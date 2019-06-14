@@ -96,7 +96,7 @@ class AppWindow(QMainWindow):
         """
         this method connects all signals to slots. Only a few mighjt be defined elsewere.
         """
-        self.ui.SelectCif_PushButton.clicked.connect(get_c())
+        self.ui.SelectCif_PushButton.clicked.connect(self.get_cif_file_block())
 
     def cif_file_open_dialog(self):
         """
