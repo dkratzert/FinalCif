@@ -1,12 +1,15 @@
 import os
 import sys
+from pathlib import Path
+
+from cif_g import file_reader
 
 DEBUG = True
 
 if DEBUG:
     from PyQt5 import uic
 
-from PyQt5.QtWidgets import QMainWindow, QApplication, QHeaderView, QLineEdit, QLabel, QPushButton
+from PyQt5.QtWidgets import QMainWindow, QApplication, QHeaderView, QLineEdit, QLabel, QPushButton, QFileDialog
 
 if getattr(sys, 'frozen', False):
     # If the application is run as a bundle, the pyInstaller bootloader
@@ -73,6 +76,7 @@ class AppWindow(QMainWindow):
         hheader.setSectionResizeMode(1, QHeaderView.Stretch)
         hheader.setSectionResizeMode(2, QHeaderView.Stretch)
         hheader.setAlternatingRowColors(True)
+        self.cif_doc = None
 
     def add_new_datafile(self, n: int, label_text: str, placeholder: str = ''):
         """
@@ -87,6 +91,29 @@ class AppWindow(QMainWindow):
         self.ui.DataSourcesGridLayout.addWidget(data_file_label, n, 0, 1, 1)
         self.ui.DataSourcesGridLayout.addWidget(data_file_edit, n, 1, 1, 1)
         self.ui.DataSourcesGridLayout.addWidget(data_file_button, n, 2, 1, 1)
+
+    def connect_signals_and_slots(self):
+        """
+        this method connects all signals to slots. Only a few mighjt be defined elsewere.
+        """
+        self.ui.SelectCif_PushButton.clicked.connect(get_c())
+
+    def cif_file_open_dialog(self):
+        """
+        Returns a cif file name from a file dialog.
+        """
+        filename, _ = QFileDialog.getOpenFileName(filter='CIF file (*.cif, *.CIF);;All Files (*.*)',
+                                                   initialFilter='*.cif',
+                                                   caption='Open .cif Files')
+        #print(filename)
+        return filename
+
+    def get_cif_file_block(self, fname: str=None):
+        if not fname:
+            fname = self.cif_file_open_dialog()
+        self.ui.SelectCif_LineEdit.setText(fname)
+        doc = file_reader.open_cif_file(Path(fname))
+        self.cif_doc = doc
 
 
 if __name__ == '__main__':
