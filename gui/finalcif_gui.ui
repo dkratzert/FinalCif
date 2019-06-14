@@ -2488,6 +2488,7 @@ The data source will be ignored until next program restart.</string>
    </property>
   </action>
  </widget>
+
  <customwidgets>
   <customwidget>
    <class>MyCifTable</class>

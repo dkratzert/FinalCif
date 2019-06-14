@@ -36,6 +36,7 @@ MANIFEST
 *.manifest
 #*.spec
 
+
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt
@@ -117,6 +118,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
 .idea/workspace.xml
 /test-data/twin4-final.cif
 *.vrf
@@ -199,3 +201,4 @@ tests/examples/work/checkpdf-cu_BruecknerJK_153F40_0m-finalcif.html
 update-finalcif.exe
 tests/examples/work/report_cu_BruecknerJK_153F40_0m-finalcif.docx
 tests/examples/work/cu_BruecknerJK_153F40_0m-finalcif.zip
+
