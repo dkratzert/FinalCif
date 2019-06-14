@@ -1,11 +1,13 @@
 altgraph==0.16.1
 future==0.17.1
+gemmi==0.2.4
 lxml==4.3.4
 macholib==1.11
 pefile==2019.4.18
+pybind11==2.3.0
 PyInstaller==3.4
 PyQt5==5.12.2
 PyQt5-sip==4.19.17
 PyQt5-stubs==5.12.1.0
 python-docx==0.8.10
-gemmi
+pywin32-ctypes==0.2.0
