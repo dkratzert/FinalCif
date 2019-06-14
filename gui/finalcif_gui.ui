@@ -29,7 +29,7 @@
      </widget>
     </item>
     <item row="0" column="1">
-     <widget class="QGroupBox" name="CifFileGroupBox">
+     <widget class="QGroupBox" name="SelectCifFileGroupBox">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
         <horstretch>2</horstretch>
@@ -41,14 +41,14 @@
       </property>
       <layout class="QGridLayout" name="CifFileGridLayout">
        <item row="0" column="0">
-        <widget class="QLineEdit" name="lineEdit">
+        <widget class="QLineEdit" name="SelectCif_LineEdit">
          <property name="text">
           <string>C:\frames\guest\foo\work\bar.cif</string>
          </property>
         </widget>
        </item>
        <item row="0" column="1">
-        <widget class="QPushButton" name="pushButton">
+        <widget class="QPushButton" name="SelectCif_PushButton">
          <property name="text">
           <string>Select File</string>
          </property>
@@ -298,7 +298,7 @@
      </widget>
     </item>
     <item row="3" column="1">
-     <widget class="QGroupBox" name="groupBox">
+     <widget class="QGroupBox" name="EquipmentGroupBox">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
         <horstretch>2</horstretch>
@@ -310,7 +310,7 @@
       </property>
       <layout class="QGridLayout" name="gridLayout_3">
        <item row="0" column="0">
-        <widget class="QStackedWidget" name="TemplatesStackedWidget">
+        <widget class="QStackedWidget" name="EquipmentTemplatesStackedWidget">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
            <horstretch>2</horstretch>
@@ -318,26 +318,26 @@
           </sizepolicy>
          </property>
          <property name="currentIndex">
-          <number>0</number>
+          <number>1</number>
          </property>
-         <widget class="QWidget" name="TemplatesStackedWidgetPage1">
+         <widget class="QWidget" name="EquipmentSelectPage">
           <layout class="QGridLayout" name="TemplatesGridLayout">
            <item row="1" column="1">
-            <widget class="QPushButton" name="EditTemplateButton">
+            <widget class="QPushButton" name="EditEquipmentTemplateButton">
              <property name="text">
               <string>Edit Template</string>
              </property>
             </widget>
            </item>
            <item row="1" column="0">
-            <widget class="QPushButton" name="NewTemplateButton">
+            <widget class="QPushButton" name="NewEquipmentTemplateButton">
              <property name="text">
               <string>New Template</string>
              </property>
             </widget>
            </item>
            <item row="0" column="0" colspan="2">
-            <widget class="QListWidget" name="TemplatesListWidget">
+            <widget class="QListWidget" name="EquipmentTemplatesListWidget">
              <property name="selectionMode">
               <enum>QAbstractItemView::SingleSelection</enum>
              </property>
@@ -358,24 +358,24 @@
            </item>
           </layout>
          </widget>
-         <widget class="QWidget" name="page">
+         <widget class="QWidget" name="EquipmentEditPage">
           <layout class="QGridLayout" name="gridLayout_2">
            <item row="1" column="0">
-            <widget class="QPushButton" name="pushButton_2">
+            <widget class="QPushButton" name="SaveEquipmentButton">
              <property name="text">
               <string>Save</string>
              </property>
             </widget>
            </item>
            <item row="1" column="1">
-            <widget class="QPushButton" name="pushButton_3">
+            <widget class="QPushButton" name="DeleteEquipmentButton">
              <property name="text">
               <string>Delete</string>
              </property>
             </widget>
            </item>
            <item row="0" column="0" colspan="2">
-            <widget class="QTableWidget" name="tableWidget">
+            <widget class="QTableWidget" name="EquipmentTableWidget">
              <attribute name="horizontalHeaderMinimumSectionSize">
               <number>100</number>
              </attribute>
@@ -405,7 +405,7 @@
      </widget>
     </item>
     <item row="6" column="1">
-     <widget class="QGroupBox" name="groupBox_2">
+     <widget class="QGroupBox" name="PropertiesGroupBox">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
         <horstretch>2</horstretch>
@@ -417,7 +417,7 @@
       </property>
       <layout class="QGridLayout" name="gridLayout_4">
        <item row="0" column="0" colspan="2">
-        <widget class="QStackedWidget" name="TemplatesStackedWidget_2">
+        <widget class="QStackedWidget" name="PropertiesTemplatesStackedWidget">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
            <horstretch>2</horstretch>
@@ -427,10 +427,10 @@
          <property name="currentIndex">
           <number>0</number>
          </property>
-         <widget class="QWidget" name="TemplatesStackedWidgetPage1_2">
+         <widget class="QWidget" name="PropertiesSelectPage">
           <layout class="QGridLayout" name="TemplatesGridLayout_2">
            <item row="1" column="0">
-            <widget class="QPushButton" name="NewTemplateButton_2">
+            <widget class="QPushButton" name="NewPropertyTemplateButton">
              <property name="text">
               <string>New Template</string>
              </property>
@@ -467,7 +467,7 @@
             </widget>
            </item>
            <item row="1" column="1">
-            <widget class="QPushButton" name="EditTemplateButton_2">
+            <widget class="QPushButton" name="EditPropertiyTemplateButton">
              <property name="text">
               <string>Edit Template</string>
              </property>
@@ -475,7 +475,7 @@
            </item>
           </layout>
          </widget>
-         <widget class="QWidget" name="page_2">
+         <widget class="QWidget" name="PropertiesEditPage">
           <layout class="QGridLayout" name="gridLayout_5">
            <item row="1" column="0">
             <widget class="QPushButton" name="pushButton_4">
@@ -542,9 +542,9 @@
  <resources/>
  <connections>
   <connection>
-   <sender>EditTemplateButton</sender>
+   <sender>EditEquipmentTemplateButton</sender>
    <signal>clicked()</signal>
-   <receiver>EditTemplateButton</receiver>
+   <receiver>EditEquipmentTemplateButton</receiver>
    <slot>click()</slot>
    <hints>
     <hint type="sourcelabel">
