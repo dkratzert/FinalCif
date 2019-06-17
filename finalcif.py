@@ -29,12 +29,11 @@ from gui.finalcif_gui import Ui_FinalCifWindow
 """
 TODO:
 
-- the working directory has to be the directory of the currently opened cif file
-- open cif file and parse it. (With gemmi?)
+#- open cif file and parse it. (With gemmi?)
 - put all incomplete information in the CifItemsTable. 
   - Add checkbox to be able to edit all cif values?
   - Or show all ? items first, then all others.
-- make first and second column of CifItemsTable uneditable.
+- make second column of CifItemsTable uneditable.
 - Own data in CifItemsTable overrides From Data Source. 
   (maybe with a signal to grey out the data source onEdit of Own Data)
 - make "save cif" work.
@@ -129,8 +128,14 @@ class AppWindow(QMainWindow):
         if not fname:
             fname = self.cif_file_open_dialog()
         self.ui.SelectCif_LineEdit.setText(fname)
-        self.cif_doc = CifContainer(Path(fname))
+        filepath = Path(fname)
+        self.cif_doc = CifContainer(filepath)
         self.cif_doc.open_cif_with_fileparser()
+        try:
+            # Change the current working Directory
+            os.chdir(filepath.absolute().parent)
+        except OSError:
+            print("Can't change the Current Working Directory")
         self.fill_cif_table()
 
     def fill_cif_table(self):
