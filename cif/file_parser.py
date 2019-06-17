@@ -13,17 +13,20 @@ Created on 09.02.2015
 """
 
 import os
+import time
+from pathlib import Path
 from pprint import pprint
 
 from cif.atoms import sorted_atoms
 
 
 class Cif(object):
-    def __init__(self, options=None):
+    def __init__(self, filename: Path = None, options=None):
         """
         A cif file parsing object optimized for speed and simplicity.
         It can not handle multi cif files.
         """
+        self.filename = filename
         if options is None:
             options = {'modification_time': "", 'file_size': ""}
         self.cif_data = {
@@ -94,6 +97,10 @@ class Cif(object):
             "modification_time"                   : options['modification_time'],
             "file_size"                           : options['file_size']
         }
+        if self.filename:
+            self.parsefile(self.filename.read_text(encoding='utf-8', errors='ignore').splitlines(keepends=True))
+            self.cif_data['modification_time'] = time.localtime(filename.stat().st_mtime)
+            self.cif_data['file_size'] = filename.stat().st_size
 
     def parsefile(self, txt: list):
         """
@@ -101,10 +108,11 @@ class Cif(object):
         :param txt: cif file as list without line endings
         :return: cif file content
         :rtype: dict
-        >>> cif = Cif()
-        >>> ok = cif.parsefile(Cif.readfile(r'./test-data/COD/4060314.cif'))
+        >>> cif = Cif(Path(r'./test-data/1000007.cif'))
         >>> cif.loops[0]
-        {'_publ_author_name': 'Eva Hevia'}
+        {'_publ_author_name': 'Thompson, R. M.'}
+        >>> cif.cell
+        [9.7397, 8.9174, 5.2503, 90.0, 105.866, 90.0]
         """
         data = False
         loop = False
@@ -334,11 +342,10 @@ class Cif(object):
 
     def loop_items(self, item):
         """
-        >>> cif = Cif()
-        >>> ok = cif.parsefile(Cif.readfile(r'./test-data/COD/4060314.cif'))
+        >>> cif = Cif(Path('./test-data/4060314.cif'))
         >>> cif.loop_items('_publ_author_name')
         ['Eva Hevia', 'Dolores Morales', 'Julio Perez', 'Victor Riera', 'Markus Seitz', 'Daniel Miguel']
-        >>> ok = cif.parsefile(Cif.readfile(r'./test-data/ICSD/1923_Aminoff, G._Ni As_P 63.m m c_Nickel arsenide.cif'))
+        >>> cif = Cif(Path(r'./test-data/1923_Aminoff, G._Ni As_P 63.m m c_Nickel arsenide.cif'))
         >>> cif.loop_items('_symmetry_equiv_pos_site_id')
         ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24']
         """
@@ -405,8 +412,7 @@ class Cif(object):
     def symm(self) -> list:
         """
         Yields symmetry operations.
-        >>> cif = Cif()
-        >>> ok = cif.parsefile(Cif.readfile(r'./test-data/COD/4060314.cif'))
+        >>> cif = Cif(Path(r'./test-data/4060314.cif'))
         >>> cif.symm
         ['x, y, z', '-x+1/2, y+1/2, -z+1/2', '-x, -y, -z', 'x-1/2, -y-1/2, z-1/2']
         """
@@ -476,16 +482,14 @@ class Cif(object):
         return data
 
 
+def foo():
+    """
+    >>> cif = Cif(Path('test-data/1000007.cif'))
+    >>> cif.cif_data['file_size']  # in bytes
+    2082
+    """
+
 if __name__ == '__main__':
-    cif = Cif()
-    with open(r'./test-data/ICSD/1923_Aminoff, G._Ni As_P 63.m m c_Nickel arsenide.cif', 'r') as f:
-        cifok = cif.parsefile(f.readlines())
-    pprint(cif.cif_data)
-    # pprint(cif._loop)
-    for x in cif.atoms:
-        pass
-        print(x)
-    print(cifok)
     import doctest
 
     failed, attempted = doctest.testmod()  # verbose=True)

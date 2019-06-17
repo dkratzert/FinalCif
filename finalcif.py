@@ -56,7 +56,18 @@ TODO:
   as needed like "publication picture program" and unimportant "like melting point". 
 - Dropdown menu for colors, software versions, ...
 - Template editor for colors, software, ...  with predefined values.
-
+- Add a sfrm file parser: 
+    - get measurement date 
+    - Determine Manufakturer, kv/mA, tube, runlist 
+- Determine the Manufacturer:
+    - work directory: 1 Punkt
+    - .abs file existiert: 1 Punkt
+    - Sfrm Frames 2 Punkte 
+    - Xxx Frames 2punkte
+    - ...
+- dann ein Dopdown mit „Manufakturer: 'bruker'“ (change)
+- select templates according to Points
+- Manufakturer has sub categories with Tube Type , housing, radiation, Cooling, goniometer, Detektor 
 - save cif file with "name_fin.cif"
 
 - Add button for checkcif report.
