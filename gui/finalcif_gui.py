@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/Users/daniel/GitHub/FinalCif/./gui/finalcif_gui.ui'
+# Form implementation generated from reading ui file 'D:\GitHub\FinalCif\./gui\finalcif_gui.ui'
 #
 # Created by: PyQt5 UI code generator 5.12.2
 #
@@ -278,7 +278,6 @@ class Ui_FinalCifWindow(object):
         self.retranslateUi(FinalCifWindow)
         self.EquipmentTemplatesStackedWidget.setCurrentIndex(1)
         self.PropertiesTemplatesStackedWidget.setCurrentIndex(0)
-        self.EditEquipmentTemplateButton.clicked.connect(self.EditEquipmentTemplateButton.click)
         QtCore.QMetaObject.connectSlotsByName(FinalCifWindow)
 
     def retranslateUi(self, FinalCifWindow):
@@ -286,7 +285,7 @@ class Ui_FinalCifWindow(object):
         FinalCifWindow.setWindowTitle(_translate("FinalCifWindow", "FinalCif"))
         self.MercuryPushButton.setText(_translate("FinalCifWindow", "View in Mercury"))
         self.SelectCifFileGroupBox.setTitle(_translate("FinalCifWindow", "Cif file"))
-        self.SelectCif_LineEdit.setText(_translate("FinalCifWindow", "C:\\frames\\guest\\foo\\work\\bar.cif"))
+        self.SelectCif_LineEdit.setPlaceholderText(_translate("FinalCifWindow", "Select a .cif file first."))
         self.SelectCif_PushButton.setText(_translate("FinalCifWindow", "Select File"))
         self.DataFilesGroupBox.setTitle(_translate("FinalCifWindow", "Data Sources"))
         self.DataFileEdit.setPlaceholderText(_translate("FinalCifWindow", " .abs file from SADABS"))
