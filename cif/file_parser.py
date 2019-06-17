@@ -20,7 +20,7 @@ from cif.atoms import sorted_atoms
 
 
 class Cif(object):
-    def __init__(self, filename: Path = None, options: dict = None) -> dict:
+    def __init__(self, filename: Path = None, options: dict = None):
         """
         A cif file parsing object optimized for speed and simplicity.
         It can not handle multi cif files.
