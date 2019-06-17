@@ -30,6 +30,8 @@ class CifContainer():
             self.cif_data = file_parser.Cif(self.filename)
         except AttributeError:
             print('Filename has to be a Path instance.')
+        except IsADirectoryError:
+            print('Filename can not be a directory.')
 
     def __getitem__(self, item):
         return self.cif_data[item] if self.cif_data[item] else ''
