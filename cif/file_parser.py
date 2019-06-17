@@ -15,13 +15,12 @@ Created on 09.02.2015
 import os
 import time
 from pathlib import Path
-from pprint import pprint
 
 from cif.atoms import sorted_atoms
 
 
 class Cif(object):
-    def __init__(self, filename: Path = None, options=None):
+    def __init__(self, filename: Path = None, options: dict = None) -> dict:
         """
         A cif file parsing object optimized for speed and simplicity.
         It can not handle multi cif files.
@@ -30,75 +29,76 @@ class Cif(object):
         if options is None:
             options = {'modification_time': "", 'file_size': ""}
         self.cif_data = {
-            "data"                                : '',
-            "_cell_length_a"                      : '',
-            '_cell_length_b'                      : '',
-            '_cell_length_c'                      : '',
-            '_cell_angle_alpha'                   : '',
-            '_cell_angle_beta'                    : '',
-            '_cell_angle_gamma'                   : '',
-            "_cell_volume"                        : '',
-            "_cell_formula_units_Z"               : '',
-            "_space_group_name_H-M_alt"           : '',
-            "_space_group_name_Hall"              : '',
-            "_space_group_centring_type"          : '',
-            "_space_group_IT_number"              : '',
-            "_space_group_crystal_system"         : '',
-            "_space_group_symop_operation_xyz"    : '',
-            "_audit_creation_method"              : '',
-            "_chemical_formula_sum"               : '',
-            "_chemical_formula_weight"            : '',
-            "_exptl_crystal_description"          : '',
-            "_exptl_crystal_colour"               : '',
-            "_exptl_crystal_size_max"             : '',
-            "_exptl_crystal_size_mid"             : '',
-            "_exptl_crystal_size_min"             : '',
-            "_exptl_absorpt_coefficient_mu"       : '',
-            "_exptl_absorpt_correction_type"      : '',
-            "_diffrn_ambient_temperature"         : '',
-            "_diffrn_radiation_wavelength"        : '',
-            "_diffrn_radiation_type"              : '',
-            "_diffrn_source"                      : '',
-            "_diffrn_measurement_device_type"     : '',
-            "_diffrn_reflns_number"               : '',
-            "_diffrn_reflns_av_R_equivalents"     : '',
-            "_diffrn_reflns_av_unetI/netI"        : '',
-            "_diffrn_reflns_theta_min"            : '',
-            "_diffrn_reflns_theta_max"            : '',
-            "_diffrn_reflns_theta_full"           : '',
-            "_diffrn_measured_fraction_theta_max" : '',
+            "data": '',
+            "_cell_length_a": '',
+            '_cell_length_b': '',
+            '_cell_length_c': '',
+            '_cell_angle_alpha': '',
+            '_cell_angle_beta': '',
+            '_cell_angle_gamma': '',
+            "_cell_volume": '',
+            "_cell_formula_units_Z": '',
+            "_space_group_name_H-M_alt": '',
+            "_space_group_name_Hall": '',
+            "_space_group_centring_type": '',
+            "_space_group_IT_number": '',
+            "_space_group_crystal_system": '',
+            "_space_group_symop_operation_xyz": '',
+            "_audit_creation_method": '',
+            "_chemical_formula_sum": '',
+            "_chemical_formula_weight": '',
+            "_exptl_crystal_description": '',
+            "_exptl_crystal_colour": '',
+            "_exptl_crystal_size_max": '',
+            "_exptl_crystal_size_mid": '',
+            "_exptl_crystal_size_min": '',
+            "_exptl_absorpt_coefficient_mu": '',
+            "_exptl_absorpt_correction_type": '',
+            "_diffrn_ambient_temperature": '',
+            "_diffrn_radiation_wavelength": '',
+            "_diffrn_radiation_type": '',
+            "_diffrn_source": '',
+            "_diffrn_measurement_device_type": '',
+            "_diffrn_reflns_number": '',
+            "_diffrn_reflns_av_R_equivalents": '',
+            "_diffrn_reflns_av_unetI/netI": '',
+            "_diffrn_reflns_theta_min": '',
+            "_diffrn_reflns_theta_max": '',
+            "_diffrn_reflns_theta_full": '',
+            "_diffrn_measured_fraction_theta_max": '',
             "_diffrn_measured_fraction_theta_full": '',
-            "_reflns_number_total"                : '',
-            "_reflns_number_gt"                   : '',
-            "_reflns_threshold_expression"        : '',
-            "_reflns_Friedel_coverage"            : '',
-            "_computing_structure_solution"       : '',
-            "_computing_structure_refinement"     : '',
-            "_refine_special_details"             : '',
-            "_refine_ls_abs_structure_Flack"      : '',
-            "_refine_ls_structure_factor_coef"    : '',
-            "_refine_ls_weighting_details"        : '',
-            "_refine_ls_number_reflns"            : '',
-            "_refine_ls_number_parameters"        : '',
-            "_refine_ls_number_restraints"        : '',
-            "_refine_ls_R_factor_all"             : '',
-            "_refine_ls_R_factor_gt"              : '',
-            "_refine_ls_wR_factor_ref"            : '',
-            "_refine_ls_wR_factor_gt"             : '',
-            "_refine_ls_goodness_of_fit_ref"      : '',
-            "_refine_ls_restrained_S_all"         : '',
-            "_refine_ls_shift/su_max"             : '',
-            "_refine_ls_shift/su_mean"            : '',
-            "_refine_diff_density_max"            : '',
-            "_refine_diff_density_min"            : '',
-            "_diffrn_reflns_av_unetI_netI"        : '',
-            "_database_code_depnum_ccdc_archive"  : '',
-            "_shelx_res_file"                     : '',
-            "modification_time"                   : options['modification_time'],
-            "file_size"                           : options['file_size']
+            "_reflns_number_total": '',
+            "_reflns_number_gt": '',
+            "_reflns_threshold_expression": '',
+            "_reflns_Friedel_coverage": '',
+            "_computing_structure_solution": '',
+            "_computing_structure_refinement": '',
+            "_refine_special_details": '',
+            "_refine_ls_abs_structure_Flack": '',
+            "_refine_ls_structure_factor_coef": '',
+            "_refine_ls_weighting_details": '',
+            "_refine_ls_number_reflns": '',
+            "_refine_ls_number_parameters": '',
+            "_refine_ls_number_restraints": '',
+            "_refine_ls_R_factor_all": '',
+            "_refine_ls_R_factor_gt": '',
+            "_refine_ls_wR_factor_ref": '',
+            "_refine_ls_wR_factor_gt": '',
+            "_refine_ls_goodness_of_fit_ref": '',
+            "_refine_ls_restrained_S_all": '',
+            "_refine_ls_shift/su_max": '',
+            "_refine_ls_shift/su_mean": '',
+            "_refine_diff_density_max": '',
+            "_refine_diff_density_min": '',
+            "_diffrn_reflns_av_unetI_netI": '',
+            "_database_code_depnum_ccdc_archive": '',
+            "_shelx_res_file": '',
+            "modification_time": options['modification_time'],
+            "file_size": options['file_size']
         }
+        self.ok = False
         if self.filename:
-            self.parsefile(self.filename.read_text(encoding='utf-8', errors='ignore').splitlines(keepends=True))
+            self.ok = self.parsefile(self.filename.read_text(encoding='utf-8', errors='ignore').splitlines(keepends=True))
             self.cif_data['modification_time'] = time.localtime(filename.stat().st_mtime)
             self.cif_data['file_size'] = filename.stat().st_size
 
@@ -488,6 +488,7 @@ def foo():
     >>> cif.cif_data['file_size']  # in bytes
     2082
     """
+
 
 if __name__ == '__main__':
     import doctest

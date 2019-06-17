@@ -2,7 +2,9 @@ import os
 import sys
 from pathlib import Path
 
-from cif_g import file_reader
+from PyQt5.QtCore import pyqtSlot
+
+from cif.file_reader import CifContainer
 
 DEBUG = True
 
@@ -22,7 +24,6 @@ else:
 if DEBUG:
     uic.compileUiDir(os.path.join(application_path, './gui'))
 from gui.finalcif_gui import Ui_FinalCifWindow
-
 
 """
 TODO:
@@ -88,6 +89,7 @@ class AppWindow(QMainWindow):
         hheader.setSectionResizeMode(2, QHeaderView.Stretch)
         hheader.setAlternatingRowColors(True)
         self.cif_doc = None
+        self.connect_signals_and_slots()
 
     def add_new_datafile(self, n: int, label_text: str, placeholder: str = ''):
         """
@@ -107,29 +109,29 @@ class AppWindow(QMainWindow):
         """
         this method connects all signals to slots. Only a few mighjt be defined elsewere.
         """
-        self.ui.SelectCif_PushButton.clicked.connect(self.get_cif_file_block())
+        self.ui.SelectCif_PushButton.clicked.connect(self.get_cif_file_block)
 
-    def cif_file_open_dialog(self):
+    @staticmethod
+    def cif_file_open_dialog():
         """
         Returns a cif file name from a file dialog.
         """
-        filename, _ = QFileDialog.getOpenFileName(filter='CIF file (*.cif, *.CIF);;All Files (*.*)',
-                                                   initialFilter='*.cif',
-                                                   caption='Open .cif Files')
-        #print(filename)
+        filename, _ = QFileDialog.getOpenFileName(filter='CIF file (*.cif, *.CIF);; All Files (*.*)',
+                                                  initialFilter='*.cif',
+                                                  caption='Open a .cif File')
+        # print(filename)
         return filename
 
-    def get_cif_file_block(self, fname: str=None):
+    def get_cif_file_block(self, fname):
         if not fname:
             fname = self.cif_file_open_dialog()
         self.ui.SelectCif_LineEdit.setText(fname)
-        doc = file_reader.open_cif_file(Path(fname))
-        self.cif_doc = doc
+        self.cif_doc = CifContainer(Path(fname))
 
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     w = AppWindow()
-    #w.showMaximized()  # For full screen view
+    # w.showMaximized()  # For full screen view
     w.setBaseSize(1200, 780)
     sys.exit(app.exec_())
