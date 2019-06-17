@@ -97,6 +97,7 @@ class Manufacturer():
     >>> m2 = Manufacturer()
     >>> m2
     """
+
     def __init__(self):
         self.points = {'bruker': 0,
                        'stoe': 0,
@@ -117,3 +118,10 @@ class Manufacturer():
         return self.get_manufacturer()
 
 
+high_prio_keys = ['_space_group_name_H-M_alt', '_space_group_centring_type', '_space_group_IT_number',
+                  '_space_group_crystal_system', '_audit_creation_method', '_chemical_formula_sum',
+                  '_chemical_formula_weight', '_exptl_crystal_description', '_exptl_crystal_colour',
+                  '_exptl_crystal_size_max', '_exptl_crystal_size_mid', '_exptl_crystal_size_min',
+                  '_exptl_absorpt_coefficient_mu', '_exptl_absorpt_correction_type', '_diffrn_ambient_temperature']
+medium_prio_keys = ['']
+low_prio_keys = ['']

@@ -2,16 +2,17 @@ import os
 import sys
 from pathlib import Path
 
-from PyQt5.QtCore import pyqtSlot
+from PyQt5.QtCore import Qt
 
 from cif.file_reader import CifContainer
 
 DEBUG = True
 
 if DEBUG:
-    from PyQt5 import uic
+    from PyQt5 import uic, Qt, QtCore
 
-from PyQt5.QtWidgets import QMainWindow, QApplication, QHeaderView, QLineEdit, QLabel, QPushButton, QFileDialog
+from PyQt5.QtWidgets import QMainWindow, QApplication, QHeaderView, QLineEdit, QLabel, QPushButton, QFileDialog, \
+    QTableWidgetItem
 
 if getattr(sys, 'frozen', False):
     # If the application is run as a bundle, the pyInstaller bootloader
@@ -90,6 +91,8 @@ class AppWindow(QMainWindow):
         hheader.setAlternatingRowColors(True)
         self.cif_doc = None
         self.connect_signals_and_slots()
+        # only for testing:
+        self.get_cif_file_block('test-data/P21c-final.cif')
 
     def add_new_datafile(self, n: int, label_text: str, placeholder: str = ''):
         """
@@ -127,6 +130,26 @@ class AppWindow(QMainWindow):
             fname = self.cif_file_open_dialog()
         self.ui.SelectCif_LineEdit.setText(fname)
         self.cif_doc = CifContainer(Path(fname))
+        self.cif_doc.open_cif_with_fileparser()
+        self.fill_cif_table()
+
+    def fill_cif_table(self):
+        # self.ui.CifItemsTable.clear()
+        self.ui.CifItemsTable.setRowCount(0)
+        for key, value in self.cif_doc.key_value_pairs():
+            self.addRow(key, value)
+
+    def addRow(self, key, value):
+        # Create a empty row at bottom of table
+        row_num = self.ui.CifItemsTable.rowCount()
+        self.ui.CifItemsTable.insertRow(row_num)
+        # Add cif key and value to the row:
+        item_key = QTableWidgetItem(key)
+        item_val = QTableWidgetItem(value)
+        self.ui.CifItemsTable.setVerticalHeaderItem(row_num, item_key)
+        self.ui.CifItemsTable.setItem(row_num, 0, item_val)
+        # has to be assigned first and then set to uneditable:
+        item_val.setFlags(item_val.flags() ^ QtCore.Qt.ItemIsEditable)
 
 
 if __name__ == '__main__':
