@@ -5,6 +5,7 @@ def open_cif_file(filename: Path):
     """
     Raads a CIF file into gemmi and returns a sole block.
     """
+    import gemmi
     doc = gemmi.cif.read_file(filename.absolute())
     return doc
 
@@ -14,8 +15,13 @@ class CifContainer():
     This class holds the content of a cif file, independent of the file parser used.
     """
 
-    def __init__(self, cif):
+    def __init__(self, cif, *args, **kwargs):
         self.cif = None
+        self.parser_type = None
+        if self.cif.__name__ == 'Cif':
+            self.parser_type = 'Cif'
+        if self.
+            
 
     def _get_cif_data_from_gemmi(self):
         pass
