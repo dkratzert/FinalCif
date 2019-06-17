@@ -42,8 +42,8 @@
       <layout class="QGridLayout" name="CifFileGridLayout">
        <item row="0" column="0">
         <widget class="QLineEdit" name="SelectCif_LineEdit">
-         <property name="text">
-          <string>C:\frames\guest\foo\work\bar.cif</string>
+         <property name="placeholderText">
+          <string>Select a .cif file first.</string>
          </property>
         </widget>
        </item>
@@ -540,22 +540,5 @@
   </action>
  </widget>
  <resources/>
- <connections>
-  <connection>
-   <sender>EditEquipmentTemplateButton</sender>
-   <signal>clicked()</signal>
-   <receiver>EditEquipmentTemplateButton</receiver>
-   <slot>click()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>249</x>
-     <y>270</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>249</x>
-     <y>270</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>
