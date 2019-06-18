@@ -30,6 +30,28 @@ def to_int(st):
             return None
 
 
+class Dataset():
+    def __init__(self):
+        self.rint = None
+        self.line = None
+        self.domain = None
+        self.written_reflections = None
+        self.hklfile = None
+        self.observations = None
+        self.Rint_3sig = None
+        self.observations_3sig = None
+        self.transmission = None
+
+    def __setattr__(self, key, value):
+        self.key = value
+
+    def __getattribute__(self, item):
+        try:
+            return self.item
+        except AttributeError:
+            return None
+
+
 class Sadabs():
     """
     This is a SADABS/TWINABS file parsing object.
@@ -40,81 +62,93 @@ class Sadabs():
 
     def __init__(self, filename):
         """
-        >>> s = Sadabs(r'scxrd/testfiles/IK_WU19.abs')
-        >>> s.parse_file()
-        >>> s.components
-
-        >>> s.hklfile
+        >>> s = Sadabs(r'test-data/IK_WU19.abs')  # this is a sadabs file
+        >>> s.twin_components
+        0
+        >>> s.dataset(0).hklfile
         'IK_WU19_0m.hkl'
-        >>> s.Rint
-
-        >>> s.transmission
+        >>> s.dataset(0).Rint  # the WR2(int)
+        0.0472
+        >>> s.dataset(0).transmission
         [0.7135, 0.7459]
-        >>> s.version
+        >>> s.dataset(0).version
         'SADABS-2016/2 - Bruker AXS area detector scaling and absorption correction'
-        >>> s.written_reflections
+        >>> s.dataset(0).written_reflections
         152800
 
-        >>> s = Sadabs(r'scxrd/testfiles/IK_KG_CF_3.abs')
-        >>> s.parse_file()
-        >>> s.transmission
+        >>> s = Sadabs(r'test-data/twin-4-5.abs')  # this is a twinabs file
+        >>> s.dataset(0).transmission
         [0.605537, 0.744178]
-        >>> s.Rint
+        >>> s.dataset(0).Rint
         0.0873
-        >>> s.hklfile
-        'IK_KG_CF_3_0m_5.hkl'
-        >>> s.components
+        >>> s.dataset(0).hklfile
+        'twin5.hkl'
+        >>> s.twin_components
         2
         >>> s.version
         'TWINABS - Bruker AXS scaling for twinned crystals - Version 2012/1'
-        >>> s.written_reflections
+        >>> s.dataset(0).written_reflections
         2330
         """
         self._fileobj = Path(filename)
-        self.written_reflections = None
-        self.hklfile = None
-        self.Rint = None
         self.version = None
-        self.components = None
-        self.transmission = None
+        self.twin_components = 0
+        self.Rint = None
+        self.output = []
+        self.parse_file()
 
     def parse_file(self):
+        n = 0
+        self.output.append(Dataset)
         for line in self._fileobj.read_text(encoding='ascii', errors='ignore').splitlines(keepends=False):
             spline = line.split()
             if self._written_refl_regex.match(line):
+                self.output.append(Dataset)
                 #     2330 Corrected reflections written to file IK_KG_CF_3_0m_5.hkl
-                self.written_reflections = to_int(spline[0])
-                self.hklfile = spline[-1]
+                self.dataset(n).written_reflections = to_int(spline[0])
+                self.dataset(n).hklfile = spline[-1]
+                n += 1
             if self._rint_regex.match(line):
                 # Rint = 0.0873  for all   11683  observations and
+                self.Rint = to_float(spline[2])
+            if line.startswith(' wR2(int)'):
                 self.Rint = to_float(spline[2])
             if 'SADABS' in line or 'TWINABS' in line:
                 self.version = line.lstrip().strip()
             if 'twin components' in line:
-                self.components = to_int(spline[0])
+                self.twin_components = to_int(spline[0])
             if "Estimated minimum and maximum transmission" in line \
                     or 'Minimum and maximum apparent transmission' in line:
                 try:
-                    self.transmission = [float(x) for x in spline[-2:]]
+                    self.dataset(n).transmission = [float(x) for x in spline[-2:]]
                 except ValueError:
                     pass
 
+    def __iter__(self):
+        return iter(x for x in self.output)
+
+    def dataset(self, n):
+        return self.output[n]
+
 
 if __name__ == '__main__':
-    s = Sadabs(r'scxrd/testfiles/IK_WU19.abs')
-    s.parse_file()
-    print('written reflections:', s.written_reflections)
-    print('hklfile:', s.hklfile)
-    print('rint:', s.Rint)
-    print('version:', s.version)
-    print('components:', s.components)
-    print('transmission:', s.transmission)
-    print('\n')
-    s = Sadabs(r'scxrd/testfiles/IK_KG_CF_3.abs')
-    s.parse_file()
-    print('written reflections:', s.written_reflections)
-    print('hklfile:', s.hklfile)
-    print('rint:', s.Rint)
-    print('version:', s.version)
-    print('components:', s.components)
-    print('transmission:', s.transmission)
+    s = Sadabs('test-data/IK_WU19.abs')
+    for dat in s:
+        print('written reflections:', dat.written_reflections)
+        print('hklfile:', dat.hklfile)
+        print('rint:', s.Rint)
+        print('version:', s.version)
+        print('components:', s.twin_components)
+        print('transmission:', dat.transmission)
+        print('\n')
+
+    print('########')
+    s = Sadabs(r'test-data/twin-4-5.abs')
+    for dat in s:
+        print('written reflections:', dat.written_reflections)
+        print('hklfile:', dat.hklfile)
+        print('rint:', s.Rint)
+        print('version:', s.version)
+        print('components:', s.twin_components)
+        print('transmission:', dat.transmission)
+        print('\n')
