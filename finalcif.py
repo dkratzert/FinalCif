@@ -29,6 +29,7 @@ from gui.finalcif_gui import Ui_FinalCifWindow
 """
 TODO:
 
+- Add file search for data files like .abs file.
 #- open cif file and parse it. (With gemmi?)
 - put all incomplete information in the CifItemsTable. 
   - Add checkbox to be able to edit all cif values?
