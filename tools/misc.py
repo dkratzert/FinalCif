@@ -130,3 +130,27 @@ medium_prio_keys = ['']
 low_prio_keys = ['']
 
 
+def to_float(st):
+    if isinstance(st, list):
+        try:
+            return [float(x) for x in st[-2:]]
+        except ValueError:
+            return None
+    else:
+        try:
+            return float(st)
+        except ValueError:
+            return None
+
+
+def to_int(st):
+    if isinstance(st, list):
+        try:
+            return [int(x) for x in st[-2:]]
+        except ValueError:
+            return None
+    else:
+        try:
+            return int(st)
+        except ValueError:
+            return None
