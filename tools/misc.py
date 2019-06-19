@@ -118,10 +118,15 @@ class Manufacturer():
         return self.get_manufacturer()
 
 
+
 high_prio_keys = ['_space_group_name_H-M_alt', '_space_group_centring_type', '_space_group_IT_number',
                   '_space_group_crystal_system', '_audit_creation_method', '_chemical_formula_sum',
                   '_chemical_formula_weight', '_exptl_crystal_description', '_exptl_crystal_colour',
                   '_exptl_crystal_size_max', '_exptl_crystal_size_mid', '_exptl_crystal_size_min',
-                  '_exptl_absorpt_coefficient_mu', '_exptl_absorpt_correction_type', '_diffrn_ambient_temperature']
+                  '_exptl_absorpt_coefficient_mu', '_exptl_absorpt_correction_type', '_diffrn_ambient_temperature',
+                  '_exptl_absorpt_correction_T_min', '_exptl_absorpt_correction_T_max', '_cell_measurement_reflns_used',
+                  '_cell_measurement_theta_min', '_cell_measurement_theta_max']
 medium_prio_keys = ['']
 low_prio_keys = ['']
+
+
