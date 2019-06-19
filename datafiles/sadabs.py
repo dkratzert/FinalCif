@@ -3,31 +3,7 @@
 import re
 from pathlib import Path
 
-
-def to_float(st):
-    if isinstance(st, list):
-        try:
-            return [float(x) for x in st[-2:]]
-        except ValueError:
-            return None
-    else:
-        try:
-            return float(st)
-        except ValueError:
-            return None
-
-
-def to_int(st):
-    if isinstance(st, list):
-        try:
-            return [int(x) for x in st[-2:]]
-        except ValueError:
-            return None
-    else:
-        try:
-            return int(st)
-        except ValueError:
-            return None
+from tools.misc import to_float, to_int
 
 
 class Dataset():
@@ -61,7 +37,7 @@ class Sadabs():
     _rint_regex = re.compile(r'^.*Rint\s=.*observations and')
     _rint3sig_regex = re.compile(r'^.*Rint\s=.*observations with')
 
-    def __init__(self, filename):
+    def __init__(self, filename: str):
         """
         >>> s = Sadabs(r'test-data/IK_WU19.abs')  # this is a sadabs file
         >>> s.twin_components
