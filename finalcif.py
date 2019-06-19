@@ -2,14 +2,12 @@ import os
 import sys
 from pathlib import Path
 
-from PyQt5.QtCore import Qt
-
 from cif.file_reader import CifContainer
 
 DEBUG = True
 
 if DEBUG:
-    from PyQt5 import uic, Qt, QtCore
+    from PyQt5 import uic, QtCore
 
 from PyQt5.QtWidgets import QMainWindow, QApplication, QHeaderView, QLineEdit, QLabel, QPushButton, QFileDialog, \
     QTableWidgetItem
@@ -90,9 +88,15 @@ class AppWindow(QMainWindow):
         hheader.setSectionResizeMode(2, QHeaderView.Stretch)
         hheader.setAlternatingRowColors(True)
         self.cif_doc = None
+        self.missing_data = []
         self.connect_signals_and_slots()
+        self.data_sources = {'_exptl_absorpt_correction_type': ['SADABS', 'TWINABS', 'SORTAV'],
+                        '_cell_measurement_reflns_used': [self.get_saint(), 'EVAL', 'HKL2000', 'DTREK'],
+                        '_cell_measurement_theta_min': ['SAINT', 'EVAL', 'HKL2000', 'DTREK'],
+                        '_cell_measurement_theta_max': ['SAINT', 'EVAL', 'HKL2000', 'DTREK'],
+                        }
         # only for testing:
-        self.get_cif_file_block('test-data/P21c-final.cif')
+        self.get_cif_file_block('test-data/foobar.cif')
 
     def add_new_datafile(self, n: int, label_text: str, placeholder: str = ''):
         """
@@ -126,6 +130,9 @@ class AppWindow(QMainWindow):
         return filename
 
     def get_cif_file_block(self, fname):
+        """
+        Opens the cif file and fills information into the main table.
+        """
         if not fname:
             fname = self.cif_file_open_dialog()
         self.ui.SelectCif_LineEdit.setText(fname)
@@ -138,11 +145,35 @@ class AppWindow(QMainWindow):
         except OSError:
             print("Can't change the Current Working Directory")
         self.fill_cif_table()
+        self.get_data_sources()
+
+    def get_saint(self):
+        """
+        TODO: I have to decide which are the valid files. Therfore I need to determine the integration time and the 
+              amount of reflections written to the raw/mul file.
+              SADABS/TWINABS should read-in the same amount of reflections SAINT has written.
+        TODO: parse ._ls file for amount of reflections, alternative the .raw/.mul file.
+        """
+        p = Path('./')
+        saintfiles = p.rglob('*_0m._ls')
+        print([i for i in saintfiles])
+
+    def get_data_sources(self):
+        """
+        Tries to determine the sources of missing data in the cif file, e.g. Tmin/Tmax from SADABS.
+        """
+        for miss in self.missing_data:
+            try:
+                miss()
+            except TypeError:
+                pass
 
     def fill_cif_table(self):
         # self.ui.CifItemsTable.clear()
         self.ui.CifItemsTable.setRowCount(0)
         for key, value in self.cif_doc.key_value_pairs():
+            if not value or value == '?':
+                self.missing_data.append(key)
             self.addRow(key, value)
 
     def addRow(self, key, value):

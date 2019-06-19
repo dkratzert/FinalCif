@@ -1,5 +1,7 @@
 from pathlib import Path
+from runpy import _get_main_module_details
 
+import gemmi
 from cif import file_parser
 from tools.misc import high_prio_keys
 
@@ -17,7 +19,6 @@ class CifContainer():
         """
         Reads a CIF file into gemmi and returns a sole block.
         """
-        import gemmi as gemmi
         doc = gemmi.cif.read_file(self.filename)
         return doc
 
