@@ -3,6 +3,7 @@ import sys
 from pathlib import Path
 
 from cif.file_reader import CifContainer
+from datafiles.datatools import MissingCifData
 from datafiles.saint import SaintListFile
 
 DEBUG = True
@@ -91,11 +92,12 @@ class AppWindow(QMainWindow):
         self.cif_doc = None
         self.missing_data = []
         self.connect_signals_and_slots()
-        self.data_sources = {'_exptl_absorpt_correction_type': ['SADABS', 'TWINABS', 'SORTAV'],
-                        '_cell_measurement_reflns_used': [self.get_saint()],
-                        '_cell_measurement_theta_min': [self.get_saint()],
-                        '_cell_measurement_theta_max': [self.get_saint()],
-                        }
+        self.miss_data = MissingCifData()
+        #self.data_sources = {'_exptl_absorpt_correction_type': ['SADABS', 'TWINABS', 'SORTAV'],
+        #                '_cell_measurement_reflns_used': [self.get_saint()],
+        #                '_cell_measurement_theta_min': [self.get_saint()],
+        #                '_cell_measurement_theta_max': [self.get_saint()],
+        #                }
         # only for testing:
         self.get_cif_file_block('test-data/foobar.cif')
 
@@ -146,7 +148,8 @@ class AppWindow(QMainWindow):
         except OSError:
             print("Can't change the Current Working Directory")
         self.fill_cif_table()
-        self.get_data_sources()
+        print('')
+        #self.get_data_sources()
 
     def get_saint(self):
         """
@@ -169,10 +172,9 @@ class AppWindow(QMainWindow):
         Tries to determine the sources of missing data in the cif file, e.g. Tmin/Tmax from SADABS.
         """
         for miss in self.missing_data:
-            try:
-                miss()
-            except TypeError:
-                pass
+            if miss == '_cell_measurement_reflns_used':
+                if not 'saint' in self.miss_data:
+                    self.miss_data['saint'] = self.get_saint()
 
     def fill_cif_table(self):
         # self.ui.CifItemsTable.clear()
