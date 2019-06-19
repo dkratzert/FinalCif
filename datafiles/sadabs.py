@@ -59,7 +59,7 @@ class Sadabs():
     This is a SADABS/TWINABS file parsing object.
     TODO: Add data structure that handles multiple refinements esp. in TWINABS
     """
-    _written_refl_regex = re.compile(r'.*Corrected reflections written to file', re.IGNORECASE)
+    _refl_written_regex = re.compile(r'.*Corrected reflections written to file', re.IGNORECASE)
     _rint_regex = re.compile(r'^.*Rint\s=.*observations and')
 
     def __init__(self, filename):
@@ -96,12 +96,15 @@ class Sadabs():
         self.version = None
         self.twin_components = 1
         self.Rint = None
+        self.input_files = [] 
         self.output = []
         self.parse_file()
 
     def parse_file(self):
         n = 0
         filetxt = self._fileobj.read_text(encoding='ascii', errors='ignore').splitlines(keepends=False)
+        hklf5 = False
+        # TODO: input files: "Reading file IK_WU19_0m.raw", but remind the 01, 02, etc. raw files
         for line in filetxt:
             spline = line.split()
             if line.startswith(' PART 3'):
@@ -122,12 +125,15 @@ class Sadabs():
             if line.startswith(' Reflections merged according'):
                 self.dataset(n).point_group_merge = spline[-1]
             if line.startswith(' HKLF 5 dataset constructed'):
-                # TODO: This can be before "Corrected reflections written":
+                # This can be before "Corrected reflections written" in case of hklf5 files
+                if self.version.startswith('TWINABS'):
+                    hklf5 = True
+                    self.output.append(Dataset())
                 self.dataset(n).filetype = to_int(spline[1])
                 self.dataset(n).domain = spline[-1]
-            if self._written_refl_regex.match(line):  # This is always first
+            if self._refl_written_regex.match(line):  # This is always first
                 #     2330 Corrected reflections written to file IK_KG_CF_3_0m_5.hkl
-                if self.version.startswith('TWINABS'):
+                if self.version.startswith('TWINABS') and not hklf5:
                     self.output.append(Dataset())
                 self.dataset(n).written_reflections = to_int(spline[0])
                 self.dataset(n).hklfile = spline[-1]
@@ -156,6 +162,7 @@ if __name__ == '__main__':
         print('hklfile:', dat.hklfile)
         print('transmission:', dat.transmission)
         print('Mu*r:', dat.mu_r)
+        print('file type:', dat.filetype)
         print('\n')
 
     print('###############')
@@ -171,4 +178,5 @@ if __name__ == '__main__':
         print('transmission:', dat.transmission)
         print('Mu*r:', dat.mu_r)
         print('Merging:', dat.point_group_merge)
+        print('file type:', dat.filetype)
         print('\n')
