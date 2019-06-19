@@ -2,9 +2,10 @@ import os
 import sys
 from pathlib import Path
 
+from PyQt5.QtCore import Qt
+
 from cif.file_reader import CifContainer
-from datafiles.datatools import MissingCifData
-from datafiles.saint import SaintListFile
+from datafiles.datatools import MissingCifData, get_saint, get_sadabs
 
 DEBUG = True
 
@@ -93,11 +94,12 @@ class AppWindow(QMainWindow):
         self.missing_data = []
         self.connect_signals_and_slots()
         self.miss_data = MissingCifData()
-        #self.data_sources = {'_exptl_absorpt_correction_type': ['SADABS', 'TWINABS', 'SORTAV'],
+        # self.data_sources = {'_exptl_absorpt_correction_type': ['SADABS', 'TWINABS', 'SORTAV'],
         #                '_cell_measurement_reflns_used': [self.get_saint()],
         #                '_cell_measurement_theta_min': [self.get_saint()],
         #                '_cell_measurement_theta_max': [self.get_saint()],
         #                }
+        self.manufacturer = 'bruker'
         # only for testing:
         self.get_cif_file_block('test-data/foobar.cif')
 
@@ -149,32 +151,33 @@ class AppWindow(QMainWindow):
             print("Can't change the Current Working Directory")
         self.fill_cif_table()
         print('')
-        #self.get_data_sources()
-
-    def get_saint(self):
-        """
-        TODO: I have to decide which are the valid files. Therfore I need to determine the integration time and the 
-              amount of reflections written to the raw/mul file.
-              SADABS/TWINABS should read-in the same amount of reflections SAINT has written.
-        TODO: parse ._ls file for amount of reflections, alternative the .raw/.mul file.
-        """
-        p = Path('./')
-        saintfiles = p.rglob('*_0m._ls')
-        saint = None
-        for s in saintfiles:
-            saint = SaintListFile(s.as_posix())
-            if saint:
-                break
-        return saint
+        # self.get_data_sources()
 
     def get_data_sources(self):
         """
         Tries to determine the sources of missing data in the cif file, e.g. Tmin/Tmax from SADABS.
         """
-        for miss in self.missing_data:
-            if miss == '_cell_measurement_reflns_used':
-                if not 'saint' in self.miss_data:
-                    self.miss_data['saint'] = self.get_saint()
+        if self.manufacturer == 'bruker':
+            saint_data = get_saint()
+            sadabs_data = get_sadabs()
+            # sadabs_data.dataset(0).transmission[]
+            sources = {'_cell_measurement_reflns_used': saint_data.cell_reflections,
+                       '_cell_measurement_theta_min': saint_data.cell_res_min_theta,
+                       '_cell_measurement_theta_max': saint_data.cell_res_max_theta,
+                       }
+            vheaderitems = {}
+            for item in range(self.ui.CifItemsTable.model().rowCount()):
+                head = self.ui.CifItemsTable.model().headerData(item, Qt.Vertical)
+                vheaderitems[head] = item
+            for miss in self.missing_data:
+                print(miss, '#')
+                # add missing item to data sources column:
+                try:
+                    tab_item = QTableWidgetItem(sources[miss])
+                    self.ui.CifItemsTable.setItem(vheaderitems[miss], 1, tab_item)
+                except KeyError:
+                    #print(miss)
+                    pass
 
     def fill_cif_table(self):
         # self.ui.CifItemsTable.clear()
@@ -183,6 +186,17 @@ class AppWindow(QMainWindow):
             if not value or value == '?':
                 self.missing_data.append(key)
             self.addRow(key, value)
+        self.get_data_sources()
+
+    def edit_row(self, vert_key: str = None, new_value=None, column: int = 1):
+        if not vert_key:
+            return None
+        vheaderitems = {}
+        for item in range(self.ui.CifItemsTable.model().rowCount()):
+            head = self.ui.CifItemsTable.model().headerData(item, Qt.Vertical)
+            vheaderitems[head] = item
+        item_val = QTableWidgetItem(new_value)
+        self.ui.CifItemsTable.setItem(vheaderitems[vert_key], column, item_val)
 
     def addRow(self, key, value):
         # Create a empty row at bottom of table

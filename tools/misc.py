@@ -100,9 +100,9 @@ class Manufacturer():
 
     def __init__(self):
         self.points = {'bruker': 0,
-                       'stoe': 0,
+                       'stoe'  : 0,
                        'rigaku': 0,
-                       'other': 0
+                       'other' : 0
                        }
 
     def get_manufacturer(self):
@@ -116,7 +116,6 @@ class Manufacturer():
 
     def __repr__(self):
         return self.get_manufacturer()
-
 
 
 high_prio_keys = ['_space_group_name_H-M_alt', '_space_group_centring_type', '_space_group_IT_number',
@@ -154,3 +153,5 @@ def to_int(st):
             return int(st)
         except ValueError:
             return None
+
+
