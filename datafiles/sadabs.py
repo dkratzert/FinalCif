@@ -32,26 +32,24 @@ def to_int(st):
 
 class Dataset():
     def __init__(self):
-        self.rint = None
-        self.line = None
-        self.domain = None
         self.written_reflections = None
         self.hklfile = None
-        self.observations = None
-        self.Rint_3sig = None
-        self.observations_3sig = None
         self.transmission = None
         self.mu_r = None
-        self.version = 'SADABS'
         self.point_group_merge = 1
         self.filetype = 4
         self.domain = 1
 
-    # def __getattribute__(self, item):
-    #    try:
-    #        return self.item
-    #    except AttributeError:
-    #        return None
+    def __repr__(self):
+        out = ''
+        out += 'written refl.:\t{}\n'.format(self.written_reflections)
+        out += 'transmission:\t{}\n'.format(self.transmission)
+        out += 'Mu*r:\t\t\t{}\n'.format(self.mu_r)
+        out += 'Merging:\t\t{}\n'.format(self.point_group_merge)
+        out += 'hklfile:\t\t{}\n'.format(self.hklfile)
+        out += 'HKL file type:\t{}\n'.format(self.filetype)
+        out += 'Domain in hkl:\t{}\n'.format(self.domain)
+        return out
 
 
 class Sadabs():
@@ -61,6 +59,7 @@ class Sadabs():
     """
     _refl_written_regex = re.compile(r'.*Corrected reflections written to file', re.IGNORECASE)
     _rint_regex = re.compile(r'^.*Rint\s=.*observations and')
+    _rint3sig_regex = re.compile(r'^.*Rint\s=.*observations with')
 
     def __init__(self, filename):
         """
@@ -96,8 +95,12 @@ class Sadabs():
         self.version = None
         self.twin_components = 1
         self.Rint = None
-        self.input_files = [] 
+        self.observations = None
+        self.Rint_3sig = None
+        self.observations_3sig = None
+        self.input_files = []
         self.output = []
+        self.batch_input = None
         self.parse_file()
 
     def parse_file(self):
@@ -111,8 +114,18 @@ class Sadabs():
                 if self.version.startswith('SADABS'):
                     self.output.append(Dataset())
             if self._rint_regex.match(line):
-                # Rint = 0.0873  for all   11683  observations and
+                #  Rint = 0.0873  for all   11683  observations and
                 self.Rint = to_float(spline[2])
+                self.observations = to_float(spline[5])
+            if self._rint3sig_regex.match(line):
+                #  Rint = 0.0376  for all   44606  observations with I > 3sigma(I)
+                self.Rint = to_float(spline[2])
+                self.observations_3sig = to_float(spline[5])
+            if line.startswith(" Reading file"):
+                self.input_files.append(spline[2])
+            if line.startswith(" Reading batch"):
+                self.input_files.append(spline[-1])
+                self.batch_input = spline[2]
             if line.startswith(' wR2(int)'):
                 self.Rint = to_float(spline[2])
             if 'SADABS' in line or 'TWINABS' in line:
@@ -147,36 +160,39 @@ class Sadabs():
     def __iter__(self):
         return iter(x for x in self.output)
 
+    @property
+    def program(self):
+        return self.version.split()[0].split('-')[0]
+
     def dataset(self, n):
         return self.output[n]
+
+    def __repr__(self):
+        out = 'Program:\t\t{}\n'.format(self.program)
+        out += 'version:\t\t{}\n'.format(self.version)
+        out += 'Input File:\t\t{}\n'.format(' '.join(self.input_files))
+        out += 'Input Batch:\t{}\n'.format(self.batch_input)
+        out += 'rint:\t\t\t{}\n'.format(self.Rint)
+        out += 'components:\t\t{}\n'.format(self.twin_components)
+        out += '\n'
+        return out
 
 
 if __name__ == '__main__':
     s = Sadabs('test-data/IK_WU19.abs')
-    print('version:', s.version)
-    print('rint:', s.Rint)
-    print('components:', s.twin_components)
-    print('')
+    print(s)
     for dat in s:
-        print('written reflections:', dat.written_reflections)
-        print('hklfile:', dat.hklfile)
-        print('transmission:', dat.transmission)
-        print('Mu*r:', dat.mu_r)
-        print('file type:', dat.filetype)
-        print('\n')
+        print(dat)
 
-    print('###############')
+    print('###############\n\n')
 
     s = Sadabs(r'test-data/twin-4-5.abs')
-    print('version:', s.version)
-    print('rint:', s.Rint)
-    print('components:', s.twin_components)
-    print('')
+    print(s)
     for dat in s:
-        print('written reflections:', dat.written_reflections)
-        print('hklfile:', dat.hklfile)
-        print('transmission:', dat.transmission)
-        print('Mu*r:', dat.mu_r)
-        print('Merging:', dat.point_group_merge)
-        print('file type:', dat.filetype)
-        print('\n')
+        print(dat)
+
+    print('###############\n\n')
+    s = Sadabs(r'test-data/DK_Zucker2.abs')
+    print(s)
+    for dat in s:
+        print(dat)
