@@ -3,6 +3,7 @@ import sys
 from pathlib import Path
 
 from cif.file_reader import CifContainer
+from datafiles.saint import SaintListFile
 
 DEBUG = True
 
@@ -91,9 +92,9 @@ class AppWindow(QMainWindow):
         self.missing_data = []
         self.connect_signals_and_slots()
         self.data_sources = {'_exptl_absorpt_correction_type': ['SADABS', 'TWINABS', 'SORTAV'],
-                        '_cell_measurement_reflns_used': [self.get_saint(), 'EVAL', 'HKL2000', 'DTREK'],
-                        '_cell_measurement_theta_min': ['SAINT', 'EVAL', 'HKL2000', 'DTREK'],
-                        '_cell_measurement_theta_max': ['SAINT', 'EVAL', 'HKL2000', 'DTREK'],
+                        '_cell_measurement_reflns_used': [self.get_saint()],
+                        '_cell_measurement_theta_min': [self.get_saint()],
+                        '_cell_measurement_theta_max': [self.get_saint()],
                         }
         # only for testing:
         self.get_cif_file_block('test-data/foobar.cif')
@@ -156,7 +157,12 @@ class AppWindow(QMainWindow):
         """
         p = Path('./')
         saintfiles = p.rglob('*_0m._ls')
-        print([i for i in saintfiles])
+        saint = None
+        for s in saintfiles:
+            saint = SaintListFile(s.as_posix())
+            if saint:
+                break
+        return saint
 
     def get_data_sources(self):
         """
