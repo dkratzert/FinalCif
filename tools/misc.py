@@ -110,6 +110,9 @@ _refine_special_details           ?
 _atom_sites_solution_primary      ?
 _atom_sites_solution_secondary    ?
 _refine_ls_hydrogen_treatment     constr
+
+_atom_sites_solution_primary      direct 
+_atom_sites_solution_secondary    difmap 
 """
 
 high_prio_keys = ['_chemical_formula_moiety',
@@ -132,7 +135,7 @@ high_prio_keys = ['_chemical_formula_moiety',
                   '_diffrn_measurement_method',
                   '_diffrn_radiation_type',
                   '_diffrn_reflns_av_R_equivalents',
-                  '_computing_data_collection',
+                  '_computing_data_collection',   # from frame header: 'PROGRAM': 'BIS V6.2.10/2018-10-02',
                   '_computing_cell_refinement',
                   '_computing_data_reduction',
                   '_computing_structure_solution',

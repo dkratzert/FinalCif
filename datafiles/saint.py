@@ -8,6 +8,7 @@ class SaintListFile():
         self.cell_reflections = 0
         self.cell_res_min_2t = 0.0
         self.cell_res_max_2t = 0.0
+        self.version = ''
         self.parse_file()
 
 
@@ -15,6 +16,8 @@ class SaintListFile():
         text = self._fileobj.read_text(encoding='ascii', errors='ignore').splitlines(keepends=False)
         for num, line in enumerate(text):
             #spline = line.strip().split()
+            if num == 0:
+                self.version = line
             if line.startswith('Reflection Summary:'):
                 """
                 Reflection Summary:
@@ -37,7 +40,7 @@ class SaintListFile():
         return float(self.cell_res_max_2t) / 2.0
 
     def __repr__(self):
-        out = ''
+        out = 'Version: {}\n'.format(self.version)
         out += 'Used Reflections: {}\n'.format(self.cell_reflections)
         out += 'min thata: {}\n'.format(self.cell_res_min_theta)
         out += 'max theta: {}\n'.format(self.cell_res_max_theta)

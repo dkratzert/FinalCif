@@ -183,6 +183,7 @@ class AppWindow(QMainWindow):
             try:
                 abstype = 'multi-scan' if not sadabs_data.dataset(-1).numerical else 'numerical'
                 t_min = min(sadabs_data.dataset(-1).transmission)
+                # TODO: determine the correct dataset number:
                 t_max = max(sadabs_data.dataset(-1).transmission)
             except (KeyError, AttributeError):
                 # no abs file found
@@ -193,7 +194,8 @@ class AppWindow(QMainWindow):
             sources = {'_cell_measurement_reflns_used'  : saint_data.cell_reflections,
                        '_cell_measurement_theta_min'    : saint_data.cell_res_min_theta,
                        '_cell_measurement_theta_max'    : saint_data.cell_res_max_theta,
-                       # TODO: determine the correct dataset number:
+                       '_computing_cell_refinement'     : saint_data.version,
+                       '_computing_data_reduction'     : saint_data.version,
                        '_exptl_absorpt_correction_type' : abstype,
                        '_exptl_absorpt_correction_T_min': str(t_min),
                        '_exptl_absorpt_correction_T_max': str(t_max),
