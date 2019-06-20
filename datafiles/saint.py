@@ -3,7 +3,8 @@ from pathlib import Path
 
 class SaintListFile():
     def __init__(self, filename: str):
-        self.file = Path(filename)
+        self._fileobj = Path(filename)
+        self.filename = self._fileobj.absolute()
         self.cell_reflections = 0
         self.cell_res_min_2t = 0.0
         self.cell_res_max_2t = 0.0
@@ -11,7 +12,7 @@ class SaintListFile():
 
 
     def parse_file(self):
-        text = self.file.read_text(encoding='ascii', errors='ignore').splitlines(keepends=False)
+        text = self._fileobj.read_text(encoding='ascii', errors='ignore').splitlines(keepends=False)
         for num, line in enumerate(text):
             #spline = line.strip().split()
             if line.startswith('Reflection Summary:'):

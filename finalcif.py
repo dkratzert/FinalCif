@@ -1,12 +1,11 @@
 import os
 import sys
 from pathlib import Path
-from pprint import pprint
 
 from PyQt5.QtCore import Qt
 
 from cif.file_reader import CifContainer
-from datafiles.datatools import MissingCifData, get_saint, get_sadabs
+from datafiles.datatools import MissingCifData, get_sadabs, get_saint
 
 DEBUG = True
 
@@ -73,7 +72,7 @@ TODO:
 - select templates according to Points
 - Manufakturer has sub categories with Tube Type , housing, radiation, Cooling, goniometer, Detektor 
 - save cif file with "name_fin.cif"
-
+- check hkl and res checksum
 - Add button for checkcif report.
 - Check if unit cell in cif fits to atoms provided.
 
@@ -106,7 +105,7 @@ class AppWindow(QMainWindow):
         #                }
         self.manufacturer = 'bruker'
         # only for testing:
-        self.get_cif_file_block('test-data/foobar.cif')
+        self.get_cif_file_block('test-data/twin4.cif')
 
     def add_new_datafile(self, n: int, label_text: str, placeholder: str = ''):
         """
@@ -129,6 +128,7 @@ class AppWindow(QMainWindow):
         self.ui.SelectCif_PushButton.clicked.connect(self.get_cif_file_block)
         self.ui.EditEquipmentTemplateButton.clicked.connect(self.edit_equipment_templates)
         self.ui.SaveEquipmentButton.clicked.connect(self.save_equipment_template)
+        # something like cifItemsTable.selected_field.connect(self.display_data_file)
 
     def edit_equipment_templates(self):
         index = self.ui.EquipmentTemplatesListWidget.currentIndex()
@@ -136,7 +136,7 @@ class AppWindow(QMainWindow):
             # nothing selected
             return
         self.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(1)
-        print(index.row())
+        # print(index.row())
 
     def save_equipment_template(self):
         print('saved')
@@ -169,12 +169,13 @@ class AppWindow(QMainWindow):
         except OSError:
             print("Can't change the Current Working Directory")
         self.fill_cif_table()
-        print('')
-        # self.get_data_sources()
 
     def get_data_sources(self):
         """
         Tries to determine the sources of missing data in the cif file, e.g. Tmin/Tmax from SADABS.
+
+        TODO: should I do it that a click on a field in question runs the get_source data for this specific field?
+              It should at least show the specific data source in DataFilesGroupBox().
         """
         if self.manufacturer == 'bruker':
             saint_data = get_saint()
@@ -188,15 +189,16 @@ class AppWindow(QMainWindow):
                 abstype = '?'
                 t_min = '?'
                 t_max = '?'
-            sources = {'_cell_measurement_reflns_used': saint_data.cell_reflections,
-                       '_cell_measurement_theta_min': saint_data.cell_res_min_theta,
-                       '_cell_measurement_theta_max': saint_data.cell_res_max_theta,
+            # TODO: make a Sources class that returns either the parser object itself or the respective value from the key:
+            sources = {'_cell_measurement_reflns_used'  : saint_data.cell_reflections,
+                       '_cell_measurement_theta_min'    : saint_data.cell_res_min_theta,
+                       '_cell_measurement_theta_max'    : saint_data.cell_res_max_theta,
                        # TODO: determine the correct dataset number:
-                       '_exptl_absorpt_correction_type': abstype,
+                       '_exptl_absorpt_correction_type' : abstype,
                        '_exptl_absorpt_correction_T_min': str(t_min),
                        '_exptl_absorpt_correction_T_max': str(t_max),
                        }
-            print(sources)
+            # print(sources)
             vheaderitems = {}
             # Build a dictionary of cif keys and row number values:
             for item in range(self.ui.CifItemsTable.model().rowCount()):
@@ -212,7 +214,6 @@ class AppWindow(QMainWindow):
                     pass
 
     def fill_cif_table(self):
-        # self.ui.CifItemsTable.clear()
         self.ui.CifItemsTable.setRowCount(0)
         for key, value in self.cif_doc.key_value_pairs():
             if not value or value == '?':

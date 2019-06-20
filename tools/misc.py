@@ -2,55 +2,6 @@ import itertools as it
 import operator
 import os
 
-cif_keywords_list = (
-    ['_chemical_formula_weight', 1],
-    ['_diffrn_ambient_temperature', 2],
-    ['_space_group_crystal_system', 3],
-    # ['_space_group_name_H-M_alt', 4],
-    ['_cell_length_a', 5],
-    ['_cell_length_b', 6],
-    ['_cell_length_c', 7],
-    ['_cell_angle_alpha', 8],
-    ['_cell_angle_beta', 9],
-    ['_cell_angle_gamma', 10],
-    ['_cell_volume', 11],
-    ['_cell_formula_units_Z', 12],
-    ['_exptl_crystal_density_diffrn', 13],
-    ['_exptl_absorpt_coefficient_mu', 14],
-    ['_exptl_crystal_F_000', 15],
-    # ['_exptl_crystal_size_max', 16],
-    # ['_exptl_crystal_size_mid', 16],
-    # ['_exptl_crystal_size_min', 16],
-    ['_exptl_crystal_colour', 17],
-    ['_exptl_crystal_description', 18],
-    # ['_diffrn_radiation_type', 19],
-    # ['_diffrn_radiation_wavelength', 19],
-    ['_diffrn_reflns_theta_min', 20],
-    ['_diffrn_reflns_theta_max', 20],
-    # ['_diffrn_reflns_limit_h_min', 21],
-    # ['_diffrn_reflns_limit_h_max', 21],
-    # ['_diffrn_reflns_limit_k_min', 21],
-    # ['_diffrn_reflns_limit_k_max', 21],
-    # ['_diffrn_reflns_limit_l_min', 21],
-    # ['_diffrn_reflns_limit_l_max', 21],
-    ['_diffrn_reflns_number', 22],
-    # ['_reflns_number_total', 23],
-    # ['_diffrn_reflns_av_R_equivalents', 23],
-    # ['_diffrn_reflns_av_unetI/netI', 23],
-    # ['_refine_ls_number_reflns', 24],
-    # ['_refine_ls_number_restraints', 24],
-    # ['_refine_ls_number_parameters', 24],
-    ['_refine_ls_goodness_of_fit_ref', 25],
-    # ['_refine_ls_R_factor_gt', 26],
-    # ['_refine_ls_wR_factor_gt', 26],
-    # ['_refine_ls_R_factor_all', 27],
-    # ['_refine_ls_wR_factor_ref', 27],
-    # ['_refine_diff_density_max', 28],
-    # ['_refine_diff_density_min', 28],
-    # ['_refine_ls_abs_structure_Flack', 29]
-
-)
-
 
 def grouper(inputs, n, fillvalue=None):
     iters = [iter(inputs)] * n
@@ -118,14 +69,85 @@ class Manufacturer():
         return self.get_manufacturer()
 
 
-high_prio_keys = ['_space_group_name_H-M_alt', '_space_group_centring_type', '_space_group_IT_number',
-                  '_space_group_crystal_system', '_audit_creation_method', '_chemical_formula_sum',
+"""
+_chemical_name_systematic         ?
+_chemical_name_common             ?
+_chemical_melting_point           ?
+_chemical_formula_moiety          ?
+_cell_measurement_reflns_used     ?
+_cell_measurement_theta_min       ?
+_cell_measurement_theta_max       ?
+_cell_measurement_temperature     100(2)
+_cell_formula_units_Z             2
+_exptl_crystal_description        ?
+_exptl_crystal_colour             ?
+_exptl_crystal_density_meas       ?
+_exptl_crystal_density_method     ?
+_exptl_transmission_factor_min    ?
+_exptl_transmission_factor_max    ?
+_exptl_absorpt_correction_type    ?
+_exptl_absorpt_correction_T_min   ?
+_exptl_absorpt_correction_T_max   ?
+_exptl_absorpt_process_details    ?
+_exptl_absorpt_special_details    ?
+_exptl_crystal_size_max           0.180
+_exptl_crystal_size_mid           0.150
+_exptl_crystal_size_min           0.060
+_exptl_absorpt_coefficient_mu     0.077
+_diffrn_ambient_temperature       100(2)
+_diffrn_source                    ?
+_diffrn_measurement_device_type   ?
+_diffrn_measurement_method        ?
+_diffrn_radiation_type            MoK\a
+_diffrn_reflns_av_R_equivalents   ?
+_computing_data_collection        ?
+_computing_cell_refinement        ?
+_computing_data_reduction         ?
+_computing_structure_solution     ?
+_computing_molecular_graphics     ?
+_computing_publication_material   ?
+_refine_special_details           ?
+_atom_sites_solution_primary      ?
+_atom_sites_solution_secondary    ?
+_refine_ls_hydrogen_treatment     constr
+"""
+
+high_prio_keys = ['_chemical_formula_moiety',
+                  '_space_group_name_H-M_alt', '_space_group_centring_type', '_space_group_IT_number',
+                  '_space_group_crystal_system',
+                  '_cell_formula_units_Z',
+                  '_audit_creation_method', '_chemical_formula_sum',
                   '_chemical_formula_weight', '_exptl_crystal_description', '_exptl_crystal_colour',
                   '_exptl_crystal_size_max', '_exptl_crystal_size_mid', '_exptl_crystal_size_min',
-                  '_exptl_absorpt_coefficient_mu', '_exptl_absorpt_correction_type', '_diffrn_ambient_temperature',
-                  '_exptl_absorpt_correction_T_min', '_exptl_absorpt_correction_T_max', '_cell_measurement_reflns_used',
-                  '_cell_measurement_theta_min', '_cell_measurement_theta_max']
-medium_prio_keys = ['']
+                  '_exptl_absorpt_coefficient_mu', '_exptl_absorpt_correction_type',
+                  '_exptl_absorpt_process_details',
+                  '_exptl_absorpt_special_details',
+                  '_diffrn_ambient_temperature',
+                  '_exptl_absorpt_correction_T_min', '_exptl_absorpt_correction_T_max',
+                  '_cell_measurement_reflns_used',
+                  '_cell_measurement_temperature',
+                  '_cell_measurement_theta_min', '_cell_measurement_theta_max',
+                  '_diffrn_source',
+                  '_diffrn_measurement_device_type',
+                  '_diffrn_measurement_method',
+                  '_diffrn_radiation_type',
+                  '_diffrn_reflns_av_R_equivalents',
+                  '_computing_data_collection',
+                  '_computing_cell_refinement',
+                  '_computing_data_reduction',
+                  '_computing_structure_solution',
+                  '_computing_molecular_graphics',
+                  '_computing_publication_material',
+                  '_refine_special_details',
+                  '_atom_sites_solution_primary',
+                  # '_atom_sites_solution_secondary',
+                  '_refine_ls_hydrogen_treatment',  # use a combo-box or dropdown
+                  '',
+                  '',
+                  ]
+medium_prio_keys = ['_chemical_name_systematic',
+                    '_chemical_name_common',
+                    ]
 low_prio_keys = ['']
 
 absorption_correction_types = {
