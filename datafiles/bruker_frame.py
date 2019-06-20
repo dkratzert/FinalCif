@@ -1,3 +1,4 @@
+from datetime import date, datetime
 from pathlib import Path
 from pprint import pformat
 
@@ -17,6 +18,23 @@ class BrukerFrameHeader():
     def __repr__(self):
         return pformat(self.header, indent=2, width=120)
 
+    @property
+    def radiation_type(self):
+        return self.header['TARGET']
+
+    @property
+    def program(self):
+        return self.header['PROGRAM']
+
+    @property
+    def detector_type(self):
+        return self.header['DETTYPE'].split()[0]
+
+    @property
+    def measure_date(self):
+        dt = ' '.join(self.header['CREATED'].split())
+        return dt
+
 
 if __name__ == '__main__':
     sfrm = BrukerFrameHeader('test-data/apex_frame.sfrm')
@@ -26,3 +44,11 @@ if __name__ == '__main__':
 
     sfrm = BrukerFrameHeader('test-data/mo_DK_Zucker2_01_0001.sfrm')
     print(sfrm)
+    print(sfrm.radiation_type)
+
+    print('#####')
+
+    sfrm = BrukerFrameHeader('test-data/cu_Ylid_Shutterless_01_0001.sfrm')
+    print(sfrm)
+    print(sfrm.radiation_type)
+    print(sfrm.measure_date)
