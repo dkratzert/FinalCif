@@ -128,6 +128,20 @@ high_prio_keys = ['_space_group_name_H-M_alt', '_space_group_centring_type', '_s
 medium_prio_keys = ['']
 low_prio_keys = ['']
 
+absorption_correction_types = {
+    'analytical' : 'analytical from crystal shape',
+    'cylinder'   : 'cylindrical',
+    'empirical'  : 'empirical from intensities',
+    'gaussian'   : 'Gaussian from crystal shape',
+    'integration': 'integration from crystal shape',
+    'multi-scan' : 'symmetry-related measurements',
+    'none'       : 'no absorption correction applied',
+    'numerical'  : 'numerical from crystal shape',
+    'psi-scan'   : 'psi-scan corrections',
+    'refdelf'    : 'refined from delta-F',
+    'sphere'     : 'spherical',
+}
+
 
 def to_float(st):
     if isinstance(st, list):
@@ -153,5 +167,3 @@ def to_int(st):
             return int(st)
         except ValueError:
             return None
-
-

@@ -1,6 +1,7 @@
 import os
 import sys
 from pathlib import Path
+from pprint import pprint
 
 from PyQt5.QtCore import Qt
 
@@ -74,6 +75,7 @@ TODO:
 - save cif file with "name_fin.cif"
 
 - Add button for checkcif report.
+- Check if unit cell in cif fits to atoms provided.
 
 """
 
@@ -90,6 +92,9 @@ class AppWindow(QMainWindow):
         hheader.setSectionResizeMode(1, QHeaderView.Stretch)
         hheader.setSectionResizeMode(2, QHeaderView.Stretch)
         hheader.setAlternatingRowColors(True)
+        # Make sure the start page is shown and not the edit page:
+        self.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
+        self.ui.PropertiesTemplatesStackedWidget.setCurrentIndex(0)
         self.cif_doc = None
         self.missing_data = []
         self.connect_signals_and_slots()
@@ -122,6 +127,20 @@ class AppWindow(QMainWindow):
         this method connects all signals to slots. Only a few mighjt be defined elsewere.
         """
         self.ui.SelectCif_PushButton.clicked.connect(self.get_cif_file_block)
+        self.ui.EditEquipmentTemplateButton.clicked.connect(self.edit_equipment_templates)
+        self.ui.SaveEquipmentButton.clicked.connect(self.save_equipment_template)
+
+    def edit_equipment_templates(self):
+        index = self.ui.EquipmentTemplatesListWidget.currentIndex()
+        if index.row() == -1:
+            # nothing selected
+            return
+        self.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(1)
+        print(index.row())
+
+    def save_equipment_template(self):
+        print('saved')
+        self.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
 
     @staticmethod
     def cif_file_open_dialog():
@@ -160,23 +179,36 @@ class AppWindow(QMainWindow):
         if self.manufacturer == 'bruker':
             saint_data = get_saint()
             sadabs_data = get_sadabs()
-            # sadabs_data.dataset(0).transmission[]
+            try:
+                abstype = 'multi-scan' if not sadabs_data.dataset(-1).numerical else 'numerical'
+                t_min = min(sadabs_data.dataset(-1).transmission)
+                t_max = max(sadabs_data.dataset(-1).transmission)
+            except (KeyError, AttributeError):
+                # no abs file found
+                abstype = '?'
+                t_min = '?'
+                t_max = '?'
             sources = {'_cell_measurement_reflns_used': saint_data.cell_reflections,
                        '_cell_measurement_theta_min': saint_data.cell_res_min_theta,
                        '_cell_measurement_theta_max': saint_data.cell_res_max_theta,
+                       # TODO: determine the correct dataset number:
+                       '_exptl_absorpt_correction_type': abstype,
+                       '_exptl_absorpt_correction_T_min': str(t_min),
+                       '_exptl_absorpt_correction_T_max': str(t_max),
                        }
+            print(sources)
             vheaderitems = {}
+            # Build a dictionary of cif keys and row number values:
             for item in range(self.ui.CifItemsTable.model().rowCount()):
                 head = self.ui.CifItemsTable.model().headerData(item, Qt.Vertical)
                 vheaderitems[head] = item
+            # get missing items from sources and put them into the corresponding rows:
             for miss in self.missing_data:
-                print(miss, '#')
                 # add missing item to data sources column:
                 try:
-                    tab_item = QTableWidgetItem(sources[miss])
+                    tab_item = QTableWidgetItem(str(sources[miss]))  # Has to be string. TODO: round float numbers?
                     self.ui.CifItemsTable.setItem(vheaderitems[miss], 1, tab_item)
                 except KeyError:
-                    #print(miss)
                     pass
 
     def fill_cif_table(self):
