@@ -321,7 +321,7 @@
           </sizepolicy>
          </property>
          <property name="currentIndex">
-          <number>0</number>
+          <number>1</number>
          </property>
          <widget class="QWidget" name="EquipmentSelectPage">
           <layout class="QGridLayout" name="TemplatesGridLayout">
@@ -370,15 +370,15 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="1">
+           <item row="1" column="2">
             <widget class="QPushButton" name="DeleteEquipmentButton">
              <property name="text">
               <string>Delete</string>
              </property>
             </widget>
            </item>
-           <item row="0" column="0" colspan="2">
-            <widget class="QTableWidget" name="EquipmentTableWidget">
+           <item row="0" column="0" colspan="3">
+            <widget class="QTableWidget" name="EquipmentEditTableWidget">
              <attribute name="horizontalHeaderDefaultSectionSize">
               <number>200</number>
              </attribute>
@@ -413,6 +413,13 @@
              </column>
             </widget>
            </item>
+           <item row="1" column="1">
+            <widget class="QPushButton" name="CancelEquipmentButton">
+             <property name="text">
+              <string>Cancel</string>
+             </property>
+            </widget>
+           </item>
           </layout>
          </widget>
         </widget>
@@ -441,7 +448,7 @@
           </sizepolicy>
          </property>
          <property name="currentIndex">
-          <number>0</number>
+          <number>1</number>
          </property>
          <widget class="QWidget" name="PropertiesSelectPage">
           <layout class="QGridLayout" name="TemplatesGridLayout_2">
@@ -453,7 +460,7 @@
             </widget>
            </item>
            <item row="0" column="0" colspan="2">
-            <widget class="QListWidget" name="TemplatesListWidget_2">
+            <widget class="QListWidget" name="PropertiesTemplatesListWidget">
              <property name="selectionMode">
               <enum>QAbstractItemView::SingleSelection</enum>
              </property>
@@ -494,21 +501,21 @@
          <widget class="QWidget" name="PropertiesEditPage">
           <layout class="QGridLayout" name="gridLayout_5">
            <item row="1" column="0">
-            <widget class="QPushButton" name="pushButton_4">
+            <widget class="QPushButton" name="SavePropertiesButton">
              <property name="text">
               <string>Save</string>
              </property>
             </widget>
            </item>
-           <item row="1" column="1">
-            <widget class="QPushButton" name="pushButton_5">
+           <item row="1" column="2">
+            <widget class="QPushButton" name="DeletePropertiesButton">
              <property name="text">
               <string>Delete</string>
              </property>
             </widget>
            </item>
-           <item row="0" column="0" colspan="2">
-            <widget class="QTableWidget" name="tableWidget_2">
+           <item row="0" column="0" colspan="3">
+            <widget class="QTableWidget" name="PropertiesEditTableWidget">
              <attribute name="horizontalHeaderDefaultSectionSize">
               <number>200</number>
              </attribute>
@@ -528,6 +535,13 @@
                <string>Value</string>
               </property>
              </column>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QPushButton" name="CancelPropertiesButton">
+             <property name="text">
+              <string>Cancel</string>
+             </property>
             </widget>
            </item>
           </layout>
