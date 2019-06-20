@@ -1,0 +1,310 @@
+
+ SADABS-2012/1 - Bruker AXS area detector scaling and absorption correction 
+ --------------------------------------------------------------------------
+
+ Equivalent reflections defined by point group -1     for scaling
+
+ Equivalent reflections defined by point group -1     for error model
+
+ Reading file bn_ed_1_0m.raw
+
+ Mean and maximum errors in direction cosine check function =   0.000   0.003
+ The mean error should not exceed 0.005, and is usually caused by matrix
+ changes during data processing.
+
+ Approximate wavelength, cell and maximum 2-theta (from cosines etc.):
+ 0.71073    9.301   12.049   19.888   95.444   98.233   97.284  104.34
+
+ ==============================================================================
+
+ PART 1 - Refinement of parameters to model systematic errors
+
+ Thresholds should now be specified for excluding reflections from the
+ parameter refinement; these reflections may still be corrected and included
+ in the final output .hkl file
+
+  275884 Reflections of which  45285 unique;   26.67 data per frame
+
+ Redundancy:          1     2     3     4     5     6     7     8     9+
+ Number of groups: 10606 10793  4385  2268  2484  2057  1433   902 10357
+
+ Mean(I/sigma):  -inf    0     1     2     3     5    10    15    20   +inf
+ Number of groups:  3224  6821  4680  3682  5581  9892  4388  2667  4350
+
+
+ Settings for parameter refinement:
+
+ Maximum resolution =  0.1000 A
+ (Intensity/sigma) threshold = 1.500
+ Restraint esd for equal adjacent scale factors =  0.0050
+ Maximum odd and even orders for spherical harmonics =   3   6
+
+  199114 Reflections employed for parameter determination
+ Effective data to parameter ratio =   16.64
+
+ wR2(int) =  0.1348 (selected reflections only, before parameter refinement)
+
+ Cycle  wR2(incid)  wR2(diffr)  Mean wt.
+    1     0.1052      0.0857     0.8486
+    2     0.0735      0.0668     0.8778
+    3     0.0622      0.0593     0.8895
+    4     0.0565      0.0548     0.8963
+    5     0.0529      0.0518     0.9006
+    6     0.0504      0.0497     0.9033
+    7     0.0487      0.0482     0.9051
+    8     0.0475      0.0472     0.9064
+    9     0.0467      0.0464     0.9072
+   10     0.0461      0.0459     0.9078
+   11     0.0456      0.0455     0.9082
+   12     0.0452      0.0451     0.9085
+   13     0.0449      0.0449     0.9088
+   14     0.0447      0.0447     0.9090
+   15     0.0445      0.0445     0.9092
+   16     0.0444      0.0444     0.9093
+   17     0.0443      0.0443     0.9094
+   18     0.0442      0.0442     0.9095
+   19     0.0441      0.0441     0.9096
+   20     0.0440      0.0440     0.9096
+   21     0.0440      0.0440     0.9097
+   22     0.0440      0.0440     0.9097
+   23     0.0439      0.0439     0.9098
+   24     0.0439      0.0439     0.9098
+   25     0.0439      0.0439     0.9098
+   26     0.0439      0.0439     0.9098
+   27     0.0438      0.0438     0.9099
+   28     0.0438      0.0438     0.9099
+   29     0.0438      0.0438     0.9099
+   30     0.0438      0.0438     0.9099
+
+       0 Reflections masked out
+
+ ==============================================================================
+
+ PART 2 - Reject outliers and establish error model
+
+ Rejected reflections are ignored in the statistics and Postscript plots
+ (except the detector diagnostics) and in the output .hkl file
+ Before applying rejections there are:
+
+  275884 total and  45285 unique reflections assuming Friedel's law. 
+ Reflections rejected for which |I-<I>|/su >   4.00
+ Where:  su^2 = sigma(I)^2 + (  0.04000 <I>)^2  (sigma(I) from SAINT)
+
+  275136 total and  45285 unique reflections left after |I-<I>|/su test
+ g = 0.0357 gave best error model; g set to 0.0357 for statistics and .hkl
+ file output
+
+  Run 2-theta  R(int)  Incid. factors  Diffr. factors    K     Total I>2sig(I)
+    1  -15.0  0.0433   0.677 - 1.522   0.988 - 1.020   0.647    8894    6991
+    2  -15.0  0.0421   0.881 - 1.568   0.978 - 1.019   0.627    3695    2834
+    3  -20.0  0.0485   0.633 - 1.473   0.978 - 1.016   0.664    9865    7367
+    4  -35.0  0.0566   0.671 - 1.557   0.978 - 1.019   0.687   14073    9777
+    5  -30.0  0.0485   0.793 - 1.479   0.984 - 1.019   0.656   12466    9101
+    6   -7.5  0.0377   0.559 - 1.522   0.981 - 1.019   0.684    5550    4670
+    7  -35.0  0.0555   0.807 - 1.451   0.988 - 1.019   0.656   12057    8406
+    8  -32.5  0.0521   0.726 - 1.514   0.988 - 1.019   0.664    6520    4763
+    9  -15.0  0.0372   0.520 - 0.845   0.984 - 1.017   0.659    8913    7350
+   10  -17.5  0.0393   0.546 - 1.304   0.979 - 1.019   0.640    9384    7355
+   11    0.0  0.0345   0.621 - 1.600   0.984 - 1.019   0.658    6933    5953
+   12    0.0  0.0274   0.618 - 0.880   0.997 - 1.014   0.645    2519    2251
+   13  -17.5  0.0418   0.601 - 1.200   0.981 - 1.017   0.664    9371    7298
+   14  -35.0  0.0528   0.653 - 1.442   0.979 - 1.015   0.666   12961    9146
+   15   -2.5  0.0367   0.739 - 1.485   0.988 - 1.020   0.654    6809    5797
+   16   -7.5  0.0480   0.580 - 1.342   0.997 - 1.019   0.813    5088    4171
+   17  -20.0  0.0484   0.707 - 1.549   0.978 - 1.019   0.658    9907    7312
+   18  -32.5  0.0502   0.715 - 1.503   0.988 - 1.019   0.659   13228    9599
+   19  -12.5  0.0399   0.639 - 1.568   0.978 - 1.019   0.652    7956    6383
+   20  -30.0  0.0416   0.563 - 0.784   0.988 - 1.020   0.667   11880    9261
+   21  -10.0  0.0347   0.518 - 0.721   0.988 - 1.014   0.674    7458    6385
+   22  -67.9  0.0220   0.595 - 0.936   0.988 - 1.020   0.659   21697   17186
+   23  -67.3  0.0262   0.538 - 1.377   0.978 - 1.019   0.657   21836   17171
+   24  -61.6  0.0236   0.768 - 1.573   0.980 - 1.019   0.691   20751   16492
+   25   14.6  0.0365   0.635 - 1.579   0.979 - 1.019   0.652    8517    6903
+   26  -69.8  0.0282   0.650 - 1.510   0.978 - 1.019   0.663   16808   12968
+
+ su = K * Sqrt[ sigma^2(I) + (g<I>)^2.00 ]  where sigma(I) is from SAINT
+
+ The above statistics are based on all non-rejected data, ignoring
+ reflections without equivalents when estimating R(int) and K.
+
+
+ ==============================================================================
+
+ PART 3 - Output Postscript diagnostics and corrected data
+
+ Diagnostic plots written to Postscript file sad.eps
+
+  275136 Corrected reflections written to file sad_noface_u.hkl
+ Estimated minimum and maximum transmission:  0.9593  1.0000
+ The ratio of these values is more reliable than their absolute values!
+ Additional spherical absorption correction applied with mu*r =  0.0000
+
+   45285 Corrected reflections written to file sad_noface_m.hkl
+ Estimated minimum and maximum transmission:  0.9593  1.0000
+ The ratio of these values is more reliable than their absolute values!
+ Additional spherical absorption correction applied with mu*r =  0.0000
+
+   42035 Corrected reflections written to file xd.hkl 
+ Estimated minimum and maximum transmission:  0.9593  1.0000
+ The ratio of these values is more reliable than their absolute values!
+ Additional spherical absorption correction applied with mu*r =  0.0000
+
+ ==============================================================================
+
+ ==============================================================================
+
+ PART 1 - Refinement of parameters to model systematic errors
+
+ Thresholds should now be specified for excluding reflections from the
+ parameter refinement; these reflections may still be corrected and included
+ in the final output .hkl file
+
+  275884 Reflections of which  45285 unique;   26.67 data per frame
+
+ Redundancy:          1     2     3     4     5     6     7     8     9+
+ Number of groups: 10606 10793  4385  2268  2484  2057  1433   902 10357
+
+ Mean(I/sigma):  -inf    0     1     2     3     5    10    15    20   +inf
+ Number of groups:  3224  6821  4680  3682  5581  9892  4388  2667  4350
+
+
+ Reading crystal faces from file:  face.p4p
+
+ Crystal faces:
+
+     H       K       L      d(mm)
+
+   0.000   0.000   1.000   0.01700
+   0.000   0.000  -1.000   0.03900
+  -2.000   1.000   1.000   0.20600
+   2.000  -1.000  -1.000   0.16800
+   0.000  -2.000   1.000   0.12500
+   0.000   2.000  -1.000   0.14200
+  -1.000   0.000   1.000   0.18300
+   1.000   0.000  -1.000   0.17800
+
+  8 Faces  + 12 Corners  = 18 Edges  +  2
+
+
+ Linear absorption coefficient set to   0.16 mm-1,  giving Rint = 0.1772
+ Minimum and maximum transmission coefficients = 0.94862 and 0.99129
+ Minimum and maximum t-bar =   0.0547   and   0.3292 mm
+ All Rint values calculated using  199114 selected reflections only
+
+ Settings for parameter refinement:
+
+ Maximum resolution =  0.1000 A
+ (Intensity/sigma) threshold = 1.500
+ Restraint esd for equal adjacent scale factors =  0.0050
+ Maximum odd and even orders for spherical harmonics =   3   6
+
+  199114 Reflections employed for parameter determination
+ Effective data to parameter ratio =   16.64
+
+ wR2(int) =  0.1355 (selected reflections only, before parameter refinement)
+
+ Cycle  wR2(incid)  wR2(diffr)  Mean wt.
+    1     0.1063      0.0872     0.8453
+    2     0.0747      0.0676     0.8764
+    3     0.0628      0.0598     0.8887
+    4     0.0570      0.0552     0.8958
+    5     0.0533      0.0521     0.9002
+    6     0.0508      0.0500     0.9030
+    7     0.0490      0.0485     0.9048
+    8     0.0478      0.0475     0.9060
+    9     0.0470      0.0468     0.9068
+   10     0.0464      0.0462     0.9074
+   11     0.0459      0.0458     0.9079
+   12     0.0455      0.0454     0.9082
+   13     0.0452      0.0451     0.9085
+   14     0.0450      0.0449     0.9087
+   15     0.0448      0.0447     0.9089
+   16     0.0446      0.0446     0.9091
+   17     0.0445      0.0445     0.9092
+   18     0.0444      0.0444     0.9093
+   19     0.0443      0.0443     0.9094
+   20     0.0442      0.0442     0.9094
+   21     0.0442      0.0442     0.9095
+   22     0.0441      0.0441     0.9095
+   23     0.0441      0.0441     0.9096
+   24     0.0440      0.0441     0.9096
+   25     0.0440      0.0440     0.9097
+   26     0.0440      0.0440     0.9097
+   27     0.0440      0.0440     0.9097
+   28     0.0440      0.0440     0.9097
+   29     0.0440      0.0440     0.9098
+   30     0.0440      0.0440     0.9098
+
+ wR2(int) =  0.0440 (selected reflections only, after parameter refinement)
+
+ ==============================================================================
+
+ PART 2 - Reject outliers and establish error model
+
+ Rejected reflections are ignored in the statistics and Postscript plots
+ (except the detector diagnostics) and in the output .hkl file
+ Before applying rejections there are:
+
+  275884 total and  45285 unique reflections assuming Friedel's law. 
+ Reflections rejected for which |I-<I>|/su >   4.00
+ Where:  su^2 = sigma(I)^2 + (  0.04000 <I>)^2  (sigma(I) from SAINT)
+
+  275137 total and  45285 unique reflections left after |I-<I>|/su test
+ g = 0.0364 gave best error model; g set to 0.0364 for statistics and .hkl
+ file output
+
+  Run 2-theta  R(int)  Incid. factors  Diffr. factors    K     Total I>2sig(I)
+    1  -15.0  0.0433   0.670 - 1.527   0.984 - 1.025   0.646    8894    6996
+    2  -15.0  0.0423   0.883 - 1.576   0.982 - 1.025   0.627    3695    2834
+    3  -20.0  0.0486   0.626 - 1.479   0.982 - 1.023   0.663    9865    7369
+    4  -35.0  0.0566   0.663 - 1.564   0.982 - 1.025   0.686   14073    9779
+    5  -30.0  0.0491   0.787 - 1.483   0.982 - 1.025   0.657   12467    9098
+    6   -7.5  0.0388   0.554 - 1.518   0.984 - 1.025   0.694    5550    4663
+    7  -35.0  0.0555   0.805 - 1.455   0.982 - 1.025   0.655   12057    8411
+    8  -32.5  0.0522   0.719 - 1.517   0.984 - 1.025   0.664    6520    4764
+    9  -15.0  0.0374   0.512 - 0.843   0.982 - 1.023   0.657    8913    7352
+   10  -17.5  0.0395   0.538 - 1.306   0.982 - 1.025   0.639    9384    7355
+   11    0.0  0.0347   0.614 - 1.606   0.987 - 1.025   0.657    6933    5953
+   12    0.0  0.0275   0.615 - 0.880   0.991 - 1.010   0.643    2519    2251
+   13  -17.5  0.0419   0.592 - 1.200   0.982 - 1.013   0.663    9371    7298
+   14  -35.0  0.0528   0.644 - 1.444   0.982 - 1.022   0.665   12961    9149
+   15   -2.5  0.0368   0.732 - 1.491   0.982 - 1.025   0.652    6809    5797
+   16   -7.5  0.0507   0.576 - 1.331   0.996 - 1.025   0.842    5088    4158
+   17  -20.0  0.0485   0.699 - 1.553   0.982 - 1.025   0.657    9907    7314
+   18  -32.5  0.0503   0.709 - 1.506   0.982 - 1.025   0.658   13228    9601
+   19  -12.5  0.0400   0.630 - 1.575   0.982 - 1.025   0.650    7956    6384
+   20  -30.0  0.0415   0.559 - 0.781   0.982 - 1.013   0.665   11880    9268
+   21  -10.0  0.0347   0.513 - 0.712   0.982 - 1.014   0.671    7458    6387
+   22  -67.9  0.0220   0.591 - 0.935   0.982 - 1.013   0.656   21697   17189
+   23  -67.3  0.0263   0.530 - 1.379   0.982 - 1.025   0.655   21836   17175
+   24  -61.6  0.0236   0.759 - 1.577   0.982 - 1.025   0.690   20751   16496
+   25   14.6  0.0367   0.628 - 1.584   0.982 - 1.025   0.651    8517    6903
+   26  -69.8  0.0283   0.643 - 1.513   0.982 - 1.025   0.661   16808   12971
+
+ su = K * Sqrt[ sigma^2(I) + (g<I>)^2.00 ]  where sigma(I) is from SAINT
+
+ The above statistics are based on all non-rejected data, ignoring
+ reflections without equivalents when estimating R(int) and K.
+
+
+ ==============================================================================
+
+ PART 3 - Output Postscript diagnostics and corrected data
+
+ Diagnostic plots written to Postscript file sad_face.eps
+
+  275137 Corrected reflections written to file sad_face_u.hkl
+ Estimated minimum and maximum transmission:  0.9385  1.0000
+ The ratio of these values is more reliable than their absolute values!
+ Additional spherical absorption correction applied with mu*r =  0.0000
+
+   45285 Corrected reflections written to file sad_face_m.hkl
+ Estimated minimum and maximum transmission:  0.9385  1.0000
+ The ratio of these values is more reliable than their absolute values!
+ Additional spherical absorption correction applied with mu*r =  0.0000
+
+   42039 Corrected reflections written to file xd_face.hkl
+ Estimated minimum and maximum transmission:  0.9385  1.0000
+ The ratio of these values is more reliable than their absolute values!
+ Additional spherical absorption correction applied with mu*r =  0.0000
+
