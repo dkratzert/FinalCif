@@ -15,6 +15,7 @@ class Dataset():
         self.point_group_merge = 1
         self.filetype = 4
         self.domain = 1
+        self.numerical = False
 
     def __repr__(self):
         out = ''
@@ -25,6 +26,8 @@ class Dataset():
         out += 'hklfile:\t\t{}\n'.format(self.hklfile)
         out += 'HKL file type:\t{}\n'.format(self.filetype)
         out += 'Domain in hkl:\t{}\n'.format(self.domain)
+        out += 'Abs. type:\t\t{}'.format('multi-scan' if not self.numerical else 'numerical')
+        out += '\n'
         return out
 
 
@@ -67,6 +70,7 @@ class Sadabs():
         >>> s.dataset(0).written_reflections
         2330
         """
+        self.faces = False
         self._fileobj = Path(filename)
         self.version = None
         self.twin_components = 1
@@ -86,9 +90,6 @@ class Sadabs():
         # TODO: input files: "Reading file IK_WU19_0m.raw", but remind the 01, 02, etc. raw files
         for line in filetxt:
             spline = line.split()
-            if line.startswith(' PART 3'):
-                if self.version.startswith('SADABS'):
-                    self.output.append(Dataset())
             if self._rint_regex.match(line):
                 #  Rint = 0.0873  for all   11683  observations and
                 self.Rint = to_float(spline[2])
@@ -104,13 +105,12 @@ class Sadabs():
                 self.batch_input = spline[2]
             if line.startswith(' wR2(int)'):
                 self.Rint = to_float(spline[2])
+            if line.startswith(' Crystal faces:'):
+                self.faces = True
             if 'SADABS' in line or 'TWINABS' in line:
                 self.version = line.lstrip().strip()
             if 'twin components' in line:
                 self.twin_components = to_int(spline[0])
-            if line.startswith(" Additional spherical absorption correction"):
-                self.dataset(n).mu_r = spline[-1]  # This is always last
-                n += 1
             if line.startswith(' Reflections merged according'):
                 self.dataset(n).point_group_merge = spline[-1]
             if line.startswith(' HKLF 5 dataset constructed'):
@@ -122,7 +122,8 @@ class Sadabs():
                 self.dataset(n).domain = spline[-1]
             if self._refl_written_regex.match(line):  # This is always first
                 #     2330 Corrected reflections written to file IK_KG_CF_3_0m_5.hkl
-                if self.version.startswith('TWINABS') and not hklf5:
+                #   275136 Corrected reflections written to file sad_noface_u.hkl
+                if not hklf5:
                     self.output.append(Dataset())
                 self.dataset(n).written_reflections = to_int(spline[0])
                 self.dataset(n).hklfile = spline[-1]
@@ -132,7 +133,11 @@ class Sadabs():
                     self.dataset(n).transmission = [float(x) for x in spline[-2:]]
                 except ValueError:
                     pass
-
+            # This is always last:
+            if line.startswith(" Additional spherical absorption correction"):
+                self.dataset(n).mu_r = spline[-1]
+                self.dataset(n).numerical = self.faces
+                n += 1
     def __iter__(self):
         return iter(x for x in self.output)
 
@@ -169,6 +174,12 @@ if __name__ == '__main__':
 
     print('###############\n\n')
     s = Sadabs(r'test-data/DK_Zucker2.abs')
+    print(s)
+    for dat in s:
+        print(dat)
+
+    print('###############\n\n')
+    s = Sadabs(r'test-data/sad.abs')
     print(s)
     for dat in s:
         print(dat)

@@ -28,7 +28,7 @@ def get_saint():
 
 def get_sadabs():
     p = Path('./')
-    sadfiles = p.rglob('*_0m._ls')
+    sadfiles = p.rglob('*.abs')
     sadabs = None
     for s in sadfiles:
         sadabs = Sadabs(s.as_posix())
