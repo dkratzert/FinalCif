@@ -6,6 +6,7 @@ from PyQt5.QtCore import Qt
 
 from cif.file_reader import CifContainer
 from datafiles.datatools import MissingCifData, get_sadabs, get_saint
+from tools.settings import FinalCifSettings
 
 DEBUG = True
 
@@ -39,6 +40,7 @@ TODO:
 - Own data in CifItemsTable overrides From Data Source. 
   (maybe with a signal to grey out the data source onEdit of Own Data)
 - make "save cif" work.
+- rightclick on main table field opens menu with "assign template"->"list of templates to select from"
 - think about a possibility to save and edit templates: QSettings()
 - signal: if edit template clicked -> got to TemplatesStackedWidgetPage1
 - signal: if Save template clicked -> got to TemplatesStackedWidgetPage0
@@ -85,6 +87,8 @@ class AppWindow(QMainWindow):
         self.ui = Ui_FinalCifWindow()
         self.ui.setupUi(self)
         self.show()
+        self.settings = FinalCifSettings(self)
+        self.settings.load_window_position()
         # distribute CifItemsTable Columns evenly:
         hheader = self.ui.CifItemsTable.horizontalHeader()
         hheader.setSectionResizeMode(0, QHeaderView.Stretch)
@@ -107,6 +111,9 @@ class AppWindow(QMainWindow):
         # only for testing:
         self.get_cif_file_block('test-data/twin4.cif')
 
+    def __del__(self):
+        self.settings.save_window_position(self.pos())
+
     def add_new_datafile(self, n: int, label_text: str, placeholder: str = ''):
         """
         Adds a new file input as data source for the currently selected cif key/value pair
@@ -126,11 +133,17 @@ class AppWindow(QMainWindow):
         this method connects all signals to slots. Only a few mighjt be defined elsewere.
         """
         self.ui.SelectCif_PushButton.clicked.connect(self.get_cif_file_block)
-        self.ui.EditEquipmentTemplateButton.clicked.connect(self.edit_equipment_templates)
+        ##
+        self.ui.EditEquipmentTemplateButton.clicked.connect(self.edit_equipment_template)
         self.ui.SaveEquipmentButton.clicked.connect(self.save_equipment_template)
+        self.ui.CancelEquipmentButton.clicked.connect(self.cancel_equipment_template)
+        ##
+        self.ui.EditPropertiyTemplateButton.clicked.connect(self.edit_property_template)
+        self.ui.SavePropertiesButton.clicked.connect(self.save_property_template)
+        self.ui.CancelPropertiesButton.clicked.connect(self.cancel_property_template)
         # something like cifItemsTable.selected_field.connect(self.display_data_file)
 
-    def edit_equipment_templates(self):
+    def edit_equipment_template(self):
         index = self.ui.EquipmentTemplatesListWidget.currentIndex()
         if index.row() == -1:
             # nothing selected
@@ -141,6 +154,30 @@ class AppWindow(QMainWindow):
     def save_equipment_template(self):
         print('saved')
         self.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
+
+    def cancel_equipment_template(self):
+        print('cancelled')
+        self.ui.EquipmentEditTableWidget.clearContents()
+        self.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
+
+    ##
+
+    def edit_property_template(self):
+        print('edit')
+        index = self.ui.PropertiesTemplatesListWidget.currentIndex()
+        if index.row() == -1:
+            # nothing selected
+            return
+        self.ui.PropertiesTemplatesStackedWidget.setCurrentIndex(1)
+
+    def save_property_template(self):
+        print('saved')
+        self.ui.PropertiesTemplatesStackedWidget.setCurrentIndex(0)
+
+    def cancel_property_template(self):
+        print('cancelled')
+        self.ui.PropertiesEditTableWidget.clearContents()
+        self.ui.PropertiesTemplatesStackedWidget.setCurrentIndex(0)
 
     @staticmethod
     def cif_file_open_dialog():
@@ -195,7 +232,7 @@ class AppWindow(QMainWindow):
                        '_cell_measurement_theta_min'    : saint_data.cell_res_min_theta,
                        '_cell_measurement_theta_max'    : saint_data.cell_res_max_theta,
                        '_computing_cell_refinement'     : saint_data.version,
-                       '_computing_data_reduction'     : saint_data.version,
+                       '_computing_data_reduction'      : saint_data.version,
                        '_exptl_absorpt_correction_type' : abstype,
                        '_exptl_absorpt_correction_T_min': str(t_min),
                        '_exptl_absorpt_correction_T_max': str(t_max),
