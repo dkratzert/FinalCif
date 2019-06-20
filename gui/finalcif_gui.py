@@ -91,6 +91,7 @@ class Ui_FinalCifWindow(object):
         self.CifTableGridLayout.addWidget(self.SaveFullReportButton, 2, 2, 1, 1)
         self.CifItemsTable = QtWidgets.QTableWidget(self.CifDataItemsGroupBox)
         self.CifItemsTable.setMidLineWidth(0)
+        self.CifItemsTable.setEditTriggers(QtWidgets.QAbstractItemView.AnyKeyPressed|QtWidgets.QAbstractItemView.DoubleClicked|QtWidgets.QAbstractItemView.EditKeyPressed|QtWidgets.QAbstractItemView.SelectedClicked)
         self.CifItemsTable.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         self.CifItemsTable.setVerticalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
         self.CifItemsTable.setHorizontalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
@@ -281,7 +282,7 @@ class Ui_FinalCifWindow(object):
         self.actionedit_templates.setObjectName("actionedit_templates")
 
         self.retranslateUi(FinalCifWindow)
-        self.EquipmentTemplatesStackedWidget.setCurrentIndex(1)
+        self.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
         self.PropertiesTemplatesStackedWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(FinalCifWindow)
 

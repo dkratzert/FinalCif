@@ -1,9 +1,9 @@
 from pathlib import Path
-from runpy import _get_main_module_details
 
 import gemmi
+
 from cif import file_parser
-from tools.misc import high_prio_keys
+from tools.misc import high_prio_keys, medium_prio_keys
 
 
 class CifContainer():
@@ -52,10 +52,21 @@ class CifContainer():
         >>> c.key_value_pairs()
 
         """
-        pairs = []
-        for k in high_prio_keys:
+        high_prio_q, high_prio_with_values = self.get_keys(high_prio_keys)
+        medium_prio_q, medium_prio_with_values = self.get_keys(medium_prio_keys)
+        # low_prio_q, low_prio_with_values = self.get_keys(low_prio_keys)
+        return high_prio_q + medium_prio_q + high_prio_with_values + medium_prio_with_values
+
+    def get_keys(self, inputkeys):
+        questions = []
+        with_values = []
+        for k in inputkeys:
             try:
-                pairs.append([k, self.cif_data[k]])
+                value = self.cif_data[k]
+                if not value or value == '?':
+                    questions.append([k, value])
+                else:
+                    with_values.append([k, value])
             except:
                 pass
-        return pairs
+        return questions, with_values

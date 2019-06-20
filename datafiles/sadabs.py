@@ -72,6 +72,7 @@ class Sadabs():
         """
         self.faces = False
         self._fileobj = Path(filename)
+        self.filename = self._fileobj.absolute()
         self.version = None
         self.twin_components = 1
         self.Rint = None
