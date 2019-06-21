@@ -2,7 +2,7 @@ import os
 import sys
 from pathlib import Path
 
-from PyQt5.QtCore import Qt, QSettings
+from PyQt5.QtCore import Qt
 
 from cif.file_reader import CifContainer
 from datafiles.datatools import MissingCifData, get_sadabs, get_saint
@@ -98,15 +98,13 @@ class AppWindow(QMainWindow):
         # Make sure the start page is shown and not the edit page:
         self.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
         self.ui.PropertiesTemplatesStackedWidget.setCurrentIndex(0)
+        self.ui.EquipmentEditTableWidget.verticalHeader().hide()
+        self.ui.PropertiesEditTableWidget.verticalHeader().hide()
         self.cif_doc = None
         self.missing_data = []
         self.connect_signals_and_slots()
         self.miss_data = MissingCifData()
-        # self.data_sources = {'_exptl_absorpt_correction_type': ['SADABS', 'TWINABS', 'SORTAV'],
-        #                '_cell_measurement_reflns_used': [self.get_saint()],
-        #                '_cell_measurement_theta_min': [self.get_saint()],
-        #                '_cell_measurement_theta_max': [self.get_saint()],
-        #                }
+
         self.manufacturer = 'bruker'
         # only for testing:
         self.get_cif_file_block('test-data/twin4.cif')
@@ -141,18 +139,74 @@ class AppWindow(QMainWindow):
         self.ui.EditPropertiyTemplateButton.clicked.connect(self.edit_property_template)
         self.ui.SavePropertiesButton.clicked.connect(self.save_property_template)
         self.ui.CancelPropertiesButton.clicked.connect(self.cancel_property_template)
+        self.ui.EquipmentEditTableWidget.cellPressed.connect(self.foo)
         # something like cifItemsTable.selected_field.connect(self.display_data_file)
 
+    def new_equipment_template(self):
+        """
+        """
+        pass
+
+    def foo(self):
+        rowcount = self.ui.EquipmentEditTableWidget.rowCount()
+        cont = 0
+        for n in range(rowcount):
+            txt = ''
+            try:
+                txt = self.ui.EquipmentEditTableWidget.item(n, 0).data()
+            except (AttributeError, TypeError):
+                pass
+            if txt:
+                cont += 1
+            print(txt)
+        if cont == rowcount:
+            self.ui.EquipmentEditTableWidget.insertRow(cont + 1)
+
     def edit_equipment_template(self):
+        """
+        Edit the key/value list of an equipment entry.
+        """
         index = self.ui.EquipmentTemplatesListWidget.currentIndex()
         if index.row() == -1:
             # nothing selected
             return
+        selected_row_text = self.ui.EquipmentTemplatesListWidget.currentIndex().data()
+        equipment_data = self.settings.load_template(selected_row_text)
+        # first load the previous values:
+        if equipment_data:
+            n = 0
+            for key, value in equipment_data.items():
+                print(n, key, value)
+                if not key or not value:
+                    continue
+                self.ui.EquipmentEditTableWidget.insertRow(n)
+                                                # row, column
+                self.ui.EquipmentEditTableWidget.setItem(n, 0, QTableWidgetItem(key))
+                self.ui.EquipmentEditTableWidget.setItem(n, 1, QTableWidgetItem(value))
+                n += 1
+            print(equipment_data)
         self.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(1)
-        # print(index.row())
+        rowcount = self.ui.EquipmentEditTableWidget.rowCount()
+        print(rowcount, '##')
 
     def save_equipment_template(self):
         print('saved')
+        selected_teplate_text = self.ui.EquipmentTemplatesListWidget.currentIndex().data()
+        data = {}
+        ncolumns = self.ui.EquipmentEditTableWidget.rowCount()
+        print(ncolumns)
+        for rownum in range(ncolumns):
+            try:
+                key = self.ui.EquipmentEditTableWidget.item(rownum, 0).text()
+            except AttributeError:
+                key = ''
+            try:
+                value = self.ui.EquipmentEditTableWidget.item(rownum, 1).text()
+            except AttributeError:
+                value = ''
+            data[key] = value
+        print(data, '###')
+        self.settings.save_template(selected_teplate_text, data)
         self.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
 
     def cancel_equipment_template(self):
@@ -163,11 +217,17 @@ class AppWindow(QMainWindow):
     ##
 
     def edit_property_template(self):
+        """
+        TODO: onclick in table->create row if no rows, edit row if a row there
+        """
         print('edit')
         index = self.ui.PropertiesTemplatesListWidget.currentIndex()
         if index.row() == -1:
             # nothing selected
             return
+        selected_row_text = self.ui.PropertiesTemplatesListWidget.currentIndex().data()
+        property_data = self.settings.load_template(selected_row_text)
+        print(property_data)
         self.ui.PropertiesTemplatesStackedWidget.setCurrentIndex(1)
 
     def save_property_template(self):
