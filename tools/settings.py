@@ -27,7 +27,15 @@ class FinalCifSettings():
             pass
         self.settings.endGroup()
 
-    def save_template(self, name: str, items: list):
+    def save_template(self, name: str, items: dict):
+        """
+        Saves Equipment templates into the settings as dictionary.
+        :param name: is the name of the template.
+        :param items: List of key value pairs
+        """
+        self.settings.setValue(name, items)
+
+    def save_template_array(self, name: str, items: list):
         """
         Saves Equipment templates into the settings.
         :param name: is the name of the template.
@@ -40,5 +48,11 @@ class FinalCifSettings():
             self.settings.setValue(key, value)
         self.settings.endArray()
 
-    def load_template(self, name):
-        pass
+    def load_template(self, name: str) -> dict:
+        return self.settings.value(name)
+
+
+if __name__ == '__main__':
+    sett = QSettings('foo', 'bar')
+    sett.setValue('a property', {'key': 'value', 'another': 'yetmore'})
+    print(sett.value('a property'))
