@@ -2,7 +2,7 @@ import os
 import sys
 from pathlib import Path
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QSettings
 
 from cif.file_reader import CifContainer
 from datafiles.datatools import MissingCifData, get_sadabs, get_saint
@@ -112,7 +112,7 @@ class AppWindow(QMainWindow):
         self.get_cif_file_block('test-data/twin4.cif')
 
     def __del__(self):
-        self.settings.save_window_position(self.pos())
+        self.settings.save_window_position(self.pos(), self.size())
 
     def add_new_datafile(self, n: int, label_text: str, placeholder: str = ''):
         """
