@@ -196,6 +196,7 @@ class AppWindow(QMainWindow):
                 # add missing item to data sources column:
                 try:
                     tab_item = QTableWidgetItem(str(equipment[data]))
+                    # vheaderitems contain the cif keywords in the vertical header, the 1 is the data sources column.
                     self.ui.CifItemsTable.setItem(self.vheaderitems[data], 1, tab_item)
                 except KeyError:
                     pass
