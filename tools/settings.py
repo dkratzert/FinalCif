@@ -30,6 +30,32 @@ class FinalCifSettings():
             pass
         self.settings.endGroup()
 
+    def property_name_by_key(self, key):
+        """
+        Returns the name in the PropertiesTemplatesListWidget that belongs to the cif keyword.
+        """
+        plist = self.settings.value('property_list')
+        for p in plist:
+            try:
+                val = self.settings.value('property/' + p)[0]
+            except TypeError:
+                continue
+            if p == key:
+                return val
+
+    def load_property_keys(self):
+        """
+        Returns a list of keys like _exptl_crystal_colour from all properties.
+        """
+        keylist = []
+        plist = self.settings.value('property_list')
+        for p in plist:
+            try:
+                keylist.append(self.settings.value('property/'+p)[0])
+            except TypeError:
+                pass
+        return keylist
+
     def save_template(self, name: str, items: list):
         """
         Saves Equipment templates into the settings as dictionary.
