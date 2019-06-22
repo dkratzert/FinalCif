@@ -14,7 +14,7 @@ if DEBUG:
     from PyQt5 import uic, QtCore
 
 from PyQt5.QtWidgets import QMainWindow, QApplication, QHeaderView, QLineEdit, QLabel, QPushButton, QFileDialog, \
-    QTableWidgetItem
+    QTableWidgetItem, QTableWidget
 
 if getattr(sys, 'frozen', False):
     # If the application is run as a bundle, the pyInstaller bootloader
@@ -142,7 +142,7 @@ class AppWindow(QMainWindow):
         self.ui.CancelPropertiesButton.clicked.connect(self.cancel_property_template)
         self.ui.EquipmentEditTableWidget.cellPressed.connect(self.add_new_row_if_needed)
         self.ui.EquipmentEditTableWidget.itemSelectionChanged.connect(self.add_new_row_if_needed)
-        self.ui.EquipmentEditTableWidget.itemChanged.connect(self.add_new_row_if_needed)
+        self.ui.EquipmentEditTableWidget.itemEntered.connect(self.add_new_row_if_needed)
         # something like cifItemsTable.selected_field.connect(self.display_data_file)
 
     def new_equipment_template(self):
@@ -151,28 +151,40 @@ class AppWindow(QMainWindow):
         pass
 
     def add_new_row_if_needed(self):
-        print('cell pressed')
-        rowcount = self.ui.EquipmentEditTableWidget.rowCount()
+        table = self.ui.EquipmentEditTableWidget
+        rowcount = table.rowCount()
         cont = 0
         for n in range(rowcount):
             key = ''
             try:
-                key = self.ui.EquipmentEditTableWidget.item(n, 0).text()
+                key = table.item(n, 0).text()
             except (AttributeError, TypeError):
                 pass
             if key:
                 cont += 1
-        print('cont:', cont, 'rowcount:', rowcount)
         if cont == rowcount:
-            print('adding row...')
-            self.ui.EquipmentEditTableWidget.insertRow(rowcount)
+            table.insertRow(rowcount)
+
+    def add_ep_row(self, table: QTableWidget, key, value):
+        """
+        Add a new row with content to the table (Equipment or Property).
+        """
+        # Create a empty row at bottom of table
+        row_num = table.rowCount()
+        table.insertRow(row_num)
+        # Add cif key and value to the row:
+        item_key = QTableWidgetItem(key)
+        item_val = QTableWidgetItem(value)
+        table.setItem(row_num, 0, item_key)
+        table.setItem(row_num, 1, item_val)
 
     def edit_equipment_template(self):
         """
         Edit the key/value list of an equipment entry.
         """
-        self.ui.EquipmentEditTableWidget.clearContents()
-        self.ui.EquipmentEditTableWidget.setRowCount(0)
+        table = self.ui.EquipmentEditTableWidget
+        table.clearContents()
+        table.setRowCount(0)
         index = self.ui.EquipmentTemplatesListWidget.currentIndex()
         if index.row() == -1:
             # nothing selected
@@ -183,31 +195,27 @@ class AppWindow(QMainWindow):
         if equipment_data:
             n = 0
             for key, value in equipment_data:
-                print('row:', n, key, value)
                 if not key or not value:
                     continue
-                self.ui.EquipmentEditTableWidget.insertRow(n)
-                                                # row, column
-                self.ui.EquipmentEditTableWidget.setItem(n, 0, QTableWidgetItem(key))
-                self.ui.EquipmentEditTableWidget.setItem(n, 1, QTableWidgetItem(value))
+                self.add_ep_row(table, key, value)
                 n += 1
             self.ui.EquipmentEditTableWidget.insertRow(n)
-            print('data:', equipment_data)
         self.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(1)
-        rowcount = self.ui.EquipmentEditTableWidget.rowCount()
-        print(rowcount, '##')
 
     def save_equipment_template(self):
-        print('saved')
+        table = self.ui.EquipmentEditTableWidget
+        # Close the item editor to prevent loss of the currently edited item:
+        table.setCurrentItem(None)
+        #table.setDisabled(True)
+        #table.setDisabled(False)
         selected_teplate_text = self.ui.EquipmentTemplatesListWidget.currentIndex().data()
         data = []
-        ncolumns = self.ui.EquipmentEditTableWidget.rowCount()
-        print(ncolumns)
+        ncolumns = table.rowCount()
         for rownum in range(ncolumns):
             key = ''
             try:
-                key = self.ui.EquipmentEditTableWidget.item(rownum, 0).text()
-                value = self.ui.EquipmentEditTableWidget.item(rownum, 1).text()
+                key = table.item(rownum, 0).text()
+                value = table.item(rownum, 1).text()
             except AttributeError:
                 value = ''
             if key and value:
@@ -216,17 +224,20 @@ class AppWindow(QMainWindow):
         print('saving:', data, '###')
         self.settings.save_template(selected_teplate_text, data)
         self.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
+        print('saved')
 
     def cancel_equipment_template(self):
         print('cancelled')
-        self.ui.EquipmentEditTableWidget.clearContents()
+        table = self.ui.EquipmentEditTableWidget
+        table.clearContents()
+        table.setRowCount(0)
         self.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
 
     ##
 
     def edit_property_template(self):
         """
-        TODO: onclick in table->create row if no rows, edit row if a row there
+        Edit the Property table.
         """
         print('edit')
         index = self.ui.PropertiesTemplatesListWidget.currentIndex()
