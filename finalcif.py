@@ -31,8 +31,7 @@ from gui.finalcif_gui import Ui_FinalCifWindow
 """
 TODO:
 
-- load templates lists
-
+- maybe add properties templates as tabwidget behind equipment templates (saves space).
 - Add file search for data files like .abs file.
 #- open cif file and parse it. (With gemmi?)
 - put all incomplete information in the CifItemsTable. 
@@ -139,10 +138,12 @@ class AppWindow(QMainWindow):
         self.ui.EditEquipmentTemplateButton.clicked.connect(self.edit_equipment_template)
         self.ui.SaveEquipmentButton.clicked.connect(self.save_equipment_template)
         self.ui.CancelEquipmentButton.clicked.connect(self.cancel_equipment_template)
+        self.ui.DeleteEquipmentButton.clicked.connect(self.delete_equipment)
         ##
         self.ui.EditPropertiyTemplateButton.clicked.connect(self.edit_property_template)
         self.ui.SavePropertiesButton.clicked.connect(self.save_property_template)
         self.ui.CancelPropertiesButton.clicked.connect(self.cancel_property_template)
+        self.ui.DeletePropertiesButton.clicked.connect(self.delete_property)
         ##
         self.ui.EquipmentEditTableWidget.cellPressed.connect(self.add_eq_row_if_needed)
         self.ui.EquipmentEditTableWidget.itemSelectionChanged.connect(self.add_eq_row_if_needed)
@@ -179,6 +180,18 @@ class AppWindow(QMainWindow):
         self.ui.EquipmentTemplatesListWidget.setCurrentItem(item)
         item.setFlags(Qt.ItemIsEditable | Qt.ItemIsEnabled | Qt.ItemIsSelectable)
         self.ui.EquipmentTemplatesListWidget.editItem(item)
+
+    def delete_equipment(self):
+        # First delete the list entries
+        index = self.ui.EquipmentTemplatesListWidget.currentIndex()
+        selected_template_text = index.data()
+        self.settings.delete_template('equipment/' + selected_template_text)
+        equipment_list = self.settings.settings.value('equipment_list')
+        equipment_list.remove(selected_template_text)
+        self.settings.save_template('equipment_list', equipment_list)
+        # now make it invisible:
+        self.ui.EquipmentTemplatesListWidget.takeItem(index.row())
+        self.cancel_equipment_template()
 
     def new_property(self):
         item = QListWidgetItem('')
@@ -320,6 +333,18 @@ class AppWindow(QMainWindow):
         # Add cif key and value to the row:
         item_val = QTableWidgetItem(value)
         table.setItem(row_num, 0, item_val)
+
+    def delete_property(self):
+        # First delete the list entries
+        index = self.ui.PropertiesTemplatesListWidget.currentIndex()
+        selected_template_text = index.data()
+        self.settings.delete_template('property/' + selected_template_text)
+        property_list = self.settings.settings.value('property_list')
+        property_list.remove(selected_template_text)
+        self.settings.save_template('property_list', property_list)
+        # now make it invisible:
+        self.ui.PropertiesTemplatesListWidget.takeItem(index.row())
+        self.cancel_property_template()
 
     def edit_property_template(self):
         """
