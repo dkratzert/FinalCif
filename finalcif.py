@@ -110,6 +110,7 @@ class AppWindow(QMainWindow):
         self.get_cif_file_block('test-data/twin4.cif')
 
     def __del__(self):
+        print('saving position')
         self.settings.save_window_position(self.pos(), self.size())
 
     def add_new_datafile(self, n: int, label_text: str, placeholder: str = ''):
@@ -139,7 +140,9 @@ class AppWindow(QMainWindow):
         self.ui.EditPropertiyTemplateButton.clicked.connect(self.edit_property_template)
         self.ui.SavePropertiesButton.clicked.connect(self.save_property_template)
         self.ui.CancelPropertiesButton.clicked.connect(self.cancel_property_template)
-        self.ui.EquipmentEditTableWidget.cellPressed.connect(self.foo)
+        self.ui.EquipmentEditTableWidget.cellPressed.connect(self.add_new_row_if_needed)
+        self.ui.EquipmentEditTableWidget.itemSelectionChanged.connect(self.add_new_row_if_needed)
+        self.ui.EquipmentEditTableWidget.itemChanged.connect(self.add_new_row_if_needed)
         # something like cifItemsTable.selected_field.connect(self.display_data_file)
 
     def new_equipment_template(self):
@@ -147,25 +150,29 @@ class AppWindow(QMainWindow):
         """
         pass
 
-    def foo(self):
+    def add_new_row_if_needed(self):
+        print('cell pressed')
         rowcount = self.ui.EquipmentEditTableWidget.rowCount()
         cont = 0
         for n in range(rowcount):
-            txt = ''
+            key = ''
             try:
-                txt = self.ui.EquipmentEditTableWidget.item(n, 0).data()
+                key = self.ui.EquipmentEditTableWidget.item(n, 0).text()
             except (AttributeError, TypeError):
                 pass
-            if txt:
+            if key:
                 cont += 1
-            print(txt)
+        print('cont:', cont, 'rowcount:', rowcount)
         if cont == rowcount:
-            self.ui.EquipmentEditTableWidget.insertRow(cont + 1)
+            print('adding row...')
+            self.ui.EquipmentEditTableWidget.insertRow(rowcount)
 
     def edit_equipment_template(self):
         """
         Edit the key/value list of an equipment entry.
         """
+        self.ui.EquipmentEditTableWidget.clearContents()
+        self.ui.EquipmentEditTableWidget.setRowCount(0)
         index = self.ui.EquipmentTemplatesListWidget.currentIndex()
         if index.row() == -1:
             # nothing selected
@@ -175,8 +182,8 @@ class AppWindow(QMainWindow):
         # first load the previous values:
         if equipment_data:
             n = 0
-            for key, value in equipment_data.items():
-                print(n, key, value)
+            for key, value in equipment_data:
+                print('row:', n, key, value)
                 if not key or not value:
                     continue
                 self.ui.EquipmentEditTableWidget.insertRow(n)
@@ -184,7 +191,8 @@ class AppWindow(QMainWindow):
                 self.ui.EquipmentEditTableWidget.setItem(n, 0, QTableWidgetItem(key))
                 self.ui.EquipmentEditTableWidget.setItem(n, 1, QTableWidgetItem(value))
                 n += 1
-            print(equipment_data)
+            self.ui.EquipmentEditTableWidget.insertRow(n)
+            print('data:', equipment_data)
         self.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(1)
         rowcount = self.ui.EquipmentEditTableWidget.rowCount()
         print(rowcount, '##')
@@ -192,20 +200,20 @@ class AppWindow(QMainWindow):
     def save_equipment_template(self):
         print('saved')
         selected_teplate_text = self.ui.EquipmentTemplatesListWidget.currentIndex().data()
-        data = {}
+        data = []
         ncolumns = self.ui.EquipmentEditTableWidget.rowCount()
         print(ncolumns)
         for rownum in range(ncolumns):
+            key = ''
             try:
                 key = self.ui.EquipmentEditTableWidget.item(rownum, 0).text()
-            except AttributeError:
-                key = ''
-            try:
                 value = self.ui.EquipmentEditTableWidget.item(rownum, 1).text()
             except AttributeError:
                 value = ''
-            data[key] = value
-        print(data, '###')
+            if key and value:
+                data.append([key, value])
+        data.append(['', ''])
+        print('saving:', data, '###')
         self.settings.save_template(selected_teplate_text, data)
         self.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
 
@@ -313,6 +321,9 @@ class AppWindow(QMainWindow):
                     pass
 
     def fill_cif_table(self):
+        """
+        Adds the cif content to the main table.
+        """
         self.ui.CifItemsTable.setRowCount(0)
         for key, value in self.cif_doc.key_value_pairs():
             if not value or value == '?':
