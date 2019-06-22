@@ -305,7 +305,7 @@
       <property name="sizePolicy">
        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
         <horstretch>2</horstretch>
-        <verstretch>2</verstretch>
+        <verstretch>3</verstretch>
        </sizepolicy>
       </property>
       <property name="title">
@@ -317,11 +317,11 @@
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
            <horstretch>2</horstretch>
-           <verstretch>2</verstretch>
+           <verstretch>3</verstretch>
           </sizepolicy>
          </property>
          <property name="currentIndex">
-          <number>1</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="EquipmentSelectPage">
           <layout class="QGridLayout" name="TemplatesGridLayout">
@@ -463,7 +463,7 @@
           </sizepolicy>
          </property>
          <property name="currentIndex">
-          <number>1</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="PropertiesSelectPage">
           <layout class="QGridLayout" name="TemplatesGridLayout_2">
@@ -494,11 +494,6 @@
              </item>
              <item>
               <property name="text">
-               <string>Hans Meister</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
                <string>Temperatures</string>
               </property>
              </item>
@@ -516,7 +511,7 @@
          <widget class="QWidget" name="PropertiesEditPage">
           <layout class="QGridLayout" name="gridLayout_5">
            <item row="0" column="0">
-            <widget class="QLabel" name="label">
+            <widget class="QLabel" name="cifKeywordLB">
              <property name="text">
               <string>cif keyword</string>
              </property>
@@ -560,7 +555,7 @@
               <number>1</number>
              </property>
              <attribute name="horizontalHeaderVisible">
-              <bool>true</bool>
+              <bool>false</bool>
              </attribute>
              <attribute name="horizontalHeaderDefaultSectionSize">
               <number>170</number>
@@ -586,7 +581,7 @@
             </widget>
            </item>
            <item row="0" column="1" colspan="3">
-            <widget class="QLineEdit" name="lineEdit"/>
+            <widget class="QLineEdit" name="cifKeywordLE"/>
            </item>
            <item row="3" column="1" colspan="2">
             <widget class="QPushButton" name="CancelPropertiesButton">

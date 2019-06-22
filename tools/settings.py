@@ -11,7 +11,6 @@ class FinalCifSettings():
         self.organization = 'DK'
         self.settings = QSettings(self.organization, self.software_name)
         self.settings.setDefaultFormat(QSettings.IniFormat)
-        print(self.settings.setFallbacksEnabled(False))
         print(self.settings.fileName())
 
     def save_window_position(self, position: QPoint, size: QSize):
