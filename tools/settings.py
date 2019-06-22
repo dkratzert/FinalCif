@@ -1,3 +1,5 @@
+from typing import List
+
 from PyQt5.QtCore import QPoint, QSettings, QSize
 from PyQt5.QtWidgets import QMainWindow
 
@@ -8,6 +10,8 @@ class FinalCifSettings():
         self.software_name = 'FinalCif'
         self.organization = 'DK'
         self.settings = QSettings(self.organization, self.software_name)
+        self.settings.setDefaultFormat(QSettings.IniFormat)
+        print(self.settings.setFallbacksEnabled(False))
         print(self.settings.fileName())
 
     def save_window_position(self, position: QPoint, size: QSize):
@@ -27,7 +31,7 @@ class FinalCifSettings():
             pass
         self.settings.endGroup()
 
-    def save_template(self, name: str, items: dict):
+    def save_template(self, name: str, items: list):
         """
         Saves Equipment templates into the settings as dictionary.
         :param name: is the name of the template.
@@ -35,20 +39,10 @@ class FinalCifSettings():
         """
         self.settings.setValue(name, items)
 
-    def save_template_array(self, name: str, items: list):
+    def load_template(self, name: str) -> List[list]:
         """
-        Saves Equipment templates into the settings.
-        :param name: is the name of the template.
-        :param items: List of key value pairs
+        Load templates abnd return them as list of lists.
         """
-        self.settings.beginWriteArray(name)
-        for num, item in enumerate(items):
-            key, value = item
-            self.settings.setArrayIndex(num)
-            self.settings.setValue(key, value)
-        self.settings.endArray()
-
-    def load_template(self, name: str) -> dict:
         return self.settings.value(name)
 
 
