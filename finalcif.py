@@ -2,7 +2,7 @@ import os
 import sys
 from pathlib import Path
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QModelIndex
 
 from cif.file_reader import CifContainer
 from datafiles.datatools import MissingCifData, get_sadabs, get_saint
@@ -14,7 +14,7 @@ if DEBUG:
     from PyQt5 import uic, QtCore
 
 from PyQt5.QtWidgets import QMainWindow, QApplication, QHeaderView, QLineEdit, QLabel, QPushButton, QFileDialog, \
-    QTableWidgetItem, QTableWidget, QStackedWidget, QListWidget
+    QTableWidgetItem, QTableWidget, QStackedWidget, QListWidget, QListWidgetItem
 
 if getattr(sys, 'frozen', False):
     # If the application is run as a bundle, the pyInstaller bootloader
@@ -30,6 +30,8 @@ from gui.finalcif_gui import Ui_FinalCifWindow
 
 """
 TODO:
+
+- load templates lists
 
 - Add file search for data files like .abs file.
 #- open cif file and parse it. (With gemmi?)
@@ -140,15 +142,35 @@ class AppWindow(QMainWindow):
         self.ui.EditPropertiyTemplateButton.clicked.connect(self.edit_property_template)
         self.ui.SavePropertiesButton.clicked.connect(self.save_property_template)
         self.ui.CancelPropertiesButton.clicked.connect(self.cancel_property_template)
+        ##
         self.ui.EquipmentEditTableWidget.cellPressed.connect(self.add_eq_row_if_needed)
         self.ui.EquipmentEditTableWidget.itemSelectionChanged.connect(self.add_eq_row_if_needed)
         self.ui.EquipmentEditTableWidget.itemEntered.connect(self.add_eq_row_if_needed)
         self.ui.EquipmentEditTableWidget.cellChanged.connect(self.add_eq_row_if_needed)
+        ##
         self.ui.PropertiesEditTableWidget.cellPressed.connect(self.add_eq_row_if_needed)
         self.ui.PropertiesEditTableWidget.itemSelectionChanged.connect(self.add_eq_row_if_needed)
         self.ui.PropertiesEditTableWidget.itemEntered.connect(self.add_eq_row_if_needed)
         self.ui.PropertiesEditTableWidget.cellChanged.connect(self.add_eq_row_if_needed)
+        ##
+        self.ui.NewEquipmentTemplateButton.clicked.connect(self.new_equipment)
+        self.ui.NewPropertyTemplateButton.clicked.connect(self.new_property)
+        ##
         # something like cifItemsTable.selected_field.connect(self.display_data_file)
+
+    def new_equipment(self):
+        item = QListWidgetItem('foo')
+        self.ui.EquipmentTemplatesListWidget.addItem(item)
+        self.ui.EquipmentTemplatesListWidget.setCurrentItem(item)
+        item.setFlags(Qt.ItemIsEditable | Qt.ItemIsEnabled | Qt.ItemIsSelectable)
+        self.ui.EquipmentTemplatesListWidget.editItem(item)
+
+    def new_property(self):
+        item = QListWidgetItem('foo')
+        self.ui.PropertiesTemplatesListWidget.addItem(item)
+        self.ui.PropertiesTemplatesListWidget.setCurrentItem(item)
+        item.setFlags(Qt.ItemIsEditable | Qt.ItemIsEnabled | Qt.ItemIsSelectable)
+        self.ui.PropertiesTemplatesListWidget.editItem(item)
 
     def add_eq_row_if_needed(self):
         """
@@ -209,11 +231,12 @@ class AppWindow(QMainWindow):
         table_data = self.settings.load_template(selected_row_text)
         # first load the previous values:
         n = 0
-        for key, value in table_data:
-            if not key or not value:
-                continue
-            self.add_equipment_row(table, key, value)
-            n += 1
+        if table_data:
+            for key, value in table_data:
+                if not key or not value:
+                    continue
+                self.add_equipment_row(table, key, value)
+                n += 1
         table.insertRow(n)
         self.ui.EquipmentEditTableWidget.blockSignals(False)
         stackedwidget.setCurrentIndex(1)
@@ -251,7 +274,7 @@ class AppWindow(QMainWindow):
             # save as dictionary for properties to have "_cif_key : itemlist"
             # for a table item as dropdown menu in the main table.
             table_data = [keyword, table_data]
-        self.settings.save_template(selected_teplate_text, table_data)
+        self.settings.save_template('equipment/'+selected_teplate_text, table_data)
         stackwidget.setCurrentIndex(0)
         print('saved')
 
@@ -348,7 +371,7 @@ class AppWindow(QMainWindow):
             # save as dictionary for properties to have "_cif_key : itemlist"
             # for a table item as dropdown menu in the main table.
             table_data = [keyword, table_data]
-        self.settings.save_template(selected_template_text, table_data)
+        self.settings.save_template('properties/'+selected_template_text, table_data)
         stackwidget.setCurrentIndex(0)
         print('saved')
 
