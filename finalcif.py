@@ -2,7 +2,7 @@ import os
 import sys
 from pathlib import Path
 
-from PyQt5.QtCore import Qt, QModelIndex
+from PyQt5.QtCore import Qt
 
 from cif.file_reader import CifContainer
 from datafiles.datatools import MissingCifData, get_sadabs, get_saint
@@ -91,6 +91,7 @@ class AppWindow(QMainWindow):
         self.show()
         self.settings = FinalCifSettings(self)
         self.settings.load_window_position()
+        self.show_equipment_and_properties()
         # distribute CifItemsTable Columns evenly:
         hheader = self.ui.CifItemsTable.horizontalHeader()
         hheader.setSectionResizeMode(0, QHeaderView.Stretch)
@@ -158,19 +159,34 @@ class AppWindow(QMainWindow):
         ##
         # something like cifItemsTable.selected_field.connect(self.display_data_file)
 
+    def show_equipment_and_properties(self):
+        equipment_list = self.settings.settings.value('equipment_list')
+        if equipment_list:
+            for eq in equipment_list:
+                if eq:
+                    item = QListWidgetItem(eq.lower())
+                    self.ui.EquipmentTemplatesListWidget.addItem(item)
+        property_list = self.settings.settings.value('property_list')
+        if property_list:
+            for eq in property_list:
+                if eq:
+                    item = QListWidgetItem(eq.lower())
+                    self.ui.PropertiesTemplatesListWidget.addItem(item)
+
     def new_equipment(self):
-        item = QListWidgetItem('foo')
+        item = QListWidgetItem('')
         self.ui.EquipmentTemplatesListWidget.addItem(item)
         self.ui.EquipmentTemplatesListWidget.setCurrentItem(item)
         item.setFlags(Qt.ItemIsEditable | Qt.ItemIsEnabled | Qt.ItemIsSelectable)
         self.ui.EquipmentTemplatesListWidget.editItem(item)
 
     def new_property(self):
-        item = QListWidgetItem('foo')
+        item = QListWidgetItem('')
         self.ui.PropertiesTemplatesListWidget.addItem(item)
         self.ui.PropertiesTemplatesListWidget.setCurrentItem(item)
         item.setFlags(Qt.ItemIsEditable | Qt.ItemIsEnabled | Qt.ItemIsSelectable)
         self.ui.PropertiesTemplatesListWidget.editItem(item)
+        self.ui.cifKeywordLE.clear()
 
     def add_eq_row_if_needed(self):
         """
@@ -210,6 +226,9 @@ class AppWindow(QMainWindow):
     ## The equipment templates:
 
     def edit_equipment_template(self):
+        it = self.ui.EquipmentTemplatesListWidget.currentItem()
+        self.ui.EquipmentTemplatesListWidget.setCurrentItem(None)
+        self.ui.EquipmentTemplatesListWidget.setCurrentItem(it)
         self.ui.CancelPropertiesButton.click()
         table = self.ui.EquipmentEditTableWidget
         stackedwidget = self.ui.EquipmentTemplatesStackedWidget
@@ -228,7 +247,7 @@ class AppWindow(QMainWindow):
             # nothing selected
             return
         selected_row_text = listwidget.currentIndex().data()
-        table_data = self.settings.load_template(selected_row_text)
+        table_data = self.settings.load_template('equipment/' + selected_row_text)
         # first load the previous values:
         n = 0
         if table_data:
@@ -245,19 +264,19 @@ class AppWindow(QMainWindow):
         table = self.ui.EquipmentEditTableWidget
         stackedwidget = self.ui.EquipmentTemplatesStackedWidget
         listwidget = self.ui.EquipmentTemplatesListWidget
-        self.save_equipment(table, stackedwidget, listwidget, keyword='')
+        self.save_equipment(table, stackedwidget, listwidget)
 
-    def save_equipment(self, table: QTableWidget,
-                       stackwidget: QStackedWidget,
-                       listwidget: QListWidget,
-                       keyword: str = ''):
+    def save_equipment(self, table: QTableWidget, stackwidget: QStackedWidget, listwidget: QListWidget):
         """
         Saves the currently selected equipment template to the config file.
         """
         # Set None Item to prevent loss of the currently edited item:
         # The current item is closed and thus saved.
         table.setCurrentItem(None)
-        selected_teplate_text = listwidget.currentIndex().data()
+        selected_template_text = listwidget.currentIndex().data()
+        equipment_list = self.settings.settings.value('equipment_list')
+        if not equipment_list:
+            equipment_list = ['']
         table_data = []
         ncolumns = table.rowCount()
         for rownum in range(ncolumns):
@@ -270,11 +289,11 @@ class AppWindow(QMainWindow):
             if key and value:
                 table_data.append([key, value])
         table_data.append(['', ''])
-        if keyword:
-            # save as dictionary for properties to have "_cif_key : itemlist"
-            # for a table item as dropdown menu in the main table.
-            table_data = [keyword, table_data]
-        self.settings.save_template('equipment/'+selected_teplate_text, table_data)
+        self.settings.save_template('equipment/' + selected_template_text, table_data)
+        equipment_list.append(selected_template_text)
+        newlist = [i.lower() for i in list(set(equipment_list)) if i]
+        # this list keeps track of the equipment items:
+        self.settings.save_template('equipment_list', newlist)
         stackwidget.setCurrentIndex(0)
         print('saved')
 
@@ -306,6 +325,10 @@ class AppWindow(QMainWindow):
         """
         Edit the Property table.
         """
+        # make sure the current item doesnt get lost:
+        it = self.ui.PropertiesTemplatesListWidget.currentItem()
+        self.ui.PropertiesTemplatesListWidget.setCurrentItem(None)
+        self.ui.PropertiesTemplatesListWidget.setCurrentItem(it)
         self.ui.CancelEquipmentButton.click()
         table = self.ui.PropertiesEditTableWidget
         stackedwidget = self.ui.PropertiesTemplatesStackedWidget
@@ -324,6 +347,9 @@ class AppWindow(QMainWindow):
         Load/Edit the value list of a property entry.
         """
         self.ui.PropertiesEditTableWidget.blockSignals(True)
+        property_list = self.settings.settings.value('property_list')
+        if not property_list:
+            property_list = ['']
         table.clearContents()
         table.setRowCount(0)
         index = listwidget.currentIndex()
@@ -331,7 +357,7 @@ class AppWindow(QMainWindow):
             # nothing selected
             return
         selected_row_text = listwidget.currentIndex().data()
-        table_data = self.settings.load_template(selected_row_text)
+        table_data = self.settings.load_template('property/' + selected_row_text)
         if table_data:
             cif_key = table_data[0]
             table_data = table_data[1]
@@ -342,6 +368,10 @@ class AppWindow(QMainWindow):
         for value in table_data:
             self.add_propeties_row(table, value)
             n += 1
+        property_list.append(selected_row_text)
+        newlist = [i for i in list(set(property_list)) if i]
+        # this list keeps track of the equipment items:
+        self.settings.save_template('property_list', newlist)
         stackedwidget.setCurrentIndex(1)
         self.ui.PropertiesEditTableWidget.blockSignals(False)
 
@@ -371,7 +401,7 @@ class AppWindow(QMainWindow):
             # save as dictionary for properties to have "_cif_key : itemlist"
             # for a table item as dropdown menu in the main table.
             table_data = [keyword, table_data]
-        self.settings.save_template('properties/'+selected_template_text, table_data)
+        self.settings.save_template('property/' + selected_template_text, table_data)
         stackwidget.setCurrentIndex(0)
         print('saved')
 
