@@ -70,6 +70,19 @@ class FinalCifSettings():
         """
         return self.settings.value(name)
 
+    def load_template_as_dict(self, name: str) -> dict:
+        """
+        """
+        keydict = {}
+        plist = self.load_template('equipment/' + name)
+        for p in plist:
+            try:
+                keydict[p[0]] = p[1]
+            except IndexError:
+                continue
+        return keydict
+
+
     def delete_template(self, name: str):
         """
         Deletes the currently seleted item.

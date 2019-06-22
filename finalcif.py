@@ -88,6 +88,7 @@ class AppWindow(QMainWindow):
         self.ui = Ui_FinalCifWindow()
         self.ui.setupUi(self)
         self.show()
+        self.vheaderitems = {}
         self.settings = FinalCifSettings(self)
         self.settings.load_window_position()
         self.show_equipment_and_properties()
@@ -104,7 +105,7 @@ class AppWindow(QMainWindow):
         self.ui.PropertiesEditTableWidget.verticalHeader().hide()
         self.cif_doc = None
         self.missing_data = []
-        self.equipment_settings = []
+        #self.equipment_settings = []
         self.connect_signals_and_slots()
         self.miss_data = MissingCifData()
 
@@ -187,8 +188,18 @@ class AppWindow(QMainWindow):
         selected_row_text = listwidget.currentIndex().data()
         if not selected_row_text:
             return None
-        table_data = self.settings.load_template('equipment/' + selected_row_text)
-        self.equipment_settings = table_data
+        #table_data = self.settings.load_template('equipment/' + selected_row_text)
+        #self.equipment_settings = table_data
+        equipment = self.settings.load_template_as_dict(selected_row_text)
+        if self.vheaderitems:
+            for data in equipment:
+                # add missing item to data sources column:
+                try:
+                    tab_item = QTableWidgetItem(str(equipment[data]))
+                    self.ui.CifItemsTable.setItem(self.vheaderitems[data], 1, tab_item)
+                except KeyError:
+                    pass
+
 
     def new_equipment(self):
         item = QListWidgetItem('')
@@ -511,17 +522,17 @@ class AppWindow(QMainWindow):
                        '_exptl_absorpt_correction_T_min': str(t_min),
                        '_exptl_absorpt_correction_T_max': str(t_max),
                        }
-            vheaderitems = {}
+
             # Build a dictionary of cif keys and row number values:
             for item in range(self.ui.CifItemsTable.model().rowCount()):
                 head = self.ui.CifItemsTable.model().headerData(item, Qt.Vertical)
-                vheaderitems[head] = item
+                self.vheaderitems[head] = item
             # get missing items from sources and put them into the corresponding rows:
             for miss in self.missing_data:
                 # add missing item to data sources column:
                 try:
                     tab_item = QTableWidgetItem(str(sources[miss]))  # Has to be string. TODO: round float numbers?
-                    self.ui.CifItemsTable.setItem(vheaderitems[miss], 1, tab_item)
+                    self.ui.CifItemsTable.setItem(self.vheaderitems[miss], 1, tab_item)
                 except KeyError:
                     pass
 
