@@ -44,6 +44,12 @@ class FinalCifSettings():
         """
         return self.settings.value(name)
 
+    def delete_template(self, name: str):
+        """
+        Deletes the currently seleted item.
+        """
+        self.settings.remove(name)
+
 
 if __name__ == '__main__':
     sett = QSettings('foo', 'bar')

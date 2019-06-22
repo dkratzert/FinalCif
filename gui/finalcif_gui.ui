@@ -247,6 +247,18 @@
        <string>Equipment Templates</string>
       </property>
       <layout class="QGridLayout" name="gridLayout_3">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
        <item row="0" column="0">
         <widget class="QStackedWidget" name="EquipmentTemplatesStackedWidget">
          <property name="sizePolicy">
@@ -276,6 +288,9 @@
            </item>
            <item row="0" column="0" colspan="2">
             <widget class="QListWidget" name="EquipmentTemplatesListWidget">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A list of diffractometer Equipment like: D8 VENTURE&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
              <property name="editTriggers">
               <set>QAbstractItemView::NoEditTriggers</set>
              </property>
@@ -382,6 +397,21 @@
        <string>Properties Templates</string>
       </property>
       <layout class="QGridLayout" name="gridLayout_4">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <property name="horizontalSpacing">
+        <number>-1</number>
+       </property>
        <item row="0" column="0" colspan="2">
         <widget class="QStackedWidget" name="PropertiesTemplatesStackedWidget">
          <property name="sizePolicy">
@@ -404,6 +434,9 @@
            </item>
            <item row="0" column="0" colspan="2">
             <widget class="QListWidget" name="PropertiesTemplatesListWidget">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A list of common properties like colour: yellow, red, blue, ...&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
              <property name="selectionMode">
               <enum>QAbstractItemView::SingleSelection</enum>
              </property>
