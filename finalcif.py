@@ -6,6 +6,7 @@ from PyQt5.QtCore import Qt
 
 from cif.file_reader import CifContainer
 from datafiles.datatools import MissingCifData, get_sadabs, get_saint
+from tools.misc import special_fields
 from tools.settings import FinalCifSettings
 
 DEBUG = True
@@ -14,7 +15,7 @@ if DEBUG:
     from PyQt5 import uic, QtCore
 
 from PyQt5.QtWidgets import QMainWindow, QApplication, QHeaderView, QLineEdit, QLabel, QPushButton, QFileDialog, \
-    QTableWidgetItem, QTableWidget, QStackedWidget, QListWidget, QListWidgetItem
+    QTableWidgetItem, QTableWidget, QStackedWidget, QListWidget, QListWidgetItem, QComboBox
 
 if getattr(sys, 'frozen', False):
     # If the application is run as a bundle, the pyInstaller bootloader
@@ -105,7 +106,7 @@ class AppWindow(QMainWindow):
         self.ui.PropertiesEditTableWidget.verticalHeader().hide()
         self.cif_doc = None
         self.missing_data = []
-        #self.equipment_settings = []
+        # self.equipment_settings = []
         self.connect_signals_and_slots()
         self.miss_data = MissingCifData()
 
@@ -188,8 +189,8 @@ class AppWindow(QMainWindow):
         selected_row_text = listwidget.currentIndex().data()
         if not selected_row_text:
             return None
-        #table_data = self.settings.load_template('equipment/' + selected_row_text)
-        #self.equipment_settings = table_data
+        # table_data = self.settings.load_template('equipment/' + selected_row_text)
+        # self.equipment_settings = table_data
         equipment = self.settings.load_template_as_dict(selected_row_text)
         if self.vheaderitems:
             for data in equipment:
@@ -197,10 +198,11 @@ class AppWindow(QMainWindow):
                 try:
                     tab_item = QTableWidgetItem(str(equipment[data]))
                     # vheaderitems contain the cif keywords in the vertical header, the 1 is the data sources column.
-                    self.ui.CifItemsTable.setItem(self.vheaderitems[data], 1, tab_item)
+                    row = self.vheaderitems[data]
+                    column = 1
+                    self.ui.CifItemsTable.setItem(row, column, tab_item)
                 except KeyError:
                     pass
-
 
     def new_equipment(self):
         item = QListWidgetItem('')
@@ -448,7 +450,7 @@ class AppWindow(QMainWindow):
                 value = ''
             if value:
                 table_data.append(value)
-        #table_data.extend([''])
+        # table_data.extend([''])
         if keyword:
             # save as dictionary for properties to have "_cif_key : itemlist"
             # for a table item as dropdown menu in the main table.
@@ -529,13 +531,30 @@ class AppWindow(QMainWindow):
                 head = self.ui.CifItemsTable.model().headerData(item, Qt.Vertical)
                 self.vheaderitems[head] = item
             # get missing items from sources and put them into the corresponding rows:
-            for miss in self.missing_data:
+            for miss_data in self.missing_data:
                 # add missing item to data sources column:
+                row_num = self.vheaderitems[miss_data]
                 try:
-                    tab_item = QTableWidgetItem(str(sources[miss]))  # Has to be string. TODO: round float numbers?
-                    self.ui.CifItemsTable.setItem(self.vheaderitems[miss], 1, tab_item)
+                    tab_item = QTableWidgetItem(str(sources[miss_data]))  # has to be string
+                    self.ui.CifItemsTable.setItem(row_num, 1, tab_item)
                 except KeyError:
                     pass
+                    #print('could not set qtablewidgetitem: {}'.format(miss_data))
+                # creating comboboxes for special keywords like _exptl_crystal_colour:
+                if miss_data in special_fields:
+                    self.add_combobox(miss_data, row_num)
+
+    def add_combobox(self, miss_data: str, row_num: int):
+        """
+        Adds a QComboBox to the CifItemsTable with the content of misc.special_fields
+        # TODO: use property templates for this! Predefine property templates for regular things like color
+        """
+        combobox = QComboBox()
+        # print('special:', row_num, miss_data)
+        self.ui.CifItemsTable.setCellWidget(row_num, 2, combobox)
+        combobox.setEditable(True)
+        for num, value in special_fields[miss_data]:
+            combobox.addItem(value, num)
 
     def fill_cif_table(self):
         """
