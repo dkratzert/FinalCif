@@ -548,6 +548,10 @@ class AppWindow(QMainWindow):
         """
         Adds a QComboBox to the CifItemsTable with the content of misc.special_fields
         # TODO: use property templates for this! Predefine property templates for regular things like color
+        # TODO: or even better. use templates from misc.special_cases or templates if there is a same cif key in order
+        # TODO  to let the user overwrite the default.
+        # TODO: need to have a method that returns COLOUR_CHOICES = ((0, 'not applicable'), (1, 'colourless'), ...
+        # TODO: from a template.
         """
         combobox = QComboBox()
         # print('special:', row_num, miss_data)
