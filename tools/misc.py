@@ -167,6 +167,25 @@ absorption_correction_types = {
     'sphere'     : 'spherical',
 }
 
+COLOUR_CHOICES = (
+    (0, 'not applicable'),
+    (1, 'colourless'),
+    (2, 'white'),
+    (3, 'black'),
+    (4, 'gray'),
+    (5, 'brown'),
+    (6, 'red'),
+    (7, 'pink'),
+    (8, 'orange'),
+    (9, 'yellow'),
+    (10, 'green'),
+    (11, 'blue'),
+    (12, 'violet')
+)
+
+
+special_fields = {'_exptl_crystal_colour': COLOUR_CHOICES}
+
 
 def to_float(st):
     if isinstance(st, list):
