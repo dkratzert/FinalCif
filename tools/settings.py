@@ -70,7 +70,7 @@ class FinalCifSettings():
         """
         return self.settings.value(name)
 
-    def load_template_as_dict(self, name: str) -> dict:
+    def load_equipment_template_as_dict(self, name: str) -> dict:
         """
         """
         keydict = {}
@@ -82,13 +82,20 @@ class FinalCifSettings():
                 continue
         return keydict
 
-
     def delete_template(self, name: str):
         """
         Deletes the currently seleted item.
         """
         self.settings.remove(name)
 
+    def load_property_by_key(self, key):
+        keylist = self.load_property_keys()
+        plist = self.settings.value('property_list')
+        templ = None
+        for (p, k) in zip(plist, keylist):
+            if k == key:
+                templ = self.load_template('property/' + p)
+        return [(n, x) for n, x in enumerate(templ[1])]
 
 if __name__ == '__main__':
     sett = QSettings('foo', 'bar')

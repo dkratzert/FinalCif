@@ -34,21 +34,10 @@ TODO:
 
 - maybe add properties templates as tabwidget behind equipment templates (saves space).
 - Add file search for data files like .abs file.
-#- open cif file and parse it. (With gemmi?)
 - put all incomplete information in the CifItemsTable. 
-  - Add checkbox to be able to edit all cif values?
-  - Or show all ? items first, then all others.
-- make second column of CifItemsTable uneditable.
 - Own data in CifItemsTable overrides From Data Source. 
   (maybe with a signal to grey out the data source onEdit of Own Data)
 - make "save cif" work.
-- rightclick on main table field opens menu with "assign template"->"list of templates to select from"
-- think about a possibility to save and edit templates: QSettings()
-- signal: if edit template clicked -> got to TemplatesStackedWidgetPage1
-- signal: if Save template clicked -> got to TemplatesStackedWidgetPage0
-- signal: if delete clicked -> delete current template table line
-- signal: if edit Own Data field -> grey out From Data Source field in same line.
-- action: rightclick on a template -> offer "delete template"
 - action: rightclick on a template -> offer "export template (to .cif)"
 - action: rightclick on a template -> offer "import template (from .cif)"
 - selecting a row in the cif items table changes the view in the Data Sources table and offers
@@ -59,26 +48,47 @@ TODO:
 - SaveResidualsTableButton -> run multitable.py
 - SaveFullReportButton -> generate full report with description text and all tables as .docx (and pdf?)
   maybe also a preview? Directly open in MSword/LibreOffice?
-- prioritise The cif items with "necessary for checkcif" like "crystal habit", less important but generally accepted
-  as needed like "publication picture program" and unimportant "like melting point". 
-- Dropdown menu for colors, software versions, ...
-- Template editor for colors, software, ...  with predefined values.
-- Add a sfrm file parser: 
-    - get measurement date 
-    - Determine Manufakturer, kv/mA, tube, runlist 
 - Determine the Manufacturer:
     - work directory: 1 Punkt
     - .abs file existiert: 1 Punkt
     - Sfrm Frames 2 Punkte 
     - Xxx Frames 2punkte
     - ...
-- dann ein Dopdown mit „Manufakturer: 'bruker'“ (change)
-- select templates according to Points
-- Manufakturer has sub categories with Tube Type , housing, radiation, Cooling, goniometer, Detektor 
+- select templates according to Points 
 - save cif file with "name_fin.cif"
 - check hkl and res checksum
 - Add button for checkcif report.
 - Check if unit cell in cif fits to atoms provided.
+
+Idea for checkcif:
+
+import os
+import sys
+from PyQt5.QtWidgets import QApplication, QVBoxLayout, QWidget
+from PyQt5.QtCore import QUrl, QEventLoop
+from PyQt5.QtWebEngineWidgets import QWebEngineView
+
+class WebPage(QWebEngineView):
+    def __init__(self):
+        QWebEngineView.__init__(self)
+        self.load(QUrl("https://www.url.com"))
+        self.loadFinished.connect(self._on_load_finished)
+
+    def _on_load_finished(self):
+        print("Finished Loading")
+        self.page().toHtml(self.Callable)
+
+    def Callable(self, html_str):
+        self.html = html_str
+        self.page().runJavaScript("document.getElementsByName('loginid')[0].value = 'email@email.com'")
+        self.page().runJavaScript("document.getElementsByName('password')[0].value = 'test'")
+        self.page().runJavaScript ("document.getElementById('signin').click()")
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    web = WebPage()
+    web.show()
+    sys.exit(app.exec_()) 
 
 """
 
@@ -120,6 +130,7 @@ class AppWindow(QMainWindow):
 
     def add_new_datafile(self, n: int, label_text: str, placeholder: str = ''):
         """
+        TODO: use this for all data files
         Adds a new file input as data source for the currently selected cif key/value pair
         """
         data_file_label = QLabel(self.DataFilesGroupBox)
@@ -191,7 +202,7 @@ class AppWindow(QMainWindow):
             return None
         # table_data = self.settings.load_template('equipment/' + selected_row_text)
         # self.equipment_settings = table_data
-        equipment = self.settings.load_template_as_dict(selected_row_text)
+        equipment = self.settings.load_equipment_template_as_dict(selected_row_text)
         if self.vheaderitems:
             for data in equipment:
                 # add missing item to data sources column:
@@ -530,34 +541,46 @@ class AppWindow(QMainWindow):
             for item in range(self.ui.CifItemsTable.model().rowCount()):
                 head = self.ui.CifItemsTable.model().headerData(item, Qt.Vertical)
                 self.vheaderitems[head] = item
+            property_fields = self.settings.load_property_keys()
             # get missing items from sources and put them into the corresponding rows:
             for miss_data in self.missing_data:
                 # add missing item to data sources column:
                 row_num = self.vheaderitems[miss_data]
+                tab_item = QTableWidgetItem()
                 try:
-                    tab_item = QTableWidgetItem(str(sources[miss_data]))  # has to be string
-                    self.ui.CifItemsTable.setItem(row_num, 1, tab_item)
+                    tab_item.setText(str(sources[miss_data]))  # has to be string
+                    # this is in the first column:
                 except KeyError:
                     pass
-                    #print('could not set qtablewidgetitem: {}'.format(miss_data))
+                self.ui.CifItemsTable.setItem(row_num, 1, tab_item)
+                # items from data sources should not be editable
+                tab_item.setFlags(tab_item.flags() ^ Qt.ItemIsEditable)
                 # creating comboboxes for special keywords like _exptl_crystal_colour:
-                if miss_data in special_fields:
-                    self.add_combobox(miss_data, row_num)
+                if miss_data in property_fields:
+                    self.add_property_combobox(self.settings.load_property_by_key(miss_data), row_num)
+                elif miss_data in special_fields:
+                    self.add_special_combobox(miss_data, row_num)
 
-    def add_combobox(self, miss_data: str, row_num: int):
+    def add_special_combobox(self, miss_data: str, row_num: int):
         """
-        Adds a QComboBox to the CifItemsTable with the content of misc.special_fields
-        # TODO: use property templates for this! Predefine property templates for regular things like color
-        # TODO: or even better. use templates from misc.special_cases or templates if there is a same cif key in order
-        # TODO  to let the user overwrite the default.
-        # TODO: need to have a method that returns COLOUR_CHOICES = ((0, 'not applicable'), (1, 'colourless'), ...
-        # TODO: from a template.
+        Adds a QComboBox to the CifItemsTable with the content of special_fields
         """
         combobox = QComboBox()
         # print('special:', row_num, miss_data)
         self.ui.CifItemsTable.setCellWidget(row_num, 2, combobox)
         combobox.setEditable(True)
         for num, value in special_fields[miss_data]:
+            combobox.addItem(value, num)
+
+    def add_property_combobox(self, miss_data: str, row_num: int):
+        """
+        Adds a QComboBox to the CifItemsTable with the content of special_fields
+        """
+        combobox = QComboBox()
+        # print('special:', row_num, miss_data)
+        self.ui.CifItemsTable.setCellWidget(row_num, 2, combobox)
+        combobox.setEditable(True)
+        for num, value in miss_data:
             combobox.addItem(value, num)
 
     def fill_cif_table(self):
@@ -587,11 +610,11 @@ class AppWindow(QMainWindow):
         self.ui.CifItemsTable.insertRow(row_num)
         # Add cif key and value to the row:
         item_key = QTableWidgetItem(key)
-        item_val = QTableWidgetItem(value)
+        tabitem = QTableWidgetItem(value)
         self.ui.CifItemsTable.setVerticalHeaderItem(row_num, item_key)
-        self.ui.CifItemsTable.setItem(row_num, 0, item_val)
+        self.ui.CifItemsTable.setItem(row_num, 0, tabitem)
         # has to be assigned first and then set to uneditable:
-        item_val.setFlags(item_val.flags() ^ QtCore.Qt.ItemIsEditable)
+        tabitem.setFlags(tabitem.flags() ^ Qt.ItemIsEditable)
 
 
 if __name__ == '__main__':

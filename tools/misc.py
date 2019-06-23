@@ -116,26 +116,37 @@ _atom_sites_solution_secondary    difmap
 """
 
 high_prio_keys = ['_chemical_formula_moiety',
-                  '_space_group_name_H-M_alt', '_space_group_centring_type', '_space_group_IT_number',
+                  '_space_group_name_H-M_alt',
+                  '_space_group_centring_type',
+                  '_space_group_IT_number',
                   '_space_group_crystal_system',
                   '_cell_formula_units_Z',
-                  '_audit_creation_method', '_chemical_formula_sum',
-                  '_chemical_formula_weight', '_exptl_crystal_description', '_exptl_crystal_colour',
-                  '_exptl_crystal_size_max', '_exptl_crystal_size_mid', '_exptl_crystal_size_min',
-                  '_exptl_absorpt_coefficient_mu', '_exptl_absorpt_correction_type',
+                  '_audit_creation_method',
+                  '_chemical_formula_sum',
+                  '_chemical_formula_weight',
+                  '_exptl_crystal_description',
+                  '_exptl_crystal_colour',
+                  '_chemical_absolute_configuration',
+                  '_exptl_crystal_size_max',
+                  '_exptl_crystal_size_mid',
+                  '_exptl_crystal_size_min',
+                  '_exptl_absorpt_coefficient_mu',
+                  '_exptl_absorpt_correction_type',
                   '_exptl_absorpt_process_details',
                   '_exptl_absorpt_special_details',
                   '_diffrn_ambient_temperature',
-                  '_exptl_absorpt_correction_T_min', '_exptl_absorpt_correction_T_max',
+                  '_exptl_absorpt_correction_T_min',
+                  '_exptl_absorpt_correction_T_max',
                   '_cell_measurement_reflns_used',
                   '_cell_measurement_temperature',
-                  '_cell_measurement_theta_min', '_cell_measurement_theta_max',
+                  '_cell_measurement_theta_min',
+                  '_cell_measurement_theta_max',
                   '_diffrn_source',
                   '_diffrn_measurement_device_type',
                   '_diffrn_measurement_method',
                   '_diffrn_radiation_type',
                   '_diffrn_reflns_av_R_equivalents',
-                  '_computing_data_collection',   # from frame header: 'PROGRAM': 'BIS V6.2.10/2018-10-02',
+                  '_computing_data_collection',  # from frame header: 'PROGRAM': 'BIS V6.2.10/2018-10-02',
                   '_computing_cell_refinement',
                   '_computing_data_reduction',
                   '_computing_structure_solution',
@@ -183,8 +194,19 @@ COLOUR_CHOICES = (
     (12, 'violet')
 )
 
+ABSOLUTE_CONFIGURATION_CHOICES = (
+    ('ad', 'Anomalous dispersion'),
+    ('rm', 'Reference Molecule'),
+    ('rmad', 'Reference Molecule and anomalous dispersion'),
+    ('syn', 'Synthesis'),
+    ('unk', 'Unknown'),
+    ('.', 'Inapplicable'),
+)
 
-special_fields = {'_exptl_crystal_colour': COLOUR_CHOICES}
+special_fields = {'_exptl_crystal_colour'           : COLOUR_CHOICES,
+                  '_chemical_absolute_configuration': ABSOLUTE_CONFIGURATION_CHOICES,
+
+                  }
 
 
 def to_float(st):
