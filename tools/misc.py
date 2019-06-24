@@ -164,22 +164,23 @@ medium_prio_keys = ['_chemical_name_systematic',
                     ]
 low_prio_keys = ['']
 
-absorption_correction_types = {
-    'analytical' : 'analytical from crystal shape',
-    'cylinder'   : 'cylindrical',
-    'empirical'  : 'empirical from intensities',
-    'gaussian'   : 'Gaussian from crystal shape',
-    'integration': 'integration from crystal shape',
-    'multi-scan' : 'symmetry-related measurements',
-    'none'       : 'no absorption correction applied',
-    'numerical'  : 'numerical from crystal shape',
-    'psi-scan'   : 'psi-scan corrections',
-    'refdelf'    : 'refined from delta-F',
-    'sphere'     : 'spherical',
-}
+ABSORPTION_CORRECTION_TYPES = (
+    ('', ' '),
+    ('analytical', 'analytical from crystal shape'),
+    ('cylinder', 'cylindrical'),
+    ('empirical', 'empirical from intensities'),
+    ('gaussian', 'Gaussian from crystal shape'),
+    ('integration', 'integration from crystal shape'),
+    ('multi-scan', 'symmetry-related measurements'),
+    ('none', 'no absorption correction applied'),
+    ('numerical', 'numerical from crystal shape'),
+    ('psi-scan', 'psi-scan corrections'),
+    ('refdelf', 'refined from delta-F'),
+    ('sphere', 'spherical'),
+)
 
 COLOUR_CHOICES = (
-    (0, 'not applicable'),
+    (0, ' '),
     (1, 'colourless'),
     (2, 'white'),
     (3, 'black'),
@@ -195,6 +196,7 @@ COLOUR_CHOICES = (
 )
 
 ABSOLUTE_CONFIGURATION_CHOICES = (
+    ('', ' '),
     ('ad', 'Anomalous dispersion'),
     ('rm', 'Reference Molecule'),
     ('rmad', 'Reference Molecule and anomalous dispersion'),
@@ -205,6 +207,7 @@ ABSOLUTE_CONFIGURATION_CHOICES = (
 
 special_fields = {'_exptl_crystal_colour'           : COLOUR_CHOICES,
                   '_chemical_absolute_configuration': ABSOLUTE_CONFIGURATION_CHOICES,
+                  '_exptl_absorpt_correction_type'  : ABSORPTION_CORRECTION_TYPES,
 
                   }
 

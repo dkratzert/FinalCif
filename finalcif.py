@@ -12,7 +12,7 @@ from tools.settings import FinalCifSettings
 DEBUG = True
 
 if DEBUG:
-    from PyQt5 import uic, QtCore
+    from PyQt5 import uic
 
 from PyQt5.QtWidgets import QMainWindow, QApplication, QHeaderView, QLineEdit, QLabel, QPushButton, QFileDialog, \
     QTableWidgetItem, QTableWidget, QStackedWidget, QListWidget, QListWidgetItem, QComboBox
@@ -549,39 +549,34 @@ class AppWindow(QMainWindow):
                 tab_item = QTableWidgetItem()
                 try:
                     tab_item.setText(str(sources[miss_data]))  # has to be string
-                    # this is in the first column:
                 except KeyError:
                     pass
+                #                               # row  column  item
                 self.ui.CifItemsTable.setItem(row_num, 1, tab_item)
                 # items from data sources should not be editable
                 tab_item.setFlags(tab_item.flags() ^ Qt.ItemIsEditable)
-                # creating comboboxes for special keywords like _exptl_crystal_colour:
+                # creating comboboxes for special keywords like _exptl_crystal_colour.
+                # In case a property for this key exists, it will show this list:
                 if miss_data in property_fields:
                     self.add_property_combobox(self.settings.load_property_by_key(miss_data), row_num)
                 elif miss_data in special_fields:
-                    self.add_special_combobox(miss_data, row_num)
+                    self.add_property_combobox(special_fields[miss_data], row_num)
 
-    def add_special_combobox(self, miss_data: str, row_num: int):
-        """
-        Adds a QComboBox to the CifItemsTable with the content of special_fields
-        """
-        combobox = QComboBox()
-        # print('special:', row_num, miss_data)
-        self.ui.CifItemsTable.setCellWidget(row_num, 2, combobox)
-        combobox.setEditable(True)
-        for num, value in special_fields[miss_data]:
-            combobox.addItem(value, num)
+    def print_combo(self, foo):
+        print('combobox has now:', foo)
 
     def add_property_combobox(self, miss_data: str, row_num: int):
         """
-        Adds a QComboBox to the CifItemsTable with the content of special_fields
+        Adds a QComboBox to the CifItemsTable with the content of special_fields or property templates.
         """
         combobox = QComboBox()
+        # combobox.currentIndexChanged.connect(self.print_combo)
         # print('special:', row_num, miss_data)
         self.ui.CifItemsTable.setCellWidget(row_num, 2, combobox)
-        combobox.setEditable(True)
+        combobox.setEditable(False)  # only editable as new template
         for num, value in miss_data:
             combobox.addItem(value, num)
+        combobox.setCurrentIndex(0)
 
     def fill_cif_table(self):
         """
