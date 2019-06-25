@@ -156,11 +156,11 @@ high_prio_keys = ['_chemical_formula_moiety',
                   '_refine_ls_hydrogen_treatment',
                   '_atom_sites_solution_primary',
                   # '_atom_sites_solution_secondary',
-                  '',
-                  '',
                   ]
 medium_prio_keys = ['_chemical_name_systematic',
                     '_chemical_name_common',
+                    '',
+                    '',
                     ]
 low_prio_keys = ['']
 

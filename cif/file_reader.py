@@ -55,10 +55,15 @@ class CifContainer():
         high_prio_q, high_prio_with_values = self.get_keys(high_prio_keys)
         medium_prio_q, medium_prio_with_values = self.get_keys(medium_prio_keys)
         # low_prio_q, low_prio_with_values = self.get_keys(low_prio_keys)
-        return high_prio_q + medium_prio_q + high_prio_with_values + medium_prio_with_values
+        return high_prio_q + medium_prio_q + [['Other keys:', '----------------------'], ['', '']] \
+               + high_prio_with_values + medium_prio_with_values
 
     def get_keys(self, inputkeys):
+        """
+        REturns the keys to be displayed in the main table.
+        """
         questions = []
+        # contains the answered keys:
         with_values = []
         for k in inputkeys:
             try:
