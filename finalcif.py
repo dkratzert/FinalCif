@@ -212,6 +212,7 @@ class AppWindow(QMainWindow):
                     row = self.vheaderitems[data]
                     column = 1
                     self.ui.CifItemsTable.setItem(row, column, tab_item)
+                    tab_item.setFlags(tab_item.flags() ^ Qt.ItemIsEditable)
                 except KeyError:
                     pass
 
@@ -518,11 +519,11 @@ class AppWindow(QMainWindow):
             saint_data = get_saint()
             sadabs_data = get_sadabs()
             frame_header = get_frame()
+            # TODO: determine the correct dataset number:
             dataset_num = -1
             try:
                 abstype = 'multi-scan' if not sadabs_data.dataset(-1).numerical else 'numerical'
                 t_min = min(sadabs_data.dataset(dataset_num).transmission)
-                # TODO: determine the correct dataset number:
                 t_max = max(sadabs_data.dataset(dataset_num).transmission)
             except (KeyError, AttributeError):
                 # no abs file found
@@ -602,8 +603,9 @@ class AppWindow(QMainWindow):
         for item in range(self.ui.CifItemsTable.model().rowCount()):
             head = self.ui.CifItemsTable.model().headerData(item, Qt.Vertical)
             vheaderitems[head] = item
-        item_val = QTableWidgetItem(new_value)
-        self.ui.CifItemsTable.setItem(vheaderitems[vert_key], column, item_val)
+        tab_item = QTableWidgetItem(new_value)
+        self.ui.CifItemsTable.setItem(vheaderitems[vert_key], column, tab_item)
+        #tab_item.setFlags(tab_item.flags() ^ Qt.ItemIsEditable)
 
     def addRow(self, key, value):
         # Create a empty row at bottom of table
@@ -612,10 +614,14 @@ class AppWindow(QMainWindow):
         # Add cif key and value to the row:
         item_key = QTableWidgetItem(key)
         tabitem = QTableWidgetItem(value)
+        tabempty = QTableWidgetItem()
+        tabempty.setFlags(tabitem.flags() ^ Qt.ItemIsEditable)
         self.ui.CifItemsTable.setVerticalHeaderItem(row_num, item_key)
         self.ui.CifItemsTable.setItem(row_num, 0, tabitem)
+        self.ui.CifItemsTable.setItem(row_num, 1, tabempty)
         # has to be assigned first and then set to uneditable:
         tabitem.setFlags(tabitem.flags() ^ Qt.ItemIsEditable)
+
 
 
 if __name__ == '__main__':
