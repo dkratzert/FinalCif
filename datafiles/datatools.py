@@ -1,5 +1,6 @@
 from pathlib import Path
 
+from datafiles.bruker_frame import BrukerFrameHeader
 from datafiles.sadabs import Sadabs
 from datafiles.saint import SaintListFile
 
@@ -35,3 +36,14 @@ def get_sadabs():
         if sadabs:
             return sadabs
     return sadabs
+
+
+def get_frame():
+    p = Path('./')
+    frames = p.rglob('*.sfrm')
+    header = None
+    for fr in frames:
+        header = BrukerFrameHeader(fr.as_posix())
+        if header:
+            return header
+    return header

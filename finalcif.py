@@ -5,7 +5,7 @@ from pathlib import Path
 from PyQt5.QtCore import Qt
 
 from cif.file_reader import CifContainer
-from datafiles.datatools import MissingCifData, get_sadabs, get_saint
+from datafiles.datatools import MissingCifData, get_sadabs, get_saint, get_frame
 from tools.misc import special_fields
 from tools.settings import FinalCifSettings
 
@@ -512,15 +512,18 @@ class AppWindow(QMainWindow):
 
         TODO: should I do it that a click on a field in question runs the get_source data for this specific field?
               It should at least show the specific data source in DataFilesGroupBox().
+              Maybe better if this method itself determines the data sources.
         """
         if self.manufacturer == 'bruker':
             saint_data = get_saint()
             sadabs_data = get_sadabs()
+            frame_header = get_frame()
+            dataset_num = -1
             try:
                 abstype = 'multi-scan' if not sadabs_data.dataset(-1).numerical else 'numerical'
-                t_min = min(sadabs_data.dataset(-1).transmission)
+                t_min = min(sadabs_data.dataset(dataset_num).transmission)
                 # TODO: determine the correct dataset number:
-                t_max = max(sadabs_data.dataset(-1).transmission)
+                t_max = max(sadabs_data.dataset(dataset_num).transmission)
             except (KeyError, AttributeError):
                 # no abs file found
                 abstype = '?'
@@ -535,6 +538,9 @@ class AppWindow(QMainWindow):
                        '_exptl_absorpt_correction_type' : abstype,
                        '_exptl_absorpt_correction_T_min': str(t_min),
                        '_exptl_absorpt_correction_T_max': str(t_max),
+                       '_diffrn_reflns_av_R_equivalents': sadabs_data.Rint,
+                       '_cell_measurement_temperature': frame_header.temperature,
+                       '_diffrn_ambient_temperature': frame_header.temperature,
                        }
 
             # Build a dictionary of cif keys and row number values:

@@ -153,9 +153,9 @@ high_prio_keys = ['_chemical_formula_moiety',
                   '_computing_molecular_graphics',
                   '_computing_publication_material',
                   '_refine_special_details',
+                  '_refine_ls_hydrogen_treatment',
                   '_atom_sites_solution_primary',
                   # '_atom_sites_solution_secondary',
-                  '_refine_ls_hydrogen_treatment',  # use a combo-box or dropdown
                   '',
                   '',
                   ]
@@ -165,7 +165,7 @@ medium_prio_keys = ['_chemical_name_systematic',
 low_prio_keys = ['']
 
 ABSORPTION_CORRECTION_TYPES = (
-    ('', ' '),
+    ('', '?'),
     ('analytical', 'analytical from crystal shape'),
     ('cylinder', 'cylindrical'),
     ('empirical', 'empirical from intensities'),
@@ -180,7 +180,7 @@ ABSORPTION_CORRECTION_TYPES = (
 )
 
 COLOUR_CHOICES = (
-    (0, ' '),
+    (0, '?'),
     (1, 'colourless'),
     (2, 'white'),
     (3, 'black'),
@@ -196,18 +196,39 @@ COLOUR_CHOICES = (
 )
 
 ABSOLUTE_CONFIGURATION_CHOICES = (
-    ('', ' '),
+    ('', '?'),
     ('ad', 'Anomalous dispersion'),
     ('rm', 'Reference Molecule'),
-    ('rmad', 'Reference Molecule and anomalous dispersion'),
+    ('rmad', 'Reference Molecule and ad'),
     ('syn', 'Synthesis'),
     ('unk', 'Unknown'),
     ('.', 'Inapplicable'),
 )
 
+REFINE_LS_HYDROGEN_TREATMENT = (
+    (0, '?'),
+    (1, 'undef'),
+    (2, 'mixed'),
+    (3, 'constr'),
+    (4, 'noref'),
+    (5, 'refall'),
+    (6, 'refxyz'),
+    (7, 'refU'),
+    (8, 'hetero'),
+    (9, 'heteroxyz'),
+    (10, 'heteroU'),
+    (11, 'heteronoref'),
+    (12, 'hetero-mixed'),
+    (13,'heteroxyz-mixed'),
+    (14, 'heteroU-mixed'),
+    (15, 'heteronoref-mixed'),
+
+)
+
 special_fields = {'_exptl_crystal_colour'           : COLOUR_CHOICES,
                   '_chemical_absolute_configuration': ABSOLUTE_CONFIGURATION_CHOICES,
                   '_exptl_absorpt_correction_type'  : ABSORPTION_CORRECTION_TYPES,
+                  '_refine_ls_hydrogen_treatment': REFINE_LS_HYDROGEN_TREATMENT,
 
                   }
 

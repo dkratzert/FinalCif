@@ -1,4 +1,3 @@
-from datetime import date, datetime
 from pathlib import Path
 from pprint import pformat
 
@@ -34,6 +33,14 @@ class BrukerFrameHeader():
     def measure_date(self):
         dt = ' '.join(self.header['CREATED'].split())
         return dt
+
+    @property
+    def temperature(self):
+        tmp = self.header['CREATED'].split()[1]
+        try:
+            return (float(tmp) / 100.0) + 273.15
+        except ValueError:
+            return 293.15
 
 
 if __name__ == '__main__':
