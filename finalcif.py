@@ -5,8 +5,8 @@ from pathlib import Path
 from PyQt5.QtCore import Qt
 
 from cif.file_reader import CifContainer
-from datafiles.datatools import MissingCifData, get_sadabs, get_saint, get_frame
-from tools.misc import special_fields
+from datafiles.datatools import MissingCifData, get_frame, get_sadabs, get_saint
+from tools.misc import special_fields, predefined_templates
 from tools.settings import FinalCifSettings
 
 DEBUG = True
@@ -32,6 +32,7 @@ from gui.finalcif_gui import Ui_FinalCifWindow
 """
 TODO:
 
+- Use a cif file parser that can write files
 - maybe add properties templates as tabwidget behind equipment templates (saves space).
 - Add file search for data files like .abs file.
 - put all incomplete information in the CifItemsTable. 
@@ -101,6 +102,7 @@ class AppWindow(QMainWindow):
         self.show()
         self.vheaderitems = {}
         self.settings = FinalCifSettings(self)
+        self.store_predefined_templates()
         self.settings.load_window_position()
         self.show_equipment_and_properties()
         # distribute CifItemsTable Columns evenly:
@@ -119,10 +121,9 @@ class AppWindow(QMainWindow):
         # self.equipment_settings = []
         self.connect_signals_and_slots()
         self.miss_data = MissingCifData()
-
         self.manufacturer = 'bruker'
         # only for testing:
-        self.get_cif_file_block('test-data/twin4.cif')
+        self.get_cif_file_block(r'/Volumes/nifty/test_workordner/Esser_JW344_Kopie/Esser_JW344_0m_a.cif')
 
     def __del__(self):
         print('saving position')
@@ -408,6 +409,16 @@ class AppWindow(QMainWindow):
         keyword = self.ui.cifKeywordLE.text()
         self.save_property(table, stackedwidget, listwidget, keyword)
 
+    def store_predefined_templates(self):
+        property_list = self.settings.settings.value('property_list')
+        for item in predefined_templates:
+            if not item['name'] in property_list:
+                property_list.append(item['name'])
+                newlist = [x for x in list(set(property_list)) if x]
+                # this list keeps track of the equipment items:
+                self.settings.save_template('property_list', newlist)
+                self.settings.save_template('property/' + item['name'], item['values'])
+
     def load_property(self, table: QTableWidget, stackedwidget: QStackedWidget, listwidget: QListWidget):
         """
         Load/Edit the value list of a property entry.
@@ -540,8 +551,9 @@ class AppWindow(QMainWindow):
                        '_exptl_absorpt_correction_T_min': str(t_min),
                        '_exptl_absorpt_correction_T_max': str(t_max),
                        '_diffrn_reflns_av_R_equivalents': sadabs_data.Rint,
-                       '_cell_measurement_temperature': frame_header.temperature,
-                       '_diffrn_ambient_temperature': frame_header.temperature,
+                       '_cell_measurement_temperature'  : frame_header.temperature,
+                       '_diffrn_ambient_temperature'    : frame_header.temperature,
+                       '_exptl_absorpt_process_details' : sadabs_data.version
                        }
 
             # Build a dictionary of cif keys and row number values:
@@ -605,7 +617,7 @@ class AppWindow(QMainWindow):
             vheaderitems[head] = item
         tab_item = QTableWidgetItem(new_value)
         self.ui.CifItemsTable.setItem(vheaderitems[vert_key], column, tab_item)
-        #tab_item.setFlags(tab_item.flags() ^ Qt.ItemIsEditable)
+        # tab_item.setFlags(tab_item.flags() ^ Qt.ItemIsEditable)
 
     def addRow(self, key, value):
         # Create a empty row at bottom of table
@@ -621,7 +633,6 @@ class AppWindow(QMainWindow):
         self.ui.CifItemsTable.setItem(row_num, 1, tabempty)
         # has to be assigned first and then set to uneditable:
         tabitem.setFlags(tabitem.flags() ^ Qt.ItemIsEditable)
-
 
 
 if __name__ == '__main__':
