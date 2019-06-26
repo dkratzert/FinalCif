@@ -6,7 +6,7 @@ from PyQt5.QtCore import Qt
 
 from cif.file_reader import CifContainer
 from datafiles.datatools import MissingCifData, get_frame, get_sadabs, get_saint
-from tools.misc import special_fields, predefined_templates
+from tools.misc import special_fields, predef_prop_templ
 from tools.settings import FinalCifSettings
 
 DEBUG = True
@@ -411,7 +411,7 @@ class AppWindow(QMainWindow):
 
     def store_predefined_templates(self):
         property_list = self.settings.settings.value('property_list')
-        for item in predefined_templates:
+        for item in predef_prop_templ:
             if not item['name'] in property_list:
                 property_list.append(item['name'])
                 newlist = [x for x in list(set(property_list)) if x]
