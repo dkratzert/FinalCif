@@ -275,15 +275,20 @@ def to_int(st):
 predef_prop_templ = [{'name'  : 'Crystal Color',
                       'values': ['_exptl_crystal_colour',
                                  ['', 'colourless', 'white', 'black', 'yellow', 'red', 'blue',
-                                  'green', 'gray', 'pink', 'orange', 'violet', 'brown']]},
+                                  'green', 'gray', 'pink', 'orange', 'violet', 'brown']]
+                      },
                      {'name'  : 'Crystal Habit',
-                      'values': ['_exptl_crystal_description', ['', 'block', 'needle', 'plate', 'prism', 'sphere']]
+                      'values': ['_exptl_crystal_description',
+                                 ['', 'block', 'needle', 'plate', 'prism', 'sphere']]
                       },
                      {'name'  : 'Cell Measurement Temperature',
-                      'values': ['_cell_measurement_temperature', ['', '0', '15', '80(2)', '100(2)', '110(2)',
-                                                                   '120(2)', '130(2)', '150(2)', '200(2)', '298(2)']]
+                      'values': ['_cell_measurement_temperature',
+                                 ['', '15', '80(2)', '100(2)', '110(2)',
+                                  '120(2)', '130(2)', '150(2)', '200(2)', '298(2)']]
                       },
                      {'name'  : 'Measurement Temperature',
-                      'values': ['_diffrn_ambient_temperature', ['', '0', '15', '80(2)', '100(2)', '110(2)',
-                                                                 '120(2)', '130(2)', '150(2)', '200(2)', '298(2)']]}
-                     ],
+                      'values': ['_diffrn_ambient_temperature',
+                                 ['', '15(1)', '80(2)', '100(2)', '110(2)',
+                                  '120(2)', '130(2)', '150(2)', '200(2)', '293.15(2)', '298(2)']]
+                      }
+                     ]

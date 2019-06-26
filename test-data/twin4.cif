@@ -76,7 +76,7 @@ _exptl_absorpt_correction_T_min   ?
 _exptl_absorpt_correction_T_max   ?
 _exptl_absorpt_process_details    ?
 _exptl_absorpt_special_details    ?
-_diffrn_ambient_temperature       100(2)
+_diffrn_ambient_temperature
 _diffrn_radiation_wavelength      0.71073
 _diffrn_radiation_type            MoK\a
 _diffrn_source                    ?
