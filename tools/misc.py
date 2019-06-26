@@ -80,6 +80,11 @@ _cell_measurement_theta_max       ?
 _cell_measurement_temperature     100(2)
 _cell_formula_units_Z             2
 _exptl_crystal_description        ?
+        A description of the quality and habit of the crystal.
+   The crystal dimensions should not normally be reported here;
+   use instead _exptl_crystal_size_ for the gross dimensions of
+   the crystal and _exptl_crystal_face_ to describe the
+   relationship between individual faces.
 _exptl_crystal_colour             ?
 _exptl_crystal_density_meas       ?
 _exptl_crystal_density_method     ?
@@ -88,8 +93,14 @@ _exptl_transmission_factor_max    ?
 _exptl_absorpt_correction_type    ?
 _exptl_absorpt_correction_T_min   ?
 _exptl_absorpt_correction_T_max   ?
-_exptl_absorpt_process_details    ?
+_exptl_absorpt_process_details    ? 
+      Description of the absorption process applied to the
+   intensities. A literature reference should be supplied
+   for psi-scan techniques.
+        'MolEN (Fair, 1990)'	
+        '(North, Phillips & Mathews, 1968)'
 _exptl_absorpt_special_details    ?
+       Das ist kein Offizieller Key?
 _exptl_crystal_size_max           0.180
 _exptl_crystal_size_mid           0.150
 _exptl_crystal_size_min           0.060
@@ -165,18 +176,18 @@ medium_prio_keys = ['_chemical_name_systematic',
 low_prio_keys = ['']
 
 ABSORPTION_CORRECTION_TYPES = (
-    ('', '?'),
-    ('analytical', 'analytical from crystal shape'),
-    ('cylinder', 'cylindrical'),
-    ('empirical', 'empirical from intensities'),
-    ('gaussian', 'Gaussian from crystal shape'),
-    ('integration', 'integration from crystal shape'),
-    ('multi-scan', 'symmetry-related measurements'),
-    ('none', 'no absorption correction applied'),
-    ('numerical', 'numerical from crystal shape'),
-    ('psi-scan', 'psi-scan corrections'),
-    ('refdelf', 'refined from delta-F'),
-    ('sphere', 'spherical'),
+    (0, ''),  # , ''),
+    (1, 'analytical'),  # , 'analytical from crystal shape'),
+    (2, 'cylinder'),  # , 'cylindrical'),
+    (3, 'empirical'),  # , 'empirical from intensities'),
+    (4, 'gaussian'),  # , 'Gaussian from crystal shape'),
+    (5, 'integration'),  # , 'integration from crystal shape'),
+    (6, 'multi-scan'),  # , 'symmetry-related measurements'),
+    (7, 'none'),  # , 'no absorption correction applied'),
+    (8, 'numerical'),  # , 'numerical from crystal shape'),
+    (9, 'psi-scan'),  # , 'psi-scan corrections'),
+    (10, 'refdelf'),  # , 'refined from delta-F'),
+    (11, 'sphere'),  # , 'spherical'),
 )
 
 COLOUR_CHOICES = (
@@ -196,13 +207,13 @@ COLOUR_CHOICES = (
 )
 
 ABSOLUTE_CONFIGURATION_CHOICES = (
-    ('', '?'),
-    ('ad', 'Anomalous dispersion'),
-    ('rm', 'Reference Molecule'),
-    ('rmad', 'Reference Molecule and ad'),
-    ('syn', 'Synthesis'),
-    ('unk', 'Unknown'),
-    ('.', 'Inapplicable'),
+    (0, ''),  # , '?'),
+    (1, 'ad'),  # , 'Anomalous dispersion'),
+    (2, 'rm'),  # , 'Reference Molecule'),
+    (3, 'rmad'),  # , 'Reference Molecule and ad'),
+    (4, 'syn'),  # , 'Synthesis'),
+    (5, 'unk'),  # , 'Unknown'),
+    (6, '.'),  # , 'Inapplicable'),
 )
 
 REFINE_LS_HYDROGEN_TREATMENT = (
@@ -219,7 +230,7 @@ REFINE_LS_HYDROGEN_TREATMENT = (
     (10, 'heteroU'),
     (11, 'heteronoref'),
     (12, 'hetero-mixed'),
-    (13,'heteroxyz-mixed'),
+    (13, 'heteroxyz-mixed'),
     (14, 'heteroU-mixed'),
     (15, 'heteronoref-mixed'),
 
@@ -228,7 +239,7 @@ REFINE_LS_HYDROGEN_TREATMENT = (
 special_fields = {'_exptl_crystal_colour'           : COLOUR_CHOICES,
                   '_chemical_absolute_configuration': ABSOLUTE_CONFIGURATION_CHOICES,
                   '_exptl_absorpt_correction_type'  : ABSORPTION_CORRECTION_TYPES,
-                  '_refine_ls_hydrogen_treatment': REFINE_LS_HYDROGEN_TREATMENT,
+                  '_refine_ls_hydrogen_treatment'   : REFINE_LS_HYDROGEN_TREATMENT,
 
                   }
 
@@ -257,3 +268,14 @@ def to_int(st):
             return int(st)
         except ValueError:
             return None
+
+
+### Property contents:
+
+predefined_templates = [{'name'  : 'Crystal Color',
+                         'values': ['_exptl_crystal_colour',
+                                    ['', 'colourless', 'white', 'black', 'yellow', 'red', 'blue',
+                                     'green', 'gray', 'pink', 'orange', 'violet', 'brown']]},
+                        {'name'  : 'Crystal Habit',
+                         'values': ['_exptl_crystal_description', ['', 'block', 'needle', 'plate', 'prism', 'sphere']]
+                         }]
