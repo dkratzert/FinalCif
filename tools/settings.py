@@ -74,7 +74,7 @@ class FinalCifSettings():
         """
         """
         keydict = {}
-        plist = self.load_template('equipment/' + name)
+        plist = self.load_template('equipment/' + name) or []
         for p in plist:
             try:
                 keydict[p[0]] = p[1]
