@@ -123,7 +123,7 @@ class AppWindow(QMainWindow):
         self.miss_data = MissingCifData()
         self.manufacturer = 'bruker'
         # only for testing:
-        self.get_cif_file_block(r'/Volumes/nifty/test_workordner/Esser_JW344_Kopie/Esser_JW344_0m_a.cif')
+        self.get_cif_file_block(r'test-data/4060308.cif')
 
     def __del__(self):
         print('saving position')
@@ -229,8 +229,11 @@ class AppWindow(QMainWindow):
         index = self.ui.EquipmentTemplatesListWidget.currentIndex()
         selected_template_text = index.data()
         self.settings.delete_template('equipment/' + selected_template_text)
-        equipment_list = self.settings.settings.value('equipment_list')
-        equipment_list.remove(selected_template_text)
+        equipment_list = self.settings.settings.value('equipment_list') or []
+        try:
+            equipment_list.remove(selected_template_text)
+        except ValueError:
+            pass
         self.settings.save_template('equipment_list', equipment_list)
         # now make it invisible:
         self.ui.EquipmentTemplatesListWidget.takeItem(index.row())
@@ -410,7 +413,7 @@ class AppWindow(QMainWindow):
         self.save_property(table, stackedwidget, listwidget, keyword)
 
     def store_predefined_templates(self):
-        property_list = self.settings.settings.value('property_list')
+        property_list = self.settings.settings.value('property_list') or []
         for item in predef_prop_templ:
             if not item['name'] in property_list:
                 property_list.append(item['name'])
