@@ -291,3 +291,27 @@ predef_prop_templ = [{'name'  : 'Crystal Color',
                                   '120(2)', '130(2)', '150(2)', '200(2)', '293.15(2)', '298(2)']]
                       }
                      ]
+
+predef_equipment_templ = [{'name' : 'D8 VENTURE',
+                           'items': [
+                               ['_diffrn_radiation_monochromator', 'mirror optics'],
+                               ['_diffrn_measurement_device', 'three-circle diffractometer'],
+                               ['_diffrn_measurement_device_type', 'Bruker D8 VENTURE dual wavelength Mo/Cu'],
+                               ['_diffrn_measurement_method', '\w and \f scans'],
+                               ['_diffrn_source', 'microfocus sealed X-ray tube'],
+                               ['_diffrn_source_current', '50'],
+                               ['_diffrn_source_voltage', '1.1'],
+                               ['_diffrn_source_type', 'Incoatec I\ms'],
+                           ]
+                           },
+                          {'name' : 'Rigaku Spider',
+                           'items': [
+                               ['_diffrn_radiation_source', ''],
+                               ['_diffrn_radiation_monochromator', 'graphite'],
+                               ['_diffrn_measurement_device', 'three-circle diffractometer'],
+                               ['_diffrn_measurement_device_type', ''],
+                               ['_diffrn_measurement_method', ''],
+                               ['_diffrn_source', ''],
+                           ]
+                           },
+                          ]

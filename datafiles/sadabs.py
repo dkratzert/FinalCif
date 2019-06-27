@@ -109,7 +109,8 @@ class Sadabs():
             if line.startswith(' Crystal faces:'):
                 self.faces = True
             if 'SADABS' in line or 'TWINABS' in line:
-                self.version = line.lstrip().strip()
+                self.version = line.lstrip().strip() + "Krause, L., Herbst-Irmer, R., Sheldrick G.M. & Stalke D., " \
+                                                       "J. Appl. Cryst. 48 (2015) 3-10"
             if 'twin components' in line:
                 self.twin_components = to_int(spline[0])
             if line.startswith(' Reflections merged according'):
@@ -139,6 +140,7 @@ class Sadabs():
                 self.dataset(n).mu_r = spline[-1]
                 self.dataset(n).numerical = self.faces
                 n += 1
+
     def __iter__(self):
         return iter(x for x in self.output)
 

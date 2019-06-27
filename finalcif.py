@@ -6,7 +6,7 @@ from PyQt5.QtCore import Qt
 
 from cif.file_reader import CifContainer
 from datafiles.datatools import MissingCifData, get_frame, get_p4p, get_sadabs, get_saint
-from tools.misc import predef_prop_templ, special_fields
+from tools.misc import predef_prop_templ, special_fields, predef_equipment_templ
 from tools.settings import FinalCifSettings
 
 DEBUG = True
@@ -32,6 +32,7 @@ from gui.finalcif_gui import Ui_FinalCifWindow
 """
 TODO:
 
+- find DSR string in res file and put descriptive text in cif.
 - determine centrosymmetric or not and remove _chemical_absolute_configuration accordingly.
 - Checkcif: http://journals.iucr.org/services/cif/checking/validlist.html
 - Check if space group symbol is written correctly.
@@ -41,16 +42,19 @@ TODO:
   foo long text bar
   ;
   during file save operation.
+- allow to add own cif keywords in the table. (maybe not?) 
 - make .lxt file parser for _computing_structure_solution und _atom_sites_solution_primary.
 - Either use gemmi or platon for the moiety formula and _space_group_IT_number 
 - if cell measurement_temp aleady in, propose the same for ambient_temp and vice versa
 - handle _computing_structure_solution
 - maybe add properties templates as tabwidget behind equipment templates (saves space).
-- Add file search for data files like .abs file.
+- Improve file search for data files like .abs file. Determine if there is a common naming sheme like "Esser_JW314_0m"
+- Determine the res file name from cif file. That can give a hint for the naming sheme or space group chaos naming.
 - put all incomplete information in the CifItemsTable. 
 - Own data in CifItemsTable overrides From Data Source. 
   (maybe with a signal to grey out the data source onEdit of Own Data)
 - make "save cif" work.
+- only let real cif keywords into the EquipmentEditTableWidget and cifKeywordLE.
 - action: rightclick on a template -> offer "export template (to .cif)"
 - action: rightclick on a template -> offer "import template (from .cif)"
 - selecting a row in the cif items table changes the view in the Data Sources table and offers
@@ -69,7 +73,7 @@ TODO:
     - ...
 - select templates according to Points 
 - save cif file with "name_fin.cif"
-- check hkl and res checksum
+- check hkl and res _shelx_res_checksum checksum
 - Add button for checkcif report.
 - Check if unit cell in cif fits to atoms provided.
 
@@ -433,6 +437,14 @@ class AppWindow(QMainWindow):
                 # this list keeps track of the equipment items:
                 self.settings.save_template('property_list', newlist)
                 self.settings.save_template('property/' + item['name'], item['values'])
+        equipment_list = self.settings.settings.value('equipment_list')
+        for item in predef_equipment_templ:
+            if not item['name'] in equipment_list:
+                equipment_list.append(item['name'])
+                newlist = [x for x in list(set(equipment_list)) if x]
+                # this list keeps track of the equipment items:
+                self.settings.save_template('equipment_list', newlist)
+                self.settings.save_template('equipment/' + item['name'], item['items'])
 
     def load_property(self, table: QTableWidget, stackedwidget: QStackedWidget, listwidget: QListWidget):
         """
@@ -578,9 +590,9 @@ class AppWindow(QMainWindow):
                        '_exptl_absorpt_process_details' : sadabs_data.version,
                        '_exptl_crystal_colour'          : p4p.crystal_color,
                        '_exptl_crystal_description'     : p4p.morphology,
-                       '_exptl_crystal_size_max'        : p4p.crystal_size[0] or '',
-                       '_exptl_crystal_size_mid'        : p4p.crystal_size[1] or '',
-                       '_exptl_crystal_size_min'        : p4p.crystal_size[2] or '',
+                       '_exptl_crystal_size_min': p4p.crystal_size[0] or '',
+                       '_exptl_crystal_size_mid': p4p.crystal_size[1] or '',
+                       '_exptl_crystal_size_max'        : p4p.crystal_size[2] or '',
                        }
 
             # Build a dictionary of cif keys and row number values in order to fill the first column
