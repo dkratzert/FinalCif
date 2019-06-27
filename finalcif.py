@@ -33,6 +33,7 @@ from gui.finalcif_gui import Ui_FinalCifWindow
 TODO:
 
 - Use a cif file parser that can write files
+- handle _computing_structure_solution
 - maybe add properties templates as tabwidget behind equipment templates (saves space).
 - Add file search for data files like .abs file.
 - put all incomplete information in the CifItemsTable. 
@@ -123,7 +124,7 @@ class AppWindow(QMainWindow):
         self.miss_data = MissingCifData()
         self.manufacturer = 'bruker'
         # only for testing:
-        self.get_cif_file_block(r'test-data/4060308.cif')
+        self.get_cif_file_block(r'test-data/twin4.cif')
 
     def __del__(self):
         print('saving position')
@@ -559,10 +560,12 @@ class AppWindow(QMainWindow):
                        '_exptl_absorpt_process_details' : sadabs_data.version
                        }
 
-            # Build a dictionary of cif keys and row number values:
+            # Build a dictionary of cif keys and row number values in order to fill the first column
+            # of CifItemsTable with cif values:
             for item in range(self.ui.CifItemsTable.model().rowCount()):
                 head = self.ui.CifItemsTable.model().headerData(item, Qt.Vertical)
                 self.vheaderitems[head] = item
+            # They are needed for the comboboxes:
             property_fields = self.settings.load_property_keys()
             # get missing items from sources and put them into the corresponding rows:
             for miss_data in self.missing_data:
