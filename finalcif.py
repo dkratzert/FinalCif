@@ -6,7 +6,7 @@ from PyQt5.QtCore import Qt
 
 from cif.file_reader import CifContainer
 from datafiles.datatools import MissingCifData, get_frame, get_sadabs, get_saint
-from tools.misc import special_fields, predef_prop_templ
+from tools.misc import predef_prop_templ, special_fields
 from tools.settings import FinalCifSettings
 
 DEBUG = True
@@ -33,6 +33,13 @@ from gui.finalcif_gui import Ui_FinalCifWindow
 TODO:
 
 - Use a cif file parser that can write files
+- make sure that cif items with whitespace have correct delimiter like 'foo bar' and
+  ;
+  foo long text bar
+  ;
+  during file save operation.
+- make .lxt file parser for _computing_structure_solution und _atom_sites_solution_primary.
+- Either use gemmi or platon for the moiety formula and _space_group_IT_number 
 - if cell measurement_temp aleady in, propose the same for ambient_temp and vice versa
 - handle _computing_structure_solution
 - maybe add properties templates as tabwidget behind equipment templates (saves space).
@@ -533,6 +540,7 @@ class AppWindow(QMainWindow):
         """
         if self.manufacturer == 'bruker':
             saint_data = get_saint()
+            saint_first_ls = get_saint('*_01._ls')
             sadabs_data = get_sadabs()
             frame_header = get_frame()
             # TODO: determine the correct dataset number:
@@ -550,6 +558,7 @@ class AppWindow(QMainWindow):
             sources = {'_cell_measurement_reflns_used'  : saint_data.cell_reflections,
                        '_cell_measurement_theta_min'    : saint_data.cell_res_min_theta,
                        '_cell_measurement_theta_max'    : saint_data.cell_res_max_theta,
+                       '_computing_data_collection'     : saint_first_ls.aquire_software,
                        '_computing_cell_refinement'     : saint_data.version,
                        '_computing_data_reduction'      : saint_data.version,
                        '_exptl_absorpt_correction_type' : abstype,
