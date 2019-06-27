@@ -55,8 +55,8 @@ class CifContainer():
         high_prio_no_valuas, high_prio_with_values = self.get_keys(high_prio_keys)
         medium_prio_q, medium_prio_with_values = self.get_keys(medium_prio_keys)
         # low_prio_q, low_prio_with_values = self.get_keys(low_prio_keys)
-        return high_prio_no_valuas + medium_prio_q + [['Other keys:', '----------------------'], ['', '']] \
-               + high_prio_with_values + medium_prio_with_values
+        medium_prio_q += [['These are already in:', '---------------------'], ['', '']]
+        return high_prio_no_valuas + medium_prio_q + high_prio_with_values + medium_prio_with_values
 
     def get_keys(self, inputkeys):
         """

@@ -69,62 +69,6 @@ class Manufacturer():
         return self.get_manufacturer()
 
 
-"""
-_chemical_name_systematic         ?
-_chemical_name_common             ?
-_chemical_melting_point           ?
-_chemical_formula_moiety          ?
-_cell_measurement_reflns_used     ?
-_cell_measurement_theta_min       ?
-_cell_measurement_theta_max       ?
-_cell_measurement_temperature     100(2)
-_cell_formula_units_Z             2
-_exptl_crystal_description        ?
-        A description of the quality and habit of the crystal.
-   The crystal dimensions should not normally be reported here;
-   use instead _exptl_crystal_size_ for the gross dimensions of
-   the crystal and _exptl_crystal_face_ to describe the
-   relationship between individual faces.
-_exptl_crystal_colour             ?
-_exptl_crystal_density_meas       ?
-_exptl_crystal_density_method     ?
-_exptl_transmission_factor_min    ?
-_exptl_transmission_factor_max    ?
-_exptl_absorpt_correction_type    ?
-_exptl_absorpt_correction_T_min   ?
-_exptl_absorpt_correction_T_max   ?
-_exptl_absorpt_process_details    ? 
-      Description of the absorption process applied to the
-   intensities. A literature reference should be supplied
-   for psi-scan techniques.
-        'MolEN (Fair, 1990)'	
-        '(North, Phillips & Mathews, 1968)'
-_exptl_absorpt_special_details    ?
-       Das ist kein Offizieller Key?
-_exptl_crystal_size_max           0.180
-_exptl_crystal_size_mid           0.150
-_exptl_crystal_size_min           0.060
-_exptl_absorpt_coefficient_mu     0.077
-_diffrn_ambient_temperature       100(2)
-_diffrn_source                    ?
-_diffrn_measurement_device_type   ?
-_diffrn_measurement_method        ?
-_diffrn_radiation_type            MoK\a
-_diffrn_reflns_av_R_equivalents   ?
-_computing_data_collection        ?
-_computing_cell_refinement        ?
-_computing_data_reduction         ?
-_computing_structure_solution     ?
-_computing_molecular_graphics     ?
-_computing_publication_material   ?
-_refine_special_details           ?
-_atom_sites_solution_primary      ?
-_atom_sites_solution_secondary    ?
-_refine_ls_hydrogen_treatment     constr
-
-_atom_sites_solution_primary      direct 
-_atom_sites_solution_secondary    difmap 
-"""
 high_prio_keys = [
     '_audit_creation_method',
     '_chemical_formula_moiety',
@@ -134,13 +78,11 @@ high_prio_keys = [
     '_space_group_IT_number',
     '_space_group_name_H-M_alt',
     # '_space_group_centring_type',  # seems to be used nowere
-
     '_cell_formula_units_Z',
     '_cell_measurement_temperature',
     '_cell_measurement_reflns_used',
     '_cell_measurement_theta_min',
     '_cell_measurement_theta_max',
-
     '_exptl_crystal_description',
     '_exptl_crystal_colour',
     '_exptl_crystal_density_diffrn',
@@ -205,21 +147,21 @@ high_prio_keys = [
     '_refine_ls_shift/su_max',
     '_refine_ls_shift/su_mean',
     '',
-    '',
 ]
 
-medium_prio_keys = ['_chemical_name_systematic',
-                    '_chemical_name_common',
-                    '_chemical_melting_point',
-                    '_space_group_name_Hall',
-                    '_exptl_crystal_density_meas',
-                    '_exptl_crystal_density_method',
-                    '_computing_molecular_graphics',
-                    '_computing_publication_material',
-                    '',
-                    '',
-                    '',
-                    ]
+medium_prio_keys = [
+    'Less important:',
+    '',
+    '_chemical_name_systematic',
+    '_chemical_name_common',
+    '_chemical_melting_point',
+    '_space_group_name_Hall',
+    '_exptl_crystal_density_meas',
+    '_exptl_crystal_density_method',
+    '_computing_molecular_graphics',
+    '_computing_publication_material',
+    '',
+]
 low_prio_keys = ['']
 
 ABSORPTION_CORRECTION_TYPES = (
