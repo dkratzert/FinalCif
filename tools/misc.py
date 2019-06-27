@@ -129,8 +129,11 @@ high_prio_keys = [
     '_computing_structure_refinement',  # 'SHELXL-2016/6 (Sheldrick, 2016)'
     '_refine_ls_hydrogen_treatment',
     '_refine_special_details',
+    '_refine_ls_structure_factor_coef',
+    '_refine_ls_matrix_type',
+    '_refine_ls_weighting_scheme',
     '_atom_sites_solution_primary',
-    # '_atom_sites_solution_secondary',
+    '_refine_ls_weighting_details',
     '_atom_sites_solution_hydrogens',
     '_refine_ls_hydrogen_treatment',
     '_refine_ls_extinction_method',
@@ -163,6 +166,8 @@ medium_prio_keys = [
     '',
 ]
 low_prio_keys = ['']
+
+text_field_keys = ('_refine_special_details', '_refine_ls_weighting_details')
 
 ABSORPTION_CORRECTION_TYPES = (
     (0, ''),  # , ''),
@@ -222,14 +227,19 @@ REFINE_LS_HYDROGEN_TREATMENT = (
     (13, 'heteroxyz-mixed'),
     (14, 'heteroU-mixed'),
     (15, 'heteronoref-mixed'),
+)
 
+RADIATION_TYPE = (
+    (0, r'Mo K\a'),
+    (1, r'Cu K\a'),
+    (3, r'Ag K\a')
 )
 
 special_fields = {'_exptl_crystal_colour'           : COLOUR_CHOICES,
                   '_chemical_absolute_configuration': ABSOLUTE_CONFIGURATION_CHOICES,
                   '_exptl_absorpt_correction_type'  : ABSORPTION_CORRECTION_TYPES,
                   '_refine_ls_hydrogen_treatment'   : REFINE_LS_HYDROGEN_TREATMENT,
-
+                  '_diffrn_radiation_type'          : RADIATION_TYPE,
                   }
 
 
