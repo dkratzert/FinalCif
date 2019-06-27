@@ -32,6 +32,8 @@ from gui.finalcif_gui import Ui_FinalCifWindow
 """
 TODO:
 
+- search for "REM SHELXT solution in" in cif file to determine if shelxt was used for solution. In this case 
+  parse the .lxt file.
 - find DSR string in res file and put descriptive text in cif.
 - determine centrosymmetric or not and remove _chemical_absolute_configuration accordingly.
 - Checkcif: http://journals.iucr.org/services/cif/checking/validlist.html
