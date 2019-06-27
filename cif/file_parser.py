@@ -76,6 +76,7 @@ class Cif(object):
             "_refine_special_details"             : '',
             "_refine_ls_abs_structure_Flack"      : '',
             "_refine_ls_structure_factor_coef"    : '',
+            "'_refine_ls_hydrogen_treatment'"     : '',
             "_refine_ls_weighting_details"        : '',
             "_refine_ls_number_reflns"            : '',
             "_refine_ls_number_parameters"        : '',
@@ -274,9 +275,11 @@ class Cif(object):
             self.cif_data['_space_group_IT_number'] = self.cif_data['_symmetry_Int_Tables_number']
         if '_diffrn_reflns_av_sigmaI/netI' in self.cif_data:
             self.cif_data['_diffrn_reflns_av_unetI/netI'] = self.cif_data['_diffrn_reflns_av_sigmaI/netI']
-        if self.cif_data["_space_group_name_H-M_alt"]:
+        if "_space_group_name_H-M_alt" in self.cif_data:
             self.cif_data["_space_group_centring_type"] = self.cif_data["_space_group_name_H-M_alt"].split()[0][:1]
-        elif self.cif_data['_space_group_name_Hall']:
+        if '_symmetry_cell_setting' in self.cif_data:
+            self.cif_data['_space_group_crystal_system'] = self.cif_data['_symmetry_cell_setting']
+        elif '_space_group_name_Hall' in self.cif_data:
             self.cif_data["_space_group_centring_type"] = self.cif_data["_space_group_name_Hall"].split()[0][:1]
 
     def __iter__(self) -> dict:

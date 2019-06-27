@@ -52,15 +52,15 @@ class CifContainer():
         >>> c.key_value_pairs()
 
         """
-        high_prio_q, high_prio_with_values = self.get_keys(high_prio_keys)
+        high_prio_no_valuas, high_prio_with_values = self.get_keys(high_prio_keys)
         medium_prio_q, medium_prio_with_values = self.get_keys(medium_prio_keys)
         # low_prio_q, low_prio_with_values = self.get_keys(low_prio_keys)
-        return high_prio_q + medium_prio_q + [['Other keys:', '----------------------'], ['', '']] \
+        return high_prio_no_valuas + medium_prio_q + [['Other keys:', '----------------------'], ['', '']] \
                + high_prio_with_values + medium_prio_with_values
 
     def get_keys(self, inputkeys):
         """
-        REturns the keys to be displayed in the main table.
+        Returns the keys to be displayed in the main table.
         """
         questions = []
         # contains the answered keys:
