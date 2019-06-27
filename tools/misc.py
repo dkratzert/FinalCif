@@ -155,14 +155,14 @@ high_prio_keys = [
 medium_prio_keys = [
     'Less important:',
     '',
+    '_computing_molecular_graphics',
+    '_computing_publication_material',
     '_chemical_name_systematic',
     '_chemical_name_common',
     '_chemical_melting_point',
     '_space_group_name_Hall',
     '_exptl_crystal_density_meas',
     '_exptl_crystal_density_method',
-    '_computing_molecular_graphics',
-    '_computing_publication_material',
     '',
 ]
 low_prio_keys = ['']
