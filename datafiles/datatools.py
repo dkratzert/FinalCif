@@ -13,16 +13,17 @@ class MissingCifData():
         self.data[key] = value
 
 
-def get_saint():
+def get_saint(name_patt='*_0m._ls'):
     """
     returns a saint parser object from the ._ls file.
     """
     p = Path('./')
-    saintfiles = p.rglob('*_0m._ls')
+    saintfiles = p.rglob(name_patt)
     saint = None
     for s in saintfiles:
         saint = SaintListFile(s.as_posix())
         if saint:
+            # TODO: This is a relly stupid approach!
             return saint
     return saint
 
