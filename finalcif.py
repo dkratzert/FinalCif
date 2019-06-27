@@ -33,6 +33,7 @@ from gui.finalcif_gui import Ui_FinalCifWindow
 TODO:
 
 - Use a cif file parser that can write files
+- if cell measurement_temp aleady in, propose the same for ambient_temp and vice versa
 - handle _computing_structure_solution
 - maybe add properties templates as tabwidget behind equipment templates (saves space).
 - Add file search for data files like .abs file.
