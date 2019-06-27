@@ -32,6 +32,8 @@ from gui.finalcif_gui import Ui_FinalCifWindow
 """
 TODO:
 
+- Checkcif: http://journals.iucr.org/services/cif/checking/validlist.html
+- Check if space group symbol is written correctly.
 - Use a cif file parser that can write files
 - make sure that cif items with whitespace have correct delimiter like 'foo bar' and
   ;
