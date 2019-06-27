@@ -5,7 +5,7 @@ from pathlib import Path
 from PyQt5.QtCore import Qt
 
 from cif.file_reader import CifContainer
-from datafiles.datatools import MissingCifData, get_frame, get_sadabs, get_saint
+from datafiles.datatools import MissingCifData, get_frame, get_p4p, get_sadabs, get_saint
 from tools.misc import predef_prop_templ, special_fields
 from tools.settings import FinalCifSettings
 
@@ -32,6 +32,7 @@ from gui.finalcif_gui import Ui_FinalCifWindow
 """
 TODO:
 
+- determine centrosymmetric or not and remove _chemical_absolute_configuration accordingly.
 - Checkcif: http://journals.iucr.org/services/cif/checking/validlist.html
 - Check if space group symbol is written correctly.
 - Use a cif file parser that can write files
@@ -542,6 +543,7 @@ class AppWindow(QMainWindow):
         """
         if self.manufacturer == 'bruker':
             saint_data = get_saint()
+            p4p = get_p4p()
             saint_first_ls = get_saint('*_01._ls')
             sadabs_data = get_sadabs()
             frame_header = get_frame()
@@ -556,6 +558,10 @@ class AppWindow(QMainWindow):
                 abstype = '?'
                 t_min = '?'
                 t_max = '?'
+            # the lower temp is more likely:
+            temp1 = frame_header.temperature
+            temp2 = p4p.temperature
+            temperature = round(min([temp1, temp2]), 1)
             # TODO: make a Sources class that returns either the parser object itself or the respective value from the key:
             sources = {'_cell_measurement_reflns_used'  : saint_data.cell_reflections,
                        '_cell_measurement_theta_min'    : saint_data.cell_res_min_theta,
@@ -567,9 +573,14 @@ class AppWindow(QMainWindow):
                        '_exptl_absorpt_correction_T_min': str(t_min),
                        '_exptl_absorpt_correction_T_max': str(t_max),
                        '_diffrn_reflns_av_R_equivalents': sadabs_data.Rint,
-                       '_cell_measurement_temperature'  : frame_header.temperature,
-                       '_diffrn_ambient_temperature'    : frame_header.temperature,
-                       '_exptl_absorpt_process_details' : sadabs_data.version
+                       '_cell_measurement_temperature'  : temperature,
+                       '_diffrn_ambient_temperature'    : temperature,
+                       '_exptl_absorpt_process_details' : sadabs_data.version,
+                       '_exptl_crystal_colour'          : p4p.crystal_color,
+                       '_exptl_crystal_description'     : p4p.morphology,
+                       '_exptl_crystal_size_max'        : p4p.crystal_size[0] or '',
+                       '_exptl_crystal_size_mid'        : p4p.crystal_size[1] or '',
+                       '_exptl_crystal_size_min'        : p4p.crystal_size[2] or '',
                        }
 
             # Build a dictionary of cif keys and row number values in order to fill the first column

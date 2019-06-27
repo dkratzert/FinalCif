@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from datafiles.bruker_frame import BrukerFrameHeader
+from datafiles.p4p_reader import P4PFile
 from datafiles.sadabs import Sadabs
 from datafiles.saint import SaintListFile
 
@@ -48,3 +49,14 @@ def get_frame():
         if header:
             return header
     return header
+
+
+def get_p4p():
+    p = Path('./')
+    p4p_files = p.rglob('*.p4p')
+    p4p = None
+    for p in p4p_files:
+        p4p = P4PFile(p.as_posix())
+        if p4p:
+            return p4p
+    return p4p
