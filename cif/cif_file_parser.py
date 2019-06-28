@@ -98,9 +98,10 @@ class Cif(object):
             "file_size"                           : options['file_size']
         }
         self.ok = False
+        self._ciftext = None
         if self.filename:
-            self.ok = self.parsefile(
-                self.filename.read_text(encoding='utf-8', errors='ignore').splitlines(keepends=True))
+            self._ciftext = self.filename.read_text(encoding='utf-8', errors='ignore').splitlines(keepends=True)
+            self.ok = self.parsefile(self._ciftext)
             self.cif_data['modification_time'] = time.localtime(filename.stat().st_mtime)
             self.cif_data['file_size'] = filename.stat().st_size
 
