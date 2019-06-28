@@ -2,7 +2,7 @@ from pathlib import Path
 
 import gemmi
 
-from cif import file_parser
+from cif import cif_file_parser
 from tools.misc import high_prio_keys, medium_prio_keys
 
 
@@ -28,7 +28,7 @@ class CifContainer():
         if self.cif_data:
             raise RuntimeError
         try:
-            self.cif_data = file_parser.Cif(self.filename)
+            self.cif_data = cif_file_parser.Cif(self.filename)
         except AttributeError:
             print('Filename has to be a Path instance.')
         except IsADirectoryError:

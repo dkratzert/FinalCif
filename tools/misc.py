@@ -235,11 +235,41 @@ RADIATION_TYPE = (
     (3, r'Ag K\a')
 )
 
+SOLUTION_PRIMARY = (
+    (0, 'direct'),
+    (1, 'vecmap'),
+    (2, 'heavy'),
+    (3, 'difmap'),
+    (4, 'geom'),
+    (5, 'disper'),
+    (6, 'isomor'),
+    (7, 'notdet'),
+    (8, 'dual'),
+    (9, 'iterative'),
+    (10, 'other'),
+)
+
+SOLUTION_SECONDARY = (
+    (0, 'difmap'),
+    (1, 'vecmap'),
+    (2, 'heavy'),
+    (3, 'direct'),
+    (4, 'geom'),
+    (5, 'disper'),
+    (6, 'isomor'),
+    (7, 'notdet'),
+    (8, 'dual'),
+    (9, 'iterative'),
+    (10, 'other'),
+)
+
 special_fields = {'_exptl_crystal_colour'           : COLOUR_CHOICES,
                   '_chemical_absolute_configuration': ABSOLUTE_CONFIGURATION_CHOICES,
                   '_exptl_absorpt_correction_type'  : ABSORPTION_CORRECTION_TYPES,
                   '_refine_ls_hydrogen_treatment'   : REFINE_LS_HYDROGEN_TREATMENT,
                   '_diffrn_radiation_type'          : RADIATION_TYPE,
+                  '_atom_sites_solution_primary'    : SOLUTION_PRIMARY,
+                  '_atom_sites_solution_secondary'    : SOLUTION_PRIMARY,
                   }
 
 
