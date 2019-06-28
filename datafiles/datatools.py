@@ -1,9 +1,11 @@
 from pathlib import Path
 
+from cif.cif_file_parser import Cif
 from datafiles.bruker_frame import BrukerFrameHeader
 from datafiles.p4p_reader import P4PFile
 from datafiles.sadabs import Sadabs
 from datafiles.saint import SaintListFile
+from datafiles.shelxt import SHELXTlistfile
 
 
 class MissingCifData():
@@ -12,6 +14,23 @@ class MissingCifData():
 
     def __setitem__(self, key, value):
         self.data[key] = value
+
+
+def get_solution_program():
+    """
+    Tries to figure out which program was used for structure solution.
+    """
+    p = Path('./')
+    shelxt = None
+    #for line in cif._ciftext:
+    #    if line.startswith('REM SHELXT solution in'):
+    xt_files = p.glob('*.lxt')
+    for x in xt_files:
+        shelxt = SHELXTlistfile(x.as_posix())
+        if shelxt:
+            return shelxt
+    return shelxt
+
 
 
 def get_saint(name_patt='*_0m._ls'):

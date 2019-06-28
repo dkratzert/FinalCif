@@ -5,8 +5,8 @@ from pathlib import Path
 from PyQt5.QtCore import Qt
 
 from cif.file_reader import CifContainer
-from datafiles.datatools import MissingCifData, get_frame, get_p4p, get_sadabs, get_saint
-from tools.misc import predef_prop_templ, special_fields, predef_equipment_templ
+from datafiles.datatools import MissingCifData, get_frame, get_p4p, get_sadabs, get_saint, get_solution_program
+from tools.misc import predef_equipment_templ, predef_prop_templ, special_fields
 from tools.settings import FinalCifSettings
 
 DEBUG = True
@@ -32,8 +32,6 @@ from gui.finalcif_gui import Ui_FinalCifWindow
 """
 TODO:
 
-- search for "REM SHELXT solution in" in cif file to determine if shelxt was used for solution. In this case 
-  parse the .lxt file.
 - find DSR string in res file and put descriptive text in cif.
 - determine centrosymmetric or not and remove _chemical_absolute_configuration accordingly.
 - Checkcif: http://journals.iucr.org/services/cif/checking/validlist.html
@@ -45,7 +43,6 @@ TODO:
   ;
   during file save operation.
 - allow to add own cif keywords in the table. (maybe not?) 
-- make .lxt file parser for _computing_structure_solution und _atom_sites_solution_primary.
 - Either use gemmi or platon for the moiety formula and _space_group_IT_number 
 - if cell measurement_temp aleady in, propose the same for ambient_temp and vice versa
 - handle _computing_structure_solution
@@ -561,6 +558,11 @@ class AppWindow(QMainWindow):
             saint_first_ls = get_saint('*_01._ls')
             sadabs_data = get_sadabs()
             frame_header = get_frame()
+            solution_program = get_solution_program()
+            solution_version = solution_program.version or ''
+            solution_primary = ''
+            if solution_program and 'XT' in solution_program.version:
+                solution_primary = 'direct'
             # TODO: determine the correct dataset number:
             dataset_num = -1
             try:
@@ -592,9 +594,11 @@ class AppWindow(QMainWindow):
                        '_exptl_absorpt_process_details' : sadabs_data.version,
                        '_exptl_crystal_colour'          : p4p.crystal_color,
                        '_exptl_crystal_description'     : p4p.morphology,
-                       '_exptl_crystal_size_min': p4p.crystal_size[0] or '',
-                       '_exptl_crystal_size_mid': p4p.crystal_size[1] or '',
+                       '_exptl_crystal_size_min'        : p4p.crystal_size[0] or '',
+                       '_exptl_crystal_size_mid'        : p4p.crystal_size[1] or '',
                        '_exptl_crystal_size_max'        : p4p.crystal_size[2] or '',
+                       '_computing_structure_solution'  : solution_version,
+                       '_atom_sites_solution_primary': solution_primary
                        }
 
             # Build a dictionary of cif keys and row number values in order to fill the first column
