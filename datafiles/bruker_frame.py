@@ -42,6 +42,15 @@ class BrukerFrameHeader():
         except ValueError:
             return 293.15
 
+    @property
+    def kilovolts(self):
+        tmp = self.header['SOURCEK']
+        return round(float(tmp), 2)
+
+    @property
+    def milliwatt(self):
+        tmp = self.header['SOURCEM']
+        return round(float(tmp), 2)
 
 if __name__ == '__main__':
     sfrm = BrukerFrameHeader('test-data/apex_frame.sfrm')
