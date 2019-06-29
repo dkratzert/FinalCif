@@ -115,3 +115,4 @@ dmypy.json
 # Pyre type checker
 .pyre/
 .idea/workspace.xml
+/test-data/twin4-final.cif

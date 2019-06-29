@@ -1,11 +1,17 @@
 import json
+import textwrap
 from pathlib import Path
 
 import gemmi
-
 from cif import cif_file_parser
 from tools.misc import high_prio_keys, medium_prio_keys
 
+
+def quote(string, wrapping=80):
+    """
+    Quotes a cif string and warppes it.
+    """
+    return gemmi.cif.quote(textwrap.fill(string, width=wrapping))
 
 class CifContainer():
     """
@@ -26,14 +32,14 @@ class CifContainer():
         """
         Reads a CIF file into gemmi and returns a sole block.
         """
-        print(self.filename)
+        print('File opened:', self.filename)
         try:
             self.doc = gemmi.cif.read_file(str(self.filename))
         except RuntimeError as e:
             return str(e)
         self.block = self.doc.sole_block()
         print('Opened block:', self.block.name)
-        self.cif_data = json.loads(self.doc.as_json())[self.block.name]
+        self.cif_data = json.loads(self.doc.as_json())[self.block.name.lower()]
 
     def open_cif_with_fileparser(self):
         """
@@ -48,7 +54,7 @@ class CifContainer():
             print('Filename can not be a directory.')
 
     def __getitem__(self, item):
-        return self.cif_data[item] if self.cif_data[item] else ''
+        return self.cif_data[item.lower()] if self.cif_data[item.lower()] else ''
 
     def atoms(self):
         return self.cif_data.atoms
@@ -80,8 +86,8 @@ class CifContainer():
         with_values = []
         for k in inputkeys:
             try:
-                value = self.cif_data[k]
-                if value == None or value == '?' or value == '':
+                value = self.cif_data[k.lower()]
+                if value is None or value == '?' or value == '':
                     questions.append([k, value])
                 else:
                     with_values.append([k, value])

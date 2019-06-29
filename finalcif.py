@@ -4,7 +4,7 @@ from pathlib import Path
 
 from PyQt5.QtCore import Qt
 
-from cif.file_reader import CifContainer
+from cif.file_reader import CifContainer, quote
 from datafiles.datatools import MissingCifData, get_frame, get_p4p, get_sadabs, get_saint, get_solution_program
 from tools.misc import predef_equipment_templ, predef_prop_templ, special_fields
 from tools.settings import FinalCifSettings
@@ -32,6 +32,7 @@ from gui.finalcif_gui import Ui_FinalCifWindow
 """
 TODO:
 
+- make cif keys all lower-case?
 - The click on a cif keyword in the table opens the IuCr help about this key in a popup.
 - find DSR string in res file and put descriptive text in cif.
 - determine centrosymmetric or not and remove _chemical_absolute_configuration accordingly.
@@ -139,7 +140,8 @@ class AppWindow(QMainWindow):
         self.miss_data = MissingCifData()
         self.manufacturer = 'bruker'
         # only for testing:
-        self.get_cif_file_block(r'test-data/twin4.cif')
+        # self.get_cif_file_block(r'test-data/twin4.cif')
+        self.get_cif_file_block(r'/Volumes/nifty/test_workordner/Esser_JW344/Esser_JW344_0m_a.cif')
 
     def __del__(self):
         print('saving position')
@@ -193,16 +195,14 @@ class AppWindow(QMainWindow):
         self.ui.EquipmentTemplatesListWidget.currentRowChanged.connect(self.load_selected_equipment)
         # something like cifItemsTable.selected_field.connect(self.display_data_file)
 
-
     def save_current_cif_file(self):
         table = self.ui.CifItemsTable
-        self.cif_doc.save(self.cif_doc.filename)
         rowcount = table.model().rowCount()
         columncount = table.model().columnCount()
         for row in range(rowcount):
-            col0 = None
-            col1 = None # from datafiles
-            col2 = None # own text
+            col0 = None  # cif content
+            col1 = None  # from datafiles
+            col2 = None  # own text
             for col in range(columncount):
                 item = table.item(row, col)
                 if col == 0 and item.text() != (None or ''):
@@ -214,19 +214,22 @@ class AppWindow(QMainWindow):
                         col2 = item.text()
                 except AttributeError:
                     pass
+                try:
+                    txt = table.cellWidget(row, col).currentText()
+                except AttributeError:
+                    txt = None
+                if col == 2 and txt:
+                    col2 = txt
                 if col == 2:
                     vhead = self.ui.CifItemsTable.model().headerData(row, Qt.Vertical)
                     # This is my row information
-                    print('col2:', vhead, col0, col1, col2, '#')
-
-
-
-
-        """for index in self.ui.CifItemsTable:
-            index = self.ui.CifItemsTable.currentIndex()
-            head = self.ui.CifItemsTable.model().data(index)
-            print(head)"""
-
+                    # print('col2:', vhead, col0, col1, col2, '#')
+                    if col1 and not col2:
+                        self.cif_doc.block.set_pair(vhead, quote(col1))
+                    if col2:
+                        self.cif_doc.block.set_pair(vhead, quote(col2))
+        self.cif_doc.save(self.cif_doc.filename)
+        print('File saved ...')
 
     def show_equipment_and_properties(self):
         """
@@ -573,7 +576,7 @@ class AppWindow(QMainWindow):
         self.ui.SelectCif_LineEdit.setText(fname)
         filepath = Path(fname)
         self.cif_doc = CifContainer(filepath)
-        #self.cif_doc.open_cif_with_fileparser()
+        # self.cif_doc.open_cif_with_fileparser()
         self.cif_doc.open_cif_with_gemmi()
         try:
             # Change the current working Directory
@@ -609,6 +612,7 @@ class AppWindow(QMainWindow):
                 t_max = max(sadabs_data.dataset(dataset_num).transmission)
             except (KeyError, AttributeError):
                 # no abs file found
+                print('no abs file found')
                 abstype = '?'
                 t_min = '?'
                 t_max = '?'
@@ -636,9 +640,8 @@ class AppWindow(QMainWindow):
                        '_exptl_crystal_size_mid'        : p4p.crystal_size[1] or '',
                        '_exptl_crystal_size_max'        : p4p.crystal_size[2] or '',
                        '_computing_structure_solution'  : solution_version,
-                       '_atom_sites_solution_primary': solution_primary
+                       '_atom_sites_solution_primary'   : solution_primary
                        }
-
             # Build a dictionary of cif keys and row number values in order to fill the first column
             # of CifItemsTable with cif values:
             for item in range(self.ui.CifItemsTable.model().rowCount()):
@@ -647,16 +650,20 @@ class AppWindow(QMainWindow):
             # They are needed for the comboboxes:
             property_fields = self.settings.load_property_keys()
             # get missing items from sources and put them into the corresponding rows:
+            self.missing_data.append('_cell_measurement_temperature')
+            self.missing_data.append('_diffrn_ambient_temperature')
             for miss_data in self.missing_data:
                 # add missing item to data sources column:
                 row_num = self.vheaderitems[miss_data]
                 tab_item = QTableWidgetItem()
-                try:
-                    tab_item.setText(str(sources[miss_data]))  # has to be string
-                except KeyError:
-                    pass
                 #                               # row  column  item
                 self.ui.CifItemsTable.setItem(row_num, 1, tab_item)
+                try:
+                    tab_item.setText(str(sources[miss_data]))  # has to be string
+                    # print(sources[miss_data], miss_data)
+                except KeyError as e:
+                    # print(e, '##')
+                    pass
                 # items from data sources should not be editable
                 tab_item.setFlags(tab_item.flags() ^ Qt.ItemIsEditable)
                 # creating comboboxes for special keywords like _exptl_crystal_colour.
@@ -691,7 +698,7 @@ class AppWindow(QMainWindow):
             if not value or value == '?':
                 self.missing_data.append(key)
             self.addRow(key, value)
-            #print(key, value)
+            # print(key, value)
         self.get_data_sources()
 
     def edit_row(self, vert_key: str = None, new_value=None, column: int = 1):
