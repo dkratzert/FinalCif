@@ -554,6 +554,7 @@
     </item>
    </layout>
   </widget>
+  <widget class="QStatusBar" name="statusBar"/>
   <action name="actionSave_Report">
    <property name="text">
     <string>Save Report</string>
