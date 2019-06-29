@@ -93,7 +93,7 @@ class FinalCifSettings():
         plist = self.settings.value('property_list')
         templ = None
         for (p, k) in zip(plist, keylist):
-            if k == key:
+            if k.lower() == key.lower():
                 templ = self.load_template('property/' + p)
         return [(n, x) for n, x in enumerate(templ[1])]
 

@@ -71,11 +71,11 @@ class CifContainer():
         >>> c.key_value_pairs()
 
         """
-        high_prio_no_valuas, high_prio_with_values = self.get_keys(high_prio_keys)
+        high_prio_no_values, high_prio_with_values = self.get_keys(high_prio_keys)
         medium_prio_q, medium_prio_with_values = self.get_keys(medium_prio_keys)
         # low_prio_q, low_prio_with_values = self.get_keys(low_prio_keys)
         medium_prio_q += [['These are already in:', '---------------------'], ['', '']]
-        return high_prio_no_valuas + medium_prio_q + high_prio_with_values + medium_prio_with_values
+        return high_prio_no_values + medium_prio_q + high_prio_with_values + medium_prio_with_values
 
     def get_keys(self, inputkeys):
         """
@@ -87,10 +87,11 @@ class CifContainer():
         for k in inputkeys:
             try:
                 value = self.cif_data[k.lower()]
-                if value is None or value == '?' or value == '':
+                if not value:
                     questions.append([k, value])
                 else:
                     with_values.append([k, value])
-            except:
+            except Exception as e:
+                #print(e)
                 pass
         return questions, with_values
