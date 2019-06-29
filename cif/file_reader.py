@@ -3,6 +3,7 @@ import textwrap
 from pathlib import Path
 
 import gemmi
+
 from cif import cif_file_parser
 from tools.misc import high_prio_keys, medium_prio_keys
 
@@ -12,6 +13,7 @@ def quote(string, wrapping=80):
     Quotes a cif string and warppes it.
     """
     return gemmi.cif.quote(textwrap.fill(string, width=wrapping))
+
 
 class CifContainer():
     """
@@ -25,7 +27,6 @@ class CifContainer():
         self.doc = None
 
     def save(self, filename):
-        filename = Path(filename.parts[-1][:-4] + '-final.cif').name
         self.doc.write_file(filename, gemmi.cif.Style.Indent35)
 
     def open_cif_with_gemmi(self):
@@ -75,7 +76,8 @@ class CifContainer():
         medium_prio_q, medium_prio_with_values = self.get_keys(medium_prio_keys)
         # low_prio_q, low_prio_with_values = self.get_keys(low_prio_keys)
         medium_prio_q += [['These are already in:', '---------------------'], ['', '']]
-        return high_prio_no_values + medium_prio_q + high_prio_with_values + medium_prio_with_values
+        foo = high_prio_no_values + medium_prio_q + high_prio_with_values + medium_prio_with_values
+        return foo
 
     def get_keys(self, inputkeys):
         """
@@ -87,11 +89,10 @@ class CifContainer():
         for k in inputkeys:
             try:
                 value = self.cif_data[k.lower()]
-                if not value:
-                    questions.append([k, value])
-                else:
-                    with_values.append([k, value])
-            except Exception as e:
-                #print(e)
-                pass
+            except KeyError:
+                value = ''
+            if not value:
+                questions.append([k, value])
+            else:
+                with_values.append([k, value])
         return questions, with_values

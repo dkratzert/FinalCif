@@ -5,7 +5,7 @@ from pathlib import Path
 from PyQt5.QtCore import Qt
 
 from cif.file_reader import CifContainer, quote
-from datafiles.datatools import MissingCifData, get_frame, get_p4p, get_sadabs, get_saint, get_solution_program
+from datafiles.datatools import BrukerData, MissingCifData
 from tools.misc import predef_equipment_templ, predef_prop_templ, special_fields
 from tools.settings import FinalCifSettings
 
@@ -33,6 +33,7 @@ from gui.finalcif_gui import Ui_FinalCifWindow
 TODO:
 
 - make cif keys all lower-case?
+- test garbage cif files an make groper warnings how to solve the problems.
 - The click on a cif keyword in the table opens the IuCr help about this key in a popup.
 - find DSR string in res file and put descriptive text in cif.
 - determine centrosymmetric or not and remove _chemical_absolute_configuration accordingly.
@@ -133,15 +134,15 @@ class AppWindow(QMainWindow):
         self.ui.PropertiesTemplatesStackedWidget.setCurrentIndex(0)
         self.ui.EquipmentEditTableWidget.verticalHeader().hide()
         self.ui.PropertiesEditTableWidget.verticalHeader().hide()
-        self.cif_doc = None
+        self.cif = None
         self.missing_data = []
         # self.equipment_settings = []
         self.connect_signals_and_slots()
-        self.miss_data = MissingCifData()
+        #self.miss_data = MissingCifData()  # this is nowhere used!
         self.manufacturer = 'bruker'
         # only for testing:
-        # self.get_cif_file_block(r'test-data/twin4.cif')
-        self.get_cif_file_block(r'/Volumes/nifty/test_workordner/Esser_JW344/Esser_JW344_0m_a.cif')
+        self.get_cif_file_block(r'test-data/twin4.cif')
+        #self.get_cif_file_block(r'/Volumes/nifty/test_workordner/Esser_JW344/Esser_JW344_0m_a.cif')
 
     def __del__(self):
         print('saving position')
@@ -226,14 +227,16 @@ class AppWindow(QMainWindow):
                     # This is my row information
                     # print('col2:', vhead, col0, col1, col2, '#')
                     if col1 and not col2:
-                        self.cif_doc.block.set_pair(vhead, quote(col1))
+                        self.cif.block.set_pair(vhead, quote(col1))
                     if col2:
-                        self.cif_doc.block.set_pair(vhead, quote(col2))
-        filename = self.cif_file_save_dialog(self.cif_doc.filename)
-        if not filename:
-            return 'Not saved!'
-        # self.cif_doc.save(self.cif_doc.filename)
-        self.cif_doc.save(Path(filename))
+                        self.cif.block.set_pair(vhead, quote(col2))
+        #filename = self.cif_file_save_dialog(self.cif.filename)
+        #if not filename:
+        #    return 'Not saved!'
+        # self.cif.save(Path(filename))
+        fin_filename = Path(self.cif.filename.parts[-1][:-4] + '-final.cif').name
+        self.cif.save(fin_filename)
+        self.ui.statusBar.showMessage('  File Saved:  {}'.format(fin_filename), 5000)
         print('File saved ...')
 
     def show_equipment_and_properties(self):
@@ -582,12 +585,12 @@ class AppWindow(QMainWindow):
         """
         Returns a cif file name from a file dialog.
         """
-        #dialog = QFileDialog()
-        #dialog.selectFile(str(filename))
-        #dialog.selectFile(str(filename.parts[-1]))
+        # dialog = QFileDialog()
+        # dialog.selectFile(str(filename))
+        # dialog.selectFile(str(filename.parts[-1]))
         filename, _ = QFileDialog.getSaveFileName(filter='CIF file (*.cif, *.CIF), All Files (*.*)',
-                                             initialFilter='*.cif',
-                                             caption='Save .cif File')
+                                                  initialFilter='*.cif',
+                                                  caption='Save .cif File')
         return filename
 
     def get_cif_file_block(self, fname):
@@ -600,9 +603,9 @@ class AppWindow(QMainWindow):
             return
         self.ui.SelectCif_LineEdit.setText(fname)
         filepath = Path(fname)
-        self.cif_doc = CifContainer(filepath)
+        self.cif = CifContainer(filepath)
         # self.cif_doc.open_cif_with_fileparser()
-        self.cif_doc.open_cif_with_gemmi()
+        self.cif.open_cif_with_gemmi()
         try:
             # Change the current working Directory
             os.chdir(filepath.absolute().parent)
@@ -613,61 +616,9 @@ class AppWindow(QMainWindow):
     def get_data_sources(self):
         """
         Tries to determine the sources of missing data in the cif file, e.g. Tmin/Tmax from SADABS.
-
-        TODO: should I do it that a click on a field in question runs the get_source data for this specific field?
-              It should at least show the specific data source in DataFilesGroupBox().
-              Maybe better if this method itself determines the data sources.
         """
         if self.manufacturer == 'bruker':
-            saint_data = get_saint()
-            p4p = get_p4p()
-            saint_first_ls = get_saint('*_01._ls')
-            sadabs_data = get_sadabs()
-            frame_header = get_frame()
-            solution_program = get_solution_program()
-            solution_version = solution_program.version or ''
-            solution_primary = ''
-            if solution_program and 'XT' in solution_program.version:
-                solution_primary = 'direct'
-            # TODO: determine the correct dataset number:
-            dataset_num = -1
-            try:
-                abstype = 'multi-scan' if not sadabs_data.dataset(-1).numerical else 'numerical'
-                t_min = min(sadabs_data.dataset(dataset_num).transmission)
-                t_max = max(sadabs_data.dataset(dataset_num).transmission)
-            except (KeyError, AttributeError):
-                # no abs file found
-                print('no abs file found')
-                abstype = '?'
-                t_min = '?'
-                t_max = '?'
-            # the lower temp is more likely:
-            temp1 = frame_header.temperature
-            temp2 = p4p.temperature
-            temperature = round(min([temp1, temp2]), 1)
-            # TODO: make a Sources class that returns either the parser object itself or the respective value from the key:
-            sources = {'_cell_measurement_reflns_used'  : saint_data.cell_reflections,
-                       '_cell_measurement_theta_min'    : saint_data.cell_res_min_theta,
-                       '_cell_measurement_theta_max'    : saint_data.cell_res_max_theta,
-                       '_computing_data_collection'     : saint_first_ls.aquire_software,
-                       '_computing_cell_refinement'     : saint_data.version,
-                       '_computing_data_reduction'      : saint_data.version,
-                       '_exptl_absorpt_correction_type' : abstype,
-                       '_exptl_absorpt_correction_T_min': str(t_min),
-                       '_exptl_absorpt_correction_T_max': str(t_max),
-                       '_diffrn_reflns_av_R_equivalents': sadabs_data.Rint,
-                       '_cell_measurement_temperature'  : temperature,
-                       '_diffrn_ambient_temperature'    : temperature,
-                       '_exptl_absorpt_process_details' : sadabs_data.version,
-                       '_exptl_crystal_colour'          : p4p.crystal_color,
-                       '_exptl_crystal_description'     : p4p.morphology,
-                       '_exptl_crystal_size_min'        : p4p.crystal_size[0] or '',
-                       '_exptl_crystal_size_mid'        : p4p.crystal_size[1] or '',
-                       '_exptl_crystal_size_max'        : p4p.crystal_size[2] or '',
-                       '_computing_structure_solution'  : solution_version,
-                       '_atom_sites_solution_primary'   : solution_primary
-                       }
-            sources = dict((k.lower(), v) for k, v in sources.items())
+            sources = BrukerData(self.cif).sources
             # Build a dictionary of cif keys and row number values in order to fill the first column
             # of CifItemsTable with cif values:
             for item in range(self.ui.CifItemsTable.model().rowCount()):
@@ -699,9 +650,6 @@ class AppWindow(QMainWindow):
                 elif miss_data.lower() in [x.lower() for x in special_fields]:
                     self.add_property_combobox(special_fields[miss_data], row_num)
 
-    def print_combo(self, foo):
-        print('combobox has now:', foo)
-
     def add_property_combobox(self, miss_data: str, row_num: int):
         """
         Adds a QComboBox to the CifItemsTable with the content of special_fields or property templates.
@@ -724,7 +672,7 @@ class AppWindow(QMainWindow):
         Adds the cif content to the main table.
         """
         self.ui.CifItemsTable.setRowCount(0)
-        for key, value in self.cif_doc.key_value_pairs():
+        for key, value in self.cif.key_value_pairs():
             if not value or value == '?':
                 self.missing_data.append(key)
             self.addRow(key, value)

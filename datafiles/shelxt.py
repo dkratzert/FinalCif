@@ -9,9 +9,10 @@ class SHELXTlistfile(ParserMixin):
         self._fileobj = Path(filename)
         self.filename = self._fileobj.absolute()
         self.version = None
-        self._text = self._fileobj.read_text(encoding='ascii', errors='ignore').splitlines(keepends=False)
-        self.solutions = {}
-        self.parse_file()
+        if not self._fileobj.is_dir():
+            self._text = self._fileobj.read_text(encoding='ascii', errors='ignore').splitlines(keepends=False)
+            self.solutions = {}
+            self.parse_file()
 
     def parse_file(self):
         """
