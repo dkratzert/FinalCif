@@ -236,17 +236,18 @@ RADIATION_TYPE = (
 )
 
 SOLUTION_PRIMARY = (
-    (0, 'direct'),
-    (1, 'vecmap'),
-    (2, 'heavy'),
-    (3, 'difmap'),
-    (4, 'geom'),
-    (5, 'disper'),
-    (6, 'isomor'),
-    (7, 'notdet'),
-    (8, 'dual'),
-    (9, 'iterative'),
-    (10, 'other'),
+    (0, ''),
+    (1, 'direct'),
+    (2, 'vecmap'),
+    (3, 'heavy'),
+    (4, 'difmap'),
+    (5, 'geom'),
+    (6, 'disper'),
+    (7, 'isomor'),
+    (8, 'notdet'),
+    (9, 'dual'),
+    (10, 'iterative'),
+    (11, 'other'),
 )
 
 SOLUTION_SECONDARY = (
@@ -269,7 +270,7 @@ special_fields = {'_exptl_crystal_colour'           : COLOUR_CHOICES,
                   '_refine_ls_hydrogen_treatment'   : REFINE_LS_HYDROGEN_TREATMENT,
                   '_diffrn_radiation_type'          : RADIATION_TYPE,
                   '_atom_sites_solution_primary'    : SOLUTION_PRIMARY,
-                  '_atom_sites_solution_secondary'    : SOLUTION_PRIMARY,
+                  '_atom_sites_solution_secondary'  : SOLUTION_PRIMARY,
                   }
 
 
