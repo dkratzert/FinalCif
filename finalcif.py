@@ -197,6 +197,7 @@ class AppWindow(QMainWindow):
 
     def save_current_cif_file(self):
         table = self.ui.CifItemsTable
+        table.setCurrentItem(None)  # makes sure also the currently edited item is saved
         rowcount = table.model().rowCount()
         columncount = table.model().columnCount()
         for row in range(rowcount):
@@ -228,7 +229,11 @@ class AppWindow(QMainWindow):
                         self.cif_doc.block.set_pair(vhead, quote(col1))
                     if col2:
                         self.cif_doc.block.set_pair(vhead, quote(col2))
-        self.cif_doc.save(self.cif_doc.filename)
+        filename = self.cif_file_save_dialog(self.cif_doc.filename)
+        if not filename:
+            return 'Not saved!'
+        # self.cif_doc.save(self.cif_doc.filename)
+        self.cif_doc.save(Path(filename))
         print('File saved ...')
 
     def show_equipment_and_properties(self):
@@ -562,9 +567,22 @@ class AppWindow(QMainWindow):
         """
         Returns a cif file name from a file dialog.
         """
-        filename, _ = QFileDialog.getOpenFileName(filter='CIF file (*.cif, *.CIF);; All Files (*.*)',
+        filename, _ = QFileDialog.getOpenFileName(filter='CIF file (*.cif, *.CIF), All Files (*.*)',
                                                   initialFilter='*.cif',
                                                   caption='Open a .cif File')
+        return filename
+
+    @staticmethod
+    def cif_file_save_dialog(filename: Path = Path('.')) -> str:
+        """
+        Returns a cif file name from a file dialog.
+        """
+        dialog = QFileDialog()
+        dialog.selectFile(str(filename))
+        #dialog.selectFile(str(filename.parts[-1]))
+        filename, _ = dialog.getSaveFileName(filter='CIF file (*.cif, *.CIF), All Files (*.*)',
+                                             initialFilter='*.cif',
+                                             caption='Save .cif File')
         return filename
 
     def get_cif_file_block(self, fname):
@@ -573,6 +591,8 @@ class AppWindow(QMainWindow):
         """
         if not fname:
             fname = self.cif_file_open_dialog()
+        if not fname:
+            return 
         self.ui.SelectCif_LineEdit.setText(fname)
         filepath = Path(fname)
         self.cif_doc = CifContainer(filepath)
@@ -642,6 +662,7 @@ class AppWindow(QMainWindow):
                        '_computing_structure_solution'  : solution_version,
                        '_atom_sites_solution_primary'   : solution_primary
                        }
+            sources = dict((k.lower(), v) for k, v in sources.items())
             # Build a dictionary of cif keys and row number values in order to fill the first column
             # of CifItemsTable with cif values:
             for item in range(self.ui.CifItemsTable.model().rowCount()):
@@ -659,7 +680,7 @@ class AppWindow(QMainWindow):
                 #                               # row  column  item
                 self.ui.CifItemsTable.setItem(row_num, 1, tab_item)
                 try:
-                    tab_item.setText(str(sources[miss_data]))  # has to be string
+                    tab_item.setText(str(sources[miss_data.lower()]))  # has to be string
                     # print(sources[miss_data], miss_data)
                 except KeyError as e:
                     # print(e, '##')
@@ -668,9 +689,9 @@ class AppWindow(QMainWindow):
                 tab_item.setFlags(tab_item.flags() ^ Qt.ItemIsEditable)
                 # creating comboboxes for special keywords like _exptl_crystal_colour.
                 # In case a property for this key exists, it will show this list:
-                if miss_data in property_fields:
+                if miss_data.lower() in [x.lower() for x in property_fields]:
                     self.add_property_combobox(self.settings.load_property_by_key(miss_data), row_num)
-                elif miss_data in special_fields:
+                elif miss_data.lower() in [x.lower() for x in special_fields]:
                     self.add_property_combobox(special_fields[miss_data], row_num)
 
     def print_combo(self, foo):

@@ -296,6 +296,7 @@ class Ui_FinalCifWindow(object):
         item.setText(_translate("FinalCifWindow", "From Data Source"))
         item = self.CifItemsTable.horizontalHeaderItem(2)
         item.setText(_translate("FinalCifWindow", "Own Data"))
+        self.SaveCifButton.setToolTip(_translate("FinalCifWindow", "Saves the cif file to name-final.cif"))
         self.SaveCifButton.setText(_translate("FinalCifWindow", "Save Cif File"))
         self.EquipmentGroupBox.setTitle(_translate("FinalCifWindow", "Equipment Templates"))
         self.EditEquipmentTemplateButton.setText(_translate("FinalCifWindow", "Edit Template"))

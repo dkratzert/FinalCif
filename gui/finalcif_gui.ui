@@ -217,6 +217,9 @@
        </item>
        <item row="2" column="0">
         <widget class="QPushButton" name="SaveCifButton">
+         <property name="toolTip">
+          <string>Saves the cif file to name-final.cif</string>
+         </property>
          <property name="text">
           <string>Save Cif File</string>
          </property>
