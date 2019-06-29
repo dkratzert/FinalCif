@@ -78,11 +78,6 @@ high_prio_keys = [
     '_space_group_IT_number',
     '_space_group_name_H-M_alt',
     # '_space_group_centring_type',  # seems to be used nowere
-    '_cell_formula_units_Z',
-    '_cell_measurement_temperature',
-    '_cell_measurement_reflns_used',
-    '_cell_measurement_theta_min',
-    '_cell_measurement_theta_max',
     '_exptl_crystal_description',
     '_exptl_crystal_colour',
     '_exptl_crystal_density_diffrn',
@@ -96,6 +91,11 @@ high_prio_keys = [
     '_exptl_absorpt_correction_T_max',
     '_exptl_absorpt_process_details',  # Program and reference e.g. 'MolEN (Fair, 1990)'
     # '_exptl_absorpt_special_details',   # This is not official?!?
+    '_cell_formula_units_Z',
+    '_cell_measurement_temperature',
+    '_cell_measurement_reflns_used',
+    '_cell_measurement_theta_min',
+    '_cell_measurement_theta_max',
     '_diffrn_ambient_temperature',
     '_diffrn_radiation_wavelength',
     '_diffrn_radiation_type',
