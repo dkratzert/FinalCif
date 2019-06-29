@@ -577,10 +577,10 @@ class AppWindow(QMainWindow):
         """
         Returns a cif file name from a file dialog.
         """
-        dialog = QFileDialog()
-        dialog.selectFile(str(filename))
+        #dialog = QFileDialog()
+        #dialog.selectFile(str(filename))
         #dialog.selectFile(str(filename.parts[-1]))
-        filename, _ = dialog.getSaveFileName(filter='CIF file (*.cif, *.CIF), All Files (*.*)',
+        filename, _ = QFileDialog.getSaveFileName(filter='CIF file (*.cif, *.CIF), All Files (*.*)',
                                              initialFilter='*.cif',
                                              caption='Save .cif File')
         return filename
@@ -592,7 +592,7 @@ class AppWindow(QMainWindow):
         if not fname:
             fname = self.cif_file_open_dialog()
         if not fname:
-            return 
+            return
         self.ui.SelectCif_LineEdit.setText(fname)
         filepath = Path(fname)
         self.cif_doc = CifContainer(filepath)
