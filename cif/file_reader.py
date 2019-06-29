@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 import gemmi
@@ -14,13 +15,25 @@ class CifContainer():
     def __init__(self, filename: Path):
         self.filename = filename.absolute()
         self.cif_data = None
+        self.block = None
+        self.doc = None
+
+    def save(self, filename):
+        filename = Path(filename.parts[-1][:-4] + '-final.cif').name
+        self.doc.write_file(filename, gemmi.cif.Style.Indent35)
 
     def open_cif_with_gemmi(self):
         """
         Reads a CIF file into gemmi and returns a sole block.
         """
-        doc = gemmi.cif.read_file(self.filename)
-        return doc
+        print(self.filename)
+        try:
+            self.doc = gemmi.cif.read_file(str(self.filename))
+        except RuntimeError as e:
+            return str(e)
+        self.block = self.doc.sole_block()
+        print('Opened block:', self.block.name)
+        self.cif_data = json.loads(self.doc.as_json())[self.block.name]
 
     def open_cif_with_fileparser(self):
         """
@@ -68,7 +81,7 @@ class CifContainer():
         for k in inputkeys:
             try:
                 value = self.cif_data[k]
-                if not value or value == '?':
+                if value == None or value == '?' or value == '':
                     questions.append([k, value])
                 else:
                     with_values.append([k, value])

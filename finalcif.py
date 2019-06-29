@@ -32,6 +32,7 @@ from gui.finalcif_gui import Ui_FinalCifWindow
 """
 TODO:
 
+- The click on a cif keyword in the table opens the IuCr help about this key in a popup.
 - find DSR string in res file and put descriptive text in cif.
 - determine centrosymmetric or not and remove _chemical_absolute_configuration accordingly.
 - Checkcif: http://journals.iucr.org/services/cif/checking/validlist.html
@@ -164,6 +165,7 @@ class AppWindow(QMainWindow):
         this method connects all signals to slots. Only a few mighjt be defined elsewere.
         """
         self.ui.SelectCif_PushButton.clicked.connect(self.get_cif_file_block)
+        self.ui.SaveCifButton.clicked.connect(self.save_current_cif_file)
         ##
         self.ui.EditEquipmentTemplateButton.clicked.connect(self.edit_equipment_template)
         self.ui.SaveEquipmentButton.clicked.connect(self.save_equipment_template)
@@ -190,6 +192,41 @@ class AppWindow(QMainWindow):
         ##
         self.ui.EquipmentTemplatesListWidget.currentRowChanged.connect(self.load_selected_equipment)
         # something like cifItemsTable.selected_field.connect(self.display_data_file)
+
+
+    def save_current_cif_file(self):
+        table = self.ui.CifItemsTable
+        self.cif_doc.save(self.cif_doc.filename)
+        rowcount = table.model().rowCount()
+        columncount = table.model().columnCount()
+        for row in range(rowcount):
+            col0 = None
+            col1 = None # from datafiles
+            col2 = None # own text
+            for col in range(columncount):
+                item = table.item(row, col)
+                if col == 0 and item.text() != (None or ''):
+                    col0 = item.text()
+                if col == 1 and item.text() != (None or ''):
+                    col1 = item.text()
+                try:
+                    if col == 2 and item.text() != (None or ''):
+                        col2 = item.text()
+                except AttributeError:
+                    pass
+                if col == 2:
+                    vhead = self.ui.CifItemsTable.model().headerData(row, Qt.Vertical)
+                    # This is my row information
+                    print('col2:', vhead, col0, col1, col2, '#')
+
+
+
+
+        """for index in self.ui.CifItemsTable:
+            index = self.ui.CifItemsTable.currentIndex()
+            head = self.ui.CifItemsTable.model().data(index)
+            print(head)"""
+
 
     def show_equipment_and_properties(self):
         """
@@ -536,7 +573,8 @@ class AppWindow(QMainWindow):
         self.ui.SelectCif_LineEdit.setText(fname)
         filepath = Path(fname)
         self.cif_doc = CifContainer(filepath)
-        self.cif_doc.open_cif_with_fileparser()
+        #self.cif_doc.open_cif_with_fileparser()
+        self.cif_doc.open_cif_with_gemmi()
         try:
             # Change the current working Directory
             os.chdir(filepath.absolute().parent)
@@ -653,6 +691,7 @@ class AppWindow(QMainWindow):
             if not value or value == '?':
                 self.missing_data.append(key)
             self.addRow(key, value)
+            #print(key, value)
         self.get_data_sources()
 
     def edit_row(self, vert_key: str = None, new_value=None, column: int = 1):
@@ -672,7 +711,8 @@ class AppWindow(QMainWindow):
         self.ui.CifItemsTable.insertRow(row_num)
         # Add cif key and value to the row:
         item_key = QTableWidgetItem(key)
-        tabitem = QTableWidgetItem(value)
+        strval = str(value or '?')
+        tabitem = QTableWidgetItem(strval)
         tabempty = QTableWidgetItem()
         tabempty.setFlags(tabitem.flags() ^ Qt.ItemIsEditable)
         self.ui.CifItemsTable.setVerticalHeaderItem(row_num, item_key)
