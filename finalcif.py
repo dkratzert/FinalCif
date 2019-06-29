@@ -514,7 +514,11 @@ class AppWindow(QMainWindow):
         if not table_data:
             table_data = ['']
         for value in table_data:
-            self.add_propeties_row(table, value)
+            try:
+                self.add_propeties_row(table, value)
+            except TypeError:
+                print('Bad value in property table')
+                continue
             n += 1
         property_list.append(selected_row_text)
         newlist = [x for x in list(set(property_list)) if x]
@@ -544,7 +548,8 @@ class AppWindow(QMainWindow):
                 value = ''
             if value:
                 table_data.append(value)
-        # table_data.extend([''])
+        # make sure to have always a blank item first:
+        table_data.insert(0, '')
         if keyword:
             # save as dictionary for properties to have "_cif_key : itemlist"
             # for a table item as dropdown menu in the main table.
@@ -707,7 +712,11 @@ class AppWindow(QMainWindow):
         self.ui.CifItemsTable.setCellWidget(row_num, 2, combobox)
         combobox.setEditable(False)  # only editable as new template
         for num, value in miss_data:
-            combobox.addItem(value, num)
+            try:
+                combobox.addItem(value, num)
+            except TypeError:
+                print('Bad value in property:', value)
+                continue
         combobox.setCurrentIndex(0)
 
     def fill_cif_table(self):
