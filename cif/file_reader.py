@@ -34,14 +34,29 @@ class CifContainer():
         """
         Reads a CIF file into gemmi and returns a sole block.
         """
-        print('File opened:', self.filename)
+        # print('File opened:', self.filename)
         try:
             self.doc = gemmi.cif.read_file(str(self.filename))
         except RuntimeError as e:
             return str(e)
         self.block = self.doc.sole_block()
-        print('Opened block:', self.block.name)
+        # print('Opened block:', self.block.name)
         self.cif_data = json.loads(self.doc.as_json())[self.block.name.lower()]
+
+    def get_symmops(self):
+        """
+        >>> cif = CifContainer(Path('test-data/twin4.cif'))
+        >>> cif.open_cif_with_gemmi()
+        >>> cif.get_symmops()
+        ['x, y, z', '-x, -y, -z']
+        """
+        xyz1 = self.block.find(("_symmetry_equiv_pos_as_xyz",))  # deprecated
+        xyz2 = self.block.find(("_space_group_symop_operation_xyz",))  # New definition
+        if xyz1:
+            self.cif_data['_space_group_symop_operation_xyz'] = [i.str(0) for i in xyz1]
+        else:
+            self.cif_data['_space_group_symop_operation_xyz'] = [i.str(0) for i in xyz2]
+        return self.cif_data['_space_group_symop_operation_xyz']
 
     def open_cif_with_fileparser(self):
         """
