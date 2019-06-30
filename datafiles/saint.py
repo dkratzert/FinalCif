@@ -2,16 +2,20 @@ from pathlib import Path
 
 
 class SaintListFile():
-    def __init__(self, filename: str):
-        self._fileobj = Path(filename)
-        self.filename = self._fileobj.absolute()
+    def __init__(self, name_patt: str):
         self.cell_reflections = 0
         self.cell_res_min_2t = 0.0
         self.cell_res_max_2t = 0.0
         self.aquire_software = ''
         self.version = ''
-        self.parse_file()
 
+        p = Path('./')
+        saintfiles = p.glob(name_patt)
+        for saintfile in saintfiles:
+            if saintfile:
+                self._fileobj = Path(saintfile)
+                self.filename = self._fileobj.absolute()
+                self.parse_file()
 
     def parse_file(self):
         text = self._fileobj.read_text(encoding='ascii', errors='ignore').splitlines(keepends=False)
