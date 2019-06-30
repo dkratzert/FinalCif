@@ -6,9 +6,10 @@ from PyQt5.QtCore import Qt
 
 from cif.file_reader import CifContainer, quote
 from datafiles.datatools import BrukerData
-from tools.misc import predef_equipment_templ, predef_prop_templ, special_fields
+from tools.misc import predef_equipment_templ, predef_prop_templ, special_fields, text_field_keys
 from tools.settings import FinalCifSettings
 
+# noinspection PyUnreachableCode
 if __debug__:
     DEBUG = True
 else:
@@ -18,8 +19,9 @@ else:
 if DEBUG:
     from PyQt5 import uic
 
-from PyQt5.QtWidgets import QMainWindow, QApplication, QHeaderView, QLineEdit, QLabel, QPushButton, QFileDialog, \
-    QTableWidgetItem, QTableWidget, QStackedWidget, QListWidget, QListWidgetItem, QComboBox
+from PyQt5.QtWidgets import QMainWindow, QApplication, QHeaderView, QFileDialog, \
+    QTableWidgetItem, QTableWidget, QStackedWidget, QListWidget, QListWidgetItem, QComboBox, QMessageBox, QTextEdit, \
+    QPlainTextEdit
 
 if getattr(sys, 'frozen', False):
     # If the application is run as a bundle, the pyInstaller bootloader
@@ -37,7 +39,7 @@ from gui.finalcif_gui import Ui_FinalCifWindow
 """
 TODO:
 
-- make cif keys all lower-case?
+- add response forms
 - test garbage cif files an make groper warnings how to solve the problems.
 - The click on a cif keyword in the table opens the IuCr help about this key in a popup.
 - find DSR string in res file and put descriptive text in cif.
@@ -147,6 +149,7 @@ class AppWindow(QMainWindow):
         self.manufacturer = 'bruker'
         # only for testing:
         # self.get_cif_file_block(r'test-data/twin4.cif')
+        # self.ui.DataFilesGroupBox.hide()
         self.get_cif_file_block(r'/Volumes/nifty/test_workordner/Esser_JW344/Esser_JW344_0m_a.cif')
         self.ui.EquipmentTemplatesListWidget.setCurrentRow(self.settings.load_last_equipment())
 
@@ -155,7 +158,7 @@ class AppWindow(QMainWindow):
         self.settings.save_window_position(self.pos(), self.size())
         self.settings.save_favorite_template(self.ui)
 
-    def add_new_datafile(self, n: int, label_text: str, placeholder: str = ''):
+    '''def add_new_datafile(self, n: int, label_text: str, placeholder: str = '') -> (QLineEdit, QPushButton):
         """
         TODO: use this for all data files
         Adds a new file input as data source for the currently selected cif key/value pair
@@ -169,10 +172,7 @@ class AppWindow(QMainWindow):
         self.ui.DataSourcesGridLayout.addWidget(data_file_label, n, 0, 1, 1)
         self.ui.DataSourcesGridLayout.addWidget(data_file_edit, n, 1, 1, 1)
         self.ui.DataSourcesGridLayout.addWidget(data_file_button, n, 2, 1, 1)
-        data_file_button.clicked.connect(self.foo)
-
-    def foo(self, x):
-        print(x, '##')
+        return data_file_edit, data_file_button'''
 
     def connect_signals_and_slots(self):
         """
@@ -217,16 +217,31 @@ class AppWindow(QMainWindow):
             col1 = None  # from datafiles
             col2 = None  # own text
             for col in range(columncount):
-                item = table.item(row, col)
-                if col == 0 and item.text() != (None or ''):
-                    col0 = item.text()
-                if col == 1 and item.text() != (None or ''):
-                    col1 = item.text()
                 try:
-                    if col == 2 and item.text() != (None or ''):
-                        col2 = item.text()
+                    item = table.item(row, col).text()
                 except AttributeError:
-                    pass
+                    item = None
+                if not item:
+                    try:
+                        item = table.item(row, col).data(0)
+                    except AttributeError:
+                        item = None
+                if not item:
+                    try:
+                        # This is for QPlaintextWidget items in the table:
+                        item = table.cellWidget(row, col).toPlainText()
+                    except AttributeError:
+                        item = None
+                if item:
+                    if col == 0 and item != (None or ''):
+                        col0 = item
+                    if col == 1 and item != (None or ''):
+                        col1 = item
+                    try:
+                        if col == 2 and item != (None or ''):
+                            col2 = item
+                    except AttributeError:
+                        pass
                 try:
                     txt = table.cellWidget(row, col).currentText()
                 except AttributeError:
@@ -240,6 +255,7 @@ class AppWindow(QMainWindow):
                     if col1 and not col2:
                         self.cif.block.set_pair(vhead, quote(col1))
                     if col2:
+                        print(col2)
                         self.cif.block.set_pair(vhead, quote(col2))
         fin_file = Path(self.cif.filename.parts[-1][:-4] + '-final.cif')
         if DEBUG:
@@ -619,7 +635,13 @@ class AppWindow(QMainWindow):
         filepath = Path(fname)
         self.cif = CifContainer(filepath)
         # self.cif_doc.open_cif_with_fileparser()
-        self.cif.open_cif_with_gemmi()
+        not_ok = self.cif.open_cif_with_gemmi()
+        if not_ok:
+            info = QMessageBox()
+            info.setIcon(QMessageBox.Information)
+            info.setText('This cif file is not readable!\n'
+                         'Plese check line {} in\n{}'.format(str(not_ok).split(':')[1], filepath.name))
+            info.show()
         try:
             # Change the current working Directory
             os.chdir(filepath.absolute().parent)
@@ -650,6 +672,7 @@ class AppWindow(QMainWindow):
                 #                               # row  column  item
                 self.ui.CifItemsTable.setItem(row_num, 1, tab_item)
                 try:
+                    #                   sources are lower case!
                     tab_item.setText(str(sources[miss_data.lower()]))  # has to be string
                     # print(sources[miss_data], miss_data)
                 except KeyError as e:
@@ -694,6 +717,9 @@ class AppWindow(QMainWindow):
         self.get_data_sources()
 
     def edit_row(self, vert_key: str = None, new_value=None, column: int = 1):
+        """
+        This is nowhere used!
+        """
         if not vert_key:
             return None
         vheaderitems = {}
@@ -705,20 +731,38 @@ class AppWindow(QMainWindow):
         # tab_item.setFlags(tab_item.flags() ^ Qt.ItemIsEditable)
 
     def addRow(self, key, value):
-        # Create a empty row at bottom of table
+        """
+        # Create a empty row at bottom of CifItemsTable
+        """
         row_num = self.ui.CifItemsTable.rowCount()
         self.ui.CifItemsTable.insertRow(row_num)
         # Add cif key and value to the row:
         item_key = QTableWidgetItem(key)
-        strval = str(value or '?')
-        tabitem = QTableWidgetItem(strval)
-        tabempty = QTableWidgetItem()
-        tabempty.setFlags(tabitem.flags() ^ Qt.ItemIsEditable)
+        if value is None:
+            strval = '?'
+        else:
+            strval = str(value)  # or '?')
+        if key in text_field_keys:
+            tabitem = QPlainTextEdit(self)
+            tabitem.setPlainText(strval)
+            tabempty = QPlainTextEdit(self)
+            tabempty2 = QPlainTextEdit(self)
+            self.ui.CifItemsTable.setCellWidget(row_num, 0, tabitem)
+            self.ui.CifItemsTable.setCellWidget(row_num, 1, tabempty)
+            self.ui.CifItemsTable.setCellWidget(row_num, 2, tabempty2)
+            tabitem.setReadOnly(True)
+            tabempty.setReadOnly(True)
+            #tabempty.setMinimumHeight(60)
+            #tabitem.setMinimumHeight(60)
+        else:
+            tabitem = QTableWidgetItem(strval)
+            tabempty = QTableWidgetItem()
+            self.ui.CifItemsTable.setItem(row_num, 1, tabempty)
+            self.ui.CifItemsTable.setItem(row_num, 0, tabitem)
+            tabitem.setFlags(tabitem.flags() ^ Qt.ItemIsEditable)
+            tabempty.setFlags(tabempty.flags() ^ Qt.ItemIsEditable)
         self.ui.CifItemsTable.setVerticalHeaderItem(row_num, item_key)
-        self.ui.CifItemsTable.setItem(row_num, 0, tabitem)
-        self.ui.CifItemsTable.setItem(row_num, 1, tabempty)
-        # has to be assigned first and then set to uneditable:
-        tabitem.setFlags(tabitem.flags() ^ Qt.ItemIsEditable)
+        self.ui.CifItemsTable.resizeRowToContents(row_num)
 
 
 if __name__ == '__main__':
