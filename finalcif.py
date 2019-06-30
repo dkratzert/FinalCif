@@ -699,7 +699,7 @@ class AppWindow(QMainWindow):
         # combobox.currentIndexChanged.connect(self.print_combo)
         # print('special:', row_num, miss_data)
         self.ui.CifItemsTable.setCellWidget(row_num, 2, combobox)
-        combobox.setEditable(False)  # only editable as new template
+        combobox.setEditable(True)  # only editable as new template
         for num, value in miss_data:
             try:
                 combobox.addItem(value, num)
