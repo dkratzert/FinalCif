@@ -73,7 +73,7 @@
         </spacer>
        </item>
        <item row="2" column="1">
-        <widget class="QPushButton" name="SaveResidualsTableButton">
+        <widget class="QPushButton" name="CheckcifButton">
          <property name="text">
           <string>CheckCif</string>
          </property>
@@ -528,7 +528,7 @@
   <tabstop>PropertiesTemplatesListWidget</tabstop>
   <tabstop>EditPropertiyTemplateButton</tabstop>
   <tabstop>EditEquipmentTemplateButton</tabstop>
-  <tabstop>SaveResidualsTableButton</tabstop>
+  <tabstop>CheckcifButton</tabstop>
   <tabstop>SaveFullReportButton</tabstop>
   <tabstop>NewEquipmentTemplateButton</tabstop>
   <tabstop>EquipmentTemplatesListWidget</tabstop>
