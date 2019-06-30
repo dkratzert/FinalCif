@@ -150,6 +150,9 @@ class AppWindow(QMainWindow):
         # only for testing:
         # self.get_cif_file_block(r'test-data/twin4.cif')
         # self.ui.DataFilesGroupBox.hide()
+        self.ui.MercuryPushButton.setDisabled(True)
+        self.ui.SaveFullReportButton.setDisabled(True)
+        self.ui.CheckcifButton.setDisabled(True)
         self.get_cif_file_block(r'/Volumes/nifty/test_workordner/Esser_JW344/Esser_JW344_0m_a.cif')
         self.ui.EquipmentTemplatesListWidget.setCurrentRow(self.settings.load_last_equipment())
 
@@ -637,6 +640,8 @@ class AppWindow(QMainWindow):
             return
         self.ui.SelectCif_LineEdit.setText(fname)
         filepath = Path(fname)
+        if not filepath.exists():
+            return
         self.cif = CifContainer(filepath)
         # self.cif_doc.open_cif_with_fileparser()
         not_ok = self.cif.open_cif_with_gemmi()
@@ -714,8 +719,6 @@ class AppWindow(QMainWindow):
         """
         self.ui.CifItemsTable.setRowCount(0)
         for key, value in self.cif.key_value_pairs():
-            if key == '_computing_publication_material':
-                value = 'FinalCif by Daniel Kratzert, Freiburg 2019'
             if not value or value == '?':
                 self.missing_data.append(key)
             self.add_row(key, value)
@@ -754,15 +757,15 @@ class AppWindow(QMainWindow):
             tabitem = QPlainTextEdit(self)
             tabitem.setPlainText(strval)
             tabitem.setFrameShape(0)  # no frame
-            tabempty = QPlainTextEdit(self)
-            tabempty.setFrameShape(0)
-            tabempty2 = QPlainTextEdit(self)
-            tabempty2.setFrameShape(0)
+            tab1 = QPlainTextEdit(self)
+            tab1.setFrameShape(0)
+            tab2 = QPlainTextEdit(self)
+            tab2.setFrameShape(0)
             self.ui.CifItemsTable.setCellWidget(row_num, 0, tabitem)
-            self.ui.CifItemsTable.setCellWidget(row_num, 1, tabempty)
-            self.ui.CifItemsTable.setCellWidget(row_num, 2, tabempty2)
+            self.ui.CifItemsTable.setCellWidget(row_num, 1, tab1)
+            self.ui.CifItemsTable.setCellWidget(row_num, 2, tab2)
             tabitem.setReadOnly(True)
-            tabempty.setReadOnly(True)
+            tab1.setReadOnly(True)
         else:
             tabitem = QTableWidgetItem(strval)
             if key == "These are already in:":
@@ -778,11 +781,15 @@ class AppWindow(QMainWindow):
                 self.ui.CifItemsTable.setItem(row_num, 1, item2)
                 self.ui.CifItemsTable.setItem(row_num, 2, item3)
             else:
-                tabempty = QTableWidgetItem()
-                self.ui.CifItemsTable.setItem(row_num, 1, tabempty)
+                tab1 = QTableWidgetItem()
+                tab2 = QTableWidgetItem()
+                self.ui.CifItemsTable.setItem(row_num, 1, tab1)
                 self.ui.CifItemsTable.setItem(row_num, 0, tabitem)
+                if key == '_computing_publication_material':
+                    tab2.setText('FinalCif by Daniel Kratzert, Freiburg 2019')
+                    self.ui.CifItemsTable.setItem(row_num, 2, tab2)
                 tabitem.setFlags(tabitem.flags() ^ Qt.ItemIsEditable)
-                tabempty.setFlags(tabempty.flags() ^ Qt.ItemIsEditable)
+                tab1.setFlags(tab1.flags() ^ Qt.ItemIsEditable)
         self.ui.CifItemsTable.setVerticalHeaderItem(row_num, item_key)
         self.ui.CifItemsTable.resizeRowToContents(row_num)
 
