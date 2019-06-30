@@ -149,7 +149,6 @@ high_prio_keys = [
     '_refine_ls_restrained_S_all',
     '_refine_ls_shift/su_max',
     '_refine_ls_shift/su_mean',
-    '',
 ]
 
 medium_prio_keys = [

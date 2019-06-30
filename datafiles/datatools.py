@@ -18,7 +18,7 @@ class MissingCifData():
 
 class BrukerData(object):
 
-    def __init__(self, app: 'AppWindow',  cif: CifContainer):
+    def __init__(self, app: 'AppWindow', cif: CifContainer):
         self.cif = cif
         self.app = app
         self.basename = cif.fileobj.stem.split('_0m')[0]
@@ -66,8 +66,8 @@ class BrukerData(object):
                    '_exptl_crystal_size_max'        : self.p4p.crystal_size[2] or '',
                    '_computing_structure_solution'  : solution_version,
                    '_atom_sites_solution_primary'   : solution_primary,
-                   '_diffrn_source_current': self.frame_header.kilovolts or '',
-                   '_diffrn_source_voltage': self.frame_header.milliwatt or '',
+                   '_diffrn_source_current'         : self.frame_header.kilovolts or '',
+                   '_diffrn_source_voltage'         : self.frame_header.milliwatt or '',
                    }
         self.sources = dict((k.lower(), v) for k, v in sources.items())
 
@@ -79,7 +79,7 @@ class BrukerData(object):
         p = Path('./')
         # for line in cif._ciftext:
         #    if line.startswith('REM SHELXT solution in'):
-        xt_files = p.glob(self.basename+'*.lxt')
+        xt_files = p.glob(self.basename + '*.lxt')
         try:
             res = self.cif.block.find_pair('_shelx_res_file')[1]
         except (TypeError, AttributeError):
@@ -106,9 +106,9 @@ class BrukerData(object):
     @property
     def sadabs(self):
         sad = Sadabs(self.basename)
-        #self.sad_fileLE, button = self.app.add_new_datafile(0, 'SADABS', 'add specific .abs file here, if needed...')
-        #self.sad_fileLE.setText(str(sad.filename.absolute()))
-        #button.clicked.connect(self.app.get_cif_file_block)
+        # self.sad_fileLE, button = self.app.add_new_datafile(0, 'SADABS', 'add specific .abs file here, if needed...')
+        # self.sad_fileLE.setText(str(sad.filename.absolute()))
+        # button.clicked.connect(self.app.get_cif_file_block)
         # I have to run self.app.get_cif_file_block but data sources for abs file should be updated
         return sad
 

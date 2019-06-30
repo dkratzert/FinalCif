@@ -1,5 +1,3 @@
-from pathlib import Path
-
 from datafiles.utils import ParserMixin
 
 
