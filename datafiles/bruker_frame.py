@@ -59,6 +59,7 @@ class BrukerFrameHeader():
         tmp = self.header['SOURCEM']
         return round(float(tmp), 2)
 
+
 if __name__ == '__main__':
     sfrm = BrukerFrameHeader('test-data/apex_frame.sfrm')
     print(sfrm)

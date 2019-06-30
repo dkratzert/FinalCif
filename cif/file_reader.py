@@ -111,9 +111,9 @@ class CifContainer():
         # contains the answered keys:
         with_values = []
         for key in inputkeys:
-            #try:
+            # try:
             value = self.block.find_value(key)
-            #except (KeyError, TypeError):
+            # except (KeyError, TypeError):
             #    value = ''
             if not value or value == '?':
                 questions.append([key, value])

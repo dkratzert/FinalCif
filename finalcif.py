@@ -3,6 +3,7 @@ import sys
 from pathlib import Path
 
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QPalette
 
 from cif.file_reader import CifContainer, quote
 from datafiles.datatools import BrukerData
@@ -20,8 +21,7 @@ if DEBUG:
     from PyQt5 import uic
 
 from PyQt5.QtWidgets import QMainWindow, QApplication, QHeaderView, QFileDialog, \
-    QTableWidgetItem, QTableWidget, QStackedWidget, QListWidget, QListWidgetItem, QComboBox, QMessageBox, QTextEdit, \
-    QPlainTextEdit
+    QTableWidgetItem, QTableWidget, QStackedWidget, QListWidget, QListWidgetItem, QComboBox, QMessageBox, QPlainTextEdit
 
 if getattr(sys, 'frozen', False):
     # If the application is run as a bundle, the pyInstaller bootloader
@@ -250,13 +250,17 @@ class AppWindow(QMainWindow):
                     col2 = txt
                 if col == 2:
                     vhead = self.ui.CifItemsTable.model().headerData(row, Qt.Vertical)
+                    if not str(vhead).startswith('_'):
+                        continue
                     # This is my row information
                     # print('col2:', vhead, col0, col1, col2, '#')
                     if col1 and not col2:
                         self.cif.block.set_pair(vhead, quote(col1))
                     if col2:
-                        print(col2)
-                        self.cif.block.set_pair(vhead, quote(col2))
+                        try:
+                            self.cif.block.set_pair(vhead, quote(col2))
+                        except RuntimeError:
+                            pass
         fin_file = Path(self.cif.filename.parts[-1][:-4] + '-final.cif')
         if DEBUG:
             if fin_file.exists():
@@ -706,13 +710,15 @@ class AppWindow(QMainWindow):
 
     def fill_cif_table(self):
         """
-        Adds the cif content to the main table.
+        Adds the cif content to the main table. also add reference to FinalCif.
         """
         self.ui.CifItemsTable.setRowCount(0)
         for key, value in self.cif.key_value_pairs():
+            if key == '_computing_publication_material':
+                value = 'FinalCif by Daniel Kratzert, Freiburg 2019'
             if not value or value == '?':
                 self.missing_data.append(key)
-            self.addRow(key, value)
+            self.add_row(key, value)
             # print(key, value)
         self.get_data_sources()
 
@@ -730,7 +736,7 @@ class AppWindow(QMainWindow):
         self.ui.CifItemsTable.setItem(vheaderitems[vert_key], column, tab_item)
         # tab_item.setFlags(tab_item.flags() ^ Qt.ItemIsEditable)
 
-    def addRow(self, key, value):
+    def add_row(self, key, value):
         """
         # Create a empty row at bottom of CifItemsTable
         """
@@ -742,25 +748,41 @@ class AppWindow(QMainWindow):
             strval = '?'
         else:
             strval = str(value)  # or '?')
+        if not key:
+            strval = ''
         if key in text_field_keys:
             tabitem = QPlainTextEdit(self)
             tabitem.setPlainText(strval)
+            tabitem.setFrameShape(0)  # no frame
             tabempty = QPlainTextEdit(self)
+            tabempty.setFrameShape(0)
             tabempty2 = QPlainTextEdit(self)
+            tabempty2.setFrameShape(0)
             self.ui.CifItemsTable.setCellWidget(row_num, 0, tabitem)
             self.ui.CifItemsTable.setCellWidget(row_num, 1, tabempty)
             self.ui.CifItemsTable.setCellWidget(row_num, 2, tabempty2)
             tabitem.setReadOnly(True)
             tabempty.setReadOnly(True)
-            #tabempty.setMinimumHeight(60)
-            #tabitem.setMinimumHeight(60)
         else:
             tabitem = QTableWidgetItem(strval)
-            tabempty = QTableWidgetItem()
-            self.ui.CifItemsTable.setItem(row_num, 1, tabempty)
-            self.ui.CifItemsTable.setItem(row_num, 0, tabitem)
-            tabitem.setFlags(tabitem.flags() ^ Qt.ItemIsEditable)
-            tabempty.setFlags(tabempty.flags() ^ Qt.ItemIsEditable)
+            if key == "These are already in:":
+                pal = QPalette()
+                pal.setColor(QPalette.Foreground, Qt.black)
+                item1 = QTableWidgetItem('----------------------')
+                item2 = QTableWidgetItem('----------------------')
+                item3 = QTableWidgetItem('----------------------')
+                item1.setBackground(Qt.gray)
+                item2.setBackground(Qt.gray)
+                item3.setBackground(Qt.gray)
+                self.ui.CifItemsTable.setItem(row_num, 0, item1)
+                self.ui.CifItemsTable.setItem(row_num, 1, item2)
+                self.ui.CifItemsTable.setItem(row_num, 2, item3)
+            else:
+                tabempty = QTableWidgetItem()
+                self.ui.CifItemsTable.setItem(row_num, 1, tabempty)
+                self.ui.CifItemsTable.setItem(row_num, 0, tabitem)
+                tabitem.setFlags(tabitem.flags() ^ Qt.ItemIsEditable)
+                tabempty.setFlags(tabempty.flags() ^ Qt.ItemIsEditable)
         self.ui.CifItemsTable.setVerticalHeaderItem(row_num, item_key)
         self.ui.CifItemsTable.resizeRowToContents(row_num)
 
