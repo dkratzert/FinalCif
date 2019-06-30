@@ -1,13 +1,20 @@
+import os
 from pathlib import Path
 from pprint import pformat
 
 
 class BrukerFrameHeader():
-    def __init__(self, filename: str):
-        self._fileobj = Path(filename)
+    def __init__(self, basename: str):
+        p = Path('./')
+        frames = p.glob(basename + '*.sfrm')
+        frames = sorted(frames, key=os.path.getmtime, reverse=True)
+        if not frames:
+            frames = p.rglob('*.sfrm')
+        for fr in frames:
+            if fr:
+                self._fileobj = Path(fr)
         self.filename = self._fileobj.absolute()
         self.header = {}
-
         with open(self._fileobj) as file:
             for n in range(96):
                 l = file.read(80).strip()

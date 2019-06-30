@@ -20,8 +20,9 @@ class CifContainer():
     This class holds the content of a cif file, independent of the file parser used.
     """
 
-    def __init__(self, filename: Path):
-        self.filename = filename.absolute()
+    def __init__(self, file: Path):
+        self.filename = file.absolute()
+        self.fileobj = file
         self.cif_data = None
         self.block = None
         self.doc = None

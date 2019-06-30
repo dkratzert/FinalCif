@@ -1,5 +1,6 @@
 #!python
 #  Copyright (c)  2019 by Daniel Kratzert
+import os
 import re
 from pathlib import Path
 
@@ -34,13 +35,12 @@ class Dataset():
 class Sadabs():
     """
     This is a SADABS/TWINABS file parsing object.
-    TODO: Add data structure that handles multiple refinements esp. in TWINABS
     """
     _refl_written_regex = re.compile(r'.*Corrected reflections written to file', re.IGNORECASE)
     _rint_regex = re.compile(r'^.*Rint\s=.*observations and')
     _rint3sig_regex = re.compile(r'^.*Rint\s=.*observations with')
 
-    def __init__(self, filename: str):
+    def __init__(self, basename: str):
         """
         >>> s = Sadabs(r'test-data/IK_WU19.abs')  # this is a sadabs file
         >>> s.twin_components
@@ -71,8 +71,6 @@ class Sadabs():
         2330
         """
         self.faces = False
-        self._fileobj = Path(filename)
-        self.filename = self._fileobj.absolute()
         self.version = None
         self.twin_components = 1
         self.Rint = None
@@ -82,7 +80,17 @@ class Sadabs():
         self.input_files = []
         self.output = []
         self.batch_input = None
-        self.parse_file()
+
+        p = Path('./')
+        sadfiles = p.rglob(basename + '*.abs')
+        sadfiles = sorted(sadfiles, key=os.path.getmtime, reverse=True)
+        if not sadfiles:
+            sadfiles = p.rglob('*.abs')
+        for sadfile in sadfiles:
+            if sadfile:
+                self._fileobj = Path(sadfile)
+                self.filename = self._fileobj.absolute()
+                self.parse_file()
 
     def parse_file(self):
         n = 0
