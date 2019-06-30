@@ -205,6 +205,13 @@ COLOUR_CHOICES = (
     (12, 'violet')
 )
 
+SPECIMEN_SUPPORT = (
+    (0, 'glass capillary'),
+    (1, 'quartz capillary'),
+    (2, 'fiber'),
+    (3, 'metal loop'),
+)
+
 ABSOLUTE_CONFIGURATION_CHOICES = (
     (0, ''),  # , '?'),
     (1, 'ad'),  # , 'Anomalous dispersion'),
@@ -269,13 +276,14 @@ SOLUTION_SECONDARY = (
     (10, 'other'),
 )
 
-special_fields = {'_exptl_crystal_colour'           : COLOUR_CHOICES,
-                  '_chemical_absolute_configuration': ABSOLUTE_CONFIGURATION_CHOICES,
-                  '_exptl_absorpt_correction_type'  : ABSORPTION_CORRECTION_TYPES,
-                  '_refine_ls_hydrogen_treatment'   : REFINE_LS_HYDROGEN_TREATMENT,
-                  '_diffrn_radiation_type'          : RADIATION_TYPE,
-                  '_atom_sites_solution_primary'    : SOLUTION_PRIMARY,
-                  '_atom_sites_solution_secondary'  : SOLUTION_PRIMARY,
+special_fields = {'_exptl_crystal_colour'               : COLOUR_CHOICES,
+                  '_chemical_absolute_configuration'    : ABSOLUTE_CONFIGURATION_CHOICES,
+                  '_exptl_absorpt_correction_type'      : ABSORPTION_CORRECTION_TYPES,
+                  '_refine_ls_hydrogen_treatment'       : REFINE_LS_HYDROGEN_TREATMENT,
+                  '_diffrn_radiation_type'              : RADIATION_TYPE,
+                  '_atom_sites_solution_primary'        : SOLUTION_PRIMARY,
+                  '_atom_sites_solution_secondary'      : SOLUTION_PRIMARY,
+                  '_diffrn_measurement_specimen_support': SPECIMEN_SUPPORT,
                   }
 
 
@@ -328,6 +336,14 @@ predef_prop_templ = [{'name'  : 'Crystal Color',
                       }
                      ]
 
+"""
+    _diffrn_source               'rotating anode X-ray tube'
+    _diffrn_source_type          'Rigaku RU-200'
+    _diffrn_source_power         50
+    _diffrn_source_current       180
+    _diffrn_source_size          '8 mm x 0.4 mm broad focus'
+"""
+
 predef_equipment_templ = [{'name' : 'D8 VENTURE',
                            'items': [
                                ['_diffrn_radiation_monochromator', 'mirror optics'],
@@ -335,19 +351,35 @@ predef_equipment_templ = [{'name' : 'D8 VENTURE',
                                ['_diffrn_measurement_device_type', 'Bruker D8 VENTURE dual wavelength Mo/Cu'],
                                ['_diffrn_measurement_method', '\w and \f scans'],
                                ['_diffrn_source', 'microfocus sealed X-ray tube'],
-                               ['_diffrn_source_current', '50'],
-                               ['_diffrn_source_voltage', '1.1'],
+                               # ['_diffrn_source_current', '50'],
+                               # ['_diffrn_source_voltage', '1.1'],
                                ['_diffrn_source_type', 'Incoatec I\ms'],
+                               ['_diffrn_measurement_specimen_support', 'Mitegen Loop'],
+                           ]
+                           },
+                          {'name' : 'SAMRT APEX II',
+                           'items': [
+                               ['_diffrn_radiation_monochromator', 'mirror optics'],
+                               ['_diffrn_measurement_device', 'three-circle diffractometer'],
+                               ['_diffrn_measurement_device_type', 'Bruker SMART APEX II QUAZAR'],
+                               ['_diffrn_measurement_method', '\w and \f scans'],
+                               ['_diffrn_source', 'microfocus sealed X-ray tube'],
+                               ['_diffrn_source_type', 'Incoatec I\ms'],
+                               ['_diffrn_detector_area_resol_mean', '7.9'],
+                               ['_diffrn_radiation_probe', 'x-ray'],
+                               ['_diffrn_measurement_specimen_support', 'Mitegen Loop'],
                            ]
                            },
                           {'name' : 'Rigaku Spider',
                            'items': [
-                               ['_diffrn_radiation_source', ''],
                                ['_diffrn_radiation_monochromator', 'graphite'],
-                               ['_diffrn_measurement_device', 'three-circle diffractometer'],
-                               ['_diffrn_measurement_device_type', ''],
-                               ['_diffrn_measurement_method', ''],
-                               ['_diffrn_source', ''],
+                               ['_diffrn_measurement_device', 'four-circle diffractometer'],
+                               ['_diffrn_measurement_device_type', 'Rigaku R-AXIS SPIDER'],
+                               ['_diffrn_measurement_method', '\w scans'],
+                               ['_diffrn_source', 'sealed X-ray tube'],  # obsolete: _diffrn_radiation_source
+                               ['_diffrn_detector', 'Image Plate'],
+                               ['_diffrn_detector_type', 'Rigaku Image Plate'],
+                               ['_diffrn_measurement_specimen_support', 'Mitegen Loop'],
                            ]
                            },
                           ]
