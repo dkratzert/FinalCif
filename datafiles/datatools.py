@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 
 from cif.file_reader import CifContainer
@@ -19,8 +18,10 @@ class MissingCifData():
 
 class BrukerData(object):
 
-    def __init__(self, cif: CifContainer):
+    def __init__(self, app: 'AppWindow',  cif: CifContainer):
         self.cif = cif
+        self.app = app
+        self.app.add_new_datafile(0, 'SADABS', 'add specific .abs file here, if needed...')
         self.basename = cif.fileobj.stem.split('_0m')[0]
         saint_data = self.saint_log('*_0m._ls')
         saint_first_ls = self.saint_log('*_01._ls')
