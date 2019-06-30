@@ -69,27 +69,7 @@
        <string>Data Sources</string>
       </property>
       <layout class="QGridLayout" name="DataSourcesGridLayout">
-       <item row="1" column="1">
-        <widget class="QLineEdit" name="DataFileEdit">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-           <horstretch>3</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="placeholderText">
-          <string> .abs file from SADABS</string>
-         </property>
-        </widget>
-       </item>
        <item row="1" column="0">
-        <widget class="QLabel" name="DataFileLabel">
-         <property name="text">
-          <string>SADABS</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="1">
         <spacer name="verticalSpacer">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -101,19 +81,6 @@
           </size>
          </property>
         </spacer>
-       </item>
-       <item row="1" column="2">
-        <widget class="QPushButton" name="DataFileButton">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-           <horstretch>1</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string>Select File</string>
-         </property>
-        </widget>
        </item>
       </layout>
      </widget>

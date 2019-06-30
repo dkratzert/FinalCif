@@ -160,15 +160,19 @@ class AppWindow(QMainWindow):
         TODO: use this for all data files
         Adds a new file input as data source for the currently selected cif key/value pair
         """
-        data_file_label = QLabel(self.DataFilesGroupBox)
+        data_file_label = QLabel(self.ui.DataFilesGroupBox)
         data_file_label.setText(label_text)
         data_file_edit = QLineEdit(self.ui.DataFilesGroupBox)
         data_file_edit.setPlaceholderText(placeholder)
-        data_file_button = QPushButton(self.DataFilesGroupBox)
+        data_file_button = QPushButton(self.ui.DataFilesGroupBox)
         data_file_button.setText('Select File')
         self.ui.DataSourcesGridLayout.addWidget(data_file_label, n, 0, 1, 1)
         self.ui.DataSourcesGridLayout.addWidget(data_file_edit, n, 1, 1, 1)
         self.ui.DataSourcesGridLayout.addWidget(data_file_button, n, 2, 1, 1)
+        data_file_button.clicked.connect(self.foo)
+
+    def foo(self, x):
+        print(x, '##')
 
     def connect_signals_and_slots(self):
         """
@@ -628,7 +632,7 @@ class AppWindow(QMainWindow):
         Tries to determine the sources of missing data in the cif file, e.g. Tmin/Tmax from SADABS.
         """
         if self.manufacturer == 'bruker':
-            sources = BrukerData(self.cif).sources
+            sources = BrukerData(self, self.cif).sources
             # Build a dictionary of cif keys and row number values in order to fill the first column
             # of CifItemsTable with cif values:
             for item in range(self.ui.CifItemsTable.model().rowCount()):
