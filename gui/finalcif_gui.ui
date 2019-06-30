@@ -320,6 +320,19 @@
       </layout>
      </widget>
     </item>
+    <item row="1" column="1" alignment="Qt::AlignLeft">
+     <widget class="QPushButton" name="MercuryPushButton">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>View in Mercury</string>
+      </property>
+     </widget>
+    </item>
     <item row="7" column="1">
      <widget class="QGroupBox" name="PropertiesGroupBox">
       <property name="sizePolicy">
@@ -476,19 +489,6 @@
         </widget>
        </item>
       </layout>
-     </widget>
-    </item>
-    <item row="1" column="1" alignment="Qt::AlignRight">
-     <widget class="QPushButton" name="MercuryPushButton">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="text">
-       <string>View in Mercury</string>
-      </property>
      </widget>
     </item>
    </layout>
