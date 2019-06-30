@@ -11,7 +11,7 @@ from tools.misc import predef_equipment_templ, predef_prop_templ, special_fields
 from tools.settings import FinalCifSettings
 
 # noinspection PyUnreachableCode
-if __debug__:
+if not __debug__:
     DEBUG = True
 else:
     # else is with "python -O file.py"
@@ -41,50 +41,21 @@ TODO:
 
 - add response forms
 - test garbage cif files an make groper warnings how to solve the problems.
-- The click on a cif keyword in the table opens the IuCr help about this key in a popup.
+- The click on a cif keyword in the table opens the IuCr help about this key in a popup. (Not easy!)
 - find DSR string in res file and put descriptive text in cif.
-- determine centrosymmetric or not and remove _chemical_absolute_configuration accordingly.
 - Checkcif: http://journals.iucr.org/services/cif/checking/validlist.html
-- Check if space group symbol is written correctly.
-- Use a cif file parser that can write files
-- make sure that cif items with whitespace have correct delimiter like 'foo bar' and
-  ;
-  foo long text bar
-  ;
-  during file save operation.
-- allow to add own cif keywords in the table. (maybe not?) 
 - Either use gemmi or platon for the moiety formula and _space_group_IT_number 
-- if cell measurement_temp aleady in, propose the same for ambient_temp and vice versa
-- handle _computing_structure_solution
-- maybe add properties templates as tabwidget behind equipment templates (saves space).
-- Improve file search for data files like .abs file. Determine if there is a common naming sheme like "Esser_JW314_0m"
 - Determine the res file name from cif file. That can give a hint for the naming sheme or space group chaos naming.
-- put all incomplete information in the CifItemsTable. 
-- Own data in CifItemsTable overrides From Data Source. 
-  (maybe with a signal to grey out the data source onEdit of Own Data)
-- make "save cif" work.
 - only let real cif keywords into the EquipmentEditTableWidget and cifKeywordLE.
 - action: rightclick on a template -> offer "export template (to .cif)"
 - action: rightclick on a template -> offer "import template (from .cif)"
-- selecting a row in the cif items table changes the view in the Data Sources table and offers
-  possible files as data sources. For example a .abs file for Tmin/Tmax
-- method: clear_data_sources_list() -> clear all in DataFilesGroupBox
 - get correct Rint, Tmin/Tmax from twinabs by combining reflections count with modification time, 
   domain count?, hkl type
 - SaveResidualsTableButton -> run multitable.py
 - SaveFullReportButton -> generate full report with description text and all tables as .docx (and pdf?)
   maybe also a preview? Directly open in MSword/LibreOffice?
-- Determine the Manufacturer:
-    - work directory: 1 Punkt
-    - .abs file existiert: 1 Punkt
-    - Sfrm Frames 2 Punkte 
-    - Xxx Frames 2punkte
-    - ...
-- select templates according to Points 
-- save cif file with "name_fin.cif"
 - check hkl and res _shelx_res_checksum checksum
 - Add button for checkcif report.
-- Check if unit cell in cif fits to atoms provided.
 
 Idea for checkcif:
 
@@ -160,22 +131,6 @@ class AppWindow(QMainWindow):
         print('saving position')
         self.settings.save_window_position(self.pos(), self.size())
         self.settings.save_favorite_template(self.ui)
-
-    '''def add_new_datafile(self, n: int, label_text: str, placeholder: str = '') -> (QLineEdit, QPushButton):
-        """
-        TODO: use this for all data files
-        Adds a new file input as data source for the currently selected cif key/value pair
-        """
-        data_file_label = QLabel(self.ui.DataFilesGroupBox)
-        data_file_label.setText(label_text)
-        data_file_edit = QLineEdit(self.ui.DataFilesGroupBox)
-        data_file_edit.setPlaceholderText(placeholder)
-        data_file_button = QPushButton(self.ui.DataFilesGroupBox)
-        data_file_button.setText('Select File')
-        self.ui.DataSourcesGridLayout.addWidget(data_file_label, n, 0, 1, 1)
-        self.ui.DataSourcesGridLayout.addWidget(data_file_edit, n, 1, 1, 1)
-        self.ui.DataSourcesGridLayout.addWidget(data_file_button, n, 2, 1, 1)
-        return data_file_edit, data_file_button'''
 
     def connect_signals_and_slots(self):
         """
@@ -622,9 +577,6 @@ class AppWindow(QMainWindow):
         """
         Returns a cif file name from a file dialog.
         """
-        # dialog = QFileDialog()
-        # dialog.selectFile(str(filename))
-        # dialog.selectFile(str(filename.parts[-1]))
         filename, _ = QFileDialog.getSaveFileName(filter='CIF file (*.cif, *.CIF), All Files (*.*)',
                                                   initialFilter='*.cif',
                                                   caption='Save .cif File')
@@ -800,3 +752,20 @@ if __name__ == '__main__':
     # w.showMaximized()  # For full screen view
     w.setBaseSize(1200, 780)
     sys.exit(app.exec_())
+
+    # noinspection PyUnreachableCode
+    '''def add_new_datafile(self, n: int, label_text: str, placeholder: str = '') -> (QLineEdit, QPushButton):
+            """
+            TODO: use this for all data files
+            Adds a new file input as data source for the currently selected cif key/value pair
+            """
+            data_file_label = QLabel(self.ui.DataFilesGroupBox)
+            data_file_label.setText(label_text)
+            data_file_edit = QLineEdit(self.ui.DataFilesGroupBox)
+            data_file_edit.setPlaceholderText(placeholder)
+            data_file_button = QPushButton(self.ui.DataFilesGroupBox)
+            data_file_button.setText('Select File')
+            self.ui.DataSourcesGridLayout.addWidget(data_file_label, n, 0, 1, 1)
+            self.ui.DataSourcesGridLayout.addWidget(data_file_edit, n, 1, 1, 1)
+            self.ui.DataSourcesGridLayout.addWidget(data_file_button, n, 2, 1, 1)
+            return data_file_edit, data_file_button'''
