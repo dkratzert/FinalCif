@@ -31,8 +31,7 @@ def read_file_to_list(p4pfile: str) -> list:
 
 class P4PFile():
 
-    def __init__(self, p4pfile: str):
-        self.p4plist = read_file_to_list(p4pfile)
+    def __init__(self, basename: str):
         self.fileid = None
         self.siteid = None
         self.chem = None
@@ -45,10 +44,24 @@ class P4PFile():
         self.source = None
         self.volume = None
         self.ortmatrix = None
-        try:
-            self.parse_p4p()
-        except Exception:
-            raise ValueError('*** p4p not readable ***')
+        self.temperature = 293
+        self.crystal_color = ''
+        self.crystal_size = ['', '', '']
+        self.morphology = ''
+        self.radiation_type = ''
+        self.wavelen = ''
+        p = Path('./')
+        p4p_files = p.rglob(basename + '*_0m.p4p')
+        if not p4p_files:
+            p4p_files = p.rglob('*.p4p')
+        for p in p4p_files:
+            if p:
+                self.filename = p
+                self.p4plist = read_file_to_list(str(self.filename))
+                try:
+                    self.parse_p4p()
+                except Exception:
+                    raise ValueError('*** p4p not readable ***')
 
     def parse_p4p(self):
         for line in self.p4plist:

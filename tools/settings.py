@@ -3,6 +3,8 @@ from typing import List
 from PyQt5.QtCore import QPoint, QSettings, QSize
 from PyQt5.QtWidgets import QMainWindow
 
+from gui.finalcif_gui import Ui_FinalCifWindow
+
 
 class FinalCifSettings():
     def __init__(self, window: QMainWindow):
@@ -18,6 +20,18 @@ class FinalCifSettings():
         self.settings.setValue("position", position)
         self.settings.setValue("size", size)
         self.settings.endGroup()
+
+    def save_favorite_template(self, app: Ui_FinalCifWindow):
+        last_equipment = app.EquipmentTemplatesListWidget.currentRow()
+        self.settings.beginGroup('LastEquipment')
+        self.settings.setValue('last', last_equipment)
+        self.settings.endGroup()
+
+    def load_last_equipment(self):
+        self.settings.beginGroup('LastEquipment')
+        last = self.settings.value("last", type=int)
+        self.settings.endGroup()
+        return last
 
     def load_window_position(self):
         self.settings.beginGroup("MainWindow")
@@ -51,7 +65,7 @@ class FinalCifSettings():
         plist = self.settings.value('property_list')
         for p in plist:
             try:
-                keylist.append(self.settings.value('property/'+p)[0])
+                keylist.append(self.settings.value('property/' + p)[0])
             except TypeError:
                 pass
         return keylist
@@ -96,6 +110,7 @@ class FinalCifSettings():
             if k.lower() == key.lower():
                 templ = self.load_template('property/' + p)
         return [(n, x) for n, x in enumerate(templ[1])]
+
 
 if __name__ == '__main__':
     sett = QSettings('foo', 'bar')

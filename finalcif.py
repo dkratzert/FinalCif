@@ -5,11 +5,15 @@ from pathlib import Path
 from PyQt5.QtCore import Qt
 
 from cif.file_reader import CifContainer, quote
-from datafiles.datatools import BrukerData, MissingCifData
+from datafiles.datatools import BrukerData
 from tools.misc import predef_equipment_templ, predef_prop_templ, special_fields
 from tools.settings import FinalCifSettings
 
-DEBUG = True
+if __debug__:
+    DEBUG = True
+else:
+    # else is with "python -O file.py"
+    DEBUG = False
 
 if DEBUG:
     from PyQt5 import uic
@@ -26,6 +30,7 @@ else:
     application_path = os.path.dirname(os.path.abspath(__file__))
 
 if DEBUG:
+    print('Compiling ui ...')
     uic.compileUiDir(os.path.join(application_path, './gui'))
 from gui.finalcif_gui import Ui_FinalCifWindow
 
@@ -138,15 +143,17 @@ class AppWindow(QMainWindow):
         self.missing_data = []
         # self.equipment_settings = []
         self.connect_signals_and_slots()
-        #self.miss_data = MissingCifData()  # this is nowhere used!
+        # self.miss_data = MissingCifData()  # this is nowhere used!
         self.manufacturer = 'bruker'
         # only for testing:
-        self.get_cif_file_block(r'test-data/twin4.cif')
-        #self.get_cif_file_block(r'/Volumes/nifty/test_workordner/Esser_JW344/Esser_JW344_0m_a.cif')
+        # self.get_cif_file_block(r'test-data/twin4.cif')
+        self.get_cif_file_block(r'/Volumes/nifty/test_workordner/Esser_JW344/Esser_JW344_0m_a.cif')
+        self.ui.EquipmentTemplatesListWidget.setCurrentRow(self.settings.load_last_equipment())
 
     def __del__(self):
         print('saving position')
         self.settings.save_window_position(self.pos(), self.size())
+        self.settings.save_favorite_template(self.ui)
 
     def add_new_datafile(self, n: int, label_text: str, placeholder: str = ''):
         """
@@ -230,13 +237,16 @@ class AppWindow(QMainWindow):
                         self.cif.block.set_pair(vhead, quote(col1))
                     if col2:
                         self.cif.block.set_pair(vhead, quote(col2))
-        #filename = self.cif_file_save_dialog(self.cif.filename)
-        #if not filename:
-        #    return 'Not saved!'
-        # self.cif.save(Path(filename))
-        fin_filename = Path(self.cif.filename.parts[-1][:-4] + '-final.cif').name
-        self.cif.save(fin_filename)
-        self.ui.statusBar.showMessage('  File Saved:  {}'.format(fin_filename), 5000)
+        fin_file = Path(self.cif.filename.parts[-1][:-4] + '-final.cif')
+        if DEBUG:
+            if fin_file.exists():
+                # a file save dialog is so anying:
+                filename = self.cif_file_save_dialog(self.cif.filename)
+                fin_file = Path(filename)
+                if not filename:
+                    return 'Not saved!'
+        self.cif.save(fin_file.name)
+        self.ui.statusBar.showMessage('  File Saved:  {}'.format(fin_file.name), 5000)
         print('File saved ...')
 
     def show_equipment_and_properties(self):
