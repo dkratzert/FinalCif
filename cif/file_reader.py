@@ -12,7 +12,8 @@ def quote(string, wrapping=80):
     """
     Quotes a cif string and warppes it.
     """
-    return gemmi.cif.quote(textwrap.fill(string, width=wrapping))
+    quoted = gemmi.cif.quote(textwrap.fill(string, width=wrapping))
+    return quoted
 
 
 class CifContainer():
@@ -38,7 +39,7 @@ class CifContainer():
         try:
             self.doc = gemmi.cif.read_file(str(self.filename))
         except RuntimeError as e:
-            return str(e)
+            return e
         self.block = self.doc.sole_block()
         # print('Opened block:', self.block.name)
         self.cif_data = json.loads(self.doc.as_json())[self.block.name.lower()]
@@ -57,6 +58,13 @@ class CifContainer():
         else:
             self.cif_data['_space_group_symop_operation_xyz'] = [i.str(0) for i in xyz2]
         return self.cif_data['_space_group_symop_operation_xyz']
+
+    @property
+    def is_centrosymm(self):
+        if '-x, -y, -z' in self.get_symmops():
+            return True
+        else:
+            return False
 
     def open_cif_with_fileparser(self):
         """
@@ -102,13 +110,13 @@ class CifContainer():
         questions = []
         # contains the answered keys:
         with_values = []
-        for k in inputkeys:
-            try:
-                value = self.cif_data[k.lower()]
-            except KeyError:
-                value = ''
-            if not value:
-                questions.append([k, value])
+        for key in inputkeys:
+            #try:
+            value = self.block.find_value(key)
+            #except (KeyError, TypeError):
+            #    value = ''
+            if not value or value == '?':
+                questions.append([key, value])
             else:
-                with_values.append([k, value])
+                with_values.append([key, value])
         return questions, with_values

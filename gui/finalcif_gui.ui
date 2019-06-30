@@ -15,19 +15,6 @@
   </property>
   <widget class="QWidget" name="Mainwidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="1" column="1">
-     <widget class="QPushButton" name="MercuryPushButton">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="text">
-       <string>View in Mercury</string>
-      </property>
-     </widget>
-    </item>
     <item row="0" column="1">
      <widget class="QGroupBox" name="SelectCifFileGroupBox">
       <property name="sizePolicy">
@@ -57,35 +44,7 @@
       </layout>
      </widget>
     </item>
-    <item row="9" column="1">
-     <widget class="QGroupBox" name="DataFilesGroupBox">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-        <horstretch>2</horstretch>
-        <verstretch>2</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="title">
-       <string>Data Sources</string>
-      </property>
-      <layout class="QGridLayout" name="DataSourcesGridLayout">
-       <item row="1" column="0">
-        <spacer name="verticalSpacer">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>0</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item row="0" column="2" rowspan="10">
+    <item row="0" column="2" rowspan="8">
      <widget class="QGroupBox" name="CifDataItemsGroupBox">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -216,7 +175,7 @@
       <property name="sizePolicy">
        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
         <horstretch>2</horstretch>
-        <verstretch>3</verstretch>
+        <verstretch>2</verstretch>
        </sizepolicy>
       </property>
       <property name="title">
@@ -361,7 +320,7 @@
       </layout>
      </widget>
     </item>
-    <item row="6" column="1">
+    <item row="7" column="1">
      <widget class="QGroupBox" name="PropertiesGroupBox">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -519,6 +478,19 @@
       </layout>
      </widget>
     </item>
+    <item row="1" column="1" alignment="Qt::AlignRight">
+     <widget class="QPushButton" name="MercuryPushButton">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>View in Mercury</string>
+      </property>
+     </widget>
+    </item>
    </layout>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
@@ -538,6 +510,29 @@
    </property>
   </action>
  </widget>
+ <tabstops>
+  <tabstop>SelectCif_LineEdit</tabstop>
+  <tabstop>EquipmentEditTableWidget</tabstop>
+  <tabstop>cifKeywordLE</tabstop>
+  <tabstop>PropertiesEditTableWidget</tabstop>
+  <tabstop>CifItemsTable</tabstop>
+  <tabstop>SelectCif_PushButton</tabstop>
+  <tabstop>DeleteEquipmentButton</tabstop>
+  <tabstop>SaveEquipmentButton</tabstop>
+  <tabstop>CancelEquipmentButton</tabstop>
+  <tabstop>DeletePropertiesButton</tabstop>
+  <tabstop>SavePropertiesButton</tabstop>
+  <tabstop>CancelPropertiesButton</tabstop>
+  <tabstop>SaveCifButton</tabstop>
+  <tabstop>NewPropertyTemplateButton</tabstop>
+  <tabstop>PropertiesTemplatesListWidget</tabstop>
+  <tabstop>EditPropertiyTemplateButton</tabstop>
+  <tabstop>EditEquipmentTemplateButton</tabstop>
+  <tabstop>SaveResidualsTableButton</tabstop>
+  <tabstop>SaveFullReportButton</tabstop>
+  <tabstop>NewEquipmentTemplateButton</tabstop>
+  <tabstop>EquipmentTemplatesListWidget</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
