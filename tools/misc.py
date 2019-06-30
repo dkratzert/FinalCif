@@ -69,15 +69,16 @@ class Manufacturer():
         return self.get_manufacturer()
 
 
+# '_space_group_centring_type',  # seems to be used nowere
+# '_exptl_absorpt_special_details',   # This is not official?!?
 high_prio_keys = [
     '_audit_creation_method',
     '_chemical_formula_moiety',
     '_chemical_formula_sum',
     '_chemical_formula_weight',
-    '_symmetry_cell_setting'
+    '_space_group_crystal_system',  # formerly known as _symmetry_cell_setting
     '_space_group_IT_number',
     '_space_group_name_H-M_alt',
-    # '_space_group_centring_type',  # seems to be used nowere
     '_exptl_crystal_description',
     '_exptl_crystal_colour',
     '_exptl_crystal_density_diffrn',
@@ -90,7 +91,6 @@ high_prio_keys = [
     '_exptl_absorpt_correction_T_min',
     '_exptl_absorpt_correction_T_max',
     '_exptl_absorpt_process_details',  # Program and reference e.g. 'MolEN (Fair, 1990)'
-    # '_exptl_absorpt_special_details',   # This is not official?!?
     '_cell_formula_units_Z',
     '_cell_measurement_temperature',
     '_cell_measurement_reflns_used',
@@ -121,7 +121,7 @@ high_prio_keys = [
     '_reflns_Friedel_fraction_max',
     '_reflns_Friedel_fraction_full',
     '_reflns_special_details',
-    '_chemical_absolute_configuration',
+    '_chemical_absolute_configuration',  # TODO: only in non-centro cases
     '_computing_data_collection',  # from frame header: 'PROGRAM': 'BIS V6.2.10/2018-10-02',
     '_computing_cell_refinement',
     '_computing_data_reduction',
@@ -167,7 +167,13 @@ medium_prio_keys = [
 ]
 low_prio_keys = ['']
 
-text_field_keys = ('_refine_special_details', '_refine_ls_weighting_details')
+# Keys that get a text field in the main list.
+text_field_keys = ('_refine_special_details',
+                   '_refine_ls_weighting_details',
+                   '_reflns_special_details',
+                   '_exptl_absorpt_process_details'
+                   '_refine_special_details',
+                   )
 
 ABSORPTION_CORRECTION_TYPES = (
     (0, ''),  # , ''),

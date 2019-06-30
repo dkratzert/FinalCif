@@ -6,8 +6,6 @@ from datafiles.utils import ParserMixin
 class SHELXTlistfile(ParserMixin):
     def __init__(self, filename: str):
         super().__init__(filename)
-        self._fileobj = Path(filename)
-        self.filename = self._fileobj.absolute()
         self.version = None
         if not self._fileobj.is_dir():
             self._text = self._fileobj.read_text(encoding='ascii', errors='ignore').splitlines(keepends=False)
