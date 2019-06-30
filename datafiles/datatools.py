@@ -35,7 +35,7 @@ class BrukerData(object):
             abstype = 'multi-scan' if not self.sadabs.dataset(-1).numerical else 'numerical'
             t_min = min(self.sadabs.dataset(dataset_num).transmission)
             t_max = max(self.sadabs.dataset(dataset_num).transmission)
-        except (KeyError, AttributeError):
+        except (KeyError, AttributeError, TypeError):
             # no abs file found
             print('no abs file found')
             abstype = '?'
