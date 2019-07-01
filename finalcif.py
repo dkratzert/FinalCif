@@ -39,6 +39,7 @@ from gui.finalcif_gui import Ui_FinalCifWindow
 """
 TODO:
 
+- color code differences between cif and data soures in columns
 - add response forms
 - test garbage cif files an make groper warnings how to solve the problems.
 - The click on a cif keyword in the table opens the IuCr help about this key in a popup. (Not easy!)
