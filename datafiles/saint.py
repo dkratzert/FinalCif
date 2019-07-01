@@ -3,7 +3,7 @@ from pathlib import Path
 
 class SaintListFile():
     def __init__(self, name_patt: str):
-        self.cell_reflections = 0
+        self.cell_reflections = ''
         self.cell_res_min_2t = 0.0
         self.cell_res_max_2t = 0.0
         self.aquire_software = ''

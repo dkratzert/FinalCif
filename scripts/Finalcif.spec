@@ -42,4 +42,4 @@ exe = EXE(pyz,
           upx=True,
           runtime_tmpdir=None,
           icon='icon\\multitable.ico',
-          console=False)
+          console=True)

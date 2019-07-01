@@ -29,6 +29,7 @@ else:
 if DEBUG:
     print('Compiling ui ...')
     uic.compileUiDir(os.path.join(application_path, './gui'))
+
 from gui.finalcif_gui import Ui_FinalCifWindow
 
 """
@@ -115,14 +116,17 @@ class AppWindow(QMainWindow):
         self.connect_signals_and_slots()
         # self.miss_data = MissingCifData()  # this is nowhere used!
         self.manufacturer = 'bruker'
-        # only for testing:
-        # self.get_cif_file_block(r'test-data/twin4.cif')
         # self.ui.DataFilesGroupBox.hide()
         self.ui.MercuryPushButton.setDisabled(True)
         self.ui.SaveFullReportButton.setDisabled(True)
         self.ui.CheckcifButton.setDisabled(True)
+        # only for testing:
+        # self.get_cif_file_block(r'test-data/twin4.cif')
         # self.get_cif_file_block(r'D:\frames\guest\BruecknerRK_103\work\BruecknerRK_103_Cu_0m_a.cif')
+        #self.get_cif_file_block(r'D:\frames\BB_29\P-1_a.cif')
         self.ui.EquipmentTemplatesListWidget.setCurrentRow(self.settings.load_last_equipment())
+        # Sorting desyncronizes header and columns:
+        self.ui.CifItemsTable.setSortingEnabled(False)
 
     def __del__(self):
         print('saving position')
@@ -161,6 +165,7 @@ class AppWindow(QMainWindow):
         self.ui.NewPropertyTemplateButton.clicked.connect(self.new_property)
         ##
         self.ui.EquipmentTemplatesListWidget.currentRowChanged.connect(self.load_selected_equipment)
+        self.ui.EquipmentTemplatesListWidget.clicked.connect(self.load_selected_equipment)
         # something like cifItemsTable.selected_field.connect(self.display_data_file)
 
     def save_current_cif_file(self):
@@ -217,7 +222,7 @@ class AppWindow(QMainWindow):
                             self.cif.block.set_pair(vhead, quote(col2))
                         except RuntimeError:
                             pass
-        fin_file = Path(self.cif.filename.parts[-1][:-4] + '-final.cif')
+        fin_file = Path(self.cif.filename.parts[-1][:-4] + '-finalcif.cif')
         if DEBUG:
             if fin_file.exists():
                 # a file save dialog is so anying:
@@ -598,9 +603,17 @@ class AppWindow(QMainWindow):
         if not_ok:
             info = QMessageBox()
             info.setIcon(QMessageBox.Information)
-            info.setText('This cif file is not readable!\n'
-                         'Plese check line {} in\n{}'.format(str(not_ok).split(':')[1], filepath.name))
+            try:
+                line = str(not_ok)[4:].split(':')[1]
+            except IndexError:
+                line = None
+            if line:
+                info.setText('This cif file is not readable!\n'
+                         'Plese check line {} in\n{}'.format(line, filepath.name))
+            else:
+                info.setText('This cif file is not readable! "{}"'.format(filepath.name))
             info.show()
+            return
         try:
             # Change the current working Directory
             os.chdir(filepath.absolute().parent)
@@ -674,6 +687,7 @@ class AppWindow(QMainWindow):
             self.add_row(key, value)
             # print(key, value)
         self.get_data_sources()
+        self.ui.CifItemsTable.resizeRowsToContents()
 
     def edit_row(self, vert_key: str = None, new_value=None, column: int = 1):
         """

@@ -38,9 +38,9 @@ class CifContainer():
         # print('File opened:', self.filename)
         try:
             self.doc = gemmi.cif.read_file(str(self.filename))
-        except RuntimeError as e:
+            self.block = self.doc.sole_block()
+        except Exception as e:
             return e
-        self.block = self.doc.sole_block()
         # print('Opened block:', self.block.name)
         self.cif_data = json.loads(self.doc.as_json())[self.block.name.lower()]
 
