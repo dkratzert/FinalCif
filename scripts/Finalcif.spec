@@ -1,5 +1,7 @@
 # -*- mode: python -*-
 
+# pyinsatller Finalcif.spec --clean -w
+
 import sys
 from os import path
 
