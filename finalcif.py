@@ -3,7 +3,7 @@ import sys
 from pathlib import Path
 
 from PyQt5.QtCore import QPoint, Qt
-from PyQt5.QtGui import QIcon, QPalette
+from PyQt5.QtGui import QColor, QIcon, QPalette
 
 from cif.file_reader import CifContainer, quote
 from datafiles.datatools import BrukerData
@@ -84,6 +84,9 @@ if __name__ == "__main__":
     sys.exit(app.exec_()) 
 
 """
+light_green = QColor(217, 255, 201)
+blue = QColor(102, 150, 179)
+yellow = QColor(244, 255, 176)
 
 
 class AppWindow(QMainWindow):
@@ -119,9 +122,9 @@ class AppWindow(QMainWindow):
         self.ui.SaveFullReportButton.setDisabled(True)
         self.ui.CheckcifButton.setDisabled(True)
         # only for testing:
-        # self.get_cif_file_block(r'test-data/twin4.cif')
-        # self.get_cif_file_block(r'D:\frames\guest\BruecknerRK_103\work\BruecknerRK_103_Cu_0m_a.cif')
-        # self.get_cif_file_block(r'D:\frames\BB_29\P-1_a.cif')
+        # self.load_cif_file(r'test-data/twin4.cif')
+        # self.load_cif_file(r'D:\frames\guest\BruecknerRK_103\work\BruecknerRK_103_Cu_0m_a.cif')
+        # self.load_cif_file(r'D:\frames\BB_29\P-1_a.cif')
         self.ui.EquipmentTemplatesListWidget.setCurrentRow(-1)  # Has to he in front in order to work
         self.ui.EquipmentTemplatesListWidget.setCurrentRow(self.settings.load_last_equipment())
         # Sorting desyncronizes header and columns:
@@ -271,6 +274,7 @@ class AppWindow(QMainWindow):
                     column = 1
                     self.ui.CifItemsTable.setItem(row, column, tab_item)
                     tab_item.setFlags(tab_item.flags() ^ Qt.ItemIsEditable)
+                    tab_item.setBackground(light_green)
                 except KeyError:
                     pass
 
@@ -645,8 +649,13 @@ class AppWindow(QMainWindow):
                 #                               # row  column  item
                 self.ui.CifItemsTable.setItem(row_num, 1, tab_item)
                 try:
-                    #                   sources are lower case!
-                    tab_item.setText(str(sources[miss_data.lower()]))  # has to be string
+                    # sources are lower case!
+                    txt = str(sources[miss_data.lower()])
+                    tab_item.setText(txt)  # has to be string
+                    if txt and txt != '?':
+                        tab_item.setBackground(light_green)
+                    else:
+                        tab_item.setBackground(yellow)
                     # print(sources[miss_data], miss_data)
                 except KeyError as e:
                     # print(e, '##')
@@ -740,9 +749,9 @@ class AppWindow(QMainWindow):
                 item1 = QTableWidgetItem('----------------------')
                 item2 = QTableWidgetItem('----------------------')
                 item3 = QTableWidgetItem('----------------------')
-                item1.setBackground(Qt.gray)
-                item2.setBackground(Qt.gray)
-                item3.setBackground(Qt.gray)
+                item1.setBackground(blue)
+                item2.setBackground(blue)
+                item3.setBackground(blue)
                 self.ui.CifItemsTable.setItem(row_num, 0, item1)
                 self.ui.CifItemsTable.setItem(row_num, 1, item2)
                 self.ui.CifItemsTable.setItem(row_num, 2, item3)
