@@ -111,6 +111,8 @@ class CifContainer():
         # contains the answered keys:
         with_values = []
         for key in inputkeys:
+            if key == '_chemical_absolute_configuration' and self.is_centrosymm:
+                continue
             # try:
             value = self.block.find_value(key)
             # except (KeyError, TypeError):
