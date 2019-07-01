@@ -8,7 +8,7 @@ from os import path
 block_cipher = None
 site_packages = next(p for p in sys.path if 'site-packages' in p)
 
-a = Analysis(['multi_gui.py'],
+a = Analysis(['finalcif.py'],
              pathex=['D:\\Programme\\Windows Kits\\10\\Redist\\ucrt\\DLLs\\x64', 'D:\\GitHub\\FinalCif'],
              binaries=[],
              datas=[('gui', 'gui'),],
