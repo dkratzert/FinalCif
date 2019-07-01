@@ -88,9 +88,6 @@
        </item>
        <item row="0" column="0" colspan="3">
         <widget class="QTableWidget" name="CifItemsTable">
-         <property name="midLineWidth">
-          <number>0</number>
-         </property>
          <property name="sizeAdjustPolicy">
           <enum>QAbstractScrollArea::AdjustIgnored</enum>
          </property>
@@ -106,8 +103,14 @@
          <property name="horizontalScrollMode">
           <enum>QAbstractItemView::ScrollPerPixel</enum>
          </property>
-         <property name="sortingEnabled">
+         <property name="showGrid">
           <bool>true</bool>
+         </property>
+         <property name="sortingEnabled">
+          <bool>false</bool>
+         </property>
+         <property name="cornerButtonEnabled">
+          <bool>false</bool>
          </property>
          <attribute name="horizontalHeaderMinimumSectionSize">
           <number>80</number>
@@ -122,7 +125,10 @@
           <number>19</number>
          </attribute>
          <attribute name="verticalHeaderDefaultSectionSize">
-          <number>23</number>
+          <number>25</number>
+         </attribute>
+         <attribute name="verticalHeaderHighlightSections">
+          <bool>true</bool>
          </attribute>
          <column>
           <property name="text">

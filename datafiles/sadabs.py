@@ -71,7 +71,7 @@ class Sadabs():
         2330
         """
         self.faces = False
-        self.version = None
+        self.version = ''
         self.twin_components = 1
         self.Rint = None
         self.observations = None
@@ -82,10 +82,10 @@ class Sadabs():
         self.batch_input = None
 
         p = Path('./')
-        sadfiles = p.rglob(basename + '*.abs')
+        sadfiles = list(p.glob(basename+'*.abs'))
         sadfiles = sorted(sadfiles, key=os.path.getmtime, reverse=True)
         if not sadfiles:
-            sadfiles = p.rglob('*.abs')
+            sadfiles = p.glob('*.abs')
         for sadfile in sadfiles:
             if sadfile:
                 self._fileobj = Path(sadfile)
@@ -157,7 +157,10 @@ class Sadabs():
         return self.version.split()[0].split('-')[0]
 
     def dataset(self, n):
-        return self.output[n]
+        try:
+            return self.output[n]
+        except IndexError:
+            return Dataset()
 
     def __repr__(self):
         out = 'Program:\t\t{}\n'.format(self.program)
@@ -171,26 +174,10 @@ class Sadabs():
 
 
 if __name__ == '__main__':
-    s = Sadabs('test-data/IK_WU19.abs')
-    print(s)
-    for dat in s:
-        print(dat)
-
     print('###############\n\n')
-
-    s = Sadabs(r'test-data/twin-4-5.abs')
+    s = Sadabs(r'D:/frames/BB_29/')
     print(s)
     for dat in s:
         print(dat)
 
-    print('###############\n\n')
-    s = Sadabs(r'test-data/DK_Zucker2.abs')
-    print(s)
-    for dat in s:
-        print(dat)
-
-    print('###############\n\n')
-    s = Sadabs(r'test-data/sad.abs')
-    print(s)
-    for dat in s:
-        print(dat)
+    
