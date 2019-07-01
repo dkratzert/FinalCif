@@ -1,6 +1,8 @@
 # -*- mode: python -*-
 
 # pyinsatller Finalcif.spec --clean -w
+#.\venv\Scripts\pyinstaller.exe -w --clean scripts\Finalcif.spec
+
 
 import sys
 from os import path
@@ -8,10 +10,10 @@ from os import path
 block_cipher = None
 site_packages = next(p for p in sys.path if 'site-packages' in p)
 
-a = Analysis(['finalcif.py'],
+a = Analysis(['../finalcif.py'],
              pathex=['D:\\Programme\\Windows Kits\\10\\Redist\\ucrt\\DLLs\\x64', 'D:\\GitHub\\FinalCif'],
              binaries=[],
-             datas=[('gui', 'gui'),],
+             datas=[('../gui', 'gui'),],
              hiddenimports=[],
              hookspath=[],
              runtime_hooks=[],
@@ -30,7 +32,7 @@ exe = EXE(pyz,
           a.zipfiles,
           a.datas,
           [],
-          name='multitable_gui',
+          name='FinalCif',
           debug=False,
           bootloader_ignore_signals=False,
           strip=False,
