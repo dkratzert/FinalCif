@@ -46,8 +46,11 @@ class FinalCifSettings():
         except TypeError:
             print('Unable to set window size.')
         self.window.move(pos)
-        shallmax = bool(eval(self.settings.value('maximized').capitalize()))
-        if shallmax:
+        max = self.settings.value('maximized')
+        if isinstance(max, str):
+            if bool(eval(max.capitalize())):
+                self.window.showMaximized()
+        elif max:
             self.window.showMaximized()
         self.settings.endGroup()
 
