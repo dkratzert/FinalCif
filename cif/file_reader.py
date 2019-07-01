@@ -111,7 +111,7 @@ class CifContainer():
         # contains the answered keys:
         with_values = []
         for key in inputkeys:
-            if key == '_chemical_absolute_configuration' and self.is_centrosymm:
+            if key in self.non_centrosymm_keys and self.is_centrosymm:
                 continue
             # try:
             value = self.block.find_value(key)
@@ -122,3 +122,5 @@ class CifContainer():
             else:
                 with_values.append([key, value])
         return questions, with_values
+
+    non_centrosymm_keys = ('_chemical_absolute_configuration', '_refine_ls_abs_structure_Flack')

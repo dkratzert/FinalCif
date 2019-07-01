@@ -15,10 +15,11 @@ class FinalCifSettings():
         self.settings.setDefaultFormat(QSettings.IniFormat)
         print(self.settings.fileName())
 
-    def save_window_position(self, position: QPoint, size: QSize):
+    def save_window_position(self, position: QPoint, size: QSize, maximized: bool):
         self.settings.beginGroup("MainWindow")
         self.settings.setValue("position", position)
         self.settings.setValue("size", size)
+        self.settings.setValue('maximized', maximized)
         self.settings.endGroup()
 
     def save_favorite_template(self, app: Ui_FinalCifWindow):
@@ -36,12 +37,15 @@ class FinalCifSettings():
     def load_window_position(self):
         self.settings.beginGroup("MainWindow")
         pos = self.settings.value("position", type=QPoint)
-        self.window.move(pos)
         try:
             size = QSize(self.settings.value("size"))
             self.window.resize(size)
         except TypeError:
-            pass
+            print('Unable to set window size.')
+        self.window.move(pos)
+        shallmax = bool(eval(self.settings.value('maximized').capitalize()))
+        if shallmax:
+            self.window.showMaximized()
         self.settings.endGroup()
 
     def property_name_by_key(self, key):
