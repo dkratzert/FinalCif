@@ -2,8 +2,8 @@ import os
 import sys
 from pathlib import Path
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPalette
+from PyQt5.QtCore import Qt, QPoint
+from PyQt5.QtGui import QPalette, QIcon
 
 from cif.file_reader import CifContainer, quote
 from datafiles.datatools import BrukerData
@@ -126,7 +126,8 @@ class AppWindow(QMainWindow):
 
     def __del__(self):
         print('saving position')
-        self.settings.save_window_position(self.pos(), self.size(), self.isMaximized())
+        x, y = self.pos().x(), self.pos().y()
+        self.settings.save_window_position(QPoint(x, y - 30), self.size(), self.isMaximized())
         self.settings.save_favorite_template(self.ui)
 
     def connect_signals_and_slots(self):
@@ -473,7 +474,7 @@ class AppWindow(QMainWindow):
                 # this list keeps track of the equipment items:
                 self.settings.save_template('property_list', newlist)
                 self.settings.save_template('property/' + item['name'], item['values'])
-        equipment_list = self.settings.settings.value('equipment_list')
+        equipment_list = self.settings.settings.value('equipment_list') or []
         for item in predef_equipment_templ:
             if not item['name'] in equipment_list:
                 equipment_list.append(item['name'])
@@ -746,6 +747,7 @@ class AppWindow(QMainWindow):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     w = AppWindow()
+    app.setWindowIcon(QIcon('./icon/multitable.png'))
     # w.showMaximized()  # For full screen view
     w.setBaseSize(1200, 780)
     sys.exit(app.exec_())
