@@ -2,8 +2,8 @@ import os
 import sys
 from pathlib import Path
 
-from PyQt5.QtCore import Qt, QPoint
-from PyQt5.QtGui import QPalette, QIcon
+from PyQt5.QtCore import QPoint, Qt
+from PyQt5.QtGui import QIcon, QPalette
 
 from cif.file_reader import CifContainer, quote
 from datafiles.datatools import BrukerData
@@ -38,11 +38,9 @@ TODO:
 - have a recently opened menu
 - color code differences between cif and data soures in columns
 - add response forms
-- test garbage cif files an make groper warnings how to solve the problems.
 - The click on a cif keyword in the table opens the IuCr help about this key in a popup. (Not easy!)
 - find DSR string in res file and put descriptive text in cif.
 - Checkcif: http://journals.iucr.org/services/cif/checking/validlist.html
-- Either use gemmi or platon for the moiety formula and _space_group_IT_number 
 - Determine the res file name from cif file. That can give a hint for the naming sheme or space group chaos naming.
 - only let real cif keywords into the EquipmentEditTableWidget and cifKeywordLE.
 - action: rightclick on a template -> offer "export template (to .cif)"
@@ -50,7 +48,7 @@ TODO:
 - get correct Rint, Tmin/Tmax from twinabs by combining reflections count with modification time, 
   domain count?, hkl type
 - SaveResidualsTableButton -> run multitable.py
-- SaveFullReportButton -> generate full report with description text and all tables as .docx (and pdf?)
+- ReportButton -> generate full report with description text and all tables as .docx (and pdf?)
   maybe also a preview? Directly open in MSword/LibreOffice?
 - check hkl and res _shelx_res_checksum checksum
 - Add button for checkcif report.
@@ -104,7 +102,7 @@ class AppWindow(QMainWindow):
         hheader.setSectionResizeMode(0, QHeaderView.Stretch)
         hheader.setSectionResizeMode(1, QHeaderView.Stretch)
         hheader.setSectionResizeMode(2, QHeaderView.Stretch)
-        hheader.setAlternatingRowColors(True)
+        # hheader.setAlternatingRowColors(True)
         # Make sure the start page is shown and not the edit page:
         self.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
         self.ui.PropertiesTemplatesStackedWidget.setCurrentIndex(0)
@@ -123,7 +121,8 @@ class AppWindow(QMainWindow):
         # only for testing:
         # self.get_cif_file_block(r'test-data/twin4.cif')
         # self.get_cif_file_block(r'D:\frames\guest\BruecknerRK_103\work\BruecknerRK_103_Cu_0m_a.cif')
-        #self.get_cif_file_block(r'D:\frames\BB_29\P-1_a.cif')
+        # self.get_cif_file_block(r'D:\frames\BB_29\P-1_a.cif')
+        self.ui.EquipmentTemplatesListWidget.setCurrentRow(-1)  # Has to he in front in order to work
         self.ui.EquipmentTemplatesListWidget.setCurrentRow(self.settings.load_last_equipment())
         # Sorting desyncronizes header and columns:
         self.ui.CifItemsTable.setSortingEnabled(False)
@@ -138,7 +137,7 @@ class AppWindow(QMainWindow):
         """
         this method connects all signals to slots. Only a few mighjt be defined elsewere.
         """
-        self.ui.SelectCif_PushButton.clicked.connect(self.get_cif_file_block)
+        self.ui.SelectCif_PushButton.clicked.connect(self.load_cif_file)
         self.ui.SaveCifButton.clicked.connect(self.save_current_cif_file)
         ##
         self.ui.EditEquipmentTemplateButton.clicked.connect(self.edit_equipment_template)
@@ -585,7 +584,7 @@ class AppWindow(QMainWindow):
                                                   caption='Save .cif File')
         return filename
 
-    def get_cif_file_block(self, fname):
+    def load_cif_file(self, fname):
         """
         Opens the cif file and fills information into the main table.
         """
@@ -609,7 +608,7 @@ class AppWindow(QMainWindow):
                 line = None
             if line:
                 info.setText('This cif file is not readable!\n'
-                         'Plese check line {} in\n{}'.format(line, filepath.name))
+                             'Plese check line {} in\n{}'.format(line, filepath.name))
             else:
                 info.setText('This cif file is not readable! "{}"'.format(filepath.name))
             info.show()
@@ -620,6 +619,8 @@ class AppWindow(QMainWindow):
         except OSError:
             print("Can't change the Current Working Directory")
         self.fill_cif_table()
+        self.ui.EquipmentTemplatesListWidget.setCurrentRow(-1)  # Has to he in front in order to work
+        self.ui.EquipmentTemplatesListWidget.setCurrentRow(self.settings.load_last_equipment())
 
     def get_data_sources(self):
         """
@@ -692,6 +693,7 @@ class AppWindow(QMainWindow):
     def edit_row(self, vert_key: str = None, new_value=None, column: int = 1):
         """
         This is nowhere used!
+        Sets a new value for a specific vertical header key and the respective column.
         """
         if not vert_key:
             return None
