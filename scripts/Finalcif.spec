@@ -2,6 +2,9 @@
 
 # pyinsatller Finalcif.spec --clean -w
 #.\venv\Scripts\pyinstaller.exe -w --clean scripts\Finalcif.spec
+# .\venv\Scripts\pyinstaller.exe scripts\Finalcif.spec
+# .\venv\Scripts\pyinstaller.exe scripts\Finalcif.spec -D     # one dir
+# .\venv\Scripts\pyinstaller.exe scripts\Finalcif.spec -F     # one file
 
 
 import sys
@@ -13,7 +16,7 @@ site_packages = next(p for p in sys.path if 'site-packages' in p)
 a = Analysis(['../finalcif.py'],
              pathex=['D:\\Programme\\Windows Kits\\10\\Redist\\ucrt\\DLLs\\x64', 'D:\\GitHub\\FinalCif'],
              binaries=[],
-             datas=[('../gui', 'gui'),],
+             datas=[('../gui', 'gui'), ('../misc', 'misc')],
              hiddenimports=[],
              hookspath=[],
              runtime_hooks=[],
@@ -39,4 +42,4 @@ exe = EXE(pyz,
           upx=True,
           runtime_tmpdir=None,
           icon='icon\\multitable.ico',
-          console=False )
+          console=True )

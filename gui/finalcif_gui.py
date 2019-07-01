@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/Users/daniel/GitHub/FinalCif/./gui/finalcif_gui.ui'
+# Form implementation generated from reading ui file 'D:\GitHub\FinalCif\./gui\finalcif_gui.ui'
 #
-# Created by: PyQt5 UI code generator 5.12.3
+# Created by: PyQt5 UI code generator 5.12.2
 #
 # WARNING! All changes made in this file will be lost!
-
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
@@ -13,7 +12,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_FinalCifWindow(object):
     def setupUi(self, FinalCifWindow):
         FinalCifWindow.setObjectName("FinalCifWindow")
-        FinalCifWindow.resize(1097, 715)
+        FinalCifWindow.resize(1400, 800)
         self.Mainwidget = QtWidgets.QWidget(FinalCifWindow)
         self.Mainwidget.setObjectName("Mainwidget")
         self.gridLayout = QtWidgets.QGridLayout(self.Mainwidget)
@@ -166,6 +165,7 @@ class Ui_FinalCifWindow(object):
         self.PropertiesGroupBox.setObjectName("PropertiesGroupBox")
         self.gridLayout_4 = QtWidgets.QGridLayout(self.PropertiesGroupBox)
         self.gridLayout_4.setContentsMargins(0, 0, 0, 0)
+        self.gridLayout_4.setHorizontalSpacing(6)
         self.gridLayout_4.setObjectName("gridLayout_4")
         self.PropertiesTemplatesStackedWidget = QtWidgets.QStackedWidget(self.PropertiesGroupBox)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
@@ -310,3 +310,5 @@ class Ui_FinalCifWindow(object):
         self.actionSave_Report.setText(_translate("FinalCifWindow", "Save Report"))
         self.actionSave_CIF_File.setText(_translate("FinalCifWindow", "Save CIF File"))
         self.actionedit_templates.setText(_translate("FinalCifWindow", "edit templates"))
+
+

@@ -10,12 +10,7 @@ from datafiles.datatools import BrukerData
 from tools.misc import predef_equipment_templ, predef_prop_templ, special_fields, text_field_keys
 from tools.settings import FinalCifSettings
 
-# noinspection PyUnreachableCode
-if not __debug__:
-    DEBUG = True
-else:
-    # else is with "python -O file.py"
-    DEBUG = False
+DEBUG = False
 
 if DEBUG:
     from PyQt5 import uic
@@ -39,6 +34,7 @@ from gui.finalcif_gui import Ui_FinalCifWindow
 """
 TODO:
 
+- have a recently opened menu
 - color code differences between cif and data soures in columns
 - add response forms
 - test garbage cif files an make groper warnings how to solve the problems.
@@ -100,8 +96,8 @@ class AppWindow(QMainWindow):
         self.vheaderitems = {}
         self.settings = FinalCifSettings(self)
         self.store_predefined_templates()
-        self.settings.load_window_position()
         self.show_equipment_and_properties()
+        self.settings.load_window_position()
         # distribute CifItemsTable Columns evenly:
         hheader = self.ui.CifItemsTable.horizontalHeader()
         hheader.setSectionResizeMode(0, QHeaderView.Stretch)
@@ -125,12 +121,12 @@ class AppWindow(QMainWindow):
         self.ui.MercuryPushButton.setDisabled(True)
         self.ui.SaveFullReportButton.setDisabled(True)
         self.ui.CheckcifButton.setDisabled(True)
-        self.get_cif_file_block(r'/Volumes/nifty/test_workordner/Esser_JW344/Esser_JW344_0m_a.cif')
+        # self.get_cif_file_block(r'D:\frames\guest\BruecknerRK_103\work\BruecknerRK_103_Cu_0m_a.cif')
         self.ui.EquipmentTemplatesListWidget.setCurrentRow(self.settings.load_last_equipment())
 
     def __del__(self):
         print('saving position')
-        self.settings.save_window_position(self.pos(), self.size())
+        self.settings.save_window_position(self.pos(), self.size(), self.isMaximized())
         self.settings.save_favorite_template(self.ui)
 
     def connect_signals_and_slots(self):
@@ -192,9 +188,9 @@ class AppWindow(QMainWindow):
                     except AttributeError:
                         item = None
                 if item:
-                    if col == 0 and item != (None or ''):
+                    if col == 0 and item != (None or '' or '?'):
                         col0 = item
-                    if col == 1 and not col0 and item != (None or ''):
+                    if col == 1 and not col0 and item != (None or '' or '?'):
                         col1 = item
                     try:
                         if col == 2 and item != (None or ''):
