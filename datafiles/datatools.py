@@ -3,6 +3,7 @@ from pathlib import Path
 from cif.file_reader import CifContainer
 from datafiles.bruker_frame import BrukerFrameHeader
 from datafiles.p4p_reader import P4PFile
+from datafiles.platon import PlatonOut
 from datafiles.sadabs import Sadabs
 from datafiles.saint import SaintListFile
 from datafiles.shelxt import SHELXTlistfile
@@ -37,12 +38,26 @@ class BrukerData(object):
             t_max = max(self.sadabs.dataset(dataset_num).transmission)
         except (KeyError, AttributeError, TypeError):
             # no abs file found
-            print('no abs file found')
             abstype = '?'
             t_min = '?'
             t_max = '?'
         # the lower temp is more likely:
-        temp1 = self.frame_header.temperature
+        try:
+            temp1 = self.frame_header.temperature
+        except AttributeError:
+            temp1 = 293
+        try:
+            kilovolt = self.frame_header.kilovolts
+        except AttributeError:
+            kilovolt = ''
+        try:
+            milliwatt = self.frame_header.milliwatt
+        except AttributeError:
+            milliwatt = ''
+        try:
+            moiety = self.platon_out.formula_moiety
+        except AttributeError:
+            moiety = ''
         temp2 = self.p4p.temperature
         temperature = round(min([temp1, temp2]), 1)
         # TODO: make a Sources class that returns either the parser object itself or the respective value from the key:
@@ -66,8 +81,9 @@ class BrukerData(object):
                    '_exptl_crystal_size_max'        : self.p4p.crystal_size[2] or '',
                    '_computing_structure_solution'  : solution_version,
                    '_atom_sites_solution_primary'   : solution_primary,
-                   '_diffrn_source_current'         : self.frame_header.kilovolts or '',
-                   '_diffrn_source_voltage'         : self.frame_header.milliwatt or '',
+                   '_diffrn_source_current'         : kilovolt or '',
+                   '_diffrn_source_voltage'         : milliwatt or '',
+                   '_chemical_formula_moiety': moiety or '',
                    }
         self.sources = dict((k.lower(), v) for k, v in sources.items())
 
@@ -119,3 +135,7 @@ class BrukerData(object):
     @property
     def p4p(self):
         return P4PFile(self.basename)
+
+    @property
+    def platon_out(self):
+        return PlatonOut(self.basename)

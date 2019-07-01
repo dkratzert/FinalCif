@@ -8,11 +8,14 @@ class BrukerFrameHeader():
         p = Path('./')
         frames = p.glob(basename + '*.sfrm')
         frames = sorted(frames, key=os.path.getmtime, reverse=True)
+        self._fileobj = None
         if not frames:
-            frames = p.rglob('*.sfrm')
+            frames = p.glob('*.sfrm')
         for fr in frames:
             if fr:
                 self._fileobj = Path(fr)
+        if not self._fileobj:
+            raise AttributeError
         self.filename = self._fileobj.absolute()
         self.header = {}
         with open(self._fileobj) as file:

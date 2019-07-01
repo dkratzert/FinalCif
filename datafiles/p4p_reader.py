@@ -51,9 +51,9 @@ class P4PFile():
         self.radiation_type = ''
         self.wavelen = ''
         p = Path('./')
-        p4p_files = p.rglob(basename + '*_0m.p4p')
+        p4p_files = p.glob(basename + '*_0m.p4p')
         if not p4p_files:
-            p4p_files = p.rglob('*.p4p')
+            p4p_files = p.glob('*.p4p')
         for p in p4p_files:
             if p:
                 self.filename = p
