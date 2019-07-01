@@ -36,7 +36,10 @@ class FinalCifSettings():
 
     def load_window_position(self):
         self.settings.beginGroup("MainWindow")
-        pos = self.settings.value("position", type=QPoint)
+        try:
+            pos = self.settings.value("position", type=QPoint)
+        except TypeError:
+            pos = QPoint(20, 20)
         try:
             size = QSize(self.settings.value("size"))
             self.window.resize(size)
