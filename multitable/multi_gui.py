@@ -24,9 +24,9 @@ else:
     application_path = os.path.dirname(os.path.abspath(__file__))
 
 
-class AppWindow(QMainWindow):
-    def __init__(self):
-        super().__init__()
+class MultitableAppWindow(QMainWindow):
+    def __init__(self, parent):
+        super().__init__(parent=parent)
         self.ui = Ui_MultitableWindow()
         self.ui.setupUi(self)
         self.ui.report_button.setDisabled(True)
@@ -111,6 +111,6 @@ if __name__ == '__main__':
         uic.compileUiDir(os.path.join(application_path, './gui'))
 
     app = QApplication(sys.argv)
-    w = AppWindow()
+    w = MultitableAppWindow()
     w.show()
     sys.exit(app.exec_())
