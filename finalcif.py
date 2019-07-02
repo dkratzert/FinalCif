@@ -36,6 +36,7 @@ from gui.finalcif_gui import Ui_FinalCifWindow
 """
 TODO:
 
+- if platon not found, load to tmep dir and execute from there.
 - new icon
 - Cif author as template
 - crystallization method templates
