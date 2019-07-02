@@ -2,7 +2,7 @@ import os
 import sys
 from pathlib import Path
 
-from PyQt5.QtCore import QPoint, Qt
+from PyQt5.QtCore import QPoint, Qt, QSize
 from PyQt5.QtGui import QColor, QIcon, QPalette
 
 from cif.file_reader import CifContainer, quote
@@ -36,6 +36,13 @@ from gui.finalcif_gui import Ui_FinalCifWindow
 """
 TODO:
 
+- new icon
+- Cif author as template
+- crystallization method templates
+- preparationm method templates
+- crytsal author: submitter, operator
+- show adata source on table hover
+- references field
 - have a recently opened menu
 - color code differences between cif and data soures in columns
 - add response forms
@@ -122,11 +129,12 @@ class AppWindow(QMainWindow):
         self.ui.MercuryPushButton.setDisabled(True)
         #self.ui.SaveFullReportButton.setDisabled(True)
         self.ui.CheckcifButton.setDisabled(True)
-        # only for testing:
-        # self.load_cif_file(r'test-data/twin4.cif')
-        # self.load_cif_file(r'D:\frames\guest\BruecknerRK_103\work\BruecknerRK_103_Cu_0m_a.cif')
-        # self.load_cif_file(r'D:\frames\BB_29\P-1_a.cif')
-        # self.load_cif_file(r'D:\frames\guest\Esser_JW283\Esser_JW283\Esser_JW283_0m_a.cif')
+        if DEBUG:
+            # only for testing:
+            # self.load_cif_file(r'test-data/twin4.cif')
+            self.load_cif_file(r'D:\frames\guest\BruecknerRK_103\work\BruecknerRK_103_Cu_0m_a.cif')
+            # self.load_cif_file(r'D:\frames\BB_29\P-1_a.cif')
+            # self.load_cif_file(r'D:\frames\guest\Esser_JW283\Esser_JW283\Esser_JW283_0m_a.cif')
         self.ui.EquipmentTemplatesListWidget.setCurrentRow(-1)  # Has to he in front in order to work
         self.ui.EquipmentTemplatesListWidget.setCurrentRow(self.settings.load_last_equipment())
         # Sorting desyncronizes header and columns:
@@ -667,6 +675,7 @@ class AppWindow(QMainWindow):
                     else:
                         tab_item.setBackground(yellow)
                     # print(sources[miss_data], miss_data)
+                    self.ui.CifItemsTable.resizeRowToContents(row_num)
                 except KeyError as e:
                     # print(e, '##')
                     pass
@@ -707,7 +716,7 @@ class AppWindow(QMainWindow):
             self.add_row(key, value)
             # print(key, value)
         self.get_data_sources()
-        self.ui.CifItemsTable.resizeRowsToContents()
+        # self.ui.CifItemsTable.resizeRowsToContents()
 
     def edit_row(self, vert_key: str = None, new_value=None, column: int = 1):
         """
@@ -751,6 +760,11 @@ class AppWindow(QMainWindow):
             self.ui.CifItemsTable.setCellWidget(row_num, 2, tab2)
             tabitem.setReadOnly(True)
             tab1.setReadOnly(True)
+            # Make QPlainTextEdit fields a bit higher than the rest
+            self.ui.CifItemsTable.setRowHeight(row_num, 80)
+        #else:
+        #if key in text_field_keys:
+        #    self.ui.CifItemsTable.setRowHeight(row_num, 60)
         else:
             tabitem = QTableWidgetItem(strval)
             if key == "These are already in:":
@@ -765,6 +779,7 @@ class AppWindow(QMainWindow):
                 self.ui.CifItemsTable.setItem(row_num, 0, item1)
                 self.ui.CifItemsTable.setItem(row_num, 1, item2)
                 self.ui.CifItemsTable.setItem(row_num, 2, item3)
+                self.ui.CifItemsTable.resizeRowToContents(row_num)
             else:
                 tab1 = QTableWidgetItem()
                 tab2 = QTableWidgetItem()
@@ -775,8 +790,8 @@ class AppWindow(QMainWindow):
                     self.ui.CifItemsTable.setItem(row_num, 2, tab2)
                 tabitem.setFlags(tabitem.flags() ^ Qt.ItemIsEditable)
                 tab1.setFlags(tab1.flags() ^ Qt.ItemIsEditable)
+                self.ui.CifItemsTable.resizeRowToContents(row_num)
         self.ui.CifItemsTable.setVerticalHeaderItem(row_num, item_key)
-        self.ui.CifItemsTable.resizeRowToContents(row_num)
 
 
 if __name__ == '__main__':
