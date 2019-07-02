@@ -36,19 +36,17 @@ from gui.finalcif_gui import Ui_FinalCifWindow
 """
 TODO:
 
-- Cif author as template
+- find DSR string in res file and put descriptive text in cif.
+- make an extra thread to load the cif data
 - crystallization method templates
 - preparationm method templates
 - crytsal author: submitter, operator
-- show adata source on table hover
+- show data source on table hover
 - references field
 - have a recently opened menu
-- color code differences between cif and data soures in columns
 - add response forms
 - The click on a cif keyword in the table opens the IuCr help about this key in a popup. (Not easy!)
-- find DSR string in res file and put descriptive text in cif.
 - Checkcif: http://journals.iucr.org/services/cif/checking/validlist.html
-- Determine the res file name from cif file. That can give a hint for the naming sheme or space group chaos naming.
 - only let real cif keywords into the EquipmentEditTableWidget and cifKeywordLE.
 - action: rightclick on a template -> offer "export template (to .cif)"
 - action: rightclick on a template -> offer "import template (from .cif)"
