@@ -177,6 +177,7 @@ text_field_keys = ('_refine_special_details',
                    '_exptl_absorpt_process_details'
                    '_refine_special_details',
                    '_publ_section_references',
+                   '_audit_contact_author_address'
                    )
 
 ABSORPTION_CORRECTION_TYPES = (
@@ -423,5 +424,6 @@ predef_equipment_templ = [{'name': 'D8 VENTURE',
                            ]
                            },
                           ]
+
 non_centrosymm_keys = ('_chemical_absolute_configuration', '_refine_ls_abs_structure_Flack',
                        '_refine_ls_abs_structure_details')
