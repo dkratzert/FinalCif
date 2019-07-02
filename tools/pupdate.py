@@ -45,10 +45,14 @@ def get_changes():
 
 
 def get_platon() -> tempfile.TemporaryFile:
-    # now preceed with platon update
-    req = request.Request(platon_url)
-    with urllib.request.urlopen(req) as response:
-        data = response.read()
+    try:
+        # now preceed with platon update
+        req = request.Request(platon_url)
+        with urllib.request.urlopen(req) as response:
+            data = response.read()
+    except Exception as e:
+        print('Can not load platon:', e)
+        return None
     # create a temporary file and download platon.zip to it.
     localFile = tempfile.TemporaryFile(mode='w+b')
     localFile.write(data)

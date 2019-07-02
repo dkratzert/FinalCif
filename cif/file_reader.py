@@ -5,7 +5,7 @@ from pathlib import Path
 import gemmi
 
 from cif import cif_file_parser
-from tools.misc import high_prio_keys, medium_prio_keys
+from tools.misc import high_prio_keys, medium_prio_keys, non_centrosymm_keys
 
 
 def quote(string, wrapping=80):
@@ -123,7 +123,7 @@ class CifContainer():
         # contains the answered keys:
         with_values = []
         for key in inputkeys:
-            if key in self.non_centrosymm_keys and self.is_centrosymm:
+            if key in non_centrosymm_keys and self.is_centrosymm:
                 continue
             # try:
             value = self.block.find_value(key)
@@ -135,4 +135,3 @@ class CifContainer():
                 with_values.append([key, value])
         return questions, with_values
 
-    non_centrosymm_keys = ('_chemical_absolute_configuration', '_refine_ls_abs_structure_Flack')
