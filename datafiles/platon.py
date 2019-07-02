@@ -8,6 +8,8 @@ from time import sleep
 
 from PyQt5.QtWidgets import QMessageBox
 
+from tools.pupdate import get_platon
+
 
 class PlatonOut():
     def __init__(self, file: Path):
@@ -46,7 +48,9 @@ class PlatonOut():
         plat = None
         chkfile = Path(self.cif_fileobj.stem + '.chk')
         print(chkfile.name)
+        os.chdir(self.cif_fileobj.absolute().parent)
         timeticks = 0
+        #pexe = get_platon()
         try:
             si = subprocess.STARTUPINFO()
             si.dwFlags = 1
@@ -57,15 +61,17 @@ class PlatonOut():
         # waiting for chk file to appear:
         while not chkfile.is_file():
             timeticks = timeticks + 1
-            print('not there', timeticks)
+            #print('not there', timeticks)
             sleep(0.01)
             if timeticks > 500:
                 print('Platon statup took too long. Killing Platon...')
                 try:
                     print('terminating platon1')
                     plat.terminate()
+                    break
                 except Exception as e:
                     print(e)
+                    break
         size1 = chkfile.stat().st_size
         size2 = 99999999
         timeticks = 0
@@ -73,15 +79,17 @@ class PlatonOut():
         while size1 <= size2:
             timeticks = timeticks + 1
             size2 = chkfile.stat().st_size
-            print(size1, size2)
+            #print(size1, size2)
             sleep(0.2)
             size1 = chkfile.stat().st_size
             if timeticks > 50:  # 10s
                 try:
                     print('terminating platon2')
                     plat.terminate()
+                    break
                 except Exception:
                     pass
+                    break
         try:
             plat.terminate()
         except Exception:
@@ -93,5 +101,8 @@ class PlatonOut():
 
 if __name__ == '__main__':
     print('###############\n\n')
-    s = PlatonOut(Path(r'D:\\frames\\guest\\Esser_JW283\\Esser_JW283'))
+    fname = Path(r'D:\frames\guest\Esser_JW283\Esser_JW283\Esser_JW283_0m_a.cif')
+    s = PlatonOut(fname)
     print(s)
+    chkfile = Path(fname.stem + '.chk')
+    chkfile.unlink()
