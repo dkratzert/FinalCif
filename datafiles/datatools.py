@@ -56,7 +56,8 @@ class BrukerData(object):
             milliwatt = ''
         try:
             moiety = self.platon_out.formula_moiety
-        except AttributeError:
+        except Exception as e:
+            print('Could not make moiety formula:', e)
             moiety = ''
         temp2 = self.p4p.temperature
         temperature = round(min([temp1, temp2]), 1)
