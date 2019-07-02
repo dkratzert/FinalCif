@@ -126,6 +126,7 @@ class AppWindow(QMainWindow):
         # self.load_cif_file(r'test-data/twin4.cif')
         # self.load_cif_file(r'D:\frames\guest\BruecknerRK_103\work\BruecknerRK_103_Cu_0m_a.cif')
         # self.load_cif_file(r'D:\frames\BB_29\P-1_a.cif')
+        # self.load_cif_file(r'D:\frames\guest\Esser_JW283\Esser_JW283\Esser_JW283_0m_a.cif')
         self.ui.EquipmentTemplatesListWidget.setCurrentRow(-1)  # Has to he in front in order to work
         self.ui.EquipmentTemplatesListWidget.setCurrentRow(self.settings.load_last_equipment())
         # Sorting desyncronizes header and columns:
