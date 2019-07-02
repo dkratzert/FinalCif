@@ -122,7 +122,7 @@ high_prio_keys = [
     '_reflns_Friedel_fraction_full',
     '_reflns_special_details',
     '_refine_ls_abs_structure_Flack',
-    '_chemical_absolute_configuration', 
+    '_chemical_absolute_configuration',
     '_computing_data_collection',  # from frame header: 'PROGRAM': 'BIS V6.2.10/2018-10-02',
     '_computing_cell_refinement',
     '_computing_data_reduction',
@@ -334,6 +334,12 @@ predef_prop_templ = [{'name'  : 'Crystal Color',
                       'values': ['_diffrn_ambient_temperature',
                                  ['', '15(1)', '80(2)', '100(2)', '110(2)',
                                   '120(2)', '130(2)', '150(2)', '200(2)', '293.15(2)', '298(2)']]
+                      },
+                     {'name'  : 'Molecular Graphics',
+                      'values': ['_computing_molecular_graphics',
+                                 ['', 'Olex2 (Dolomanov et al., 2009)', 'ShelXle (H\"ubschle 2011)',
+                                  'ORTEP Farrujia 2012', 'Bruker SHELXTL, XP (G. Sheldrick)',
+                                  'Mercury CSD']]
                       }
                      ]
 
