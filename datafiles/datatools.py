@@ -55,6 +55,21 @@ class BrukerData(object):
         except AttributeError:
             milliwatt = ''
         try:
+            detector_type = self.frame_header.detector_type
+        except AttributeError:
+            detector_type = ''
+        print(detector_type)
+        if detector_type.find('APEX2') > 0:
+            for num, row in enumerate(self.app.settings.settings.value('equipment_list')):
+                if row.find('APEX') > 0:
+                    self.app.ui.EquipmentTemplatesListWidget.setCurrentRow(-1)
+                    self.app.ui.EquipmentTemplatesListWidget.setCurrentRow(num)
+        if detector_type.find('PHOTON') > 0:
+            for num, row in enumerate(self.app.settings.settings.value('equipment_list')):
+                if row.find('VENTURE') > 0:
+                    self.app.ui.EquipmentTemplatesListWidget.setCurrentRow(-1)
+                    self.app.ui.EquipmentTemplatesListWidget.setCurrentRow(num)
+        try:
             moiety = self.platon_out.formula_moiety
         except Exception as e:
             print('Could not make moiety formula:', e)

@@ -398,11 +398,11 @@ predef_equipment_templ = [{'name': 'D8 VENTURE',
                                ['_diffrn_measurement_specimen_support', 'Mitegen Loop'],
                            ]
                            },
-                          {'name': 'SAMRT APEX II',
+                          {'name': 'SMART APEX2 QUAZAR',
                            'items': [
                                ['_diffrn_radiation_monochromator', 'mirror optics'],
                                ['_diffrn_measurement_device', 'three-circle diffractometer'],
-                               ['_diffrn_measurement_device_type', 'Bruker SMART APEX II QUAZAR'],
+                               ['_diffrn_measurement_device_type', 'Bruker SMART APEX2 QUAZAR'],
                                ['_diffrn_measurement_method', '\w and \f scans'],
                                ['_diffrn_source', 'microfocus sealed X-ray tube'],
                                ['_diffrn_source_type', 'Incoatec I\ms'],

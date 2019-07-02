@@ -47,7 +47,6 @@ class PlatonOut():
     def run_platon(self):
         plat = None
         chkfile = Path(self.cif_fileobj.stem + '.chk')
-        print(chkfile.name)
         os.chdir(self.cif_fileobj.absolute().parent)
         timeticks = 0
         # a fresh platon exe from the web:
@@ -71,7 +70,7 @@ class PlatonOut():
             if timeticks > 1000:
                 print('Platon statup took too long. Killing Platon...')
                 try:
-                    print('terminating platon1')
+                    print('Platon took too much time, terminating platon. (1)')
                     plat.terminate()
                     break
                 except Exception as e:
@@ -87,9 +86,9 @@ class PlatonOut():
             #print(size1, size2)
             sleep(0.1)
             size1 = chkfile.stat().st_size
-            if timeticks > 300:  # 30s
+            if timeticks > 200:  # 30s
                 try:
-                    print('terminating platon2')
+                    print('Platon took too much time, terminating platon. (2)')
                     plat.terminate()
                     break
                 except Exception:
