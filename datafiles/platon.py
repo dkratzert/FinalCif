@@ -56,11 +56,11 @@ class PlatonOut():
             si = subprocess.STARTUPINFO()
             si.dwFlags = 1
             si.wShowWindow = 0
-            if not pexe:
-                plat = subprocess.Popen([r'platon.exe', '-u', self.cif_fileobj.name], startupinfo=si)
+            if pexe:
+                plat = subprocess.Popen([pexe, '-u', self.cif_fileobj.name], startupinfo=si)
             else:
                 print('trying local platon')
-                plat = subprocess.Popen([pexe, '-u', self.cif_fileobj.name], startupinfo=si)
+                plat = subprocess.Popen([r'platon.exe', '-u', self.cif_fileobj.name], startupinfo=si)
         except FileNotFoundError:
             print('Platon not found.')
             return
@@ -68,7 +68,7 @@ class PlatonOut():
         while not chkfile.is_file():
             timeticks = timeticks + 1
             sleep(0.01)
-            if timeticks > 500:
+            if timeticks > 1000:
                 print('Platon statup took too long. Killing Platon...')
                 try:
                     print('terminating platon1')
@@ -85,9 +85,9 @@ class PlatonOut():
             timeticks = timeticks + 1
             size2 = chkfile.stat().st_size
             #print(size1, size2)
-            sleep(0.2)
+            sleep(0.1)
             size1 = chkfile.stat().st_size
-            if timeticks > 50:  # 10s
+            if timeticks > 300:  # 30s
                 try:
                     print('terminating platon2')
                     plat.terminate()
