@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/Users/daniel/GitHub/FinalCif/./gui/finalcif_gui.ui'
+# Form implementation generated from reading ui file 'D:\GitHub\FinalCif\./gui\finalcif_gui.ui'
 #
-# Created by: PyQt5 UI code generator 5.12.3
+# Created by: PyQt5 UI code generator 5.12.2
 #
 # WARNING! All changes made in this file will be lost!
-
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
@@ -278,7 +277,7 @@ class Ui_FinalCifWindow(object):
         self.SelectCif_PushButton.setText(_translate("FinalCifWindow", "Select File"))
         self.CifDataItemsGroupBox.setTitle(_translate("FinalCifWindow", "Missing CIF Items"))
         self.CheckcifButton.setText(_translate("FinalCifWindow", "CheckCif"))
-        self.SaveFullReportButton.setText(_translate("FinalCifWindow", "Save Tables"))
+        self.SaveFullReportButton.setText(_translate("FinalCifWindow", "Make Tables"))
         self.CifItemsTable.setSortingEnabled(False)
         item = self.CifItemsTable.horizontalHeaderItem(0)
         item.setText(_translate("FinalCifWindow", "CIF Value"))
@@ -313,3 +312,5 @@ class Ui_FinalCifWindow(object):
         self.actionSave_Report.setText(_translate("FinalCifWindow", "Save Report"))
         self.actionSave_CIF_File.setText(_translate("FinalCifWindow", "Save CIF File"))
         self.actionedit_templates.setText(_translate("FinalCifWindow", "edit templates"))
+
+
