@@ -54,21 +54,25 @@ class BrukerData(object):
             milliwatt = self.frame_header.milliwatt
         except AttributeError:
             milliwatt = ''
+        # Have to find a different method to select the row:
+        """
         try:
             detector_type = self.frame_header.detector_type
         except AttributeError:
             detector_type = ''
         print(detector_type)
-        if detector_type.find('APEX2') > 0:
+        if 'APEX2' in detector_type:
             for num, row in enumerate(self.app.settings.settings.value('equipment_list')):
-                if row.find('APEX') > 0:
-                    self.app.ui.EquipmentTemplatesListWidget.setCurrentRow(-1)
-                    self.app.ui.EquipmentTemplatesListWidget.setCurrentRow(num)
-        if detector_type.find('PHOTON') > 0:
+                if 'APEX' in row:
+                    #self.app.ui.EquipmentTemplatesListWidget.setCurrentRow(-1)
+                    self.app.ui.EquipmentTemplatesListWidget.setCurrentRow(num+1)
+                    break
+        if 'PHOTON' in detector_type:
             for num, row in enumerate(self.app.settings.settings.value('equipment_list')):
-                if row.find('VENTURE') > 0:
-                    self.app.ui.EquipmentTemplatesListWidget.setCurrentRow(-1)
-                    self.app.ui.EquipmentTemplatesListWidget.setCurrentRow(num)
+                if 'VENTURE' in row:
+                    #self.app.ui.EquipmentTemplatesListWidget.setCurrentRow(-1)
+                    self.app.ui.EquipmentTemplatesListWidget.setCurrentRow(num+1)
+                    break"""
         try:
             moiety = self.platon_out.formula_moiety
         except Exception as e:
