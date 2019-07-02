@@ -36,8 +36,6 @@ from gui.finalcif_gui import Ui_FinalCifWindow
 """
 TODO:
 
-- if platon not found, load to tmep dir and execute from there.
-- new icon
 - Cif author as template
 - crystallization method templates
 - preparationm method templates
@@ -528,7 +526,10 @@ class AppWindow(QMainWindow):
         table_data = self.settings.load_template('property/' + selected_row_text)
         if table_data:
             cif_key = table_data[0]
-            table_data = table_data[1]
+            try:
+                table_data = table_data[1]
+            except:
+                pass
             self.ui.cifKeywordLE.setText(cif_key)
         n = 0
         if not table_data:

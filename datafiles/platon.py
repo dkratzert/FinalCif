@@ -50,18 +50,23 @@ class PlatonOut():
         print(chkfile.name)
         os.chdir(self.cif_fileobj.absolute().parent)
         timeticks = 0
-        #pexe = get_platon()
+        # a fresh platon exe from the web:
+        pexe = get_platon()
         try:
             si = subprocess.STARTUPINFO()
             si.dwFlags = 1
             si.wShowWindow = 0
-            plat = subprocess.Popen([r'platon.exe', '-u', self.cif_fileobj.name], startupinfo=si)
+            if not pexe:
+                plat = subprocess.Popen([r'platon.exe', '-u', self.cif_fileobj.name], startupinfo=si)
+            else:
+                print('trying local platon')
+                plat = subprocess.Popen([pexe, '-u', self.cif_fileobj.name], startupinfo=si)
         except FileNotFoundError:
             print('Platon not found.')
+            return
         # waiting for chk file to appear:
         while not chkfile.is_file():
             timeticks = timeticks + 1
-            #print('not there', timeticks)
             sleep(0.01)
             if timeticks > 500:
                 print('Platon statup took too long. Killing Platon...')

@@ -51,9 +51,9 @@ class Manufacturer():
 
     def __init__(self):
         self.points = {'bruker': 0,
-                       'stoe'  : 0,
+                       'stoe': 0,
                        'rigaku': 0,
-                       'other' : 0
+                       'other': 0
                        }
 
     def get_manufacturer(self):
@@ -72,6 +72,7 @@ class Manufacturer():
 # '_space_group_centring_type',  # seems to be used nowere
 # '_exptl_absorpt_special_details',   # This is not official?!?
 high_prio_keys = [
+    '_audit_contact_author_address',
     '_audit_creation_method',
     '_chemical_formula_moiety',
     '_chemical_formula_sum',
@@ -121,7 +122,6 @@ high_prio_keys = [
     '_reflns_Friedel_fraction_max',
     '_reflns_Friedel_fraction_full',
     '_reflns_special_details',
-    '_refine_ls_abs_structure_Flack',
     '_chemical_absolute_configuration',
     '_computing_data_collection',  # from frame header: 'PROGRAM': 'BIS V6.2.10/2018-10-02',
     '_computing_cell_refinement',
@@ -139,6 +139,8 @@ high_prio_keys = [
     '_refine_ls_hydrogen_treatment',
     '_refine_ls_extinction_method',
     '_refine_ls_extinction_coef',
+    '_refine_ls_abs_structure_Flack',
+    '_refine_ls_abs_structure_details',
     '_refine_ls_number_reflns',
     '_refine_ls_number_parameters',
     '_refine_ls_number_restraints',
@@ -155,6 +157,7 @@ high_prio_keys = [
 medium_prio_keys = [
     '_computing_molecular_graphics',
     '_computing_publication_material',
+    '_publ_section_references',
     '_chemical_name_systematic',
     '_chemical_name_common',
     '_chemical_melting_point',
@@ -173,6 +176,7 @@ text_field_keys = ('_refine_special_details',
                    '_reflns_special_details',
                    '_exptl_absorpt_process_details'
                    '_refine_special_details',
+                   '_publ_section_references',
                    )
 
 ABSORPTION_CORRECTION_TYPES = (
@@ -277,13 +281,13 @@ SOLUTION_SECONDARY = (
     (10, 'other'),
 )
 
-special_fields = {'_exptl_crystal_colour'               : COLOUR_CHOICES,
-                  '_chemical_absolute_configuration'    : ABSOLUTE_CONFIGURATION_CHOICES,
-                  '_exptl_absorpt_correction_type'      : ABSORPTION_CORRECTION_TYPES,
-                  '_refine_ls_hydrogen_treatment'       : REFINE_LS_HYDROGEN_TREATMENT,
-                  '_diffrn_radiation_type'              : RADIATION_TYPE,
-                  '_atom_sites_solution_primary'        : SOLUTION_PRIMARY,
-                  '_atom_sites_solution_secondary'      : SOLUTION_PRIMARY,
+special_fields = {'_exptl_crystal_colour': COLOUR_CHOICES,
+                  '_chemical_absolute_configuration': ABSOLUTE_CONFIGURATION_CHOICES,
+                  '_exptl_absorpt_correction_type': ABSORPTION_CORRECTION_TYPES,
+                  '_refine_ls_hydrogen_treatment': REFINE_LS_HYDROGEN_TREATMENT,
+                  '_diffrn_radiation_type': RADIATION_TYPE,
+                  '_atom_sites_solution_primary': SOLUTION_PRIMARY,
+                  '_atom_sites_solution_secondary': SOLUTION_PRIMARY,
                   '_diffrn_measurement_specimen_support': SPECIMEN_SUPPORT,
                   }
 
@@ -316,42 +320,71 @@ def to_int(st):
 
 ### Property contents:
 
-predef_prop_templ = [{'name'  : 'Crystal Color',
+predef_prop_templ = [{'name': 'Crystal Color',
                       'values': ['_exptl_crystal_colour',
                                  ['', 'colourless', 'white', 'black', 'yellow', 'red', 'blue',
                                   'green', 'gray', 'pink', 'orange', 'violet', 'brown']]
                       },
-                     {'name'  : 'Crystal Habit',
+                     {'name': 'Crystal Habit',
                       'values': ['_exptl_crystal_description',
                                  ['', 'block', 'needle', 'plate', 'prism', 'sphere']]
                       },
-                     {'name'  : 'Cell Measurement Temperature',
+                     {'name': 'Cell Measurement Temperature',
                       'values': ['_cell_measurement_temperature',
                                  ['', '15', '80(2)', '100(2)', '110(2)',
                                   '120(2)', '130(2)', '150(2)', '200(2)', '298(2)']]
                       },
-                     {'name'  : 'Measurement Temperature',
+                     {'name': 'Measurement Temperature',
                       'values': ['_diffrn_ambient_temperature',
                                  ['', '15(1)', '80(2)', '100(2)', '110(2)',
                                   '120(2)', '130(2)', '150(2)', '200(2)', '293.15(2)', '298(2)']]
                       },
-                     {'name'  : 'Molecular Graphics',
+                     {'name': 'Molecular Graphics',
                       'values': ['_computing_molecular_graphics',
                                  ['', 'Olex2 (Dolomanov et al., 2009)', 'ShelXle (H\"ubschle 2011)',
                                   'ORTEP Farrujia 2012', 'Bruker SHELXTL, XP (G. Sheldrick)',
                                   'Mercury CSD']]
+                      },
+                     {'name': 'Contact Author for cif file',
+                      'values': ['_audit_contact_author_address',
+                                 ['Albert-Ludwigs-Universitaet Freiburg\n'
+                                  'Institut fuer Anorganische und Analytische Chemie\n'
+                                  'Albertstrasse 21\n'
+                                  'Freiburg i. Br.\n'
+                                  '79104\n'
+                                  'Germany']]
                       }
                      ]
 
 """
-    _diffrn_source               'rotating anode X-ray tube'
-    _diffrn_source_type          'Rigaku RU-200'
-    _diffrn_source_power         50
-    _diffrn_source_current       180
-    _diffrn_source_size          '8 mm x 0.4 mm broad focus'
+_audit_contact_author_address
+;
+Albert-Ludwigs-Universitaet Freiburg
+Institut fuer Anorganische und Analytische Chemie
+Albertstrasse 21
+Freiburg i. Br.
+79104
+Germany
+;
+_audit_contact_author_email        daniel.kratzert@ac.uni-freiburg.de
+_audit_contact_author_name         'Kratzert, D.'
+_audit_contact_author_phone        '+49 761-203-6156'
+_publ_contact_author_id_orcid      0000-0003-0970-9780
+_publ_section_references
+;
+D. Kratzert, I. Krossing, J. Appl. Cryst. 2018, 51.
+
+Dolomanov, O.V., Bourhis, L.J., Gildea, R.J, Howard, J.A.K. & Puschmann, H.
+ (2009), J. Appl. Cryst. 42, 339-341.
+
+Sheldrick, G.M. (2015). Acta Cryst. A71, 3-8.
+
+Sheldrick, G.M. (2015). Acta Cryst. C71, 3-8.
+;
+
 """
 
-predef_equipment_templ = [{'name' : 'D8 VENTURE',
+predef_equipment_templ = [{'name': 'D8 VENTURE',
                            'items': [
                                ['_diffrn_radiation_monochromator', 'mirror optics'],
                                ['_diffrn_measurement_device', 'three-circle diffractometer'],
@@ -364,7 +397,7 @@ predef_equipment_templ = [{'name' : 'D8 VENTURE',
                                ['_diffrn_measurement_specimen_support', 'Mitegen Loop'],
                            ]
                            },
-                          {'name' : 'SAMRT APEX II',
+                          {'name': 'SAMRT APEX II',
                            'items': [
                                ['_diffrn_radiation_monochromator', 'mirror optics'],
                                ['_diffrn_measurement_device', 'three-circle diffractometer'],
@@ -377,7 +410,7 @@ predef_equipment_templ = [{'name' : 'D8 VENTURE',
                                ['_diffrn_measurement_specimen_support', 'Mitegen Loop'],
                            ]
                            },
-                          {'name' : 'Rigaku Spider',
+                          {'name': 'Rigaku Spider',
                            'items': [
                                ['_diffrn_radiation_monochromator', 'graphite'],
                                ['_diffrn_measurement_device', 'four-circle diffractometer'],
@@ -390,3 +423,5 @@ predef_equipment_templ = [{'name' : 'D8 VENTURE',
                            ]
                            },
                           ]
+non_centrosymm_keys = ('_chemical_absolute_configuration', '_refine_ls_abs_structure_Flack',
+                       '_refine_ls_abs_structure_details')
