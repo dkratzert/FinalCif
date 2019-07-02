@@ -7,6 +7,7 @@ from PyQt5.QtGui import QColor, QIcon, QPalette
 
 from cif.file_reader import CifContainer, quote
 from datafiles.datatools import BrukerData
+from multitable.multi_gui import MultitableAppWindow
 from tools.misc import predef_equipment_templ, predef_prop_templ, special_fields, text_field_keys
 from tools.settings import FinalCifSettings
 
@@ -119,7 +120,7 @@ class AppWindow(QMainWindow):
         self.manufacturer = 'bruker'
         # self.ui.DataFilesGroupBox.hide()
         self.ui.MercuryPushButton.setDisabled(True)
-        self.ui.SaveFullReportButton.setDisabled(True)
+        #self.ui.SaveFullReportButton.setDisabled(True)
         self.ui.CheckcifButton.setDisabled(True)
         # only for testing:
         # self.load_cif_file(r'test-data/twin4.cif')
@@ -169,6 +170,14 @@ class AppWindow(QMainWindow):
         self.ui.EquipmentTemplatesListWidget.currentRowChanged.connect(self.load_selected_equipment)
         self.ui.EquipmentTemplatesListWidget.clicked.connect(self.load_selected_equipment)
         # something like cifItemsTable.selected_field.connect(self.display_data_file)
+        ##
+        self.ui.SaveFullReportButton.clicked.connect(self.run_multitable)
+
+    def run_multitable(self):
+        #app = QApplication(sys.argv)
+        w = MultitableAppWindow(self)
+        w.show()
+        #sys.exit(app.exec_())
 
     def save_current_cif_file(self):
         table = self.ui.CifItemsTable
@@ -218,10 +227,10 @@ class AppWindow(QMainWindow):
                     # This is my row information
                     # print('col2:', vhead, col0, col1, col2, '#')
                     if col1 and not col2:
-                        self.cif.block.set_pair(vhead, quote(col1))
+                        self.cif.set_pair_delimited(vhead, quote(col1))
                     if col2:
                         try:
-                            self.cif.block.set_pair(vhead, quote(col2))
+                            self.cif.set_pair_delimited(vhead, quote(col2))
                         except RuntimeError:
                             pass
         fin_file = Path(self.cif.filename.parts[-1][:-4] + '-finalcif.cif')

@@ -87,6 +87,18 @@ class CifContainer():
     def cell(self):
         return self.cif_data.cell
 
+    def set_pair_delimited(self, key, txt):
+        """
+        Converts special characters to their markup counterparts.
+        """
+        charcters = {'°': r'\%', '±': r'+-', 'ß': r'\&s', 'ü': r'u\"',
+                     'ö': r'o\"', 'ä': r'a\"', 'é': '\'e', 'á': r'\'a',
+                     'à': r'\`a', 'â': r'\^a', 'ç': r'\,c'}
+        for char in txt:
+            if char in charcters:
+                txt = txt.replace(char, charcters[char])
+        self.block.set_pair(key, txt)
+
     def key_value_pairs(self):
         """
         Returns the key/value pairs of a cif file sorted by priority.
