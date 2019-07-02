@@ -138,4 +138,4 @@ class BrukerData(object):
 
     @property
     def platon_out(self):
-        return PlatonOut(self.basename)
+        return PlatonOut(self.cif.filename)
