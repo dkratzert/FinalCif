@@ -152,7 +152,7 @@ high_prio_keys = [
     '_refine_ls_restrained_S_all',
     '_refine_ls_shift/su_max',
     '_refine_ls_shift/su_mean',
-    '_publ_section_references',
+    '_publ_section_references'
 ]
 
 medium_prio_keys = [
@@ -169,7 +169,7 @@ medium_prio_keys = [
 ]
 low_prio_keys = ['']
 
-# Keys that get a text field in the main list.
+# Keys that get a text field in the main list. These fields have more hight.
 text_field_keys = ['_refine_special_details',
                    '_refine_ls_weighting_details',
                    '_reflns_special_details',
@@ -178,7 +178,7 @@ text_field_keys = ['_refine_special_details',
                    '_publ_section_references',
                    '_audit_contact_author_address',
                    ]
-                   
+
 ABSORPTION_CORRECTION_TYPES = (
     (0, ''),  # , ''),
     (1, 'analytical'),  # , 'analytical from crystal shape'),
@@ -345,15 +345,22 @@ predef_prop_templ = [{'name': 'Crystal Color',
                                   'ORTEP Farrujia 2012', 'Bruker SHELXTL, XP (G. Sheldrick)',
                                   'Mercury CSD']]
                       },
-                     {'name': 'Contact Author for cif file',
+                     {'name': 'Contact Author Address',
                       'values': ['_audit_contact_author_address',
-                                 ['Albert-Ludwigs-Universitaet Freiburg\n'
-                                  'Institut fuer Anorganische und Analytische Chemie\n'
-                                  'Albertstrasse 21\n'
-                                  'Freiburg i. Br.\n'
-                                  '79104\n'
-                                  'Germany']]
-                      }
+                                 ['']]
+                      },
+                     {'name': 'Contact Author email adress',
+                      'values': ['_audit_contact_author_email',
+                                 ['']]
+                      },
+                     {'name': 'Contact Author Phone number',
+                      'values': ['_audit_contact_author_name',
+                                 ['']]
+                      },
+                     {'name': 'Contact Author Orchid ID',
+                      'values': ['_publ_contact_author_id_orcid',
+                                 ['']]
+                      },
                      ]
 
 """
