@@ -15,7 +15,8 @@ class DSRFind():
     def __init__(self, resfile):
         self.resflie = resfile
         self.dsr_used = False
-        self.parse_res()
+        if resfile:
+            self.parse_res()
 
     def _isthere(self):
         self.dsr_used = True

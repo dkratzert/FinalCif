@@ -11,7 +11,7 @@ from multitable.multi_gui import MultitableAppWindow
 from tools.misc import predef_equipment_templ, predef_prop_templ, special_fields, text_field_keys
 from tools.settings import FinalCifSettings
 
-DEBUG = False
+DEBUG = True
 
 if DEBUG:
     from PyQt5 import uic
@@ -124,7 +124,6 @@ class AppWindow(QMainWindow):
         # self.miss_data = MissingCifData()  # this is nowhere used!
         self.manufacturer = 'bruker'
         # self.ui.DataFilesGroupBox.hide()
-        self.ui.MercuryPushButton.setDisabled(True)
         # self.ui.SaveFullReportButton.setDisabled(True)
         self.ui.CheckcifButton.setDisabled(True)
         if DEBUG:
@@ -192,10 +191,24 @@ class AppWindow(QMainWindow):
         # item.setText('clicked')
 
     def run_multitable(self):
-        # app = QApplication(sys.argv)
+        """
+        Runs the multitable program to make a report table.
+        """
         w = MultitableAppWindow(self)
         w.show()
-        # sys.exit(app.exec_())
+
+    def save_current_recent_files_list(self, file):
+        recent = list(self.settings.settings.value('recent_files', type=list))
+        recent.append(file)
+        self.settings.settings.setValue('recent_files', recent[-7:])
+        print(recent, 'save')
+
+    def load_recent_cifs_list(self):
+        self.ui.RecentComboBox.clear()
+        recent = list(self.settings.settings.value('recent_files', type=list))
+        self.ui.RecentComboBox.addItem('Recent Files')
+        self.ui.RecentComboBox.addItems(recent)
+        print(recent, 'load')
 
     def save_current_cif_file(self):
         table = self.ui.CifItemsTable
@@ -629,6 +642,8 @@ class AppWindow(QMainWindow):
         if not fname:
             return
         self.ui.SelectCif_LineEdit.setText(fname)
+        self.save_current_recent_files_list(fname)
+        self.load_recent_cifs_list()
         filepath = Path(fname)
         if not filepath.exists():
             return
