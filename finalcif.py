@@ -546,6 +546,8 @@ class AppWindow(QMainWindow):
         self.settings.save_template('property_list', newlist)
         stackedwidget.setCurrentIndex(1)
         self.ui.PropertiesEditTableWidget.blockSignals(False)
+        table.setWordWrap(False)
+        table.resizeRowsToContents()
 
     def save_property(self, table: QTableWidget,
                       stackwidget: QStackedWidget,
