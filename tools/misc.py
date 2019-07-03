@@ -152,12 +152,12 @@ high_prio_keys = [
     '_refine_ls_restrained_S_all',
     '_refine_ls_shift/su_max',
     '_refine_ls_shift/su_mean',
+    '_publ_section_references',
 ]
 
 medium_prio_keys = [
     '_computing_molecular_graphics',
     '_computing_publication_material',
-    '_publ_section_references',
     '_chemical_name_systematic',
     '_chemical_name_common',
     '_chemical_melting_point',
@@ -166,20 +166,19 @@ medium_prio_keys = [
     '_exptl_crystal_density_method',
     '_diffrn_source_current',
     '_diffrn_source_voltage',
-    '',
 ]
 low_prio_keys = ['']
 
 # Keys that get a text field in the main list.
-text_field_keys = ('_refine_special_details',
+text_field_keys = ['_refine_special_details',
                    '_refine_ls_weighting_details',
                    '_reflns_special_details',
-                   '_exptl_absorpt_process_details'
+                   '_exptl_absorpt_process_details',
                    '_refine_special_details',
                    '_publ_section_references',
-                   '_audit_contact_author_address'
-                   )
-
+                   '_audit_contact_author_address',
+                   ]
+                   
 ABSORPTION_CORRECTION_TYPES = (
     (0, ''),  # , ''),
     (1, 'analytical'),  # , 'analytical from crystal shape'),
