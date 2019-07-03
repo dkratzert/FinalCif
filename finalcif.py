@@ -11,7 +11,7 @@ from multitable.multi_gui import MultitableAppWindow
 from tools.misc import predef_equipment_templ, predef_prop_templ, special_fields, text_field_keys
 from tools.settings import FinalCifSettings
 
-DEBUG = False
+DEBUG = True
 
 if DEBUG:
     from PyQt5 import uic
@@ -129,7 +129,8 @@ class AppWindow(QMainWindow):
         if DEBUG:
             # only for testing:
             # self.load_cif_file(r'test-data/twin4.cif')
-            self.load_cif_file(r'D:\frames\guest\BruecknerRK_103\work\BruecknerRK_103_Cu_0m_a.cif')
+            self.load_cif_file(r'D:\GitHub\DSR\p21c.cif')
+            #self.load_cif_file(r'D:\frames\guest\BruecknerRK_103\work\BruecknerRK_103_Cu_0m_a.cif')
             # self.load_cif_file(r'D:\frames\BB_29\P-1_a.cif')
             # self.load_cif_file(r'D:\frames\guest\Esser_JW283\Esser_JW283\Esser_JW283_0m_a.cif')
         # TODO: Have to find a different method to select the row:
@@ -678,7 +679,7 @@ class AppWindow(QMainWindow):
                     else:
                         tab_item.setBackground(yellow)
                     # print(sources[miss_data], miss_data)
-                    self.ui.CifItemsTable.resizeRowToContents(row_num)
+                    #self.ui.CifItemsTable.resizeRowToContents(row_num)
                 except KeyError as e:
                     # print(e, '##')
                     pass
@@ -699,6 +700,8 @@ class AppWindow(QMainWindow):
         # combobox.currentIndexChanged.connect(self.print_combo)
         # print('special:', row_num, miss_data)
         self.ui.CifItemsTable.setCellWidget(row_num, 2, combobox)
+        #item = self.ui.CifItemsTable.item(row_num, 2)
+        #combobox.setFixedWidth(item.width())
         combobox.setEditable(True)  # only editable as new template
         for num, value in miss_data:
             try:
