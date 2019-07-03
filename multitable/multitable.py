@@ -11,6 +11,7 @@ from docx.shared import Cm, Pt, RGBColor
 
 
 # compiled with "Py -3 -m PyInstaller multitable.spec --onefile"
+from cif.cif_file_parser import Cif
 from multitable.tools import isfloat, grouper, cif_keywords_list, this_or_quest, get_files_from_current_dir
 
 

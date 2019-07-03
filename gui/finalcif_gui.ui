@@ -15,168 +15,16 @@
   </property>
   <widget class="QWidget" name="Mainwidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="1">
-     <widget class="QGroupBox" name="SelectCifFileGroupBox">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-        <horstretch>2</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="title">
-       <string>Cif file</string>
-      </property>
-      <layout class="QGridLayout" name="CifFileGridLayout">
-       <item row="0" column="0">
-        <widget class="QLineEdit" name="SelectCif_LineEdit">
-         <property name="placeholderText">
-          <string>Select a .cif file first.</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QPushButton" name="SelectCif_PushButton">
-         <property name="text">
-          <string>Select File</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
+    <item row="1" column="1">
+     <widget class="QComboBox" name="RecentComboBox">
+      <item>
+       <property name="text">
+        <string>Recent Files</string>
+       </property>
+      </item>
      </widget>
     </item>
-    <item row="0" column="2" rowspan="8">
-     <widget class="QGroupBox" name="CifDataItemsGroupBox">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-        <horstretch>5</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="title">
-       <string>Missing CIF Items</string>
-      </property>
-      <layout class="QGridLayout" name="CifTableGridLayout">
-       <item row="1" column="1">
-        <spacer name="verticalSpacer_2">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeType">
-          <enum>QSizePolicy::Minimum</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>10</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item row="2" column="1">
-        <widget class="QPushButton" name="CheckcifButton">
-         <property name="text">
-          <string>CheckCif</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="2">
-        <widget class="QPushButton" name="SaveFullReportButton">
-         <property name="text">
-          <string>Make Tables</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="0" colspan="3">
-        <widget class="QTableWidget" name="CifItemsTable">
-         <property name="sizeAdjustPolicy">
-          <enum>QAbstractScrollArea::AdjustIgnored</enum>
-         </property>
-         <property name="editTriggers">
-          <set>QAbstractItemView::AllEditTriggers</set>
-         </property>
-         <property name="selectionBehavior">
-          <enum>QAbstractItemView::SelectRows</enum>
-         </property>
-         <property name="verticalScrollMode">
-          <enum>QAbstractItemView::ScrollPerPixel</enum>
-         </property>
-         <property name="horizontalScrollMode">
-          <enum>QAbstractItemView::ScrollPerPixel</enum>
-         </property>
-         <property name="showGrid">
-          <bool>true</bool>
-         </property>
-         <property name="sortingEnabled">
-          <bool>false</bool>
-         </property>
-         <property name="cornerButtonEnabled">
-          <bool>false</bool>
-         </property>
-         <attribute name="horizontalHeaderMinimumSectionSize">
-          <number>80</number>
-         </attribute>
-         <attribute name="horizontalHeaderDefaultSectionSize">
-          <number>152</number>
-         </attribute>
-         <attribute name="horizontalHeaderHighlightSections">
-          <bool>false</bool>
-         </attribute>
-         <attribute name="verticalHeaderMinimumSectionSize">
-          <number>19</number>
-         </attribute>
-         <attribute name="verticalHeaderDefaultSectionSize">
-          <number>25</number>
-         </attribute>
-         <attribute name="verticalHeaderHighlightSections">
-          <bool>true</bool>
-         </attribute>
-         <column>
-          <property name="text">
-           <string>CIF Value</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>From Data Source</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>Own Data</string>
-          </property>
-         </column>
-        </widget>
-       </item>
-       <item row="2" column="0">
-        <widget class="QPushButton" name="SaveCifButton">
-         <property name="toolTip">
-          <string>Saves the cif file to name-final.cif</string>
-         </property>
-         <property name="text">
-          <string>Save Cif File</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="1">
-        <spacer name="verticalSpacer_3">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeType">
-          <enum>QSizePolicy::Minimum</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>10</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item row="3" column="1">
+    <item row="5" column="1">
      <widget class="QGroupBox" name="EquipmentGroupBox">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -288,11 +136,11 @@
              <property name="rowCount">
               <number>1</number>
              </property>
-             <attribute name="horizontalHeaderMinimumSectionSize">
-              <number>90</number>
-             </attribute>
              <attribute name="horizontalHeaderDefaultSectionSize">
               <number>170</number>
+             </attribute>
+             <attribute name="horizontalHeaderMinimumSectionSize">
+              <number>90</number>
              </attribute>
              <attribute name="horizontalHeaderStretchLastSection">
               <bool>true</bool>
@@ -320,20 +168,168 @@
       </layout>
      </widget>
     </item>
-    <item row="1" column="1" alignment="Qt::AlignLeft">
-     <widget class="QPushButton" name="MercuryPushButton">
+    <item row="0" column="1">
+     <widget class="QGroupBox" name="SelectCifFileGroupBox">
       <property name="sizePolicy">
-       <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-        <horstretch>0</horstretch>
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>2</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
       </property>
-      <property name="text">
-       <string>View in Mercury</string>
+      <property name="title">
+       <string>Cif file</string>
       </property>
+      <layout class="QGridLayout" name="CifFileGridLayout">
+       <item row="0" column="0">
+        <widget class="QLineEdit" name="SelectCif_LineEdit">
+         <property name="placeholderText">
+          <string>Select a .cif file first.</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QPushButton" name="SelectCif_PushButton">
+         <property name="text">
+          <string>Select File</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </widget>
     </item>
-    <item row="6" column="1" rowspan="2">
+    <item row="0" column="4" rowspan="10">
+     <widget class="QGroupBox" name="CifDataItemsGroupBox">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>5</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="title">
+       <string>Missing CIF Items</string>
+      </property>
+      <layout class="QGridLayout" name="CifTableGridLayout">
+       <item row="1" column="1">
+        <spacer name="verticalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Minimum</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>10</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="2" column="1">
+        <widget class="QPushButton" name="CheckcifButton">
+         <property name="text">
+          <string>CheckCif</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="2">
+        <widget class="QPushButton" name="SaveFullReportButton">
+         <property name="text">
+          <string>Make Tables</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0" colspan="3">
+        <widget class="QTableWidget" name="CifItemsTable">
+         <property name="sizeAdjustPolicy">
+          <enum>QAbstractScrollArea::AdjustIgnored</enum>
+         </property>
+         <property name="editTriggers">
+          <set>QAbstractItemView::AllEditTriggers</set>
+         </property>
+         <property name="selectionBehavior">
+          <enum>QAbstractItemView::SelectRows</enum>
+         </property>
+         <property name="verticalScrollMode">
+          <enum>QAbstractItemView::ScrollPerPixel</enum>
+         </property>
+         <property name="horizontalScrollMode">
+          <enum>QAbstractItemView::ScrollPerPixel</enum>
+         </property>
+         <property name="showGrid">
+          <bool>true</bool>
+         </property>
+         <property name="sortingEnabled">
+          <bool>false</bool>
+         </property>
+         <property name="cornerButtonEnabled">
+          <bool>false</bool>
+         </property>
+         <attribute name="horizontalHeaderDefaultSectionSize">
+          <number>152</number>
+         </attribute>
+         <attribute name="horizontalHeaderHighlightSections">
+          <bool>false</bool>
+         </attribute>
+         <attribute name="horizontalHeaderMinimumSectionSize">
+          <number>80</number>
+         </attribute>
+         <attribute name="verticalHeaderDefaultSectionSize">
+          <number>25</number>
+         </attribute>
+         <attribute name="verticalHeaderHighlightSections">
+          <bool>true</bool>
+         </attribute>
+         <attribute name="verticalHeaderMinimumSectionSize">
+          <number>19</number>
+         </attribute>
+         <column>
+          <property name="text">
+           <string>CIF Value</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>From Data Source</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Own Data</string>
+          </property>
+         </column>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QPushButton" name="SaveCifButton">
+         <property name="toolTip">
+          <string>Saves the cif file to name-final.cif</string>
+         </property>
+         <property name="text">
+          <string>Save Cif File</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <spacer name="verticalSpacer_3">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Minimum</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>10</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="8" column="1" rowspan="2">
      <widget class="QGroupBox" name="PropertiesGroupBox">
       <property name="title">
        <string>Properties Templates</string>
@@ -437,11 +433,11 @@
              <attribute name="horizontalHeaderVisible">
               <bool>false</bool>
              </attribute>
-             <attribute name="horizontalHeaderMinimumSectionSize">
-              <number>90</number>
-             </attribute>
              <attribute name="horizontalHeaderDefaultSectionSize">
               <number>170</number>
+             </attribute>
+             <attribute name="horizontalHeaderMinimumSectionSize">
+              <number>90</number>
              </attribute>
              <attribute name="horizontalHeaderStretchLastSection">
               <bool>true</bool>
