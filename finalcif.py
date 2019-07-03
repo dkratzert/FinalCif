@@ -2,7 +2,7 @@ import os
 import sys
 from pathlib import Path
 
-from PyQt5.QtCore import QPoint, Qt, QSize
+from PyQt5.QtCore import QPoint, Qt
 from PyQt5.QtGui import QColor, QIcon, QPalette
 
 from cif.file_reader import CifContainer, quote
@@ -11,7 +11,7 @@ from multitable.multi_gui import MultitableAppWindow
 from tools.misc import predef_equipment_templ, predef_prop_templ, special_fields, text_field_keys
 from tools.settings import FinalCifSettings
 
-DEBUG = True
+DEBUG = False
 
 if DEBUG:
     from PyQt5 import uic
@@ -36,6 +36,7 @@ from gui.finalcif_gui import Ui_FinalCifWindow
 """
 TODO:
 
+-
 - find DSR string in res file and put descriptive text in cif.
 - make an extra thread to load the cif data
 - crystallization method templates
@@ -91,7 +92,7 @@ if __name__ == "__main__":
 """
 light_green = QColor(217, 255, 201)
 blue = QColor(102, 150, 179)
-yellow = QColor(244, 255, 176)
+yellow = QColor(250, 252, 167)
 
 
 class AppWindow(QMainWindow):
@@ -124,18 +125,18 @@ class AppWindow(QMainWindow):
         self.manufacturer = 'bruker'
         # self.ui.DataFilesGroupBox.hide()
         self.ui.MercuryPushButton.setDisabled(True)
-        #self.ui.SaveFullReportButton.setDisabled(True)
+        # self.ui.SaveFullReportButton.setDisabled(True)
         self.ui.CheckcifButton.setDisabled(True)
         if DEBUG:
             # only for testing:
             # self.load_cif_file(r'test-data/twin4.cif')
-            self.load_cif_file(r'D:\GitHub\DSR\p21c.cif')
-            #self.load_cif_file(r'D:\frames\guest\BruecknerRK_103\work\BruecknerRK_103_Cu_0m_a.cif')
+            # self.load_cif_file(r'D:\GitHub\DSR\p21c.cif')
+            self.load_cif_file(r'D:\frames\guest\BruecknerRK_103\work\BruecknerRK_103_Cu_0m_a.cif')
             # self.load_cif_file(r'D:\frames\BB_29\P-1_a.cif')
             # self.load_cif_file(r'D:\frames\guest\Esser_JW283\Esser_JW283\Esser_JW283_0m_a.cif')
         # TODO: Have to find a different method to select the row:
-        #self.ui.EquipmentTemplatesListWidget.setCurrentRow(-1)  # Has to he in front in order to work
-        #self.ui.EquipmentTemplatesListWidget.setCurrentRow(self.settings.load_last_equipment())
+        # self.ui.EquipmentTemplatesListWidget.setCurrentRow(-1)  # Has to he in front in order to work
+        # self.ui.EquipmentTemplatesListWidget.setCurrentRow(self.settings.load_last_equipment())
         # Sorting desyncronizes header and columns:
         self.ui.CifItemsTable.setSortingEnabled(False)
 
@@ -180,12 +181,21 @@ class AppWindow(QMainWindow):
         # something like cifItemsTable.selected_field.connect(self.display_data_file)
         ##
         self.ui.SaveFullReportButton.clicked.connect(self.run_multitable)
+        view = self.ui.CifItemsTable.verticalHeader()
+        view.setSectionsClickable(True)
+        view.sectionClicked.connect(self.foo)
+
+    def foo(self, section):
+        item = self.ui.CifItemsTable.verticalHeaderItem(section)
+        itemtext = item.text()
+        # print(itemtext)
+        # item.setText('clicked')
 
     def run_multitable(self):
-        #app = QApplication(sys.argv)
+        # app = QApplication(sys.argv)
         w = MultitableAppWindow(self)
         w.show()
-        #sys.exit(app.exec_())
+        # sys.exit(app.exec_())
 
     def save_current_cif_file(self):
         table = self.ui.CifItemsTable
@@ -645,8 +655,8 @@ class AppWindow(QMainWindow):
         except OSError:
             print("Can't change the Current Working Directory")
         self.fill_cif_table()
-        #self.ui.EquipmentTemplatesListWidget.setCurrentRow(-1)  # Has to he in front in order to work
-        #self.ui.EquipmentTemplatesListWidget.setCurrentRow(self.settings.load_last_equipment())
+        # self.ui.EquipmentTemplatesListWidget.setCurrentRow(-1)  # Has to he in front in order to work
+        # self.ui.EquipmentTemplatesListWidget.setCurrentRow(self.settings.load_last_equipment())
 
     def get_data_sources(self):
         """
@@ -679,7 +689,7 @@ class AppWindow(QMainWindow):
                     else:
                         tab_item.setBackground(yellow)
                     # print(sources[miss_data], miss_data)
-                    #self.ui.CifItemsTable.resizeRowToContents(row_num)
+                    # self.ui.CifItemsTable.resizeRowToContents(row_num)
                 except KeyError as e:
                     # print(e, '##')
                     pass
@@ -700,8 +710,10 @@ class AppWindow(QMainWindow):
         # combobox.currentIndexChanged.connect(self.print_combo)
         # print('special:', row_num, miss_data)
         self.ui.CifItemsTable.setCellWidget(row_num, 2, combobox)
-        #item = self.ui.CifItemsTable.item(row_num, 2)
-        #combobox.setFixedWidth(item.width())
+        self.ui.CifItemsTable.setHorizontalScrollBarPolicy(1)
+        # combobox.setFixedWidth(self.ui.CifItemsTable.columnWidth(2))
+        # Otherwise, the combobox will be longer than the column:
+        combobox.setSizeAdjustPolicy(QComboBox.AdjustToMinimumContentsLength)
         combobox.setEditable(True)  # only editable as new template
         for num, value in miss_data:
             try:
@@ -768,8 +780,8 @@ class AppWindow(QMainWindow):
             tab1.setReadOnly(True)
             # Make QPlainTextEdit fields a bit higher than the rest
             self.ui.CifItemsTable.setRowHeight(row_num, 80)
-        #else:
-        #if key in text_field_keys:
+        # else:
+        # if key in text_field_keys:
         #    self.ui.CifItemsTable.setRowHeight(row_num, 60)
         else:
             tabitem = QTableWidgetItem(strval)

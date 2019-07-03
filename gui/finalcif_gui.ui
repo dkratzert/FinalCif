@@ -202,12 +202,6 @@
        </property>
        <item row="0" column="0">
         <widget class="QStackedWidget" name="EquipmentTemplatesStackedWidget">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-           <horstretch>2</horstretch>
-           <verstretch>3</verstretch>
-          </sizepolicy>
-         </property>
          <property name="currentIndex">
           <number>1</number>
          </property>
@@ -247,21 +241,28 @@
          </widget>
          <widget class="QWidget" name="EquipmentEditPage">
           <layout class="QGridLayout" name="gridLayout_2">
-           <item row="1" column="0">
+           <item row="1" column="1">
             <widget class="QPushButton" name="DeleteEquipmentButton">
              <property name="text">
               <string>Delete Template</string>
              </property>
             </widget>
            </item>
-           <item row="1" column="4">
+           <item row="1" column="2">
+            <widget class="QPushButton" name="SaveEquipmentButton">
+             <property name="text">
+              <string>Save</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="3">
             <widget class="QPushButton" name="CancelEquipmentButton">
              <property name="text">
               <string>Cancel</string>
              </property>
             </widget>
            </item>
-           <item row="0" column="0" colspan="6">
+           <item row="0" column="1" colspan="3">
             <widget class="QTableWidget" name="EquipmentEditTableWidget">
              <property name="autoScroll">
               <bool>false</bool>
@@ -312,13 +313,6 @@
              </column>
             </widget>
            </item>
-           <item row="1" column="1" colspan="3">
-            <widget class="QPushButton" name="SaveEquipmentButton">
-             <property name="text">
-              <string>Save</string>
-             </property>
-            </widget>
-           </item>
           </layout>
          </widget>
         </widget>
@@ -339,14 +333,8 @@
       </property>
      </widget>
     </item>
-    <item row="7" column="1">
+    <item row="6" column="1" rowspan="2">
      <widget class="QGroupBox" name="PropertiesGroupBox">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-        <horstretch>2</horstretch>
-        <verstretch>2</verstretch>
-       </sizepolicy>
-      </property>
       <property name="title">
        <string>Properties Templates</string>
       </property>
@@ -410,24 +398,20 @@
          </widget>
          <widget class="QWidget" name="PropertiesEditPage">
           <layout class="QGridLayout" name="gridLayout_5">
-           <item row="2" column="0" colspan="2">
-            <widget class="QPushButton" name="DeletePropertiesButton">
+           <item row="2" column="3">
+            <widget class="QPushButton" name="CancelPropertiesButton">
+             <property name="minimumSize">
+              <size>
+               <width>110</width>
+               <height>0</height>
+              </size>
+             </property>
              <property name="text">
-              <string>Delete Template</string>
+              <string>Cancel</string>
              </property>
             </widget>
            </item>
-           <item row="0" column="0">
-            <widget class="QLabel" name="cifKeywordLB">
-             <property name="text">
-              <string>cif keyword</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1" colspan="4">
-            <widget class="QLineEdit" name="cifKeywordLE"/>
-           </item>
-           <item row="1" column="0" colspan="5">
+           <item row="1" column="0" colspan="4">
             <widget class="QTableWidget" name="PropertiesEditTableWidget">
              <property name="autoScroll">
               <bool>false</bool>
@@ -476,17 +460,39 @@
              </column>
             </widget>
            </item>
-           <item row="2" column="4">
-            <widget class="QPushButton" name="CancelPropertiesButton">
+           <item row="0" column="0">
+            <widget class="QLabel" name="cifKeywordLB">
              <property name="text">
-              <string>Cancel</string>
+              <string>cif keyword</string>
              </property>
             </widget>
            </item>
-           <item row="2" column="2" colspan="2">
+           <item row="0" column="1" colspan="3">
+            <widget class="QLineEdit" name="cifKeywordLE"/>
+           </item>
+           <item row="2" column="2">
             <widget class="QPushButton" name="SavePropertiesButton">
+             <property name="minimumSize">
+              <size>
+               <width>110</width>
+               <height>0</height>
+              </size>
+             </property>
              <property name="text">
               <string>Save</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QPushButton" name="DeletePropertiesButton">
+             <property name="minimumSize">
+              <size>
+               <width>110</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Delete Template</string>
              </property>
             </widget>
            </item>
@@ -523,12 +529,6 @@
   <tabstop>PropertiesEditTableWidget</tabstop>
   <tabstop>CifItemsTable</tabstop>
   <tabstop>SelectCif_PushButton</tabstop>
-  <tabstop>DeleteEquipmentButton</tabstop>
-  <tabstop>SaveEquipmentButton</tabstop>
-  <tabstop>CancelEquipmentButton</tabstop>
-  <tabstop>DeletePropertiesButton</tabstop>
-  <tabstop>SavePropertiesButton</tabstop>
-  <tabstop>CancelPropertiesButton</tabstop>
   <tabstop>SaveCifButton</tabstop>
   <tabstop>NewPropertyTemplateButton</tabstop>
   <tabstop>PropertiesTemplatesListWidget</tabstop>
