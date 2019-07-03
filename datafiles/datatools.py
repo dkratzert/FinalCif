@@ -7,6 +7,7 @@ from datafiles.platon import PlatonOut
 from datafiles.sadabs import Sadabs
 from datafiles.saint import SaintListFile
 from datafiles.shelxt import SHELXTlistfile
+from datafiles.utils import DSRFind
 
 
 class MissingCifData():
@@ -28,6 +29,14 @@ class BrukerData(object):
         solution_program = self.get_solution_program()
         solution_version = solution_program.version or ''
         solution_primary = ''
+        resdata = cif.block.find_value('_shelx_res_file')
+        shelx = 'Sheldrick, G.M. (2015). Acta Cryst. A71, 3-8.\nSheldrick, G.M. (2015). Acta Cryst. C71, 3-8.\n'
+        dsr = ''
+        d = DSRFind(resdata)
+        if resdata:
+            if d.dsr_used:
+                dsr = 'The program DSR was used for model building:\n' \
+                      'D. Kratzert, I. Krossing, J. Appl. Cryst. 2018, 51, 928-934. doi: 10.1107/S1600576718004508'
         if solution_program and 'XT' in solution_program.version:
             solution_primary = 'direct'
         # TODO: determine the correct dataset number:
@@ -81,29 +90,30 @@ class BrukerData(object):
         temp2 = self.p4p.temperature
         temperature = round(min([temp1, temp2]), 1)
         # TODO: make a Sources class that returns either the parser object itself or the respective value from the key:
-        sources = {'_cell_measurement_reflns_used'  : saint_data.cell_reflections,
-                   '_cell_measurement_theta_min'    : saint_data.cell_res_min_theta,
-                   '_cell_measurement_theta_max'    : saint_data.cell_res_max_theta,
-                   '_computing_data_collection'     : saint_first_ls.aquire_software,
-                   '_computing_cell_refinement'     : saint_data.version,
-                   '_computing_data_reduction'      : saint_data.version,
-                   '_exptl_absorpt_correction_type' : abstype,
+        sources = {'_cell_measurement_reflns_used': saint_data.cell_reflections,
+                   '_cell_measurement_theta_min': saint_data.cell_res_min_theta,
+                   '_cell_measurement_theta_max': saint_data.cell_res_max_theta,
+                   '_computing_data_collection': saint_first_ls.aquire_software,
+                   '_computing_cell_refinement': saint_data.version,
+                   '_computing_data_reduction': saint_data.version,
+                   '_exptl_absorpt_correction_type': abstype,
                    '_exptl_absorpt_correction_T_min': str(t_min),
                    '_exptl_absorpt_correction_T_max': str(t_max),
                    '_diffrn_reflns_av_R_equivalents': self.sadabs.Rint,
-                   '_cell_measurement_temperature'  : temperature,
-                   '_diffrn_ambient_temperature'    : temperature,
-                   '_exptl_absorpt_process_details' : self.sadabs.version,
-                   '_exptl_crystal_colour'          : self.p4p.crystal_color,
-                   '_exptl_crystal_description'     : self.p4p.morphology,
-                   '_exptl_crystal_size_min'        : self.p4p.crystal_size[0] or '',
-                   '_exptl_crystal_size_mid'        : self.p4p.crystal_size[1] or '',
-                   '_exptl_crystal_size_max'        : self.p4p.crystal_size[2] or '',
-                   '_computing_structure_solution'  : solution_version,
-                   '_atom_sites_solution_primary'   : solution_primary,
-                   '_diffrn_source_current'         : kilovolt or '',
-                   '_diffrn_source_voltage'         : milliwatt or '',
+                   '_cell_measurement_temperature': temperature,
+                   '_diffrn_ambient_temperature': temperature,
+                   '_exptl_absorpt_process_details': self.sadabs.version,
+                   '_exptl_crystal_colour': self.p4p.crystal_color,
+                   '_exptl_crystal_description': self.p4p.morphology,
+                   '_exptl_crystal_size_min': self.p4p.crystal_size[0] or '',
+                   '_exptl_crystal_size_mid': self.p4p.crystal_size[1] or '',
+                   '_exptl_crystal_size_max': self.p4p.crystal_size[2] or '',
+                   '_computing_structure_solution': solution_version,
+                   '_atom_sites_solution_primary': solution_primary,
+                   '_diffrn_source_current': kilovolt or '',
+                   '_diffrn_source_voltage': milliwatt or '',
                    '_chemical_formula_moiety': moiety or '',
+                   '_publ_section_references': shelx + dsr,
                    }
         self.sources = dict((k.lower(), v) for k, v in sources.items())
 
