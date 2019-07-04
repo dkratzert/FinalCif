@@ -122,7 +122,7 @@ class CifContainer():
         questions = []
         # contains the answered keys:
         with_values = []
-        for key in inputkeys:
+        for key, _ in inputkeys:
             if key in non_centrosymm_keys and self.is_centrosymm:
                 continue
             # try:

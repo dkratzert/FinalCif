@@ -8,7 +8,8 @@ from PyQt5.QtGui import QColor, QIcon, QPalette
 from cif.file_reader import CifContainer, quote
 from datafiles.datatools import BrukerData
 from multitable.multi_gui import MultitableAppWindow
-from tools.misc import predef_equipment_templ, predef_prop_templ, special_fields, text_field_keys
+from tools.misc import predef_equipment_templ, predef_prop_templ, special_fields, text_field_keys, high_prio_keys, \
+    medium_prio_keys
 from tools.settings import FinalCifSettings
 
 DEBUG = True
@@ -17,7 +18,8 @@ if DEBUG:
     from PyQt5 import uic
 
 from PyQt5.QtWidgets import QMainWindow, QApplication, QHeaderView, QFileDialog, \
-    QTableWidgetItem, QTableWidget, QStackedWidget, QListWidget, QListWidgetItem, QComboBox, QMessageBox, QPlainTextEdit
+    QTableWidgetItem, QTableWidget, QStackedWidget, QListWidget, QListWidgetItem, QComboBox, QMessageBox, \
+    QPlainTextEdit, QSizePolicy
 
 if getattr(sys, 'frozen', False):
     # If the application is run as a bundle, the pyInstaller bootloader
@@ -39,12 +41,11 @@ TODO:
 -
 - find DSR string in res file and put descriptive text in cif.
 - make an extra thread to load the cif data
+- make extra thread to load platon
 - crystallization method templates
-- preparationm method templates
-- crytsal author: submitter, operator
+- preparation method templates
+- crystal author: submitter, operator
 - show data source on table hover
-- references field
-- have a recently opened menu
 - add response forms
 - The click on a cif keyword in the table opens the IuCr help about this key in a popup. (Not easy!)
 - Checkcif: http://journals.iucr.org/services/cif/checking/validlist.html
@@ -183,7 +184,7 @@ class AppWindow(QMainWindow):
         # vertical header click:
         view = self.ui.CifItemsTable.verticalHeader()
         view.setSectionsClickable(True)
-        view.sectionClicked.connect(self.foo)
+        #view.sectionClicked.connect(self.vheader_section_click)
         ###
         self.ui.RecentComboBox.currentIndexChanged.connect(self.load_recent_file)
 
@@ -193,11 +194,19 @@ class AppWindow(QMainWindow):
             txt = combo.itemText(file_index)
             self.load_cif_file(txt)
 
-    def foo(self, section):
+    def vheader_section_click(self, section):
         item = self.ui.CifItemsTable.verticalHeaderItem(section)
         itemtext = item.text()
-        # print(itemtext)
-        # item.setText('clicked')
+        try:
+            item.setText(high_prio_keys[itemtext])
+            return
+        except KeyError:
+            pass
+        try:
+            item.setText(medium_prio_keys[itemtext])
+            return
+        except KeyError:
+            pass
 
     def run_multitable(self):
         """
@@ -741,6 +750,7 @@ class AppWindow(QMainWindow):
         # combobox.setFixedWidth(self.ui.CifItemsTable.columnWidth(2))
         # Otherwise, the combobox will be longer than the column:
         combobox.setSizeAdjustPolicy(QComboBox.AdjustToMinimumContentsLength)
+        combobox.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
         combobox.setEditable(True)  # only editable as new template
         for num, value in miss_data:
             try:
