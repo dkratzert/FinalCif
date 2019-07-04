@@ -5,7 +5,7 @@ from pathlib import Path
 import gemmi
 
 from cif import cif_file_parser
-from tools.misc import high_prio_keys, medium_prio_keys, non_centrosymm_keys
+from tools.misc import high_prio_keys, non_centrosymm_keys
 
 
 def quote(string, wrapping=80):
@@ -109,11 +109,9 @@ class CifContainer():
 
         """
         high_prio_no_values, high_prio_with_values = self.get_keys(high_prio_keys)
-        medium_prio_q, medium_prio_with_values = self.get_keys(medium_prio_keys)
-        # low_prio_q, low_prio_with_values = self.get_keys(low_prio_keys)
-        medium_prio_q += [['These are already in:', '---------------------'], ['', '']]
-        foo = high_prio_no_values + medium_prio_q + high_prio_with_values + medium_prio_with_values
-        return foo
+        return high_prio_no_values + \
+               [['These are already in:', '---------------------'],
+                ['', '']] + high_prio_with_values
 
     def get_keys(self, inputkeys):
         """
