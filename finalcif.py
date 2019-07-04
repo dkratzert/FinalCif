@@ -120,6 +120,7 @@ class AppWindow(QMainWindow):
         self.ui.PropertiesEditTableWidget.verticalHeader().hide()
         self.cif = None
         self.missing_data = []
+        self.vheader_clicked = -1  # This is the index number of the vheader that got clicked last
         # self.equipment_settings = []
         self.connect_signals_and_slots()
         # self.miss_data = MissingCifData()  # this is nowhere used!
@@ -131,7 +132,7 @@ class AppWindow(QMainWindow):
             # only for testing:
             self.load_cif_file(r'test-data/twin4.cif')
             # self.load_cif_file(r'D:\GitHub\DSR\p21c.cif')
-            #self.load_cif_file(r'D:\frames\guest\BruecknerRK_103\work\BruecknerRK_103_Cu_0m_a.cif')
+            # self.load_cif_file(r'D:\frames\guest\BruecknerRK_103\work\BruecknerRK_103_Cu_0m_a.cif')
             # self.load_cif_file(r'D:\frames\BB_29\P-1_a.cif')
             # self.load_cif_file(r'D:\frames\guest\Esser_JW283\Esser_JW283\Esser_JW283_0m_a.cif')
         # TODO: Have to find a different method to select the row:
@@ -185,7 +186,7 @@ class AppWindow(QMainWindow):
         # vertical header click:
         view = self.ui.CifItemsTable.verticalHeader()
         view.setSectionsClickable(True)
-        #view.sectionClicked.connect(self.vheader_section_click)
+        view.sectionClicked.connect(self.vheader_section_click)
         ###
         self.ui.RecentComboBox.currentIndexChanged.connect(self.load_recent_file)
 
@@ -198,13 +199,28 @@ class AppWindow(QMainWindow):
     def vheader_section_click(self, section):
         item = self.ui.CifItemsTable.verticalHeaderItem(section)
         itemtext = item.text()
+        txt = ''
+        # be sure not to get vheader with name of last click:
+        if section != self.vheader_clicked and self.vheader_clicked > -1:
+            return
+            # get back previous name
+        if self.vheader_clicked > -1:
+            item.setText([x for x in self.vheaderitems.keys()][self.vheader_clicked])
+            self.vheader_clicked = -1
+            return
         try:
-            item.setText(high_prio_keys[itemtext])
+            txt = high_prio_keys[itemtext]
+            if txt:
+                item.setText(txt)
+            self.vheader_clicked = section
             return
         except KeyError:
             pass
         try:
-            item.setText(medium_prio_keys[itemtext])
+            txt = medium_prio_keys[itemtext]
+            if txt:
+                item.setText(txt)
+            self.vheader_clicked = section
             return
         except KeyError:
             pass
@@ -223,14 +239,14 @@ class AppWindow(QMainWindow):
         if len(recent) > 5:
             recent.pop()
         self.settings.settings.setValue('recent_files', recent)
-        #print(recent, 'save')
+        # print(recent, 'save')
 
     def load_recent_cifs_list(self):
         self.ui.RecentComboBox.clear()
         recent = list(self.settings.settings.value('recent_files', type=list))
         self.ui.RecentComboBox.addItem('Recent Files')
         self.ui.RecentComboBox.addItems(recent)
-        #print(recent, 'load')
+        # print(recent, 'load')
 
     def save_current_cif_file(self):
         table = self.ui.CifItemsTable
@@ -692,7 +708,7 @@ class AppWindow(QMainWindow):
         except OSError:
             print("Can't change the Current Working Directory")
         self.ui.CifItemsTable.clearContents()
-        #self.ui.CifItemsTable.clear() # clears header
+        # self.ui.CifItemsTable.clear() # clears header
         self.fill_cif_table()
         # self.ui.EquipmentTemplatesListWidget.setCurrentRow(-1)  # Has to he in front in order to work
         # self.ui.EquipmentTemplatesListWidget.setCurrentRow(self.settings.load_last_equipment())
