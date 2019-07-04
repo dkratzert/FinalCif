@@ -15,11 +15,9 @@ class PlatonOut():
     def __init__(self, file: Path):
         self.cif_fileobj = file
         platfiles = self.get_chkfiles()
+        self._fileobj = Path('.')
+        self.filename = Path('')
         if not platfiles:
-            #info = QMessageBox()
-            #info.setIcon(QMessageBox.Information)
-            #info.setText('Running PLATON, this may take a while.')
-            #info.show()
             self.run_platon()
         platfiles = self.get_chkfiles()
         for platfile in platfiles:
@@ -55,12 +53,15 @@ class PlatonOut():
             si = subprocess.STARTUPINFO()
             si.dwFlags = 1
             si.wShowWindow = 0
+        except AttributeError:
+            si = None
+        try:
             if pexe:
                 plat = subprocess.Popen([pexe, '-u', self.cif_fileobj.name], startupinfo=si)
             else:
                 print('trying local platon')
                 plat = subprocess.Popen([r'platon.exe', '-u', self.cif_fileobj.name], startupinfo=si)
-        except FileNotFoundError:
+        except (FileNotFoundError, PermissionError):
             print('Platon not found.')
             return
         # waiting for chk file to appear:

@@ -41,7 +41,7 @@ _cell_volume                       56.29
 _cell_formula_units_Z              2
 _symmetry_space_group_name_H-M     'P 63/m m c'
 _symmetry_Int_Tables_number        194
-_refine_ls_R_factor_all            
+_refine_ls_R_factor_all            ?
 loop_
 _symmetry_equiv_pos_site_id
 _symmetry_equiv_pos_as_xyz

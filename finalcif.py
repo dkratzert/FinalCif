@@ -736,8 +736,10 @@ class AppWindow(QMainWindow):
                 self.ui.CifItemsTable.setItem(row_num, 1, tab_item)
                 try:
                     # sources are lower case!
-                    txt = str(sources[miss_data.lower()])
+                    txt = str(sources[miss_data.lower()][0])
+                    tooltiptext = str(sources[miss_data.lower()][1])
                     tab_item.setText(txt)  # has to be string
+                    tab_item.setToolTip(tooltiptext)
                     if txt and txt != '?':
                         tab_item.setBackground(light_green)
                     else:

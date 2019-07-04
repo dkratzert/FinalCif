@@ -54,16 +54,16 @@ class BrukerData(object):
         # the lower temp is more likely:
         try:
             temp1 = self.frame_header.temperature
-        except AttributeError:
+        except (AttributeError, KeyError):
             temp1 = 293
         try:
             kilovolt = self.frame_header.kilovolts
-        except AttributeError:
+        except (AttributeError, KeyError):
             kilovolt = ''
         try:
-            milliwatt = self.frame_header.milliwatt
-        except AttributeError:
-            milliwatt = ''
+            milliamps = self.frame_header.milliamps
+        except (AttributeError, KeyError):
+            milliamps = ''
         # Have to find a different method to select the row:
         """
         try:
@@ -91,30 +91,30 @@ class BrukerData(object):
         temp2 = self.p4p.temperature
         temperature = round(min([temp1, temp2]), 1)
         # TODO: make a Sources class that returns either the parser object itself or the respective value from the key:
-        sources = {'_cell_measurement_reflns_used': saint_data.cell_reflections,
-                   '_cell_measurement_theta_min': saint_data.cell_res_min_theta,
-                   '_cell_measurement_theta_max': saint_data.cell_res_max_theta,
-                   '_computing_data_collection': saint_first_ls.aquire_software,
-                   '_computing_cell_refinement': saint_data.version,
-                   '_computing_data_reduction': saint_data.version,
-                   '_exptl_absorpt_correction_type': abstype,
-                   '_exptl_absorpt_correction_T_min': str(t_min),
-                   '_exptl_absorpt_correction_T_max': str(t_max),
-                   '_diffrn_reflns_av_R_equivalents': self.sadabs.Rint,
-                   '_cell_measurement_temperature': temperature,
-                   '_diffrn_ambient_temperature': temperature,
-                   '_exptl_absorpt_process_details': self.sadabs.version,
-                   '_exptl_crystal_colour': self.p4p.crystal_color,
-                   '_exptl_crystal_description': self.p4p.morphology,
-                   '_exptl_crystal_size_min': self.p4p.crystal_size[0] or '',
-                   '_exptl_crystal_size_mid': self.p4p.crystal_size[1] or '',
-                   '_exptl_crystal_size_max': self.p4p.crystal_size[2] or '',
-                   '_computing_structure_solution': solution_version,
-                   '_atom_sites_solution_primary': solution_primary,
-                   '_diffrn_source_current': kilovolt or '',
-                   '_diffrn_source_voltage': milliwatt or '',
-                   '_chemical_formula_moiety': moiety or '',
-                   '_publ_section_references': shelx,
+        sources = {'_cell_measurement_reflns_used': (saint_data.cell_reflections, saint_data.filename.name),
+                   '_cell_measurement_theta_min': (saint_data.cell_res_min_theta, saint_data.filename.name),
+                   '_cell_measurement_theta_max': (saint_data.cell_res_max_theta, saint_data.filename.name),
+                   '_computing_data_collection': (saint_first_ls.aquire_software, saint_data.filename.name),
+                   '_computing_cell_refinement': (saint_data.version, saint_data.filename.name),
+                   '_computing_data_reduction': (saint_data.version, saint_data.filename.name),
+                   '_exptl_absorpt_correction_type': (abstype, self.sadabs.filename.name),
+                   '_exptl_absorpt_correction_T_min': (str(t_min), self.sadabs.filename.name),
+                   '_exptl_absorpt_correction_T_max': (str(t_max), self.sadabs.filename.name),
+                   '_diffrn_reflns_av_R_equivalents': (self.sadabs.Rint, self.sadabs.filename.name),
+                   '_cell_measurement_temperature': (temperature, self.p4p.filename.name),
+                   '_diffrn_ambient_temperature': (temperature, self.p4p.filename.name),
+                   '_exptl_absorpt_process_details': (self.sadabs.version, self.sadabs.filename.name),
+                   '_exptl_crystal_colour': (self.p4p.crystal_color, self.p4p.filename.name),
+                   '_exptl_crystal_description': (self.p4p.morphology, self.p4p.filename.name),
+                   '_exptl_crystal_size_min': (self.p4p.crystal_size[0] or '', self.p4p.filename.name),
+                   '_exptl_crystal_size_mid': (self.p4p.crystal_size[1] or '', self.p4p.filename.name),
+                   '_exptl_crystal_size_max': (self.p4p.crystal_size[2] or '', self.p4p.filename.name),
+                   '_computing_structure_solution': (solution_version, ''),
+                   '_atom_sites_solution_primary': (solution_primary, ''),
+                   '_diffrn_source_voltage': (kilovolt or '', self.frame_header.filename.name),
+                   '_diffrn_source_current': (milliamps or '', self.frame_header.filename.name),
+                   '_chemical_formula_moiety': (moiety or '', self.platon_out.filename.name),
+                   '_publ_section_references': (shelx, ''),
                    }
         self.sources = dict((k.lower(), v) for k, v in sources.items())
 
