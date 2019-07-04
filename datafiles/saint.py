@@ -8,7 +8,7 @@ class SaintListFile():
         self.cell_res_max_2t = 0.0
         self.aquire_software = ''
         self.version = ''
-
+        self.filename = Path('.')
         p = Path('./')
         saintfiles = p.glob(name_patt)
         for saintfile in saintfiles:

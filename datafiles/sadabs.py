@@ -80,7 +80,7 @@ class Sadabs():
         self.input_files = []
         self.output = []
         self.batch_input = None
-
+        self.filename = Path('./')
         p = Path('./')
         sadfiles = list(p.glob(basename+'*.abs'))
         sadfiles = sorted(sadfiles, key=os.path.getmtime, reverse=True)
@@ -180,4 +180,3 @@ if __name__ == '__main__':
     for dat in s:
         print(dat)
 
-    
