@@ -37,7 +37,7 @@ class BrukerData(object):
             if d.dsr_used:
                 dsr = 'The program DSR was used for model building:\n' \
                       'D. Kratzert, I. Krossing, J. Appl. Cryst. 2018, 51, 928-934. doi: 10.1107/S1600576718004508'
-                shelx = shelx+dsr
+                shelx = shelx + dsr
         if solution_program and 'XT' in solution_program.version:
             solution_primary = 'direct'
         # TODO: determine the correct dataset number:
