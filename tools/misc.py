@@ -72,10 +72,14 @@ class Manufacturer():
 # '_space_group_centring_type',  # seems to be used nowere
 # '_exptl_absorpt_special_details',   # This is not official?!?
 high_prio_keys = {
-    '_audit_contact_author_address'                    : 'Adresss of the cif author',
-    '_audit_creation_method'                           : 'Program that created this cif file',
-    '_chemical_formula_moiety'                         : 'Formula with each discrete bonded residue or ion',
-    '_chemical_formula_sum'                            : 'Specifies the composition of the compound',
+    '_audit_contact_author_address'                    : 'The adresss of the cif author',
+    '_audit_contact_author_email'                      : 'The email adress of the cif author',
+    '_audit_contact_author_name'                       : 'The name of the cif author',
+    '_audit_contact_author_phone'                      : 'The phone number of the cif author',
+    '_publ_contact_author_id_orcid'                    : 'The ORCID ID of the author submitting the manuscript and data block',
+    '_audit_creation_method'                           : 'The program that created this cif file after refinement',
+    '_chemical_formula_moiety'                         : 'Formula with each discrete bonded residue or ion separated',
+    '_chemical_formula_sum'                            : 'The sum formula specifies the composition of the compound',
     '_chemical_formula_weight'                         : 'Formula mass in daltons',
     '_space_group_crystal_system'                      : 'The name of the crystal system to which the space group belongs',
     '_space_group_IT_number'                           : 'The number as assigned in International Tables for Crystallography Vol. A',
@@ -138,7 +142,7 @@ high_prio_keys = {
     '_refine_ls_hydrogen_treatment'                    : 'Treatment of hydrogen atoms in the least-squares refinement',
     '_refine_special_details'                          : 'Detailed refinement desripton, e.g. information about a disorder model',
     '_refine_ls_structure_factor_coef'                 : 'Structure-factor coefficient |F|, F^2^ or I used in the least-squares refinement process',
-    '_refine_ls_matrix_type'                           : ' Type of matrix used to accumulate the least-squares derivatives',
+    '_refine_ls_matrix_type'                           : 'Type of matrix used to accumulate the least-squares derivatives',
     '_refine_ls_weighting_scheme'                      : 'The weighting scheme applied in the least-squares process',
     '_refine_ls_weighting_details'                     : 'A description of special aspects of the weighting scheme used in the least-squares refinement',
     '_atom_sites_solution_primary'                     : 'Codes which identify the methods used to locate the initial atom sites',
