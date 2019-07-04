@@ -128,9 +128,9 @@ class AppWindow(QMainWindow):
         self.ui.CheckcifButton.setDisabled(True)
         if DEBUG:
             # only for testing:
-            # self.load_cif_file(r'test-data/twin4.cif')
+            self.load_cif_file(r'test-data/twin4.cif')
             # self.load_cif_file(r'D:\GitHub\DSR\p21c.cif')
-            self.load_cif_file(r'D:\frames\guest\BruecknerRK_103\work\BruecknerRK_103_Cu_0m_a.cif')
+            #self.load_cif_file(r'D:\frames\guest\BruecknerRK_103\work\BruecknerRK_103_Cu_0m_a.cif')
             # self.load_cif_file(r'D:\frames\BB_29\P-1_a.cif')
             # self.load_cif_file(r'D:\frames\guest\Esser_JW283\Esser_JW283\Esser_JW283_0m_a.cif')
         # TODO: Have to find a different method to select the row:
@@ -180,9 +180,18 @@ class AppWindow(QMainWindow):
         # something like cifItemsTable.selected_field.connect(self.display_data_file)
         ##
         self.ui.SaveFullReportButton.clicked.connect(self.run_multitable)
+        # vertical header click:
         view = self.ui.CifItemsTable.verticalHeader()
         view.setSectionsClickable(True)
         view.sectionClicked.connect(self.foo)
+        ###
+        self.ui.RecentComboBox.currentIndexChanged.connect(self.load_recent_file)
+
+    def load_recent_file(self, file_index):
+        combo = self.ui.RecentComboBox
+        if file_index > 1:
+            txt = combo.itemText(file_index)
+            self.load_cif_file(txt)
 
     def foo(self, section):
         item = self.ui.CifItemsTable.verticalHeaderItem(section)
@@ -199,16 +208,19 @@ class AppWindow(QMainWindow):
 
     def save_current_recent_files_list(self, file):
         recent = list(self.settings.settings.value('recent_files', type=list))
-        recent.append(file)
-        self.settings.settings.setValue('recent_files', recent[-7:])
-        print(recent, 'save')
+        if not file in recent:
+            recent.insert(0, file)
+        if len(recent) > 5:
+            recent.pop()
+        self.settings.settings.setValue('recent_files', recent)
+        #print(recent, 'save')
 
     def load_recent_cifs_list(self):
         self.ui.RecentComboBox.clear()
         recent = list(self.settings.settings.value('recent_files', type=list))
         self.ui.RecentComboBox.addItem('Recent Files')
         self.ui.RecentComboBox.addItems(recent)
-        print(recent, 'load')
+        #print(recent, 'load')
 
     def save_current_cif_file(self):
         table = self.ui.CifItemsTable
