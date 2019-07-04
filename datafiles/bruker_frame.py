@@ -15,14 +15,17 @@ class BrukerFrameHeader():
             if fr:
                 self._fileobj = Path(fr)
         if not self._fileobj:
-            raise AttributeError
+            self._fileobj = Path()
         self.filename = self._fileobj.absolute()
         self.header = {}
-        with open(self._fileobj) as file:
-            for n in range(96):
-                l = file.read(80).strip()
-                key = l[:7].strip()
-                self.header[key] = l[8:].strip()  # value
+        try:
+            with open(self._fileobj) as file:
+                for n in range(96):
+                    l = file.read(80).strip()
+                    key = l[:7].strip()
+                    self.header[key] = l[8:].strip()  # value
+        except IsADirectoryError:
+            pass
 
     def __repr__(self):
         return pformat(self.header, indent=2, width=120)
@@ -46,10 +49,10 @@ class BrukerFrameHeader():
 
     @property
     def temperature(self):
-        tmp = self.header['CREATED'].split()[1]
         try:
+            tmp = self.header['CREATED'].split()[1]
             return (float(tmp) / 100.0) + 273.15
-        except ValueError:
+        except (ValueError, KeyError):
             return 293.15
 
     @property
@@ -58,7 +61,7 @@ class BrukerFrameHeader():
         return round(float(tmp), 2)
 
     @property
-    def milliwatt(self):
+    def milliamps(self):
         tmp = self.header['SOURCEM']
         return round(float(tmp), 2)
 
