@@ -8,8 +8,8 @@ from PyQt5.QtGui import QColor, QIcon, QPalette
 from cif.file_reader import CifContainer, quote
 from datafiles.datatools import BrukerData
 from multitable.multi_gui import MultitableAppWindow
-from tools.misc import predef_equipment_templ, predef_prop_templ, special_fields, text_field_keys, high_prio_keys, \
-    medium_prio_keys
+from tools.misc import high_prio_keys, predef_equipment_templ, predef_prop_templ, special_fields, \
+    text_field_keys
 from tools.settings import FinalCifSettings
 
 DEBUG = False
@@ -202,6 +202,8 @@ class AppWindow(QMainWindow):
         txt = ''
         # be sure not to get vheader with name of last click:
         if section != self.vheader_clicked and self.vheader_clicked > -1:
+            self.restore_vertical_header()
+            self.vheader_clicked = -1
             return
             # get back previous name
         if self.vheader_clicked > -1:
@@ -216,14 +218,11 @@ class AppWindow(QMainWindow):
             return
         except KeyError:
             pass
-        try:
-            txt = medium_prio_keys[itemtext]
-            if txt:
-                item.setText(txt)
-            self.vheader_clicked = section
-            return
-        except KeyError:
-            pass
+
+    def restore_vertical_header(self):
+        for row_num, key in enumerate(self.vheaderitems.keys()):
+            item_key = QTableWidgetItem(key)
+            self.ui.CifItemsTable.setVerticalHeaderItem(row_num, item_key)
 
     def run_multitable(self):
         """
