@@ -12,7 +12,7 @@ from tools.misc import predef_equipment_templ, predef_prop_templ, special_fields
     medium_prio_keys
 from tools.settings import FinalCifSettings
 
-DEBUG = True
+DEBUG = False
 
 if DEBUG:
     from PyQt5 import uic
@@ -139,6 +139,7 @@ class AppWindow(QMainWindow):
         # self.ui.EquipmentTemplatesListWidget.setCurrentRow(self.settings.load_last_equipment())
         # Sorting desyncronizes header and columns:
         self.ui.CifItemsTable.setSortingEnabled(False)
+        self.load_recent_cifs_list()
 
     def __del__(self):
         print('saving position')
@@ -190,7 +191,7 @@ class AppWindow(QMainWindow):
 
     def load_recent_file(self, file_index):
         combo = self.ui.RecentComboBox
-        if file_index > 1:
+        if file_index > 0:
             txt = combo.itemText(file_index)
             self.load_cif_file(txt)
 
@@ -690,6 +691,8 @@ class AppWindow(QMainWindow):
             os.chdir(filepath.absolute().parent)
         except OSError:
             print("Can't change the Current Working Directory")
+        self.ui.CifItemsTable.clearContents()
+        #self.ui.CifItemsTable.clear() # clears header
         self.fill_cif_table()
         # self.ui.EquipmentTemplatesListWidget.setCurrentRow(-1)  # Has to he in front in order to work
         # self.ui.EquipmentTemplatesListWidget.setCurrentRow(self.settings.load_last_equipment())
