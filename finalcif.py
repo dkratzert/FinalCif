@@ -782,29 +782,45 @@ class AppWindow(QMainWindow):
             # get missing items from sources and put them into the corresponding rows:
             self.missing_data.append('_cell_measurement_temperature')
             self.missing_data.append('_diffrn_ambient_temperature')
+            self.missing_data.append('_publ_section_references')
             for miss_data in self.missing_data:
                 # add missing item to data sources column:
                 row_num = self.vheaderitems[miss_data]
-                tab_item = QTableWidgetItem()
-                #                             # row  column  item
-                self.ui.CifItemsTable.setItem(row_num, 1, tab_item)
+                if miss_data in text_field_keys:
+                    tab_item = QPlainTextEdit(self)
+                    tab_item.setFrameShape(0)
+                    self.ui.CifItemsTable.setCellWidget(row_num, 1, tab_item)
+                else:
+                    tab_item = QTableWidgetItem()
+                    #                             # row  column  item
+                    self.ui.CifItemsTable.setItem(row_num, 1, tab_item)
                 try:
                     # sources are lower case!
                     txt = str(sources[miss_data.lower()][0])
                     tooltiptext = str(sources[miss_data.lower()][1])
-                    tab_item.setText(txt)  # has to be string
-                    tab_item.setToolTip(tooltiptext)
-                    if txt and txt != '?':
-                        tab_item.setBackground(light_green)
+                    if miss_data in text_field_keys:
+                        tab_item.setPlainText(txt)
+                        pal = tab_item.palette()
+                        if txt and txt != '?':
+                            pal.setColor(QPalette.Base, light_green)
+                        else:
+                            pal.setColor(QPalette.Base, yellow)
+                        tab_item.setPalette(pal)
                     else:
-                        tab_item.setBackground(yellow)
+                        tab_item.setText(txt)  # has to be string
+                        if txt and txt != '?':
+                            tab_item.setBackground(light_green)
+                        else:
+                            tab_item.setBackground(yellow)
+                    tab_item.setToolTip(tooltiptext)
                     # print(sources[miss_data], miss_data)
                     # self.ui.CifItemsTable.resizeRowToContents(row_num)
                 except KeyError as e:
                     # print(e, '##')
                     pass
                 # items from data sources should not be editable
-                tab_item.setFlags(tab_item.flags() ^ Qt.ItemIsEditable)
+                if not miss_data in text_field_keys:
+                    tab_item.setFlags(tab_item.flags() ^ Qt.ItemIsEditable)
                 # creating comboboxes for special keywords like _exptl_crystal_colour.
                 # In case a property for this key exists, it will show this list:
                 if miss_data.lower() in [x.lower() for x in property_fields]:
@@ -844,9 +860,9 @@ class AppWindow(QMainWindow):
                 self.missing_data.append(key)
             self.add_row(key, value)
             # print(key, value)
+        self.test_checksums()
         self.get_data_sources()
         # self.ui.CifItemsTable.resizeRowsToContents()
-        self.test_checksums()
 
     def edit_row(self, vert_key: str = None, new_value=None, column: int = 1):
         """
@@ -879,6 +895,7 @@ class AppWindow(QMainWindow):
         if not key:
             strval = ''
         if key in text_field_keys:
+            # print(key, strval)
             tabitem = QPlainTextEdit(self)
             tabitem.setPlainText(strval)
             tabitem.setFrameShape(0)  # no frame (border)
