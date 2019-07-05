@@ -19,6 +19,7 @@ def quote(string, wrapping=80):
 class CifContainer():
     """
     This class holds the content of a cif file, independent of the file parser used.
+    TODO: get _exptl_absorpt_process_details etc from cif file if it is there.
     """
 
     def __init__(self, file: Path):
@@ -45,19 +46,38 @@ class CifContainer():
         self.cif_data = json.loads(self.doc.as_json())[self.block.name.lower()]
 
     def hkl_checksum(self):
-        pass
+        """
+        Calculates the shelx checksum for the hkl file content of a cif file.
 
+        >>> c = CifContainer(Path('test-data/DK_zucker2_0m.cif'))
+        >>> c.open_cif_with_gemmi()
+        >>> c.hkl_checksum()
+        69576
+        """
+        res = self.block.find_value('_shelx_hkl_file')
+        return self.calc_checksum(res[1:-1])
+
+    @property
     def res_checksum(self):
-        pass
+        """
+        Calculates the shelx checksum for the res file content of a cif file.
+
+        >>> c = CifContainer(Path('test-data/DK_zucker2_0m.cif'))
+        >>> c.open_cif_with_gemmi()
+        >>> c.res_checksum
+        52593
+        """
+        res = self.block.find_value('_shelx_res_file')
+        return self.calc_checksum(res[1:-1])
 
     def calc_checksum(self, input: str):
         """
-        Calculates the shelx checksum for the res and hkl content of a cif file.
+        Calculates the shelx checksum a cif file.
         """
         sum = 0
         input = input.encode('ascii')
         for char in input:
-            print(char)
+            # print(char)
             if char > 32:  # space character
                 sum += char
         sum %= 714025
@@ -126,9 +146,9 @@ class CifContainer():
         Returns the key/value pairs of a cif file sorted by priority.
 
         >>> c = CifContainer(Path('test-data/P21c-final.cif'))
-        >>> c.open_cif_with_fileparser()
-        >>> c.key_value_pairs()
-
+        >>> c.open_cif_with_gemmi()
+        >>> c.key_value_pairs()[:2]
+        [['_audit_contact_author_address', None], ['_audit_contact_author_email', None]]
         """
         high_prio_no_values, high_prio_with_values = self.get_keys(high_prio_keys)
         return high_prio_no_values + \
