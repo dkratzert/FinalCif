@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
-
+#
+# This program was innitially created by Nils Trapp and extended by
+# Daniel Kratzert
+#
 import itertools as it
 import re
 from pathlib import Path

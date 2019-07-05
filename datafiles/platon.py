@@ -1,6 +1,14 @@
 """
 :: Moiety_Formula = C24 H27 Au Cl N P, C H2 Cl2, Cl
 """
+#  ----------------------------------------------------------------------------
+#  "THE BEER-WARE LICENSE" (Revision 42):
+#  daniel.kratzert@ac.uni-freiburg.de> wrote this file.  As long as you retain
+#  this notice you can do whatever you want with this stuff. If we meet some day,
+#  and you think this stuff is worth it, you can buy me a beer in return.
+#  Dr. Daniel Kratzert
+#  ----------------------------------------------------------------------------
+
 import os
 import subprocess
 from pathlib import Path

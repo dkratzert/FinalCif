@@ -1,3 +1,11 @@
+#  ----------------------------------------------------------------------------
+#  "THE BEER-WARE LICENSE" (Revision 42):
+#  daniel.kratzert@ac.uni-freiburg.de> wrote this file.  As long as you retain
+#  this notice you can do whatever you want with this stuff. If we meet some day,
+#  and you think this stuff is worth it, you can buy me a beer in return.
+#  Dr. Daniel Kratzert
+#  ----------------------------------------------------------------------------
+
 from pathlib import Path
 
 from cif.file_reader import CifContainer
@@ -91,30 +99,30 @@ class BrukerData(object):
         temp2 = self.p4p.temperature
         temperature = round(min([temp1, temp2]), 1)
         # TODO: make a Sources class that returns either the parser object itself or the respective value from the key:
-        sources = {'_cell_measurement_reflns_used': (saint_data.cell_reflections, saint_data.filename.name),
-                   '_cell_measurement_theta_min': (saint_data.cell_res_min_theta, saint_data.filename.name),
-                   '_cell_measurement_theta_max': (saint_data.cell_res_max_theta, saint_data.filename.name),
-                   '_computing_data_collection': (saint_first_ls.aquire_software, saint_data.filename.name),
-                   '_computing_cell_refinement': (saint_data.version, saint_data.filename.name),
-                   '_computing_data_reduction': (saint_data.version, saint_data.filename.name),
-                   '_exptl_absorpt_correction_type': (abstype, self.sadabs.filename.name),
+        sources = {'_cell_measurement_reflns_used'  : (saint_data.cell_reflections, saint_data.filename.name),
+                   '_cell_measurement_theta_min'    : (saint_data.cell_res_min_theta, saint_data.filename.name),
+                   '_cell_measurement_theta_max'    : (saint_data.cell_res_max_theta, saint_data.filename.name),
+                   '_computing_data_collection'     : (saint_first_ls.aquire_software, saint_data.filename.name),
+                   '_computing_cell_refinement'     : (saint_data.version, saint_data.filename.name),
+                   '_computing_data_reduction'      : (saint_data.version, saint_data.filename.name),
+                   '_exptl_absorpt_correction_type' : (abstype, self.sadabs.filename.name),
                    '_exptl_absorpt_correction_T_min': (str(t_min), self.sadabs.filename.name),
                    '_exptl_absorpt_correction_T_max': (str(t_max), self.sadabs.filename.name),
                    '_diffrn_reflns_av_R_equivalents': (self.sadabs.Rint, self.sadabs.filename.name),
-                   '_cell_measurement_temperature': (temperature, self.p4p.filename.name),
-                   '_diffrn_ambient_temperature': (temperature, self.p4p.filename.name),
-                   '_exptl_absorpt_process_details': (self.sadabs.version, self.sadabs.filename.name),
-                   '_exptl_crystal_colour': (self.p4p.crystal_color, self.p4p.filename.name),
-                   '_exptl_crystal_description': (self.p4p.morphology, self.p4p.filename.name),
-                   '_exptl_crystal_size_min': (self.p4p.crystal_size[0] or '', self.p4p.filename.name),
-                   '_exptl_crystal_size_mid': (self.p4p.crystal_size[1] or '', self.p4p.filename.name),
-                   '_exptl_crystal_size_max': (self.p4p.crystal_size[2] or '', self.p4p.filename.name),
-                   '_computing_structure_solution': (solution_version, ''),
-                   '_atom_sites_solution_primary': (solution_primary, ''),
-                   '_diffrn_source_voltage': (kilovolt or '', self.frame_header.filename.name),
-                   '_diffrn_source_current': (milliamps or '', self.frame_header.filename.name),
-                   '_chemical_formula_moiety': (moiety or '', self.platon_out.filename.name),
-                   '_publ_section_references': (shelx, ''),
+                   '_cell_measurement_temperature'  : (temperature, self.p4p.filename.name),
+                   '_diffrn_ambient_temperature'    : (temperature, self.p4p.filename.name),
+                   '_exptl_absorpt_process_details' : (self.sadabs.version, self.sadabs.filename.name),
+                   '_exptl_crystal_colour'          : (self.p4p.crystal_color, self.p4p.filename.name),
+                   '_exptl_crystal_description'     : (self.p4p.morphology, self.p4p.filename.name),
+                   '_exptl_crystal_size_min'        : (self.p4p.crystal_size[0] or '', self.p4p.filename.name),
+                   '_exptl_crystal_size_mid'        : (self.p4p.crystal_size[1] or '', self.p4p.filename.name),
+                   '_exptl_crystal_size_max'        : (self.p4p.crystal_size[2] or '', self.p4p.filename.name),
+                   '_computing_structure_solution'  : (solution_version, ''),
+                   '_atom_sites_solution_primary'   : (solution_primary, ''),
+                   '_diffrn_source_voltage'         : (kilovolt or '', self.frame_header.filename.name),
+                   '_diffrn_source_current'         : (milliamps or '', self.frame_header.filename.name),
+                   '_chemical_formula_moiety'       : (moiety or '', self.platon_out.filename.name),
+                   '_publ_section_references'       : (shelx, ''),
                    }
         self.sources = dict((k.lower(), v) for k, v in sources.items())
 

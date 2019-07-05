@@ -1,3 +1,11 @@
+#  ----------------------------------------------------------------------------
+#  "THE BEER-WARE LICENSE" (Revision 42):
+#  daniel.kratzert@ac.uni-freiburg.de> wrote this file.  As long as you retain
+#  this notice you can do whatever you want with this stuff. If we meet some day,
+#  and you think this stuff is worth it, you can buy me a beer in return.
+#  Dr. Daniel Kratzert
+#  ----------------------------------------------------------------------------
+
 import os
 import sys
 from collections import OrderedDict
@@ -38,23 +46,16 @@ from gui.finalcif_gui import Ui_FinalCifWindow
 """
 TODO:
 
--
 - find DSR string in res file and put descriptive text in cif.
 - make an extra thread to load the cif data
 - make extra thread to load platon
-- crystallization method templates
-- preparation method templates
-- crystal author: submitter, operator
-- show data source on table hover
 - add response forms
-- The click on a cif keyword in the table opens the IuCr help about this key in a popup. (Not easy!)
 - Checkcif: http://journals.iucr.org/services/cif/checking/validlist.html
 - only let real cif keywords into the EquipmentEditTableWidget and cifKeywordLE.
 - action: rightclick on a template -> offer "export template (to .cif)"
 - action: rightclick on a template -> offer "import template (from .cif)"
 - get correct Rint, Tmin/Tmax from twinabs by combining reflections count with modification time, 
   domain count?, hkl type
-- SaveResidualsTableButton -> run multitable.py
 - ReportButton -> generate full report with description text and all tables as .docx (and pdf?)
   maybe also a preview? Directly open in MSword/LibreOffice?
 - check hkl and res _shelx_res_checksum checksum
