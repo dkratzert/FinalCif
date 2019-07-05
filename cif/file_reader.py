@@ -1,4 +1,5 @@
 import json
+import os
 import textwrap
 from pathlib import Path
 
@@ -135,11 +136,11 @@ class CifContainer():
         """
         charcters = {'°': r'\%', '±': r'+-', 'ß': r'\&s', 'ü': r'u\"',
                      'ö': r'o\"', 'ä': r'a\"', 'é': '\'e', 'á': r'\'a',
-                     'à': r'\`a', 'â': r'\^a', 'ç': r'\,c'}
+                     'à': r'\`a', 'â': r'\^a', 'ç': r'\,c', r'\r\n': chr(10)}
         for char in txt:
             if char in charcters:
                 txt = txt.replace(char, charcters[char])
-        self.block.set_pair(key, txt)
+        self.block.set_pair(key, quote(txt))
 
     def key_value_pairs(self):
         """

@@ -1,9 +1,10 @@
 import os
 import sys
+from collections import OrderedDict
 from pathlib import Path
 
 from PyQt5.QtCore import QPoint, Qt
-from PyQt5.QtGui import QColor, QIcon, QPalette
+from PyQt5.QtGui import QColor, QIcon, QPalette, QTextCursor
 
 from cif.file_reader import CifContainer, quote
 from datafiles.datatools import BrukerData
@@ -102,7 +103,7 @@ class AppWindow(QMainWindow):
         self.ui = Ui_FinalCifWindow()
         self.ui.setupUi(self)
         self.show()
-        self.vheaderitems = {}
+        self.vheaderitems = OrderedDict()
         self.settings = FinalCifSettings(self)
         self.store_predefined_templates()
         self.show_equipment_and_properties()
@@ -155,11 +156,13 @@ class AppWindow(QMainWindow):
         self.ui.SelectCif_PushButton.clicked.connect(self.load_cif_file)
         self.ui.SaveCifButton.clicked.connect(self.save_current_cif_file)
         ##
+        self.ui.EquipmentTemplatesListWidget.doubleClicked.connect(self.edit_equipment_template)
         self.ui.EditEquipmentTemplateButton.clicked.connect(self.edit_equipment_template)
         self.ui.SaveEquipmentButton.clicked.connect(self.save_equipment_template)
         self.ui.CancelEquipmentButton.clicked.connect(self.cancel_equipment_template)
         self.ui.DeleteEquipmentButton.clicked.connect(self.delete_equipment)
         ##
+        self.ui.PropertiesTemplatesListWidget.doubleClicked.connect(self.edit_property_template)
         self.ui.EditPropertiyTemplateButton.clicked.connect(self.edit_property_template)
         self.ui.SavePropertiesButton.clicked.connect(self.save_property_template)
         self.ui.CancelPropertiesButton.clicked.connect(self.cancel_property_template)
@@ -295,10 +298,10 @@ class AppWindow(QMainWindow):
                     # This is my row information
                     # print('col2:', vhead, col0, col1, col2, '#')
                     if col1 and not col2:
-                        self.cif.set_pair_delimited(vhead, quote(col1))
+                        self.cif.set_pair_delimited(vhead, col1)
                     if col2:
                         try:
-                            self.cif.set_pair_delimited(vhead, quote(col2))
+                            self.cif.set_pair_delimited(vhead, col2)
                         except RuntimeError:
                             pass
         fin_file = Path(self.cif.filename.parts[-1][:-4] + '-finalcif.cif')
@@ -317,6 +320,8 @@ class AppWindow(QMainWindow):
         """
         Display saved items in the equipment and properties lists.
         """
+        self.ui.EquipmentTemplatesListWidget.clear()
+        self.ui.PropertiesTemplatesListWidget.clear()
         equipment_list = self.settings.settings.value('equipment_list')
         if equipment_list:
             for eq in equipment_list:
@@ -342,18 +347,35 @@ class AppWindow(QMainWindow):
         # self.equipment_settings = table_data
         equipment = self.settings.load_equipment_template_as_dict(selected_row_text)
         if self.vheaderitems:
-            for data in equipment:
+            for key in equipment:
                 # add missing item to data sources column:
-                try:
-                    tab_item = QTableWidgetItem(str(equipment[data]))
-                    # vheaderitems contain the cif keywords in the vertical header, the 1 is the data sources column.
-                    row = self.vheaderitems[data]
+                if key in text_field_keys:
+                    tabitem = QPlainTextEdit(self)
+                    pal = tabitem.palette()
+                    pal.setColor(QPalette.Base, light_green)
+                    tabitem.setPalette(pal)
+                    txtlst = equipment[key].split(r'\n')
+                    for txt in txtlst:
+                        tabitem.moveCursor(QTextCursor.End)
+                        tabitem.moveCursor(QTextCursor.NextRow)
+                        tabitem.appendPlainText(txt)
+                    tabitem.setFrameShape(0)  # no
+                    #tabitem.setPalette(pal)
+                    row = self.vheaderitems[key]
                     column = 1
-                    self.ui.CifItemsTable.setItem(row, column, tab_item)
-                    tab_item.setFlags(tab_item.flags() ^ Qt.ItemIsEditable)
-                    tab_item.setBackground(light_green)
-                except KeyError:
-                    pass
+                    self.ui.CifItemsTable.setCellWidget(row, column, tabitem)
+                else:
+                    try:
+                        tab_item = QTableWidgetItem(str(equipment[key]))
+                        # vheaderitems contain the cif keywords in the vertical header, the 1 is the data sources column.
+                        row = self.vheaderitems[key]
+                        column = 1
+                        self.ui.CifItemsTable.setItem(row, column, tab_item)
+                        tab_item.setFlags(tab_item.flags() ^ Qt.ItemIsEditable)
+                        tab_item.setBackground(light_green)
+                    except KeyError as e:
+                        #print('load_selected_equipment:', e)
+                        pass
 
     def new_equipment(self):
         item = QListWidgetItem('')
@@ -376,6 +398,8 @@ class AppWindow(QMainWindow):
         # now make it invisible:
         self.ui.EquipmentTemplatesListWidget.takeItem(index.row())
         self.cancel_equipment_template()
+        self.store_predefined_templates()
+        self.show_equipment_and_properties()
 
     def new_property(self):
         item = QListWidgetItem('')
@@ -416,7 +440,10 @@ class AppWindow(QMainWindow):
         table.insertRow(row_num)
         # Add cif key and value to the row:
         item_key = QTableWidgetItem(key)
-        item_val = QTableWidgetItem(value)
+        try:
+            item_val = QTableWidgetItem(value)
+        except TypeError:
+            return
         table.setItem(row_num, 0, item_key)
         table.setItem(row_num, 1, item_val)
 
@@ -732,7 +759,7 @@ class AppWindow(QMainWindow):
                 # add missing item to data sources column:
                 row_num = self.vheaderitems[miss_data]
                 tab_item = QTableWidgetItem()
-                #                               # row  column  item
+                #                             # row  column  item
                 self.ui.CifItemsTable.setItem(row_num, 1, tab_item)
                 try:
                     # sources are lower case!
@@ -747,7 +774,7 @@ class AppWindow(QMainWindow):
                     # print(sources[miss_data], miss_data)
                     # self.ui.CifItemsTable.resizeRowToContents(row_num)
                 except KeyError as e:
-                    # print(e, '##')
+                    #print(e, '##')
                     pass
                 # items from data sources should not be editable
                 tab_item.setFlags(tab_item.flags() ^ Qt.ItemIsEditable)
@@ -810,7 +837,8 @@ class AppWindow(QMainWindow):
 
     def add_row(self, key, value):
         """
-        # Create a empty row at bottom of CifItemsTable
+        Create a empty row at bottom of CifItemsTable. This method only fills cif data in the 
+        first column. Not the data from external sources!
         """
         row_num = self.ui.CifItemsTable.rowCount()
         self.ui.CifItemsTable.insertRow(row_num)
@@ -825,7 +853,7 @@ class AppWindow(QMainWindow):
         if key in text_field_keys:
             tabitem = QPlainTextEdit(self)
             tabitem.setPlainText(strval)
-            tabitem.setFrameShape(0)  # no frame
+            tabitem.setFrameShape(0)  # no frame (border)
             tab1 = QPlainTextEdit(self)
             tab1.setFrameShape(0)
             tab2 = QPlainTextEdit(self)
@@ -843,8 +871,8 @@ class AppWindow(QMainWindow):
         else:
             tabitem = QTableWidgetItem(strval)
             if key == "These are already in:":
-                pal = QPalette()
-                pal.setColor(QPalette.Foreground, Qt.black)
+                #pal = QPalette()
+                #pal.setColor(QPalette.Foreground, Qt.black)
                 item1 = QTableWidgetItem('----------------------')
                 item2 = QTableWidgetItem('----------------------')
                 item3 = QTableWidgetItem('----------------------')
