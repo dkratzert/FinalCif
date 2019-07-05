@@ -20,7 +20,14 @@ def quote(string, wrapping=80):
     """
     Quotes a cif string and warppes it.
     """
-    quoted = gemmi.cif.quote(textwrap.fill(string, width=wrapping))
+    lines = '\n'
+    for line in string.split('\n'):
+        if len(line) > wrapping:
+            line = textwrap.fill(line, width=wrapping)
+            lines += line + '\n'
+        else:
+            lines += line + '\n'
+    quoted = gemmi.cif.quote(lines.rstrip('\n'))
     return quoted
 
 
@@ -143,7 +150,7 @@ class CifContainer():
         """
         charcters = {'°': r'\%', '±': r'+-', 'ß': r'\&s', 'ü': r'u\"',
                      'ö': r'o\"', 'ä': r'a\"', 'é': '\'e', 'á': r'\'a',
-                     'à': r'\`a', 'â': r'\^a', 'ç': r'\,c', r'\r\n': chr(10)}
+                     'à': r'\`a', 'â': r'\^a', 'ç': r'\,c'}  # , r'\r\n': chr(10)}
         for char in txt:
             if char in charcters:
                 txt = txt.replace(char, charcters[char])
