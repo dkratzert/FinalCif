@@ -49,6 +49,7 @@ class Cif(object):
             "_exptl_crystal_size_min"             : '',
             "_exptl_absorpt_coefficient_mu"       : '',
             "_exptl_absorpt_correction_type"      : '',
+            "_exptl_special_details"              : '',
             "_diffrn_ambient_temperature"         : '',
             "_diffrn_radiation_wavelength"        : '',
             "_diffrn_radiation_type"              : '',
@@ -210,7 +211,10 @@ class Cif(object):
             if semi_colon_text_field:
                 if not line.lstrip().startswith(";"):
                     semi_colon_text_list.append(line)
-                if (textlen - 1 > num) and txt[num + 1][0] == ";":
+                    continue  # otherwise, the next line would end the text field 
+                if line.startswith(";") or line.startswith('_') or line.startswith('loop_'):
+                    if not semi_colon_text_list:
+                        continue
                     self.cif_data[semi_colon_text_field] = "{}".format(os.linesep).join(semi_colon_text_list)
                     semi_colon_text_list.clear()
                     semi_colon_text_field = ''
