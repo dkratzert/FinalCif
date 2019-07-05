@@ -87,6 +87,7 @@ high_prio_keys = {
     '_space_group_name_Hall'                           : 'Space-group symbol defined by S. R. Hall (1981)',
     '_exptl_crystal_description'                       : 'A description of the quality and habit of the crystal',
     '_exptl_crystal_colour'                            : 'The colour of the crystal',
+    '_exptl_crystal_recrystallization_method'          : 'Describes the method used to crystallize the sample',
     '_exptl_crystal_density_meas'                      : 'Density value measured using standard chemical and physical methods',
     '_exptl_crystal_density_method'                    : 'The method used to measure _exptl_crystal_density_meas',
     '_exptl_crystal_density_diffrn'                    : 'Density values calculated from the crystal cell and contents',
@@ -179,6 +180,7 @@ text_field_keys = ['_refine_special_details',
                    '_refine_special_details',
                    '_publ_section_references',
                    '_audit_contact_author_address',
+                   '_exptl_crystal_recrystallization_method',
                    ]
 
 ABSORPTION_CORRECTION_TYPES = (
