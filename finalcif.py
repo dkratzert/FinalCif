@@ -5,8 +5,11 @@ from pathlib import Path
 
 from PyQt5.QtCore import QPoint, Qt
 from PyQt5.QtGui import QColor, QIcon, QPalette, QTextCursor
+from PyQt5.QtWidgets import QMainWindow, QApplication, QHeaderView, QFileDialog, \
+    QTableWidgetItem, QTableWidget, QStackedWidget, QListWidget, QListWidgetItem, QComboBox, QMessageBox, \
+    QPlainTextEdit, QSizePolicy
 
-from cif.file_reader import CifContainer, quote
+from cif.file_reader import CifContainer
 from datafiles.datatools import BrukerData
 from multitable.multi_gui import MultitableAppWindow
 from tools.misc import high_prio_keys, predef_equipment_templ, predef_prop_templ, special_fields, \
@@ -17,10 +20,6 @@ DEBUG = False
 
 if DEBUG:
     from PyQt5 import uic
-
-from PyQt5.QtWidgets import QMainWindow, QApplication, QHeaderView, QFileDialog, \
-    QTableWidgetItem, QTableWidget, QStackedWidget, QListWidget, QListWidgetItem, QComboBox, QMessageBox, \
-    QPlainTextEdit, QSizePolicy
 
 if getattr(sys, 'frozen', False):
     # If the application is run as a bundle, the pyInstaller bootloader
@@ -360,7 +359,7 @@ class AppWindow(QMainWindow):
                         tabitem.moveCursor(QTextCursor.NextRow)
                         tabitem.appendPlainText(txt)
                     tabitem.setFrameShape(0)  # no
-                    #tabitem.setPalette(pal)
+                    # tabitem.setPalette(pal)
                     row = self.vheaderitems[key]
                     column = 1
                     self.ui.CifItemsTable.setCellWidget(row, column, tabitem)
@@ -374,7 +373,7 @@ class AppWindow(QMainWindow):
                         tab_item.setFlags(tab_item.flags() ^ Qt.ItemIsEditable)
                         tab_item.setBackground(light_green)
                     except KeyError as e:
-                        #print('load_selected_equipment:', e)
+                        # print('load_selected_equipment:', e)
                         pass
 
     def new_equipment(self):
@@ -774,7 +773,7 @@ class AppWindow(QMainWindow):
                     # print(sources[miss_data], miss_data)
                     # self.ui.CifItemsTable.resizeRowToContents(row_num)
                 except KeyError as e:
-                    #print(e, '##')
+                    # print(e, '##')
                     pass
                 # items from data sources should not be editable
                 tab_item.setFlags(tab_item.flags() ^ Qt.ItemIsEditable)
@@ -871,14 +870,17 @@ class AppWindow(QMainWindow):
         else:
             tabitem = QTableWidgetItem(strval)
             if key == "These are already in:":
-                #pal = QPalette()
-                #pal.setColor(QPalette.Foreground, Qt.black)
-                item1 = QTableWidgetItem('----------------------')
-                item2 = QTableWidgetItem('----------------------')
-                item3 = QTableWidgetItem('----------------------')
+                # pal = QPalette()
+                # pal.setColor(QPalette.Foreground, Qt.black)
+                item1 = QTableWidgetItem('')
+                item2 = QTableWidgetItem('')
+                item3 = QTableWidgetItem('')
                 item1.setBackground(blue)
+                item1.setFlags(item1.flags() ^ Qt.ItemIsEditable)
                 item2.setBackground(blue)
+                item2.setFlags(item2.flags() ^ Qt.ItemIsEditable)
                 item3.setBackground(blue)
+                item3.setFlags(item3.flags() ^ Qt.ItemIsEditable)
                 self.ui.CifItemsTable.setItem(row_num, 0, item1)
                 self.ui.CifItemsTable.setItem(row_num, 1, item2)
                 self.ui.CifItemsTable.setItem(row_num, 2, item3)
