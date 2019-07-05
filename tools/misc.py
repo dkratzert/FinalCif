@@ -183,14 +183,14 @@ text_field_keys = ['_refine_special_details',
 
 ABSORPTION_CORRECTION_TYPES = (
     (0, ''),  # , ''),
-    (1, 'analytical'),  # , 'analytical from crystal shape'),
-    (2, 'cylinder'),  # , 'cylindrical'),
+    (1, 'multi-scan'),  # , 'symmetry-related measurements'),
+    (2, 'numerical'),  # , 'numerical from crystal shape'),
     (3, 'empirical'),  # , 'empirical from intensities'),
     (4, 'gaussian'),  # , 'Gaussian from crystal shape'),
     (5, 'integration'),  # , 'integration from crystal shape'),
-    (6, 'multi-scan'),  # , 'symmetry-related measurements'),
+    (6, 'analytical'),  # , 'analytical from crystal shape'),
     (7, 'none'),  # , 'no absorption correction applied'),
-    (8, 'numerical'),  # , 'numerical from crystal shape'),
+    (8, 'cylinder'),  # , 'cylindrical'),
     (9, 'psi-scan'),  # , 'psi-scan corrections'),
     (10, 'refdelf'),  # , 'refined from delta-F'),
     (11, 'sphere'),  # , 'spherical'),
@@ -320,51 +320,6 @@ def to_int(st):
             return None
 
 
-### Property contents:
-
-predef_prop_templ = [{'name'  : 'Crystal Color',
-                      'values': ['_exptl_crystal_colour',
-                                 ['', 'colourless', 'white', 'black', 'yellow', 'red', 'blue',
-                                  'green', 'gray', 'pink', 'orange', 'violet', 'brown']]
-                      },
-                     {'name'  : 'Crystal Habit',
-                      'values': ['_exptl_crystal_description',
-                                 ['', 'block', 'needle', 'plate', 'prism', 'sphere']]
-                      },
-                     {'name'  : 'Cell Measurement Temperature',
-                      'values': ['_cell_measurement_temperature',
-                                 ['', '15', '80(2)', '100(2)', '110(2)',
-                                  '120(2)', '130(2)', '150(2)', '200(2)', '298(2)']]
-                      },
-                     {'name'  : 'Measurement Temperature',
-                      'values': ['_diffrn_ambient_temperature',
-                                 ['', '15(1)', '80(2)', '100(2)', '110(2)',
-                                  '120(2)', '130(2)', '150(2)', '200(2)', '293.15(2)', '298(2)']]
-                      },
-                     {'name'  : 'Molecular Graphics',
-                      'values': ['_computing_molecular_graphics',
-                                 ['', 'Olex2 (Dolomanov et al., 2009)', 'ShelXle (H\"ubschle 2011)',
-                                  'ORTEP Farrujia 2012', 'Bruker SHELXTL, XP (G. Sheldrick)',
-                                  'Mercury CSD']]
-                      },
-                     {'name'  : 'Contact Author Address',
-                      'values': ['_audit_contact_author_address',
-                                 ['']]
-                      },
-                     {'name'  : 'Contact Author email adress',
-                      'values': ['_audit_contact_author_email',
-                                 ['']]
-                      },
-                     {'name'  : 'Contact Author Phone number',
-                      'values': ['_audit_contact_author_name',
-                                 ['']]
-                      },
-                     {'name'  : 'Contact Author Orchid ID',
-                      'values': ['_publ_contact_author_id_orcid',
-                                 ['']]
-                      },
-                     ]
-
 """
 _audit_contact_author_address
 ;
@@ -392,6 +347,7 @@ Sheldrick, G.M. (2015). Acta Cryst. C71, 3-8.
 ;
 
 """
+# Equipment templates
 
 predef_equipment_templ = [{'name' : 'D8 VENTURE',
                            'items': [
@@ -431,4 +387,48 @@ predef_equipment_templ = [{'name' : 'D8 VENTURE',
                                ['_diffrn_measurement_specimen_support', 'Mitegen Loop'],
                            ]
                            },
+                          {'name' : 'Contact author name and address',
+                           'items': [
+                               ['_audit_contact_author_name', 'Dr. Daniel Kratzert'],
+                               ['_audit_contact_author_address',
+                                "Albert-Ludwigs-Universität Freiburg\n"
+                                "Institut für Anorganische und Analytische Chemie\n"
+                                "Albertstraße 21\n"
+                                "Freiburg i. Br.\n"
+                                "79104\n"
+                                "Germany"],
+                               ['_audit_contact_author_email', 'daniel.kratzert@ac.uni-freiburg.de'],
+                               ['_audit_contact_author_phone', '+497612036156'],
+                               ['_publ_contact_author_id_orcid', 'https://orcid.org/0000-0003-0970-9780'],
+                           ]
+                           },
                           ]
+
+### Property contents:
+
+predef_prop_templ = [{'name'  : 'Crystal Color',
+                      'values': ['_exptl_crystal_colour',
+                                 ['', 'colourless', 'white', 'black', 'yellow', 'red', 'blue',
+                                  'green', 'gray', 'pink', 'orange', 'violet', 'brown']]
+                      },
+                     {'name'  : 'Crystal Habit',
+                      'values': ['_exptl_crystal_description',
+                                 ['', 'block', 'needle', 'plate', 'prism', 'sphere']]
+                      },
+                     {'name'  : 'Cell Measurement Temperature',
+                      'values': ['_cell_measurement_temperature',
+                                 ['', '15', '80(2)', '100(2)', '110(2)',
+                                  '120(2)', '130(2)', '150(2)', '200(2)', '298(2)']]
+                      },
+                     {'name'  : 'Measurement Temperature',
+                      'values': ['_diffrn_ambient_temperature',
+                                 ['', '15(1)', '80(2)', '100(2)', '110(2)',
+                                  '120(2)', '130(2)', '150(2)', '200(2)', '293.15(2)', '298(2)']]
+                      },
+                     {'name'  : 'Molecular Graphics',
+                      'values': ['_computing_molecular_graphics',
+                                 ['', 'Olex2 (Dolomanov et al., 2009)', 'ShelXle (H\"ubschle 2011)',
+                                  'ORTEP Farrujia 2012', 'Bruker SHELXTL, XP (G. Sheldrick)',
+                                  'Mercury CSD']]
+                      },
+                     ]
