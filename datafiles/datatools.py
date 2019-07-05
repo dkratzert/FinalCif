@@ -45,7 +45,7 @@ class BrukerData(object):
             if d.dsr_used:
                 dsr = 'The program DSR was used for model building:\n' \
                       'D. Kratzert, I. Krossing, J. Appl. Cryst. 2018, 51, 928-934. doi: 10.1107/S1600576718004508'
-                shelx = shelx + dsr
+                shelx += dsr
         if solution_program and 'XT' in solution_program.version:
             solution_primary = 'direct'
         # TODO: determine the correct dataset number:
@@ -98,7 +98,8 @@ class BrukerData(object):
             moiety = ''
         temp2 = self.p4p.temperature
         temperature = round(min([temp1, temp2]), 1)
-        # TODO: make a Sources class that returns either the parser object itself or the respective value from the key:
+        # TODO: make a Sources class that returns either the parser object itself or the respective value from the key
+        #                                              data                         tooltip
         sources = {'_cell_measurement_reflns_used'  : (saint_data.cell_reflections, saint_data.filename.name),
                    '_cell_measurement_theta_min'    : (saint_data.cell_res_min_theta, saint_data.filename.name),
                    '_cell_measurement_theta_max'    : (saint_data.cell_res_max_theta, saint_data.filename.name),
