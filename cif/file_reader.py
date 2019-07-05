@@ -44,6 +44,28 @@ class CifContainer():
         # print('Opened block:', self.block.name)
         self.cif_data = json.loads(self.doc.as_json())[self.block.name.lower()]
 
+    def hkl_checksum(self):
+        pass
+
+    def res_checksum(self):
+        pass
+
+    def calc_checksum(self, input: str):
+        """
+        Calculates the shelx checksum for the res and hkl content of a cif file.
+        """
+        sum = 0
+        input = input.encode('ascii')
+        for char in input:
+            print(char)
+            if char > 32:  # space character
+                sum += char
+        sum %= 714025
+        sum = sum * 1366 + 150889
+        sum %= 714025
+        sum %= 100000
+        return sum
+
     def get_symmops(self):
         """
         >>> cif = CifContainer(Path('test-data/twin4.cif'))
