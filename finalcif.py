@@ -58,7 +58,6 @@ TODO:
   domain count?, hkl type
 - ReportButton -> generate full report with description text and all tables as .docx (and pdf?)
   maybe also a preview? Directly open in MSword/LibreOffice?
-- check hkl and res _shelx_res_checksum checksum
 - Add button for checkcif report.
 
 Idea for checkcif:
