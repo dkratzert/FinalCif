@@ -60,30 +60,44 @@ class CifContainer():
         # print('Opened block:', self.block.name)
         self.cif_data = json.loads(self.doc.as_json())[self.block.name.lower()]
 
-    def hkl_checksum(self):
+    @property
+    def hkl_checksum_calcd(self):
         """
         Calculates the shelx checksum for the hkl file content of a cif file.
 
         >>> c = CifContainer(Path('test-data/DK_zucker2_0m.cif'))
         >>> c.open_cif_with_gemmi()
-        >>> c.hkl_checksum()
+        >>> c.hkl_checksum_calcd
         69576
+        >>> c = CifContainer(Path('test-data/4060310.cif'))
+        >>> c.open_cif_with_gemmi()
+        >>> c.hkl_checksum_calcd
+        0
         """
-        res = self.block.find_value('_shelx_hkl_file')
-        return self.calc_checksum(res[1:-1])
+        hkl = self.block.find_value('_shelx_hkl_file')
+        if hkl:
+            return self.calc_checksum(hkl[1:-1])
+        else:
+            return 0
 
     @property
-    def res_checksum(self):
+    def res_checksum_calcd(self):
         """
         Calculates the shelx checksum for the res file content of a cif file.
 
         >>> c = CifContainer(Path('test-data/DK_zucker2_0m.cif'))
         >>> c.open_cif_with_gemmi()
-        >>> c.res_checksum
+        >>> c.res_checksum_calcd
         52593
+        >>> c = CifContainer(Path('test-data/4060310.cif'))
+        >>> c.open_cif_with_gemmi()
+        >>> c.res_checksum_calcd
+        0
         """
         res = self.block.find_value('_shelx_res_file')
-        return self.calc_checksum(res[1:-1])
+        if res:
+            return self.calc_checksum(res[1:-1])
+        return 0
 
     def calc_checksum(self, input: str):
         """

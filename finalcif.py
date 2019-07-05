@@ -739,6 +739,34 @@ class AppWindow(QMainWindow):
         # self.ui.EquipmentTemplatesListWidget.setCurrentRow(-1)  # Has to he in front in order to work
         # self.ui.EquipmentTemplatesListWidget.setCurrentRow(self.settings.load_last_equipment())
 
+    def test_checksums(self):
+        """
+        A method to check wether the checksums in the cif file fit to the content.
+        """
+        cif_res_ckecksum = 0
+        if self.cif.res_checksum_calcd > 0:
+            cif_res_ckecksum = int(self.cif.block.find_value('_shelx_res_checksum')) or -1
+        if cif_res_ckecksum > 0 and cif_res_ckecksum != self.cif.res_checksum_calcd:
+            self.show_checksum_warning()
+        cif_hkl_ckecksum = 0
+        if self.cif.hkl_checksum_calcd > 0:
+            cif_hkl_ckecksum = int(self.cif.block.find_value('_shelx_hkl_checksum')) or -1
+        if cif_hkl_ckecksum > 0 and cif_hkl_ckecksum != self.cif.hkl_checksum_calcd:
+            self.show_checksum_warning(res=False)
+
+    def show_checksum_warning(self, res=True):
+        """
+        A message box to display if the checksums do not agree.
+        """
+        info = QMessageBox()
+        info.setIcon(QMessageBox.Information)
+        if res:
+            info.setText('The _shelx_res_checksum is not\nconsistent with the .res file content!')
+        else:
+            info.setText('The _shelx_hkl_checksum is not\nconsistent with the .hkl file content!')
+        info.show()
+        info.exec()
+
     def get_data_sources(self):
         """
         Tries to determine the sources of missing data in the cif file, e.g. Tmin/Tmax from SADABS.
@@ -819,6 +847,7 @@ class AppWindow(QMainWindow):
             # print(key, value)
         self.get_data_sources()
         # self.ui.CifItemsTable.resizeRowsToContents()
+        self.test_checksums()
 
     def edit_row(self, vert_key: str = None, new_value=None, column: int = 1):
         """
