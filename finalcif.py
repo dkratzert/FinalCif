@@ -864,7 +864,7 @@ class AppWindow(QMainWindow):
             tabitem.setReadOnly(True)
             tab1.setReadOnly(True)
             # Make QPlainTextEdit fields a bit higher than the rest
-            self.ui.CifItemsTable.setRowHeight(row_num, 80)
+            self.ui.CifItemsTable.setRowHeight(row_num, 90)
         # else:
         # if key in text_field_keys:
         #    self.ui.CifItemsTable.setRowHeight(row_num, 60)

@@ -332,19 +332,6 @@ def to_int(st):
 
 
 """
-_audit_contact_author_address
-;
-Albert-Ludwigs-Universitaet Freiburg
-Institut fuer Anorganische und Analytische Chemie
-Albertstrasse 21
-Freiburg i. Br.
-79104
-Germany
-;
-_audit_contact_author_email        daniel.kratzert@ac.uni-freiburg.de
-_audit_contact_author_name         'Kratzert, D.'
-_audit_contact_author_phone        '+49 761-203-6156'
-_publ_contact_author_id_orcid      0000-0003-0970-9780
 _publ_section_references
 ;
 D. Kratzert, I. Krossing, J. Appl. Cryst. 2018, 51.
@@ -356,7 +343,6 @@ Sheldrick, G.M. (2015). Acta Cryst. A71, 3-8.
 
 Sheldrick, G.M. (2015). Acta Cryst. C71, 3-8.
 ;
-
 """
 # Equipment templates
 
