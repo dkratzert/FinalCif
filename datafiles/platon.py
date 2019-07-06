@@ -87,6 +87,7 @@ class Platon():
                 plat = subprocess.Popen([r'platon', '-u', self.cif_fileobj.name], startupinfo=si)
             except Exception as e:
                 print('Could not run local platon:', e)
+                return
         # waiting for chk file to appear:
         while not chkfile.is_file():
             timeticks = timeticks + 1
