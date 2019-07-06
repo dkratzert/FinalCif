@@ -10,6 +10,7 @@
 #  ----------------------------------------------------------------------------
 
 import os
+import stat
 import subprocess
 from pathlib import Path
 from time import sleep
@@ -63,15 +64,19 @@ class PlatonOut():
             si.wShowWindow = 0
         except AttributeError:
             si = None
-        try:
-            if pexe:
+        is_exec = stat.S_IXUSR & os.stat(Path(pexe).absolute())[stat.ST_MODE]
+        if pexe and is_exec:
+            try:
                 plat = subprocess.Popen([pexe, '-u', self.cif_fileobj.name], startupinfo=si)
-            else:
-                print('trying local platon')
-                plat = subprocess.Popen([r'platon.exe', '-u', self.cif_fileobj.name], startupinfo=si)
-        except (FileNotFoundError, PermissionError):
-            print('Platon not found.')
-            return
+            except (FileNotFoundError, PermissionError) as e:
+                print('Downloaded platon not found:', e)
+                return
+        else:
+            print('trying local platon')
+            try:
+                plat = subprocess.Popen([r'platon', '-u', self.cif_fileobj.name], startupinfo=si)
+            except Exception as e:
+                print('Could not run local platon:', e)
         # waiting for chk file to appear:
         while not chkfile.is_file():
             timeticks = timeticks + 1
