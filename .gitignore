@@ -119,3 +119,5 @@ dmypy.json
 *.vrf
 *.chk
 *.def
+*.ckf
+*.fcf
