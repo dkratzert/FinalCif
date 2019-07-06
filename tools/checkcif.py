@@ -5,10 +5,9 @@
 #  and you think this stuff is worth it, you can buy me a beer in return.
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
-import json
 from pathlib import Path
-from urllib import request
 
+import requests
 from PyQt5.QtCore import QUrl
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 
@@ -58,21 +57,31 @@ class WebPage(QWebEngineView):
 
 
 def get_checkcif():
-    file_name = '/Users/daniel/GitHub/FinalCif/test-data/DK_zucker2_0m.cif'
+    file_name = 'test-data/DK_zucker2_0m.cif'
     out_file = "cifreport.html"
+    f = open(file_name, 'rb')
 
-    params = {
-        "file"      : Path(file_name).read_text(encoding='ascii', errors='ignore'),
+    headers = {
+        "file"      : f,  # Path(file_name).open(),  # .read_text(encoding='ascii'),
         "runtype"   : "symmonly",
         "referer"   : "checkcif_server",
         "outputtype": 'HTML',
-        'validtype' : 'checkcif_only'
+        "validtype" : "checkcif_only",
+        # "valout"    : 'vrfno',
+        # "UPLOAD"    : 'submit',
     }
     print('Report request sent')
-    url = 'http://checkcif.iucr.org/cgi-bin/checkcif_hkl.pl'
+    url1 = url = 'http://checkcif.iucr.org'
+    url = 'https://checkcif.iucr.org/cgi-bin/checkcif_hkl.pl'
 
-    response = request.urlopen(url, data=bytes(json.dumps(params), encoding='ascii'), timeout=150)
-    Path(out_file).write_bytes(response.read())
+    # r1 = requests.get(url1)
+    # for i in r1.cookies:
+    #    print(i, '##')
+
+    r = requests.post(url, files=headers, timeout=150)
+    print(r.text)
+    Path(out_file).write_bytes(r.content)
+    print('ready')
 
 
 if __name__ == "__main__":
