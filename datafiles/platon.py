@@ -18,13 +18,13 @@ from time import sleep
 from tools.pupdate import get_platon
 
 
-class PlatonOut():
-    def __init__(self, file: Path):
+class Platon():
+    def __init__(self, file: Path, force=False):
         self.cif_fileobj = file
         curdir = Path(os.curdir).absolute()
         self.chkfile = Path(self.cif_fileobj.stem + '.chk')
         os.chdir(self.cif_fileobj.absolute().parent)
-        if not self.chkfile.exists():
+        if not self.chkfile.exists() or force:
             self.run_platon(self.chkfile)
         else:
             self.chk_filename = self.chkfile.absolute()
@@ -57,7 +57,7 @@ class PlatonOut():
     def run_platon(self, chkfile: Path):
         """
         >>> fname = Path(r'/Users/daniel/GitHub/FinalCif/test-data/DK_zucker2_0m.cif')
-        >>> PlatonOut(fname)
+        >>> Platon(fname)
         Platon:
         C12 H22 O11
         """
@@ -129,7 +129,7 @@ class PlatonOut():
 if __name__ == '__main__':
     os.chdir("/Users/daniel/GitHub")
     fname = Path(r'/Users/daniel/GitHub/FinalCif/test-data/DK_zucker2_0m.cif')
-    s = PlatonOut(fname)
+    s = Platon(fname)
     print(s)
     print(s.chkfile)
     #print(s.chk_file_text)

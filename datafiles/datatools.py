@@ -11,7 +11,7 @@ from pathlib import Path
 from cif.file_reader import CifContainer
 from datafiles.bruker_frame import BrukerFrameHeader
 from datafiles.p4p_reader import P4PFile
-from datafiles.platon import PlatonOut
+from datafiles.platon import Platon
 from datafiles.sadabs import Sadabs
 from datafiles.saint import SaintListFile
 from datafiles.shelxt import SHELXTlistfile
@@ -36,6 +36,7 @@ class BrukerData(object):
         saint_first_ls = self.saint_log('*_01._ls')
         solution_program = self.get_solution_program()
         solution_version = solution_program.version or ''
+        self.plat = Platon(self.cif.filename)
         solution_primary = ''
         resdata = cif.block.find_value('_shelx_res_file')
         shelx = 'Sheldrick, G.M. (2015). Acta Cryst. A71, 3-8.\nSheldrick, G.M. (2015). Acta Cryst. C71, 3-8.\n'
@@ -178,4 +179,4 @@ class BrukerData(object):
 
     @property
     def platon_out(self):
-        return PlatonOut(self.cif.filename)
+        return self.plat

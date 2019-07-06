@@ -11,14 +11,14 @@ import sys
 from collections import OrderedDict
 from pathlib import Path
 
-from PyQt5.QtCore import QPoint, Qt, QSize
-from PyQt5.QtGui import QColor, QIcon, QPalette, QTextCursor
-from PyQt5.QtWidgets import QMainWindow, QApplication, QHeaderView, QFileDialog, \
-    QTableWidgetItem, QTableWidget, QStackedWidget, QListWidget, QListWidgetItem, QComboBox, QMessageBox, \
-    QPlainTextEdit, QSizePolicy, QStyle
+from PyQt5.QtCore import QPoint, Qt
+from PyQt5.QtGui import QColor, QFont, QIcon, QPalette
+from PyQt5.QtWidgets import QApplication, QComboBox, QFileDialog, QHeaderView, QListWidget, QListWidgetItem, \
+    QMainWindow, QMessageBox, QPlainTextEdit, QSizePolicy, QStackedWidget, QStyle, QTableWidget, QTableWidgetItem
 
 from cif.file_reader import CifContainer
 from datafiles.datatools import BrukerData
+from datafiles.platon import Platon
 from multitable.multi_gui import MultitableAppWindow
 from tools.misc import high_prio_keys, predef_equipment_templ, predef_prop_templ, special_fields, \
     text_field_keys
@@ -85,6 +85,7 @@ class AppWindow(QMainWindow):
         # Make sure the start page is shown and not the edit page:
         self.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
         self.ui.PropertiesTemplatesStackedWidget.setCurrentIndex(0)
+        self.ui.MainStackedWidget.setCurrentIndex(0)
         self.ui.EquipmentEditTableWidget.verticalHeader().hide()
         self.ui.PropertiesEditTableWidget.verticalHeader().hide()
         self.cif = None
@@ -96,7 +97,6 @@ class AppWindow(QMainWindow):
         self.manufacturer = 'bruker'
         # self.ui.DataFilesGroupBox.hide()
         # self.ui.SaveFullReportButton.setDisabled(True)
-        self.ui.CheckcifButton.setDisabled(True)
         self.ui.SaveCifButton.setIcon(self.style().standardIcon(QStyle.SP_ArrowDown))
         self.ui.CheckcifButton.setIcon(self.style().standardIcon(QStyle.SP_FileDialogDetailedView))
         self.ui.SaveFullReportButton.setIcon(self.style().standardIcon(QStyle.SP_FileDialogListView))
@@ -111,8 +111,8 @@ class AppWindow(QMainWindow):
         self.ui.CifItemsTable.setSortingEnabled(False)
         self.load_recent_cifs_list()
         # Makes no real sense anymore:
-        #self.ui.EquipmentTemplatesListWidget.setCurrentRow(-1)  # Has to he in front in order to work
-        #self.ui.EquipmentTemplatesListWidget.setCurrentRow(self.settings.load_last_equipment())
+        # self.ui.EquipmentTemplatesListWidget.setCurrentRow(-1)  # Has to he in front in order to work
+        # self.ui.EquipmentTemplatesListWidget.setCurrentRow(self.settings.load_last_equipment())
 
     def __del__(self):
         print('saving position')
@@ -124,6 +124,9 @@ class AppWindow(QMainWindow):
         """
         this method connects all signals to slots. Only a few mighjt be defined elsewere.
         """
+        self.ui.CheckcifButton.clicked.connect(self.do_checkcif)
+        self.ui.BacktoMainpushButton.clicked.connect(self.back_to_main)
+        ##
         self.ui.SelectCif_PushButton.clicked.connect(self.load_cif_file)
         self.ui.SaveCifButton.clicked.connect(self.save_current_cif_file)
         ##
@@ -163,6 +166,32 @@ class AppWindow(QMainWindow):
         view.sectionClicked.connect(self.vheader_section_click)
         ###
         self.ui.RecentComboBox.currentIndexChanged.connect(self.load_recent_file)
+
+    def back_to_main(self):
+        """
+        Get back to the main table.
+        """
+        self.ui.MainStackedWidget.setCurrentIndex(0)
+
+    def do_checkcif(self):
+        """
+        Performs a checkcif with platon and displays it in the text editor of the MainStackedWidget.
+        """
+        self.save_current_cif_file()
+        fin_file = Path(self.cif.filename.stem + '-finalcif.cif')
+        p = Platon(fin_file, force=True)
+        self.ui.MainStackedWidget.setCurrentIndex(1)
+        ccpe = self.ui.CheckcifPE
+        doc = ccpe.document()
+        font = doc.defaultFont()
+        font.setFamily("Courier New")
+        font.setStyleHint(QFont.Monospace)
+        size = font.pointSize()
+        font.setPointSize(size + 2)
+        doc.setDefaultFont(font)
+        ccpe.setLineWrapMode(QPlainTextEdit.NoWrap)
+        ccpe.setPlainText(p.chk_file_text)
+        ccpe.appendPlainText(p.vrf_txt)
 
     def load_recent_file(self, file_index):
         combo = self.ui.RecentComboBox
@@ -275,15 +304,15 @@ class AppWindow(QMainWindow):
                             self.cif.set_pair_delimited(vhead, col2)
                         except RuntimeError:
                             pass
-        #fin_file = Path(self.cif.filename.parts[-1][:-4] + '-finalcif.cif')
+        # fin_file = Path(self.cif.filename.parts[-1][:-4] + '-finalcif.cif')
         fin_file = Path(self.cif.filename.stem + '-finalcif.cif')
-        if DEBUG:
-            if fin_file.exists():
-                # a file save dialog is so anying:
-                filename = self.cif_file_save_dialog(fin_file.name)
-                fin_file = Path(filename)
-                if not filename:
-                    return 'Not saved!'
+        #if DEBUG:
+        #    if fin_file.exists():
+        #        # a file save dialog is so anying:
+        #        filename = self.cif_file_save_dialog(fin_file.name)
+        #        fin_file = Path(filename)
+        #        if not filename:
+        #            return 'Not saved!'
         self.cif.save(fin_file.name)
         self.ui.statusBar.showMessage('  File Saved:  {}'.format(fin_file.name), 5000)
         print('File saved ...')
