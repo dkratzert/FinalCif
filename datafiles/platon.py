@@ -15,50 +15,59 @@ import subprocess
 from pathlib import Path
 from time import sleep
 
-from PyQt5.QtWidgets import QMessageBox
-
 from tools.pupdate import get_platon
 
 
 class PlatonOut():
     def __init__(self, file: Path):
         self.cif_fileobj = file
-        platfiles = self.get_chkfiles()
-        self._fileobj = Path('.')
-        self.filename = Path('')
-        if not platfiles:
-            self.run_platon()
-        platfiles = self.get_chkfiles()
-        for platfile in platfiles:
-            if platfile:
-                self._fileobj = Path(platfile)
-                self.filename = self._fileobj.absolute()
-        if not self._fileobj.is_dir():
-            self._text = self._fileobj.read_text(encoding='ascii', errors='ignore').splitlines(keepends=False)
-            self.formula_moiety = ''
-            self.parse_file()
-
-    def get_chkfiles(self):
-        p = Path('./')
-        platfiles = p.glob('*.chk')
-        platfiles = sorted(platfiles, key=os.path.getmtime, reverse=True)
-        return platfiles
+        curdir = Path(os.curdir).absolute()
+        self.chkfile = Path(self.cif_fileobj.stem + '.chk')
+        os.chdir(self.cif_fileobj.absolute().parent)
+        if not self.chkfile.exists():
+            self.run_platon(self.chkfile)
+        else:
+            self.chk_filename = self.chkfile.absolute()
+        self.chk_file_text = self.chkfile.read_text(encoding='ascii', errors='ignore')
+        self.formula_moiety = ''
+        self.parse_file()
+        try:
+            self.vrf_txt = Path(self.cif_fileobj.stem + '.vrf').read_text(encoding='ascii')
+        except FileNotFoundError:
+            self.vrf_txt = ''
+        # delete orphaned files:
+        for ext in ['.ckf', '.fcf', '.def', '.lis', '.sar', '.sum', '.hkp', '.pjn', '.bin', '_pl.res', '_pl.spf']:
+            try:
+                file = Path(self.cif_fileobj.stem + ext)
+                if file.stat().st_size < 100:
+                    file.unlink()
+                if file.suffix in ['.sar', '_pl.res', '_pl.spf']:
+                    file.unlink()
+            except FileNotFoundError:
+                pass
+        os.chdir(curdir.absolute())
 
     def parse_file(self):
         """
         """
-        for num, line in enumerate(self._text):
+        for num, line in enumerate(self.chk_file_text.splitlines(keepends=False)):
             if line.startswith('# MoietyFormula'):
                 self.formula_moiety = ' '.join(line.split(' ')[2:])
 
-    def run_platon(self):
+    def run_platon(self, chkfile: Path):
+        """
+        >>> fname = Path(r'/Users/daniel/GitHub/FinalCif/test-data/DK_zucker2_0m.cif')
+        >>> PlatonOut(fname)
+        Platon:
+        C12 H22 O11
+        """
         plat = None
-        chkfile = Path(self.cif_fileobj.stem + '.chk')
         os.chdir(self.cif_fileobj.absolute().parent)
         timeticks = 0
         # a fresh platon exe from the web:
         pexe = get_platon()
         try:
+            # This is only available on windows:
             si = subprocess.STARTUPINFO()
             si.dwFlags = 1
             si.wShowWindow = 0
@@ -67,7 +76,7 @@ class PlatonOut():
         is_exec = stat.S_IXUSR & os.stat(Path(pexe).absolute())[stat.ST_MODE]
         if pexe and is_exec:
             try:
-                plat = subprocess.Popen([pexe, '-u', self.cif_fileobj.name], startupinfo=si)
+                plat = subprocess.Popen([pexe, '-u', self.cif_fileobj.name], startupinfo=si, stdout=subprocess.DEVNULL)
             except (FileNotFoundError, PermissionError) as e:
                 print('Downloaded platon not found:', e)
                 return
@@ -97,7 +106,7 @@ class PlatonOut():
         while size1 <= size2:
             timeticks = timeticks + 1
             size2 = chkfile.stat().st_size
-            #print(size1, size2)
+            # print(size1, size2)
             sleep(0.1)
             size1 = chkfile.stat().st_size
             if timeticks > 200:  # 30s
@@ -118,9 +127,11 @@ class PlatonOut():
 
 
 if __name__ == '__main__':
-    print('###############\n\n')
-    fname = Path(r'D:\frames\guest\Esser_JW283\Esser_JW283\Esser_JW283_0m_a.cif')
+    os.chdir("/Users/daniel/GitHub")
+    fname = Path(r'/Users/daniel/GitHub/FinalCif/test-data/DK_zucker2_0m.cif')
     s = PlatonOut(fname)
     print(s)
-    chkfile = Path(fname.stem + '.chk')
-    chkfile.unlink()
+    print(s.chkfile)
+    #print(s.chk_file_text)
+    #chkfile = Path(fname.stem + '.chk')
+    #chkfile.unlink()

@@ -46,7 +46,6 @@ from gui.finalcif_gui import Ui_FinalCifWindow
 """
 TODO:
 
-- find DSR string in res file and put descriptive text in cif.
 - make an extra thread to load the cif data
 - make extra thread to load platon
 - add response forms
@@ -730,11 +729,11 @@ class AppWindow(QMainWindow):
         A message box to display if the checksums do not agree.
         """
         info = QMessageBox()
-        info.setIcon(QMessageBox.Information)
+        info.setIcon(QMessageBox.Warning)
         if res:
-            info.setText('The _shelx_res_checksum is not\nconsistent with the .res file content!')
+            info.setText('The "_shelx_res_checksum" is not\nconsistent with the .res file content!')
         else:
-            info.setText('The _shelx_hkl_checksum is not\nconsistent with the .hkl file content!')
+            info.setText('The "_shelx_hkl_checksum" is not\nconsistent with the .hkl file content!')
         info.show()
         info.exec()
 
