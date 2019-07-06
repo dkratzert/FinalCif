@@ -209,7 +209,7 @@ class AppWindow(QMainWindow):
         recent = list(self.settings.settings.value('recent_files', type=list))
         if not file in recent:
             recent.insert(0, file)
-        if len(recent) > 5:
+        if len(recent) > 7:
             recent.pop()
         self.settings.settings.setValue('recent_files', recent)
         # print(recent, 'save')
@@ -275,11 +275,12 @@ class AppWindow(QMainWindow):
                             self.cif.set_pair_delimited(vhead, col2)
                         except RuntimeError:
                             pass
-        fin_file = Path(self.cif.filename.parts[-1][:-4] + '-finalcif.cif')
+        #fin_file = Path(self.cif.filename.parts[-1][:-4] + '-finalcif.cif')
+        fin_file = Path(self.cif.filename.stem + '-finalcif.cif')
         if DEBUG:
             if fin_file.exists():
                 # a file save dialog is so anying:
-                filename = self.cif_file_save_dialog(self.cif.filename)
+                filename = self.cif_file_save_dialog(fin_file.name)
                 fin_file = Path(filename)
                 if not filename:
                     return 'Not saved!'
@@ -652,19 +653,19 @@ class AppWindow(QMainWindow):
         """
         Returns a cif file name from a file dialog.
         """
-        filename, _ = QFileDialog.getOpenFileName(filter='CIF file (*.cif, *.CIF), All Files (*.*)',
-                                                  initialFilter='*.cif',
+        filename, _ = QFileDialog.getOpenFileName(filter="CIF file (*.cif)",
+                                                  initialFilter="CIF file (*.cif)",
                                                   caption='Open a .cif File')
         return filename
 
     @staticmethod
-    def cif_file_save_dialog(filename: Path = Path('.')) -> str:
+    def cif_file_save_dialog(filename: str) -> str:
         """
         Returns a cif file name from a file dialog.
         """
-        filename, _ = QFileDialog.getSaveFileName(filter='CIF file (*.cif, *.CIF), All Files (*.*)',
-                                                  initialFilter='*.cif',
-                                                  caption='Save .cif File')
+        dialog = QFileDialog(filter="CIF file (*.cif)", caption='Save .cif File')
+        dialog.selectFile(filename)
+        filename, _ = dialog.getSaveFileName()
         return filename
 
     def load_cif_file(self, fname):
