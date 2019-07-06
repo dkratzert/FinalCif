@@ -36,7 +36,7 @@ class PlatonOut():
         except FileNotFoundError:
             self.vrf_txt = ''
         # delete orphaned files:
-        for ext in ['.ckf', '.fcf', '.def', '.lis', '.sar', '.sum', '.hkp', '.pjn', '.bin', '_pl.res', '_pl.spf']:
+        for ext in ['.ckf', '.fcf', '.def', '.lis', '.sar', '.ckf', '.sum', '.hkp', '.pjn', '.bin', '_pl.res', '_pl.spf']:
             try:
                 file = Path(self.cif_fileobj.stem + ext)
                 if file.stat().st_size < 100:
