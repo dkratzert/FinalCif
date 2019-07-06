@@ -24,7 +24,7 @@ from tools.misc import high_prio_keys, predef_equipment_templ, predef_prop_templ
     text_field_keys
 from tools.settings import FinalCifSettings
 
-DEBUG = False
+DEBUG = True
 
 if DEBUG:
     from PyQt5 import uic
