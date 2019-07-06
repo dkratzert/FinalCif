@@ -24,18 +24,18 @@
       </item>
      </widget>
     </item>
-    <item row="5" column="1">
-     <widget class="QGroupBox" name="EquipmentGroupBox">
+    <item row="6" column="1" rowspan="4">
+     <widget class="QGroupBox" name="PropertiesGroupBox">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-        <horstretch>1</horstretch>
-        <verstretch>3</verstretch>
+        <horstretch>0</horstretch>
+        <verstretch>1</verstretch>
        </sizepolicy>
       </property>
       <property name="title">
-       <string>Equipment and Author Templates</string>
+       <string>Properties Templates</string>
       </property>
-      <layout class="QGridLayout" name="gridLayout_3">
+      <layout class="QGridLayout" name="gridLayout_4">
        <property name="leftMargin">
         <number>0</number>
        </property>
@@ -48,40 +48,33 @@
        <property name="bottomMargin">
         <number>0</number>
        </property>
-       <item row="0" column="0">
-        <widget class="QStackedWidget" name="EquipmentTemplatesStackedWidget">
+       <property name="horizontalSpacing">
+        <number>6</number>
+       </property>
+       <item row="0" column="0" colspan="2">
+        <widget class="QStackedWidget" name="PropertiesTemplatesStackedWidget">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>2</horstretch>
+           <verstretch>2</verstretch>
           </sizepolicy>
          </property>
          <property name="currentIndex">
-          <number>0</number>
+          <number>1</number>
          </property>
-         <widget class="QWidget" name="EquipmentSelectPage">
-          <layout class="QGridLayout" name="TemplatesGridLayout">
-           <item row="1" column="1">
-            <widget class="QPushButton" name="EditEquipmentTemplateButton">
-             <property name="text">
-              <string>Edit Template</string>
-             </property>
-            </widget>
-           </item>
+         <widget class="QWidget" name="PropertiesSelectPage">
+          <layout class="QGridLayout" name="TemplatesGridLayout_2">
            <item row="1" column="0">
-            <widget class="QPushButton" name="NewEquipmentTemplateButton">
+            <widget class="QPushButton" name="NewPropertyTemplateButton">
              <property name="text">
               <string>New Template</string>
              </property>
             </widget>
            </item>
            <item row="0" column="0" colspan="2">
-            <widget class="QListWidget" name="EquipmentTemplatesListWidget">
+            <widget class="QListWidget" name="PropertiesTemplatesListWidget">
              <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A list of diffractometer Equipment like: D8 VENTURE&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-             <property name="editTriggers">
-              <set>QAbstractItemView::NoEditTriggers</set>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A list of common properties like colour: yellow, red, blue, ...&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="selectionMode">
               <enum>QAbstractItemView::SingleSelection</enum>
@@ -91,41 +84,24 @@
              </property>
             </widget>
            </item>
+           <item row="1" column="1">
+            <widget class="QPushButton" name="EditPropertiyTemplateButton">
+             <property name="text">
+              <string>Edit Template</string>
+             </property>
+            </widget>
+           </item>
           </layout>
          </widget>
-         <widget class="QWidget" name="EquipmentEditPage">
-          <layout class="QGridLayout" name="gridLayout_2">
-           <item row="1" column="1">
-            <widget class="QPushButton" name="DeleteEquipmentButton">
-             <property name="text">
-              <string>Delete Template</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="2">
-            <widget class="QPushButton" name="SaveEquipmentButton">
-             <property name="text">
-              <string>Save</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="3">
-            <widget class="QPushButton" name="CancelEquipmentButton">
-             <property name="text">
-              <string>Cancel</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1" colspan="3">
-            <widget class="QTableWidget" name="EquipmentEditTableWidget">
+         <widget class="QWidget" name="PropertiesEditPage">
+          <layout class="QGridLayout" name="gridLayout_5">
+           <item row="1" column="0" colspan="6">
+            <widget class="QTableWidget" name="PropertiesEditTableWidget">
              <property name="autoScroll">
               <bool>false</bool>
              </property>
              <property name="editTriggers">
               <set>QAbstractItemView::AllEditTriggers</set>
-             </property>
-             <property name="alternatingRowColors">
-              <bool>false</bool>
              </property>
              <property name="selectionMode">
               <enum>QAbstractItemView::SingleSelection</enum>
@@ -142,14 +118,20 @@
              <property name="rowCount">
               <number>1</number>
              </property>
-             <attribute name="horizontalHeaderMinimumSectionSize">
-              <number>90</number>
+             <attribute name="horizontalHeaderVisible">
+              <bool>false</bool>
              </attribute>
              <attribute name="horizontalHeaderDefaultSectionSize">
               <number>170</number>
              </attribute>
+             <attribute name="horizontalHeaderMinimumSectionSize">
+              <number>90</number>
+             </attribute>
              <attribute name="horizontalHeaderStretchLastSection">
               <bool>true</bool>
+             </attribute>
+             <attribute name="verticalHeaderVisible">
+              <bool>false</bool>
              </attribute>
              <attribute name="verticalHeaderDefaultSectionSize">
               <number>23</number>
@@ -157,15 +139,75 @@
              <row/>
              <column>
               <property name="text">
-               <string>key</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>value</string>
+               <string>possible values</string>
               </property>
              </column>
             </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="cifKeywordLB">
+             <property name="text">
+              <string>cif keyword</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1" colspan="5">
+            <widget class="QLineEdit" name="cifKeywordLE"/>
+           </item>
+           <item row="2" column="0" rowspan="2" colspan="6">
+            <layout class="QHBoxLayout" name="horizontalLayout">
+             <item>
+              <widget class="QPushButton" name="DeletePropertiesButton">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                 <horstretch>1</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>Delete Template</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="SavePropertiesButton">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                 <horstretch>1</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>120</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>Save</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="CancelPropertiesButton">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                 <horstretch>1</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>120</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>Cancel</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </item>
           </layout>
          </widget>
@@ -271,23 +313,23 @@
          <property name="cornerButtonEnabled">
           <bool>false</bool>
          </property>
-         <attribute name="horizontalHeaderMinimumSectionSize">
-          <number>80</number>
-         </attribute>
          <attribute name="horizontalHeaderDefaultSectionSize">
           <number>152</number>
          </attribute>
          <attribute name="horizontalHeaderHighlightSections">
           <bool>false</bool>
          </attribute>
-         <attribute name="verticalHeaderMinimumSectionSize">
-          <number>19</number>
+         <attribute name="horizontalHeaderMinimumSectionSize">
+          <number>80</number>
          </attribute>
          <attribute name="verticalHeaderDefaultSectionSize">
           <number>25</number>
          </attribute>
          <attribute name="verticalHeaderHighlightSections">
           <bool>true</bool>
+         </attribute>
+         <attribute name="verticalHeaderMinimumSectionSize">
+          <number>19</number>
          </attribute>
          <column>
           <property name="text">
@@ -335,18 +377,18 @@
       </layout>
      </widget>
     </item>
-    <item row="6" column="1" rowspan="4">
-     <widget class="QGroupBox" name="PropertiesGroupBox">
+    <item row="5" column="1">
+     <widget class="QGroupBox" name="EquipmentGroupBox">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-        <horstretch>0</horstretch>
-        <verstretch>1</verstretch>
+        <horstretch>1</horstretch>
+        <verstretch>3</verstretch>
        </sizepolicy>
       </property>
       <property name="title">
-       <string>Properties Templates</string>
+       <string>Equipment and Author Templates</string>
       </property>
-      <layout class="QGridLayout" name="gridLayout_4">
+      <layout class="QGridLayout" name="gridLayout_3">
        <property name="leftMargin">
         <number>0</number>
        </property>
@@ -359,33 +401,40 @@
        <property name="bottomMargin">
         <number>0</number>
        </property>
-       <property name="horizontalSpacing">
-        <number>6</number>
-       </property>
-       <item row="0" column="0" colspan="2">
-        <widget class="QStackedWidget" name="PropertiesTemplatesStackedWidget">
+       <item row="0" column="0">
+        <widget class="QStackedWidget" name="EquipmentTemplatesStackedWidget">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-           <horstretch>2</horstretch>
-           <verstretch>2</verstretch>
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
           </sizepolicy>
          </property>
          <property name="currentIndex">
           <number>1</number>
          </property>
-         <widget class="QWidget" name="PropertiesSelectPage">
-          <layout class="QGridLayout" name="TemplatesGridLayout_2">
+         <widget class="QWidget" name="EquipmentSelectPage">
+          <layout class="QGridLayout" name="TemplatesGridLayout">
+           <item row="1" column="1">
+            <widget class="QPushButton" name="EditEquipmentTemplateButton">
+             <property name="text">
+              <string>Edit Template</string>
+             </property>
+            </widget>
+           </item>
            <item row="1" column="0">
-            <widget class="QPushButton" name="NewPropertyTemplateButton">
+            <widget class="QPushButton" name="NewEquipmentTemplateButton">
              <property name="text">
               <string>New Template</string>
              </property>
             </widget>
            </item>
            <item row="0" column="0" colspan="2">
-            <widget class="QListWidget" name="PropertiesTemplatesListWidget">
+            <widget class="QListWidget" name="EquipmentTemplatesListWidget">
              <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A list of common properties like colour: yellow, red, blue, ...&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A list of diffractometer Equipment like: D8 VENTURE&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="editTriggers">
+              <set>QAbstractItemView::NoEditTriggers</set>
              </property>
              <property name="selectionMode">
               <enum>QAbstractItemView::SingleSelection</enum>
@@ -395,37 +444,41 @@
              </property>
             </widget>
            </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="EquipmentEditPage">
+          <layout class="QGridLayout" name="gridLayout_2">
            <item row="1" column="1">
-            <widget class="QPushButton" name="EditPropertiyTemplateButton">
+            <widget class="QPushButton" name="DeleteEquipmentButton">
              <property name="text">
-              <string>Edit Template</string>
+              <string>Delete Template</string>
              </property>
             </widget>
            </item>
-          </layout>
-         </widget>
-         <widget class="QWidget" name="PropertiesEditPage">
-          <layout class="QGridLayout" name="gridLayout_5">
-           <item row="2" column="3">
-            <widget class="QPushButton" name="CancelPropertiesButton">
-             <property name="minimumSize">
-              <size>
-               <width>110</width>
-               <height>0</height>
-              </size>
+           <item row="1" column="2">
+            <widget class="QPushButton" name="SaveEquipmentButton">
+             <property name="text">
+              <string>Save</string>
              </property>
+            </widget>
+           </item>
+           <item row="1" column="3">
+            <widget class="QPushButton" name="CancelEquipmentButton">
              <property name="text">
               <string>Cancel</string>
              </property>
             </widget>
            </item>
-           <item row="1" column="0" colspan="4">
-            <widget class="QTableWidget" name="PropertiesEditTableWidget">
+           <item row="0" column="1" colspan="3">
+            <widget class="QTableWidget" name="EquipmentEditTableWidget">
              <property name="autoScroll">
               <bool>false</bool>
              </property>
              <property name="editTriggers">
               <set>QAbstractItemView::AllEditTriggers</set>
+             </property>
+             <property name="alternatingRowColors">
+              <bool>false</bool>
              </property>
              <property name="selectionMode">
               <enum>QAbstractItemView::SingleSelection</enum>
@@ -442,20 +495,14 @@
              <property name="rowCount">
               <number>1</number>
              </property>
-             <attribute name="horizontalHeaderVisible">
-              <bool>false</bool>
+             <attribute name="horizontalHeaderDefaultSectionSize">
+              <number>170</number>
              </attribute>
              <attribute name="horizontalHeaderMinimumSectionSize">
               <number>90</number>
              </attribute>
-             <attribute name="horizontalHeaderDefaultSectionSize">
-              <number>170</number>
-             </attribute>
              <attribute name="horizontalHeaderStretchLastSection">
               <bool>true</bool>
-             </attribute>
-             <attribute name="verticalHeaderVisible">
-              <bool>false</bool>
              </attribute>
              <attribute name="verticalHeaderDefaultSectionSize">
               <number>23</number>
@@ -463,45 +510,14 @@
              <row/>
              <column>
               <property name="text">
-               <string>possible values</string>
+               <string>key</string>
               </property>
              </column>
-            </widget>
-           </item>
-           <item row="0" column="0">
-            <widget class="QLabel" name="cifKeywordLB">
-             <property name="text">
-              <string>cif keyword</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1" colspan="3">
-            <widget class="QLineEdit" name="cifKeywordLE"/>
-           </item>
-           <item row="2" column="2">
-            <widget class="QPushButton" name="SavePropertiesButton">
-             <property name="minimumSize">
-              <size>
-               <width>110</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>Save</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="1">
-            <widget class="QPushButton" name="DeletePropertiesButton">
-             <property name="minimumSize">
-              <size>
-               <width>110</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>Delete Template</string>
-             </property>
+             <column>
+              <property name="text">
+               <string>value</string>
+              </property>
+             </column>
             </widget>
            </item>
           </layout>
