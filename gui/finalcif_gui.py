@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/Users/daniel/GitHub/FinalCif/./gui/finalcif_gui.ui'
 #
-# Created by: PyQt5 UI code generator 5.12.3
+# Created by: PyQt5 UI code generator 5.13.0
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -175,6 +175,8 @@ class Ui_FinalCifWindow(object):
         self.CifItemsTable.verticalHeader().setMinimumSectionSize(19)
         self.CifTableGridLayout.addWidget(self.CifItemsTable, 0, 0, 1, 3)
         self.SaveCifButton = QtWidgets.QPushButton(self.CifDataItemsGroupBox)
+        icon = QtGui.QIcon.fromTheme("text-x-generic")
+        self.SaveCifButton.setIcon(icon)
         self.SaveCifButton.setObjectName("SaveCifButton")
         self.CifTableGridLayout.addWidget(self.SaveCifButton, 2, 0, 1, 1)
         spacerItem1 = QtWidgets.QSpacerItem(20, 10, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
