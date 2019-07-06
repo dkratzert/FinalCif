@@ -11,11 +11,11 @@ import sys
 from collections import OrderedDict
 from pathlib import Path
 
-from PyQt5.QtCore import QPoint, Qt
+from PyQt5.QtCore import QPoint, Qt, QSize
 from PyQt5.QtGui import QColor, QIcon, QPalette, QTextCursor
 from PyQt5.QtWidgets import QMainWindow, QApplication, QHeaderView, QFileDialog, \
     QTableWidgetItem, QTableWidget, QStackedWidget, QListWidget, QListWidgetItem, QComboBox, QMessageBox, \
-    QPlainTextEdit, QSizePolicy
+    QPlainTextEdit, QSizePolicy, QStyle
 
 from cif.file_reader import CifContainer
 from datafiles.datatools import BrukerData
@@ -60,36 +60,6 @@ TODO:
   maybe also a preview? Directly open in MSword/LibreOffice?
 - Add button for checkcif report.
 
-Idea for checkcif:
-
-import os
-import sys
-from PyQt5.QtWidgets import QApplication, QVBoxLayout, QWidget
-from PyQt5.QtCore import QUrl, QEventLoop
-from PyQt5.QtWebEngineWidgets import QWebEngineView
-
-class WebPage(QWebEngineView):
-    def __init__(self):
-        QWebEngineView.__init__(self)
-        self.load(QUrl("https://www.url.com"))
-        self.loadFinished.connect(self._on_load_finished)
-
-    def _on_load_finished(self):
-        print("Finished Loading")
-        self.page().toHtml(self.Callable)
-
-    def Callable(self, html_str):
-        self.html = html_str
-        self.page().runJavaScript("document.getElementsByName('loginid')[0].value = 'email@email.com'")
-        self.page().runJavaScript("document.getElementsByName('password')[0].value = 'test'")
-        self.page().runJavaScript ("document.getElementById('signin').click()")
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    web = WebPage()
-    web.show()
-    sys.exit(app.exec_()) 
-
 """
 light_green = QColor(217, 255, 201)
 blue = QColor(102, 150, 179)
@@ -128,19 +98,22 @@ class AppWindow(QMainWindow):
         # self.ui.DataFilesGroupBox.hide()
         # self.ui.SaveFullReportButton.setDisabled(True)
         self.ui.CheckcifButton.setDisabled(True)
+        self.ui.SaveCifButton.setIcon(self.style().standardIcon(QStyle.SP_ArrowDown))
+        self.ui.CheckcifButton.setIcon(self.style().standardIcon(QStyle.SP_FileDialogDetailedView))
+        self.ui.SaveFullReportButton.setIcon(self.style().standardIcon(QStyle.SP_FileDialogListView))
+        self.ui.SelectCif_PushButton.setIcon(self.style().standardIcon(QStyle.SP_FileDialogContentsView))
         if DEBUG:
             # only for testing:
             self.load_cif_file(r'test-data/twin4.cif')
             # self.load_cif_file(r'D:\GitHub\DSR\p21c.cif')
             # self.load_cif_file(r'D:\frames\guest\BruecknerRK_103\work\BruecknerRK_103_Cu_0m_a.cif')
-            # self.load_cif_file(r'D:\frames\BB_29\P-1_a.cif')
             # self.load_cif_file(r'D:\frames\guest\Esser_JW283\Esser_JW283\Esser_JW283_0m_a.cif')
-        # TODO: Have to find a different method to select the row:
-        # self.ui.EquipmentTemplatesListWidget.setCurrentRow(-1)  # Has to he in front in order to work
-        # self.ui.EquipmentTemplatesListWidget.setCurrentRow(self.settings.load_last_equipment())
         # Sorting desyncronizes header and columns:
         self.ui.CifItemsTable.setSortingEnabled(False)
         self.load_recent_cifs_list()
+        # Makes no real sense anymore:
+        #self.ui.EquipmentTemplatesListWidget.setCurrentRow(-1)  # Has to he in front in order to work
+        #self.ui.EquipmentTemplatesListWidget.setCurrentRow(self.settings.load_last_equipment())
 
     def __del__(self):
         print('saving position')
@@ -354,9 +327,8 @@ class AppWindow(QMainWindow):
                     pal.setColor(QPalette.Base, light_green)
                     tabitem.setPalette(pal)
                     txtlst = equipment[key].split(r'\n')
+                    # special treatment for text fields in order to get line breaks:
                     for txt in txtlst:
-                        tabitem.moveCursor(QTextCursor.End)
-                        tabitem.moveCursor(QTextCursor.NextRow)
                         tabitem.appendPlainText(txt)
                     tabitem.setFrameShape(0)  # no
                     # tabitem.setPalette(pal)
