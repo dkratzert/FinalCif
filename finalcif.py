@@ -24,7 +24,7 @@ from tools.misc import high_prio_keys, predef_equipment_templ, predef_prop_templ
     text_field_keys
 from tools.settings import FinalCifSettings
 
-DEBUG = True
+DEBUG = False
 
 if DEBUG:
     from PyQt5 import uic
@@ -46,9 +46,9 @@ from gui.finalcif_gui import Ui_FinalCifWindow
 """
 TODO:
 
+- Make a warning if Z is much larger than expected. Maybe dependent on the crystal system.
 - make an extra thread to load the cif data
 - make extra thread to load platon
-- add response forms
 - Checkcif: http://journals.iucr.org/services/cif/checking/validlist.html
 - only let real cif keywords into the EquipmentEditTableWidget and cifKeywordLE.
 - action: rightclick on a template -> offer "export template (to .cif)"
@@ -57,7 +57,6 @@ TODO:
   domain count?, hkl type
 - ReportButton -> generate full report with description text and all tables as .docx (and pdf?)
   maybe also a preview? Directly open in MSword/LibreOffice?
-- Add button for checkcif report.
 
 """
 light_green = QColor(217, 255, 201)
@@ -82,21 +81,20 @@ class AppWindow(QMainWindow):
         hheader.setSectionResizeMode(1, QHeaderView.Stretch)
         hheader.setSectionResizeMode(2, QHeaderView.Stretch)
         # hheader.setAlternatingRowColors(True)
+        #self.ui.CifItemsTable.verticalHeader().setAlternatingRowColors(True)
         # Make sure the start page is shown and not the edit page:
         self.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
         self.ui.PropertiesTemplatesStackedWidget.setCurrentIndex(0)
         self.ui.MainStackedWidget.setCurrentIndex(0)
         self.ui.EquipmentEditTableWidget.verticalHeader().hide()
         self.ui.PropertiesEditTableWidget.verticalHeader().hide()
+        self.ui.CheckcifButton.setDisabled(True)
+        self.ui.SaveCifButton.setDisabled(True)
         self.cif = None
         self.missing_data = []
         self.vheader_clicked = -1  # This is the index number of the vheader that got clicked last
-        # self.equipment_settings = []
         self.connect_signals_and_slots()
-        # self.miss_data = MissingCifData()  # this is nowhere used!
         self.manufacturer = 'bruker'
-        # self.ui.DataFilesGroupBox.hide()
-        # self.ui.SaveFullReportButton.setDisabled(True)
         self.ui.SaveCifButton.setIcon(self.style().standardIcon(QStyle.SP_ArrowDown))
         self.ui.CheckcifButton.setIcon(self.style().standardIcon(QStyle.SP_FileDialogDetailedView))
         self.ui.SaveFullReportButton.setIcon(self.style().standardIcon(QStyle.SP_FileDialogListView))
@@ -105,8 +103,6 @@ class AppWindow(QMainWindow):
             # only for testing:
             self.load_cif_file(r'test-data/twin4.cif')
             # self.load_cif_file(r'D:\GitHub\DSR\p21c.cif')
-            # self.load_cif_file(r'D:\frames\guest\BruecknerRK_103\work\BruecknerRK_103_Cu_0m_a.cif')
-            # self.load_cif_file(r'D:\frames\guest\Esser_JW283\Esser_JW283\Esser_JW283_0m_a.cif')
         # Sorting desyncronizes header and columns:
         self.ui.CifItemsTable.setSortingEnabled(False)
         self.load_recent_cifs_list()
@@ -177,6 +173,8 @@ class AppWindow(QMainWindow):
         """
         Performs a checkcif with platon and displays it in the text editor of the MainStackedWidget.
         """
+        table = self.ui.CifItemsTable
+        table.setCurrentItem(None)  # makes sure also the currently edited item is saved
         self.save_current_cif_file()
         fin_file = Path(self.cif.filename.stem + '-finalcif.cif')
         p = Platon(fin_file, force=True)
@@ -186,8 +184,9 @@ class AppWindow(QMainWindow):
         font = doc.defaultFont()
         font.setFamily("Courier New")
         font.setStyleHint(QFont.Monospace)
-        size = font.pointSize()
-        font.setPointSize(size + 2)
+        # increases the pont size every time a bit more :)
+        # size = font.pointSize()
+        # font.setPointSize(size + 2)
         doc.setDefaultFont(font)
         ccpe.setLineWrapMode(QPlainTextEdit.NoWrap)
         ccpe.setPlainText(p.chk_file_text)
@@ -305,17 +304,14 @@ class AppWindow(QMainWindow):
                         except RuntimeError:
                             pass
         # fin_file = Path(self.cif.filename.parts[-1][:-4] + '-finalcif.cif')
-        fin_file = Path(self.cif.filename.stem + '-finalcif.cif')
-        #if DEBUG:
-        #    if fin_file.exists():
-        #        # a file save dialog is so anying:
-        #        filename = self.cif_file_save_dialog(fin_file.name)
-        #        fin_file = Path(filename)
-        #        if not filename:
-        #            return 'Not saved!'
-        self.cif.save(fin_file.name)
-        self.ui.statusBar.showMessage('  File Saved:  {}'.format(fin_file.name), 5000)
-        print('File saved ...')
+        try:
+            fin_file = Path(self.cif.filename.stem + '-finalcif.cif')
+            self.cif.save(fin_file.name)
+            self.ui.statusBar.showMessage('  File Saved:  {}'.format(fin_file.name), 15000)
+            print('File saved ...')
+        except AttributeError as e:
+            print('Unable to save file:')
+            print(e)
 
     def show_equipment_and_properties(self):
         """
@@ -398,6 +394,7 @@ class AppWindow(QMainWindow):
         # now make it invisible:
         self.ui.EquipmentTemplatesListWidget.takeItem(index.row())
         self.cancel_equipment_template()
+        # I do these both to clear the list:
         self.store_predefined_templates()
         self.show_equipment_and_properties()
 
@@ -555,6 +552,9 @@ class AppWindow(QMainWindow):
         # now make it invisible:
         self.ui.PropertiesTemplatesListWidget.takeItem(index.row())
         self.cancel_property_template()
+        # I do these both to clear the list:
+        self.store_predefined_templates()
+        self.show_equipment_and_properties()
 
     def edit_property_template(self):
         """
@@ -701,6 +701,7 @@ class AppWindow(QMainWindow):
         """
         Opens the cif file and fills information into the main table.
         """
+        self.vheaderitems.clear()
         if not fname:
             fname = self.cif_file_open_dialog()
         if not fname:
@@ -736,6 +737,8 @@ class AppWindow(QMainWindow):
         self.ui.CifItemsTable.clearContents()
         # self.ui.CifItemsTable.clear() # clears header
         self.fill_cif_table()
+        self.ui.CheckcifButton.setEnabled(True)
+        self.ui.SaveCifButton.setEnabled(True)
         # self.ui.EquipmentTemplatesListWidget.setCurrentRow(-1)  # Has to he in front in order to work
         # self.ui.EquipmentTemplatesListWidget.setCurrentRow(self.settings.load_last_equipment())
 
@@ -953,20 +956,3 @@ if __name__ == '__main__':
     # w.showMaximized()  # For full screen view
     w.setBaseSize(1200, 780)
     sys.exit(app.exec_())
-
-    # noinspection PyUnreachableCode
-    '''def add_new_datafile(self, n: int, label_text: str, placeholder: str = '') -> (QLineEdit, QPushButton):
-            """
-            TODO: use this for all data files
-            Adds a new file input as data source for the currently selected cif key/value pair
-            """
-            data_file_label = QLabel(self.ui.DataFilesGroupBox)
-            data_file_label.setText(label_text)
-            data_file_edit = QLineEdit(self.ui.DataFilesGroupBox)
-            data_file_edit.setPlaceholderText(placeholder)
-            data_file_button = QPushButton(self.ui.DataFilesGroupBox)
-            data_file_button.setText('Select File')
-            self.ui.DataSourcesGridLayout.addWidget(data_file_label, n, 0, 1, 1)
-            self.ui.DataSourcesGridLayout.addWidget(data_file_edit, n, 1, 1, 1)
-            self.ui.DataSourcesGridLayout.addWidget(data_file_button, n, 2, 1, 1)
-            return data_file_edit, data_file_button'''
