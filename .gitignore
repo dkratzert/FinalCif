@@ -116,3 +116,6 @@ dmypy.json
 .pyre/
 .idea/workspace.xml
 /test-data/twin4-final.cif
+*.vrf
+*.chk
+*.def
