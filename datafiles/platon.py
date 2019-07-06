@@ -24,6 +24,7 @@ class Platon():
         curdir = Path(os.curdir).absolute()
         self.chkfile = Path(self.cif_fileobj.stem + '.chk')
         os.chdir(self.cif_fileobj.absolute().parent)
+        self.chk_filename = ''
         if not self.chkfile.exists() or force:
             self.run_platon(self.chkfile)
         else:
@@ -109,7 +110,7 @@ class Platon():
             # print(size1, size2)
             sleep(0.1)
             size1 = chkfile.stat().st_size
-            if timeticks > 200:  # 30s
+            if timeticks > 250:
                 try:
                     print('Platon took too much time, terminating platon. (2)')
                     plat.terminate()

@@ -123,7 +123,7 @@ class BrukerData(object):
                    '_atom_sites_solution_primary'   : (solution_primary, ''),
                    '_diffrn_source_voltage'         : (kilovolt or '', self.frame_header.filename.name),
                    '_diffrn_source_current'         : (milliamps or '', self.frame_header.filename.name),
-                   '_chemical_formula_moiety'       : (moiety or '', self.platon_out.chk_filename.name),
+                   '_chemical_formula_moiety'       : (moiety or '', self.platon_out.chk_filename),
                    '_publ_section_references'       : (shelx, ''),
                    }
         self.sources = dict((k.lower(), v) for k, v in sources.items())
