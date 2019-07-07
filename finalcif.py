@@ -700,6 +700,8 @@ class AppWindow(QMainWindow):
         Opens the cif file and fills information into the main table.
         """
         self.vheaderitems.clear()
+        self.ui.MainStackedWidget.setCurrentIndex(0)
+        self.ui.CheckcifPE.clear()
         if not fname:
             fname = self.cif_file_open_dialog()
         if not fname:
