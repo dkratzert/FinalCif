@@ -164,30 +164,34 @@ class CifContainer():
         occ = self.cif_data['_atom_site_occupancy']
         part = self.cif_data['_atom_site_disorder_group']
 
-    def atoms_non_h_in_asu(self):
+    def atoms_non_h_in_asu(self, only_nh=False):
         summe = 0
         if '_atom_site_type_symbol' in self.cif_data and '_atom_site_occupancy' in self.cif_data:
             for n, at in enumerate(self.cif_data['_atom_site_type_symbol']):
-                if not at in ['H', 'D']:
-                    occ = self.cif_data['_atom_site_occupancy'][n]
-                    if isinstance(occ, str):
-                        occ = to_float(occ)
-                        if occ:
-                            summe += occ
-                    else:
+                if only_nh:
+                    if at in ['H', 'D']:
+                        continue
+                occ = self.cif_data['_atom_site_occupancy'][n]
+                if isinstance(occ, str):
+                    occ = to_float(occ)
+                    if occ:
+                        summe += occ
+                else:
                         summe += occ
             return summe
         else:
             return None
 
-    def atoms_non_h_in_cell(self):
+    def atoms_non_h_in_cell(self, only_nh=False):
         summe = 0
         if '_atom_site_type_symbol' in self.cif_data:
             for at in self.cif_data['_chemical_formula_sum'].split():
-                if at[:2].strip('0123456789') not in ['H', 'D']:
-                    num = re.sub('\D', '', at)
-                    if num:
-                        summe += float(num)
+                if only_nh:
+                    if at[:2].strip('0123456789') in ['H', 'D']:
+                        continue
+                num = re.sub('\D', '', at)
+                if num:
+                    summe += float(num)
         return summe
 
     def cell(self):
