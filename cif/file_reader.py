@@ -58,8 +58,10 @@ class CifContainer():
             self.block = self.doc.sole_block()
         except Exception as e:
             return e
-        # print('Opened block:', self.block.name)
-        self.cif_data = json.loads(self.doc.as_json())[self.block.name.lower()]
+        try:
+            self.cif_data = json.loads(self.doc.as_json())[self.block.name.lower()]
+        except Exception as e:
+            return e
 
     @property
     def hkl_checksum_calcd(self):
