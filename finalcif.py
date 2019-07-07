@@ -67,6 +67,8 @@ class AppWindow(QMainWindow):
         super().__init__()
         self.ui = Ui_FinalCifWindow()
         self.ui.setupUi(self)
+        # To make file drag&drop working:
+        self.setAcceptDrops(True)
         self.show()
         self.vheaderitems = OrderedDict()
         self.settings = FinalCifSettings(self)
@@ -101,6 +103,8 @@ class AppWindow(QMainWindow):
             # only for testing:
             self.load_cif_file(r'test-data/twin4.cif')
             # self.load_cif_file(r'D:\GitHub\DSR\p21c.cif')
+        if len(sys.argv) > 1:
+            self.load_cif_file(sys.argv[1])
         # Sorting desyncronizes header and columns:
         self.ui.CifItemsTable.setSortingEnabled(False)
         self.load_recent_cifs_list()
@@ -160,6 +164,27 @@ class AppWindow(QMainWindow):
         view.sectionClicked.connect(self.vheader_section_click)
         ###
         self.ui.RecentComboBox.currentIndexChanged.connect(self.load_recent_file)
+
+    def dragEnterEvent(self, e):
+        if e.mimeData().hasText():
+            e.accept()
+        else:
+            e.ignore()
+
+    def dropEvent(self, e):
+        """
+        Handles drop events.
+        """
+        from urllib.parse import urlparse
+        p = urlparse(e.mimeData().text())
+        if sys.platform.startswith('win'):
+            final_path = p.path[1:]  # remove strange / at start
+        else:
+            final_path = p.path
+        _, ending = os.path.splitext(final_path)
+        #print(final_path, ending)
+        if ending.lower() == '.cif':
+            self.load_cif_file(final_path)
 
     def back_to_main(self):
         """
@@ -718,6 +743,7 @@ class AppWindow(QMainWindow):
         if not_ok:
             info = QMessageBox()
             info.setIcon(QMessageBox.Information)
+            print('Output from gemmi:', not_ok)
             try:
                 line = str(not_ok)[4:].split(':')[1]
             except IndexError:

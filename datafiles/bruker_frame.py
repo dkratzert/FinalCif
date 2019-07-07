@@ -28,7 +28,7 @@ class BrukerFrameHeader():
         self.filename = self._fileobj.absolute()
         self.header = {}
         try:
-            with open(self._fileobj) as file:
+            with open(self._fileobj, encoding='ascii', errors='ignore') as file:
                 for n in range(96):
                     l = file.read(80).strip()
                     key = l[:7].strip()
