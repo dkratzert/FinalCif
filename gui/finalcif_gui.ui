@@ -60,7 +60,7 @@
           </sizepolicy>
          </property>
          <property name="currentIndex">
-          <number>1</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="PropertiesSelectPage">
           <layout class="QGridLayout" name="TemplatesGridLayout_2">
@@ -74,7 +74,7 @@
            <item row="0" column="0" colspan="2">
             <widget class="QListWidget" name="PropertiesTemplatesListWidget">
              <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A list of common properties like colour: yellow, red, blue, ...&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A list of common properties like &lt;/p&gt;&lt;p&gt;_exptl_crystal_colour: yellow, red, blue, ...&lt;/p&gt;&lt;p&gt;Lists defined here will appear as dropdown menus in the main Table.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="selectionMode">
               <enum>QAbstractItemView::SingleSelection</enum>
@@ -139,7 +139,7 @@
              <row/>
              <column>
               <property name="text">
-               <string>possible values</string>
+               <string/>
               </property>
              </column>
             </widget>
@@ -456,17 +456,10 @@
           </sizepolicy>
          </property>
          <property name="currentIndex">
-          <number>1</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="EquipmentSelectPage">
           <layout class="QGridLayout" name="TemplatesGridLayout">
-           <item row="1" column="1">
-            <widget class="QPushButton" name="EditEquipmentTemplateButton">
-             <property name="text">
-              <string>Edit Template</string>
-             </property>
-            </widget>
-           </item>
            <item row="1" column="0">
             <widget class="QPushButton" name="NewEquipmentTemplateButton">
              <property name="text">
@@ -477,7 +470,7 @@
            <item row="0" column="0" colspan="2">
             <widget class="QListWidget" name="EquipmentTemplatesListWidget">
              <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A list of diffractometer Equipment like: D8 VENTURE&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Each entry can have a list of key/value pairs. For example a Diffractometer model can have a list of features.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="editTriggers">
               <set>QAbstractItemView::NoEditTriggers</set>
@@ -487,6 +480,13 @@
              </property>
              <property name="selectionBehavior">
               <enum>QAbstractItemView::SelectRows</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QPushButton" name="EditEquipmentTemplateButton">
+             <property name="text">
+              <string>Edit Template</string>
              </property>
             </widget>
            </item>
