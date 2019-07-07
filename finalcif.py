@@ -11,6 +11,23 @@ import sys
 from collections import OrderedDict
 from pathlib import Path
 
+DEBUG = False
+
+if getattr(sys, 'frozen', False):
+    # If the application is run as a bundle, the pyInstaller bootloader
+    # extends the sys module by a flag frozen=True and sets the app
+    # path into variable _MEIPASS'.
+    application_path = sys._MEIPASS
+else:
+    application_path = os.path.dirname(os.path.abspath(__file__))
+
+if DEBUG:
+    from PyQt5 import uic
+
+    print('Compiling ui ...')
+    uic.compileUiDir(os.path.join(application_path, './gui'))
+    # uic.compileUi('./gui/finalcif_gui.ui', open('./gui/finalcif_gui.py', 'w'))
+
 from PyQt5.QtCore import QPoint, Qt
 from PyQt5.QtGui import QColor, QFont, QIcon, QPalette
 from PyQt5.QtWidgets import QApplication, QComboBox, QFileDialog, QHeaderView, QListWidget, QListWidgetItem, \
@@ -23,25 +40,6 @@ from multitable.multi_gui import MultitableAppWindow
 from tools.misc import high_prio_keys, predef_equipment_templ, predef_prop_templ, special_fields, \
     text_field_keys, to_float
 from tools.settings import FinalCifSettings
-
-DEBUG = False
-
-if DEBUG:
-    from PyQt5 import uic
-
-if getattr(sys, 'frozen', False):
-    # If the application is run as a bundle, the pyInstaller bootloader
-    # extends the sys module by a flag frozen=True and sets the app
-    # path into variable _MEIPASS'.
-    application_path = sys._MEIPASS
-else:
-    application_path = os.path.dirname(os.path.abspath(__file__))
-
-if DEBUG:
-    print('Compiling ui ...')
-    uic.compileUiDir(os.path.join(application_path, './gui'))
-
-from gui.finalcif_gui import Ui_FinalCifWindow
 
 """
 TODO:
@@ -182,7 +180,7 @@ class AppWindow(QMainWindow):
         else:
             final_path = p.path
         _, ending = os.path.splitext(final_path)
-        #print(final_path, ending)
+        # print(final_path, ending)
         if ending.lower() == '.cif':
             self.load_cif_file(final_path)
 
@@ -224,7 +222,6 @@ class AppWindow(QMainWindow):
     def vheader_section_click(self, section):
         item = self.ui.CifItemsTable.verticalHeaderItem(section)
         itemtext = item.text()
-        txt = ''
         # be sure not to get vheader with name of last click:
         if section != self.vheader_clicked and self.vheader_clicked > -1:
             self.restore_vertical_header()
@@ -258,7 +255,7 @@ class AppWindow(QMainWindow):
 
     def save_current_recent_files_list(self, file):
         recent = list(self.settings.settings.value('recent_files', type=list))
-        if not file in recent:
+        if file not in recent:
             recent.insert(0, file)
         if len(recent) > 7:
             recent.pop()
@@ -467,7 +464,7 @@ class AppWindow(QMainWindow):
         table.setItem(row_num, 0, item_key)
         table.setItem(row_num, 1, item_val)
 
-    ## The equipment templates:
+    # The equipment templates:
 
     def edit_equipment_template(self):
         it = self.ui.EquipmentTemplatesListWidget.currentItem()
@@ -550,7 +547,7 @@ class AppWindow(QMainWindow):
         self.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
         print('cancelled')
 
-    ## The properties templates:
+    # The properties templates:
 
     @staticmethod
     def add_propeties_row(table: QTableWidget, value: str = ''):
@@ -812,7 +809,7 @@ class AppWindow(QMainWindow):
         if Z and Z > 8.0 and (csystem == 'tricilinic' or csystem == 'monoclinic'):
             bad = True
         if Z and Z > 16.0 and (csystem == 'orthorhombic' or csystem == 'tetragonal' or csystem == 'trigonal'
-                         or csystem == 'hexagonal' or csystem == 'cubic'):
+                               or csystem == 'hexagonal' or csystem == 'cubic'):
             bad = True
         if bad:
             zinfo = QMessageBox()
@@ -1006,6 +1003,8 @@ class AppWindow(QMainWindow):
 
 
 if __name__ == '__main__':
+    from gui.finalcif_gui import Ui_FinalCifWindow
+
     app = QApplication(sys.argv)
     w = AppWindow()
     app.setWindowIcon(QIcon('./icon/multitable.png'))
