@@ -42,7 +42,7 @@ class Platon():
                 file = Path(self.cif_fileobj.stem + ext)
                 if file.stat().st_size < 100:
                     file.unlink()
-                if file.suffix in ['.sar', '_pl.res', '_pl.spf']:
+                if file.suffix in ['.sar', '_pl.res', '_pl.spf', '.ckf']:
                     file.unlink()
             except FileNotFoundError:
                 pass
