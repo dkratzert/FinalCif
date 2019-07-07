@@ -21,7 +21,7 @@ from datafiles.datatools import BrukerData
 from datafiles.platon import Platon
 from multitable.multi_gui import MultitableAppWindow
 from tools.misc import high_prio_keys, predef_equipment_templ, predef_prop_templ, special_fields, \
-    text_field_keys
+    text_field_keys, to_float
 from tools.settings import FinalCifSettings
 
 DEBUG = False
@@ -728,6 +728,7 @@ class AppWindow(QMainWindow):
             else:
                 info.setText('This cif file is not readable! "{}"'.format(filepath.name))
             info.show()
+            info.exec()
             return
         try:
             # Change the current working Directory
@@ -770,10 +771,30 @@ class AppWindow(QMainWindow):
         info.show()
         info.exec()
 
+    def check_atomic_volume(self):
+        """
+        Calculates the spezific volume of the non-hydrogen atoms. The "ideal value" is 18 A^3
+        """
+        n_at = self.cif.atoms_non_h()
+        v = to_float(self.cif['_cell_volume'])
+        Z = to_float(self.cif['_cell_formula_units_Z'])
+        if all([n_at, v, Z]):
+            atomic_volume = (v / (float(n_at) * Z))
+        else:
+            atomic_volume = 18.0
+        if atomic_volume < 5.0 or atomic_volume > 25.0:
+            zinfo = QMessageBox()
+            zinfo.setIcon(QMessageBox.Information)
+            zinfo.setText('The number of formula units (Z={:.0f}, atomic volume = {:.1f}) is probably wrong.'
+                         '\nYou may restart refinement with a correct value.'.format(Z, atomic_volume))
+            zinfo.show()
+            zinfo.exec()
+
     def get_data_sources(self):
         """
         Tries to determine the sources of missing data in the cif file, e.g. Tmin/Tmax from SADABS.
         """
+        self.check_atomic_volume()
         if self.manufacturer == 'bruker':
             sources = BrukerData(self, self.cif).sources
             # Build a dictionary of cif keys and row number values in order to fill the first column
@@ -789,7 +810,10 @@ class AppWindow(QMainWindow):
             self.missing_data.append('_publ_section_references')
             for miss_data in self.missing_data:
                 # add missing item to data sources column:
-                row_num = self.vheaderitems[miss_data]
+                try:
+                    row_num = self.vheaderitems[miss_data]
+                except KeyError:
+                    continue
                 if miss_data in text_field_keys:
                     tab_item = QPlainTextEdit(self)
                     tab_item.setFrameShape(0)

@@ -49,7 +49,7 @@ _cell_angle_alpha                 90
 _cell_angle_beta                  102.982(9)
 _cell_angle_gamma                 90
 _cell_volume                      704.3(4)
-_cell_formula_units_Z             2
+_cell_formula_units_Z             42
 _cell_measurement_temperature     100(2)
 _cell_measurement_reflns_used     ?
 _cell_measurement_theta_min       ?

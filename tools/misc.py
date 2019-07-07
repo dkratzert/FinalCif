@@ -313,7 +313,7 @@ def to_float(st):
             return None
     else:
         try:
-            return float(st)
+            return float(st.split('(')[0])
         except ValueError:
             return None
 
@@ -326,7 +326,7 @@ def to_int(st):
             return None
     else:
         try:
-            return int(st)
+            return int(st.split('(')[0])
         except ValueError:
             return None
 

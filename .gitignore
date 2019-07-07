@@ -121,3 +121,4 @@ dmypy.json
 *.def
 *.ckf
 *.fcf
+*.spf
