@@ -7,6 +7,7 @@
 #  ----------------------------------------------------------------------------
 
 import json
+import re
 import textwrap
 from pathlib import Path
 
@@ -163,7 +164,7 @@ class CifContainer():
         occ = self.cif_data['_atom_site_occupancy']
         part = self.cif_data['_atom_site_disorder_group']
 
-    def atoms_non_h(self):
+    def atoms_non_h_in_asu(self):
         summe = 0
         if '_atom_site_type_symbol' in self.cif_data and '_atom_site_occupancy' in self.cif_data:
             for n, at in enumerate(self.cif_data['_atom_site_type_symbol']):
@@ -173,9 +174,21 @@ class CifContainer():
                         occ = to_float(occ)
                         if occ:
                             summe += occ
+                    else:
+                        summe += occ
             return summe
         else:
             return None
+
+    def atoms_non_h_in_cell(self):
+        summe = 0
+        if '_atom_site_type_symbol' in self.cif_data:
+            for at in self.cif_data['_chemical_formula_sum'].split():
+                if at[:2].strip('0123456789') not in ['H', 'D']:
+                    num = re.sub('\D', '', at)
+                    if num:
+                        summe += float(num)
+        return summe
 
     def cell(self):
         return self.cif_data.cell
@@ -225,3 +238,7 @@ class CifContainer():
             else:
                 with_values.append([key, value])
         return questions, with_values
+
+    @property
+    def crystal_system(self):
+        return (self['_space_group_crystal_system'] or self['_symmetry_cell_setting']).strip("'\"; ")
