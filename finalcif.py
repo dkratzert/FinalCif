@@ -46,8 +46,6 @@ from gui.finalcif_gui import Ui_FinalCifWindow
 """
 TODO:
 
-- Make a warning if Z is much larger than expected. Maybe dependent on the crystal system.
-- make an extra thread to load the cif data
 - make extra thread to load platon
 - Checkcif: http://journals.iucr.org/services/cif/checking/validlist.html
 - only let real cif keywords into the EquipmentEditTableWidget and cifKeywordLE.
