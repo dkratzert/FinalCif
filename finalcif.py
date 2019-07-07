@@ -81,7 +81,7 @@ class AppWindow(QMainWindow):
         hheader.setSectionResizeMode(1, QHeaderView.Stretch)
         hheader.setSectionResizeMode(2, QHeaderView.Stretch)
         # hheader.setAlternatingRowColors(True)
-        #self.ui.CifItemsTable.verticalHeader().setAlternatingRowColors(True)
+        # self.ui.CifItemsTable.verticalHeader().setAlternatingRowColors(True)
         # Make sure the start page is shown and not the edit page:
         self.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
         self.ui.PropertiesTemplatesStackedWidget.setCurrentIndex(0)
@@ -775,18 +775,21 @@ class AppWindow(QMainWindow):
         """
         Calculates the spezific volume of the non-hydrogen atoms. The "ideal value" is 18 A^3
         """
-        n_at = self.cif.atoms_non_h()
+        n_at_cell = self.cif.atoms_non_h_in_cell()
+        n_at_asu = self.cif.atoms_non_h_in_asu()
         v = to_float(self.cif['_cell_volume'])
         Z = to_float(self.cif['_cell_formula_units_Z'])
-        if all([n_at, v, Z]):
-            atomic_volume = (v / (float(n_at) * Z))
+        if all([n_at_cell, v]):
+            atomic_volume = (v / (float(n_at_cell)))
         else:
             atomic_volume = 18.0
-        if atomic_volume < 5.0 or atomic_volume > 25.0:
+        Zcalc = n_at_cell / n_at_asu
+        print(Zcalc)
+        if atomic_volume < 12 or atomic_volume > 22.0 :
             zinfo = QMessageBox()
             zinfo.setIcon(QMessageBox.Information)
             zinfo.setText('The number of formula units (Z={:.0f}, atomic volume = {:.1f}) is probably wrong.'
-                         '\nYou may restart refinement with a correct value.'.format(Z, atomic_volume))
+                          '\nYou may restart refinement with a correct value.'.format(Z, atomic_volume))
             zinfo.show()
             zinfo.exec()
 
@@ -794,7 +797,7 @@ class AppWindow(QMainWindow):
         """
         Tries to determine the sources of missing data in the cif file, e.g. Tmin/Tmax from SADABS.
         """
-        self.check_atomic_volume()
+        #self.check_atomic_volume()
         if self.manufacturer == 'bruker':
             sources = BrukerData(self, self.cif).sources
             # Build a dictionary of cif keys and row number values in order to fill the first column
