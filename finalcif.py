@@ -771,25 +771,26 @@ class AppWindow(QMainWindow):
         info.show()
         info.exec()
 
-    def check_atomic_volume(self):
+    def check_Z(self):
         """
-        Calculates the spezific volume of the non-hydrogen atoms. The "ideal value" is 18 A^3
+        Crude check if Z is much too high e.h. a SEHLXT solution with "C H N O" sum formula.
         """
-        n_at_cell = self.cif.atoms_non_h_in_cell()
-        n_at_asu = self.cif.atoms_non_h_in_asu()
-        v = to_float(self.cif['_cell_volume'])
         Z = to_float(self.cif['_cell_formula_units_Z'])
-        if all([n_at_cell, v]):
-            atomic_volume = (v / (float(n_at_cell)))
-        else:
-            atomic_volume = 18.0
-        Zcalc = n_at_cell / n_at_asu
-        print(Zcalc)
-        if atomic_volume < 12 or atomic_volume > 22.0 :
+        density = to_float(self.cif['_exptl_crystal_density_diffrn'])
+        csystem = self.cif.crystal_system
+        bad = False
+        if density > 0.8 or density > 4:
+            bad = True
+        if Z > 8.0 and (csystem == 'tricilinic' or csystem == 'monoclinic'):
+            bad = True
+        if Z > 16.0 and (csystem == 'orthorhombic' or csystem == 'tetragonal' or csystem == 'trigonal'
+                         or csystem == 'hexagonal' or csystem == 'cubic'):
+            bad = True
+        if bad:
             zinfo = QMessageBox()
             zinfo.setIcon(QMessageBox.Information)
-            zinfo.setText('The number of formula units (Z={:.0f}, atomic volume = {:.1f}) is probably wrong.'
-                          '\nYou may restart refinement with a correct value.'.format(Z, atomic_volume))
+            zinfo.setText('The number of formula units Z={:.0f} is probably wrong.'
+                          '\nYou may restart refinement with a correct value.'.format(Z))
             zinfo.show()
             zinfo.exec()
 
@@ -797,7 +798,7 @@ class AppWindow(QMainWindow):
         """
         Tries to determine the sources of missing data in the cif file, e.g. Tmin/Tmax from SADABS.
         """
-        #self.check_atomic_volume()
+        self.check_Z()
         if self.manufacturer == 'bruker':
             sources = BrukerData(self, self.cif).sources
             # Build a dictionary of cif keys and row number values in order to fill the first column
