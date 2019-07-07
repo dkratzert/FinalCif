@@ -13,7 +13,7 @@ from pathlib import Path
 import gemmi
 
 from cif import cif_file_parser
-from tools.misc import high_prio_keys, non_centrosymm_keys
+from tools.misc import high_prio_keys, non_centrosymm_keys, to_float
 
 
 def quote(string, wrapping=80):
@@ -150,10 +150,32 @@ class CifContainer():
             print('Filename can not be a directory.')
 
     def __getitem__(self, item):
-        return self.cif_data[item.lower()] if self.cif_data[item.lower()] else ''
+        result = self.block.find_value(item)
+        return result if result else ''
 
     def atoms(self):
-        return self.cif_data.atoms
+        # TODO: make this work
+        labels = self.cif_data['_atom_site_label']
+        types = self.cif_data['_atom_site_type_symbol']
+        x = self.cif_data['_atom_site_fract_x']
+        y = self.cif_data['_atom_site_fract_y']
+        z = self.cif_data['_atom_site_fract_z']
+        occ = self.cif_data['_atom_site_occupancy']
+        part = self.cif_data['_atom_site_disorder_group']
+
+    def atoms_non_h(self):
+        summe = 0
+        if '_atom_site_type_symbol' in self.cif_data and '_atom_site_occupancy' in self.cif_data:
+            for n, at in enumerate(self.cif_data['_atom_site_type_symbol']):
+                if not at in ['H', 'D']:
+                    occ = self.cif_data['_atom_site_occupancy'][n]
+                    if isinstance(occ, str):
+                        occ = to_float(occ)
+                        if occ:
+                            summe += occ
+            return summe
+        else:
+            return None
 
     def cell(self):
         return self.cif_data.cell
