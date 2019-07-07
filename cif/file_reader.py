@@ -164,7 +164,7 @@ class CifContainer():
         occ = self.cif_data['_atom_site_occupancy']
         part = self.cif_data['_atom_site_disorder_group']
 
-    def atoms_non_h_in_asu(self, only_nh=False):
+    def atoms_in_asu(self, only_nh=False):
         summe = 0
         if '_atom_site_type_symbol' in self.cif_data and '_atom_site_occupancy' in self.cif_data:
             for n, at in enumerate(self.cif_data['_atom_site_type_symbol']):
@@ -182,7 +182,7 @@ class CifContainer():
         else:
             return None
 
-    def atoms_non_h_in_cell(self, only_nh=False):
+    def atoms_in_cell(self, only_nh=False):
         summe = 0
         if '_atom_site_type_symbol' in self.cif_data:
             for at in self.cif_data['_chemical_formula_sum'].split():
