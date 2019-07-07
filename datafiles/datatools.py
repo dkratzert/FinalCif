@@ -73,25 +73,6 @@ class BrukerData(object):
             milliamps = self.frame_header.milliamps
         except (AttributeError, KeyError):
             milliamps = ''
-        # Have to find a different method to select the row:
-        """
-        try:
-            detector_type = self.frame_header.detector_type
-        except AttributeError:
-            detector_type = ''
-        print(detector_type)
-        if 'APEX2' in detector_type:
-            for num, row in enumerate(self.app.settings.settings.value('equipment_list')):
-                if 'APEX' in row:
-                    #self.app.ui.EquipmentTemplatesListWidget.setCurrentRow(-1)
-                    self.app.ui.EquipmentTemplatesListWidget.setCurrentRow(num+1)
-                    break
-        if 'PHOTON' in detector_type:
-            for num, row in enumerate(self.app.settings.settings.value('equipment_list')):
-                if 'VENTURE' in row:
-                    #self.app.ui.EquipmentTemplatesListWidget.setCurrentRow(-1)
-                    self.app.ui.EquipmentTemplatesListWidget.setCurrentRow(num+1)
-                    break"""
         try:
             moiety = self.platon_out.formula_moiety
         except Exception as e:
