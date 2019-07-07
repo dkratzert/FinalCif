@@ -779,7 +779,8 @@ class AppWindow(QMainWindow):
         density = to_float(self.cif['_exptl_crystal_density_diffrn'])
         csystem = self.cif.crystal_system
         bad = False
-        if density > 0.8 or density > 4:
+        ntypes = len(self.cif['_chemical_formula_sum'].split())
+        if ntypes > 2.0 and density < 0.8 or density > 4.0:
             bad = True
         if Z > 8.0 and (csystem == 'tricilinic' or csystem == 'monoclinic'):
             bad = True
