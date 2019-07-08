@@ -209,7 +209,7 @@ class AppWindow(QMainWindow):
             p = Platon(self.fin_file, force=True)
         except Exception as e:
             print(e)
-            self.ui.CheckcifButton.setDisabled(True)
+            #self.ui.CheckcifButton.setDisabled(True)
             return
         self.ui.MainStackedWidget.setCurrentIndex(1)
         ccpe = self.ui.CheckcifPlaintextEdit

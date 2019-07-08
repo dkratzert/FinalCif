@@ -36,12 +36,13 @@ class BrukerData(object):
         saint_first_ls = self.saint_log('*_01._ls')
         solution_program = self.get_solution_program()
         solution_version = solution_program.version or ''
-        try:
-            self.plat = Platon(self.cif.filename)
-        except Exception as e:
-            print(e)
-            self.app.ui.CheckcifButton.setDisabled(True)
-            self.plat = None
+        # This creates more problems than it solves:
+        #try:
+        #    self.plat = Platon(self.cif.filename)
+        #except Exception as e:
+        #    print(e)
+        #    self.app.ui.CheckcifButton.setDisabled(True)
+        #    self.plat = None
         solution_primary = ''
         resdata = cif.block.find_value('_shelx_res_file')
         shelx = 'Sheldrick, G.M. (2015). Acta Cryst. A71, 3-8.\nSheldrick, G.M. (2015). Acta Cryst. C71, 3-8.\n'
@@ -78,15 +79,15 @@ class BrukerData(object):
             milliamps = self.frame_header.milliamps
         except (AttributeError, KeyError):
             milliamps = ''
-        try:
-            moiety = self.plat.formula_moiety
-        except Exception as e:
-            print('Could not make moiety formula:', e)
-            moiety = ''
-        try:
-            chk_file = self.plat.chk_filename
-        except Exception as e:
-            chk_file = ''
+        #try:
+        #    moiety = self.plat.formula_moiety
+        #except Exception as e:
+        #    print('Could not make moiety formula:', e)
+        #    moiety = ''
+        #try:
+        #    chk_file = self.plat.chk_filename
+        #except Exception as e:
+        #    chk_file = ''
         temp2 = self.p4p.temperature
         temperature = round(min([temp1, temp2]), 1)
         # TODO: make a Sources class that returns either the parser object itself or the respective value from the key
@@ -113,7 +114,7 @@ class BrukerData(object):
                    '_atom_sites_solution_primary'   : (solution_primary, ''),
                    '_diffrn_source_voltage'         : (kilovolt or '', self.frame_header.filename.name),
                    '_diffrn_source_current'         : (milliamps or '', self.frame_header.filename.name),
-                   '_chemical_formula_moiety'       : (moiety or '', chk_file),
+                   #'_chemical_formula_moiety'       : (moiety or '', chk_file),
                    '_publ_section_references'       : (shelx, ''),
                    }
         self.sources = dict((k.lower(), v) for k, v in sources.items())
