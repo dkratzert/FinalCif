@@ -11,6 +11,8 @@ import sys
 from collections import OrderedDict
 from pathlib import Path
 
+from tools.version import VERSION
+
 DEBUG = False
 
 if getattr(sys, 'frozen', False):
@@ -68,6 +70,7 @@ class AppWindow(QMainWindow):
         # To make file drag&drop working:
         self.setAcceptDrops(True)
         self.show()
+        self.statusBar().showMessage('FinalCif version {}'.format(VERSION))
         self.vheaderitems = OrderedDict()
         self.settings = FinalCifSettings(self)
         self.store_predefined_templates()
@@ -206,7 +209,7 @@ class AppWindow(QMainWindow):
         font.setFamily("Courier New")
         font.setStyleHint(QFont.Monospace)
         # increases the pont size every time a bit more :)
-        size = font.pointSize()
+        #size = font.pointSize()
         font.setPointSize(14)
         doc.setDefaultFont(font)
         ccpe.setLineWrapMode(QPlainTextEdit.NoWrap)
@@ -1008,6 +1011,7 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     w = AppWindow()
     app.setWindowIcon(QIcon('./icon/multitable.png'))
+    w.setWindowTitle('FinalCif v{}'.format(VERSION))
     # w.showMaximized()  # For full screen view
     w.setBaseSize(1200, 780)
     sys.exit(app.exec_())
