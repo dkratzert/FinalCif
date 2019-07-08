@@ -121,11 +121,11 @@
              <attribute name="horizontalHeaderVisible">
               <bool>false</bool>
              </attribute>
-             <attribute name="horizontalHeaderDefaultSectionSize">
-              <number>170</number>
-             </attribute>
              <attribute name="horizontalHeaderMinimumSectionSize">
               <number>90</number>
+             </attribute>
+             <attribute name="horizontalHeaderDefaultSectionSize">
+              <number>170</number>
              </attribute>
              <attribute name="horizontalHeaderStretchLastSection">
               <bool>true</bool>
@@ -272,7 +272,7 @@
        <item row="0" column="0" colspan="3">
         <widget class="QStackedWidget" name="MainStackedWidget">
          <property name="currentIndex">
-          <number>1</number>
+          <number>2</number>
          </property>
          <widget class="QWidget" name="page_MainTable">
           <layout class="QVBoxLayout" name="verticalLayout">
@@ -302,23 +302,23 @@
              <property name="cornerButtonEnabled">
               <bool>false</bool>
              </property>
+             <attribute name="horizontalHeaderMinimumSectionSize">
+              <number>80</number>
+             </attribute>
              <attribute name="horizontalHeaderDefaultSectionSize">
               <number>152</number>
              </attribute>
              <attribute name="horizontalHeaderHighlightSections">
               <bool>false</bool>
              </attribute>
-             <attribute name="horizontalHeaderMinimumSectionSize">
-              <number>80</number>
+             <attribute name="verticalHeaderMinimumSectionSize">
+              <number>19</number>
              </attribute>
              <attribute name="verticalHeaderDefaultSectionSize">
               <number>25</number>
              </attribute>
              <attribute name="verticalHeaderHighlightSections">
               <bool>true</bool>
-             </attribute>
-             <attribute name="verticalHeaderMinimumSectionSize">
-              <number>19</number>
              </attribute>
              <column>
               <property name="text">
@@ -377,7 +377,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QPlainTextEdit" name="CheckcifPE"/>
+            <widget class="QPlainTextEdit" name="CheckcifPlaintextEdit"/>
            </item>
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -397,12 +397,56 @@
              <item>
               <widget class="QPushButton" name="BacktoMainpushButton">
                <property name="text">
-                <string>Back to CIF List</string>
+                <string>Back to CIF Table</string>
                </property>
               </widget>
              </item>
              <item>
               <spacer name="horizontalSpacer">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="page_FinalCif">
+          <layout class="QVBoxLayout" name="verticalLayout_3">
+           <item>
+            <widget class="QPlainTextEdit" name="FinalCifFilePlainTextEdit"/>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_3">
+             <item>
+              <spacer name="horizontalSpacer_3">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <widget class="QPushButton" name="BackPushButton">
+               <property name="text">
+                <string>Back to CIF Table</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer_4">
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
                </property>
@@ -541,11 +585,11 @@
              <property name="rowCount">
               <number>1</number>
              </property>
-             <attribute name="horizontalHeaderDefaultSectionSize">
-              <number>170</number>
-             </attribute>
              <attribute name="horizontalHeaderMinimumSectionSize">
               <number>90</number>
+             </attribute>
+             <attribute name="horizontalHeaderDefaultSectionSize">
+              <number>170</number>
              </attribute>
              <attribute name="horizontalHeaderStretchLastSection">
               <bool>true</bool>
