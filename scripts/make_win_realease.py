@@ -32,18 +32,22 @@ def disable_debug(filepath: str):
     iss_file = "\n".join(file)
     pth.write_text(iss_file, encoding="UTF-8")
 
-try:
-    print(os.path.abspath('./gui'))
-    uic.compileUiDir('./gui')
-    print('recompiled ui')
-except:
-    print("Unable to compile UI!")
-    raise
+def recompile_ui():
+    try:
+        print(os.path.abspath('./gui'))
+        uic.compileUiDir('./gui')
+        print('recompiled ui')
+    except:
+        print("Unable to compile UI!")
+        raise
 
 disable_debug('finalcif.py')
+
+recompile_ui()
 
 subprocess.run(r""".\venv\Scripts\pyinstaller.exe scripts\Finalcif.spec -F --clean""".split())
 
 print('copying file')
 print(r'dist\FinalCif.exe', r'W:\htdocs\finalcif')
+
 shutil.copy(r'dist\FinalCif.exe', r'W:\htdocs\finalcif\FinalCif-v{}.exe'.format(VERSION))
