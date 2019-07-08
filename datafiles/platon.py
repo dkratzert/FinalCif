@@ -41,7 +41,8 @@ class Platon():
         except FileNotFoundError:
             self.vrf_txt = ''
         # delete orphaned files:
-        for ext in ['.ckf', '.fcf', '.def', '.lis', '.sar', '.ckf', '.sum', '.hkp', '.pjn', '.bin', '_pl.res', '_pl.spf']:
+        for ext in ['.ckf', '.fcf', '.def', '.lis', '.sar', '.ckf', '.sum', '.hkp', '.pjn', '.bin', '_pl.res',
+                    '_pl.spf']:
             try:
                 file = Path(self.cif_fileobj.stem + ext)
                 if file.stat().st_size < 100:
@@ -69,8 +70,6 @@ class Platon():
         plat = None
         os.chdir(self.cif_fileobj.absolute().parent)
         timeticks = 0
-        # a fresh platon exe from the web:
-        pexe = get_platon()
         try:
             # This is only available on windows:
             si = subprocess.STARTUPINFO()
@@ -78,25 +77,30 @@ class Platon():
             si.wShowWindow = 0
         except AttributeError:
             si = None
-        is_exec = stat.S_IXUSR & os.stat(Path(pexe).absolute())[stat.ST_MODE]
-        if pexe and is_exec:
-            try:
-                plat = subprocess.Popen([pexe, '-u', self.cif_fileobj.name], startupinfo=si, stdout=subprocess.DEVNULL)
-            except (FileNotFoundError, PermissionError) as e:
-                print('Downloaded platon not found:', e)
-                return
-        else:
+        try:
             print('trying local platon')
-            try:
-                plat = subprocess.Popen([r'platon', '-u', self.cif_fileobj.name], startupinfo=si)
-            except Exception as e:
-                print('Could not run local platon:', e)
-                return
-        # waiting for chk file to appear:
+            plat = subprocess.Popen([r'platon.exe', '-u', self.cif_fileobj.name], startupinfo=si)
+        except Exception as e:
+            print('Could not run local platon:', e)
+            return 
+            # a fresh platon exe from the web:
+            # this runs only wif salflibc.dll. I have to find a solution to download it.
+            #pexe = get_platon()
+            #is_exec = stat.S_IXUSR & os.stat(Path(pexe).absolute())[stat.ST_MODE]
+            #if pexe and is_exec:
+            #    try:
+            #        plat = subprocess.Popen([pexe, '-u', self.cif_fileobj.name], startupinfo=si,
+            #                                stdout=subprocess.DEVNULL)
+            #    except Exception as e:
+            #        print('Downloaded platon not found:', e)
+            #        return
+            #else:
+            #    return
+                # waiting for chk file to appear:
         while not chkfile.is_file():
             timeticks = timeticks + 1
             sleep(0.01)
-            if timeticks > 1000:
+            if timeticks > 8:
                 print('Platon statup took too long. Killing Platon...')
                 try:
                     print('Platon took too much time, terminating platon. (1)')
@@ -138,6 +142,6 @@ if __name__ == '__main__':
     s = Platon(fname)
     print(s)
     print(s.chkfile)
-    #print(s.chk_file_text)
-    #chkfile = Path(fname.stem + '.chk')
-    #chkfile.unlink()
+    # print(s.chk_file_text)
+    # chkfile = Path(fname.stem + '.chk')
+    # chkfile.unlink()

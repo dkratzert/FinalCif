@@ -205,7 +205,12 @@ class AppWindow(QMainWindow):
         table = self.ui.CifItemsTable
         table.setCurrentItem(None)  # makes sure also the currently edited item is saved
         self.save_current_cif_file()
-        p = Platon(self.fin_file, force=True)
+        try:
+            p = Platon(self.fin_file, force=True)
+        except Exception as e:
+            print(e)
+            self.ui.CheckcifButton.setDisabled(True)
+            return
         self.ui.MainStackedWidget.setCurrentIndex(1)
         ccpe = self.ui.CheckcifPlaintextEdit
         doc = ccpe.document()
@@ -217,8 +222,11 @@ class AppWindow(QMainWindow):
         font.setPointSize(14)
         doc.setDefaultFont(font)
         ccpe.setLineWrapMode(QPlainTextEdit.NoWrap)
-        ccpe.setPlainText(p.chk_file_text)
-        ccpe.appendPlainText(p.vrf_txt)
+        try:
+            ccpe.setPlainText(p.chk_file_text)
+            ccpe.appendPlainText(p.vrf_txt)
+        except AttributeError:
+            pass
 
     def load_recent_file(self, file_index):
         combo = self.ui.RecentComboBox
