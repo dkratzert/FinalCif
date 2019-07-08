@@ -1000,7 +1000,7 @@ class AppWindow(QMainWindow):
         #    self.ui.CifItemsTable.setRowHeight(row_num, 60)
         else:
             tabitem = QTableWidgetItem(strval)
-            if key == "These are already in:":
+            if key == "These below are already in:":
                 # pal = QPalette()
                 # pal.setColor(QPalette.Foreground, Qt.black)
                 item1 = QTableWidgetItem('')
