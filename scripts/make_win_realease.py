@@ -13,8 +13,10 @@
 import shutil
 import subprocess
 
+from tools.version import VERSION
+
 subprocess.run(r""".\venv\Scripts\pyinstaller.exe scripts\Finalcif.spec -F --clean""".split())
 
 print('copying file')
 print(r'dist\FinalCif.exe', r'W:\htdocs\finalcif')
-shutil.copy(r'dist\FinalCif.exe', r'W:\htdocs\finalcif')
+shutil.copy(r'dist\FinalCif.exe', r'W:\htdocs\finalcif\FinalCif-v{}.exe'.format(VERSION))
