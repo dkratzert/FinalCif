@@ -15,236 +15,6 @@
   </property>
   <widget class="QWidget" name="Mainwidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="1" column="1">
-     <widget class="QComboBox" name="RecentComboBox">
-      <item>
-       <property name="text">
-        <string>Recent Files</string>
-       </property>
-      </item>
-     </widget>
-    </item>
-    <item row="6" column="1" rowspan="4">
-     <widget class="QGroupBox" name="PropertiesGroupBox">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-        <horstretch>0</horstretch>
-        <verstretch>1</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="title">
-       <string>Properties Templates</string>
-      </property>
-      <layout class="QGridLayout" name="gridLayout_4">
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
-        <number>0</number>
-       </property>
-       <property name="horizontalSpacing">
-        <number>6</number>
-       </property>
-       <item row="0" column="0" colspan="2">
-        <widget class="QStackedWidget" name="PropertiesTemplatesStackedWidget">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-           <horstretch>2</horstretch>
-           <verstretch>2</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="currentIndex">
-          <number>0</number>
-         </property>
-         <widget class="QWidget" name="PropertiesSelectPage">
-          <layout class="QGridLayout" name="TemplatesGridLayout_2">
-           <item row="1" column="0">
-            <widget class="QPushButton" name="NewPropertyTemplateButton">
-             <property name="text">
-              <string>New Template</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="0" colspan="2">
-            <widget class="QListWidget" name="PropertiesTemplatesListWidget">
-             <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A list of common properties like &lt;/p&gt;&lt;p&gt;_exptl_crystal_colour: yellow, red, blue, ...&lt;/p&gt;&lt;p&gt;Lists defined here will appear as dropdown menus in the main Table.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-             <property name="selectionMode">
-              <enum>QAbstractItemView::SingleSelection</enum>
-             </property>
-             <property name="selectionBehavior">
-              <enum>QAbstractItemView::SelectRows</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="QPushButton" name="EditPropertiyTemplateButton">
-             <property name="text">
-              <string>Edit Template</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-         <widget class="QWidget" name="PropertiesEditPage">
-          <layout class="QGridLayout" name="gridLayout_5">
-           <item row="1" column="0" colspan="6">
-            <widget class="QTableWidget" name="PropertiesEditTableWidget">
-             <property name="autoScroll">
-              <bool>false</bool>
-             </property>
-             <property name="editTriggers">
-              <set>QAbstractItemView::AllEditTriggers</set>
-             </property>
-             <property name="selectionMode">
-              <enum>QAbstractItemView::SingleSelection</enum>
-             </property>
-             <property name="selectionBehavior">
-              <enum>QAbstractItemView::SelectRows</enum>
-             </property>
-             <property name="verticalScrollMode">
-              <enum>QAbstractItemView::ScrollPerPixel</enum>
-             </property>
-             <property name="horizontalScrollMode">
-              <enum>QAbstractItemView::ScrollPerPixel</enum>
-             </property>
-             <property name="rowCount">
-              <number>1</number>
-             </property>
-             <attribute name="horizontalHeaderVisible">
-              <bool>false</bool>
-             </attribute>
-             <attribute name="horizontalHeaderMinimumSectionSize">
-              <number>90</number>
-             </attribute>
-             <attribute name="horizontalHeaderDefaultSectionSize">
-              <number>170</number>
-             </attribute>
-             <attribute name="horizontalHeaderStretchLastSection">
-              <bool>true</bool>
-             </attribute>
-             <attribute name="verticalHeaderVisible">
-              <bool>false</bool>
-             </attribute>
-             <attribute name="verticalHeaderDefaultSectionSize">
-              <number>23</number>
-             </attribute>
-             <row/>
-             <column>
-              <property name="text">
-               <string/>
-              </property>
-             </column>
-            </widget>
-           </item>
-           <item row="0" column="0">
-            <widget class="QLabel" name="cifKeywordLB">
-             <property name="text">
-              <string>cif keyword</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1" colspan="5">
-            <widget class="QLineEdit" name="cifKeywordLE"/>
-           </item>
-           <item row="2" column="0" rowspan="2" colspan="6">
-            <layout class="QHBoxLayout" name="horizontalLayout">
-             <item>
-              <widget class="QPushButton" name="DeletePropertiesButton">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                 <horstretch>1</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string>Delete Template</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="SavePropertiesButton">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                 <horstretch>1</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="minimumSize">
-                <size>
-                 <width>120</width>
-                 <height>0</height>
-                </size>
-               </property>
-               <property name="text">
-                <string>Save</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="CancelPropertiesButton">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                 <horstretch>1</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="minimumSize">
-                <size>
-                 <width>120</width>
-                 <height>0</height>
-                </size>
-               </property>
-               <property name="text">
-                <string>Cancel</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-          </layout>
-         </widget>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item row="0" column="1">
-     <widget class="QGroupBox" name="SelectCifFileGroupBox">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-        <horstretch>1</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="title">
-       <string>Cif file</string>
-      </property>
-      <layout class="QGridLayout" name="CifFileGridLayout">
-       <item row="0" column="0">
-        <widget class="QLineEdit" name="SelectCif_LineEdit">
-         <property name="placeholderText">
-          <string>Select a .cif file first.</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QPushButton" name="SelectCif_PushButton">
-         <property name="text">
-          <string>Select File</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </item>
     <item row="0" column="4" rowspan="10">
      <widget class="QGroupBox" name="CifDataItemsGroupBox">
       <property name="sizePolicy">
@@ -484,6 +254,198 @@
       </layout>
      </widget>
     </item>
+    <item row="7" column="1" rowspan="3">
+     <widget class="QGroupBox" name="PropertiesGroupBox">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>1</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="title">
+       <string>Properties Templates</string>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_4">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>1</number>
+       </property>
+       <property name="horizontalSpacing">
+        <number>6</number>
+       </property>
+       <item row="0" column="0" colspan="2">
+        <widget class="QStackedWidget" name="PropertiesTemplatesStackedWidget">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>2</horstretch>
+           <verstretch>2</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="currentIndex">
+          <number>0</number>
+         </property>
+         <widget class="QWidget" name="PropertiesSelectPage">
+          <layout class="QGridLayout" name="TemplatesGridLayout_2">
+           <item row="1" column="0">
+            <widget class="QPushButton" name="NewPropertyTemplateButton">
+             <property name="text">
+              <string>New Template</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0" colspan="2">
+            <widget class="QListWidget" name="PropertiesTemplatesListWidget">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A list of common properties like &lt;/p&gt;&lt;p&gt;_exptl_crystal_colour: yellow, red, blue, ...&lt;/p&gt;&lt;p&gt;Lists defined here will appear as dropdown menus in the main Table.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="selectionMode">
+              <enum>QAbstractItemView::SingleSelection</enum>
+             </property>
+             <property name="selectionBehavior">
+              <enum>QAbstractItemView::SelectRows</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QPushButton" name="EditPropertiyTemplateButton">
+             <property name="text">
+              <string>Edit Template</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="PropertiesEditPage">
+          <layout class="QGridLayout" name="gridLayout_5">
+           <item row="1" column="0" colspan="6">
+            <widget class="QTableWidget" name="PropertiesEditTableWidget">
+             <property name="autoScroll">
+              <bool>false</bool>
+             </property>
+             <property name="editTriggers">
+              <set>QAbstractItemView::AllEditTriggers</set>
+             </property>
+             <property name="selectionMode">
+              <enum>QAbstractItemView::SingleSelection</enum>
+             </property>
+             <property name="selectionBehavior">
+              <enum>QAbstractItemView::SelectRows</enum>
+             </property>
+             <property name="verticalScrollMode">
+              <enum>QAbstractItemView::ScrollPerPixel</enum>
+             </property>
+             <property name="horizontalScrollMode">
+              <enum>QAbstractItemView::ScrollPerPixel</enum>
+             </property>
+             <property name="rowCount">
+              <number>1</number>
+             </property>
+             <attribute name="horizontalHeaderVisible">
+              <bool>false</bool>
+             </attribute>
+             <attribute name="horizontalHeaderMinimumSectionSize">
+              <number>90</number>
+             </attribute>
+             <attribute name="horizontalHeaderDefaultSectionSize">
+              <number>170</number>
+             </attribute>
+             <attribute name="horizontalHeaderStretchLastSection">
+              <bool>true</bool>
+             </attribute>
+             <attribute name="verticalHeaderVisible">
+              <bool>false</bool>
+             </attribute>
+             <attribute name="verticalHeaderDefaultSectionSize">
+              <number>23</number>
+             </attribute>
+             <row/>
+             <column>
+              <property name="text">
+               <string/>
+              </property>
+             </column>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="cifKeywordLB">
+             <property name="text">
+              <string>cif keyword</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1" colspan="5">
+            <widget class="QLineEdit" name="cifKeywordLE"/>
+           </item>
+           <item row="2" column="0" rowspan="2" colspan="6">
+            <layout class="QHBoxLayout" name="horizontalLayout">
+             <item>
+              <widget class="QPushButton" name="DeletePropertiesButton">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                 <horstretch>1</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>Delete Template</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="SavePropertiesButton">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                 <horstretch>1</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>120</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>Save</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="CancelPropertiesButton">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                 <horstretch>1</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>120</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>Cancel</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
     <item row="5" column="1">
      <widget class="QGroupBox" name="EquipmentGroupBox">
       <property name="sizePolicy">
@@ -506,6 +468,9 @@
         <number>0</number>
        </property>
        <property name="bottomMargin">
+        <number>1</number>
+       </property>
+       <property name="spacing">
         <number>0</number>
        </property>
        <item row="0" column="0">
@@ -629,6 +594,56 @@
            </item>
           </layout>
          </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="0" column="1" rowspan="2">
+     <widget class="QGroupBox" name="SelectCifFileGroupBox">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>1</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="title">
+       <string>Cif file</string>
+      </property>
+      <layout class="QGridLayout" name="CifFileGridLayout">
+       <property name="bottomMargin">
+        <number>9</number>
+       </property>
+       <property name="horizontalSpacing">
+        <number>4</number>
+       </property>
+       <property name="verticalSpacing">
+        <number>6</number>
+       </property>
+       <item row="0" column="1">
+        <widget class="QPushButton" name="SelectCif_PushButton">
+         <property name="text">
+          <string>Select File</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLineEdit" name="SelectCif_LineEdit">
+         <property name="placeholderText">
+          <string>Select a .cif file first.</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0" colspan="2">
+        <widget class="QComboBox" name="RecentComboBox">
+         <property name="currentText">
+          <string>Recent Files</string>
+         </property>
+         <item>
+          <property name="text">
+           <string>Recent Files</string>
+          </property>
+         </item>
         </widget>
        </item>
       </layout>
