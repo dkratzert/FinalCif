@@ -26,7 +26,11 @@ class Platon():
         os.chdir(self.cif_fileobj.absolute().parent)
         self.chk_filename = ''
         if not self.chkfile.exists() or force:
-            self.run_platon(self.chkfile)
+            try:
+                self.run_platon(self.chkfile)
+            except Exception as e:
+                print(e)
+                return
         else:
             self.chk_filename = self.chkfile.absolute()
         self.chk_file_text = self.chkfile.read_text(encoding='ascii', errors='ignore')
@@ -97,10 +101,10 @@ class Platon():
                 try:
                     print('Platon took too much time, terminating platon. (1)')
                     plat.terminate()
-                    break
+                    raise FileNotFoundError
                 except Exception as e:
                     print(e)
-                    break
+                    raise Exception
         size1 = chkfile.stat().st_size
         size2 = 99999999
         timeticks = 0
