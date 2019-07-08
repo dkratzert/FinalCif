@@ -29,6 +29,7 @@ class Platon():
             try:
                 self.run_platon(self.chkfile)
             except Exception as e:
+                print('Platon failed to run:')
                 print(e)
                 return
         else:
@@ -40,6 +41,7 @@ class Platon():
             self.vrf_txt = Path(self.cif_fileobj.stem + '.vrf').read_text(encoding='ascii')
         except FileNotFoundError:
             self.vrf_txt = ''
+        sleep(2)
         # delete orphaned files:
         for ext in ['.ckf', '.fcf', '.def', '.lis', '.sar', '.ckf', '.sum', '.hkp', '.pjn', '.bin', '_pl.res',
                     '_pl.spf']:
@@ -50,6 +52,7 @@ class Platon():
                 if file.suffix in ['.sar', '_pl.res', '_pl.spf', '.ckf']:
                     file.unlink()
             except FileNotFoundError:
+                print('##')
                 pass
         os.chdir(curdir.absolute())
 
@@ -85,6 +88,7 @@ class Platon():
             return 
             # a fresh platon exe from the web:
             # this runs only wif salflibc.dll. I have to find a solution to download it.
+            # Here is the link to salflib: http://www.chem.gla.ac.uk/~louis/software/dll/salflibc.dll
             #pexe = get_platon()
             #is_exec = stat.S_IXUSR & os.stat(Path(pexe).absolute())[stat.ST_MODE]
             #if pexe and is_exec:
@@ -97,6 +101,7 @@ class Platon():
             #else:
             #    return
                 # waiting for chk file to appear:
+        #plat.wait(50)
         while not chkfile.is_file():
             timeticks = timeticks + 1
             sleep(0.01)
@@ -129,8 +134,9 @@ class Platon():
                     break
         try:
             plat.terminate()
-        except Exception:
-            pass
+        except Exception as e:
+            print('foo')
+            print(e)
 
     def __repr__(self):
         return 'Platon:\n{}'.format(self.formula_moiety)
