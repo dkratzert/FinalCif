@@ -92,6 +92,7 @@ class AppWindow(QMainWindow):
         self.ui.CheckcifButton.setDisabled(True)
         self.ui.SaveCifButton.setDisabled(True)
         self.cif = None
+        self.fin_file = Path()
         self.missing_data = []
         self.vheader_clicked = -1  # This is the index number of the vheader that got clicked last
         self.connect_signals_and_slots()
@@ -100,6 +101,8 @@ class AppWindow(QMainWindow):
         self.ui.CheckcifButton.setIcon(self.style().standardIcon(QStyle.SP_FileDialogDetailedView))
         self.ui.SaveFullReportButton.setIcon(self.style().standardIcon(QStyle.SP_FileDialogListView))
         self.ui.SelectCif_PushButton.setIcon(self.style().standardIcon(QStyle.SP_FileDialogContentsView))
+        self.ui.BackPushButton.setIcon(self.style().standardIcon(QStyle.SP_FileDialogBack))
+        self.ui.BacktoMainpushButton.setIcon(self.style().standardIcon(QStyle.SP_FileDialogBack))
         if DEBUG:
             # only for testing:
             self.load_cif_file(r'test-data/twin4.cif')
@@ -123,11 +126,13 @@ class AppWindow(QMainWindow):
         """
         this method connects all signals to slots. Only a few mighjt be defined elsewere.
         """
+        self.ui.BackPushButton.clicked.connect(self.back_to_main)
+        ##
         self.ui.CheckcifButton.clicked.connect(self.do_checkcif)
         self.ui.BacktoMainpushButton.clicked.connect(self.back_to_main)
         ##
         self.ui.SelectCif_PushButton.clicked.connect(self.load_cif_file)
-        self.ui.SaveCifButton.clicked.connect(self.save_current_cif_file)
+        self.ui.SaveCifButton.clicked.connect(self.save_cif_and_display)
         ##
         self.ui.EquipmentTemplatesListWidget.doubleClicked.connect(self.edit_equipment_template)
         self.ui.EditEquipmentTemplateButton.clicked.connect(self.edit_equipment_template)
@@ -200,16 +205,15 @@ class AppWindow(QMainWindow):
         table = self.ui.CifItemsTable
         table.setCurrentItem(None)  # makes sure also the currently edited item is saved
         self.save_current_cif_file()
-        fin_file = Path(self.cif.filename.stem + '-finalcif.cif')
-        p = Platon(fin_file, force=True)
+        p = Platon(self.fin_file, force=True)
         self.ui.MainStackedWidget.setCurrentIndex(1)
-        ccpe = self.ui.CheckcifPE
+        ccpe = self.ui.CheckcifPlaintextEdit
         doc = ccpe.document()
         font = doc.defaultFont()
         font.setFamily("Courier New")
         font.setStyleHint(QFont.Monospace)
         # increases the pont size every time a bit more :)
-        #size = font.pointSize()
+        # size = font.pointSize()
         font.setPointSize(14)
         doc.setDefaultFont(font)
         ccpe.setLineWrapMode(QPlainTextEdit.NoWrap)
@@ -272,6 +276,10 @@ class AppWindow(QMainWindow):
         self.ui.RecentComboBox.addItems(recent)
         # print(recent, 'load')
 
+    def save_cif_and_display(self):
+        self.save_current_cif_file()
+        self.display_saved_cif()
+
     def save_current_cif_file(self):
         table = self.ui.CifItemsTable
         table.setCurrentItem(None)  # makes sure also the currently edited item is saved
@@ -326,15 +334,32 @@ class AppWindow(QMainWindow):
                             self.cif.set_pair_delimited(vhead, col2)
                         except RuntimeError:
                             pass
-        # fin_file = Path(self.cif.filename.parts[-1][:-4] + '-finalcif.cif')
         try:
-            fin_file = Path(self.cif.filename.stem + '-finalcif.cif')
-            self.cif.save(fin_file.name)
-            self.ui.statusBar.showMessage('  File Saved:  {}'.format(fin_file.name), 15000)
+            self.fin_file = Path(self.cif.filename.stem + '-finalcif.cif')
+            self.cif.save(self.fin_file.name)
+            self.ui.statusBar.showMessage('  File Saved:  {}'.format(self.fin_file.name), 10000)
             print('File saved ...')
         except AttributeError as e:
             print('Unable to save file:')
             print(e)
+            return
+
+    def display_saved_cif(self):
+        """
+        Displays the saved cif file into a textfield.
+        """
+        self.ui.MainStackedWidget.setCurrentIndex(2)
+        final_textedit = self.ui.FinalCifFilePlainTextEdit
+        doc = final_textedit.document()
+        font = doc.defaultFont()
+        font.setFamily("Courier New")
+        font.setStyleHint(QFont.Monospace)
+        # increases the pont size every time a bit more :)
+        # size = font.pointSize()
+        font.setPointSize(14)
+        doc.setDefaultFont(font)
+        final_textedit.setLineWrapMode(QPlainTextEdit.NoWrap)
+        final_textedit.setPlainText(self.fin_file.read_text(encoding='utf-8', errors='ignore'))
 
     def show_equipment_and_properties(self):
         """
@@ -726,7 +751,7 @@ class AppWindow(QMainWindow):
         """
         self.vheaderitems.clear()
         self.ui.MainStackedWidget.setCurrentIndex(0)
-        self.ui.CheckcifPE.clear()
+        self.ui.CheckcifPlaintextEdit.clear()
         if not fname:
             fname = self.cif_file_open_dialog()
         if not fname:
