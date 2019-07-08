@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/Users/daniel/GitHub/FinalCif/./gui/finalcif_gui.ui'
+# Form implementation generated from reading ui file './gui\finalcif_gui.ui'
 #
-# Created by: PyQt5 UI code generator 5.13.0
+# Created by: PyQt5 UI code generator 5.12.2
 #
 # WARNING! All changes made in this file will be lost!
-
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
@@ -194,9 +193,9 @@ class Ui_FinalCifWindow(object):
         self.label = QtWidgets.QLabel(self.page_checkcif)
         self.label.setObjectName("label")
         self.verticalLayout_2.addWidget(self.label)
-        self.CheckcifPE = QtWidgets.QPlainTextEdit(self.page_checkcif)
-        self.CheckcifPE.setObjectName("CheckcifPE")
-        self.verticalLayout_2.addWidget(self.CheckcifPE)
+        self.CheckcifPlaintextEdit = QtWidgets.QPlainTextEdit(self.page_checkcif)
+        self.CheckcifPlaintextEdit.setObjectName("CheckcifPlaintextEdit")
+        self.verticalLayout_2.addWidget(self.CheckcifPlaintextEdit)
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
         spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
@@ -208,6 +207,24 @@ class Ui_FinalCifWindow(object):
         self.horizontalLayout_2.addItem(spacerItem1)
         self.verticalLayout_2.addLayout(self.horizontalLayout_2)
         self.MainStackedWidget.addWidget(self.page_checkcif)
+        self.page_FinalCif = QtWidgets.QWidget()
+        self.page_FinalCif.setObjectName("page_FinalCif")
+        self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.page_FinalCif)
+        self.verticalLayout_3.setObjectName("verticalLayout_3")
+        self.FinalCifFilePlainTextEdit = QtWidgets.QPlainTextEdit(self.page_FinalCif)
+        self.FinalCifFilePlainTextEdit.setObjectName("FinalCifFilePlainTextEdit")
+        self.verticalLayout_3.addWidget(self.FinalCifFilePlainTextEdit)
+        self.horizontalLayout_3 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_3.setObjectName("horizontalLayout_3")
+        spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_3.addItem(spacerItem2)
+        self.BackPushButton = QtWidgets.QPushButton(self.page_FinalCif)
+        self.BackPushButton.setObjectName("BackPushButton")
+        self.horizontalLayout_3.addWidget(self.BackPushButton)
+        spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_3.addItem(spacerItem3)
+        self.verticalLayout_3.addLayout(self.horizontalLayout_3)
+        self.MainStackedWidget.addWidget(self.page_FinalCif)
         self.CifTableGridLayout.addWidget(self.MainStackedWidget, 0, 0, 1, 3)
         self.gridLayout.addWidget(self.CifDataItemsGroupBox, 0, 4, 10, 1)
         self.EquipmentGroupBox = QtWidgets.QGroupBox(self.Mainwidget)
@@ -293,7 +310,7 @@ class Ui_FinalCifWindow(object):
 
         self.retranslateUi(FinalCifWindow)
         self.PropertiesTemplatesStackedWidget.setCurrentIndex(0)
-        self.MainStackedWidget.setCurrentIndex(1)
+        self.MainStackedWidget.setCurrentIndex(2)
         self.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(FinalCifWindow)
         FinalCifWindow.setTabOrder(self.SelectCif_LineEdit, self.EquipmentEditTableWidget)
@@ -334,7 +351,8 @@ class Ui_FinalCifWindow(object):
         self.CheckcifButton.setText(_translate("FinalCifWindow", "CheckCif"))
         self.SaveFullReportButton.setText(_translate("FinalCifWindow", "Make Tables"))
         self.label.setText(_translate("FinalCifWindow", "PLATON Checkcif output:"))
-        self.BacktoMainpushButton.setText(_translate("FinalCifWindow", "Back to CIF List"))
+        self.BacktoMainpushButton.setText(_translate("FinalCifWindow", "Back to CIF Table"))
+        self.BackPushButton.setText(_translate("FinalCifWindow", "Back to CIF Table"))
         self.EquipmentGroupBox.setTitle(_translate("FinalCifWindow", "Equipment and Author Templates"))
         self.NewEquipmentTemplateButton.setText(_translate("FinalCifWindow", "New Template"))
         self.EquipmentTemplatesListWidget.setToolTip(_translate("FinalCifWindow", "<html><head/><body><p>Each entry can have a list of key/value pairs. For example a Diffractometer model can have a list of features.</p></body></html>"))
@@ -349,3 +367,5 @@ class Ui_FinalCifWindow(object):
         self.actionSave_Report.setText(_translate("FinalCifWindow", "Save Report"))
         self.actionSave_CIF_File.setText(_translate("FinalCifWindow", "Save CIF File"))
         self.actionedit_templates.setText(_translate("FinalCifWindow", "edit templates"))
+
+
