@@ -122,3 +122,5 @@ dmypy.json
 *.ckf
 *.fcf
 *.spf
+test-data/platon.out
+test-data/twin4-finalcif.cif

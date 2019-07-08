@@ -377,7 +377,20 @@
             </widget>
            </item>
            <item>
-            <widget class="QPlainTextEdit" name="CheckcifPlaintextEdit"/>
+            <widget class="QPlainTextEdit" name="CheckcifPlaintextEdit">
+             <property name="lineWrapMode">
+              <enum>QPlainTextEdit::NoWrap</enum>
+             </property>
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+             <property name="plainText">
+              <string notr="true"/>
+             </property>
+             <property name="textInteractionFlags">
+              <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+             </property>
+            </widget>
            </item>
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -421,7 +434,11 @@
          <widget class="QWidget" name="page_FinalCif">
           <layout class="QVBoxLayout" name="verticalLayout_3">
            <item>
-            <widget class="QPlainTextEdit" name="FinalCifFilePlainTextEdit"/>
+            <widget class="QPlainTextEdit" name="FinalCifFilePlainTextEdit">
+             <property name="textInteractionFlags">
+              <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+             </property>
+            </widget>
            </item>
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_3">
