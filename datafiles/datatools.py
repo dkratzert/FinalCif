@@ -36,7 +36,12 @@ class BrukerData(object):
         saint_first_ls = self.saint_log('*_01._ls')
         solution_program = self.get_solution_program()
         solution_version = solution_program.version or ''
-        self.plat = Platon(self.cif.filename)
+        try:
+            self.plat = Platon(self.cif.filename)
+        except Exception as e:
+            print(e)
+            self.app.ui.CheckcifButton.setDisabled(True)
+            self.plat = None
         solution_primary = ''
         resdata = cif.block.find_value('_shelx_res_file')
         shelx = 'Sheldrick, G.M. (2015). Acta Cryst. A71, 3-8.\nSheldrick, G.M. (2015). Acta Cryst. C71, 3-8.\n'
@@ -74,12 +79,12 @@ class BrukerData(object):
         except (AttributeError, KeyError):
             milliamps = ''
         try:
-            moiety = self.platon_out.formula_moiety
+            moiety = self.plat.formula_moiety
         except Exception as e:
             print('Could not make moiety formula:', e)
             moiety = ''
         try:
-            chk_file = self.platon_out.chk_filename
+            chk_file = self.plat.chk_filename
         except Exception as e:
             chk_file = ''
         temp2 = self.p4p.temperature
@@ -161,7 +166,3 @@ class BrukerData(object):
     @property
     def p4p(self):
         return P4PFile(self.basename)
-
-    @property
-    def platon_out(self):
-        return self.plat
