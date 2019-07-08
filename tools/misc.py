@@ -81,8 +81,8 @@ class Manufacturer():
 # '_space_group_centring_type',  # seems to be used nowere
 # '_exptl_absorpt_special_details',   # This is not official?!?
 high_prio_keys = {
-    '_audit_contact_author_address'                    : 'The adresss of the cif author',
-    '_audit_contact_author_email'                      : 'The email adress of the cif author',
+    '_audit_contact_author_address'                    : 'The address of the cif author',
+    '_audit_contact_author_email'                      : 'The email address of the cif author',
     '_audit_contact_author_name'                       : 'The name of the cif author',
     '_audit_contact_author_phone'                      : 'The phone number of the cif author',
     '_publ_contact_author_id_orcid'                    : 'The ORCID ID of the author submitting the manuscript and data block',
@@ -150,14 +150,14 @@ high_prio_keys = {
     '_reflns_special_details'                          : 'Description of the properties of the reported reflection list',
     '_chemical_absolute_configuration'                 : 'Method how the absolute configuration was established',
     '_computing_data_collection'                       : 'Computer program used to collect the intensity data',
-    '_computing_cell_refinement'                       : 'Computer program used to idex and refine the unit cell parameters',
+    '_computing_cell_refinement'                       : 'Computer program used to index and refine the unit cell parameters',
     '_computing_data_reduction'                        : 'Computer program used to integrate the intensity data',
     '_computing_structure_solution'                    : 'Computer program used for structure solution',
     '_computing_structure_refinement'                  : 'Computer program used for structure refinement',
     '_computing_molecular_graphics'                    : 'Computer program used to make molecular graphics',
     '_computing_publication_material'                  : 'Computer program used to generate publication material',
     '_refine_ls_hydrogen_treatment'                    : 'Treatment of hydrogen atoms in the least-squares refinement',
-    '_refine_special_details'                          : 'Detailed refinement desripton, e.g. information about a disorder model',
+    '_refine_special_details'                          : 'Detailed refinement description, e.g. information about a disorder model',
     '_refine_ls_structure_factor_coef'                 : 'Structure-factor coefficient |F|, F^2^ or I used in the least-squares refinement process',
     '_refine_ls_matrix_type'                           : 'Type of matrix used to accumulate the least-squares derivatives',
     '_refine_ls_weighting_scheme'                      : 'The weighting scheme applied in the least-squares process',
