@@ -24,7 +24,7 @@ class BrukerFrameHeader():
             if fr:
                 self._fileobj = Path(fr)
         if not self._fileobj:
-            self._fileobj = Path()
+            raise FileNotFoundError
         self.filename = self._fileobj.absolute()
         self.header = {}
         try:
