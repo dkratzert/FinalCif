@@ -209,7 +209,12 @@ class CifContainer():
         for char in txt:
             if char in charcters:
                 txt = txt.replace(char, charcters[char])
-        self.block.set_pair(key, quote(txt))
+        try:
+            # bad hack to get the numbered values correct
+            float(txt)
+            self.block.set_pair(key, txt)
+        except (TypeError, ValueError):
+            self.block.set_pair(key, quote(txt))
 
     def key_value_pairs(self):
         """
