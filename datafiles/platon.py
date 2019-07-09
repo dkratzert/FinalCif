@@ -23,8 +23,18 @@ class Platon():
         self.cif_fileobj = file
         curdir = Path(os.curdir).absolute()
         self.chkfile = Path(self.cif_fileobj.stem + '.chk')
+        self.vrf_file = Path(self.cif_fileobj.stem + '.vrf')
+        try:
+            self.chkfile.unlink()
+        except ValueError:
+            pass
+        try:
+            self.vrf_file.unlink()
+        except ValueError:
+            pass
         os.chdir(self.cif_fileobj.absolute().parent)
         self.chk_filename = ''
+        self.platon_output = ''
         if not self.chkfile.exists() or force:
             try:
                 self.run_platon(self.chkfile)
@@ -34,14 +44,16 @@ class Platon():
                 return
         else:
             self.chk_filename = self.chkfile.absolute()
-        self.chk_file_text = self.chkfile.read_text(encoding='ascii', errors='ignore')
-        self.formula_moiety = ''
-        self.parse_file()
         try:
-            self.vrf_txt = Path(self.cif_fileobj.stem + '.vrf').read_text(encoding='ascii')
+            self.chk_file_text = self.chkfile.read_text(encoding='ascii', errors='ignore')
+        except FileNotFoundError:
+            self.chk_file_text = ''
+        try:
+            self.vrf_txt = self.vrf_file.read_text(encoding='ascii')
         except FileNotFoundError:
             self.vrf_txt = ''
-        sleep(2)
+        self.formula_moiety = ''
+        self.parse_file()
         # delete orphaned files:
         for ext in ['.ckf', '.fcf', '.def', '.lis', '.sar', '.ckf', '.sum', '.hkp', '.pjn', '.bin', '_pl.res',
                     '_pl.spf']:
@@ -82,61 +94,17 @@ class Platon():
             si = None
         try:
             print('trying local platon')
-            plat = subprocess.Popen([r'platon.exe', '-u', self.cif_fileobj.name], startupinfo=si)
+            plat = subprocess.run([r'platon', '-u', self.cif_fileobj.name], startupinfo=si, timeout=30, capture_output=True)
         except Exception as e:
             print('Could not run local platon:', e)
-            return 
-            # a fresh platon exe from the web:
-            # this runs only wif salflibc.dll. I have to find a solution to download it.
-            # Here is the link to salflib: http://www.chem.gla.ac.uk/~louis/software/dll/salflibc.dll
-            #pexe = get_platon()
-            #is_exec = stat.S_IXUSR & os.stat(Path(pexe).absolute())[stat.ST_MODE]
-            #if pexe and is_exec:
-            #    try:
-            #        plat = subprocess.Popen([pexe, '-u', self.cif_fileobj.name], startupinfo=si,
-            #                                stdout=subprocess.DEVNULL)
-            #    except Exception as e:
-            #        print('Downloaded platon not found:', e)
-            #        return
-            #else:
-            #    return
-                # waiting for chk file to appear:
-        #plat.wait(50)
-        while not chkfile.is_file():
-            timeticks = timeticks + 1
-            sleep(0.01)
-            if timeticks > 8:
-                print('Platon statup took too long. Killing Platon...')
-                try:
-                    print('Platon took too much time, terminating platon. (1)')
-                    plat.terminate()
-                    raise FileNotFoundError
-                except Exception as e:
-                    print(e)
-                    raise Exception
-        size1 = chkfile.stat().st_size
-        size2 = 99999999
-        timeticks = 0
-        # waiting until size does not increase anymore:
-        while size1 <= size2:
-            timeticks = timeticks + 1
-            size2 = chkfile.stat().st_size
-            # print(size1, size2)
-            sleep(0.1)
-            size1 = chkfile.stat().st_size
-            if timeticks > 250:
-                try:
-                    print('Platon took too much time, terminating platon. (2)')
-                    plat.terminate()
-                    break
-                except Exception:
-                    pass
-                    break
-        try:
-            plat.terminate()
-        except Exception as e:
-            print('foo')
-            print(e)
+            return
+        self.platon_output = plat.stdout.decode('ascii')
+        self.platon_output += plat.stderr.decode('ascii')
+        # a fresh platon exe from the web:
+        # this runs only wif salflibc.dll. I have to find a solution to download it.
+        # Here is the link to salflib: http://www.chem.gla.ac.uk/~louis/software/dll/salflibc.dll
+        #pexe = get_platon()
+
 
     def __repr__(self):
         return 'Platon:\n{}'.format(self.formula_moiety)
