@@ -69,16 +69,20 @@ class BrukerData(object):
         # the lower temp is more likely:
         try:
             temp1 = self.frame_header.temperature
-        except (AttributeError, KeyError):
+        except (AttributeError, KeyError, FileNotFoundError):
             temp1 = 293
         try:
             kilovolt = self.frame_header.kilovolts
-        except (AttributeError, KeyError):
+        except (AttributeError, KeyError, FileNotFoundError):
             kilovolt = ''
         try:
             milliamps = self.frame_header.milliamps
-        except (AttributeError, KeyError):
+        except (AttributeError, KeyError, FileNotFoundError):
             milliamps = ''
+        try:
+            frame_name = self.frame_header.filename.name
+        except (FileNotFoundError):
+            frame_name = ''
         #try:
         #    moiety = self.plat.formula_moiety
         #except Exception as e:
@@ -112,8 +116,8 @@ class BrukerData(object):
                    '_exptl_crystal_size_max'        : (self.p4p.crystal_size[2] or '', self.p4p.filename.name),
                    '_computing_structure_solution'  : (solution_version, ''),
                    '_atom_sites_solution_primary'   : (solution_primary, ''),
-                   '_diffrn_source_voltage'         : (kilovolt or '', self.frame_header.filename.name),
-                   '_diffrn_source_current'         : (milliamps or '', self.frame_header.filename.name),
+                   '_diffrn_source_voltage'         : (kilovolt or '', frame_name),
+                   '_diffrn_source_current'         : (milliamps or '', frame_name),
                    #'_chemical_formula_moiety'       : (moiety or '', chk_file),
                    '_publ_section_references'       : (shelx, ''),
                    }

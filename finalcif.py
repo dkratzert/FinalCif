@@ -206,14 +206,16 @@ class AppWindow(QMainWindow):
         table.setCurrentItem(None)  # makes sure also the currently edited item is saved
         self.save_current_cif_file()
         try:
-            p = Platon(self.fin_file, force=True)
+            p = Platon(self.fin_file)
         except Exception as e:
             print(e)
-            #self.ui.CheckcifButton.setDisabled(True)
+            # self.ui.CheckcifButton.setDisabled(True)
             return
         self.ui.MainStackedWidget.setCurrentIndex(1)
         ccpe = self.ui.CheckcifPlaintextEdit
-        ccpe.setPlainText(p.platon_output)
+        ccpe.setPlainText('Platon output: ')
+        ccpe.appendPlainText(p.platon_output)
+        ccpe.appendPlainText('\n' + '#' * 80)
         doc = ccpe.document()
         font = doc.defaultFont()
         font.setFamily("Courier New")
@@ -225,10 +227,12 @@ class AppWindow(QMainWindow):
         ccpe.setLineWrapMode(QPlainTextEdit.NoWrap)
         if p.chk_file_text:
             try:
-                ccpe.setPlainText(p.chk_file_text)
+                ccpe.appendPlainText(p.chk_file_text)
+                ccpe.appendPlainText('\n' + '#' * 27 + ' Validation Response Forms ' + '#' * 26 + '\n')
                 ccpe.appendPlainText(p.vrf_txt)
             except AttributeError:
                 pass
+        ccpe.verticalScrollBar().setValue(0)
 
     def load_recent_file(self, file_index):
         combo = self.ui.RecentComboBox
