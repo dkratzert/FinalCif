@@ -82,10 +82,10 @@ class Platon():
             si = None
         try:
             print('trying local platon')
-            plat = subprocess.call([r'platon', '-u', self.cif_fileobj.name], startupinfo=si, timeout=30)
+            subprocess.call([r'platon', '-u', self.cif_fileobj.name], startupinfo=si, timeout=30)
         except Exception as e:
             print('Could not run local platon:', e)
-            return 
+            return
             # a fresh platon exe from the web:
             # this runs only wif salflibc.dll. I have to find a solution to download it.
             # Here is the link to salflib: http://www.chem.gla.ac.uk/~louis/software/dll/salflibc.dll
