@@ -82,7 +82,7 @@ class Platon():
             si = None
         try:
             print('trying local platon')
-            plat = subprocess.Popen([r'platon.exe', '-u', self.cif_fileobj.name], startupinfo=si)
+            plat = subprocess.call([r'platon', '-u', self.cif_fileobj.name], startupinfo=si, timeout=30)
         except Exception as e:
             print('Could not run local platon:', e)
             return 
@@ -102,6 +102,7 @@ class Platon():
             #    return
                 # waiting for chk file to appear:
         #plat.wait(50)
+        """
         while not chkfile.is_file():
             timeticks = timeticks + 1
             sleep(0.01)
@@ -137,6 +138,7 @@ class Platon():
         except Exception as e:
             print('foo')
             print(e)
+        """
 
     def __repr__(self):
         return 'Platon:\n{}'.format(self.formula_moiety)
