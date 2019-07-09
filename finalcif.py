@@ -213,6 +213,7 @@ class AppWindow(QMainWindow):
             return
         self.ui.MainStackedWidget.setCurrentIndex(1)
         ccpe = self.ui.CheckcifPlaintextEdit
+        ccpe.setPlainText(p.platon_output)
         doc = ccpe.document()
         font = doc.defaultFont()
         font.setFamily("Courier New")
@@ -222,11 +223,12 @@ class AppWindow(QMainWindow):
         font.setPointSize(14)
         doc.setDefaultFont(font)
         ccpe.setLineWrapMode(QPlainTextEdit.NoWrap)
-        try:
-            ccpe.setPlainText(p.chk_file_text)
-            ccpe.appendPlainText(p.vrf_txt)
-        except AttributeError:
-            pass
+        if p.chk_file_text:
+            try:
+                ccpe.setPlainText(p.chk_file_text)
+                ccpe.appendPlainText(p.vrf_txt)
+            except AttributeError:
+                pass
 
     def load_recent_file(self, file_index):
         combo = self.ui.RecentComboBox
