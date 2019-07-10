@@ -393,20 +393,32 @@ predef_equipment_templ = [{'name' : 'D8 VENTURE',
                            },
                           {'name' : 'Contact author name and address',
                            'items': [
-                               ['_audit_contact_author_name', 'Dr. Daniel Kratzert'],
-                               ['_audit_contact_author_address',
-                                "Albert-Ludwigs-Universität Freiburg\n"
-                                "Institut für Anorganische und Analytische Chemie\n"
-                                "Albertstraße 21\n"
-                                "Freiburg i. Br.\n"
-                                "79104\n"
-                                "Germany"],
-                               ['_audit_contact_author_email', 'daniel.kratzert@ac.uni-freiburg.de'],
-                               ['_audit_contact_author_phone', '+497612036156'],
-                               ['_publ_contact_author_id_orcid', 'https://orcid.org/0000-0003-0970-9780'],
+                               ['_audit_contact_author_name', ''],
+                               ['_audit_contact_author_address', ""],
+                               ['_audit_contact_author_email', ''],
+                               ['_audit_contact_author_phone', ''],
+                               ['_publ_contact_author_id_orcid', ''],
                            ]
                            },
                           ]
+
+"""
+{'name' : 'Contact author name and address',
+'items': [
+   ['_audit_contact_author_name', 'Dr. Daniel Kratzert'],
+   ['_audit_contact_author_address',
+    "Albert-Ludwigs-Universität Freiburg\n"
+    "Institut für Anorganische und Analytische Chemie\n"
+    "Albertstraße 21\n"
+    "Freiburg i. Br.\n"
+    "79104\n"
+    "Germany"],
+   ['_audit_contact_author_email', 'daniel.kratzert@ac.uni-freiburg.de'],
+   ['_audit_contact_author_phone', '+497612036156'],
+   ['_publ_contact_author_id_orcid', 'https://orcid.org/0000-0003-0970-9780'],
+]
+},"""
+
 
 ### Property contents:
 
