@@ -158,6 +158,7 @@ def make_report_from(files: List, output_filename: str = None):
     :param files: Input cif files a list.
     :param output_filename: the table is saved to this file.
     """
+    # TODO: make file instaces with Path()
     nfiles = [i.rstrip('.cif') for i in files]  # remove file suffix for display
     group_of_files = list(grouper(nfiles, 3))  # group in threes to fit on A4 page
     table_index = len(group_of_files) - 1  # n-th table
@@ -223,10 +224,7 @@ def make_report_from(files: List, output_filename: str = None):
 
         for table_column in range(0, 3):  # the three columns
             if page_number[1][table_column]:
-                filename = page_number[1][table_column] + '.cif'
-                cif = Cif()
-                with open(filename, 'r') as f:
-                    cif.parsefile(f.readlines())
+                # TODO: parse cif file with gemmi and create Cif() instance like in Finalcif
 
                 # Set text for all usual cif keywords:
                 for _, key in enumerate(cif_keywords_list):
