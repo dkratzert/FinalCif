@@ -109,8 +109,10 @@ class MultitableAppWindow(QMainWindow):
                                                          caption="Save Table To",
                                                          directory='./multitable.docx')
         # initialFilter='*.docx')
-        make_report_from(files_list, output_filename)
-        self.ui.OutputTextEdit.append('\nReport finished - output file: {}'.format(output_filename))
+        # TODO: check if this "ok" works:
+        ok = make_report_from(files_list, output_filename)
+        if ok:
+            self.ui.OutputTextEdit.append('\nReport finished - output file: {}'.format(output_filename))
         self.ui.CifFileListListWidget.clear()
 
 
