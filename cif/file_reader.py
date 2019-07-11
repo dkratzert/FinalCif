@@ -17,10 +17,12 @@ from cif import cif_file_parser
 from tools.misc import high_prio_keys, non_centrosymm_keys, to_float
 
 
-def quote(string, wrapping=80):
+def quote(string: str, wrapping=80):
     """
-    Quotes a cif string and warppes it.
+    Quotes a cif string and wrapps it. The shorter strings are directly handled by cif.quote().
     """
+    if len(string) < 80:
+        return gemmi.cif.quote(string)
     lines = '\n'
     for line in string.split('\n'):
         if len(line) > wrapping:

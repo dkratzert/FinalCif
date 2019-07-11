@@ -10,7 +10,8 @@
 #  ----------------------------------------------------------------------------
 
 import os
-from subprocess import Popen, STARTUPINFO, TimeoutExpired, PIPE
+import subprocess
+from subprocess import Popen, TimeoutExpired, PIPE
 import sys
 from pathlib import Path
 from time import sleep
@@ -84,7 +85,7 @@ class Platon():
         timeticks = 0
         try:
             # This is only available on windows:
-            si = STARTUPINFO()
+            si = subprocess.STARTUPINFO()
             si.dwFlags = 1
             si.wShowWindow = 0
         except AttributeError:

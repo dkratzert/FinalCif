@@ -121,6 +121,6 @@ if __name__ == '__main__':
         uic.compileUiDir(os.path.join(application_path, './gui'))
 
     app = QApplication(sys.argv)
-    w = MultitableAppWindow()
+    w = MultitableAppWindow(app)
     w.show()
     sys.exit(app.exec_())
