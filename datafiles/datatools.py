@@ -11,7 +11,6 @@ from pathlib import Path
 from cif.file_reader import CifContainer
 from datafiles.bruker_frame import BrukerFrameHeader
 from datafiles.p4p_reader import P4PFile
-from datafiles.platon import Platon
 from datafiles.sadabs import Sadabs
 from datafiles.saint import SaintListFile
 from datafiles.shelxt import SHELXTlistfile
@@ -37,9 +36,9 @@ class BrukerData(object):
         solution_program = self.get_solution_program()
         solution_version = solution_program.version or ''
         # This creates more problems than it solves:
-        #try:
+        # try:
         #    self.plat = Platon(self.cif.filename)
-        #except Exception as e:
+        # except Exception as e:
         #    print(e)
         #    self.app.ui.CheckcifButton.setDisabled(True)
         #    self.plat = None
@@ -56,16 +55,22 @@ class BrukerData(object):
         if solution_program and 'XT' in solution_program.version:
             solution_primary = 'direct'
         # TODO: determine the correct dataset number:
-        dataset_num = -1
-        try:
-            abstype = 'multi-scan' if not self.sadabs.dataset(-1).numerical else 'numerical'
-            t_min = min(self.sadabs.dataset(dataset_num).transmission)
-            t_max = max(self.sadabs.dataset(dataset_num).transmission)
-        except (KeyError, AttributeError, TypeError):
-            # no abs file found
-            abstype = '?'
-            t_min = '?'
-            t_max = '?'
+        dataset_num = 1
+        abstype = '?'
+        t_min = '?'
+        t_max = '?'
+        # Going back from last dataset:
+        for n in range(1, len(self.sadabs.datasets) + 1):
+            try:
+                abstype = 'multi-scan' if not self.sadabs.dataset(-n).numerical else 'numerical'
+                t_min = min(self.sadabs.dataset(-n).transmission)
+                t_max = max(self.sadabs.dataset(-n).transmission)
+                if all([abstype, t_min, t_max]):
+                    break
+            except (KeyError, AttributeError, TypeError):
+                pass
+                #print('No .abs file found.')
+                # no abs file found
         # the lower temp is more likely:
         try:
             temp1 = self.frame_header.temperature
@@ -83,14 +88,14 @@ class BrukerData(object):
             frame_name = self.frame_header.filename.name
         except (FileNotFoundError):
             frame_name = ''
-        #try:
+        # try:
         #    moiety = self.plat.formula_moiety
-        #except Exception as e:
+        # except Exception as e:
         #    print('Could not make moiety formula:', e)
         #    moiety = ''
-        #try:
+        # try:
         #    chk_file = self.plat.chk_filename
-        #except Exception as e:
+        # except Exception as e:
         #    chk_file = ''
         temp2 = self.p4p.temperature
         temperature = round(min([temp1, temp2]), 1)
@@ -118,7 +123,7 @@ class BrukerData(object):
                    '_atom_sites_solution_primary'   : (solution_primary, ''),
                    '_diffrn_source_voltage'         : (kilovolt or '', frame_name),
                    '_diffrn_source_current'         : (milliamps or '', frame_name),
-                   #'_chemical_formula_moiety'       : (moiety or '', chk_file),
+                   # '_chemical_formula_moiety'       : (moiety or '', chk_file),
                    '_publ_section_references'       : (shelx, ''),
                    }
         self.sources = dict((k.lower(), v) for k, v in sources.items())

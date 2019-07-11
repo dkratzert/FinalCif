@@ -88,10 +88,10 @@ class Sadabs():
         self.Rint_3sig = None
         self.observations_3sig = None
         self.input_files = []
-        self.output = []
+        self.datasets = []
         self.batch_input = None
         self.filename = Path('./')
-        p = Path('./')
+        p = Path('.')
         sadfiles = list(p.glob(basename+'*.abs'))
         sadfiles = sorted(sadfiles, key=os.path.getmtime, reverse=True)
         if not sadfiles:
@@ -127,7 +127,7 @@ class Sadabs():
             if line.startswith(' Crystal faces:'):
                 self.faces = True
             if 'SADABS' in line or 'TWINABS' in line:
-                self.version = line.lstrip().strip() + "Krause, L., Herbst-Irmer, R., Sheldrick G.M. & Stalke D., " \
+                self.version = line.lstrip().strip() + ": Krause, L., Herbst-Irmer, R., Sheldrick G.M. & Stalke D., " \
                                                        "J. Appl. Cryst. 48 (2015) 3-10"
             if 'twin components' in line:
                 self.twin_components = to_int(spline[0])
@@ -137,14 +137,14 @@ class Sadabs():
                 # This can be before "Corrected reflections written" in case of hklf5 files
                 if self.version.startswith('TWINABS'):
                     hklf5 = True
-                    self.output.append(Dataset())
+                    self.datasets.append(Dataset())
                 self.dataset(n).filetype = to_int(spline[1])
                 self.dataset(n).domain = spline[-1]
             if self._refl_written_regex.match(line):  # This is always first
                 #     2330 Corrected reflections written to file IK_KG_CF_3_0m_5.hkl
                 #   275136 Corrected reflections written to file sad_noface_u.hkl
                 if not hklf5:
-                    self.output.append(Dataset())
+                    self.datasets.append(Dataset())
                 self.dataset(n).written_reflections = to_int(spline[0])
                 self.dataset(n).hklfile = spline[-1]
             if "Estimated minimum and maximum transmission" in line \
@@ -158,9 +158,12 @@ class Sadabs():
                 self.dataset(n).mu_r = spline[-1]
                 self.dataset(n).numerical = self.faces
                 n += 1
+            # do not:
+            #if line.startswith(' Unique HKLF'):
+            #    n += 1
 
     def __iter__(self):
-        return iter(x for x in self.output)
+        return iter(x for x in self.datasets)
 
     @property
     def program(self):
@@ -168,7 +171,7 @@ class Sadabs():
 
     def dataset(self, n):
         try:
-            return self.output[n]
+            return self.datasets[n]
         except IndexError:
             return Dataset()
 
