@@ -12,9 +12,7 @@ from docx import Document
 from docx.enum.style import WD_STYLE_TYPE
 from docx.shared import Cm, Pt, RGBColor
 
-
 # compiled with "Py -3 -m PyInstaller multitable.spec --onefile"
-from cif.cif_file_parser import Cif
 from cif.file_reader import CifContainer
 from multitable.tools import isfloat, grouper, cif_keywords_list, this_or_quest, get_files_from_current_dir
 
@@ -230,13 +228,12 @@ def make_report_from(files: List, output_filename: str = None):
                 cif = CifContainer(file_obj)
                 cif.open_cif_with_gemmi()
 
-                headcell = header_cells[table_column].paragraphs[0]
+                headcell = header_cells[table_column + 1].paragraphs[0]
                 headcell.add_run(Path(file_list[table_column]).name).bold = True
 
                 # Set text for all usual cif keywords:
                 for _, key in enumerate(cif_keywords_list):
                     cell = table.cell(key[1] + 1, table_column + 1)
-                    print(cif[key[0]])
                     if cif[key[0]]:
                         cell.text = cif[key[0]]
                     else:

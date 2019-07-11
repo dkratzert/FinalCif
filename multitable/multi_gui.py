@@ -113,6 +113,8 @@ class MultitableAppWindow(QMainWindow):
         ok = make_report_from(files_list, output_filename)
         if ok:
             self.ui.OutputTextEdit.append('\nReport finished - output file: {}'.format(output_filename))
+        else:
+            self.ui.OutputTextEdit.append('\nFailed to generate Report!')
         self.ui.CifFileListListWidget.clear()
 
 
