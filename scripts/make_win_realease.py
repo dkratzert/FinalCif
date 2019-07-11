@@ -19,6 +19,7 @@ from PyQt5 import uic
 
 from tools.version import VERSION
 
+
 def disable_debug(filepath: str):
     pth = Path(filepath)
     file = pth.read_text(encoding="UTF-8", errors='ignore').split("\n")
@@ -32,6 +33,7 @@ def disable_debug(filepath: str):
     iss_file = "\n".join(file)
     pth.write_text(iss_file, encoding="UTF-8")
 
+
 def recompile_ui():
     try:
         print(os.path.abspath('./gui'))
@@ -40,6 +42,7 @@ def recompile_ui():
     except:
         print("Unable to compile UI!")
         raise
+
 
 disable_debug('finalcif.py')
 
