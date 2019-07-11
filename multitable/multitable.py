@@ -15,6 +15,7 @@ from docx.shared import Cm, Pt, RGBColor
 
 # compiled with "Py -3 -m PyInstaller multitable.spec --onefile"
 from cif.cif_file_parser import Cif
+from cif.file_reader import CifContainer
 from multitable.tools import isfloat, grouper, cif_keywords_list, this_or_quest, get_files_from_current_dir
 
 
@@ -158,9 +159,7 @@ def make_report_from(files: List, output_filename: str = None):
     :param files: Input cif files a list.
     :param output_filename: the table is saved to this file.
     """
-    # TODO: make file instaces with Path()
-    nfiles = [i.rstrip('.cif') for i in files]  # remove file suffix for display
-    group_of_files = list(grouper(nfiles, 3))  # group in threes to fit on A4 page
+    group_of_files = list(grouper(files, 3))  # group in threes to fit on A4 page
     table_index = len(group_of_files) - 1  # n-th table
 
     document = Document()
@@ -190,7 +189,7 @@ def make_report_from(files: List, output_filename: str = None):
 
     # document.add_page_break()
 
-    for page_number in enumerate(group_of_files):  # one page per three structures:
+    for page_number, file_list in enumerate(group_of_files):  # one page per three structures:
         document.add_paragraph('')  # cannot format cells directly,
         paragraph = document.paragraphs[-1]  # but it will keep settings from
         paragraph_format = style.paragraph_format  # previous paragraph -> dirty hack:
@@ -223,12 +222,21 @@ def make_report_from(files: List, output_filename: str = None):
         populate_description_columns(table)
 
         for table_column in range(0, 3):  # the three columns
-            if page_number[1][table_column]:
-                # TODO: parse cif file with gemmi and create Cif() instance like in Finalcif
+            file_name = file_list[table_column]
+            if not file_name:
+                break
+            file_obj = Path(file_name)
+            if file_obj.exists():
+                cif = CifContainer(file_obj)
+                cif.open_cif_with_gemmi()
+
+                headcell = header_cells[table_column].paragraphs[0]
+                headcell.add_run(Path(file_list[table_column]).name).bold = True
 
                 # Set text for all usual cif keywords:
                 for _, key in enumerate(cif_keywords_list):
                     cell = table.cell(key[1] + 1, table_column + 1)
+                    print(cif[key[0]])
                     if cif[key[0]]:
                         cell.text = cif[key[0]]
                     else:
@@ -240,7 +248,7 @@ def make_report_from(files: List, output_filename: str = None):
                 # The sum formula:
                 if cif['_chemical_formula_sum']:
                     sum_formula = cif['_chemical_formula_sum']
-                    ltext2 = sum_formula.replace(" ", "")
+                    ltext2 = sum_formula.replace(" ", "").replace("'", "")
                     ltext3 = [''.join(x[1]) for x in it.groupby(ltext2, lambda x: x.isalpha())]
                     for _, word in enumerate(ltext3):
                         formrun = table.cell(1, table_column + 1).paragraphs[0]
@@ -354,15 +362,10 @@ def make_report_from(files: List, output_filename: str = None):
                 rfullrun.add_run(' = ' + ls_wR_factor_ref)
                 table.cell(29, table_column + 1).text = diff_density_max + '/' + diff_density_min
                 table.cell(30, table_column + 1).text = cif['_refine_ls_abs_structure_Flack']
-                print('File parsed: ' + filename + '  (' + sum_formula + ')  ' + space_group)
+                print('File parsed: ' + file_obj.name + '  (' + sum_formula + ')  ' + space_group)
 
-        for cell in enumerate(header_cells):
-            if cell[0] < 3 and page_number[1][cell[0]] is not None:
-                table_column = cell[0] + 1
-                headcell = header_cells[table_column].paragraphs[0]
-                headcell.add_run(Path(page_number[1][cell[0]]).name + '.cif').bold = True
         # page break between tables:
-        if page_number[0] < table_index:
+        if page_number < table_index:
             document.add_page_break()
 
     print('\nScript finished - output file: multitable.docx')
@@ -370,7 +373,7 @@ def make_report_from(files: List, output_filename: str = None):
         document.save('multitable.docx')
     else:
         document.save(output_filename)
-    return nfiles
+    return group_of_files
 
 
 if __name__ == '__main__':
