@@ -39,7 +39,7 @@ from cif.file_reader import CifContainer
 from datafiles.datatools import BrukerData
 from datafiles.platon import Platon
 from multitable.multi_gui import MultitableAppWindow
-from tools.misc import high_prio_keys, predef_equipment_templ, predef_prop_templ, special_fields, \
+from tools.misc import high_prio_keys, predef_equipment_templ, predef_prop_templ, combobox_fields, \
     text_field_keys, to_float
 from tools.settings import FinalCifSettings
 
@@ -876,6 +876,7 @@ class AppWindow(QMainWindow):
             # They are needed for the comboboxes:
             property_fields = self.settings.load_property_keys()
             # get missing items from sources and put them into the corresponding rows:
+            # These will be yellow if not filled in:
             self.missing_data.append('_cell_measurement_temperature')
             self.missing_data.append('_diffrn_ambient_temperature')
             self.missing_data.append('_publ_section_references')
@@ -915,7 +916,7 @@ class AppWindow(QMainWindow):
                     # print(sources[miss_data], miss_data)
                     # self.ui.CifItemsTable.resizeRowToContents(row_num)
                 except KeyError as e:
-                    # print(e, '##')
+                    #print(e, '##')
                     pass
                 # items from data sources should not be editable
                 if not miss_data in text_field_keys:
@@ -924,8 +925,8 @@ class AppWindow(QMainWindow):
                 # In case a property for this key exists, it will show this list:
                 if miss_data.lower() in [x.lower() for x in property_fields]:
                     self.add_property_combobox(self.settings.load_property_by_key(miss_data), row_num)
-                elif miss_data.lower() in [x.lower() for x in special_fields]:
-                    self.add_property_combobox(special_fields[miss_data], row_num)
+                elif miss_data.lower() in [x.lower() for x in combobox_fields]:
+                    self.add_property_combobox(combobox_fields[miss_data], row_num)
 
     def add_property_combobox(self, miss_data: str, row_num: int):
         """
