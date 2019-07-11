@@ -92,7 +92,8 @@ class Platon():
             si = None
         try:
             print('trying local platon')
-            with Popen([r'platon', '-u', self.cif_fileobj.name], startupinfo=si, stdout=PIPE, stderr=PIPE) as plat:
+            with Popen([r'platon', '-u', self.cif_fileobj.name], 
+                       startupinfo=si, stdout=PIPE, stderr=PIPE, shell=True, env=os.environ) as plat:
                 try:
                     stdout, stderr = plat.communicate(sys.stdin, timeout=20)
                 except TimeoutExpired:
@@ -111,7 +112,7 @@ class Platon():
                     size1 = chkfile.stat().st_size
                     if timeticks > 10:
                         try:
-                            print('Platon took too much time, terminating platon. (2)')
+                            #print('Platon took too much time, terminating platon. (2)')
                             plat.terminate()
                             break
                         except Exception:

@@ -124,7 +124,7 @@ def format_space_group(table, cif, table_column):
     Sets formating of the space group symbol in row 6.
     """
     # The HM space group symbol
-    space_group = cif['_space_group_name_H-M_alt']
+    space_group = cif['_space_group_name_H-M_alt'].strip("'")
     it_number = cif['_space_group_IT_number']
     if space_group:
         if len(space_group) > 4:  # don't modify P 1
