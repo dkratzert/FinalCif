@@ -213,7 +213,7 @@ class AppWindow(QMainWindow):
             return
         self.ui.MainStackedWidget.setCurrentIndex(1)
         ccpe = self.ui.CheckcifPlaintextEdit
-        ccpe.setPlainText('Platon output: ')
+        ccpe.setPlainText('Platon output: \nThis might not be the same as the IUCr Checkcif!')
         ccpe.appendPlainText(p.platon_output)
         ccpe.appendPlainText('\n' + '#' * 80)
         doc = ccpe.document()

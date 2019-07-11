@@ -110,9 +110,14 @@ class MultitableAppWindow(QMainWindow):
                                                          directory='./multitable.docx')
         # initialFilter='*.docx')
         # TODO: check if this "ok" works:
-        ok = make_report_from(files_list, output_filename)
+        try:
+            ok = make_report_from(files_list, output_filename)
+        except Exception as e:
+            print(e)
+            ok = False
         if ok:
             self.ui.OutputTextEdit.append('\nReport finished - output file: {}'.format(output_filename))
+            os.startfile(output_filename)
         else:
             self.ui.OutputTextEdit.append('\nFailed to generate Report!')
         self.ui.CifFileListListWidget.clear()
