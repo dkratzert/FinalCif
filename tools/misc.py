@@ -301,15 +301,15 @@ SOLUTION_SECONDARY = (
     (10, 'other'),
 )
 
-special_fields = {'_exptl_crystal_colour'               : COLOUR_CHOICES,
-                  '_chemical_absolute_configuration'    : ABSOLUTE_CONFIGURATION_CHOICES,
-                  '_exptl_absorpt_correction_type'      : ABSORPTION_CORRECTION_TYPES,
-                  '_refine_ls_hydrogen_treatment'       : REFINE_LS_HYDROGEN_TREATMENT,
-                  '_diffrn_radiation_type'              : RADIATION_TYPE,
-                  '_atom_sites_solution_primary'        : SOLUTION_PRIMARY,
-                  '_atom_sites_solution_secondary'      : SOLUTION_PRIMARY,
-                  '_diffrn_measurement_specimen_support': SPECIMEN_SUPPORT,
-                  }
+combobox_fields = {'_exptl_crystal_colour'               : COLOUR_CHOICES,
+                   '_chemical_absolute_configuration'    : ABSOLUTE_CONFIGURATION_CHOICES,
+                   '_exptl_absorpt_correction_type'      : ABSORPTION_CORRECTION_TYPES,
+                   '_refine_ls_hydrogen_treatment'       : REFINE_LS_HYDROGEN_TREATMENT,
+                   '_diffrn_radiation_type'              : RADIATION_TYPE,
+                   '_atom_sites_solution_primary'        : SOLUTION_PRIMARY,
+                   '_atom_sites_solution_secondary'      : SOLUTION_PRIMARY,
+                   '_diffrn_measurement_specimen_support': SPECIMEN_SUPPORT,
+                   }
 
 
 def to_float(st):
@@ -418,7 +418,6 @@ predef_equipment_templ = [{'name' : 'D8 VENTURE',
    ['_publ_contact_author_id_orcid', 'https://orcid.org/0000-0003-0970-9780'],
 ]
 },"""
-
 
 ### Property contents:
 
