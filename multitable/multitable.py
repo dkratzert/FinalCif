@@ -246,13 +246,19 @@ def make_report_from(files: List, output_filename: str = None):
             file_name = file_list[table_column]
             if not file_name:
                 break
-            make_main_table(file_list, file_name, table, table_column)
+            make_main_table(file_name, table, table_column)
 
         # page break between tables:
         if page_number < table_index:
             document.add_page_break()
 
     # TODO: Add additional tables here
+    document.add_paragraph('')
+    # TODO: add table header
+    table_coords = document.add_table(rows=1, cols=5)
+    table_coords.autofit = False
+
+    #add_coords_table()
 
     print('\nScript finished - output file: multitable.docx')
     if not output_filename:
@@ -262,7 +268,7 @@ def make_report_from(files: List, output_filename: str = None):
     return group_of_files
 
 
-def make_main_table(file_list, file_name, table, table_column):
+def make_main_table(file_name, table, table_column):
     """
     Fills the main table with residuals. Column, by column.
     """
@@ -272,7 +278,7 @@ def make_main_table(file_list, file_name, table, table_column):
         cif.open_cif_with_gemmi()
         header_cells = table.rows[0].cells
         headcell = header_cells[table_column + 1].paragraphs[0]
-        headcell.add_run(Path(file_list[table_column]).name).bold = True
+        headcell.add_run(file_obj.name).bold = True
 
         # Set text for all usual cif keywords by a lookup table:
         for _, key in enumerate(cif_keywords_list):
