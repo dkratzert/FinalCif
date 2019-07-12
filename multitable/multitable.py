@@ -16,6 +16,32 @@ from docx.shared import Cm, Pt, RGBColor
 from cif.file_reader import CifContainer
 from multitable.tools import isfloat, grouper, cif_keywords_list, this_or_quest, get_files_from_current_dir
 
+"""
+Table 2.  Atomic coordinates  ( x 10^4) and equivalent  isotropic displacement parameters (Å^2 x 10^3)
+for I-43d_final.  U(eq) is defined as one third of  the trace of the orthogonalized Uij tensor.
+Name x	y	z	U(eq)
+
+Table 3.   Bond lengths [Å] and angles [°] for  I-43d_final.
+Ni(1)-N(1) 	1.972(2)
+Symmetry transformations used to generate equivalent atoms: 
+#1 y,z,x    #2 z,x,y      
+
+Table 4.   Anisotropic displacement parameters  (Å2x 103) for I-43d_final.  The anisotropic
+displacement factor exponent takes the form:  -2p2[ h2 a*2U11 + ...  + 2 h k a* b* U12 ]
+Atom    U11	U22 U33	U23	U13	U12
+
+Table 5.   Hydrogen coordinates ( x 104) and isotropic  displacement parameters (Å2x 10 3)
+for I-43d_final. 
+Atom x 	y 	z 	U(eq)
+
+Table 6.  Torsion angles [°] for I-43d_final.
+C(5)-P(4)-N(1)-C(3)	159.2(3)
+Symmetry transformations used to generate equivalent atoms: 
+#1 y,z,x    #2 z,x,y 
+
+Table 7.  Hydrogen bonds for I-43d_final  [Å and °]. 
+D-H...A	d(D-H)	d(H...A)	d(D...A)	<(DHA)
+"""
 
 def populate_description_columns(table):
     """
