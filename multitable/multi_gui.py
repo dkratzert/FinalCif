@@ -7,6 +7,7 @@
 #  ----------------------------------------------------------------------------
 
 import os
+import subprocess
 import sys
 from pathlib import Path
 
@@ -117,7 +118,10 @@ class MultitableAppWindow(QMainWindow):
             ok = False
         if ok:
             self.ui.OutputTextEdit.append('\nReport finished - output file: {}'.format(output_filename))
-            os.startfile(output_filename)
+            if sys.platform == 'win':
+                os.startfile(output_filename)
+            if sys.platform == 'darwin':
+                subprocess.call(['open', output_filename])
         else:
             self.ui.OutputTextEdit.append('\nFailed to generate Report!')
         self.ui.CifFileListListWidget.clear()
