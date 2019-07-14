@@ -127,3 +127,15 @@ test-data/twin4-finalcif.cif
 test-data/4060314-finalcif.cif
 test-data/p21c-finalcif.cif
 multitable.docx
+*.2fcf
+*.fcf6
+*.hkl
+*.ins
+*.lst
+*.res
+*.hist
+*.metacif
+*.odb
+*.phil
+test-data/shelXlesaves/SAVEHIST
+~$ltitable.docx
