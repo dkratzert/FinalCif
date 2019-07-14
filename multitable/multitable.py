@@ -253,10 +253,10 @@ def make_report_from(files: List, output_filename: str = None):
             document.add_page_break()
 
     # TODO: Add additional tables here
-    document.add_paragraph('')
+    #document.add_paragraph('')
     # TODO: add table header
-    table_coords = document.add_table(rows=1, cols=5)
-    table_coords.autofit = False
+    #table_coords = document.add_table(rows=1, cols=5)
+    #table_coords.autofit = False
 
     #add_coords_table()
 
