@@ -11,6 +11,7 @@ from docx import Document, table
 from docx.enum.style import WD_STYLE_TYPE
 from docx.shared import Pt
 from mtools import cif_keywords_list, isfloat, this_or_quest
+from mtools import get_files_from_current_dir
 
 # compiled with "Py -3 -m PyInstaller multitable.spec --onefile"
 from cif.file_reader import CifContainer
@@ -216,12 +217,12 @@ def add_coords_table(document: Document, cif: CifContainer):
     ar.bold = True
     ar.font.subscript = True
     for at in cif.atoms():
-        row = coords_table.add_row()
-        row.cells[0].paragraphs[0].add_run(at[0])  # label
-        row.cells[1].paragraphs[0].add_run(str(at[2]))  # x
-        row.cells[2].paragraphs[0].add_run(str(at[3]))  # y
-        row.cells[3].paragraphs[0].add_run(str(at[4]))  # z
-        row.cells[4].paragraphs[0].add_run(str(at[7]))  # ueq
+        row_cells = coords_table.add_row().cells
+        row_cells[0].text = at[0]  # label
+        row_cells[1].text = str(at[2])  # x
+        row_cells[2].text = str(at[3])  # y
+        row_cells[3].text = str(at[4])  # z
+        row_cells[4].text = str(at[7])  # ueq
 
 
 def add_bonds_and_angles_table(document: Document, cif: CifContainer):
@@ -242,18 +243,18 @@ def add_bonds_and_angles_table(document: Document, cif: CifContainer):
         if symm and symm not in symms.keys():
             symms[symm] = num
             num += 1
-        row = coords_table.add_row()
-        row.cells[0].paragraphs[0].add_run(at1 + ' - ' + at2)
-        row.cells[0].paragraphs[0].add_run('#' + str(symms[symm]) if symm else '').font.superscript = True
-        row.cells[1].paragraphs[0].add_run(str(val))  # bond
+        row_cells = coords_table.add_row().cells
+        row_cells[0].text = at1 + ' - ' + at2
+        row_cells[0].paragraphs[0].add_run('#' + str(symms[symm]) if symm else '').font.superscript = True
+        row_cells[1].text = str(val)  # bond
     print('symms:', symms)
     ################################
     coords_table.add_row()
     # TODO: split this in two columns:
     for at1, at2, at3, angle, symm1, symm2 in cif.angles():
         row = coords_table.add_row()
-        row.cells[0].paragraphs[0].add_run(at1 + ' - ' + at2 + ' - ' + at3)  # labels
-        row.cells[1].paragraphs[0].add_run(str(angle))  # angle
+        row.cells[0].text = (at1 + ' - ' + at2 + ' - ' + at3)  # labels
+        row.cells[1].text = str(angle)  # angle
 
 
 def add_torsion_angles(document: Document, cif: CifContainer):
@@ -273,9 +274,9 @@ def add_torsion_angles(document: Document, cif: CifContainer):
     # ar = head_row.cells[1].paragraphs[0].add_run('Value')
     # ar.bold = True
     for at1, at2, at3, at4, angle, symm1, symm2, symm3, symm4 in cif.torsion_angles():
-        row = coords_table.add_row()
-        row.cells[0].paragraphs[0].add_run(at1 + ' - ' + at2 + ' - ' + at3 + ' - ' + at4)  # labels
-        row.cells[1].paragraphs[0].add_run(str(angle))  # angle
+        row_cells = coords_table.add_row().cells
+        row_cells[0].paragraphs[0].add_run(at1 + ' - ' + at2 + ' - ' + at3 + ' - ' + at4)  # labels
+        row_cells[1].paragraphs[0].add_run(str(angle))  # angle
 
 
 def add_hydrogen_bonds():
@@ -503,5 +504,5 @@ def make_main_table(table: table, cif: CifContainer, file_name: str):
 
 
 if __name__ == '__main__':
-    # make_report_from(get_files_from_current_dir()[4])
-    make_report_from(Path('test-data/4060314.cif'))
+    make_report_from(get_files_from_current_dir()[7])
+    #make_report_from(Path('test-data/4060314.cif'))
