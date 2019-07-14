@@ -1,5 +1,6 @@
 import itertools as it
 import os
+from pathlib import Path
 
 cif_keywords_list = (
     ['_chemical_formula_weight', 1],
@@ -65,11 +66,7 @@ def isfloat(value):
 
 
 def get_files_from_current_dir():
-    files = []
-    for f in os.listdir('./'):
-        if f.endswith('.cif'):
-            files.append(f)
-    return files
+    return list(Path('./').rglob('*.cif'))
 
 
 def this_or_quest(value):

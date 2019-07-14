@@ -41,7 +41,7 @@ class CifContainer():
     """
 
     def __init__(self, file: Path):
-        self.filename = file.absolute()
+        self.filename_absolute = file.absolute()
         self.fileobj = file
         self.cif_data = None
         self.block = None
@@ -56,7 +56,7 @@ class CifContainer():
         """
         # print('File opened:', self.filename)
         try:
-            self.doc = gemmi.cif.read_file(str(self.filename))
+            self.doc = gemmi.cif.read_file(str(self.filename_absolute))
             self.block = self.doc.sole_block()
         except Exception as e:
             return e
@@ -148,7 +148,7 @@ class CifContainer():
         if self.cif_data:
             raise RuntimeError
         try:
-            self.cif_data = cif_file_parser.Cif(self.filename)
+            self.cif_data = cif_file_parser.Cif(self.filename_absolute)
         except AttributeError:
             print('Filename has to be a Path instance.')
         except IsADirectoryError:
@@ -159,16 +159,23 @@ class CifContainer():
         return result if result else ''
 
     def atoms(self):
-        # TODO: make this work
-        labels = self.cif_data['_atom_site_label']
-        types = self.cif_data['_atom_site_type_symbol']
-        x = self.cif_data['_atom_site_fract_x']
-        y = self.cif_data['_atom_site_fract_y']
-        z = self.cif_data['_atom_site_fract_z']
-        occ = self.cif_data['_atom_site_occupancy']
-        part = self.cif_data['_atom_site_disorder_group']
+        labels = self.block.find_loop('_atom_site_label')
+        types = self.block.find_loop('_atom_site_type_symbol')
+        x = self.block.find_loop('_atom_site_fract_x')
+        y = self.block.find_loop('_atom_site_fract_y')
+        z = self.block.find_loop('_atom_site_fract_z')
+        occ = self.block.find_loop('_atom_site_occupancy')
+        part = self.block.find_loop('_atom_site_disorder_group')
+        u_eq = self.block.find_loop('_atom_site_U_iso_or_equiv')
+        for label, type, x, y, z, occ, part, ueq in zip(labels, types, x, y, z, occ, part, u_eq):
+            #       0     1    2   3 4  5    6     7
+            yield label, type, x, y, z, occ, part, ueq
 
     def atoms_in_asu(self, only_nh=False):
+        """
+        Number of atoms in the asymmetric unit.
+        :param only_nh: Only count non-hydrogen atoms.
+        """
         summe = 0
         if '_atom_site_type_symbol' in self.cif_data and '_atom_site_occupancy' in self.cif_data:
             for n, at in enumerate(self.cif_data['_atom_site_type_symbol']):
@@ -187,6 +194,11 @@ class CifContainer():
             return None
 
     def atoms_in_cell(self, only_nh=False):
+        """
+        Number of atoms in the unit cell.
+        :param only_nh: Only count non-hydrogen atoms.
+        :return:
+        """
         summe = 0
         if '_atom_site_type_symbol' in self.cif_data:
             for at in self.cif_data['_chemical_formula_sum'].split():
