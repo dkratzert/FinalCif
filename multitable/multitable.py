@@ -10,7 +10,7 @@ from pathlib import Path
 from docx import Document, table
 from docx.enum.style import WD_STYLE_TYPE
 from docx.shared import Pt
-from mtools import cif_keywords_list, get_files_from_current_dir, isfloat, this_or_quest
+from mtools import cif_keywords_list, isfloat, this_or_quest
 
 # compiled with "Py -3 -m PyInstaller multitable.spec --onefile"
 from cif.file_reader import CifContainer
@@ -184,7 +184,7 @@ def format_space_group(table, cif):
     return space_group
 
 
-def add_coords_table(document, cif):
+def add_coords_table(document: Document, cif: CifContainer):
     """
     Adds the table with the atom coordinates.
     :param document: The current word document.
@@ -215,13 +215,74 @@ def add_coords_table(document, cif):
     ar = head_row.cells[4].paragraphs[0].add_run('eq')
     ar.bold = True
     ar.font.subscript = True
-    for num, at in enumerate(cif.atoms()):
+    for at in cif.atoms():
         row = coords_table.add_row()
         row.cells[0].paragraphs[0].add_run(at[0])  # label
         row.cells[1].paragraphs[0].add_run(str(at[2]))  # x
         row.cells[2].paragraphs[0].add_run(str(at[3]))  # y
         row.cells[3].paragraphs[0].add_run(str(at[4]))  # z
         row.cells[4].paragraphs[0].add_run(str(at[7]))  # ueq
+
+
+def add_bonds_and_angles_table(document: Document, cif: CifContainer):
+    headline = r"Table 3. Bond lengths [Å] and angles [°] for {}.".format(cif.fileobj.name)
+    document.add_heading(headline, 2)
+    coords_table = document.add_table(rows=0, cols=2)
+    # Bond/Angle  value
+    # head_row = coords_table.rows[0]
+    # ar = head_row.cells[0].paragraphs[0].add_run('Atoms')
+    # ar.bold = True
+    # ar = head_row.cells[1].paragraphs[0].add_run('Value')
+    # ar.bold = True
+    symms = {}
+    num = 1
+    for at1, at2, val, symm in cif.bonds():
+        if symm == '.':
+            symm = None
+        if symm and symm not in symms.keys():
+            symms[symm] = num
+            num += 1
+        row = coords_table.add_row()
+        row.cells[0].paragraphs[0].add_run(at1 + ' - ' + at2)
+        row.cells[0].paragraphs[0].add_run('#' + str(symms[symm]) if symm else '').font.superscript = True
+        row.cells[1].paragraphs[0].add_run(str(val))  # bond
+    print('symms:', symms)
+    ################################
+    coords_table.add_row()
+    # TODO: split this in two columns:
+    for at1, at2, at3, angle, symm1, symm2 in cif.angles():
+        row = coords_table.add_row()
+        row.cells[0].paragraphs[0].add_run(at1 + ' - ' + at2 + ' - ' + at3)  # labels
+        row.cells[1].paragraphs[0].add_run(str(angle))  # angle
+
+
+def add_torsion_angles(document: Document, cif: CifContainer):
+    """
+    Table 6.  Torsion angles [°] for I-43d_final.
+    """
+    if not len(list(cif.torsion_angles())) > 0:
+        print('No torsion angles in cif.')
+        return
+    headline = r"Table 4. Torsion angles [°] for {}.".format(cif.fileobj.name)
+    document.add_heading(headline, 2)
+    coords_table = document.add_table(rows=0, cols=2)
+    # Bond/Angle  value
+    # head_row = coords_table.rows[0]
+    # ar = head_row.cells[0].paragraphs[0].add_run('Atoms')
+    # ar.bold = True
+    # ar = head_row.cells[1].paragraphs[0].add_run('Value')
+    # ar.bold = True
+    for at1, at2, at3, at4, angle, symm1, symm2, symm3, symm4 in cif.torsion_angles():
+        row = coords_table.add_row()
+        row.cells[0].paragraphs[0].add_run(at1 + ' - ' + at2 + ' - ' + at3 + ' - ' + at4)  # labels
+        row.cells[1].paragraphs[0].add_run(str(angle))  # angle
+
+
+def add_hydrogen_bonds():
+    """
+    Table 7.  Hydrogen bonds for I-43d_final  [Å and °].
+    """
+    pass
 
 
 def make_report_from(file_obj: Path, output_filename: str = None):
@@ -274,7 +335,10 @@ def make_report_from(file_obj: Path, output_filename: str = None):
     cif = None
     if file_obj.exists():
         cif = CifContainer(file_obj)
-        cif.open_cif_with_gemmi()
+        ok = cif.open_cif_with_gemmi()
+        if ok:
+            print(ok)
+            return
     # Add descriptions to the first column of the main table:
     populate_description_columns(table, cif)
     # The main residuals table:
@@ -285,6 +349,10 @@ def make_report_from(file_obj: Path, output_filename: str = None):
     # document.add_paragraph('')
 
     add_coords_table(document, cif)
+
+    add_bonds_and_angles_table(document, cif)
+
+    add_torsion_angles(document, cif)
 
     print('\nScript finished - output file: multitable.docx')
     if not output_filename:
@@ -311,9 +379,7 @@ def make_main_table(table: table, cif: CifContainer, file_name: str):
         else:
             cell.text = '?'
             continue
-
     # Now the special handling:
-
     # The sum formula:
     sum_formula = 'no sum formula'
     if cif['_chemical_formula_sum']:
@@ -437,4 +503,5 @@ def make_main_table(table: table, cif: CifContainer, file_name: str):
 
 
 if __name__ == '__main__':
-    make_report_from(get_files_from_current_dir()[4])
+    # make_report_from(get_files_from_current_dir()[4])
+    make_report_from(Path('test-data/4060314.cif'))
