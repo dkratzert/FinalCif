@@ -104,13 +104,13 @@ class CifContainer():
             return self.calc_checksum(res[1:-1])
         return 0
 
-    def calc_checksum(self, input: str):
+    def calc_checksum(self, input_str: str):
         """
         Calculates the shelx checksum a cif file.
         """
         sum = 0
-        input = input.encode('ascii')
-        for char in input:
+        input_str = input_str.encode('ascii')
+        for char in input_str:
             # print(char)
             if char > 32:  # space character
                 sum += char
@@ -122,6 +122,8 @@ class CifContainer():
 
     def get_symmops(self):
         """
+        Reads the symmops from the cif file.
+        TODO: Use SymmOps class from dsrmath to get ortep symbol math.
         >>> cif = CifContainer(Path('test-data/twin4.cif'))
         >>> cif.open_cif_with_gemmi()
         >>> cif.get_symmops()
@@ -171,6 +173,43 @@ class CifContainer():
             #       0     1    2   3 4  5    6     7
             yield label, type, x, y, z, occ, part, ueq
 
+    def bonds(self):
+        label1 = self.block.find_loop('_geom_bond_atom_site_label_1')
+        label2 = self.block.find_loop('_geom_bond_atom_site_label_2')
+        dist = self.block.find_loop('_geom_bond_distance')
+        symm = self.block.find_loop('_geom_bond_site_symmetry_2')
+        for label1, label2, dist, symm in zip(label1, label2, dist, symm):
+            yield (label1, label2, dist, symm)
+
+    def angles(self):
+        label1 = self.block.find_loop('_geom_angle_atom_site_label_1')
+        label2 = self.block.find_loop('_geom_angle_atom_site_label_2')
+        label3 = self.block.find_loop('_geom_angle_atom_site_label_3')
+        angle = self.block.find_loop('_geom_angle')
+        symm1 = self.block.find_loop('_geom_angle_site_symmetry_1')
+        symm2 = self.block.find_loop('_geom_angle_site_symmetry_3')
+        for label1, label2, label3, angle, symm1, symm2 in zip(label1, label2, label3, angle, symm1, symm2):
+            if symm1 != '.' or symm2 != '.':
+                pass
+            yield (label1, label2, label3, angle, symm1, symm2)
+
+    def torsion_angles(self):
+        label1 = self.block.find_loop('_geom_torsion_atom_site_label_1')
+        label2 = self.block.find_loop('_geom_torsion_atom_site_label_2')
+        label3 = self.block.find_loop('_geom_torsion_atom_site_label_3')
+        label4 = self.block.find_loop('_geom_torsion_atom_site_label_4')
+        torsang = self.block.find_loop('_geom_torsion')
+        symm1 = self.block.find_loop('_geom_torsion_site_symmetry_1')
+        symm2 = self.block.find_loop('_geom_torsion_site_symmetry_2')
+        symm3 = self.block.find_loop('_geom_torsion_site_symmetry_3')
+        symm4 = self.block.find_loop('_geom_torsion_site_symmetry_4')
+        for label1, label2, label3, label4, torsang, symm1, symm2, symm3, symm4 in zip(label1, label2, label3, label4,
+                                                                                       torsang, symm1, symm2, symm3,
+                                                                                       symm4):
+            if symm1 != '.' or symm2 != '.' or symm3 != '.' or symm4 != '.':
+                pass
+            yield (label1, label2, label3, label4, torsang, symm1, symm2, symm3, symm4)
+
     def atoms_in_asu(self, only_nh=False):
         """
         Number of atoms in the asymmetric unit.
@@ -188,7 +227,7 @@ class CifContainer():
                     if occ:
                         summe += occ
                 else:
-                        summe += occ
+                    summe += occ
             return summe
         else:
             return None
