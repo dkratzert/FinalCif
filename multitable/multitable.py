@@ -11,7 +11,7 @@ from docx import Document, table
 from docx.enum.style import WD_STYLE_TYPE
 from docx.shared import Pt
 from mtools import cif_keywords_list, isfloat, this_or_quest
-from mtools import get_files_from_current_dir
+from symm import SymmetryElement
 
 # compiled with "Py -3 -m PyInstaller multitable.spec --onefile"
 from cif.file_reader import CifContainer
@@ -236,25 +236,36 @@ def add_bonds_and_angles_table(document: Document, cif: CifContainer):
     # ar = head_row.cells[1].paragraphs[0].add_run('Value')
     # ar.bold = True
     symms = {}
+    newsymms = {}
     num = 1
     for at1, at2, val, symm in cif.bonds():
         if symm == '.':
             symm = None
         if symm and symm not in symms.keys():
             symms[symm] = num
+            # Applys translational symmetry to symmcards:
+            # 3_556 -> 2
+            card = cif.symmops[int(symm.split('_')[0]) - 1].split(',')
+            s = SymmetryElement(card)
+            s.translate(symm)
+            newsymms[num] = s.toShelxl()
             num += 1
         row_cells = coords_table.add_row().cells
         row_cells[0].text = at1 + ' - ' + at2
         row_cells[0].paragraphs[0].add_run('#' + str(symms[symm]) if symm else '').font.superscript = True
         row_cells[1].text = str(val)  # bond
-    print('symms:', symms)
-    ################################
+    ############ the angles ####################
     coords_table.add_row()
     # TODO: split this in two columns:
     for at1, at2, at3, angle, symm1, symm2 in cif.angles():
         row = coords_table.add_row()
         row.cells[0].text = (at1 + ' - ' + at2 + ' - ' + at3)  # labels
         row.cells[1].text = str(angle)  # angle
+    p = document.add_paragraph('')
+    line = ''
+    for key, value in newsymms.items():
+        line += "#{}: {};  ".format(key, value)
+    p.add_run(line[:-3])  # leave out last semicolon
 
 
 def add_torsion_angles(document: Document, cif: CifContainer):
@@ -335,11 +346,11 @@ def make_report_from(file_obj: Path, output_filename: str = None):
             row.cells[table_column].style = document.styles['Normal']
     cif = None
     if file_obj.exists():
-        cif = CifContainer(file_obj)
-        ok = cif.open_cif_with_gemmi()
-        if ok:
-            print(ok)
-            return
+        try:
+            cif = CifContainer(file_obj)
+        except Exception as e:
+            print('Unable to open cif file:')
+            print(e)
     # Add descriptions to the first column of the main table:
     populate_description_columns(table, cif)
     # The main residuals table:
@@ -504,5 +515,5 @@ def make_main_table(table: table, cif: CifContainer, file_name: str):
 
 
 if __name__ == '__main__':
-    make_report_from(get_files_from_current_dir()[7])
-    #make_report_from(Path('test-data/4060314.cif'))
+    # make_report_from(get_files_from_current_dir()[7])
+    make_report_from(Path('test-data/4060314.cif'))
