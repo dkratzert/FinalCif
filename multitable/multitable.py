@@ -245,7 +245,7 @@ def add_bonds_and_angles_table(document: Document, cif: CifContainer):
             symms[symm] = num
             # Applys translational symmetry to symmcards:
             # 3_556 -> 2
-            card = cif.symmops[int(symm.split('_')[0]) - 1].split(',')
+            card = get_card(cif, symm)
             s = SymmetryElement(card)
             s.translate(symm)
             newsymms[num] = s.toShelxl()
@@ -258,14 +258,42 @@ def add_bonds_and_angles_table(document: Document, cif: CifContainer):
     coords_table.add_row()
     # TODO: split this in two columns:
     for at1, at2, at3, angle, symm1, symm2 in cif.angles():
-        row = coords_table.add_row()
-        row.cells[0].text = (at1 + ' - ' + at2 + ' - ' + at3)  # labels
-        row.cells[1].text = str(angle)  # angle
+        if symm1 == '.':
+            symm1 = None
+        if symm2 == '.':
+            symm2 = None
+        if (symm1 or symm2) and (symm1 or symm2) not in symms.keys():
+            if symm1:
+                symms[symm1] = num
+                card = get_card(cif, symm1)
+            if symm2:
+                symms[symm2] = num
+                card = get_card(cif, symm2)
+            # Applys translational symmetry to symmcards:
+            # 3_556 -> 2
+            if symm1 or symm2:
+                s = SymmetryElement(card)
+            if symm1:
+                s.translate(symm1)
+            if symm2:
+                s.translate(symm2)
+            newsymms[num] = s.toShelxl()
+            num += 1
+        row_cells = coords_table.add_row().cells
+        row_cells[0].text = (at1 + ' - ' + at2 + ' - ' + at3)  # labels
+        row_cells[0].paragraphs[0].add_run('#' + str(symms[symm1]) if symm1 else '').font.superscript = True
+        row_cells[0].paragraphs[0].add_run('#' + str(symms[symm2]) if symm2 else '').font.superscript = True
+        row_cells[1].text = str(angle)  # angle
     p = document.add_paragraph('')
-    line = ''
+    line = 'Symmetry transformations used to generate equivalent atoms: '
     for key, value in newsymms.items():
-        line += "#{}: {};  ".format(key, value)
-    p.add_run(line[:-3])  # leave out last semicolon
+        line += "#{}: {};   ".format(key, value)
+    p.add_run(line[:-4])  # leave out last semicolon
+
+
+def get_card(cif, symm):
+    card = cif.symmops[int(symm.split('_')[0]) - 1].split(',')
+    return card
 
 
 def add_torsion_angles(document: Document, cif: CifContainer):
@@ -278,12 +306,6 @@ def add_torsion_angles(document: Document, cif: CifContainer):
     headline = r"Table 4. Torsion angles [°] for {}.".format(cif.fileobj.name)
     document.add_heading(headline, 2)
     coords_table = document.add_table(rows=0, cols=2)
-    # Bond/Angle  value
-    # head_row = coords_table.rows[0]
-    # ar = head_row.cells[0].paragraphs[0].add_run('Atoms')
-    # ar.bold = True
-    # ar = head_row.cells[1].paragraphs[0].add_run('Value')
-    # ar.bold = True
     for at1, at2, at3, at4, angle, symm1, symm2, symm3, symm4 in cif.torsion_angles():
         row_cells = coords_table.add_row().cells
         row_cells[0].paragraphs[0].add_run(at1 + ' - ' + at2 + ' - ' + at3 + ' - ' + at4)  # labels
@@ -516,4 +538,5 @@ def make_main_table(table: table, cif: CifContainer, file_name: str):
 
 if __name__ == '__main__':
     # make_report_from(get_files_from_current_dir()[7])
-    make_report_from(Path('test-data/4060314.cif'))
+    #make_report_from(Path(r'test-data/4060314.cif'))
+    make_report_from(Path(r'D:\goedaten\strukturen_goe\eigene\DK_4008\xl12\new\r3c.cif'))
