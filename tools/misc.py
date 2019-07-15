@@ -9,7 +9,7 @@
 
 import itertools as it
 import operator
-import os
+from pathlib import Path
 
 
 def grouper(inputs, n, fillvalue=None):
@@ -23,14 +23,6 @@ def isfloat(value):
         return True
     except ValueError:
         return False
-
-
-def get_files_from_current_dir():
-    files = []
-    for f in os.listdir('./'):
-        if f.endswith('.cif'):
-            files.append(f)
-    return files
 
 
 def this_or_quest(value):
@@ -447,3 +439,7 @@ predef_prop_templ = [{'name'  : 'Crystal Color',
                                   'Mercury CSD']]
                       },
                      ]
+
+
+def get_files_from_current_dir():
+    return list(Path('./').rglob('*.cif'))
