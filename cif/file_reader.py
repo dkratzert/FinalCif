@@ -191,8 +191,6 @@ class CifContainer():
         symm1 = self.block.find_loop('_geom_angle_site_symmetry_1')
         symm2 = self.block.find_loop('_geom_angle_site_symmetry_3')
         for label1, label2, label3, angle, symm1, symm2 in zip(label1, label2, label3, angle, symm1, symm2):
-            if symm1 != '.' or symm2 != '.':
-                pass
             yield (label1, label2, label3, angle, symm1, symm2)
 
     def torsion_angles(self):
@@ -208,8 +206,6 @@ class CifContainer():
         for label1, label2, label3, label4, torsang, symm1, symm2, symm3, symm4 in zip(label1, label2, label3, label4,
                                                                                        torsang, symm1, symm2, symm3,
                                                                                        symm4):
-            if symm1 != '.' or symm2 != '.' or symm3 != '.' or symm4 != '.':
-                pass
             yield (label1, label2, label3, label4, torsang, symm1, symm2, symm3, symm4)
 
     def atoms_in_asu(self, only_nh=False):

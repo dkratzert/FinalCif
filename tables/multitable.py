@@ -10,16 +10,15 @@ from pathlib import Path
 from docx import Document, table
 from docx.enum.style import WD_STYLE_TYPE
 from docx.shared import Pt
-from multitable.mtools import cif_keywords_list, isfloat, this_or_quest
-from multitable.symm import SymmetryElement
 
 # compiled with "Py -3 -m PyInstaller multitable.spec --onefile"
 from cif.file_reader import CifContainer
+from tables.mtools import cif_keywords_list, isfloat, this_or_quest
+from tools.misc import get_files_from_current_dir
+from tables.symm import SymmetryElement
 
 """
 #TODO: 
-* Make multitable single-tabled
-* add missing tables
 * create nice .docx template
 
 
@@ -50,7 +49,7 @@ D-H...A	d(D-H)	d(H...A)	d(D...A)	<(DHA)
 """
 
 
-def populate_description_columns(table, cif):
+def populate_description_columns(table, cif: CifContainer):
     """
     This Method adds the descriptions to the fist table column.
     """
@@ -168,9 +167,9 @@ def format_space_group(table, cif):
         space_group_formated_text = [char for char in space_group]  # ???)
         sgrun = table.cell(5, 1).paragraphs[0]
         is_sub = False
-        for k in range(0, len(space_group_formated_text)):
-            sgrunsub = sgrun.add_run(space_group_formated_text[k])
-            if not space_group_formated_text[k].isdigit():
+        for k, char in enumerate(space_group_formated_text):
+            sgrunsub = sgrun.add_run(char)
+            if not char.isdigit():
                 sgrunsub.font.italic = True
             else:
                 if space_group_formated_text[k - 1].isdigit() and not is_sub:
@@ -183,140 +182,6 @@ def format_space_group(table, cif):
     else:
         space_group = 'no space group'
     return space_group
-
-
-def add_coords_table(document: Document, cif: CifContainer):
-    """
-    Adds the table with the atom coordinates.
-    :param document: The current word document.
-    :param cif: the cif object from CifContainer.
-    :return: None
-    """
-    # TODO: proper formating for heading:
-    headline = r"Table 2. Atomic coordinates (*10^4) and equivalent isotropic displacement parameters (Å^2*10^3) " \
-               r"for {}. U(eq) is defined as one third of the trace of " \
-               r"the orthogonalized Uij tensor.".format(cif.fileobj.name)
-    document.add_heading(headline, 2)
-    coords_table = document.add_table(rows=1, cols=5)
-    # Atom	x	y	z	U(eq)
-    head_row = coords_table.rows[0]
-    ar = head_row.cells[0].paragraphs[0].add_run('Atom')
-    ar.bold = True
-    ar = head_row.cells[1].paragraphs[0].add_run('x')
-    ar.bold = True
-    ar.italic = True
-    ar = head_row.cells[2].paragraphs[0].add_run('y')
-    ar.bold = True
-    ar.italic = True
-    ar = head_row.cells[3].paragraphs[0].add_run('z')
-    ar.italic = True
-    ar = head_row.cells[4].paragraphs[0].add_run('U')
-    ar.bold = True
-    ar.italic = True
-    ar = head_row.cells[4].paragraphs[0].add_run('eq')
-    ar.bold = True
-    ar.font.subscript = True
-    for at in cif.atoms():
-        row_cells = coords_table.add_row().cells
-        row_cells[0].text = at[0]  # label
-        row_cells[1].text = str(at[2])  # x
-        row_cells[2].text = str(at[3])  # y
-        row_cells[3].text = str(at[4])  # z
-        row_cells[4].text = str(at[7])  # ueq
-
-
-def add_bonds_and_angles_table(document: Document, cif: CifContainer):
-    headline = r"Table 3. Bond lengths [Å] and angles [°] for {}.".format(cif.fileobj.name)
-    document.add_heading(headline, 2)
-    coords_table = document.add_table(rows=0, cols=2)
-    # Bond/Angle  value
-    # head_row = coords_table.rows[0]
-    # ar = head_row.cells[0].paragraphs[0].add_run('Atoms')
-    # ar.bold = True
-    # ar = head_row.cells[1].paragraphs[0].add_run('Value')
-    # ar.bold = True
-    symms = {}
-    newsymms = {}
-    num = 1
-    for at1, at2, val, symm in cif.bonds():
-        if symm == '.':
-            symm = None
-        if symm and symm not in symms.keys():
-            symms[symm] = num
-            # Applys translational symmetry to symmcards:
-            # 3_556 -> 2
-            card = get_card(cif, symm)
-            s = SymmetryElement(card)
-            s.translate(symm)
-            newsymms[num] = s.toShelxl()
-            num += 1
-        row_cells = coords_table.add_row().cells
-        row_cells[0].text = at1 + ' - ' + at2
-        row_cells[0].paragraphs[0].add_run('#' + str(symms[symm]) if symm else '').font.superscript = True
-        row_cells[1].text = str(val)  # bond
-    ############ the angles ####################
-    coords_table.add_row()
-    # TODO: split this in two columns:
-    for at1, at2, at3, angle, symm1, symm2 in cif.angles():
-        if symm1 == '.':
-            symm1 = None
-        if symm2 == '.':
-            symm2 = None
-        if (symm1 or symm2) and (symm1 or symm2) not in symms.keys():
-            if symm1:
-                symms[symm1] = num
-                card = get_card(cif, symm1)
-            if symm2:
-                symms[symm2] = num
-                card = get_card(cif, symm2)
-            # Applys translational symmetry to symmcards:
-            # 3_556 -> 2
-            if symm1 or symm2:
-                s = SymmetryElement(card)
-            if symm1:
-                s.translate(symm1)
-            if symm2:
-                s.translate(symm2)
-            newsymms[num] = s.toShelxl()
-            num += 1
-        row_cells = coords_table.add_row().cells
-        row_cells[0].text = (at1 + ' - ' + at2 + ' - ' + at3)  # labels
-        row_cells[0].paragraphs[0].add_run('#' + str(symms[symm1]) if symm1 else '').font.superscript = True
-        row_cells[0].paragraphs[0].add_run('#' + str(symms[symm2]) if symm2 else '').font.superscript = True
-        row_cells[1].text = str(angle)  # angle
-    p = document.add_paragraph('')
-    line = 'Symmetry transformations used to generate equivalent atoms: '
-    for key, value in newsymms.items():
-        line += "#{}: {};   ".format(key, value)
-    p.add_run(line[:-4])  # leave out last semicolon
-
-
-def get_card(cif, symm):
-    card = cif.symmops[int(symm.split('_')[0]) - 1].split(',')
-    return card
-
-
-def add_torsion_angles(document: Document, cif: CifContainer):
-    """
-    Table 6.  Torsion angles [°] for I-43d_final.
-    """
-    if not len(list(cif.torsion_angles())) > 0:
-        print('No torsion angles in cif.')
-        return
-    headline = r"Table 4. Torsion angles [°] for {}.".format(cif.fileobj.name)
-    document.add_heading(headline, 2)
-    coords_table = document.add_table(rows=0, cols=2)
-    for at1, at2, at3, at4, angle, symm1, symm2, symm3, symm4 in cif.torsion_angles():
-        row_cells = coords_table.add_row().cells
-        row_cells[0].paragraphs[0].add_run(at1 + ' - ' + at2 + ' - ' + at3 + ' - ' + at4)  # labels
-        row_cells[1].paragraphs[0].add_run(str(angle))  # angle
-
-
-def add_hydrogen_bonds():
-    """
-    Table 7.  Hydrogen bonds for I-43d_final  [Å and °].
-    """
-    pass
 
 
 def make_report_from(file_obj: Path, output_filename: str = None):
@@ -373,6 +238,8 @@ def make_report_from(file_obj: Path, output_filename: str = None):
         except Exception as e:
             print('Unable to open cif file:')
             print(e)
+    else:
+        raise FileNotFoundError
     # Add descriptions to the first column of the main table:
     populate_description_columns(table, cif)
     # The main residuals table:
@@ -388,9 +255,9 @@ def make_report_from(file_obj: Path, output_filename: str = None):
 
     add_torsion_angles(document, cif)
 
-    print('\nScript finished - output file: multitable.docx')
+    print('\nScript finished - output file: tables.docx')
     if not output_filename:
-        document.save('multitable.docx')
+        document.save('tables.docx')
     else:
         document.save(output_filename)
     return file_obj.name
@@ -536,7 +403,200 @@ def make_main_table(table: table, cif: CifContainer, file_name: str):
     print('File parsed: ' + file_name + '  (' + sum_formula + ')  ' + space_group)
 
 
+def add_coords_table(document: Document, cif: CifContainer):
+    """
+    Adds the table with the atom coordinates.
+    :param document: The current word document.
+    :param cif: the cif object from CifContainer.
+    :return: None
+    """
+    # TODO: proper formating for heading:
+    headline = r"Table 2. Atomic coordinates (*10^4) and equivalent isotropic displacement parameters (Å^2*10^3) " \
+               r"for {}. U(eq) is defined as one third of the trace of " \
+               r"the orthogonalized Uij tensor.".format(cif.fileobj.name)
+    document.add_heading(headline, 2)
+    coords_table = document.add_table(rows=1, cols=5)
+    # Atom	x	y	z	U(eq)
+    head_row = coords_table.rows[0]
+    ar = head_row.cells[0].paragraphs[0].add_run('Atom')
+    ar.bold = True
+    ar = head_row.cells[1].paragraphs[0].add_run('x')
+    ar.bold = True
+    ar.italic = True
+    ar = head_row.cells[2].paragraphs[0].add_run('y')
+    ar.bold = True
+    ar.italic = True
+    ar = head_row.cells[3].paragraphs[0].add_run('z')
+    ar.italic = True
+    ar = head_row.cells[4].paragraphs[0].add_run('U')
+    ar.bold = True
+    ar.italic = True
+    ar = head_row.cells[4].paragraphs[0].add_run('eq')
+    ar.bold = True
+    ar.font.subscript = True
+    for at in cif.atoms():
+        row_cells = coords_table.add_row().cells
+        row_cells[0].text = at[0]  # label
+        row_cells[1].text = str(at[2])  # x
+        row_cells[2].text = str(at[3])  # y
+        row_cells[3].text = str(at[4])  # z
+        row_cells[4].text = str(at[7])  # ueq
+
+
+def add_bonds_and_angles_table(document: Document, cif: CifContainer):
+    headline = r"Table 3. Bond lengths [Å] and angles [°] for {}.".format(cif.fileobj.name)
+    document.add_heading(headline, 2)
+    coords_table = document.add_table(rows=0, cols=2)
+    # Bond/Angle  value
+    # head_row = coords_table.rows[0]
+    # ar = head_row.cells[0].paragraphs[0].add_run('Atoms')
+    # ar.bold = True
+    # ar = head_row.cells[1].paragraphs[0].add_run('Value')
+    # ar.bold = True
+    symms = {}
+    newsymms = {}
+    num = 1
+    for at1, at2, val, symm2 in cif.bonds():
+        if symm2 == '.':
+            symm2 = None
+        if symm2 and symm2 not in symms.keys():
+            symms[symm2] = num
+            # Applys translational symmetry to symmcards:
+            # 3_556 -> 2
+            card = get_card(cif, symm2)
+            s = SymmetryElement(card)
+            s.translate(symm2)
+            newsymms[num] = s.toShelxl()
+            num += 1
+        row_cells = coords_table.add_row().cells
+        row_cells[0].text = at1 + ' - ' + at2
+        row_cells[0].paragraphs[0].add_run('#' + str(symms[symm2]) if symm2 else '').font.superscript = True
+        row_cells[1].text = str(val)  # bond
+    ############ the angles ####################
+    coords_table.add_row()
+    card = ''
+    s = SymmetryElement(card)
+    # TODO: split this in two columns:
+    for at1, at2, at3, angle, symm1, symm3 in cif.angles():
+        if symm1 == '.':
+            symm1 = None
+        if symm3 == '.':
+            symm3 = None
+        if (symm1 or symm3) and (symm1 or symm3) not in symms.keys():
+            if symm1:
+                symms[symm1] = num
+                card = get_card(cif, symm1)
+            if symm3:
+                symms[symm3] = num
+                card = get_card(cif, symm3)
+            # Applys translational symmetry to symmcards:
+            # 3_556 -> 2
+            if symm1 or symm3:
+                s = SymmetryElement(card)
+            if symm1:
+                s.translate(symm1)
+            if symm3:
+                s.translate(symm3)
+            newsymms[num] = s.toShelxl()
+            num += 1
+        row_cells = coords_table.add_row().cells
+        row_cells[0].text = at1
+        row_cells[0].paragraphs[0].add_run('#' + str(symms[symm1]) if symm1 else '').font.superscript = True
+        row_cells[0].paragraphs[0].add_run(' - ' + at2 + ' - ')
+        row_cells[0].paragraphs[0].add_run(at3)  # labels
+        row_cells[0].paragraphs[0].add_run('#' + str(symms[symm3]) if symm3 else '').font.superscript = True
+        row_cells[1].text = str(angle)  # angle
+    add_last_symminfo_line(newsymms, document)
+
+
+def add_last_symminfo_line(newsymms, document):
+    p = document.add_paragraph('')
+    line = 'Symmetry transformations used to generate equivalent atoms: '
+    nitems = len(newsymms)
+    n = 0
+    for key, value in newsymms.items():
+        sep = ';'
+        if n == nitems:
+            sep = ''
+        n += 1
+        line += "#{}: {}{}   ".format(key, value, sep)
+    if newsymms:
+        p.add_run(line)
+
+
+def get_card(cif, symm):
+    card = cif.symmops[int(symm.split('_')[0]) - 1].split(',')
+    return card
+
+
+def add_torsion_angles(document: Document, cif: CifContainer):
+    """
+    Table 6.  Torsion angles [°] for I-43d_final.
+    """
+    if not len(list(cif.torsion_angles())) > 0:
+        print('No torsion angles in cif.')
+        return
+    headline = r"Table 4. Torsion angles [°] for {}.".format(cif.fileobj.name)
+    document.add_heading(headline, 2)
+    coords_table = document.add_table(rows=0, cols=2)
+    symms = {}
+    newsymms = {}
+    card = ''
+    s = SymmetryElement(card)
+    num = 1
+    for at1, at2, at3, at4, angle, symm1, symm2, symm3, symm4 in cif.torsion_angles():
+        if symm1 == '.':
+            symm1 = None
+        if symm2 == '.':
+            symm2 = None
+        if symm3 == '.':
+            symm3 = None
+        if symm4 == '.':
+            symm4 = None
+        if (symm1 or symm2 or symm3 or symm4) and (symm1 or symm2 or symm3 or symm4) not in symms.keys():
+            if symm1:
+                symms[symm1] = num
+                s = SymmetryElement(get_card(cif, symm1))
+                s.translate(symm1)
+            if symm2:
+                symms[symm2] = num
+                s = SymmetryElement(get_card(cif, symm2))
+                s.translate(symm2)
+            if symm3:
+                symms[symm3] = num
+                s = SymmetryElement(get_card(cif, symm3))
+                s.translate(symm3)
+            if symm4:
+                symms[symm4] = num
+                s = SymmetryElement(get_card(cif, symm4))
+                s.translate(symm4)
+            newsymms[num] = s.toShelxl()
+            num += 1
+        row_cells = coords_table.add_row().cells
+        row_cells[0].text = at1
+        row_cells[0].paragraphs[0].add_run('#' + str(symms[symm1]) if symm1 else '').font.superscript = True
+        row_cells[0].paragraphs[0].add_run(' - ')
+        row_cells[0].paragraphs[0].add_run(at2)
+        row_cells[0].paragraphs[0].add_run('#' + str(symms[symm2]) if symm2 else '').font.superscript = True
+        row_cells[0].paragraphs[0].add_run(' - ')
+        row_cells[0].paragraphs[0].add_run(at3)
+        row_cells[0].paragraphs[0].add_run('#' + str(symms[symm3]) if symm3 else '').font.superscript = True
+        row_cells[0].paragraphs[0].add_run(' - ')
+        row_cells[0].paragraphs[0].add_run(at4)  # labels
+        row_cells[0].paragraphs[0].add_run('#' + str(symms[symm4]) if symm4 else '').font.superscript = True
+        row_cells[1].paragraphs[0].add_run(str(angle))  # angle
+    add_last_symminfo_line(newsymms, document)
+
+
+def add_hydrogen_bonds():
+    """
+    Table 7.  Hydrogen bonds for I-43d_final  [Å and °].
+    """
+    pass
+
+
 if __name__ == '__main__':
-    # make_report_from(get_files_from_current_dir()[7])
+    make_report_from(get_files_from_current_dir()[2])
     #make_report_from(Path(r'test-data/4060314.cif'))
-    make_report_from(Path(r'D:\goedaten\strukturen_goe\eigene\DK_4008\xl12\new\r3c.cif'))
+    #make_report_from(Path(r'/Volumes/home/strukturen/eigene/DK_30011/sad-final.cif'))
+    # make_report_from(Path(r'D:\goedaten\strukturen_goe\eigene\DK_4008\xl12\new\r3c.cif'))

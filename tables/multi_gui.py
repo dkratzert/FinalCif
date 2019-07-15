@@ -21,7 +21,7 @@ if DEBUG:
 
 from PyQt5.QtWidgets import QMainWindow, QApplication, QFileDialog, QListWidgetItem, QAbstractItemView
 
-# This is to make sure that multitable finds the application path even when it is
+# This is to make sure that tables finds the application path even when it is
 # executed from another path e.g. when opened via "open file" in windows:
 
 if getattr(sys, 'frozen', False):
@@ -108,7 +108,7 @@ class MultitableAppWindow(QMainWindow):
             return
         output_filename, _ = QFileDialog.getSaveFileName(filter='MS Word Documents (*.docx);;',
                                                          caption="Save Table To",
-                                                         directory='./multitable.docx')
+                                                         directory='./tables.docx')
         # initialFilter='*.docx')
         # TODO: check if this "ok" works:
         try:
