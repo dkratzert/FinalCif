@@ -10,8 +10,8 @@ from pathlib import Path
 from docx import Document, table
 from docx.enum.style import WD_STYLE_TYPE
 from docx.shared import Pt
-from mtools import cif_keywords_list, isfloat, this_or_quest
-from symm import SymmetryElement
+from multitable.mtools import cif_keywords_list, isfloat, this_or_quest
+from multitable.symm import SymmetryElement
 
 # compiled with "Py -3 -m PyInstaller multitable.spec --onefile"
 from cif.file_reader import CifContainer

@@ -27,14 +27,12 @@ class BrukerFrameHeader():
             raise FileNotFoundError
         self.filename = self._fileobj.absolute()
         self.header = {}
-        try:
-            with open(self._fileobj, encoding='ascii', errors='ignore') as file:
+        if self._fileobj.is_file():
+            with open(str(self._fileobj.absolute()), encoding='ascii', errors='ignore', mode='r') as file:
                 for n in range(96):
                     l = file.read(80).strip()
                     key = l[:7].strip()
                     self.header[key] = l[8:].strip()  # value
-        except IsADirectoryError:
-            pass
 
     def __repr__(self):
         return pformat(self.header, indent=2, width=120)
@@ -59,7 +57,7 @@ class BrukerFrameHeader():
     @property
     def temperature(self):
         try:
-            tmp = self.header['CREATED'].split()[1]
+            tmp = self.header['LOWTEMP'].split()[1]
             return (float(tmp) / 100.0) + 273.15
         except (ValueError, KeyError):
             return 293.15
