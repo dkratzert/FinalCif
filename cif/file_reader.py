@@ -46,6 +46,8 @@ class CifContainer():
         self.cif_data = None
         self.block = None
         self.doc = None
+        self.open_cif_with_gemmi()
+        self.symmops = self._get_symmops()
 
     def save(self, filename):
         self.doc.write_file(filename, gemmi.cif.Style.Indent35)
@@ -59,11 +61,11 @@ class CifContainer():
             self.doc = gemmi.cif.read_file(str(self.filename_absolute))
             self.block = self.doc.sole_block()
         except Exception as e:
-            return e
+            raise
         try:
             self.cif_data = json.loads(self.doc.as_json())[self.block.name.lower()]
         except Exception as e:
-            return e
+            raise
 
     @property
     def hkl_checksum_calcd(self):
@@ -120,13 +122,13 @@ class CifContainer():
         sum %= 100000
         return sum
 
-    def get_symmops(self):
+    def _get_symmops(self):
         """
         Reads the symmops from the cif file.
         TODO: Use SymmOps class from dsrmath to get ortep symbol math.
         >>> cif = CifContainer(Path('test-data/twin4.cif'))
         >>> cif.open_cif_with_gemmi()
-        >>> cif.get_symmops()
+        >>> cif._get_symmops()
         ['x, y, z', '-x, -y, -z']
         """
         xyz1 = self.block.find(("_symmetry_equiv_pos_as_xyz",))  # deprecated
@@ -139,7 +141,7 @@ class CifContainer():
 
     @property
     def is_centrosymm(self):
-        if '-x, -y, -z' in self.get_symmops():
+        if '-x, -y, -z' in self.symmops:
             return True
         else:
             return False
