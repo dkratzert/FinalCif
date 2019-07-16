@@ -180,6 +180,7 @@ class CifContainer():
         label2 = self.block.find_loop('_geom_bond_atom_site_label_2')
         dist = self.block.find_loop('_geom_bond_distance')
         symm = self.block.find_loop('_geom_bond_site_symmetry_2')
+        publ = self.block.find_loop('_geom_bond_publ_flag')
         for label1, label2, dist, symm in zip(label1, label2, dist, symm):
             yield (label1, label2, dist, symm)
 
@@ -190,6 +191,7 @@ class CifContainer():
         angle = self.block.find_loop('_geom_angle')
         symm1 = self.block.find_loop('_geom_angle_site_symmetry_1')
         symm2 = self.block.find_loop('_geom_angle_site_symmetry_3')
+        # publ = self.block.find_loop('_geom_angle_publ_flag')
         for label1, label2, label3, angle, symm1, symm2 in zip(label1, label2, label3, angle, symm1, symm2):
             yield (label1, label2, label3, angle, symm1, symm2)
 
@@ -203,10 +205,26 @@ class CifContainer():
         symm2 = self.block.find_loop('_geom_torsion_site_symmetry_2')
         symm3 = self.block.find_loop('_geom_torsion_site_symmetry_3')
         symm4 = self.block.find_loop('_geom_torsion_site_symmetry_4')
+        # publ = self.block.find_loop('_geom_torsion_publ_flag')
         for label1, label2, label3, label4, torsang, symm1, symm2, symm3, symm4 in zip(label1, label2, label3, label4,
                                                                                        torsang, symm1, symm2, symm3,
                                                                                        symm4):
             yield (label1, label2, label3, label4, torsang, symm1, symm2, symm3, symm4)
+
+    def hydrogen_bonds(self):
+        label_d = self.block.find_loop('_geom_hbond_atom_site_label_D')
+        label_h = self.block.find_loop('_geom_hbond_atom_site_label_H')
+        label_a = self.block.find_loop('_geom_hbond_atom_site_label_A')
+        dist_dh = self.block.find_loop('_geom_hbond_distance_DH')
+        dist_ha = self.block.find_loop('_geom_hbond_distance_HA')
+        dist_da = self.block.find_loop('_geom_hbond_distance_DA')
+        angle_dha = self.block.find_loop('_geom_hbond_angle_DHA')
+        symm = self.block.find_loop('_geom_hbond_site_symmetry_A')
+        # publ = self.block.find_loop('_geom_hbond_publ_flag')
+        for label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm in zip(label_d, label_h, label_a,
+                                                                                         dist_dh, dist_ha, dist_da,
+                                                                                         angle_dha, symm):
+            yield label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm
 
     def atoms_in_asu(self, only_nh=False):
         """
