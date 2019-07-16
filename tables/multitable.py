@@ -20,32 +20,12 @@ from tables.symm import SymmetryElement
 """
 #TODO: 
 * create nice .docx template
-
-
-Table 2.  Atomic coordinates  ( x 10^4) and equivalent  isotropic displacement parameters (Å^2 x 10^3)
-for I-43d_final.  U(eq) is defined as one third of  the trace of the orthogonalized Uij tensor.
-Name x	y	z	U(eq)
-
-Table 3.   Bond lengths [Å] and angles [°] for  I-43d_final.
-Ni(1)-N(1) 	1.972(2)
-Symmetry transformations used to generate equivalent atoms: 
-#1 y,z,x    #2 z,x,y      
-
-Table 4.   Anisotropic displacement parameters  (Å2x 103) for I-43d_final.  The anisotropic
-displacement factor exponent takes the form:  -2p2[ h2 a*2U11 + ...  + 2 h k a* b* U12 ]
-Atom    U11	U22 U33	U23	U13	U12
-
-Table 5.   Hydrogen coordinates ( x 104) and isotropic  displacement parameters (Å2x 10 3)
-for I-43d_final. 
-Atom x 	y 	z 	U(eq)
-
-Table 6.  Torsion angles [°] for I-43d_final.
-C(5)-P(4)-N(1)-C(3)	159.2(3)
-Symmetry transformations used to generate equivalent atoms: 
-#1 y,z,x    #2 z,x,y 
-
-Table 7.  Hydrogen bonds for I-43d_final  [Å and °]. 
-D-H...A	d(D-H)	d(H...A)	d(D...A)	<(DHA)
+* completeness to 0.83 A, theta range in A
+* index ranges in one row
+* cell parameters in three rows
+* proper table numbering:
+ table1 -> num -> table2 -> ...
+ if table fails, return number, else count up and then return number 
 """
 
 
@@ -254,6 +234,8 @@ def make_report_from(file_obj: Path, output_filename: str = None):
     add_bonds_and_angles_table(document, cif)
 
     add_torsion_angles(document, cif)
+
+    add_hydrogen_bonds(document, cif)
 
     print('\nScript finished - output file: tables.docx')
     if not output_filename:
@@ -588,15 +570,48 @@ def add_torsion_angles(document: Document, cif: CifContainer):
     add_last_symminfo_line(newsymms, document)
 
 
-def add_hydrogen_bonds():
+def add_hydrogen_bonds(document: Document, cif: CifContainer):
     """
     Table 7.  Hydrogen bonds for I-43d_final  [Å and °].
     """
-    pass
+    if not len(list(cif.hydrogen_bonds())) > 0:
+        print('No hydrogen bonds in cif.')
+        return
+    headline = r"Table 7. Hydrogen bonds for {} [Å and °].".format(cif.fileobj.name)
+    document.add_heading(headline, 2)
+    hydrogen_table = document.add_table(rows=1, cols=5)
+    head_row = hydrogen_table.rows[0].cells
+    # D-H...A	d(D-H)	d(H...A)	d(D...A)	<(DHA)
+    head_row[0].paragraphs[0].add_run('D-H...A').font.bold = True
+    head_row[1].paragraphs[0].add_run('d(D-H)').font.bold = True
+    head_row[2].paragraphs[0].add_run('d(H...A)').font.bold = True
+    head_row[3].paragraphs[0].add_run('d(D...A)').font.bold = True
+    head_row[4].paragraphs[0].add_run('<(DHA)').font.bold = True
+    symms = {}
+    newsymms = {}
+    num = 1
+    for label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm in cif.hydrogen_bonds():
+        if symm == '.':
+            symm = None
+        if symm and symm not in symms.keys():
+            symms[symm] = num
+            s = SymmetryElement(get_card(cif, symm))
+            s.translate(symm)
+            newsymms[num] = s.toShelxl()
+        num += 1
+        symmval = ('#' + str(symms[symm])) if symm else ''
+        row_cells = hydrogen_table.add_row().cells
+        row_cells[0].text = label_d + ' - ' + label_h + ' ... ' + label_a
+        row_cells[0].paragraphs[0].add_run(symmval).font.superscript = True
+        row_cells[1].text = dist_dh
+        row_cells[2].text = dist_ha
+        row_cells[3].text = dist_da
+        row_cells[4].text = angle_dha
+    add_last_symminfo_line(newsymms, document)
 
 
 if __name__ == '__main__':
-    make_report_from(get_files_from_current_dir()[5])
-    #make_report_from(Path(r'test-data/4060314.cif'))
+    #make_report_from(get_files_from_current_dir()[1])
+    make_report_from(Path(r'test-data/DK_zucker2_0m.cif'))
     #make_report_from(Path(r'/Volumes/home/strukturen/eigene/DK_30011/sad-final.cif'))
     # make_report_from(Path(r'D:\goedaten\strukturen_goe\eigene\DK_4008\xl12\new\r3c.cif'))

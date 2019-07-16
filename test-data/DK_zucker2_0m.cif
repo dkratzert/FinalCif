@@ -72,7 +72,7 @@ _shelx_estimated_absorpt_T_max    ?
 _exptl_absorpt_correction_type   multi-scan
 _exptl_absorpt_correction_T_min  0.6961
 _exptl_absorpt_correction_T_max  0.7510
-_exptl_absorpt_process_details
+_exptl_absorpt_process_details   ?
 _exptl_absorpt_special_details    ?
 _diffrn_ambient_temperature       100(2)
 _diffrn_radiation_wavelength      0.71073
