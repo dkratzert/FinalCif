@@ -596,7 +596,7 @@ def add_hydrogen_bonds():
 
 
 if __name__ == '__main__':
-    make_report_from(get_files_from_current_dir()[2])
+    make_report_from(get_files_from_current_dir()[5])
     #make_report_from(Path(r'test-data/4060314.cif'))
     #make_report_from(Path(r'/Volumes/home/strukturen/eigene/DK_30011/sad-final.cif'))
     # make_report_from(Path(r'D:\goedaten\strukturen_goe\eigene\DK_4008\xl12\new\r3c.cif'))
