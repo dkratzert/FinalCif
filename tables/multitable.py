@@ -14,7 +14,6 @@ from docx.shared import Pt
 # compiled with "Py -3 -m PyInstaller multitable.spec --onefile"
 from cif.file_reader import CifContainer
 from tables.mtools import cif_keywords_list, isfloat, this_or_quest
-from tools.misc import get_files_from_current_dir
 from tables.symm import SymmetryElement
 
 """
@@ -185,7 +184,8 @@ def make_report_from(file_obj: Path, output_filename: str = None):
     new_heading_style.base_style = styles['Heading 1']
     # font = new_heading_style.font
     # font.color.rgb = RGBColor(0, 0, 0)
-    tab0_head = r"Table 1. Crystal data and structure refinement for {}".format(file_obj.name)
+    table_num = 1
+    tab0_head = r"Table {}. Crystal data and structure refinement for {}".format(table_num, file_obj.name)
     head = document.add_heading(tab0_head, 1)
     # head.style = 'HeaderStyle'
     # head.style.paragraph_format.space_before = Pt(0)
@@ -229,13 +229,13 @@ def make_report_from(file_obj: Path, output_filename: str = None):
 
     # document.add_paragraph('')
 
-    add_coords_table(document, cif)
+    table_num = add_coords_table(document, cif, table_num)
 
-    add_bonds_and_angles_table(document, cif)
+    table_num = add_bonds_and_angles_table(document, cif, table_num)
 
-    add_torsion_angles(document, cif)
+    table_num = add_torsion_angles(document, cif, table_num)
 
-    add_hydrogen_bonds(document, cif)
+    table_num = add_hydrogen_bonds(document, cif, table_num)
 
     print('\nScript finished - output file: tables.docx')
     if not output_filename:
@@ -385,17 +385,18 @@ def make_main_table(table: table, cif: CifContainer, file_name: str):
     print('File parsed: ' + file_name + '  (' + sum_formula + ')  ' + space_group)
 
 
-def add_coords_table(document: Document, cif: CifContainer):
+def add_coords_table(document: Document, cif: CifContainer, table_num: int):
     """
     Adds the table with the atom coordinates.
     :param document: The current word document.
     :param cif: the cif object from CifContainer.
     :return: None
     """
+    table_num += 1
     # TODO: proper formating for heading:
-    headline = r"Table 2. Atomic coordinates (*10^4) and equivalent isotropic displacement parameters (Å^2*10^3) " \
+    headline = r"Table {}. Atomic coordinates (*10^4) and equivalent isotropic displacement parameters (Å^2*10^3) " \
                r"for {}. U(eq) is defined as one third of the trace of " \
-               r"the orthogonalized Uij tensor.".format(cif.fileobj.name)
+               r"the orthogonalized Uij tensor.".format(table_num, cif.fileobj.name)
     document.add_heading(headline, 2)
     coords_table = document.add_table(rows=1, cols=5)
     # Atom	x	y	z	U(eq)
@@ -423,10 +424,15 @@ def add_coords_table(document: Document, cif: CifContainer):
         row_cells[2].text = str(at[3])  # y
         row_cells[3].text = str(at[4])  # z
         row_cells[4].text = str(at[7])  # ueq
+    return table_num
 
 
-def add_bonds_and_angles_table(document: Document, cif: CifContainer):
-    headline = r"Table 3. Bond lengths [Å] and angles [°] for {}.".format(cif.fileobj.name)
+def add_bonds_and_angles_table(document: Document, cif: CifContainer, table_num: int):
+    """
+    Make table with bonds and angles.
+    """
+    table_num += 1
+    headline = r"Table {}. Bond lengths [Å] and angles [°] for {}.".format(table_num, cif.fileobj.name)
     document.add_heading(headline, 2)
     coords_table = document.add_table(rows=0, cols=2)
     # Bond/Angle  value
@@ -489,6 +495,7 @@ def add_bonds_and_angles_table(document: Document, cif: CifContainer):
         row_cells[0].paragraphs[0].add_run('#' + str(symms[symm3]) if symm3 else '').font.superscript = True
         row_cells[1].text = str(angle)  # angle
     add_last_symminfo_line(newsymms, document)
+    return table_num
 
 
 def add_last_symminfo_line(newsymms, document):
@@ -511,14 +518,15 @@ def get_card(cif, symm):
     return card
 
 
-def add_torsion_angles(document: Document, cif: CifContainer):
+def add_torsion_angles(document: Document, cif: CifContainer, table_num: int):
     """
     Table 6.  Torsion angles [°] for I-43d_final.
     """
     if not len(list(cif.torsion_angles())) > 0:
         print('No torsion angles in cif.')
-        return
-    headline = r"Table 4. Torsion angles [°] for {}.".format(cif.fileobj.name)
+        return table_num
+    table_num += 1
+    headline = r"Table {}. Torsion angles [°] for {}.".format(table_num, cif.fileobj.name)
     document.add_heading(headline, 2)
     coords_table = document.add_table(rows=0, cols=2)
     symms = {}
@@ -568,16 +576,18 @@ def add_torsion_angles(document: Document, cif: CifContainer):
         row_cells[0].paragraphs[0].add_run('#' + str(symms[symm4]) if symm4 else '').font.superscript = True
         row_cells[1].paragraphs[0].add_run(str(angle))  # angle
     add_last_symminfo_line(newsymms, document)
+    return table_num
 
 
-def add_hydrogen_bonds(document: Document, cif: CifContainer):
+def add_hydrogen_bonds(document: Document, cif: CifContainer, table_num: int):
     """
     Table 7.  Hydrogen bonds for I-43d_final  [Å and °].
     """
     if not len(list(cif.hydrogen_bonds())) > 0:
         print('No hydrogen bonds in cif.')
         return
-    headline = r"Table 7. Hydrogen bonds for {} [Å and °].".format(cif.fileobj.name)
+    table_num += 1
+    headline = r"Table {}. Hydrogen bonds for {} [Å and °].".format(table_num, cif.fileobj.name)
     document.add_heading(headline, 2)
     hydrogen_table = document.add_table(rows=1, cols=5)
     head_row = hydrogen_table.rows[0].cells
@@ -608,10 +618,11 @@ def add_hydrogen_bonds(document: Document, cif: CifContainer):
         row_cells[3].text = dist_da
         row_cells[4].text = angle_dha
     add_last_symminfo_line(newsymms, document)
+    return table_num
 
 
 if __name__ == '__main__':
-    #make_report_from(get_files_from_current_dir()[1])
+    # make_report_from(get_files_from_current_dir()[1])
     make_report_from(Path(r'test-data/DK_zucker2_0m.cif'))
-    #make_report_from(Path(r'/Volumes/home/strukturen/eigene/DK_30011/sad-final.cif'))
+    # make_report_from(Path(r'/Volumes/home/strukturen/eigene/DK_30011/sad-final.cif'))
     # make_report_from(Path(r'D:\goedaten\strukturen_goe\eigene\DK_4008\xl12\new\r3c.cif'))
