@@ -37,7 +37,8 @@ def quote(string: str, wrapping=80):
 class CifContainer():
     """
     This class holds the content of a cif file, independent of the file parser used.
-    TODO: get _exptl_absorpt_process_details etc from cif file if it is there.
+    TODO: get _exptl_absorpt_process_details etc from cif file (hkl section) if it is there.
+    TODO: add missing cif keywords to the cif file premature to the file opening with gemmi
     """
 
     def __init__(self, file: Path):
