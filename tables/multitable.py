@@ -8,7 +8,8 @@ import re
 from pathlib import Path
 
 from docx import Document, table
-from docx.shared import Pt
+from docx.enum.table import WD_TABLE_ALIGNMENT
+from docx.shared import Pt, Cm
 
 # compiled with "Py -3 -m PyInstaller multitable.spec --onefile"
 from cif.file_reader import CifContainer
@@ -40,7 +41,7 @@ def populate_description_columns(table, cif: CifContainer):
     lgnd4 = table.cell(4, 0).paragraphs[0]
     lgnd4sub = lgnd4.add_run('Crystal system')
     lgnd5 = table.cell(5, 0).paragraphs[0]
-    lgnd5sub = lgnd5.add_run('Space group')
+    lgnd5sub = lgnd5.add_run('Space group (number)')
     lgnd6 = table.cell(6, 0).paragraphs[0]
     lgnd6sub = lgnd6.add_run('a').font.italic = True
     lgnd6.add_run('/\u212B')
@@ -168,7 +169,7 @@ def make_report_from(file_obj: Path, output_filename: str = None):
     :param file_obj: Input cif file.
     :param output_filename: the table is saved to this file.
     """
-    document = Document()
+    document = Document('template/template1.docx')
 
     style = document.styles['Normal']
     font = style.font
@@ -216,19 +217,22 @@ def make_report_from(file_obj: Path, output_filename: str = None):
 def add_main_table(document: Document(), cif: CifContainer, table_num: int):
     tab0_head = r"Table {}. Crystal data and structure refinement for {}".format(table_num, cif.fileobj.name)
     document.add_heading(tab0_head, 2)
-    table = document.add_table(rows=1, cols=2)
-    table.autofit = True
-    col = table.columns[0]
-    # col.width = Cm(4.5)
-    col.autofit = True
-    col = table.columns[1]
-    # col.width = Cm(3.4)
-    col.autofit = True
+    table = document.add_table(rows=31, cols=2)
+    #table.alignment = WD_TABLE_ALIGNMENT.CENTER
+    table.width = Cm(10)
+    #table.allow_autofit = False
+    #table.autofit = False
+    #col = table.columns[0]
+    #col.width = Cm(5.0)
+    #col.autofit = False
+    #col = table.columns[1]
+    #col.width = Cm(5.0)
+    #col.autofit = False
     # setup table format:
-    for cell in range(0, 30):
-        row = table.add_row()  # define row and cells separately
-        for table_column in range(0, 1):
-            row.cells[table_column].style = document.styles['Normal']
+    widths = (Cm(5), Cm(5))
+    for row in table.rows:
+        for idx, width in enumerate(widths):
+            row.cells[idx].width = width
     # Add descriptions to the first column of the main table:
     populate_description_columns(table, cif)
     # The main residuals table:
