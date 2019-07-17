@@ -11,6 +11,7 @@ import sys
 from collections import OrderedDict
 from pathlib import Path
 
+from tables.multitable import make_report_from
 from tools.version import VERSION
 
 DEBUG = False
@@ -38,7 +39,6 @@ from PyQt5.QtWidgets import QApplication, QComboBox, QFileDialog, QHeaderView, Q
 from cif.file_reader import CifContainer
 from datafiles.datatools import BrukerData
 from datafiles.platon import Platon
-from multitable.multi_gui import MultitableAppWindow
 from tools.misc import high_prio_keys, predef_equipment_templ, predef_prop_templ, combobox_fields, \
     text_field_keys, to_float
 from tools.settings import FinalCifSettings
@@ -91,7 +91,7 @@ class AppWindow(QMainWindow):
         self.ui.PropertiesEditTableWidget.verticalHeader().hide()
         self.ui.CheckcifButton.setDisabled(True)
         self.ui.SaveCifButton.setDisabled(True)
-        self.cif = None
+        self.cif = None  # :type cif: CifContainer
         self.fin_file = Path()
         self.missing_data = []
         self.vheader_clicked = -1  # This is the index number of the vheader that got clicked last
@@ -163,7 +163,7 @@ class AppWindow(QMainWindow):
         self.ui.EquipmentTemplatesListWidget.clicked.connect(self.load_selected_equipment)
         # something like cifItemsTable.selected_field.connect(self.display_data_file)
         ##
-        self.ui.SaveFullReportButton.clicked.connect(self.run_multitable)
+        self.ui.SaveFullReportButton.clicked.connect(self.make_table)
         # vertical header click:
         view = self.ui.CifItemsTable.verticalHeader()
         view.setSectionsClickable(True)
@@ -267,12 +267,12 @@ class AppWindow(QMainWindow):
             item_key = QTableWidgetItem(key)
             self.ui.CifItemsTable.setVerticalHeaderItem(row_num, item_key)
 
-    def run_multitable(self):
+    def make_table(self):
         """
         Runs the multitable program to make a report table.
         """
-        w = MultitableAppWindow(self)
-        w.show()
+        if self.cif:
+            make_report_from(self.cif.fileobj)
 
     def save_current_recent_files_list(self, file):
         recent = list(self.settings.settings.value('recent_files', type=list))
@@ -916,7 +916,7 @@ class AppWindow(QMainWindow):
                     # print(sources[miss_data], miss_data)
                     # self.ui.CifItemsTable.resizeRowToContents(row_num)
                 except KeyError as e:
-                    #print(e, '##')
+                    # print(e, '##')
                     pass
                 # items from data sources should not be editable
                 if not miss_data in text_field_keys:
