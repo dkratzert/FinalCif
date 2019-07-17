@@ -8,7 +8,6 @@ import re
 from pathlib import Path
 
 from docx import Document, table
-from docx.enum.style import WD_STYLE_TYPE
 from docx.shared import Pt
 
 # compiled with "Py -3 -m PyInstaller multitable.spec --onefile"
@@ -176,41 +175,15 @@ def make_report_from(file_obj: Path, output_filename: str = None):
     font.name = 'Callibri'
     font.size = Pt(10)
 
-    document.add_heading('Structure Tables', 0)
+    document.add_heading('Structure Tables', 1)
 
     # a style for the header:
     styles = document.styles
-    new_heading_style = styles.add_style('HeaderStyle', WD_STYLE_TYPE.PARAGRAPH)
-    new_heading_style.base_style = styles['Heading 1']
+    # new_heading_style = styles.add_style('HeaderStyle', WD_STYLE_TYPE.PARAGRAPH)
+    # new_heading_style.base_style = styles['Heading 1']
     # font = new_heading_style.font
     # font.color.rgb = RGBColor(0, 0, 0)
-    table_num = 1
-    tab0_head = r"Table {}. Crystal data and structure refinement for {}".format(table_num, file_obj.name)
-    head = document.add_heading(tab0_head, 1)
-    # head.style = 'HeaderStyle'
-    # head.style.paragraph_format.space_before = Pt(0)
 
-    document.add_paragraph('')  # cannot format cells directly,
-    paragraph = document.paragraphs[-1]  # but it will keep settings from
-    paragraph_format = style.paragraph_format  # previous paragraph -> dirty hack:
-    paragraph_format.space_before = Pt(2.5)  # create paragraph, apply style,
-    paragraph_format.space_after = Pt(0)  # kill paragraph, create table.
-    p = paragraph._element
-    p.getparent().remove(p)
-    p._p = p._element = None
-    table = document.add_table(rows=1, cols=2)
-    table.autofit = True
-    col = table.columns[0]
-    # col.width = Cm(4.5)
-    col.autofit = True
-    col = table.columns[1]
-    # col.width = Cm(3.4)
-    col.autofit = True
-    # setup table format:
-    for cell in range(0, 30):
-        row = table.add_row()  # define row and cells separately
-        for table_column in range(0, 1):
-            row.cells[table_column].style = document.styles['Normal']
     cif = None
     if file_obj.exists():
         try:
@@ -220,14 +193,9 @@ def make_report_from(file_obj: Path, output_filename: str = None):
             print(e)
     else:
         raise FileNotFoundError
-    # Add descriptions to the first column of the main table:
-    populate_description_columns(table, cif)
-    # The main residuals table:
-    make_main_table(table, cif, file_obj.name)
 
-    # document.add_page_break()
-
-    # document.add_paragraph('')
+    table_num = 1
+    cif, table_num = add_main_table(document, cif, table_num)
 
     table_num = add_coords_table(document, cif, table_num)
 
@@ -245,13 +213,36 @@ def make_report_from(file_obj: Path, output_filename: str = None):
     return file_obj.name
 
 
-def make_main_table(table: table, cif: CifContainer, file_name: str):
+def add_main_table(document: Document(), cif: CifContainer, table_num: int):
+    tab0_head = r"Table {}. Crystal data and structure refinement for {}".format(table_num, cif.fileobj.name)
+    document.add_heading(tab0_head, 2)
+    table = document.add_table(rows=1, cols=2)
+    table.autofit = True
+    col = table.columns[0]
+    # col.width = Cm(4.5)
+    col.autofit = True
+    col = table.columns[1]
+    # col.width = Cm(3.4)
+    col.autofit = True
+    # setup table format:
+    for cell in range(0, 30):
+        row = table.add_row()  # define row and cells separately
+        for table_column in range(0, 1):
+            row.cells[table_column].style = document.styles['Normal']
+    # Add descriptions to the first column of the main table:
+    populate_description_columns(table, cif)
+    # The main residuals table:
+    populate_main_table_values(table, cif)
+    return cif, table_num
+
+
+def populate_main_table_values(table: table, cif: CifContainer):
     """
     Fills the main table with residuals. Column, by column.
     """
     header_cells = table.rows[0].cells
     headcell = header_cells[1].paragraphs[0]
-    headcell.add_run(file_name).bold = True
+    headcell.add_run(cif.fileobj.name).bold = True
 
     # Set text for all usual cif keywords by a lookup table:
     for _, key in enumerate(cif_keywords_list):
@@ -382,7 +373,7 @@ def make_main_table(table: table, cif: CifContainer, file_name: str):
     table.cell(29, 1).text = diff_density_max + '/' + diff_density_min
     if not cif.is_centrosymm:
         table.cell(30, 1).text = cif['_refine_ls_abs_structure_Flack'] or '?'
-    print('File parsed: ' + file_name + '  (' + sum_formula + ')  ' + space_group)
+    print('File parsed: ' + cif.fileobj.name + '  (' + sum_formula + ')  ' + space_group)
 
 
 def add_coords_table(document: Document, cif: CifContainer, table_num: int):
@@ -394,10 +385,17 @@ def add_coords_table(document: Document, cif: CifContainer, table_num: int):
     """
     table_num += 1
     # TODO: proper formating for heading:
-    headline = r"Table {}. Atomic coordinates (*10^4) and equivalent isotropic displacement parameters (Å^2*10^3) " \
-               r"for {}. U(eq) is defined as one third of the trace of " \
-               r"the orthogonalized Uij tensor.".format(table_num, cif.fileobj.name)
-    document.add_heading(headline, 2)
+    headline = "Table {}. Atomic coordinates ".format(table_num)
+    h = document.add_heading(headline, 2)
+    h.add_run(' and equivalent isotropic displacement parameters (Å')
+    h.add_run('2').font.superscript = True
+    h.add_run(') for {}. U'.format(cif.fileobj.name))
+    h.add_run('eq').font.subscript = True
+    h.add_run(' is defined as one third of the trace of the orthogonalized U')
+    ij = h.add_run('ij')
+    ij.font.subscript = True
+    ij.italic = True
+    h.add_run(' tensor.')
     coords_table = document.add_table(rows=1, cols=5)
     # Atom	x	y	z	U(eq)
     head_row = coords_table.rows[0]
