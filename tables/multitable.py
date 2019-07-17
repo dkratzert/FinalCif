@@ -169,13 +169,12 @@ def make_report_from(file_obj: Path, output_filename: str = None):
     :param file_obj: Input cif file.
     :param output_filename: the table is saved to this file.
     """
-    document = Document('template/template1.docx')
+    document = Document('template/template2.docx')
 
     style = document.styles['Normal']
     font = style.font
     font.name = 'Callibri'
     font.size = Pt(10)
-
     document.add_heading('Structure Tables', 1)
 
     # a style for the header:
