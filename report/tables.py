@@ -10,14 +10,16 @@ import subprocess
 import sys
 from pathlib import Path
 
-from docx import Document, table
-from docx.enum.table import WD_TABLE_ALIGNMENT
-from docx.shared import Pt, Cm
-
+from docx import Document
+from docx.oxml import OxmlElement
+from docx.oxml.ns import qn
+from docx.shared import Cm
 # compiled with "Py -3 -m PyInstaller multitable.spec --onefile"
+from docx.table import _Cell, Table
+
 from cif.file_reader import CifContainer
-from tables.mtools import cif_keywords_list, isfloat, this_or_quest
-from tables.symm import SymmetryElement
+from report.mtools import cif_keywords_list, isfloat, this_or_quest
+from report.symm import SymmetryElement
 
 """
 #TODO: 
@@ -29,109 +31,6 @@ from tables.symm import SymmetryElement
  table1 -> num -> table2 -> ...
  if table fails, return number, else count up and then return number 
 """
-
-
-def populate_description_columns(table, cif: CifContainer):
-    """
-    This Method adds the descriptions to the fist table column.
-    """
-    lgnd1 = table.cell(1, 0).paragraphs[0]
-    lgnd1sub = lgnd1.add_run('Empirical formula')
-    lgnd2 = table.cell(2, 0).paragraphs[0]
-    lgnd2sub = lgnd2.add_run('Formula weight')
-    lgnd3 = table.cell(3, 0).paragraphs[0]
-    lgnd3sub = lgnd3.add_run('Temperature/K')
-    lgnd4 = table.cell(4, 0).paragraphs[0]
-    lgnd4sub = lgnd4.add_run('Crystal system')
-    lgnd5 = table.cell(5, 0).paragraphs[0]
-    lgnd5sub = lgnd5.add_run('Space group (number)')
-    lgnd6 = table.cell(6, 0).paragraphs[0]
-    lgnd6sub = lgnd6.add_run('a').font.italic = True
-    lgnd6.add_run('/Å')
-    lgnd7 = table.cell(7, 0).paragraphs[0]
-    lgnd7sub = lgnd7.add_run('b').font.italic = True
-    lgnd7.add_run('/Å')
-    lgnd8 = table.cell(8, 0).paragraphs[0]
-    lgnd8sub = lgnd8.add_run('c').font.italic = True
-    lgnd8.add_run('/Å')
-    lgnd9 = table.cell(9, 0).paragraphs[0]
-    lgnd9sub = lgnd9.add_run('\u03B1/Å')
-    lgnd10 = table.cell(10, 0).paragraphs[0]
-    lgnd10sub = lgnd10.add_run('\u03B2/Å')
-    lgnd11 = table.cell(11, 0).paragraphs[0]
-    lgnd11sub = lgnd11.add_run('\u03B3/Å')
-    lgnd12 = table.cell(12, 0).paragraphs[0]
-    lgnd12sub = lgnd12.add_run('Volume/Å')
-    lgnd12sub1 = lgnd12.add_run('3')
-    lgnd12sub1.font.superscript = True
-    lgnd13 = table.cell(13, 0).paragraphs[0]
-    lgnd13sub = lgnd13.add_run('Z')
-    lgnd13sub.font.italic = True
-    lgnd14 = table.cell(14, 0).paragraphs[0]
-    lgnd14sub = lgnd14.add_run('\u03C1')
-    lgnd14sub.font.italic = True
-    lgnd14sub1 = lgnd14.add_run('calc')
-    lgnd14sub1.font.subscript = True
-    lgnd14sub2 = lgnd14.add_run(' g/cm')
-    lgnd14sub3 = lgnd14.add_run('3')
-    lgnd14sub3.font.superscript = True
-    lgnd15 = table.cell(15, 0).paragraphs[0]
-    lgnd15sub = lgnd15.add_run('\u03BC/mm')
-    lgnd15sub1 = lgnd15.add_run('-1')
-    lgnd15sub1.font.superscript = True
-    lgnd16 = table.cell(16, 0).paragraphs[0]
-    lgnd16sub = lgnd16.add_run('F')
-    lgnd16sub.font.italic = True
-    lgnd16sub1 = lgnd16.add_run('(000)')
-    lgnd17 = table.cell(17, 0).paragraphs[0]
-    lgnd17sub = lgnd17.add_run('Crystal size/mm')
-    lgnd17sub1 = lgnd17.add_run('3')
-    lgnd17sub1.font.superscript = True
-    lgnd18 = table.cell(18, 0).paragraphs[0]
-    lgnd18sub = lgnd18.add_run('Crystal colour')
-    lgnd19 = table.cell(19, 0).paragraphs[0]
-    lgnd19sub = lgnd19.add_run('Crystal shape')
-    lgnd20 = table.cell(20, 0).paragraphs[0]
-    lgnd20sub = lgnd20.add_run('Radiation')
-    lgnd21 = table.cell(21, 0).paragraphs[0]
-    lgnd21sub = lgnd21.add_run('2\u03F4 range/\u00b0')
-    lgnd22 = table.cell(22, 0).paragraphs[0]
-    lgnd22sub = lgnd22.add_run('Index ranges')
-    lgnd23 = table.cell(23, 0).paragraphs[0]
-    lgnd23sub = lgnd23.add_run('Reflections collected')
-    lgnd24 = table.cell(24, 0).paragraphs[0]
-    lgnd24sub = lgnd24.add_run('Independent reflections')
-    lgnd25 = table.cell(25, 0).paragraphs[0]
-    lgnd25sub = lgnd25.add_run('Data / Restraints / Param.')
-    lgnd26 = table.cell(26, 0).paragraphs[0]
-    lgnd26sub = lgnd26.add_run('Goodness-of-fit on ')
-    lgnd26sub1 = lgnd26.add_run('F')
-    lgnd26sub1.font.italic = True
-    lgnd26sub2 = lgnd26.add_run('2')
-    lgnd26sub2.font.superscript = True
-    lgnd27 = table.cell(27, 0).paragraphs[0]
-    lgnd27sub = lgnd27.add_run('Final ')
-    lgnd27sub1 = lgnd27.add_run('R')
-    lgnd27sub1.font.italic = True
-    lgnd27sub2 = lgnd27.add_run(' indexes \n[')
-    lgnd27sub3 = lgnd27.add_run('I')
-    lgnd27sub3.font.italic = True
-    lgnd27sub4 = lgnd27.add_run('\u22652\u03C3(')
-    lgnd27sub5 = lgnd27.add_run('I')
-    lgnd27sub5.font.italic = True
-    lgnd27sub3 = lgnd27.add_run(')]')
-    lgnd28 = table.cell(28, 0).paragraphs[0]
-    lgnd28sub = lgnd28.add_run('Final ')
-    lgnd28sub1 = lgnd28.add_run('R')
-    lgnd28sub1.font.italic = True
-    lgnd28sub2 = lgnd28.add_run(' indexes \n[all data]')
-    lgnd29 = table.cell(29, 0).paragraphs[0]
-    lgnd29sub = lgnd29.add_run('Largest peak/hole /eÅ')
-    lgnd29sub1 = lgnd29.add_run('3')
-    lgnd29sub1.font.superscript = True
-    lgnd30 = table.cell(30, 0).paragraphs[0]
-    if not cif.is_centrosymm:
-        lgnd30sub = lgnd30.add_run('Flack x parameter')
 
 
 def format_space_group(table, cif):
@@ -166,20 +65,20 @@ def format_space_group(table, cif):
     return space_group
 
 
-def make_report_from(file_obj: Path, output_filename: str = None):
+def make_report_from(file_obj: Path, output_filename: str = None, path: str = ''):
     """
     Creates a tabular cif report.
     :param file_obj: Input cif file.
     :param output_filename: the table is saved to this file.
     """
-    document = Document('template/template1.docx')
+    document = Document(Path(path).joinpath('template/template1.docx').absolute())
     # Deleting first (empty) paragraph, otherwise first line would be an empty one:
     p = document.paragraphs[0]
     delete_paragraph(p)
     style = document.styles['Normal']
     font = style.font
-    #font.name = 'Arial'
-    #font.size = Pt(10)
+    # font.name = 'Arial'
+    # font.size = Pt(10)
     document.add_heading('Structure Tables', 1)
 
     # a style for the header:
@@ -201,9 +100,9 @@ def make_report_from(file_obj: Path, output_filename: str = None):
 
     table_num = 1
     cif, table_num = add_main_table(document, cif, table_num)
-
+    document.add_paragraph('')
     table_num = add_coords_table(document, cif, table_num)
-
+    document.add_paragraph('')
     table_num = add_bonds_and_angles_table(document, cif, table_num)
 
     table_num = add_torsion_angles(document, cif, table_num)
@@ -217,49 +116,51 @@ def make_report_from(file_obj: Path, output_filename: str = None):
         document.save(output_filename)
     return file_obj.name
 
+
 def delete_paragraph(paragraph):
     p = paragraph._element
     p.getparent().remove(p)
     p._p = p._element = None
 
+
 def add_main_table(document: Document(), cif: CifContainer, table_num: int):
     tab0_head = r"Table {}. Crystal data and structure refinement for {}".format(table_num, cif.fileobj.name)
     document.add_heading(tab0_head, 2)
-    table = document.add_table(rows=31, cols=2)
-    #table.alignment = WD_TABLE_ALIGNMENT.CENTER
-    table.width = Cm(10)
-    #table.allow_autofit = False
-    #table.autofit = False
-    #col = table.columns[0]
-    #col.width = Cm(5.0)
-    #col.autofit = False
-    #col = table.columns[1]
-    #col.width = Cm(5.0)
-    #col.autofit = False
+    main_table = document.add_table(rows=31, cols=2)
+    # table.alignment = WD_TABLE_ALIGNMENT.CENTER
+    main_table.width = Cm(10)
+    # table.allow_autofit = False
+    # table.autofit = False
+    # col = table.columns[0]
+    # col.width = Cm(5.0)
+    # col.autofit = False
+    # col = table.columns[1]
+    # col.width = Cm(5.0)
+    # col.autofit = False
     # setup table format:
     widths = (Cm(5), Cm(5))
-    for row in table.rows:
+    for row in main_table.rows:
         for idx, width in enumerate(widths):
             row.cells[idx].width = width
     # Add descriptions to the first column of the main table:
-    populate_description_columns(table, cif)
+    populate_description_columns(main_table, cif)
     # The main residuals table:
-    populate_main_table_values(table, cif)
+    populate_main_table_values(main_table, cif)
     return cif, table_num
 
 
-def populate_main_table_values(table: table, cif: CifContainer):
+def populate_main_table_values(main_table: Table, cif: CifContainer):
     """
     Fills the main table with residuals. Column, by column.
     """
-    header_cells = table.rows[0].cells
-    headcell = header_cells[1].paragraphs[0]
-    headcell.add_run(cif.fileobj.name).bold = True
+    header_cells = main_table.rows[0].cells
+    headcell = header_cells[0].paragraphs[0]
+    headcell.add_run('CCDC')  # .bold = True
 
     # Set text for all usual cif keywords by a lookup table:
     for _, key in enumerate(cif_keywords_list):
         # key[1] contains the row number:
-        cell = table.cell(key[1] + 1, 1)
+        cell = main_table.cell(key[1] + 1, 1)
         if cif[key[0]]:
             cell.text = cif[key[0]]
         else:
@@ -273,12 +174,12 @@ def populate_main_table_values(table: table, cif: CifContainer):
         ltext2 = sum_formula.replace(" ", "").replace("'", "")
         ltext3 = [''.join(x[1]) for x in it.groupby(ltext2, lambda x: x.isalpha())]
         for _, word in enumerate(ltext3):
-            formrun = table.cell(1, 1).paragraphs[0]
+            formrun = main_table.cell(1, 1).paragraphs[0]
             formrunsub = formrun.add_run(word)
             if isfloat(word):
                 formrunsub.font.subscript = True
 
-    space_group = format_space_group(table, cif)
+    space_group = format_space_group(main_table, cif)
     radiation_type = cif['_diffrn_radiation_type']
     radiation_wavelength = cif['_diffrn_radiation_wavelength']
     crystal_size_min = cif['_exptl_crystal_size_min']
@@ -312,9 +213,9 @@ def populate_main_table_values(table: table, cif: CifContainer):
         diff_density_max = '?'
 
     # now prepare & write all the concatenated & derived cell contents:
-    table.cell(17, 1).text = this_or_quest(crystal_size_max) + '\u00d7' + \
-                             this_or_quest(crystal_size_mid) + '\u00d7' + \
-                             this_or_quest(crystal_size_min)
+    main_table.cell(17, 1).text = this_or_quest(crystal_size_max) + '\u00d7' + \
+                                  this_or_quest(crystal_size_mid) + '\u00d7' + \
+                                  this_or_quest(crystal_size_min)
     wavelength = str(' (\u03bb =' + this_or_quest(radiation_wavelength) + ')').replace(' ', '')
     # radtype: ('Mo', 'K', '\\a')
     radtype = list(radiation_type.partition("K"))
@@ -323,7 +224,7 @@ def populate_main_table_values(table: table, cif: CifContainer):
             radtype[2] = '\u03b1'
         if radtype[2] == '\\b':
             radtype[2] = '\u03b2'
-    radrun = table.cell(20, 1).paragraphs[0]
+    radrun = main_table.cell(20, 1).paragraphs[0]
     # radiation type e.g. Mo:
     radrun.add_run(radtype[0])
     # K line:
@@ -335,17 +236,17 @@ def populate_main_table_values(table: table, cif: CifContainer):
     # wavelength lambda:
     radrun.add_run(' ' + wavelength)
     try:
-        table.cell(21, 1).text = "{0:.2f}".format(2 * float(theta_min)) + \
-                                 ' to ' + "{0:.2f}".format(2 * float(theta_max))
+        main_table.cell(21, 1).text = "{0:.2f}".format(2 * float(theta_min)) + \
+                                      ' to ' + "{0:.2f}".format(2 * float(theta_max))
     except ValueError:
-        table.cell(21, 1).text = '? to ?'
-    table.cell(22, 1).text = limit_h_min + ' \u2264 h \u2264 ' \
-                             + limit_h_max + '\n' \
-                             + limit_k_min + ' \u2264 k \u2264 ' \
-                             + limit_k_max + '\n' \
-                             + limit_l_min + ' \u2264 l \u2264 ' \
-                             + limit_l_max
-    rintrun = table.cell(24, 1).paragraphs[0]
+        main_table.cell(21, 1).text = '? to ?'
+    main_table.cell(22, 1).text = limit_h_min + ' \u2264 h \u2264 ' \
+                                  + limit_h_max + '\n' \
+                                  + limit_k_min + ' \u2264 k \u2264 ' \
+                                  + limit_k_max + '\n' \
+                                  + limit_l_min + ' \u2264 l \u2264 ' \
+                                  + limit_l_max
+    rintrun = main_table.cell(24, 1).paragraphs[0]
     rintrun.add_run(this_or_quest(reflns_number_total) + '\n')
     rintita1 = rintrun.add_run('R')
     rintita1.font.italic = True
@@ -357,10 +258,10 @@ def populate_main_table_values(table: table, cif: CifContainer):
     rintsub2 = rintrun.add_run('sigma')
     rintsub2.font.subscript = True
     rintrun.add_run(' = ' + this_or_quest(reflns_av_unetI))
-    table.cell(25, 1).text = this_or_quest(ls_number_reflns) + '/' \
-                             + this_or_quest(ls_number_restraints) + '/' \
-                             + this_or_quest(ls_number_parameters)
-    r2sigrun = table.cell(27, 1).paragraphs[0]
+    main_table.cell(25, 1).text = this_or_quest(ls_number_reflns) + '/' \
+                                  + this_or_quest(ls_number_restraints) + '/' \
+                                  + this_or_quest(ls_number_parameters)
+    r2sigrun = main_table.cell(27, 1).paragraphs[0]
     r2sigita1 = r2sigrun.add_run('R')
     r2sigita1.font.italic = True
     r2sigsub1 = r2sigrun.add_run('1')
@@ -371,7 +272,7 @@ def populate_main_table_values(table: table, cif: CifContainer):
     r2sigsub2 = r2sigrun.add_run('2')
     r2sigsub2.font.subscript = True
     r2sigrun.add_run(' = ' + this_or_quest(ls_wR_factor_gt))
-    rfullrun = table.cell(28, 1).paragraphs[0]
+    rfullrun = main_table.cell(28, 1).paragraphs[0]
     rfullita1 = rfullrun.add_run('R')
     rfullita1.font.italic = True
     rfullsub1 = rfullrun.add_run('1')
@@ -382,9 +283,9 @@ def populate_main_table_values(table: table, cif: CifContainer):
     rfullsub2 = rfullrun.add_run('2')
     rfullsub2.font.subscript = True
     rfullrun.add_run(' = ' + ls_wR_factor_ref)
-    table.cell(29, 1).text = diff_density_max + '/' + diff_density_min
+    main_table.cell(29, 1).text = diff_density_max + '/' + diff_density_min
     if not cif.is_centrosymm:
-        table.cell(30, 1).text = cif['_refine_ls_abs_structure_Flack'] or '?'
+        main_table.cell(30, 1).text = cif['_refine_ls_abs_structure_Flack'] or '?'
     print('File parsed: ' + cif.fileobj.name + '  (' + sum_formula + ')  ' + space_group)
 
 
@@ -396,20 +297,19 @@ def add_coords_table(document: Document, cif: CifContainer, table_num: int):
     :return: None
     """
     table_num += 1
-    # TODO: proper formating for heading:
     headline = "Table {}. Atomic coordinates ".format(table_num)
     h = document.add_heading(headline, 2)
     h.add_run(' and equivalent isotropic displacement parameters (Å')
     h.add_run('2').font.superscript = True
     h.add_run(') for {}. U'.format(cif.fileobj.name))
     h.add_run('eq').font.subscript = True
-    h.add_run(' is defined as one third of the trace of the orthogonalized U')
+    h.add_run(' is defined as 1/3 of the trace of the orthogonalized U')
     ij = h.add_run('ij')
     ij.font.subscript = True
     ij.italic = True
     h.add_run(' tensor.')
     coords_table = document.add_table(rows=1, cols=5)
-    #coords_table.style = document.styles['Table Grid']
+    # coords_table.style = document.styles['Table Grid']
     coords_table.style = 'Table Grid'
     # Atom	x	y	z	U(eq)
     head_row = coords_table.rows[0]
@@ -439,12 +339,52 @@ def add_coords_table(document: Document, cif: CifContainer, table_num: int):
     return table_num
 
 
+def set_cell_border(cell: _Cell, **kwargs):
+    """
+    Set cell`s border
+    Usage:
+
+    set_cell_border(
+        cell,
+        top={"sz": 12, "val": "single", "color": "#FF0000", "space": "0"},
+        bottom={"sz": 12, "color": "#00FF00", "val": "single"},
+        start={"sz": 24, "val": "dashed", "shadow": "true"},
+        end={"sz": 12, "val": "dashed"},
+    )
+    """
+    tc = cell._tc
+    tcPr = tc.get_or_add_tcPr()
+
+    # check for tag existnace, if none found, then create one
+    tcBorders = tcPr.first_child_found_in("w:tcBorders")
+    if tcBorders is None:
+        tcBorders = OxmlElement('w:tcBorders')
+        tcPr.append(tcBorders)
+
+    # list over all available tags
+    for edge in ('start', 'top', 'end', 'bottom', 'insideH', 'insideV'):
+        edge_data = kwargs.get(edge)
+        if edge_data:
+            tag = 'w:{}'.format(edge)
+
+            # check for tag existnace, if none found, then create one
+            element = tcBorders.find(qn(tag))
+            if element is None:
+                element = OxmlElement(tag)
+                tcBorders.append(element)
+
+            # looks like order of attributes is important
+            for key in ["sz", "val", "color", "space", "shadow"]:
+                if key in edge_data:
+                    element.set(qn('w:{}'.format(key)), str(edge_data[key]))
+
+
 def add_bonds_and_angles_table(document: Document, cif: CifContainer, table_num: int):
     """
     Make table with bonds and angles.
     """
     table_num += 1
-    headline = r"Table {}. Bond lengths [Å] and angles [°] for {}.".format(table_num, cif.fileobj.name)
+    headline = r"Table {}. Bond lengths and angles for {}.".format(table_num, cif.fileobj.name)
     document.add_heading(headline, 2)
     bond_angle_table = document.add_table(rows=0, cols=2)
     bond_angle_table.style = 'Table Grid'
@@ -480,6 +420,8 @@ def add_bonds_and_angles_table(document: Document, cif: CifContainer, table_num:
     ar.bold = True
     ar = head_row.cells[1].paragraphs[0].add_run('Angle [°]')
     ar.bold = True
+    set_cell_border(head_row.cells[0], bottom={"sz": 2, "color": "#000000", "val": "single"})
+    set_cell_border(head_row.cells[1], bottom={"sz": 2, "color": "#000000", "val": "single"})
     card = ''
     s = SymmetryElement(card)
     # TODO: split this in two columns:
@@ -555,9 +497,15 @@ def add_torsion_angles(document: Document, cif: CifContainer, table_num: int):
         print('No torsion angles in cif.')
         return table_num
     table_num += 1
-    headline = r"Table {}. Torsion angles [°] for {}.".format(table_num, cif.fileobj.name)
+    headline = r"Table {}. Torsion angles for {}.".format(table_num, cif.fileobj.name)
     document.add_heading(headline, 2)
     torsion_table = document.add_table(rows=0, cols=2)
+    torsion_table.style = 'Table Grid'
+    head_row = torsion_table.add_row()
+    ar = head_row.cells[0].paragraphs[0].add_run('Atom - Atom - Atom - Atom')
+    ar.bold = True
+    ar = head_row.cells[1].paragraphs[0].add_run('Torsion Angle [°]')
+    ar.bold = True
     symms = {}
     newsymms = {}
     card = ''
@@ -604,7 +552,7 @@ def add_torsion_angles(document: Document, cif: CifContainer, table_num: int):
         row_cells[0].paragraphs[0].add_run(at4)  # labels
         row_cells[0].paragraphs[0].add_run('#' + str(symms[symm4]) if symm4 else '').font.superscript = True
         row_cells[1].paragraphs[0].add_run(str(angle))  # angle
-    widths = (Cm(4), Cm(4))
+    widths = (Cm(4.5), Cm(4))
     make_table_widths(torsion_table, widths)
     add_last_symminfo_line(newsymms, document)
     return table_num
@@ -618,9 +566,10 @@ def add_hydrogen_bonds(document: Document, cif: CifContainer, table_num: int):
         print('No hydrogen bonds in cif.')
         return
     table_num += 1
-    headline = r"Table {}. Hydrogen bonds for {} [Å and °].".format(table_num, cif.fileobj.name)
+    headline = r"Table {}. Hydrogen bonds for {}.".format(table_num, cif.fileobj.name)
     document.add_heading(headline, 2)
     hydrogen_table = document.add_table(rows=1, cols=5)
+    hydrogen_table.style = 'Table Grid'
     head_row = hydrogen_table.rows[0].cells
     # D-H...A	d(D-H)	d(H...A)	d(D...A)	<(DHA)
     head_row[0].paragraphs[0].add_run('D-H...A').font.bold = True
@@ -648,8 +597,113 @@ def add_hydrogen_bonds(document: Document, cif: CifContainer, table_num: int):
         row_cells[2].text = dist_ha
         row_cells[3].text = dist_da
         row_cells[4].text = angle_dha
+    widths = (Cm(4), Cm(2.5), Cm(2.5), Cm(2.5), Cm(2.5))
+    make_table_widths(hydrogen_table, widths)
     add_last_symminfo_line(newsymms, document)
     return table_num
+
+
+def populate_description_columns(main_table, cif: CifContainer):
+    """
+    This Method adds the descriptions to the fist table column.
+    """
+    lgnd1 = main_table.cell(1, 0).paragraphs[0]
+    lgnd1sub = lgnd1.add_run('Empirical formula')
+    lgnd2 = main_table.cell(2, 0).paragraphs[0]
+    lgnd2sub = lgnd2.add_run('Formula weight')
+    lgnd3 = main_table.cell(3, 0).paragraphs[0]
+    lgnd3sub = lgnd3.add_run('Temperature/K')
+    lgnd4 = main_table.cell(4, 0).paragraphs[0]
+    lgnd4sub = lgnd4.add_run('Crystal system')
+    lgnd5 = main_table.cell(5, 0).paragraphs[0]
+    lgnd5sub = lgnd5.add_run('Space group (number)')
+    lgnd6 = main_table.cell(6, 0).paragraphs[0]
+    lgnd6sub = lgnd6.add_run('a').font.italic = True
+    lgnd6.add_run('/Å')
+    lgnd7 = main_table.cell(7, 0).paragraphs[0]
+    lgnd7sub = lgnd7.add_run('b').font.italic = True
+    lgnd7.add_run('/Å')
+    lgnd8 = main_table.cell(8, 0).paragraphs[0]
+    lgnd8sub = lgnd8.add_run('c').font.italic = True
+    lgnd8.add_run('/Å')
+    lgnd9 = main_table.cell(9, 0).paragraphs[0]
+    lgnd9sub = lgnd9.add_run('\u03B1/Å')
+    lgnd10 = main_table.cell(10, 0).paragraphs[0]
+    lgnd10sub = lgnd10.add_run('\u03B2/Å')
+    lgnd11 = main_table.cell(11, 0).paragraphs[0]
+    lgnd11sub = lgnd11.add_run('\u03B3/Å')
+    lgnd12 = main_table.cell(12, 0).paragraphs[0]
+    lgnd12sub = lgnd12.add_run('Volume/Å')
+    lgnd12sub1 = lgnd12.add_run('3')
+    lgnd12sub1.font.superscript = True
+    lgnd13 = main_table.cell(13, 0).paragraphs[0]
+    lgnd13sub = lgnd13.add_run('Z')
+    lgnd13sub.font.italic = True
+    lgnd14 = main_table.cell(14, 0).paragraphs[0]
+    lgnd14sub = lgnd14.add_run('\u03C1')
+    lgnd14sub.font.italic = True
+    lgnd14sub1 = lgnd14.add_run('calc')
+    lgnd14sub1.font.subscript = True
+    lgnd14sub2 = lgnd14.add_run(' g/cm')
+    lgnd14sub3 = lgnd14.add_run('3')
+    lgnd14sub3.font.superscript = True
+    lgnd15 = main_table.cell(15, 0).paragraphs[0]
+    lgnd15sub = lgnd15.add_run('\u03BC/mm')
+    lgnd15sub1 = lgnd15.add_run('-1')
+    lgnd15sub1.font.superscript = True
+    lgnd16 = main_table.cell(16, 0).paragraphs[0]
+    lgnd16sub = lgnd16.add_run('F')
+    lgnd16sub.font.italic = True
+    lgnd16sub1 = lgnd16.add_run('(000)')
+    lgnd17 = main_table.cell(17, 0).paragraphs[0]
+    lgnd17sub = lgnd17.add_run('Crystal size/mm')
+    lgnd17sub1 = lgnd17.add_run('3')
+    lgnd17sub1.font.superscript = True
+    lgnd18 = main_table.cell(18, 0).paragraphs[0]
+    lgnd18sub = lgnd18.add_run('Crystal colour')
+    lgnd19 = main_table.cell(19, 0).paragraphs[0]
+    lgnd19sub = lgnd19.add_run('Crystal shape')
+    lgnd20 = main_table.cell(20, 0).paragraphs[0]
+    lgnd20sub = lgnd20.add_run('Radiation')
+    lgnd21 = main_table.cell(21, 0).paragraphs[0]
+    lgnd21sub = lgnd21.add_run('2\u03F4 range/\u00b0')
+    lgnd22 = main_table.cell(22, 0).paragraphs[0]
+    lgnd22sub = lgnd22.add_run('Index ranges')
+    lgnd23 = main_table.cell(23, 0).paragraphs[0]
+    lgnd23sub = lgnd23.add_run('Reflections collected')
+    lgnd24 = main_table.cell(24, 0).paragraphs[0]
+    lgnd24sub = lgnd24.add_run('Independent reflections')
+    lgnd25 = main_table.cell(25, 0).paragraphs[0]
+    lgnd25sub = lgnd25.add_run('Data / Restraints / Param.')
+    lgnd26 = main_table.cell(26, 0).paragraphs[0]
+    lgnd26sub = lgnd26.add_run('Goodness-of-fit on ')
+    lgnd26sub1 = lgnd26.add_run('F')
+    lgnd26sub1.font.italic = True
+    lgnd26sub2 = lgnd26.add_run('2')
+    lgnd26sub2.font.superscript = True
+    lgnd27 = main_table.cell(27, 0).paragraphs[0]
+    lgnd27sub = lgnd27.add_run('Final ')
+    lgnd27sub1 = lgnd27.add_run('R')
+    lgnd27sub1.font.italic = True
+    lgnd27sub2 = lgnd27.add_run(' indexes \n[')
+    lgnd27sub3 = lgnd27.add_run('I')
+    lgnd27sub3.font.italic = True
+    lgnd27sub4 = lgnd27.add_run('\u22652\u03C3(')
+    lgnd27sub5 = lgnd27.add_run('I')
+    lgnd27sub5.font.italic = True
+    lgnd27sub3 = lgnd27.add_run(')]')
+    lgnd28 = main_table.cell(28, 0).paragraphs[0]
+    lgnd28sub = lgnd28.add_run('Final ')
+    lgnd28sub1 = lgnd28.add_run('R')
+    lgnd28sub1.font.italic = True
+    lgnd28sub2 = lgnd28.add_run(' indexes \n[all data]')
+    lgnd29 = main_table.cell(29, 0).paragraphs[0]
+    lgnd29sub = lgnd29.add_run('Largest peak/hole /eÅ')
+    lgnd29sub1 = lgnd29.add_run('3')
+    lgnd29sub1.font.superscript = True
+    lgnd30 = main_table.cell(30, 0).paragraphs[0]
+    if not cif.is_centrosymm:
+        lgnd30sub = lgnd30.add_run('Flack x parameter')
 
 
 if __name__ == '__main__':
@@ -658,7 +712,8 @@ if __name__ == '__main__':
     make_report_from(Path(r'test-data/DK_zucker2_0m.cif'))
     # make_report_from(Path(r'/Volumes/home/strukturen/eigene/DK_30011/sad-final.cif'))
     # make_report_from(Path(r'D:\goedaten\strukturen_goe\eigene\DK_4008\xl12\new\r3c.cif'))
-    if sys.platform == 'win':
-        os.startfile(output_filename)
+    print(sys.platform)
+    if sys.platform == 'win' or sys.platform == 'win32':
+        os.startfile(Path(output_filename).absolute())
     if sys.platform == 'darwin':
         subprocess.call(['open', output_filename])

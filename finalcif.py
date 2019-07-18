@@ -11,7 +11,7 @@ import sys
 from collections import OrderedDict
 from pathlib import Path
 
-from tables.multitable import make_report_from
+from report.tables import make_report_from
 from tools.version import VERSION
 
 DEBUG = False
@@ -272,7 +272,12 @@ class AppWindow(QMainWindow):
         Runs the multitable program to make a report table.
         """
         if self.cif:
-            make_report_from(self.cif.fileobj)
+            output_filename = 'tables.docx'
+            make_report_from(self.cif.fileobj, path=application_path)
+            if sys.platform == 'win' or sys.platform == 'win32':
+                os.startfile(Path(output_filename).absolute())
+            if sys.platform == 'darwin':
+                os.subprocess.call(['open', Path(output_filename).absolute()])
 
     def save_current_recent_files_list(self, file):
         recent = list(self.settings.settings.value('recent_files', type=list))
