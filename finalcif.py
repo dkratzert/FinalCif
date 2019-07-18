@@ -273,7 +273,14 @@ class AppWindow(QMainWindow):
         """
         if self.cif:
             output_filename = 'tables.docx'
-            make_report_from(self.cif.fileobj, path=application_path)
+            not_ok = None
+            try:
+                make_report_from(self.cif.fileobj, path=application_path)
+            except FileNotFoundError as e:
+                print('Unable to open cif file')
+                not_ok = e
+                self.unable_to_open_message(self.cif.fileobj, not_ok)
+                return 
             if sys.platform == 'win' or sys.platform == 'win32':
                 os.startfile(Path(output_filename).absolute())
             if sys.platform == 'darwin':
@@ -781,24 +788,16 @@ class AppWindow(QMainWindow):
         filepath = Path(fname)
         if not filepath.exists():
             return
-        self.cif = CifContainer(filepath)
-        # self.cif_doc.open_cif_with_fileparser()
-        not_ok = self.cif.open_cif_with_gemmi()
+        not_ok = None
+        try:
+            e = None
+            self.cif = CifContainer(filepath)
+        except Exception as e:
+            print('Unable to open cif file...')
+            print(e)
+            not_ok = e
         if not_ok:
-            info = QMessageBox()
-            info.setIcon(QMessageBox.Information)
-            print('Output from gemmi:', not_ok)
-            try:
-                line = str(not_ok)[4:].split(':')[1]
-            except IndexError:
-                line = None
-            if line:
-                info.setText('This cif file is not readable!\n'
-                             'Plese check line {} in\n{}'.format(line, filepath.name))
-            else:
-                info.setText('This cif file is not readable! "{}"'.format(filepath.name))
-            info.show()
-            info.exec()
+            self.unable_to_open_message(filepath, not_ok)
             return
         try:
             # Change the current working Directory
@@ -812,6 +811,23 @@ class AppWindow(QMainWindow):
         self.ui.SaveCifButton.setEnabled(True)
         # self.ui.EquipmentTemplatesListWidget.setCurrentRow(-1)  # Has to he in front in order to work
         # self.ui.EquipmentTemplatesListWidget.setCurrentRow(self.settings.load_last_equipment())
+
+    def unable_to_open_message(self, filepath, not_ok):
+        info = QMessageBox()
+        info.setIcon(QMessageBox.Information)
+        print('Output from gemmi:', not_ok)
+        try:
+            line = str(not_ok)[4:].split(':')[1]
+        except IndexError:
+            line = None
+        if line:
+            info.setText('This cif file is not readable!\n'
+                         'Plese check line {} in\n{}'.format(line, filepath.name))
+        else:
+            info.setText('This cif file is not readable! "{}"'.format(filepath.name))
+        info.show()
+        info.exec()
+        return
 
     def test_checksums(self):
         """
