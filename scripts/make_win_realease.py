@@ -48,9 +48,10 @@ disable_debug('finalcif.py')
 
 recompile_ui()
 
-subprocess.run(r""".\venv\Scripts\pyinstaller.exe scripts\Finalcif.spec -F --clean""".split())
+subprocess.run(r""".\venv\Scripts\pyinstaller.exe Finalcif.spec -F --clean""".split())
 
 print('copying file')
-print(r'dist\FinalCif.exe', r'W:\htdocs\finalcif')
+
+print(r'dist\FinalCif.exe', r'W:\htdocs\finalcif\FinalCif-v{}.exe'.format(VERSION))
 
 shutil.copy(r'dist\FinalCif.exe', r'W:\htdocs\finalcif\FinalCif-v{}.exe'.format(VERSION))

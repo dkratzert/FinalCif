@@ -71,10 +71,17 @@ def make_report_from(file_obj: Path, output_filename: str = None, path: str = ''
     :param file_obj: Input cif file.
     :param output_filename: the table is saved to this file.
     """
-    document = Document(Path(path).joinpath('template/template1.docx').absolute())
+    try:
+        document = Document(Path(path).joinpath('template/template1.docx').absolute())
+    except FileNotFoundError:
+        document = Document()
     # Deleting first (empty) paragraph, otherwise first line would be an empty one:
-    p = document.paragraphs[0]
-    delete_paragraph(p)
+    try:
+        p = document.paragraphs[0]
+        delete_paragraph(p)
+    except IndexError:
+        # no paragraph there
+        pass
     style = document.styles['Normal']
     font = style.font
     # font.name = 'Arial'
