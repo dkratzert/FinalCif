@@ -347,6 +347,7 @@ def add_coords_table(document: Document, cif: CifContainer, table_num: int):
     ar.bold = True
     ar.italic = True
     ar = head_row.cells[3].paragraphs[0].add_run('z')
+    ar.bold = True
     ar.italic = True
     ar = head_row.cells[4].paragraphs[0].add_run('U')
     ar.bold = True
