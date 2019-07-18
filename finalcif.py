@@ -91,7 +91,7 @@ class AppWindow(QMainWindow):
         self.ui.PropertiesEditTableWidget.verticalHeader().hide()
         self.ui.CheckcifButton.setDisabled(True)
         self.ui.SaveCifButton.setDisabled(True)
-        self.cif = None  # :type cif: CifContainer
+        self.cif = None
         self.fin_file = Path()
         self.missing_data = []
         self.vheader_clicked = -1  # This is the index number of the vheader that got clicked last
@@ -354,7 +354,7 @@ class AppWindow(QMainWindow):
                         except RuntimeError:
                             pass
         try:
-            self.fin_file = Path(self.cif.filename.stem + '-finalcif.cif')
+            self.fin_file = Path(self.cif.fileobj.stem + '-finalcif.cif')
             self.cif.save(self.fin_file.name)
             self.ui.statusBar.showMessage('  File Saved:  {}'.format(self.fin_file.name), 10000)
             print('File saved ...')
