@@ -4,7 +4,10 @@
 # Daniel Kratzert
 #
 import itertools as it
+import os
 import re
+import subprocess
+import sys
 from pathlib import Path
 
 from docx import Document, table
@@ -169,12 +172,14 @@ def make_report_from(file_obj: Path, output_filename: str = None):
     :param file_obj: Input cif file.
     :param output_filename: the table is saved to this file.
     """
-    document = Document('template/template2.docx')
-
+    document = Document('template/template1.docx')
+    # Deleting first (empty) paragraph, otherwise first line would be an empty one:
+    p = document.paragraphs[0]
+    delete_paragraph(p)
     style = document.styles['Normal']
     font = style.font
-    font.name = 'Callibri'
-    font.size = Pt(10)
+    #font.name = 'Arial'
+    #font.size = Pt(10)
     document.add_heading('Structure Tables', 1)
 
     # a style for the header:
@@ -212,6 +217,10 @@ def make_report_from(file_obj: Path, output_filename: str = None):
         document.save(output_filename)
     return file_obj.name
 
+def delete_paragraph(paragraph):
+    p = paragraph._element
+    p.getparent().remove(p)
+    p._p = p._element = None
 
 def add_main_table(document: Document(), cif: CifContainer, table_num: int):
     tab0_head = r"Table {}. Crystal data and structure refinement for {}".format(table_num, cif.fileobj.name)
@@ -623,7 +632,12 @@ def add_hydrogen_bonds(document: Document, cif: CifContainer, table_num: int):
 
 
 if __name__ == '__main__':
+    output_filename = 'tables.docx'
     # make_report_from(get_files_from_current_dir()[1])
     make_report_from(Path(r'test-data/DK_zucker2_0m.cif'))
     # make_report_from(Path(r'/Volumes/home/strukturen/eigene/DK_30011/sad-final.cif'))
     # make_report_from(Path(r'D:\goedaten\strukturen_goe\eigene\DK_4008\xl12\new\r3c.cif'))
+    if sys.platform == 'win':
+        os.startfile(output_filename)
+    if sys.platform == 'darwin':
+        subprocess.call(['open', output_filename])
