@@ -7,6 +7,7 @@
 #  ----------------------------------------------------------------------------
 
 import os
+import subprocess
 import sys
 from collections import OrderedDict
 from pathlib import Path
@@ -280,11 +281,11 @@ class AppWindow(QMainWindow):
                 print('Unable to open cif file')
                 not_ok = e
                 self.unable_to_open_message(self.cif.fileobj, not_ok)
-                return 
+                return
             if sys.platform == 'win' or sys.platform == 'win32':
                 os.startfile(Path(output_filename).absolute())
             if sys.platform == 'darwin':
-                os.subprocess.call(['open', Path(output_filename).absolute()])
+                subprocess.call(['open', Path(output_filename).absolute()])
 
     def save_current_recent_files_list(self, file):
         recent = list(self.settings.settings.value('recent_files', type=list))
