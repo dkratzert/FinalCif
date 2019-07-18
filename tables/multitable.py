@@ -47,21 +47,21 @@ def populate_description_columns(table, cif: CifContainer):
     lgnd5sub = lgnd5.add_run('Space group (number)')
     lgnd6 = table.cell(6, 0).paragraphs[0]
     lgnd6sub = lgnd6.add_run('a').font.italic = True
-    lgnd6.add_run('/\u212B')
+    lgnd6.add_run('/Å')
     lgnd7 = table.cell(7, 0).paragraphs[0]
     lgnd7sub = lgnd7.add_run('b').font.italic = True
-    lgnd7.add_run('/\u212B')
+    lgnd7.add_run('/Å')
     lgnd8 = table.cell(8, 0).paragraphs[0]
     lgnd8sub = lgnd8.add_run('c').font.italic = True
-    lgnd8.add_run('/\u212B')
+    lgnd8.add_run('/Å')
     lgnd9 = table.cell(9, 0).paragraphs[0]
-    lgnd9sub = lgnd9.add_run('\u03B1/\u00b0')
+    lgnd9sub = lgnd9.add_run('\u03B1/Å')
     lgnd10 = table.cell(10, 0).paragraphs[0]
-    lgnd10sub = lgnd10.add_run('\u03B2/\u00b0')
+    lgnd10sub = lgnd10.add_run('\u03B2/Å')
     lgnd11 = table.cell(11, 0).paragraphs[0]
-    lgnd11sub = lgnd11.add_run('\u03B3/\u00b0')
+    lgnd11sub = lgnd11.add_run('\u03B3/Å')
     lgnd12 = table.cell(12, 0).paragraphs[0]
-    lgnd12sub = lgnd12.add_run('Volume/\u212B')
+    lgnd12sub = lgnd12.add_run('Volume/Å')
     lgnd12sub1 = lgnd12.add_run('3')
     lgnd12sub1.font.superscript = True
     lgnd13 = table.cell(13, 0).paragraphs[0]
@@ -126,7 +126,7 @@ def populate_description_columns(table, cif: CifContainer):
     lgnd28sub1.font.italic = True
     lgnd28sub2 = lgnd28.add_run(' indexes \n[all data]')
     lgnd29 = table.cell(29, 0).paragraphs[0]
-    lgnd29sub = lgnd29.add_run('Largest peak/hole /e\u212B')
+    lgnd29sub = lgnd29.add_run('Largest peak/hole /eÅ')
     lgnd29sub1 = lgnd29.add_run('3')
     lgnd29sub1.font.superscript = True
     lgnd30 = table.cell(30, 0).paragraphs[0]
@@ -409,6 +409,8 @@ def add_coords_table(document: Document, cif: CifContainer, table_num: int):
     ij.italic = True
     h.add_run(' tensor.')
     coords_table = document.add_table(rows=1, cols=5)
+    #coords_table.style = document.styles['Table Grid']
+    coords_table.style = 'Table Grid'
     # Atom	x	y	z	U(eq)
     head_row = coords_table.rows[0]
     ar = head_row.cells[0].paragraphs[0].add_run('Atom')
@@ -444,13 +446,14 @@ def add_bonds_and_angles_table(document: Document, cif: CifContainer, table_num:
     table_num += 1
     headline = r"Table {}. Bond lengths [Å] and angles [°] for {}.".format(table_num, cif.fileobj.name)
     document.add_heading(headline, 2)
-    coords_table = document.add_table(rows=0, cols=2)
+    bond_angle_table = document.add_table(rows=0, cols=2)
+    bond_angle_table.style = 'Table Grid'
     # Bond/Angle  value
-    # head_row = coords_table.rows[0]
-    # ar = head_row.cells[0].paragraphs[0].add_run('Atoms')
-    # ar.bold = True
-    # ar = head_row.cells[1].paragraphs[0].add_run('Value')
-    # ar.bold = True
+    head_row = bond_angle_table.add_row()
+    ar = head_row.cells[0].paragraphs[0].add_run('Atom - Atom')
+    ar.bold = True
+    ar = head_row.cells[1].paragraphs[0].add_run('Length [Å]')
+    ar.bold = True
     symms = {}
     newsymms = {}
     num = 1
@@ -466,12 +469,17 @@ def add_bonds_and_angles_table(document: Document, cif: CifContainer, table_num:
             s.translate(symm2)
             newsymms[num] = s.toShelxl()
             num += 1
-        row_cells = coords_table.add_row().cells
+        row_cells = bond_angle_table.add_row().cells
         row_cells[0].text = at1 + ' - ' + at2
         row_cells[0].paragraphs[0].add_run('#' + str(symms[symm2]) if symm2 else '').font.superscript = True
         row_cells[1].text = str(val)  # bond
     ############ the angles ####################
-    coords_table.add_row()
+    bond_angle_table.add_row()
+    head_row = bond_angle_table.add_row()
+    ar = head_row.cells[0].paragraphs[0].add_run('Atom - Atom - Atom')
+    ar.bold = True
+    ar = head_row.cells[1].paragraphs[0].add_run('Angle [°]')
+    ar.bold = True
     card = ''
     s = SymmetryElement(card)
     # TODO: split this in two columns:
@@ -497,15 +505,26 @@ def add_bonds_and_angles_table(document: Document, cif: CifContainer, table_num:
                 s.translate(symm3)
             newsymms[num] = s.toShelxl()
             num += 1
-        row_cells = coords_table.add_row().cells
+        row_cells = bond_angle_table.add_row().cells
         row_cells[0].text = at1
         row_cells[0].paragraphs[0].add_run('#' + str(symms[symm1]) if symm1 else '').font.superscript = True
         row_cells[0].paragraphs[0].add_run(' - ' + at2 + ' - ')
         row_cells[0].paragraphs[0].add_run(at3)  # labels
         row_cells[0].paragraphs[0].add_run('#' + str(symms[symm3]) if symm3 else '').font.superscript = True
         row_cells[1].text = str(angle)  # angle
+    widths = (Cm(4), Cm(4))
+    make_table_widths(bond_angle_table, widths)
     add_last_symminfo_line(newsymms, document)
     return table_num
+
+
+def make_table_widths(table, widths):
+    """
+    Sets the width of the columns of a table.
+    """
+    for row in table.rows:
+        for idx, width in enumerate(widths):
+            row.cells[idx].width = width
 
 
 def add_last_symminfo_line(newsymms, document):
@@ -538,7 +557,7 @@ def add_torsion_angles(document: Document, cif: CifContainer, table_num: int):
     table_num += 1
     headline = r"Table {}. Torsion angles [°] for {}.".format(table_num, cif.fileobj.name)
     document.add_heading(headline, 2)
-    coords_table = document.add_table(rows=0, cols=2)
+    torsion_table = document.add_table(rows=0, cols=2)
     symms = {}
     newsymms = {}
     card = ''
@@ -572,7 +591,7 @@ def add_torsion_angles(document: Document, cif: CifContainer, table_num: int):
                 s.translate(symm4)
             newsymms[num] = s.toShelxl()
             num += 1
-        row_cells = coords_table.add_row().cells
+        row_cells = torsion_table.add_row().cells
         row_cells[0].text = at1
         row_cells[0].paragraphs[0].add_run('#' + str(symms[symm1]) if symm1 else '').font.superscript = True
         row_cells[0].paragraphs[0].add_run(' - ')
@@ -585,6 +604,8 @@ def add_torsion_angles(document: Document, cif: CifContainer, table_num: int):
         row_cells[0].paragraphs[0].add_run(at4)  # labels
         row_cells[0].paragraphs[0].add_run('#' + str(symms[symm4]) if symm4 else '').font.superscript = True
         row_cells[1].paragraphs[0].add_run(str(angle))  # angle
+    widths = (Cm(4), Cm(4))
+    make_table_widths(torsion_table, widths)
     add_last_symminfo_line(newsymms, document)
     return table_num
 
