@@ -15,7 +15,7 @@ from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Cm
 # compiled with "Py -3 -m PyInstaller multitable.spec --onefile"
-from docx.table import _Cell, Table
+from docx.table import Table, _Cell
 
 from cif.file_reader import CifContainer
 from report.mtools import cif_keywords_list, isfloat, this_or_quest
@@ -133,7 +133,13 @@ def delete_paragraph(paragraph):
 def add_main_table(document: Document(), cif: CifContainer, table_num: int):
     tab0_head = r"Table {}. Crystal data and structure refinement for {}".format(table_num, cif.fileobj.name)
     document.add_heading(tab0_head, 2)
-    main_table = document.add_table(rows=31, cols=2)
+    exti = cif['_refine_ls_extinction_coef']
+    rows = 33
+    if cif.is_centrosymm:
+        rows -= 1
+    if exti == '.' or exti == '?':
+        rows -= 1
+    main_table = document.add_table(rows=rows, cols=2)
     # table.alignment = WD_TABLE_ALIGNMENT.CENTER
     main_table.width = Cm(10)
     # table.allow_autofit = False
@@ -210,6 +216,11 @@ def populate_main_table_values(main_table: Table, cif: CifContainer):
     ls_wR_factor_gt = cif['_refine_ls_wR_factor_gt']
     ls_R_factor_all = cif['_refine_ls_R_factor_all']
     ls_wR_factor_ref = cif['_refine_ls_wR_factor_ref']
+    goof = cif['_refine_ls_goodness_of_fit_ref']
+    try:
+        completeness = "{0:.2f}".format(round(float(cif['_diffrn_measured_fraction_theta_full']) * 100, 1))
+    except ValueError:
+        completeness = '?'
     try:
         diff_density_min = "{0:.2f}".format(round(float(cif['_refine_diff_density_min']), 2))
     except ValueError:
@@ -265,10 +276,13 @@ def populate_main_table_values(main_table: Table, cif: CifContainer):
     rintsub2 = rintrun.add_run('sigma')
     rintsub2.font.subscript = True
     rintrun.add_run(' = ' + this_or_quest(reflns_av_unetI))
-    main_table.cell(25, 1).text = this_or_quest(ls_number_reflns) + '/' \
+    main_table.cell(25, 1).paragraphs[0].add_run(completeness)
+    main_table.cell(26, 1).text = this_or_quest(ls_number_reflns) + '/' \
                                   + this_or_quest(ls_number_restraints) + '/' \
                                   + this_or_quest(ls_number_parameters)
-    r2sigrun = main_table.cell(27, 1).paragraphs[0]
+    goof_run = main_table.cell(27, 1).paragraphs[0]
+    goof_run.add_run(goof)
+    r2sigrun = main_table.cell(28, 1).paragraphs[0]
     r2sigita1 = r2sigrun.add_run('R')
     r2sigita1.font.italic = True
     r2sigsub1 = r2sigrun.add_run('1')
@@ -279,7 +293,7 @@ def populate_main_table_values(main_table: Table, cif: CifContainer):
     r2sigsub2 = r2sigrun.add_run('2')
     r2sigsub2.font.subscript = True
     r2sigrun.add_run(' = ' + this_or_quest(ls_wR_factor_gt))
-    rfullrun = main_table.cell(28, 1).paragraphs[0]
+    rfullrun = main_table.cell(29, 1).paragraphs[0]
     rfullita1 = rfullrun.add_run('R')
     rfullita1.font.italic = True
     rfullsub1 = rfullrun.add_run('1')
@@ -290,9 +304,13 @@ def populate_main_table_values(main_table: Table, cif: CifContainer):
     rfullsub2 = rfullrun.add_run('2')
     rfullsub2.font.subscript = True
     rfullrun.add_run(' = ' + ls_wR_factor_ref)
-    main_table.cell(29, 1).text = diff_density_max + '/' + diff_density_min
+    main_table.cell(30, 1).text = diff_density_max + '/' + diff_density_min
     if not cif.is_centrosymm:
-        main_table.cell(30, 1).text = cif['_refine_ls_abs_structure_Flack'] or '?'
+        main_table.cell(31, 1).text = cif['_refine_ls_abs_structure_Flack'] or '?'
+    exti = cif['_refine_ls_extinction_coef']
+    if exti != '.' and exti != '?':
+        num = len(main_table.columns[0].cells)
+        main_table.columns[1].cells[num - 1].text = exti
     print('File parsed: ' + cif.fileobj.name + '  (' + sum_formula + ')  ' + space_group)
 
 
@@ -681,42 +699,50 @@ def populate_description_columns(main_table, cif: CifContainer):
     lgnd24 = main_table.cell(24, 0).paragraphs[0]
     lgnd24sub = lgnd24.add_run('Independent reflections')
     lgnd25 = main_table.cell(25, 0).paragraphs[0]
-    lgnd25sub = lgnd25.add_run('Data / Restraints / Param.')
-    lgnd26 = main_table.cell(26, 0).paragraphs[0]
-    lgnd26sub = lgnd26.add_run('Goodness-of-fit on ')
-    lgnd26sub1 = lgnd26.add_run('F')
-    lgnd26sub1.font.italic = True
-    lgnd26sub2 = lgnd26.add_run('2')
-    lgnd26sub2.font.superscript = True
+    theta_full = cif['_diffrn_reflns_theta_full']
+    lgnd25Asub = lgnd25.add_run('Completeness to \u03B8 = °'.format(theta_full))
+    lgnd26 = main_table.cell(26, 0).paragraphs[0].add_run('Data / Restraints / Param.')
     lgnd27 = main_table.cell(27, 0).paragraphs[0]
-    lgnd27sub = lgnd27.add_run('Final ')
-    lgnd27sub1 = lgnd27.add_run('R')
+    lgnd27sub = lgnd27.add_run('Goodness-of-fit on ')
+    lgnd27sub1 = lgnd27.add_run('F')
     lgnd27sub1.font.italic = True
-    lgnd27sub2 = lgnd27.add_run(' indexes \n[')
-    lgnd27sub3 = lgnd27.add_run('I')
-    lgnd27sub3.font.italic = True
-    lgnd27sub4 = lgnd27.add_run('\u22652\u03C3(')
-    lgnd27sub5 = lgnd27.add_run('I')
-    lgnd27sub5.font.italic = True
-    lgnd27sub3 = lgnd27.add_run(')]')
+    lgnd27sub2 = lgnd27.add_run('2')
+    lgnd27sub2.font.superscript = True
     lgnd28 = main_table.cell(28, 0).paragraphs[0]
     lgnd28sub = lgnd28.add_run('Final ')
     lgnd28sub1 = lgnd28.add_run('R')
     lgnd28sub1.font.italic = True
-    lgnd28sub2 = lgnd28.add_run(' indexes \n[all data]')
+    lgnd28sub2 = lgnd28.add_run(' indexes \n[')
+    lgnd28sub3 = lgnd28.add_run('I')
+    lgnd28sub3.font.italic = True
+    lgnd28sub4 = lgnd28.add_run('\u22652\u03C3(')
+    lgnd28sub5 = lgnd28.add_run('I')
+    lgnd28sub5.font.italic = True
+    lgnd28sub3 = lgnd28.add_run(')]')
     lgnd29 = main_table.cell(29, 0).paragraphs[0]
-    lgnd29sub = lgnd29.add_run('Largest peak/hole /eÅ')
-    lgnd29sub1 = lgnd29.add_run('3')
-    lgnd29sub1.font.superscript = True
+    lgnd29sub = lgnd29.add_run('Final ')
+    lgnd29sub1 = lgnd29.add_run('R')
+    lgnd29sub1.font.italic = True
+    lgnd29sub2 = lgnd29.add_run(' indexes \n[all data]')
     lgnd30 = main_table.cell(30, 0).paragraphs[0]
+    lgnd30sub = lgnd30.add_run('Largest peak/hole /eÅ')
+    lgnd30sub1 = lgnd30.add_run('3')
+    lgnd30sub1.font.superscript = True
     if not cif.is_centrosymm:
-        lgnd30sub = lgnd30.add_run('Flack x parameter')
+        lgnd31 = main_table.cell(31, 0).paragraphs[0]
+        lgnd31sub = lgnd31.add_run('Flack x parameter')
+    exti = cif['_refine_ls_extinction_coef']
+    if exti != '.' and exti != '?':
+        # always the last cell
+        num = len(main_table.columns[0].cells)
+        main_table.columns[0].cells[num - 1].paragraphs[0].add_run('Extinction coefficient')
 
 
 if __name__ == '__main__':
     output_filename = 'tables.docx'
-    # make_report_from(get_files_from_current_dir()[1])
+    # make_report_from(get_files_from_current_dir()[5])
     make_report_from(Path(r'test-data/DK_zucker2_0m.cif'))
+    # make_report_from(Path(r'test-data/sad-final.cif'))
     # make_report_from(Path(r'/Volumes/home/strukturen/eigene/DK_30011/sad-final.cif'))
     # make_report_from(Path(r'D:\goedaten\strukturen_goe\eigene\DK_4008\xl12\new\r3c.cif'))
     print(sys.platform)
