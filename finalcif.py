@@ -47,15 +47,14 @@ from tools.settings import FinalCifSettings
 """
 TODO:
 
+- make report txt from cif info
+- try to determine the _chemical_absolute_configuration method
 - make extra thread to load platon
 - Checkcif: http://journals.iucr.org/services/cif/checking/validlist.html
 - only let real cif keywords into the EquipmentEditTableWidget and cifKeywordLE.
 - action: rightclick on a template -> offer "export template (to .cif)"
 - action: rightclick on a template -> offer "import template (from .cif)"
-- get correct Rint, Tmin/Tmax from twinabs by combining reflections count with modification time, 
-  domain count?, hkl type
-- ReportButton -> generate full report with description text and all tables as .docx (and pdf?)
-  maybe also a preview? Directly open in MSword/LibreOffice?
+
 
 """
 light_green = QColor(217, 255, 201)
@@ -273,10 +272,11 @@ class AppWindow(QMainWindow):
         Runs the multitable program to make a report table.
         """
         if self.cif:
+            self.save_current_cif_file()
             output_filename = 'tables.docx'
             not_ok = None
             try:
-                make_report_from(self.cif.fileobj, path=application_path)
+                make_report_from(self.fin_file, path=application_path)
             except FileNotFoundError as e:
                 print('Unable to open cif file')
                 not_ok = e

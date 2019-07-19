@@ -50,7 +50,9 @@ class CifContainer():
         self.open_cif_with_gemmi()
         self.symmops = self._get_symmops()
 
-    def save(self, filename):
+    def save(self, filename=None):
+        if not filename:
+            filename = self.filename_absolute
         self.doc.write_file(filename, gemmi.cif.Style.Indent35)
 
     def open_cif_with_gemmi(self):
