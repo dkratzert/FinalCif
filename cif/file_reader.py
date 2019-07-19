@@ -47,6 +47,8 @@ class CifContainer():
         self.cif_data = None
         self.block = None
         self.doc = None
+        self.cif_file_text = ''
+        self.data_position = 0
         self.open_cif_with_gemmi()
         self.symmops = self._get_symmops()
 
@@ -60,6 +62,7 @@ class CifContainer():
         Reads a CIF file into gemmi and returns a sole block.
         """
         # print('File opened:', self.filename)
+        self.cif_file_text = self.fileobj.read_text(encoding='utf-8', errors='ignore')
         try:
             self.doc = gemmi.cif.read_file(str(self.filename_absolute))
             self.block = self.doc.sole_block()
@@ -69,6 +72,7 @@ class CifContainer():
             self.cif_data = json.loads(self.doc.as_json())[self.block.name.lower()]
         except Exception as e:
             raise
+        self.data_position = self.cif_file_text.find('data_')
 
     @property
     def hkl_checksum_calcd(self):
@@ -309,17 +313,27 @@ class CifContainer():
         questions = []
         # contains the answered keys:
         with_values = []
+        missing_keys = []
         for key in inputkeys.keys():
             if key in non_centrosymm_keys and self.is_centrosymm:
                 continue
             # try:
             value = self.block.find_value(key)
+            if not value:
+                # these are not in the cif file
+                missing_keys.append(key)
             # except (KeyError, TypeError):
             #    value = ''
             if not value or value == '?':
                 questions.append([key, value])
             else:
                 with_values.append([key, value])
+        cif = self.cif_file_text.splitlines()
+        for k in missing_keys:
+            cif.insert(self.data_position + 1, k + "     '?'")
+        self.cif_file_text = "\n".join(cif)
+        self.fileobj.write_text(self.cif_file_text)
+        self.open_cif_with_gemmi()
         return questions, with_values
 
     @property
