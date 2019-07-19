@@ -5,17 +5,20 @@
 #  and you think this stuff is worth it, you can buy me a beer in return.
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
+import sys
 from pathlib import Path
 
 import requests
 from PyQt5.QtCore import QUrl
 from PyQt5.QtWebEngineWidgets import QWebEngineView
+from PyQt5.QtWidgets import QApplication
 
 
 class WebPage(QWebEngineView):
     def __init__(self):
         QWebEngineView.__init__(self)
-        self.load(QUrl("https://checkcif.iucr.org/"))
+        #self.load(QUrl("https://checkcif.iucr.org/"))
+        self.load(QUrl("cifreport.html"))
         self.loadFinished.connect(self._on_load_finished)
 
     def _on_load_finished(self):
@@ -24,6 +27,7 @@ class WebPage(QWebEngineView):
 
     def Callable(self, html_str):
         self.html = html_str
+        '''
         self.page().runJavaScript(
             """
             var xhttp = new XMLHttpRequest();
@@ -35,25 +39,11 @@ class WebPage(QWebEngineView):
             };
             xhttp.open("POST", "//checkcif.iucr.org/cgi-bin/checkcif_hkl.pl", true);
             xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-            xhttp.send("filecif=='/Users/daniel/GitHub/FinalCif/test-data/DK_zucker2_0m.cif'");
+            xhttp.send("filecif=='/Users/daniel/GitHub/FinalCif/test-data/ntd106c-P-1-final.cif'");
             
             """
-        )
-        # self.page().runJavaScript(
-        #    "document.getElementsByName('filecif')[0].value = '/Users/daniel/GitHub/FinalCif/test-data/DK_zucker2_0m.cif'")
-        # self.page().runJavaScript("document.getElementsByName('UPLOAD')[0].click()")
-        # self.page().runJavaScript(
-        #    """
-        #    let fileInput = document.querySelector('input');
-        #    fileInput.addEventListener("input", ev => {
-        #        ev.preventDefault();
-        #        fileInput.files = e.dataTransfer.files;
-        #    }
-        #    );
-        #    //var x = document.createElement("INPUT");
-        #    //x.setAttribute("type", "file");
-        #    """
-        # )
+        )'''
+
 
 
 def get_checkcif():
@@ -86,7 +76,7 @@ def get_checkcif():
 
 if __name__ == "__main__":
     get_checkcif()
-    # app = QApplication(sys.argv)
-    # web = WebPage()
-    # web.show()
-    # sys.exit(app.exec_())
+    #app = QApplication(sys.argv)
+    #web = WebPage()
+    #web.show()
+    #sys.exit(app.exec_())
