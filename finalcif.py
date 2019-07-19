@@ -46,7 +46,7 @@ from tools.settings import FinalCifSettings
 
 """
 TODO:
-
+- try to get new cif keywords at the start, not end
 - make report txt from cif info
 - try to determine the _chemical_absolute_configuration method
 - make extra thread to load platon
