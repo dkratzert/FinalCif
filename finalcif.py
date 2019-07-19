@@ -46,7 +46,8 @@ from tools.settings import FinalCifSettings
 
 """
 TODO:
-- try to get new cif keywords at the start, not end
+- check used reflections and min/max theta for nm-twins 
+- make tables faster
 - make report txt from cif info
 - try to determine the _chemical_absolute_configuration method
 - make extra thread to load platon
