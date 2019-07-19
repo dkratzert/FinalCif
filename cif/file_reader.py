@@ -13,7 +13,6 @@ from pathlib import Path
 
 import gemmi
 
-from cif import cif_file_parser
 from tools.misc import high_prio_keys, non_centrosymm_keys, to_float
 
 
@@ -49,6 +48,7 @@ class CifContainer():
         self.doc = None
         self.cif_file_text = ''
         self.data_position = 0
+        self.atomic_struct = None
         self.open_cif_with_gemmi()
         self.symmops = self._get_symmops()
 
@@ -67,10 +67,12 @@ class CifContainer():
             self.doc = gemmi.cif.read_file(str(self.filename_absolute))
             self.block = self.doc.sole_block()
         except Exception as e:
+            print('Unable to read file:', e)
             raise
         try:
-            self.cif_data = json.loads(self.doc.as_json())[self.block.name.lower()]
+            self.atomic_struct = gemmi.read_atomic_structure(str(self.filename_absolute))
         except Exception as e:
+            print('Unable to read atomic structure:', e)
             raise
         self.data_position = self.cif_file_text.find('data_')
 
@@ -141,10 +143,11 @@ class CifContainer():
         xyz1 = self.block.find(("_symmetry_equiv_pos_as_xyz",))  # deprecated
         xyz2 = self.block.find(("_space_group_symop_operation_xyz",))  # New definition
         if xyz1:
-            self.cif_data['_space_group_symop_operation_xyz'] = [i.str(0) for i in xyz1]
+            return [i.str(0) for i in xyz1]
+        elif xyz2:
+            return [i.str(0) for i in xyz2]
         else:
-            self.cif_data['_space_group_symop_operation_xyz'] = [i.str(0) for i in xyz2]
-        return self.cif_data['_space_group_symop_operation_xyz']
+            return []
 
     @property
     def is_centrosymm(self):
@@ -152,18 +155,6 @@ class CifContainer():
             return True
         else:
             return False
-
-    def open_cif_with_fileparser(self):
-        """
-        """
-        if self.cif_data:
-            raise RuntimeError
-        try:
-            self.cif_data = cif_file_parser.Cif(self.filename_absolute)
-        except AttributeError:
-            print('Filename has to be a Path instance.')
-        except IsADirectoryError:
-            print('Filename can not be a directory.')
 
     def __getitem__(self, item):
         result = self.block.find_value(item)
@@ -181,6 +172,21 @@ class CifContainer():
         for label, type, x, y, z, occ, part, ueq in zip(labels, types, x, y, z, occ, part, u_eq):
             #       0     1    2   3 4  5    6     7
             yield label, type, x, y, z, occ, part, ueq
+
+    def atoms_from_sites(self):
+        for at in self.atomic_struct.sites:
+            yield at.orth.name, at.fract.type_symbol, at.fract.x, at.fract.y, at.fract.z
+
+    def atoms_orthogonal(self):
+        for at in self.atomic_struct.sites:
+            yield [self.atomic_struct.cell.orthogonalize(at.fract).x,
+                   self.atomic_struct.cell.orthogonalize(at.fract).y,
+                   self.atomic_struct.cell.orthogonalize(at.fract).z]
+
+    @property
+    def cell(self):
+        c = self.atomic_struct.cell
+        return c.a, c.b, c.c, c.alpha, c.beta, c.gamma, c.volume
 
     def bonds(self):
         label1 = self.block.find_loop('_geom_bond_atom_site_label_1')
@@ -233,8 +239,10 @@ class CifContainer():
                                                                                          angle_dha, symm):
             yield label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm
 
+    '''
     def atoms_in_asu(self, only_nh=False):
         """
+        This method my not work!!
         Number of atoms in the asymmetric unit.
         :param only_nh: Only count non-hydrogen atoms.
         """
@@ -257,6 +265,7 @@ class CifContainer():
 
     def atoms_in_cell(self, only_nh=False):
         """
+        This method my not work!!
         Number of atoms in the unit cell.
         :param only_nh: Only count non-hydrogen atoms.
         :return:
@@ -271,9 +280,11 @@ class CifContainer():
                 if num:
                     summe += float(num)
         return summe
-
+    
     def cell(self):
         return self.cif_data.cell
+    '''
+
 
     def set_pair_delimited(self, key, txt):
         """
