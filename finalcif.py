@@ -46,9 +46,8 @@ from tools.settings import FinalCifSettings
 
 """
 TODO:
-- check used reflections and min/max theta for nm-twins 
 - make tables faster
-- make report txt from cif info
+- make report text in tables from cif info
 - try to determine the _chemical_absolute_configuration method
 - make extra thread to load platon
 - Checkcif: http://journals.iucr.org/services/cif/checking/validlist.html
