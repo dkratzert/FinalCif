@@ -8,6 +8,7 @@ import os
 import re
 import subprocess
 import sys
+import time
 from pathlib import Path
 
 from docx import Document
@@ -471,10 +472,11 @@ def add_bonds_and_angles_table(document: Document, cif: CifContainer, table_num:
             num += 1
         cell0, cell1 = bond_angle_table.add_row().cells
         cell0.text = at1
-        cell0.paragraphs[0].add_run('#' + str(symms[symm1]) if symm1 else '').font.superscript = True
-        cell0.paragraphs[0].add_run(' - ' + at2 + ' - ')
-        cell0.paragraphs[0].add_run(at3)  # labels
-        cell0.paragraphs[0].add_run('#' + str(symms[symm3]) if symm3 else '').font.superscript = True
+        cp0 = cell0.paragraphs[0]
+        cp0.add_run('#' + str(symms[symm1]) if symm1 else '').font.superscript = True
+        cp0.add_run(' - ' + at2 + ' - ')
+        cp0.add_run(at3)  # labels
+        cp0.add_run('#' + str(symms[symm3]) if symm3 else '').font.superscript = True
         cell1.text = str(angle)  # angle
     set_column_width(bond_angle_table.columns[0], Cm(4))
     set_column_width(bond_angle_table.columns[1], Cm(4))
@@ -567,17 +569,18 @@ def add_torsion_angles(document: Document, cif: CifContainer, table_num: int):
             newsymms[num] = s.toShelxl()
             num += 1
         cell0, cell1 = torsion_table.add_row().cells
-        cell0.text = at1
-        cell0.paragraphs[0].add_run('#' + str(symms[symm1]) if symm1 else '').font.superscript = True
-        cell0.paragraphs[0].add_run(' - ')
-        cell0.paragraphs[0].add_run(at2)
-        cell0.paragraphs[0].add_run('#' + str(symms[symm2]) if symm2 else '').font.superscript = True
-        cell0.paragraphs[0].add_run(' - ')
-        cell0.paragraphs[0].add_run(at3)
-        cell0.paragraphs[0].add_run('#' + str(symms[symm3]) if symm3 else '').font.superscript = True
-        cell0.paragraphs[0].add_run(' - ')
-        cell0.paragraphs[0].add_run(at4)  # labels
-        cell0.paragraphs[0].add_run('#' + str(symms[symm4]) if symm4 else '').font.superscript = True
+        cp0 = cell0.paragraphs[0]
+        cp0.add_run(at1)
+        cp0.add_run('#' + str(symms[symm1]) if symm1 else '').font.superscript = True
+        cp0.add_run(' - ')
+        cp0.add_run(at2)
+        cp0.add_run('#' + str(symms[symm2]) if symm2 else '').font.superscript = True
+        cp0.add_run(' - ')
+        cp0.add_run(at3)
+        cp0.add_run('#' + str(symms[symm3]) if symm3 else '').font.superscript = True
+        cp0.add_run(' - ')
+        cp0.add_run(at4)  # labels
+        cp0.add_run('#' + str(symms[symm4]) if symm4 else '').font.superscript = True
         cell1.paragraphs[0].add_run(str(angle))  # angle
     set_column_width(torsion_table.columns[0], Cm(5))
     set_column_width(torsion_table.columns[1], Cm(4))
@@ -743,7 +746,10 @@ def populate_description_columns(main_table, cif: CifContainer):
 if __name__ == '__main__':
     output_filename = 'tables.docx'
     # make_report_from(get_files_from_current_dir()[5])
+    t1 = time.perf_counter()
     make_report_from(Path(r'test-data/DK_zucker2_0m.cif'))
+    t2 = time.perf_counter()
+    print(round(t2-t1, 2), 's')
     # make_report_from(Path(r'test-data/sad-final.cif'))
     # make_report_from(Path(r'/Volumes/home/strukturen/eigene/DK_30011/sad-final.cif'))
     # make_report_from(Path(r'D:\goedaten\strukturen_goe\eigene\DK_4008\xl12\new\r3c.cif'))
