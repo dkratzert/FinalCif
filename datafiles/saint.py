@@ -24,10 +24,15 @@ class SaintListFile():
             if saintfile:
                 self._fileobj = Path(saintfile)
                 self.filename = self._fileobj.absolute()
-                self.parse_file()
+                try:
+                    self.parse_file()
+                except Exception as e:
+                    print('Unable to parse saint list file:', e)
 
     def parse_file(self):
         text = self._fileobj.read_text(encoding='ascii', errors='ignore').splitlines(keepends=False)
+        summary = None
+        orientation = 0
         for num, line in enumerate(text):
             #spline = line.strip().split()
             if num == 0:
@@ -45,10 +50,21 @@ class SaintListFile():
                  Component     Input  RLV.Excl      Used  WorstRes   BestRes   Min.2Th   Max.2Th
                     1.1(1)       202         0       202    6.9242    1.2823     5.884    32.178
                 """
-                summary = text[num + 3].split() or text[num + 2].split()
+                summary = True
+            if summary and line.lstrip().startswith('1.1(1)'):
+                summary = line.split()
                 self.cell_reflections = summary[3] or 0
                 self.cell_res_min_2t = summary[6] or 0.0
                 self.cell_res_max_2t = summary[7] or 0.0
+            if summary and not orientation and line.lstrip().startswith('All'):
+                summary = line.split()
+                self.cell_reflections = summary[3] or 0
+                self.cell_res_min_2t = summary[6] or 0.0
+                self.cell_res_max_2t = summary[7] or 0.0
+            if line.startswith("Orientation ('UB') matrix"):
+                orientation += 1
+            if summary and orientation == 2:
+                break
             if line.startswith('Frames were acquired'):
                 """
                 Frames were acquired with BIS 2018.9.0.3/05-Dec-2018 && APEX3_2018.7-2

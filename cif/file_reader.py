@@ -341,7 +341,9 @@ class CifContainer():
                 with_values.append([key, value])
         cif = self.cif_file_text.splitlines()
         for k in missing_keys:
-            cif.insert(self.data_position + 1, k + "     '?'")
+            cif.insert(self.data_position, k + "     '?'")
+            if k in non_centrosymm_keys and self.is_centrosymm:
+                continue
         self.cif_file_text = "\n".join(cif)
         self.fileobj.write_text(self.cif_file_text)
         self.open_cif_with_gemmi()
