@@ -141,7 +141,6 @@ def add_main_table(document: Document(), cif: CifContainer, table_num: int):
         rows -= 1
     main_table = document.add_table(rows=rows, cols=2)
     # table.alignment = WD_TABLE_ALIGNMENT.CENTER
-    main_table.width = Cm(10)
     # table.allow_autofit = False
     # table.autofit = False
     # col = table.columns[0]
@@ -151,10 +150,8 @@ def add_main_table(document: Document(), cif: CifContainer, table_num: int):
     # col.width = Cm(5.0)
     # col.autofit = False
     # setup table format:
-    widths = (Cm(5), Cm(5))
-    for row in main_table.rows:
-        for idx, width in enumerate(widths):
-            row.cells[idx].width = width
+    set_column_width(main_table.columns[0], Cm(5))
+    set_column_width(main_table.columns[1], Cm(5))
     # Add descriptions to the first column of the main table:
     populate_description_columns(main_table, cif)
     # The main residuals table:
@@ -356,12 +353,12 @@ def add_coords_table(document: Document, cif: CifContainer, table_num: int):
     ar.bold = True
     ar.font.subscript = True
     for at in cif.atoms():
-        row_cells = coords_table.add_row().cells
-        row_cells[0].text = at[0]  # label
-        row_cells[1].text = str(at[2])  # x
-        row_cells[2].text = str(at[3])  # y
-        row_cells[3].text = str(at[4])  # z
-        row_cells[4].text = str(at[7])  # ueq
+        c0, c1, c2, c3, c4 = coords_table.add_row().cells
+        c0.text = at[0]  # label
+        c1.text = str(at[2])  # x
+        c2.text = str(at[3])  # y
+        c3.text = str(at[4])  # z
+        c4.text = str(at[7])  # ueq
     return table_num
 
 
@@ -412,8 +409,7 @@ def add_bonds_and_angles_table(document: Document, cif: CifContainer, table_num:
     table_num += 1
     headline = r"Table {}. Bond lengths and angles for {}.".format(table_num, cif.fileobj.name)
     document.add_heading(headline, 2)
-    bond_angle_table = document.add_table(rows=0, cols=2)
-    bond_angle_table.style = 'Table Grid'
+    bond_angle_table = document.add_table(rows=0, cols=2, style='Table Grid')
     # Bond/Angle  value
     head_row = bond_angle_table.add_row()
     ar = head_row.cells[0].paragraphs[0].add_run('Atom - Atom')
@@ -473,19 +469,22 @@ def add_bonds_and_angles_table(document: Document, cif: CifContainer, table_num:
                 s.translate(symm3)
             newsymms[num] = s.toShelxl()
             num += 1
-        row_cells = bond_angle_table.add_row().cells
-        cell0 = row_cells[0]
-        cell1 = row_cells[1]
+        cell0, cell1 = bond_angle_table.add_row().cells
         cell0.text = at1
         cell0.paragraphs[0].add_run('#' + str(symms[symm1]) if symm1 else '').font.superscript = True
         cell0.paragraphs[0].add_run(' - ' + at2 + ' - ')
         cell0.paragraphs[0].add_run(at3)  # labels
         cell0.paragraphs[0].add_run('#' + str(symms[symm3]) if symm3 else '').font.superscript = True
         cell1.text = str(angle)  # angle
-        cell0.width = Cm(4)
-        cell1.width = Cm(4)
+    set_column_width(bond_angle_table.columns[0], Cm(4))
+    set_column_width(bond_angle_table.columns[1], Cm(4))
     add_last_symminfo_line(newsymms, document)
     return table_num
+
+
+def set_column_width(column, width):
+    for cell in column.cells:
+        cell.width = width
 
 
 def make_table_widths(table, widths):
@@ -567,21 +566,21 @@ def add_torsion_angles(document: Document, cif: CifContainer, table_num: int):
                 s.translate(symm4)
             newsymms[num] = s.toShelxl()
             num += 1
-        row_cells = torsion_table.add_row().cells
-        row_cells[0].text = at1
-        row_cells[0].paragraphs[0].add_run('#' + str(symms[symm1]) if symm1 else '').font.superscript = True
-        row_cells[0].paragraphs[0].add_run(' - ')
-        row_cells[0].paragraphs[0].add_run(at2)
-        row_cells[0].paragraphs[0].add_run('#' + str(symms[symm2]) if symm2 else '').font.superscript = True
-        row_cells[0].paragraphs[0].add_run(' - ')
-        row_cells[0].paragraphs[0].add_run(at3)
-        row_cells[0].paragraphs[0].add_run('#' + str(symms[symm3]) if symm3 else '').font.superscript = True
-        row_cells[0].paragraphs[0].add_run(' - ')
-        row_cells[0].paragraphs[0].add_run(at4)  # labels
-        row_cells[0].paragraphs[0].add_run('#' + str(symms[symm4]) if symm4 else '').font.superscript = True
-        row_cells[1].paragraphs[0].add_run(str(angle))  # angle
-    widths = (Cm(4.5), Cm(4))
-    make_table_widths(torsion_table, widths)
+        cell0, cell1 = torsion_table.add_row().cells
+        cell0.text = at1
+        cell0.paragraphs[0].add_run('#' + str(symms[symm1]) if symm1 else '').font.superscript = True
+        cell0.paragraphs[0].add_run(' - ')
+        cell0.paragraphs[0].add_run(at2)
+        cell0.paragraphs[0].add_run('#' + str(symms[symm2]) if symm2 else '').font.superscript = True
+        cell0.paragraphs[0].add_run(' - ')
+        cell0.paragraphs[0].add_run(at3)
+        cell0.paragraphs[0].add_run('#' + str(symms[symm3]) if symm3 else '').font.superscript = True
+        cell0.paragraphs[0].add_run(' - ')
+        cell0.paragraphs[0].add_run(at4)  # labels
+        cell0.paragraphs[0].add_run('#' + str(symms[symm4]) if symm4 else '').font.superscript = True
+        cell1.paragraphs[0].add_run(str(angle))  # angle
+    set_column_width(torsion_table.columns[0], Cm(5))
+    set_column_width(torsion_table.columns[1], Cm(4))
     add_last_symminfo_line(newsymms, document)
     return table_num
 
@@ -618,13 +617,13 @@ def add_hydrogen_bonds(document: Document, cif: CifContainer, table_num: int):
             newsymms[num] = s.toShelxl()
         num += 1
         symmval = ('#' + str(symms[symm])) if symm else ''
-        row_cells = hydrogen_table.add_row().cells
-        row_cells[0].text = label_d + ' - ' + label_h + ' ... ' + label_a
-        row_cells[0].paragraphs[0].add_run(symmval).font.superscript = True
-        row_cells[1].text = dist_dh
-        row_cells[2].text = dist_ha
-        row_cells[3].text = dist_da
-        row_cells[4].text = angle_dha
+        cell0, cell1, cell2, cell3, cell4 = hydrogen_table.add_row().cells
+        cell0.text = label_d + ' - ' + label_h + ' ... ' + label_a
+        cell0.paragraphs[0].add_run(symmval).font.superscript = True
+        cell1.text = dist_dh
+        cell2.text = dist_ha
+        cell3.text = dist_da
+        cell4.text = angle_dha
     widths = (Cm(4), Cm(2.5), Cm(2.5), Cm(2.5), Cm(2.5))
     make_table_widths(hydrogen_table, widths)
     add_last_symminfo_line(newsymms, document)
