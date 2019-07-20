@@ -474,14 +474,16 @@ def add_bonds_and_angles_table(document: Document, cif: CifContainer, table_num:
             newsymms[num] = s.toShelxl()
             num += 1
         row_cells = bond_angle_table.add_row().cells
-        row_cells[0].text = at1
-        row_cells[0].paragraphs[0].add_run('#' + str(symms[symm1]) if symm1 else '').font.superscript = True
-        row_cells[0].paragraphs[0].add_run(' - ' + at2 + ' - ')
-        row_cells[0].paragraphs[0].add_run(at3)  # labels
-        row_cells[0].paragraphs[0].add_run('#' + str(symms[symm3]) if symm3 else '').font.superscript = True
-        row_cells[1].text = str(angle)  # angle
-    widths = (Cm(4), Cm(4))
-    make_table_widths(bond_angle_table, widths)
+        cell0 = row_cells[0]
+        cell1 = row_cells[1]
+        cell0.text = at1
+        cell0.paragraphs[0].add_run('#' + str(symms[symm1]) if symm1 else '').font.superscript = True
+        cell0.paragraphs[0].add_run(' - ' + at2 + ' - ')
+        cell0.paragraphs[0].add_run(at3)  # labels
+        cell0.paragraphs[0].add_run('#' + str(symms[symm3]) if symm3 else '').font.superscript = True
+        cell1.text = str(angle)  # angle
+        cell0.width = Cm(4)
+        cell1.width = Cm(4)
     add_last_symminfo_line(newsymms, document)
     return table_num
 
