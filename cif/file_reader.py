@@ -6,14 +6,12 @@
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
 
-import json
-import re
 import textwrap
 from pathlib import Path
 
 import gemmi
 
-from tools.misc import high_prio_keys, non_centrosymm_keys, to_float
+from tools.misc import high_prio_keys, non_centrosymm_keys
 
 
 def quote(string: str, wrapping=80):
@@ -75,6 +73,34 @@ class CifContainer():
             print('Unable to read atomic structure:', e)
             raise
         self.data_position = self.cif_file_text.find('data_')
+
+    @property
+    def abs_process_details(self):
+        """
+        This method tries to determine the information witten at the end of a cif hkl file by sadabs.
+        """
+        hkl = self.block.find_value('_shelx_hkl_file')
+        abs = False
+        details = ''
+        all = {}
+        for line in hkl.splitlines():
+            if line.startswith(' _exptl_absorpt_process_details'):
+                abs = True
+                continue
+            if abs and not line.startswith(')'):
+                details += line
+                continue
+            if line.startswith(')') and details:
+                all['_exptl_absorpt_process_details'] = details.lstrip()
+                abs = False
+                continue
+            if line.startswith(' _exptl_absorpt_correction_type'):
+                all['_exptl_absorpt_correction_type'] = line.split()[1]
+            if line.startswith(' _exptl_absorpt_correction_T_max'):
+                all['_exptl_absorpt_correction_T_max'] = line.split()[1]
+            if line.startswith(' _exptl_absorpt_correction_T_min'):
+                all['_exptl_absorpt_correction_T_min'] = line.split()[1]
+        return all
 
     @property
     def hkl_checksum_calcd(self):
@@ -285,7 +311,6 @@ class CifContainer():
         return self.cif_data.cell
     '''
 
-
     def set_pair_delimited(self, key, txt):
         """
         Converts special characters to their markup counterparts.
@@ -339,14 +364,14 @@ class CifContainer():
                 questions.append([key, value])
             else:
                 with_values.append([key, value])
-        cif = self.cif_file_text.splitlines()
-        for k in missing_keys:
-            cif.insert(self.data_position, k + "     '?'")
-            if k in non_centrosymm_keys and self.is_centrosymm:
-                continue
-        self.cif_file_text = "\n".join(cif)
-        self.fileobj.write_text(self.cif_file_text)
-        self.open_cif_with_gemmi()
+        # cif = self.cif_file_text.splitlines()
+        # for k in missing_keys:
+        #    cif.insert(self.data_position, k + "     '?'")
+        #    if k in non_centrosymm_keys and self.is_centrosymm:
+        #        continue
+        # self.cif_file_text = "\n".join(cif)
+        # self.fileobj.write_text(self.cif_file_text)
+        # self.open_cif_with_gemmi()
         return questions, with_values
 
     @property
