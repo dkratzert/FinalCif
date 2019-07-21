@@ -109,14 +109,23 @@ def make_report_from(file_obj: Path, output_filename: str = None, path: str = ''
     table_num = 1
     cif, table_num = add_main_table(document, cif, table_num)
     document.add_paragraph('')
+    t1 = time.perf_counter()
     table_num = add_coords_table(document, cif, table_num)
+    t2 = time.perf_counter()
+    print('coord', round(t2 - t1, 2), 's')
     document.add_paragraph('')
+    t1 = time.perf_counter()
     table_num = add_bonds_and_angles_table(document, cif, table_num)
-
+    t2 = time.perf_counter()
+    print('bonds/ang', round(t2 - t1, 2), 's')
+    t1 = time.perf_counter()
     table_num = add_torsion_angles(document, cif, table_num)
-
+    t2 = time.perf_counter()
+    print('tors', round(t2 - t1, 2), 's')
+    t1 = time.perf_counter()
     table_num = add_hydrogen_bonds(document, cif, table_num)
-
+    t2 = time.perf_counter()
+    print('hydrogen', round(t2 - t1, 2), 's')
     print('\nScript finished - output file: tables.docx')
     if not output_filename:
         document.save('tables.docx')
@@ -410,9 +419,12 @@ def add_bonds_and_angles_table(document: Document, cif: CifContainer, table_num:
     table_num += 1
     headline = r"Table {}. Bond lengths and angles for {}.".format(table_num, cif.fileobj.name)
     document.add_heading(headline, 2)
-    bond_angle_table = document.add_table(rows=0, cols=2, style='Table Grid')
+    nbonds = len(list(cif.bonds()))
+    nangles = len(list(cif.angles()))
+    # creating rows before is *much* faster!
+    bond_angle_table = document.add_table(rows=nbonds + nangles + 3, cols=2, style='Table Grid')
     # Bond/Angle  value
-    head_row = bond_angle_table.add_row()
+    head_row = bond_angle_table.rows[0]
     ar = head_row.cells[0].paragraphs[0].add_run('Atom - Atom')
     ar.bold = True
     ar = head_row.cells[1].paragraphs[0].add_run('Length [Å]')
@@ -420,7 +432,13 @@ def add_bonds_and_angles_table(document: Document, cif: CifContainer, table_num:
     symms = {}
     newsymms = {}
     num = 1
+    # having a list of column cella before is *much* faster!
+    col1_cells = bond_angle_table.columns[0].cells
+    col2_cells = bond_angle_table.columns[1].cells
+    rowidx = 1
     for at1, at2, val, symm2 in cif.bonds():
+        c0, c1 = col1_cells[rowidx], col2_cells[rowidx]
+        rowidx += 1
         if symm2 == '.':
             symm2 = None
         if symm2 and symm2 not in symms.keys():
@@ -432,13 +450,12 @@ def add_bonds_and_angles_table(document: Document, cif: CifContainer, table_num:
             s.translate(symm2)
             newsymms[num] = s.toShelxl()
             num += 1
-        row_cells = bond_angle_table.add_row().cells
-        row_cells[0].text = at1 + ' - ' + at2
-        row_cells[0].paragraphs[0].add_run('#' + str(symms[symm2]) if symm2 else '').font.superscript = True
-        row_cells[1].text = str(val)  # bond
+        c0.text = at1 + ' - ' + at2
+        c0.paragraphs[0].add_run('#' + str(symms[symm2]) if symm2 else '').font.superscript = True
+        c1.text = str(val)  # bond
     ############ the angles ####################
-    bond_angle_table.add_row()
-    head_row = bond_angle_table.add_row()
+    # bond_angle_table.add_row()
+    head_row = bond_angle_table.rows[nbonds+2]
     ar = head_row.cells[0].paragraphs[0].add_run('Atom - Atom - Atom')
     ar.bold = True
     ar = head_row.cells[1].paragraphs[0].add_run('Angle [°]')
@@ -447,8 +464,10 @@ def add_bonds_and_angles_table(document: Document, cif: CifContainer, table_num:
     set_cell_border(head_row.cells[1], bottom={"sz": 2, "color": "#000000", "val": "single"})
     card = ''
     s = SymmetryElement(card)
-    # TODO: split this in two columns:
+    rowidx += 2
     for at1, at2, at3, angle, symm1, symm3 in cif.angles():
+        c0, c1 = col1_cells[rowidx], col2_cells[rowidx]
+        rowidx += 1
         if symm1 == '.':
             symm1 = None
         if symm3 == '.':
@@ -470,14 +489,13 @@ def add_bonds_and_angles_table(document: Document, cif: CifContainer, table_num:
                 s.translate(symm3)
             newsymms[num] = s.toShelxl()
             num += 1
-        cell0, cell1 = bond_angle_table.add_row().cells
-        cell0.text = at1
-        cp0 = cell0.paragraphs[0]
+        c0.text = at1
+        cp0 = c0.paragraphs[0]
         cp0.add_run('#' + str(symms[symm1]) if symm1 else '').font.superscript = True
         cp0.add_run(' - ' + at2 + ' - ')
         cp0.add_run(at3)  # labels
         cp0.add_run('#' + str(symms[symm3]) if symm3 else '').font.superscript = True
-        cell1.text = str(angle)  # angle
+        c1.text = str(angle)  # angle
     set_column_width(bond_angle_table.columns[0], Cm(4))
     set_column_width(bond_angle_table.columns[1], Cm(4))
     add_last_symminfo_line(newsymms, document)
@@ -747,9 +765,10 @@ if __name__ == '__main__':
     output_filename = 'tables.docx'
     # make_report_from(get_files_from_current_dir()[5])
     t1 = time.perf_counter()
-    make_report_from(Path(r'test-data/DK_zucker2_0m.cif'))
+    # make_report_from(Path(r'test-data/DK_zucker2_0m.cif'))
+    make_report_from(Path(r'/Volumes/nifty/p-1.cif'))
     t2 = time.perf_counter()
-    print(round(t2-t1, 2), 's')
+    print(round(t2 - t1, 2), 's')
     # make_report_from(Path(r'test-data/sad-final.cif'))
     # make_report_from(Path(r'/Volumes/home/strukturen/eigene/DK_30011/sad-final.cif'))
     # make_report_from(Path(r'D:\goedaten\strukturen_goe\eigene\DK_4008\xl12\new\r3c.cif'))
