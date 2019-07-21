@@ -107,25 +107,28 @@ def make_report_from(file_obj: Path, output_filename: str = None, path: str = ''
         raise FileNotFoundError
 
     table_num = 1
+    t1 = time.perf_counter()
     cif, table_num = add_main_table(document, cif, table_num)
+    t2 = time.perf_counter()
+    print('main table:', round(t2 - t1, 2), 's')
     document.add_paragraph('')
     t1 = time.perf_counter()
     table_num = add_coords_table(document, cif, table_num)
     t2 = time.perf_counter()
-    print('coord', round(t2 - t1, 2), 's')
+    print('coords:', round(t2 - t1, 2), 's')
     document.add_paragraph('')
     t1 = time.perf_counter()
     table_num = add_bonds_and_angles_table(document, cif, table_num)
     t2 = time.perf_counter()
-    print('bonds/ang', round(t2 - t1, 2), 's')
+    print('bonds/ang:', round(t2 - t1, 2), 's')
     t1 = time.perf_counter()
     table_num = add_torsion_angles(document, cif, table_num)
     t2 = time.perf_counter()
-    print('tors', round(t2 - t1, 2), 's')
+    print('tors:', round(t2 - t1, 2), 's')
     t1 = time.perf_counter()
     table_num = add_hydrogen_bonds(document, cif, table_num)
     t2 = time.perf_counter()
-    print('hydrogen', round(t2 - t1, 2), 's')
+    print('hydrogen:', round(t2 - t1, 2), 's')
     print('\nScript finished - output file: tables.docx')
     if not output_filename:
         document.save('tables.docx')
@@ -328,6 +331,7 @@ def add_coords_table(document: Document, cif: CifContainer, table_num: int):
     :param cif: the cif object from CifContainer.
     :return: None
     """
+    ncoords = len(list(cif.atoms()))
     table_num += 1
     headline = "Table {}. Atomic coordinates ".format(table_num)
     h = document.add_heading(headline, 2)
@@ -340,7 +344,7 @@ def add_coords_table(document: Document, cif: CifContainer, table_num: int):
     ij.font.subscript = True
     ij.italic = True
     h.add_run(' tensor.')
-    coords_table = document.add_table(rows=1, cols=5)
+    coords_table = document.add_table(rows=ncoords + 1, cols=5)
     # coords_table.style = document.styles['Table Grid']
     coords_table.style = 'Table Grid'
     # Atom	x	y	z	U(eq)
@@ -362,8 +366,17 @@ def add_coords_table(document: Document, cif: CifContainer, table_num: int):
     ar = head_row.cells[4].paragraphs[0].add_run('eq')
     ar.bold = True
     ar.font.subscript = True
+    # having a list of column cella before is *much* faster!
+    col0_cells = coords_table.columns[0].cells
+    col1_cells = coords_table.columns[1].cells
+    col2_cells = coords_table.columns[2].cells
+    col3_cells = coords_table.columns[3].cells
+    col4_cells = coords_table.columns[4].cells
+    rowidx = 1
     for at in cif.atoms():
-        c0, c1, c2, c3, c4 = coords_table.add_row().cells
+        c0, c1, c2, c3, c4 = col0_cells[rowidx], col1_cells[rowidx], col2_cells[rowidx], \
+                             col3_cells[rowidx], col4_cells[rowidx]
+        rowidx += 1
         c0.text = at[0]  # label
         c1.text = str(at[2])  # x
         c2.text = str(at[3])  # y
@@ -455,7 +468,7 @@ def add_bonds_and_angles_table(document: Document, cif: CifContainer, table_num:
         c1.text = str(val)  # bond
     ############ the angles ####################
     # bond_angle_table.add_row()
-    head_row = bond_angle_table.rows[nbonds+2]
+    head_row = bond_angle_table.rows[nbonds + 2]
     ar = head_row.cells[0].paragraphs[0].add_run('Atom - Atom - Atom')
     ar.bold = True
     ar = head_row.cells[1].paragraphs[0].add_run('Angle [°]')
@@ -540,15 +553,16 @@ def add_torsion_angles(document: Document, cif: CifContainer, table_num: int):
     """
     Table 6.  Torsion angles [°] for I-43d_final.
     """
+    ntors = len(list(cif.torsion_angles()))
     if not len(list(cif.torsion_angles())) > 0:
         print('No torsion angles in cif.')
         return table_num
     table_num += 1
     headline = r"Table {}. Torsion angles for {}.".format(table_num, cif.fileobj.name)
     document.add_heading(headline, 2)
-    torsion_table = document.add_table(rows=0, cols=2)
+    torsion_table = document.add_table(rows=ntors + 1, cols=2)
     torsion_table.style = 'Table Grid'
-    head_row = torsion_table.add_row()
+    head_row = torsion_table.rows[0]
     ar = head_row.cells[0].paragraphs[0].add_run('Atom - Atom - Atom - Atom')
     ar.bold = True
     ar = head_row.cells[1].paragraphs[0].add_run('Torsion Angle [°]')
@@ -558,7 +572,12 @@ def add_torsion_angles(document: Document, cif: CifContainer, table_num: int):
     card = ''
     s = SymmetryElement(card)
     num = 1
+    col0_cells = torsion_table.columns[0].cells
+    col1_cells = torsion_table.columns[1].cells
+    rowidx = 1
     for at1, at2, at3, at4, angle, symm1, symm2, symm3, symm4 in cif.torsion_angles():
+        c0, c1 = col0_cells[rowidx], col1_cells[rowidx]
+        rowidx += 1
         if symm1 == '.':
             symm1 = None
         if symm2 == '.':
@@ -586,8 +605,7 @@ def add_torsion_angles(document: Document, cif: CifContainer, table_num: int):
                 s.translate(symm4)
             newsymms[num] = s.toShelxl()
             num += 1
-        cell0, cell1 = torsion_table.add_row().cells
-        cp0 = cell0.paragraphs[0]
+        cp0 = c0.paragraphs[0]
         cp0.add_run(at1)
         cp0.add_run('#' + str(symms[symm1]) if symm1 else '').font.superscript = True
         cp0.add_run(' - ')
@@ -599,7 +617,7 @@ def add_torsion_angles(document: Document, cif: CifContainer, table_num: int):
         cp0.add_run(' - ')
         cp0.add_run(at4)  # labels
         cp0.add_run('#' + str(symms[symm4]) if symm4 else '').font.superscript = True
-        cell1.paragraphs[0].add_run(str(angle))  # angle
+        c1.paragraphs[0].add_run(str(angle))  # angle
     set_column_width(torsion_table.columns[0], Cm(5))
     set_column_width(torsion_table.columns[1], Cm(4))
     add_last_symminfo_line(newsymms, document)
@@ -765,8 +783,8 @@ if __name__ == '__main__':
     output_filename = 'tables.docx'
     # make_report_from(get_files_from_current_dir()[5])
     t1 = time.perf_counter()
-    # make_report_from(Path(r'test-data/DK_zucker2_0m.cif'))
-    make_report_from(Path(r'/Volumes/nifty/p-1.cif'))
+    make_report_from(Path(r'test-data/DK_zucker2_0m.cif'))
+    # make_report_from(Path(r'/Volumes/nifty/p-1.cif'))
     t2 = time.perf_counter()
     print(round(t2 - t1, 2), 's')
     # make_report_from(Path(r'test-data/sad-final.cif'))
