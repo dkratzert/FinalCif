@@ -525,10 +525,8 @@ def add_torsion_angles(document: Document, cif: CifContainer, table_num: int):
     torsion_table = document.add_table(rows=ntors + 1, cols=2)
     torsion_table.style = 'Table Grid'
     head_row = torsion_table.rows[0]
-    ar = head_row.cells[0].paragraphs[0].add_run('Atom - Atom - Atom - Atom')
-    ar.bold = True
-    ar = head_row.cells[1].paragraphs[0].add_run('Torsion Angle [°]')
-    ar.bold = True
+    head_row.cells[0].paragraphs[0].add_run('Atom - Atom - Atom - Atom').bold = True
+    head_row.cells[1].paragraphs[0].add_run('Torsion Angle [°]').bold = True
     symms = {}
     newsymms = {}
     card = ''
@@ -593,10 +591,11 @@ def add_hydrogen_bonds(document: Document, cif: CifContainer, table_num: int):
     if not len(list(cif.hydrogen_bonds())) > 0:
         print('No hydrogen bonds in cif.')
         return
+    nhydrogenb = len(list(cif.hydrogen_bonds()))
     table_num += 1
     headline = r"Table {}. Hydrogen bonds for {}.".format(table_num, cif.fileobj.name)
     document.add_heading(headline, 2)
-    hydrogen_table = document.add_table(rows=1, cols=5)
+    hydrogen_table = document.add_table(rows=nhydrogenb + 1, cols=5)
     hydrogen_table.style = 'Table Grid'
     head_row = hydrogen_table.rows[0].cells
     # D-H...A	d(D-H)	d(H...A)	d(D...A)	<(DHA)
@@ -608,7 +607,16 @@ def add_hydrogen_bonds(document: Document, cif: CifContainer, table_num: int):
     symms = {}
     newsymms = {}
     num = 1
+    col0_cells = hydrogen_table.columns[0].cells
+    col1_cells = hydrogen_table.columns[1].cells
+    col2_cells = hydrogen_table.columns[2].cells
+    col3_cells = hydrogen_table.columns[3].cells
+    col4_cells = hydrogen_table.columns[4].cells
+    rowidx = 1
     for label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm in cif.hydrogen_bonds():
+        c0, c1, c2, c3, c4 = col0_cells[rowidx], col1_cells[rowidx], col2_cells[rowidx], \
+                             col3_cells[rowidx], col4_cells[rowidx]
+        rowidx += 1
         if symm == '.':
             symm = None
         if symm and symm not in symms.keys():
@@ -618,13 +626,12 @@ def add_hydrogen_bonds(document: Document, cif: CifContainer, table_num: int):
             newsymms[num] = s.toShelxl()
         num += 1
         symmval = ('#' + str(symms[symm])) if symm else ''
-        cell0, cell1, cell2, cell3, cell4 = hydrogen_table.add_row().cells
-        cell0.text = label_d + ' - ' + label_h + ' ... ' + label_a
-        cell0.paragraphs[0].add_run(symmval).font.superscript = True
-        cell1.text = dist_dh
-        cell2.text = dist_ha
-        cell3.text = dist_da
-        cell4.text = angle_dha
+        c0.text = label_d + ' - ' + label_h + ' ... ' + label_a
+        c0.paragraphs[0].add_run(symmval).font.superscript = True
+        c1.text = dist_dh
+        c2.text = dist_ha
+        c3.text = dist_da
+        c4.text = angle_dha
     widths = (Cm(4), Cm(2.5), Cm(2.5), Cm(2.5), Cm(2.5))
     make_table_widths(hydrogen_table, widths)
     add_last_symminfo_line(newsymms, document)
