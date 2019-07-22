@@ -11,7 +11,7 @@ from pathlib import Path
 
 import gemmi
 
-from tools.misc import high_prio_keys, non_centrosymm_keys
+from tools.misc import find_line, high_prio_keys, non_centrosymm_keys
 
 
 def quote(string: str, wrapping=80):
@@ -43,7 +43,6 @@ class CifContainer():
         self.block = None
         self.doc = None
         self.cif_file_text = ''
-        self.data_position = 0
         self.atomic_struct = None
         self.missing_keys = []
         self.open_cif_with_gemmi()
@@ -53,38 +52,7 @@ class CifContainer():
     def save(self, filename=None):
         if not filename:
             filename = self.filename_absolute
-        # txt = self.doc.write_file(filename, gemmi.cif.Style.Indent35)
-        txt = self.doc.as_string().splitlines()
-        for k in self.missing_keys:
-            self.remove_duplicate_keywords(k, txt)
-            # align this to 35 chars:
-            txt.insert(self.data_position, k + ' '*(31-len(k)) + '    ?')
-            if k in non_centrosymm_keys and self.is_centrosymm:
-                continue
-        self.cif_file_text = "\n".join(txt)
-        Path(filename).write_text(self.cif_file_text)
-
-    def remove_duplicate_keywords(self, k, txt):
-        """
-        Removes keywords from the end of the file.
-        :param k: keyword
-        :param txt: cif text.
-        :return:
-        """
-        for num, line in enumerate(txt):
-            if line.startswith(k):
-                del txt[num]
-                if txt[num].startswith(';'):
-                    del txt[num]
-                    if not txt[num]:
-                        break
-                    while not txt[num].startswith(';'):
-                        if not txt[num]:
-                            break
-                        print('foo')
-                        del txt[num]
-                    else:
-                        del txt[num]
+        self.doc.write_file(filename, gemmi.cif.Style.Indent35)
 
     def open_cif_with_gemmi(self):
         """
@@ -99,11 +67,15 @@ class CifContainer():
             print('Unable to read file:', e)
             raise
         try:
-            self.atomic_struct = gemmi.read_atomic_structure(str(self.filename_absolute))
+            self.atomic_struct = gemmi.make_atomic_structure_from_block(self.block)
         except Exception as e:
             print('Unable to read atomic structure:', e)
             raise
-        self.data_position = self.cif_file_text.find('data_')
+
+    def open_cif_by_string(self):
+        self.doc = gemmi.cif.read_string(self.cif_file_text)
+        self.block = self.doc.sole_block()
+        self.atomic_struct = gemmi.make_atomic_structure_from_block(self.block)
 
     def abs_hkl_details(self):
         """
@@ -369,14 +341,14 @@ class CifContainer():
                 questions.append([key, value])
             else:
                 with_values.append([key, value])
-        # cif = self.cif_file_text.splitlines()
-        # for k in missing_keys:
-        #    cif.insert(self.data_position, k + "     '?'")
-        #    if k in non_centrosymm_keys and self.is_centrosymm:
-        #        continue
-        # self.cif_file_text = "\n".join(cif)
-        # self.fileobj.write_text(self.cif_file_text)
-        # self.open_cif_with_gemmi()
+        cif = self.cif_file_text.splitlines()
+        data_position = find_line(cif, '^data_')
+        for k in self.missing_keys:
+            if k in non_centrosymm_keys and self.is_centrosymm:
+                continue
+            cif.insert(data_position + 1, k + ' ' * (31 - len(k)) + '    ?')
+        self.cif_file_text = "\n".join(cif)
+        self.open_cif_by_string()
         return questions, with_values
 
     @property
