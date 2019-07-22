@@ -34,8 +34,6 @@ def quote(string: str, wrapping=80):
 class CifContainer():
     """
     This class holds the content of a cif file, independent of the file parser used.
-    TODO: get _exptl_absorpt_process_details etc from cif file (hkl section) if it is there.
-    TODO: add missing cif keywords to the cif file premature to the file opening with gemmi
     """
 
     def __init__(self, file: Path):
@@ -55,15 +53,38 @@ class CifContainer():
     def save(self, filename=None):
         if not filename:
             filename = self.filename_absolute
-        #txt = self.doc.write_file(filename, gemmi.cif.Style.Indent35)
+        # txt = self.doc.write_file(filename, gemmi.cif.Style.Indent35)
         txt = self.doc.as_string().splitlines()
         for k in self.missing_keys:
-            # todo: align this to 35 chars:
-            txt.insert(self.data_position, k + "      ?")
+            self.remove_duplicate_keywords(k, txt)
+            # align this to 35 chars:
+            txt.insert(self.data_position, k + ' '*(31-len(k)) + '    ?')
             if k in non_centrosymm_keys and self.is_centrosymm:
                 continue
         self.cif_file_text = "\n".join(txt)
         Path(filename).write_text(self.cif_file_text)
+
+    def remove_duplicate_keywords(self, k, txt):
+        """
+        Removes keywords from the end of the file.
+        :param k: keyword
+        :param txt: cif text.
+        :return:
+        """
+        for num, line in enumerate(txt):
+            if line.startswith(k):
+                del txt[num]
+                if txt[num].startswith(';'):
+                    del txt[num]
+                    if not txt[num]:
+                        break
+                    while not txt[num].startswith(';'):
+                        if not txt[num]:
+                            break
+                        print('foo')
+                        del txt[num]
+                    else:
+                        del txt[num]
 
     def open_cif_with_gemmi(self):
         """
@@ -89,8 +110,8 @@ class CifContainer():
         This method tries to determine the information witten at the end of a cif hkl file by sadabs.
         """
         hkl = self.block.find_value('_shelx_hkl_file')
-        all = {'_exptl_absorpt_process_details': '',
-               '_exptl_absorpt_correction_type': '',
+        all = {'_exptl_absorpt_process_details' : '',
+               '_exptl_absorpt_correction_type' : '',
                '_exptl_absorpt_correction_T_max': '',
                '_exptl_absorpt_correction_T_min': '',
                }
@@ -191,7 +212,7 @@ class CifContainer():
     def _get_symmops(self):
         """
         Reads the symmops from the cif file.
-        TODO: Use SymmOps class from dsrmath to get ortep symbol math.
+
         >>> cif = CifContainer(Path('test-data/twin4.cif'))
         >>> cif.open_cif_with_gemmi()
         >>> cif._get_symmops()

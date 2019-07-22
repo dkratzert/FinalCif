@@ -60,7 +60,7 @@ class Platon():
                 if file.suffix in ['.sar', '_pl.res', '_pl.spf', '.ckf']:
                     file.unlink()
             except FileNotFoundError:
-                print('##')
+                #print('##')
                 pass
         os.chdir(curdir.absolute())
 
