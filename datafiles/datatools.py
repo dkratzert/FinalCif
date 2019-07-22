@@ -54,8 +54,6 @@ class BrukerData(object):
                 shelx += dsr
         if solution_program and 'XT' in solution_program.version:
             solution_primary = 'direct'
-        # TODO: determine the correct dataset number:
-        dataset_num = 1
         abstype = '?'
         t_min = '?'
         t_max = '?'
@@ -109,8 +107,7 @@ class BrukerData(object):
         temperature = round(min([temp1, temp2]), 1)
         if temperature < 0.01:
             temperature = '?'
-        # TODO: make a Sources class that returns either the parser object itself or the respective value from the key
-        #                                              data                         tooltip
+        #                          data                         tooltip
         sources = {'_cell_measurement_reflns_used'          : (saint_data.cell_reflections, saint_data.filename.name),
                    '_cell_measurement_theta_min'            : (saint_data.cell_res_min_theta, saint_data.filename.name),
                    '_cell_measurement_theta_max'            : (saint_data.cell_res_max_theta, saint_data.filename.name),
