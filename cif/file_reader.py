@@ -47,13 +47,23 @@ class CifContainer():
         self.cif_file_text = ''
         self.data_position = 0
         self.atomic_struct = None
+        self.missing_keys = []
         self.open_cif_with_gemmi()
         self.symmops = self._get_symmops()
+        self.hkl_extra_info = self.abs_hkl_details()
 
     def save(self, filename=None):
         if not filename:
             filename = self.filename_absolute
-        self.doc.write_file(filename, gemmi.cif.Style.Indent35)
+        #txt = self.doc.write_file(filename, gemmi.cif.Style.Indent35)
+        txt = self.doc.as_string().splitlines()
+        for k in self.missing_keys:
+            # todo: align this to 35 chars:
+            txt.insert(self.data_position, k + "      ?")
+            if k in non_centrosymm_keys and self.is_centrosymm:
+                continue
+        self.cif_file_text = "\n".join(txt)
+        Path(filename).write_text(self.cif_file_text)
 
     def open_cif_with_gemmi(self):
         """
@@ -74,15 +84,20 @@ class CifContainer():
             raise
         self.data_position = self.cif_file_text.find('data_')
 
-    @property
-    def abs_process_details(self):
+    def abs_hkl_details(self):
         """
         This method tries to determine the information witten at the end of a cif hkl file by sadabs.
         """
         hkl = self.block.find_value('_shelx_hkl_file')
+        all = {'_exptl_absorpt_process_details': '',
+               '_exptl_absorpt_correction_type': '',
+               '_exptl_absorpt_correction_T_max': '',
+               '_exptl_absorpt_correction_T_min': '',
+               }
+        if not hkl:
+            return all
         abs = False
         details = ''
-        all = {}
         for line in hkl.splitlines():
             if line.startswith(' _exptl_absorpt_process_details'):
                 abs = True
@@ -101,6 +116,22 @@ class CifContainer():
             if line.startswith(' _exptl_absorpt_correction_T_min'):
                 all['_exptl_absorpt_correction_T_min'] = line.split()[1]
         return all
+
+    @property
+    def absorpt_process_details(self):
+        return self.hkl_extra_info['_exptl_absorpt_process_details']
+
+    @property
+    def absorpt_correction_type(self):
+        return self.hkl_extra_info['_exptl_absorpt_correction_type']
+
+    @property
+    def absorpt_correction_T_max(self):
+        return self.hkl_extra_info['_exptl_absorpt_correction_T_max']
+
+    @property
+    def absorpt_correction_T_min(self):
+        return self.hkl_extra_info['_exptl_absorpt_correction_T_min']
 
     @property
     def hkl_checksum_calcd(self):
@@ -265,52 +296,6 @@ class CifContainer():
                                                                                          angle_dha, symm):
             yield label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm
 
-    '''
-    def atoms_in_asu(self, only_nh=False):
-        """
-        This method my not work!!
-        Number of atoms in the asymmetric unit.
-        :param only_nh: Only count non-hydrogen atoms.
-        """
-        summe = 0
-        if '_atom_site_type_symbol' in self.cif_data and '_atom_site_occupancy' in self.cif_data:
-            for n, at in enumerate(self.cif_data['_atom_site_type_symbol']):
-                if only_nh:
-                    if at in ['H', 'D']:
-                        continue
-                occ = self.cif_data['_atom_site_occupancy'][n]
-                if isinstance(occ, str):
-                    occ = to_float(occ)
-                    if occ:
-                        summe += occ
-                else:
-                    summe += occ
-            return summe
-        else:
-            return None
-
-    def atoms_in_cell(self, only_nh=False):
-        """
-        This method my not work!!
-        Number of atoms in the unit cell.
-        :param only_nh: Only count non-hydrogen atoms.
-        :return:
-        """
-        summe = 0
-        if '_atom_site_type_symbol' in self.cif_data:
-            for at in self.cif_data['_chemical_formula_sum'].split():
-                if only_nh:
-                    if at[:2].strip('0123456789') in ['H', 'D']:
-                        continue
-                num = re.sub('\D', '', at)
-                if num:
-                    summe += float(num)
-        return summe
-    
-    def cell(self):
-        return self.cif_data.cell
-    '''
-
     def set_pair_delimited(self, key, txt):
         """
         Converts special characters to their markup counterparts.
@@ -349,7 +334,6 @@ class CifContainer():
         questions = []
         # contains the answered keys:
         with_values = []
-        missing_keys = []
         for key in inputkeys.keys():
             if key in non_centrosymm_keys and self.is_centrosymm:
                 continue
@@ -357,7 +341,7 @@ class CifContainer():
             value = self.block.find_value(key)
             if not value:
                 # these are not in the cif file
-                missing_keys.append(key)
+                self.missing_keys.append(key)
             # except (KeyError, TypeError):
             #    value = ''
             if not value or value == '?':

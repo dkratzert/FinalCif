@@ -335,7 +335,8 @@ class AppWindow(QMainWindow):
                 if item:
                     if col == 0 and item != (None or '' or '?'):
                         col0 = item
-                    if col == 1 and not col0 and item != (None or '' or '?'):
+                    # removed: not col0 and
+                    if col == 1 and item != (None or '' or '?'):
                         col1 = item
                     try:
                         if col == 2 and item != (None or ''):
