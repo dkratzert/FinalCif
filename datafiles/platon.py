@@ -92,8 +92,9 @@ class Platon():
             si = None
         try:
             print('trying local platon')
-            with Popen([r'platon', '-u', self.cif_fileobj.name], 
-                       startupinfo=si, stdout=PIPE, stderr=PIPE, shell=True, env=os.environ) as plat:
+            with Popen([r'platon', '-u', self.cif_fileobj.name],
+                        # do I need shell = Falso on Mac and True on Windows?
+                       startupinfo=si, stdout=PIPE, stderr=PIPE, shell=False, env=os.environ) as plat:
                 try:
                     stdout, stderr = plat.communicate(sys.stdin, timeout=20)
                 except TimeoutExpired:
