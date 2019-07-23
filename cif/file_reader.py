@@ -37,7 +37,6 @@ class CifContainer():
     """
 
     def __init__(self, file: Path):
-        self.filename_absolute = file.absolute()
         self.fileobj = file
         self.cif_data = None
         self.block = None
@@ -51,7 +50,7 @@ class CifContainer():
 
     def save(self, filename=None):
         if not filename:
-            filename = self.filename_absolute
+            filename = self.fileobj.absolute()
         self.doc.write_file(filename, gemmi.cif.Style.Indent35)
 
     def open_cif_with_gemmi(self):
@@ -61,7 +60,7 @@ class CifContainer():
         # print('File opened:', self.filename)
         self.cif_file_text = self.fileobj.read_text(encoding='utf-8', errors='ignore')
         try:
-            self.doc = gemmi.cif.read_file(str(self.filename_absolute))
+            self.doc = gemmi.cif.read_file(str(self.fileobj.absolute()))
             self.block = self.doc.sole_block()
         except Exception as e:
             print('Unable to read file:', e)

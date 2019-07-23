@@ -12,6 +12,7 @@ import sys
 from collections import OrderedDict
 from pathlib import Path
 
+from datafiles.rigaku_data import RigakuData
 from report.tables import make_report_from
 from tools.version import VERSION
 
@@ -38,7 +39,7 @@ from PyQt5.QtWidgets import QApplication, QComboBox, QFileDialog, QHeaderView, Q
     QMainWindow, QMessageBox, QPlainTextEdit, QSizePolicy, QStackedWidget, QStyle, QTableWidget, QTableWidgetItem
 
 from cif.file_reader import CifContainer
-from datafiles.datatools import BrukerData
+from datafiles.bruker_data import BrukerData
 from datafiles.platon import Platon
 from tools.misc import high_prio_keys, predef_equipment_templ, predef_prop_templ, combobox_fields, \
     text_field_keys, to_float
@@ -97,6 +98,7 @@ class AppWindow(QMainWindow):
         self.vheader_clicked = -1  # This is the index number of the vheader that got clicked last
         self.connect_signals_and_slots()
         self.manufacturer = 'bruker'
+        self.rigakucif = None
         self.ui.SaveCifButton.setIcon(self.style().standardIcon(QStyle.SP_ArrowDown))
         self.ui.CheckcifButton.setIcon(self.style().standardIcon(QStyle.SP_FileDialogDetailedView))
         self.ui.SaveFullReportButton.setIcon(self.style().standardIcon(QStyle.SP_FileDialogListView))
@@ -806,6 +808,13 @@ class AppWindow(QMainWindow):
             os.chdir(filepath.absolute().parent)
         except OSError:
             print("Can't change the Current Working Directory")
+        try:
+            rigaku = Path('./').glob('*.cif_od').__next__()
+            if rigaku.exists():
+                self.manufacturer = 'rigaku'
+                self.rigakucif = RigakuData(rigaku)
+        except StopIteration:
+            pass
         self.ui.CifItemsTable.clearContents()
         # self.ui.CifItemsTable.clear() # clears header
         self.fill_cif_table()
@@ -891,65 +900,67 @@ class AppWindow(QMainWindow):
         self.check_Z()
         if self.manufacturer == 'bruker':
             sources = BrukerData(self, self.cif).sources
-            # Build a dictionary of cif keys and row number values in order to fill the first column
-            # of CifItemsTable with cif values:
-            for item in range(self.ui.CifItemsTable.model().rowCount()):
-                head = self.ui.CifItemsTable.model().headerData(item, Qt.Vertical)
-                self.vheaderitems[head] = item
-            # They are needed for the comboboxes:
-            property_fields = self.settings.load_property_keys()
-            # get missing items from sources and put them into the corresponding rows:
-            # These will be yellow if not filled in:
-            self.missing_data.append('_cell_measurement_temperature')
-            self.missing_data.append('_diffrn_ambient_temperature')
-            self.missing_data.append('_publ_section_references')
-            for miss_data in self.missing_data:
-                # add missing item to data sources column:
-                try:
-                    row_num = self.vheaderitems[miss_data]
-                except KeyError:
-                    continue
+        if self.manufacturer == 'rigaku':
+            sources = self.rigakucif.sources
+        # Build a dictionary of cif keys and row number values in order to fill the first column
+        # of CifItemsTable with cif values:
+        for item in range(self.ui.CifItemsTable.model().rowCount()):
+            head = self.ui.CifItemsTable.model().headerData(item, Qt.Vertical)
+            self.vheaderitems[head] = item
+        # They are needed for the comboboxes:
+        property_fields = self.settings.load_property_keys()
+        # get missing items from sources and put them into the corresponding rows:
+        # These will be yellow if not filled in:
+        self.missing_data.append('_cell_measurement_temperature')
+        self.missing_data.append('_diffrn_ambient_temperature')
+        self.missing_data.append('_publ_section_references')
+        for miss_data in self.missing_data:
+            # add missing item to data sources column:
+            try:
+                row_num = self.vheaderitems[miss_data]
+            except KeyError:
+                continue
+            if miss_data in text_field_keys:
+                tab_item = QPlainTextEdit(self)
+                tab_item.setFrameShape(0)
+                self.ui.CifItemsTable.setCellWidget(row_num, 1, tab_item)
+            else:
+                tab_item = QTableWidgetItem()
+                #                             # row  column  item
+                self.ui.CifItemsTable.setItem(row_num, 1, tab_item)
+            try:
+                # sources are lower case!
+                txt = str(sources[miss_data.lower()][0])
+                tooltiptext = str(sources[miss_data.lower()][1])
                 if miss_data in text_field_keys:
-                    tab_item = QPlainTextEdit(self)
-                    tab_item.setFrameShape(0)
-                    self.ui.CifItemsTable.setCellWidget(row_num, 1, tab_item)
-                else:
-                    tab_item = QTableWidgetItem()
-                    #                             # row  column  item
-                    self.ui.CifItemsTable.setItem(row_num, 1, tab_item)
-                try:
-                    # sources are lower case!
-                    txt = str(sources[miss_data.lower()][0])
-                    tooltiptext = str(sources[miss_data.lower()][1])
-                    if miss_data in text_field_keys:
-                        tab_item.setPlainText(txt)
-                        pal = tab_item.palette()
-                        if txt and txt != '?':
-                            pal.setColor(QPalette.Base, light_green)
-                        else:
-                            pal.setColor(QPalette.Base, yellow)
-                        tab_item.setPalette(pal)
+                    tab_item.setPlainText(txt)
+                    pal = tab_item.palette()
+                    if txt and txt != '?':
+                        pal.setColor(QPalette.Base, light_green)
                     else:
-                        tab_item.setText(txt)  # has to be string
-                        if txt and txt != '?':
-                            tab_item.setBackground(light_green)
-                        else:
-                            tab_item.setBackground(yellow)
-                    tab_item.setToolTip(tooltiptext)
-                    # print(sources[miss_data], miss_data)
-                    # self.ui.CifItemsTable.resizeRowToContents(row_num)
-                except KeyError as e:
-                    # print(e, '##')
-                    pass
-                # items from data sources should not be editable
-                if not miss_data in text_field_keys:
-                    tab_item.setFlags(tab_item.flags() ^ Qt.ItemIsEditable)
-                # creating comboboxes for special keywords like _exptl_crystal_colour.
-                # In case a property for this key exists, it will show this list:
-                if miss_data.lower() in [x.lower() for x in property_fields]:
-                    self.add_property_combobox(self.settings.load_property_by_key(miss_data), row_num)
-                elif miss_data.lower() in [x.lower() for x in combobox_fields]:
-                    self.add_property_combobox(combobox_fields[miss_data], row_num)
+                        pal.setColor(QPalette.Base, yellow)
+                    tab_item.setPalette(pal)
+                else:
+                    tab_item.setText(txt)  # has to be string
+                    if txt and txt != '?':
+                        tab_item.setBackground(light_green)
+                    else:
+                        tab_item.setBackground(yellow)
+                tab_item.setToolTip(tooltiptext)
+                # print(sources[miss_data], miss_data)
+                # self.ui.CifItemsTable.resizeRowToContents(row_num)
+            except KeyError as e:
+                # print(e, '##')
+                pass
+            # items from data sources should not be editable
+            if not miss_data in text_field_keys:
+                tab_item.setFlags(tab_item.flags() ^ Qt.ItemIsEditable)
+            # creating comboboxes for special keywords like _exptl_crystal_colour.
+            # In case a property for this key exists, it will show this list:
+            if miss_data.lower() in [x.lower() for x in property_fields]:
+                self.add_property_combobox(self.settings.load_property_by_key(miss_data), row_num)
+            elif miss_data.lower() in [x.lower() for x in combobox_fields]:
+                self.add_property_combobox(combobox_fields[miss_data], row_num)
 
     def add_property_combobox(self, miss_data: str, row_num: int):
         """
