@@ -47,12 +47,10 @@ from tools.settings import FinalCifSettings
 
 """
 TODO:
-- make tables faster
 - make report text in tables from cif info
 - try to determine the _chemical_absolute_configuration method
 - make extra thread to load platon
 - Checkcif: http://journals.iucr.org/services/cif/checking/validlist.html
-- only let real cif keywords into the EquipmentEditTableWidget and cifKeywordLE.
 - action: rightclick on a template -> offer "export template (to .cif)"
 - action: rightclick on a template -> offer "import template (from .cif)"
 
@@ -301,6 +299,9 @@ class AppWindow(QMainWindow):
     def load_recent_cifs_list(self):
         self.ui.RecentComboBox.clear()
         recent = list(self.settings.settings.value('recent_files', type=list))
+        for n, file in enumerate(recent):
+            if not Path(file).exists():
+                del recent[n]
         self.ui.RecentComboBox.addItem('Recent Files')
         self.ui.RecentComboBox.addItems(recent)
         # print(recent, 'load')
@@ -835,7 +836,7 @@ class AppWindow(QMainWindow):
             info.setText('This cif file is not readable!\n'
                          'Plese check line {} in\n{}'.format(line, filepath.name))
         else:
-            info.setText('This cif file is not readable! "{}"'.format(filepath.name))
+            info.setText('This cif file is not readable! "{}"\n{}'.format(filepath.name, not_ok))
         info.show()
         info.exec()
         return
