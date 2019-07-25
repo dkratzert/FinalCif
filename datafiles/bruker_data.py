@@ -44,7 +44,10 @@ class BrukerData(object):
         #    self.plat = None
         solution_primary = ''
         resdata = cif.block.find_value('_shelx_res_file')
-        shelx = 'Sheldrick, G.M. (2015). Acta Cryst. A71, 3-8.\nSheldrick, G.M. (2015). Acta Cryst. C71, 3-8.\n'
+        if 'shelx' in self.cif.block.find_value('_audit_creation_method').lower():
+            shelx = 'Sheldrick, G.M. (2015). Acta Cryst. A71, 3-8.\nSheldrick, G.M. (2015). Acta Cryst. C71, 3-8.\n'
+        else:
+            shelx = ''
         dsr = ''
         d = DSRFind(resdata)
         if resdata:
@@ -127,7 +130,7 @@ class BrukerData(object):
                    '_exptl_crystal_size_min'                : (self.p4p.crystal_size[0] or '', self.p4p.filename.name),
                    '_exptl_crystal_size_mid'                : (self.p4p.crystal_size[1] or '', self.p4p.filename.name),
                    '_exptl_crystal_size_max'                : (self.p4p.crystal_size[2] or '', self.p4p.filename.name),
-                   '_computing_structure_solution'          : (solution_version, ''),
+                   #'_computing_structure_solution'          : (solution_version, ''),
                    '_atom_sites_solution_primary'           : (solution_primary, ''),
                    '_diffrn_source_voltage'                 : (kilovolt or '', frame_name),
                    '_diffrn_source_current'                 : (milliamps or '', frame_name),
