@@ -109,8 +109,6 @@ class MultitableAppWindow(QMainWindow):
         output_filename, _ = QFileDialog.getSaveFileName(filter='MS Word Documents (*.docx);;',
                                                          caption="Save Table To",
                                                          directory='./tables.docx')
-        # initialFilter='*.docx')
-        # TODO: check if this "ok" works:
         try:
             ok = make_report_from(files_list, output_filename)
         except Exception as e:

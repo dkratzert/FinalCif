@@ -9,6 +9,7 @@
 
 import itertools as it
 import operator
+import re
 from pathlib import Path
 
 
@@ -30,6 +31,13 @@ def this_or_quest(value):
     Returns the value or a question mark if the value is None.
     """
     return value if value else '?'
+
+
+def find_line(inputlist: list, regex: str) -> int:
+    for num, string in enumerate(inputlist):
+        if re.match(regex, string, re.IGNORECASE):
+            return num  # returns the index number if regex found
+    return 0
 
 
 class Manufacturer():
