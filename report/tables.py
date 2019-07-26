@@ -213,8 +213,8 @@ def populate_main_table_values(main_table: Table, cif: CifContainer):
     Fills the main table with residuals. Column, by column.
     """
     header_cells = main_table.rows[0].cells
-    headcell = header_cells[0].paragraphs[0]
-    headcell.add_run('CCDC number')  # .bold = True
+    header_cells[0].paragraphs[0].add_run('CCDC number')  # .bold = True
+    header_cells[1].paragraphs[0].add_run(cif['_database_code_depnum_ccdc_archive'])  # .bold = True
 
     # Set text for all usual cif keywords by a lookup table:
     for _, key in enumerate(cif_keywords_list):
