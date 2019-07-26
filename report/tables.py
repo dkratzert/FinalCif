@@ -107,9 +107,9 @@ def make_report_from(file_obj: Path, output_filename: str = None, path: str = ''
     else:
         raise FileNotFoundError
 
-    p_report = document.add_paragraph()
-    p_report.add_run('The following text is only a guideline: ').font.bold = True
-    CrstalSelection(cif, p_report)
+    #p_report = document.add_paragraph()
+    #p_report.add_run('The following text is only a guideline: ').font.bold = True
+    #CrstalSelection(cif, p_report)
 
     table_num = 1
     t1 = time.perf_counter()
