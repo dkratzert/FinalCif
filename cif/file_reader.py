@@ -6,15 +6,12 @@
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
 
-import json
-import re
 import textwrap
 from pathlib import Path
 
 import gemmi
 
-from cif import cif_file_parser
-from tools.misc import high_prio_keys, non_centrosymm_keys, to_float
+from tools.misc import find_line, high_prio_keys, non_centrosymm_keys
 
 
 def quote(string: str, wrapping=80):
@@ -37,20 +34,23 @@ def quote(string: str, wrapping=80):
 class CifContainer():
     """
     This class holds the content of a cif file, independent of the file parser used.
-    TODO: get _exptl_absorpt_process_details etc from cif file (hkl section) if it is there.
-    TODO: add missing cif keywords to the cif file premature to the file opening with gemmi
     """
 
     def __init__(self, file: Path):
-        self.filename_absolute = file.absolute()
         self.fileobj = file
         self.cif_data = None
         self.block = None
         self.doc = None
+        self.cif_file_text = ''
+        self.atomic_struct = None
+        self.missing_keys = []
         self.open_cif_with_gemmi()
         self.symmops = self._get_symmops()
+        self.hkl_extra_info = self.abs_hkl_details()
 
-    def save(self, filename):
+    def save(self, filename=None):
+        if not filename:
+            filename = self.fileobj.absolute()
         self.doc.write_file(filename, gemmi.cif.Style.Indent35)
 
     def open_cif_with_gemmi(self):
@@ -58,15 +58,72 @@ class CifContainer():
         Reads a CIF file into gemmi and returns a sole block.
         """
         # print('File opened:', self.filename)
+        self.cif_file_text = self.fileobj.read_text(encoding='utf-8', errors='ignore')
         try:
-            self.doc = gemmi.cif.read_file(str(self.filename_absolute))
+            self.doc = gemmi.cif.read_file(str(self.fileobj.absolute()))
             self.block = self.doc.sole_block()
         except Exception as e:
+            print('Unable to read file:', e)
             raise
         try:
-            self.cif_data = json.loads(self.doc.as_json())[self.block.name.lower()]
+            self.atomic_struct = gemmi.make_atomic_structure_from_block(self.block)
         except Exception as e:
+            print('Unable to read atomic structure:', e)
             raise
+
+    def open_cif_by_string(self):
+        self.doc = gemmi.cif.read_string(self.cif_file_text)
+        self.block = self.doc.sole_block()
+        self.atomic_struct = gemmi.make_atomic_structure_from_block(self.block)
+
+    def abs_hkl_details(self):
+        """
+        This method tries to determine the information witten at the end of a cif hkl file by sadabs.
+        """
+        hkl = self.block.find_value('_shelx_hkl_file')
+        all = {'_exptl_absorpt_process_details' : '',
+               '_exptl_absorpt_correction_type' : '',
+               '_exptl_absorpt_correction_T_max': '',
+               '_exptl_absorpt_correction_T_min': '',
+               }
+        if not hkl:
+            return all
+        abs = False
+        details = ''
+        for line in hkl.splitlines():
+            if line.startswith(' _exptl_absorpt_process_details'):
+                abs = True
+                continue
+            if abs and not line.startswith(')'):
+                details += line
+                continue
+            if line.startswith(')') and details:
+                all['_exptl_absorpt_process_details'] = details.lstrip()
+                abs = False
+                continue
+            if line.startswith(' _exptl_absorpt_correction_type'):
+                all['_exptl_absorpt_correction_type'] = line.split()[1]
+            if line.startswith(' _exptl_absorpt_correction_T_max'):
+                all['_exptl_absorpt_correction_T_max'] = line.split()[1]
+            if line.startswith(' _exptl_absorpt_correction_T_min'):
+                all['_exptl_absorpt_correction_T_min'] = line.split()[1]
+        return all
+
+    @property
+    def absorpt_process_details(self):
+        return self.hkl_extra_info['_exptl_absorpt_process_details']
+
+    @property
+    def absorpt_correction_type(self):
+        return self.hkl_extra_info['_exptl_absorpt_correction_type']
+
+    @property
+    def absorpt_correction_T_max(self):
+        return self.hkl_extra_info['_exptl_absorpt_correction_T_max']
+
+    @property
+    def absorpt_correction_T_min(self):
+        return self.hkl_extra_info['_exptl_absorpt_correction_T_min']
 
     @property
     def hkl_checksum_calcd(self):
@@ -126,7 +183,7 @@ class CifContainer():
     def _get_symmops(self):
         """
         Reads the symmops from the cif file.
-        TODO: Use SymmOps class from dsrmath to get ortep symbol math.
+
         >>> cif = CifContainer(Path('test-data/twin4.cif'))
         >>> cif.open_cif_with_gemmi()
         >>> cif._get_symmops()
@@ -135,10 +192,11 @@ class CifContainer():
         xyz1 = self.block.find(("_symmetry_equiv_pos_as_xyz",))  # deprecated
         xyz2 = self.block.find(("_space_group_symop_operation_xyz",))  # New definition
         if xyz1:
-            self.cif_data['_space_group_symop_operation_xyz'] = [i.str(0) for i in xyz1]
+            return [i.str(0) for i in xyz1]
+        elif xyz2:
+            return [i.str(0) for i in xyz2]
         else:
-            self.cif_data['_space_group_symop_operation_xyz'] = [i.str(0) for i in xyz2]
-        return self.cif_data['_space_group_symop_operation_xyz']
+            return []
 
     @property
     def is_centrosymm(self):
@@ -146,18 +204,6 @@ class CifContainer():
             return True
         else:
             return False
-
-    def open_cif_with_fileparser(self):
-        """
-        """
-        if self.cif_data:
-            raise RuntimeError
-        try:
-            self.cif_data = cif_file_parser.Cif(self.filename_absolute)
-        except AttributeError:
-            print('Filename has to be a Path instance.')
-        except IsADirectoryError:
-            print('Filename can not be a directory.')
 
     def __getitem__(self, item):
         result = self.block.find_value(item)
@@ -175,6 +221,21 @@ class CifContainer():
         for label, type, x, y, z, occ, part, ueq in zip(labels, types, x, y, z, occ, part, u_eq):
             #       0     1    2   3 4  5    6     7
             yield label, type, x, y, z, occ, part, ueq
+
+    def atoms_from_sites(self):
+        for at in self.atomic_struct.sites:
+            yield at.orth.name, at.fract.type_symbol, at.fract.x, at.fract.y, at.fract.z
+
+    def atoms_orthogonal(self):
+        for at in self.atomic_struct.sites:
+            yield [self.atomic_struct.cell.orthogonalize(at.fract).x,
+                   self.atomic_struct.cell.orthogonalize(at.fract).y,
+                   self.atomic_struct.cell.orthogonalize(at.fract).z]
+
+    @property
+    def cell(self):
+        c = self.atomic_struct.cell
+        return c.a, c.b, c.c, c.alpha, c.beta, c.gamma, c.volume
 
     def bonds(self):
         label1 = self.block.find_loop('_geom_bond_atom_site_label_1')
@@ -227,48 +288,6 @@ class CifContainer():
                                                                                          angle_dha, symm):
             yield label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm
 
-    def atoms_in_asu(self, only_nh=False):
-        """
-        Number of atoms in the asymmetric unit.
-        :param only_nh: Only count non-hydrogen atoms.
-        """
-        summe = 0
-        if '_atom_site_type_symbol' in self.cif_data and '_atom_site_occupancy' in self.cif_data:
-            for n, at in enumerate(self.cif_data['_atom_site_type_symbol']):
-                if only_nh:
-                    if at in ['H', 'D']:
-                        continue
-                occ = self.cif_data['_atom_site_occupancy'][n]
-                if isinstance(occ, str):
-                    occ = to_float(occ)
-                    if occ:
-                        summe += occ
-                else:
-                    summe += occ
-            return summe
-        else:
-            return None
-
-    def atoms_in_cell(self, only_nh=False):
-        """
-        Number of atoms in the unit cell.
-        :param only_nh: Only count non-hydrogen atoms.
-        :return:
-        """
-        summe = 0
-        if '_atom_site_type_symbol' in self.cif_data:
-            for at in self.cif_data['_chemical_formula_sum'].split():
-                if only_nh:
-                    if at[:2].strip('0123456789') in ['H', 'D']:
-                        continue
-                num = re.sub('\D', '', at)
-                if num:
-                    summe += float(num)
-        return summe
-
-    def cell(self):
-        return self.cif_data.cell
-
     def set_pair_delimited(self, key, txt):
         """
         Converts special characters to their markup counterparts.
@@ -312,12 +331,23 @@ class CifContainer():
                 continue
             # try:
             value = self.block.find_value(key)
+            if not value:
+                # these are not in the cif file
+                self.missing_keys.append(key)
             # except (KeyError, TypeError):
             #    value = ''
             if not value or value == '?':
                 questions.append([key, value])
             else:
                 with_values.append([key, value])
+        cif = self.cif_file_text.splitlines()
+        data_position = find_line(cif, '^data_')
+        for k in self.missing_keys:
+            if k in non_centrosymm_keys and self.is_centrosymm:
+                continue
+            cif.insert(data_position + 1, k + ' ' * (31 - len(k)) + '    ?')
+        self.cif_file_text = "\n".join(cif)
+        self.open_cif_by_string()
         return questions, with_values
 
     @property

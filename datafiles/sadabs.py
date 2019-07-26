@@ -106,7 +106,6 @@ class Sadabs():
         n = 0
         filetxt = self._fileobj.read_text(encoding='ascii', errors='ignore').splitlines(keepends=False)
         hklf5 = False
-        # TODO: input files: "Reading file IK_WU19_0m.raw", but remind the 01, 02, etc. raw files
         for line in filetxt:
             spline = line.split()
             if self._rint_regex.match(line):
