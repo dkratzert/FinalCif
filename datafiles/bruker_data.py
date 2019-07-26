@@ -130,7 +130,8 @@ class BrukerData(object):
                    '_exptl_crystal_size_min'                : (self.p4p.crystal_size[0] or '', self.p4p.filename.name),
                    '_exptl_crystal_size_mid'                : (self.p4p.crystal_size[1] or '', self.p4p.filename.name),
                    '_exptl_crystal_size_max'                : (self.p4p.crystal_size[2] or '', self.p4p.filename.name),
-                   #'_computing_structure_solution'          : (solution_version, ''),
+                   '_computing_structure_solution'          : (
+                   solution_version if cif.block.find_value('_computing_structure_solution') == '?' else '', ''),
                    '_atom_sites_solution_primary'           : (solution_primary, ''),
                    '_diffrn_source_voltage'                 : (kilovolt or '', frame_name),
                    '_diffrn_source_current'                 : (milliamps or '', frame_name),
