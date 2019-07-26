@@ -44,7 +44,10 @@ class BrukerData(object):
         #    self.plat = None
         solution_primary = ''
         resdata = cif.block.find_value('_shelx_res_file')
-        shelx = 'Sheldrick, G.M. (2015). Acta Cryst. A71, 3-8.\nSheldrick, G.M. (2015). Acta Cryst. C71, 3-8.\n'
+        if 'shelx' in self.cif.block.find_value('_audit_creation_method').lower():
+            shelx = 'Sheldrick, G.M. (2015). Acta Cryst. A71, 3-8.\nSheldrick, G.M. (2015). Acta Cryst. C71, 3-8.\n'
+        else:
+            shelx = ''
         dsr = ''
         d = DSRFind(resdata)
         if resdata:
@@ -54,8 +57,6 @@ class BrukerData(object):
                 shelx += dsr
         if solution_program and 'XT' in solution_program.version:
             solution_primary = 'direct'
-        # TODO: determine the correct dataset number:
-        dataset_num = 1
         abstype = '?'
         t_min = '?'
         t_max = '?'
@@ -88,19 +89,28 @@ class BrukerData(object):
             frame_name = self.frame_header.filename.name
         except (FileNotFoundError):
             frame_name = ''
-        # try:
-        #    moiety = self.plat.formula_moiety
-        # except Exception as e:
-        #    print('Could not make moiety formula:', e)
-        #    moiety = ''
-        # try:
-        #    chk_file = self.plat.chk_filename
-        # except Exception as e:
-        #    chk_file = ''
+        if self.cif.absorpt_process_details:
+            absdetails = (self.cif.absorpt_process_details, self.cif.fileobj.name)
+        else:
+            absdetails = (self.sadabs.version, self.sadabs.filename.name)
+        if self.cif.absorpt_correction_type:
+            abscorrtype = (self.cif.absorpt_correction_type, self.cif.fileobj.name)
+        else:
+            abscorrtype = (abstype, self.sadabs.filename.name)
+        if self.cif.absorpt_correction_T_max:
+            abs_tmax = (self.cif.absorpt_correction_T_max, self.cif.fileobj.name)
+        else:
+            abs_tmax = (str(t_min), self.sadabs.filename.name)
+        if self.cif.absorpt_correction_T_min:
+            abs_tmin = (self.cif.absorpt_correction_T_min, self.cif.fileobj.name)
+        else:
+            abs_tmin = (str(t_min), self.sadabs.filename.name)
+
         temp2 = self.p4p.temperature
         temperature = round(min([temp1, temp2]), 1)
-        # TODO: make a Sources class that returns either the parser object itself or the respective value from the key
-        #                                              data                         tooltip
+        if temperature < 0.01:
+            temperature = '?'
+        #                          data                         tooltip
         sources = {'_cell_measurement_reflns_used'          : (saint_data.cell_reflections, saint_data.filename.name),
                    '_cell_measurement_theta_min'            : (saint_data.cell_res_min_theta, saint_data.filename.name),
                    '_cell_measurement_theta_max'            : (saint_data.cell_res_max_theta, saint_data.filename.name),
@@ -108,19 +118,20 @@ class BrukerData(object):
                        saint_first_ls.aquire_software, saint_data.filename.name),
                    '_computing_cell_refinement'             : (saint_data.version, saint_data.filename.name),
                    '_computing_data_reduction'              : (saint_data.version, saint_data.filename.name),
-                   '_exptl_absorpt_correction_type'         : (abstype, self.sadabs.filename.name),
-                   '_exptl_absorpt_correction_T_min'        : (str(t_min), self.sadabs.filename.name),
-                   '_exptl_absorpt_correction_T_max'        : (str(t_max), self.sadabs.filename.name),
+                   '_exptl_absorpt_correction_type'         : abscorrtype,
+                   '_exptl_absorpt_correction_T_min'        : abs_tmin,
+                   '_exptl_absorpt_correction_T_max'        : abs_tmax,
                    '_diffrn_reflns_av_R_equivalents'        : (self.sadabs.Rint, self.sadabs.filename.name),
                    '_cell_measurement_temperature'          : (temperature, self.p4p.filename.name),
                    '_diffrn_ambient_temperature'            : (temperature, self.p4p.filename.name),
-                   '_exptl_absorpt_process_details'         : (self.sadabs.version, self.sadabs.filename.name),
+                   '_exptl_absorpt_process_details'         : absdetails,
                    '_exptl_crystal_colour'                  : (self.p4p.crystal_color, self.p4p.filename.name),
                    '_exptl_crystal_description'             : (self.p4p.morphology, self.p4p.filename.name),
                    '_exptl_crystal_size_min'                : (self.p4p.crystal_size[0] or '', self.p4p.filename.name),
                    '_exptl_crystal_size_mid'                : (self.p4p.crystal_size[1] or '', self.p4p.filename.name),
                    '_exptl_crystal_size_max'                : (self.p4p.crystal_size[2] or '', self.p4p.filename.name),
-                   '_computing_structure_solution'          : (solution_version, ''),
+                   '_computing_structure_solution'          : (
+                   solution_version if cif.block.find_value('_computing_structure_solution') == '?' else '', ''),
                    '_atom_sites_solution_primary'           : (solution_primary, ''),
                    '_diffrn_source_voltage'                 : (kilovolt or '', frame_name),
                    '_diffrn_source_current'                 : (milliamps or '', frame_name),
