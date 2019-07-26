@@ -11,7 +11,7 @@ import sys
 import time
 from pathlib import Path
 
-from report.report_text import CrstalSelection
+from report.report_text import CrstalSelection, MachineType
 from docx import Document
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
@@ -107,9 +107,11 @@ def make_report_from(file_obj: Path, output_filename: str = None, path: str = ''
     else:
         raise FileNotFoundError
 
-    #p_report = document.add_paragraph()
-    #p_report.add_run('The following text is only a guideline: ').font.bold = True
-    #CrstalSelection(cif, p_report)
+    p_report = document.add_paragraph()
+    p_report.add_run('The following text is only a guideline: ').font.bold = True
+    CrstalSelection(cif, p_report)
+    MachineType(cif, p_report)
+
 
     table_num = 1
     t1 = time.perf_counter()
@@ -784,7 +786,7 @@ if __name__ == '__main__':
     output_filename = 'tables.docx'
     # make_report_from(get_files_from_current_dir()[5])
     t1 = time.perf_counter()
-    make_report_from(Path(r'test-data/DK_zucker2_0m.cif'))
+    make_report_from(Path(r'test-data/DK_zucker2_0m-finalcif.cif'))
     # make_report_from(Path(r'/Volumes/nifty/p-1.cif'))
     t2 = time.perf_counter()
     print('complete table:', round(t2 - t1, 2), 's')
