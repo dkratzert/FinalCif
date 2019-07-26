@@ -11,7 +11,7 @@ import sys
 import time
 from pathlib import Path
 
-from report.report_text import CrstalSelection, MachineType, format_radiation, DataReduct
+from report.report_text import CrstalSelection, MachineType, format_radiation, DataReduct, SolveRefine, Hydrogens
 from docx import Document
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
@@ -112,6 +112,8 @@ def make_report_from(file_obj: Path, output_filename: str = None, path: str = ''
     CrstalSelection(cif, p_report)
     MachineType(cif, p_report)
     DataReduct(cif, p_report)
+    SolveRefine(cif, p_report)
+    Hydrogens(cif, p_report)
 
     table_num = 1
     t1 = time.perf_counter()
