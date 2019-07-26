@@ -11,7 +11,7 @@ import sys
 import time
 from pathlib import Path
 
-from report.report_text import CrstalSelection, MachineType
+from report.report_text import CrstalSelection, MachineType, format_radiation, DataReduct
 from docx import Document
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
@@ -111,7 +111,7 @@ def make_report_from(file_obj: Path, output_filename: str = None, path: str = ''
     p_report.add_run('The following text is only a guideline: ').font.bold = True
     CrstalSelection(cif, p_report)
     MachineType(cif, p_report)
-
+    DataReduct(cif, p_report)
 
     table_num = 1
     t1 = time.perf_counter()
@@ -289,12 +289,7 @@ def populate_main_table_values(main_table: Table, cif: CifContainer):
                                   this_or_quest(crystal_size_min)
     wavelength = str(' (\u03bb =' + this_or_quest(radiation_wavelength) + ')').replace(' ', '')
     # radtype: ('Mo', 'K', '\\a')
-    radtype = list(radiation_type.partition("K"))
-    if len(radtype) > 2:
-        if radtype[2] == '\\a':
-            radtype[2] = '\u03b1'
-        if radtype[2] == '\\b':
-            radtype[2] = '\u03b2'
+    radtype = format_radiation(radiation_type)
     radrun = main_table.cell(20, 1).paragraphs[0]
     # radiation type e.g. Mo:
     radrun.add_run(radtype[0])
