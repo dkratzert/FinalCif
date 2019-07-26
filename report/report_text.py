@@ -1,7 +1,6 @@
 from builtins import str
 
-from docx.document import Document
-from docx.text import run
+import gemmi
 from docx.text.paragraph import Paragraph
 from docx.text.run import Run
 
@@ -11,7 +10,8 @@ from cif.file_reader import CifContainer
 class FormatMixin():
 
     def bold(self, run: Run):
-        return run.font.bold = True
+        r = run.bold = True
+        return r
 
 
 class ReportText():
@@ -38,11 +38,25 @@ class CrstalSelection(FormatMixin):
         else:
             return '?'
 
-class MachineType():
-    def __init__(self, cif: CifContainer, paragraph = Paragraph):
-        self.cif = cif
-        sentence = "The data were collected on a Bruker APEXII QUAZAR with an Incoatec microfocus source with mirror " \
-                   "optics as monochromator. The diffrac¬tometer were equipped with an Oxford Cryosystems 800 low " \
-                   "temperature device1 and used MoK radiation, λ = 0.71073 Å."
-        self.txt = sentence.format()
 
+class MachineType():
+    def __init__(self, cif: CifContainer, paragraph: Paragraph):
+        self.cif = cif
+        gstr = gemmi.cif.as_string
+        self.difftype = gstr(self.cif.block.find_value('_diffrn_measurement_device_type'))
+        self.device = gstr(self.cif['_diffrn_measurement_device'])
+        self.source = gstr(self.cif['_diffrn_source'])
+        self.monochrom = gstr(self.cif['_diffrn_radiation_monochromator'])
+        if not self.monochrom:
+            self.monochrom = '?'
+        self.cooling = gstr(self.cif['_olex2_diffrn_ambient_temperature_device'])
+        if not self.cooling:
+            self.cooling = '?'
+        self.rad_type = gstr(self.cif['_diffrn_radiation_type'])
+        self.wavelen = gstr(self.cif['_diffrn_radiation_wavelength'])
+        sentence = "The data were collected on a {} {} with an {} using {} as monochromator. " \
+                   "The diffractometer were equipped with an {} low " \
+                   "temperature device and used {} radiation, λ = {}\u00A0Å."
+        self.txt = sentence.format(self.difftype, self.device, self.source, self.monochrom, self.cooling,
+                                   self.rad_type, self.wavelen)
+        paragraph.add_run(self.txt)
