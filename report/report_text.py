@@ -10,6 +10,7 @@ from cif.file_reader import CifContainer
 TODO: Add references of the used programs to the end.
 """
 
+
 class FormatMixin():
 
     def bold(self, run: Run):
@@ -99,9 +100,59 @@ class DataReduct():
             abs_details = 'TWINABS'
         if 'crysalis' in abs_details.lower():
             abs_details = 'SCALE3 ABSPACK'
-        sentence = 'All data were integrated with {} and {} {} absorption correction using {} was applied.'
+        sentence = 'All data were integrated with {} and {} {} absorption correction using {} was applied. '
         txt = sentence.format(integration_prog, get_inf_article(abstype), abstype, abs_details)
         paragraph.add_run(txt)
+
+
+class SolveRefine():
+    def __init__(self, cif: CifContainer, paragraph: Paragraph):
+        self.cif = cif
+        gstr = gemmi.cif.as_string
+        solution_prog = gstr(self.cif.block.find_value('_computing_structure_solution'))
+        if not solution_prog:
+            solution_prog = '?'
+        solution_method = gstr(self.cif.block.find_value('_atom_sites_solution_primary'))
+        if not solution_method:
+            solution_method = '?'
+        refined = gstr(self.cif.block.find_value('_computing_structure_refinement'))
+        if not refined:
+            refined = '?'
+        # dsr = gstr(self.cif.block.find_value('_computing_structure_refinement'))
+        refine_coef = gstr(self.cif.block.find_value('_refine_ls_structure_factor_coef'))
+        sentence = r"The structure were solved by {} methods using {} and refined by full-matrix " \
+                   "least-squares methods against "
+        txt = sentence.format(solution_method, solution_prog)
+        paragraph.add_run(txt)
+        paragraph.add_run('F').font.italic = True
+        if refine_coef.lower() == 'fsqd':
+            paragraph.add_run('2').font.superscript = True
+        paragraph.add_run(' by {}'.format(refined))
+        paragraph.add_run('. ')
+
+
+class Hydrogens():
+    def __init__(self, cif: CifContainer, paragraph: Paragraph):
+        """
+        TODO: check if the proposed things are really there.
+        """
+        self.cif = cif
+        sentence1 = "All non-hydrogen atoms were refined with anisotropic displacement parameters. " \
+                    "The hydrogen atoms were refined isotropically on calculated positions using a riding model " \
+                    "with their "  # iso values constrained to 1.5 times the Ueq of their pivot atoms for " \
+        # "terminal sp3 carbon atoms and 1.2 times for all other carbon atoms."
+        sentence2 = " values constrained to 1.5 times the "
+        sentence3 = " of their pivot atoms for terminal sp"
+        sentence4 = " carbon atoms and 1.2 times for all other carbon atoms."
+        paragraph.add_run(sentence1)
+        paragraph.add_run('U').font.italic = True
+        paragraph.add_run('iso').font.subscript = True
+        paragraph.add_run(sentence2)
+        paragraph.add_run('U').font.italic = True
+        paragraph.add_run('eq').font.subscript = True
+        paragraph.add_run(sentence3)
+        paragraph.add_run('3').font.superscript = True
+        paragraph.add_run(sentence4)
 
 
 def get_inf_article(next_word: str) -> str:
