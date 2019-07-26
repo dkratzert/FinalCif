@@ -11,6 +11,7 @@ import sys
 import time
 from pathlib import Path
 
+from report.report_text import CrstalSelection
 from docx import Document
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
@@ -105,6 +106,10 @@ def make_report_from(file_obj: Path, output_filename: str = None, path: str = ''
             print(e)
     else:
         raise FileNotFoundError
+
+    p_report = document.add_paragraph()
+    p_report.add_run('The following text is only a guideline: ').font.bold = True
+    CrstalSelection(cif, p_report)
 
     table_num = 1
     t1 = time.perf_counter()
