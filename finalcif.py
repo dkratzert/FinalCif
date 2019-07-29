@@ -300,8 +300,11 @@ class AppWindow(QMainWindow):
         self.ui.RecentComboBox.clear()
         recent = list(self.settings.settings.value('recent_files', type=list))
         for n, file in enumerate(recent):
-            if not Path(file).exists():
-                del recent[n]
+            try:
+                if not Path(file).exists():
+                    del recent[n]
+            except OSError:
+                pass
         self.ui.RecentComboBox.addItem('Recent Files')
         self.ui.RecentComboBox.addItems(recent)
         # print(recent, 'load')
@@ -790,8 +793,12 @@ class AppWindow(QMainWindow):
         self.ui.SelectCif_LineEdit.setText(fname)
         self.save_current_recent_files_list(fname)
         self.load_recent_cifs_list()
-        filepath = Path(fname)
-        if not filepath.exists():
+        try:
+            filepath = Path(fname)
+            if not filepath.exists():
+                return
+        except OSError:
+            print('Something failed during cif file opening...')
             return
         not_ok = None
         try:
