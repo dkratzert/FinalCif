@@ -11,7 +11,6 @@ import sys
 import time
 from pathlib import Path
 
-from report.report_text import CrstalSelection
 from docx import Document
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
