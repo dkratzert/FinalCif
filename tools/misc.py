@@ -117,6 +117,7 @@ high_prio_keys = {
     '_exptl_absorpt_correction_T_min'                  : 'The calculated minimum value of the transmission factor for the specimen',
     '_exptl_absorpt_correction_T_max'                  : 'The calculated maximum value of the transmission factor for the specimen',
     '_exptl_absorpt_process_details'                   : 'Description of the absorption process applied to the intensities',
+    '_exptl_special_details'                           : 'Any details about the experimental work prior to the measurement',
     '_cell_measurement_temperature'                    : 'The temperature in kelvins at which the unit-cell parameters were measured',
     '_cell_measurement_reflns_used'                    : 'The total number of reflections used to determine the unit cell',
     '_cell_measurement_theta_min'                      : 'The maximum theta angles of reflections used to measure the unit cell in degrees',
@@ -197,6 +198,7 @@ text_field_keys = ['_refine_special_details',
                    '_publ_section_references',
                    '_audit_contact_author_address',
                    '_exptl_crystal_recrystallization_method',
+                   '_exptl_special_details',
                    ]
 
 ABSORPTION_CORRECTION_TYPES = (
