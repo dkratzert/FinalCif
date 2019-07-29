@@ -60,7 +60,7 @@ class CifContainer():
         # print('File opened:', self.filename)
         self.cif_file_text = self.fileobj.read_text(encoding='utf-8', errors='ignore')
         try:
-            self.doc = gemmi.cif.read_file(str(self.fileobj.absolute()))
+            self.doc = gemmi.cif.read_string(self.cif_file_text)
             self.block = self.doc.sole_block()
         except Exception as e:
             print('Unable to read file:', e)
