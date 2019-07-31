@@ -139,11 +139,10 @@ class Hydrogens():
         self.cif = cif
         sentence1 = "All non-hydrogen atoms were refined with anisotropic displacement parameters. " \
                     "The hydrogen atoms were refined isotropically on calculated positions using a riding model " \
-                    "with their "  # iso values constrained to 1.5 times the Ueq of their pivot atoms for " \
-        # "terminal sp3 carbon atoms and 1.2 times for all other carbon atoms."
+                    "with their "
         sentence2 = " values constrained to 1.5 times the "
         sentence3 = " of their pivot atoms for terminal sp"
-        sentence4 = " carbon atoms and 1.2 times for all other carbon atoms."
+        sentence4 = " carbon atoms and 1.2 times for all other carbon atoms. "
         paragraph.add_run(sentence1)
         paragraph.add_run('U').font.italic = True
         paragraph.add_run('iso').font.subscript = True
@@ -153,6 +152,31 @@ class Hydrogens():
         paragraph.add_run(sentence3)
         paragraph.add_run('3').font.superscript = True
         paragraph.add_run(sentence4)
+
+
+class Disorder():
+    def __init__(self, cif: CifContainer, paragraph: Paragraph):
+        self.cif = cif
+        sentence2 = ''
+        sentence1 = "Disordered moieties were refined using bond lengths " \
+                    "restraints and displacement parameter restraints. "
+        if self.cif.dsr_used:
+            sentence2 = "Some parts of the disorder model were introduced by the " \
+                        "program DSR. (doi: 10.1107/S1600576718004508) "
+        paragraph.add_run(sentence1)
+        if sentence2:
+            paragraph.add_run(sentence2)
+
+
+class CCDC():
+    def __init__(self, cif: CifContainer, paragraph: Paragraph):
+        self.cif = cif
+        sentence = "Crystallographic data (including structure factors) for the structures reported in this " \
+                   "paper have been deposited with the Cambridge Crystallographic Data Centre. CCDC ?????? contain " \
+                   "the supplementary crystallographic data for this paper. Copies of the data can " \
+                   "be obtained free of charge from The Cambridge Crystallographic Data Centre " \
+                   "via www.ccdc.cam.ac.uk/data_request/cif."
+        paragraph.add_run(sentence)
 
 
 def get_inf_article(next_word: str) -> str:
