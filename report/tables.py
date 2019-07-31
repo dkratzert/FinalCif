@@ -11,6 +11,8 @@ import sys
 import time
 from pathlib import Path
 
+from report.report_text import CrstalSelection, MachineType, format_radiation, DataReduct, SolveRefine, Hydrogens, \
+    Disorder, CCDC
 from docx import Document
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
@@ -23,14 +25,14 @@ from report.mtools import cif_keywords_list, isfloat, this_or_quest
 from report.symm import SymmetryElement
 
 """
-#TODO: 
+#TODO:
 * create nice .docx template
 * completeness to 0.83 A, theta range in A
 * index ranges in one row
 * cell parameters in three rows
 * proper table numbering:
  table1 -> num -> table2 -> ...
- if table fails, return number, else count up and then return number 
+ if table fails, return number, else count up and then return number
 """
 
 
@@ -106,9 +108,17 @@ def make_report_from(file_obj: Path, output_filename: str = None, path: str = ''
     else:
         raise FileNotFoundError
 
-    #p_report = document.add_paragraph()
-    #p_report.add_run('The following text is only a guideline: ').font.bold = True
-    #CrstalSelection(cif, p_report)
+    p_report = document.add_paragraph()
+    p_report.add_run('The following text is only a suggestion: ').font.bold = True
+    CrstalSelection(cif, p_report)
+    MachineType(cif, p_report)
+    DataReduct(cif, p_report)
+    SolveRefine(cif, p_report)
+    if cif.hydrogen_atoms_present:
+        Hydrogens(cif, p_report)
+    if cif.disorder_present:
+        Disorder(cif, p_report)
+    CCDC(cif, p_report)
 
     table_num = 1
     t1 = time.perf_counter()
@@ -286,12 +296,7 @@ def populate_main_table_values(main_table: Table, cif: CifContainer):
                                   this_or_quest(crystal_size_min)
     wavelength = str(' (\u03bb =' + this_or_quest(radiation_wavelength) + ')').replace(' ', '')
     # radtype: ('Mo', 'K', '\\a')
-    radtype = list(radiation_type.partition("K"))
-    if len(radtype) > 2:
-        if radtype[2] == '\\a':
-            radtype[2] = '\u03b1'
-        if radtype[2] == '\\b':
-            radtype[2] = '\u03b2'
+    radtype = format_radiation(radiation_type)
     radrun = main_table.cell(20, 1).paragraphs[0]
     # radiation type e.g. Mo:
     radrun.add_run(radtype[0])
@@ -783,7 +788,7 @@ if __name__ == '__main__':
     output_filename = 'tables.docx'
     # make_report_from(get_files_from_current_dir()[5])
     t1 = time.perf_counter()
-    make_report_from(Path(r'test-data/DK_zucker2_0m.cif'))
+    make_report_from(Path(r'test-data/DK_zucker2_0m-finalcif.cif'))
     # make_report_from(Path(r'/Volumes/nifty/p-1.cif'))
     t2 = time.perf_counter()
     print('complete table:', round(t2 - t1, 2), 's')
