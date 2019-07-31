@@ -11,6 +11,7 @@ from pathlib import Path
 
 import gemmi
 
+from datafiles.utils import DSRFind
 from tools.misc import find_line, high_prio_keys, non_centrosymm_keys
 
 
@@ -47,6 +48,9 @@ class CifContainer():
         self.open_cif_with_gemmi()
         self.symmops = self._get_symmops()
         self.hkl_extra_info = self.abs_hkl_details()
+        self.resdata = self.block.find_value('_shelx_res_file')
+        d = DSRFind(self.resdata)
+        self.dsr_used = d.dsr_used
 
     def save(self, filename=None):
         if not filename:
@@ -219,18 +223,37 @@ class CifContainer():
         part = self.block.find_loop('_atom_site_disorder_group')
         u_eq = self.block.find_loop('_atom_site_U_iso_or_equiv')
         for label, type, x, y, z, occ, part, ueq in zip(labels, types, x, y, z, occ, part, u_eq):
-            #       0     1    2   3 4  5    6     7
+            #  0    1    2  3  4   5    6     7
             yield label, type, x, y, z, occ, part, ueq
 
     def atoms_from_sites(self):
         for at in self.atomic_struct.sites:
-            yield at.orth.name, at.fract.type_symbol, at.fract.x, at.fract.y, at.fract.z
+            yield at.label, at.type_symbol, at.fract.x, at.fract.y, at.fract.z
 
     def atoms_orthogonal(self):
         for at in self.atomic_struct.sites:
             yield [self.atomic_struct.cell.orthogonalize(at.fract).x,
                    self.atomic_struct.cell.orthogonalize(at.fract).y,
                    self.atomic_struct.cell.orthogonalize(at.fract).z]
+
+    @property
+    def hydrogen_atoms_present(self):
+        for at in self.atomic_struct.sites:
+            if at.type_symbol in ('H', 'D'):
+                return True
+        else:
+            return False
+
+    @property
+    def disorder_present(self):
+        for at in self.atoms():
+            if at[6] == '.':
+                continue
+            if int(at[6]) > 0:
+                return True
+        else:
+            return False
+
 
     @property
     def cell(self):
