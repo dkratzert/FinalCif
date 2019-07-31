@@ -43,15 +43,12 @@ class BrukerData(object):
         #    self.app.ui.CheckcifButton.setDisabled(True)
         #    self.plat = None
         solution_primary = ''
-        resdata = cif.block.find_value('_shelx_res_file')
         if 'shelx' in self.cif.block.find_value('_audit_creation_method').lower():
             shelx = 'Sheldrick, G.M. (2015). Acta Cryst. A71, 3-8.\nSheldrick, G.M. (2015). Acta Cryst. C71, 3-8.\n'
         else:
             shelx = ''
-        dsr = ''
-        d = DSRFind(resdata)
-        if resdata:
-            if d.dsr_used:
+        if cif.resdata:
+            if cif.dsr_used:
                 dsr = 'The program DSR was used for model building:\n' \
                       'D. Kratzert, I. Krossing, J. Appl. Cryst. 2018, 51, 928-934. doi: 10.1107/S1600576718004508'
                 shelx += dsr
