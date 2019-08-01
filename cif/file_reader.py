@@ -56,6 +56,9 @@ class CifContainer():
         if not filename:
             filename = self.fileobj.absolute()
         self.doc.write_file(filename, gemmi.cif.Style.Indent35)
+        # or this way:
+        # TODO: for gemmi 0.2.8 and up:
+        # Path(filename).write_text(self.doc.as_string())
 
     def open_cif_with_gemmi(self):
         """

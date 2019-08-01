@@ -437,6 +437,12 @@ class AppWindow(QMainWindow):
         equipment = self.settings.load_equipment_template_as_dict(selected_row_text)
         if self.vheaderitems:
             for key in equipment:
+                # TODO: Add a way to add additional items to the cif file
+                # not sure if this is a good idea:
+                #if key not in self.vheaderitems:
+                #    self.cif.missing_keys.append(key)
+                    #self.cif.open_cif_by_string()
+                    #self.fill_cif_table()
                 # add missing item to data sources column:
                 if key in text_field_keys:
                     tabitem = QPlainTextEdit(self)
