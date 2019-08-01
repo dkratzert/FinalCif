@@ -10,7 +10,7 @@ import os
 import subprocess
 import sys
 from collections import OrderedDict
-from pathlib import Path
+from pathlib import Path, WindowsPath
 
 from datafiles.rigaku_data import RigakuData
 from report.tables import make_report_from
@@ -288,9 +288,14 @@ class AppWindow(QMainWindow):
                 subprocess.call(['open', Path(output_filename).absolute()])
 
     def save_current_recent_files_list(self, file):
+        if os.name == 'nt':
+            file = WindowsPath(file).absolute()
+        else:
+            file = Path(file).absolute()
         recent = list(self.settings.settings.value('recent_files', type=list))
-        if file not in recent:
-            recent.insert(0, file)
+        if str(file) not in recent:
+            # file has to be str not Path():
+            recent.insert(0, str(file))
         if len(recent) > 7:
             recent.pop()
         self.settings.settings.setValue('recent_files', recent)
@@ -300,6 +305,8 @@ class AppWindow(QMainWindow):
         self.ui.RecentComboBox.clear()
         recent = list(self.settings.settings.value('recent_files', type=list))
         for n, file in enumerate(recent):
+            if not isinstance(file, str):
+                del recent[n]
             try:
                 if not Path(file).exists():
                     del recent[n]
@@ -307,7 +314,6 @@ class AppWindow(QMainWindow):
                 pass
         self.ui.RecentComboBox.addItem('Recent Files')
         self.ui.RecentComboBox.addItems(recent)
-        # print(recent, 'load')
 
     def save_cif_and_display(self):
         self.save_current_cif_file()
