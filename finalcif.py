@@ -282,7 +282,7 @@ class AppWindow(QMainWindow):
                 not_ok = e
                 self.unable_to_open_message(self.cif.fileobj, not_ok)
                 return
-            if sys.platform == 'win' or sys.platform == 'win32':
+            if os.name == 'nt':
                 os.startfile(Path(output_filename).absolute())
             if sys.platform == 'darwin':
                 subprocess.call(['open', Path(output_filename).absolute()])
@@ -796,7 +796,10 @@ class AppWindow(QMainWindow):
             fname = self.cif_file_open_dialog()
         if not fname:
             return
-        self.ui.SelectCif_LineEdit.setText(fname)
+        if os.name == 'nt':
+            self.ui.SelectCif_LineEdit.setText(str(WindowsPath(fname).absolute()))
+        else:
+            self.ui.SelectCif_LineEdit.setText(fname)
         self.save_current_recent_files_list(fname)
         self.load_recent_cifs_list()
         try:
