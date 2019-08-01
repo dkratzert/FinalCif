@@ -52,6 +52,6 @@ subprocess.run(r""".\venv\Scripts\pyinstaller.exe Finalcif.spec -F --clean""".sp
 
 print('copying file')
 
-print(r'dist\FinalCif.exe', r'W:\htdocs\finalcif\FinalCif-v{}.exe'.format(VERSION))
+#print(r'dist\FinalCif.exe', r'W:\htdocs\finalcif\FinalCif-v{}.exe'.format(VERSION))
 
 shutil.copy(r'dist\FinalCif.exe', r'W:\htdocs\finalcif\FinalCif-v{}.exe'.format(VERSION))

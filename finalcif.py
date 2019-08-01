@@ -47,6 +47,7 @@ from tools.settings import FinalCifSettings
 
 """
 TODO:
+- add template keywords to main list if missing
 - make report text in tables from cif info
 - try to determine the _chemical_absolute_configuration method
 - make extra thread to load platon
@@ -54,7 +55,8 @@ TODO:
 - action: rightclick on a template -> offer "export template (to .cif)"
 - action: rightclick on a template -> offer "import template (from .cif)"
 
-
+[cdic[x]['_name'] for x in cdic.keys() if '_name' in cdic[x]]
+cdic = json.loads(c.as_json())
 """
 light_green = QColor(217, 255, 201)
 blue = QColor(102, 150, 179)
@@ -409,12 +411,14 @@ class AppWindow(QMainWindow):
         self.ui.PropertiesTemplatesListWidget.clear()
         equipment_list = self.settings.settings.value('equipment_list')
         if equipment_list:
+            equipment_list.sort()
             for eq in equipment_list:
                 if eq:
                     item = QListWidgetItem(eq)
                     self.ui.EquipmentTemplatesListWidget.addItem(item)
         property_list = self.settings.settings.value('property_list')
         if property_list:
+            property_list.sort()
             for pr in property_list:
                 if pr:
                     item = QListWidgetItem(pr)
