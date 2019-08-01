@@ -26,6 +26,23 @@ def isfloat(value):
         return False
 
 
+def flatten(lis):
+    """
+    Given a list, possibly nested to any level, return it flattened.
+    From: http://code.activestate.com/recipes/578948-flattening-an-arbitrarily-nested-list-in-python/
+
+    >>> flatten([['wer', 234, 'brdt5'], ['dfg'], [[21, 34,5], ['fhg', 4]]])
+    ['wer', 234, 'brdt5', 'dfg', 21, 34, 5, 'fhg', 4]
+    """
+    new_lis = []
+    for item in lis:
+        if type(item) == type([]):
+            new_lis.extend(flatten(item))
+        else:
+            new_lis.append(item)
+    return new_lis
+
+
 def this_or_quest(value):
     """
     Returns the value or a question mark if the value is None.
