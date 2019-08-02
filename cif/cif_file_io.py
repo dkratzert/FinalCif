@@ -55,10 +55,9 @@ class CifContainer():
     def save(self, filename=None):
         if not filename:
             filename = self.fileobj.absolute()
-        self.doc.write_file(filename, gemmi.cif.Style.Indent35)
+        #self.doc.write_file(filename, gemmi.cif.Style.Indent35)
         # or this way:
-        # TODO: for gemmi 0.2.8 and up:
-        # Path(filename).write_text(self.doc.as_string())
+        Path(filename).write_text(self.doc.as_string(gemmi.cif.Style.Indent35))
 
     def open_cif_with_gemmi(self):
         """
@@ -68,6 +67,7 @@ class CifContainer():
         self.cif_file_text = self.fileobj.read_text(encoding='utf-8', errors='ignore')
         try:
             self.doc = gemmi.cif.read_string(self.cif_file_text)
+            #self.doc = gemmi.cif.read_file(str(self.fileobj.absolute()))
             self.block = self.doc.sole_block()
         except Exception as e:
             print('Unable to read file:', e)

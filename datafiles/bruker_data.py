@@ -8,7 +8,7 @@
 
 from pathlib import Path
 
-from cif.file_reader import CifContainer
+from cif.cif_file_io import CifContainer
 from datafiles.bruker_frame import BrukerFrameHeader
 from datafiles.p4p_reader import P4PFile
 from datafiles.sadabs import Sadabs
