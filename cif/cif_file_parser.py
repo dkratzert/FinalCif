@@ -7,6 +7,11 @@
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
 
+"""
+ This cif file parser was originally designed for a different project and was superseeded by the
+ gemmi cif file parser.
+"""
+
 import os
 import time
 from pathlib import Path

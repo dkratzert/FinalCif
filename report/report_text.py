@@ -4,7 +4,7 @@ import gemmi
 from docx.text.paragraph import Paragraph
 from docx.text.run import Run
 
-from cif.file_reader import CifContainer
+from cif.cif_file_io import CifContainer
 
 """
 TODO: Add references of the used programs to the end.
