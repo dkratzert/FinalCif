@@ -75,7 +75,7 @@ class Platon():
 
     def run_platon(self, chkfile: Path):
         """
-        >>> fname = Path(r'/Users/daniel/GitHub/FinalCif/test-data/DK_zucker2_0m.cif')
+        >>> fname = Path(r'./test-data/DK_zucker2_0m.cif')
         >>> Platon(fname)
         Platon:
         C12 H22 O11
