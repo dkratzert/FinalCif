@@ -47,6 +47,7 @@ from tools.settings import FinalCifSettings
 
 """
 TODO:
+- make tab key go down one row
 - add template keywords to main list if missing
 - make report text in tables from cif info
 - try to determine the _chemical_absolute_configuration method
@@ -61,7 +62,7 @@ cdic = json.loads(c.as_json())
 light_green = QColor(217, 255, 201)
 blue = QColor(102, 150, 179)
 yellow = QColor(250, 252, 167)
-
+from gui.finalcif_gui import Ui_FinalCifWindow
 
 class AppWindow(QMainWindow):
     def __init__(self):
@@ -439,10 +440,10 @@ class AppWindow(QMainWindow):
             for key in equipment:
                 # TODO: Add a way to add additional items to the cif file
                 # not sure if this is a good idea:
-                #if key not in self.vheaderitems:
+                # if key not in self.vheaderitems:
                 #    self.cif.missing_keys.append(key)
-                    #self.cif.open_cif_by_string()
-                    #self.fill_cif_table()
+                # self.cif.open_cif_by_string()
+                # self.fill_cif_table()
                 # add missing item to data sources column:
                 if key in text_field_keys:
                     tabitem = QPlainTextEdit(self)
@@ -1107,8 +1108,6 @@ class AppWindow(QMainWindow):
 
 
 if __name__ == '__main__':
-    from gui.finalcif_gui import Ui_FinalCifWindow
-
     app = QApplication(sys.argv)
     w = AppWindow()
     app.setWindowIcon(QIcon('./icon/multitable.png'))
