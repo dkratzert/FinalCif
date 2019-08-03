@@ -284,8 +284,11 @@ class Cif(object):
             self.cif_data["_space_group_centring_type"] = self.cif_data["_space_group_name_H-M_alt"].split()[0][:1]
         if '_symmetry_cell_setting' in self.cif_data:
             self.cif_data['_space_group_crystal_system'] = self.cif_data['_symmetry_cell_setting']
-        elif '_space_group_name_Hall' in self.cif_data:
-            self.cif_data["_space_group_centring_type"] = self.cif_data["_space_group_name_Hall"].split()[0][:1]
+        if '_space_group_name_Hall' in self.cif_data:
+            try:
+                self.cif_data["_space_group_centring_type"] = self.cif_data["_space_group_name_Hall"].split()[0][:1]
+            except IndexError:
+                pass
 
     def __iter__(self) -> dict:
         """
