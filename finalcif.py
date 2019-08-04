@@ -12,6 +12,7 @@ import sys
 from collections import OrderedDict
 from pathlib import Path, WindowsPath
 
+from cif.core_dict import cif_core
 from datafiles.rigaku_data import RigakuData
 from report.tables import make_report_from
 from tools.version import VERSION
@@ -443,6 +444,12 @@ class AppWindow(QMainWindow):
         equipment = self.settings.load_equipment_template_as_dict(selected_row_text)
         if self.vheaderitems:
             for key in equipment:
+                if not key in self.vheaderitems:
+                    if key in cif_core:
+                        self.add_row(key=key, value='?', at_start=True)
+                        self.missing_data.append(key)
+                    else:
+                        print(key, 'is not a valid cif keyword!')
                 # TODO: Add a way to add additional items to the cif file
                 # not sure if this is a good idea:
                 # if key not in self.vheaderitems:
@@ -459,7 +466,7 @@ class AppWindow(QMainWindow):
                     # special treatment for text fields in order to get line breaks:
                     for txt in txtlst:
                         tabitem.appendPlainText(txt)
-                    tabitem.setFrameShape(0)  # no
+                    tabitem.setFrameShape(0)  # no fram earound the field
                     # tabitem.setPalette(pal)
                     row = self.vheaderitems[key]
                     column = 1
@@ -474,8 +481,8 @@ class AppWindow(QMainWindow):
                         tab_item.setFlags(tab_item.flags() ^ Qt.ItemIsEditable)
                         tab_item.setBackground(light_green)
                     except KeyError as e:
-                        # print('load_selected_equipment:', e)
-                        pass
+                        print('not in list:', e)
+        self.get_data_sources()
 
     def new_equipment(self):
         item = QListWidgetItem('')
@@ -1046,12 +1053,15 @@ class AppWindow(QMainWindow):
         self.ui.CifItemsTable.setItem(vheaderitems[vert_key], column, tab_item)
         # tab_item.setFlags(tab_item.flags() ^ Qt.ItemIsEditable)
 
-    def add_row(self, key, value):
+    def add_row(self, key, value, at_start=False):
         """
         Create a empty row at bottom of CifItemsTable. This method only fills cif data in the 
         first column. Not the data from external sources!
         """
-        row_num = self.ui.CifItemsTable.rowCount()
+        if at_start:
+            row_num = 0
+        else:
+            row_num = self.ui.CifItemsTable.rowCount()
         self.ui.CifItemsTable.insertRow(row_num)
         # Add cif key and value to the row:
         item_key = QTableWidgetItem(key)
