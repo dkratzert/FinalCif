@@ -68,6 +68,7 @@ blue = QColor(102, 150, 179)
 yellow = QColor(250, 252, 167)
 from gui.finalcif_gui import Ui_FinalCifWindow
 
+
 class AppWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -329,27 +330,26 @@ class AppWindow(QMainWindow):
 
     def get_table_item(self, table, row, col) -> str:
         try:
-           item = table.item(row, col).text()
+            item = table.item(row, col).text()
         except AttributeError:
-           item = None
+            item = None
         if not item:
-           try:
-               item = table.item(row, col).data(0)
-           except AttributeError:
-               item = None
-         if not item:
-             try:
-                 # This is for QPlaintextWidget items in the table:
-                 item = table.cellWidget(row, col).toPlainText()
-             except AttributeError:
-                 item = None
-         if not item:
-             try:
-                 item = table.cellWidget(row, col).currentText()
-             except AttributeError:
-                 item = None
-         return item 
-
+            try:
+                item = table.item(row, col).data(0)
+            except AttributeError:
+                item = None
+        if not item:
+            try:
+                # This is for QPlaintextWidget items in the table:
+                item = table.cellWidget(row, col).toPlainText()
+            except AttributeError:
+                item = None
+        if not item:
+            try:
+                item = table.cellWidget(row, col).currentText()
+            except AttributeError:
+                item = None
+        return item
 
     def save_current_cif_file(self):
         table = self.ui.CifItemsTable
