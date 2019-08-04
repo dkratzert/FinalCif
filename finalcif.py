@@ -320,7 +320,8 @@ class AppWindow(QMainWindow):
             except OSError:
                 pass
         self.ui.RecentComboBox.addItem('Recent Files')
-        self.ui.RecentComboBox.addItems(recent)
+        for file in recent:
+            self.ui.RecentComboBox.addItem(Path(file).name)
 
     def save_cif_and_display(self):
         self.save_current_cif_file()
@@ -1102,7 +1103,12 @@ class AppWindow(QMainWindow):
                 tab2 = QTableWidgetItem()
                 self.ui.CifItemsTable.setItem(row_num, 1, tab1)
                 self.ui.CifItemsTable.setItem(row_num, 0, tabitem)
-                if key == '_computing_publication_material':
+                if key == '_audit_creation_method':
+                    # or better _audit_update_record?
+                    """'A record of any changes to the data block. The '
+                    'update format is a date (yyyy-mm-dd) followed by a '
+                    'description of the changes. The latest update entry '
+                    'is added to the bottom of this record.'"""
                     tab2.setText('FinalCif by Daniel Kratzert, Freiburg 2019')
                     self.ui.CifItemsTable.setItem(row_num, 2, tab2)
                 tabitem.setFlags(tabitem.flags() ^ Qt.ItemIsEditable)
