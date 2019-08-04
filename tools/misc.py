@@ -87,8 +87,8 @@ high_prio_keys = {
     '_exptl_crystal_description'                       : 'A description of the quality and habit of the crystal',
     '_exptl_crystal_colour'                            : 'The colour of the crystal',
     '_exptl_crystal_recrystallization_method'          : 'Describes the method used to crystallize the sample',
-    '_exptl_crystal_density_meas'                      : 'Density value measured using standard chemical and physical methods',
-    '_exptl_crystal_density_method'                    : 'The method used to measure _exptl_crystal_density_meas',
+    # '_exptl_crystal_density_meas'                      : 'Density value measured using standard chemical and physical methods',
+    # '_exptl_crystal_density_method'                    : 'The method used to measure _exptl_crystal_density_meas',
     '_exptl_crystal_density_diffrn'                    : 'Density values calculated from the crystal cell and contents',
     '_exptl_crystal_F_000'                             : 'The effective number of electrons in the crystal unit cell contributing to F(000)',
     '_exptl_crystal_size_max'                          : 'Maximum dimension of the crystal in mm',
@@ -440,4 +440,17 @@ predef_prop_templ = [{'name'  : 'Crystal Color',
                                   'ORTEP Farrujia 2012', 'Bruker SHELXTL, XP (G. Sheldrick)',
                                   'Mercury CSD']]
                       },
+                     {'name'  : 'Crystal Cooling Device',
+                      'values': ['_olex2_diffrn_ambient_temperature_device',
+                                 ['',
+                                  'Oxford Cryostream',
+                                  'Oxford Cryostream 800',
+                                  'Oxford Cryostream 700',
+                                  'Oxford Cryostream 600',
+                                  'Bruker Kryofelx II',
+                                  'Bruker Kryofelx I',
+                                  ]
+                                 ]
+
+                      }
                      ]
