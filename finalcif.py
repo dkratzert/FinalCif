@@ -327,6 +327,30 @@ class AppWindow(QMainWindow):
         self.save_current_cif_file()
         self.display_saved_cif()
 
+    def get_table_item(self, table, row, col) -> str:
+        try:
+           item = table.item(row, col).text()
+        except AttributeError:
+           item = None
+        if not item:
+           try:
+               item = table.item(row, col).data(0)
+           except AttributeError:
+               item = None
+         if not item:
+             try:
+                 # This is for QPlaintextWidget items in the table:
+                 item = table.cellWidget(row, col).toPlainText()
+             except AttributeError:
+                 item = None
+         if not item:
+             try:
+                 item = table.cellWidget(row, col).currentText()
+             except AttributeError:
+                 item = None
+         return item 
+
+
     def save_current_cif_file(self):
         table = self.ui.CifItemsTable
         table.setCurrentItem(None)  # makes sure also the currently edited item is saved
@@ -337,21 +361,7 @@ class AppWindow(QMainWindow):
             col1 = None  # from datafiles
             col2 = None  # own text
             for col in range(columncount):
-                try:
-                    item = table.item(row, col).text()
-                except AttributeError:
-                    item = None
-                if not item:
-                    try:
-                        item = table.item(row, col).data(0)
-                    except AttributeError:
-                        item = None
-                if not item:
-                    try:
-                        # This is for QPlaintextWidget items in the table:
-                        item = table.cellWidget(row, col).toPlainText()
-                    except AttributeError:
-                        item = None
+                item = self.get_table_item(table, row, col)
                 if item:
                     if col == 0 and item != (None or '' or '?'):
                         col0 = item
@@ -363,12 +373,6 @@ class AppWindow(QMainWindow):
                             col2 = item
                     except AttributeError:
                         pass
-                try:
-                    txt = table.cellWidget(row, col).currentText()
-                except AttributeError:
-                    txt = None
-                if col == 2 and txt:
-                    col2 = txt
                 if col == 2:
                     vhead = self.ui.CifItemsTable.model().headerData(row, Qt.Vertical)
                     if not str(vhead).startswith('_'):
