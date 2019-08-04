@@ -8,7 +8,6 @@
 # 
 
 import itertools as it
-import operator
 import re
 from pathlib import Path
 
@@ -16,6 +15,10 @@ from pathlib import Path
 def grouper(inputs, n, fillvalue=None):
     iters = [iter(inputs)] * n
     return it.zip_longest(*iters, fillvalue=fillvalue)
+
+
+def get_files_from_current_dir():
+    return list(Path('./').rglob('*.cif'))
 
 
 def isfloat(value):
@@ -55,44 +58,6 @@ def find_line(inputlist: list, regex: str) -> int:
         if re.match(regex, string, re.IGNORECASE):
             return num  # returns the index number if regex found
     return 0
-
-
-class Manufacturer():
-    """
-    A class to count evidences for the manufacturer of a dataset.
-
-    >>> from tools.misc import Manufacturer
-    >>> m = Manufacturer()
-    >>> m.points['bruker'] += 1
-    >>> m.points['bruker'] += 1
-    >>> m
-    bruker
-    >>> m.points['stoe'] += 1
-    >>> m.points['stoe'] += 10
-    >>> m
-    stoe
-    >>> m2 = Manufacturer()
-    >>> m2
-    """
-
-    def __init__(self):
-        self.points = {'bruker': 0,
-                       'stoe'  : 0,
-                       'rigaku': 0,
-                       'other' : 0
-                       }
-
-    def get_manufacturer(self):
-        """
-        Returns the manufacturer with the most points.
-        """
-        if not any(self.points.values()):
-            # all with 0 points
-            return 'other'
-        return max(self.points.items(), key=operator.itemgetter(1))[0]
-
-    def __repr__(self):
-        return self.get_manufacturer()
 
 
 # '_space_group_centring_type',  # seems to be used nowere
@@ -389,7 +354,7 @@ predef_equipment_templ = [{'name' : 'D8 VENTURE',
                                # ['_diffrn_source_current', '50'],
                                # ['_diffrn_source_voltage', '1.1'],
                                ['_diffrn_source_type', r'Incoatec I\ms'],
-                               ['_diffrn_measurement_specimen_support', 'Mitegen Loop'],
+                               ['_diffrn_measurement_specimen_support', 'MiTeGen micromount'],
                                ['_olex2_diffrn_ambient_temperature_device', 'Oxford Cryostream 800'],
                            ]
                            },
@@ -403,7 +368,7 @@ predef_equipment_templ = [{'name' : 'D8 VENTURE',
                                ['_diffrn_source_type', r'Incoatec I\ms'],
                                ['_diffrn_detector_area_resol_mean', '7.9'],
                                ['_diffrn_radiation_probe', 'x-ray'],
-                               ['_diffrn_measurement_specimen_support', 'Mitegen Loop'],
+                               ['_diffrn_measurement_specimen_support', 'MiTeGen micromount'],
                                ['_olex2_diffrn_ambient_temperature_device', 'Oxford Cryostream 800'],
                            ]
                            },
@@ -416,7 +381,7 @@ predef_equipment_templ = [{'name' : 'D8 VENTURE',
                                ['_diffrn_source', 'sealed X-ray tube'],  # obsolete: _diffrn_radiation_source
                                ['_diffrn_detector', 'Image Plate'],
                                ['_diffrn_detector_type', 'Rigaku Image Plate'],
-                               ['_diffrn_measurement_specimen_support', 'Mitegen Loop'],
+                               ['_diffrn_measurement_specimen_support', 'MiTeGen micromount'],
                                ['_olex2_diffrn_ambient_temperature_device', 'Bruker Kryoflex II'],
                            ]
                            },
@@ -476,7 +441,3 @@ predef_prop_templ = [{'name'  : 'Crystal Color',
                                   'Mercury CSD']]
                       },
                      ]
-
-
-def get_files_from_current_dir():
-    return list(Path('./').rglob('*.cif'))
