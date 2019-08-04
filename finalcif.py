@@ -486,6 +486,8 @@ class AppWindow(QMainWindow):
             self.show_general_warning('"{}" is not an official CIF keyword!'.format(key))
         self.vheaderitems.insert(0, key)
         self.add_row(key=key, value='?', at_start=True)
+        if key in [x.lower() for x in combobox_fields]:
+            self.add_property_combobox(combobox_fields[key], 0)
         self.missing_data.append(key)
         # This is a crude hack to get the new values to the start of the cif file:
         # It seems to be fast and stable though...
