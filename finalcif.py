@@ -56,8 +56,12 @@ TODO:
 - action: rightclick on a template -> offer "export template (to .cif)"
 - action: rightclick on a template -> offer "import template (from .cif)"
 
-[cdic[x]['_name'] for x in cdic.keys() if '_name' in cdic[x]]
 cdic = json.loads(c.as_json())
+[cdic[x]['_name'] for x in cdic.keys() if '_name' in cdic[x]]
+
+as dict:
+{str(cdic[x]['_name']): ' '.join(cdic[x]['_definition'].split()) for x in cdic.keys() if '_name' in cdic[x]}
+
 """
 light_green = QColor(217, 255, 201)
 blue = QColor(102, 150, 179)
