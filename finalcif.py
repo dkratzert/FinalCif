@@ -9,9 +9,9 @@
 import os
 import subprocess
 import sys
-from collections import OrderedDict
 from pathlib import Path, WindowsPath
 
+from cif.core_dict import cif_core
 from datafiles.rigaku_data import RigakuData
 from report.tables import make_report_from
 from tools.version import VERSION
@@ -42,7 +42,7 @@ from cif.cif_file_io import CifContainer
 from datafiles.bruker_data import BrukerData
 from datafiles.platon import Platon
 from tools.misc import high_prio_keys, predef_equipment_templ, predef_prop_templ, combobox_fields, \
-    text_field_keys, to_float
+    text_field_keys, to_float, find_line
 from tools.settings import FinalCifSettings
 
 """
@@ -78,7 +78,7 @@ class AppWindow(QMainWindow):
         self.setAcceptDrops(True)
         self.show()
         self.statusBar().showMessage('FinalCif version {}'.format(VERSION))
-        self.vheaderitems = OrderedDict()
+        self.vheaderitems = list()
         self.settings = FinalCifSettings(self)
         self.store_predefined_templates()
         self.show_equipment_and_properties()
@@ -258,7 +258,7 @@ class AppWindow(QMainWindow):
             return
             # get back previous name
         if self.vheader_clicked > -1:
-            item.setText([x for x in self.vheaderitems.keys()][self.vheader_clicked])
+            item.setText(self.vheaderitems[self.vheader_clicked])
             self.vheader_clicked = -1
             return
         try:
@@ -271,7 +271,7 @@ class AppWindow(QMainWindow):
             pass
 
     def restore_vertical_header(self):
-        for row_num, key in enumerate(self.vheaderitems.keys()):
+        for row_num, key in enumerate(self.vheaderitems):
             item_key = QTableWidgetItem(key)
             self.ui.CifItemsTable.setVerticalHeaderItem(row_num, item_key)
 
@@ -447,12 +447,8 @@ class AppWindow(QMainWindow):
         equipment = self.settings.load_equipment_template_as_dict(selected_row_text)
         if self.vheaderitems:
             for key in equipment:
-                # TODO: Add a way to add additional items to the cif file
-                # not sure if this is a good idea:
-                # if key not in self.vheaderitems:
-                #    self.cif.missing_keys.append(key)
-                # self.cif.open_cif_by_string()
-                # self.fill_cif_table()
+                if key not in self.vheaderitems:
+                    self.add_new_table_key(key)
                 # add missing item to data sources column:
                 if key in text_field_keys:
                     tabitem = QPlainTextEdit(self)
@@ -463,23 +459,42 @@ class AppWindow(QMainWindow):
                     # special treatment for text fields in order to get line breaks:
                     for txt in txtlst:
                         tabitem.appendPlainText(txt)
-                    tabitem.setFrameShape(0)  # no
+                    tabitem.setFrameShape(0)  # no fram earound the field
                     # tabitem.setPalette(pal)
-                    row = self.vheaderitems[key]
+                    row = self.vheaderitems.index(key)
                     column = 1
                     self.ui.CifItemsTable.setCellWidget(row, column, tabitem)
                 else:
                     try:
                         tab_item = QTableWidgetItem(str(equipment[key]))
                         # vheaderitems contain the cif keywords in the vertical header, the 1 is the data sources column.
-                        row = self.vheaderitems[key]
+                        row = self.vheaderitems.index(key)
                         column = 1
                         self.ui.CifItemsTable.setItem(row, column, tab_item)
                         tab_item.setFlags(tab_item.flags() ^ Qt.ItemIsEditable)
                         tab_item.setBackground(light_green)
-                    except KeyError as e:
-                        # print('load_selected_equipment:', e)
-                        pass
+                    except ValueError as e:
+                        print('not in list:', e)
+
+    def add_new_table_key(self, key: str) -> None:
+        """
+        Adds a new row with a respective vheaderitem to the main table.
+        Also the currently opened cif file is updated.
+        """
+        # warn if key is not official:
+        if key not in cif_core:
+            self.show_general_warning('"{}" is not an official CIF keyword!'.format(key))
+        self.vheaderitems.insert(0, key)
+        self.add_row(key=key, value='?', at_start=True)
+        self.missing_data.append(key)
+        # This is a crude hack to get the new values to the start of the cif file:
+        # It seems to be fast and stable though...
+        if not self.cif.block.find_value(key):
+            cif_lst = self.cif.cif_file_text.splitlines()
+            data_position = find_line(cif_lst, '^data_')
+            cif_lst.insert(data_position + 1, key + ' ' * (31 - len(key)) + '    ?')
+            self.cif.cif_file_text = "\n".join(cif_lst)
+            self.cif.open_cif_by_string()
 
     def new_equipment(self):
         item = QListWidgetItem('')
@@ -905,6 +920,18 @@ class AppWindow(QMainWindow):
         info.show()
         info.exec()
 
+    def show_general_warning(self, warn_text=''):
+        """
+        A message box to display if the checksums do not agree.
+        """
+        if not warn_text:
+            return
+        info = QMessageBox()
+        info.setIcon(QMessageBox.Warning)
+        info.setText(warn_text)
+        info.show()
+        info.exec()
+
     def check_Z(self):
         """
         Crude check if Z is much too high e.h. a SEHLXT solution with "C H N O" sum formula.
@@ -941,9 +968,10 @@ class AppWindow(QMainWindow):
             sources = self.rigakucif.sources
         # Build a dictionary of cif keys and row number values in order to fill the first column
         # of CifItemsTable with cif values:
-        for item in range(self.ui.CifItemsTable.model().rowCount()):
-            head = self.ui.CifItemsTable.model().headerData(item, Qt.Vertical)
-            self.vheaderitems[head] = item
+        for num in range(self.ui.CifItemsTable.model().rowCount()):
+            vhead = self.ui.CifItemsTable.model().headerData(num, Qt.Vertical)
+            if not vhead in self.vheaderitems:
+                self.vheaderitems.append(vhead)
         # They are needed for the comboboxes:
         property_fields = self.settings.load_property_keys()
         # get missing items from sources and put them into the corresponding rows:
@@ -954,8 +982,8 @@ class AppWindow(QMainWindow):
         for miss_data in self.missing_data:
             # add missing item to data sources column:
             try:
-                row_num = self.vheaderitems[miss_data]
-            except KeyError:
+                row_num = self.vheaderitems.index(miss_data)
+            except ValueError:
                 continue
             if miss_data in text_field_keys:
                 tab_item = QPlainTextEdit(self)
@@ -1050,12 +1078,15 @@ class AppWindow(QMainWindow):
         self.ui.CifItemsTable.setItem(vheaderitems[vert_key], column, tab_item)
         # tab_item.setFlags(tab_item.flags() ^ Qt.ItemIsEditable)
 
-    def add_row(self, key, value):
+    def add_row(self, key, value, at_start=False):
         """
         Create a empty row at bottom of CifItemsTable. This method only fills cif data in the 
         first column. Not the data from external sources!
         """
-        row_num = self.ui.CifItemsTable.rowCount()
+        if at_start:
+            row_num = 0
+        else:
+            row_num = self.ui.CifItemsTable.rowCount()
         self.ui.CifItemsTable.insertRow(row_num)
         # Add cif key and value to the row:
         item_key = QTableWidgetItem(key)

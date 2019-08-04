@@ -252,14 +252,19 @@ COLOUR_CHOICES = (
 )
 
 SPECIMEN_SUPPORT = (
-    (0, 'glass capillary'),
-    (1, 'quartz capillary'),
-    (2, 'fiber'),
-    (3, 'metal loop'),
+    (0, ''),
+    (0, 'MiTeGen micromount'),
+    (1, 'glass capillary'),
+    (2, 'quartz capillary'),
+    (3, 'glass fiber'),
+    (4, 'metal loop'),
+    (5, 'nylon loop'),
+    (6, 'cactus needle'),
+    (7, 'cat whisker'),
 )
 
 ABSOLUTE_CONFIGURATION_CHOICES = (
-    (0, ''),  # , '?'),
+    (0, ''),  #
     (1, 'ad'),  # , 'Anomalous dispersion'),
     (2, 'rm'),  # , 'Reference Molecule'),
     (3, 'rmad'),  # , 'Reference Molecule and ad'),
