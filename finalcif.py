@@ -301,10 +301,10 @@ class AppWindow(QMainWindow):
         """
         if self.cif:
             self.save_current_cif_file()
-            output_filename = 'tables.docx'
+            output_filename = 'report_{}.docx'.format(self.cif.fileobj.stem)
             not_ok = None
             try:
-                make_report_from(self.fin_file, path=application_path)
+                make_report_from(self.fin_file, path=application_path, output_filename=output_filename)
             except FileNotFoundError as e:
                 print('Unable to open cif file')
                 not_ok = e
