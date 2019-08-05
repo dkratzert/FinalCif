@@ -45,6 +45,26 @@ from tools.misc import high_prio_keys, predef_equipment_templ, predef_prop_templ
     text_field_keys, to_float, find_line
 from tools.settings import FinalCifSettings
 
+
+def _append_run_path():
+    if getattr(sys, 'frozen', False):
+        pathlist = []
+
+        # If the application is run as a bundle, the pyInstaller bootloader
+        # extends the sys module by a flag frozen=True and sets the app
+        # path into variable _MEIPASS'.
+        pathlist.append(application_path)
+
+        # the application exe path
+        _main_app_path = os.path.dirname(sys.executable)
+        pathlist.append(_main_app_path)
+
+        # append to system path enviroment
+        os.environ["PATH"] += os.pathsep + os.pathsep.join(pathlist)
+
+
+_append_run_path()
+
 """
 TODO:
 - make tab key go down one row
