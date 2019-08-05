@@ -114,6 +114,8 @@ high_prio_keys = {
     '_diffrn_source_voltage'                           : 'The voltage in kilovolts at which the radiation source was operated',
     '_diffrn_measurement_device_type'                  : 'The make, model or name of the measurement device used.',
     '_diffrn_measurement_method'                       : "Method used to measure the intensities, eg.g 'omega scans'",
+    '_diffrn_measurement_specimen_support'             : 'The physical device used to support the crystal during data collection.',
+    #'_diffrn_measurement_specimen_adhesive'            : 'Adhesive used to hold the crystal on the _diffrn_measurement_specimen_support during intensity measurement.',
     '_diffrn_reflns_number'                            : 'The total number of measured intensities excluding systematic absent',
     '_diffrn_reflns_av_unetI/netI'                     : 'Measure [sum |u(net I)|/sum|net I|] for all measured reflections',
     '_diffrn_reflns_av_R_equivalents'                  : 'The residual for symmetry-equivalent reflections used to calculate the average intensity',
@@ -201,7 +203,7 @@ ABSORPTION_CORRECTION_TYPES = (
 )
 
 COLOUR_CHOICES = (
-    (0, '?'),
+    (0, ''),
     (1, 'colourless'),
     (2, 'white'),
     (3, 'black'),
@@ -218,14 +220,23 @@ COLOUR_CHOICES = (
 
 SPECIMEN_SUPPORT = (
     (0, ''),
-    (0, 'MiTeGen micromount'),
-    (1, 'glass capillary'),
-    (2, 'quartz capillary'),
-    (3, 'glass fiber'),
-    (4, 'metal loop'),
-    (5, 'nylon loop'),
-    (6, 'cactus needle'),
-    (7, 'cat whisker'),
+    (1, 'MiTeGen micromount'),
+    (2, 'glass capillary'),
+    (3, 'quartz capillary'),
+    (4, 'glass fiber'),
+    (5, 'metal loop'),
+    (6, 'nylon loop'),
+    (7, 'cactus needle'),
+    (8, 'cat whisker'),
+)
+
+ADHESIVE = (
+    (0, ''),
+    (1, 'perfluorether oil'),
+    (2, 'epoxy glue'),
+    (3, 'motor oil'),
+    (4, 'grease'),
+    (5, 'honey'),
 )
 
 ABSOLUTE_CONFIGURATION_CHOICES = (
@@ -239,7 +250,7 @@ ABSOLUTE_CONFIGURATION_CHOICES = (
 )
 
 REFINE_LS_HYDROGEN_TREATMENT = (
-    (0, '?'),
+    (0, ''),
     (1, 'undef'),
     (2, 'mixed'),
     (3, 'constr'),
@@ -258,8 +269,9 @@ REFINE_LS_HYDROGEN_TREATMENT = (
 )
 
 RADIATION_TYPE = (
-    (0, r'Mo K\a'),
-    (1, r'Cu K\a'),
+    (0, r''),
+    (1, r'Mo K\a'),
+    (2, r'Cu K\a'),
     (3, r'Ag K\a')
 )
 
@@ -279,17 +291,18 @@ SOLUTION_PRIMARY = (
 )
 
 SOLUTION_SECONDARY = (
-    (0, 'difmap'),
-    (1, 'vecmap'),
-    (2, 'heavy'),
-    (3, 'direct'),
-    (4, 'geom'),
-    (5, 'disper'),
-    (6, 'isomor'),
-    (7, 'notdet'),
-    (8, 'dual'),
-    (9, 'iterative'),
-    (10, 'other'),
+    (0, ''),
+    (1, 'direct'),
+    (2, 'vecmap'),
+    (3, 'heavy'),
+    (4, 'difmap'),
+    (5, 'geom'),
+    (6, 'disper'),
+    (7, 'isomor'),
+    (8, 'notdet'),
+    (9, 'dual'),
+    (10, 'iterative'),
+    (11, 'other'),
 )
 
 combobox_fields = {'_exptl_crystal_colour'               : COLOUR_CHOICES,
@@ -300,6 +313,7 @@ combobox_fields = {'_exptl_crystal_colour'               : COLOUR_CHOICES,
                    '_atom_sites_solution_primary'        : SOLUTION_PRIMARY,
                    '_atom_sites_solution_secondary'      : SOLUTION_PRIMARY,
                    '_diffrn_measurement_specimen_support': SPECIMEN_SUPPORT,
+                   # '_diffrn_measurement_specimen_adhesive': ADHESIVE,
                    }
 
 
