@@ -963,6 +963,7 @@ class AppWindow(QMainWindow):
         """
         Tries to determine the sources of missing data in the cif file, e.g. Tmin/Tmax from SADABS.
         """
+        sources = None
         self.check_Z()
         if self.manufacturer == 'bruker':
             sources = BrukerData(self, self.cif).sources
