@@ -321,8 +321,7 @@ class AppWindow(QMainWindow):
             except OSError:
                 pass
         self.ui.RecentComboBox.addItem('Recent Files')
-        for file in recent:
-            self.ui.RecentComboBox.addItem(Path(file).name)
+        self.ui.RecentComboBox.addItems(recent)
 
     def save_cif_and_display(self):
         self.save_current_cif_file()
