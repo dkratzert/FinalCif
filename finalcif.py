@@ -472,6 +472,7 @@ class AppWindow(QMainWindow):
                     self.add_new_table_key(key)
                 # add missing item to data sources column:
                 if key in text_field_keys:
+                    # special treatments for text fields:
                     tabitem = QPlainTextEdit(self)
                     pal = tabitem.palette()
                     pal.setColor(QPalette.Base, light_green)
@@ -562,10 +563,10 @@ class AppWindow(QMainWindow):
             table = self.ui.PropertiesEditTableWidget
         rowcount = table.rowCount()
         cont = 0
-        for n in range(rowcount):
+        for row in range(rowcount):
             key = ''
             try:
-                key = table.item(n, 0).text()
+                key = table.item(row, column=0).text()
             except (AttributeError, TypeError):
                 pass
             if key:  # don't count empty key rows
@@ -578,17 +579,24 @@ class AppWindow(QMainWindow):
         """
         Add a new row with content to the table (Equipment or Property).
         """
+        if not isinstance(value, str):
+            return
+        if not isinstance(key, str):
+            return
         # Create a empty row at bottom of table
         row_num = table.rowCount()
         table.insertRow(row_num)
-        # Add cif key and value to the row:
-        item_key = QTableWidgetItem(key)
-        try:
+        if len(value) > 38:
+            tab_item = QPlainTextEdit()
+            tab_item.setFrameShape(0)
+            tab_item.setPlainText(value)
+            table.setCellWidget(row_num, 1, tab_item)
+        else:
             item_val = QTableWidgetItem(value)
-        except TypeError:
-            return
+            # Add cif key and value to the row:
+            table.setItem(row_num, 1, item_val)
+        item_key = QTableWidgetItem(key)
         table.setItem(row_num, 0, item_key)
-        table.setItem(row_num, 1, item_val)
 
     # The equipment templates:
 
@@ -626,21 +634,17 @@ class AppWindow(QMainWindow):
         table.insertRow(n)
         self.ui.EquipmentEditTableWidget.blockSignals(False)
         stackedwidget.setCurrentIndex(1)
+        self.ui.EquipmentEditTableWidget.resizeRowsToContents()
 
     def save_equipment_template(self):
-        table = self.ui.EquipmentEditTableWidget
-        stackedwidget = self.ui.EquipmentTemplatesStackedWidget
-        listwidget = self.ui.EquipmentTemplatesListWidget
-        self.save_equipment(table, stackedwidget, listwidget)
-
-    def save_equipment(self, table: QTableWidget, stackwidget: QStackedWidget, listwidget: QListWidget):
         """
         Saves the currently selected equipment template to the config file.
         """
+        table = self.ui.EquipmentEditTableWidget
         # Set None Item to prevent loss of the currently edited item:
         # The current item is closed and thus saved.
         table.setCurrentItem(None)
-        selected_template_text = listwidget.currentIndex().data()
+        selected_template_text = self.ui.EquipmentTemplatesListWidget.currentIndex().data()
         equipment_list = self.settings.settings.value('equipment_list')
         if not equipment_list:
             equipment_list = ['']
@@ -649,8 +653,8 @@ class AppWindow(QMainWindow):
         for rownum in range(ncolumns):
             key = ''
             try:
-                key = table.item(rownum, 0).text()
-                value = table.item(rownum, 1).text()
+                key = self.get_table_item(table, rownum, 0)
+                value = self.get_table_item(table, rownum, 1)
             except AttributeError:
                 value = ''
             if key and value:
@@ -660,7 +664,7 @@ class AppWindow(QMainWindow):
         newlist = [x for x in list(set(equipment_list)) if x]
         # this list keeps track of the equipment items:
         self.settings.save_template('equipment_list', newlist)
-        stackwidget.setCurrentIndex(0)
+        self.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
         print('saved')
 
     def cancel_equipment_template(self):
@@ -715,6 +719,7 @@ class AppWindow(QMainWindow):
         stackedwidget = self.ui.PropertiesTemplatesStackedWidget
         listwidget = self.ui.PropertiesTemplatesListWidget
         self.load_property(table, stackedwidget, listwidget)
+        table.resizeRowsToContents()
 
     def save_property_template(self):
         table = self.ui.PropertiesEditTableWidget
@@ -1009,19 +1014,15 @@ class AppWindow(QMainWindow):
                 row_num = self.vheaderitems.index(miss_data)
             except ValueError:
                 continue
-            if miss_data in text_field_keys:
-                tab_item = QPlainTextEdit(self)
-                tab_item.setFrameShape(0)
-                self.ui.CifItemsTable.setCellWidget(row_num, 1, tab_item)
-            else:
-                tab_item = QTableWidgetItem()
-                #                             # row  column  item
-                self.ui.CifItemsTable.setItem(row_num, 1, tab_item)
+            tab_item = QTableWidgetItem()
             try:
                 # sources are lower case!
                 txt = str(sources[miss_data.lower()][0])
                 tooltiptext = str(sources[miss_data.lower()][1])
                 if miss_data in text_field_keys:
+                    tab_item = QPlainTextEdit(self)
+                    tab_item.setFrameShape(0)
+                    self.ui.CifItemsTable.setCellWidget(row_num, 1, tab_item)
                     tab_item.setPlainText(txt)
                     pal = tab_item.palette()
                     if txt and txt != '?':
@@ -1030,6 +1031,8 @@ class AppWindow(QMainWindow):
                         pal.setColor(QPalette.Base, yellow)
                     tab_item.setPalette(pal)
                 else:
+                    #                             # row  column  item
+                    self.ui.CifItemsTable.setItem(row_num, 1, tab_item)
                     tab_item.setText(txt)  # has to be string
                     if txt and txt != '?':
                         tab_item.setBackground(light_green)
