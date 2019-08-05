@@ -60,7 +60,7 @@ class BrukerData(object):
         # Going back from last dataset:
         for n in range(1, len(self.sadabs.datasets) + 1):
             try:
-                abstype = 'multi-scan' if not self.sadabs.dataset(-n).numerical else 'numerical'
+                abstype = 'numerical' if self.sadabs.dataset(-n).numerical else 'multi-scan' 
                 t_min = min(self.sadabs.dataset(-n).transmission)
                 t_max = max(self.sadabs.dataset(-n).transmission)
                 if all([abstype, t_min, t_max]):
@@ -97,7 +97,7 @@ class BrukerData(object):
         if self.cif.absorpt_correction_T_max:
             abs_tmax = (self.cif.absorpt_correction_T_max, self.cif.fileobj.name)
         else:
-            abs_tmax = (str(t_min), self.sadabs.filename.name)
+            abs_tmax = (str(t_max), self.sadabs.filename.name)
         if self.cif.absorpt_correction_T_min:
             abs_tmin = (self.cif.absorpt_correction_T_min, self.cif.fileobj.name)
         else:
