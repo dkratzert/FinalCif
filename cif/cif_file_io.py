@@ -55,7 +55,7 @@ class CifContainer():
     def save(self, filename=None):
         if not filename:
             filename = self.fileobj.absolute()
-        #self.doc.write_file(filename, gemmi.cif.Style.Indent35)
+        # self.doc.write_file(filename, gemmi.cif.Style.Indent35)
         # or this way:
         Path(filename).write_text(self.doc.as_string(gemmi.cif.Style.Indent35))
 
@@ -67,7 +67,7 @@ class CifContainer():
         self.cif_file_text = self.fileobj.read_text(encoding='utf-8', errors='ignore')
         try:
             self.doc = gemmi.cif.read_string(self.cif_file_text)
-            #self.doc = gemmi.cif.read_file(str(self.fileobj.absolute()))
+            # self.doc = gemmi.cif.read_file(str(self.fileobj.absolute()))
             self.block = self.doc.sole_block()
         except Exception as e:
             print('Unable to read file:', e)
@@ -257,7 +257,6 @@ class CifContainer():
         else:
             return False
 
-
     @property
     def cell(self):
         c = self.atomic_struct.cell
@@ -318,9 +317,32 @@ class CifContainer():
         """
         Converts special characters to their markup counterparts.
         """
-        charcters = {'°': r'\%', '±': r'+-', 'ß': r'\&s', 'ü': r'u\"',
-                     'ö': r'o\"', 'ä': r'a\"', 'é': '\'e', 'á': r'\'a',
-                     'à': r'\`a', 'â': r'\^a', 'ç': r'\,c'}  # , r'\r\n': chr(10)}
+        charcters = {'°'      : r'\%', '±': r'+-', 'ß': r'\&s', 'ü': r'u\"',
+                     'ö'      : r'o\"', 'ä': r'a\"', 'é': '\'e', 'á': r'\'a',
+                     'à'      : r'\`a', 'â': r'\^a', 'ç': r'\,c',
+                     u"\u03B1": r'\a',
+                     u"\u03B2": r'\b',
+                     u"\u03B3": r'\g',
+                     u"\u03B4": r'\d',
+                     u"\u03B5": r'\e',
+                     u"\u03B6": r'\z',
+                     u"\u03B7": r'\h',
+                     u"\u03B8": r'\q',
+                     u"\u03B9": r'\i',
+                     u"\u03BA": r'\k',
+                     u"\u03BB": r'\l',
+                     u"\u03BC": r'\m',
+                     u"\u03BD": r'\n',
+                     u"\u03BE": r'\x',
+                     u"\u03BF": r'\o',
+                     u"\u03C0": r'\p',
+                     u"\u03C1": r'\r',
+                     u"\u03C3": r'\s',
+                     u"\u03C4": r'\t',
+                     u"\u03C5": r'\u',
+                     u"\u03C6": r'\F',
+                     u"\u03C9": r'\w',
+                     }  # , r'\r\n': chr(10)}
         for char in txt:
             if char in charcters:
                 txt = txt.replace(char, charcters[char])
@@ -329,7 +351,11 @@ class CifContainer():
             float(txt)
             self.block.set_pair(key, txt)
         except (TypeError, ValueError):
-            self.block.set_pair(key, quote(txt))
+            # prevent _key '?' in cif:
+            if txt == '?':
+                self.block.set_pair(key, txt)
+            else:
+                self.block.set_pair(key, quote(txt))
 
     def key_value_pairs(self):
         """

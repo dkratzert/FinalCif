@@ -68,6 +68,7 @@ _append_run_path()
 """
 TODO:
 - make tab key go down one row
+- add button for zip file with cif, report and checkcif pdf
 - add template keywords to main list if missing
 - make report text in tables from cif info
 - try to determine the _chemical_absolute_configuration method
@@ -410,9 +411,10 @@ class AppWindow(QMainWindow):
             self.cif.save(self.fin_file.name)
             self.ui.statusBar.showMessage('  File Saved:  {}'.format(self.fin_file.name), 10000)
             print('File saved ...')
-        except AttributeError as e:
+        except (AttributeError, UnicodeEncodeError) as e:
             print('Unable to save file:')
             print(e)
+            self.show_general_warning(str(e))
             return
 
     def display_saved_cif(self):
