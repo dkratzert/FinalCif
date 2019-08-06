@@ -16,7 +16,7 @@ from datafiles.rigaku_data import RigakuData
 from report.tables import make_report_from
 from tools.version import VERSION
 
-DEBUG = True
+DEBUG = False
 
 if getattr(sys, 'frozen', False):
     # If the application is run as a bundle, the pyInstaller bootloader
@@ -119,6 +119,7 @@ class AppWindow(QMainWindow):
         self.ui.PropertiesEditTableWidget.verticalHeader().hide()
         self.ui.CheckcifButton.setDisabled(True)
         self.ui.SaveCifButton.setDisabled(True)
+        self.ui.ImportPropertyTemplateButton.hide()
         self.cif = None
         self.fin_file = Path()
         self.missing_data = []
