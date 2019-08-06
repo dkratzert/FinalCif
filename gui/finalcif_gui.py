@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file './gui\finalcif_gui.ui'
 #
-# Created by: PyQt5 UI code generator 5.12.2
+# Created by: PyQt5 UI code generator 5.12.1
 #
 # WARNING! All changes made in this file will be lost!
 
