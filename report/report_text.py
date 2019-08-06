@@ -29,7 +29,7 @@ class CrstalSelection(FormatMixin):
         self.temp = self.cif['_diffrn_ambient_temperature']
         self._name = cif.fileobj.name
         method = 'shock-cooled '
-        sentence = "The data for {} were collected from a {}single crystal at {}\u00A0K."
+        sentence = "The data for {} were collected from a {}single crystal at {}\u00A0K "
         if float(self.temp.split('(')[0]) > 200:
             method = ''
         self.txt = sentence.format(self.name, method, self.temp)
@@ -59,8 +59,8 @@ class MachineType():
         self.rad_type = gstr(self.cif['_diffrn_radiation_type'])
         radtype = format_radiation(self.rad_type)
         self.wavelen = gstr(self.cif['_diffrn_radiation_wavelength'])
-        sentence1 = "The data were collected on {} {} {} with {} {} using {} as monochromator. " \
-                    "The diffractometer were equipped with {} {} low temperature device and used "
+        sentence1 = "on {} {} {} with {} {} using {} as monochromator. " \
+                    "The diffractometer was equipped with {} {} low temperature device and used "
         sentence2 = " radiation, λ = {}\u00A0Å. "
         txt = sentence1.format(get_inf_article(self.difftype), self.difftype, self.device,
                                get_inf_article(self.source), self.source, self.monochrom,
