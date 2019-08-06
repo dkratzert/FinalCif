@@ -47,36 +47,13 @@ from tools.misc import high_prio_keys, predef_equipment_templ, predef_prop_templ
 from tools.settings import FinalCifSettings
 
 
-def _append_run_path():
-    if getattr(sys, 'frozen', False):
-        pathlist = []
-
-        # If the application is run as a bundle, the pyInstaller bootloader
-        # extends the sys module by a flag frozen=True and sets the app
-        # path into variable _MEIPASS'.
-        pathlist.append(application_path)
-
-        # the application exe path
-        _main_app_path = os.path.dirname(sys.executable)
-        pathlist.append(_main_app_path)
-
-        # append to system path enviroment
-        os.environ["PATH"] += os.pathsep + os.pathsep.join(pathlist)
-
-
-_append_run_path()
-
 """
 TODO:
 - make tab key go down one row
 - add button for zip file with cif, report and checkcif pdf
-- add template keywords to main list if missing
-- make report text in tables from cif info
 - try to determine the _chemical_absolute_configuration method
 - make extra thread to load platon
 - Checkcif: http://journals.iucr.org/services/cif/checking/validlist.html
-- action: rightclick on a template -> offer "export template (to .cif)"
-- action: rightclick on a template -> offer "import template (from .cif)"
 
 cdic = json.loads(c.as_json())
 [cdic[x]['_name'] for x in cdic.keys() if '_name' in cdic[x]]
@@ -725,6 +702,7 @@ class AppWindow(QMainWindow):
 
     # The properties templates:
 
+
     @staticmethod
     def add_propeties_row(table: QTableWidget, value: str = ''):
         """
@@ -791,6 +769,39 @@ class AppWindow(QMainWindow):
                 # this list keeps track of the equipment items:
                 self.settings.save_template('equipment_list', newlist)
                 self.settings.save_template('equipment/' + item['name'], item['items'])
+
+    def export_property_template(self):
+        """
+        Exports the currently selected property entry to a file.
+        """
+        selected_row_text = self.ui.PropertiesTemplatesListWidget.currentIndex().data()
+        if not selected_row_text:
+            return
+        prop_data = self.settings.load_template('property/' + selected_row_text)
+        table_data = []
+        cif_key = ''
+        if prop_data:
+            cif_key = prop_data[0]
+            try:
+                table_data = prop_data[1]
+            except:
+                pass
+        if not cif_key:
+            return
+        from gemmi import cif
+        doc = cif.Document()
+        blockname = '__'.join(selected_row_text.split())
+        block = doc.add_new_block(blockname)
+        loop = block.init_loop(cif_key, [cif_key])
+        for value in table_data:
+            loop.add_row([value])
+        filename = self.cif_file_save_dialog(blockname.replace('__', '_') + '.cif')
+        try:
+            Path(filename).write_text(doc.as_string(cif.Style.Indent35))
+        except PermissionError:
+            if Path(filename).is_dir():
+                return
+            self.show_general_warning('No permission to write file to {}'.format(Path(filename).absolute()))
 
     def load_property(self, table: QTableWidget, stackedwidget: QStackedWidget, listwidget: QListWidget):
         """
