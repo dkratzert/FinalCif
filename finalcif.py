@@ -9,6 +9,7 @@ import json
 import os
 import subprocess
 import sys
+from contextlib import suppress
 from pathlib import Path, WindowsPath
 
 from cif.core_dict import cif_core
@@ -958,8 +959,10 @@ class AppWindow(QMainWindow):
         except IndexError:
             line = None
         if line:
+            with suppress(Exception):
+                line = int(line) - 1
             info.setText('This cif file is not readable!\n'
-                         'Plese check line {} in\n{}'.format(line, filepath.name))
+                         'Please check line {} in\n{}'.format(line, filepath.name))
         else:
             info.setText('This cif file is not readable! "{}"\n{}'.format(filepath.name, not_ok))
         info.show()
