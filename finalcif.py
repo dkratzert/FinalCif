@@ -654,7 +654,7 @@ class AppWindow(QMainWindow):
             doc = cif.read_file(filename)
         except RuntimeError as e:
             self.show_general_warning(str(e))
-            return 
+            return
         block = doc.sole_block()
         data = json.loads(doc.as_json(mmjson=True))
         table_data = []
@@ -699,12 +699,17 @@ class AppWindow(QMainWindow):
             return
         from gemmi import cif
         doc = cif.Document()
-        blockname = '_'.join(selected_template.split())
+        blockname = '__'.join(selected_template.split())
         block = doc.add_new_block(blockname)
         for key, value in table_data:
             set_pair_delimited(block, key, value)
-        filename = self.cif_file_save_dialog(blockname + '.cif')
-        Path(filename).write_text(doc.as_string(cif.Style.Indent35))
+        filename = self.cif_file_save_dialog(blockname.replace('__', '_') + '.cif')
+        try:
+            Path(filename).write_text(doc.as_string(cif.Style.Indent35))
+        except PermissionError:
+            if Path(filename).is_dir():
+                return 
+            self.show_general_warning('No permission to write file to {}'.format(Path(filename).absolute()))
 
     def cancel_equipment_template(self):
         """
@@ -885,7 +890,7 @@ class AppWindow(QMainWindow):
         dialog = QFileDialog(filter="CIF file (*.cif)", caption='Save .cif File')
         dialog.setDefaultSuffix('.cif')
         dialog.selectFile(filename)
-        filename, _ = dialog.getSaveFileName()
+        filename, _ = dialog.getSaveFileName(None, 'Select file name', filename)
         return filename
 
     def load_cif_file(self, fname):
