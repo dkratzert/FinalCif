@@ -438,13 +438,10 @@ class AppWindow(QMainWindow):
         """
         self.ui.EquipmentTemplatesListWidget.clear()
         self.ui.PropertiesTemplatesListWidget.clear()
-        equipment_list = self.settings.settings.value('equipment_list')
-        if equipment_list:
-            equipment_list.sort()
-            for eq in equipment_list:
-                if eq:
-                    item = QListWidgetItem(eq)
-                    self.ui.EquipmentTemplatesListWidget.addItem(item)
+        for eq in self.settings.get_equipment_list():
+            if eq:
+                item = QListWidgetItem(eq)
+                self.ui.EquipmentTemplatesListWidget.addItem(item)
         property_list = self.settings.settings.value('property_list')
         if property_list:
             property_list.sort()
@@ -501,9 +498,6 @@ class AppWindow(QMainWindow):
         Adds a new row with a respective vheaderitem to the main table.
         Also the currently opened cif file is updated.
         """
-        # warn if key is not official:
-        if key not in cif_core:
-            self.show_general_warning('"{}" is not an official CIF keyword!'.format(key))
         self.vheaderitems.insert(0, key)
         self.add_row(key=key, value='?', at_start=True)
         if key in [x.lower() for x in combobox_fields]:
@@ -639,14 +633,12 @@ class AppWindow(QMainWindow):
         Saves the currently selected equipment template to the config file.
         """
         selected_template_text, table_data = self.get_equipment_entry_data()
+        # warn if key is not official:
+        for key, _ in table_data:
+            if key not in cif_core:
+                self.show_general_warning('"{}" is not an official CIF keyword!'.format(key))
         self.settings.save_template('equipment/' + selected_template_text, table_data)
-        equipment_list = self.settings.settings.value('equipment_list')
-        if not equipment_list:
-            equipment_list = ['']
-        equipment_list.append(selected_template_text)
-        newlist = [x for x in list(set(equipment_list)) if x]
-        # this list keeps track of the equipment items:
-        self.settings.save_template('equipment_list', newlist)
+        self.settings.append_to_equipment_list(selected_template_text)
         self.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
         print('saved')
 
@@ -655,12 +647,26 @@ class AppWindow(QMainWindow):
         Import an equipment entry from a cif file.
         """
         filename = self.cif_file_open_dialog()
+        if not filename:
+            return 
         from gemmi import cif
-        doc = cif.read_file(filename)
+        try:
+            doc = cif.read_file(filename)
+        except RuntimeError as e:
+            self.show_general_warning(str(e))
+            return 
         block = doc.sole_block()
         data = json.loads(doc.as_json(mmjson=True))
-        for key, value in data['data_' + block.name].items():
-            print(key, value)
+        table_data = []
+        name = block.name.replace('__', ' ')
+        for key in data['data_' + block.name].keys():
+            key = '_' + key
+            d = [key, cif.as_string(block.find_value(key))]
+            if d:
+                table_data.append(d)
+        self.settings.save_template('equipment/' + name, table_data)
+        self.settings.append_to_equipment_list(name)
+        self.show_equipment_and_properties()
 
     def get_equipment_entry_data(self):
         """

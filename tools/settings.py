@@ -36,6 +36,22 @@ class FinalCifSettings():
         self.settings.setValue('last', last_equipment)
         self.settings.endGroup()
 
+    def append_to_equipment_list(self, selected_template_text):
+        equipment_list = self.settings.value('equipment_list')
+        if not equipment_list:
+            equipment_list = ['']
+        equipment_list.sort()
+        equipment_list.append(selected_template_text)
+        newlist = [x for x in list(set(equipment_list)) if x]
+        # this list keeps track of the equipment items:
+        self.save_template('equipment_list', newlist)
+
+    def get_equipment_list(self):
+        equipment_list = self.settings.value('equipment_list')
+        if not equipment_list:
+            equipment_list = ['']
+        return equipment_list
+
     def load_last_equipment(self):
         self.settings.beginGroup('LastEquipment')
         last = self.settings.value("last", type=int)
