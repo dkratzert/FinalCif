@@ -400,6 +400,8 @@ predef_equipment_templ = [{'name' : 'D8 VENTURE',
                                ['_diffrn_source', 'sealed X-ray tube'],  # obsolete: _diffrn_radiation_source
                                ['_diffrn_detector', 'Image Plate'],
                                ['_diffrn_detector_type', 'Rigaku Image Plate'],
+                               ['_diffrn_detector_area_resol_mean', '?'],
+                               ['_diffrn_radiation_probe', 'x-ray'],
                                ['_diffrn_measurement_specimen_support', 'MiTeGen micromount'],
                                ['_olex2_diffrn_ambient_temperature_device', 'Bruker Kryoflex II'],
                            ]
