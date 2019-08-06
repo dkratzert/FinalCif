@@ -19,7 +19,7 @@
      <widget class="QGroupBox" name="CifDataItemsGroupBox">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-        <horstretch>5</horstretch>
+        <horstretch>6</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
       </property>
@@ -258,7 +258,7 @@
      <widget class="QGroupBox" name="PropertiesGroupBox">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-        <horstretch>0</horstretch>
+        <horstretch>2</horstretch>
         <verstretch>1</verstretch>
        </sizepolicy>
       </property>
@@ -301,7 +301,21 @@
              </property>
             </widget>
            </item>
-           <item row="0" column="0" colspan="2">
+           <item row="1" column="1">
+            <widget class="QPushButton" name="EditPropertyTemplateButton">
+             <property name="text">
+              <string>Edit Template</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="2">
+            <widget class="QPushButton" name="ImportPropertyTemplateButton">
+             <property name="text">
+              <string>Import</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0" colspan="3">
             <widget class="QListWidget" name="PropertiesTemplatesListWidget">
              <property name="toolTip">
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A list of common properties like &lt;/p&gt;&lt;p&gt;_exptl_crystal_colour: yellow, red, blue, ...&lt;/p&gt;&lt;p&gt;Lists defined here will appear as dropdown menus in the main Table.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -311,13 +325,6 @@
              </property>
              <property name="selectionBehavior">
               <enum>QAbstractItemView::SelectRows</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="QPushButton" name="EditPropertiyTemplateButton">
-             <property name="text">
-              <string>Edit Template</string>
              </property>
             </widget>
            </item>
@@ -450,7 +457,7 @@
      <widget class="QGroupBox" name="EquipmentGroupBox">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-        <horstretch>1</horstretch>
+        <horstretch>2</horstretch>
         <verstretch>3</verstretch>
        </sizepolicy>
       </property>
@@ -482,18 +489,11 @@
           </sizepolicy>
          </property>
          <property name="currentIndex">
-          <number>0</number>
+          <number>1</number>
          </property>
          <widget class="QWidget" name="EquipmentSelectPage">
           <layout class="QGridLayout" name="TemplatesGridLayout">
-           <item row="1" column="0">
-            <widget class="QPushButton" name="NewEquipmentTemplateButton">
-             <property name="text">
-              <string>New Template</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="0" colspan="2">
+           <item row="0" column="0" colspan="3">
             <widget class="QListWidget" name="EquipmentTemplatesListWidget">
              <property name="toolTip">
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Each entry can have a list of key/value pairs. For example a Diffractometer model can have a list of features.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -509,10 +509,24 @@
              </property>
             </widget>
            </item>
+           <item row="1" column="0">
+            <widget class="QPushButton" name="NewEquipmentTemplateButton">
+             <property name="text">
+              <string>New Template</string>
+             </property>
+            </widget>
+           </item>
            <item row="1" column="1">
             <widget class="QPushButton" name="EditEquipmentTemplateButton">
              <property name="text">
               <string>Edit Template</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="2">
+            <widget class="QPushButton" name="ImportEquipmentTemplateButton">
+             <property name="text">
+              <string>Import</string>
              </property>
             </widget>
            </item>
@@ -541,7 +555,14 @@
              </property>
             </widget>
            </item>
-           <item row="0" column="1" colspan="3">
+           <item row="1" column="4">
+            <widget class="QPushButton" name="ExportEquipmentButton">
+             <property name="text">
+              <string>Export</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1" colspan="4">
             <widget class="QTableWidget" name="EquipmentEditTableWidget">
              <property name="autoScroll">
               <bool>false</bool>
@@ -603,7 +624,7 @@
      <widget class="QGroupBox" name="SelectCifFileGroupBox">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-        <horstretch>1</horstretch>
+        <horstretch>2</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
       </property>
@@ -676,8 +697,7 @@
   <tabstop>SelectCif_PushButton</tabstop>
   <tabstop>NewPropertyTemplateButton</tabstop>
   <tabstop>PropertiesTemplatesListWidget</tabstop>
-  <tabstop>EditPropertiyTemplateButton</tabstop>
-  <tabstop>EditEquipmentTemplateButton</tabstop>
+  <tabstop>EditPropertyTemplateButton</tabstop>
   <tabstop>NewEquipmentTemplateButton</tabstop>
   <tabstop>EquipmentTemplatesListWidget</tabstop>
  </tabstops>
