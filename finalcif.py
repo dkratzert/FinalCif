@@ -5,13 +5,14 @@
 #  and you think this stuff is worth it, you can buy me a beer in return.
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
-
+import json
 import os
 import subprocess
 import sys
-from collections import OrderedDict
-from pathlib import Path
+from contextlib import suppress
+from pathlib import Path, WindowsPath
 
+from cif.core_dict import cif_core
 from datafiles.rigaku_data import RigakuData
 from report.tables import make_report_from
 from tools.version import VERSION
@@ -38,15 +39,38 @@ from PyQt5.QtGui import QColor, QFont, QIcon, QPalette
 from PyQt5.QtWidgets import QApplication, QComboBox, QFileDialog, QHeaderView, QListWidget, QListWidgetItem, \
     QMainWindow, QMessageBox, QPlainTextEdit, QSizePolicy, QStackedWidget, QStyle, QTableWidget, QTableWidgetItem
 
-from cif.file_reader import CifContainer
+from cif.cif_file_io import CifContainer, set_pair_delimited
 from datafiles.bruker_data import BrukerData
 from datafiles.platon import Platon
 from tools.misc import high_prio_keys, predef_equipment_templ, predef_prop_templ, combobox_fields, \
-    text_field_keys, to_float
+    text_field_keys, to_float, find_line
 from tools.settings import FinalCifSettings
+
+
+def _append_run_path():
+    if getattr(sys, 'frozen', False):
+        pathlist = []
+
+        # If the application is run as a bundle, the pyInstaller bootloader
+        # extends the sys module by a flag frozen=True and sets the app
+        # path into variable _MEIPASS'.
+        pathlist.append(application_path)
+
+        # the application exe path
+        _main_app_path = os.path.dirname(sys.executable)
+        pathlist.append(_main_app_path)
+
+        # append to system path enviroment
+        os.environ["PATH"] += os.pathsep + os.pathsep.join(pathlist)
+
+
+_append_run_path()
 
 """
 TODO:
+- make tab key go down one row
+- add button for zip file with cif, report and checkcif pdf
+- add template keywords to main list if missing
 - make report text in tables from cif info
 - try to determine the _chemical_absolute_configuration method
 - make extra thread to load platon
@@ -54,11 +78,17 @@ TODO:
 - action: rightclick on a template -> offer "export template (to .cif)"
 - action: rightclick on a template -> offer "import template (from .cif)"
 
+cdic = json.loads(c.as_json())
+[cdic[x]['_name'] for x in cdic.keys() if '_name' in cdic[x]]
+
+as dict:
+{str(cdic[x]['_name']): ' '.join(cdic[x]['_definition'].split()) for x in cdic.keys() if '_name' in cdic[x]}
 
 """
 light_green = QColor(217, 255, 201)
 blue = QColor(102, 150, 179)
 yellow = QColor(250, 252, 167)
+from gui.finalcif_gui import Ui_FinalCifWindow
 
 
 class AppWindow(QMainWindow):
@@ -70,7 +100,7 @@ class AppWindow(QMainWindow):
         self.setAcceptDrops(True)
         self.show()
         self.statusBar().showMessage('FinalCif version {}'.format(VERSION))
-        self.vheaderitems = OrderedDict()
+        self.vheaderitems = list()
         self.settings = FinalCifSettings(self)
         self.store_predefined_templates()
         self.show_equipment_and_properties()
@@ -90,6 +120,7 @@ class AppWindow(QMainWindow):
         self.ui.PropertiesEditTableWidget.verticalHeader().hide()
         self.ui.CheckcifButton.setDisabled(True)
         self.ui.SaveCifButton.setDisabled(True)
+        self.ui.ImportPropertyTemplateButton.hide()
         self.cif = None
         self.fin_file = Path()
         self.missing_data = []
@@ -103,10 +134,6 @@ class AppWindow(QMainWindow):
         self.ui.SelectCif_PushButton.setIcon(self.style().standardIcon(QStyle.SP_FileDialogContentsView))
         self.ui.BackPushButton.setIcon(self.style().standardIcon(QStyle.SP_FileDialogBack))
         self.ui.BacktoMainpushButton.setIcon(self.style().standardIcon(QStyle.SP_FileDialogBack))
-        if DEBUG:
-            # only for testing:
-            self.load_cif_file(r'test-data/twin4.cif')
-            # self.load_cif_file(r'D:\GitHub\DSR\p21c.cif')
         if len(sys.argv) > 1:
             self.load_cif_file(sys.argv[1])
         # Sorting desyncronizes header and columns:
@@ -139,9 +166,11 @@ class AppWindow(QMainWindow):
         self.ui.SaveEquipmentButton.clicked.connect(self.save_equipment_template)
         self.ui.CancelEquipmentButton.clicked.connect(self.cancel_equipment_template)
         self.ui.DeleteEquipmentButton.clicked.connect(self.delete_equipment)
+        self.ui.ExportEquipmentButton.clicked.connect(self.export_equipment_template)
+        self.ui.ImportEquipmentTemplateButton.clicked.connect(self.import_equipment_from_file)
         ##
         self.ui.PropertiesTemplatesListWidget.doubleClicked.connect(self.edit_property_template)
-        self.ui.EditPropertiyTemplateButton.clicked.connect(self.edit_property_template)
+        self.ui.EditPropertyTemplateButton.clicked.connect(self.edit_property_template)
         self.ui.SavePropertiesButton.clicked.connect(self.save_property_template)
         self.ui.CancelPropertiesButton.clicked.connect(self.cancel_property_template)
         self.ui.DeletePropertiesButton.clicked.connect(self.delete_property)
@@ -250,7 +279,7 @@ class AppWindow(QMainWindow):
             return
             # get back previous name
         if self.vheader_clicked > -1:
-            item.setText([x for x in self.vheaderitems.keys()][self.vheader_clicked])
+            item.setText(self.vheaderitems[self.vheader_clicked])
             self.vheader_clicked = -1
             return
         try:
@@ -263,7 +292,7 @@ class AppWindow(QMainWindow):
             pass
 
     def restore_vertical_header(self):
-        for row_num, key in enumerate(self.vheaderitems.keys()):
+        for row_num, key in enumerate(self.vheaderitems):
             item_key = QTableWidgetItem(key)
             self.ui.CifItemsTable.setVerticalHeaderItem(row_num, item_key)
 
@@ -273,24 +302,29 @@ class AppWindow(QMainWindow):
         """
         if self.cif:
             self.save_current_cif_file()
-            output_filename = 'tables.docx'
+            output_filename = 'report_{}.docx'.format(self.cif.fileobj.stem)
             not_ok = None
             try:
-                make_report_from(self.fin_file, path=application_path)
+                make_report_from(self.fin_file, path=application_path, output_filename=output_filename)
             except FileNotFoundError as e:
                 print('Unable to open cif file')
                 not_ok = e
                 self.unable_to_open_message(self.cif.fileobj, not_ok)
                 return
-            if sys.platform == 'win' or sys.platform == 'win32':
+            if os.name == 'nt':
                 os.startfile(Path(output_filename).absolute())
             if sys.platform == 'darwin':
                 subprocess.call(['open', Path(output_filename).absolute()])
 
     def save_current_recent_files_list(self, file):
+        if os.name == 'nt':
+            file = WindowsPath(file).absolute()
+        else:
+            file = Path(file).absolute()
         recent = list(self.settings.settings.value('recent_files', type=list))
-        if file not in recent:
-            recent.insert(0, file)
+        if str(file) not in recent:
+            # file has to be str not Path():
+            recent.insert(0, str(file))
         if len(recent) > 7:
             recent.pop()
         self.settings.settings.setValue('recent_files', recent)
@@ -300,15 +334,42 @@ class AppWindow(QMainWindow):
         self.ui.RecentComboBox.clear()
         recent = list(self.settings.settings.value('recent_files', type=list))
         for n, file in enumerate(recent):
-            if not Path(file).exists():
+            if not isinstance(file, str):
                 del recent[n]
+            try:
+                if not Path(file).exists():
+                    del recent[n]
+            except OSError:
+                pass
         self.ui.RecentComboBox.addItem('Recent Files')
         self.ui.RecentComboBox.addItems(recent)
-        # print(recent, 'load')
 
     def save_cif_and_display(self):
         self.save_current_cif_file()
         self.display_saved_cif()
+
+    def get_table_item(self, table, row, col) -> str:
+        try:
+            item = table.item(row, col).text()
+        except AttributeError:
+            item = None
+        if not item:
+            try:
+                item = table.item(row, col).data(0)
+            except AttributeError:
+                item = None
+        if not item:
+            try:
+                # This is for QPlaintextWidget items in the table:
+                item = table.cellWidget(row, col).toPlainText()
+            except AttributeError:
+                item = None
+        if not item:
+            try:
+                item = table.cellWidget(row, col).currentText()
+            except AttributeError:
+                item = None
+        return item
 
     def save_current_cif_file(self):
         table = self.ui.CifItemsTable
@@ -320,21 +381,7 @@ class AppWindow(QMainWindow):
             col1 = None  # from datafiles
             col2 = None  # own text
             for col in range(columncount):
-                try:
-                    item = table.item(row, col).text()
-                except AttributeError:
-                    item = None
-                if not item:
-                    try:
-                        item = table.item(row, col).data(0)
-                    except AttributeError:
-                        item = None
-                if not item:
-                    try:
-                        # This is for QPlaintextWidget items in the table:
-                        item = table.cellWidget(row, col).toPlainText()
-                    except AttributeError:
-                        item = None
+                item = self.get_table_item(table, row, col)
                 if item:
                     if col == 0 and item != (None or '' or '?'):
                         col0 = item
@@ -346,12 +393,6 @@ class AppWindow(QMainWindow):
                             col2 = item
                     except AttributeError:
                         pass
-                try:
-                    txt = table.cellWidget(row, col).currentText()
-                except AttributeError:
-                    txt = None
-                if col == 2 and txt:
-                    col2 = txt
                 if col == 2:
                     vhead = self.ui.CifItemsTable.model().headerData(row, Qt.Vertical)
                     if not str(vhead).startswith('_'):
@@ -359,10 +400,10 @@ class AppWindow(QMainWindow):
                     # This is my row information
                     # print('col2:', vhead, col0, col1, col2, '#')
                     if col1 and not col2:
-                        self.cif.set_pair_delimited(vhead, col1)
+                        set_pair_delimited(self.cif.block, vhead, col1)
                     if col2:
                         try:
-                            self.cif.set_pair_delimited(vhead, col2)
+                            set_pair_delimited(self.cif.block, vhead, col2)
                         except RuntimeError:
                             pass
         try:
@@ -370,9 +411,10 @@ class AppWindow(QMainWindow):
             self.cif.save(self.fin_file.name)
             self.ui.statusBar.showMessage('  File Saved:  {}'.format(self.fin_file.name), 10000)
             print('File saved ...')
-        except AttributeError as e:
+        except (AttributeError, UnicodeEncodeError) as e:
             print('Unable to save file:')
             print(e)
+            self.show_general_warning(str(e))
             return
 
     def display_saved_cif(self):
@@ -398,14 +440,13 @@ class AppWindow(QMainWindow):
         """
         self.ui.EquipmentTemplatesListWidget.clear()
         self.ui.PropertiesTemplatesListWidget.clear()
-        equipment_list = self.settings.settings.value('equipment_list')
-        if equipment_list:
-            for eq in equipment_list:
-                if eq:
-                    item = QListWidgetItem(eq)
-                    self.ui.EquipmentTemplatesListWidget.addItem(item)
+        for eq in self.settings.get_equipment_list():
+            if eq:
+                item = QListWidgetItem(eq)
+                self.ui.EquipmentTemplatesListWidget.addItem(item)
         property_list = self.settings.settings.value('property_list')
         if property_list:
+            property_list.sort()
             for pr in property_list:
                 if pr:
                     item = QListWidgetItem(pr)
@@ -424,8 +465,11 @@ class AppWindow(QMainWindow):
         equipment = self.settings.load_equipment_template_as_dict(selected_row_text)
         if self.vheaderitems:
             for key in equipment:
+                if key not in self.vheaderitems:
+                    self.add_new_table_key(key)
                 # add missing item to data sources column:
                 if key in text_field_keys:
+                    # special treatments for text fields:
                     tabitem = QPlainTextEdit(self)
                     pal = tabitem.palette()
                     pal.setColor(QPalette.Base, light_green)
@@ -434,23 +478,41 @@ class AppWindow(QMainWindow):
                     # special treatment for text fields in order to get line breaks:
                     for txt in txtlst:
                         tabitem.appendPlainText(txt)
-                    tabitem.setFrameShape(0)  # no
+                    tabitem.setFrameShape(0)  # no fram earound the field
                     # tabitem.setPalette(pal)
-                    row = self.vheaderitems[key]
+                    row = self.vheaderitems.index(key)
                     column = 1
                     self.ui.CifItemsTable.setCellWidget(row, column, tabitem)
                 else:
                     try:
                         tab_item = QTableWidgetItem(str(equipment[key]))
                         # vheaderitems contain the cif keywords in the vertical header, the 1 is the data sources column.
-                        row = self.vheaderitems[key]
+                        row = self.vheaderitems.index(key)
                         column = 1
                         self.ui.CifItemsTable.setItem(row, column, tab_item)
                         tab_item.setFlags(tab_item.flags() ^ Qt.ItemIsEditable)
                         tab_item.setBackground(light_green)
-                    except KeyError as e:
-                        # print('load_selected_equipment:', e)
-                        pass
+                    except ValueError as e:
+                        print('not in list:', e)
+
+    def add_new_table_key(self, key: str) -> None:
+        """
+        Adds a new row with a respective vheaderitem to the main table.
+        Also the currently opened cif file is updated.
+        """
+        self.vheaderitems.insert(0, key)
+        self.add_row(key=key, value='?', at_start=True)
+        if key in [x.lower() for x in combobox_fields]:
+            self.add_property_combobox(combobox_fields[key], 0)
+        self.missing_data.append(key)
+        # This is a crude hack to get the new values to the start of the cif file:
+        # It seems to be fast and stable though...
+        if not self.cif.block.find_value(key):
+            cif_lst = self.cif.cif_file_text.splitlines()
+            data_position = find_line(cif_lst, '^data_')
+            cif_lst.insert(data_position + 1, key + ' ' * (31 - len(key)) + '    ?')
+            self.cif.cif_file_text = "\n".join(cif_lst)
+            self.cif.open_cif_by_string()
 
     def new_equipment(self):
         item = QListWidgetItem('')
@@ -495,10 +557,10 @@ class AppWindow(QMainWindow):
             table = self.ui.PropertiesEditTableWidget
         rowcount = table.rowCount()
         cont = 0
-        for n in range(rowcount):
+        for row in range(rowcount):
             key = ''
             try:
-                key = table.item(n, 0).text()
+                key = table.item(row, column=0).text()
             except (AttributeError, TypeError):
                 pass
             if key:  # don't count empty key rows
@@ -511,17 +573,24 @@ class AppWindow(QMainWindow):
         """
         Add a new row with content to the table (Equipment or Property).
         """
+        if not isinstance(value, str):
+            return
+        if not isinstance(key, str):
+            return
         # Create a empty row at bottom of table
         row_num = table.rowCount()
         table.insertRow(row_num)
-        # Add cif key and value to the row:
-        item_key = QTableWidgetItem(key)
-        try:
+        if len(value) > 38:
+            tab_item = QPlainTextEdit()
+            tab_item.setFrameShape(0)
+            tab_item.setPlainText(value)
+            table.setCellWidget(row_num, 1, tab_item)
+        else:
             item_val = QTableWidgetItem(value)
-        except TypeError:
-            return
+            # Add cif key and value to the row:
+            table.setItem(row_num, 1, item_val)
+        item_key = QTableWidgetItem(key)
         table.setItem(row_num, 0, item_key)
-        table.setItem(row_num, 1, item_val)
 
     # The equipment templates:
 
@@ -559,42 +628,90 @@ class AppWindow(QMainWindow):
         table.insertRow(n)
         self.ui.EquipmentEditTableWidget.blockSignals(False)
         stackedwidget.setCurrentIndex(1)
+        self.ui.EquipmentEditTableWidget.resizeRowsToContents()
 
     def save_equipment_template(self):
-        table = self.ui.EquipmentEditTableWidget
-        stackedwidget = self.ui.EquipmentTemplatesStackedWidget
-        listwidget = self.ui.EquipmentTemplatesListWidget
-        self.save_equipment(table, stackedwidget, listwidget)
-
-    def save_equipment(self, table: QTableWidget, stackwidget: QStackedWidget, listwidget: QListWidget):
         """
         Saves the currently selected equipment template to the config file.
         """
+        selected_template_text, table_data = self.get_equipment_entry_data()
+        # warn if key is not official:
+        for key, _ in table_data:
+            if key not in cif_core:
+                self.show_general_warning('"{}" is not an official CIF keyword!'.format(key))
+        self.settings.save_template('equipment/' + selected_template_text, table_data)
+        self.settings.append_to_equipment_list(selected_template_text)
+        self.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
+        print('saved')
+
+    def import_equipment_from_file(self):
+        """
+        Import an equipment entry from a cif file.
+        """
+        filename = self.cif_file_open_dialog()
+        if not filename:
+            return 
+        from gemmi import cif
+        try:
+            doc = cif.read_file(filename)
+        except RuntimeError as e:
+            self.show_general_warning(str(e))
+            return
+        block = doc.sole_block()
+        data = json.loads(doc.as_json(mmjson=True))
+        table_data = []
+        name = block.name.replace('__', ' ')
+        for key in data['data_' + block.name].keys():
+            key = '_' + key
+            d = [key, cif.as_string(block.find_value(key))]
+            if d:
+                table_data.append(d)
+        self.settings.save_template('equipment/' + name, table_data)
+        self.settings.append_to_equipment_list(name)
+        self.show_equipment_and_properties()
+
+    def get_equipment_entry_data(self):
+        """
+        Returns the string of the currently selected entry and the table date behind it.
+        """
+        table = self.ui.EquipmentEditTableWidget
         # Set None Item to prevent loss of the currently edited item:
         # The current item is closed and thus saved.
         table.setCurrentItem(None)
-        selected_template_text = listwidget.currentIndex().data()
-        equipment_list = self.settings.settings.value('equipment_list')
-        if not equipment_list:
-            equipment_list = ['']
+        selected_template_text = self.ui.EquipmentTemplatesListWidget.currentIndex().data()
         table_data = []
         ncolumns = table.rowCount()
         for rownum in range(ncolumns):
             key = ''
             try:
-                key = table.item(rownum, 0).text()
-                value = table.item(rownum, 1).text()
+                key = self.get_table_item(table, rownum, 0)
+                value = self.get_table_item(table, rownum, 1)
             except AttributeError:
                 value = ''
             if key and value:
                 table_data.append([key, value])
-        self.settings.save_template('equipment/' + selected_template_text, table_data)
-        equipment_list.append(selected_template_text)
-        newlist = [x for x in list(set(equipment_list)) if x]
-        # this list keeps track of the equipment items:
-        self.settings.save_template('equipment_list', newlist)
-        stackwidget.setCurrentIndex(0)
-        print('saved')
+        return selected_template_text, table_data
+
+    def export_equipment_template(self):
+        """
+        exports the currently selected equipment entry to a file.
+        """
+        selected_template, table_data = self.get_equipment_entry_data()
+        if not selected_template:
+            return
+        from gemmi import cif
+        doc = cif.Document()
+        blockname = '__'.join(selected_template.split())
+        block = doc.add_new_block(blockname)
+        for key, value in table_data:
+            set_pair_delimited(block, key, value)
+        filename = self.cif_file_save_dialog(blockname.replace('__', '_') + '.cif')
+        try:
+            Path(filename).write_text(doc.as_string(cif.Style.Indent35))
+        except PermissionError:
+            if Path(filename).is_dir():
+                return 
+            self.show_general_warning('No permission to write file to {}'.format(Path(filename).absolute()))
 
     def cancel_equipment_template(self):
         """
@@ -648,6 +765,7 @@ class AppWindow(QMainWindow):
         stackedwidget = self.ui.PropertiesTemplatesStackedWidget
         listwidget = self.ui.PropertiesTemplatesListWidget
         self.load_property(table, stackedwidget, listwidget)
+        table.resizeRowsToContents()
 
     def save_property_template(self):
         table = self.ui.PropertiesEditTableWidget
@@ -772,8 +890,9 @@ class AppWindow(QMainWindow):
         Returns a cif file name from a file dialog.
         """
         dialog = QFileDialog(filter="CIF file (*.cif)", caption='Save .cif File')
+        dialog.setDefaultSuffix('.cif')
         dialog.selectFile(filename)
-        filename, _ = dialog.getSaveFileName()
+        filename, _ = dialog.getSaveFileName(None, 'Select file name', filename)
         return filename
 
     def load_cif_file(self, fname):
@@ -787,11 +906,18 @@ class AppWindow(QMainWindow):
             fname = self.cif_file_open_dialog()
         if not fname:
             return
-        self.ui.SelectCif_LineEdit.setText(fname)
+        if os.name == 'nt':
+            self.ui.SelectCif_LineEdit.setText(str(WindowsPath(fname).absolute()))
+        else:
+            self.ui.SelectCif_LineEdit.setText(fname)
         self.save_current_recent_files_list(fname)
         self.load_recent_cifs_list()
-        filepath = Path(fname)
-        if not filepath.exists():
+        try:
+            filepath = Path(fname)
+            if not filepath.exists():
+                return
+        except OSError:
+            print('Something failed during cif file opening...')
             return
         not_ok = None
         try:
@@ -833,8 +959,10 @@ class AppWindow(QMainWindow):
         except IndexError:
             line = None
         if line:
+            with suppress(Exception):
+                line = int(line) - 1
             info.setText('This cif file is not readable!\n'
-                         'Plese check line {} in\n{}'.format(line, filepath.name))
+                         'Please check line {} in\n{}'.format(line, filepath.name))
         else:
             info.setText('This cif file is not readable! "{}"\n{}'.format(filepath.name, not_ok))
         info.show()
@@ -869,6 +997,18 @@ class AppWindow(QMainWindow):
         info.show()
         info.exec()
 
+    def show_general_warning(self, warn_text=''):
+        """
+        A message box to display if the checksums do not agree.
+        """
+        if not warn_text:
+            return
+        info = QMessageBox()
+        info.setIcon(QMessageBox.Warning)
+        info.setText(warn_text)
+        info.show()
+        info.exec()
+
     def check_Z(self):
         """
         Crude check if Z is much too high e.h. a SEHLXT solution with "C H N O" sum formula.
@@ -898,6 +1038,7 @@ class AppWindow(QMainWindow):
         """
         Tries to determine the sources of missing data in the cif file, e.g. Tmin/Tmax from SADABS.
         """
+        sources = None
         self.check_Z()
         if self.manufacturer == 'bruker':
             sources = BrukerData(self, self.cif).sources
@@ -905,9 +1046,10 @@ class AppWindow(QMainWindow):
             sources = self.rigakucif.sources
         # Build a dictionary of cif keys and row number values in order to fill the first column
         # of CifItemsTable with cif values:
-        for item in range(self.ui.CifItemsTable.model().rowCount()):
-            head = self.ui.CifItemsTable.model().headerData(item, Qt.Vertical)
-            self.vheaderitems[head] = item
+        for num in range(self.ui.CifItemsTable.model().rowCount()):
+            vhead = self.ui.CifItemsTable.model().headerData(num, Qt.Vertical)
+            if not vhead in self.vheaderitems:
+                self.vheaderitems.append(vhead)
         # They are needed for the comboboxes:
         property_fields = self.settings.load_property_keys()
         # get missing items from sources and put them into the corresponding rows:
@@ -918,22 +1060,18 @@ class AppWindow(QMainWindow):
         for miss_data in self.missing_data:
             # add missing item to data sources column:
             try:
-                row_num = self.vheaderitems[miss_data]
-            except KeyError:
+                row_num = self.vheaderitems.index(miss_data)
+            except ValueError:
                 continue
-            if miss_data in text_field_keys:
-                tab_item = QPlainTextEdit(self)
-                tab_item.setFrameShape(0)
-                self.ui.CifItemsTable.setCellWidget(row_num, 1, tab_item)
-            else:
-                tab_item = QTableWidgetItem()
-                #                             # row  column  item
-                self.ui.CifItemsTable.setItem(row_num, 1, tab_item)
+            tab_item = QTableWidgetItem()
             try:
                 # sources are lower case!
                 txt = str(sources[miss_data.lower()][0])
                 tooltiptext = str(sources[miss_data.lower()][1])
                 if miss_data in text_field_keys:
+                    tab_item = QPlainTextEdit(self)
+                    tab_item.setFrameShape(0)
+                    self.ui.CifItemsTable.setCellWidget(row_num, 1, tab_item)
                     tab_item.setPlainText(txt)
                     pal = tab_item.palette()
                     if txt and txt != '?':
@@ -942,6 +1080,8 @@ class AppWindow(QMainWindow):
                         pal.setColor(QPalette.Base, yellow)
                     tab_item.setPalette(pal)
                 else:
+                    #                             # row  column  item
+                    self.ui.CifItemsTable.setItem(row_num, 1, tab_item)
                     tab_item.setText(txt)  # has to be string
                     if txt and txt != '?':
                         tab_item.setBackground(light_green)
@@ -1014,12 +1154,15 @@ class AppWindow(QMainWindow):
         self.ui.CifItemsTable.setItem(vheaderitems[vert_key], column, tab_item)
         # tab_item.setFlags(tab_item.flags() ^ Qt.ItemIsEditable)
 
-    def add_row(self, key, value):
+    def add_row(self, key, value, at_start=False):
         """
         Create a empty row at bottom of CifItemsTable. This method only fills cif data in the 
         first column. Not the data from external sources!
         """
-        row_num = self.ui.CifItemsTable.rowCount()
+        if at_start:
+            row_num = 0
+        else:
+            row_num = self.ui.CifItemsTable.rowCount()
         self.ui.CifItemsTable.insertRow(row_num)
         # Add cif key and value to the row:
         item_key = QTableWidgetItem(key)
@@ -1071,7 +1214,12 @@ class AppWindow(QMainWindow):
                 tab2 = QTableWidgetItem()
                 self.ui.CifItemsTable.setItem(row_num, 1, tab1)
                 self.ui.CifItemsTable.setItem(row_num, 0, tabitem)
-                if key == '_computing_publication_material':
+                if key == '_audit_creation_method':
+                    # or better _audit_update_record?
+                    """'A record of any changes to the data block. The '
+                    'update format is a date (yyyy-mm-dd) followed by a '
+                    'description of the changes. The latest update entry '
+                    'is added to the bottom of this record.'"""
                     tab2.setText('FinalCif by Daniel Kratzert, Freiburg 2019')
                     self.ui.CifItemsTable.setItem(row_num, 2, tab2)
                 tabitem.setFlags(tabitem.flags() ^ Qt.ItemIsEditable)
@@ -1081,8 +1229,6 @@ class AppWindow(QMainWindow):
 
 
 if __name__ == '__main__':
-    from gui.finalcif_gui import Ui_FinalCifWindow
-
     app = QApplication(sys.argv)
     w = AppWindow()
     app.setWindowIcon(QIcon('./icon/multitable.png'))

@@ -8,7 +8,6 @@
 # 
 
 import itertools as it
-import operator
 import re
 from pathlib import Path
 
@@ -18,12 +17,33 @@ def grouper(inputs, n, fillvalue=None):
     return it.zip_longest(*iters, fillvalue=fillvalue)
 
 
+def get_files_from_current_dir():
+    return list(Path('./').rglob('*.cif'))
+
+
 def isfloat(value):
     try:
         float(value)
         return True
     except ValueError:
         return False
+
+
+def flatten(lis):
+    """
+    Given a list, possibly nested to any level, return it flattened.
+    From: http://code.activestate.com/recipes/578948-flattening-an-arbitrarily-nested-list-in-python/
+
+    >>> flatten([['wer', 234, 'brdt5'], ['dfg'], [[21, 34,5], ['fhg', 4]]])
+    ['wer', 234, 'brdt5', 'dfg', 21, 34, 5, 'fhg', 4]
+    """
+    new_lis = []
+    for item in lis:
+        if type(item) == type([]):
+            new_lis.extend(flatten(item))
+        else:
+            new_lis.append(item)
+    return new_lis
 
 
 def this_or_quest(value):
@@ -38,44 +58,6 @@ def find_line(inputlist: list, regex: str) -> int:
         if re.match(regex, string, re.IGNORECASE):
             return num  # returns the index number if regex found
     return 0
-
-
-class Manufacturer():
-    """
-    A class to count evidences for the manufacturer of a dataset.
-
-    >>> from tools.misc import Manufacturer
-    >>> m = Manufacturer()
-    >>> m.points['bruker'] += 1
-    >>> m.points['bruker'] += 1
-    >>> m
-    bruker
-    >>> m.points['stoe'] += 1
-    >>> m.points['stoe'] += 10
-    >>> m
-    stoe
-    >>> m2 = Manufacturer()
-    >>> m2
-    """
-
-    def __init__(self):
-        self.points = {'bruker': 0,
-                       'stoe'  : 0,
-                       'rigaku': 0,
-                       'other' : 0
-                       }
-
-    def get_manufacturer(self):
-        """
-        Returns the manufacturer with the most points.
-        """
-        if not any(self.points.values()):
-            # all with 0 points
-            return 'other'
-        return max(self.points.items(), key=operator.itemgetter(1))[0]
-
-    def __repr__(self):
-        return self.get_manufacturer()
 
 
 # '_space_group_centring_type',  # seems to be used nowere
@@ -105,8 +87,8 @@ high_prio_keys = {
     '_exptl_crystal_description'                       : 'A description of the quality and habit of the crystal',
     '_exptl_crystal_colour'                            : 'The colour of the crystal',
     '_exptl_crystal_recrystallization_method'          : 'Describes the method used to crystallize the sample',
-    '_exptl_crystal_density_meas'                      : 'Density value measured using standard chemical and physical methods',
-    '_exptl_crystal_density_method'                    : 'The method used to measure _exptl_crystal_density_meas',
+    # '_exptl_crystal_density_meas'                      : 'Density value measured using standard chemical and physical methods',
+    # '_exptl_crystal_density_method'                    : 'The method used to measure _exptl_crystal_density_meas',
     '_exptl_crystal_density_diffrn'                    : 'Density values calculated from the crystal cell and contents',
     '_exptl_crystal_F_000'                             : 'The effective number of electrons in the crystal unit cell contributing to F(000)',
     '_exptl_crystal_size_max'                          : 'Maximum dimension of the crystal in mm',
@@ -117,6 +99,7 @@ high_prio_keys = {
     '_exptl_absorpt_correction_T_min'                  : 'The calculated minimum value of the transmission factor for the specimen',
     '_exptl_absorpt_correction_T_max'                  : 'The calculated maximum value of the transmission factor for the specimen',
     '_exptl_absorpt_process_details'                   : 'Description of the absorption process applied to the intensities',
+    '_exptl_special_details'                           : 'Any details about the experimental work prior to the measurement',
     '_cell_measurement_temperature'                    : 'The temperature in kelvins at which the unit-cell parameters were measured',
     '_cell_measurement_reflns_used'                    : 'The total number of reflections used to determine the unit cell',
     '_cell_measurement_theta_min'                      : 'The maximum theta angles of reflections used to measure the unit cell in degrees',
@@ -131,6 +114,8 @@ high_prio_keys = {
     '_diffrn_source_voltage'                           : 'The voltage in kilovolts at which the radiation source was operated',
     '_diffrn_measurement_device_type'                  : 'The make, model or name of the measurement device used.',
     '_diffrn_measurement_method'                       : "Method used to measure the intensities, eg.g 'omega scans'",
+    '_diffrn_measurement_specimen_support'             : 'The physical device used to support the crystal during data collection.',
+    #'_diffrn_measurement_specimen_adhesive'            : 'Adhesive used to hold the crystal on the _diffrn_measurement_specimen_support during intensity measurement.',
     '_diffrn_reflns_number'                            : 'The total number of measured intensities excluding systematic absent',
     '_diffrn_reflns_av_unetI/netI'                     : 'Measure [sum |u(net I)|/sum|net I|] for all measured reflections',
     '_diffrn_reflns_av_R_equivalents'                  : 'The residual for symmetry-equivalent reflections used to calculate the average intensity',
@@ -199,6 +184,7 @@ text_field_keys = ['_refine_special_details',
                    '_publ_section_references',
                    '_audit_contact_author_address',
                    '_exptl_crystal_recrystallization_method',
+                   '_exptl_special_details',
                    ]
 
 ABSORPTION_CORRECTION_TYPES = (
@@ -217,7 +203,7 @@ ABSORPTION_CORRECTION_TYPES = (
 )
 
 COLOUR_CHOICES = (
-    (0, '?'),
+    (0, ''),
     (1, 'colourless'),
     (2, 'white'),
     (3, 'black'),
@@ -233,14 +219,28 @@ COLOUR_CHOICES = (
 )
 
 SPECIMEN_SUPPORT = (
-    (0, 'glass capillary'),
-    (1, 'quartz capillary'),
-    (2, 'fiber'),
-    (3, 'metal loop'),
+    (0, ''),
+    (1, 'MiTeGen micromount'),
+    (2, 'glass capillary'),
+    (3, 'quartz capillary'),
+    (4, 'glass fiber'),
+    (5, 'metal loop'),
+    (6, 'nylon loop'),
+    (7, 'cactus needle'),
+    (8, 'cat whisker'),
+)
+
+ADHESIVE = (
+    (0, ''),
+    (1, 'perfluorether oil'),
+    (2, 'epoxy glue'),
+    (3, 'motor oil'),
+    (4, 'grease'),
+    (5, 'honey'),
 )
 
 ABSOLUTE_CONFIGURATION_CHOICES = (
-    (0, ''),  # , '?'),
+    (0, ''),  #
     (1, 'ad'),  # , 'Anomalous dispersion'),
     (2, 'rm'),  # , 'Reference Molecule'),
     (3, 'rmad'),  # , 'Reference Molecule and ad'),
@@ -250,7 +250,7 @@ ABSOLUTE_CONFIGURATION_CHOICES = (
 )
 
 REFINE_LS_HYDROGEN_TREATMENT = (
-    (0, '?'),
+    (0, ''),
     (1, 'undef'),
     (2, 'mixed'),
     (3, 'constr'),
@@ -269,8 +269,9 @@ REFINE_LS_HYDROGEN_TREATMENT = (
 )
 
 RADIATION_TYPE = (
-    (0, r'Mo K\a'),
-    (1, r'Cu K\a'),
+    (0, r''),
+    (1, r'Mo K\a'),
+    (2, r'Cu K\a'),
     (3, r'Ag K\a')
 )
 
@@ -290,17 +291,18 @@ SOLUTION_PRIMARY = (
 )
 
 SOLUTION_SECONDARY = (
-    (0, 'difmap'),
-    (1, 'vecmap'),
-    (2, 'heavy'),
-    (3, 'direct'),
-    (4, 'geom'),
-    (5, 'disper'),
-    (6, 'isomor'),
-    (7, 'notdet'),
-    (8, 'dual'),
-    (9, 'iterative'),
-    (10, 'other'),
+    (0, ''),
+    (1, 'direct'),
+    (2, 'vecmap'),
+    (3, 'heavy'),
+    (4, 'difmap'),
+    (5, 'geom'),
+    (6, 'disper'),
+    (7, 'isomor'),
+    (8, 'notdet'),
+    (9, 'dual'),
+    (10, 'iterative'),
+    (11, 'other'),
 )
 
 combobox_fields = {'_exptl_crystal_colour'               : COLOUR_CHOICES,
@@ -311,6 +313,7 @@ combobox_fields = {'_exptl_crystal_colour'               : COLOUR_CHOICES,
                    '_atom_sites_solution_primary'        : SOLUTION_PRIMARY,
                    '_atom_sites_solution_secondary'      : SOLUTION_PRIMARY,
                    '_diffrn_measurement_specimen_support': SPECIMEN_SUPPORT,
+                   # '_diffrn_measurement_specimen_adhesive': ADHESIVE,
                    }
 
 
@@ -364,8 +367,11 @@ predef_equipment_templ = [{'name' : 'D8 VENTURE',
                                ['_diffrn_source', 'microfocus sealed X-ray tube'],
                                # ['_diffrn_source_current', '50'],
                                # ['_diffrn_source_voltage', '1.1'],
+                               ['_diffrn_detector_area_resol_mean', '7.41'],
+                               ['_diffrn_detector', 'HPAD'],
+                               ['_diffrn_detector_type', 'Bruker PHOTON III'],
                                ['_diffrn_source_type', r'Incoatec I\ms'],
-                               ['_diffrn_measurement_specimen_support', 'Mitegen Loop'],
+                               ['_diffrn_measurement_specimen_support', 'MiTeGen micromount'],
                                ['_olex2_diffrn_ambient_temperature_device', 'Oxford Cryostream 800'],
                            ]
                            },
@@ -377,9 +383,11 @@ predef_equipment_templ = [{'name' : 'D8 VENTURE',
                                ['_diffrn_measurement_method', r'\w and \f scans'],
                                ['_diffrn_source', 'microfocus sealed X-ray tube'],
                                ['_diffrn_source_type', r'Incoatec I\ms'],
+                               ['_diffrn_detector', 'CCD'],
+                               ['_diffrn_detector_type', 'Bruker APEXII'],
                                ['_diffrn_detector_area_resol_mean', '7.9'],
                                ['_diffrn_radiation_probe', 'x-ray'],
-                               ['_diffrn_measurement_specimen_support', 'Mitegen Loop'],
+                               ['_diffrn_measurement_specimen_support', 'MiTeGen micromount'],
                                ['_olex2_diffrn_ambient_temperature_device', 'Oxford Cryostream 800'],
                            ]
                            },
@@ -392,7 +400,9 @@ predef_equipment_templ = [{'name' : 'D8 VENTURE',
                                ['_diffrn_source', 'sealed X-ray tube'],  # obsolete: _diffrn_radiation_source
                                ['_diffrn_detector', 'Image Plate'],
                                ['_diffrn_detector_type', 'Rigaku Image Plate'],
-                               ['_diffrn_measurement_specimen_support', 'Mitegen Loop'],
+                               ['_diffrn_detector_area_resol_mean', '?'],
+                               ['_diffrn_radiation_probe', 'x-ray'],
+                               ['_diffrn_measurement_specimen_support', 'MiTeGen micromount'],
                                ['_olex2_diffrn_ambient_temperature_device', 'Bruker Kryoflex II'],
                            ]
                            },
@@ -451,8 +461,17 @@ predef_prop_templ = [{'name'  : 'Crystal Color',
                                   'ORTEP Farrujia 2012', 'Bruker SHELXTL, XP (G. Sheldrick)',
                                   'Mercury CSD']]
                       },
+                     {'name'  : 'Crystal Cooling Device',
+                      'values': ['_olex2_diffrn_ambient_temperature_device',
+                                 ['',
+                                  'Oxford Cryostream',
+                                  'Oxford Cryostream 800',
+                                  'Oxford Cryostream 700',
+                                  'Oxford Cryostream 600',
+                                  'Bruker Kryofelx II',
+                                  'Bruker Kryofelx I',
+                                  ]
+                                 ]
+
+                      }
                      ]
-
-
-def get_files_from_current_dir():
-    return list(Path('./').rglob('*.cif'))

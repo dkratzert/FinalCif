@@ -20,19 +20,19 @@ from docx.shared import Cm
 # compiled with "Py -3 -m PyInstaller multitable.spec --onefile"
 from docx.table import Table, _Cell
 
-from cif.file_reader import CifContainer
+from cif.cif_file_io import CifContainer
 from report.mtools import cif_keywords_list, isfloat, this_or_quest
 from report.symm import SymmetryElement
 
 """
-#TODO: 
+#TODO:
 * create nice .docx template
 * completeness to 0.83 A, theta range in A
 * index ranges in one row
 * cell parameters in three rows
 * proper table numbering:
  table1 -> num -> table2 -> ...
- if table fails, return number, else count up and then return number 
+ if table fails, return number, else count up and then return number
 """
 
 
