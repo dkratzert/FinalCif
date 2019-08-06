@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file './gui\finalcif_gui.ui'
+# Form implementation generated from reading ui file '/Users/daniel/GitHub/FinalCif/./gui/finalcif_gui.ui'
 #
-# Created by: PyQt5 UI code generator 5.12.1
+# Created by: PyQt5 UI code generator 5.13.0
 #
 # WARNING! All changes made in this file will be lost!
+
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
@@ -142,14 +143,17 @@ class Ui_FinalCifWindow(object):
         self.NewPropertyTemplateButton = QtWidgets.QPushButton(self.PropertiesSelectPage)
         self.NewPropertyTemplateButton.setObjectName("NewPropertyTemplateButton")
         self.TemplatesGridLayout_2.addWidget(self.NewPropertyTemplateButton, 1, 0, 1, 1)
+        self.EditPropertyTemplateButton = QtWidgets.QPushButton(self.PropertiesSelectPage)
+        self.EditPropertyTemplateButton.setObjectName("EditPropertyTemplateButton")
+        self.TemplatesGridLayout_2.addWidget(self.EditPropertyTemplateButton, 1, 1, 1, 1)
+        self.ImportPropertyTemplateButton = QtWidgets.QPushButton(self.PropertiesSelectPage)
+        self.ImportPropertyTemplateButton.setObjectName("ImportPropertyTemplateButton")
+        self.TemplatesGridLayout_2.addWidget(self.ImportPropertyTemplateButton, 1, 2, 1, 1)
         self.PropertiesTemplatesListWidget = QtWidgets.QListWidget(self.PropertiesSelectPage)
         self.PropertiesTemplatesListWidget.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
         self.PropertiesTemplatesListWidget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         self.PropertiesTemplatesListWidget.setObjectName("PropertiesTemplatesListWidget")
-        self.TemplatesGridLayout_2.addWidget(self.PropertiesTemplatesListWidget, 0, 0, 1, 2)
-        self.EditPropertiyTemplateButton = QtWidgets.QPushButton(self.PropertiesSelectPage)
-        self.EditPropertiyTemplateButton.setObjectName("EditPropertiyTemplateButton")
-        self.TemplatesGridLayout_2.addWidget(self.EditPropertiyTemplateButton, 1, 1, 1, 1)
+        self.TemplatesGridLayout_2.addWidget(self.PropertiesTemplatesListWidget, 0, 0, 1, 3)
         self.PropertiesTemplatesStackedWidget.addWidget(self.PropertiesSelectPage)
         self.PropertiesEditPage = QtWidgets.QWidget()
         self.PropertiesEditPage.setObjectName("PropertiesEditPage")
@@ -234,18 +238,21 @@ class Ui_FinalCifWindow(object):
         self.EquipmentSelectPage.setObjectName("EquipmentSelectPage")
         self.TemplatesGridLayout = QtWidgets.QGridLayout(self.EquipmentSelectPage)
         self.TemplatesGridLayout.setObjectName("TemplatesGridLayout")
-        self.NewEquipmentTemplateButton = QtWidgets.QPushButton(self.EquipmentSelectPage)
-        self.NewEquipmentTemplateButton.setObjectName("NewEquipmentTemplateButton")
-        self.TemplatesGridLayout.addWidget(self.NewEquipmentTemplateButton, 1, 0, 1, 1)
         self.EquipmentTemplatesListWidget = QtWidgets.QListWidget(self.EquipmentSelectPage)
         self.EquipmentTemplatesListWidget.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.EquipmentTemplatesListWidget.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
         self.EquipmentTemplatesListWidget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         self.EquipmentTemplatesListWidget.setObjectName("EquipmentTemplatesListWidget")
-        self.TemplatesGridLayout.addWidget(self.EquipmentTemplatesListWidget, 0, 0, 1, 2)
+        self.TemplatesGridLayout.addWidget(self.EquipmentTemplatesListWidget, 0, 0, 1, 3)
+        self.NewEquipmentTemplateButton = QtWidgets.QPushButton(self.EquipmentSelectPage)
+        self.NewEquipmentTemplateButton.setObjectName("NewEquipmentTemplateButton")
+        self.TemplatesGridLayout.addWidget(self.NewEquipmentTemplateButton, 1, 0, 1, 1)
         self.EditEquipmentTemplateButton = QtWidgets.QPushButton(self.EquipmentSelectPage)
         self.EditEquipmentTemplateButton.setObjectName("EditEquipmentTemplateButton")
         self.TemplatesGridLayout.addWidget(self.EditEquipmentTemplateButton, 1, 1, 1, 1)
+        self.ImportEquipmentTemplateButton = QtWidgets.QPushButton(self.EquipmentSelectPage)
+        self.ImportEquipmentTemplateButton.setObjectName("ImportEquipmentTemplateButton")
+        self.TemplatesGridLayout.addWidget(self.ImportEquipmentTemplateButton, 1, 2, 1, 1)
         self.EquipmentTemplatesStackedWidget.addWidget(self.EquipmentSelectPage)
         self.EquipmentEditPage = QtWidgets.QWidget()
         self.EquipmentEditPage.setObjectName("EquipmentEditPage")
@@ -260,6 +267,9 @@ class Ui_FinalCifWindow(object):
         self.CancelEquipmentButton = QtWidgets.QPushButton(self.EquipmentEditPage)
         self.CancelEquipmentButton.setObjectName("CancelEquipmentButton")
         self.gridLayout_2.addWidget(self.CancelEquipmentButton, 1, 3, 1, 1)
+        self.ExportEquipmentButton = QtWidgets.QPushButton(self.EquipmentEditPage)
+        self.ExportEquipmentButton.setObjectName("ExportEquipmentButton")
+        self.gridLayout_2.addWidget(self.ExportEquipmentButton, 1, 4, 1, 1)
         self.EquipmentEditTableWidget = QtWidgets.QTableWidget(self.EquipmentEditPage)
         self.EquipmentEditTableWidget.setAutoScroll(False)
         self.EquipmentEditTableWidget.setEditTriggers(QtWidgets.QAbstractItemView.AllEditTriggers)
@@ -279,7 +289,7 @@ class Ui_FinalCifWindow(object):
         self.EquipmentEditTableWidget.horizontalHeader().setMinimumSectionSize(90)
         self.EquipmentEditTableWidget.horizontalHeader().setStretchLastSection(True)
         self.EquipmentEditTableWidget.verticalHeader().setDefaultSectionSize(23)
-        self.gridLayout_2.addWidget(self.EquipmentEditTableWidget, 0, 1, 1, 3)
+        self.gridLayout_2.addWidget(self.EquipmentEditTableWidget, 0, 1, 1, 4)
         self.EquipmentTemplatesStackedWidget.addWidget(self.EquipmentEditPage)
         self.gridLayout_3.addWidget(self.EquipmentTemplatesStackedWidget, 0, 0, 1, 1)
         self.gridLayout.addWidget(self.EquipmentGroupBox, 5, 1, 1, 1)
@@ -320,7 +330,7 @@ class Ui_FinalCifWindow(object):
         self.retranslateUi(FinalCifWindow)
         self.MainStackedWidget.setCurrentIndex(2)
         self.PropertiesTemplatesStackedWidget.setCurrentIndex(0)
-        self.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
+        self.EquipmentTemplatesStackedWidget.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(FinalCifWindow)
         FinalCifWindow.setTabOrder(self.SelectCif_LineEdit, self.EquipmentEditTableWidget)
         FinalCifWindow.setTabOrder(self.EquipmentEditTableWidget, self.cifKeywordLE)
@@ -328,9 +338,8 @@ class Ui_FinalCifWindow(object):
         FinalCifWindow.setTabOrder(self.PropertiesEditTableWidget, self.SelectCif_PushButton)
         FinalCifWindow.setTabOrder(self.SelectCif_PushButton, self.NewPropertyTemplateButton)
         FinalCifWindow.setTabOrder(self.NewPropertyTemplateButton, self.PropertiesTemplatesListWidget)
-        FinalCifWindow.setTabOrder(self.PropertiesTemplatesListWidget, self.EditPropertiyTemplateButton)
-        FinalCifWindow.setTabOrder(self.EditPropertiyTemplateButton, self.EditEquipmentTemplateButton)
-        FinalCifWindow.setTabOrder(self.EditEquipmentTemplateButton, self.NewEquipmentTemplateButton)
+        FinalCifWindow.setTabOrder(self.PropertiesTemplatesListWidget, self.EditPropertyTemplateButton)
+        FinalCifWindow.setTabOrder(self.EditPropertyTemplateButton, self.NewEquipmentTemplateButton)
         FinalCifWindow.setTabOrder(self.NewEquipmentTemplateButton, self.EquipmentTemplatesListWidget)
 
     def retranslateUi(self, FinalCifWindow):
@@ -352,19 +361,22 @@ class Ui_FinalCifWindow(object):
         self.BackPushButton.setText(_translate("FinalCifWindow", "Back to CIF Table"))
         self.PropertiesGroupBox.setTitle(_translate("FinalCifWindow", "Properties Templates"))
         self.NewPropertyTemplateButton.setText(_translate("FinalCifWindow", "New Template"))
+        self.EditPropertyTemplateButton.setText(_translate("FinalCifWindow", "Edit Template"))
+        self.ImportPropertyTemplateButton.setText(_translate("FinalCifWindow", "Import"))
         self.PropertiesTemplatesListWidget.setToolTip(_translate("FinalCifWindow", "<html><head/><body><p>A list of common properties like </p><p>_exptl_crystal_colour: yellow, red, blue, ...</p><p>Lists defined here will appear as dropdown menus in the main Table.</p></body></html>"))
-        self.EditPropertiyTemplateButton.setText(_translate("FinalCifWindow", "Edit Template"))
         self.cifKeywordLB.setText(_translate("FinalCifWindow", "cif keyword"))
         self.DeletePropertiesButton.setText(_translate("FinalCifWindow", "Delete Template"))
         self.SavePropertiesButton.setText(_translate("FinalCifWindow", "Save"))
         self.CancelPropertiesButton.setText(_translate("FinalCifWindow", "Cancel"))
         self.EquipmentGroupBox.setTitle(_translate("FinalCifWindow", "Equipment and Author Templates"))
-        self.NewEquipmentTemplateButton.setText(_translate("FinalCifWindow", "New Template"))
         self.EquipmentTemplatesListWidget.setToolTip(_translate("FinalCifWindow", "<html><head/><body><p>Each entry can have a list of key/value pairs. For example a Diffractometer model can have a list of features.</p></body></html>"))
+        self.NewEquipmentTemplateButton.setText(_translate("FinalCifWindow", "New Template"))
         self.EditEquipmentTemplateButton.setText(_translate("FinalCifWindow", "Edit Template"))
+        self.ImportEquipmentTemplateButton.setText(_translate("FinalCifWindow", "Import"))
         self.DeleteEquipmentButton.setText(_translate("FinalCifWindow", "Delete Template"))
         self.SaveEquipmentButton.setText(_translate("FinalCifWindow", "Save"))
         self.CancelEquipmentButton.setText(_translate("FinalCifWindow", "Cancel"))
+        self.ExportEquipmentButton.setText(_translate("FinalCifWindow", "Export"))
         item = self.EquipmentEditTableWidget.horizontalHeaderItem(0)
         item.setText(_translate("FinalCifWindow", "key"))
         item = self.EquipmentEditTableWidget.horizontalHeaderItem(1)
@@ -377,5 +389,3 @@ class Ui_FinalCifWindow(object):
         self.actionSave_Report.setText(_translate("FinalCifWindow", "Save Report"))
         self.actionSave_CIF_File.setText(_translate("FinalCifWindow", "Save CIF File"))
         self.actionedit_templates.setText(_translate("FinalCifWindow", "edit templates"))
-
-
