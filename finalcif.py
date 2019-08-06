@@ -164,7 +164,7 @@ class AppWindow(QMainWindow):
         self.ui.SaveEquipmentButton.clicked.connect(self.save_equipment_template)
         self.ui.CancelEquipmentButton.clicked.connect(self.cancel_equipment_template)
         self.ui.DeleteEquipmentButton.clicked.connect(self.delete_equipment)
-        self.ui.ExportEquipmentButton.clicked.connect(self.export_equipment_entry)
+        self.ui.ExportEquipmentButton.clicked.connect(self.export_equipment_template)
         self.ui.ImportEquipmentTemplateButton.clicked.connect(self.import_equipment_from_file)
         ##
         self.ui.PropertiesTemplatesListWidget.doubleClicked.connect(self.edit_property_template)
@@ -658,10 +658,9 @@ class AppWindow(QMainWindow):
         from gemmi import cif
         doc = cif.read_file(filename)
         block = doc.sole_block()
-        data = json.loads(doc.as_json())
-        for key, value in data[block.name].items():
+        data = json.loads(doc.as_json(mmjson=True))
+        for key, value in data['data_' + block.name].items():
             print(key, value)
-
 
     def get_equipment_entry_data(self):
         """
@@ -685,7 +684,7 @@ class AppWindow(QMainWindow):
                 table_data.append([key, value])
         return selected_template_text, table_data
 
-    def export_equipment_entry(self):
+    def export_equipment_template(self):
         """
         exports the currently selected equipment entry to a file.
         """
