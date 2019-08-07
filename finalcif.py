@@ -15,6 +15,7 @@ from pathlib import Path, WindowsPath
 from cif.core_dict import cif_core
 from datafiles.rigaku_data import RigakuData
 from report.tables import make_report_from
+from tools.update import get_current_version
 from tools.version import VERSION
 
 DEBUG = False
@@ -120,7 +121,6 @@ class AppWindow(QMainWindow):
         self.ui.PropertiesEditTableWidget.verticalHeader().hide()
         self.ui.CheckcifButton.setDisabled(True)
         self.ui.SaveCifButton.setDisabled(True)
-        self.ui.ImportPropertyTemplateButton.hide()
         self.cif = None
         self.fin_file = Path()
         self.missing_data = []
@@ -139,9 +139,8 @@ class AppWindow(QMainWindow):
         # Sorting desyncronizes header and columns:
         self.ui.CifItemsTable.setSortingEnabled(False)
         self.load_recent_cifs_list()
-        # Makes no real sense anymore:
-        # self.ui.EquipmentTemplatesListWidget.setCurrentRow(-1)  # Has to he in front in order to work
-        # self.ui.EquipmentTemplatesListWidget.setCurrentRow(self.settings.load_last_equipment())
+        if get_current_version() > VERSION:
+            self.show_general_warning(r"A newer version of FinalCif is available\n under <a href='https://www.xs3.uni-freiburg.de/research/finalcif'>https://www.xs3.uni-freiburg.de/research/finalcif</a>")
 
     def __del__(self):
         print('saving position')
