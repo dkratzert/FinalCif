@@ -47,7 +47,6 @@ from tools.misc import high_prio_keys, predef_equipment_templ, predef_prop_templ
     text_field_keys, to_float, find_line
 from tools.settings import FinalCifSettings
 
-
 """
 TODO:
 - make tab key go down one row
@@ -117,7 +116,10 @@ class AppWindow(QMainWindow):
         self.ui.CifItemsTable.setSortingEnabled(False)
         self.load_recent_cifs_list()
         if get_current_version() > VERSION:
-            self.show_general_warning(r"A newer version of FinalCif is available\n under <a href='https://www.xs3.uni-freiburg.de/research/finalcif'>https://www.xs3.uni-freiburg.de/research/finalcif</a>")
+            self.show_general_warning(
+                r"A newer version of FinalCif is available\n under "
+                r"<a href='https://www.xs3.uni-freiburg.de/research/finalcif'>"
+                r"https://www.xs3.uni-freiburg.de/research/finalcif</a>")
 
     def __del__(self):
         print('saving position')
@@ -160,6 +162,8 @@ class AppWindow(QMainWindow):
         self.ui.PropertiesEditTableWidget.itemSelectionChanged.connect(self.add_eq_row_if_needed)
         self.ui.PropertiesEditTableWidget.itemEntered.connect(self.add_eq_row_if_needed)
         self.ui.PropertiesEditTableWidget.cellChanged.connect(self.add_eq_row_if_needed)
+        self.ui.ImportPropertyTemplateButton.clicked.connect(self.import_property_from_file)
+        self.ui.ExportPropertyButton.clicked.connect(self.export_property_template)
         ##
         self.ui.NewEquipmentTemplateButton.clicked.connect(self.new_equipment)
         self.ui.NewPropertyTemplateButton.clicked.connect(self.new_property)
@@ -276,12 +280,13 @@ class AppWindow(QMainWindow):
         """
         Runs the multitable program to make a report table.
         """
+        not_ok = None
         if self.cif:
             self.save_current_cif_file()
             output_filename = 'report_{}.docx'.format(self.cif.fileobj.stem)
-            not_ok = None
             try:
-                make_report_from(self.fin_file, path=application_path, output_filename=output_filename)
+                make_report_from(self.fin_file, path=application_path, output_filename=output_filename,
+                                 without_H=self.ui.HAtomsCheckBox.isChecked())
             except FileNotFoundError as e:
                 print('Unable to open cif file')
                 not_ok = e
@@ -521,7 +526,7 @@ class AppWindow(QMainWindow):
         self.ui.PropertiesTemplatesListWidget.setCurrentItem(item)
         item.setFlags(Qt.ItemIsEditable | Qt.ItemIsEnabled | Qt.ItemIsSelectable)
         self.ui.PropertiesTemplatesListWidget.editItem(item)
-        self.ui.cifKeywordLE.clear()
+        self.ui.cifKeywordLineEdit.clear()
 
     def add_eq_row_if_needed(self):
         """
@@ -626,7 +631,7 @@ class AppWindow(QMainWindow):
         """
         filename = self.cif_file_open_dialog()
         if not filename:
-            return 
+            return
         from gemmi import cif
         try:
             doc = cif.read_file(filename)
@@ -686,7 +691,7 @@ class AppWindow(QMainWindow):
             Path(filename).write_text(doc.as_string(cif.Style.Indent35))
         except PermissionError:
             if Path(filename).is_dir():
-                return 
+                return
             self.show_general_warning('No permission to write file to {}'.format(Path(filename).absolute()))
 
     def cancel_equipment_template(self):
@@ -700,7 +705,6 @@ class AppWindow(QMainWindow):
         print('cancelled')
 
     # The properties templates:
-
 
     @staticmethod
     def add_propeties_row(table: QTableWidget, value: str = ''):
@@ -741,14 +745,14 @@ class AppWindow(QMainWindow):
         table = self.ui.PropertiesEditTableWidget
         stackedwidget = self.ui.PropertiesTemplatesStackedWidget
         listwidget = self.ui.PropertiesTemplatesListWidget
-        self.load_property(table, stackedwidget, listwidget)
+        self.load_property_from_settings(table, stackedwidget, listwidget)
         table.resizeRowsToContents()
 
     def save_property_template(self):
         table = self.ui.PropertiesEditTableWidget
         stackedwidget = self.ui.PropertiesTemplatesStackedWidget
         listwidget = self.ui.PropertiesTemplatesListWidget
-        keyword = self.ui.cifKeywordLE.text()
+        keyword = self.ui.cifKeywordLineEdit.text()
         self.save_property(table, stackedwidget, listwidget, keyword)
 
     def store_predefined_templates(self):
@@ -787,11 +791,13 @@ class AppWindow(QMainWindow):
                 pass
         if not cif_key:
             return
+        print(cif_key)
+        print(table_data)
         from gemmi import cif
         doc = cif.Document()
         blockname = '__'.join(selected_row_text.split())
         block = doc.add_new_block(blockname)
-        loop = block.init_loop(cif_key, [cif_key])
+        loop = block.init_loop(cif_key, [''])
         for value in table_data:
             loop.add_row([value])
         filename = self.cif_file_save_dialog(blockname.replace('__', '_') + '.cif')
@@ -802,7 +808,40 @@ class AppWindow(QMainWindow):
                 return
             self.show_general_warning('No permission to write file to {}'.format(Path(filename).absolute()))
 
-    def load_property(self, table: QTableWidget, stackedwidget: QStackedWidget, listwidget: QListWidget):
+    def import_property_from_file(self):
+        filename = self.cif_file_open_dialog()
+        if not filename:
+            return
+        from gemmi import cif
+        try:
+            doc = cif.read_file(filename)
+        except RuntimeError as e:
+            self.show_general_warning(str(e))
+            return
+        property_list = self.settings.settings.value('property_list')
+        if not property_list:
+            property_list = ['']
+        block = doc.sole_block()
+        block_name = block.name.replace('__', ' ')
+        property_list.append(block_name)
+        table = self.ui.PropertiesEditTableWidget
+        table.setRowCount(0)
+        data = json.loads(doc.as_json(mmjson=True))['data_' + block.name]
+        loop_column_name = list(data.keys())[0]
+        template_list = [x for x in block.find_loop('_' + loop_column_name)]
+        self.ui.cifKeywordLineEdit.setText(loop_column_name)
+        newlist = [x for x in list(set(property_list)) if x]
+        newlist.sort()
+        # this list keeps track of the equipment items:
+        self.settings.save_template('property_list', newlist)
+        template_list.insert(0, '')
+        # save as dictionary for properties to have "_cif_key : itemlist"
+        # for a table item as dropdown menu in the main table.
+        table_data = [block_name, template_list]
+        self.settings.save_template('property/' + block_name, table_data)
+        self.show_equipment_and_properties()
+
+    def load_property_from_settings(self, table: QTableWidget, stackedwidget: QStackedWidget, listwidget: QListWidget):
         """
         Load/Edit the value list of a property entry.
         """
@@ -824,13 +863,13 @@ class AppWindow(QMainWindow):
                 table_data = table_data[1]
             except:
                 pass
-            self.ui.cifKeywordLE.setText(cif_key)
+            self.ui.cifKeywordLineEdit.setText(cif_key)
         n = 0
         if not table_data:
             table_data = ['']
         for value in table_data:
             try:
-                self.add_propeties_row(table, value)
+                self.add_propeties_row(table, str(value))
             except TypeError:
                 print('Bad value in property table')
                 continue
@@ -954,7 +993,11 @@ class AppWindow(QMainWindow):
             pass
         self.ui.CifItemsTable.clearContents()
         # self.ui.CifItemsTable.clear() # clears header
-        self.fill_cif_table()
+        try:
+            self.fill_cif_table()
+        except RuntimeError as e:
+            not_ok = e
+            self.unable_to_open_message(filepath, not_ok)
         self.ui.CheckcifButton.setEnabled(True)
         self.ui.SaveCifButton.setEnabled(True)
         # self.ui.EquipmentTemplatesListWidget.setCurrentRow(-1)  # Has to he in front in order to work
@@ -1013,11 +1056,11 @@ class AppWindow(QMainWindow):
         """
         if not warn_text:
             return
-        info = QMessageBox()
-        info.setIcon(QMessageBox.Warning)
-        info.setText(warn_text)
-        info.show()
-        info.exec()
+        info = QMessageBox(self).warning(self, ' ', warn_text)
+        #info.setIcon(QMessageBox.Warning)
+        #info.setText(warn_text)
+        #info.show()
+        #info.exec()
 
     def check_Z(self):
         """

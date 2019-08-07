@@ -42,7 +42,7 @@
        <item row="0" column="0" colspan="3">
         <widget class="QStackedWidget" name="MainStackedWidget">
          <property name="currentIndex">
-          <number>2</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="page_MainTable">
           <layout class="QVBoxLayout" name="verticalLayout">
@@ -127,10 +127,26 @@
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="SaveFullReportButton">
-               <property name="text">
-                <string>Make Tables</string>
+              <widget class="QGroupBox" name="groupBox">
+               <property name="title">
+                <string/>
                </property>
+               <layout class="QVBoxLayout" name="verticalLayout_4">
+                <item>
+                 <widget class="QPushButton" name="SaveFullReportButton">
+                  <property name="text">
+                   <string>Make Tables</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QCheckBox" name="HAtomsCheckBox">
+                  <property name="text">
+                   <string>without H-Bonds</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
               </widget>
              </item>
             </layout>
@@ -263,7 +279,7 @@
        </sizepolicy>
       </property>
       <property name="title">
-       <string>Properties Templates</string>
+       <string>Property Templates</string>
       </property>
       <layout class="QGridLayout" name="gridLayout_4">
        <property name="leftMargin">
@@ -290,7 +306,7 @@
           </sizepolicy>
          </property>
          <property name="currentIndex">
-          <number>0</number>
+          <number>1</number>
          </property>
          <widget class="QWidget" name="PropertiesSelectPage">
           <layout class="QGridLayout" name="TemplatesGridLayout_2">
@@ -374,7 +390,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="ExportEquipmentButton_3">
+              <widget class="QPushButton" name="ExportPropertyButton">
                <property name="text">
                 <string>Export</string>
                </property>
@@ -439,7 +455,7 @@
             </widget>
            </item>
            <item row="0" column="1" colspan="5">
-            <widget class="QLineEdit" name="cifKeywordLE"/>
+            <widget class="QLineEdit" name="cifKeywordLineEdit"/>
            </item>
           </layout>
          </widget>
@@ -687,7 +703,7 @@
  <tabstops>
   <tabstop>SelectCif_LineEdit</tabstop>
   <tabstop>EquipmentEditTableWidget</tabstop>
-  <tabstop>cifKeywordLE</tabstop>
+  <tabstop>cifKeywordLineEdit</tabstop>
   <tabstop>PropertiesEditTableWidget</tabstop>
   <tabstop>SelectCif_PushButton</tabstop>
   <tabstop>NewPropertyTemplateButton</tabstop>
