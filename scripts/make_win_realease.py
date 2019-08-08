@@ -51,6 +51,7 @@ def copy_to_remote():
     print('copying file')
     print(r'dist\FinalCif.exe', r'W:\htdocs\finalcif\FinalCif-v{}.exe'.format(VERSION))
     shutil.copy(r'dist\FinalCif.exe', r'W:\htdocs\finalcif\FinalCif-v{}.exe'.format(VERSION))
+    Path(r'W:\htdocs\finalcif\version.txt').write_text(str(VERSION))
 
 
 disable_debug('finalcif.py')
