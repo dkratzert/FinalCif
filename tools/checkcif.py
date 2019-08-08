@@ -15,35 +15,19 @@ from PyQt5.QtWidgets import QApplication
 
 
 class WebPage(QWebEngineView):
-    def __init__(self):
+    def __init__(self, url):
         QWebEngineView.__init__(self)
-        #self.load(QUrl("https://checkcif.iucr.org/"))
-        self.load(QUrl("cifreport.html"))
-        self.loadFinished.connect(self._on_load_finished)
+        # self.load(QUrl("https://checkcif.iucr.org/"))
+        url = QUrl.fromLocalFile(url)
+        self.load(url)
+        #self.loadFinished.connect(self._on_load_finished)
 
     def _on_load_finished(self):
-        print("Finished Loading")
         self.page().toHtml(self.Callable)
+        print("Finished Loading")
 
     def Callable(self, html_str):
         self.html = html_str
-        '''
-        self.page().runJavaScript(
-            """
-            var xhttp = new XMLHttpRequest();
-            xhttp.onreadystatechange = function() {
-                if (this.readyState === 4 && this.status === 200) {
-                    document.getElementsByTagName("body").innerHTML =
-                    this.responseText;
-                }
-            };
-            xhttp.open("POST", "//checkcif.iucr.org/cgi-bin/checkcif_hkl.pl", true);
-            xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-            xhttp.send("filecif=='/Users/daniel/GitHub/FinalCif/test-data/ntd106c-P-1-final.cif'");
-            
-            """
-        )'''
-
 
 
 def get_checkcif():
@@ -69,14 +53,14 @@ def get_checkcif():
     #    print(i, '##')
 
     r = requests.post(url, files=headers, timeout=150)
-    print(r.text)
+    #print(r.text)
     Path(out_file).write_bytes(r.content)
     print('ready')
 
 
 if __name__ == "__main__":
     get_checkcif()
-    #app = QApplication(sys.argv)
-    #web = WebPage()
-    #web.show()
-    #sys.exit(app.exec_())
+    app = QApplication(sys.argv)
+    web = WebPage('/Users/daniel/GitHub/FinalCif/cifreport.html')
+    web.show()
+    sys.exit(app.exec_())
