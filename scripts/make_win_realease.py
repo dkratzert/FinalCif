@@ -20,8 +20,10 @@ from PyQt5 import uic
 
 from tools.version import VERSION
 
-arg = sys.argv[1]
-
+try:
+    arg = sys.argv[1]
+except IndexError:
+    arg=''
 
 def disable_debug(filepath: str):
     pth = Path(filepath)
