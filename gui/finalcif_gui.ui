@@ -42,7 +42,7 @@
        <item row="0" column="0" colspan="3">
         <widget class="QStackedWidget" name="MainStackedWidget">
          <property name="currentIndex">
-          <number>2</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="page_MainTable">
           <layout class="QVBoxLayout" name="verticalLayout">
@@ -127,10 +127,26 @@
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="SaveFullReportButton">
-               <property name="text">
-                <string>Make Tables</string>
+              <widget class="QGroupBox" name="groupBox">
+               <property name="title">
+                <string/>
                </property>
+               <layout class="QVBoxLayout" name="verticalLayout_4">
+                <item>
+                 <widget class="QPushButton" name="SaveFullReportButton">
+                  <property name="text">
+                   <string>Make Tables</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QCheckBox" name="HAtomsCheckBox">
+                  <property name="text">
+                   <string>without H-Bonds</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
               </widget>
              </item>
             </layout>
@@ -263,7 +279,7 @@
        </sizepolicy>
       </property>
       <property name="title">
-       <string>Properties Templates</string>
+       <string>Property Templates</string>
       </property>
       <layout class="QGridLayout" name="gridLayout_4">
        <property name="leftMargin">
@@ -290,7 +306,7 @@
           </sizepolicy>
          </property>
          <property name="currentIndex">
-          <number>0</number>
+          <number>1</number>
          </property>
          <widget class="QWidget" name="PropertiesSelectPage">
           <layout class="QGridLayout" name="TemplatesGridLayout_2">
@@ -332,6 +348,56 @@
          </widget>
          <widget class="QWidget" name="PropertiesEditPage">
           <layout class="QGridLayout" name="gridLayout_5">
+           <item row="2" column="0" rowspan="2" colspan="6">
+            <layout class="QHBoxLayout" name="horizontalLayout">
+             <item>
+              <widget class="QPushButton" name="DeletePropertiesButton">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                 <horstretch>1</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>Delete Template</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="SavePropertiesButton">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                 <horstretch>1</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>Save</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="CancelPropertiesButton">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                 <horstretch>1</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>Cancel</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="ExportPropertyButton">
+               <property name="text">
+                <string>Export</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
            <item row="1" column="0" colspan="6">
             <widget class="QTableWidget" name="PropertiesEditTableWidget">
              <property name="autoScroll">
@@ -389,62 +455,7 @@
             </widget>
            </item>
            <item row="0" column="1" colspan="5">
-            <widget class="QLineEdit" name="cifKeywordLE"/>
-           </item>
-           <item row="2" column="0" rowspan="2" colspan="6">
-            <layout class="QHBoxLayout" name="horizontalLayout">
-             <item>
-              <widget class="QPushButton" name="DeletePropertiesButton">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                 <horstretch>1</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string>Delete Template</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="SavePropertiesButton">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                 <horstretch>1</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="minimumSize">
-                <size>
-                 <width>120</width>
-                 <height>0</height>
-                </size>
-               </property>
-               <property name="text">
-                <string>Save</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="CancelPropertiesButton">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                 <horstretch>1</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="minimumSize">
-                <size>
-                 <width>120</width>
-                 <height>0</height>
-                </size>
-               </property>
-               <property name="text">
-                <string>Cancel</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
+            <widget class="QLineEdit" name="cifKeywordLineEdit"/>
            </item>
           </layout>
          </widget>
@@ -489,7 +500,7 @@
           </sizepolicy>
          </property>
          <property name="currentIndex">
-          <number>1</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="EquipmentSelectPage">
           <layout class="QGridLayout" name="TemplatesGridLayout">
@@ -534,34 +545,6 @@
          </widget>
          <widget class="QWidget" name="EquipmentEditPage">
           <layout class="QGridLayout" name="gridLayout_2">
-           <item row="1" column="1">
-            <widget class="QPushButton" name="DeleteEquipmentButton">
-             <property name="text">
-              <string>Delete Template</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="2">
-            <widget class="QPushButton" name="SaveEquipmentButton">
-             <property name="text">
-              <string>Save</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="3">
-            <widget class="QPushButton" name="CancelEquipmentButton">
-             <property name="text">
-              <string>Cancel</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="4">
-            <widget class="QPushButton" name="ExportEquipmentButton">
-             <property name="text">
-              <string>Export</string>
-             </property>
-            </widget>
-           </item>
            <item row="0" column="1" colspan="4">
             <widget class="QTableWidget" name="EquipmentEditTableWidget">
              <property name="autoScroll">
@@ -611,6 +594,34 @@
                <string>value</string>
               </property>
              </column>
+            </widget>
+           </item>
+           <item row="1" column="2">
+            <widget class="QPushButton" name="SaveEquipmentButton">
+             <property name="text">
+              <string>Save</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QPushButton" name="DeleteEquipmentButton">
+             <property name="text">
+              <string>Delete Template</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="3">
+            <widget class="QPushButton" name="CancelEquipmentButton">
+             <property name="text">
+              <string>Cancel</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="4">
+            <widget class="QPushButton" name="ExportEquipmentButton">
+             <property name="text">
+              <string>Export</string>
+             </property>
             </widget>
            </item>
           </layout>
@@ -692,7 +703,7 @@
  <tabstops>
   <tabstop>SelectCif_LineEdit</tabstop>
   <tabstop>EquipmentEditTableWidget</tabstop>
-  <tabstop>cifKeywordLE</tabstop>
+  <tabstop>cifKeywordLineEdit</tabstop>
   <tabstop>PropertiesEditTableWidget</tabstop>
   <tabstop>SelectCif_PushButton</tabstop>
   <tabstop>NewPropertyTemplateButton</tabstop>
