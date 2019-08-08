@@ -31,6 +31,8 @@ if getattr(sys, 'frozen', False):
 else:
     application_path = os.path.dirname(os.path.abspath(__file__))
 
+os.environ['PATH'] = sys._MEIPASS + os.pathsep + os.environ['PATH']
+
 if DEBUG:
     from PyQt5 import uic
 
@@ -57,6 +59,7 @@ TODO:
 - try to determine the _chemical_absolute_configuration method
 - make extra thread to load platon
 - Checkcif: http://journals.iucr.org/services/cif/checking/validlist.html
+- load pairs and loops, add new content with order, write back
 
 cdic = json.loads(c.as_json())
 [cdic[x]['_name'] for x in cdic.keys() if '_name' in cdic[x]]
@@ -110,7 +113,7 @@ class AppWindow(QMainWindow):
         self.rigakucif = None
         self.ui.SaveCifButton.setIcon(self.style().standardIcon(QStyle.SP_ArrowDown))
         self.ui.CheckcifButton.setIcon(self.style().standardIcon(QStyle.SP_FileDialogDetailedView))
-        self.ui.CheckcifOnlineButton.setIcon(self.style().standardIcon(QStyle.SP_FileDialogDetailedView))
+        self.ui.CheckcifOnlineButton.setIcon(self.style().standardIcon(QStyle.SP_TitleBarNormalButton))
         self.ui.SaveFullReportButton.setIcon(self.style().standardIcon(QStyle.SP_FileDialogListView))
         self.ui.SelectCif_PushButton.setIcon(self.style().standardIcon(QStyle.SP_FileDialogContentsView))
         self.ui.BackPushButton.setIcon(self.style().standardIcon(QStyle.SP_FileDialogBack))
@@ -420,10 +423,10 @@ class AppWindow(QMainWindow):
             self.cif.save(self.fin_file.name)
             self.ui.statusBar.showMessage('  File Saved:  {}'.format(self.fin_file.name), 10000)
             print('File saved ...')
-        except (AttributeError, UnicodeEncodeError) as e:
+        except (AttributeError, UnicodeEncodeError, PermissionError) as e:
             print('Unable to save file:')
             print(e)
-            self.show_general_warning(str(e))
+            self.show_general_warning('Can not save file: ' + str(e))
             return
 
     def display_saved_cif(self):
