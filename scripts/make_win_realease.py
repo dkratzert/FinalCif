@@ -20,7 +20,7 @@ from PyQt5 import uic
 
 from tools.version import VERSION
 
-arg = sys.argv[0]
+arg = sys.argv[1]
 
 
 def disable_debug(filepath: str):
@@ -59,6 +59,8 @@ disable_debug('finalcif.py')
 recompile_ui()
 
 subprocess.run(r""".\venv\Scripts\pyinstaller.exe Finalcif.spec -F --clean""".split())
+
+print(arg)
 
 if arg == 'copy':
     copy_to_remote()
