@@ -21,7 +21,7 @@ from tools.checkcif import MakeCheckCif
 from tools.update import get_current_version
 from tools.version import VERSION
 
-DEBUG = True
+DEBUG = False
 
 if getattr(sys, 'frozen', False):
     # If the application is run as a bundle, the pyInstaller bootloader
