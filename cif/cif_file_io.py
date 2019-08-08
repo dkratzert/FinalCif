@@ -307,14 +307,21 @@ class CifContainer():
         c = self.atomic_struct.cell
         return c.a, c.b, c.c, c.alpha, c.beta, c.gamma, c.volume
 
-    def bonds(self):
+    def bonds(self, without_H: bool = False):
+        """
+        Yields a list of bonds in the cif file.
+        """
         label1 = self.block.find_loop('_geom_bond_atom_site_label_1')
         label2 = self.block.find_loop('_geom_bond_atom_site_label_2')
         dist = self.block.find_loop('_geom_bond_distance')
         symm = self.block.find_loop('_geom_bond_site_symmetry_2')
         publ = self.block.find_loop('_geom_bond_publ_flag')
+        hat = ('H', 'D')
         for label1, label2, dist, symm in zip(label1, label2, dist, symm):
-            yield (label1, label2, dist, symm)
+            if without_H and (label1[0] in hat or label2[0] in hat):
+                continue
+            else:
+                yield (label1, label2, dist, symm)
 
     def angles(self):
         label1 = self.block.find_loop('_geom_angle_atom_site_label_1')

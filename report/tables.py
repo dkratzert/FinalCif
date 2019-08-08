@@ -11,8 +11,6 @@ import sys
 import time
 from pathlib import Path
 
-from report.report_text import CrstalSelection, MachineType, format_radiation, DataReduct, SolveRefine, Hydrogens, \
-    Disorder, CCDC
 from docx import Document
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
@@ -22,6 +20,8 @@ from docx.table import Table, _Cell
 
 from cif.cif_file_io import CifContainer
 from report.mtools import cif_keywords_list, isfloat, this_or_quest
+from report.report_text import CrstalSelection, MachineType, format_radiation, DataReduct, SolveRefine, Hydrogens, \
+    Disorder, CCDC
 from report.symm import SymmetryElement
 
 """
@@ -68,7 +68,7 @@ def format_space_group(table, cif):
     return space_group
 
 
-def make_report_from(file_obj: Path, output_filename: str = None, path: str = ''):
+def make_report_from(file_obj: Path, output_filename: str = None, path: str = '', without_H: bool = False):
     """
     Creates a tabular cif report.
     :param file_obj: Input cif file.
@@ -132,7 +132,7 @@ def make_report_from(file_obj: Path, output_filename: str = None, path: str = ''
     print('coords:', round(t2 - t1, 2), 's')
     document.add_paragraph('')
     t1 = time.perf_counter()
-    table_num = add_bonds_and_angles_table(document, cif, table_num)
+    table_num = add_bonds_and_angles_table(document, cif, table_num, without_H)
     t2 = time.perf_counter()
     print('bonds/ang:', round(t2 - t1, 2), 's')
     t1 = time.perf_counter()
@@ -430,7 +430,7 @@ def add_coords_table(document: Document, cif: CifContainer, table_num: int):
     return table_num
 
 
-def add_bonds_and_angles_table(document: Document, cif: CifContainer, table_num: int):
+def add_bonds_and_angles_table(document: Document, cif: CifContainer, table_num: int, without_H: bool = False):
     """
     Make table with bonds and angles.
     """
@@ -454,7 +454,7 @@ def add_bonds_and_angles_table(document: Document, cif: CifContainer, table_num:
     col1_cells = bond_angle_table.columns[0].cells
     col2_cells = bond_angle_table.columns[1].cells
     rowidx = 1
-    for at1, at2, val, symm2 in cif.bonds():
+    for at1, at2, val, symm2 in cif.bonds(without_H):
         c0, c1 = col1_cells[rowidx], col2_cells[rowidx]
         rowidx += 1
         if symm2 == '.':
