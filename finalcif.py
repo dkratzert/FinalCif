@@ -18,7 +18,7 @@ from report.tables import make_report_from
 from tools.update import get_current_version
 from tools.version import VERSION
 
-DEBUG = False
+DEBUG = True
 
 if getattr(sys, 'frozen', False):
     # If the application is run as a bundle, the pyInstaller bootloader
