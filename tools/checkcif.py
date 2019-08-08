@@ -54,6 +54,7 @@ def get_checkcif():
 
     r = requests.post(url, files=headers, timeout=150)
     #print(r.text)
+    # TODO: need a tempfile here:
     Path(out_file).write_bytes(r.content)
     print('ready')
 
