@@ -13,11 +13,14 @@
 import os
 import shutil
 import subprocess
+import sys
 from pathlib import Path
 
 from PyQt5 import uic
 
 from tools.version import VERSION
+
+arg = sys.argv[0]
 
 
 def disable_debug(filepath: str):
@@ -44,14 +47,19 @@ def recompile_ui():
         raise
 
 
+def copy_to_remote():
+    print('copying file')
+    print(r'dist\FinalCif.exe', r'W:\htdocs\finalcif\FinalCif-v{}.exe'.format(VERSION))
+    shutil.copy(r'dist\FinalCif.exe', r'W:\htdocs\finalcif\FinalCif-v{}.exe'.format(VERSION))
+
+
 disable_debug('finalcif.py')
 
 recompile_ui()
 
 subprocess.run(r""".\venv\Scripts\pyinstaller.exe Finalcif.spec -F --clean""".split())
 
-print('copying file')
+if arg == 'copy':
+    copy_to_remote()
 
-print(r'dist\FinalCif.exe', r'W:\htdocs\finalcif\FinalCif-v{}.exe'.format(VERSION))
-
-shutil.copy(r'dist\FinalCif.exe', r'W:\htdocs\finalcif\FinalCif-v{}.exe'.format(VERSION))
+print('Created version: {}'.format(VERSION))
