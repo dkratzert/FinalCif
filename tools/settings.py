@@ -21,7 +21,7 @@ class FinalCifSettings():
         self.organization = 'DK'
         self.settings = QSettings(self.organization, self.software_name)
         self.settings.setDefaultFormat(QSettings.IniFormat)
-        print(self.settings.fileName())
+        #print(self.settings.fileName())
 
     def save_window_position(self, position: QPoint, size: QSize, maximized: bool):
         self.settings.beginGroup("MainWindow")

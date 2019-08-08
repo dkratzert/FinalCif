@@ -799,8 +799,6 @@ class AppWindow(QMainWindow):
                 pass
         if not cif_key:
             return
-        print(cif_key)
-        print(table_data)
         from gemmi import cif
         doc = cif.Document()
         blockname = '__'.join(selected_row_text.split())
