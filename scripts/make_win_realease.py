@@ -22,6 +22,7 @@ from tools.version import VERSION
 
 arg = sys.argv[0]
 
+
 def disable_debug(filepath: str):
     pth = Path(filepath)
     file = pth.read_text(encoding="UTF-8", errors='ignore').split("\n")
@@ -61,4 +62,4 @@ subprocess.run(r""".\venv\Scripts\pyinstaller.exe Finalcif.spec -F --clean""".sp
 if arg == 'copy':
     copy_to_remote()
 
-
+print('Created version: {}'.format(VERSION))
