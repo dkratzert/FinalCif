@@ -115,11 +115,19 @@ class AppWindow(QMainWindow):
         # Sorting desyncronizes header and columns:
         self.ui.CifItemsTable.setSortingEnabled(False)
         self.load_recent_cifs_list()
-        if get_current_version() > VERSION:
-            self.show_general_warning(
-                r"A newer version of FinalCif is available\n under "
-                r"<a href='https://www.xs3.uni-freiburg.de/research/finalcif'>"
-                r"https://www.xs3.uni-freiburg.de/research/finalcif</a>")
+        try:
+            if get_current_version() > VERSION:
+                self.show_general_warning(
+                    r"A newer version of FinalCif is available\n under "
+                    r"<a href='https://www.xs3.uni-freiburg.de/research/finalcif'>"
+                    r"https://www.xs3.uni-freiburg.de/research/finalcif</a>")
+        except Exception as e:
+            print('Unable to do update check:')
+            print(e)
+            if DEBUG:
+                raise
+            else:
+                pass
 
     def __del__(self):
         print('saving position')
@@ -1057,10 +1065,10 @@ class AppWindow(QMainWindow):
         if not warn_text:
             return
         info = QMessageBox(self).warning(self, ' ', warn_text)
-        #info.setIcon(QMessageBox.Warning)
-        #info.setText(warn_text)
-        #info.show()
-        #info.exec()
+        # info.setIcon(QMessageBox.Warning)
+        # info.setText(warn_text)
+        # info.show()
+        # info.exec()
 
     def check_Z(self):
         """
