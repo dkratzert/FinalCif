@@ -408,11 +408,11 @@ predef_equipment_templ = [{'name' : 'D8 VENTURE',
                            },
                           {'name' : 'Contact author name and address',
                            'items': [
-                               ['_audit_contact_author_name', ''],
-                               ['_audit_contact_author_address', ""],
-                               ['_audit_contact_author_email', ''],
-                               ['_audit_contact_author_phone', ''],
-                               ['_publ_contact_author_id_orcid', ''],
+                               ['_audit_contact_author_name', '?'],
+                               ['_audit_contact_author_address', "?"],
+                               ['_audit_contact_author_email', '?'],
+                               ['_audit_contact_author_phone', '?'],
+                               ['_publ_contact_author_id_orcid', '?'],
                            ]
                            },
                           ]
