@@ -12,9 +12,12 @@ import sys
 from contextlib import suppress
 from pathlib import Path, WindowsPath
 
+from requests import ReadTimeout
+
 from cif.core_dict import cif_core
 from datafiles.rigaku_data import RigakuData
 from report.tables import make_report_from
+from tools.checkcif import MakeCheckCif
 from tools.update import get_current_version
 from tools.version import VERSION
 
@@ -24,9 +27,11 @@ if getattr(sys, 'frozen', False):
     # If the application is run as a bundle, the pyInstaller bootloader
     # extends the sys module by a flag frozen=True and sets the app
     # path into variable _MEIPASS'.
+    os.environ['PATH'] = sys._MEIPASS + os.pathsep + os.environ['PATH']
     application_path = sys._MEIPASS
 else:
     application_path = os.path.dirname(os.path.abspath(__file__))
+
 
 if DEBUG:
     from PyQt5 import uic
@@ -54,6 +59,7 @@ TODO:
 - try to determine the _chemical_absolute_configuration method
 - make extra thread to load platon
 - Checkcif: http://journals.iucr.org/services/cif/checking/validlist.html
+- load pairs and loops, add new content with order, write back
 
 cdic = json.loads(c.as_json())
 [cdic[x]['_name'] for x in cdic.keys() if '_name' in cdic[x]]
@@ -96,6 +102,7 @@ class AppWindow(QMainWindow):
         self.ui.EquipmentEditTableWidget.verticalHeader().hide()
         self.ui.PropertiesEditTableWidget.verticalHeader().hide()
         self.ui.CheckcifButton.setDisabled(True)
+        self.ui.CheckcifOnlineButton.setDisabled(True)
         self.ui.SaveCifButton.setDisabled(True)
         self.cif = None
         self.fin_file = Path()
@@ -106,6 +113,7 @@ class AppWindow(QMainWindow):
         self.rigakucif = None
         self.ui.SaveCifButton.setIcon(self.style().standardIcon(QStyle.SP_ArrowDown))
         self.ui.CheckcifButton.setIcon(self.style().standardIcon(QStyle.SP_FileDialogDetailedView))
+        self.ui.CheckcifOnlineButton.setIcon(self.style().standardIcon(QStyle.SP_TitleBarNormalButton))
         self.ui.SaveFullReportButton.setIcon(self.style().standardIcon(QStyle.SP_FileDialogListView))
         self.ui.SelectCif_PushButton.setIcon(self.style().standardIcon(QStyle.SP_FileDialogContentsView))
         self.ui.BackPushButton.setIcon(self.style().standardIcon(QStyle.SP_FileDialogBack))
@@ -115,11 +123,19 @@ class AppWindow(QMainWindow):
         # Sorting desyncronizes header and columns:
         self.ui.CifItemsTable.setSortingEnabled(False)
         self.load_recent_cifs_list()
-        if get_current_version() > VERSION:
-            self.show_general_warning(
-                r"A newer version of FinalCif is available\n under "
-                r"<a href='https://www.xs3.uni-freiburg.de/research/finalcif'>"
-                r"https://www.xs3.uni-freiburg.de/research/finalcif</a>")
+        try:
+            if get_current_version() > VERSION:
+                self.show_general_warning(
+                    r"A newer version of FinalCif is available\n under "
+                    r"<a href='https://www.xs3.uni-freiburg.de/research/finalcif'>"
+                    r"https://www.xs3.uni-freiburg.de/research/finalcif</a>")
+        except Exception as e:
+            print('Unable to do update check:')
+            print(e)
+            if DEBUG:
+                raise
+            else:
+                pass
 
     def __del__(self):
         print('saving position')
@@ -133,7 +149,8 @@ class AppWindow(QMainWindow):
         """
         self.ui.BackPushButton.clicked.connect(self.back_to_main)
         ##
-        self.ui.CheckcifButton.clicked.connect(self.do_checkcif)
+        self.ui.CheckcifButton.clicked.connect(self.do_offline_checkcif)
+        self.ui.CheckcifOnlineButton.clicked.connect(self.do_online_checkcif)
         self.ui.BacktoMainpushButton.clicked.connect(self.back_to_main)
         ##
         self.ui.SelectCif_PushButton.clicked.connect(self.load_cif_file)
@@ -207,7 +224,21 @@ class AppWindow(QMainWindow):
         """
         self.ui.MainStackedWidget.setCurrentIndex(0)
 
-    def do_checkcif(self):
+    def do_online_checkcif(self):
+        """
+        Performs an online checkcif via checkcif.iucr.org.
+        """
+        self.save_current_cif_file()
+        try:
+            MakeCheckCif(self, self.fin_file, Path('checkcif-' + self.cif.fileobj.stem + '.html'))
+        except ReadTimeout:
+            self.show_general_warning(r"The check took too long. Try it at"
+                                      r" <a href='https://checkcif.iucr.org/'>https://checkcif.iucr.org/</a> directly.")
+        except Exception as e:
+            print('Can not do checkcif:')
+            print(e)
+
+    def do_offline_checkcif(self):
         """
         Performs a checkcif with platon and displays it in the text editor of the MainStackedWidget.
         """
@@ -392,10 +423,10 @@ class AppWindow(QMainWindow):
             self.cif.save(self.fin_file.name)
             self.ui.statusBar.showMessage('  File Saved:  {}'.format(self.fin_file.name), 10000)
             print('File saved ...')
-        except (AttributeError, UnicodeEncodeError) as e:
+        except (AttributeError, UnicodeEncodeError, PermissionError) as e:
             print('Unable to save file:')
             print(e)
-            self.show_general_warning(str(e))
+            self.show_general_warning('Can not save file: ' + str(e))
             return
 
     def display_saved_cif(self):
@@ -791,8 +822,6 @@ class AppWindow(QMainWindow):
                 pass
         if not cif_key:
             return
-        print(cif_key)
-        print(table_data)
         from gemmi import cif
         doc = cif.Document()
         blockname = '__'.join(selected_row_text.split())
@@ -999,6 +1028,7 @@ class AppWindow(QMainWindow):
             not_ok = e
             self.unable_to_open_message(filepath, not_ok)
         self.ui.CheckcifButton.setEnabled(True)
+        self.ui.CheckcifOnlineButton.setEnabled(True)
         self.ui.SaveCifButton.setEnabled(True)
         # self.ui.EquipmentTemplatesListWidget.setCurrentRow(-1)  # Has to he in front in order to work
         # self.ui.EquipmentTemplatesListWidget.setCurrentRow(self.settings.load_last_equipment())
@@ -1057,10 +1087,10 @@ class AppWindow(QMainWindow):
         if not warn_text:
             return
         info = QMessageBox(self).warning(self, ' ', warn_text)
-        #info.setIcon(QMessageBox.Warning)
-        #info.setText(warn_text)
-        #info.show()
-        #info.exec()
+        # info.setIcon(QMessageBox.Warning)
+        # info.setText(warn_text)
+        # info.show()
+        # info.exec()
 
     def check_Z(self):
         """
