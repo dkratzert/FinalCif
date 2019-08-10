@@ -60,6 +60,9 @@ TODO:
 - make extra thread to load platon
 - Checkcif: http://journals.iucr.org/services/cif/checking/validlist.html
 - load pairs and loops, add new content with order, write back
+- Add to report: Atom names with uderscres define atoms in residues. 
+  These atoms are uniquely defined by their residue number after the underscore.
+
 
 c = CifContainer(Path('test-data/DK_zucker2_0m-finalcif.cif'))
 cdic = json.loads(c.as_json())
