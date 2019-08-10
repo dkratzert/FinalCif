@@ -61,12 +61,20 @@ TODO:
 - Checkcif: http://journals.iucr.org/services/cif/checking/validlist.html
 - load pairs and loops, add new content with order, write back
 
+c = CifContainer(Path('test-data/DK_zucker2_0m-finalcif.cif'))
 cdic = json.loads(c.as_json())
 [cdic[x]['_name'] for x in cdic.keys() if '_name' in cdic[x]]
 
 as dict:
 {str(cdic[x]['_name']): ' '.join(cdic[x]['_definition'].split()) for x in cdic.keys() if '_name' in cdic[x]}
 
+for item in c.block:
+    if item.line_number < 670:
+        if item.pair is not None:
+            print('pair', item.pair)
+        elif item.loop is not None:
+            print('loop', item.loop)
+            print([c.block.find_values(x) for x in item.loop.tags])
 """
 light_green = QColor(217, 255, 201)
 blue = QColor(102, 150, 179)
