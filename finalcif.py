@@ -214,7 +214,7 @@ class AppWindow(QMainWindow):
         if version > VERSION:
             print('Version {} is outdated (actual is {}).'.format(version, VERSION))
             self.show_general_warning(
-                r"A newer version of FinalCif is available\n under "
+                r"A newer version of FinalCif is available under "
                 r"<a href='https://www.xs3.uni-freiburg.de/research/finalcif'>"
                 r"https://www.xs3.uni-freiburg.de/research/finalcif</a>")
 
