@@ -206,7 +206,7 @@ class AppWindow(QMainWindow):
         """
         Reads the reply from the server and displays a warning in case of an old version.
         """
-        version = 99999
+        version = 0
         try:
             version = int(bytes(reply.readAll()).decode('ascii', 'ignore'))
         except Exception:
