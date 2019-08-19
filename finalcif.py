@@ -12,13 +12,14 @@ import sys
 from contextlib import suppress
 from pathlib import Path, WindowsPath
 
+from PyQt5.QtNetwork import QNetworkRequest, QNetworkAccessManager, QNetworkReply
 from requests import ReadTimeout
 
 from cif.core_dict import cif_core
 from datafiles.rigaku_data import RigakuData
 from report.tables import make_report_from
 from tools.checkcif import MakeCheckCif
-from tools.update import get_current_version
+from tools.update import mainurl
 from tools.version import VERSION
 
 DEBUG = False
@@ -40,7 +41,7 @@ if DEBUG:
     uic.compileUiDir(os.path.join(application_path, './gui'))
     # uic.compileUi('./gui/finalcif_gui.ui', open('./gui/finalcif_gui.py', 'w'))
 
-from PyQt5.QtCore import QPoint, Qt
+from PyQt5.QtCore import QPoint, Qt, QUrl
 from PyQt5.QtGui import QColor, QFont, QIcon, QPalette
 from PyQt5.QtWidgets import QApplication, QComboBox, QFileDialog, QHeaderView, QListWidget, QListWidgetItem, \
     QMainWindow, QMessageBox, QPlainTextEdit, QSizePolicy, QStackedWidget, QStyle, QTableWidget, QTableWidgetItem
@@ -61,12 +62,21 @@ TODO:
 - Checkcif: http://journals.iucr.org/services/cif/checking/validlist.html
 - load pairs and loops, add new content with order, write back
 
+
+c = CifContainer(Path('test-data/DK_zucker2_0m-finalcif.cif'))
 cdic = json.loads(c.as_json())
 [cdic[x]['_name'] for x in cdic.keys() if '_name' in cdic[x]]
 
 as dict:
 {str(cdic[x]['_name']): ' '.join(cdic[x]['_definition'].split()) for x in cdic.keys() if '_name' in cdic[x]}
 
+for item in c.block:
+    if item.line_number < 670:
+        if item.pair is not None:
+            print('pair', item.pair)
+        elif item.loop is not None:
+            print('loop', item.loop)
+            print([c.block.find_values(x) for x in item.loop.tags])
 """
 light_green = QColor(217, 255, 201)
 blue = QColor(102, 150, 179)
@@ -123,19 +133,9 @@ class AppWindow(QMainWindow):
         # Sorting desyncronizes header and columns:
         self.ui.CifItemsTable.setSortingEnabled(False)
         self.load_recent_cifs_list()
-        try:
-            if get_current_version() > VERSION:
-                self.show_general_warning(
-                    r"A newer version of FinalCif is available\n under "
-                    r"<a href='https://www.xs3.uni-freiburg.de/research/finalcif'>"
-                    r"https://www.xs3.uni-freiburg.de/research/finalcif</a>")
-        except Exception as e:
-            print('Unable to do update check:')
-            print(e)
-            if DEBUG:
-                raise
-            else:
-                pass
+        self.netman = QNetworkAccessManager()
+        self.netman.finished.connect(self.show_update_warning)
+        self.checkfor_version()
 
     def __del__(self):
         print('saving position')
@@ -196,6 +196,27 @@ class AppWindow(QMainWindow):
         view.sectionClicked.connect(self.vheader_section_click)
         ###
         self.ui.RecentComboBox.currentIndexChanged.connect(self.load_recent_file)
+
+    def checkfor_version(self):
+        url = QUrl(mainurl+'version.txt')
+        req = QNetworkRequest(url)
+        self.netman.get(req)
+
+    def show_update_warning(self, reply: QNetworkReply):
+        """
+        Reads the reply from the server and displays a warning in case of an old version.
+        """
+        version = 99999
+        try:
+            version = int(bytes(reply.readAll()).decode('ascii', 'ignore'))
+        except Exception:
+            pass
+        if version > VERSION:
+            print('Version {} is outdated (actual is {}).'.format(version, VERSION))
+            self.show_general_warning(
+                r"A newer version of FinalCif is available\n under "
+                r"<a href='https://www.xs3.uni-freiburg.de/research/finalcif'>"
+                r"https://www.xs3.uni-freiburg.de/research/finalcif</a>")
 
     def dragEnterEvent(self, e):
         if e.mimeData().hasText():
