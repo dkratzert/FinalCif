@@ -5,12 +5,16 @@
 #  and you think this stuff is worth it, you can buy me a beer in return.
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
+
+import subprocess
+from html.parser import HTMLParser
 from pathlib import Path
 
 import requests
 from PyQt5.QtCore import QUrl, QPoint
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtWidgets import QMainWindow
+from requests.exceptions import MissingSchema
 
 
 class WebPage(QWebEngineView):
@@ -35,14 +39,14 @@ class MakeCheckCif():
         self.parent = parent
         # _, self.out_file = mkstemp(suffix='.html')
         self.out_file = outfile
-        self.show_report_window(cif)
+        self.cifobj = cif
 
-    def get_checkcif(self, file_name: str, out_file: Path, pdf=False):
+    def _get_checkcif(self, out_file: Path, pdf=True):
         """
         Requests a checkcif run from IUCr servers.
         #TODO: parse output to get the pdf file directly.
         """
-        f = open(file_name, 'rb')
+        f = open(str(self.cifobj.absolute()), 'rb')
         if pdf:
             report_type = 'PDF'
         else:
@@ -65,8 +69,8 @@ class MakeCheckCif():
         print('ready')
         return out_file
 
-    def show_report_window(self, cif):
-        self.get_checkcif(cif.absolute(), self.out_file)
+    def show_html_report(self):
+        self._get_checkcif(self.out_file, pdf=False)
         app = QMainWindow(self.parent)
         web = WebPage(self.out_file)
         app.setCentralWidget(web)
@@ -77,8 +81,52 @@ class MakeCheckCif():
         app.move(QPoint(100, 50))
         web.show()
 
+    def _open_pdf_result(self, html_result: Path):
+        parser = MyHTMLParser()
+        # the link to the pdf file resides in this html file:
+        parser.feed(html_result.read_text())
+        try:
+            pdf = parser.get_pdf()
+        except MissingSchema:
+            print('Link is not valid anymore...')
+            pdf = None
+        if pdf:
+            pdfobj = Path('checkcif-' + self.cifobj.stem + '.pdf')
+            pdfobj.write_bytes(pdf)
+            subprocess.Popen([str(pdfobj.absolute())], shell=True)
+
+    def show_pdf_report(self):
+        html = self._get_checkcif(self.out_file, pdf=True)
+        self._open_pdf_result(html)
+
+
+class MyHTMLParser(HTMLParser):
+    def __init__(self):
+        self.link = ''
+        super(MyHTMLParser, self).__init__()
+        self.pdf = ''
+
+    def get_pdf(self):
+        return requests.get(self.link).content
+
+    def handle_starttag(self, tag, attrs):
+        if tag == "a":
+            if len(attrs) > 1 and attrs[0][1] == '_blank':
+                self.link = attrs[1][1]
+
+
+
+
 
 if __name__ == "__main__":
+    cif = Path(r'D:\frames\guest\BreitPZ_R_122\BreitPZ_R_122\BreitPZ_R_122_0m_a-finalcif.cif')
+    html = Path(r'D:\frames\guest\BreitPZ_R_122\BreitPZ_R_122\checkcif-test.html')
+    ckf = MakeCheckCif(None, cif, outfile=html)
+    ckf.show_pdf_report()
+    #html = Path(r'D:\frames\guest\BreitPZ_R_122\BreitPZ_R_122\checkcif-BreitPZ_R_122_0m_a.html')
+    #open_pdf_result(Path(r'D:\frames\guest\BreitPZ_R_122\BreitPZ_R_122\BreitPZ_R_122_0m_a-finalcif.cif'), html)
+    # Path(d:\tmp\
+    # print(parser.pdf)
     # outfile = get_checkcif('test-data/p21c.cif')
     # app = QApplication(sys.argv)
     # web = WebPage(outfile)
