@@ -37,24 +37,29 @@ class MakeCheckCif():
         self.out_file = outfile
         self.show_report_window(cif)
 
-    def get_checkcif(self, file_name: str, out_file: Path):
+    def get_checkcif(self, file_name: str, out_file: Path, pdf=False):
         """
         Requests a checkcif run from IUCr servers.
+        #TODO: parse output to get the pdf file directly.
         """
         f = open(file_name, 'rb')
-
+        if pdf:
+            report_type = 'PDF'
+        else:
+            report_type = 'HTML'
         headers = {
-            "file"      : f,  # Path(file_name).open(),  # .read_text(encoding='ascii'),
             "runtype"   : "symmonly",
             "referer"   : "checkcif_server",
-            "outputtype": 'HTML',
-            "validtype" : "checkcif_only",
+            "outputtype": report_type,
+            # "validtype" : "checkcif_only", # or 
+            "validtype" : "checkcif_with_hkl",
+            "valout"    : 'vrfab',
             # "valout"    : 'vrfno',
             # "UPLOAD"    : 'submit',
         }
         print('Report request sent')
         url = 'https://checkcif.iucr.org/cgi-bin/checkcif_hkl.pl'
-        r = requests.post(url, files=headers, timeout=150)
+        r = requests.post(url, files={'file': f}, data=headers, timeout=150)
         out_file.write_bytes(r.content)
         f.close()
         print('ready')
@@ -85,11 +90,11 @@ if __name__ == "__main__":
     # except PermissionError:
     #    print('can not delete 1')
 
-    #outfile = get_checkcif('test-data/p21c.cif')
-    #app = QWindow()
-    #web = WebPage(outfile)
-    #web.show()
-    #app.setWidth(500)
-    #app.exec_()
-    #web.close()
+    # outfile = get_checkcif('test-data/p21c.cif')
+    # app = QWindow()
+    # web = WebPage(outfile)
+    # web.show()
+    # app.setWidth(500)
+    # app.exec_()
+    # web.close()
     pass

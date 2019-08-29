@@ -56,6 +56,9 @@ from tools.settings import FinalCifSettings
 """
 TODO:
 - make tab key go down one row
+- collect 
+    <img width=792 src="http://checkcif.iucr.org/tmp/082919103807370275000/platon_Ite.gif">
+    from checkcif.html for report
 - add button for zip file with cif, report and checkcif pdf
 - try to determine the _chemical_absolute_configuration method
 - make extra thread to load platon
