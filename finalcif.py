@@ -116,6 +116,7 @@ class AppWindow(QMainWindow):
         self.ui.PropertiesEditTableWidget.verticalHeader().hide()
         self.ui.CheckcifButton.setDisabled(True)
         self.ui.CheckcifOnlineButton.setDisabled(True)
+        self.ui.CheckcifPDFOnlineButton.setDisabled(True)
         self.ui.SaveCifButton.setDisabled(True)
         self.cif = None
         self.fin_file = Path()
@@ -127,6 +128,7 @@ class AppWindow(QMainWindow):
         self.ui.SaveCifButton.setIcon(self.style().standardIcon(QStyle.SP_ArrowDown))
         self.ui.CheckcifButton.setIcon(self.style().standardIcon(QStyle.SP_FileDialogDetailedView))
         self.ui.CheckcifOnlineButton.setIcon(self.style().standardIcon(QStyle.SP_TitleBarNormalButton))
+        self.ui.CheckcifPDFOnlineButton.setIcon(self.style().standardIcon(QStyle.SP_TitleBarNormalButton))
         self.ui.SaveFullReportButton.setIcon(self.style().standardIcon(QStyle.SP_FileDialogListView))
         self.ui.SelectCif_PushButton.setIcon(self.style().standardIcon(QStyle.SP_FileDialogContentsView))
         self.ui.BackPushButton.setIcon(self.style().standardIcon(QStyle.SP_FileDialogBack))
@@ -153,7 +155,8 @@ class AppWindow(QMainWindow):
         self.ui.BackPushButton.clicked.connect(self.back_to_main)
         ##
         self.ui.CheckcifButton.clicked.connect(self.do_offline_checkcif)
-        self.ui.CheckcifOnlineButton.clicked.connect(self.do_online_checkcif)
+        self.ui.CheckcifOnlineButton.clicked.connect(self.do_html_checkcif)
+        self.ui.CheckcifPDFOnlineButton.clicked.connect(self.do_pdf_checkcif)
         self.ui.BacktoMainpushButton.clicked.connect(self.back_to_main)
         ##
         self.ui.SelectCif_PushButton.clicked.connect(self.load_cif_file)
@@ -248,13 +251,29 @@ class AppWindow(QMainWindow):
         """
         self.ui.MainStackedWidget.setCurrentIndex(0)
 
-    def do_online_checkcif(self):
+    def do_html_checkcif(self):
         """
         Performs an online checkcif via checkcif.iucr.org.
         """
         self.save_current_cif_file()
         try:
-            MakeCheckCif(self, self.fin_file, Path('checkcif-' + self.cif.fileobj.stem + '.html'))
+            ckf = MakeCheckCif(self, self.fin_file, Path('checkcif-' + self.cif.fileobj.stem + '.html'))
+            ckf.show_html_report()
+        except ReadTimeout:
+            self.show_general_warning(r"The check took too long. Try it at"
+                                      r" <a href='https://checkcif.iucr.org/'>https://checkcif.iucr.org/</a> directly.")
+        except Exception as e:
+            print('Can not do checkcif:')
+            print(e)
+
+    def do_pdf_checkcif(self):
+        """
+        Performs an online checkcif and shows the result as pdf.
+        """
+        self.save_current_cif_file()
+        try:
+            ckf = MakeCheckCif(None, self.fin_file, outfile=Path('checkcif-' + self.cif.fileobj.stem + '.html'))
+            ckf.show_pdf_report()
         except ReadTimeout:
             self.show_general_warning(r"The check took too long. Try it at"
                                       r" <a href='https://checkcif.iucr.org/'>https://checkcif.iucr.org/</a> directly.")
@@ -1053,6 +1072,7 @@ class AppWindow(QMainWindow):
             self.unable_to_open_message(filepath, not_ok)
         self.ui.CheckcifButton.setEnabled(True)
         self.ui.CheckcifOnlineButton.setEnabled(True)
+        self.ui.CheckcifPDFOnlineButton.setEnabled(True)
         self.ui.SaveCifButton.setEnabled(True)
         # self.ui.EquipmentTemplatesListWidget.setCurrentRow(-1)  # Has to he in front in order to work
         # self.ui.EquipmentTemplatesListWidget.setCurrentRow(self.settings.load_last_equipment())
