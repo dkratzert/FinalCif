@@ -118,6 +118,7 @@ class AppWindow(QMainWindow):
         self.ui.CheckcifOnlineButton.setDisabled(True)
         self.ui.CheckcifPDFOnlineButton.setDisabled(True)
         self.ui.SaveCifButton.setDisabled(True)
+        self.ui.ExploreDirButton.setDisabled(True)
         self.cif = None
         self.fin_file = Path()
         self.missing_data = []
@@ -226,11 +227,16 @@ class AppWindow(QMainWindow):
                 r"https://www.xs3.uni-freiburg.de/research/finalcif</a>".format(remote_version))
 
     def explore_dir(self):
-        curdir = self.cif.fileobj.absolute().parent
+        try:
+            curdir = self.cif.fileobj.absolute().parent
+        except AttributeError:
+            return 
         if sys.platform == "win" or sys.platform == "win32":
-            subprocess.Popen([str(curdir)], shell=True)
+            subprocess.Popen(['explorer', str(curdir)], shell=True)
         if sys.platform == 'darwin':
             subprocess.call(['open', curdir])
+        if sys.platform == 'linux':
+            subprocess.call(['xdg-open', curdir])
 
     def dragEnterEvent(self, e):
         if e.mimeData().hasText():
@@ -1100,6 +1106,7 @@ class AppWindow(QMainWindow):
         self.ui.CheckcifOnlineButton.setEnabled(True)
         self.ui.CheckcifPDFOnlineButton.setEnabled(True)
         self.ui.SaveCifButton.setEnabled(True)
+        self.ui.ExploreDirButton.setEnabled(True)
         # self.ui.EquipmentTemplatesListWidget.setCurrentRow(-1)  # Has to he in front in order to work
         # self.ui.EquipmentTemplatesListWidget.setCurrentRow(self.settings.load_last_equipment())
 
