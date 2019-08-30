@@ -221,9 +221,9 @@ class AppWindow(QMainWindow):
         if remote_version > VERSION:
             print('Version {} is outdated (actual is {}).'.format(VERSION, remote_version))
             self.show_general_warning(
-                r"A newer version of FinalCif is available under "
+                r"A newer version {} of FinalCif is available under "
                 r"<a href='https://www.xs3.uni-freiburg.de/research/finalcif'>"
-                r"https://www.xs3.uni-freiburg.de/research/finalcif</a>")
+                r"https://www.xs3.uni-freiburg.de/research/finalcif</a>".format(remote_version))
 
     def explore_dir(self):
         curdir = self.cif.fileobj.absolute().parent
