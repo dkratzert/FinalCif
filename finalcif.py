@@ -18,7 +18,7 @@ from requests import ReadTimeout
 from cif.core_dict import cif_core
 from datafiles.rigaku_data import RigakuData
 from report.tables import make_report_from
-from tools.checkcif import MakeCheckCif
+from tools.checkcif import MakeCheckCif, MyHTMLParser
 from tools.update import mainurl
 from tools.version import VERSION
 
@@ -58,9 +58,6 @@ TODO:
 - make tab key go down one row
 - 
 - option for default directory?
-- collect 
-    <img width=792 src="http://checkcif.iucr.org/tmp/082919103807370275000/platon_Ite.gif">
-    from checkcif.html for report
 - add button for zip file with cif, report and checkcif pdf
 - try to determine the _chemical_absolute_configuration method
 - Checkcif: http://journals.iucr.org/services/cif/checking/validlist.html
@@ -286,6 +283,12 @@ class AppWindow(QMainWindow):
         except Exception as e:
             print('Can not do checkcif:')
             print(e)
+            return
+        imageobj = Path(self.cif.fileobj.stem + '-finalcif.gif')
+        parser = MyHTMLParser()
+        parser.feed(htmlfile.read_text())
+        gif = parser.get_image()
+        imageobj.write_bytes(gif)
         self.ui.statusBar.showMessage('Report finished.')
 
     def do_pdf_checkcif(self):
@@ -395,6 +398,8 @@ class AppWindow(QMainWindow):
                 make_report_from(self.fin_file, path=application_path, output_filename=output_filename,
                                  without_H=self.ui.HAtomsCheckBox.isChecked())
             except FileNotFoundError as e:
+                if DEBUG:
+                    raise 
                 print('Unable to open cif file')
                 not_ok = e
                 self.unable_to_open_message(self.cif.fileobj, not_ok)

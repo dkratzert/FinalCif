@@ -21,10 +21,8 @@ from requests.exceptions import MissingSchema
 class WebPage(QWebEngineView):
     def __init__(self, file: Path):
         QWebEngineView.__init__(self)
-        # self.load(QUrl("https://checkcif.iucr.org/"))
         self.url = QUrl.fromLocalFile(str(file.absolute()))
         self.load(self.url)
-        # self.loadFinished.connect(self._on_load_finished)
 
     def _on_load_finished(self):
         self.page().toHtml(self.Callable)
@@ -36,13 +34,13 @@ class WebPage(QWebEngineView):
 
 class MakeCheckCif():
 
-    def __init__(self, parent: 'AppWindow', cif: Path, outfile: Path):
+    def __init__(self, parent, cif: Path, outfile: Path):
         self.parent = parent
         # _, self.out_file = mkstemp(suffix='.html')
-        self.out_file = outfile
+        self.html_out_file = outfile
         self.cifobj = cif
 
-    def _get_checkcif(self, out_file: Path, pdf=True):
+    def _get_checkcif(self, pdf=True):
         """
         Requests a checkcif run from IUCr servers.
         """
@@ -67,18 +65,17 @@ class MakeCheckCif():
         print('Report request sent')
         url = 'https://checkcif.iucr.org/cgi-bin/checkcif_hkl.pl'
         r = requests.post(url, files={'file': f}, data=headers, timeout=150)
-        out_file.write_bytes(r.content)
+        self.html_out_file.write_bytes(r.content)
         f.close()
         print('ready')
-        return out_file
 
     def show_html_report(self):
         """
         Shows the html result of checkcif in a webengine window.
         """
-        self._get_checkcif(self.out_file, pdf=False)
+        self._get_checkcif(pdf=False)
         app = QMainWindow(self.parent)
-        web = WebPage(self.out_file)
+        web = WebPage(self.html_out_file)
         app.setCentralWidget(web)
         app.setBaseSize(900, 900)
         app.show()
@@ -87,13 +84,13 @@ class MakeCheckCif():
         app.move(QPoint(100, 50))
         web.show()
 
-    def _open_pdf_result(self, html_result: Path):
+    def _open_pdf_result(self):
         """
         Opens the resulkting pdf file in the systems pdf viewer.
         """
         parser = MyHTMLParser()
         # the link to the pdf file resides in this html file:
-        parser.feed(html_result.read_text())
+        parser.feed(self.html_out_file.read_text())
         try:
             pdf = parser.get_pdf()
         except MissingSchema:
@@ -108,13 +105,14 @@ class MakeCheckCif():
                 subprocess.call(['open', str(pdfobj.absolute())])
 
     def show_pdf_report(self):
-        html = self._get_checkcif(self.out_file, pdf=True)
-        self._open_pdf_result(html)
+        self._get_checkcif(pdf=True)
+        self._open_pdf_result()
 
 
 class MyHTMLParser(HTMLParser):
     def __init__(self):
         self.link = ''
+        self.imageurl = ''
         super(MyHTMLParser, self).__init__()
         self.pdf = ''
 
@@ -125,14 +123,29 @@ class MyHTMLParser(HTMLParser):
         if tag == "a":
             if len(attrs) > 1 and attrs[0][1] == '_blank':
                 self.link = attrs[1][1]
+        if tag == "img":
+            if len(attrs) > 1:
+                if attrs[0][0] == 'width':
+                    self.imageurl = attrs[1][1]
 
+    def get_image(self):
+        try:
+            return requests.get(self.imageurl).content
+        except MissingSchema:
+            return b''
 
 if __name__ == "__main__":
     cif = Path(r'D:\frames\guest\BreitPZ_R_122\BreitPZ_R_122\BreitPZ_R_122_0m_a-finalcif.cif')
-    html = Path(r'D:\frames\guest\BreitPZ_R_122\BreitPZ_R_122\checkcif-test.html')
-    ckf = MakeCheckCif(None, cif, outfile=html)
-    ckf.show_pdf_report()
+    html = Path(r'D:\GitHub\FinalCif\test-data\checkcif-DK_zucker2_0m.html')
+    #ckf = MakeCheckCif(None, cif, outfile=html)
+    #ckf.show_pdf_report()
     # html = Path(r'D:\frames\guest\BreitPZ_R_122\BreitPZ_R_122\checkcif-BreitPZ_R_122_0m_a.html')
+    
+    parser = MyHTMLParser()
+    parser.feed(html.read_text())
+    image = parser.get_image()
+    print(image)
+    
     # open_pdf_result(Path(r'D:\frames\guest\BreitPZ_R_122\BreitPZ_R_122\BreitPZ_R_122_0m_a-finalcif.cif'), html)
     # Path(d:\tmp\
     # print(parser.pdf)
