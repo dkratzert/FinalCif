@@ -150,3 +150,5 @@ test-data/406äöü0310-finalcif.cif
 test-data/report_DK_zucker2_0m.docx
 *.html
 test-data/DK_ML7-66-final-finalcif.cif
+test-data/checkcif-DK_ML7-66-final-finalcif.pdf
+test-data/checkcif-DK_zucker2_0m-finalcif.pdf
