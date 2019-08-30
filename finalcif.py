@@ -213,13 +213,13 @@ class AppWindow(QMainWindow):
         """
         Reads the reply from the server and displays a warning in case of an old version.
         """
-        version = 0
+        remote_version = 0
         try:
-            version = int(bytes(reply.readAll()).decode('ascii', 'ignore'))
+            remote_version = int(bytes(reply.readAll()).decode('ascii', 'ignore'))
         except Exception:
             pass
-        if version > VERSION:
-            print('Version {} is outdated (actual is {}).'.format(version, VERSION))
+        if remote_version > VERSION:
+            print('Version {} is outdated (actual is {}).'.format(VERSION, remote_version))
             self.show_general_warning(
                 r"A newer version of FinalCif is available under "
                 r"<a href='https://www.xs3.uni-freiburg.de/research/finalcif'>"
