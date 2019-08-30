@@ -263,6 +263,7 @@ class AppWindow(QMainWindow):
         """
         Performs an online checkcif via checkcif.iucr.org.
         """
+        self.ui.statusBar.showMessage('Sending html report request...')
         self.save_current_cif_file()
         htmlfile = Path('checkcif-' + self.cif.fileobj.stem + '.html')
         try:
@@ -278,13 +279,15 @@ class AppWindow(QMainWindow):
         except Exception as e:
             print('Can not do checkcif:')
             print(e)
+        self.ui.statusBar.showMessage('Report finished.')
 
     def do_pdf_checkcif(self):
         """
         Performs an online checkcif and shows the result as pdf.
         """
+        self.ui.statusBar.showMessage('Sending pdf report request...')
         self.save_current_cif_file()
-        htmlfile = Path('checkcif-' + self.cif.fileobj.stem + '.html')
+        htmlfile = Path('checkpdf-' + self.cif.fileobj.stem + '.html')
         try:
             htmlfile.unlink()
         except FileNotFoundError:
@@ -298,6 +301,11 @@ class AppWindow(QMainWindow):
         except Exception as e:
             print('Can not do checkcif:')
             print(e)
+        self.ui.statusBar.showMessage('Report finished.')
+        try:
+            htmlfile.unlink()
+        except FileNotFoundError:
+            pass
 
     def do_offline_checkcif(self):
         """
