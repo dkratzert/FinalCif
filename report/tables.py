@@ -21,7 +21,7 @@ from docx.table import Table, _Cell
 from cif.cif_file_io import CifContainer
 from report.mtools import cif_keywords_list, isfloat, this_or_quest
 from report.report_text import CrstalSelection, MachineType, format_radiation, DataReduct, SolveRefine, Hydrogens, \
-    Disorder, CCDC
+    Disorder, CCDC, Crystallization
 from report.symm import SymmetryElement
 
 """
@@ -108,8 +108,15 @@ def make_report_from(file_obj: Path, output_filename: str = None, path: str = ''
     else:
         raise FileNotFoundError
 
+    # The picture after the header:
+    picfile = Path(file_obj.stem + '.gif')
+    if picfile.exists():
+        pic = document.add_paragraph()
+        pic.add_run().add_picture(str(picfile), width=Cm(7))
+
     p_report = document.add_paragraph()
     p_report.add_run('The following text is only a suggestion: ').font.bold = True
+    Crystallization(cif, p_report)
     CrstalSelection(cif, p_report)
     MachineType(cif, p_report)
     DataReduct(cif, p_report)
@@ -435,9 +442,12 @@ def add_bonds_and_angles_table(document: Document, cif: CifContainer, table_num:
     Make table with bonds and angles.
     """
     table_num += 1
-    headline = r"Table {}. Bond lengths and angles for {}.".format(table_num, cif.fileobj.name)
+    ridehtext = ''
+    if without_H:
+        ridehtext = " Bonds to riding hydrogen atoms were omitted."
+    headline = r"Table {}. Bond lengths and angles for {}.{}".format(table_num, cif.fileobj.name, ridehtext)
     document.add_heading(headline, 2)
-    nbonds = len(list(cif.bonds()))
+    nbonds = len(list(cif.bonds(without_H)))
     nangles = len(list(cif.angles()))
     # creating rows before is *much* faster!
     bond_angle_table = document.add_table(rows=nbonds + nangles + 3, cols=2, style='Table Grid')
