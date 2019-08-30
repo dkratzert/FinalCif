@@ -56,12 +56,13 @@ from tools.settings import FinalCifSettings
 """
 TODO:
 - make tab key go down one row
+- 
+- option for default directory?
 - collect 
     <img width=792 src="http://checkcif.iucr.org/tmp/082919103807370275000/platon_Ite.gif">
     from checkcif.html for report
 - add button for zip file with cif, report and checkcif pdf
 - try to determine the _chemical_absolute_configuration method
-- make extra thread to load platon
 - Checkcif: http://journals.iucr.org/services/cif/checking/validlist.html
 - load pairs and loops, add new content with order, write back
 

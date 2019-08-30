@@ -50,8 +50,10 @@ class MakeCheckCif():
         f = open(str(self.cifobj.absolute()), 'rb')
         if pdf:
             report_type = 'PDF'
+            vrf = 'vrfno'
         else:
             report_type = 'HTML'
+            vrf = 'vrfab'
         if self.parent.cif.block.find_value('_shelx_hkl_file'):
             hkl = 'checkcif_with_hkl'
         else:
@@ -61,9 +63,7 @@ class MakeCheckCif():
             "referer"   : "checkcif_server",
             "outputtype": report_type,
             "validtype" : hkl,
-            "valout"    : 'vrfab',
-            # "valout"    : 'vrfno',
-            # "UPLOAD"    : 'submit',
+            "valout"    : vrf,
         }
         print('Report request sent')
         url = 'https://checkcif.iucr.org/cgi-bin/checkcif_hkl.pl'
