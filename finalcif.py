@@ -56,7 +56,7 @@ from tools.settings import FinalCifSettings
 """
 TODO:
 - make tab key go down one row
-- 
+- Add one picture of the vzs file
 - option for default directory?
 - add button for zip file with cif, report and checkcif pdf
 - try to determine the _chemical_absolute_configuration method
