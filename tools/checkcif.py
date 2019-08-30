@@ -45,7 +45,6 @@ class MakeCheckCif():
     def _get_checkcif(self, out_file: Path, pdf=True):
         """
         Requests a checkcif run from IUCr servers.
-        #TODO: parse output to get the pdf file directly.
         """
         f = open(str(self.cifobj.absolute()), 'rb')
         if pdf:
@@ -74,6 +73,9 @@ class MakeCheckCif():
         return out_file
 
     def show_html_report(self):
+        """
+        Shows the html result of checkcif in a webengine window.
+        """
         self._get_checkcif(self.out_file, pdf=False)
         app = QMainWindow(self.parent)
         web = WebPage(self.out_file)
@@ -86,6 +88,9 @@ class MakeCheckCif():
         web.show()
 
     def _open_pdf_result(self, html_result: Path):
+        """
+        Opens the resulkting pdf file in the systems pdf viewer.
+        """
         parser = MyHTMLParser()
         # the link to the pdf file resides in this html file:
         parser.feed(html_result.read_text())
