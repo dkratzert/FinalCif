@@ -7,11 +7,12 @@
 #  ----------------------------------------------------------------------------
 
 import subprocess
+import sys
 from html.parser import HTMLParser
 from pathlib import Path
 
 import requests
-from PyQt5.QtCore import QUrl, QPoint
+from PyQt5.QtCore import QPoint, QUrl
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtWidgets import QMainWindow
 from requests.exceptions import MissingSchema
@@ -35,7 +36,7 @@ class WebPage(QWebEngineView):
 
 class MakeCheckCif():
 
-    def __init__(self, parent, cif: Path, outfile: Path):
+    def __init__(self, parent: 'AppWindow', cif: Path, outfile: Path):
         self.parent = parent
         # _, self.out_file = mkstemp(suffix='.html')
         self.out_file = outfile
@@ -51,12 +52,15 @@ class MakeCheckCif():
             report_type = 'PDF'
         else:
             report_type = 'HTML'
+        if self.parent.cif.block.find_value('_shelx_hkl_file'):
+            hkl = 'checkcif_with_hkl'
+        else:
+            hkl = 'checkcif_only'
         headers = {
             "runtype"   : "symmonly",
             "referer"   : "checkcif_server",
             "outputtype": report_type,
-            # "validtype" : "checkcif_only", # or 
-            "validtype" : "checkcif_with_hkl",
+            "validtype" : hkl,
             "valout"    : 'vrfab',
             # "valout"    : 'vrfno',
             # "UPLOAD"    : 'submit',
@@ -93,7 +97,10 @@ class MakeCheckCif():
         if pdf:
             pdfobj = Path('checkcif-' + self.cifobj.stem + '.pdf')
             pdfobj.write_bytes(pdf)
-            subprocess.Popen([str(pdfobj.absolute())], shell=True)
+            if sys.platform == 'win' or sys.platform == 'win32':
+                subprocess.Popen([str(pdfobj.absolute())], shell=True)
+            if sys.platform == 'darwin':
+                subprocess.call(['open', str(pdfobj.absolute())])
 
     def show_pdf_report(self):
         html = self._get_checkcif(self.out_file, pdf=True)
@@ -115,16 +122,13 @@ class MyHTMLParser(HTMLParser):
                 self.link = attrs[1][1]
 
 
-
-
-
 if __name__ == "__main__":
     cif = Path(r'D:\frames\guest\BreitPZ_R_122\BreitPZ_R_122\BreitPZ_R_122_0m_a-finalcif.cif')
     html = Path(r'D:\frames\guest\BreitPZ_R_122\BreitPZ_R_122\checkcif-test.html')
     ckf = MakeCheckCif(None, cif, outfile=html)
     ckf.show_pdf_report()
-    #html = Path(r'D:\frames\guest\BreitPZ_R_122\BreitPZ_R_122\checkcif-BreitPZ_R_122_0m_a.html')
-    #open_pdf_result(Path(r'D:\frames\guest\BreitPZ_R_122\BreitPZ_R_122\BreitPZ_R_122_0m_a-finalcif.cif'), html)
+    # html = Path(r'D:\frames\guest\BreitPZ_R_122\BreitPZ_R_122\checkcif-BreitPZ_R_122_0m_a.html')
+    # open_pdf_result(Path(r'D:\frames\guest\BreitPZ_R_122\BreitPZ_R_122\BreitPZ_R_122_0m_a-finalcif.cif'), html)
     # Path(d:\tmp\
     # print(parser.pdf)
     # outfile = get_checkcif('test-data/p21c.cif')

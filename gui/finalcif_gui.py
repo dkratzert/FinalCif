@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file './gui\finalcif_gui.ui'
+# Form implementation generated from reading ui file '/Users/daniel/GitHub/FinalCif/./gui/finalcif_gui.ui'
 #
-# Created by: PyQt5 UI code generator 5.12.2
+# Created by: PyQt5 UI code generator 5.13.0
 #
 # WARNING! All changes made in this file will be lost!
+
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
@@ -68,8 +69,9 @@ class Ui_FinalCifWindow(object):
         self.SaveCifButton = QtWidgets.QPushButton(self.groupBox)
         self.SaveCifButton.setObjectName("SaveCifButton")
         self.gridLayout_7.addWidget(self.SaveCifButton, 0, 0, 1, 1)
-        spacerItem = QtWidgets.QSpacerItem(20, 23, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Preferred)
-        self.gridLayout_7.addItem(spacerItem, 1, 0, 1, 1)
+        self.ExploreDirButton = QtWidgets.QPushButton(self.groupBox)
+        self.ExploreDirButton.setObjectName("ExploreDirButton")
+        self.gridLayout_7.addWidget(self.ExploreDirButton, 1, 0, 1, 1)
         self.ButtonsHorizontalLayout.addWidget(self.groupBox)
         self.groupBox_checkcif = QtWidgets.QGroupBox(self.page_MainTable)
         self.groupBox_checkcif.setTitle("")
@@ -116,13 +118,13 @@ class Ui_FinalCifWindow(object):
         self.verticalLayout_2.addWidget(self.CheckcifPlaintextEdit)
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
-        spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.horizontalLayout_2.addItem(spacerItem1)
+        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_2.addItem(spacerItem)
         self.BacktoMainpushButton = QtWidgets.QPushButton(self.page_checkcif)
         self.BacktoMainpushButton.setObjectName("BacktoMainpushButton")
         self.horizontalLayout_2.addWidget(self.BacktoMainpushButton)
-        spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.horizontalLayout_2.addItem(spacerItem2)
+        spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_2.addItem(spacerItem1)
         self.verticalLayout_2.addLayout(self.horizontalLayout_2)
         self.MainStackedWidget.addWidget(self.page_checkcif)
         self.page_FinalCif = QtWidgets.QWidget()
@@ -135,13 +137,13 @@ class Ui_FinalCifWindow(object):
         self.verticalLayout_3.addWidget(self.FinalCifFilePlainTextEdit)
         self.horizontalLayout_3 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
-        spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.horizontalLayout_3.addItem(spacerItem3)
+        spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_3.addItem(spacerItem2)
         self.BackPushButton = QtWidgets.QPushButton(self.page_FinalCif)
         self.BackPushButton.setObjectName("BackPushButton")
         self.horizontalLayout_3.addWidget(self.BackPushButton)
-        spacerItem4 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.horizontalLayout_3.addItem(spacerItem4)
+        spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_3.addItem(spacerItem3)
         self.verticalLayout_3.addLayout(self.horizontalLayout_3)
         self.MainStackedWidget.addWidget(self.page_FinalCif)
         self.CifTableGridLayout.addWidget(self.MainStackedWidget, 0, 0, 1, 3)
@@ -383,6 +385,8 @@ class Ui_FinalCifWindow(object):
         item.setText(_translate("FinalCifWindow", "Own Data"))
         self.SaveCifButton.setToolTip(_translate("FinalCifWindow", "Saves the cif file to name-final.cif"))
         self.SaveCifButton.setText(_translate("FinalCifWindow", "Save Cif File"))
+        self.ExploreDirButton.setToolTip(_translate("FinalCifWindow", "Saves the cif file to name-final.cif"))
+        self.ExploreDirButton.setText(_translate("FinalCifWindow", "Explore Directory"))
         self.CheckcifPDFOnlineButton.setText(_translate("FinalCifWindow", "Checkcif Online PDF"))
         self.CheckcifButton.setText(_translate("FinalCifWindow", "CheckCif Offline"))
         self.CheckcifOnlineButton.setText(_translate("FinalCifWindow", "Checkcif Online HTML"))
@@ -422,5 +426,3 @@ class Ui_FinalCifWindow(object):
         self.actionSave_Report.setText(_translate("FinalCifWindow", "Save Report"))
         self.actionSave_CIF_File.setText(_translate("FinalCifWindow", "Save CIF File"))
         self.actionedit_templates.setText(_translate("FinalCifWindow", "edit templates"))
-
-

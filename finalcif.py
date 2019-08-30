@@ -153,6 +153,7 @@ class AppWindow(QMainWindow):
         this method connects all signals to slots. Only a few mighjt be defined elsewere.
         """
         self.ui.BackPushButton.clicked.connect(self.back_to_main)
+        self.ui.ExploreDirButton.clicked.connect(self.explore_dir)
         ##
         self.ui.CheckcifButton.clicked.connect(self.do_offline_checkcif)
         self.ui.CheckcifOnlineButton.clicked.connect(self.do_html_checkcif)
@@ -224,6 +225,13 @@ class AppWindow(QMainWindow):
                 r"<a href='https://www.xs3.uni-freiburg.de/research/finalcif'>"
                 r"https://www.xs3.uni-freiburg.de/research/finalcif</a>")
 
+    def explore_dir(self):
+        curdir = self.cif.fileobj.absolute().parent
+        if sys.platform == "win" or sys.platform == "win32":
+            subprocess.Popen([str(curdir)], shell=True)
+        if sys.platform == 'darwin':
+            subprocess.call(['open', curdir])
+
     def dragEnterEvent(self, e):
         if e.mimeData().hasText():
             e.accept()
@@ -256,8 +264,13 @@ class AppWindow(QMainWindow):
         Performs an online checkcif via checkcif.iucr.org.
         """
         self.save_current_cif_file()
+        htmlfile = Path('checkcif-' + self.cif.fileobj.stem + '.html')
         try:
-            ckf = MakeCheckCif(self, self.fin_file, Path('checkcif-' + self.cif.fileobj.stem + '.html'))
+            htmlfile.unlink()
+        except FileNotFoundError:
+            pass
+        try:
+            ckf = MakeCheckCif(self, self.fin_file, outfile=htmlfile)
             ckf.show_html_report()
         except ReadTimeout:
             self.show_general_warning(r"The check took too long. Try it at"
@@ -271,8 +284,13 @@ class AppWindow(QMainWindow):
         Performs an online checkcif and shows the result as pdf.
         """
         self.save_current_cif_file()
+        htmlfile = Path('checkcif-' + self.cif.fileobj.stem + '.html')
         try:
-            ckf = MakeCheckCif(None, self.fin_file, outfile=Path('checkcif-' + self.cif.fileobj.stem + '.html'))
+            htmlfile.unlink()
+        except FileNotFoundError:
+            pass
+        try:
+            ckf = MakeCheckCif(self, self.fin_file, outfile=htmlfile)
             ckf.show_pdf_report()
         except ReadTimeout:
             self.show_general_warning(r"The check took too long. Try it at"
