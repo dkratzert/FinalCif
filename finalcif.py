@@ -55,6 +55,7 @@ from tools.settings import FinalCifSettings
 """
 TODO:
 - make tab key go down one row
+- Add one picture of the vzs file
 - option for default directory?
 - add button for zip file with cif, report and checkcif pdf
 - Checkcif: http://journals.iucr.org/services/cif/checking/validlist.html
@@ -1317,7 +1318,7 @@ class AppWindow(QMainWindow):
 
     def add_row(self, key, value, at_start=False):
         """
-        Create a empty row at bottom of CifItemsTable. This method only fills cif data in the 
+        Create a empty row at bottom of CifItemsTable. This method only fills cif data in the
         first column. Not the data from external sources!
         """
         if at_start:
