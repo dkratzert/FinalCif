@@ -59,7 +59,6 @@ TODO:
 - 
 - option for default directory?
 - add button for zip file with cif, report and checkcif pdf
-- try to determine the _chemical_absolute_configuration method
 - Checkcif: http://journals.iucr.org/services/cif/checking/validlist.html
 - load pairs and loops, add new content with order, write back
 

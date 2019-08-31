@@ -70,9 +70,13 @@ _exptl_absorpt_coefficient_mu     0.145
 _shelx_estimated_absorpt_T_min    ?
 _shelx_estimated_absorpt_T_max    ?
 _exptl_absorpt_correction_type   multi-scan
-_exptl_absorpt_correction_T_min  0.6961
-_exptl_absorpt_correction_T_max  0.7510
-_exptl_absorpt_process_details   ?
+_exptl_absorpt_correction_T_min  0.7016
+_exptl_absorpt_correction_T_max  0.7456
+_exptl_absorpt_process_details
+;
+ SADABS 2016/2: Krause, L., Herbst-Irmer, R., Sheldrick G.M. & Stalke D.,
+ J. Appl. Cryst. 48 (2015) 3-10
+;
 _exptl_absorpt_special_details    ?
 _diffrn_ambient_temperature       100(2)
 _diffrn_radiation_wavelength      0.71073
@@ -120,7 +124,7 @@ _reflns_special_details
 _computing_data_collection        ?
 _computing_cell_refinement        ?
 _computing_data_reduction         ?
-_computing_structure_solution     ?
+_computing_structure_solution     'SHELXT 2018/2 (Sheldrick, 2018)'
 _computing_structure_refinement 'SHELXL-2018/3 (Sheldrick, 2018)'
 _computing_molecular_graphics     ?
 _computing_publication_material   ?
@@ -148,8 +152,8 @@ _refine_ls_number_parameters      224
 _refine_ls_number_restraints      1
 _refine_ls_R_factor_all           0.0234
 _refine_ls_R_factor_gt            0.0226
-_refine_ls_wR_factor_ref          0.0629
-_refine_ls_wR_factor_gt           0.0624
+_refine_ls_wR_factor_ref          0.0630
+_refine_ls_wR_factor_gt           0.0625
 _refine_ls_goodness_of_fit_ref    1.080
 _refine_ls_restrained_S_all       1.080
 _refine_ls_shift/su_max           0.001
@@ -490,7 +494,7 @@ _shelx_res_file
 ;
 TITL DK_Zucker2_0m_a.res in P2(1)
     DK_zucker2_0m.res
-    created by SHELXL-2018/3 at 08:05:17 on 16-Jul-2019
+    created by SHELXL-2018/3 at 10:10:49 on 31-Aug-2019
 REM Old TITL Integration of DK_zucker
 REM SHELXT solution in P2(1)
 REM R1 0.060,  Rweak 0.029,  Alpha 0.001,  Orientation as input
@@ -606,7 +610,7 @@ AFIX   0
 O10   3   -0.090993    0.843761   -0.021223    11.00000    0.00587    0.01147 =
          0.01053    0.00209    0.00041    0.00107
 AFIX 148
-H10A  2   -0.184405    0.800975   -0.015696    11.00000   -1.50000
+H10A  2   -0.184405    0.800974   -0.015696    11.00000   -1.50000
 AFIX   0
 C11   1    0.130389    0.878355    0.177221    11.00000    0.00633    0.00692 =
          0.00827   -0.00039    0.00211    0.00056
@@ -630,7 +634,7 @@ HKLF 4
 
 
 REM  DK_Zucker2_0m_a.res in P2(1)
-REM wR2 = 0.0629, GooF = S = 1.080, Restrained GooF = 1.080 for all data
+REM wR2 = 0.0630, GooF = S = 1.080, Restrained GooF = 1.080 for all data
 REM R1 = 0.0226 for 18043 Fo > 4sig(Fo) and 0.0234 for all 18544 data
 REM 224 parameters refined using 1 restraints
 
@@ -660,7 +664,7 @@ Q18   1   0.7201  0.1796  0.3520  11.00000  0.05    0.32
 Q19   1   0.2286  0.8609  0.2025  11.00000  0.05    0.32
 Q20   1   0.3146  0.7482  0.0753  11.00000  0.05    0.31
 ;
-_shelx_res_checksum   72161
+_shelx_res_checksum   28449
 
 _shelx_hkl_file
 ;
@@ -119737,15 +119741,16 @@ _shelx_hkl_file
  J. Appl. Cryst. 48 (2015) 3-10
 )
  _exptl_absorpt_correction_type   multi-scan
- _exptl_absorpt_correction_T_max  0.7510
- _exptl_absorpt_correction_T_min  0.6961
+ _exptl_absorpt_correction_T_max  0.7456
+ _exptl_absorpt_correction_T_min  0.7016
  _exptl_special_details
 )
  The following wavelength and cell were deduced by SADABS from the
  direction cosines etc. They are given here for emergency use only:
  CELL 0.71075    7.720    8.667   10.814   90.006  102.988   90.023
 )
+_computing_structure_solution     'SHELXT 2018/2 (Sheldrick, 2018)'
 
 ;
-_shelx_hkl_checksum   69576
+_shelx_hkl_checksum   26780
 
