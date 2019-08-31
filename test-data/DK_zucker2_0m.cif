@@ -69,14 +69,10 @@ _exptl_crystal_size_min           ?
 _exptl_absorpt_coefficient_mu     0.145
 _shelx_estimated_absorpt_T_min    ?
 _shelx_estimated_absorpt_T_max    ?
-_exptl_absorpt_correction_type   multi-scan
-_exptl_absorpt_correction_T_min  0.7016
-_exptl_absorpt_correction_T_max  0.7456
-_exptl_absorpt_process_details
-;
- SADABS 2016/2: Krause, L., Herbst-Irmer, R., Sheldrick G.M. & Stalke D.,
- J. Appl. Cryst. 48 (2015) 3-10
-;
+_exptl_absorpt_correction_type   ?
+_exptl_absorpt_correction_T_min  ?
+_exptl_absorpt_correction_T_max  ?
+_exptl_absorpt_process_details  ?
 _exptl_absorpt_special_details    ?
 _diffrn_ambient_temperature       100(2)
 _diffrn_radiation_wavelength      0.71073
