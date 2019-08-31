@@ -660,8 +660,7 @@ class AppWindow(QMainWindow):
         if cont == rowcount:
             table.insertRow(rowcount)
 
-    @staticmethod
-    def add_equipment_row(table: QTableWidget, key: str = '', value: str = ''):
+    def add_equipment_row(self, table: QTableWidget, key: str = '', value: str = ''):
         """
         Add a new row with content to the table (Equipment or Property).
         """
@@ -1234,7 +1233,7 @@ class AppWindow(QMainWindow):
                 txt = str(sources[miss_data.lower()][0])
                 tooltiptext = str(sources[miss_data.lower()][1])
                 if miss_data in text_field_keys:
-                    tab_item = QPlainTextEdit(self)
+                    tab_item = QPlainTextEdit(self.ui.CifItemsTable)
                     tab_item.setReadOnly(True)
                     tab_item.setFrameShape(0)
                     self.ui.CifItemsTable.setCellWidget(row_num, 1, tab_item)
@@ -1340,12 +1339,12 @@ class AppWindow(QMainWindow):
             strval = ''
         if key in text_field_keys:
             # print(key, strval)
-            tabitem = QPlainTextEdit(self)
+            tabitem = QPlainTextEdit(self.ui.CifItemsTable)
             tabitem.setPlainText(strval)
             tabitem.setFrameShape(0)  # no frame (border)
-            tab1 = QPlainTextEdit(self)
+            tab1 = QPlainTextEdit(self.ui.CifItemsTable)
             tab1.setFrameShape(0)
-            tab2 = QPlainTextEdit(self)
+            tab2 = QPlainTextEdit(self.ui.CifItemsTable)
             tab2.setFrameShape(0)
             self.ui.CifItemsTable.setCellWidget(row_num, 0, tabitem)
             self.ui.CifItemsTable.setCellWidget(row_num, 1, tab1)
