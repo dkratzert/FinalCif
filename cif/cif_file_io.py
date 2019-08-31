@@ -132,7 +132,7 @@ class CifContainer():
         """
         This method tries to determine the information witten at the end of a cif hkl file by sadabs.
         """
-        hkl = self.block.find_value('_shelx_hkl_file')[1:-1]
+        hkl = self.block.find_value('_shelx_hkl_file')[:-1]
         all = {'_exptl_absorpt_process_details' : '',
                '_exptl_absorpt_correction_type' : '',
                '_exptl_absorpt_correction_T_max': '',
@@ -141,7 +141,7 @@ class CifContainer():
                }
         if not hkl:
             return all
-        hkl = hkl[hkl.find('0   0   0    0.00    0.00   0'):].split('\n')[1:]
+        hkl = hkl[hkl.find('  0   0   0    0'):].split('\n')[1:]
         hkl = 'data_hkldat\n' + '\n'.join(hkl)
         # in-html cif has ')' instead of ';':
         hkl = [re.sub(r'^\)', ';', x) for x in hkl.split('\n')]
