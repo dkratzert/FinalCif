@@ -54,6 +54,7 @@ from tools.settings import FinalCifSettings
 
 """
 TODO:
+- check info from hkl file end more carefully: ';' and ')' cases.
 - make tab key go down one row
 - option for default directory?
 - add button for zip file with cif, report and checkcif pdf
