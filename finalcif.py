@@ -12,7 +12,7 @@ import sys
 from contextlib import suppress
 from pathlib import Path, WindowsPath
 
-from PyQt5.QtNetwork import QNetworkRequest, QNetworkAccessManager, QNetworkReply
+from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkReply, QNetworkRequest
 from requests import ReadTimeout
 
 from cif.core_dict import cif_core
@@ -33,7 +33,6 @@ if getattr(sys, 'frozen', False):
 else:
     application_path = os.path.dirname(os.path.abspath(__file__))
 
-
 if DEBUG:
     from PyQt5 import uic
 
@@ -50,13 +49,12 @@ from cif.cif_file_io import CifContainer, set_pair_delimited
 from datafiles.bruker_data import BrukerData
 from datafiles.platon import Platon
 from tools.misc import high_prio_keys, predef_equipment_templ, predef_prop_templ, combobox_fields, \
-    text_field_keys, to_float, find_line
+    text_field_keys, to_float, find_line, strip_finalcif_of_name
 from tools.settings import FinalCifSettings
 
 """
 TODO:
 - make tab key go down one row
-- 
 - option for default directory?
 - add button for zip file with cif, report and checkcif pdf
 - Checkcif: http://journals.iucr.org/services/cif/checking/validlist.html
@@ -203,7 +201,7 @@ class AppWindow(QMainWindow):
         self.ui.RecentComboBox.currentIndexChanged.connect(self.load_recent_file)
 
     def checkfor_version(self):
-        url = QUrl(mainurl+'version.txt')
+        url = QUrl(mainurl + 'version.txt')
         req = QNetworkRequest(url)
         self.netman.get(req)
 
@@ -227,7 +225,7 @@ class AppWindow(QMainWindow):
         try:
             curdir = self.cif.fileobj.absolute().parent
         except AttributeError:
-            return 
+            return
         if sys.platform == "win" or sys.platform == "win32":
             subprocess.Popen(['explorer', str(curdir)], shell=True)
         if sys.platform == 'darwin':
@@ -283,7 +281,8 @@ class AppWindow(QMainWindow):
             print('Can not do checkcif:')
             print(e)
             return
-        imageobj = Path(self.cif.fileobj.stem + '-finalcif.gif')
+        # The picture file linked in the html file:
+        imageobj = Path(strip_finalcif_of_name(str(self.cif.fileobj.stem)) + '-finalcif.gif')
         parser = MyHTMLParser()
         parser.feed(htmlfile.read_text())
         gif = parser.get_image()
@@ -398,7 +397,7 @@ class AppWindow(QMainWindow):
                                  without_H=self.ui.HAtomsCheckBox.isChecked())
             except FileNotFoundError as e:
                 if DEBUG:
-                    raise 
+                    raise
                 print('Unable to open cif file')
                 not_ok = e
                 self.unable_to_open_message(self.cif.fileobj, not_ok)
@@ -499,7 +498,7 @@ class AppWindow(QMainWindow):
                         except RuntimeError:
                             pass
         try:
-            self.fin_file = Path(self.cif.fileobj.stem + '-finalcif.cif')
+            self.fin_file = Path(strip_finalcif_of_name(str(self.cif.fileobj.stem)) + '-finalcif.cif')
             self.cif.save(self.fin_file.name)
             self.ui.statusBar.showMessage('  File Saved:  {}'.format(self.fin_file.name), 10000)
             print('File saved ...')
@@ -1058,6 +1057,9 @@ class AppWindow(QMainWindow):
         """
         self.vheaderitems.clear()
         self.ui.MainStackedWidget.setCurrentIndex(0)
+        self.ui.CifItemsTable.setRowCount(0)
+        self.ui.CifItemsTable.clear()
+        self.ui.CifItemsTable.clearContents()
         self.ui.CheckcifPlaintextEdit.clear()
         if not fname:
             fname = self.cif_file_open_dialog()
@@ -1345,6 +1347,7 @@ class AppWindow(QMainWindow):
             tab1 = QPlainTextEdit(self.ui.CifItemsTable)
             tab1.setFrameShape(0)
             tab2 = QPlainTextEdit(self.ui.CifItemsTable)
+            tab2.setTabChangesFocus(True)
             tab2.setFrameShape(0)
             self.ui.CifItemsTable.setCellWidget(row_num, 0, tabitem)
             self.ui.CifItemsTable.setCellWidget(row_num, 1, tab1)
