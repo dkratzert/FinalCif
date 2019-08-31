@@ -106,9 +106,12 @@ class DataReduct():
         if 'sortav' in abs_details.lower():
             abs_details = 'SORTAV'
         if 'sadabs' in abs_details.lower():
-            abs_details = 'SADABS'
+            if ':' in abs_details:
+                abs_details = abs_details.split(':')[0].strip('\n')
+            else:
+                abs_details = abs_details.split(' ')[0].strip('\n')
         if 'twinabs' in abs_details.lower():
-            abs_details = 'TWINABS'
+            abs_details = abs_details.split(' ')[0].strip('\n')
         if 'crysalis' in abs_details.lower():
             abs_details = 'SCALE3 ABSPACK'
         sentence = 'All data were integrated with {} and {} {} absorption correction using {} was applied. '
