@@ -9,8 +9,8 @@ import json
 import os
 import subprocess
 import sys
-from contextlib import suppress
 from pathlib import Path, WindowsPath
+from gemmi import cif
 
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkReply, QNetworkRequest
 from requests import ReadTimeout
@@ -54,7 +54,6 @@ from tools.settings import FinalCifSettings
 
 """
 TODO:
-- check info from hkl file end more carefully: ';' and ')' cases.
 - make tab key go down one row
 - option for default directory?
 - add button for zip file with cif, report and checkcif pdf
@@ -742,7 +741,6 @@ class AppWindow(QMainWindow):
         filename = self.cif_file_open_dialog()
         if not filename:
             return
-        from gemmi import cif
         try:
             doc = cif.read_file(filename)
         except RuntimeError as e:
@@ -790,7 +788,6 @@ class AppWindow(QMainWindow):
         selected_template, table_data = self.get_equipment_entry_data()
         if not selected_template:
             return
-        from gemmi import cif
         doc = cif.Document()
         blockname = '__'.join(selected_template.split())
         block = doc.add_new_block(blockname)
@@ -901,7 +898,6 @@ class AppWindow(QMainWindow):
                 pass
         if not cif_key:
             return
-        from gemmi import cif
         doc = cif.Document()
         blockname = '__'.join(selected_row_text.split())
         block = doc.add_new_block(blockname)
@@ -920,7 +916,6 @@ class AppWindow(QMainWindow):
         filename = self.cif_file_open_dialog()
         if not filename:
             return
-        from gemmi import cif
         try:
             doc = cif.read_file(filename)
         except RuntimeError as e:
@@ -1126,8 +1121,6 @@ class AppWindow(QMainWindow):
         except IndexError:
             line = None
         if line:
-            with suppress(Exception):
-                line = int(line) - 1
             info.setText('This cif file is not readable!\n'
                          'Please check line {} in\n{}'.format(line, filepath.name))
         else:
