@@ -5,7 +5,7 @@
 #  and you think this stuff is worth it, you can buy me a beer in return.
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
-
+import re
 import textwrap
 from pathlib import Path
 
@@ -132,33 +132,31 @@ class CifContainer():
         """
         This method tries to determine the information witten at the end of a cif hkl file by sadabs.
         """
-        hkl = self.block.find_value('_shelx_hkl_file')
+        hkl = self.block.find_value('_shelx_hkl_file')[1:-1]
         all = {'_exptl_absorpt_process_details' : '',
                '_exptl_absorpt_correction_type' : '',
                '_exptl_absorpt_correction_T_max': '',
                '_exptl_absorpt_correction_T_min': '',
+               '_computing_structure_solution'  : '',
                }
         if not hkl:
             return all
-        abs = False
-        details = ''
-        for line in hkl.splitlines():
-            if line.startswith(' _exptl_absorpt_process_details'):
-                abs = True
-                continue
-            if abs and not line.startswith(')'):
-                details += line
-                continue
-            if line.startswith(')') and details:
-                all['_exptl_absorpt_process_details'] = details.lstrip()
-                abs = False
-                continue
-            if line.startswith(' _exptl_absorpt_correction_type'):
-                all['_exptl_absorpt_correction_type'] = line.split()[1]
-            if line.startswith(' _exptl_absorpt_correction_T_max'):
-                all['_exptl_absorpt_correction_T_max'] = line.split()[1]
-            if line.startswith(' _exptl_absorpt_correction_T_min'):
-                all['_exptl_absorpt_correction_T_min'] = line.split()[1]
+        hkl = hkl[hkl.find('0   0   0    0.00    0.00   0'):].split('\n')[1:]
+        hkl = 'data_hkldat\n' + '\n'.join(hkl)
+        # in-html cif has ')' instead of ';':
+        hkl = [re.sub(r'^\)', ';', x) for x in hkl.split('\n')]
+        # the keys have a blank char in front:
+        hkl = [re.sub(r'^ _', '_', x) for x in hkl]
+        hkl = '\n'.join(hkl)
+        try:
+            hkldoc = gemmi.cif.read_string(hkl)
+            hklblock = hkldoc.sole_block()
+        except Exception as e:
+            return all
+        for key in all.keys():
+            val = hklblock.find_value(key)
+            if val:
+                all[key] = gemmi.cif.as_string(val).strip()
         return all
 
     @property
@@ -218,13 +216,13 @@ class CifContainer():
 
     def calc_checksum(self, input_str: str):
         """
-        Calculates the shelx checksum a cif file.
+        Calculates the shelx checksum of a cif file.
         """
         sum = 0
-        input_str = input_str.encode('ascii')
+        input_str = input_str.encode('ascii', 'ignore')
         for char in input_str:
             # print(char)
-            if char > 32:  # space character
+            if char > 32:  # ascii 32 is space character
                 sum += char
         sum %= 714025
         sum = sum * 1366 + 150889
