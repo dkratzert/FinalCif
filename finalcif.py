@@ -80,7 +80,7 @@ for item in c.block:
 """
 light_green = QColor(217, 255, 201)
 blue = QColor(102, 150, 179)
-yellow = QColor(250, 252, 167)
+yellow = QColor(240, 247, 150)
 from gui.finalcif_gui import Ui_FinalCifWindow
 
 
@@ -1235,6 +1235,7 @@ class AppWindow(QMainWindow):
                 tooltiptext = str(sources[miss_data.lower()][1])
                 if miss_data in text_field_keys:
                     tab_item = QPlainTextEdit(self)
+                    tab_item.setReadOnly(True)
                     tab_item.setFrameShape(0)
                     self.ui.CifItemsTable.setCellWidget(row_num, 1, tab_item)
                     tab_item.setPlainText(txt)
