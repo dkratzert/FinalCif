@@ -80,7 +80,7 @@ for item in c.block:
 """
 light_green = QColor(217, 255, 201)
 blue = QColor(102, 150, 179)
-yellow = QColor(240, 247, 150)
+yellow = QColor(250, 247, 150)
 from gui.finalcif_gui import Ui_FinalCifWindow
 
 
