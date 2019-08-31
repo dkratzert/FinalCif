@@ -152,6 +152,7 @@ class CifContainer():
             hkldoc = gemmi.cif.read_string(hkl)
             hklblock = hkldoc.sole_block()
         except Exception as e:
+            print('Unable to get information from hkl foot.')
             return all
         for key in all.keys():
             val = hklblock.find_value(key)
