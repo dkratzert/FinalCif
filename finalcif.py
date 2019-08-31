@@ -9,10 +9,10 @@ import json
 import os
 import subprocess
 import sys
-from contextlib import suppress
 from pathlib import Path, WindowsPath
+from gemmi import cif
 
-from PyQt5.QtNetwork import QNetworkRequest, QNetworkAccessManager, QNetworkReply
+from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkReply, QNetworkRequest
 from requests import ReadTimeout
 
 from cif.core_dict import cif_core
@@ -33,7 +33,6 @@ if getattr(sys, 'frozen', False):
 else:
     application_path = os.path.dirname(os.path.abspath(__file__))
 
-
 if DEBUG:
     from PyQt5 import uic
 
@@ -50,7 +49,7 @@ from cif.cif_file_io import CifContainer, set_pair_delimited
 from datafiles.bruker_data import BrukerData
 from datafiles.platon import Platon
 from tools.misc import high_prio_keys, predef_equipment_templ, predef_prop_templ, combobox_fields, \
-    text_field_keys, to_float, find_line
+    text_field_keys, to_float, find_line, strip_finalcif_of_name
 from tools.settings import FinalCifSettings
 
 """
@@ -59,7 +58,6 @@ TODO:
 - Add one picture of the vzs file
 - option for default directory?
 - add button for zip file with cif, report and checkcif pdf
-- try to determine the _chemical_absolute_configuration method
 - Checkcif: http://journals.iucr.org/services/cif/checking/validlist.html
 - load pairs and loops, add new content with order, write back
 
@@ -81,7 +79,7 @@ for item in c.block:
 """
 light_green = QColor(217, 255, 201)
 blue = QColor(102, 150, 179)
-yellow = QColor(250, 252, 167)
+yellow = QColor(250, 247, 150)
 from gui.finalcif_gui import Ui_FinalCifWindow
 
 
@@ -204,7 +202,7 @@ class AppWindow(QMainWindow):
         self.ui.RecentComboBox.currentIndexChanged.connect(self.load_recent_file)
 
     def checkfor_version(self):
-        url = QUrl(mainurl+'version.txt')
+        url = QUrl(mainurl + 'version.txt')
         req = QNetworkRequest(url)
         self.netman.get(req)
 
@@ -228,7 +226,7 @@ class AppWindow(QMainWindow):
         try:
             curdir = self.cif.fileobj.absolute().parent
         except AttributeError:
-            return 
+            return
         if sys.platform == "win" or sys.platform == "win32":
             subprocess.Popen(['explorer', str(curdir)], shell=True)
         if sys.platform == 'darwin':
@@ -284,7 +282,8 @@ class AppWindow(QMainWindow):
             print('Can not do checkcif:')
             print(e)
             return
-        imageobj = Path(self.cif.fileobj.stem + '-finalcif.gif')
+        # The picture file linked in the html file:
+        imageobj = Path(strip_finalcif_of_name(str(self.cif.fileobj.stem)) + '-finalcif.gif')
         parser = MyHTMLParser()
         parser.feed(htmlfile.read_text())
         gif = parser.get_image()
@@ -399,7 +398,7 @@ class AppWindow(QMainWindow):
                                  without_H=self.ui.HAtomsCheckBox.isChecked())
             except FileNotFoundError as e:
                 if DEBUG:
-                    raise 
+                    raise
                 print('Unable to open cif file')
                 not_ok = e
                 self.unable_to_open_message(self.cif.fileobj, not_ok)
@@ -500,7 +499,7 @@ class AppWindow(QMainWindow):
                         except RuntimeError:
                             pass
         try:
-            self.fin_file = Path(self.cif.fileobj.stem + '-finalcif.cif')
+            self.fin_file = Path(strip_finalcif_of_name(str(self.cif.fileobj.stem)) + '-finalcif.cif')
             self.cif.save(self.fin_file.name)
             self.ui.statusBar.showMessage('  File Saved:  {}'.format(self.fin_file.name), 10000)
             print('File saved ...')
@@ -661,8 +660,7 @@ class AppWindow(QMainWindow):
         if cont == rowcount:
             table.insertRow(rowcount)
 
-    @staticmethod
-    def add_equipment_row(table: QTableWidget, key: str = '', value: str = ''):
+    def add_equipment_row(self, table: QTableWidget, key: str = '', value: str = ''):
         """
         Add a new row with content to the table (Equipment or Property).
         """
@@ -744,7 +742,6 @@ class AppWindow(QMainWindow):
         filename = self.cif_file_open_dialog()
         if not filename:
             return
-        from gemmi import cif
         try:
             doc = cif.read_file(filename)
         except RuntimeError as e:
@@ -792,7 +789,6 @@ class AppWindow(QMainWindow):
         selected_template, table_data = self.get_equipment_entry_data()
         if not selected_template:
             return
-        from gemmi import cif
         doc = cif.Document()
         blockname = '__'.join(selected_template.split())
         block = doc.add_new_block(blockname)
@@ -903,7 +899,6 @@ class AppWindow(QMainWindow):
                 pass
         if not cif_key:
             return
-        from gemmi import cif
         doc = cif.Document()
         blockname = '__'.join(selected_row_text.split())
         block = doc.add_new_block(blockname)
@@ -922,7 +917,6 @@ class AppWindow(QMainWindow):
         filename = self.cif_file_open_dialog()
         if not filename:
             return
-        from gemmi import cif
         try:
             doc = cif.read_file(filename)
         except RuntimeError as e:
@@ -1060,6 +1054,9 @@ class AppWindow(QMainWindow):
         """
         self.vheaderitems.clear()
         self.ui.MainStackedWidget.setCurrentIndex(0)
+        self.ui.CifItemsTable.setRowCount(0)
+        self.ui.CifItemsTable.clear()
+        self.ui.CifItemsTable.clearContents()
         self.ui.CheckcifPlaintextEdit.clear()
         if not fname:
             fname = self.cif_file_open_dialog()
@@ -1125,8 +1122,6 @@ class AppWindow(QMainWindow):
         except IndexError:
             line = None
         if line:
-            with suppress(Exception):
-                line = int(line) - 1
             info.setText('This cif file is not readable!\n'
                          'Please check line {} in\n{}'.format(line, filepath.name))
         else:
@@ -1235,7 +1230,8 @@ class AppWindow(QMainWindow):
                 txt = str(sources[miss_data.lower()][0])
                 tooltiptext = str(sources[miss_data.lower()][1])
                 if miss_data in text_field_keys:
-                    tab_item = QPlainTextEdit(self)
+                    tab_item = QPlainTextEdit(self.ui.CifItemsTable)
+                    tab_item.setReadOnly(True)
                     tab_item.setFrameShape(0)
                     self.ui.CifItemsTable.setCellWidget(row_num, 1, tab_item)
                     tab_item.setPlainText(txt)
@@ -1322,7 +1318,7 @@ class AppWindow(QMainWindow):
 
     def add_row(self, key, value, at_start=False):
         """
-        Create a empty row at bottom of CifItemsTable. This method only fills cif data in the 
+        Create a empty row at bottom of CifItemsTable. This method only fills cif data in the
         first column. Not the data from external sources!
         """
         if at_start:
@@ -1340,12 +1336,13 @@ class AppWindow(QMainWindow):
             strval = ''
         if key in text_field_keys:
             # print(key, strval)
-            tabitem = QPlainTextEdit(self)
+            tabitem = QPlainTextEdit(self.ui.CifItemsTable)
             tabitem.setPlainText(strval)
             tabitem.setFrameShape(0)  # no frame (border)
-            tab1 = QPlainTextEdit(self)
+            tab1 = QPlainTextEdit(self.ui.CifItemsTable)
             tab1.setFrameShape(0)
-            tab2 = QPlainTextEdit(self)
+            tab2 = QPlainTextEdit(self.ui.CifItemsTable)
+            tab2.setTabChangesFocus(True)
             tab2.setFrameShape(0)
             self.ui.CifItemsTable.setCellWidget(row_num, 0, tabitem)
             self.ui.CifItemsTable.setCellWidget(row_num, 1, tab1)
