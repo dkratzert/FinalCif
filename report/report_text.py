@@ -106,10 +106,10 @@ class DataReduct():
         if 'sortav' in abs_details.lower():
             abs_details = 'SORTAV'
         if 'sadabs' in abs_details.lower():
-            if ':' in abs_details:
+            if ':' in abs_details[:16]:
                 abs_details = abs_details.split(':')[0].strip('\n')
             else:
-                abs_details = abs_details.split(' ')[0].strip('\n')
+                abs_details = abs_details.split()[0].strip('\n')
         if 'twinabs' in abs_details.lower():
             abs_details = abs_details.split(' ')[0].strip('\n')
         if 'crysalis' in abs_details.lower():
