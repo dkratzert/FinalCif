@@ -58,10 +58,10 @@ class MachineType():
     def __init__(self, cif: CifContainer, paragraph: Paragraph):
         self.cif = cif
         gstr = gemmi.cif.as_string
-        self.difftype = gstr(self.cif['_diffrn_measurement_device_type'])
-        self.device = gstr(self.cif['_diffrn_measurement_device'])
-        self.source = gstr(self.cif['_diffrn_source'])
-        self.monochrom = gstr(self.cif['_diffrn_radiation_monochromator'])
+        self.difftype = gstr(self.cif['_diffrn_measurement_device_type']).strip("'")
+        self.device = gstr(self.cif['_diffrn_measurement_device']).strip("'")
+        self.source = gstr(self.cif['_diffrn_source']).strip("'")
+        self.monochrom = gstr(self.cif['_diffrn_radiation_monochromator']).strip("'")
         if not self.monochrom:
             self.monochrom = '?'
         self.cooling = gstr(self.cif['_olex2_diffrn_ambient_temperature_device'])
@@ -123,7 +123,7 @@ class SolveRefine():
     def __init__(self, cif: CifContainer, paragraph: Paragraph):
         self.cif = cif
         gstr = gemmi.cif.as_string
-        solution_prog = gstr(self.cif['_computing_structure_solution'])
+        solution_prog = gstr(self.cif['_computing_structure_solution']).strip("'")
         if not solution_prog:
             solution_prog = '?'
         solution_method = gstr(self.cif['_atom_sites_solution_primary'])
