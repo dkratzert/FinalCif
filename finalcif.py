@@ -1168,11 +1168,7 @@ class AppWindow(QMainWindow):
         """
         if not warn_text:
             return
-        info = QMessageBox(self).warning(self, ' ', warn_text)
-        # info.setIcon(QMessageBox.Warning)
-        # info.setText(warn_text)
-        # info.show()
-        # info.exec()
+        QMessageBox(self).warning(self, ' ', warn_text)
 
     def check_Z(self):
         """
@@ -1184,7 +1180,7 @@ class AppWindow(QMainWindow):
         bad = False
         ntypes = len(self.cif['_chemical_formula_sum'].split())
         if all([ntypes, density]):
-            if ntypes > 2.0 and density < 0.8 or density > 4.0:
+            if ntypes > 2.0 and density < 0.6 or density > 4.0:
                 bad = True
         if Z and Z > 8.0 and (csystem == 'tricilinic' or csystem == 'monoclinic'):
             bad = True
