@@ -23,16 +23,27 @@ class ReportText():
         pass
 
 
+class Crystallization(FormatMixin):
+    def __init__(self, cif: CifContainer, paragraph: Paragraph):
+        self.cif = cif
+        gstr = gemmi.cif.as_string
+        self.crytsalization_method = gstr(self.cif['_exptl_crystal_recrystallization_method'])  # .strip("'")
+        sentence = "The compound was crystallized {}. "
+        self.text = sentence.format(self.crytsalization_method)
+        paragraph.add_run(self.text)
+
+
 class CrstalSelection(FormatMixin):
     def __init__(self, cif: CifContainer, paragraph: Paragraph):
         self.cif = cif
-        self.temp = self.cif['_diffrn_ambient_temperature']
+        gstr = gemmi.cif.as_string
+        self.temperature = gstr(self.cif['_diffrn_ambient_temperature'])
         self._name = cif.fileobj.name
         method = 'shock-cooled '
         sentence = "The data for {} were collected from a {}single crystal at {}\u00A0K "
-        if float(self.temp.split('(')[0]) > 200:
+        if float(self.temperature.split('(')[0]) > 200:
             method = ''
-        self.txt = sentence.format(self.name, method, self.temp)
+        self.txt = sentence.format(self.name, method, self.temperature)
         paragraph.add_run(self.txt)
 
     @property
@@ -47,7 +58,7 @@ class MachineType():
     def __init__(self, cif: CifContainer, paragraph: Paragraph):
         self.cif = cif
         gstr = gemmi.cif.as_string
-        self.difftype = gstr(self.cif.block.find_value('_diffrn_measurement_device_type'))
+        self.difftype = gstr(self.cif['_diffrn_measurement_device_type'])
         self.device = gstr(self.cif['_diffrn_measurement_device'])
         self.source = gstr(self.cif['_diffrn_source'])
         self.monochrom = gstr(self.cif['_diffrn_radiation_monochromator'])
@@ -82,7 +93,7 @@ class DataReduct():
     def __init__(self, cif: CifContainer, paragraph: Paragraph):
         self.cif = cif
         gstr = gemmi.cif.as_string
-        integration = gstr(self.cif.block.find_value('_computing_data_reduction'))
+        integration = gstr(self.cif['_computing_data_reduction'])
         integration_prog = '?'
         if 'saint' in integration.lower():
             integration_prog = 'SAINT'
@@ -90,14 +101,17 @@ class DataReduct():
             integration_prog = 'CrysAlisPro'
         if 'trek' in integration.lower():
             integration_prog = 'd*trek'
-        abstype = gstr(self.cif.block.find_value('_exptl_absorpt_correction_type'))
-        abs_details = gstr(self.cif.block.find_value('_exptl_absorpt_process_details'))
+        abstype = gstr(self.cif['_exptl_absorpt_correction_type'])
+        abs_details = gstr(self.cif['_exptl_absorpt_process_details'])
         if 'sortav' in abs_details.lower():
             abs_details = 'SORTAV'
         if 'sadabs' in abs_details.lower():
-            abs_details = 'SADABS'
+            if ':' in abs_details[:16]:
+                abs_details = abs_details.split(':')[0].strip('\n')
+            else:
+                abs_details = abs_details.split()[0].strip('\n')
         if 'twinabs' in abs_details.lower():
-            abs_details = 'TWINABS'
+            abs_details = abs_details.split(' ')[0].strip('\n')
         if 'crysalis' in abs_details.lower():
             abs_details = 'SCALE3 ABSPACK'
         sentence = 'All data were integrated with {} and {} {} absorption correction using {} was applied. '
@@ -109,17 +123,17 @@ class SolveRefine():
     def __init__(self, cif: CifContainer, paragraph: Paragraph):
         self.cif = cif
         gstr = gemmi.cif.as_string
-        solution_prog = gstr(self.cif.block.find_value('_computing_structure_solution'))
+        solution_prog = gstr(self.cif['_computing_structure_solution'])
         if not solution_prog:
             solution_prog = '?'
-        solution_method = gstr(self.cif.block.find_value('_atom_sites_solution_primary'))
+        solution_method = gstr(self.cif['_atom_sites_solution_primary'])
         if not solution_method:
             solution_method = '?'
-        refined = gstr(self.cif.block.find_value('_computing_structure_refinement'))
+        refined = gstr(self.cif['_computing_structure_refinement'])
         if not refined:
             refined = '?'
-        # dsr = gstr(self.cif.block.find_value('_computing_structure_refinement'))
-        refine_coef = gstr(self.cif.block.find_value('_refine_ls_structure_factor_coef'))
+        # dsr = gstr(self.cif['_computing_structure_refinement'])
+        refine_coef = gstr(self.cif['_refine_ls_structure_factor_coef'])
         sentence = r"The structure were solved by {} methods using {} and refined by full-matrix " \
                    "least-squares methods against "
         txt = sentence.format(solution_method, solution_prog)
