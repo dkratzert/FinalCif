@@ -8,6 +8,7 @@
 
 import subprocess
 import sys
+import time
 from html.parser import HTMLParser
 from pathlib import Path
 
@@ -53,6 +54,8 @@ class MakeCheckCif():
             vrf = 'vrfab'
         if self.parent.cif.block.find_value('_shelx_hkl_file'):
             hkl = 'checkcif_with_hkl'
+            if self.parent.ui.structfactCheckBox.isChecked():
+                hkl = 'checkcif_only'
         else:
             hkl = 'checkcif_only'
         headers = {
@@ -64,7 +67,10 @@ class MakeCheckCif():
         }
         print('Report request sent')
         url = 'https://checkcif.iucr.org/cgi-bin/checkcif_hkl.pl'
+        t1 = time.perf_counter()
         r = requests.post(url, files={'file': f}, data=headers, timeout=150)
+        t2 = time.perf_counter()
+        print('Report took {}s.'.format(str(round(t2 - t1, 2))))
         self.html_out_file.write_bytes(r.content)
         f.close()
         print('ready')
@@ -134,18 +140,19 @@ class MyHTMLParser(HTMLParser):
         except MissingSchema:
             return b''
 
+
 if __name__ == "__main__":
     cif = Path(r'D:\frames\guest\BreitPZ_R_122\BreitPZ_R_122\BreitPZ_R_122_0m_a-finalcif.cif')
     html = Path(r'D:\GitHub\FinalCif\test-data\checkcif-DK_zucker2_0m.html')
-    #ckf = MakeCheckCif(None, cif, outfile=html)
-    #ckf.show_pdf_report()
+    # ckf = MakeCheckCif(None, cif, outfile=html)
+    # ckf.show_pdf_report()
     # html = Path(r'D:\frames\guest\BreitPZ_R_122\BreitPZ_R_122\checkcif-BreitPZ_R_122_0m_a.html')
-    
+
     parser = MyHTMLParser()
     parser.feed(html.read_text())
     image = parser.get_image()
     print(image)
-    
+
     # open_pdf_result(Path(r'D:\frames\guest\BreitPZ_R_122\BreitPZ_R_122\BreitPZ_R_122_0m_a-finalcif.cif'), html)
     # Path(d:\tmp\
     # print(parser.pdf)

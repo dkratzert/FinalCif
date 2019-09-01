@@ -10,9 +10,9 @@ import os
 import subprocess
 import sys
 from pathlib import Path, WindowsPath
-from gemmi import cif
 
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkReply, QNetworkRequest
+from gemmi import cif
 from requests import ReadTimeout
 
 from cif.core_dict import cif_core
