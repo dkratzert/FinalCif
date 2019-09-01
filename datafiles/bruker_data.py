@@ -14,7 +14,6 @@ from datafiles.p4p_reader import P4PFile
 from datafiles.sadabs import Sadabs
 from datafiles.saint import SaintListFile
 from datafiles.shelxt import SHELXTlistfile
-from datafiles.utils import DSRFind
 
 
 class MissingCifData():
@@ -53,7 +52,7 @@ class BrukerData(object):
         # Going back from last dataset:
         for n in range(1, len(self.sadabs.datasets) + 1):
             try:
-                abstype = 'numerical' if self.sadabs.dataset(-n).numerical else 'multi-scan' 
+                abstype = 'numerical' if self.sadabs.dataset(-n).numerical else 'multi-scan'
                 t_min = min(self.sadabs.dataset(-n).transmission)
                 t_max = max(self.sadabs.dataset(-n).transmission)
                 if all([abstype, t_min, t_max]):
