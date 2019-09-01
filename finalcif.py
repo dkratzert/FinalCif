@@ -1081,6 +1081,8 @@ class AppWindow(QMainWindow):
             self.cif = CifContainer(filepath)
         except Exception as e:
             print('Unable to open cif file...')
+            if DEBUG:
+                raise
             print(e)
             not_ok = e
         if not_ok:
@@ -1104,6 +1106,8 @@ class AppWindow(QMainWindow):
             self.fill_cif_table()
         except RuntimeError as e:
             not_ok = e
+            if DEBUG:
+                raise
             self.unable_to_open_message(filepath, not_ok)
         self.ui.CheckcifButton.setEnabled(True)
         self.ui.CheckcifOnlineButton.setEnabled(True)
@@ -1293,8 +1297,9 @@ class AppWindow(QMainWindow):
         """
         self.ui.CifItemsTable.setRowCount(0)
         for key, value in self.cif.key_value_pairs():
-            if not value or value == '?':
+            if not value or value == '?' or value == "'?'":
                 self.missing_data.append(key)
+                value = '?'
             self.add_row(key, value)
             # print(key, value)
         self.test_checksums()
@@ -1331,7 +1336,7 @@ class AppWindow(QMainWindow):
         if value is None:
             strval = '?'
         else:
-            strval = str(value)  # or '?')
+            strval = str(value).strip(" ").strip("'").strip(';\n')  # or '?')
         if not key:
             strval = ''
         if key in text_field_keys:
