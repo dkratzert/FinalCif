@@ -5,21 +5,24 @@
 #  and you think this stuff is worth it, you can buy me a beer in return.
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
+
+import subprocess
+import sys
+from html.parser import HTMLParser
 from pathlib import Path
 
 import requests
-from PyQt5.QtCore import QUrl, QPoint
+from PyQt5.QtCore import QPoint, QUrl
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtWidgets import QMainWindow
+from requests.exceptions import MissingSchema
 
 
 class WebPage(QWebEngineView):
     def __init__(self, file: Path):
         QWebEngineView.__init__(self)
-        # self.load(QUrl("https://checkcif.iucr.org/"))
         self.url = QUrl.fromLocalFile(str(file.absolute()))
         self.load(self.url)
-        # self.loadFinished.connect(self._on_load_finished)
 
     def _on_load_finished(self):
         self.page().toHtml(self.Callable)
@@ -34,36 +37,45 @@ class MakeCheckCif():
     def __init__(self, parent, cif: Path, outfile: Path):
         self.parent = parent
         # _, self.out_file = mkstemp(suffix='.html')
-        self.out_file = outfile
-        self.show_report_window(cif)
+        self.html_out_file = outfile
+        self.cifobj = cif
 
-    def get_checkcif(self, file_name: str, out_file: Path):
+    def _get_checkcif(self, pdf=True):
         """
         Requests a checkcif run from IUCr servers.
         """
-        f = open(file_name, 'rb')
-
+        f = open(str(self.cifobj.absolute()), 'rb')
+        if pdf:
+            report_type = 'PDF'
+            vrf = 'vrfno'
+        else:
+            report_type = 'HTML'
+            vrf = 'vrfab'
+        if self.parent.cif.block.find_value('_shelx_hkl_file'):
+            hkl = 'checkcif_with_hkl'
+        else:
+            hkl = 'checkcif_only'
         headers = {
-            "file"      : f,  # Path(file_name).open(),  # .read_text(encoding='ascii'),
             "runtype"   : "symmonly",
             "referer"   : "checkcif_server",
-            "outputtype": 'HTML',
-            "validtype" : "checkcif_only",
-            # "valout"    : 'vrfno',
-            # "UPLOAD"    : 'submit',
+            "outputtype": report_type,
+            "validtype" : hkl,
+            "valout"    : vrf,
         }
         print('Report request sent')
         url = 'https://checkcif.iucr.org/cgi-bin/checkcif_hkl.pl'
-        r = requests.post(url, files=headers, timeout=150)
-        out_file.write_bytes(r.content)
+        r = requests.post(url, files={'file': f}, data=headers, timeout=150)
+        self.html_out_file.write_bytes(r.content)
         f.close()
         print('ready')
-        return out_file
 
-    def show_report_window(self, cif):
-        self.get_checkcif(cif.absolute(), self.out_file)
+    def show_html_report(self):
+        """
+        Shows the html result of checkcif in a webengine window.
+        """
+        self._get_checkcif(pdf=False)
         app = QMainWindow(self.parent)
-        web = WebPage(self.out_file)
+        web = WebPage(self.html_out_file)
         app.setCentralWidget(web)
         app.setBaseSize(900, 900)
         app.show()
@@ -72,8 +84,71 @@ class MakeCheckCif():
         app.move(QPoint(100, 50))
         web.show()
 
+    def _open_pdf_result(self):
+        """
+        Opens the resulkting pdf file in the systems pdf viewer.
+        """
+        parser = MyHTMLParser()
+        # the link to the pdf file resides in this html file:
+        parser.feed(self.html_out_file.read_text())
+        try:
+            pdf = parser.get_pdf()
+        except MissingSchema:
+            print('Link is not valid anymore...')
+            pdf = None
+        if pdf:
+            pdfobj = Path('checkcif-' + self.cifobj.stem + '.pdf')
+            pdfobj.write_bytes(pdf)
+            if sys.platform == 'win' or sys.platform == 'win32':
+                subprocess.Popen([str(pdfobj.absolute())], shell=True)
+            if sys.platform == 'darwin':
+                subprocess.call(['open', str(pdfobj.absolute())])
+
+    def show_pdf_report(self):
+        self._get_checkcif(pdf=True)
+        self._open_pdf_result()
+
+
+class MyHTMLParser(HTMLParser):
+    def __init__(self):
+        self.link = ''
+        self.imageurl = ''
+        super(MyHTMLParser, self).__init__()
+        self.pdf = ''
+
+    def get_pdf(self):
+        return requests.get(self.link).content
+
+    def handle_starttag(self, tag, attrs):
+        if tag == "a":
+            if len(attrs) > 1 and attrs[0][1] == '_blank':
+                self.link = attrs[1][1]
+        if tag == "img":
+            if len(attrs) > 1:
+                if attrs[0][0] == 'width':
+                    self.imageurl = attrs[1][1]
+
+    def get_image(self):
+        try:
+            return requests.get(self.imageurl).content
+        except MissingSchema:
+            return b''
 
 if __name__ == "__main__":
+    cif = Path(r'D:\frames\guest\BreitPZ_R_122\BreitPZ_R_122\BreitPZ_R_122_0m_a-finalcif.cif')
+    html = Path(r'D:\GitHub\FinalCif\test-data\checkcif-DK_zucker2_0m.html')
+    #ckf = MakeCheckCif(None, cif, outfile=html)
+    #ckf.show_pdf_report()
+    # html = Path(r'D:\frames\guest\BreitPZ_R_122\BreitPZ_R_122\checkcif-BreitPZ_R_122_0m_a.html')
+    
+    parser = MyHTMLParser()
+    parser.feed(html.read_text())
+    image = parser.get_image()
+    print(image)
+    
+    # open_pdf_result(Path(r'D:\frames\guest\BreitPZ_R_122\BreitPZ_R_122\BreitPZ_R_122_0m_a-finalcif.cif'), html)
+    # Path(d:\tmp\
+    # print(parser.pdf)
     # outfile = get_checkcif('test-data/p21c.cif')
     # app = QApplication(sys.argv)
     # web = WebPage(outfile)
@@ -85,11 +160,11 @@ if __name__ == "__main__":
     # except PermissionError:
     #    print('can not delete 1')
 
-    #outfile = get_checkcif('test-data/p21c.cif')
-    #app = QWindow()
-    #web = WebPage(outfile)
-    #web.show()
-    #app.setWidth(500)
-    #app.exec_()
-    #web.close()
+    # outfile = get_checkcif('test-data/p21c.cif')
+    # app = QWindow()
+    # web = WebPage(outfile)
+    # web.show()
+    # app.setWidth(500)
+    # app.exec_()
+    # web.close()
     pass
