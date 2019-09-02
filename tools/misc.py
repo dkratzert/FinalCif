@@ -29,6 +29,29 @@ def isfloat(value):
         return False
 
 
+class Multilog(object):
+    """
+    This class copies all output from stdout and stderr to a file
+    It acts like tee with following usage:
+    sys.stdout = multifile([sys.stdout, lstfileobj])
+    """
+
+    def __init__(self, files):
+        self._files = files
+
+    def __getattr__(self, attr, *args):
+        return self._wrap(attr, *args)
+
+    def _wrap(self, attr, *args):
+        def g(*a, **kw):
+            res = ''
+            for f in self._files:
+                res = getattr(f, attr, *args)(*a, **kw)
+            return res
+
+        return g
+
+
 def strip_finalcif_of_name(pth: str) -> str:
     """
     Strips '-finalcif' from the stem path
@@ -466,9 +489,9 @@ predef_prop_templ = [{'name'  : 'Crystal Color',
                       },
                      {'name'  : 'Molecular Graphics',
                       'values': ['_computing_molecular_graphics',
-                                 ['', 'Olex2 (Dolomanov et al., 2009)', 
+                                 ['', 'Olex2 (Dolomanov et al., 2009)',
                                   'ShelXle (H\"ubschle 2011)',
-                                  'ORTEP Farrujia 2012', 
+                                  'ORTEP Farrujia 2012',
                                   'Bruker SHELXTL, XP (G. Sheldrick)',
                                   'Mercury CSD, C. F. Macrae et al. 2008',
                                   'PLATON (A.L.Spek, 2019)'
