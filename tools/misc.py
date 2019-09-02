@@ -466,9 +466,13 @@ predef_prop_templ = [{'name'  : 'Crystal Color',
                       },
                      {'name'  : 'Molecular Graphics',
                       'values': ['_computing_molecular_graphics',
-                                 ['', 'Olex2 (Dolomanov et al., 2009)', 'ShelXle (H\"ubschle 2011)',
-                                  'ORTEP Farrujia 2012', 'Bruker SHELXTL, XP (G. Sheldrick)',
-                                  'Mercury CSD']]
+                                 ['', 'Olex2 (Dolomanov et al., 2009)', 
+                                  'ShelXle (H\"ubschle 2011)',
+                                  'ORTEP Farrujia 2012', 
+                                  'Bruker SHELXTL, XP (G. Sheldrick)',
+                                  'Mercury CSD, C. F. Macrae et al. 2008',
+                                  'PLATON (A.L.Spek, 2019)'
+                                  ]]
                       },
                      {'name'  : 'Crystal Cooling Device',
                       'values': ['_olex2_diffrn_ambient_temperature_device',
