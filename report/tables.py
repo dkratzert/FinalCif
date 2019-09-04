@@ -14,7 +14,7 @@ from pathlib import Path
 from docx import Document
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
-from docx.shared import Cm
+from docx.shared import Cm, Pt
 # compiled with "Py -3 -m PyInstaller multitable.spec --onefile"
 from docx.table import Table, _Cell
 
@@ -784,7 +784,8 @@ def add_last_symminfo_line(newsymms, document):
         n += 1
         line += "#{}: {}{}   ".format(key, value, sep)
     if newsymms:
-        p.add_run(line)
+        run = p.add_run(line)
+        run.font.size = Pt(8)
 
 
 def get_card(cif, symm):

@@ -55,6 +55,7 @@ from tools.settings import FinalCifSettings
 """
 TODO:
 - make tab key go down one row
+- sanitize file name of report from "-finalcif"
 - Add one picture of the vzs file
 - option for default directory?
 - add button for zip file with cif, report and checkcif pdf
