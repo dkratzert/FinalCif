@@ -61,6 +61,8 @@ TODO:
 - Checkcif: http://journals.iucr.org/services/cif/checking/validlist.html
 - load pairs and loops, add new content with order, write back
 
+- spgr = gemmi.find_spacegroup_by_ops(gemmi.GroupOps([gemmi.Op(o) for o in ['x,y,z', ...]]))
+- ops = [op.triplet() for op in gemmi.find_spacegroup_by_name('I2').operations()]
 
 c = CifContainer(Path('test-data/DK_zucker2_0m-finalcif.cif'))
 cdic = json.loads(c.as_json())
