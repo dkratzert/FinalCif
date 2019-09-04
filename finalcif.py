@@ -406,6 +406,13 @@ class AppWindow(QMainWindow):
                 not_ok = e
                 self.unable_to_open_message(self.cif.fileobj, not_ok)
                 return
+            except PermissionError:
+                if DEBUG:
+                    raise
+                print('Unable to open cif file')
+                self.show_general_warning('The report document {} could not be opened.\n'
+                                          'Is the file already opened?'.format(output_filename))
+                return
             if os.name == 'nt':
                 os.startfile(Path(output_filename).absolute())
             if sys.platform == 'darwin':
