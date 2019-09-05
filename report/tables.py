@@ -115,6 +115,7 @@ def make_report_from(file_obj: Path, output_filename: str = None, path: str = ''
         pic.add_run().add_picture(str(picfile), width=Cm(7))
 
     p_report = document.add_paragraph()
+    p_report.style = document.styles['fliesstext']
     p_report.add_run('The following text is only a suggestion: ').font.bold = True
     Crystallization(cif, p_report)
     CrstalSelection(cif, p_report)

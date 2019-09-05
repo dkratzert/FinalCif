@@ -4,7 +4,7 @@ import gemmi
 from docx.text.paragraph import Paragraph
 from docx.text.run import Run
 
-from cif.cif_file_io import CifContainer
+from cif.cif_file_io import CifContainer, retranslate_delimiter
 
 """
 TODO: Add references of the used programs to the end.
@@ -29,10 +29,10 @@ class Crystallization(FormatMixin):
         gstr = gemmi.cif.as_string
         self.crytsalization_method = gstr(self.cif['_exptl_crystal_recrystallization_method'])
         if not self.crytsalization_method:
-            self.crytsalization_method = 'from ????'
-        sentence = "The compound was crystallized {}. "
+            self.crytsalization_method = '[No crystallization method was given]'
+        sentence = "{} "
         self.text = sentence.format(self.crytsalization_method)
-        paragraph.add_run(self.text)
+        paragraph.add_run(retranslate_delimiter(self.text))
 
 
 class CrstalSelection(FormatMixin):
@@ -46,7 +46,7 @@ class CrstalSelection(FormatMixin):
         if float(self.temperature.split('(')[0]) > 200:
             method = ''
         self.txt = sentence.format(self.name, method, self.temperature)
-        paragraph.add_run(self.txt)
+        paragraph.add_run(retranslate_delimiter(self.txt))
 
     @property
     def name(self) -> str:
@@ -82,13 +82,13 @@ class MachineType():
         txt = sentence1.format(get_inf_article(self.difftype), self.difftype, self.device,
                                get_inf_article(self.source), self.source, self.monochrom,
                                self.detector_type, get_inf_article(self.cooling), self.cooling)
-        paragraph.add_run(txt)
+        paragraph.add_run(retranslate_delimiter(txt))
         # radiation type e.g. Mo:
-        paragraph.add_run(radtype[0])
+        paragraph.add_run(retranslate_delimiter(radtype[0]))
         # K line:
         radrunita = paragraph.add_run(radtype[1])
         radrunita.font.italic = True
-        alpha = paragraph.add_run(radtype[2])
+        alpha = paragraph.add_run(retranslate_delimiter(radtype[2]))
         alpha.font.italic = True
         alpha.font.subscript = True
         txt2 = sentence2.format(self.wavelen)
@@ -122,7 +122,7 @@ class DataReduct():
             abs_details = 'SCALE3 ABSPACK'
         sentence = 'All data were integrated with {} and {} {} absorption correction using {} was applied. '
         txt = sentence.format(integration_prog, get_inf_article(abstype), abstype, abs_details)
-        paragraph.add_run(txt)
+        paragraph.add_run(retranslate_delimiter(txt))
 
 
 class SolveRefine():
@@ -143,7 +143,7 @@ class SolveRefine():
         sentence = r"The structure were solved by {} methods using {} and refined by full-matrix " \
                    "least-squares methods against "
         txt = sentence.format(solution_method, solution_prog)
-        paragraph.add_run(txt)
+        paragraph.add_run(retranslate_delimiter(txt))
         paragraph.add_run('F').font.italic = True
         if refine_coef.lower() == 'fsqd':
             paragraph.add_run('2').font.superscript = True
