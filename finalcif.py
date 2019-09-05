@@ -45,7 +45,7 @@ from PyQt5.QtGui import QColor, QFont, QIcon, QPalette
 from PyQt5.QtWidgets import QApplication, QComboBox, QFileDialog, QHeaderView, QListWidget, QListWidgetItem, \
     QMainWindow, QMessageBox, QPlainTextEdit, QSizePolicy, QStackedWidget, QStyle, QTableWidget, QTableWidgetItem
 
-from cif.cif_file_io import CifContainer, set_pair_delimited
+from cif.cif_file_io import CifContainer, set_pair_delimited, retranslate_delimiter
 from datafiles.bruker_data import BrukerData
 from datafiles.platon import Platon
 from tools.misc import high_prio_keys, predef_equipment_templ, predef_prop_templ, combobox_fields, \
@@ -684,10 +684,10 @@ class AppWindow(QMainWindow):
         if len(value) > 38:
             tab_item = QPlainTextEdit()
             tab_item.setFrameShape(0)
-            tab_item.setPlainText(value)
+            tab_item.setPlainText(retranslate_delimiter(value))
             table.setCellWidget(row_num, 1, tab_item)
         else:
-            item_val = QTableWidgetItem(value)
+            item_val = QTableWidgetItem(retranslate_delimiter(value))
             # Add cif key and value to the row:
             table.setItem(row_num, 1, item_val)
         item_key = QTableWidgetItem(key)

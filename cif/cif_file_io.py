@@ -31,37 +31,45 @@ def quote(string: str, wrapping=80):
     quoted = gemmi.cif.quote(lines.rstrip('\n'))
     return quoted
 
+charcters = {'°'      : r'\%',
+             '±'      : r'+-',
+             'ß'      : r'\&s',
+             'ü'      : r'u\"',
+             'ö'      : r'o\"',
+             'ä'      : r'a\"',
+             'é'      : '\'e',
+             'á'      : r'\'a',
+             'à'      : r'\`a',
+             'â'      : r'\^a',
+             'ç'      : r'\,c',
+             u"\u03B1": r'\a',
+             u"\u03B2": r'\b',
+             u"\u03B3": r'\g',
+             u"\u03B4": r'\d',
+             u"\u03B5": r'\e',
+             u"\u03B6": r'\z',
+             u"\u03B7": r'\h',
+             u"\u03B8": r'\q',
+             u"\u03B9": r'\i',
+             u"\u03BA": r'\k',
+             u"\u03BB": r'\l',
+             u"\u03BC": r'\m',
+             u"\u03BD": r'\n',
+             u"\u03BE": r'\x',
+             u"\u03BF": r'\o',
+             u"\u03C0": r'\p',
+             u"\u03C1": r'\r',
+             u"\u03C3": r'\s',
+             u"\u03C4": r'\t',
+             u"\u03C5": r'\u',
+             u"\u03C6": r'\F',
+             u"\u03C9": r'\w',
+             }  # , r'\r\n': chr(10)}
 
-def set_pair_delimited(block, key, txt):
+def set_pair_delimited(block, key: str, txt: str):
     """
     Converts special characters to their markup counterparts.
     """
-    charcters = {'°'      : r'\%', '±': r'+-', 'ß': r'\&s', 'ü': r'u\"',
-                 'ö'      : r'o\"', 'ä': r'a\"', 'é': '\'e', 'á': r'\'a',
-                 'à'      : r'\`a', 'â': r'\^a', 'ç': r'\,c',
-                 u"\u03B1": r'\a',
-                 u"\u03B2": r'\b',
-                 u"\u03B3": r'\g',
-                 u"\u03B4": r'\d',
-                 u"\u03B5": r'\e',
-                 u"\u03B6": r'\z',
-                 u"\u03B7": r'\h',
-                 u"\u03B8": r'\q',
-                 u"\u03B9": r'\i',
-                 u"\u03BA": r'\k',
-                 u"\u03BB": r'\l',
-                 u"\u03BC": r'\m',
-                 u"\u03BD": r'\n',
-                 u"\u03BE": r'\x',
-                 u"\u03BF": r'\o',
-                 u"\u03C0": r'\p',
-                 u"\u03C1": r'\r',
-                 u"\u03C3": r'\s',
-                 u"\u03C4": r'\t',
-                 u"\u03C5": r'\u',
-                 u"\u03C6": r'\F',
-                 u"\u03C9": r'\w',
-                 }  # , r'\r\n': chr(10)}
     for char in txt:
         if char in charcters:
             txt = txt.replace(char, charcters[char])
@@ -75,6 +83,17 @@ def set_pair_delimited(block, key, txt):
             block.set_pair(key, txt)
         else:
             block.set_pair(key, quote(txt))
+
+def retranslate_delimiter(txt: str):
+    """
+    Translates delimited cif characters back to unicode characters.
+    >>> retranslate_delimiter("Crystals were grown from thf at -20 \%C.")
+    'Crystals were grown from thf at -20 °C.'
+    """
+    inv_map = {v: k for k, v in charcters.items()}
+    for char in inv_map.keys():
+        txt = txt.replace(char, inv_map[char])
+    return txt
 
 
 class CifContainer():
