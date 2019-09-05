@@ -407,11 +407,11 @@ predef_equipment_templ = [{'name' : 'D8 VENTURE',
                                ['_olex2_diffrn_ambient_temperature_device', 'Oxford Cryostream 800'],
                            ]
                            },
-                          {'name' : 'SMART APEX2 QUAZAR',
+                          {'name' : 'APEX2 QUAZAR',
                            'items': [
                                ['_diffrn_radiation_monochromator', 'mirror optics'],
                                ['_diffrn_measurement_device', 'three-circle diffractometer'],
-                               ['_diffrn_measurement_device_type', 'Bruker SMART APEX2 QUAZAR'],
+                               ['_diffrn_measurement_device_type', 'Bruker APEX2 QUAZAR'],
                                ['_diffrn_measurement_method', r'\w and \f scans'],
                                ['_diffrn_source', 'microfocus sealed X-ray tube'],
                                ['_diffrn_source_type', r'Incoatec I\ms'],
