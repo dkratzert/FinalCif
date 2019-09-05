@@ -27,7 +27,9 @@ class Crystallization(FormatMixin):
     def __init__(self, cif: CifContainer, paragraph: Paragraph):
         self.cif = cif
         gstr = gemmi.cif.as_string
-        self.crytsalization_method = gstr(self.cif['_exptl_crystal_recrystallization_method'])  # .strip("'")
+        self.crytsalization_method = gstr(self.cif['_exptl_crystal_recrystallization_method'])
+        if not self.crytsalization_method:
+            self.crytsalization_method = 'from ????'
         sentence = "The compound was crystallized {}. "
         self.text = sentence.format(self.crytsalization_method)
         paragraph.add_run(self.text)
@@ -70,12 +72,16 @@ class MachineType():
         self.rad_type = gstr(self.cif['_diffrn_radiation_type'])
         radtype = format_radiation(self.rad_type)
         self.wavelen = gstr(self.cif['_diffrn_radiation_wavelength'])
-        sentence1 = "on {} {} {} with {} {} using {} as monochromator. " \
+        self.detector_type = ''
+        detector_type = gstr(self.cif['_diffrn_detector_type'])
+        if detector_type:
+            self.detector_type = " and a {} detector".format(detector_type) 
+        sentence1 = "on {} {} {} with {} {} using {} as monochromator{}. " \
                     "The diffractometer was equipped with {} {} low temperature device and used "
         sentence2 = " radiation, λ = {}\u00A0Å. "
         txt = sentence1.format(get_inf_article(self.difftype), self.difftype, self.device,
                                get_inf_article(self.source), self.source, self.monochrom,
-                               get_inf_article(self.cooling), self.cooling)
+                               self.detector_type, get_inf_article(self.cooling), self.cooling)
         paragraph.add_run(txt)
         # radiation type e.g. Mo:
         paragraph.add_run(radtype[0])
