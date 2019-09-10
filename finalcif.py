@@ -54,6 +54,8 @@ from tools.settings import FinalCifSettings
 
 """
 TODO:
+- Filter out mouse wheel events for comboboxes
+- parse vref items from html chekccif (<pre> tag)
 - make tab key go down one row
 - sanitize file name of report from "-finalcif"
 - Add one picture of the vzs file
