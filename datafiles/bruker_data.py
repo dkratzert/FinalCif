@@ -107,6 +107,7 @@ class BrukerData(object):
         temperature = round(min([temp1, temp2]), 1)
         if temperature < 0.01:
             temperature = '?'
+        # All sources that are not filled with data will be yellow in the main table
         #                          data                         tooltip
         sources = {'_cell_measurement_reflns_used'          : (saint_data.cell_reflections, saint_data.filename.name),
                    '_cell_measurement_theta_min'            : (saint_data.cell_res_min_theta, saint_data.filename.name),
@@ -135,6 +136,7 @@ class BrukerData(object):
                    '_publ_section_references'               : (shelx, ''),
                    '_refine_special_details'                : ('', ''),
                    '_exptl_crystal_recrystallization_method': ('', ''),
+                   '_chemical_absolute_configuration'       : ('', ''),
                    }
         self.sources = dict((k.lower(), v) for k, v in sources.items())
 
