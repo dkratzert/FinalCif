@@ -274,7 +274,7 @@ class AppWindow(QMainWindow):
         """
         self.ui.statusBar.showMessage('Sending html report request...')
         self.save_current_cif_file()
-        htmlfile = Path('checkcif-' + self.cif.fileobj.stem + '.html')
+        htmlfile = Path(strip_finalcif_of_name('checkcif-' + self.cif.fileobj.stem) + '-finalcif.html')
         try:
             htmlfile.unlink()
         except FileNotFoundError:
