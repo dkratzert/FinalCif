@@ -265,6 +265,7 @@ class AppWindow(QMainWindow):
         """
         Get back to the main table.
         """
+        self.load_cif_file(self.fin_file)
         self.ui.MainStackedWidget.setCurrentIndex(0)
 
     def do_html_checkcif(self):
@@ -398,9 +399,9 @@ class AppWindow(QMainWindow):
         not_ok = None
         if self.cif:
             self.save_current_cif_file()
-            output_filename = 'report_{}.docx'.format(self.cif.fileobj.stem)
+            output_filename = strip_finalcif_of_name('report_{}'.format(self.cif.fileobj.stem)) + '-finalcif.docx'
             try:
-                make_report_from(self.fin_file, path=application_path, output_filename=output_filename,
+                make_report_from(self.fin_file, output_filename=output_filename, path=application_path, 
                                  without_H=self.ui.HAtomsCheckBox.isChecked())
             except FileNotFoundError as e:
                 if DEBUG:
