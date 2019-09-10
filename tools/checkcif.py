@@ -18,6 +18,8 @@ from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtWidgets import QMainWindow
 from requests.exceptions import MissingSchema
 
+from tools.misc import strip_finalcif_of_name
+
 
 class WebPage(QWebEngineView):
     def __init__(self, file: Path):
@@ -103,7 +105,7 @@ class MakeCheckCif():
             print('Link is not valid anymore...')
             pdf = None
         if pdf:
-            pdfobj = Path('checkcif-' + self.cifobj.stem + '.pdf')
+            pdfobj = Path(strip_finalcif_of_name('checkcif-' + self.cifobj.stem) + '-finalcif.pdf')
             pdfobj.write_bytes(pdf)
             if sys.platform == 'win' or sys.platform == 'win32':
                 subprocess.Popen([str(pdfobj.absolute())], shell=True)
