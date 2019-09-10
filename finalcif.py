@@ -40,7 +40,7 @@ if DEBUG:
     uic.compileUiDir(os.path.join(application_path, './gui'))
     # uic.compileUi('./gui/finalcif_gui.ui', open('./gui/finalcif_gui.py', 'w'))
 
-from PyQt5.QtCore import QPoint, Qt, QUrl
+from PyQt5.QtCore import QPoint, Qt, QUrl, QObject, QEvent
 from PyQt5.QtGui import QColor, QFont, QIcon, QPalette
 from PyQt5.QtWidgets import QApplication, QComboBox, QFileDialog, QHeaderView, QListWidget, QListWidgetItem, \
     QMainWindow, QMessageBox, QPlainTextEdit, QSizePolicy, QStackedWidget, QStyle, QTableWidget, QTableWidgetItem
@@ -102,6 +102,7 @@ class AppWindow(QMainWindow):
         self.store_predefined_templates()
         self.show_equipment_and_properties()
         self.settings.load_window_position()
+        self.ui.CifItemsTable.installEventFilter(self)
         # distribute CifItemsTable Columns evenly:
         hheader = self.ui.CifItemsTable.horizontalHeader()
         hheader.setSectionResizeMode(0, QHeaderView.Stretch)
@@ -1277,11 +1278,32 @@ class AppWindow(QMainWindow):
             elif miss_data.lower() in [x.lower() for x in combobox_fields]:
                 self.add_property_combobox(combobox_fields[miss_data], row_num)
 
+    def eventFilter(self, widget: QObject, event: QEvent):
+        """
+        Event filter to ignore wheel events in comboboxes to prevent accidental changes to them.
+        """
+        if event.type() == QEvent.Wheel and widget and not widget.hasFocus():
+            event.ignore()
+            return True
+        if event.type() == QEvent.KeyRelease and event.key() == Qt.Key_Backtab:
+            row = self.ui.CifItemsTable.currentRow()
+            if row > 0:
+                self.ui.CifItemsTable.setCurrentCell(row - 1, 2)
+            return True
+        if event.type() == QEvent.KeyRelease and event.key() == Qt.Key_Tab:
+            row = self.ui.CifItemsTable.currentRow()
+            self.ui.CifItemsTable.setCurrentCell(row, 2)
+            return True
+        return QObject.eventFilter(self, widget, event)
+
     def add_property_combobox(self, miss_data: str, row_num: int):
         """
         Adds a QComboBox to the CifItemsTable with the content of special_fields or property templates.
         """
         combobox = QComboBox()
+        # Works in combination with the event filter:
+        combobox.setFocusPolicy(Qt.StrongFocus)
+        combobox.installEventFilter(self)
         # combobox.currentIndexChanged.connect(self.print_combo)
         # print('special:', row_num, miss_data)
         self.ui.CifItemsTable.setCellWidget(row_num, 2, combobox)
@@ -1407,6 +1429,7 @@ class AppWindow(QMainWindow):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     w = AppWindow()
+    # app.setWindowIcon(QIcon('./icon/multitable.ico'))
     app.setWindowIcon(QIcon('./icon/multitable.png'))
     w.setWindowTitle('FinalCif v{}'.format(VERSION))
     # w.showMaximized()  # For full screen view
