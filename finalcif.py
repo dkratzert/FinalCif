@@ -1228,6 +1228,8 @@ class AppWindow(QMainWindow):
         self.missing_data.append('_cell_measurement_temperature')
         self.missing_data.append('_diffrn_ambient_temperature')
         self.missing_data.append('_publ_section_references')
+        if self.cif.is_centrosymm:
+            self.missing_data.append('_chemical_absolute_configuration')
         for miss_data in self.missing_data:
             # add missing item to data sources column:
             try:
