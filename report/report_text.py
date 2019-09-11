@@ -60,20 +60,18 @@ class MachineType():
     def __init__(self, cif: CifContainer, paragraph: Paragraph):
         self.cif = cif
         gstr = gemmi.cif.as_string
-        self.difftype = gstr(self.cif['_diffrn_measurement_device_type']).strip("'")
-        self.device = gstr(self.cif['_diffrn_measurement_device']).strip("'")
-        self.source = gstr(self.cif['_diffrn_source']).strip("'")
-        self.monochrom = gstr(self.cif['_diffrn_radiation_monochromator']).strip("'")
+        self.difftype = gstr(self.cif['_diffrn_measurement_device_type']).strip("'") or '[No measurement device type given]'
+        self.device = gstr(self.cif['_diffrn_measurement_device']).strip("'") or '[No measurement device given]'
+        self.source = gstr(self.cif['_diffrn_source']).strip("'") or '[No radiation source given]'
+        self.monochrom = gstr(self.cif['_diffrn_radiation_monochromator']).strip("'") or '[No monochromator type given]'
         if not self.monochrom:
             self.monochrom = '?'
-        self.cooling = gstr(self.cif['_olex2_diffrn_ambient_temperature_device'])
-        if not self.cooling:
-            self.cooling = '?'
-        self.rad_type = gstr(self.cif['_diffrn_radiation_type'])
+        self.cooling = gstr(self.cif['_olex2_diffrn_ambient_temperature_device']) or '[No cooling device given]'
+        self.rad_type = gstr(self.cif['_diffrn_radiation_type']) or '[No radiation type given]'
         radtype = format_radiation(self.rad_type)
-        self.wavelen = gstr(self.cif['_diffrn_radiation_wavelength'])
+        self.wavelen = gstr(self.cif['_diffrn_radiation_wavelength']) or '[No wavelength given]'
         self.detector_type = ''
-        detector_type = gstr(self.cif['_diffrn_detector_type'])
+        detector_type = gstr(self.cif['_diffrn_detector_type']) or '[No detector type given]'
         if detector_type:
             self.detector_type = " and a {} detector".format(detector_type) 
         sentence1 = "on {} {} {} with {} {} using {} as monochromator{}. " \
@@ -107,8 +105,8 @@ class DataReduct():
             integration_prog = 'CrysAlisPro'
         if 'trek' in integration.lower():
             integration_prog = 'd*trek'
-        abstype = gstr(self.cif['_exptl_absorpt_correction_type'])
-        abs_details = gstr(self.cif['_exptl_absorpt_process_details'])
+        abstype = gstr(self.cif['_exptl_absorpt_correction_type']) or '??'
+        abs_details = gstr(self.cif['_exptl_absorpt_process_details']) or '??'
         if 'sortav' in abs_details.lower():
             abs_details = 'SORTAV'
         if 'sadabs' in abs_details.lower():
@@ -129,15 +127,9 @@ class SolveRefine():
     def __init__(self, cif: CifContainer, paragraph: Paragraph):
         self.cif = cif
         gstr = gemmi.cif.as_string
-        solution_prog = gstr(self.cif['_computing_structure_solution']).strip("'")
-        if not solution_prog:
-            solution_prog = '?'
-        solution_method = gstr(self.cif['_atom_sites_solution_primary'])
-        if not solution_method:
-            solution_method = '?'
-        refined = gstr(self.cif['_computing_structure_refinement'])
-        if not refined:
-            refined = '?'
+        solution_prog = gstr(self.cif['_computing_structure_solution']).strip("'") or '??'
+        solution_method = gstr(self.cif['_atom_sites_solution_primary']) or '??'
+        refined = gstr(self.cif['_computing_structure_refinement']) or '??'
         # dsr = gstr(self.cif['_computing_structure_refinement'])
         refine_coef = gstr(self.cif['_refine_ls_structure_factor_coef'])
         sentence = r"The structure were solved by {} methods using {} and refined by full-matrix " \
