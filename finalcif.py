@@ -54,10 +54,7 @@ from tools.settings import FinalCifSettings
 
 """
 TODO:
-- Filter out mouse wheel events for comboboxes
-- parse vref items from html chekccif (<pre> tag)
-- make tab key go down one row
-- sanitize file name of report from "-finalcif"
+- try QNetworkRequest for checkcif
 - Add one picture of the vzs file
 - option for default directory?
 - add button for zip file with cif, report and checkcif pdf
