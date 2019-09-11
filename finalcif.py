@@ -265,7 +265,7 @@ class AppWindow(QMainWindow):
         """
         Get back to the main table.
         """
-        self.load_cif_file(self.fin_file)
+        self.load_cif_file(str(self.fin_file.absolute()))
         self.ui.MainStackedWidget.setCurrentIndex(0)
 
     def do_html_checkcif(self):
@@ -326,6 +326,14 @@ class AppWindow(QMainWindow):
     def do_offline_checkcif(self):
         """
         Performs a checkcif with platon and displays it in the text editor of the MainStackedWidget.
+
+        from threading import Thread
+        t1 = Thread(target=Worker, args=(self.fin_file,))
+        t1.start()
+        while t1.is_alive():
+            sleep(0.5)
+        else:
+            emit platon_ready()
         """
         table = self.ui.CifItemsTable
         table.setCurrentItem(None)  # makes sure also the currently edited item is saved
