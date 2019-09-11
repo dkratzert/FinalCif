@@ -13,7 +13,7 @@ from html.parser import HTMLParser
 from pathlib import Path
 
 import requests
-from PyQt5.QtCore import QPoint, QUrl
+from PyQt5.QtCore import QUrl, QPoint
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtWidgets import QMainWindow
 from requests.exceptions import MissingSchema
@@ -70,7 +70,7 @@ class MakeCheckCif():
         print('Report request sent')
         url = 'https://checkcif.iucr.org/cgi-bin/checkcif_hkl.pl'
         t1 = time.perf_counter()
-        r = requests.post(url, files={'file': f}, data=headers, timeout=150)
+        r = requests.post(url, files={'file': f}, data=headers, timeout=180)
         t2 = time.perf_counter()
         print('Report took {}s.'.format(str(round(t2 - t1, 2))))
         self.html_out_file.write_bytes(r.content)
@@ -123,6 +123,7 @@ class MyHTMLParser(HTMLParser):
         self.imageurl = ''
         super(MyHTMLParser, self).__init__()
         self.pdf = ''
+        self.vrf = ''
 
     def get_pdf(self):
         return requests.get(self.link).content
@@ -133,8 +134,12 @@ class MyHTMLParser(HTMLParser):
                 self.link = attrs[1][1]
         if tag == "img":
             if len(attrs) > 1:
-                if attrs[0][0] == 'width':
+                if attrs[0][0] == 'width' and '.gif' in attrs[1][1]:
                     self.imageurl = attrs[1][1]
+
+    def handle_data(self, data):
+        if 'Validation Reply Form' in data:
+            self.vrf = data
 
     def get_image(self):
         try:
@@ -144,16 +149,21 @@ class MyHTMLParser(HTMLParser):
 
 
 if __name__ == "__main__":
-    cif = Path(r'D:\frames\guest\BreitPZ_R_122\BreitPZ_R_122\BreitPZ_R_122_0m_a-finalcif.cif')
-    html = Path(r'D:\GitHub\FinalCif\test-data\checkcif-DK_zucker2_0m.html')
+    #cif = Path(r'D:\frames\guest\BreitPZ_R_122\BreitPZ_R_122\BreitPZ_R_122_0m_a-finalcif.cif')
+    html = Path(r'/Users/daniel/GitHub/FinalCif/test-data/checkcif-DK_zucker2_0m.html')
     # ckf = MakeCheckCif(None, cif, outfile=html)
     # ckf.show_pdf_report()
     # html = Path(r'D:\frames\guest\BreitPZ_R_122\BreitPZ_R_122\checkcif-BreitPZ_R_122_0m_a.html')
 
+    from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkReply, QNetworkRequest, QHttpMultiPart, QHttpPart
+    from PyQt5.QtWebEngineWidgets import QWebEngineView
+
     parser = MyHTMLParser()
     parser.feed(html.read_text())
-    image = parser.get_image()
-    print(image)
+    print(parser.imageurl)
+    print(parser.vrf)
+    print(parser.pdf)
+    print(parser.link)
 
     # open_pdf_result(Path(r'D:\frames\guest\BreitPZ_R_122\BreitPZ_R_122\BreitPZ_R_122_0m_a-finalcif.cif'), html)
     # Path(d:\tmp\
@@ -176,4 +186,43 @@ if __name__ == "__main__":
     # app.setWidth(500)
     # app.exec_()
     # web.close()
-    pass
+
+    headers = {
+        "runtype"   : "symmonly",
+        "referer"   : "checkcif_server",
+        "outputtype": 'HTML',
+        "validtype" : 'checkcif_only',
+        "valout"    : 'vrfno',
+    }
+
+    def show_update_warning(reply: QNetworkReply):
+        """
+        Reads the reply from the server and displays a warning in case of an old version.
+        """
+        print(reply.readAll()).decode('ascii', 'ignore')
+
+
+    multiPart = QHttpMultiPart(QHttpMultiPart.FormDataType)
+    netman = QNetworkAccessManager()
+    #netman.finished.connect(show_update_warning)
+    url = QUrl('https://checkcif.iucr.org/cgi-bin/checkcif_hkl.pl')
+    req = QNetworkRequest(url)
+    reply = netman.get(req)
+    print(reply.readAll())
+
+    multipart = QHttpMultiPart(QHttpMultiPart.FormDataType)
+    for name, value in headers.items():
+        part = QHttpPart()
+        part.setHeader(QNetworkRequest.ContentTypeHeader, 'text/plain; charset=utf-8')
+        part.setHeader(QNetworkRequest.ContentDispositionHeader, 'form-data; name="%s"' % name)
+        part.setBody(value.encode('utf-8'))
+        multipart.append(part)
+    filepart = QHttpPart()
+    filepart.setHeader(QNetworkRequest.ContentTypeHeader, file['type'])
+    filepart.setHeader(QNetworkRequest.ContentDispositionHeader,
+                       'form-data; name="%s"; filename="%s"' % (file['name'], file['filename']))
+    filepart.setBodyDevice(file['device'])
+    multipart.append(filepart)
+    reply = netman.get(req, multipart)
+    # Hook multipart to the reply so that it sticks around for the lifetime of the request
+    multipart.setParent(reply)
