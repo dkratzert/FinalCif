@@ -17,6 +17,12 @@ from pathlib import Path
 from time import sleep
 
 
+def Worker(fname):
+    print("Platon worker")
+    s = Platon(fname)
+    return s
+
+
 class Platon():
     def __init__(self, file: Path):
         self.cif_fileobj = file
@@ -60,7 +66,7 @@ class Platon():
                 if file.suffix in ['.sar', '_pl.res', '_pl.spf', '.ckf']:
                     file.unlink()
             except FileNotFoundError:
-                #print('##')
+                # print('##')
                 pass
         os.chdir(curdir.absolute())
 
@@ -112,7 +118,7 @@ class Platon():
                     size1 = chkfile.stat().st_size
                     if timeticks > 10:
                         try:
-                            #print('Platon took too much time, terminating platon. (2)')
+                            # print('Platon took too much time, terminating platon. (2)')
                             plat.terminate()
                             break
                         except Exception:
@@ -125,8 +131,8 @@ class Platon():
             print('Could not run local platon:', e)
             self.platon_output = str(e)
             return
-        #self.platon_output = plat.stdout.decode('ascii')
-        #self.platon_output += plat.stderr.decode('ascii')
+        # self.platon_output = plat.stdout.decode('ascii')
+        # self.platon_output += plat.stderr.decode('ascii')
         # a fresh platon exe from the web:
         # this runs only wif salflibc.dll. I have to find a solution to download it.
         # Here is the link to salflib: http://www.chem.gla.ac.uk/~louis/software/dll/salflibc.dll
@@ -139,9 +145,9 @@ class Platon():
 if __name__ == '__main__':
     os.chdir("/Users/daniel/GitHub")
     fname = Path(r'/Users/daniel/GitHub/FinalCif/test-data/DK_zucker2_0m.cif')
-    s = Platon(fname)
-    print(s)
-    print(s.chkfile)
+    # from threading import Thread
+    # t1 = Thread(target=Worker, args=(fname,))
+    # t1.start()
     # print(s.chk_file_text)
     # chkfile = Path(fname.stem + '.chk')
     # chkfile.unlink()
