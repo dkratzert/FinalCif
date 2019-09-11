@@ -9,7 +9,10 @@ import json
 import os
 import subprocess
 import sys
+import time
+import traceback
 from pathlib import Path, WindowsPath
+from urllib.parse import quote
 
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkReply, QNetworkRequest
 from gemmi import cif
@@ -401,7 +404,7 @@ class AppWindow(QMainWindow):
             self.save_current_cif_file()
             output_filename = strip_finalcif_of_name('report_{}'.format(self.cif.fileobj.stem)) + '-finalcif.docx'
             try:
-                make_report_from(self.fin_file, output_filename=output_filename, path=application_path, 
+                make_report_from(self.fin_file, output_filename=output_filename, path=application_path,
                                  without_H=self.ui.HAtomsCheckBox.isChecked())
             except FileNotFoundError as e:
                 if DEBUG:
@@ -1428,6 +1431,34 @@ class AppWindow(QMainWindow):
 
 
 if __name__ == '__main__':
+    def my_exception_hook(exctype, value, error_traceback):
+        """
+        Hooks into Exceptions to create debug reports.
+        """
+        errortext = 'FinalCif crash report\n\n'
+        errortext += time.asctime(time.localtime(time.time())) + '\n'
+        errortext += "Finalcif crashed during the following opertaion:" + '\n'
+        errortext += '-' * 80 + '\n'
+        errortext += ''.join(traceback.format_tb(error_traceback)) + '\n'
+        errortext += '-' * 80 + '\n'
+        logfile = Path(r'./finalcif-crash.txt')
+        try:
+            logfile.write_text(errortext)
+        except PermissionError:
+            pass
+        sys.__excepthook__(exctype, value, error_traceback)
+        # Hier Fesnter für meldung öffnen
+        window = AppWindow()
+        text = 'FinalCif encountered an error.<br>Please send the file <br>"{}" <br>to Daniel Kratzert:  ' \
+               '<a href="mailto:daniel.kratzert@ac.uni-freiburg.de?subject=FinalCif version {} crash report">' \
+               'daniel.kratzert@ac.uni-freiburg.de</a>'.format(logfile.absolute(), VERSION)
+        QMessageBox.warning(window, 'Warning', text)
+        window.show()
+        sys.exit(1)
+
+
+    sys.excepthook = my_exception_hook
+
     app = QApplication(sys.argv)
     w = AppWindow()
     # app.setWindowIcon(QIcon('./icon/multitable.ico'))
