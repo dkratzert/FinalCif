@@ -139,6 +139,7 @@ class AppWindow(QMainWindow):
             self.load_cif_file(sys.argv[1])
         # Sorting desyncronizes header and columns:
         self.ui.CifItemsTable.setSortingEnabled(False)
+        self.setWindowIcon(QIcon('./icon/multitable.png'))
         self.load_recent_cifs_list()
         self.netman = QNetworkAccessManager()
         self.netman.finished.connect(self.show_update_warning)
@@ -1436,6 +1437,8 @@ if __name__ == '__main__':
         errortext += "Finalcif crashed during the following opertaion:" + '\n'
         errortext += '-' * 80 + '\n'
         errortext += ''.join(traceback.format_tb(error_traceback)) + '\n'
+        errortext += str(exctype.__name__) + ': '
+        errortext += str(value) + '\n'
         errortext += '-' * 80 + '\n'
         logfile = Path(r'./finalcif-crash.txt')
         try:
