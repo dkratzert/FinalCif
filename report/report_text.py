@@ -43,7 +43,10 @@ class CrstalSelection(FormatMixin):
         self._name = cif.fileobj.name
         method = 'shock-cooled '
         sentence = "The data for {} were collected from a {}single crystal at {}\u00A0K "
-        if float(self.temperature.split('(')[0]) > 200:
+        try:
+            if float(self.temperature.split('(')[0]) > 200:
+                method = ''
+        except ValueError:
             method = ''
         self.txt = sentence.format(self.name, method, self.temperature)
         paragraph.add_run(retranslate_delimiter(self.txt))
