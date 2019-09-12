@@ -120,8 +120,8 @@ _reflns_special_details
 _computing_data_collection        ?
 _computing_cell_refinement        ?
 _computing_data_reduction         ?
-_computing_structure_solution     'SHELXT 2018/2 (Sheldrick, 2018)'
-_computing_structure_refinement 'SHELXL-2018/3 (Sheldrick, 2018)'
+_computing_structure_solution     ?
+_computing_structure_refinement   'SHELXL-2018/3 (Sheldrick, 2018)'
 _computing_molecular_graphics     ?
 _computing_publication_material   ?
 _refine_special_details           ?

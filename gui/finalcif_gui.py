@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/Users/daniel/GitHub/FinalCif/./gui/finalcif_gui.ui'
+# Form implementation generated from reading ui file './gui\finalcif_gui.ui'
 #
-# Created by: PyQt5 UI code generator 5.13.0
+# Created by: PyQt5 UI code generator 5.12.2
 #
 # WARNING! All changes made in this file will be lost!
-
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
@@ -186,6 +185,9 @@ class Ui_FinalCifWindow(object):
         self.CheckcifButton = QtWidgets.QPushButton(self.groupBox_checkcif)
         self.CheckcifButton.setObjectName("CheckcifButton")
         self.gridLayout_6.addWidget(self.CheckcifButton, 1, 0, 1, 1)
+        self.structfactCheckBox = QtWidgets.QCheckBox(self.groupBox_checkcif)
+        self.structfactCheckBox.setObjectName("structfactCheckBox")
+        self.gridLayout_6.addWidget(self.structfactCheckBox, 1, 1, 1, 1)
         self.ButtonsHorizontalLayout.addWidget(self.groupBox_checkcif)
         self.groupBox_tables = QtWidgets.QGroupBox(self.page_MainTable)
         self.groupBox_tables.setTitle("")
@@ -399,6 +401,7 @@ class Ui_FinalCifWindow(object):
         self.CheckcifPDFOnlineButton.setText(_translate("FinalCifWindow", "Checkcif Online PDF"))
         self.CheckcifOnlineButton.setText(_translate("FinalCifWindow", "Checkcif Online HTML"))
         self.CheckcifButton.setText(_translate("FinalCifWindow", "CheckCif Offline"))
+        self.structfactCheckBox.setText(_translate("FinalCifWindow", "without structure factors"))
         self.SaveFullReportButton.setText(_translate("FinalCifWindow", "Make Tables"))
         self.HAtomsCheckBox.setText(_translate("FinalCifWindow", "without H-Bonds"))
         self.label.setText(_translate("FinalCifWindow", "PLATON Checkcif output:"))
@@ -425,3 +428,5 @@ class Ui_FinalCifWindow(object):
         self.actionSave_Report.setText(_translate("FinalCifWindow", "Save Report"))
         self.actionSave_CIF_File.setText(_translate("FinalCifWindow", "Save CIF File"))
         self.actionedit_templates.setText(_translate("FinalCifWindow", "edit templates"))
+
+
