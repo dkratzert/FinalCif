@@ -29,6 +29,29 @@ def isfloat(value):
         return False
 
 
+class Multilog(object):
+    """
+    This class copies all output from stdout and stderr to a file
+    It acts like tee with following usage:
+    sys.stdout = multifile([sys.stdout, lstfileobj])
+    """
+
+    def __init__(self, files):
+        self._files = files
+
+    def __getattr__(self, attr, *args):
+        return self._wrap(attr, *args)
+
+    def _wrap(self, attr, *args):
+        def g(*a, **kw):
+            res = ''
+            for f in self._files:
+                res = getattr(f, attr, *args)(*a, **kw)
+            return res
+
+        return g
+
+
 def strip_finalcif_of_name(pth: str) -> str:
     """
     Strips '-finalcif' from the stem path
@@ -189,7 +212,6 @@ text_field_keys = ['_refine_special_details',
                    '_refine_ls_weighting_details',
                    '_reflns_special_details',
                    '_exptl_absorpt_process_details',
-                   '_refine_special_details',
                    '_publ_section_references',
                    '_audit_contact_author_address',
                    '_exptl_crystal_recrystallization_method',
@@ -384,11 +406,11 @@ predef_equipment_templ = [{'name' : 'D8 VENTURE',
                                ['_olex2_diffrn_ambient_temperature_device', 'Oxford Cryostream 800'],
                            ]
                            },
-                          {'name' : 'SMART APEX2 QUAZAR',
+                          {'name' : 'APEX2 QUAZAR',
                            'items': [
                                ['_diffrn_radiation_monochromator', 'mirror optics'],
                                ['_diffrn_measurement_device', 'three-circle diffractometer'],
-                               ['_diffrn_measurement_device_type', 'Bruker SMART APEX2 QUAZAR'],
+                               ['_diffrn_measurement_device_type', 'Bruker APEX2 QUAZAR'],
                                ['_diffrn_measurement_method', r'\w and \f scans'],
                                ['_diffrn_source', 'microfocus sealed X-ray tube'],
                                ['_diffrn_source_type', r'Incoatec I\ms'],
@@ -466,9 +488,13 @@ predef_prop_templ = [{'name'  : 'Crystal Color',
                       },
                      {'name'  : 'Molecular Graphics',
                       'values': ['_computing_molecular_graphics',
-                                 ['', 'Olex2 (Dolomanov et al., 2009)', 'ShelXle (H\"ubschle 2011)',
-                                  'ORTEP Farrujia 2012', 'Bruker SHELXTL, XP (G. Sheldrick)',
-                                  'Mercury CSD']]
+                                 ['', 'Olex2 (Dolomanov et al., 2009)',
+                                  'ShelXle (H\"ubschle 2011)',
+                                  'ORTEP Farrujia 2012',
+                                  'Bruker SHELXTL, XP (G. Sheldrick)',
+                                  'Mercury CSD, C. F. Macrae et al. 2008',
+                                  'PLATON (A.L.Spek, 2019)'
+                                  ]]
                       },
                      {'name'  : 'Crystal Cooling Device',
                       'values': ['_olex2_diffrn_ambient_temperature_device',

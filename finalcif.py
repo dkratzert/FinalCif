@@ -9,10 +9,13 @@ import json
 import os
 import subprocess
 import sys
+import time
+import traceback
 from pathlib import Path, WindowsPath
-from gemmi import cif
+from urllib.parse import quote
 
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkReply, QNetworkRequest
+from gemmi import cif
 from requests import ReadTimeout
 
 from cif.core_dict import cif_core
@@ -42,12 +45,12 @@ if DEBUG:
     uic.compileUiDir(os.path.join(application_path, './gui'))
     # uic.compileUi('./gui/finalcif_gui.ui', open('./gui/finalcif_gui.py', 'w'))
 
-from PyQt5.QtCore import QPoint, Qt, QUrl
+from PyQt5.QtCore import QPoint, Qt, QUrl, QObject, QEvent
 from PyQt5.QtGui import QColor, QFont, QIcon, QPalette
 from PyQt5.QtWidgets import QApplication, QComboBox, QFileDialog, QHeaderView, QListWidget, QListWidgetItem, \
     QMainWindow, QMessageBox, QPlainTextEdit, QSizePolicy, QStackedWidget, QStyle, QTableWidget, QTableWidgetItem
 
-from cif.cif_file_io import CifContainer, set_pair_delimited
+from cif.cif_file_io import CifContainer, set_pair_delimited, retranslate_delimiter
 from datafiles.bruker_data import BrukerData
 from datafiles.platon import Platon
 from tools.misc import high_prio_keys, predef_equipment_templ, predef_prop_templ, combobox_fields, \
@@ -56,7 +59,7 @@ from tools.settings import FinalCifSettings
 
 """
 TODO:
-- make tab key go down one row
+- try QNetworkRequest for checkcif
 - Add one picture of the vzs file
 - option for default directory?
 - add button for zip file with cif, report and checkcif pdf
@@ -65,6 +68,8 @@ TODO:
 - Add to report: Atom names with uderscres define atoms in residues. 
   These atoms are uniquely defined by their residue number after the underscore.
 
+- spgr = gemmi.find_spacegroup_by_ops(gemmi.GroupOps([gemmi.Op(o) for o in ['x,y,z', ...]]))
+- ops = [op.triplet() for op in gemmi.find_spacegroup_by_name('I2').operations()]
 
 c = CifContainer(Path('test-data/DK_zucker2_0m-finalcif.cif'))
 cdic = json.loads(c.as_json())
@@ -101,6 +106,7 @@ class AppWindow(QMainWindow):
         self.store_predefined_templates()
         self.show_equipment_and_properties()
         self.settings.load_window_position()
+        self.ui.CifItemsTable.installEventFilter(self)
         # distribute CifItemsTable Columns evenly:
         hheader = self.ui.CifItemsTable.horizontalHeader()
         hheader.setSectionResizeMode(0, QHeaderView.Stretch)
@@ -222,7 +228,7 @@ class AppWindow(QMainWindow):
         if remote_version > VERSION:
             print('Version {} is outdated (actual is {}).'.format(VERSION, remote_version))
             self.show_general_warning(
-                r"A newer version {} of FinalCif is available under "
+                r"A newer version {} of FinalCif is available under: <br>"
                 r"<a href='https://www.xs3.uni-freiburg.de/research/finalcif'>"
                 r"https://www.xs3.uni-freiburg.de/research/finalcif</a>".format(remote_version))
 
@@ -263,6 +269,7 @@ class AppWindow(QMainWindow):
         """
         Get back to the main table.
         """
+        self.load_cif_file(str(self.fin_file.absolute()))
         self.ui.MainStackedWidget.setCurrentIndex(0)
 
     def do_html_checkcif(self):
@@ -271,7 +278,7 @@ class AppWindow(QMainWindow):
         """
         self.ui.statusBar.showMessage('Sending html report request...')
         self.save_current_cif_file()
-        htmlfile = Path('checkcif-' + self.cif.fileobj.stem + '.html')
+        htmlfile = Path(strip_finalcif_of_name('checkcif-' + self.cif.fileobj.stem) + '-finalcif.html')
         try:
             htmlfile.unlink()
         except FileNotFoundError:
@@ -323,6 +330,14 @@ class AppWindow(QMainWindow):
     def do_offline_checkcif(self):
         """
         Performs a checkcif with platon and displays it in the text editor of the MainStackedWidget.
+
+        from threading import Thread
+        t1 = Thread(target=Worker, args=(self.fin_file,))
+        t1.start()
+        while t1.is_alive():
+            sleep(0.5)
+        else:
+            emit platon_ready()
         """
         table = self.ui.CifItemsTable
         table.setCurrentItem(None)  # makes sure also the currently edited item is saved
@@ -396,9 +411,9 @@ class AppWindow(QMainWindow):
         not_ok = None
         if self.cif:
             self.save_current_cif_file()
-            output_filename = 'report_{}.docx'.format(self.cif.fileobj.stem)
+            output_filename = strip_finalcif_of_name('report_{}'.format(self.cif.fileobj.stem)) + '-finalcif.docx'
             try:
-                make_report_from(self.fin_file, path=application_path, output_filename=output_filename,
+                make_report_from(self.fin_file, output_filename=output_filename, path=application_path,
                                  without_H=self.ui.HAtomsCheckBox.isChecked())
             except FileNotFoundError as e:
                 if DEBUG:
@@ -406,6 +421,13 @@ class AppWindow(QMainWindow):
                 print('Unable to open cif file')
                 not_ok = e
                 self.unable_to_open_message(self.cif.fileobj, not_ok)
+                return
+            except PermissionError:
+                if DEBUG:
+                    raise
+                print('Unable to open cif file')
+                self.show_general_warning('The report document {} could not be opened.\n'
+                                          'Is the file already opened?'.format(output_filename))
                 return
             if os.name == 'nt':
                 os.startfile(Path(output_filename).absolute())
@@ -678,10 +700,10 @@ class AppWindow(QMainWindow):
         if len(value) > 38:
             tab_item = QPlainTextEdit()
             tab_item.setFrameShape(0)
-            tab_item.setPlainText(value)
+            tab_item.setPlainText(retranslate_delimiter(value))
             table.setCellWidget(row_num, 1, tab_item)
         else:
-            item_val = QTableWidgetItem(value)
+            item_val = QTableWidgetItem(retranslate_delimiter(value))
             # Add cif key and value to the row:
             table.setItem(row_num, 1, item_val)
         item_key = QTableWidgetItem(key)
@@ -1085,6 +1107,8 @@ class AppWindow(QMainWindow):
             self.cif = CifContainer(filepath)
         except Exception as e:
             print('Unable to open cif file...')
+            if DEBUG:
+                raise
             print(e)
             not_ok = e
         if not_ok:
@@ -1108,6 +1132,8 @@ class AppWindow(QMainWindow):
             self.fill_cif_table()
         except RuntimeError as e:
             not_ok = e
+            if DEBUG:
+                raise
             self.unable_to_open_message(filepath, not_ok)
         self.ui.CheckcifButton.setEnabled(True)
         self.ui.CheckcifOnlineButton.setEnabled(True)
@@ -1168,11 +1194,7 @@ class AppWindow(QMainWindow):
         """
         if not warn_text:
             return
-        info = QMessageBox(self).warning(self, ' ', warn_text)
-        # info.setIcon(QMessageBox.Warning)
-        # info.setText(warn_text)
-        # info.show()
-        # info.exec()
+        QMessageBox(self).warning(self, ' ', warn_text)
 
     def check_Z(self):
         """
@@ -1184,7 +1206,7 @@ class AppWindow(QMainWindow):
         bad = False
         ntypes = len(self.cif['_chemical_formula_sum'].split())
         if all([ntypes, density]):
-            if ntypes > 2.0 and density < 0.8 or density > 4.0:
+            if ntypes > 2.0 and density < 0.6 or density > 4.0:
                 bad = True
         if Z and Z > 8.0 and (csystem == 'tricilinic' or csystem == 'monoclinic'):
             bad = True
@@ -1269,11 +1291,32 @@ class AppWindow(QMainWindow):
             elif miss_data.lower() in [x.lower() for x in combobox_fields]:
                 self.add_property_combobox(combobox_fields[miss_data], row_num)
 
+    def eventFilter(self, widget: QObject, event: QEvent):
+        """
+        Event filter to ignore wheel events in comboboxes to prevent accidental changes to them.
+        """
+        if event.type() == QEvent.Wheel and widget and not widget.hasFocus():
+            event.ignore()
+            return True
+        if event.type() == QEvent.KeyRelease and event.key() == Qt.Key_Backtab:
+            row = self.ui.CifItemsTable.currentRow()
+            if row > 0:
+                self.ui.CifItemsTable.setCurrentCell(row - 1, 2)
+            return True
+        if event.type() == QEvent.KeyRelease and event.key() == Qt.Key_Tab:
+            row = self.ui.CifItemsTable.currentRow()
+            self.ui.CifItemsTable.setCurrentCell(row, 2)
+            return True
+        return QObject.eventFilter(self, widget, event)
+
     def add_property_combobox(self, miss_data: str, row_num: int):
         """
         Adds a QComboBox to the CifItemsTable with the content of special_fields or property templates.
         """
         combobox = QComboBox()
+        # Works in combination with the event filter:
+        combobox.setFocusPolicy(Qt.StrongFocus)
+        combobox.installEventFilter(self)
         # combobox.currentIndexChanged.connect(self.print_combo)
         # print('special:', row_num, miss_data)
         self.ui.CifItemsTable.setCellWidget(row_num, 2, combobox)
@@ -1297,8 +1340,9 @@ class AppWindow(QMainWindow):
         """
         self.ui.CifItemsTable.setRowCount(0)
         for key, value in self.cif.key_value_pairs():
-            if not value or value == '?':
+            if not value or value == '?' or value == "'?'":
                 self.missing_data.append(key)
+                value = '?'
             self.add_row(key, value)
             # print(key, value)
         self.test_checksums()
@@ -1335,7 +1379,7 @@ class AppWindow(QMainWindow):
         if value is None:
             strval = '?'
         else:
-            strval = str(value)  # or '?')
+            strval = str(value).strip(" ").strip("'").strip(';\n')  # or '?')
         if not key:
             strval = ''
         if key in text_field_keys:
@@ -1396,8 +1440,37 @@ class AppWindow(QMainWindow):
 
 
 if __name__ == '__main__':
+    def my_exception_hook(exctype, value, error_traceback):
+        """
+        Hooks into Exceptions to create debug reports.
+        """
+        errortext = 'FinalCif crash report\n\n'
+        errortext += time.asctime(time.localtime(time.time())) + '\n'
+        errortext += "Finalcif crashed during the following opertaion:" + '\n'
+        errortext += '-' * 80 + '\n'
+        errortext += ''.join(traceback.format_tb(error_traceback)) + '\n'
+        errortext += '-' * 80 + '\n'
+        logfile = Path(r'./finalcif-crash.txt')
+        try:
+            logfile.write_text(errortext)
+        except PermissionError:
+            pass
+        sys.__excepthook__(exctype, value, error_traceback)
+        # Hier Fesnter für meldung öffnen
+        window = AppWindow()
+        text = 'FinalCif encountered an error.<br>Please send the file <br>"{}" <br>to Daniel Kratzert:  ' \
+               '<a href="mailto:daniel.kratzert@ac.uni-freiburg.de?subject=FinalCif version {} crash report">' \
+               'daniel.kratzert@ac.uni-freiburg.de</a>'.format(logfile.absolute(), VERSION)
+        QMessageBox.warning(window, 'Warning', text)
+        window.show()
+        sys.exit(1)
+
+
+    sys.excepthook = my_exception_hook
+
     app = QApplication(sys.argv)
     w = AppWindow()
+    # app.setWindowIcon(QIcon('./icon/multitable.ico'))
     app.setWindowIcon(QIcon('./icon/multitable.png'))
     w.setWindowTitle('FinalCif v{}'.format(VERSION))
     # w.showMaximized()  # For full screen view

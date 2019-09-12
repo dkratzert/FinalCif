@@ -14,7 +14,6 @@ from datafiles.p4p_reader import P4PFile
 from datafiles.sadabs import Sadabs
 from datafiles.saint import SaintListFile
 from datafiles.shelxt import SHELXTlistfile
-from datafiles.utils import DSRFind
 
 
 class MissingCifData():
@@ -33,15 +32,7 @@ class BrukerData(object):
         self.basename = cif.fileobj.stem.split('_0m')[0]
         saint_data = self.saint_log('*_0m._ls')
         saint_first_ls = self.saint_log('*_01._ls')
-        solution_program = self.get_solution_program()
-        solution_version = solution_program.version or ''
-        # This creates more problems than it solves:
-        # try:
-        #    self.plat = Platon(self.cif.filename)
-        # except Exception as e:
-        #    print(e)
-        #    self.app.ui.CheckcifButton.setDisabled(True)
-        #    self.plat = None
+        sp = self.get_solution_program()
         solution_primary = ''
         if 'shelx' in self.cif.block.find_value('_audit_creation_method').lower():
             shelx = 'Sheldrick, G.M. (2015). Acta Cryst. A71, 3-8.\nSheldrick, G.M. (2015). Acta Cryst. C71, 3-8.\n'
@@ -52,15 +43,16 @@ class BrukerData(object):
                 dsr = 'The program DSR was used for model building:\n' \
                       'D. Kratzert, I. Krossing, J. Appl. Cryst. 2018, 51, 928-934. doi: 10.1107/S1600576718004508'
                 shelx += dsr
-        if solution_program and 'XT' in solution_program.version:
+        if sp and 'XT' in sp.version:
             solution_primary = 'direct'
+        solution_program = (sp.version, sp.filename)
         abstype = '?'
         t_min = '?'
         t_max = '?'
         # Going back from last dataset:
         for n in range(1, len(self.sadabs.datasets) + 1):
             try:
-                abstype = 'numerical' if self.sadabs.dataset(-n).numerical else 'multi-scan' 
+                abstype = 'numerical' if self.sadabs.dataset(-n).numerical else 'multi-scan'
                 t_min = min(self.sadabs.dataset(-n).transmission)
                 t_max = max(self.sadabs.dataset(-n).transmission)
                 if all([abstype, t_min, t_max]):
@@ -86,6 +78,10 @@ class BrukerData(object):
             frame_name = self.frame_header.filename.name
         except (FileNotFoundError):
             frame_name = ''
+        if self.cif.solution_program_details:
+            solution_program = (self.cif.solution_program_details, self.cif.fileobj.name)
+        if self.cif['_computing_structure_solution']:
+            solution_program = (self.cif['_computing_structure_solution'], self.cif.fileobj.name)
         if self.cif.absorpt_process_details:
             absdetails = (self.cif.absorpt_process_details, self.cif.fileobj.name)
         else:
@@ -103,10 +99,15 @@ class BrukerData(object):
         else:
             abs_tmin = (str(t_min), self.sadabs.filename.name)
 
+        if self.sadabs.Rint:
+            rint = (self.sadabs.Rint, self.sadabs.filename.name)
+        else:
+            rint = ('', '')
         temp2 = self.p4p.temperature
         temperature = round(min([temp1, temp2]), 1)
         if temperature < 0.01:
             temperature = '?'
+        # All sources that are not filled with data will be yellow in the main table
         #                          data                         tooltip
         sources = {'_cell_measurement_reflns_used'          : (saint_data.cell_reflections, saint_data.filename.name),
                    '_cell_measurement_theta_min'            : (saint_data.cell_res_min_theta, saint_data.filename.name),
@@ -118,7 +119,7 @@ class BrukerData(object):
                    '_exptl_absorpt_correction_type'         : abscorrtype,
                    '_exptl_absorpt_correction_T_min'        : abs_tmin,
                    '_exptl_absorpt_correction_T_max'        : abs_tmax,
-                   '_diffrn_reflns_av_R_equivalents'        : (self.sadabs.Rint, self.sadabs.filename.name),
+                   '_diffrn_reflns_av_R_equivalents'        : rint,
                    '_cell_measurement_temperature'          : (temperature, self.p4p.filename.name),
                    '_diffrn_ambient_temperature'            : (temperature, self.p4p.filename.name),
                    '_exptl_absorpt_process_details'         : absdetails,
@@ -127,8 +128,7 @@ class BrukerData(object):
                    '_exptl_crystal_size_min'                : (self.p4p.crystal_size[0] or '', self.p4p.filename.name),
                    '_exptl_crystal_size_mid'                : (self.p4p.crystal_size[1] or '', self.p4p.filename.name),
                    '_exptl_crystal_size_max'                : (self.p4p.crystal_size[2] or '', self.p4p.filename.name),
-                   '_computing_structure_solution'          : (
-                   solution_version if cif.block.find_value('_computing_structure_solution') == '?' else '', ''),
+                   '_computing_structure_solution'          : solution_program,
                    '_atom_sites_solution_primary'           : (solution_primary, ''),
                    '_diffrn_source_voltage'                 : (kilovolt or '', frame_name),
                    '_diffrn_source_current'                 : (milliamps or '', frame_name),
@@ -136,6 +136,7 @@ class BrukerData(object):
                    '_publ_section_references'               : (shelx, ''),
                    '_refine_special_details'                : ('', ''),
                    '_exptl_crystal_recrystallization_method': ('', ''),
+                   '_chemical_absolute_configuration'       : ('', ''),
                    }
         self.sources = dict((k.lower(), v) for k, v in sources.items())
 
@@ -155,7 +156,7 @@ class BrukerData(object):
         byxt = res.find('REM SHELXT solution in')
         for x in xt_files:
             shelxt = SHELXTlistfile(x.as_posix())
-            if shelxt and byxt:
+            if shelxt.version and byxt:
                 return shelxt
         if byxt > 0:
             xt = SHELXTlistfile('')

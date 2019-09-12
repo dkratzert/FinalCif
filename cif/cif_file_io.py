@@ -31,37 +31,45 @@ def quote(string: str, wrapping=80):
     quoted = gemmi.cif.quote(lines.rstrip('\n'))
     return quoted
 
+charcters = {'°'      : r'\%',
+             '±'      : r'+-',
+             'ß'      : r'\&s',
+             'ü'      : r'u\"',
+             'ö'      : r'o\"',
+             'ä'      : r'a\"',
+             'é'      : '\'e',
+             'á'      : r'\'a',
+             'à'      : r'\`a',
+             'â'      : r'\^a',
+             'ç'      : r'\,c',
+             u"\u03B1": r'\a',
+             u"\u03B2": r'\b',
+             u"\u03B3": r'\g',
+             u"\u03B4": r'\d',
+             u"\u03B5": r'\e',
+             u"\u03B6": r'\z',
+             u"\u03B7": r'\h',
+             u"\u03B8": r'\q',
+             u"\u03B9": r'\i',
+             u"\u03BA": r'\k',
+             u"\u03BB": r'\l',
+             u"\u03BC": r'\m',
+             u"\u03BD": r'\n',
+             u"\u03BE": r'\x',
+             u"\u03BF": r'\o',
+             u"\u03C0": r'\p',
+             u"\u03C1": r'\r',
+             u"\u03C3": r'\s',
+             u"\u03C4": r'\t',
+             u"\u03C5": r'\u',
+             u"\u03C6": r'\F',
+             u"\u03C9": r'\w',
+             }  # , r'\r\n': chr(10)}
 
-def set_pair_delimited(block, key, txt):
+def set_pair_delimited(block, key: str, txt: str):
     """
     Converts special characters to their markup counterparts.
     """
-    charcters = {'°'      : r'\%', '±': r'+-', 'ß': r'\&s', 'ü': r'u\"',
-                 'ö'      : r'o\"', 'ä': r'a\"', 'é': '\'e', 'á': r'\'a',
-                 'à'      : r'\`a', 'â': r'\^a', 'ç': r'\,c',
-                 u"\u03B1": r'\a',
-                 u"\u03B2": r'\b',
-                 u"\u03B3": r'\g',
-                 u"\u03B4": r'\d',
-                 u"\u03B5": r'\e',
-                 u"\u03B6": r'\z',
-                 u"\u03B7": r'\h',
-                 u"\u03B8": r'\q',
-                 u"\u03B9": r'\i',
-                 u"\u03BA": r'\k',
-                 u"\u03BB": r'\l',
-                 u"\u03BC": r'\m',
-                 u"\u03BD": r'\n',
-                 u"\u03BE": r'\x',
-                 u"\u03BF": r'\o',
-                 u"\u03C0": r'\p',
-                 u"\u03C1": r'\r',
-                 u"\u03C3": r'\s',
-                 u"\u03C4": r'\t',
-                 u"\u03C5": r'\u',
-                 u"\u03C6": r'\F',
-                 u"\u03C9": r'\w',
-                 }  # , r'\r\n': chr(10)}
     for char in txt:
         if char in charcters:
             txt = txt.replace(char, charcters[char])
@@ -75,6 +83,17 @@ def set_pair_delimited(block, key, txt):
             block.set_pair(key, txt)
         else:
             block.set_pair(key, quote(txt))
+
+def retranslate_delimiter(txt: str):
+    """
+    Translates delimited cif characters back to unicode characters.
+    >>> retranslate_delimiter("Crystals were grown from thf at -20 \%C.")
+    'Crystals were grown from thf at -20 °C.'
+    """
+    inv_map = {v: k for k, v in charcters.items()}
+    for char in inv_map.keys():
+        txt = txt.replace(char, inv_map[char])
+    return txt
 
 
 class CifContainer():
@@ -96,6 +115,15 @@ class CifContainer():
         self.resdata = self.block.find_value('_shelx_res_file')
         d = DSRFind(self.resdata)
         self.dsr_used = d.dsr_used
+
+    def __getitem__(self, item):
+        result = self.block.find_value(item)
+        if result:
+            if result == '?' or result == "'?'":
+                return ''
+            return result
+        else:
+            return ''
 
     def save(self, filename=None):
         if not filename:
@@ -132,13 +160,17 @@ class CifContainer():
         """
         This method tries to determine the information witten at the end of a cif hkl file by sadabs.
         """
-        hkl = self.block.find_value('_shelx_hkl_file')[:-1]
+        hkl = None
         all = {'_exptl_absorpt_process_details' : '',
                '_exptl_absorpt_correction_type' : '',
                '_exptl_absorpt_correction_T_max': '',
                '_exptl_absorpt_correction_T_min': '',
                '_computing_structure_solution'  : '',
                }
+        try:
+            hkl = self.block.find_value('_shelx_hkl_file')[:-1]
+        except Exception:
+            pass
         if not hkl:
             return all
         hkl = hkl[hkl.find('  0   0   0    0'):].split('\n')[1:]
@@ -153,12 +185,17 @@ class CifContainer():
             hklblock = hkldoc.sole_block()
         except Exception as e:
             print('Unable to get information from hkl foot.')
+            print(e)
             return all
         for key in all.keys():
             val = hklblock.find_value(key)
             if val:
                 all[key] = gemmi.cif.as_string(val).strip()
         return all
+
+    @property
+    def solution_program_details(self):
+        return self.hkl_extra_info['_computing_structure_solution']
 
     @property
     def absorpt_process_details(self):
@@ -255,10 +292,6 @@ class CifContainer():
             return True
         else:
             return False
-
-    def __getitem__(self, item):
-        result = self.block.find_value(item)
-        return result if result else ''
 
     def atoms(self):
         labels = self.block.find_loop('_atom_site_label')
@@ -375,8 +408,7 @@ class CifContainer():
         """
         high_prio_no_values, high_prio_with_values = self.get_keys(high_prio_keys)
         return high_prio_no_values + \
-               [['These below are already in:', '---------------------'],
-                ['', '']] + high_prio_with_values
+               [['These below are already in:', '---------------------']] + high_prio_with_values
 
     def get_keys(self, inputkeys):
         """
@@ -395,7 +427,7 @@ class CifContainer():
                 self.missing_keys.append(key)
             # except (KeyError, TypeError):
             #    value = ''
-            if not value or value == '?':
+            if not value or value == '?' or value == "'?'":
                 questions.append([key, value])
             else:
                 with_values.append([key, value])

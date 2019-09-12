@@ -53,14 +53,16 @@ class SaintListFile():
                 summary = True
             if summary and line.lstrip().startswith('1.1(1)'):
                 summary = line.split()
-                self.cell_reflections = summary[3] or 0
-                self.cell_res_min_2t = summary[6] or 0.0
-                self.cell_res_max_2t = summary[7] or 0.0
+                if len(summary) > 7:
+                    self.cell_reflections = summary[3] or 0
+                    self.cell_res_min_2t = summary[6] or 0.0
+                    self.cell_res_max_2t = summary[7] or 0.0
             if summary and not orientation and line.lstrip().startswith('All'):
                 summary = line.split()
-                self.cell_reflections = summary[3] or 0
-                self.cell_res_min_2t = summary[6] or 0.0
-                self.cell_res_max_2t = summary[7] or 0.0
+                if len(summary) > 7:
+                    self.cell_reflections = summary[3] or 0
+                    self.cell_res_min_2t = summary[6] or 0.0
+                    self.cell_res_max_2t = summary[7] or 0.0
             if line.startswith("Orientation ('UB') matrix"):
                 orientation += 1
             if summary and orientation == 2:

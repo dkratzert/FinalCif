@@ -14,7 +14,7 @@ from pathlib import Path
 from docx import Document
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
-from docx.shared import Cm
+from docx.shared import Cm, Pt
 # compiled with "Py -3 -m PyInstaller multitable.spec --onefile"
 from docx.table import Table, _Cell
 
@@ -115,6 +115,7 @@ def make_report_from(file_obj: Path, output_filename: str = None, path: str = ''
         pic.add_run().add_picture(str(picfile), width=Cm(7))
 
     p_report = document.add_paragraph()
+    p_report.style = document.styles['fliesstext']
     p_report.add_run('The following text is only a suggestion: ').font.bold = True
     Crystallization(cif, p_report)
     CrstalSelection(cif, p_report)
@@ -784,7 +785,8 @@ def add_last_symminfo_line(newsymms, document):
         n += 1
         line += "#{}: {}{}   ".format(key, value, sep)
     if newsymms:
-        p.add_run(line)
+        run = p.add_run(line)
+        run.font.size = Pt(8)
 
 
 def get_card(cif, symm):
