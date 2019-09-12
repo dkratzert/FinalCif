@@ -12,7 +12,6 @@ import sys
 import time
 import traceback
 from pathlib import Path, WindowsPath
-from urllib.parse import quote
 
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkReply, QNetworkRequest
 from gemmi import cif
@@ -447,6 +446,7 @@ class AppWindow(QMainWindow):
     def load_recent_cifs_list(self):
         self.ui.RecentComboBox.clear()
         recent = list(self.settings.settings.value('recent_files', type=list))
+        self.ui.RecentComboBox.addItem('Recent Files')
         for n, file in enumerate(recent):
             if not isinstance(file, str):
                 del recent[n]
@@ -455,8 +455,7 @@ class AppWindow(QMainWindow):
                     del recent[n]
             except OSError:
                 pass
-        self.ui.RecentComboBox.addItem('Recent Files')
-        self.ui.RecentComboBox.addItems(recent)
+            self.ui.RecentComboBox.addItem(file, n)
 
     def save_cif_and_display(self):
         self.save_current_cif_file()
