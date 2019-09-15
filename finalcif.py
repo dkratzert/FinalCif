@@ -185,10 +185,14 @@ class AppWindow(QMainWindow):
         self.ui.EquipmentEditTableWidget.itemEntered.connect(self.add_eq_row_if_needed)
         self.ui.EquipmentEditTableWidget.cellChanged.connect(self.add_eq_row_if_needed)
         ##
-        self.ui.PropertiesEditTableWidget.cellPressed.connect(self.add_eq_row_if_needed)
         self.ui.PropertiesEditTableWidget.itemSelectionChanged.connect(self.add_eq_row_if_needed)
+        self.ui.PropertiesEditTableWidget.currentItemChanged.connect(self.add_eq_row_if_needed)
+        self.ui.PropertiesEditTableWidget.itemActivated.connect(self.add_eq_row_if_needed)
+        self.ui.PropertiesEditTableWidget.itemPressed.connect(self.add_eq_row_if_needed)
         self.ui.PropertiesEditTableWidget.itemEntered.connect(self.add_eq_row_if_needed)
-        self.ui.PropertiesEditTableWidget.cellChanged.connect(self.add_eq_row_if_needed)
+        self.ui.PropertiesEditTableWidget.itemClicked.connect(self.add_eq_row_if_needed)
+        self.ui.PropertiesEditTableWidget.itemChanged.connect(self.add_eq_row_if_needed)
+        #
         self.ui.ImportPropertyTemplateButton.clicked.connect(self.import_property_from_file)
         self.ui.ExportPropertyButton.clicked.connect(self.export_property_template)
         ##
@@ -606,6 +610,8 @@ class AppWindow(QMainWindow):
         Adds a new row with a respective vheaderitem to the main table.
         Also the currently opened cif file is updated.
         """
+        if not key.startswith('_'):
+            return
         self.vheaderitems.insert(0, key)
         self.add_row(key=key, value='?', at_start=True)
         if key in [x.lower() for x in combobox_fields]:
@@ -659,19 +665,22 @@ class AppWindow(QMainWindow):
         """
         if self.ui.EquipmentEditTableWidget.hasFocus():
             table = self.ui.EquipmentEditTableWidget
-        else:
+        elif self.ui.PropertiesEditTableWidget.hasFocus():
             table = self.ui.PropertiesEditTableWidget
+        else:
+            return
         rowcount = table.rowCount()
         cont = 0
         for row in range(rowcount):
             key = ''
             try:
-                key = table.item(row, column=0).text()
-            except (AttributeError, TypeError):
+                key = table.item(row, 0).text()
+            except (AttributeError, TypeError) as e:
                 pass
             if key:  # don't count empty key rows
                 cont += 1
-        if cont == rowcount:
+        diff = rowcount - cont
+        if diff < 4:
             table.insertRow(rowcount)
 
     def add_equipment_row(self, table: QTableWidget, key: str = '', value: str = ''):
@@ -718,6 +727,7 @@ class AppWindow(QMainWindow):
         table.setRowCount(0)
         index = listwidget.currentIndex()
         if index.row() == -1:
+            self.ui.EquipmentEditTableWidget.blockSignals(False)
             # nothing selected
             return
         selected_row_text = listwidget.currentIndex().data()
@@ -743,6 +753,11 @@ class AppWindow(QMainWindow):
         # warn if key is not official:
         for key, _ in table_data:
             if key not in cif_core:
+                if not key.startswith('_'):
+                    self.show_general_warning('"{}" is not a valid keyword! '
+                                              '\nChange the name in order to save.\n'
+                                              'Keys must start with an underscore.'.format(key))
+                    return
                 self.show_general_warning('"{}" is not an official CIF keyword!'.format(key))
         self.settings.save_template('equipment/' + selected_template_text, table_data)
         self.settings.append_to_equipment_list(selected_template_text)
@@ -824,7 +839,7 @@ class AppWindow(QMainWindow):
         table.clearContents()
         table.setRowCount(0)
         self.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
-        print('cancelled')
+        print('cancelled equipment')
 
     # The properties templates:
 
@@ -963,7 +978,7 @@ class AppWindow(QMainWindow):
         """
         Load/Edit the value list of a property entry.
         """
-        self.ui.PropertiesEditTableWidget.blockSignals(True)
+        #self.ui.PropertiesEditTableWidget.blockSignals(True)
         property_list = self.settings.settings.value('property_list')
         if not property_list:
             property_list = ['']
@@ -972,6 +987,7 @@ class AppWindow(QMainWindow):
         index = listwidget.currentIndex()
         if index.row() == -1:
             # nothing selected
+            #self.ui.PropertiesEditTableWidget.blockSignals(False)
             return
         selected_row_text = listwidget.currentIndex().data()
         table_data = self.settings.load_template('property/' + selected_row_text)
@@ -984,7 +1000,7 @@ class AppWindow(QMainWindow):
             self.ui.cifKeywordLineEdit.setText(cif_key)
         n = 0
         if not table_data:
-            table_data = ['']
+            table_data = ['', '', '', '', '', '']
         for value in table_data:
             try:
                 self.add_propeties_row(table, str(value))
@@ -997,7 +1013,7 @@ class AppWindow(QMainWindow):
         # this list keeps track of the equipment items:
         self.settings.save_template('property_list', newlist)
         stackedwidget.setCurrentIndex(1)
-        self.ui.PropertiesEditTableWidget.blockSignals(False)
+        #self.ui.PropertiesEditTableWidget.blockSignals(False)
         table.setWordWrap(False)
         table.resizeRowsToContents()
 
@@ -1040,6 +1056,7 @@ class AppWindow(QMainWindow):
         table.clearContents()
         table.setRowCount(0)
         self.ui.PropertiesTemplatesStackedWidget.setCurrentIndex(0)
+        print('canceled property')
 
     @staticmethod
     def cif_file_open_dialog():
