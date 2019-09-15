@@ -11,6 +11,8 @@ import sys
 import time
 from html.parser import HTMLParser
 from pathlib import Path
+from tempfile import mkstemp
+import gemmi
 
 import requests
 from PyQt5.QtCore import QUrl, QPoint
@@ -58,6 +60,9 @@ class MakeCheckCif():
             hkl = 'checkcif_with_hkl'
             if self.parent.ui.structfactCheckBox.isChecked():
                 hkl = 'checkcif_only'
+                f.close()
+                tmp = self._get_cif_without_hkl()
+                f = open(tmp, 'rb')
         else:
             hkl = 'checkcif_only'
         headers = {
@@ -75,6 +80,12 @@ class MakeCheckCif():
         print('Report took {}s.'.format(str(round(t2 - t1, 2))))
         self.html_out_file.write_bytes(r.content)
         f.close()
+        if hkl == 'checkcif_only':
+            try:
+                Path(tmp).unlink()
+            except ValueError:
+                print('can not delete tempfile from checkcif:')
+                print(tmp)
         print('ready')
 
     def show_html_report(self):
@@ -115,6 +126,15 @@ class MakeCheckCif():
     def show_pdf_report(self):
         self._get_checkcif(pdf=True)
         self._open_pdf_result()
+
+    def _get_cif_without_hkl(self):
+        _, tmp = mkstemp(prefix='finalcif-', suffix='.cif')
+        doc = gemmi.cif.read_string(self.cifobj.read_text())
+        block = doc.sole_block()
+        block.set_pair('_shelx_hkl_file', '')
+        p = Path(tmp)
+        p.write_text(doc.as_string(gemmi.cif.Style.Indent35))
+        return tmp
 
 
 class MyHTMLParser(HTMLParser):
@@ -202,27 +222,3 @@ if __name__ == "__main__":
         print(reply.readAll()).decode('ascii', 'ignore')
 
 
-    multiPart = QHttpMultiPart(QHttpMultiPart.FormDataType)
-    netman = QNetworkAccessManager()
-    #netman.finished.connect(show_update_warning)
-    url = QUrl('https://checkcif.iucr.org/cgi-bin/checkcif_hkl.pl')
-    req = QNetworkRequest(url)
-    reply = netman.get(req)
-    print(reply.readAll())
-
-    multipart = QHttpMultiPart(QHttpMultiPart.FormDataType)
-    for name, value in headers.items():
-        part = QHttpPart()
-        part.setHeader(QNetworkRequest.ContentTypeHeader, 'text/plain; charset=utf-8')
-        part.setHeader(QNetworkRequest.ContentDispositionHeader, 'form-data; name="%s"' % name)
-        part.setBody(value.encode('utf-8'))
-        multipart.append(part)
-    filepart = QHttpPart()
-    filepart.setHeader(QNetworkRequest.ContentTypeHeader, file['type'])
-    filepart.setHeader(QNetworkRequest.ContentDispositionHeader,
-                       'form-data; name="%s"; filename="%s"' % (file['name'], file['filename']))
-    filepart.setBodyDevice(file['device'])
-    multipart.append(filepart)
-    reply = netman.get(req, multipart)
-    # Hook multipart to the reply so that it sticks around for the lifetime of the request
-    multipart.setParent(reply)

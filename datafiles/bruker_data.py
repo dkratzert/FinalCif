@@ -14,6 +14,7 @@ from datafiles.p4p_reader import P4PFile
 from datafiles.sadabs import Sadabs
 from datafiles.saint import SaintListFile
 from datafiles.shelxt import SHELXTlistfile
+from gemmi import cif as gcif
 
 
 class MissingCifData():
@@ -81,7 +82,7 @@ class BrukerData(object):
         if self.cif.solution_program_details:
             solution_program = (self.cif.solution_program_details, self.cif.fileobj.name)
         if self.cif['_computing_structure_solution']:
-            solution_program = (self.cif['_computing_structure_solution'], self.cif.fileobj.name)
+            solution_program = (gcif.as_string(self.cif['_computing_structure_solution']), self.cif.fileobj.name)
         if self.cif.absorpt_process_details:
             absdetails = (self.cif.absorpt_process_details, self.cif.fileobj.name)
         else:
