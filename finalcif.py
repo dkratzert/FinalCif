@@ -489,6 +489,11 @@ class AppWindow(QMainWindow):
         return item
 
     def save_current_cif_file(self):
+        """
+        Saves the current cif file and stores the information of the third column.
+        """
+        # restore header, otherwise item is not saved:
+        self.restore_vertical_header()
         table = self.ui.CifItemsTable
         table.setCurrentItem(None)  # makes sure also the currently edited item is saved
         rowcount = table.model().rowCount()
