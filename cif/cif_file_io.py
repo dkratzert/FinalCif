@@ -187,7 +187,7 @@ class CifContainer():
             print('Unable to get information from hkl foot.')
             print(e)
             return all
-        for key in all.keys():
+        for key in all:
             val = hklblock.find_value(key)
             if val:
                 all[key] = gemmi.cif.as_string(val).strip()
