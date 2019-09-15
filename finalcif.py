@@ -24,7 +24,7 @@ from tools.checkcif import MakeCheckCif, MyHTMLParser
 from tools.update import mainurl
 from tools.version import VERSION
 
-DEBUG = False
+DEBUG = True
 
 if getattr(sys, 'frozen', False):
     # If the application is run as a bundle, the pyInstaller bootloader
@@ -184,12 +184,19 @@ class AppWindow(QMainWindow):
         self.ui.EquipmentEditTableWidget.itemSelectionChanged.connect(self.add_eq_row_if_needed)
         self.ui.EquipmentEditTableWidget.itemEntered.connect(self.add_eq_row_if_needed)
         self.ui.EquipmentEditTableWidget.cellChanged.connect(self.add_eq_row_if_needed)
+        self.ui.EquipmentEditTableWidget.currentItemChanged.connect(self.add_eq_row_if_needed)
+        self.ui.EquipmentEditTableWidget.itemActivated.connect(self.add_eq_row_if_needed)
+        self.ui.EquipmentEditTableWidget.itemPressed.connect(self.add_eq_row_if_needed)
+        self.ui.EquipmentEditTableWidget.itemClicked.connect(self.add_eq_row_if_needed)
+        self.ui.EquipmentEditTableWidget.itemChanged.connect(self.add_eq_row_if_needed)
         ##
         self.ui.PropertiesEditTableWidget.itemSelectionChanged.connect(self.add_eq_row_if_needed)
+        self.ui.PropertiesEditTableWidget.cellPressed.connect(self.add_eq_row_if_needed)
+        self.ui.PropertiesEditTableWidget.itemEntered.connect(self.add_eq_row_if_needed)
+        self.ui.PropertiesEditTableWidget.cellChanged.connect(self.add_eq_row_if_needed)
         self.ui.PropertiesEditTableWidget.currentItemChanged.connect(self.add_eq_row_if_needed)
         self.ui.PropertiesEditTableWidget.itemActivated.connect(self.add_eq_row_if_needed)
         self.ui.PropertiesEditTableWidget.itemPressed.connect(self.add_eq_row_if_needed)
-        self.ui.PropertiesEditTableWidget.itemEntered.connect(self.add_eq_row_if_needed)
         self.ui.PropertiesEditTableWidget.itemClicked.connect(self.add_eq_row_if_needed)
         self.ui.PropertiesEditTableWidget.itemChanged.connect(self.add_eq_row_if_needed)
         #
@@ -740,6 +747,10 @@ class AppWindow(QMainWindow):
                     continue
                 self.add_equipment_row(table, key, value)
                 n += 1
+        else:
+            # new empty equipment:
+            for _ in range(8):
+                self.add_equipment_row(table, '', '')
         table.insertRow(n)
         self.ui.EquipmentEditTableWidget.blockSignals(False)
         stackedwidget.setCurrentIndex(1)
