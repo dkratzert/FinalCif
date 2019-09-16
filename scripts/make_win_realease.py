@@ -60,7 +60,7 @@ disable_debug('finalcif.py')
 
 recompile_ui()
 
-subprocess.run(r""".\venv\Scripts\pyinstaller.exe Finalcif.spec -F --clean""".split())
+subprocess.run(r""".\venv\Scripts\pyinstaller.exe --icon=icon\multitable.ico -F Finalcif.spec --clean""".split())
 
 print(arg)
 
