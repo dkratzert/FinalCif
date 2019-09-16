@@ -57,6 +57,7 @@ from tools.settings import FinalCifSettings
 """
 TODO:
 - add loops to templates
+- write more tests!
 - calculate space group and crystal system if missing
 - support stoe cif
 - support all of .cifod
