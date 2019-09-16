@@ -1,5 +1,5 @@
 from PyQt5.QtCore import QEvent, QObject, Qt
-from PyQt5.QtWidgets import QComboBox, QFrame, QPlainTextEdit, QSizePolicy, QTableWidget, QWidget
+from PyQt5.QtWidgets import QComboBox, QFrame, QPlainTextEdit, QSizePolicy, QTableWidget, QWidget, QTableWidgetItem
 
 
 class MyCifTable(QTableWidget):
@@ -23,6 +23,9 @@ class MyCifTable(QTableWidget):
             self.setCurrentCell(row, 2)
             return True
         return QObject.eventFilter(self, widget, event)
+
+    def item(self, row: int, column: int) -> str:
+        return self.cellWidget(row, column).toPlainText()
 
 
 class MyQPlainTextEdit(QPlainTextEdit):
@@ -72,3 +75,11 @@ class MyComboBox(QComboBox):
         print(self.currentText(), '####')
         return self.currentText()
 
+
+class MyTableWidgetItem(QTableWidgetItem):
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+    #def text(self) -> str:
+    #    return self.text()
