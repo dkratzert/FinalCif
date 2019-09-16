@@ -19,7 +19,7 @@ from requests import ReadTimeout
 
 from cif.core_dict import cif_core
 from datafiles.rigaku_data import RigakuData
-from gui.custom_classes import MyComboBox, MyQPlainTextEdit
+from gui.custom_classes import MyComboBox, MyQPlainTextEdit, MyCifTable
 from report.tables import make_report_from
 from tools.checkcif import MakeCheckCif, MyHTMLParser
 from tools.update import mainurl
@@ -92,6 +92,10 @@ blue = QColor(102, 150, 179)
 yellow = QColor(250, 247, 150)
 from gui.finalcif_gui import Ui_FinalCifWindow
 
+[ COL_CIF,
+  COL_DATA,
+  COL_EDIT
+] = range(3)
 
 class AppWindow(QMainWindow):
     def __init__(self):
@@ -110,9 +114,9 @@ class AppWindow(QMainWindow):
         self.ui.CifItemsTable.installEventFilter(self)
         # distribute CifItemsTable Columns evenly:
         hheader = self.ui.CifItemsTable.horizontalHeader()
-        hheader.setSectionResizeMode(0, QHeaderView.Stretch)
-        hheader.setSectionResizeMode(1, QHeaderView.Stretch)
-        hheader.setSectionResizeMode(2, QHeaderView.Stretch)
+        hheader.setSectionResizeMode(COL_CIF, QHeaderView.Stretch)
+        hheader.setSectionResizeMode(COL_DATA, QHeaderView.Stretch)
+        hheader.setSectionResizeMode(COL_EDIT, QHeaderView.Stretch)
         # hheader.setAlternatingRowColors(True)
         # self.ui.CifItemsTable.verticalHeader().setAlternatingRowColors(True)
         # Make sure the start page is shown and not the edit page:
@@ -471,22 +475,24 @@ class AppWindow(QMainWindow):
         self.save_current_cif_file()
         self.display_saved_cif()
 
-    def get_table_item(self, table, row, col) -> str:
+    def get_table_item(self, table: MyCifTable, row, col) -> str:
         try:
             item = table.item(row, col).text()
+            print(table.item(row, col).text())
         except AttributeError:
+            #raise
             item = None
-        if not item:
-            try:
-                item = table.item(row, col).data(0)
-            except AttributeError:
-                item = None
-        if not item:
-            try:
-                # This is for QPlaintextWidget items in the table:
-                item = table.cellWidget(row, col).toPlainText()
-            except AttributeError:
-                item = None
+        #if not item:
+        #    try:
+        #        item = table.item(row, col).data(0)
+        #    except AttributeError:
+        #        item = None
+        #if not item:
+        #    try:
+        #        # This is for QPlaintextWidget items in the table:
+        #        item = table.cellWidget(row, col).toPlainText()
+        #    except AttributeError:
+        #        item = None
         return item
 
     def save_current_cif_file(self):
@@ -506,17 +512,17 @@ class AppWindow(QMainWindow):
             for col in range(columncount):
                 item = self.get_table_item(table, row, col)
                 if item:
-                    if col == 0 and item != (None or '' or '?'):
+                    if col == COL_CIF and item != (None or '' or '?'):
                         col0 = item
                     # removed: not col0 and
-                    if col == 1 and item != (None or '' or '?'):
+                    if col == COL_DATA and item != (None or '' or '?'):
                         col1 = item
                     try:
-                        if col == 2 and item != (None or ''):
+                        if col == COL_EDIT and item != (None or ''):
                             col2 = item
                     except AttributeError:
                         pass
-                if col == 2:
+                if col == COL_EDIT:
                     vhead = self.ui.CifItemsTable.model().headerData(row, Qt.Vertical)
                     if not str(vhead).startswith('_'):
                         continue
@@ -1319,7 +1325,7 @@ class AppWindow(QMainWindow):
         """
         combobox = MyComboBox()
         # print('special:', row_num, miss_data)
-        self.ui.CifItemsTable.setCellWidget(row_num, 2, combobox)
+        self.ui.CifItemsTable.setCellWidget(row_num, COL_EDIT, combobox)
         self.ui.CifItemsTable.setHorizontalScrollBarPolicy(1)
         for num, value in miss_data:
             try:
@@ -1343,21 +1349,6 @@ class AppWindow(QMainWindow):
         self.test_checksums()
         self.get_data_sources()
         # self.ui.CifItemsTable.resizeRowsToContents()
-
-    def edit_row(self, vert_key: str = None, new_value=None, column: int = 1):
-        """
-        This is nowhere used!
-        Sets a new value for a specific vertical header key and the respective column.
-        """
-        if not vert_key:
-            return None
-        vheaderitems = {}
-        for item in range(self.ui.CifItemsTable.model().rowCount()):
-            head = self.ui.CifItemsTable.model().headerData(item, Qt.Vertical)
-            vheaderitems[head] = item
-        tab_item = QTableWidgetItem(new_value)
-        self.ui.CifItemsTable.setItem(vheaderitems[vert_key], column, tab_item)
-        # tab_item.setFlags(tab_item.flags() ^ Qt.ItemIsEditable)
 
     def add_row(self, key, value, at_start=False):
         """
@@ -1383,9 +1374,9 @@ class AppWindow(QMainWindow):
             tabitem.setPlainText(strval)
             tab1 = MyQPlainTextEdit(self.ui.CifItemsTable)
             tab2 = MyQPlainTextEdit(self.ui.CifItemsTable)
-            self.ui.CifItemsTable.setCellWidget(row_num, 0, tabitem)
-            self.ui.CifItemsTable.setCellWidget(row_num, 1, tab1)
-            self.ui.CifItemsTable.setCellWidget(row_num, 2, tab2)
+            self.ui.CifItemsTable.setCellWidget(row_num, COL_CIF, tabitem)
+            self.ui.CifItemsTable.setCellWidget(row_num, COL_DATA, tab1)
+            self.ui.CifItemsTable.setCellWidget(row_num, COL_EDIT, tab2)
             tabitem.setReadOnly(True)
             tab1.setReadOnly(True)
             # Make QPlainTextEdit fields a bit higher than the rest
@@ -1430,6 +1421,7 @@ class AppWindow(QMainWindow):
         self.ui.CifItemsTable.setVerticalHeaderItem(row_num, head_item_key)
 
 
+
 if __name__ == '__main__':
     def my_exception_hook(exctype, value, error_traceback):
         """
@@ -1458,8 +1450,8 @@ if __name__ == '__main__':
         window.show()
         sys.exit(1)
 
-
-    sys.excepthook = my_exception_hook
+    if not DEBUG:
+        sys.excepthook = my_exception_hook
 
     app = QApplication(sys.argv)
     w = AppWindow()

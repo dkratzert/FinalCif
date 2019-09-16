@@ -1,5 +1,5 @@
-from PyQt5.QtCore import QObject, QEvent, Qt
-from PyQt5.QtWidgets import QPlainTextEdit, QTableWidget, QWidget, QComboBox, QSizePolicy, QFrame
+from PyQt5.QtCore import QEvent, QObject, Qt
+from PyQt5.QtWidgets import QComboBox, QFrame, QPlainTextEdit, QSizePolicy, QTableWidget, QWidget
 
 
 class MyCifTable(QTableWidget):
@@ -29,20 +29,28 @@ class MyQPlainTextEdit(QPlainTextEdit):
     """
     A special plaintextedit with convenient methods to set the background color and other things.
     """
+
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.parent = parent
         self.setFocusPolicy(Qt.StrongFocus)
         self.setFrameShape(QFrame.NoFrame)
         self.setTabChangesFocus(True)
 
-    def toPlainText(self) -> str:
-        super().toPlainText()
+    def text(self) -> str:
+        return self.toPlainText()
+
+    def data(self):
+        return
+    #def item(self, row: int, col: int):
+    #    return self.toPlainText()
 
 
 class MyComboBox(QComboBox):
     """
     A special QComboBox with convenient methods to set the background color and other things.
     """
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setFocusPolicy(Qt.StrongFocus)
@@ -60,5 +68,7 @@ class MyComboBox(QComboBox):
             return True
         return QObject.eventFilter(self, widget, event)
 
-    def toPlainText(self) -> str:
-        super().currentText()
+    def text(self) -> str:
+        print(self.currentText(), '####')
+        return self.currentText()
+
