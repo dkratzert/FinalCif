@@ -144,7 +144,7 @@ class AppWindow(QMainWindow):
             self.load_cif_file(sys.argv[1])
         # Sorting desyncronizes header and columns:
         self.ui.CifItemsTable.setSortingEnabled(False)
-        self.setWindowIcon(QIcon('./icon/multitable.png'))
+        self.setWindowIcon(QIcon('./icon/finalcif.png'))
         self.load_recent_cifs_list()
         self.netman = QNetworkAccessManager()
         self.netman.finished.connect(self.show_update_warning)
@@ -1498,8 +1498,7 @@ if __name__ == '__main__':
 
     app = QApplication(sys.argv)
     w = AppWindow()
-    # app.setWindowIcon(QIcon('./icon/multitable.ico'))
-    app.setWindowIcon(QIcon('./icon/multitable.png'))
+    app.setWindowIcon(QIcon('./icon/finalcif.png'))
     w.setWindowTitle('FinalCif v{}'.format(VERSION))
     # w.showMaximized()  # For full screen view
     w.setBaseSize(1200, 780)
