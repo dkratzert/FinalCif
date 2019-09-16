@@ -19,7 +19,7 @@ from requests import ReadTimeout
 
 from cif.core_dict import cif_core
 from datafiles.rigaku_data import RigakuData
-from gui.custom_classes import MyComboBox, MyQPlainTextEdit, MyCifTable
+from gui.custom_classes import MyComboBox, MyQPlainTextEdit, MyCifTable, MyTableWidgetItem
 from report.tables import make_report_from
 from tools.checkcif import MakeCheckCif, MyHTMLParser
 from tools.update import mainurl
@@ -46,7 +46,7 @@ if DEBUG:
 from PyQt5.QtCore import QPoint, Qt, QUrl
 from PyQt5.QtGui import QColor, QFont, QIcon, QPalette
 from PyQt5.QtWidgets import QApplication, QComboBox, QFileDialog, QHeaderView, QListWidget, QListWidgetItem, \
-    QMainWindow, QMessageBox, QPlainTextEdit, QSizePolicy, QStackedWidget, QStyle, QTableWidget, QTableWidgetItem
+    QMainWindow, QMessageBox, QPlainTextEdit, QSizePolicy, QStackedWidget, QStyle, QTableWidget
 
 from cif.cif_file_io import CifContainer, set_pair_delimited, retranslate_delimiter
 from datafiles.bruker_data import BrukerData
@@ -410,7 +410,7 @@ class AppWindow(QMainWindow):
 
     def restore_vertical_header(self):
         for row_num, key in enumerate(self.vheaderitems):
-            item_key = QTableWidgetItem(key)
+            item_key = MyTableWidgetItem(key)
             self.ui.CifItemsTable.setVerticalHeaderItem(row_num, item_key)
 
     def make_table(self):
@@ -476,6 +476,7 @@ class AppWindow(QMainWindow):
         self.display_saved_cif()
 
     def get_table_item(self, table: MyCifTable, row, col) -> str:
+        print(row, col, table.item(row, col))
         try:
             item = table.item(row, col).text()
             print(table.item(row, col).text())
@@ -487,12 +488,12 @@ class AppWindow(QMainWindow):
         #        item = table.item(row, col).data(0)
         #    except AttributeError:
         #        item = None
-        #if not item:
-        #    try:
-        #        # This is for QPlaintextWidget items in the table:
-        #        item = table.cellWidget(row, col).toPlainText()
-        #    except AttributeError:
-        #        item = None
+        if not item:
+            try:
+                # This is for QPlaintextWidget items in the table:
+                item = table.cellWidget(row, col).toPlainText()
+            except AttributeError:
+                item = None
         return item
 
     def save_current_cif_file(self):
@@ -614,7 +615,7 @@ class AppWindow(QMainWindow):
                     self.ui.CifItemsTable.setCellWidget(row, column, tabitem)
                 else:
                     try:
-                        tab_item = QTableWidgetItem(str(equipment[key]))
+                        tab_item = MyTableWidgetItem(str(equipment[key]))
                         # vheaderitems contain the cif keywords in the vertical header, the 1 is the data sources column.
                         row = self.vheaderitems.index(key)
                         column = 1
@@ -719,10 +720,10 @@ class AppWindow(QMainWindow):
             tab_item.setPlainText(retranslate_delimiter(value))
             table.setCellWidget(row_num, 1, tab_item)
         else:
-            item_val = QTableWidgetItem(retranslate_delimiter(value))
+            item_val = MyTableWidgetItem(retranslate_delimiter(value))
             # Add cif key and value to the row:
             table.setItem(row_num, 1, item_val)
-        item_key = QTableWidgetItem(key)
+        item_key = MyTableWidgetItem(key)
         table.setItem(row_num, 0, item_key)
 
     # The equipment templates:
@@ -875,7 +876,7 @@ class AppWindow(QMainWindow):
         row_num = table.rowCount()
         table.insertRow(row_num)
         # Add cif key and value to the row:
-        item_val = QTableWidgetItem(value)
+        item_val = MyTableWidgetItem(value)
         table.setItem(row_num, 0, item_val)
 
     def delete_property(self):
@@ -1278,7 +1279,7 @@ class AppWindow(QMainWindow):
                 row_num = self.vheaderitems.index(miss_data)
             except ValueError:
                 continue
-            tab_item = QTableWidgetItem()
+            tab_item = MyTableWidgetItem()
             try:
                 # sources are lower case!
                 txt = str(sources[miss_data.lower()][0])
@@ -1361,7 +1362,7 @@ class AppWindow(QMainWindow):
             row_num = self.ui.CifItemsTable.rowCount()
         self.ui.CifItemsTable.insertRow(row_num)
         # Add cif key and value to the row:
-        head_item_key = QTableWidgetItem(key)
+        head_item_key = MyTableWidgetItem(key)
         if value is None:
             strval = '?'
         else:
@@ -1385,13 +1386,13 @@ class AppWindow(QMainWindow):
         # if key in text_field_keys:
         #    self.ui.CifItemsTable.setRowHeight(row_num, 60)
         else:
-            tabitem = QTableWidgetItem(strval)
+            tabitem = MyTableWidgetItem(strval)
             if key == "These below are already in:":
                 # pal = QPalette()
                 # pal.setColor(QPalette.Foreground, Qt.black)
-                item1 = QTableWidgetItem('')
-                item2 = QTableWidgetItem('')
-                item3 = QTableWidgetItem('')
+                item1 = MyTableWidgetItem('')
+                item2 = MyTableWidgetItem('')
+                item3 = MyTableWidgetItem('')
                 item1.setBackground(blue)
                 item1.setFlags(item1.flags() ^ Qt.ItemIsEditable)
                 item2.setBackground(blue)
@@ -1403,8 +1404,8 @@ class AppWindow(QMainWindow):
                 self.ui.CifItemsTable.setItem(row_num, 2, item3)
                 self.ui.CifItemsTable.resizeRowToContents(row_num)
             else:
-                tab1 = QTableWidgetItem()
-                tab2 = QTableWidgetItem()
+                tab1 = MyTableWidgetItem()
+                tab2 = MyTableWidgetItem()
                 self.ui.CifItemsTable.setItem(row_num, 1, tab1)
                 self.ui.CifItemsTable.setItem(row_num, 0, tabitem)
                 if key == '_audit_creation_method':
