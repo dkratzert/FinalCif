@@ -25,7 +25,7 @@ from tools.checkcif import MakeCheckCif, MyHTMLParser
 from tools.update import mainurl
 from tools.version import VERSION
 
-DEBUG = False
+DEBUG = True
 
 if getattr(sys, 'frozen', False):
     # If the application is run as a bundle, the pyInstaller bootloader
@@ -43,7 +43,7 @@ if DEBUG:
     uic.compileUiDir(os.path.join(application_path, './gui'))
     # uic.compileUi('./gui/finalcif_gui.ui', open('./gui/finalcif_gui.py', 'w'))
 
-from PyQt5.QtCore import QPoint, Qt, QUrl, QObject, QEvent
+from PyQt5.QtCore import QPoint, Qt, QUrl
 from PyQt5.QtGui import QColor, QFont, QIcon, QPalette
 from PyQt5.QtWidgets import QApplication, QComboBox, QFileDialog, QHeaderView, QListWidget, QListWidgetItem, \
     QMainWindow, QMessageBox, QPlainTextEdit, QSizePolicy, QStackedWidget, QStyle, QTableWidget, QTableWidgetItem
@@ -485,11 +485,6 @@ class AppWindow(QMainWindow):
             try:
                 # This is for QPlaintextWidget items in the table:
                 item = table.cellWidget(row, col).toPlainText()
-            except AttributeError:
-                item = None
-        if not item:
-            try:
-                item = table.cellWidget(row, col).currentText()
             except AttributeError:
                 item = None
         return item
@@ -1318,41 +1313,14 @@ class AppWindow(QMainWindow):
             elif miss_data.lower() in [x.lower() for x in combobox_fields]:
                 self.add_property_combobox(combobox_fields[miss_data], row_num)
 
-    def eventFilter(self, widget: QObject, event: QEvent):
-        """
-        Event filter to ignore wheel events in comboboxes to prevent accidental changes to them.
-        """
-        if event.type() == QEvent.Wheel and widget and not widget.hasFocus():
-            event.ignore()
-            return True
-        if event.type() == QEvent.KeyRelease and event.key() == Qt.Key_Backtab:
-            row = self.ui.CifItemsTable.currentRow()
-            if row > 0:
-                self.ui.CifItemsTable.setCurrentCell(row - 1, 2)
-            return True
-        if event.type() == QEvent.KeyRelease and event.key() == Qt.Key_Tab:
-            row = self.ui.CifItemsTable.currentRow()
-            self.ui.CifItemsTable.setCurrentCell(row, 2)
-            return True
-        return QObject.eventFilter(self, widget, event)
-
     def add_property_combobox(self, miss_data: str, row_num: int):
         """
         Adds a QComboBox to the CifItemsTable with the content of special_fields or property templates.
         """
         combobox = MyComboBox()
-        # Works in combination with the event filter:
-        combobox.setFocusPolicy(Qt.StrongFocus)
-        combobox.installEventFilter(self)
-        # combobox.currentIndexChanged.connect(self.print_combo)
         # print('special:', row_num, miss_data)
         self.ui.CifItemsTable.setCellWidget(row_num, 2, combobox)
         self.ui.CifItemsTable.setHorizontalScrollBarPolicy(1)
-        # combobox.setFixedWidth(self.ui.CifItemsTable.columnWidth(2))
-        # Otherwise, the combobox will be longer than the column:
-        combobox.setSizeAdjustPolicy(QComboBox.AdjustToMinimumContentsLength)
-        combobox.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
-        combobox.setEditable(True)  # only editable as new template
         for num, value in miss_data:
             try:
                 combobox.addItem(value, num)
@@ -1402,7 +1370,7 @@ class AppWindow(QMainWindow):
             row_num = self.ui.CifItemsTable.rowCount()
         self.ui.CifItemsTable.insertRow(row_num)
         # Add cif key and value to the row:
-        item_key = QTableWidgetItem(key)
+        head_item_key = QTableWidgetItem(key)
         if value is None:
             strval = '?'
         else:
@@ -1413,12 +1381,8 @@ class AppWindow(QMainWindow):
             # print(key, strval)
             tabitem = MyQPlainTextEdit(self.ui.CifItemsTable)
             tabitem.setPlainText(strval)
-            tabitem.setFrameShape(0)  # no frame (border)
             tab1 = MyQPlainTextEdit(self.ui.CifItemsTable)
-            tab1.setFrameShape(0)
             tab2 = MyQPlainTextEdit(self.ui.CifItemsTable)
-            tab2.setTabChangesFocus(True)
-            tab2.setFrameShape(0)
             self.ui.CifItemsTable.setCellWidget(row_num, 0, tabitem)
             self.ui.CifItemsTable.setCellWidget(row_num, 1, tab1)
             self.ui.CifItemsTable.setCellWidget(row_num, 2, tab2)
@@ -1463,7 +1427,7 @@ class AppWindow(QMainWindow):
                 tabitem.setFlags(tabitem.flags() ^ Qt.ItemIsEditable)
                 tab1.setFlags(tab1.flags() ^ Qt.ItemIsEditable)
                 self.ui.CifItemsTable.resizeRowToContents(row_num)
-        self.ui.CifItemsTable.setVerticalHeaderItem(row_num, item_key)
+        self.ui.CifItemsTable.setVerticalHeaderItem(row_num, head_item_key)
 
 
 if __name__ == '__main__':
