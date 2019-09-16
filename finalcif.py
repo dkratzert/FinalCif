@@ -56,6 +56,10 @@ from tools.settings import FinalCifSettings
 
 """
 TODO:
+- add loops to templates
+- calculate space group and crystal system if missing
+- support stoe cif
+- support all of .cifod
 - try QNetworkRequest for checkcif
 - Add one picture of the vzs file
 - option for default directory?
