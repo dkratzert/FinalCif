@@ -134,7 +134,7 @@ class Ui_FinalCifWindow(object):
         self.page_MainTable.setObjectName("page_MainTable")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.page_MainTable)
         self.verticalLayout.setObjectName("verticalLayout")
-        self.CifItemsTable = QtWidgets.QTableWidget(self.page_MainTable)
+        self.CifItemsTable = MyCifTable(self.page_MainTable)
         self.CifItemsTable.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustIgnored)
         self.CifItemsTable.setEditTriggers(QtWidgets.QAbstractItemView.AllEditTriggers)
         self.CifItemsTable.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
@@ -429,3 +429,4 @@ class Ui_FinalCifWindow(object):
         self.actionSave_Report.setText(_translate("FinalCifWindow", "Save Report"))
         self.actionSave_CIF_File.setText(_translate("FinalCifWindow", "Save CIF File"))
         self.actionedit_templates.setText(_translate("FinalCifWindow", "edit templates"))
+from gui.custom_classes import MyCifTable

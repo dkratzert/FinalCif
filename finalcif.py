@@ -19,6 +19,7 @@ from requests import ReadTimeout
 
 from cif.core_dict import cif_core
 from datafiles.rigaku_data import RigakuData
+from gui.custom_classes import MyComboBox, MyQPlainTextEdit
 from report.tables import make_report_from
 from tools.checkcif import MakeCheckCif, MyHTMLParser
 from tools.update import mainurl
@@ -596,7 +597,7 @@ class AppWindow(QMainWindow):
                 # add missing item to data sources column:
                 if key in text_field_keys:
                     # special treatments for text fields:
-                    tabitem = QPlainTextEdit(self)
+                    tabitem = MyQPlainTextEdit(self)
                     pal = tabitem.palette()
                     pal.setColor(QPalette.Base, light_green)
                     tabitem.setPalette(pal)
@@ -711,7 +712,7 @@ class AppWindow(QMainWindow):
         row_num = table.rowCount()
         table.insertRow(row_num)
         if len(value) > 38:
-            tab_item = QPlainTextEdit()
+            tab_item = MyQPlainTextEdit()
             tab_item.setFrameShape(0)
             tab_item.setPlainText(retranslate_delimiter(value))
             table.setCellWidget(row_num, 1, tab_item)
@@ -998,7 +999,7 @@ class AppWindow(QMainWindow):
         """
         Load/Edit the value list of a property entry.
         """
-        #self.ui.PropertiesEditTableWidget.blockSignals(True)
+        # self.ui.PropertiesEditTableWidget.blockSignals(True)
         property_list = self.settings.settings.value('property_list')
         if not property_list:
             property_list = ['']
@@ -1007,7 +1008,7 @@ class AppWindow(QMainWindow):
         index = listwidget.currentIndex()
         if index.row() == -1:
             # nothing selected
-            #self.ui.PropertiesEditTableWidget.blockSignals(False)
+            # self.ui.PropertiesEditTableWidget.blockSignals(False)
             return
         selected_row_text = listwidget.currentIndex().data()
         table_data = self.settings.load_template('property/' + selected_row_text)
@@ -1033,7 +1034,7 @@ class AppWindow(QMainWindow):
         # this list keeps track of the equipment items:
         self.settings.save_template('property_list', newlist)
         stackedwidget.setCurrentIndex(1)
-        #self.ui.PropertiesEditTableWidget.blockSignals(False)
+        # self.ui.PropertiesEditTableWidget.blockSignals(False)
         table.setWordWrap(False)
         table.resizeRowsToContents()
 
@@ -1281,7 +1282,7 @@ class AppWindow(QMainWindow):
                 txt = str(sources[miss_data.lower()][0])
                 tooltiptext = str(sources[miss_data.lower()][1])
                 if miss_data in text_field_keys:
-                    tab_item = QPlainTextEdit(self.ui.CifItemsTable)
+                    tab_item = MyQPlainTextEdit(self.ui.CifItemsTable)
                     tab_item.setReadOnly(True)
                     tab_item.setFrameShape(0)
                     self.ui.CifItemsTable.setCellWidget(row_num, 1, tab_item)
@@ -1338,7 +1339,7 @@ class AppWindow(QMainWindow):
         """
         Adds a QComboBox to the CifItemsTable with the content of special_fields or property templates.
         """
-        combobox = QComboBox()
+        combobox = MyComboBox()
         # Works in combination with the event filter:
         combobox.setFocusPolicy(Qt.StrongFocus)
         combobox.installEventFilter(self)
@@ -1409,12 +1410,12 @@ class AppWindow(QMainWindow):
             strval = ''
         if key in text_field_keys:
             # print(key, strval)
-            tabitem = QPlainTextEdit(self.ui.CifItemsTable)
+            tabitem = MyQPlainTextEdit(self.ui.CifItemsTable)
             tabitem.setPlainText(strval)
             tabitem.setFrameShape(0)  # no frame (border)
-            tab1 = QPlainTextEdit(self.ui.CifItemsTable)
+            tab1 = MyQPlainTextEdit(self.ui.CifItemsTable)
             tab1.setFrameShape(0)
-            tab2 = QPlainTextEdit(self.ui.CifItemsTable)
+            tab2 = MyQPlainTextEdit(self.ui.CifItemsTable)
             tab2.setTabChangesFocus(True)
             tab2.setFrameShape(0)
             self.ui.CifItemsTable.setCellWidget(row_num, 0, tabitem)
