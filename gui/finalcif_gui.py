@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file './gui\finalcif_gui.ui'
+# Form implementation generated from reading ui file 'D:\GitHub\FinalCif\./gui\finalcif_gui.ui'
 #
 # Created by: PyQt5 UI code generator 5.12.2
 #
@@ -133,7 +133,7 @@ class Ui_FinalCifWindow(object):
         self.page_MainTable.setObjectName("page_MainTable")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.page_MainTable)
         self.verticalLayout.setObjectName("verticalLayout")
-        self.CifItemsTable = QtWidgets.QTableWidget(self.page_MainTable)
+        self.CifItemsTable = MyCifTable(self.page_MainTable)
         self.CifItemsTable.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustIgnored)
         self.CifItemsTable.setEditTriggers(QtWidgets.QAbstractItemView.AllEditTriggers)
         self.CifItemsTable.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
@@ -430,3 +430,4 @@ class Ui_FinalCifWindow(object):
         self.actionedit_templates.setText(_translate("FinalCifWindow", "edit templates"))
 
 
+from gui.custom_classes import MyCifTable
