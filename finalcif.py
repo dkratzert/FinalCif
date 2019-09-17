@@ -14,6 +14,7 @@ import traceback
 from pathlib import Path, WindowsPath
 
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkReply, QNetworkRequest
+# noinspection PyUnresolvedReferences
 from gemmi import cif
 from requests import ReadTimeout
 
@@ -25,7 +26,7 @@ from tools.checkcif import MakeCheckCif, MyHTMLParser
 from tools.update import mainurl
 from tools.version import VERSION
 
-DEBUG = True
+DEBUG = False
 
 if getattr(sys, 'frozen', False):
     # If the application is run as a bundle, the pyInstaller bootloader
