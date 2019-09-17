@@ -19,7 +19,7 @@ from requests import ReadTimeout
 
 from cif.core_dict import cif_core
 from datafiles.rigaku_data import RigakuData
-from gui.custom_classes import MyComboBox, MyQPlainTextEdit, MyCifTable, MyTableWidgetItem
+from gui.custom_classes import MyComboBox, MyQPlainTextEdit, MyTableWidgetItem
 from report.tables import make_report_from
 from tools.checkcif import MakeCheckCif, MyHTMLParser
 from tools.update import mainurl
@@ -44,9 +44,9 @@ if DEBUG:
     # uic.compileUi('./gui/finalcif_gui.ui', open('./gui/finalcif_gui.py', 'w'))
 
 from PyQt5.QtCore import QPoint, Qt, QUrl
-from PyQt5.QtGui import QColor, QFont, QIcon, QPalette
-from PyQt5.QtWidgets import QApplication, QComboBox, QFileDialog, QHeaderView, QListWidget, QListWidgetItem, \
-    QMainWindow, QMessageBox, QPlainTextEdit, QSizePolicy, QStackedWidget, QStyle, QTableWidget
+from PyQt5.QtGui import QColor, QFont, QIcon
+from PyQt5.QtWidgets import QApplication, QFileDialog, QHeaderView, QListWidget, QListWidgetItem, \
+    QMainWindow, QMessageBox, QPlainTextEdit, QStackedWidget, QStyle, QTableWidget
 
 from cif.cif_file_io import CifContainer, set_pair_delimited, retranslate_delimiter
 from datafiles.bruker_data import BrukerData
@@ -92,10 +92,11 @@ blue = QColor(102, 150, 179)
 yellow = QColor(250, 247, 150)
 from gui.finalcif_gui import Ui_FinalCifWindow
 
-[ COL_CIF,
-  COL_DATA,
-  COL_EDIT
-] = range(3)
+[COL_CIF,
+ COL_DATA,
+ COL_EDIT
+ ] = range(3)
+
 
 class AppWindow(QMainWindow):
     def __init__(self):
@@ -475,27 +476,6 @@ class AppWindow(QMainWindow):
         self.save_current_cif_file()
         self.display_saved_cif()
 
-    def get_table_item(self, table: MyCifTable, row, col) -> str:
-        print(row, col, table.item(row, col))
-        try:
-            item = table.item(row, col).text()
-            print(table.item(row, col).text())
-        except AttributeError:
-            #raise
-            item = None
-        #if not item:
-        #    try:
-        #        item = table.item(row, col).data(0)
-        #    except AttributeError:
-        #        item = None
-        if not item:
-            try:
-                # This is for QPlaintextWidget items in the table:
-                item = table.cellWidget(row, col).toPlainText()
-            except AttributeError:
-                item = None
-        return item
-
     def save_current_cif_file(self):
         """
         Saves the current cif file and stores the information of the third column.
@@ -511,7 +491,7 @@ class AppWindow(QMainWindow):
             col1 = None  # from datafiles
             col2 = None  # own text
             for col in range(columncount):
-                item = self.get_table_item(table, row, col)
+                item = table.text(row, col)
                 if item:
                     if col == COL_CIF and item != (None or '' or '?'):
                         col0 = item
@@ -590,8 +570,6 @@ class AppWindow(QMainWindow):
         selected_row_text = listwidget.currentIndex().data()
         if not selected_row_text:
             return None
-        # table_data = self.settings.load_template('equipment/' + selected_row_text)
-        # self.equipment_settings = table_data
         equipment = self.settings.load_equipment_template_as_dict(selected_row_text)
         if self.vheaderitems:
             for key in equipment:
@@ -601,26 +579,22 @@ class AppWindow(QMainWindow):
                 if key in text_field_keys:
                     # special treatments for text fields:
                     tabitem = MyQPlainTextEdit(self)
-                    pal = tabitem.palette()
-                    pal.setColor(QPalette.Base, light_green)
-                    tabitem.setPalette(pal)
+                    tabitem.setColor(light_green)
                     txtlst = equipment[key].split(r'\n')
                     # special treatment for text fields in order to get line breaks:
                     for txt in txtlst:
                         tabitem.appendPlainText(txt)
-                    tabitem.setFrameShape(0)  # no fram earound the field
-                    # tabitem.setPalette(pal)
+                    tabitem.setFrameShape(0)  # no frame around the field
+                    tabitem.set_uneditable()
                     row = self.vheaderitems.index(key)
-                    column = 1
-                    self.ui.CifItemsTable.setCellWidget(row, column, tabitem)
+                    self.ui.CifItemsTable.setCellWidget(row, COL_DATA, tabitem)
                 else:
                     try:
                         tab_item = MyTableWidgetItem(str(equipment[key]))
                         # vheaderitems contain the cif keywords in the vertical header, the 1 is the data sources column.
                         row = self.vheaderitems.index(key)
-                        column = 1
-                        self.ui.CifItemsTable.setItem(row, column, tab_item)
-                        tab_item.setFlags(tab_item.flags() ^ Qt.ItemIsEditable)
+                        self.ui.CifItemsTable.setItem(row, COL_DATA, tab_item)
+                        tab_item.set_uneditable()
                         tab_item.setBackground(light_green)
                     except ValueError as e:
                         print('not in list:', e)
@@ -827,8 +801,8 @@ class AppWindow(QMainWindow):
         for rownum in range(ncolumns):
             key = ''
             try:
-                key = self.get_table_item(table, rownum, 0)
-                value = self.get_table_item(table, rownum, 1)
+                key = table.item(rownum, 0).text()
+                value = table.item(rownum, 1).text()
             except AttributeError:
                 value = ''
             if key and value:
@@ -1283,36 +1257,32 @@ class AppWindow(QMainWindow):
             try:
                 # sources are lower case!
                 txt = str(sources[miss_data.lower()][0])
-                tooltiptext = str(sources[miss_data.lower()][1])
                 if miss_data in text_field_keys:
+                    # only text fields:
                     tab_item = MyQPlainTextEdit(self.ui.CifItemsTable)
                     tab_item.setReadOnly(True)
                     tab_item.setFrameShape(0)
-                    self.ui.CifItemsTable.setCellWidget(row_num, 1, tab_item)
+                    self.ui.CifItemsTable.setCellWidget(row_num, COL_DATA, tab_item)
                     tab_item.setPlainText(txt)
-                    pal = tab_item.palette()
                     if txt and txt != '?':
-                        pal.setColor(QPalette.Base, light_green)
+                        tab_item.setColor(light_green)
                     else:
-                        pal.setColor(QPalette.Base, yellow)
-                    tab_item.setPalette(pal)
+                        tab_item.setColor(yellow)
                 else:
-                    #                             # row  column  item
-                    self.ui.CifItemsTable.setItem(row_num, 1, tab_item)
+                    # regular linedit fields:
+                    self.ui.CifItemsTable.setItem(row_num, COL_DATA, tab_item)
                     tab_item.setText(txt)  # has to be string
                     if txt and txt != '?':
                         tab_item.setBackground(light_green)
                     else:
                         tab_item.setBackground(yellow)
-                tab_item.setToolTip(tooltiptext)
-                # print(sources[miss_data], miss_data)
-                # self.ui.CifItemsTable.resizeRowToContents(row_num)
+                tab_item.setToolTip(str(sources[miss_data.lower()][1]))
             except KeyError as e:
                 # print(e, '##')
                 pass
             # items from data sources should not be editable
             if not miss_data in text_field_keys:
-                tab_item.setFlags(tab_item.flags() ^ Qt.ItemIsEditable)
+                tab_item.set_uneditable()
             # creating comboboxes for special keywords like _exptl_crystal_colour.
             # In case a property for this key exists, it will show this list:
             if miss_data.lower() in [x.lower() for x in property_fields]:
@@ -1370,57 +1340,53 @@ class AppWindow(QMainWindow):
         if not key:
             strval = ''
         if key in text_field_keys:
+            # All textedit fields
             # print(key, strval)
-            tabitem = MyQPlainTextEdit(self.ui.CifItemsTable)
-            tabitem.setPlainText(strval)
-            tab1 = MyQPlainTextEdit(self.ui.CifItemsTable)
-            tab2 = MyQPlainTextEdit(self.ui.CifItemsTable)
-            self.ui.CifItemsTable.setCellWidget(row_num, COL_CIF, tabitem)
-            self.ui.CifItemsTable.setCellWidget(row_num, COL_DATA, tab1)
-            self.ui.CifItemsTable.setCellWidget(row_num, COL_EDIT, tab2)
-            tabitem.setReadOnly(True)
-            tab1.setReadOnly(True)
+            tab_cif = MyQPlainTextEdit(self.ui.CifItemsTable)
+            tab_cif.setPlainText(strval)
+            tab_data = MyQPlainTextEdit(self.ui.CifItemsTable)
+            tab_edit = MyQPlainTextEdit(self.ui.CifItemsTable)
+            self.ui.CifItemsTable.setCellWidget(row_num, COL_CIF, tab_cif)
+            self.ui.CifItemsTable.setCellWidget(row_num, COL_DATA, tab_data)
+            self.ui.CifItemsTable.setCellWidget(row_num, COL_EDIT, tab_edit)
+            tab_cif.setReadOnly(True)
+            tab_data.setReadOnly(True)
             # Make QPlainTextEdit fields a bit higher than the rest
             self.ui.CifItemsTable.setRowHeight(row_num, 90)
-        # else:
-        # if key in text_field_keys:
-        #    self.ui.CifItemsTable.setRowHeight(row_num, 60)
         else:
-            tabitem = MyTableWidgetItem(strval)
+            # All regular linedit fields:
+            tab_cif = MyTableWidgetItem(strval)
             if key == "These below are already in:":
-                # pal = QPalette()
-                # pal.setColor(QPalette.Foreground, Qt.black)
-                item1 = MyTableWidgetItem('')
-                item2 = MyTableWidgetItem('')
-                item3 = MyTableWidgetItem('')
-                item1.setBackground(blue)
-                item1.setFlags(item1.flags() ^ Qt.ItemIsEditable)
-                item2.setBackground(blue)
-                item2.setFlags(item2.flags() ^ Qt.ItemIsEditable)
-                item3.setBackground(blue)
-                item3.setFlags(item3.flags() ^ Qt.ItemIsEditable)
-                self.ui.CifItemsTable.setItem(row_num, 0, item1)
-                self.ui.CifItemsTable.setItem(row_num, 1, item2)
-                self.ui.CifItemsTable.setItem(row_num, 2, item3)
-                self.ui.CifItemsTable.resizeRowToContents(row_num)
+                self.add_separation_line(row_num)
             else:
-                tab1 = MyTableWidgetItem()
-                tab2 = MyTableWidgetItem()
-                self.ui.CifItemsTable.setItem(row_num, 1, tab1)
-                self.ui.CifItemsTable.setItem(row_num, 0, tabitem)
+                tab_data = MyTableWidgetItem()
+                self.ui.CifItemsTable.setItem(row_num, COL_CIF, tab_cif)
+                self.ui.CifItemsTable.setItem(row_num, COL_DATA, tab_data)
                 if key == '_audit_creation_method':
-                    # or better _audit_update_record?
-                    """'A record of any changes to the data block. The '
-                    'update format is a date (yyyy-mm-dd) followed by a '
-                    'description of the changes. The latest update entry '
-                    'is added to the bottom of this record.'"""
-                    tab2.setText('FinalCif by Daniel Kratzert, Freiburg 2019')
-                    self.ui.CifItemsTable.setItem(row_num, 2, tab2)
-                tabitem.setFlags(tabitem.flags() ^ Qt.ItemIsEditable)
-                tab1.setFlags(tab1.flags() ^ Qt.ItemIsEditable)
+                    tab_data.setText('FinalCif by Daniel Kratzert, Freiburg 2019')
+                tab_cif.set_uneditable()
+                tab_data.set_uneditable()
                 self.ui.CifItemsTable.resizeRowToContents(row_num)
         self.ui.CifItemsTable.setVerticalHeaderItem(row_num, head_item_key)
 
+    def add_separation_line(self, row_num):
+        """
+        Adds a blue separation line between cif content and empty cif keywords.
+        """
+        # The blue line in the table:
+        item1 = MyTableWidgetItem('')
+        item2 = MyTableWidgetItem('')
+        item3 = MyTableWidgetItem('')
+        item1.setBackground(blue)
+        item1.set_uneditable()
+        item2.setBackground(blue)
+        item2.set_uneditable()
+        item3.setBackground(blue)
+        item3.set_uneditable()
+        self.ui.CifItemsTable.setItem(row_num, COL_CIF, item1)
+        self.ui.CifItemsTable.setItem(row_num, COL_DATA, item2)
+        self.ui.CifItemsTable.setItem(row_num, COL_EDIT, item3)
+        self.ui.CifItemsTable.resizeRowToContents(row_num)
 
 
 if __name__ == '__main__':
@@ -1450,6 +1416,7 @@ if __name__ == '__main__':
         QMessageBox.warning(window, 'Warning', text)
         window.show()
         sys.exit(1)
+
 
     if not DEBUG:
         sys.excepthook = my_exception_hook
