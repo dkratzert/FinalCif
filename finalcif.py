@@ -316,7 +316,8 @@ class AppWindow(QMainWindow):
         parser = MyHTMLParser()
         parser.feed(htmlfile.read_text())
         gif = parser.get_image()
-        imageobj.write_bytes(gif)
+        if gif:
+            imageobj.write_bytes(gif)
         self.ui.statusBar.showMessage('Report finished.')
 
     def do_pdf_checkcif(self):
