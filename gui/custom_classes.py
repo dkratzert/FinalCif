@@ -1,4 +1,5 @@
 from PyQt5.QtCore import QEvent, QObject, Qt
+from PyQt5.QtGui import QPalette
 from PyQt5.QtWidgets import QComboBox, QFrame, QPlainTextEdit, QSizePolicy, QTableWidget, QWidget, QTableWidgetItem
 
 
@@ -24,8 +25,32 @@ class MyCifTable(QTableWidget):
             return True
         return QObject.eventFilter(self, widget, event)
 
-    def item(self, row: int, column: int) -> str:
-        return self.cellWidget(row, column).toPlainText()
+    def text(self, row: int, column: int) -> str:
+        """
+        Returns the text inside a table cell.
+        """
+        try:
+            txt = self.item(row, column).text()
+        except AttributeError:
+            txt = None
+        if not txt:
+            try:
+                txt = self.item(row, column).data(0)
+            except AttributeError:
+                txt = None
+        if not txt:
+            try:
+                # for QPlaintextWidgets:
+                txt = self.cellWidget(row, column).toPlainText()
+            except AttributeError:
+                txt = None
+        if not txt:
+            # for comboboxes:
+            try:
+                txt = self.cellWidget(row, column).currentText()
+            except AttributeError:
+                txt = None
+        return txt
 
 
 class MyQPlainTextEdit(QPlainTextEdit):
@@ -40,13 +65,13 @@ class MyQPlainTextEdit(QPlainTextEdit):
         self.setFrameShape(QFrame.NoFrame)
         self.setTabChangesFocus(True)
 
-    def text(self) -> str:
-        return self.toPlainText()
+    def setColor(self, color):
+        pal = self.palette()
+        pal.setColor(QPalette.Base, color)
+        self.setPalette(pal)
 
-    def data(self):
-        return
-    #def item(self, row: int, col: int):
-    #    return self.toPlainText()
+    def set_uneditable(self):
+        self.setReadOnly(True)
 
 
 class MyComboBox(QComboBox):
@@ -71,9 +96,8 @@ class MyComboBox(QComboBox):
             return True
         return QObject.eventFilter(self, widget, event)
 
-    def text(self) -> str:
-        print(self.currentText(), '####')
-        return self.currentText()
+    def set_uneditable(self):
+        self.setFlags(self.flags() ^ Qt.ItemIsEditable)
 
 
 class MyTableWidgetItem(QTableWidgetItem):
@@ -81,5 +105,6 @@ class MyTableWidgetItem(QTableWidgetItem):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-    #def text(self) -> str:
-    #    return self.text()
+    def set_uneditable(self):
+        self.setFlags(self.flags() ^ Qt.ItemIsEditable)
+
