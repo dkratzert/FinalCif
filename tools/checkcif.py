@@ -5,7 +5,7 @@
 #  and you think this stuff is worth it, you can buy me a beer in return.
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
-
+import os
 import subprocess
 import sys
 import time
@@ -49,6 +49,7 @@ class MakeCheckCif():
         """
         Requests a checkcif run from IUCr servers.
         """
+        tmp, fd = None, None
         f = open(str(self.cifobj.absolute()), 'rb')
         if pdf:
             report_type = 'PDF'
@@ -61,7 +62,7 @@ class MakeCheckCif():
             if self.parent.ui.structfactCheckBox.isChecked():
                 hkl = 'checkcif_only'
                 f.close()
-                tmp = self._get_cif_without_hkl()
+                tmp, fd = self._get_cif_without_hkl()
                 f = open(tmp, 'rb')
         else:
             hkl = 'checkcif_only'
@@ -82,7 +83,10 @@ class MakeCheckCif():
         f.close()
         if hkl == 'checkcif_only':
             try:
-                Path(tmp).unlink()
+                # a trick to clos the file descriptor:
+                f = os.fdopen(fd, 'w')
+                f.close()
+                os.unlink(tmp)
             except ValueError:
                 print('can not delete tempfile from checkcif:')
                 print(tmp)
@@ -128,13 +132,13 @@ class MakeCheckCif():
         self._open_pdf_result()
 
     def _get_cif_without_hkl(self):
-        _, tmp = mkstemp(prefix='finalcif-', suffix='.cif')
+        fd, tmp = mkstemp(prefix='finalcif-', suffix='.cif')
         doc = gemmi.cif.read_string(self.cifobj.read_text())
         block = doc.sole_block()
         block.set_pair('_shelx_hkl_file', '')
         p = Path(tmp)
         p.write_text(doc.as_string(gemmi.cif.Style.Indent35))
-        return tmp
+        return tmp, fd
 
 
 class MyHTMLParser(HTMLParser):
