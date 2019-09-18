@@ -777,17 +777,53 @@ class AppWindow(QMainWindow):
             self.show_general_warning(str(e))
             return
         block = doc.sole_block()
-        data = json.loads(doc.as_json(mmjson=True))
         table_data = []
-        name = block.name.replace('__', ' ')
-        for key in data['data_' + block.name].keys():
-            key = '_' + key
-            d = [key, cif.as_string(block.find_value(key))]
-            if d:
-                table_data.append(d)
+        for item in block:
+            if item.pair is not None:
+                # print(item.pair)
+                table_data.append(item.pair)
+                # TODO: add a list of items that should not be imported, like: _cell_length_a
+            #elif item.loop is not None:
+            #    print(item.loop)
+        if filename.endswith('.cif_od'):
+            name = Path(filename).stem
+        else:
+            name = block.name.replace('__', ' ')
         self.settings.save_template('equipment/' + name, table_data)
         self.settings.append_to_equipment_list(name)
         self.show_equipment_and_properties()
+
+    def get_loop(self, item):
+        # for item in block:
+        if item.loop is not None:
+            n = 0
+            while True:
+                try:
+                    row = [item.loop.val(n, x) for x in range(len(item.loop.tags))]
+                    if not row[0]:
+                        break
+                    n += 1
+                except Exception:
+                    break
+        #####
+        """
+        # get columns:
+        for item in block:
+            if item.loop is not None:
+                for tag in item.loop.tags:
+                    val = block.find_values(tag)
+                    print([str(x) for x in val])
+        
+        # get rows:
+        for item in block:
+            if item.loop is not None:
+                tags = item.loop.tags
+                table = block.find(tags)
+                print('table columns, rows:', table.width(), len(table))
+                row = [x for x in table]
+                for r in row:
+                    print([x for x in r])
+        """
 
     def get_equipment_entry_data(self):
         """
@@ -1059,12 +1095,12 @@ class AppWindow(QMainWindow):
         print('canceled property')
 
     @staticmethod
-    def cif_file_open_dialog():
+    def cif_file_open_dialog() -> str:
         """
         Returns a cif file name from a file dialog.
         """
-        filename, _ = QFileDialog.getOpenFileName(filter="CIF file (*.cif)",
-                                                  initialFilter="CIF file (*.cif)",
+        filename, _ = QFileDialog.getOpenFileName(filter="CIF file (*.cif, *.cif_od)",
+                                                  initialFilter="CIF file (*.cif, *.cif_od)",
                                                   caption='Open a .cif File')
         return filename
 
@@ -1079,7 +1115,7 @@ class AppWindow(QMainWindow):
         filename, _ = dialog.getSaveFileName(None, 'Select file name', filename)
         return filename
 
-    def load_cif_file(self, fname):
+    def load_cif_file(self, fname: str) -> None:
         """
         Opens the cif file and fills information into the main table.
         """
@@ -1148,7 +1184,7 @@ class AppWindow(QMainWindow):
         # self.ui.EquipmentTemplatesListWidget.setCurrentRow(-1)  # Has to he in front in order to work
         # self.ui.EquipmentTemplatesListWidget.setCurrentRow(self.settings.load_last_equipment())
 
-    def unable_to_open_message(self, filepath, not_ok):
+    def unable_to_open_message(self, filepath, not_ok) -> None:
         info = QMessageBox()
         info.setIcon(QMessageBox.Information)
         print('Output from gemmi:', not_ok)

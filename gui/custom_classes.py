@@ -108,3 +108,8 @@ class MyTableWidgetItem(QTableWidgetItem):
     def set_uneditable(self):
         self.setFlags(self.flags() ^ Qt.ItemIsEditable)
 
+
+class MyEquipmentTable(QTableWidget):
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
