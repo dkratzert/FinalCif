@@ -26,7 +26,7 @@ from tools.checkcif import MakeCheckCif, MyHTMLParser
 from tools.update import mainurl
 from tools.version import VERSION
 
-DEBUG = False
+DEBUG = True
 
 if getattr(sys, 'frozen', False):
     # If the application is run as a bundle, the pyInstaller bootloader
@@ -58,6 +58,7 @@ from tools.settings import FinalCifSettings
 
 """
 TODO:
+- Add event filter to have a newline on enter key in equipment templates. Maybe even switch to a textfield?
 - add loops to templates
 - write more tests!
 - calculate space group and crystal system if missing
@@ -192,25 +193,25 @@ class AppWindow(QMainWindow):
         self.ui.CancelPropertiesButton.clicked.connect(self.cancel_property_template)
         self.ui.DeletePropertiesButton.clicked.connect(self.delete_property)
         ##
-        self.ui.EquipmentEditTableWidget.cellPressed.connect(self.add_eq_row_if_needed)
-        self.ui.EquipmentEditTableWidget.itemSelectionChanged.connect(self.add_eq_row_if_needed)
-        self.ui.EquipmentEditTableWidget.itemEntered.connect(self.add_eq_row_if_needed)
-        self.ui.EquipmentEditTableWidget.cellChanged.connect(self.add_eq_row_if_needed)
-        self.ui.EquipmentEditTableWidget.currentItemChanged.connect(self.add_eq_row_if_needed)
-        self.ui.EquipmentEditTableWidget.itemActivated.connect(self.add_eq_row_if_needed)
-        self.ui.EquipmentEditTableWidget.itemPressed.connect(self.add_eq_row_if_needed)
-        self.ui.EquipmentEditTableWidget.itemClicked.connect(self.add_eq_row_if_needed)
-        self.ui.EquipmentEditTableWidget.itemChanged.connect(self.add_eq_row_if_needed)
+        self.ui.EquipmentEditTableWidget.cellPressed.connect(self.ui.EquipmentEditTableWidget.add_equipment_row)
+        self.ui.EquipmentEditTableWidget.itemSelectionChanged.connect(self.ui.EquipmentEditTableWidget.add_equipment_row)
+        self.ui.EquipmentEditTableWidget.itemEntered.connect(self.ui.EquipmentEditTableWidget.add_equipment_row)
+        self.ui.EquipmentEditTableWidget.cellChanged.connect(self.ui.EquipmentEditTableWidget.add_equipment_row)
+        self.ui.EquipmentEditTableWidget.currentItemChanged.connect(self.ui.EquipmentEditTableWidget.add_equipment_row)
+        self.ui.EquipmentEditTableWidget.itemActivated.connect(self.ui.EquipmentEditTableWidget.add_equipment_row)
+        self.ui.EquipmentEditTableWidget.itemPressed.connect(self.ui.EquipmentEditTableWidget.add_equipment_row)
+        self.ui.EquipmentEditTableWidget.itemClicked.connect(self.ui.EquipmentEditTableWidget.add_equipment_row)
+        self.ui.EquipmentEditTableWidget.itemChanged.connect(self.ui.EquipmentEditTableWidget.add_equipment_row)
         ##
-        self.ui.PropertiesEditTableWidget.itemSelectionChanged.connect(self.add_eq_row_if_needed)
-        self.ui.PropertiesEditTableWidget.cellPressed.connect(self.add_eq_row_if_needed)
-        self.ui.PropertiesEditTableWidget.itemEntered.connect(self.add_eq_row_if_needed)
-        self.ui.PropertiesEditTableWidget.cellChanged.connect(self.add_eq_row_if_needed)
-        self.ui.PropertiesEditTableWidget.currentItemChanged.connect(self.add_eq_row_if_needed)
-        self.ui.PropertiesEditTableWidget.itemActivated.connect(self.add_eq_row_if_needed)
-        self.ui.PropertiesEditTableWidget.itemPressed.connect(self.add_eq_row_if_needed)
-        self.ui.PropertiesEditTableWidget.itemClicked.connect(self.add_eq_row_if_needed)
-        self.ui.PropertiesEditTableWidget.itemChanged.connect(self.add_eq_row_if_needed)
+        self.ui.PropertiesEditTableWidget.itemSelectionChanged.connect(self.add_property_row_if_needed)
+        self.ui.PropertiesEditTableWidget.cellPressed.connect(self.add_property_row_if_needed)
+        self.ui.PropertiesEditTableWidget.itemEntered.connect(self.add_property_row_if_needed)
+        self.ui.PropertiesEditTableWidget.cellChanged.connect(self.add_property_row_if_needed)
+        self.ui.PropertiesEditTableWidget.currentItemChanged.connect(self.add_property_row_if_needed)
+        self.ui.PropertiesEditTableWidget.itemActivated.connect(self.add_property_row_if_needed)
+        self.ui.PropertiesEditTableWidget.itemPressed.connect(self.add_property_row_if_needed)
+        self.ui.PropertiesEditTableWidget.itemClicked.connect(self.add_property_row_if_needed)
+        self.ui.PropertiesEditTableWidget.itemChanged.connect(self.add_property_row_if_needed)
         #
         self.ui.ImportPropertyTemplateButton.clicked.connect(self.import_property_from_file)
         self.ui.ExportPropertyButton.clicked.connect(self.export_property_template)
@@ -622,6 +623,35 @@ class AppWindow(QMainWindow):
             self.cif.cif_file_text = "\n".join(cif_lst)
             self.cif.open_cif_by_string()
 
+    def new_property(self):
+        item = QListWidgetItem('')
+        self.ui.PropertiesTemplatesListWidget.addItem(item)
+        self.ui.PropertiesTemplatesListWidget.setCurrentItem(item)
+        item.setFlags(Qt.ItemIsEditable | Qt.ItemIsEnabled | Qt.ItemIsSelectable)
+        self.ui.PropertiesTemplatesListWidget.editItem(item)
+        self.ui.cifKeywordLineEdit.clear()
+
+    def add_property_row_if_needed(self):
+        """
+        Adds an empty row at the bottom of either the EquipmentEditTableWidget, or the PropertiesEditTableWidget.
+        """
+        table = self.ui.PropertiesEditTableWidget
+        rowcount = table.rowCount()
+        cont = 0
+        for row in range(rowcount):
+            key = ''
+            try:
+                key = table.item(row, 0).text()
+            except (AttributeError, TypeError) as e:
+                pass
+            if key:  # don't count empty key rows
+                cont += 1
+        diff = rowcount - cont
+        if diff < 4:
+            table.insertRow(rowcount)
+
+    # The equipment templates:
+
     def new_equipment(self):
         item = QListWidgetItem('')
         self.ui.EquipmentTemplatesListWidget.addItem(item)
@@ -646,63 +676,6 @@ class AppWindow(QMainWindow):
         # I do these both to clear the list:
         self.store_predefined_templates()
         self.show_equipment_and_properties()
-
-    def new_property(self):
-        item = QListWidgetItem('')
-        self.ui.PropertiesTemplatesListWidget.addItem(item)
-        self.ui.PropertiesTemplatesListWidget.setCurrentItem(item)
-        item.setFlags(Qt.ItemIsEditable | Qt.ItemIsEnabled | Qt.ItemIsSelectable)
-        self.ui.PropertiesTemplatesListWidget.editItem(item)
-        self.ui.cifKeywordLineEdit.clear()
-
-    def add_eq_row_if_needed(self):
-        """
-        Adds an empty row at the bottom of either the EquipmentEditTableWidget, or the PropertiesEditTableWidget.
-        """
-        if self.ui.EquipmentEditTableWidget.hasFocus():
-            table = self.ui.EquipmentEditTableWidget
-        elif self.ui.PropertiesEditTableWidget.hasFocus():
-            table = self.ui.PropertiesEditTableWidget
-        else:
-            return
-        rowcount = table.rowCount()
-        cont = 0
-        for row in range(rowcount):
-            key = ''
-            try:
-                key = table.item(row, 0).text()
-            except (AttributeError, TypeError) as e:
-                pass
-            if key:  # don't count empty key rows
-                cont += 1
-        diff = rowcount - cont
-        if diff < 4:
-            table.insertRow(rowcount)
-
-    def add_equipment_row(self, table: QTableWidget, key: str = '', value: str = ''):
-        """
-        Add a new row with content to the table (Equipment or Property).
-        """
-        if not isinstance(value, str):
-            return
-        if not isinstance(key, str):
-            return
-        # Create a empty row at bottom of table
-        row_num = table.rowCount()
-        table.insertRow(row_num)
-        if len(value) > 38:
-            tab_item = MyQPlainTextEdit()
-            tab_item.setFrameShape(0)
-            tab_item.setPlainText(retranslate_delimiter(value))
-            table.setCellWidget(row_num, 1, tab_item)
-        else:
-            item_val = MyTableWidgetItem(retranslate_delimiter(value))
-            # Add cif key and value to the row:
-            table.setItem(row_num, 1, item_val)
-        item_key = MyTableWidgetItem(key)
-        table.setItem(row_num, 0, item_key)
-
-    # The equipment templates:
 
     def edit_equipment_template(self):
         it = self.ui.EquipmentTemplatesListWidget.currentItem()
@@ -734,12 +707,12 @@ class AppWindow(QMainWindow):
             for key, value in table_data:
                 if not key or not value:
                     continue
-                self.add_equipment_row(table, key, value)
+                self.ui.EquipmentEditTableWidget.add_equipment_row(key, value)
                 n += 1
         else:
             # new empty equipment:
             for _ in range(8):
-                self.add_equipment_row(table, '', '')
+                self.ui.EquipmentEditTableWidget.add_equipment_row('', '')
         table.insertRow(n)
         self.ui.EquipmentEditTableWidget.blockSignals(False)
         stackedwidget.setCurrentIndex(1)
@@ -803,8 +776,8 @@ class AppWindow(QMainWindow):
         for rownum in range(ncolumns):
             key = ''
             try:
-                key = table.item(rownum, 0).text()
-                value = table.item(rownum, 1).text()
+                key = table.text(rownum, 0)
+                value = table.text(rownum, 1)
             except AttributeError:
                 value = ''
             if key and value:
