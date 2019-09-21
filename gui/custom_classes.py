@@ -1,13 +1,14 @@
 from PyQt5.QtCore import QEvent, QObject, Qt
-from PyQt5.QtGui import QPalette, QKeyEvent
-from PyQt5.QtWidgets import QComboBox, QFrame, QPlainTextEdit, QSizePolicy, QTableWidget, QWidget, QTableWidgetItem
+from PyQt5.QtGui import QPalette, QResizeEvent
+from PyQt5.QtWidgets import QAbstractScrollArea, QComboBox, QFrame, QPlainTextEdit, QSizePolicy, QTableWidget, \
+    QTableWidgetItem, QWidget, QHeaderView
 
 from cif.cif_file_io import retranslate_delimiter
 
 
 class ItemTextMixin:
 
-    #def __init__(self, parent: QWidget = None):
+    # def __init__(self, parent: QWidget = None):
     #    super().__init__(parent)
 
     def text(self, row: int, column: int) -> str:
@@ -44,6 +45,9 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         super().__init__(parent)
         self.parent = parent
         self.installEventFilter(self)
+        self.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
     def eventFilter(self, widget: QObject, event: QEvent):
         """
@@ -60,6 +64,9 @@ class MyCifTable(QTableWidget, ItemTextMixin):
             return True
         return QObject.eventFilter(self, widget, event)
 
+    def adjustToContents(self):
+        pass
+
 
 class MyQPlainTextEdit(QPlainTextEdit):
     """
@@ -72,6 +79,11 @@ class MyQPlainTextEdit(QPlainTextEdit):
         self.setFocusPolicy(Qt.StrongFocus)
         self.setFrameShape(QFrame.NoFrame)
         self.setTabChangesFocus(True)
+        self.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        #self.textChanged.connect(self.myresize)
+        # self.parent.adjustToContents()
 
     def setColor(self, color):
         pal = self.palette()
@@ -80,6 +92,14 @@ class MyQPlainTextEdit(QPlainTextEdit):
 
     def set_uneditable(self):
         self.setReadOnly(True)
+
+    def onTextChanged(self):
+        size = self.document().size().toSize()
+        self.setFixedHeight(size.height() + 30)
+
+    def resizeEvent(self, event: QResizeEvent):
+        self.parent.adjustToContents()
+        super().resizeEvent(event)
 
 
 class MyComboBox(QComboBox):
@@ -121,17 +141,26 @@ class MyEQTableWidget(QTableWidget, ItemTextMixin):
     """
     A table widget for the equipment list.
     """
+
     def __init__(self, parent=None):
         super().__init__(parent)
+        #self.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
+        #self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
     def eventFilter(self, widget: QObject, event: QEvent):
-        #print('event')
+        """
+        TODO: Filter to make enter key do a newline. not working. maght have to be in the parent class.
+        :param widget:
+        :param event:
+        :return:
+        """
+        # print('event')
         # event.type() == QEvent.KeyPress and
         if event.type() == QEvent.KeyPress and event.key() == Qt.Key_Enter:
             print('foo')
-            #row = self.currentRow()
-            #self.setCurrentCell(row, 2)
-            #return True
+            # row = self.currentRow()
+            # self.setCurrentCell(row, 2)
+            # return True
         return QObject.eventFilter(self, widget, event)
 
     def add_equipment_row(self, key: str = '', value: str = ''):
@@ -145,16 +174,14 @@ class MyEQTableWidget(QTableWidget, ItemTextMixin):
         # Create a empty row at bottom of table
         row_num = self.rowCount()
         self.insertRow(row_num)
-        #if len(value) > 38:
-        tab_item = MyQPlainTextEdit()
+        item_key = MyTableWidgetItem(key)
+        self.setItem(row_num, 0, item_key)
+        # if len(value) > 38:
+        tab_item = MyQPlainTextEdit(self)
         tab_item.setFrameShape(0)
         tab_item.setPlainText(retranslate_delimiter(value))
         self.setCellWidget(row_num, 1, tab_item)
-        if len(value) < 38:
-            tab_item.setFixedHeight(25)
-        #else:
-        #    item_val = MyTableWidgetItem(retranslate_delimiter(value))
-        #    # Add cif key and value to the row:
-        #    self.setItem(row_num, 1, item_val)
-        item_key = MyTableWidgetItem(key)
-        self.setItem(row_num, 0, item_key)
+
+    def adjustToContents(self):
+        print('adjust')
+        self.resizeRowsToContents()

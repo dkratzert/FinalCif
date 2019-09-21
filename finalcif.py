@@ -581,13 +581,12 @@ class AppWindow(QMainWindow):
                 # add missing item to data sources column:
                 if key in text_field_keys:
                     # special treatments for text fields:
-                    tabitem = MyQPlainTextEdit(self)
+                    tabitem = MyQPlainTextEdit(self.ui.CifItemsTable)
                     tabitem.setColor(light_green)
                     txtlst = equipment[key].split(r'\n')
                     # special treatment for text fields in order to get line breaks:
                     for txt in txtlst:
-                        tabitem.appendPlainText(txt)
-                    tabitem.setFrameShape(0)  # no frame around the field
+                        tabitem.setPlainText(txt)
                     tabitem.set_uneditable()
                     row = self.vheaderitems.index(key)
                     self.ui.CifItemsTable.setCellWidget(row, COL_DATA, tabitem)
@@ -685,9 +684,9 @@ class AppWindow(QMainWindow):
         table = self.ui.EquipmentEditTableWidget
         stackedwidget = self.ui.EquipmentTemplatesStackedWidget
         listwidget = self.ui.EquipmentTemplatesListWidget
-        self.load_equipment(table, stackedwidget, listwidget)
+        self.load_equipment_to_edit(table, stackedwidget, listwidget)
 
-    def load_equipment(self, table: QTableWidget, stackedwidget: QStackedWidget, listwidget: QListWidget):
+    def load_equipment_to_edit(self, table: QTableWidget, stackedwidget: QStackedWidget, listwidget: QListWidget):
         """
         Load/Edit the key/value list of an equipment entry.
         """
@@ -856,7 +855,7 @@ class AppWindow(QMainWindow):
         stackedwidget = self.ui.PropertiesTemplatesStackedWidget
         listwidget = self.ui.PropertiesTemplatesListWidget
         self.load_property_from_settings(table, stackedwidget, listwidget)
-        table.resizeRowsToContents()
+        #table.resizeRowsToContents()
 
     def save_property_template(self):
         table = self.ui.PropertiesEditTableWidget
