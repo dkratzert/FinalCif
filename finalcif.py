@@ -45,7 +45,7 @@ if DEBUG:
     # uic.compileUi('./gui/finalcif_gui.ui', open('./gui/finalcif_gui.py', 'w'))
 
 from PyQt5.QtCore import QPoint, Qt, QUrl
-from PyQt5.QtGui import QColor, QFont, QIcon
+from PyQt5.QtGui import QColor, QFont, QIcon, QBrush
 from PyQt5.QtWidgets import QApplication, QFileDialog, QHeaderView, QListWidget, QListWidgetItem, \
     QMainWindow, QMessageBox, QPlainTextEdit, QStackedWidget, QStyle, QTableWidget
 
@@ -58,6 +58,7 @@ from tools.settings import FinalCifSettings
 
 """
 TODO:
+- items = self.table.findItems(self.edit.text(), QtCore.Qt.MatchExactly)
 - Add event filter to have a newline on enter key in equipment templates. Maybe even switch to a textfield?
 - add loops to templates
 - write more tests!
@@ -222,9 +223,9 @@ class AppWindow(QMainWindow):
         ##
         self.ui.SaveFullReportButton.clicked.connect(self.make_table)
         # vertical header click:
-        view = self.ui.CifItemsTable.verticalHeader()
-        view.setSectionsClickable(True)
-        view.sectionClicked.connect(self.vheader_section_click)
+        vheader = self.ui.CifItemsTable.verticalHeader()
+        vheader.setSectionsClickable(True)
+        vheader.sectionClicked.connect(self.vheader_section_click)
         ###
         self.ui.RecentComboBox.currentIndexChanged.connect(self.load_recent_file)
 
@@ -1347,16 +1348,21 @@ class AppWindow(QMainWindow):
         item1 = MyTableWidgetItem('')
         item2 = MyTableWidgetItem('')
         item3 = MyTableWidgetItem('')
-        item1.setBackground(blue)
+        diag = QBrush(blue)
+        diag.setStyle(Qt.DiagCrossPattern)
+        item1.setBackground(diag)
         item1.set_uneditable()
-        item2.setBackground(blue)
+        item2.setBackground(diag)
         item2.set_uneditable()
-        item3.setBackground(blue)
+        item3.setBackground(diag)
         item3.set_uneditable()
         self.ui.CifItemsTable.setItem(row_num, COL_CIF, item1)
         self.ui.CifItemsTable.setItem(row_num, COL_DATA, item2)
         self.ui.CifItemsTable.setItem(row_num, COL_EDIT, item3)
         self.ui.CifItemsTable.resizeRowToContents(row_num)
+        # Not working:
+        #item = self.ui.CifItemsTable.verticalHeaderItem(row_num)
+        #item.setBackground(diag)
 
 
 if __name__ == '__main__':
