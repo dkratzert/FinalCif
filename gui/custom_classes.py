@@ -1,3 +1,4 @@
+import PyQt5
 from PyQt5.QtCore import QEvent, QObject, Qt
 from PyQt5.QtGui import QPalette, QTextOption
 from PyQt5.QtWidgets import QAbstractScrollArea, QComboBox, QFrame, QPlainTextEdit, QSizePolicy, QTableWidget, \
@@ -6,10 +7,8 @@ from PyQt5.QtWidgets import QAbstractScrollArea, QComboBox, QFrame, QPlainTextEd
 from cif.cif_file_io import retranslate_delimiter
 
 
+# noinspection PyUnresolvedReferences
 class ItemTextMixin:
-
-    # def __init__(self, parent: QWidget = None):
-    #    super().__init__(parent)
 
     def text(self, row: int, column: int) -> str:
         """
@@ -103,12 +102,6 @@ class MyQPlainTextEdit(QPlainTextEdit):
             return True
         return QObject.eventFilter(self, widget, event)
 
-    def textChanged(self) -> None:
-        # TODO: not working
-        super().textChanged()
-        height = self.document().size().height()
-        self.setFixedHeight(height + 30)
-
 
 class MyComboBox(QComboBox):
     """
@@ -172,7 +165,7 @@ class MyEQTableWidget(QTableWidget, ItemTextMixin):
             if key:  # don't count empty key rows
                 cont += 1
         diff = rowcount - cont
-        if diff < 4:
+        if diff < 2:
             self.add_equipment_row()
 
     def add_equipment_row(self, key_text: str = '', value_text: str = ''):
@@ -188,6 +181,7 @@ class MyEQTableWidget(QTableWidget, ItemTextMixin):
         self.insertRow(row_num)
         key_item = MyQPlainTextEdit(self)
         key_item.setPlainText(key_text)
+        key_item.textChanged.connect(self.add_row_if_needed)
         self.setCellWidget(row_num, 0, key_item)
         # if len(value) > 38:
         tab_item = MyQPlainTextEdit(self)
