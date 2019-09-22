@@ -26,7 +26,7 @@ from tools.checkcif import MakeCheckCif, MyHTMLParser
 from tools.update import mainurl
 from tools.version import VERSION
 
-DEBUG = True
+DEBUG = False
 
 if getattr(sys, 'frozen', False):
     # If the application is run as a bundle, the pyInstaller bootloader
@@ -581,11 +581,8 @@ class AppWindow(QMainWindow):
                 if key in text_field_keys:
                     # special treatments for text fields:
                     tabitem = MyQPlainTextEdit(self.ui.CifItemsTable)
-                    tabitem.setColor(light_green)
-                    txtlst = equipment[key].split(r'\n')
-                    # special treatment for text fields in order to get line breaks:
-                    for txt in txtlst:
-                        tabitem.setPlainText(txt)
+                    tabitem.setBackground(light_green)
+                    tabitem.setText(equipment[key])
                     tabitem.set_uneditable()
                     row = self.vheaderitems.index(key)
                     self.ui.CifItemsTable.setCellWidget(row, COL_DATA, tabitem)
@@ -1275,9 +1272,9 @@ class AppWindow(QMainWindow):
                     self.ui.CifItemsTable.setCellWidget(row_num, COL_DATA, tab_item)
                     tab_item.setPlainText(txt)
                     if txt and txt != '?':
-                        tab_item.setColor(light_green)
+                        tab_item.setBackground(light_green)
                     else:
-                        tab_item.setColor(yellow)
+                        tab_item.setBackground(yellow)
                 else:
                     # regular linedit fields:
                     self.ui.CifItemsTable.setItem(row_num, COL_DATA, tab_item)
