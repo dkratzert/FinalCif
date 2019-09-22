@@ -780,9 +780,11 @@ class AppWindow(QMainWindow):
                 table_data.append([key, value])
         return selected_template_text, table_data
 
-    def export_equipment_template(self):
+    def export_equipment_template(self, filename: str = None):
         """
-        exports the currently selected equipment entry to a file.
+        Exports the currently selected equipment entry to a file.
+
+        I order to export, we have to run self.edit_equipment_template() first!
         """
         selected_template, table_data = self.get_equipment_entry_data()
         if not selected_template:
@@ -792,7 +794,8 @@ class AppWindow(QMainWindow):
         block = doc.add_new_block(blockname)
         for key, value in table_data:
             set_pair_delimited(block, key, value)
-        filename = self.cif_file_save_dialog(blockname.replace('__', '_') + '.cif')
+        if not filename:
+            filename = self.cif_file_save_dialog(blockname.replace('__', '_') + '.cif')
         try:
             Path(filename).write_text(doc.as_string(cif.Style.Indent35))
         except PermissionError:
@@ -1361,8 +1364,8 @@ class AppWindow(QMainWindow):
         self.ui.CifItemsTable.setItem(row_num, COL_EDIT, item3)
         self.ui.CifItemsTable.resizeRowToContents(row_num)
         # Not working:
-        #item = self.ui.CifItemsTable.verticalHeaderItem(row_num)
-        #item.setBackground(diag)
+        # item = self.ui.CifItemsTable.verticalHeaderItem(row_num)
+        # item.setBackground(diag)
 
 
 if __name__ == '__main__':
