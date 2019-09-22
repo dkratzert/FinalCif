@@ -20,13 +20,13 @@ from requests import ReadTimeout
 
 from cif.core_dict import cif_core
 from datafiles.rigaku_data import RigakuData
-from gui.custom_classes import MyComboBox, MyQPlainTextEdit, MyTableWidgetItem
+from gui.custom_classes import MyComboBox, MyEQTableWidget, MyQPlainTextEdit, MyTableWidgetItem
 from report.tables import make_report_from
 from tools.checkcif import MakeCheckCif, MyHTMLParser
 from tools.update import mainurl
 from tools.version import VERSION
 
-DEBUG = False
+DEBUG = True
 
 if getattr(sys, 'frozen', False):
     # If the application is run as a bundle, the pyInstaller bootloader
@@ -45,11 +45,11 @@ if DEBUG:
     # uic.compileUi('./gui/finalcif_gui.ui', open('./gui/finalcif_gui.py', 'w'))
 
 from PyQt5.QtCore import QPoint, Qt, QUrl
-from PyQt5.QtGui import QColor, QFont, QIcon
+from PyQt5.QtGui import QColor, QFont, QIcon, QBrush
 from PyQt5.QtWidgets import QApplication, QFileDialog, QHeaderView, QListWidget, QListWidgetItem, \
     QMainWindow, QMessageBox, QPlainTextEdit, QStackedWidget, QStyle, QTableWidget
 
-from cif.cif_file_io import CifContainer, set_pair_delimited, retranslate_delimiter
+from cif.cif_file_io import CifContainer, set_pair_delimited
 from datafiles.bruker_data import BrukerData
 from datafiles.platon import Platon
 from tools.misc import high_prio_keys, predef_equipment_templ, predef_prop_templ, combobox_fields, \
@@ -58,6 +58,8 @@ from tools.settings import FinalCifSettings
 
 """
 TODO:
+- items = self.table.findItems(self.edit.text(), QtCore.Qt.MatchExactly)
+- Add event filter to have a newline on enter key in equipment templates. Maybe even switch to a textfield?
 - add loops to templates
 - write more tests!
 - calculate space group and crystal system if missing
@@ -192,25 +194,22 @@ class AppWindow(QMainWindow):
         self.ui.CancelPropertiesButton.clicked.connect(self.cancel_property_template)
         self.ui.DeletePropertiesButton.clicked.connect(self.delete_property)
         ##
-        self.ui.EquipmentEditTableWidget.cellPressed.connect(self.add_eq_row_if_needed)
-        self.ui.EquipmentEditTableWidget.itemSelectionChanged.connect(self.add_eq_row_if_needed)
-        self.ui.EquipmentEditTableWidget.itemEntered.connect(self.add_eq_row_if_needed)
-        self.ui.EquipmentEditTableWidget.cellChanged.connect(self.add_eq_row_if_needed)
-        self.ui.EquipmentEditTableWidget.currentItemChanged.connect(self.add_eq_row_if_needed)
-        self.ui.EquipmentEditTableWidget.itemActivated.connect(self.add_eq_row_if_needed)
-        self.ui.EquipmentEditTableWidget.itemPressed.connect(self.add_eq_row_if_needed)
-        self.ui.EquipmentEditTableWidget.itemClicked.connect(self.add_eq_row_if_needed)
-        self.ui.EquipmentEditTableWidget.itemChanged.connect(self.add_eq_row_if_needed)
+        self.ui.EquipmentEditTableWidget.cellPressed.connect(self.ui.EquipmentEditTableWidget.add_row_if_needed)
+        self.ui.EquipmentEditTableWidget.itemSelectionChanged.connect(
+            self.ui.EquipmentEditTableWidget.add_row_if_needed)
+        self.ui.EquipmentEditTableWidget.itemEntered.connect(self.ui.EquipmentEditTableWidget.add_row_if_needed)
+        self.ui.EquipmentEditTableWidget.cellChanged.connect(self.ui.EquipmentEditTableWidget.add_row_if_needed)
+        self.ui.EquipmentEditTableWidget.currentItemChanged.connect(self.ui.EquipmentEditTableWidget.add_row_if_needed)
         ##
-        self.ui.PropertiesEditTableWidget.itemSelectionChanged.connect(self.add_eq_row_if_needed)
-        self.ui.PropertiesEditTableWidget.cellPressed.connect(self.add_eq_row_if_needed)
-        self.ui.PropertiesEditTableWidget.itemEntered.connect(self.add_eq_row_if_needed)
-        self.ui.PropertiesEditTableWidget.cellChanged.connect(self.add_eq_row_if_needed)
-        self.ui.PropertiesEditTableWidget.currentItemChanged.connect(self.add_eq_row_if_needed)
-        self.ui.PropertiesEditTableWidget.itemActivated.connect(self.add_eq_row_if_needed)
-        self.ui.PropertiesEditTableWidget.itemPressed.connect(self.add_eq_row_if_needed)
-        self.ui.PropertiesEditTableWidget.itemClicked.connect(self.add_eq_row_if_needed)
-        self.ui.PropertiesEditTableWidget.itemChanged.connect(self.add_eq_row_if_needed)
+        self.ui.PropertiesEditTableWidget.itemSelectionChanged.connect(self.add_property_row_if_needed)
+        self.ui.PropertiesEditTableWidget.cellPressed.connect(self.add_property_row_if_needed)
+        self.ui.PropertiesEditTableWidget.itemEntered.connect(self.add_property_row_if_needed)
+        self.ui.PropertiesEditTableWidget.cellChanged.connect(self.add_property_row_if_needed)
+        self.ui.PropertiesEditTableWidget.currentItemChanged.connect(self.add_property_row_if_needed)
+        self.ui.PropertiesEditTableWidget.itemActivated.connect(self.add_property_row_if_needed)
+        self.ui.PropertiesEditTableWidget.itemPressed.connect(self.add_property_row_if_needed)
+        self.ui.PropertiesEditTableWidget.itemClicked.connect(self.add_property_row_if_needed)
+        self.ui.PropertiesEditTableWidget.itemChanged.connect(self.add_property_row_if_needed)
         #
         self.ui.ImportPropertyTemplateButton.clicked.connect(self.import_property_from_file)
         self.ui.ExportPropertyButton.clicked.connect(self.export_property_template)
@@ -224,9 +223,9 @@ class AppWindow(QMainWindow):
         ##
         self.ui.SaveFullReportButton.clicked.connect(self.make_table)
         # vertical header click:
-        view = self.ui.CifItemsTable.verticalHeader()
-        view.setSectionsClickable(True)
-        view.sectionClicked.connect(self.vheader_section_click)
+        vheader = self.ui.CifItemsTable.verticalHeader()
+        vheader.setSectionsClickable(True)
+        vheader.sectionClicked.connect(self.vheader_section_click)
         ###
         self.ui.RecentComboBox.currentIndexChanged.connect(self.load_recent_file)
 
@@ -566,7 +565,8 @@ class AppWindow(QMainWindow):
 
     def load_selected_equipment(self):
         """
-        Load equipment data to be used in the main table
+        Loads equipment data to be shown in the main Cif table.
+        Not for template edititng!
         """
         listwidget = self.ui.EquipmentTemplatesListWidget
         selected_row_text = listwidget.currentIndex().data()
@@ -580,13 +580,12 @@ class AppWindow(QMainWindow):
                 # add missing item to data sources column:
                 if key in text_field_keys:
                     # special treatments for text fields:
-                    tabitem = MyQPlainTextEdit(self)
+                    tabitem = MyQPlainTextEdit(self.ui.CifItemsTable)
                     tabitem.setColor(light_green)
                     txtlst = equipment[key].split(r'\n')
                     # special treatment for text fields in order to get line breaks:
                     for txt in txtlst:
-                        tabitem.appendPlainText(txt)
-                    tabitem.setFrameShape(0)  # no frame around the field
+                        tabitem.setPlainText(txt)
                     tabitem.set_uneditable()
                     row = self.vheaderitems.index(key)
                     self.ui.CifItemsTable.setCellWidget(row, COL_DATA, tabitem)
@@ -603,7 +602,7 @@ class AppWindow(QMainWindow):
 
     def add_new_table_key(self, key: str) -> None:
         """
-        Adds a new row with a respective vheaderitem to the main table.
+        Adds a new row with a respective vheaderitem to the main cif table.
         Also the currently opened cif file is updated.
         """
         if not key.startswith('_'):
@@ -621,6 +620,35 @@ class AppWindow(QMainWindow):
             cif_lst.insert(data_position + 1, key + ' ' * (31 - len(key)) + '    ?')
             self.cif.cif_file_text = "\n".join(cif_lst)
             self.cif.open_cif_by_string()
+
+    def new_property(self):
+        item = QListWidgetItem('')
+        self.ui.PropertiesTemplatesListWidget.addItem(item)
+        self.ui.PropertiesTemplatesListWidget.setCurrentItem(item)
+        item.setFlags(Qt.ItemIsEditable | Qt.ItemIsEnabled | Qt.ItemIsSelectable)
+        self.ui.PropertiesTemplatesListWidget.editItem(item)
+        self.ui.cifKeywordLineEdit.clear()
+
+    def add_property_row_if_needed(self):
+        """
+        Adds an empty row at the bottom of either the EquipmentEditTableWidget, or the PropertiesEditTableWidget.
+        """
+        table = self.ui.PropertiesEditTableWidget
+        rowcount = table.rowCount()
+        cont = 0
+        for row in range(rowcount):
+            key = ''
+            try:
+                key = table.item(row, 0).text()
+            except (AttributeError, TypeError) as e:
+                pass
+            if key:  # don't count empty key rows
+                cont += 1
+        diff = rowcount - cont
+        if diff < 4:
+            table.insertRow(rowcount)
+
+    # The equipment templates:
 
     def new_equipment(self):
         item = QListWidgetItem('')
@@ -647,63 +675,6 @@ class AppWindow(QMainWindow):
         self.store_predefined_templates()
         self.show_equipment_and_properties()
 
-    def new_property(self):
-        item = QListWidgetItem('')
-        self.ui.PropertiesTemplatesListWidget.addItem(item)
-        self.ui.PropertiesTemplatesListWidget.setCurrentItem(item)
-        item.setFlags(Qt.ItemIsEditable | Qt.ItemIsEnabled | Qt.ItemIsSelectable)
-        self.ui.PropertiesTemplatesListWidget.editItem(item)
-        self.ui.cifKeywordLineEdit.clear()
-
-    def add_eq_row_if_needed(self):
-        """
-        Adds an empty row at the bottom of either the EquipmentEditTableWidget, or the PropertiesEditTableWidget.
-        """
-        if self.ui.EquipmentEditTableWidget.hasFocus():
-            table = self.ui.EquipmentEditTableWidget
-        elif self.ui.PropertiesEditTableWidget.hasFocus():
-            table = self.ui.PropertiesEditTableWidget
-        else:
-            return
-        rowcount = table.rowCount()
-        cont = 0
-        for row in range(rowcount):
-            key = ''
-            try:
-                key = table.item(row, 0).text()
-            except (AttributeError, TypeError) as e:
-                pass
-            if key:  # don't count empty key rows
-                cont += 1
-        diff = rowcount - cont
-        if diff < 4:
-            table.insertRow(rowcount)
-
-    def add_equipment_row(self, table: QTableWidget, key: str = '', value: str = ''):
-        """
-        Add a new row with content to the table (Equipment or Property).
-        """
-        if not isinstance(value, str):
-            return
-        if not isinstance(key, str):
-            return
-        # Create a empty row at bottom of table
-        row_num = table.rowCount()
-        table.insertRow(row_num)
-        if len(value) > 38:
-            tab_item = MyQPlainTextEdit()
-            tab_item.setFrameShape(0)
-            tab_item.setPlainText(retranslate_delimiter(value))
-            table.setCellWidget(row_num, 1, tab_item)
-        else:
-            item_val = MyTableWidgetItem(retranslate_delimiter(value))
-            # Add cif key and value to the row:
-            table.setItem(row_num, 1, item_val)
-        item_key = MyTableWidgetItem(key)
-        table.setItem(row_num, 0, item_key)
-
-    # The equipment templates:
-
     def edit_equipment_template(self):
         it = self.ui.EquipmentTemplatesListWidget.currentItem()
         self.ui.EquipmentTemplatesListWidget.setCurrentItem(None)
@@ -712,38 +683,36 @@ class AppWindow(QMainWindow):
         table = self.ui.EquipmentEditTableWidget
         stackedwidget = self.ui.EquipmentTemplatesStackedWidget
         listwidget = self.ui.EquipmentTemplatesListWidget
-        self.load_equipment(table, stackedwidget, listwidget)
+        self.load_equipment_to_edit(table, stackedwidget, listwidget)
 
-    def load_equipment(self, table: QTableWidget, stackedwidget: QStackedWidget, listwidget: QListWidget):
+    def load_equipment_to_edit(self, table: MyEQTableWidget, stackedwidget: QStackedWidget, listwidget: QListWidget):
         """
         Load/Edit the key/value list of an equipment entry.
         """
-        self.ui.EquipmentEditTableWidget.blockSignals(True)
+        table.blockSignals(True)
         table.clearContents()
         table.setRowCount(0)
         index = listwidget.currentIndex()
         if index.row() == -1:
-            self.ui.EquipmentEditTableWidget.blockSignals(False)
             # nothing selected
             return
         selected_row_text = listwidget.currentIndex().data()
         table_data = self.settings.load_template('equipment/' + selected_row_text)
         # first load the previous values:
-        n = 0
         if table_data:
             for key, value in table_data:
                 if not key or not value:
                     continue
-                self.add_equipment_row(table, key, value)
-                n += 1
+                table.add_equipment_row(key, value)
         else:
             # new empty equipment:
             for _ in range(8):
-                self.add_equipment_row(table, '', '')
-        table.insertRow(n)
-        self.ui.EquipmentEditTableWidget.blockSignals(False)
+                table.add_equipment_row('', '')
+        table.add_equipment_row('', '')
+        table.add_equipment_row('', '')
         stackedwidget.setCurrentIndex(1)
-        self.ui.EquipmentEditTableWidget.resizeRowsToContents()
+        table.resizeRowsToContents()
+        table.blockSignals(False)
 
     def save_equipment_template(self):
         """
@@ -839,17 +808,19 @@ class AppWindow(QMainWindow):
         for rownum in range(ncolumns):
             key = ''
             try:
-                key = table.item(rownum, 0).text()
-                value = table.item(rownum, 1).text()
+                key = table.text(rownum, 0)
+                value = table.text(rownum, 1)
             except AttributeError:
                 value = ''
             if key and value:
                 table_data.append([key, value])
         return selected_template_text, table_data
 
-    def export_equipment_template(self):
+    def export_equipment_template(self, filename: str = None):
         """
-        exports the currently selected equipment entry to a file.
+        Exports the currently selected equipment entry to a file.
+
+        I order to export, we have to run self.edit_equipment_template() first!
         """
         selected_template, table_data = self.get_equipment_entry_data()
         if not selected_template:
@@ -859,7 +830,8 @@ class AppWindow(QMainWindow):
         block = doc.add_new_block(blockname)
         for key, value in table_data:
             set_pair_delimited(block, key, value)
-        filename = self.cif_file_save_dialog(blockname.replace('__', '_') + '.cif')
+        if not filename:
+            filename = self.cif_file_save_dialog(blockname.replace('__', '_') + '.cif')
         try:
             Path(filename).write_text(doc.as_string(cif.Style.Indent35))
         except PermissionError:
@@ -878,18 +850,6 @@ class AppWindow(QMainWindow):
         print('cancelled equipment')
 
     # The properties templates:
-
-    @staticmethod
-    def add_propeties_row(table: QTableWidget, value: str = ''):
-        """
-        Add a new row with a value to the Property table.
-        """
-        # Create a empty row at bottom of table
-        row_num = table.rowCount()
-        table.insertRow(row_num)
-        # Add cif key and value to the row:
-        item_val = MyTableWidgetItem(value)
-        table.setItem(row_num, 0, item_val)
 
     def delete_property(self):
         # First delete the list entries
@@ -919,7 +879,7 @@ class AppWindow(QMainWindow):
         stackedwidget = self.ui.PropertiesTemplatesStackedWidget
         listwidget = self.ui.PropertiesTemplatesListWidget
         self.load_property_from_settings(table, stackedwidget, listwidget)
-        table.resizeRowsToContents()
+        # table.resizeRowsToContents()
 
     def save_property_template(self):
         table = self.ui.PropertiesEditTableWidget
@@ -1014,7 +974,7 @@ class AppWindow(QMainWindow):
         """
         Load/Edit the value list of a property entry.
         """
-        # self.ui.PropertiesEditTableWidget.blockSignals(True)
+        table.blockSignals(True)
         property_list = self.settings.settings.value('property_list')
         if not property_list:
             property_list = ['']
@@ -1034,24 +994,35 @@ class AppWindow(QMainWindow):
             except:
                 pass
             self.ui.cifKeywordLineEdit.setText(cif_key)
-        n = 0
         if not table_data:
-            table_data = ['', '', '', '', '', '']
+            table_data = ['', '', '']
         for value in table_data:
             try:
                 self.add_propeties_row(table, str(value))
             except TypeError:
                 print('Bad value in property table')
                 continue
-            n += 1
+        self.add_propeties_row(table, '')
         property_list.append(selected_row_text)
         newlist = [x for x in list(set(property_list)) if x]
         # this list keeps track of the equipment items:
         self.settings.save_template('property_list', newlist)
         stackedwidget.setCurrentIndex(1)
-        # self.ui.PropertiesEditTableWidget.blockSignals(False)
-        table.setWordWrap(False)
+        table.blockSignals(False)
+        # table.setWordWrap(False)
         table.resizeRowsToContents()
+
+    @staticmethod
+    def add_propeties_row(table: QTableWidget, value: str = ''):
+        """
+        Add a new row with a value to the Property table.
+        """
+        # Create a empty row at bottom of table
+        row_num = table.rowCount()
+        table.insertRow(row_num)
+        # Add cif key and value to the row:
+        item_val = MyTableWidgetItem(value)
+        table.setItem(row_num, 0, item_val)
 
     def save_property(self, table: QTableWidget,
                       stackwidget: QStackedWidget,
@@ -1093,6 +1064,8 @@ class AppWindow(QMainWindow):
         table.setRowCount(0)
         self.ui.PropertiesTemplatesStackedWidget.setCurrentIndex(0)
         print('canceled property')
+
+    ##   end of properties
 
     @staticmethod
     def cif_file_open_dialog() -> str:
@@ -1299,7 +1272,6 @@ class AppWindow(QMainWindow):
                     # only text fields:
                     tab_item = MyQPlainTextEdit(self.ui.CifItemsTable)
                     tab_item.setReadOnly(True)
-                    tab_item.setFrameShape(0)
                     self.ui.CifItemsTable.setCellWidget(row_num, COL_DATA, tab_item)
                     tab_item.setPlainText(txt)
                     if txt and txt != '?':
@@ -1415,16 +1387,21 @@ class AppWindow(QMainWindow):
         item1 = MyTableWidgetItem('')
         item2 = MyTableWidgetItem('')
         item3 = MyTableWidgetItem('')
-        item1.setBackground(blue)
+        diag = QBrush(blue)
+        diag.setStyle(Qt.DiagCrossPattern)
+        item1.setBackground(diag)
         item1.set_uneditable()
-        item2.setBackground(blue)
+        item2.setBackground(diag)
         item2.set_uneditable()
-        item3.setBackground(blue)
+        item3.setBackground(diag)
         item3.set_uneditable()
         self.ui.CifItemsTable.setItem(row_num, COL_CIF, item1)
         self.ui.CifItemsTable.setItem(row_num, COL_DATA, item2)
         self.ui.CifItemsTable.setItem(row_num, COL_EDIT, item3)
         self.ui.CifItemsTable.resizeRowToContents(row_num)
+        # Not working:
+        # item = self.ui.CifItemsTable.verticalHeaderItem(row_num)
+        # item.setBackground(diag)
 
 
 if __name__ == '__main__':

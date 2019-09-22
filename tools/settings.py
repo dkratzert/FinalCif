@@ -50,7 +50,7 @@ class FinalCifSettings():
         equipment_list = self.settings.value('equipment_list')
         if not equipment_list:
             equipment_list = ['']
-        return equipment_list
+        return sorted(equipment_list)
 
     def load_last_equipment(self):
         self.settings.beginGroup('LastEquipment')

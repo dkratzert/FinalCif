@@ -63,7 +63,8 @@ class MachineType():
     def __init__(self, cif: CifContainer, paragraph: Paragraph):
         self.cif = cif
         gstr = gemmi.cif.as_string
-        self.difftype = gstr(self.cif['_diffrn_measurement_device_type']).strip("'") or '[No measurement device type given]'
+        self.difftype = gstr(self.cif['_diffrn_measurement_device_type']).strip(
+            "'") or '[No measurement device type given]'
         self.device = gstr(self.cif['_diffrn_measurement_device']).strip("'") or '[No measurement device given]'
         self.source = gstr(self.cif['_diffrn_source']).strip("'") or '[No radiation source given]'
         self.monochrom = gstr(self.cif['_diffrn_radiation_monochromator']).strip("'") or '[No monochromator type given]'
@@ -76,7 +77,7 @@ class MachineType():
         self.detector_type = ''
         detector_type = gstr(self.cif['_diffrn_detector_type']) or '[No detector type given]'
         if detector_type:
-            self.detector_type = " and a {} detector".format(detector_type) 
+            self.detector_type = " and a {} detector".format(detector_type)
         sentence1 = "on {} {} {} with {} {} using {} as monochromator{}. " \
                     "The diffractometer was equipped with {} {} low temperature device and used "
         sentence2 = " radiation, λ = {}\u00A0Å. "
