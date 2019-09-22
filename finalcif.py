@@ -199,10 +199,6 @@ class AppWindow(QMainWindow):
         self.ui.EquipmentEditTableWidget.itemEntered.connect(self.ui.EquipmentEditTableWidget.add_row_if_needed)
         self.ui.EquipmentEditTableWidget.cellChanged.connect(self.ui.EquipmentEditTableWidget.add_row_if_needed)
         self.ui.EquipmentEditTableWidget.currentItemChanged.connect(self.ui.EquipmentEditTableWidget.add_row_if_needed)
-        self.ui.EquipmentEditTableWidget.itemActivated.connect(self.ui.EquipmentEditTableWidget.add_row_if_needed)
-        self.ui.EquipmentEditTableWidget.itemPressed.connect(self.ui.EquipmentEditTableWidget.add_row_if_needed)
-        self.ui.EquipmentEditTableWidget.itemClicked.connect(self.ui.EquipmentEditTableWidget.add_row_if_needed)
-        self.ui.EquipmentEditTableWidget.itemChanged.connect(self.ui.EquipmentEditTableWidget.add_row_if_needed)
         ##
         self.ui.PropertiesEditTableWidget.itemSelectionChanged.connect(self.add_property_row_if_needed)
         self.ui.PropertiesEditTableWidget.cellPressed.connect(self.add_property_row_if_needed)
@@ -959,7 +955,7 @@ class AppWindow(QMainWindow):
                 pass
             self.ui.cifKeywordLineEdit.setText(cif_key)
         if not table_data:
-            table_data = ['', '', '', '', '', '']
+            table_data = ['', '', '']
         for value in table_data:
             try:
                 self.add_propeties_row(table, str(value))

@@ -181,6 +181,7 @@ class MyEQTableWidget(QTableWidget, ItemTextMixin):
         self.insertRow(row_num)
         key_item = MyQPlainTextEdit(self)
         key_item.setPlainText(key_text)
+        # This is critical, because otherwise the add_row_if_needed does not work as expected:
         key_item.textChanged.connect(self.add_row_if_needed)
         self.setCellWidget(row_num, 0, key_item)
         # if len(value) > 38:
