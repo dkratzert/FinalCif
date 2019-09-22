@@ -50,7 +50,7 @@ class TestApplication(unittest.TestCase):
     def test_gui_simpl(self):
         self.assertEqual(0, self.myapp.ui.CifItemsTable.rowCount())
         self.myapp.load_cif_file(r'test-data/DK_zucker2_0m.cif')
-        self.assertEqual(107, self.myapp.ui.CifItemsTable.rowCount())
+        self.assertEqual(105, self.myapp.ui.CifItemsTable.rowCount())
         self.assertEqual('_audit_contact_author_email', self.myapp.ui.CifItemsTable.verticalHeaderItem(1).text())
         #TODO: test for value in _audit_contact_author_email
         #TODO: test for value in _audit_creation_method, bith in all columns
