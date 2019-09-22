@@ -1,4 +1,3 @@
-import PyQt5
 from PyQt5.QtCore import QEvent, QObject, Qt
 from PyQt5.QtGui import QPalette, QTextOption
 from PyQt5.QtWidgets import QAbstractScrollArea, QComboBox, QFrame, QPlainTextEdit, QSizePolicy, QTableWidget, \
@@ -85,13 +84,22 @@ class MyQPlainTextEdit(QPlainTextEdit):
         # this is critical:
         self.parent.adjustToContents()
 
-    def setColor(self, color):
+    def setBackground(self, color):
         pal = self.palette()
         pal.setColor(QPalette.Base, color)
         self.setPalette(pal)
 
     def set_uneditable(self):
         self.setReadOnly(True)
+
+    def setText(self, text: str):
+        """
+        Set text of a Plaintextfield with lines wrapped at newline characters.
+        """
+        txtlst = text.split(r'\n')
+        # special treatment for text fields in order to get line breaks:
+        for txt in txtlst:
+            self.setPlainText(txt)
 
     def eventFilter(self, widget: QObject, event: QEvent):
         """
