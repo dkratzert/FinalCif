@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'C:\Users\daniel\Github\FinalCif\./gui\finalcif_gui.ui'
+# Form implementation generated from reading ui file '/Users/daniel/GitHub/FinalCif/./gui/finalcif_gui.ui'
 #
-# Created by: PyQt5 UI code generator 5.12.2
+# Created by: PyQt5 UI code generator 5.13.0
 #
 # WARNING! All changes made in this file will be lost!
+
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
@@ -227,12 +228,12 @@ class Ui_FinalCifWindow(object):
         self.verticalLayout = QtWidgets.QVBoxLayout(self.page_MainTable)
         self.verticalLayout.setObjectName("verticalLayout")
         self.CifItemsTable = MyCifTable(self.page_MainTable)
-        self.CifItemsTable.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustIgnored)
         self.CifItemsTable.setEditTriggers(QtWidgets.QAbstractItemView.AllEditTriggers)
         self.CifItemsTable.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         self.CifItemsTable.setVerticalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
         self.CifItemsTable.setHorizontalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
         self.CifItemsTable.setShowGrid(True)
+        self.CifItemsTable.setWordWrap(True)
         self.CifItemsTable.setCornerButtonEnabled(False)
         self.CifItemsTable.setObjectName("CifItemsTable")
         self.CifItemsTable.setColumnCount(3)
@@ -248,7 +249,7 @@ class Ui_FinalCifWindow(object):
         self.CifItemsTable.horizontalHeader().setMinimumSectionSize(80)
         self.CifItemsTable.verticalHeader().setDefaultSectionSize(25)
         self.CifItemsTable.verticalHeader().setHighlightSections(True)
-        self.CifItemsTable.verticalHeader().setMinimumSectionSize(19)
+        self.CifItemsTable.verticalHeader().setMinimumSectionSize(20)
         self.verticalLayout.addWidget(self.CifItemsTable)
         self.ButtonsHorizontalLayout = QtWidgets.QHBoxLayout()
         self.ButtonsHorizontalLayout.setObjectName("ButtonsHorizontalLayout")
@@ -356,7 +357,7 @@ class Ui_FinalCifWindow(object):
         self.retranslateUi(FinalCifWindow)
         self.EquipmentTemplatesStackedWidget.setCurrentIndex(1)
         self.PropertiesTemplatesStackedWidget.setCurrentIndex(1)
-        self.MainStackedWidget.setCurrentIndex(1)
+        self.MainStackedWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(FinalCifWindow)
         FinalCifWindow.setTabOrder(self.SelectCif_LineEdit, self.EquipmentEditTableWidget)
         FinalCifWindow.setTabOrder(self.EquipmentEditTableWidget, self.cifKeywordLineEdit)
@@ -423,6 +424,4 @@ class Ui_FinalCifWindow(object):
         self.actionSave_Report.setText(_translate("FinalCifWindow", "Save Report"))
         self.actionSave_CIF_File.setText(_translate("FinalCifWindow", "Save CIF File"))
         self.actionedit_templates.setText(_translate("FinalCifWindow", "edit templates"))
-
-
 from gui.custom_classes import MyCifTable, MyEQTableWidget
