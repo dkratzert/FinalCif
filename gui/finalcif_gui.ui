@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <comment>Python: from gui.custom_classes import MyCifTable</comment>
  <comment>Python: from gui.custom_classes import MyEQTableWidget</comment>
  <class>FinalCifWindow</class>
  <widget class="QMainWindow" name="FinalCifWindow">
@@ -16,717 +15,708 @@
    <string>FinalCif</string>
   </property>
   <widget class="QWidget" name="Mainwidget">
-   <layout class="QGridLayout" name="gridLayout">
-    <item row="7" column="1" rowspan="3">
-     <widget class="QGroupBox" name="PropertiesGroupBox">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-        <horstretch>2</horstretch>
-        <verstretch>1</verstretch>
-       </sizepolicy>
+   <layout class="QHBoxLayout" name="horizontalLayout_4">
+    <item>
+     <widget class="QSplitter" name="splitter">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
       </property>
-      <property name="title">
-       <string>Property Templates</string>
-      </property>
-      <layout class="QGridLayout" name="gridLayout_4">
-       <property name="leftMargin">
+      <widget class="QFrame" name="LeftFrame">
+       <property name="frameShape">
+        <enum>QFrame::NoFrame</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Plain</enum>
+       </property>
+       <property name="lineWidth">
         <number>0</number>
        </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
-        <number>1</number>
-       </property>
-       <property name="horizontalSpacing">
-        <number>6</number>
-       </property>
-       <item row="0" column="0" colspan="2">
-        <widget class="QStackedWidget" name="PropertiesTemplatesStackedWidget">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-           <horstretch>2</horstretch>
-           <verstretch>2</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="currentIndex">
-          <number>1</number>
-         </property>
-         <widget class="QWidget" name="PropertiesSelectPage">
-          <layout class="QGridLayout" name="TemplatesGridLayout_2">
-           <item row="1" column="0">
-            <widget class="QPushButton" name="NewPropertyTemplateButton">
+       <layout class="QVBoxLayout" name="verticalLayout_5">
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QGroupBox" name="SelectCifFileGroupBox">
+          <property name="title">
+           <string>Cif file</string>
+          </property>
+          <layout class="QGridLayout" name="CifFileGridLayout" columnstretch="0,0">
+           <property name="horizontalSpacing">
+            <number>4</number>
+           </property>
+           <property name="verticalSpacing">
+            <number>8</number>
+           </property>
+           <item row="0" column="1">
+            <widget class="QPushButton" name="SelectCif_PushButton">
              <property name="text">
-              <string>New Template</string>
+              <string>Select File</string>
              </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="QPushButton" name="EditPropertyTemplateButton">
-             <property name="text">
-              <string>Edit Template</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="2">
-            <widget class="QPushButton" name="ImportPropertyTemplateButton">
-             <property name="text">
-              <string>Import</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="0" colspan="3">
-            <widget class="QListWidget" name="PropertiesTemplatesListWidget">
-             <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A list of common properties like &lt;/p&gt;&lt;p&gt;_exptl_crystal_colour: yellow, red, blue, ...&lt;/p&gt;&lt;p&gt;Lists defined here will appear as dropdown menus in the main Table.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-             <property name="selectionMode">
-              <enum>QAbstractItemView::SingleSelection</enum>
-             </property>
-             <property name="selectionBehavior">
-              <enum>QAbstractItemView::SelectRows</enum>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-         <widget class="QWidget" name="PropertiesEditPage">
-          <layout class="QGridLayout" name="gridLayout_5">
-           <item row="2" column="0" rowspan="2" colspan="6">
-            <layout class="QHBoxLayout" name="horizontalLayout">
-             <item>
-              <widget class="QPushButton" name="DeletePropertiesButton">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                 <horstretch>1</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string>Delete Template</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="SavePropertiesButton">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                 <horstretch>1</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string>Save</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="CancelPropertiesButton">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                 <horstretch>1</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string>Cancel</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="ExportPropertyButton">
-               <property name="text">
-                <string>Export</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item row="1" column="0" colspan="6">
-            <widget class="QTableWidget" name="PropertiesEditTableWidget">
-             <property name="autoScroll">
-              <bool>false</bool>
-             </property>
-             <property name="editTriggers">
-              <set>QAbstractItemView::AllEditTriggers</set>
-             </property>
-             <property name="selectionMode">
-              <enum>QAbstractItemView::SingleSelection</enum>
-             </property>
-             <property name="selectionBehavior">
-              <enum>QAbstractItemView::SelectRows</enum>
-             </property>
-             <property name="verticalScrollMode">
-              <enum>QAbstractItemView::ScrollPerPixel</enum>
-             </property>
-             <property name="horizontalScrollMode">
-              <enum>QAbstractItemView::ScrollPerPixel</enum>
-             </property>
-             <property name="rowCount">
-              <number>1</number>
-             </property>
-             <attribute name="horizontalHeaderVisible">
-              <bool>false</bool>
-             </attribute>
-             <attribute name="horizontalHeaderDefaultSectionSize">
-              <number>170</number>
-             </attribute>
-             <attribute name="horizontalHeaderMinimumSectionSize">
-              <number>90</number>
-             </attribute>
-             <attribute name="horizontalHeaderStretchLastSection">
-              <bool>true</bool>
-             </attribute>
-             <attribute name="verticalHeaderVisible">
-              <bool>false</bool>
-             </attribute>
-             <attribute name="verticalHeaderDefaultSectionSize">
-              <number>23</number>
-             </attribute>
-             <row/>
-             <column>
-              <property name="text">
-               <string/>
-              </property>
-             </column>
             </widget>
            </item>
            <item row="0" column="0">
-            <widget class="QLabel" name="cifKeywordLB">
-             <property name="text">
-              <string>cif keyword</string>
+            <widget class="QLineEdit" name="SelectCif_LineEdit">
+             <property name="placeholderText">
+              <string>Select a .cif file first.</string>
              </property>
             </widget>
            </item>
-           <item row="0" column="1" colspan="5">
-            <widget class="QLineEdit" name="cifKeywordLineEdit"/>
-           </item>
-          </layout>
-         </widget>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item row="0" column="4" rowspan="10">
-     <widget class="QGroupBox" name="CifDataItemsGroupBox">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-        <horstretch>6</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="title">
-       <string/>
-      </property>
-      <layout class="QGridLayout" name="CifTableGridLayout">
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
-        <number>0</number>
-       </property>
-       <item row="0" column="0" colspan="3">
-        <widget class="QStackedWidget" name="MainStackedWidget">
-         <property name="currentIndex">
-          <number>0</number>
-         </property>
-         <widget class="QWidget" name="page_MainTable">
-          <layout class="QVBoxLayout" name="verticalLayout">
-           <item>
-            <widget class="MyCifTable" name="CifItemsTable">
-             <property name="sizeAdjustPolicy">
-              <enum>QAbstractScrollArea::AdjustIgnored</enum>
+           <item row="1" column="0" colspan="2">
+            <widget class="QComboBox" name="RecentComboBox">
+             <property name="currentText">
+              <string>Recent Files</string>
              </property>
-             <property name="editTriggers">
-              <set>QAbstractItemView::AllEditTriggers</set>
-             </property>
-             <property name="selectionBehavior">
-              <enum>QAbstractItemView::SelectRows</enum>
-             </property>
-             <property name="verticalScrollMode">
-              <enum>QAbstractItemView::ScrollPerPixel</enum>
-             </property>
-             <property name="horizontalScrollMode">
-              <enum>QAbstractItemView::ScrollPerPixel</enum>
-             </property>
-             <property name="showGrid">
-              <bool>true</bool>
-             </property>
-             <property name="sortingEnabled">
-              <bool>false</bool>
-             </property>
-             <property name="cornerButtonEnabled">
-              <bool>false</bool>
-             </property>
-             <attribute name="horizontalHeaderDefaultSectionSize">
-              <number>152</number>
-             </attribute>
-             <attribute name="horizontalHeaderHighlightSections">
-              <bool>false</bool>
-             </attribute>
-             <attribute name="horizontalHeaderMinimumSectionSize">
-              <number>80</number>
-             </attribute>
-             <attribute name="verticalHeaderDefaultSectionSize">
-              <number>25</number>
-             </attribute>
-             <attribute name="verticalHeaderHighlightSections">
-              <bool>true</bool>
-             </attribute>
-             <attribute name="verticalHeaderMinimumSectionSize">
-              <number>19</number>
-             </attribute>
-             <column>
+             <item>
               <property name="text">
-               <string>CIF Value</string>
+               <string>Recent Files</string>
               </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>From Data Source</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>Own Data</string>
-              </property>
-             </column>
-            </widget>
-           </item>
-           <item>
-            <layout class="QHBoxLayout" name="ButtonsHorizontalLayout">
-             <item>
-              <widget class="QGroupBox" name="groupBox">
-               <property name="title">
-                <string/>
-               </property>
-               <layout class="QGridLayout" name="gridLayout_7">
-                <item row="0" column="0">
-                 <widget class="QPushButton" name="SaveCifButton">
-                  <property name="toolTip">
-                   <string>Saves the cif file to name-final.cif</string>
-                  </property>
-                  <property name="text">
-                   <string>Save Cif File</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="1" column="0">
-                 <widget class="QPushButton" name="ExploreDirButton">
-                  <property name="toolTip">
-                   <string>Saves the cif file to name-final.cif</string>
-                  </property>
-                  <property name="text">
-                   <string>Explore Directory</string>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
              </item>
-             <item>
-              <widget class="QGroupBox" name="groupBox_checkcif">
-               <property name="title">
-                <string/>
-               </property>
-               <layout class="QGridLayout" name="gridLayout_6">
-                <item row="0" column="1">
-                 <widget class="QPushButton" name="CheckcifPDFOnlineButton">
-                  <property name="text">
-                   <string>Checkcif Online PDF</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="0" column="0">
-                 <widget class="QPushButton" name="CheckcifOnlineButton">
-                  <property name="text">
-                   <string>Checkcif Online HTML</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="1" column="0">
-                 <widget class="QPushButton" name="CheckcifButton">
-                  <property name="text">
-                   <string>CheckCif Offline</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="1" column="1">
-                 <widget class="QCheckBox" name="structfactCheckBox">
-                  <property name="text">
-                   <string>without structure factors</string>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
-             </item>
-             <item>
-              <widget class="QGroupBox" name="groupBox_tables">
-               <property name="title">
-                <string/>
-               </property>
-               <layout class="QVBoxLayout" name="verticalLayout_4">
-                <item>
-                 <widget class="QPushButton" name="SaveFullReportButton">
-                  <property name="text">
-                   <string>Make Tables</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QCheckBox" name="HAtomsCheckBox">
-                  <property name="text">
-                   <string>without H-Bonds</string>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
-             </item>
-            </layout>
-           </item>
-          </layout>
-         </widget>
-         <widget class="QWidget" name="page_checkcif">
-          <layout class="QVBoxLayout" name="verticalLayout_2">
-           <item>
-            <widget class="QLabel" name="label">
-             <property name="text">
-              <string>PLATON Checkcif output:</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPlainTextEdit" name="CheckcifPlaintextEdit">
-             <property name="lineWrapMode">
-              <enum>QPlainTextEdit::NoWrap</enum>
-             </property>
-             <property name="readOnly">
-              <bool>true</bool>
-             </property>
-             <property name="plainText">
-              <string notr="true"/>
-             </property>
-             <property name="textInteractionFlags">
-              <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_2">
-             <item>
-              <spacer name="horizontalSpacer_2">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item>
-              <widget class="QPushButton" name="BacktoMainpushButton">
-               <property name="text">
-                <string>Back to CIF Table</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <spacer name="horizontalSpacer">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-            </layout>
-           </item>
-          </layout>
-         </widget>
-         <widget class="QWidget" name="page_FinalCif">
-          <layout class="QVBoxLayout" name="verticalLayout_3">
-           <item>
-            <widget class="QPlainTextEdit" name="FinalCifFilePlainTextEdit">
-             <property name="textInteractionFlags">
-              <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_3">
-             <item>
-              <spacer name="horizontalSpacer_3">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item>
-              <widget class="QPushButton" name="BackPushButton">
-               <property name="text">
-                <string>Back to CIF Table</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <spacer name="horizontalSpacer_4">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-            </layout>
-           </item>
-          </layout>
-         </widget>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item row="5" column="1">
-     <widget class="QGroupBox" name="EquipmentGroupBox">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-        <horstretch>2</horstretch>
-        <verstretch>3</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="title">
-       <string>Equipment and Author Templates</string>
-      </property>
-      <layout class="QGridLayout" name="gridLayout_3">
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
-        <number>1</number>
-       </property>
-       <property name="spacing">
-        <number>0</number>
-       </property>
-       <item row="0" column="0">
-        <widget class="QStackedWidget" name="EquipmentTemplatesStackedWidget">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="currentIndex">
-          <number>0</number>
-         </property>
-         <widget class="QWidget" name="EquipmentSelectPage">
-          <layout class="QGridLayout" name="TemplatesGridLayout">
-           <item row="0" column="0" colspan="3">
-            <widget class="QListWidget" name="EquipmentTemplatesListWidget">
-             <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Each entry can have a list of key/value pairs. For example a Diffractometer model can have a list of features.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-             <property name="editTriggers">
-              <set>QAbstractItemView::NoEditTriggers</set>
-             </property>
-             <property name="selectionMode">
-              <enum>QAbstractItemView::SingleSelection</enum>
-             </property>
-             <property name="selectionBehavior">
-              <enum>QAbstractItemView::SelectRows</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <widget class="QPushButton" name="NewEquipmentTemplateButton">
-             <property name="text">
-              <string>New Template</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="QPushButton" name="EditEquipmentTemplateButton">
-             <property name="text">
-              <string>Edit Template</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="2">
-            <widget class="QPushButton" name="ImportEquipmentTemplateButton">
-             <property name="text">
-              <string>Import</string>
-             </property>
             </widget>
            </item>
           </layout>
          </widget>
-         <widget class="QWidget" name="EquipmentEditPage">
-          <layout class="QGridLayout" name="gridLayout_2">
-           <item row="0" column="1" colspan="4">
-            <widget class="MyEQTableWidget" name="EquipmentEditTableWidget">
-             <property name="autoScroll">
-              <bool>false</bool>
-             </property>
-             <property name="editTriggers">
-              <set>QAbstractItemView::AllEditTriggers</set>
-             </property>
-             <property name="alternatingRowColors">
-              <bool>false</bool>
-             </property>
-             <property name="selectionMode">
-              <enum>QAbstractItemView::SingleSelection</enum>
-             </property>
-             <property name="selectionBehavior">
-              <enum>QAbstractItemView::SelectRows</enum>
-             </property>
-             <property name="verticalScrollMode">
-              <enum>QAbstractItemView::ScrollPerPixel</enum>
-             </property>
-             <property name="horizontalScrollMode">
-              <enum>QAbstractItemView::ScrollPerPixel</enum>
-             </property>
-             <property name="rowCount">
+        </item>
+        <item>
+         <widget class="QGroupBox" name="EquipmentGroupBox">
+          <property name="title">
+           <string>Equipment and Author Templates</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_3">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>1</number>
+           </property>
+           <property name="spacing">
+            <number>0</number>
+           </property>
+           <item row="0" column="0">
+            <widget class="QStackedWidget" name="EquipmentTemplatesStackedWidget">
+             <property name="currentIndex">
               <number>1</number>
              </property>
-             <attribute name="horizontalHeaderDefaultSectionSize">
-              <number>170</number>
-             </attribute>
-             <attribute name="horizontalHeaderMinimumSectionSize">
-              <number>90</number>
-             </attribute>
-             <attribute name="horizontalHeaderStretchLastSection">
-              <bool>true</bool>
-             </attribute>
-             <attribute name="verticalHeaderDefaultSectionSize">
-              <number>23</number>
-             </attribute>
-             <row/>
-             <column>
-              <property name="text">
-               <string>key</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>value</string>
-              </property>
-             </column>
-            </widget>
-           </item>
-           <item row="1" column="2">
-            <widget class="QPushButton" name="SaveEquipmentButton">
-             <property name="text">
-              <string>Save</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="QPushButton" name="DeleteEquipmentButton">
-             <property name="text">
-              <string>Delete Template</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="3">
-            <widget class="QPushButton" name="CancelEquipmentButton">
-             <property name="text">
-              <string>Cancel</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="4">
-            <widget class="QPushButton" name="ExportEquipmentButton">
-             <property name="text">
-              <string>Export</string>
-             </property>
+             <widget class="QWidget" name="EquipmentSelectPage">
+              <layout class="QGridLayout" name="TemplatesGridLayout">
+               <item row="0" column="0" colspan="3">
+                <widget class="QListWidget" name="EquipmentTemplatesListWidget">
+                 <property name="toolTip">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Each entry can have a list of key/value pairs. For example a Diffractometer model can have a list of features.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
+                 <property name="editTriggers">
+                  <set>QAbstractItemView::NoEditTriggers</set>
+                 </property>
+                 <property name="selectionMode">
+                  <enum>QAbstractItemView::SingleSelection</enum>
+                 </property>
+                 <property name="selectionBehavior">
+                  <enum>QAbstractItemView::SelectRows</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QPushButton" name="NewEquipmentTemplateButton">
+                 <property name="text">
+                  <string>New Template</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="QPushButton" name="EditEquipmentTemplateButton">
+                 <property name="text">
+                  <string>Edit Template</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="2">
+                <widget class="QPushButton" name="ImportEquipmentTemplateButton">
+                 <property name="text">
+                  <string>Import</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+             <widget class="QWidget" name="EquipmentEditPage">
+              <layout class="QGridLayout" name="gridLayout_2">
+               <item row="0" column="1" colspan="4">
+                <widget class="MyEQTableWidget" name="EquipmentEditTableWidget">
+                 <property name="autoScroll">
+                  <bool>false</bool>
+                 </property>
+                 <property name="editTriggers">
+                  <set>QAbstractItemView::AllEditTriggers</set>
+                 </property>
+                 <property name="alternatingRowColors">
+                  <bool>false</bool>
+                 </property>
+                 <property name="selectionMode">
+                  <enum>QAbstractItemView::SingleSelection</enum>
+                 </property>
+                 <property name="selectionBehavior">
+                  <enum>QAbstractItemView::SelectRows</enum>
+                 </property>
+                 <property name="verticalScrollMode">
+                  <enum>QAbstractItemView::ScrollPerPixel</enum>
+                 </property>
+                 <property name="horizontalScrollMode">
+                  <enum>QAbstractItemView::ScrollPerPixel</enum>
+                 </property>
+                 <property name="rowCount">
+                  <number>1</number>
+                 </property>
+                 <attribute name="horizontalHeaderDefaultSectionSize">
+                  <number>170</number>
+                 </attribute>
+                 <attribute name="horizontalHeaderMinimumSectionSize">
+                  <number>90</number>
+                 </attribute>
+                 <attribute name="horizontalHeaderStretchLastSection">
+                  <bool>true</bool>
+                 </attribute>
+                 <attribute name="verticalHeaderDefaultSectionSize">
+                  <number>23</number>
+                 </attribute>
+                 <row/>
+                 <column>
+                  <property name="text">
+                   <string>key</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string>value</string>
+                  </property>
+                 </column>
+                </widget>
+               </item>
+               <item row="1" column="2">
+                <widget class="QPushButton" name="SaveEquipmentButton">
+                 <property name="text">
+                  <string>Save</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="QPushButton" name="DeleteEquipmentButton">
+                 <property name="text">
+                  <string>Delete Template</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="3">
+                <widget class="QPushButton" name="CancelEquipmentButton">
+                 <property name="text">
+                  <string>Cancel</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="4">
+                <widget class="QPushButton" name="ExportEquipmentButton">
+                 <property name="text">
+                  <string>Export</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
             </widget>
            </item>
           </layout>
          </widget>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item row="0" column="1" rowspan="2">
-     <widget class="QGroupBox" name="SelectCifFileGroupBox">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-        <horstretch>2</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="title">
-       <string>Cif file</string>
-      </property>
-      <layout class="QGridLayout" name="CifFileGridLayout" columnstretch="0,0">
-       <property name="horizontalSpacing">
-        <number>4</number>
-       </property>
-       <property name="verticalSpacing">
-        <number>8</number>
-       </property>
-       <item row="0" column="1">
-        <widget class="QPushButton" name="SelectCif_PushButton">
-         <property name="text">
-          <string>Select File</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="0">
-        <widget class="QLineEdit" name="SelectCif_LineEdit">
-         <property name="placeholderText">
-          <string>Select a .cif file first.</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0" colspan="2">
-        <widget class="QComboBox" name="RecentComboBox">
-         <property name="currentText">
-          <string>Recent Files</string>
-         </property>
-         <item>
-          <property name="text">
-           <string>Recent Files</string>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="PropertiesGroupBox">
+          <property name="title">
+           <string>Property Templates</string>
           </property>
-         </item>
-        </widget>
-       </item>
-      </layout>
+          <layout class="QGridLayout" name="gridLayout_4">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>1</number>
+           </property>
+           <property name="horizontalSpacing">
+            <number>6</number>
+           </property>
+           <item row="0" column="0" colspan="2">
+            <widget class="QStackedWidget" name="PropertiesTemplatesStackedWidget">
+             <property name="currentIndex">
+              <number>1</number>
+             </property>
+             <widget class="QWidget" name="PropertiesSelectPage">
+              <layout class="QGridLayout" name="TemplatesGridLayout_2">
+               <item row="1" column="0">
+                <widget class="QPushButton" name="NewPropertyTemplateButton">
+                 <property name="text">
+                  <string>New Template</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="QPushButton" name="EditPropertyTemplateButton">
+                 <property name="text">
+                  <string>Edit Template</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="2">
+                <widget class="QPushButton" name="ImportPropertyTemplateButton">
+                 <property name="text">
+                  <string>Import</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0" colspan="3">
+                <widget class="QListWidget" name="PropertiesTemplatesListWidget">
+                 <property name="toolTip">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A list of common properties like &lt;/p&gt;&lt;p&gt;_exptl_crystal_colour: yellow, red, blue, ...&lt;/p&gt;&lt;p&gt;Lists defined here will appear as dropdown menus in the main Table.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
+                 <property name="selectionMode">
+                  <enum>QAbstractItemView::SingleSelection</enum>
+                 </property>
+                 <property name="selectionBehavior">
+                  <enum>QAbstractItemView::SelectRows</enum>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+             <widget class="QWidget" name="PropertiesEditPage">
+              <layout class="QGridLayout" name="gridLayout_5">
+               <item row="2" column="0" rowspan="2" colspan="6">
+                <layout class="QHBoxLayout" name="horizontalLayout">
+                 <item>
+                  <widget class="QPushButton" name="DeletePropertiesButton">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                     <horstretch>1</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="text">
+                    <string>Delete Template</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="SavePropertiesButton">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                     <horstretch>1</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="text">
+                    <string>Save</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="CancelPropertiesButton">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                     <horstretch>1</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="text">
+                    <string>Cancel</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="ExportPropertyButton">
+                   <property name="text">
+                    <string>Export</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item row="1" column="0" colspan="6">
+                <widget class="QTableWidget" name="PropertiesEditTableWidget">
+                 <property name="autoScroll">
+                  <bool>false</bool>
+                 </property>
+                 <property name="editTriggers">
+                  <set>QAbstractItemView::AllEditTriggers</set>
+                 </property>
+                 <property name="selectionMode">
+                  <enum>QAbstractItemView::SingleSelection</enum>
+                 </property>
+                 <property name="selectionBehavior">
+                  <enum>QAbstractItemView::SelectRows</enum>
+                 </property>
+                 <property name="verticalScrollMode">
+                  <enum>QAbstractItemView::ScrollPerPixel</enum>
+                 </property>
+                 <property name="horizontalScrollMode">
+                  <enum>QAbstractItemView::ScrollPerPixel</enum>
+                 </property>
+                 <property name="rowCount">
+                  <number>1</number>
+                 </property>
+                 <attribute name="horizontalHeaderVisible">
+                  <bool>false</bool>
+                 </attribute>
+                 <attribute name="horizontalHeaderDefaultSectionSize">
+                  <number>170</number>
+                 </attribute>
+                 <attribute name="horizontalHeaderMinimumSectionSize">
+                  <number>90</number>
+                 </attribute>
+                 <attribute name="horizontalHeaderStretchLastSection">
+                  <bool>true</bool>
+                 </attribute>
+                 <attribute name="verticalHeaderVisible">
+                  <bool>false</bool>
+                 </attribute>
+                 <attribute name="verticalHeaderDefaultSectionSize">
+                  <number>23</number>
+                 </attribute>
+                 <row/>
+                 <column>
+                  <property name="text">
+                   <string/>
+                  </property>
+                 </column>
+                </widget>
+               </item>
+               <item row="0" column="0">
+                <widget class="QLabel" name="cifKeywordLB">
+                 <property name="text">
+                  <string>cif keyword</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1" colspan="5">
+                <widget class="QLineEdit" name="cifKeywordLineEdit"/>
+               </item>
+              </layout>
+             </widget>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QFrame" name="CifDataItemsFrame">
+       <property name="lineWidth">
+        <number>0</number>
+       </property>
+       <layout class="QGridLayout" name="CifTableGridLayout">
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item row="0" column="0" colspan="3">
+         <widget class="QStackedWidget" name="MainStackedWidget">
+          <property name="currentIndex">
+           <number>1</number>
+          </property>
+          <widget class="QWidget" name="page_MainTable">
+           <layout class="QVBoxLayout" name="verticalLayout">
+            <item>
+             <widget class="MyCifTable" name="CifItemsTable">
+              <property name="sizeAdjustPolicy">
+               <enum>QAbstractScrollArea::AdjustIgnored</enum>
+              </property>
+              <property name="editTriggers">
+               <set>QAbstractItemView::AllEditTriggers</set>
+              </property>
+              <property name="selectionBehavior">
+               <enum>QAbstractItemView::SelectRows</enum>
+              </property>
+              <property name="verticalScrollMode">
+               <enum>QAbstractItemView::ScrollPerPixel</enum>
+              </property>
+              <property name="horizontalScrollMode">
+               <enum>QAbstractItemView::ScrollPerPixel</enum>
+              </property>
+              <property name="showGrid">
+               <bool>true</bool>
+              </property>
+              <property name="sortingEnabled">
+               <bool>false</bool>
+              </property>
+              <property name="cornerButtonEnabled">
+               <bool>false</bool>
+              </property>
+              <attribute name="horizontalHeaderDefaultSectionSize">
+               <number>152</number>
+              </attribute>
+              <attribute name="horizontalHeaderHighlightSections">
+               <bool>false</bool>
+              </attribute>
+              <attribute name="horizontalHeaderMinimumSectionSize">
+               <number>80</number>
+              </attribute>
+              <attribute name="verticalHeaderDefaultSectionSize">
+               <number>25</number>
+              </attribute>
+              <attribute name="verticalHeaderHighlightSections">
+               <bool>true</bool>
+              </attribute>
+              <attribute name="verticalHeaderMinimumSectionSize">
+               <number>19</number>
+              </attribute>
+              <column>
+               <property name="text">
+                <string>CIF Value</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string>From Data Source</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string>Own Data</string>
+               </property>
+              </column>
+             </widget>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="ButtonsHorizontalLayout">
+              <item>
+               <widget class="QGroupBox" name="groupBox">
+                <property name="title">
+                 <string/>
+                </property>
+                <layout class="QGridLayout" name="gridLayout_7">
+                 <item row="0" column="0">
+                  <widget class="QPushButton" name="SaveCifButton">
+                   <property name="toolTip">
+                    <string>Saves the cif file to name-final.cif</string>
+                   </property>
+                   <property name="text">
+                    <string>Save Cif File</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QPushButton" name="ExploreDirButton">
+                   <property name="toolTip">
+                    <string>Saves the cif file to name-final.cif</string>
+                   </property>
+                   <property name="text">
+                    <string>Explore Directory</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item>
+               <widget class="QGroupBox" name="groupBox_checkcif">
+                <property name="title">
+                 <string/>
+                </property>
+                <layout class="QGridLayout" name="gridLayout_6">
+                 <item row="0" column="1">
+                  <widget class="QPushButton" name="CheckcifPDFOnlineButton">
+                   <property name="text">
+                    <string>Checkcif Online PDF</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="0">
+                  <widget class="QPushButton" name="CheckcifOnlineButton">
+                   <property name="text">
+                    <string>Checkcif Online HTML</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QPushButton" name="CheckcifButton">
+                   <property name="text">
+                    <string>CheckCif Offline</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="1">
+                  <widget class="QCheckBox" name="structfactCheckBox">
+                   <property name="text">
+                    <string>without structure factors</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item>
+               <widget class="QGroupBox" name="groupBox_tables">
+                <property name="title">
+                 <string/>
+                </property>
+                <layout class="QVBoxLayout" name="verticalLayout_4">
+                 <item>
+                  <widget class="QPushButton" name="SaveFullReportButton">
+                   <property name="text">
+                    <string>Make Tables</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QCheckBox" name="HAtomsCheckBox">
+                   <property name="text">
+                    <string>without H-Bonds</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="page_checkcif">
+           <layout class="QVBoxLayout" name="verticalLayout_2">
+            <item>
+             <widget class="QLabel" name="label">
+              <property name="text">
+               <string>PLATON Checkcif output:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPlainTextEdit" name="CheckcifPlaintextEdit">
+              <property name="lineWrapMode">
+               <enum>QPlainTextEdit::NoWrap</enum>
+              </property>
+              <property name="readOnly">
+               <bool>true</bool>
+              </property>
+              <property name="plainText">
+               <string notr="true"/>
+              </property>
+              <property name="textInteractionFlags">
+               <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_2">
+              <item>
+               <spacer name="horizontalSpacer_2">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QPushButton" name="BacktoMainpushButton">
+                <property name="text">
+                 <string>Back to CIF Table</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="page_FinalCif">
+           <layout class="QVBoxLayout" name="verticalLayout_3">
+            <item>
+             <widget class="QPlainTextEdit" name="FinalCifFilePlainTextEdit">
+              <property name="textInteractionFlags">
+               <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_3">
+              <item>
+               <spacer name="horizontalSpacer_3">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QPushButton" name="BackPushButton">
+                <property name="text">
+                 <string>Back to CIF Table</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_4">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </item>
    </layout>
@@ -748,18 +738,6 @@
    </property>
   </action>
  </widget>
- <tabstops>
-  <tabstop>SelectCif_LineEdit</tabstop>
-  <tabstop>EquipmentEditTableWidget</tabstop>
-  <tabstop>cifKeywordLineEdit</tabstop>
-  <tabstop>PropertiesEditTableWidget</tabstop>
-  <tabstop>SelectCif_PushButton</tabstop>
-  <tabstop>NewPropertyTemplateButton</tabstop>
-  <tabstop>PropertiesTemplatesListWidget</tabstop>
-  <tabstop>EditPropertyTemplateButton</tabstop>
-  <tabstop>NewEquipmentTemplateButton</tabstop>
-  <tabstop>EquipmentTemplatesListWidget</tabstop>
- </tabstops>
  <customwidgets>
   <customwidget>
    <class>MyCifTable</class>
@@ -772,6 +750,18 @@
    <header>gui.custom_classes.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>SelectCif_LineEdit</tabstop>
+  <tabstop>EquipmentEditTableWidget</tabstop>
+  <tabstop>cifKeywordLineEdit</tabstop>
+  <tabstop>PropertiesEditTableWidget</tabstop>
+  <tabstop>SelectCif_PushButton</tabstop>
+  <tabstop>NewPropertyTemplateButton</tabstop>
+  <tabstop>PropertiesTemplatesListWidget</tabstop>
+  <tabstop>EditPropertyTemplateButton</tabstop>
+  <tabstop>NewEquipmentTemplateButton</tabstop>
+  <tabstop>EquipmentTemplatesListWidget</tabstop>
+ </tabstops>
  <includes>
   <include location="local">gui.custom_classes.h</include>
  </includes>
