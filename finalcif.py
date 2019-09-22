@@ -60,7 +60,8 @@ from tools.settings import FinalCifSettings
 TODO:
 - find a better way to display all key/value pairs instead of only the predefined.
 - add template values to the third row in order to overwrite values in the cif?
-- items = self.table.findItems(self.edit.text(), QtCore.Qt.MatchExactly)
+- items = self.table.findItems(self.edit.text(), QtCore.Qt.MatchExactly). Open find dialog with strg+f and close 
+  on escape or edit actions
 - add loops to templates
 - write more tests!
 - calculate space group and crystal system if missing

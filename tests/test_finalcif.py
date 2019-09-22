@@ -50,7 +50,7 @@ class TestApplication(unittest.TestCase):
     def test_gui_simpl(self):
         self.assertEqual(0, self.myapp.ui.CifItemsTable.rowCount())
         self.myapp.load_cif_file(r'test-data/DK_zucker2_0m.cif')
-        self.assertEqual(105, self.myapp.ui.CifItemsTable.rowCount())
+        self.assertEqual(111, self.myapp.ui.CifItemsTable.rowCount())
         self.assertEqual('_audit_contact_author_email', self.myapp.ui.CifItemsTable.verticalHeaderItem(1).text())
         self.assertEqual('', self.myapp.ui.CifItemsTable.item(1, 1).text())
         self.myapp.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
@@ -65,10 +65,10 @@ class TestApplication(unittest.TestCase):
         self.assertEqual('?', self.myapp.ui.CifItemsTable.item(1, 0).text())
         # Tihs can only word if I have inserted the emeail adress manually:
         self.assertEqual('daniel.kratzert@ac.uni-freiburg.de', self.myapp.ui.CifItemsTable.item(1, 1).text())
-        self.assertTrue(not self.myapp.ui.CifItemsTable.item(1, 2))
+        self.assertTrue(self.myapp.ui.CifItemsTable.item(1, 2))
         # Test if it really selects the row:
         self.myapp.ui.EquipmentTemplatesListWidget.setCurrentRow(0)
-        self.assertNotEqual('daniel.kratzert@ac.uni-freiburg.de', self.myapp.ui.CifItemsTable.item(1, 1).text())
+        self.assertEqual('daniel.kratzert@ac.uni-freiburg.de', self.myapp.ui.CifItemsTable.item(1, 1).text())
 
     def test_export_template(self):
         item = self.myapp.ui.EquipmentTemplatesListWidget.findItems('Contact author name and address',
