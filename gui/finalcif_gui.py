@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/Users/daniel/GitHub/FinalCif/./gui/finalcif_gui.ui'
+# Form implementation generated from reading ui file 'C:\Users\daniel\Github\FinalCif\./gui\finalcif_gui.ui'
 #
-# Created by: PyQt5 UI code generator 5.13.0
+# Created by: PyQt5 UI code generator 5.12.2
 #
 # WARNING! All changes made in this file will be lost!
-
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
@@ -22,6 +21,11 @@ class Ui_FinalCifWindow(object):
         self.splitter.setOrientation(QtCore.Qt.Horizontal)
         self.splitter.setObjectName("splitter")
         self.LeftFrame = QtWidgets.QFrame(self.splitter)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(4)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.LeftFrame.sizePolicy().hasHeightForWidth())
+        self.LeftFrame.setSizePolicy(sizePolicy)
         self.LeftFrame.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.LeftFrame.setFrameShadow(QtWidgets.QFrame.Plain)
         self.LeftFrame.setLineWidth(0)
@@ -93,10 +97,13 @@ class Ui_FinalCifWindow(object):
         self.EquipmentEditTableWidget.setHorizontalHeaderItem(0, item)
         item = QtWidgets.QTableWidgetItem()
         self.EquipmentEditTableWidget.setHorizontalHeaderItem(1, item)
-        self.EquipmentEditTableWidget.horizontalHeader().setDefaultSectionSize(170)
-        self.EquipmentEditTableWidget.horizontalHeader().setMinimumSectionSize(90)
+        self.EquipmentEditTableWidget.horizontalHeader().setCascadingSectionResizes(True)
+        self.EquipmentEditTableWidget.horizontalHeader().setDefaultSectionSize(210)
+        self.EquipmentEditTableWidget.horizontalHeader().setMinimumSectionSize(100)
+        self.EquipmentEditTableWidget.horizontalHeader().setSortIndicatorShown(True)
         self.EquipmentEditTableWidget.horizontalHeader().setStretchLastSection(True)
-        self.EquipmentEditTableWidget.verticalHeader().setDefaultSectionSize(23)
+        self.EquipmentEditTableWidget.verticalHeader().setVisible(False)
+        self.EquipmentEditTableWidget.verticalHeader().setDefaultSectionSize(30)
         self.gridLayout_2.addWidget(self.EquipmentEditTableWidget, 0, 1, 1, 4)
         self.SaveEquipmentButton = QtWidgets.QPushButton(self.EquipmentEditPage)
         self.SaveEquipmentButton.setObjectName("SaveEquipmentButton")
@@ -191,7 +198,7 @@ class Ui_FinalCifWindow(object):
         self.PropertiesEditTableWidget.horizontalHeader().setMinimumSectionSize(90)
         self.PropertiesEditTableWidget.horizontalHeader().setStretchLastSection(True)
         self.PropertiesEditTableWidget.verticalHeader().setVisible(False)
-        self.PropertiesEditTableWidget.verticalHeader().setDefaultSectionSize(23)
+        self.PropertiesEditTableWidget.verticalHeader().setDefaultSectionSize(30)
         self.gridLayout_5.addWidget(self.PropertiesEditTableWidget, 1, 0, 1, 6)
         self.cifKeywordLB = QtWidgets.QLabel(self.PropertiesEditPage)
         self.cifKeywordLB.setObjectName("cifKeywordLB")
@@ -203,6 +210,11 @@ class Ui_FinalCifWindow(object):
         self.gridLayout_4.addWidget(self.PropertiesTemplatesStackedWidget, 0, 0, 1, 2)
         self.verticalLayout_5.addWidget(self.PropertiesGroupBox)
         self.CifDataItemsFrame = QtWidgets.QFrame(self.splitter)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(10)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.CifDataItemsFrame.sizePolicy().hasHeightForWidth())
+        self.CifDataItemsFrame.setSizePolicy(sizePolicy)
         self.CifDataItemsFrame.setLineWidth(0)
         self.CifDataItemsFrame.setObjectName("CifDataItemsFrame")
         self.CifTableGridLayout = QtWidgets.QGridLayout(self.CifDataItemsFrame)
@@ -369,6 +381,7 @@ class Ui_FinalCifWindow(object):
         self.NewEquipmentTemplateButton.setText(_translate("FinalCifWindow", "New Template"))
         self.EditEquipmentTemplateButton.setText(_translate("FinalCifWindow", "Edit Template"))
         self.ImportEquipmentTemplateButton.setText(_translate("FinalCifWindow", "Import"))
+        self.EquipmentEditTableWidget.setSortingEnabled(True)
         item = self.EquipmentEditTableWidget.horizontalHeaderItem(0)
         item.setText(_translate("FinalCifWindow", "key"))
         item = self.EquipmentEditTableWidget.horizontalHeaderItem(1)
@@ -410,4 +423,6 @@ class Ui_FinalCifWindow(object):
         self.actionSave_Report.setText(_translate("FinalCifWindow", "Save Report"))
         self.actionSave_CIF_File.setText(_translate("FinalCifWindow", "Save CIF File"))
         self.actionedit_templates.setText(_translate("FinalCifWindow", "edit templates"))
+
+
 from gui.custom_classes import MyCifTable, MyEQTableWidget
