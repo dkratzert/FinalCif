@@ -58,8 +58,9 @@ from tools.settings import FinalCifSettings
 
 """
 TODO:
+- find a better way to display all key/value pairs instead of only the predefined.
+- add template values to the third row in order to overwrite values in the cif?
 - items = self.table.findItems(self.edit.text(), QtCore.Qt.MatchExactly)
-- Add event filter to have a newline on enter key in equipment templates. Maybe even switch to a textfield?
 - add loops to templates
 - write more tests!
 - calculate space group and crystal system if missing
@@ -586,12 +587,17 @@ class AppWindow(QMainWindow):
                     tabitem.set_uneditable()
                     row = self.vheaderitems.index(key)
                     self.ui.CifItemsTable.setCellWidget(row, COL_DATA, tabitem)
+                    tabitem2 = MyQPlainTextEdit(self.ui.CifItemsTable)
+                    tabitem2.setText(equipment[key])
+                    self.ui.CifItemsTable.setCellWidget(row, COL_EDIT, tabitem2)
                 else:
                     try:
                         tab_item = MyTableWidgetItem(str(equipment[key]))
                         # vheaderitems contain the cif keywords in the vertical header, the 1 is the data sources column.
                         row = self.vheaderitems.index(key)
                         self.ui.CifItemsTable.setItem(row, COL_DATA, tab_item)
+                        tab_item2 = MyTableWidgetItem(str(equipment[key]))
+                        self.ui.CifItemsTable.setItem(row, COL_EDIT, tab_item2)
                         tab_item.set_uneditable()
                         tab_item.setBackground(light_green)
                     except ValueError as e:
@@ -1069,8 +1075,8 @@ class AppWindow(QMainWindow):
         """
         Returns a cif file name from a file dialog.
         """
-        filename, _ = QFileDialog.getOpenFileName(filter="CIF file (*.cif, *.cif_od)",
-                                                  initialFilter="CIF file (*.cif, *.cif_od)",
+        filename, _ = QFileDialog.getOpenFileName(filter="CIF file (*.cif; *.cif_od)",
+                                                  initialFilter="CIF file (*.cif; *.cif_od)",
                                                   caption='Open a .cif File')
         return filename
 

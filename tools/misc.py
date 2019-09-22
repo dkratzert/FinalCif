@@ -141,9 +141,15 @@ high_prio_keys = {
     '_diffrn_radiation_type'                           : r'The type of the radiation, e.g. Mo K\a',
     '_diffrn_radiation_monochromator'                  : r'The typ monochromator type to get _diffrn_radiation_wavelength',
     '_olex2_diffrn_ambient_temperature_device'         : 'Device to cool the crystal during measurement',
+    '_diffrn_radiation_probe'                          : 'The nature of the radiation used',
     '_diffrn_source'                                   : "The general class of the source of radiation, e.g.'sealed X-ray tube'",
+    '_diffrn_source_type'                              : 'The make, model or name of the source of radiation.',
     '_diffrn_source_current'                           : 'The current in milliamperes at which the radiation source was operated',
     '_diffrn_source_voltage'                           : 'The voltage in kilovolts at which the radiation source was operated',
+    '_diffrn_detector'                                 : 'The general class of the radiation detector.',
+    '_diffrn_detector_type'                            : 'The make, model or name of the detector device used.',
+    '_diffrn_detector_area_resol_mean'                 : 'The resolution of an area detector, in pixels/mm.',
+    '_diffrn_measurement_device'                       : 'The general class of goniometer or device used to support and orient the specimen.',
     '_diffrn_measurement_device_type'                  : 'The make, model or name of the measurement device used.',
     '_diffrn_measurement_method'                       : "Method used to measure the intensities, eg.g 'omega scans'",
     '_diffrn_measurement_specimen_support'             : 'The physical device used to support the crystal during data collection.',
@@ -402,6 +408,7 @@ predef_equipment_templ = [{'name' : 'D8 VENTURE',
                                ['_diffrn_detector', 'HPAD'],
                                ['_diffrn_detector_type', 'Bruker PHOTON III'],
                                ['_diffrn_source_type', r'Incoatec I\ms'],
+                               ['_diffrn_radiation_probe', 'x-ray'],
                                ['_diffrn_measurement_specimen_support', 'MiTeGen micromount'],
                                ['_olex2_diffrn_ambient_temperature_device', 'Oxford Cryostream 800'],
                            ]
@@ -505,6 +512,17 @@ predef_prop_templ = [{'name'  : 'Crystal Color',
                                   'Oxford Cryostream 600',
                                   'Bruker Kryofelx II',
                                   'Bruker Kryofelx I',
+                                  ]
+                                 ]
+
+                      },
+                      {'name'  : 'Radiation Type',
+                      'values': ['_diffrn_radiation_probe',
+                                 ['',
+                                  'x-ray',
+                                  'neutron',
+                                  'electron',
+                                  'gamma',
                                   ]
                                  ]
 
