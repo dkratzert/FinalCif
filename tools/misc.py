@@ -472,7 +472,7 @@ predef_prop_templ = [{'name'  : 'Crystal Color',
                                  ['', 'colourless', 'white', 'black', 'yellow', 'red', 'blue',
                                   'green', 'gray', 'pink', 'orange', 'violet', 'brown']]
                       },
-                     {'name'  : 'Crystal Habit',
+                     {'name'  : 'Crystal Habit Description',
                       'values': ['_exptl_crystal_description',
                                  ['', 'block', 'needle', 'plate', 'prism', 'sphere']]
                       },
