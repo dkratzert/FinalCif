@@ -1,7 +1,7 @@
 from PyQt5.QtCore import QEvent, QObject, Qt
-from PyQt5.QtGui import QPalette, QResizeEvent
+from PyQt5.QtGui import QPalette, QTextOption
 from PyQt5.QtWidgets import QAbstractScrollArea, QComboBox, QFrame, QPlainTextEdit, QSizePolicy, QTableWidget, \
-    QTableWidgetItem, QWidget, QHeaderView
+    QTableWidgetItem, QWidget
 
 from cif.cif_file_io import retranslate_delimiter
 
@@ -46,8 +46,8 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         self.parent = parent
         self.installEventFilter(self)
         self.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
-        self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
 
     def eventFilter(self, widget: QObject, event: QEvent):
         """
@@ -80,10 +80,11 @@ class MyQPlainTextEdit(QPlainTextEdit):
         self.setFrameShape(QFrame.NoFrame)
         self.setTabChangesFocus(True)
         self.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
-        self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        #self.textChanged.connect(self.myresize)
-        # self.parent.adjustToContents()
+        self.setWordWrapMode(QTextOption.WrapAtWordBoundaryOrAnywhere)
+        # this is critical:
+        self.parent.adjustToContents()
 
     def setColor(self, color):
         pal = self.palette()
@@ -93,13 +94,20 @@ class MyQPlainTextEdit(QPlainTextEdit):
     def set_uneditable(self):
         self.setReadOnly(True)
 
-    def onTextChanged(self):
-        size = self.document().size().toSize()
-        self.setFixedHeight(size.height() + 30)
+    def eventFilter(self, widget: QObject, event: QEvent):
+        """
+        Event filter to ignore wheel events in comboboxes to prevent accidental changes to them.
+        """
+        if event.type() == QEvent.Wheel and widget and not widget.hasFocus():
+            event.ignore()
+            return True
+        return QObject.eventFilter(self, widget, event)
 
-    def resizeEvent(self, event: QResizeEvent):
-        self.parent.adjustToContents()
-        super().resizeEvent(event)
+    def textChanged(self) -> None:
+        # TODO: not working
+        super().textChanged()
+        height = self.document().size().height()
+        self.setFixedHeight(height + 30)
 
 
 class MyComboBox(QComboBox):
@@ -119,7 +127,7 @@ class MyComboBox(QComboBox):
         """
         Event filter to ignore wheel events in comboboxes to prevent accidental changes to them.
         """
-        if event.type() == QEvent.Wheel and widget and not widget.hasFocus():
+        if event.type() == QEvent.Wheel:  # and widget and not widget.hasFocus():
             event.ignore()
             return True
         return QObject.eventFilter(self, widget, event)
@@ -144,44 +152,48 @@ class MyEQTableWidget(QTableWidget, ItemTextMixin):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        #self.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
-        #self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.setWordWrap(QTextOption.WrapAtWordBoundaryOrAnywhere)
 
     def eventFilter(self, widget: QObject, event: QEvent):
         """
-        TODO: Filter to make enter key do a newline. not working. maght have to be in the parent class.
-        :param widget:
-        :param event:
-        :return:
         """
-        # print('event')
-        # event.type() == QEvent.KeyPress and
-        if event.type() == QEvent.KeyPress and event.key() == Qt.Key_Enter:
-            print('foo')
-            # row = self.currentRow()
-            # self.setCurrentCell(row, 2)
-            # return True
         return QObject.eventFilter(self, widget, event)
 
-    def add_equipment_row(self, key: str = '', value: str = ''):
+    def add_row_if_needed(self):
+        rowcount = self.rowCount()
+        cont = 0
+        for row in range(rowcount):
+            key = ''
+            try:
+                key = self.text(row, 0)
+            except (AttributeError, TypeError) as e:
+                pass
+                # print(e)
+            if key:  # don't count empty key rows
+                cont += 1
+        diff = rowcount - cont
+        if diff < 4:
+            self.add_equipment_row()
+
+    def add_equipment_row(self, key_text: str = '', value_text: str = ''):
         """
         Add a new row with content to the table (Equipment or Property).
         """
-        if not isinstance(value, str):
+        if not isinstance(value_text, str):
             return
-        if not isinstance(key, str):
+        if not isinstance(key_text, str):
             return
         # Create a empty row at bottom of table
         row_num = self.rowCount()
         self.insertRow(row_num)
-        item_key = MyTableWidgetItem(key)
-        self.setItem(row_num, 0, item_key)
+        key_item = MyQPlainTextEdit(self)
+        key_item.setPlainText(key_text)
+        self.setCellWidget(row_num, 0, key_item)
         # if len(value) > 38:
         tab_item = MyQPlainTextEdit(self)
-        tab_item.setFrameShape(0)
-        tab_item.setPlainText(retranslate_delimiter(value))
+        tab_item.setPlainText(retranslate_delimiter(value_text))
         self.setCellWidget(row_num, 1, tab_item)
 
     def adjustToContents(self):
-        print('adjust')
+        # print('adjust')
         self.resizeRowsToContents()
