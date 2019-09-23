@@ -65,6 +65,15 @@ class MyCifTable(QTableWidget, ItemTextMixin):
     def adjustToContents(self):
         pass
 
+    def setText(self, row, column, txt):
+        self.setCurrentCell(row, column)
+        item = self.currentItem()
+        if item:
+            item.setText(txt)
+        else:
+            # in this case, we have a combobox
+            self.cellWidget(row, column).setText(txt)
+
 
 class MyQPlainTextEdit(QPlainTextEdit):
     """
@@ -133,6 +142,9 @@ class MyComboBox(QComboBox):
 
     def set_uneditable(self):
         self.setFlags(self.flags() ^ Qt.ItemIsEditable)
+
+    def setText(self, txt: str):
+        self.setEditText(txt)
 
 
 class MyTableWidgetItem(QTableWidgetItem):

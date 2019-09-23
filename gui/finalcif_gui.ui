@@ -18,8 +18,16 @@
    <layout class="QHBoxLayout" name="horizontalLayout_4">
     <item>
      <widget class="QSplitter" name="splitter">
+      <property name="styleSheet">
+       <string notr="true">QSplitter::handle {
+    background-color: rgb(197, 197, 197);
+}</string>
+      </property>
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="handleWidth">
+       <number>3</number>
       </property>
       <widget class="QFrame" name="LeftFrame">
        <property name="sizePolicy">
@@ -93,7 +101,10 @@
           <property name="title">
            <string>Equipment and Author Templates</string>
           </property>
-          <layout class="QGridLayout" name="gridLayout_3">
+          <layout class="QVBoxLayout" name="verticalLayout_7">
+           <property name="spacing">
+            <number>0</number>
+           </property>
            <property name="leftMargin">
             <number>0</number>
            </property>
@@ -106,13 +117,10 @@
            <property name="bottomMargin">
             <number>1</number>
            </property>
-           <property name="spacing">
-            <number>0</number>
-           </property>
-           <item row="0" column="0">
+           <item>
             <widget class="QStackedWidget" name="EquipmentTemplatesStackedWidget">
              <property name="currentIndex">
-              <number>1</number>
+              <number>0</number>
              </property>
              <widget class="QWidget" name="EquipmentSelectPage">
               <layout class="QGridLayout" name="TemplatesGridLayout">
@@ -189,11 +197,11 @@
                  <attribute name="horizontalHeaderCascadingSectionResizes">
                   <bool>true</bool>
                  </attribute>
-                 <attribute name="horizontalHeaderDefaultSectionSize">
-                  <number>210</number>
-                 </attribute>
                  <attribute name="horizontalHeaderMinimumSectionSize">
                   <number>100</number>
+                 </attribute>
+                 <attribute name="horizontalHeaderDefaultSectionSize">
+                  <number>210</number>
                  </attribute>
                  <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
                   <bool>true</bool>
@@ -220,33 +228,37 @@
                  </column>
                 </widget>
                </item>
-               <item row="1" column="2">
-                <widget class="QPushButton" name="SaveEquipmentButton">
-                 <property name="text">
-                  <string>Save</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="1">
-                <widget class="QPushButton" name="DeleteEquipmentButton">
-                 <property name="text">
-                  <string>Delete Template</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="3">
-                <widget class="QPushButton" name="CancelEquipmentButton">
-                 <property name="text">
-                  <string>Cancel</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="4">
-                <widget class="QPushButton" name="ExportEquipmentButton">
-                 <property name="text">
-                  <string>Export</string>
-                 </property>
-                </widget>
+               <item row="2" column="1" colspan="4">
+                <layout class="QHBoxLayout" name="horizontalLayout_5">
+                 <item>
+                  <widget class="QPushButton" name="DeleteEquipmentButton">
+                   <property name="text">
+                    <string>Delete Template</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="SaveEquipmentButton">
+                   <property name="text">
+                    <string>Save</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="CancelEquipmentButton">
+                   <property name="text">
+                    <string>Cancel</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="ExportEquipmentButton">
+                   <property name="text">
+                    <string>Export</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
                </item>
               </layout>
              </widget>
@@ -260,7 +272,10 @@
           <property name="title">
            <string>Property Templates</string>
           </property>
-          <layout class="QGridLayout" name="gridLayout_4">
+          <layout class="QVBoxLayout" name="verticalLayout_6">
+           <property name="spacing">
+            <number>6</number>
+           </property>
            <property name="leftMargin">
             <number>0</number>
            </property>
@@ -273,10 +288,7 @@
            <property name="bottomMargin">
             <number>1</number>
            </property>
-           <property name="horizontalSpacing">
-            <number>6</number>
-           </property>
-           <item row="0" column="0" colspan="2">
+           <item>
             <widget class="QStackedWidget" name="PropertiesTemplatesStackedWidget">
              <property name="currentIndex">
               <number>1</number>
@@ -397,11 +409,11 @@
                  <attribute name="horizontalHeaderVisible">
                   <bool>false</bool>
                  </attribute>
-                 <attribute name="horizontalHeaderDefaultSectionSize">
-                  <number>170</number>
-                 </attribute>
                  <attribute name="horizontalHeaderMinimumSectionSize">
                   <number>90</number>
+                 </attribute>
+                 <attribute name="horizontalHeaderDefaultSectionSize">
+                  <number>170</number>
                  </attribute>
                  <attribute name="horizontalHeaderStretchLastSection">
                   <bool>true</bool>
@@ -495,23 +507,23 @@
               <property name="cornerButtonEnabled">
                <bool>false</bool>
               </property>
+              <attribute name="horizontalHeaderMinimumSectionSize">
+               <number>80</number>
+              </attribute>
               <attribute name="horizontalHeaderDefaultSectionSize">
                <number>152</number>
               </attribute>
               <attribute name="horizontalHeaderHighlightSections">
                <bool>false</bool>
               </attribute>
-              <attribute name="horizontalHeaderMinimumSectionSize">
-               <number>80</number>
+              <attribute name="verticalHeaderMinimumSectionSize">
+               <number>20</number>
               </attribute>
               <attribute name="verticalHeaderDefaultSectionSize">
                <number>25</number>
               </attribute>
               <attribute name="verticalHeaderHighlightSections">
                <bool>true</bool>
-              </attribute>
-              <attribute name="verticalHeaderMinimumSectionSize">
-               <number>20</number>
               </attribute>
               <column>
                <property name="text">
