@@ -81,8 +81,6 @@ class MyQPlainTextEdit(QPlainTextEdit):
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setWordWrapMode(QTextOption.WrapAtWordBoundaryOrAnywhere)
-        # this is critical:
-        self.parent.adjustToContents()
 
     def setBackground(self, color):
         pal = self.palette()

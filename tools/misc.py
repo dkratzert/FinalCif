@@ -94,7 +94,7 @@ def find_line(inputlist: list, regex: str) -> int:
 
 # '_space_group_centring_type',  # seems to be used nowere
 # '_exptl_absorpt_special_details',   # This is not official?!?
-high_prio_keys = {
+essential_keys = {
     '_audit_contact_author_address'                    : 'The address of the cif author',
     '_audit_contact_author_email'                      : 'The email address of the cif author',
     '_audit_contact_author_name'                       : 'The name of the cif author',
