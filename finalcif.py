@@ -26,7 +26,7 @@ from tools.checkcif import MakeCheckCif, MyHTMLParser
 from tools.update import mainurl
 from tools.version import VERSION
 
-DEBUG = True
+DEBUG = False
 
 if getattr(sys, 'frozen', False):
     # If the application is run as a bundle, the pyInstaller bootloader
@@ -580,30 +580,10 @@ class AppWindow(QMainWindow):
             for key in equipment:
                 if key not in self.vheaderitems:
                     self.add_new_table_key(key)
+                row = self.vheaderitems.index(key)
                 # add missing item to data sources column:
-                if key in text_field_keys:
-                    # special treatments for text fields:
-                    tabitem = MyQPlainTextEdit(self.ui.CifItemsTable)
-                    tabitem.setBackground(light_green)
-                    tabitem.setText(equipment[key])
-                    tabitem.set_uneditable()
-                    row = self.vheaderitems.index(key)
-                    self.ui.CifItemsTable.setCellWidget(row, COL_DATA, tabitem)
-                    tabitem2 = MyQPlainTextEdit(self.ui.CifItemsTable)
-                    tabitem2.setText(equipment[key])
-                    self.ui.CifItemsTable.setCellWidget(row, COL_EDIT, tabitem2)
-                else:
-                    try:
-                        tab_item = MyTableWidgetItem(str(equipment[key]))
-                        # vheaderitems contain the cif keywords in the vertical header, the 1 is the data sources column.
-                        row = self.vheaderitems.index(key)
-                        self.ui.CifItemsTable.setItem(row, COL_DATA, tab_item)
-                        tab_item2 = MyTableWidgetItem(str(equipment[key]))
-                        self.ui.CifItemsTable.setItem(row, COL_EDIT, tab_item2)
-                        tab_item.set_uneditable()
-                        tab_item.setBackground(light_green)
-                    except ValueError as e:
-                        print('not in list:', e)
+                self.ui.CifItemsTable.setText(row, COL_DATA, equipment[key])
+                self.ui.CifItemsTable.setText(row, COL_EDIT, equipment[key])
 
     def add_new_table_key(self, key: str) -> None:
         """
@@ -1279,10 +1259,12 @@ class AppWindow(QMainWindow):
                     tab_item.setReadOnly(True)
                     self.ui.CifItemsTable.setCellWidget(row_num, COL_DATA, tab_item)
                     tab_item.setPlainText(txt)
-                    if txt and txt != '?':
+                    #first_col = self.ui.CifItemsTable.text(row_num, COL_CIF)
+                    if txt and txt != '?':# or txt == first_col:
                         tab_item.setBackground(light_green)
                     else:
                         tab_item.setBackground(yellow)
+                    tab_item.setToolTip(str(sources[miss_data.lower()][1]))
                 else:
                     # regular linedit fields:
                     self.ui.CifItemsTable.setItem(row_num, COL_DATA, tab_item)

@@ -9,6 +9,7 @@ import re
 import textwrap
 from pathlib import Path
 
+# noinspection PyUnresolvedReferences
 import gemmi
 
 from datafiles.utils import DSRFind
@@ -121,7 +122,6 @@ class CifContainer():
         self.doc = None
         self.cif_file_text = ''
         self.atomic_struct = None
-        self.missing_keys = []
         self.open_cif_with_gemmi()
         self.symmops = self._get_symmops()
         self.hkl_extra_info = self.abs_hkl_details()
@@ -429,33 +429,37 @@ class CifContainer():
         questions = []
         # contains the answered keys:
         with_values = []
+        # holds keys that are not in the cif file but in essential_keys:
+        missing_keys = []
         for item in self.block:
             if item.pair is not None:
                 key, value = item.pair
-                if len(value) > 300:
+                if len(value) > 1000:
                     # do not include res and hkl file:
                     continue
                 if key.startswith('_shelx'):
                     continue
-                if key in non_centrosymm_keys and self.is_centrosymm:
+                if self.is_centrosymm and key in non_centrosymm_keys:
                     continue
                 if not value or value == '?' or value == "'?'":
                     questions.append([key, value])
                 else:
                     with_values.append([key, value])
         all_keys = [x[0] for x in with_values] + [x[0] for x in questions]
+        # check if there are keys not in the cif but in essential_keys:
         for key in essential_keys:
             if key not in all_keys:
                 questions.append([key, '?'])
+                missing_keys.append(key)
         cif = self.cif_file_text.splitlines()
         data_position = find_line(cif, '^data_')
-        for k in self.missing_keys:
+        for k in missing_keys:
             if k in non_centrosymm_keys and self.is_centrosymm:
                 continue
             cif.insert(data_position + 1, k + ' ' * (31 - len(k)) + '    ?')
         self.cif_file_text = "\n".join(cif)
         self.open_cif_by_string()
-        return questions, with_values
+        return sorted(questions), sorted(with_values)
 
     @property
     def crystal_system(self):
