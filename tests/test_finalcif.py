@@ -50,8 +50,8 @@ class TestApplication(unittest.TestCase):
     def test_gui_simpl(self):
         self.assertEqual(0, self.myapp.ui.CifItemsTable.rowCount())
         self.myapp.load_cif_file(r'test-data/DK_zucker2_0m.cif')
-        self.assertEqual(111, self.myapp.ui.CifItemsTable.rowCount())
-        self.assertEqual('_audit_contact_author_email', self.myapp.ui.CifItemsTable.verticalHeaderItem(1).text())
+        self.assertEqual(126, self.myapp.ui.CifItemsTable.rowCount())
+        self.assertEqual('_audit_contact_author_email', self.myapp.ui.CifItemsTable.verticalHeaderItem(16).text())
         self.assertEqual('', self.myapp.ui.CifItemsTable.item(1, 1).text())
         self.myapp.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
         # QTest.mouseClick(self.myapp.ui.EquipmentTemplatesListWidget.item(2), Qt.LeftButton, delay=-1)
