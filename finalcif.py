@@ -52,12 +52,15 @@ from PyQt5.QtWidgets import QApplication, QFileDialog, QHeaderView, QListWidget,
 from cif.cif_file_io import CifContainer, set_pair_delimited
 from datafiles.bruker_data import BrukerData
 from datafiles.platon import Platon
-from tools.misc import high_prio_keys, predef_equipment_templ, predef_prop_templ, combobox_fields, \
+from tools.misc import essential_keys, predef_equipment_templ, predef_prop_templ, combobox_fields, \
     text_field_keys, to_float, find_line, strip_finalcif_of_name
 from tools.settings import FinalCifSettings
 
 """
 TODO:
+- spgr = gemmi.find_spacegroup_by_ops(gemmi.GroupOps([gemmi.Op(o) for o in ['x,y,z', ...]]))
+- ops = [op.triplet() for op in gemmi.find_spacegroup_by_name('I2').operations()]
+
 - find a better way to display all key/value pairs instead of only the predefined.
 - add template values to the third row in order to overwrite values in the cif?
 - items = self.table.findItems(self.edit.text(), QtCore.Qt.MatchExactly). Open find dialog with strg+f and close 
@@ -74,8 +77,6 @@ TODO:
 - Checkcif: http://journals.iucr.org/services/cif/checking/validlist.html
 - load pairs and loops, add new content with order, write back
 
-- spgr = gemmi.find_spacegroup_by_ops(gemmi.GroupOps([gemmi.Op(o) for o in ['x,y,z', ...]]))
-- ops = [op.triplet() for op in gemmi.find_spacegroup_by_name('I2').operations()]
 
 c = CifContainer(Path('test-data/DK_zucker2_0m-finalcif.cif'))
 cdic = json.loads(c.as_json())
@@ -404,7 +405,7 @@ class AppWindow(QMainWindow):
             self.vheader_clicked = -1
             return
         try:
-            txt = high_prio_keys[itemtext]
+            txt = essential_keys[itemtext]
             if txt:
                 item.setText(txt)
             self.vheader_clicked = section

@@ -12,7 +12,7 @@ from pathlib import Path
 import gemmi
 
 from datafiles.utils import DSRFind
-from tools.misc import find_line, high_prio_keys, non_centrosymm_keys
+from tools.misc import essential_keys, find_line, non_centrosymm_keys
 
 
 def quote(string: str, wrapping=80):
@@ -30,6 +30,7 @@ def quote(string: str, wrapping=80):
             lines += line + '\n'
     quoted = gemmi.cif.quote(lines.rstrip('\n'))
     return quoted
+
 
 charcters = {'°'      : r'\%',
              '±'      : r'+-',
@@ -76,6 +77,7 @@ charcters = {'°'      : r'\%',
              u"\u03D5": r'\f',
              }  # , r'\r\n': chr(10)}
 
+
 def set_pair_delimited(block, key: str, txt: str):
     """
     Converts special characters to their markup counterparts.
@@ -93,6 +95,7 @@ def set_pair_delimited(block, key: str, txt: str):
             block.set_pair(key, txt)
         else:
             block.set_pair(key, quote(txt))
+
 
 def retranslate_delimiter(txt: str):
     """
@@ -416,31 +419,34 @@ class CifContainer():
         >>> c.key_value_pairs()[:2]
         [['_audit_contact_author_address', None], ['_audit_contact_author_email', None]]
         """
-        high_prio_no_values, high_prio_with_values = self.get_keys(high_prio_keys)
-        return high_prio_no_values + \
-               [['These below are already in:', '---------------------']] + high_prio_with_values
+        high_prio_no_values, high_prio_with_values = self.get_keys()
+        return high_prio_no_values + [['These below are already in:', '---------------------']] + high_prio_with_values
 
-    def get_keys(self, inputkeys):
+    def get_keys(self):
         """
         Returns the keys to be displayed in the main table.
         """
         questions = []
         # contains the answered keys:
         with_values = []
-        for key in inputkeys.keys():
-            if key in non_centrosymm_keys and self.is_centrosymm:
-                continue
-            # try:
-            value = self.block.find_value(key)
-            if not value:
-                # these are not in the cif file
-                self.missing_keys.append(key)
-            # except (KeyError, TypeError):
-            #    value = ''
-            if not value or value == '?' or value == "'?'":
-                questions.append([key, value])
-            else:
-                with_values.append([key, value])
+        for item in self.block:
+            if item.pair is not None:
+                key, value = item.pair
+                if len(value) > 300:
+                    # do not include res and hkl file:
+                    continue
+                if key.startswith('_shelx'):
+                    continue
+                if key in non_centrosymm_keys and self.is_centrosymm:
+                    continue
+                if not value or value == '?' or value == "'?'":
+                    questions.append([key, value])
+                else:
+                    with_values.append([key, value])
+        all_keys = [x[0] for x in with_values] + [x[0] for x in questions]
+        for key in essential_keys:
+            if key not in all_keys:
+                questions.append([key, '?'])
         cif = self.cif_file_text.splitlines()
         data_position = find_line(cif, '^data_')
         for k in self.missing_keys:
