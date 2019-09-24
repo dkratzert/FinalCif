@@ -47,7 +47,7 @@ if DEBUG:
 from PyQt5.QtCore import QPoint, Qt, QUrl
 from PyQt5.QtGui import QColor, QFont, QIcon, QBrush
 from PyQt5.QtWidgets import QApplication, QFileDialog, QHeaderView, QListWidget, QListWidgetItem, \
-    QMainWindow, QMessageBox, QPlainTextEdit, QStackedWidget, QStyle, QTableWidget
+    QMainWindow, QMessageBox, QPlainTextEdit, QStackedWidget, QStyle, QTableWidget, QSplashScreen
 
 from cif.cif_file_io import CifContainer, set_pair_delimited
 from datafiles.bruker_data import BrukerData
@@ -293,10 +293,27 @@ class AppWindow(QMainWindow):
         self.load_cif_file(str(self.fin_file.absolute()))
         self.ui.MainStackedWidget.setCurrentIndex(0)
 
+    def show_splash(self, text: str):
+        splash = QSplashScreen()
+        splashFont = QFont()
+        # splashFont.setFamily("Arial")
+        splashFont.setBold(True)
+        splashFont.setPixelSize(16)
+        splashFont.setStretch(120)
+        splash.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.SplashScreen)
+        splash = QSplashScreen()
+        splash.show()
+        splash.setFont(splashFont)
+        splash.setMinimumWidth(400)
+        splash.setMaximumHeight(100)
+        splash.showMessage(text, alignment=Qt.AlignCenter, )
+        return splash
+
     def do_html_checkcif(self):
         """
         Performs an online checkcif via checkcif.iucr.org.
         """
+        splash = self.show_splash("Running Checkcif. Please wait...")
         self.ui.statusBar.showMessage('Sending html report request...')
         self.save_current_cif_file()
         htmlfile = Path(strip_finalcif_of_name('checkcif-' + self.cif.fileobj.stem) + '-finalcif.html')
@@ -322,11 +339,13 @@ class AppWindow(QMainWindow):
         if gif:
             imageobj.write_bytes(gif)
         self.ui.statusBar.showMessage('Report finished.')
+        splash.finish(self)
 
     def do_pdf_checkcif(self):
         """
         Performs an online checkcif and shows the result as pdf.
         """
+        splash = self.show_splash("Running Checkcif. Please wait...")
         self.ui.statusBar.showMessage('Sending pdf report request...')
         self.save_current_cif_file()
         htmlfile = Path('checkpdf-' + self.cif.fileobj.stem + '.html')
@@ -348,11 +367,13 @@ class AppWindow(QMainWindow):
             htmlfile.unlink()
         except FileNotFoundError:
             pass
+        splash.finish(self)
 
     def do_offline_checkcif(self):
         """
         Performs a checkcif with platon and displays it in the text editor of the MainStackedWidget.
         """
+        splash = self.show_splash("Running Checkcif locally. Please wait...")
         table = self.ui.CifItemsTable
         table.setCurrentItem(None)  # makes sure also the currently edited item is saved
         self.save_current_cif_file()
@@ -384,6 +405,7 @@ class AppWindow(QMainWindow):
             except AttributeError:
                 pass
         ccpe.verticalScrollBar().setValue(0)
+        splash.finish(self)
 
     def load_recent_file(self, file_index):
         combo = self.ui.RecentComboBox
@@ -739,7 +761,7 @@ class AppWindow(QMainWindow):
                 # print(item.pair)
                 table_data.append(item.pair)
                 # TODO: add a list of items that should not be imported, like: _cell_length_a
-            #elif item.loop is not None:
+            # elif item.loop is not None:
             #    print(item.loop)
         if filename.endswith('.cif_od'):
             name = Path(filename).stem
@@ -1261,8 +1283,8 @@ class AppWindow(QMainWindow):
                     tab_item.setReadOnly(True)
                     self.ui.CifItemsTable.setCellWidget(row_num, COL_DATA, tab_item)
                     tab_item.setPlainText(txt)
-                    #first_col = self.ui.CifItemsTable.text(row_num, COL_CIF)
-                    if txt and txt != '?':# or txt == first_col:
+                    # first_col = self.ui.CifItemsTable.text(row_num, COL_CIF)
+                    if txt and txt != '?':  # or txt == first_col:
                         tab_item.setBackground(light_green)
                     else:
                         tab_item.setBackground(yellow)
