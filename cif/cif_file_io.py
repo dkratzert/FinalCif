@@ -431,7 +431,7 @@ class CifContainer():
 
     def get_keys(self):
         """
-        Returns the keys to be displayed in the main table.
+        Returns the keys to be displayed in the main table as two separate lists.
         """
         questions = []
         # contains the answered keys:
@@ -463,7 +463,7 @@ class CifContainer():
         cif = self.cif_file_text.splitlines()
         data_position = find_line(cif, '^data_')
         for k in missing_keys:
-            if self.is_centrokey(key):
+            if self.is_centrokey(k):
                 continue
             cif.insert(data_position + 1, k + ' ' * (31 - len(k)) + '    ?')
         self.cif_file_text = "\n".join(cif)
