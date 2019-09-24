@@ -422,6 +422,13 @@ class CifContainer():
         high_prio_no_values, high_prio_with_values = self.get_keys()
         return high_prio_no_values + [['These below are already in:', '---------------------']] + high_prio_with_values
 
+    def is_centrokey(self, key):
+        """
+        Is True if the kurrent key is only valid 
+        for non-centrosymmetric structures
+        """
+        return self.is_centrosymm and key in non_centrosymm_keys
+
     def get_keys(self):
         """
         Returns the keys to be displayed in the main table.
@@ -439,7 +446,7 @@ class CifContainer():
                     continue
                 if key.startswith('_shelx'):
                     continue
-                if self.is_centrosymm and key in non_centrosymm_keys:
+                if self.is_centrokey(key):
                     continue
                 if not value or value == '?' or value == "'?'":
                     questions.append([key, value])
@@ -449,12 +456,14 @@ class CifContainer():
         # check if there are keys not in the cif but in essential_keys:
         for key in essential_keys:
             if key not in all_keys:
+                if self.is_centrokey(key):
+                    continue
                 questions.append([key, '?'])
                 missing_keys.append(key)
         cif = self.cif_file_text.splitlines()
         data_position = find_line(cif, '^data_')
         for k in missing_keys:
-            if k in non_centrosymm_keys and self.is_centrosymm:
+            if self.is_centrokey(key):
                 continue
             cif.insert(data_position + 1, k + ' ' * (31 - len(k)) + '    ?')
         self.cif_file_text = "\n".join(cif)
