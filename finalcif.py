@@ -26,7 +26,7 @@ from tools.checkcif import MakeCheckCif, MyHTMLParser
 from tools.update import mainurl
 from tools.version import VERSION
 
-DEBUG = True
+DEBUG = False
 
 if getattr(sys, 'frozen', False):
     # If the application is run as a bundle, the pyInstaller bootloader
@@ -495,20 +495,21 @@ class AppWindow(QMainWindow):
             col1 = None  # from datafiles
             col2 = None  # own text
             for col in range(columncount):
-                item = table.text(row, col)
-                if item:
-                    if col == COL_CIF and item != (None or '' or '?'):
-                        col0 = item
+                txt = table.text(row, col)
+                if txt:
+                    if col == COL_CIF and txt != (None or '' or '?'):
+                        col0 = txt
                     # removed: not col0 and
-                    if col == COL_DATA and item != (None or '' or '?'):
-                        col1 = item
+                    if col == COL_DATA and txt != (None or '' or '?'):
+                        col1 = txt
                     try:
-                        if col == COL_EDIT and item != (None or ''):
-                            col2 = item
+                        if col == COL_EDIT and txt != (None or ''):
+                            col2 = txt
                     except AttributeError:
                         pass
                 if col == COL_EDIT:
                     vhead = self.ui.CifItemsTable.model().headerData(row, Qt.Vertical)
+                    # vertical header item is surely not a cif keyword:
                     if not str(vhead).startswith('_'):
                         continue
                     # This is my row information
@@ -518,7 +519,8 @@ class AppWindow(QMainWindow):
                     if col2:
                         try:
                             set_pair_delimited(self.cif.block, vhead, col2)
-                        except RuntimeError:
+                        except RuntimeError as e:
+                            print('Can not take cif info from table:', e)
                             pass
         try:
             self.fin_file = Path(strip_finalcif_of_name(str(self.cif.fileobj.stem)) + '-finalcif.cif')
