@@ -117,7 +117,6 @@ class CifContainer():
 
     def __init__(self, file: Path):
         self.fileobj = file
-        self.cif_data = None
         self.block = None
         self.doc = None
         self.cif_file_text = ''
@@ -225,6 +224,42 @@ class CifContainer():
     @property
     def absorpt_correction_T_min(self):
         return self.hkl_extra_info['_exptl_absorpt_correction_T_min']
+
+    def _spgr(self) -> gemmi.SpaceGroup:
+        if self.symmops:
+            symm_ops = self.symmops
+        else:
+            symm_ops = self.symmops_from_spgr()
+        return gemmi.find_spacegroup_by_ops(gemmi.GroupOps([gemmi.Op(o) for o in symm_ops]))
+
+    def space_group(self) -> str:
+        """
+        Returns the space group from the symmetry operators.
+        spgr.short_name() gives the short name.
+        """
+        return self._spgr().xhm()
+
+    def symmops_from_spgr(self) -> list:
+        #_symmetry_space_group_name_Hall
+        space_group = None
+        if self['_space_group_name_H-M_alt']:
+            space_group = self['_space_group_name_H-M_alt']
+        if self['_symmetry_space_group_name_H-M']:
+            space_group = self['_symmetry_space_group_name_H-M']
+        if not space_group:
+            return []
+        ops = [op.triplet() for op in
+               gemmi.find_spacegroup_by_name(gemmi.cif.as_string(space_group)).operations()]
+        return ops
+
+    def spgr_number_from_symmops(self):
+        return self._spgr().number
+
+    def crystal_system(self) -> str:
+        return self._spgr().crystal_system_str()
+
+    def hall_symbol(self):
+        return self._spgr().hall
 
     @property
     def hkl_checksum_calcd(self):
@@ -438,6 +473,23 @@ class CifContainer():
         with_values = []
         # holds keys that are not in the cif file but in essential_keys:
         missing_keys = []
+        # Make sure the most important things are there:
+        if not self['_space_group_name_H-M_alt']:
+            try:
+                self.block.set_pair('_space_group_name_H-M_alt', self.space_group())
+            except AttributeError:
+                self.block.set_pair('_space_group_name_H-M_alt', '?')
+        if not self['_space_group_name_Hall']:
+            self.block.set_pair('_space_group_name_Hall', self.hall_symbol())
+        if not self['_space_group_IT_number']:
+            self.block.set_pair('_space_group_IT_number', str(self.spgr_number_from_symmops()))
+        if not self['_space_group_crystal_system']:
+            self.block.set_pair('_space_group_crystal_system', self.crystal_system())
+        if not self.symmops:
+            loop = self.block.init_loop('_space_group_symop_operation_', ['xyz'])
+            for x in self.symmops_from_spgr():
+                loop.add_row([x])
+            #print(list(self.block.find_loop('_space_group_symop_operation_xyz')))
         for item in self.block:
             if item.pair is not None:
                 key, value = item.pair
@@ -470,6 +522,3 @@ class CifContainer():
         self.open_cif_by_string()
         return sorted(questions), sorted(with_values)
 
-    @property
-    def crystal_system(self):
-        return (self['_space_group_crystal_system'] or self['_symmetry_cell_setting']).strip("'\"; ")
