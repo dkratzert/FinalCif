@@ -66,6 +66,9 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         pass
 
     def setText(self, row, column, txt):
+        """
+        Set text in current table cell regardless of the containing item.
+        """
         self.setCurrentCell(row, column)
         item = self.currentItem()
         if item:

@@ -10,13 +10,15 @@ import textwrap
 from pathlib import Path
 
 # noinspection PyUnresolvedReferences
+from typing import Dict, List, Tuple
+
 import gemmi
 
 from datafiles.utils import DSRFind
 from tools.misc import essential_keys, find_line, non_centrosymm_keys
 
 
-def quote(string: str, wrapping=80):
+def quote(string: str, wrapping=80) -> str:
     """
     Quotes a cif string and wrapps it. The shorter strings are directly handled by cif.quote().
     """
@@ -98,7 +100,7 @@ def set_pair_delimited(block, key: str, txt: str):
             block.set_pair(key, quote(txt))
 
 
-def retranslate_delimiter(txt: str):
+def retranslate_delimiter(txt: str) -> str:
     """
     Translates delimited cif characters back to unicode characters.
     >>> retranslate_delimiter("Crystals were grown from thf at -20 \%C.")
@@ -128,7 +130,7 @@ class CifContainer():
         d = DSRFind(self.resdata)
         self.dsr_used = d.dsr_used
 
-    def __getitem__(self, item):
+    def __getitem__(self, item: str) -> str:
         result = self.block.find_value(item)
         if result:
             if result == '?' or result == "'?'":
@@ -137,14 +139,14 @@ class CifContainer():
         else:
             return ''
 
-    def save(self, filename=None):
+    def save(self, filename: str = None) -> None:
         if not filename:
             filename = self.fileobj.absolute()
         # self.doc.write_file(filename, gemmi.cif.Style.Indent35)
         # or this way:
         Path(filename).write_text(self.doc.as_string(gemmi.cif.Style.Indent35))
 
-    def open_cif_with_gemmi(self):
+    def open_cif_with_gemmi(self) -> None:
         """
         Reads a CIF file into gemmi and returns a sole block.
         """
@@ -163,12 +165,12 @@ class CifContainer():
             print('Unable to read atomic structure:', e)
             raise
 
-    def open_cif_by_string(self):
+    def open_cif_by_string(self) -> None:
         self.doc = gemmi.cif.read_string(self.cif_file_text)
         self.block = self.doc.sole_block()
         self.atomic_struct = gemmi.make_atomic_structure_from_block(self.block)
 
-    def abs_hkl_details(self):
+    def abs_hkl_details(self) -> Dict[str, str]:
         """
         This method tries to determine the information witten at the end of a cif hkl file by sadabs.
         """
@@ -206,23 +208,23 @@ class CifContainer():
         return all
 
     @property
-    def solution_program_details(self):
+    def solution_program_details(self) -> str:
         return self.hkl_extra_info['_computing_structure_solution']
 
     @property
-    def absorpt_process_details(self):
+    def absorpt_process_details(self) -> str:
         return self.hkl_extra_info['_exptl_absorpt_process_details']
 
     @property
-    def absorpt_correction_type(self):
+    def absorpt_correction_type(self) -> str:
         return self.hkl_extra_info['_exptl_absorpt_correction_type']
 
     @property
-    def absorpt_correction_T_max(self):
+    def absorpt_correction_T_max(self) -> str:
         return self.hkl_extra_info['_exptl_absorpt_correction_T_max']
 
     @property
-    def absorpt_correction_T_min(self):
+    def absorpt_correction_T_min(self) -> str:
         return self.hkl_extra_info['_exptl_absorpt_correction_T_min']
 
     def _spgr(self) -> gemmi.SpaceGroup:
@@ -239,8 +241,8 @@ class CifContainer():
         """
         return self._spgr().xhm()
 
-    def symmops_from_spgr(self) -> list:
-        #_symmetry_space_group_name_Hall
+    def symmops_from_spgr(self) -> List[str]:
+        # _symmetry_space_group_name_Hall
         space_group = None
         if self['_space_group_name_H-M_alt']:
             space_group = self['_space_group_name_H-M_alt']
@@ -252,17 +254,17 @@ class CifContainer():
                gemmi.find_spacegroup_by_name(gemmi.cif.as_string(space_group)).operations()]
         return ops
 
-    def spgr_number_from_symmops(self):
+    def spgr_number_from_symmops(self) -> int:
         return self._spgr().number
 
     def crystal_system(self) -> str:
         return self._spgr().crystal_system_str()
 
-    def hall_symbol(self):
+    def hall_symbol(self) -> str:
         return self._spgr().hall
 
     @property
-    def hkl_checksum_calcd(self):
+    def hkl_checksum_calcd(self) -> int:
         """
         Calculates the shelx checksum for the hkl file content of a cif file.
 
@@ -282,7 +284,7 @@ class CifContainer():
             return 0
 
     @property
-    def res_checksum_calcd(self):
+    def res_checksum_calcd(self) -> int:
         """
         Calculates the shelx checksum for the res file content of a cif file.
 
@@ -300,7 +302,7 @@ class CifContainer():
             return self.calc_checksum(res[1:-1])
         return 0
 
-    def calc_checksum(self, input_str: str):
+    def calc_checksum(self, input_str: str) -> int:
         """
         Calculates the shelx checksum of a cif file.
         """
@@ -316,7 +318,7 @@ class CifContainer():
         sum %= 100000
         return sum
 
-    def _get_symmops(self):
+    def _get_symmops(self) -> List[str]:
         """
         Reads the symmops from the cif file.
 
@@ -335,13 +337,13 @@ class CifContainer():
             return []
 
     @property
-    def is_centrosymm(self):
+    def is_centrosymm(self) -> bool:
         if '-x, -y, -z' in self.symmops:
             return True
         else:
             return False
 
-    def atoms(self):
+    def atoms(self) -> Tuple[str, str, str, str, str, str, str, str]:
         labels = self.block.find_loop('_atom_site_label')
         types = self.block.find_loop('_atom_site_type_symbol')
         x = self.block.find_loop('_atom_site_fract_x')
@@ -365,7 +367,7 @@ class CifContainer():
                    self.atomic_struct.cell.orthogonalize(at.fract).z]
 
     @property
-    def hydrogen_atoms_present(self):
+    def hydrogen_atoms_present(self) -> bool:
         for at in self.atomic_struct.sites:
             if at.type_symbol in ('H', 'D'):
                 return True
@@ -373,7 +375,7 @@ class CifContainer():
             return False
 
     @property
-    def disorder_present(self):
+    def disorder_present(self) -> bool:
         for at in self.atoms():
             if at[6] == '.':
                 continue
@@ -383,7 +385,7 @@ class CifContainer():
             return False
 
     @property
-    def cell(self):
+    def cell(self) -> tuple:
         c = self.atomic_struct.cell
         return c.a, c.b, c.c, c.alpha, c.beta, c.gamma, c.volume
 
@@ -489,7 +491,7 @@ class CifContainer():
             loop = self.block.init_loop('_space_group_symop_operation_', ['xyz'])
             for x in self.symmops_from_spgr():
                 loop.add_row([x])
-            #print(list(self.block.find_loop('_space_group_symop_operation_xyz')))
+            # print(list(self.block.find_loop('_space_group_symop_operation_xyz')))
         for item in self.block:
             if item.pair is not None:
                 key, value = item.pair
@@ -521,4 +523,3 @@ class CifContainer():
         self.cif_file_text = "\n".join(cif)
         self.open_cif_by_string()
         return sorted(questions), sorted(with_values)
-

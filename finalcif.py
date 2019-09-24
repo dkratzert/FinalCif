@@ -12,6 +12,7 @@ import sys
 import time
 import traceback
 from pathlib import Path, WindowsPath
+from typing import Tuple
 
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkReply, QNetworkRequest
 # noinspection PyUnresolvedReferences
@@ -58,22 +59,16 @@ from tools.settings import FinalCifSettings
 
 """
 TODO:
-- find a better way to display all key/value pairs instead of only the predefined.
-- add template values to the third row in order to overwrite values in the cif?
 - items = self.table.findItems(self.edit.text(), QtCore.Qt.MatchExactly). Open find dialog with strg+f and close 
   on escape or edit actions
 - add loops to templates
 - write more tests!
-- calculate space group and crystal system if missing
 - support stoe cif
 - support all of .cifod
-- try QNetworkRequest for checkcif
-- Add one picture of the vzs file
+- Add one picture of the vzs file to report.
 - option for default directory?
-- add button for zip file with cif, report and checkcif pdf
 - Checkcif: http://journals.iucr.org/services/cif/checking/validlist.html
 - load pairs and loops, add new content with order, write back
-
 
 c = CifContainer(Path('test-data/DK_zucker2_0m-finalcif.cif'))
 cdic = json.loads(c.as_json())
@@ -800,7 +795,7 @@ class AppWindow(QMainWindow):
                     print([x for x in r])
         """
 
-    def get_equipment_entry_data(self):
+    def get_equipment_entry_data(self) -> Tuple[str, list]:
         """
         Returns the string of the currently selected entry and the table date behind it.
         """
@@ -1208,7 +1203,7 @@ class AppWindow(QMainWindow):
         info.show()
         info.exec()
 
-    def show_general_warning(self, warn_text=''):
+    def show_general_warning(self, warn_text: str = ''):
         """
         A message box to display if the checksums do not agree.
         """
@@ -1339,7 +1334,7 @@ class AppWindow(QMainWindow):
         self.get_data_sources()
         # self.ui.CifItemsTable.resizeRowsToContents()
 
-    def add_row(self, key, value, at_start=False):
+    def add_row(self, key, value, at_start=False) -> None:
         """
         Create a empty row at bottom of CifItemsTable. This method only fills cif data in the
         first column. Not the data from external sources!
@@ -1387,7 +1382,7 @@ class AppWindow(QMainWindow):
                 self.ui.CifItemsTable.resizeRowToContents(row_num)
         self.ui.CifItemsTable.setVerticalHeaderItem(row_num, head_item_key)
 
-    def add_separation_line(self, row_num):
+    def add_separation_line(self, row_num: int):
         """
         Adds a blue separation line between cif content and empty cif keywords.
         """
