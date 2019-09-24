@@ -58,9 +58,6 @@ from tools.settings import FinalCifSettings
 
 """
 TODO:
-- spgr = gemmi.find_spacegroup_by_ops(gemmi.GroupOps([gemmi.Op(o) for o in ['x,y,z', ...]]))
-- ops = [op.triplet() for op in gemmi.find_spacegroup_by_name('I2').operations()]
-
 - find a better way to display all key/value pairs instead of only the predefined.
 - add template values to the third row in order to overwrite values in the cif?
 - items = self.table.findItems(self.edit.text(), QtCore.Qt.MatchExactly). Open find dialog with strg+f and close 
