@@ -21,7 +21,8 @@ from requests import ReadTimeout
 
 from cif.core_dict import cif_core
 from datafiles.rigaku_data import RigakuData
-from gui.custom_classes import MyComboBox, MyEQTableWidget, MyQPlainTextEdit, MyTableWidgetItem
+from gui.custom_classes import MyComboBox, MyEQTableWidget, MyQPlainTextEdit, \
+    MyTableWidgetItem, blue, light_green, yellow
 from report.tables import make_report_from
 from tools.checkcif import MakeCheckCif, MyHTMLParser
 from tools.update import mainurl
@@ -46,7 +47,7 @@ if DEBUG:
     # uic.compileUi('./gui/finalcif_gui.ui', open('./gui/finalcif_gui.py', 'w'))
 
 from PyQt5.QtCore import QPoint, Qt, QUrl
-from PyQt5.QtGui import QColor, QFont, QIcon, QBrush
+from PyQt5.QtGui import QFont, QIcon, QBrush
 from PyQt5.QtWidgets import QApplication, QFileDialog, QHeaderView, QListWidget, QListWidgetItem, \
     QMainWindow, QMessageBox, QPlainTextEdit, QStackedWidget, QStyle, QTableWidget, QSplashScreen
 
@@ -85,9 +86,6 @@ for item in c.block:
             print('loop', item.loop)
             print([c.block.find_values(x) for x in item.loop.tags])
 """
-light_green = QColor(217, 255, 201)
-blue = QColor(102, 150, 179)
-yellow = QColor(250, 247, 150)
 from gui.finalcif_gui import Ui_FinalCifWindow
 
 [COL_CIF,
@@ -599,6 +597,7 @@ class AppWindow(QMainWindow):
                 row = self.vheaderitems.index(key)
                 # add missing item to data sources column:
                 self.ui.CifItemsTable.setText(row, COL_DATA, equipment[key])
+                self.ui.CifItemsTable.setBackground(row, COL_DATA, light_green)
                 self.ui.CifItemsTable.setText(row, COL_EDIT, equipment[key])
 
     def add_new_table_key(self, key: str) -> None:
