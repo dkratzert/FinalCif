@@ -60,6 +60,7 @@ from tools.settings import FinalCifSettings
 
 """
 TODO:
+- make report two columns
 - items = self.table.findItems(self.edit.text(), QtCore.Qt.MatchExactly). Open find dialog with strg+f and close 
   on escape or edit actions
 -detect twins and write proper report text about them.
@@ -151,7 +152,6 @@ class AppWindow(QMainWindow):
             self.load_cif_file(sys.argv[1])
         # Sorting desyncronizes header and columns:
         self.ui.CifItemsTable.setSortingEnabled(False)
-        self.setWindowIcon(QIcon('./icon/finalcif.png'))
         self.load_recent_cifs_list()
         self.netman = QNetworkAccessManager()
         self.netman.finished.connect(self.show_update_warning)
@@ -1453,7 +1453,7 @@ if __name__ == '__main__':
 
     app = QApplication(sys.argv)
     w = AppWindow()
-    app.setWindowIcon(QIcon('./icon/finalcif.png'))
+    app.setWindowIcon(QIcon(os.path.join(application_path, r'icon/finalcif2.png')))
     w.setWindowTitle('FinalCif v{}'.format(VERSION))
     # w.showMaximized()  # For full screen view
     w.setBaseSize(1200, 780)
