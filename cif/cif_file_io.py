@@ -8,7 +8,6 @@
 import re
 import textwrap
 from pathlib import Path
-
 # noinspection PyUnresolvedReferences
 from typing import Dict, List, Tuple
 
@@ -506,7 +505,7 @@ class CifContainer():
         self.open_cif_by_string()
         return sorted(questions), sorted(with_values)
 
-    def add_to_cif(self, cif_as_list: list, key:str, value='    ?'):
+    def add_to_cif(self, cif_as_list: list, key: str, value='    ?'):
         """
         Add an additional key value pair to the cif text right behind the data_ tag.
         """
