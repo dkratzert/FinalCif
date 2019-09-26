@@ -2,7 +2,7 @@ altgraph==0.16.1
 certifi==2019.6.16
 chardet==3.0.4
 future==0.17.1
-gemmi==0.2.8
+gemmi==0.3.0
 idna==2.8
 lxml==4.4.1
 macholib==1.11

@@ -12,6 +12,7 @@ import sys
 import time
 import traceback
 from pathlib import Path, WindowsPath
+from pprint import pprint
 from typing import Tuple
 
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkReply, QNetworkRequest
@@ -522,7 +523,8 @@ class AppWindow(QMainWindow):
                     try:
                         if col == COL_EDIT and txt != (None or ''):
                             col2 = txt
-                    except AttributeError:
+                    except AttributeError as e:
+                        #print(e)
                         pass
                 if col == COL_EDIT:
                     vhead = self.ui.CifItemsTable.model().headerData(row, Qt.Vertical)
@@ -1410,8 +1412,10 @@ class AppWindow(QMainWindow):
         self.ui.CifItemsTable.setItem(row_num, COL_EDIT, item3)
         self.ui.CifItemsTable.resizeRowToContents(row_num)
         # Not working:
-        # item = self.ui.CifItemsTable.verticalHeaderItem(row_num)
-        # item.setBackground(diag)
+        # AttributeError: 'NoneType' object has no attribute 'setFont'
+        # itemFont = QFont()
+        # itemFont.setBold(True)
+        # self.ui.CifItemsTable.verticalHeaderItem(row_num).setFont(itemFont)
 
 
 if __name__ == '__main__':
