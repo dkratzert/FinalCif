@@ -44,7 +44,7 @@ exe = EXE(pyz,
           strip=False,
           upx=True,
           runtime_tmpdir=None,
-          icon='icon/multitable.ico',
+          icon='icon/finalcif2.ico',
           console=False)
 
 # For a directory release:
