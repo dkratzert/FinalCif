@@ -149,6 +149,7 @@ class MyHTMLParser(HTMLParser):
         super(MyHTMLParser, self).__init__()
         self.pdf = ''
         self.vrf = ''
+        self.alert_levels = []
 
     def get_pdf(self):
         return requests.get(self.link).content
@@ -162,9 +163,11 @@ class MyHTMLParser(HTMLParser):
                 if attrs[0][0] == 'width' and '.gif' in attrs[1][1]:
                     self.imageurl = attrs[1][1]
 
-    def handle_data(self, data):
+    def handle_data(self, data: str):
         if 'Validation Reply Form' in data:
             self.vrf = data
+        if data.startswith('PLAT') and len(data) == 17:
+            self.alert_levels.append(data)
 
     def get_image(self):
         try:
@@ -176,19 +179,29 @@ class MyHTMLParser(HTMLParser):
     def response_forms(self):
         forms = []
         form = {}
+        n = 0
         for line in self.vrf.split('\n'):
             if line.startswith('_vrf'):
-                form = {}
+                form = {'level': ''}
                 plat = line.split('_')[2]
-                form.update({'name': line, 'sname': plat})
+                form.update({'name': line, 'short_name': plat})
             if line.startswith(';'):
                 continue
             if line.startswith('PROBLEM'):
                 problem = line[9:]
                 form.update({'problem': problem})
+                for x in self.alert_levels:
+                    if form['short_name'] == x[:7]:
+                        form.update({'level': x})
+                n+=1
                 forms.append(form)
         return forms
 
+    """
+    TODO:
+    - <a href='javascript:makeHelpWindow("PLAT699.html")'> from html file
+    - http://journals.iucr.org/services/cif/checking/PLAT699.html
+    """
 
 
 if __name__ == "__main__":
@@ -203,8 +216,9 @@ if __name__ == "__main__":
 
     parser = MyHTMLParser()
     parser.feed(html.read_text())
-    print(parser.imageurl)
-    print(parser.response_forms)
+    #print(parser.imageurl)
+    pprint(parser.response_forms)
+    print(parser.alert_levels)
     #print(parser.vrf)
     print(parser.pdf)
     print(parser.link)
