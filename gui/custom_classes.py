@@ -108,9 +108,14 @@ class MyQPlainTextEdit(QPlainTextEdit):
         self.setWordWrapMode(QTextOption.WrapAtWordBoundaryOrAnywhere)
 
     def setBackground(self, color):
-        pal = self.palette()
-        pal.setColor(QPalette.Base, color)
-        self.setPalette(pal)
+        """
+        Set background color of the text field.
+        """
+        self.setStyleSheet("QPlainTextEdit {{background-color: {};}}".format(str(color.name())))
+        # No idea why tis does not work
+        #pal = self.palette()
+        #pal.setColor(QPalette.Base, color)
+        #self.setPalette(pal)
 
     def set_uneditable(self):
         self.setReadOnly(True)
