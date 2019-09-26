@@ -12,7 +12,6 @@ import sys
 import time
 import traceback
 from pathlib import Path, WindowsPath
-from pprint import pprint
 from typing import Tuple
 
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkReply, QNetworkRequest
@@ -495,8 +494,9 @@ class AppWindow(QMainWindow):
             self.ui.RecentComboBox.addItem(file, n)
 
     def save_cif_and_display(self):
-        self.save_current_cif_file()
-        self.display_saved_cif()
+        saved = self.save_current_cif_file()
+        if saved:
+            self.display_saved_cif()
 
     def save_current_cif_file(self):
         """
@@ -524,7 +524,7 @@ class AppWindow(QMainWindow):
                         if col == COL_EDIT and txt != (None or ''):
                             col2 = txt
                     except AttributeError as e:
-                        #print(e)
+                        # print(e)
                         pass
                 if col == COL_EDIT:
                     vhead = self.ui.CifItemsTable.model().headerData(row, Qt.Vertical)
@@ -546,11 +546,12 @@ class AppWindow(QMainWindow):
             self.cif.save(self.fin_file.name)
             self.ui.statusBar.showMessage('  File Saved:  {}'.format(self.fin_file.name), 10000)
             print('File saved ...')
+            return True
         except (AttributeError, UnicodeEncodeError, PermissionError) as e:
             print('Unable to save file:')
             print(e)
             self.show_general_warning('Can not save file: ' + str(e))
-            return
+            return False
 
     def display_saved_cif(self):
         """
