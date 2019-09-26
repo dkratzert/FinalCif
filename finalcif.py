@@ -62,6 +62,7 @@ from tools.settings import FinalCifSettings
 TODO:
 - items = self.table.findItems(self.edit.text(), QtCore.Qt.MatchExactly). Open find dialog with strg+f and close 
   on escape or edit actions
+-detect twins and write proper report text about them.
 - add loops to templates
 - write more tests!
 - support stoe cif
@@ -71,13 +72,14 @@ TODO:
 - Checkcif: http://journals.iucr.org/services/cif/checking/validlist.html
 - load pairs and loops, add new content with order, write back
 
-c = CifContainer(Path('test-data/DK_zucker2_0m-finalcif.cif'))
+c = CifContainer(Path('cif_core_dict.cif'))
 cdic = json.loads(c.as_json())
 [cdic[x]['_name'] for x in cdic.keys() if '_name' in cdic[x]]
 
 as dict:
 {str(cdic[x]['_name']): ' '.join(cdic[x]['_definition'].split()) for x in cdic.keys() if '_name' in cdic[x]}
 
+# iterate over pairs and loops: 
 for item in c.block:
     if item.line_number < 670:
         if item.pair is not None:
@@ -130,7 +132,10 @@ class AppWindow(QMainWindow):
         self.cif = None
         self.fin_file = Path()
         self.missing_data = []
-        self.vheader_clicked = -1  # This is the index number of the vheader that got clicked last
+        # This is the index number of the vheader that got clicked last:
+        self.vheader_clicked = -1
+        # True if line with "these are already in" reached:
+        self.complete_data_row = -1
         self.connect_signals_and_slots()
         self.manufacturer = 'bruker'
         self.rigakucif = None
@@ -763,6 +768,9 @@ class AppWindow(QMainWindow):
         self.show_equipment_and_properties()
 
     def get_loop(self, item):
+        """
+        TODO: use this to load loops from machine cifs
+        """
         # for item in block:
         if item.loop is not None:
             n = 0
@@ -1251,8 +1259,11 @@ class AppWindow(QMainWindow):
             vhead = self.ui.CifItemsTable.model().headerData(num, Qt.Vertical)
             if not vhead in self.vheaderitems:
                 self.vheaderitems.append(vhead)
-        # They are needed for the comboboxes:
-        property_fields = self.settings.load_property_keys()
+                # adding comboboxes:
+                if vhead.lower() in combobox_fields:
+                    self.add_property_combobox(combobox_fields[vhead.lower()], num)
+                elif vhead.lower() in self.settings.load_property_keys():
+                    self.add_property_combobox(self.settings.load_property_by_key(vhead.lower()), num)
         # get missing items from sources and put them into the corresponding rows:
         # These will be yellow if not filled in:
         self.missing_data.append('_cell_measurement_temperature')
@@ -1275,19 +1286,21 @@ class AppWindow(QMainWindow):
                     self.ui.CifItemsTable.setCellWidget(row_num, COL_DATA, tab_item)
                     tab_item.setPlainText(txt)
                     # first_col = self.ui.CifItemsTable.text(row_num, COL_CIF)
-                    if txt and txt != '?':  # or txt == first_col:
-                        tab_item.setBackground(light_green)
-                    else:
-                        tab_item.setBackground(yellow)
+                    if row_num < self.complete_data_row:
+                        if txt and txt != '?':  # or txt == first_col:
+                            tab_item.setBackground(light_green)
+                        else:
+                            tab_item.setBackground(yellow)
                     tab_item.setToolTip(str(sources[miss_data.lower()][1]))
                 else:
                     # regular linedit fields:
                     self.ui.CifItemsTable.setItem(row_num, COL_DATA, tab_item)
                     tab_item.setText(txt)  # has to be string
-                    if txt and txt != '?':
-                        tab_item.setBackground(light_green)
-                    else:
-                        tab_item.setBackground(yellow)
+                    if row_num < self.complete_data_row:
+                        if txt and txt != '?':
+                            tab_item.setBackground(light_green)
+                        else:
+                            tab_item.setBackground(yellow)
                 tab_item.setToolTip(str(sources[miss_data.lower()][1]))
             except KeyError as e:
                 # print(e, '##')
@@ -1295,22 +1308,16 @@ class AppWindow(QMainWindow):
             # items from data sources should not be editable
             if not miss_data in text_field_keys:
                 tab_item.set_uneditable()
-            # creating comboboxes for special keywords like _exptl_crystal_colour.
-            # In case a property for this key exists, it will show this list:
-            if miss_data.lower() in [x.lower() for x in property_fields]:
-                self.add_property_combobox(self.settings.load_property_by_key(miss_data), row_num)
-            elif miss_data.lower() in [x.lower() for x in combobox_fields]:
-                self.add_property_combobox(combobox_fields[miss_data], row_num)
 
-    def add_property_combobox(self, miss_data: str, row_num: int):
+    def add_property_combobox(self, data: str, row_num: int):
         """
         Adds a QComboBox to the CifItemsTable with the content of special_fields or property templates.
         """
         combobox = MyComboBox()
         # print('special:', row_num, miss_data)
         self.ui.CifItemsTable.setCellWidget(row_num, COL_EDIT, combobox)
-        self.ui.CifItemsTable.setHorizontalScrollBarPolicy(1)
-        for num, value in miss_data:
+        self.ui.CifItemsTable.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        for num, value in data:
             try:
                 combobox.addItem(value, num)
             except TypeError:
@@ -1370,6 +1377,7 @@ class AppWindow(QMainWindow):
             tab_cif = MyTableWidgetItem(strval)
             if key == "These below are already in:":
                 self.add_separation_line(row_num)
+                self.complete_data_row = row_num
             else:
                 tab_data = MyTableWidgetItem()
                 self.ui.CifItemsTable.setItem(row_num, COL_CIF, tab_cif)
