@@ -11,6 +11,7 @@ import sys
 import time
 from html.parser import HTMLParser
 from pathlib import Path
+from pprint import pprint
 from tempfile import mkstemp
 import gemmi
 
@@ -171,10 +172,28 @@ class MyHTMLParser(HTMLParser):
         except MissingSchema:
             return b''
 
+    @property
+    def response_forms(self):
+        forms = []
+        form = {}
+        for line in self.vrf.split('\n'):
+            if line.startswith('_vrf'):
+                form = {}
+                plat = line.split('_')[2]
+                form.update({'name': line, 'sname': plat})
+            if line.startswith(';'):
+                continue
+            if line.startswith('PROBLEM'):
+                problem = line[9:]
+                form.update({'problem': problem})
+                forms.append(form)
+        return forms
+
+
 
 if __name__ == "__main__":
     #cif = Path(r'D:\frames\guest\BreitPZ_R_122\BreitPZ_R_122\BreitPZ_R_122_0m_a-finalcif.cif')
-    html = Path(r'/Users/daniel/GitHub/FinalCif/test-data/checkcif-DK_zucker2_0m.html')
+    html = Path(r'/Users/daniel/GitHub/FinalCif/test-data/checkcif-DK_zucker2_0m-finalcif.html')
     # ckf = MakeCheckCif(None, cif, outfile=html)
     # ckf.show_pdf_report()
     # html = Path(r'D:\frames\guest\BreitPZ_R_122\BreitPZ_R_122\checkcif-BreitPZ_R_122_0m_a.html')
@@ -185,7 +204,8 @@ if __name__ == "__main__":
     parser = MyHTMLParser()
     parser.feed(html.read_text())
     print(parser.imageurl)
-    print(parser.vrf)
+    print(parser.response_forms)
+    #print(parser.vrf)
     print(parser.pdf)
     print(parser.link)
 
@@ -211,18 +231,6 @@ if __name__ == "__main__":
     # app.exec_()
     # web.close()
 
-    headers = {
-        "runtype"   : "symmonly",
-        "referer"   : "checkcif_server",
-        "outputtype": 'HTML',
-        "validtype" : 'checkcif_only',
-        "valout"    : 'vrfno',
-    }
 
-    def show_update_warning(reply: QNetworkReply):
-        """
-        Reads the reply from the server and displays a warning in case of an old version.
-        """
-        print(reply.readAll()).decode('ascii', 'ignore')
 
 
