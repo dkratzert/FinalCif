@@ -11,12 +11,13 @@ import sys
 import time
 from html.parser import HTMLParser
 from pathlib import Path
-from pprint import pprint
 from tempfile import mkstemp
-import gemmi
 
+import gemmi
 import requests
-from PyQt5.QtCore import QUrl, QPoint
+from PyQt5.QtCore import QPoint, QUrl
+from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest
+from PyQt5.QtNetwork import QNetworkReply
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtWidgets import QMainWindow
 from requests.exceptions import MissingSchema
@@ -193,7 +194,7 @@ class MyHTMLParser(HTMLParser):
                 for x in self.alert_levels:
                     if form['short_name'] == x[:7]:
                         form.update({'level': x})
-                n+=1
+                n += 1
                 forms.append(form)
         return forms
 
@@ -204,24 +205,50 @@ class MyHTMLParser(HTMLParser):
     """
 
 
+class AlertHelp():
+    def __init__(self, alert: str):
+        self.netman = QNetworkAccessManager()
+        'http://journals.iucr.org/services/cif/checking/PLAT035.html'
+        self.helpurl = r'http://journals.iucr.org/services/cif/checking/' + alert + '.html'
+        print('url:', self.helpurl)
+
+    def get_help(self):
+        url = QUrl(self.helpurl)
+        req = QNetworkRequest(url)
+        print('doing request')
+        self.netman.get(req)
+        self.netman.finished.connect(self.parse_result)
+
+    def parse_result(self, reply: QNetworkReply):
+        print('parsing reply')
+        text = 'no help available'
+        try:
+            text = bytes(reply.readAll()).decode('ascii', 'ignore')
+        except Exception as e:
+            print(e)
+            pass
+        print(text)
+        return text
+
+
 if __name__ == "__main__":
-    #cif = Path(r'D:\frames\guest\BreitPZ_R_122\BreitPZ_R_122\BreitPZ_R_122_0m_a-finalcif.cif')
+    # cif = Path(r'D:\frames\guest\BreitPZ_R_122\BreitPZ_R_122\BreitPZ_R_122_0m_a-finalcif.cif')
     html = Path(r'/Users/daniel/GitHub/FinalCif/test-data/checkcif-DK_zucker2_0m-finalcif.html')
     # ckf = MakeCheckCif(None, cif, outfile=html)
     # ckf.show_pdf_report()
     # html = Path(r'D:\frames\guest\BreitPZ_R_122\BreitPZ_R_122\checkcif-BreitPZ_R_122_0m_a.html')
 
-    from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkReply, QNetworkRequest, QHttpMultiPart, QHttpPart
-    from PyQt5.QtWebEngineWidgets import QWebEngineView
-
     parser = MyHTMLParser()
     parser.feed(html.read_text())
-    #print(parser.imageurl)
-    pprint(parser.response_forms)
-    print(parser.alert_levels)
-    #print(parser.vrf)
-    print(parser.pdf)
-    print(parser.link)
+    # print(parser.imageurl)
+    # pprint(parser.response_forms)
+    # print(parser.alert_levels)
+    # print(parser.vrf)
+    # print(parser.pdf)
+    # print(parser.link)
+
+    a = AlertHelp('PLAT035')
+    a.get_help()
 
     # open_pdf_result(Path(r'D:\frames\guest\BreitPZ_R_122\BreitPZ_R_122\BreitPZ_R_122_0m_a-finalcif.cif'), html)
     # Path(d:\tmp\
@@ -244,7 +271,3 @@ if __name__ == "__main__":
     # app.setWidth(500)
     # app.exec_()
     # web.close()
-
-
-
-
