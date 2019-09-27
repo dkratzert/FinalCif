@@ -77,8 +77,11 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         if item:
             item.setText(txt)
         else:
-            # in this case, we have a combobox
-            self.cellWidget(row, column).setText(txt)
+            try:
+                # in this case, we have a combobox
+                self.cellWidget(row, column).setText(txt)
+            except AttributeError:
+                pass
 
     def setBackground(self, row: int, column: int, color: QColor):
         self.setCurrentCell(row, column)
