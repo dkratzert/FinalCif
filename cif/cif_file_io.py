@@ -8,7 +8,6 @@
 import re
 import textwrap
 from pathlib import Path
-
 # noinspection PyUnresolvedReferences
 from typing import Dict, List, Tuple
 
@@ -470,28 +469,12 @@ class CifContainer():
         """
         Returns the keys to be displayed in the main table as two separate lists.
         """
+        cif_as_list = self.cif_file_text.splitlines()
         questions = []
         # contains the answered keys:
         with_values = []
         # holds keys that are not in the cif file but in essential_keys:
         missing_keys = []
-        # Make sure the most important things are there:
-        if not self['_space_group_name_H-M_alt']:
-            try:
-                self.block.set_pair('_space_group_name_H-M_alt', self.space_group())
-            except AttributeError:
-                self.block.set_pair('_space_group_name_H-M_alt', '?')
-        if not self['_space_group_name_Hall']:
-            self.block.set_pair('_space_group_name_Hall', self.hall_symbol())
-        if not self['_space_group_IT_number']:
-            self.block.set_pair('_space_group_IT_number', str(self.spgr_number_from_symmops()))
-        if not self['_space_group_crystal_system']:
-            self.block.set_pair('_space_group_crystal_system', self.crystal_system())
-        if not self.symmops:
-            loop = self.block.init_loop('_space_group_symop_operation_', ['xyz'])
-            for x in self.symmops_from_spgr():
-                loop.add_row([x])
-            # print(list(self.block.find_loop('_space_group_symop_operation_xyz')))
         for item in self.block:
             if item.pair is not None:
                 key, value = item.pair
@@ -514,12 +497,17 @@ class CifContainer():
                     continue
                 questions.append([key, '?'])
                 missing_keys.append(key)
-        cif = self.cif_file_text.splitlines()
-        data_position = find_line(cif, '^data_')
         for k in missing_keys:
             if self.is_centrokey(k):
                 continue
-            cif.insert(data_position + 1, k + ' ' * (31 - len(k)) + '    ?')
-        self.cif_file_text = "\n".join(cif)
+            self.add_to_cif(cif_as_list, k)
+        self.cif_file_text = "\n".join(cif_as_list)
         self.open_cif_by_string()
         return sorted(questions), sorted(with_values)
+
+    def add_to_cif(self, cif_as_list: list, key: str, value='    ?'):
+        """
+        Add an additional key value pair to the cif text right behind the data_ tag.
+        """
+        data_position = find_line(cif_as_list, '^data_')
+        cif_as_list.insert(data_position + 1, key + ' ' * (31 - len(key)) + value)
