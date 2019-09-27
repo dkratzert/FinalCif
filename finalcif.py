@@ -745,6 +745,7 @@ class AppWindow(QMainWindow):
         """
         Import an equipment entry from a cif file.
         """
+        import gemmi
         filename = self.cif_file_open_dialog()
         if not filename:
             return
@@ -757,8 +758,8 @@ class AppWindow(QMainWindow):
         table_data = []
         for item in block:
             if item.pair is not None:
-                # print(item.pair)
-                table_data.append(item.pair)
+                key, value = item.pair
+                table_data.append([key, gemmi.cif.as_string(value)])
                 # TODO: add a list of items that should not be imported, like: _cell_length_a
             # elif item.loop is not None:
             #    print(item.loop)
@@ -961,6 +962,9 @@ class AppWindow(QMainWindow):
         property_list = self.settings.settings.value('property_list')
         if not property_list:
             property_list = ['']
+        # TODO: replace this with  
+        #  for item in block:
+        #      if item.loop is not None:
         block = doc.sole_block()
         block_name = block.name.replace('__', ' ')
         property_list.append(block_name)
