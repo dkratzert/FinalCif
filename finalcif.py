@@ -1230,12 +1230,12 @@ class AppWindow(QMainWindow):
         csystem = self.cif.crystal_system
         bad = False
         ntypes = len(self.cif['_chemical_formula_sum'].split())
-        if all([ntypes, density]):
-            if ntypes > 2.0 and density < 0.6 or density > 4.0:
-                bad = True
-        if Z and Z > 8.0 and (csystem == 'tricilinic' or csystem == 'monoclinic'):
+        #if all([ntypes, density]):
+        #    if ntypes > 3.0 and density < 0.6 or density > 4.0:
+        #        bad = True
+        if Z and Z > 20.0 and (csystem == 'tricilinic' or csystem == 'monoclinic'):
             bad = True
-        if Z and Z > 16.0 and (csystem == 'orthorhombic' or csystem == 'tetragonal' or csystem == 'trigonal'
+        if Z and Z > 32.0 and (csystem == 'orthorhombic' or csystem == 'tetragonal' or csystem == 'trigonal'
                                or csystem == 'hexagonal' or csystem == 'cubic'):
             bad = True
         if bad:
