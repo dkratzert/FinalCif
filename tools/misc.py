@@ -188,6 +188,7 @@ essential_keys = {
     '_refine_ls_weighting_scheme'                      : 'The weighting scheme applied in the least-squares process',
     '_refine_ls_weighting_details'                     : 'A description of special aspects of the weighting scheme used in the least-squares refinement',
     '_atom_sites_solution_primary'                     : 'Codes which identify the methods used to locate the initial atom sites',
+    '_atom_sites_solution_secondary'                   : 'Codes which identify how the remaining non-hydrogen sites were located',
     '_atom_sites_solution_hydrogens'                   : 'Codes which identify the methods used to locate the initial hydrogen atom sites',
     '_refine_ls_extinction_method'                     : 'A description of the extinction-correction method applied',
     '_refine_ls_extinction_coef'                       : 'The extinction coefficient used to calculate the correction factor applied to the structure-factor data',
@@ -222,6 +223,7 @@ text_field_keys = ['_refine_special_details',
                    '_audit_contact_author_address',
                    '_exptl_crystal_recrystallization_method',
                    '_exptl_special_details',
+                   '_geom_special_details',
                    ]
 
 ABSORPTION_CORRECTION_TYPES = (
@@ -350,6 +352,7 @@ combobox_fields = {'_exptl_crystal_colour'               : COLOUR_CHOICES,
                    '_atom_sites_solution_primary'        : SOLUTION_PRIMARY,
                    '_atom_sites_solution_secondary'      : SOLUTION_PRIMARY,
                    '_diffrn_measurement_specimen_support': SPECIMEN_SUPPORT,
+                   '_atom_sites_solution_hydrogens'      : SOLUTION_PRIMARY,
                    # '_diffrn_measurement_specimen_adhesive': ADHESIVE,
                    }
 
@@ -516,7 +519,7 @@ predef_prop_templ = [{'name'  : 'Crystal Color',
                                  ]
 
                       },
-                      {'name'  : 'Radiation Type',
+                     {'name'  : 'Radiation Type',
                       'values': ['_diffrn_radiation_probe',
                                  ['',
                                   'x-ray',

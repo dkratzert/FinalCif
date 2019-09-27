@@ -1,10 +1,13 @@
 from PyQt5.QtCore import QEvent, QObject, Qt
-from PyQt5.QtGui import QPalette, QTextOption
+from PyQt5.QtGui import QColor, QPalette, QTextOption
 from PyQt5.QtWidgets import QAbstractScrollArea, QComboBox, QFrame, QPlainTextEdit, QSizePolicy, QTableWidget, \
     QTableWidgetItem, QWidget
 
 from cif.cif_file_io import retranslate_delimiter
 
+light_green = QColor(217, 255, 201)
+blue = QColor(102, 150, 179)
+yellow = QColor(250, 247, 150)
 
 # noinspection PyUnresolvedReferences
 class ItemTextMixin:
@@ -77,6 +80,16 @@ class MyCifTable(QTableWidget, ItemTextMixin):
             # in this case, we have a combobox
             self.cellWidget(row, column).setText(txt)
 
+    def setBackground(self, row: int, column: int, color: QColor):
+        self.setCurrentCell(row, column)
+        item = self.currentItem()
+        if item:
+            item.setBackground(color)
+        else:
+            widget = self.cellWidget(row, column)
+            if widget:
+                widget.setBackground(color)
+
 
 class MyQPlainTextEdit(QPlainTextEdit):
     """
@@ -95,9 +108,14 @@ class MyQPlainTextEdit(QPlainTextEdit):
         self.setWordWrapMode(QTextOption.WrapAtWordBoundaryOrAnywhere)
 
     def setBackground(self, color):
-        pal = self.palette()
-        pal.setColor(QPalette.Base, color)
-        self.setPalette(pal)
+        """
+        Set background color of the text field.
+        """
+        self.setStyleSheet("QPlainTextEdit {{background-color: {};}}".format(str(color.name())))
+        # No idea why tis does not work
+        #pal = self.palette()
+        #pal.setColor(QPalette.Base, color)
+        #self.setPalette(pal)
 
     def set_uneditable(self):
         self.setReadOnly(True)
@@ -213,3 +231,6 @@ class MyEQTableWidget(QTableWidget, ItemTextMixin):
     def adjustToContents(self):
         # print('adjust')
         self.resizeRowsToContents()
+
+
+

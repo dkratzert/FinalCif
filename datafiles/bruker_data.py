@@ -5,8 +5,10 @@
 #  and you think this stuff is worth it, you can buy me a beer in return.
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
-
+from contextlib import suppress
 from pathlib import Path
+
+from gemmi import cif as gcif
 
 from cif.cif_file_io import CifContainer
 from datafiles.bruker_frame import BrukerFrameHeader
@@ -14,7 +16,6 @@ from datafiles.p4p_reader import P4PFile
 from datafiles.sadabs import Sadabs
 from datafiles.saint import SaintListFile
 from datafiles.shelxt import SHELXTlistfile
-from gemmi import cif as gcif
 
 
 class MissingCifData():
@@ -108,6 +109,32 @@ class BrukerData(object):
         temperature = round(min([temp1, temp2]), 1)
         if temperature < 0.01:
             temperature = '?'
+        # TODO: refrator space group things into a general method:
+        spgr = '?'
+        if not self.cif['_space_group_name_H-M_alt']:
+            try:
+                spgr = self.cif.space_group()
+            except AttributeError:
+                pass
+        hallsym = '?'
+        if not self.cif['_space_group_name_Hall']:
+            with suppress(AttributeError):
+                hallsym = self.cif.hall_symbol()
+        spgrnum = '?'
+        if not self.cif['_space_group_IT_number']:
+            with suppress(AttributeError):
+                spgrnum = self.cif.spgr_number_from_symmops()
+        csystem = '?'
+        if not self.cif['_space_group_crystal_system']:
+            with suppress(AttributeError):
+                csystem = self.cif.crystal_system()
+        """
+        #TODO: symmops are missing, need loops for that
+        if not self.symmops:
+            for x in reversed(self.symmops_from_spgr()):
+                self.add_to_cif(cif_as_list, key=x, value='')
+            self.add_to_cif(cif_as_list, key='_space_group_symop_operation_xyz', value='')
+            self.add_to_cif(cif_as_list, key='_loop', value='')"""
         # All sources that are not filled with data will be yellow in the main table
         #                          data                         tooltip
         sources = {'_cell_measurement_reflns_used'          : (saint_data.cell_reflections, saint_data.filename.name),
@@ -138,6 +165,10 @@ class BrukerData(object):
                    '_refine_special_details'                : ('', ''),
                    '_exptl_crystal_recrystallization_method': ('', ''),
                    '_chemical_absolute_configuration'       : ('', ''),
+                   '_space_group_name_H-M_alt'              : (spgr, 'calculated by gemmi'),
+                   '_space_group_name_Hall'                 : (hallsym, 'calculated by gemmi'),
+                   '_space_group_IT_number'                 : (spgrnum, 'calculated by gemmi'),
+                   '_space_group_crystal_system'            : (csystem, 'calculated by gemmi'),
                    }
         self.sources = dict((k.lower(), v) for k, v in sources.items())
 
