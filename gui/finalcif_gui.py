@@ -244,6 +244,7 @@ class Ui_FinalCifWindow(object):
         self.verticalLayout = QtWidgets.QVBoxLayout(self.page_MainTable)
         self.verticalLayout.setObjectName("verticalLayout")
         self.CifItemsTable = MyCifTable(self.page_MainTable)
+        self.CifItemsTable.setAutoScroll(False)
         self.CifItemsTable.setEditTriggers(QtWidgets.QAbstractItemView.AllEditTriggers)
         self.CifItemsTable.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         self.CifItemsTable.setVerticalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)

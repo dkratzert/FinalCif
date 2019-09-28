@@ -11,19 +11,20 @@ import sys
 import time
 from html.parser import HTMLParser
 from pathlib import Path
-from pprint import pprint
 from tempfile import mkstemp
 from typing import List
 
 import gemmi
 import requests
-from PyQt5.QtCore import QPoint, QUrl
+from PyQt5.QtCore import QUrl
+from PyQt5.QtGui import QResizeEvent
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest
 from PyQt5.QtNetwork import QNetworkReply
 from PyQt5.QtWebEngineWidgets import QWebEngineView
-from PyQt5.QtWidgets import QMainWindow, qApp, QApplication
+from PyQt5.QtWidgets import QMainWindow, QVBoxLayout
 from requests.exceptions import MissingSchema
 
+from gui.responseformseditor import Ui_ResponseFormsEditor
 from tools.misc import strip_finalcif_of_name
 
 
@@ -32,6 +33,9 @@ class WebPage(QWebEngineView):
         QWebEngineView.__init__(self)
         self.url = QUrl.fromLocalFile(str(file.absolute()))
         self.load(self.url)
+
+    def resizeEvent(self, a0: QResizeEvent) -> None:
+        self.resize(a0.size())
 
     def _on_load_finished(self):
         self.page().toHtml(self.Callable)
@@ -61,7 +65,7 @@ class MakeCheckCif():
         else:
             report_type = 'HTML'
             vrf = 'vrfab'
-        if self.parent.cif.block.find_value('_shelx_hkl_file'):
+        if self.parent and self.parent.cif.block.find_value('_shelx_hkl_file'):
             hkl = 'checkcif_with_hkl'
             if self.parent.ui.structfactCheckBox.isChecked():
                 hkl = 'checkcif_only'
@@ -99,16 +103,18 @@ class MakeCheckCif():
     def show_html_report(self):
         """
         Shows the html result of checkcif in a webengine window.
+        #TODO: this is complete crap! 
         """
         self._get_checkcif(pdf=False)
-        app = QMainWindow(self.parent)
+        dialog = QMainWindow(self.parent)
+        subwin = Ui_ResponseFormsEditor()
+        subwin.setupUi(dialog)
         web = WebPage(self.html_out_file)
-        app.setCentralWidget(web)
-        app.setBaseSize(900, 900)
-        app.show()
-        app.setMinimumWidth(900)
-        app.setMinimumHeight(700)
-        app.move(QPoint(100, 50))
+        vlayout = QVBoxLayout()
+        subwin.reportPage.setLayout(vlayout)
+        subwin.stackedWidget.setCurrentIndex(0)
+        subwin.stackedWidget.addWidget(web)
+        dialog.show()
         web.show()
 
     def _open_pdf_result(self):
@@ -226,14 +232,13 @@ class AlertHelp():
         found = False
         helptext = []
         for line in self.checkdef:
-            if line.startswith('_'+alert):
+            if line.startswith('_' + alert):
                 found = True
                 continue
             if found and line.startswith('#=='):
                 return '\n'.join(helptext[2:])
             if found:
                 helptext.append(line)
-
 
 
 class AlertHelpRemote():
@@ -264,9 +269,11 @@ class AlertHelpRemote():
 
 
 if __name__ == "__main__":
-    # cif = Path(r'D:\frames\guest\BreitPZ_R_122\BreitPZ_R_122\BreitPZ_R_122_0m_a-finalcif.cif')
-    html = Path(r'/Users/daniel/GitHub/FinalCif/test-data/checkcif-DK_zucker2_0m-finalcif.html')
-    # ckf = MakeCheckCif(None, cif, outfile=html)
+    cif = Path('test-data/1000007-finalcif.cif')
+    html = Path(r'./test-data/checkcif-DK_zucker2_0m-finalcif.html')
+    ckf = MakeCheckCif(None, cif, outfile=html)
+    ckf.show_html_report()
+    sys.exit()
     # ckf.show_pdf_report()
     # html = Path(r'D:\frames\guest\BreitPZ_R_122\BreitPZ_R_122\checkcif-BreitPZ_R_122_0m_a.html')
 
@@ -279,8 +286,8 @@ if __name__ == "__main__":
     # print(parser.pdf)
     # print(parser.link)
 
-    #a = AlertHelp()
-    #a.get_help('PLAT115')
+    # a = AlertHelp()
+    # a.get_help('PLAT115')
 
     # open_pdf_result(Path(r'D:\frames\guest\BreitPZ_R_122\BreitPZ_R_122\BreitPZ_R_122_0m_a-finalcif.cif'), html)
     # Path(d:\tmp\
