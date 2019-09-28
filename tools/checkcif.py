@@ -11,45 +11,24 @@ import sys
 import time
 from html.parser import HTMLParser
 from pathlib import Path
+from pprint import pprint
 from tempfile import mkstemp
 from typing import List
 
 import gemmi
 import requests
 from PyQt5.QtCore import QUrl
-from PyQt5.QtGui import QResizeEvent
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest
 from PyQt5.QtNetwork import QNetworkReply
-from PyQt5.QtWebEngineWidgets import QWebEngineView
-from PyQt5.QtWidgets import QMainWindow, QVBoxLayout
 from requests.exceptions import MissingSchema
 
-from gui.responseformseditor import Ui_ResponseFormsEditor
 from tools.misc import strip_finalcif_of_name
-
-
-class WebPage(QWebEngineView):
-    def __init__(self, file: Path):
-        QWebEngineView.__init__(self)
-        self.url = QUrl.fromLocalFile(str(file.absolute()))
-        self.load(self.url)
-
-    def resizeEvent(self, a0: QResizeEvent) -> None:
-        self.resize(a0.size())
-
-    def _on_load_finished(self):
-        self.page().toHtml(self.Callable)
-        print("Finished Loading")
-
-    def Callable(self, html_str):
-        self.html = html_str
 
 
 class MakeCheckCif():
 
     def __init__(self, parent, cif: Path, outfile: Path):
         self.parent = parent
-        # _, self.out_file = mkstemp(suffix='.html')
         self.html_out_file = outfile
         self.cifobj = cif
 
@@ -64,7 +43,7 @@ class MakeCheckCif():
             vrf = 'vrfno'
         else:
             report_type = 'HTML'
-            vrf = 'vrfab'
+            vrf = 'vrfabc'
         if self.parent and self.parent.cif.block.find_value('_shelx_hkl_file'):
             hkl = 'checkcif_with_hkl'
             if self.parent.ui.structfactCheckBox.isChecked():
@@ -89,9 +68,9 @@ class MakeCheckCif():
         print('Report took {}s.'.format(str(round(t2 - t1, 2))))
         self.html_out_file.write_bytes(r.content)
         f.close()
-        if hkl == 'checkcif_only':
+        if hkl == 'checkcif_only' and fd:
             try:
-                # a trick to clos the file descriptor:
+                # a trick to close the file descriptor:
                 f = os.fdopen(fd, 'w')
                 f.close()
                 os.unlink(tmp)
@@ -99,23 +78,6 @@ class MakeCheckCif():
                 print('can not delete tempfile from checkcif:')
                 print(tmp)
         print('ready')
-
-    def show_html_report(self):
-        """
-        Shows the html result of checkcif in a webengine window.
-        #TODO: this is complete crap! 
-        """
-        self._get_checkcif(pdf=False)
-        dialog = QMainWindow(self.parent)
-        subwin = Ui_ResponseFormsEditor()
-        subwin.setupUi(dialog)
-        web = WebPage(self.html_out_file)
-        vlayout = QVBoxLayout()
-        subwin.reportPage.setLayout(vlayout)
-        subwin.stackedWidget.setCurrentIndex(0)
-        subwin.stackedWidget.addWidget(web)
-        dialog.show()
-        web.show()
 
     def _open_pdf_result(self):
         """
@@ -193,7 +155,7 @@ class MyHTMLParser(HTMLParser):
          'name'      : '_vrf_PLAT035_DK_zucker2_0m',
          'problem'   : '_chemical_absolute_configuration Info  Not Given     Please Do '
                        '!  ',
-         'short_name': 'PLAT035'},
+         'alert_num': 'PLAT035'},
          {...},
          ]
         """
@@ -204,7 +166,7 @@ class MyHTMLParser(HTMLParser):
             if line.startswith('_vrf'):
                 form = {'level': ''}
                 plat = line.split('_')[2]
-                form.update({'name': line, 'short_name': plat})
+                form.update({'name': line, 'alert_num': plat})
             if line.startswith(';'):
                 continue
             if line.startswith('PROBLEM'):
@@ -219,14 +181,14 @@ class MyHTMLParser(HTMLParser):
 
 
 class AlertHelp():
-    def __init__(self):
-        self.checkdef = Path('../check.def').read_text().splitlines(keepends=False)
+    def __init__(self, checkdef: list):
+        self.checkdef = checkdef  # Path('../check.def').read_text().splitlines(keepends=False)
 
     def get_help(self, alert: str):
         if len(alert) > 4:
             alert = alert[4:]
         help = self._parse_checkdef(alert)
-        print(help)
+        return help
 
     def _parse_checkdef(self, alert):
         found = False
@@ -271,9 +233,9 @@ class AlertHelpRemote():
 if __name__ == "__main__":
     cif = Path('test-data/1000007-finalcif.cif')
     html = Path(r'./test-data/checkcif-DK_zucker2_0m-finalcif.html')
-    ckf = MakeCheckCif(None, cif, outfile=html)
-    ckf.show_html_report()
-    sys.exit()
+    # ckf = MakeCheckCif(None, cif, outfile=html)
+    # ckf.show_html_report()
+    # sys.exit()
     # ckf.show_pdf_report()
     # html = Path(r'D:\frames\guest\BreitPZ_R_122\BreitPZ_R_122\checkcif-BreitPZ_R_122_0m_a.html')
 
@@ -289,24 +251,3 @@ if __name__ == "__main__":
     # a = AlertHelp()
     # a.get_help('PLAT115')
 
-    # open_pdf_result(Path(r'D:\frames\guest\BreitPZ_R_122\BreitPZ_R_122\BreitPZ_R_122_0m_a-finalcif.cif'), html)
-    # Path(d:\tmp\
-    # print(parser.pdf)
-    # outfile = get_checkcif('test-data/p21c.cif')
-    # app = QApplication(sys.argv)
-    # web = WebPage(outfile)
-    # web.show()
-    # app.exec_()
-    # web.close()
-    # try:
-    #    Path(outfile).unlink()
-    # except PermissionError:
-    #    print('can not delete 1')
-
-    # outfile = get_checkcif('test-data/p21c.cif')
-    # app = QWindow()
-    # web = WebPage(outfile)
-    # web.show()
-    # app.setWidth(500)
-    # app.exec_()
-    # web.close()

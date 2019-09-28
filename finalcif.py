@@ -16,6 +16,7 @@ from typing import Tuple
 
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkReply, QNetworkRequest
 # noinspection PyUnresolvedReferences
+from PyQt5.QtWebEngineWidgets import QWebEngineView
 from gemmi import cif
 from requests import ReadTimeout
 
@@ -23,8 +24,10 @@ from cif.core_dict import cif_core
 from datafiles.rigaku_data import RigakuData
 from gui.custom_classes import MyComboBox, MyEQTableWidget, MyQPlainTextEdit, \
     MyTableWidgetItem, blue, light_green, yellow
+from gui.responseformseditor import Ui_ResponseFormsEditor
+from gui.vrf_classes import MyVRFContainer, VREF
 from report.tables import make_report_from
-from tools.checkcif import MakeCheckCif, MyHTMLParser
+from tools.checkcif import MakeCheckCif, MyHTMLParser, AlertHelp
 from tools.update import mainurl
 from tools.version import VERSION
 
@@ -160,6 +163,7 @@ class AppWindow(QMainWindow):
         self.netman_checkdef.finished.connect(self._save_checkdef)
         self.checkfor_version()
         self.get_checkdef()
+        self.subwin = Ui_ResponseFormsEditor()
 
     def __del__(self):
         print('saving position')
@@ -359,23 +363,76 @@ class AppWindow(QMainWindow):
             pass
         try:
             ckf = MakeCheckCif(self, self.fin_file, outfile=htmlfile)
-            ckf.show_html_report()
+            ckf._get_checkcif(pdf=False)
         except ReadTimeout:
             self.show_general_warning(r"The check took too long. Try it at"
                                       r" <a href='https://checkcif.iucr.org/'>https://checkcif.iucr.org/</a> directly.")
         except Exception as e:
-            print('Can not do checkcif:')
+            print('Can not do checkcif::')
+            if DEBUG:
+                raise
             print(e)
             return
+        web = QWebEngineView()
+        url = QUrl.fromLocalFile(str(htmlfile.absolute()))
+        dialog = QMainWindow(self)
+        self.subwin.setupUi(dialog)
+        self.subwin.reportLayout.addWidget(web)
+        self.subwin.show_report_Button.hide()
+        self.subwin.show_report_Button.clicked.connect(self._switch_to_report)
+        self.subwin.show_Forms_Button.clicked.connect(self._switch_to_vrf)
+        web.load(url)
+        self.subwin.stackedWidget.setCurrentIndex(0)
+        dialog.setMinimumWidth(900)
+        dialog.setMinimumHeight(700)
+        dialog.move(QPoint(100, 50))
+        dialog.show()
         # The picture file linked in the html file:
         imageobj = Path(strip_finalcif_of_name(str(self.cif.fileobj.stem)) + '-finalcif.gif')
         parser = MyHTMLParser()
         parser.feed(htmlfile.read_text())
         gif = parser.get_image()
-        if gif:
-            imageobj.write_bytes(gif)
         self.ui.statusBar.showMessage('Report finished.')
         splash.finish(self)
+        forms = parser.response_forms
+        # makes all gray:
+        # self.subwin.responseFormsListWidget.setStyleSheet("background: 'gray';")
+        a = AlertHelp(self.checkdef)
+        self.vrfs = []
+        for form in forms:
+            # print(form)
+            vrf = MyVRFContainer(form, a.get_help(form['alert_num']))
+            vrf.setAutoFillBackground(False)
+            self.vrfs.append(vrf)
+            item = QListWidgetItem()
+            item.setSizeHint(vrf.sizeHint())
+            self.subwin.responseFormsListWidget.addItem(item)
+            self.subwin.responseFormsListWidget.setItemWidget(item, vrf)
+        dialog.raise_()
+        self.subwin.SavePushButton.clicked.connect(self.save_responses)
+        if gif:
+            imageobj.write_bytes(gif)
+
+    def save_responses(self):
+        cif_as_list = self.cif.cif_file_text.splitlines()
+        for row in range(self.subwin.responseFormsListWidget.count()):
+            txt = self.vrfs[row].response_text_edit.toPlainText()
+            v = VREF()
+            v.name = self.vrfs[row].form['name']
+            v.problem = self.vrfs[row].form['problem']
+            v.response = txt
+            self.cif.add_to_cif(cif_as_list, key=str(v), value='')
+        self.save_cif_and_display()
+
+    def _switch_to_report(self):
+        self.subwin.show_Forms_Button.show()
+        self.subwin.show_report_Button.hide()
+        self.subwin.stackedWidget.setCurrentIndex(0)
+
+    def _switch_to_vrf(self):
+        self.subwin.show_Forms_Button.hide()
+        self.subwin.show_report_Button.show()
+        self.subwin.stackedWidget.setCurrentIndex(1)
 
     def do_pdf_checkcif(self):
         """
@@ -397,6 +454,8 @@ class AppWindow(QMainWindow):
                                       r" <a href='https://checkcif.iucr.org/'>https://checkcif.iucr.org/</a> directly.")
         except Exception as e:
             print('Can not do checkcif:')
+            if DEBUG:
+                raise
             print(e)
         self.ui.statusBar.showMessage('Report finished.')
         try:
@@ -665,9 +724,11 @@ class AppWindow(QMainWindow):
         # It seems to be fast and stable though...
         if not self.cif.block.find_value(key):
             cif_lst = self.cif.cif_file_text.splitlines()
-            data_position = find_line(cif_lst, '^data_')
-            cif_lst.insert(data_position + 1, key + ' ' * (31 - len(key)) + '    ?')
-            self.cif.cif_file_text = "\n".join(cif_lst)
+            self.cif.add_to_cif(cif_lst, key)
+            #data_position = find_line(cif_lst, '^data_')
+            #cif_lst.insert(data_position + 1, key + ' ' * (31 - len(key)) + '    ?')
+            #self.cif.cif_file_text = "\n".join(cif_lst)
+            #TODO: can this be here?
             self.cif.open_cif_by_string()
 
     def new_property(self):
