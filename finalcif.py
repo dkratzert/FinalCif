@@ -28,7 +28,7 @@ from tools.checkcif import MakeCheckCif, MyHTMLParser
 from tools.update import mainurl
 from tools.version import VERSION
 
-DEBUG = False
+DEBUG = True
 
 if getattr(sys, 'frozen', False):
     # If the application is run as a bundle, the pyInstaller bootloader
@@ -155,7 +155,11 @@ class AppWindow(QMainWindow):
         self.load_recent_cifs_list()
         self.netman = QNetworkAccessManager()
         self.netman.finished.connect(self.show_update_warning)
+        self.netman_checkdef = QNetworkAccessManager()
+        self.checkdef = []
+        self.netman_checkdef.finished.connect(self._save_checkdef)
         self.checkfor_version()
+        self.get_checkdef()
 
     def __del__(self):
         print('saving position')
@@ -247,6 +251,43 @@ class AppWindow(QMainWindow):
                 r"A newer version {} of FinalCif is available under: <br>"
                 r"<a href='https://www.xs3.uni-freiburg.de/research/finalcif'>"
                 r"https://www.xs3.uni-freiburg.de/research/finalcif</a>".format(remote_version))
+
+    def get_checkdef(self):
+        """
+        Sends a get request to the platon server in order to get the current check.def file.
+        """
+        url = QUrl('http://www.cryst.chem.uu.nl/spek/xraysoft/unix/platon/check.def')
+        req = QNetworkRequest(url)
+        self.netman_checkdef.get(req)
+
+    def _save_checkdef(self, reply: QNetworkReply) -> None:
+        """
+        Is called by the finished signal from the network manager.
+        """
+        txt = bytes(reply.readAll()).decode('ascii', 'ignore')
+        self.checkdef = txt.splitlines(keepends=False)
+
+    def get_checkdef_help(self, alert: str) -> str:
+        """
+        Parses check.def from PLATON in order to get help about an Alert from Checkcif.
+
+        :param alert: alert number of the respective checkcif alert as three digit string or 'PLAT' + three digits
+        """
+        found = False
+        helptext = []
+        if len(alert) > 4:
+            alert = alert[4:]
+        for line in self.checkdef:
+            if line.startswith('_' + alert):
+                found = True
+                continue
+            if found and line.startswith('#==='):
+                return '\n'.join(helptext[2:])
+            if found:
+                helptext.append(line)
+        if len(self.checkdef) < 100:
+            return "No help available. Could not get 'check.def' file from platon server."
+        return 'No help available.'
 
     def explore_dir(self):
         try:
@@ -1230,7 +1271,7 @@ class AppWindow(QMainWindow):
         csystem = self.cif.crystal_system
         bad = False
         ntypes = len(self.cif['_chemical_formula_sum'].split())
-        #if all([ntypes, density]):
+        # if all([ntypes, density]):
         #    if ntypes > 3.0 and density < 0.6 or density > 4.0:
         #        bad = True
         if Z and Z > 20.0 and (csystem == 'tricilinic' or csystem == 'monoclinic'):
