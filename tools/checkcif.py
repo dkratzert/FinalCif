@@ -11,7 +11,9 @@ import sys
 import time
 from html.parser import HTMLParser
 from pathlib import Path
+from pprint import pprint
 from tempfile import mkstemp
+from typing import List
 
 import gemmi
 import requests
@@ -19,7 +21,7 @@ from PyQt5.QtCore import QPoint, QUrl
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest
 from PyQt5.QtNetwork import QNetworkReply
 from PyQt5.QtWebEngineWidgets import QWebEngineView
-from PyQt5.QtWidgets import QMainWindow
+from PyQt5.QtWidgets import QMainWindow, qApp, QApplication
 from requests.exceptions import MissingSchema
 
 from tools.misc import strip_finalcif_of_name
@@ -177,7 +179,18 @@ class MyHTMLParser(HTMLParser):
             return b''
 
     @property
-    def response_forms(self):
+    def response_forms(self) -> List[dict]:
+        """
+        :returns
+        [
+        {'level'     : 'PLAT035_ALERT_1_B',
+         'name'      : '_vrf_PLAT035_DK_zucker2_0m',
+         'problem'   : '_chemical_absolute_configuration Info  Not Given     Please Do '
+                       '!  ',
+         'short_name': 'PLAT035'},
+         {...},
+         ]
+        """
         forms = []
         form = {}
         n = 0
@@ -192,17 +205,12 @@ class MyHTMLParser(HTMLParser):
                 problem = line[9:]
                 form.update({'problem': problem})
                 for x in self.alert_levels:
-                    if form['short_name'] == x[:7]:
+                    if form['alert_num'] == x[:7]:
                         form.update({'level': x})
                 n += 1
                 forms.append(form)
         return forms
 
-    """
-    TODO:
-    - <a href='javascript:makeHelpWindow("PLAT699.html")'> from html file
-    - http://journals.iucr.org/services/cif/checking/PLAT699.html
-    """
 
 class AlertHelp():
     def __init__(self):
@@ -262,17 +270,17 @@ if __name__ == "__main__":
     # ckf.show_pdf_report()
     # html = Path(r'D:\frames\guest\BreitPZ_R_122\BreitPZ_R_122\checkcif-BreitPZ_R_122_0m_a.html')
 
-    #parser = MyHTMLParser()
-    #parser.feed(html.read_text())
+    parser = MyHTMLParser()
+    parser.feed(html.read_text())
     # print(parser.imageurl)
-    # pprint(parser.response_forms)
+    pprint(parser.response_forms)
     # print(parser.alert_levels)
     # print(parser.vrf)
     # print(parser.pdf)
     # print(parser.link)
 
-    a = AlertHelp()
-    a.get_help('PLAT415')
+    #a = AlertHelp()
+    #a.get_help('PLAT115')
 
     # open_pdf_result(Path(r'D:\frames\guest\BreitPZ_R_122\BreitPZ_R_122\BreitPZ_R_122_0m_a-finalcif.cif'), html)
     # Path(d:\tmp\
