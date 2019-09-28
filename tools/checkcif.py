@@ -204,22 +204,46 @@ class MyHTMLParser(HTMLParser):
     - http://journals.iucr.org/services/cif/checking/PLAT699.html
     """
 
-
 class AlertHelp():
+    def __init__(self):
+        self.checkdef = Path('../check.def').read_text().splitlines(keepends=False)
+
+    def get_help(self, alert: str):
+        if len(alert) > 4:
+            alert = alert[4:]
+        help = self._parse_checkdef(alert)
+        print(help)
+
+    def _parse_checkdef(self, alert):
+        found = False
+        helptext = []
+        for line in self.checkdef:
+            if line.startswith('_'+alert):
+                found = True
+                continue
+            if found and line.startswith('#=='):
+                return '\n'.join(helptext[2:])
+            if found:
+                helptext.append(line)
+
+
+
+class AlertHelpRemote():
     def __init__(self, alert: str):
         self.netman = QNetworkAccessManager()
-        'http://journals.iucr.org/services/cif/checking/PLAT035.html'
-        self.helpurl = r'http://journals.iucr.org/services/cif/checking/' + alert + '.html'
+        self.helpurl = r'https://journals.iucr.org/services/cif/checking/' + alert + '.html'
         print('url:', self.helpurl)
+        self.netman.finished.connect(self._parse_result)
 
     def get_help(self):
         url = QUrl(self.helpurl)
         req = QNetworkRequest(url)
         print('doing request')
         self.netman.get(req)
-        self.netman.finished.connect(self.parse_result)
 
-    def parse_result(self, reply: QNetworkReply):
+    def _parse_result(self, reply: QNetworkReply):
+        if reply.error():
+            print(reply.errorString())
         print('parsing reply')
         text = 'no help available'
         try:
@@ -238,8 +262,8 @@ if __name__ == "__main__":
     # ckf.show_pdf_report()
     # html = Path(r'D:\frames\guest\BreitPZ_R_122\BreitPZ_R_122\checkcif-BreitPZ_R_122_0m_a.html')
 
-    parser = MyHTMLParser()
-    parser.feed(html.read_text())
+    #parser = MyHTMLParser()
+    #parser.feed(html.read_text())
     # print(parser.imageurl)
     # pprint(parser.response_forms)
     # print(parser.alert_levels)
@@ -247,8 +271,8 @@ if __name__ == "__main__":
     # print(parser.pdf)
     # print(parser.link)
 
-    a = AlertHelp('PLAT035')
-    a.get_help()
+    a = AlertHelp()
+    a.get_help('PLAT415')
 
     # open_pdf_result(Path(r'D:\frames\guest\BreitPZ_R_122\BreitPZ_R_122\BreitPZ_R_122_0m_a-finalcif.cif'), html)
     # Path(d:\tmp\
