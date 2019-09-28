@@ -20,7 +20,13 @@
       <property name="currentIndex">
        <number>1</number>
       </property>
-      <widget class="QWidget" name="reportPage"/>
+      <widget class="QWidget" name="reportPage">
+       <layout class="QVBoxLayout" name="verticalLayout_5">
+        <item>
+         <layout class="QVBoxLayout" name="reportLayout"/>
+        </item>
+       </layout>
+      </widget>
       <widget class="QWidget" name="formsPage">
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <property name="leftMargin">
@@ -185,7 +191,7 @@
        <item>
         <widget class="QPushButton" name="show_Forms_Button">
          <property name="text">
-          <string>Show Response Forms</string>
+          <string>Edit Response Forms</string>
          </property>
         </widget>
        </item>
