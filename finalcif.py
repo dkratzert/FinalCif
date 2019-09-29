@@ -15,8 +15,9 @@ from pathlib import Path, WindowsPath
 from typing import Tuple
 
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkReply, QNetworkRequest
-# noinspection PyUnresolvedReferences
+
 from PyQt5.QtWebEngineWidgets import QWebEngineView
+# noinspection PyUnresolvedReferences
 from gemmi import cif
 from requests import ReadTimeout
 
@@ -27,16 +28,17 @@ from gui.custom_classes import MyComboBox, MyEQTableWidget, MyQPlainTextEdit, \
 from gui.responseformseditor import Ui_ResponseFormsEditor
 from gui.vrf_classes import MyVRFContainer, VREF
 from report.tables import make_report_from
-from tools.checkcif import MakeCheckCif, MyHTMLParser, AlertHelp
+from tools.checkcif import AlertHelp, MakeCheckCif, MyHTMLParser
 from tools.update import mainurl
 from tools.version import VERSION
 
-DEBUG = True
+DEBUG = False
 
 if getattr(sys, 'frozen', False):
     # If the application is run as a bundle, the pyInstaller bootloader
     # extends the sys module by a flag frozen=True and sets the app
     # path into variable _MEIPASS'.
+    # noinspection PyProtectedMember
     os.environ['PATH'] = sys._MEIPASS + os.pathsep + os.environ['PATH']
     application_path = sys._MEIPASS
 else:
@@ -58,7 +60,7 @@ from cif.cif_file_io import CifContainer, set_pair_delimited
 from datafiles.bruker_data import BrukerData
 from datafiles.platon import Platon
 from tools.misc import essential_keys, predef_equipment_templ, predef_prop_templ, combobox_fields, \
-    text_field_keys, to_float, find_line, strip_finalcif_of_name
+    text_field_keys, to_float, strip_finalcif_of_name
 from tools.settings import FinalCifSettings
 
 """
@@ -417,6 +419,7 @@ class AppWindow(QMainWindow):
         for response_row in range(self.subwin.responseFormsListWidget.count()):
             txt = self.vrfs[response_row].response_text_edit.toPlainText()
             if not txt:
+                # No response was written
                 continue
             v = VREF()
             v.key = self.vrfs[response_row].form['name']
@@ -424,9 +427,9 @@ class AppWindow(QMainWindow):
             v.response = txt
             # add a key with '?' as value
             self.add_new_table_key(v.key)
-            row = self.vheaderitems.index(v.key)
+            vheader_row = self.vheaderitems.index(v.key)
             # add data to this key:
-            self.ui.CifItemsTable.setText(row, COL_EDIT, str(v))
+            self.ui.CifItemsTable.setText(vheader_row, COL_EDIT, v.value)
         self.save_cif_and_display()
 
     def _switch_to_report(self):
@@ -730,10 +733,10 @@ class AppWindow(QMainWindow):
         if not self.cif.block.find_value(key):
             cif_lst = self.cif.cif_file_text.splitlines()
             self.cif.add_to_cif(cif_lst, key)
-            #data_position = find_line(cif_lst, '^data_')
-            #cif_lst.insert(data_position + 1, key + ' ' * (31 - len(key)) + '    ?')
-            #self.cif.cif_file_text = "\n".join(cif_lst)
-            #TODO: can this be here?
+            # data_position = find_line(cif_lst, '^data_')
+            # cif_lst.insert(data_position + 1, key + ' ' * (31 - len(key)) + '    ?')
+            # self.cif.cif_file_text = "\n".join(cif_lst)
+            # TODO: can this be here?
             self.cif.cif_file_text = "\n".join(cif_lst)
             self.cif.open_cif_by_string()
 

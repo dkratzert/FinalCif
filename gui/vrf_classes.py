@@ -1,5 +1,3 @@
-import textwrap
-
 from PyQt5.QtCore import QSize, Qt
 from PyQt5.QtWidgets import QDialog, QFrame, QHBoxLayout, QLabel, QPushButton, QSizePolicy, QSpacerItem, QTextEdit, \
     QVBoxLayout, QWidget
@@ -22,6 +20,10 @@ class VREF():
         self._response = 'RESPONSE: '
 
     @property
+    def value(self):
+        return self.__repr__()
+
+    @property
     def response(self):
         return self._response
 
@@ -39,9 +41,9 @@ class VREF():
 
     def __repr__(self):
         txt = (
-               "{}\n"
-               "{}\n".format(self.problem, self.response)
-               )
+            "{}\n"
+            "{}\n".format(self.problem, self.response)
+        )
         return txt
 
     def __str__(self):
@@ -111,9 +113,9 @@ class MyVRFContainer(QWidget):
         type = level[-1] if len(level) > 1 else 'General Alert'
         color = 'lightgray'
         if type == 'A':
-            color = 'red'
+            color = 'rgb(240, 88, 70)'  # 'red'
         elif type == 'B':
-            color = 'rgb(252, 86, 3)'
+            color = 'rgb(252, 119, 20)'
         elif type == 'C':
             color = 'yellow'
         elif type == 'G':
@@ -124,7 +126,7 @@ class MyVRFContainer(QWidget):
         label.setText("{} {}".format(type, num))
         style = 'QLabel {{ font-size: 12px; background-color: {:s}; ' \
                 'font-weight: bold;' \
-                'border: 2px solid black;' \
+                'border: 1px solid black;' \
                 'border-radius: 5px; ' \
                 'margin: 0px;' \
                 'padding: 4px;' \
