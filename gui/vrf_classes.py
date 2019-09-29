@@ -55,7 +55,6 @@ class MyVRFContainer(QWidget):
     def __init__(self, form: dict, help: str, parent=None):
         """
         A Widget to display each validation response form.
-        #TODO: test what happens if form is empty or contains garbage
 
         :param form: a dictionary with:
                     {'level':   'PLAT035_ALERT_1_B',
