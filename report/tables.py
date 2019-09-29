@@ -15,25 +15,13 @@ from docx import Document
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Cm, Pt
-# compiled with "Py -3 -m PyInstaller multitable.spec --onefile"
 from docx.table import Table, _Cell
 
 from cif.cif_file_io import CifContainer
 from report.mtools import cif_keywords_list, isfloat, this_or_quest
-from report.report_text import CrstalSelection, MachineType, format_radiation, DataReduct, SolveRefine, Hydrogens, \
-    Disorder, CCDC, Crystallization
+from report.report_text import CCDC, CrstalSelection, Crystallization, DataReduct, Disorder, Hydrogens, MachineType, \
+    SolveRefine, format_radiation
 from report.symm import SymmetryElement
-
-"""
-#TODO:
-* create nice .docx template
-* completeness to 0.83 A, theta range in A
-* index ranges in one row
-* cell parameters in three rows
-* proper table numbering:
- table1 -> num -> table2 -> ...
- if table fails, return number, else count up and then return number
-"""
 
 
 def format_space_group(table, cif):
@@ -129,32 +117,35 @@ def make_report_from(file_obj: Path, output_filename: str = None, path: str = ''
     CCDC(cif, p_report)
 
     table_num = 1
-    t1 = time.perf_counter()
+    p = document.add_paragraph('')
+    p.space_before = Pt(25)
     cif, table_num = add_main_table(document, cif, table_num)
-    t2 = time.perf_counter()
-    #print('main table:', round(t2 - t1, 2), 's')
-    document.add_paragraph('')
-    t1 = time.perf_counter()
+    # document.add_paragraph('')
+    make_culumns_section(document, columns='1')
     table_num = add_coords_table(document, cif, table_num)
-    t2 = time.perf_counter()
-    #print('coords:', round(t2 - t1, 2), 's')
-    document.add_paragraph('')
-    t1 = time.perf_counter()
+    make_culumns_section(document, columns='2')
+    # document.add_paragraph('')
     table_num = add_bonds_and_angles_table(document, cif, table_num, without_H)
-    t2 = time.perf_counter()
-    #print('bonds/ang:', round(t2 - t1, 2), 's')
-    t1 = time.perf_counter()
     table_num = add_torsion_angles(document, cif, table_num)
-    t2 = time.perf_counter()
-    #print('tors:', round(t2 - t1, 2), 's')
-    t1 = time.perf_counter()
+    make_culumns_section(document, columns='1')
     table_num = add_hydrogen_bonds(document, cif, table_num)
-    t2 = time.perf_counter()
-    #print('hydrogen:', round(t2 - t1, 2), 's')
-    print('\nScript finished - output file: tables.docx')
+    document.add_paragraph('')
     document.save(output_filename)
-    print('\nScript finished - output file: {}'.format(output_filename))
+    print('\nTables finished - output file: {}'.format(output_filename))
     return file_obj.name
+
+
+def make_culumns_section(document, columns: str = '1'):
+    """
+    Makes a new section (new page) which has a certain number of columns.
+    available sections:
+    CONTINUOUS, NEW_COLUMN, NEW_PAGE, EVEN_PAGE, ODD_PAGE
+    """
+    from docx.enum.section import WD_SECTION
+    section = document.add_section(WD_SECTION.CONTINUOUS)
+    sectPr = section._sectPr
+    cols = sectPr.xpath('./w:cols')[0]
+    cols.set(qn('w:num'), '{}'.format(columns))
 
 
 def delete_paragraph(paragraph):
@@ -219,8 +210,8 @@ def add_main_table(document: Document(), cif: CifContainer, table_num: int):
     # col.width = Cm(5.0)
     # col.autofit = False
     # setup table format:
-    set_column_width(main_table.columns[0], Cm(5))
-    set_column_width(main_table.columns[1], Cm(5))
+    set_column_width(main_table.columns[0], Cm(4.05))
+    set_column_width(main_table.columns[1], Cm(4.05))
     # Add descriptions to the first column of the main table:
     populate_description_columns(main_table, cif)
     # The main residuals table:
@@ -372,7 +363,6 @@ def populate_main_table_values(main_table: Table, cif: CifContainer):
     if exti != '.' and exti != '?':
         num = len(main_table.columns[0].cells)
         main_table.columns[1].cells[num - 1].text = exti
-    print('File parsed: ' + cif.fileobj.name + '  (' + sum_formula + ')  ' + space_group)
 
 
 def add_coords_table(document: Document, cif: CifContainer, table_num: int):
