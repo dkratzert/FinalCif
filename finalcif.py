@@ -400,7 +400,7 @@ class AppWindow(QMainWindow):
             item.setSizeHint(vrf.sizeHint())
             self.subwin.responseFormsListWidget.addItem(item)
             self.subwin.responseFormsListWidget.setItemWidget(item, vrf)
-        else:
+        if not forms:
             iteme = QListWidgetItem(' ')
             item = QListWidgetItem(' No level A or B alerts to explain.')
             self.subwin.responseFormsListWidget.addItem(iteme)
