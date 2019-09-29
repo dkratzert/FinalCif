@@ -15,6 +15,7 @@ from pathlib import Path, WindowsPath
 from typing import Tuple
 
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkReply, QNetworkRequest
+from PyQt5.QtWebEngineWidgets import QWebEngineView
 # noinspection PyUnresolvedReferences
 from gemmi import cif
 from requests import ReadTimeout
@@ -23,17 +24,20 @@ from cif.core_dict import cif_core
 from datafiles.rigaku_data import RigakuData
 from gui.custom_classes import MyComboBox, MyEQTableWidget, MyQPlainTextEdit, \
     MyTableWidgetItem, blue, light_green, yellow
+from gui.responseformseditor import Ui_ResponseFormsEditor
+from gui.vrf_classes import MyVRFContainer, VREF
 from report.tables import make_report_from
-from tools.checkcif import MakeCheckCif, MyHTMLParser
+from tools.checkcif import AlertHelp, MakeCheckCif, MyHTMLParser
 from tools.update import mainurl
 from tools.version import VERSION
 
-DEBUG = False
+DEBUG = True
 
 if getattr(sys, 'frozen', False):
     # If the application is run as a bundle, the pyInstaller bootloader
     # extends the sys module by a flag frozen=True and sets the app
     # path into variable _MEIPASS'.
+    # noinspection PyProtectedMember
     os.environ['PATH'] = sys._MEIPASS + os.pathsep + os.environ['PATH']
     application_path = sys._MEIPASS
 else:
@@ -55,7 +59,7 @@ from cif.cif_file_io import CifContainer, set_pair_delimited
 from datafiles.bruker_data import BrukerData
 from datafiles.platon import Platon
 from tools.misc import essential_keys, predef_equipment_templ, predef_prop_templ, combobox_fields, \
-    text_field_keys, to_float, find_line, strip_finalcif_of_name
+    text_field_keys, to_float, strip_finalcif_of_name
 from tools.settings import FinalCifSettings
 
 """
@@ -155,7 +159,12 @@ class AppWindow(QMainWindow):
         self.load_recent_cifs_list()
         self.netman = QNetworkAccessManager()
         self.netman.finished.connect(self.show_update_warning)
+        self.netman_checkdef = QNetworkAccessManager()
+        self.checkdef = []
+        self.netman_checkdef.finished.connect(self._save_checkdef)
         self.checkfor_version()
+        self.get_checkdef()
+        self.subwin = Ui_ResponseFormsEditor()
 
     def __del__(self):
         print('saving position')
@@ -248,6 +257,43 @@ class AppWindow(QMainWindow):
                 r"<a href='https://www.xs3.uni-freiburg.de/research/finalcif'>"
                 r"https://www.xs3.uni-freiburg.de/research/finalcif</a>".format(remote_version))
 
+    def get_checkdef(self):
+        """
+        Sends a get request to the platon server in order to get the current check.def file.
+        """
+        url = QUrl('http://www.cryst.chem.uu.nl/spek/xraysoft/unix/platon/check.def')
+        req = QNetworkRequest(url)
+        self.netman_checkdef.get(req)
+
+    def _save_checkdef(self, reply: QNetworkReply) -> None:
+        """
+        Is called by the finished signal from the network manager.
+        """
+        txt = bytes(reply.readAll()).decode('ascii', 'ignore')
+        self.checkdef = txt.splitlines(keepends=False)
+
+    def get_checkdef_help(self, alert: str) -> str:
+        """
+        Parses check.def from PLATON in order to get help about an Alert from Checkcif.
+
+        :param alert: alert number of the respective checkcif alert as three digit string or 'PLAT' + three digits
+        """
+        found = False
+        helptext = []
+        if len(alert) > 4:
+            alert = alert[4:]
+        for line in self.checkdef:
+            if line.startswith('_' + alert):
+                found = True
+                continue
+            if found and line.startswith('#==='):
+                return '\n'.join(helptext[2:])
+            if found:
+                helptext.append(line)
+        if len(self.checkdef) < 100:
+            return "No help available. Could not get 'check.def' file from platon server."
+        return 'No help available.'
+
     def explore_dir(self):
         try:
             curdir = self.cif.fileobj.absolute().parent
@@ -318,23 +364,88 @@ class AppWindow(QMainWindow):
             pass
         try:
             ckf = MakeCheckCif(self, self.fin_file, outfile=htmlfile)
-            ckf.show_html_report()
+            ckf._get_checkcif(pdf=False)
         except ReadTimeout:
             self.show_general_warning(r"The check took too long. Try it at"
                                       r" <a href='https://checkcif.iucr.org/'>https://checkcif.iucr.org/</a> directly.")
         except Exception as e:
-            print('Can not do checkcif:')
+            print('Can not do checkcif::')
+            if DEBUG:
+                raise
             print(e)
             return
+        web = QWebEngineView()
+        url = QUrl.fromLocalFile(str(htmlfile.absolute()))
+        dialog = QMainWindow(self)
+        self.subwin.setupUi(dialog)
+        self.subwin.reportLayout.addWidget(web)
+        self.subwin.show_report_Button.hide()
+        self.subwin.show_report_Button.clicked.connect(self._switch_to_report)
+        self.subwin.show_Forms_Button.clicked.connect(self._switch_to_vrf)
+        web.load(url)
+        self.subwin.stackedWidget.setCurrentIndex(0)
+        dialog.setMinimumWidth(900)
+        dialog.setMinimumHeight(700)
+        dialog.move(QPoint(100, 50))
+        dialog.show()
         # The picture file linked in the html file:
         imageobj = Path(strip_finalcif_of_name(str(self.cif.fileobj.stem)) + '-finalcif.gif')
         parser = MyHTMLParser()
         parser.feed(htmlfile.read_text())
         gif = parser.get_image()
-        if gif:
-            imageobj.write_bytes(gif)
         self.ui.statusBar.showMessage('Report finished.')
         splash.finish(self)
+        forms = parser.response_forms
+        # makes all gray:
+        # self.subwin.responseFormsListWidget.setStyleSheet("background: 'gray';")
+        a = AlertHelp(self.checkdef)
+        self.vrfs = []
+        for form in forms:
+            # print(form)
+            vrf = MyVRFContainer(form, a.get_help(form['alert_num']))
+            vrf.setAutoFillBackground(False)
+            self.vrfs.append(vrf)
+            item = QListWidgetItem()
+            item.setSizeHint(vrf.sizeHint())
+            self.subwin.responseFormsListWidget.addItem(item)
+            self.subwin.responseFormsListWidget.setItemWidget(item, vrf)
+        dialog.raise_()
+        self.subwin.SavePushButton.clicked.connect(self.save_responses)
+        if gif:
+            imageobj.write_bytes(gif)
+
+    def save_responses(self):
+        n = 0
+        for response_row in range(self.subwin.responseFormsListWidget.count()):
+            txt = self.vrfs[response_row].response_text_edit.toPlainText()
+            if not txt:
+                # No response was written
+                continue
+            n += 1
+            v = VREF()
+            v.key = self.vrfs[response_row].form['name']
+            v.problem = self.vrfs[response_row].form['problem']
+            v.response = txt
+            # add a key with '?' as value
+            self.add_new_table_key(v.key)
+            vheader_row = self.vheaderitems.index(v.key)
+            # add data to this key:
+            self.ui.CifItemsTable.setText(vheader_row, COL_EDIT, v.value)
+        self.save_cif_and_display()
+        if n:
+            self.subwin.statusBar.showMessage('Forms saved')
+        else:
+            self.subwin.statusBar.showMessage('No forms were filled in.')
+
+    def _switch_to_report(self):
+        self.subwin.show_Forms_Button.show()
+        self.subwin.show_report_Button.hide()
+        self.subwin.stackedWidget.setCurrentIndex(0)
+
+    def _switch_to_vrf(self):
+        self.subwin.show_Forms_Button.hide()
+        self.subwin.show_report_Button.show()
+        self.subwin.stackedWidget.setCurrentIndex(1)
 
     def do_pdf_checkcif(self):
         """
@@ -356,6 +467,8 @@ class AppWindow(QMainWindow):
                                       r" <a href='https://checkcif.iucr.org/'>https://checkcif.iucr.org/</a> directly.")
         except Exception as e:
             print('Can not do checkcif:')
+            if DEBUG:
+                raise
             print(e)
         self.ui.statusBar.showMessage('Report finished.')
         try:
@@ -624,8 +737,11 @@ class AppWindow(QMainWindow):
         # It seems to be fast and stable though...
         if not self.cif.block.find_value(key):
             cif_lst = self.cif.cif_file_text.splitlines()
-            data_position = find_line(cif_lst, '^data_')
-            cif_lst.insert(data_position + 1, key + ' ' * (31 - len(key)) + '    ?')
+            self.cif.add_to_cif(cif_lst, key)
+            # data_position = find_line(cif_lst, '^data_')
+            # cif_lst.insert(data_position + 1, key + ' ' * (31 - len(key)) + '    ?')
+            # self.cif.cif_file_text = "\n".join(cif_lst)
+            # TODO: can this be here?
             self.cif.cif_file_text = "\n".join(cif_lst)
             self.cif.open_cif_by_string()
 
@@ -1234,12 +1350,12 @@ class AppWindow(QMainWindow):
         csystem = self.cif.crystal_system
         bad = False
         ntypes = len(self.cif['_chemical_formula_sum'].split())
-        if all([ntypes, density]):
-            if ntypes > 2.0 and density < 0.6 or density > 4.0:
-                bad = True
-        if Z and Z > 8.0 and (csystem == 'tricilinic' or csystem == 'monoclinic'):
+        # if all([ntypes, density]):
+        #    if ntypes > 3.0 and density < 0.6 or density > 4.0:
+        #        bad = True
+        if Z and Z > 20.0 and (csystem == 'tricilinic' or csystem == 'monoclinic'):
             bad = True
-        if Z and Z > 16.0 and (csystem == 'orthorhombic' or csystem == 'tetragonal' or csystem == 'trigonal'
+        if Z and Z > 32.0 and (csystem == 'orthorhombic' or csystem == 'tetragonal' or csystem == 'trigonal'
                                or csystem == 'hexagonal' or csystem == 'cubic'):
             bad = True
         if bad:

@@ -1,5 +1,5 @@
 from PyQt5.QtCore import QEvent, QObject, Qt
-from PyQt5.QtGui import QColor, QPalette, QTextOption
+from PyQt5.QtGui import QColor, QTextOption
 from PyQt5.QtWidgets import QAbstractScrollArea, QComboBox, QFrame, QPlainTextEdit, QSizePolicy, QTableWidget, \
     QTableWidgetItem, QWidget
 
@@ -8,6 +8,17 @@ from cif.cif_file_io import retranslate_delimiter
 light_green = QColor(217, 255, 201)
 blue = QColor(102, 150, 179)
 yellow = QColor(250, 247, 150)
+
+
+class QHLine(QFrame):
+    def __init__(self):
+        super(QHLine, self).__init__()
+        self.setFrameShape(QFrame.HLine)
+        #self.setFrameShadow(QFrame.Sunken)
+        # gives a black line:
+        #self.setFrameShadow(QFrame.Plain)
+        self.setFrameShadow(QFrame.Raised)
+
 
 # noinspection PyUnresolvedReferences
 class ItemTextMixin:
@@ -116,9 +127,9 @@ class MyQPlainTextEdit(QPlainTextEdit):
         """
         self.setStyleSheet("QPlainTextEdit {{background-color: {};}}".format(str(color.name())))
         # No idea why tis does not work
-        #pal = self.palette()
-        #pal.setColor(QPalette.Base, color)
-        #self.setPalette(pal)
+        # pal = self.palette()
+        # pal.setColor(QPalette.Base, color)
+        # self.setPalette(pal)
 
     def set_uneditable(self):
         self.setReadOnly(True)
@@ -234,6 +245,3 @@ class MyEQTableWidget(QTableWidget, ItemTextMixin):
     def adjustToContents(self):
         # print('adjust')
         self.resizeRowsToContents()
-
-
-
