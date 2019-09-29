@@ -25,10 +25,12 @@ class Ui_FinalCifWindow(object):
         sizePolicy.setHeightForWidth(self.splitter.sizePolicy().hasHeightForWidth())
         self.splitter.setSizePolicy(sizePolicy)
         self.splitter.setStyleSheet("QSplitter::handle {\n"
-"    background-color: rgb(197, 197, 197);\n"
+"    background-color: rgb(200, 200, 200);\n"
+"    margin: 0px 0px;\n"
 "}")
+        self.splitter.setLineWidth(0)
         self.splitter.setOrientation(QtCore.Qt.Horizontal)
-        self.splitter.setHandleWidth(5)
+        self.splitter.setHandleWidth(3)
         self.splitter.setObjectName("splitter")
         self.LeftFrame = QtWidgets.QFrame(self.splitter)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
@@ -232,7 +234,6 @@ class Ui_FinalCifWindow(object):
         self.CifDataItemsFrame.setSizePolicy(sizePolicy)
         self.CifDataItemsFrame.setMinimumSize(QtCore.QSize(0, 0))
         self.CifDataItemsFrame.setBaseSize(QtCore.QSize(0, 0))
-        self.CifDataItemsFrame.setLineWidth(0)
         self.CifDataItemsFrame.setObjectName("CifDataItemsFrame")
         self.CifTableGridLayout = QtWidgets.QGridLayout(self.CifDataItemsFrame)
         self.CifTableGridLayout.setContentsMargins(0, 0, 0, 0)
