@@ -414,14 +414,19 @@ class AppWindow(QMainWindow):
             imageobj.write_bytes(gif)
 
     def save_responses(self):
-        cif_as_list = self.cif.cif_file_text.splitlines()
-        for row in range(self.subwin.responseFormsListWidget.count()):
-            txt = self.vrfs[row].response_text_edit.toPlainText()
+        for response_row in range(self.subwin.responseFormsListWidget.count()):
+            txt = self.vrfs[response_row].response_text_edit.toPlainText()
+            if not txt:
+                continue
             v = VREF()
-            v.name = self.vrfs[row].form['name']
-            v.problem = self.vrfs[row].form['problem']
+            v.key = self.vrfs[response_row].form['name']
+            v.problem = self.vrfs[response_row].form['problem']
             v.response = txt
-            self.cif.add_to_cif(cif_as_list, key=str(v), value='')
+            # add a key with '?' as value
+            self.add_new_table_key(v.key)
+            row = self.vheaderitems.index(v.key)
+            # add data to this key:
+            self.ui.CifItemsTable.setText(row, COL_EDIT, str(v))
         self.save_cif_and_display()
 
     def _switch_to_report(self):
@@ -729,6 +734,7 @@ class AppWindow(QMainWindow):
             #cif_lst.insert(data_position + 1, key + ' ' * (31 - len(key)) + '    ?')
             #self.cif.cif_file_text = "\n".join(cif_lst)
             #TODO: can this be here?
+            self.cif.cif_file_text = "\n".join(cif_lst)
             self.cif.open_cif_by_string()
 
     def new_property(self):
