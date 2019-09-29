@@ -63,9 +63,6 @@ from tools.settings import FinalCifSettings
 
 """
 TODO:
-- make report two columns
-- items = self.table.findItems(self.edit.text(), QtCore.Qt.MatchExactly). Open find dialog with strg+f and close 
-  on escape or edit actions
 - detect twins and write proper report text about them.
 - add loops to templates
 - write more tests!
@@ -74,13 +71,13 @@ TODO:
 - Add one picture of the vzs file to report.
 - option for default directory?
 
+# cif core dictionary to python dictionary:
 c = CifContainer(Path('cif_core_dict.cif'))
 cdic = json.loads(c.as_json())
 [cdic[x]['_name'] for x in cdic.keys() if '_name' in cdic[x]]
 
 as dict:
 {str(cdic[x]['_name']): ' '.join(cdic[x]['_definition'].split()) for x in cdic.keys() if '_name' in cdic[x]}
-
 """
 # They must be here in order to have directly updated ui files from the ui compiler:
 from gui.finalcif_gui import Ui_FinalCifWindow
