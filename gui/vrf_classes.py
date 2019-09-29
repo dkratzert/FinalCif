@@ -17,7 +17,7 @@ class VREF():
     """
 
     def __init__(self):
-        self.name = ''
+        self.key = ''
         self._problem = 'PROBLEM: '
         self._response = 'RESPONSE: '
 
@@ -27,7 +27,7 @@ class VREF():
 
     @response.setter
     def response(self, txt):
-        self._response = self.response + '\n'.join(textwrap.wrap(txt, width=70))
+        self._response = self.response + txt
 
     @property
     def problem(self):
@@ -38,11 +38,9 @@ class VREF():
         self._problem = self.problem + txt
 
     def __repr__(self):
-        txt = ("{}\n"
-               ";\n"
+        txt = (
                "{}\n"
-               "{}\n"
-               ";\n".format(self.name, self.problem, self.response)
+               "{}\n".format(self.problem, self.response)
                )
         return txt
 
@@ -181,7 +179,7 @@ if __name__ == '__main__':
     web.raise_()
     """
     v = VREF()
-    v.name = '_vrf_PLAT035_DK_zucker2_0m'
+    v.key = '_vrf_PLAT035_DK_zucker2_0m'
     v.problem = '_chemical_absolute_configuration Info  Not Given     Please Do '
     v.response = 'Yes, this is a very long response and I want to see if this is wrapping correctly around ma 70 zeichen limit which is critical for cif. I also have to quote the special characters!'
 
