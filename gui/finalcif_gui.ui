@@ -26,14 +26,18 @@
       </property>
       <property name="styleSheet">
        <string notr="true">QSplitter::handle {
-    background-color: rgb(197, 197, 197);
+	background-color: rgb(200, 200, 200);
+	margin: 0px 0px;
 }</string>
+      </property>
+      <property name="lineWidth">
+       <number>0</number>
       </property>
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
       <property name="handleWidth">
-       <number>5</number>
+       <number>3</number>
       </property>
       <widget class="QFrame" name="LeftFrame">
        <property name="sizePolicy">
@@ -487,9 +491,6 @@
          <width>0</width>
          <height>0</height>
         </size>
-       </property>
-       <property name="lineWidth">
-        <number>0</number>
        </property>
        <layout class="QGridLayout" name="CifTableGridLayout">
         <property name="leftMargin">

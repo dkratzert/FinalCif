@@ -106,5 +106,5 @@ class Ui_ResponseFormsEditor(object):
         self.groupBox.setTitle(_translate("ResponseFormsEditor", "List of CheckCif Alerts"))
         self.label.setText(_translate("ResponseFormsEditor", "Every form you fill out will be written to the cif file."))
         self.SavePushButton.setText(_translate("ResponseFormsEditor", "Save Response Forms"))
-        self.show_report_Button.setText(_translate("ResponseFormsEditor", "Show Report"))
+        self.show_report_Button.setText(_translate("ResponseFormsEditor", "Back To Report"))
         self.show_Forms_Button.setText(_translate("ResponseFormsEditor", "Edit Response Forms"))

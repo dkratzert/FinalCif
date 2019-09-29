@@ -163,7 +163,7 @@
        <item>
         <widget class="QPushButton" name="show_report_Button">
          <property name="text">
-          <string>Show Report</string>
+          <string>Back To Report</string>
          </property>
         </widget>
        </item>
