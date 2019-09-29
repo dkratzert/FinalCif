@@ -15,7 +15,6 @@ from pathlib import Path, WindowsPath
 from typing import Tuple
 
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkReply, QNetworkRequest
-
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 # noinspection PyUnresolvedReferences
 from gemmi import cif
@@ -32,7 +31,7 @@ from tools.checkcif import AlertHelp, MakeCheckCif, MyHTMLParser
 from tools.update import mainurl
 from tools.version import VERSION
 
-DEBUG = False
+DEBUG = True
 
 if getattr(sys, 'frozen', False):
     # If the application is run as a bundle, the pyInstaller bootloader
@@ -416,11 +415,13 @@ class AppWindow(QMainWindow):
             imageobj.write_bytes(gif)
 
     def save_responses(self):
+        n = 0
         for response_row in range(self.subwin.responseFormsListWidget.count()):
             txt = self.vrfs[response_row].response_text_edit.toPlainText()
             if not txt:
                 # No response was written
                 continue
+            n += 1
             v = VREF()
             v.key = self.vrfs[response_row].form['name']
             v.problem = self.vrfs[response_row].form['problem']
@@ -431,6 +432,10 @@ class AppWindow(QMainWindow):
             # add data to this key:
             self.ui.CifItemsTable.setText(vheader_row, COL_EDIT, v.value)
         self.save_cif_and_display()
+        if n:
+            self.subwin.statusBar.showMessage('Forms saved')
+        else:
+            self.subwin.statusBar.showMessage('No forms were filled in.')
 
     def _switch_to_report(self):
         self.subwin.show_Forms_Button.show()

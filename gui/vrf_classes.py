@@ -110,7 +110,7 @@ class MyVRFContainer(QWidget):
         label = QLabel()
         hlayout.addWidget(label)
         level = self.form['level']
-        type = level[-1] if len(level) > 1 else 'General Alert'
+        type = level[-1] if len(level) > 1 else 'General A  Alert'
         color = 'lightgray'
         if type == 'A':
             color = 'rgb(240, 88, 70)'  # 'red'
@@ -121,15 +121,16 @@ class MyVRFContainer(QWidget):
         elif type == 'G':
             color = 'green'
         if len(type) == 1:
-            type = type + ' alert'
+            type = type + '  Alert'
         num = self.form['alert_num'] if 'alert_num' in self.form else ''
         label.setText("{} {}".format(type, num))
         style = 'QLabel {{ font-size: 12px; background-color: {:s}; ' \
                 'font-weight: bold;' \
-                'border: 1px solid black;' \
+                'border: 1px solid gray;' \
                 'border-radius: 5px; ' \
                 'margin: 0px;' \
                 'padding: 4px;' \
+                'opacity: 230;' \
                 '}}'.format(color)
         label.setStyleSheet(style)
         spacerItem = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
@@ -157,7 +158,7 @@ class MyVRFContainer(QWidget):
     def response_label_box(self):
         frame = QFrame()
         hlayout = QHBoxLayout()
-        hlayout.setContentsMargins(4, 8, 4, 4)
+        hlayout.setContentsMargins(4, 8, 4, 12)
         frame.setLayout(hlayout)
         resp_label = QLabel()
         hlayout.addWidget(resp_label, 0, Qt.AlignTop)

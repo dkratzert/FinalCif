@@ -14,8 +14,10 @@ class QHLine(QFrame):
     def __init__(self):
         super(QHLine, self).__init__()
         self.setFrameShape(QFrame.HLine)
-        # self.setFrameShadow(QFrame.Sunken)
-        self.setFrameShadow(QFrame.Plain)
+        #self.setFrameShadow(QFrame.Sunken)
+        # gives a black line:
+        #self.setFrameShadow(QFrame.Plain)
+        self.setFrameShadow(QFrame.Raised)
 
 
 # noinspection PyUnresolvedReferences

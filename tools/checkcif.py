@@ -43,7 +43,7 @@ class MakeCheckCif():
             vrf = 'vrfno'
         else:
             report_type = 'HTML'
-            vrf = 'vrfabc'
+            vrf = 'vrfab'
         if self.parent and self.parent.cif.block.find_value('_shelx_hkl_file'):
             hkl = 'checkcif_with_hkl'
             if self.parent.ui.structfactCheckBox.isChecked():
