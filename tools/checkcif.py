@@ -250,4 +250,3 @@ if __name__ == "__main__":
 
     # a = AlertHelp()
     # a.get_help('PLAT115')
-
