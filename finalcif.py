@@ -278,9 +278,7 @@ class AppWindow(QMainWindow):
                 return '\n'.join(helptext[2:])
             if found:
                 helptext.append(line)
-        if len(self.checkdef) < 100:
-            return "No help available. Could not get 'check.def' file from platon server."
-        return 'No help available.'
+        return ''
 
     def explore_dir(self):
         try:
@@ -378,8 +376,7 @@ class AppWindow(QMainWindow):
         dialog.show()
         # The picture file linked in the html file:
         imageobj = Path(strip_finalcif_of_name(str(self.cif.fileobj.stem)) + '-finalcif.gif')
-        parser = MyHTMLParser()
-        parser.feed(htmlfile.read_text())
+        parser = MyHTMLParser(htmlfile.read_text())
         gif = parser.get_image()
         self.ui.statusBar.showMessage('Report finished.')
         splash.finish(self)
