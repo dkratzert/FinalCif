@@ -5,6 +5,7 @@ from docx.text.paragraph import Paragraph
 from docx.text.run import Run
 
 from cif.cif_file_io import CifContainer, retranslate_delimiter
+from tools.misc import prot_space
 
 """
 TODO: Add references of the used programs to the end.
@@ -42,7 +43,7 @@ class CrstalSelection(FormatMixin):
         self.temperature = gstr(self.cif['_diffrn_ambient_temperature'])
         self._name = cif.fileobj.name
         method = 'shock-cooled '
-        sentence = "The data for {} were collected from a {}single crystal at {}\u00A0K "
+        sentence = "The data for {} were collected from a {}single crystal at {}" + prot_space + "K "
         try:
             if float(self.temperature.split('(')[0]) > 200:
                 method = ''
@@ -80,7 +81,7 @@ class MachineType():
             self.detector_type = " and a {} detector".format(detector_type)
         sentence1 = "on {} {} {} with {} {} using {} as monochromator{}. " \
                     "The diffractometer was equipped with {} {} low temperature device and used "
-        sentence2 = " radiation, λ = {}\u00A0Å. "
+        sentence2 = " radiation, λ = {}" + prot_space + "Å. "
         txt = sentence1.format(get_inf_article(self.difftype), self.difftype, self.device,
                                get_inf_article(self.source), self.source, self.monochrom,
                                self.detector_type, get_inf_article(self.cooling), self.cooling)

@@ -11,6 +11,8 @@ import itertools as it
 import re
 from pathlib import Path
 
+# protected space character:
+prot_space = u'\u00A0'
 
 def grouper(inputs, n, fillvalue=None):
     iters = [iter(inputs)] * n

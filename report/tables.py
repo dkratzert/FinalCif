@@ -22,6 +22,7 @@ from report.mtools import cif_keywords_list, isfloat, this_or_quest
 from report.report_text import CCDC, CrstalSelection, Crystallization, DataReduct, Disorder, Hydrogens, MachineType, \
     SolveRefine, format_radiation
 from report.symm import SymmetryElement
+from tools.misc import prot_space
 
 
 def format_space_group(table, cif):
@@ -376,15 +377,13 @@ def add_coords_table(document: Document, cif: CifContainer, table_num: int):
     table_num += 1
     headline = "Table {}. Atomic coordinates ".format(table_num)
     h = document.add_heading(headline, 2)
-    h.add_run(' and equivalent isotropic displacement parameters (Å')
+    h.add_run(' and U')
+    eq = h.add_run('eq')
+    eq.subscript = True
+    #eq.italic = True
+    h.add_run(prot_space + '[Å')
     h.add_run('2').font.superscript = True
-    h.add_run(') for {}. U'.format(cif.fileobj.name))
-    h.add_run('eq').font.subscript = True
-    h.add_run(' is defined as 1/3 of the trace of the orthogonalized U')
-    ij = h.add_run('ij')
-    ij.font.subscript = True
-    ij.italic = True
-    h.add_run(' tensor.')
+    h.add_run('] for {}.'.format(cif.fileobj.name))
     coords_table = document.add_table(rows=ncoords + 1, cols=5)
     # coords_table.style = document.styles['Table Grid']
     coords_table.style = 'Table Grid'
@@ -423,6 +422,15 @@ def add_coords_table(document: Document, cif: CifContainer, table_num: int):
         c2.text = str(at[3])  # y
         c3.text = str(at[4])  # z
         c4.text = str(at[7])  # ueq
+    p = document.add_paragraph()
+    p.style = document.styles['tabunterschr']
+    p.add_run('U')
+    p.add_run('eq').font.subscript = True
+    p.add_run(' is defined as 1/3 of the trace of the orthogonalized U')
+    ij = p.add_run('ij')
+    ij.font.subscript = True
+    ij.italic = True
+    p.add_run(' tensor.')
     return table_num
 
 
@@ -688,7 +696,8 @@ def populate_description_columns(main_table, cif: CifContainer):
     lgnd14.add_run('3').font.superscript = True
     lgnd14.add_run(']')
     lgnd15 = main_table.cell(15, 0).paragraphs[0]
-    lgnd15.add_run('\u03BC [mm')
+    lgnd15.add_run('\u03BC').font.italic = True
+    lgnd15.add_run(' [mm')
     lgnd15.add_run('-1').font.superscript = True
     lgnd15.add_run(']')
     lgnd16 = main_table.cell(16, 0).paragraphs[0]
