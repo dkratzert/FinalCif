@@ -399,7 +399,7 @@ class AppWindow(QMainWindow):
             item = QListWidgetItem(' No level A or B alerts to explain.')
             self.subwin.responseFormsListWidget.addItem(iteme)
             self.subwin.responseFormsListWidget.addItem(item)
-        dialog.raise_()
+        dialog.show()
         self.subwin.SavePushButton.clicked.connect(self.save_responses)
         if gif:
             imageobj.write_bytes(gif)

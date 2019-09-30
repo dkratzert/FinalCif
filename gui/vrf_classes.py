@@ -94,7 +94,6 @@ class MyVRFContainer(QWidget):
         # dialog.setFixedHeight(200)
         # dialog.setFixedWidth(200)
         dialog.show()
-        dialog.raise_()
 
     def sizeHint(self) -> QSize:
         return QSize(400, 150)
