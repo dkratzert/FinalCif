@@ -203,7 +203,7 @@ class CCDC():
                    "paper have been deposited with the Cambridge Crystallographic Data Centre. CCDC ?????? contain " \
                    "the supplementary crystallographic data for this paper. Copies of the data can " \
                    "be obtained free of charge from The Cambridge Crystallographic Data Centre " \
-                   "via www.ccdc.cam.ac.uk/data_request/cif."
+                   "via www.ccdc.cam.ac.uk/structures."
         paragraph.add_run(sentence)
 
 
