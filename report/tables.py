@@ -390,11 +390,11 @@ def add_coords_table(document: Document, cif: CifContainer, table_num: int):
     """
     ncoords = len(list(cif.atoms()))
     table_num += 1
-    headline = "Table {}. Atomic coordinates ".format(table_num)
+    headline = "Table {}. Atomic coordinates and ".format(table_num)
     h = document.add_heading(headline, 2)
-    h.add_run(' and U')
+    h.add_run('U').font.italic = True
     eq = h.add_run('eq')
-    eq.subscript = True
+    eq.font.subscript = True
     # eq.italic = True
     h.add_run(prot_space + '[Å')
     h.add_run('2').font.superscript = True
@@ -439,13 +439,15 @@ def add_coords_table(document: Document, cif: CifContainer, table_num: int):
         c4.text = str(at[7])  # ueq
     p = document.add_paragraph()
     p.style = document.styles['tabunterschr']
-    p.add_run('U')
+    p.add_run('U').font.italic = True
     p.add_run('eq').font.subscript = True
-    p.add_run(' is defined as 1/3 of the trace of the orthogonalized U')
+    p.add_run(' is defined as 1/3 of the trace of the orthogonalized ')
+    p.add_run('U').font.italic = True
     ij = p.add_run('ij')
     ij.font.subscript = True
-    ij.italic = True
+    ij.font.italic = True
     p.add_run(' tensor.')
+    document.add_paragraph()
     return table_num
 
 
@@ -610,7 +612,7 @@ def add_torsion_angles(document: Document, cif: CifContainer, table_num: int):
         cp0.add_run('#' + str(symms[symm4]) if symm4 else '').font.superscript = True
         c1.paragraphs[0].add_run(str(angle))  # angle
     set_column_width(torsion_table.columns[0], Cm(5))
-    set_column_width(torsion_table.columns[1], Cm(4))
+    set_column_width(torsion_table.columns[1], Cm(3))
     add_last_symminfo_line(newsymms, document)
     return table_num
 
