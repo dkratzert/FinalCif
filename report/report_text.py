@@ -1,15 +1,26 @@
+import os
 from builtins import str
 
 import gemmi
 from docx.text.paragraph import Paragraph
 from docx.text.run import Run
+from lxml import etree
 
 from cif.cif_file_io import CifContainer, retranslate_delimiter
 from tools.misc import prot_space
+from app_path import application_path
 
-"""
-TODO: Add references of the used programs to the end.
-"""
+
+# TODO: Add references of the used programs to the end.
+
+
+def math_to_word(eq):
+    """Transform a sympy equation to be printed in word document."""
+    tree = etree.fromstring(eq)
+    xslt = etree.parse(os.path.join(application_path, 'template/mathml2omml.xsl'))
+    transform = etree.XSLT(xslt)
+    new_dom = transform(tree)
+    return new_dom.getroot()
 
 
 class FormatMixin():

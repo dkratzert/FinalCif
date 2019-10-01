@@ -20,27 +20,24 @@ from PyQt5.QtWebEngineWidgets import QWebEngineView
 from gemmi import cif
 from requests import ReadTimeout
 
+from cif.cif_file_io import CifContainer, set_pair_delimited
 from cif.core_dict import cif_core
+from datafiles.bruker_data import BrukerData
+from datafiles.platon import Platon
 from datafiles.rigaku_data import RigakuData
 from gui.custom_classes import MyComboBox, MyEQTableWidget, MyQPlainTextEdit, \
     MyTableWidgetItem, blue, light_green, yellow
 from gui.vrf_classes import MyVRFContainer, VREF
 from report.tables import make_report_from
 from tools.checkcif import AlertHelp, MakeCheckCif, MyHTMLParser
+from tools.misc import combobox_fields, essential_keys, excluded_imports, predef_equipment_templ, predef_prop_templ, \
+    strip_finalcif_of_name, text_field_keys, to_float
+from app_path import application_path
+from tools.settings import FinalCifSettings
 from tools.update import mainurl
 from tools.version import VERSION
 
 DEBUG = False
-
-if getattr(sys, 'frozen', False):
-    # If the application is run as a bundle, the pyInstaller bootloader
-    # extends the sys module by a flag frozen=True and sets the app
-    # path into variable _MEIPASS'.
-    # noinspection PyProtectedMember
-    os.environ['PATH'] = sys._MEIPASS + os.pathsep + os.environ['PATH']
-    application_path = sys._MEIPASS
-else:
-    application_path = os.path.dirname(os.path.abspath(__file__))
 
 if DEBUG:
     from PyQt5 import uic
@@ -53,13 +50,6 @@ from PyQt5.QtCore import QPoint, Qt, QUrl
 from PyQt5.QtGui import QFont, QIcon, QBrush
 from PyQt5.QtWidgets import QApplication, QFileDialog, QHeaderView, QListWidget, QListWidgetItem, \
     QMainWindow, QMessageBox, QPlainTextEdit, QStackedWidget, QStyle, QTableWidget, QSplashScreen
-
-from cif.cif_file_io import CifContainer, set_pair_delimited
-from datafiles.bruker_data import BrukerData
-from datafiles.platon import Platon
-from tools.misc import essential_keys, predef_equipment_templ, predef_prop_templ, combobox_fields, \
-    text_field_keys, to_float, strip_finalcif_of_name, excluded_imports
-from tools.settings import FinalCifSettings
 
 """
 TODO:
