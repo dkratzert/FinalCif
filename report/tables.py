@@ -130,6 +130,8 @@ def make_report_from(file_obj: Path, output_filename: str = None, path: str = ''
     CCDC(cif, p_report)
 
     table_num = 1
+    if not picfile.exists():
+        document.add_paragraph('\n\n\n\n\n\n')
     p = document.add_paragraph('')
     p.space_before = Pt(25)
     cif, table_num = add_main_table(document, cif, table_num)
