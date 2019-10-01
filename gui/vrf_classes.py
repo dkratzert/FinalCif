@@ -55,7 +55,6 @@ class MyVRFContainer(QWidget):
     def __init__(self, form: dict, help: str, parent=None):
         """
         A Widget to display each validation response form.
-        #TODO: test what happens if form is empty or contains garbage
 
         :param form: a dictionary with:
                     {'level':   'PLAT035_ALERT_1_B',
@@ -95,7 +94,6 @@ class MyVRFContainer(QWidget):
         # dialog.setFixedHeight(200)
         # dialog.setFixedWidth(200)
         dialog.show()
-        dialog.raise_()
 
     def sizeHint(self) -> QSize:
         return QSize(400, 150)
@@ -184,6 +182,6 @@ if __name__ == '__main__':
     v = VREF()
     v.key = '_vrf_PLAT035_DK_zucker2_0m'
     v.problem = '_chemical_absolute_configuration Info  Not Given     Please Do '
-    v.response = 'Yes, this is a very long response and I want to see if this is wrapping correctly around ma 70 zeichen limit which is critical for cif. I also have to quote the special characters!'
+    v.response = 'a response'
 
-    print(v)
+    print(v.value)

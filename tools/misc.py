@@ -11,6 +11,9 @@ import itertools as it
 import re
 from pathlib import Path
 
+# protected space character:
+prot_space = u'\u00A0'
+
 
 def grouper(inputs, n, fillvalue=None):
     iters = [iter(inputs)] * n
@@ -355,6 +358,15 @@ combobox_fields = {'_exptl_crystal_colour'               : COLOUR_CHOICES,
                    '_atom_sites_solution_hydrogens'      : SOLUTION_PRIMARY,
                    # '_diffrn_measurement_specimen_adhesive': ADHESIVE,
                    }
+
+excluded_imports = (
+    '_cell_length_a',
+    '_cell_length_b',
+    '_cell_length_c',
+    '_cell_angle_alpha',
+    '_cell_angle_beta',
+    '_cell_angle_gamma',
+)
 
 
 def to_float(st):

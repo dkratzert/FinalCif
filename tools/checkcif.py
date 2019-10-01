@@ -83,9 +83,8 @@ class MakeCheckCif():
         """
         Opens the resulkting pdf file in the systems pdf viewer.
         """
-        parser = MyHTMLParser()
+        parser = MyHTMLParser(self.html_out_file.read_text())
         # the link to the pdf file resides in this html file:
-        parser.feed(self.html_out_file.read_text())
         try:
             pdf = parser.get_pdf()
         except MissingSchema:
@@ -114,13 +113,14 @@ class MakeCheckCif():
 
 
 class MyHTMLParser(HTMLParser):
-    def __init__(self):
+    def __init__(self, data):
         self.link = ''
         self.imageurl = ''
         super(MyHTMLParser, self).__init__()
         self.pdf = ''
         self.vrf = ''
         self.alert_levels = []
+        self.feed(data)
 
     def get_pdf(self):
         return requests.get(self.link).content
@@ -188,6 +188,8 @@ class AlertHelp():
         if len(alert) > 4:
             alert = alert[4:]
         help = self._parse_checkdef(alert)
+        if not help:
+            return 'No help available.'
         return help
 
     def _parse_checkdef(self, alert):
@@ -239,8 +241,7 @@ if __name__ == "__main__":
     # ckf.show_pdf_report()
     # html = Path(r'D:\frames\guest\BreitPZ_R_122\BreitPZ_R_122\checkcif-BreitPZ_R_122_0m_a.html')
 
-    parser = MyHTMLParser()
-    parser.feed(html.read_text())
+    parser = MyHTMLParser(html.read_text())
     # print(parser.imageurl)
     pprint(parser.response_forms)
     # print(parser.alert_levels)

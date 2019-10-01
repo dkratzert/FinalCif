@@ -4,68 +4,68 @@
 # Daniel Kratzert
 #
 import itertools as it
-import os
 import re
-import subprocess
-import sys
 import time
 from pathlib import Path
 
 from docx import Document
+from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Cm, Pt
-# compiled with "Py -3 -m PyInstaller multitable.spec --onefile"
 from docx.table import Table, _Cell
 
 from cif.cif_file_io import CifContainer
 from report.mtools import cif_keywords_list, isfloat, this_or_quest
-from report.report_text import CrstalSelection, MachineType, format_radiation, DataReduct, SolveRefine, Hydrogens, \
-    Disorder, CCDC, Crystallization
+from report.report_text import CCDC, CrstalSelection, Crystallization, DataReduct, Disorder, Hydrogens, MachineType, \
+    SolveRefine, format_radiation, math_to_word
+from report.spgrps import SpaceGroups
 from report.symm import SymmetryElement
-
-"""
-#TODO:
-* create nice .docx template
-* completeness to 0.83 A, theta range in A
-* index ranges in one row
-* cell parameters in three rows
-* proper table numbering:
- table1 -> num -> table2 -> ...
- if table fails, return number, else count up and then return number
-"""
+from tools.misc import prot_space
+from app_path import application_path
 
 
 def format_space_group(table, cif):
     """
     Sets formating of the space group symbol in row 6.
     """
-    # The HM space group symbol
     space_group = cif['_space_group_name_H-M_alt'].strip("'")
     it_number = cif['_space_group_IT_number']
-    if space_group:
-        if len(space_group) > 4:  # don't modify P 1
-            space_group = re.sub(r'\s1', '', space_group)  # remove extra Hall "1" for mono and tric
-        space_group = re.sub(r'\s', '', space_group)  # remove all remaining whitespace
-        # space_group = re.sub(r'-1', u'\u0031\u0305', space_group)  # exchange -1 with 1bar
-        space_group_formated_text = [char for char in space_group]  # ???)
-        sgrun = table.cell(5, 1).paragraphs[0]
-        is_sub = False
-        for k, char in enumerate(space_group_formated_text):
-            sgrunsub = sgrun.add_run(char)
-            if not char.isdigit():
-                sgrunsub.font.italic = True
-            else:
-                if space_group_formated_text[k - 1].isdigit() and not is_sub:
-                    is_sub = True
-                    sgrunsub.font.subscript = True  # lowercase the second digit if previous is also digit
+    try:
+        # The HM space group symbol
+
+        s = SpaceGroups()
+        spgrxml = s.iucrNumberToMathml(it_number)
+        paragraph = table.cell(5, 1).paragraphs[0]  # add_paragraph('')
+        paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
+        paragraph._element.append(math_to_word(spgrxml))
+        paragraph.add_run(' (' + it_number + ')')
+    except Exception:
+        # Use fallback:
+        if space_group:
+            if len(space_group) > 4:  # don't modify P 1
+                space_group = re.sub(r'\s1', '', space_group)  # remove extra Hall "1" for mono and tric
+            space_group = re.sub(r'\s', '', space_group)  # remove all remaining whitespace
+            # space_group = re.sub(r'-1', u'\u0031\u0305', space_group)  # exchange -1 with 1bar
+            space_group_formated_text = [char for char in space_group]  # ???)
+            sgrun = table.cell(5, 1).paragraphs[0]
+            is_sub = False
+            for k, char in enumerate(space_group_formated_text):
+                sgrunsub = sgrun.add_run(char)
+                if not char.isdigit():
+                    sgrunsub.font.italic = True
                 else:
-                    is_sub = False  # only every second number as subscript for P212121 etc.
-        if it_number:
-            sgrun.add_run(' (' + it_number + ')')
-    else:
-        space_group = 'no space group'
-    return space_group
+                    if space_group_formated_text[k - 1].isdigit() and not is_sub:
+                        is_sub = True
+                        sgrunsub.font.subscript = True  # lowercase the second digit if previous is also digit
+                    else:
+                        is_sub = False  # only every second number as subscript for P212121 etc.
+            if it_number:
+                sgrun.add_run(' (' + it_number + ')')
+        else:
+            sgrun = table.cell(5, 1).paragraphs[0]
+            sgrun.add_run('?')
+
 
 
 def make_report_from(file_obj: Path, output_filename: str = None, path: str = '', without_H: bool = False):
@@ -75,8 +75,9 @@ def make_report_from(file_obj: Path, output_filename: str = None, path: str = ''
     :param output_filename: the table is saved to this file.
     """
     try:
-        document = Document(Path(path).joinpath('template/template1.docx').absolute())
-    except FileNotFoundError:
+        document = Document(Path(path).joinpath(application_path, 'template/template1.docx').absolute())
+    except FileNotFoundError as e:
+        print(e)
         document = Document()
     # Deleting first (empty) paragraph, otherwise first line would be an empty one:
     try:
@@ -129,32 +130,38 @@ def make_report_from(file_obj: Path, output_filename: str = None, path: str = ''
     CCDC(cif, p_report)
 
     table_num = 1
-    t1 = time.perf_counter()
+    if not picfile.exists():
+        document.add_paragraph('\n\n\n\n\n\n')
+    p = document.add_paragraph('')
+    p.space_before = Pt(25)
     cif, table_num = add_main_table(document, cif, table_num)
-    t2 = time.perf_counter()
-    #print('main table:', round(t2 - t1, 2), 's')
-    document.add_paragraph('')
-    t1 = time.perf_counter()
+    # document.add_paragraph('')
+    make_culumns_section(document, columns='1')
     table_num = add_coords_table(document, cif, table_num)
-    t2 = time.perf_counter()
-    #print('coords:', round(t2 - t1, 2), 's')
-    document.add_paragraph('')
-    t1 = time.perf_counter()
+    make_culumns_section(document, columns='2')
+    # document.add_paragraph('')
     table_num = add_bonds_and_angles_table(document, cif, table_num, without_H)
-    t2 = time.perf_counter()
-    #print('bonds/ang:', round(t2 - t1, 2), 's')
-    t1 = time.perf_counter()
     table_num = add_torsion_angles(document, cif, table_num)
-    t2 = time.perf_counter()
-    #print('tors:', round(t2 - t1, 2), 's')
-    t1 = time.perf_counter()
+    make_culumns_section(document, columns='1')
     table_num = add_hydrogen_bonds(document, cif, table_num)
-    t2 = time.perf_counter()
-    #print('hydrogen:', round(t2 - t1, 2), 's')
-    print('\nScript finished - output file: tables.docx')
+    document.add_paragraph('')
     document.save(output_filename)
-    print('\nScript finished - output file: {}'.format(output_filename))
+    print('\nTables finished - output file: {}'.format(output_filename))
     return file_obj.name
+
+
+def make_culumns_section(document, columns: str = '1'):
+    """
+    Makes a new section (new page) which has a certain number of columns.
+    available sections:
+    CONTINUOUS, NEW_COLUMN, NEW_PAGE, EVEN_PAGE, ODD_PAGE
+    """
+    # noinspection PyUnresolvedReferences
+    from docx.enum.section import WD_SECTION
+    section = document.add_section(WD_SECTION.CONTINUOUS)
+    sectPr = section._sectPr
+    cols = sectPr.xpath('./w:cols')[0]
+    cols.set(qn('w:num'), '{}'.format(columns))
 
 
 def delete_paragraph(paragraph):
@@ -219,8 +226,8 @@ def add_main_table(document: Document(), cif: CifContainer, table_num: int):
     # col.width = Cm(5.0)
     # col.autofit = False
     # setup table format:
-    set_column_width(main_table.columns[0], Cm(5))
-    set_column_width(main_table.columns[1], Cm(5))
+    set_column_width(main_table.columns[0], Cm(4.05))
+    set_column_width(main_table.columns[1], Cm(4.05))
     # Add descriptions to the first column of the main table:
     populate_description_columns(main_table, cif)
     # The main residuals table:
@@ -258,7 +265,7 @@ def populate_main_table_values(main_table: Table, cif: CifContainer):
             if isfloat(word):
                 formrunsub.font.subscript = True
 
-    space_group = format_space_group(main_table, cif)
+    format_space_group(main_table, cif)
     radiation_type = cif['_diffrn_radiation_type']
     radiation_wavelength = cif['_diffrn_radiation_wavelength']
     crystal_size_min = cif['_exptl_crystal_size_min']
@@ -372,7 +379,6 @@ def populate_main_table_values(main_table: Table, cif: CifContainer):
     if exti != '.' and exti != '?':
         num = len(main_table.columns[0].cells)
         main_table.columns[1].cells[num - 1].text = exti
-    print('File parsed: ' + cif.fileobj.name + '  (' + sum_formula + ')  ' + space_group)
 
 
 def add_coords_table(document: Document, cif: CifContainer, table_num: int):
@@ -384,17 +390,15 @@ def add_coords_table(document: Document, cif: CifContainer, table_num: int):
     """
     ncoords = len(list(cif.atoms()))
     table_num += 1
-    headline = "Table {}. Atomic coordinates ".format(table_num)
+    headline = "Table {}. Atomic coordinates and ".format(table_num)
     h = document.add_heading(headline, 2)
-    h.add_run(' and equivalent isotropic displacement parameters (Å')
+    h.add_run('U').font.italic = True
+    eq = h.add_run('eq')
+    eq.font.subscript = True
+    # eq.italic = True
+    h.add_run(prot_space + '[Å')
     h.add_run('2').font.superscript = True
-    h.add_run(') for {}. U'.format(cif.fileobj.name))
-    h.add_run('eq').font.subscript = True
-    h.add_run(' is defined as 1/3 of the trace of the orthogonalized U')
-    ij = h.add_run('ij')
-    ij.font.subscript = True
-    ij.italic = True
-    h.add_run(' tensor.')
+    h.add_run('] for {}.'.format(cif.fileobj.name))
     coords_table = document.add_table(rows=ncoords + 1, cols=5)
     # coords_table.style = document.styles['Table Grid']
     coords_table.style = 'Table Grid'
@@ -433,6 +437,17 @@ def add_coords_table(document: Document, cif: CifContainer, table_num: int):
         c2.text = str(at[3])  # y
         c3.text = str(at[4])  # z
         c4.text = str(at[7])  # ueq
+    p = document.add_paragraph()
+    p.style = document.styles['tabunterschr']
+    p.add_run('U').font.italic = True
+    p.add_run('eq').font.subscript = True
+    p.add_run(' is defined as 1/3 of the trace of the orthogonalized ')
+    p.add_run('U').font.italic = True
+    ij = p.add_run('ij')
+    ij.font.subscript = True
+    ij.font.italic = True
+    p.add_run(' tensor.')
+    document.add_paragraph()
     return table_num
 
 
@@ -597,7 +612,7 @@ def add_torsion_angles(document: Document, cif: CifContainer, table_num: int):
         cp0.add_run('#' + str(symms[symm4]) if symm4 else '').font.superscript = True
         c1.paragraphs[0].add_run(str(angle))  # angle
     set_column_width(torsion_table.columns[0], Cm(5))
-    set_column_width(torsion_table.columns[1], Cm(4))
+    set_column_width(torsion_table.columns[1], Cm(3))
     add_last_symminfo_line(newsymms, document)
     return table_num
 
@@ -698,7 +713,8 @@ def populate_description_columns(main_table, cif: CifContainer):
     lgnd14.add_run('3').font.superscript = True
     lgnd14.add_run(']')
     lgnd15 = main_table.cell(15, 0).paragraphs[0]
-    lgnd15.add_run('\u03BC [mm')
+    lgnd15.add_run('\u03BC').font.italic = True
+    lgnd15.add_run(' [mm')
     lgnd15.add_run('-1').font.superscript = True
     lgnd15.add_run(']')
     lgnd16 = main_table.cell(16, 0).paragraphs[0]
@@ -798,14 +814,10 @@ if __name__ == '__main__':
     output_filename = 'tables.docx'
     # make_report_from(get_files_from_current_dir()[5])
     t1 = time.perf_counter()
-    make_report_from(Path(r'test-data/DK_zucker2_0m-finalcif.cif'))
+    make_report_from(Path(r'test-data/DK_zucker2_0m.cif'), output_filename=Path(output_filename))
     # make_report_from(Path(r'/Volumes/nifty/p-1.cif'))
     t2 = time.perf_counter()
     print('complete table:', round(t2 - t1, 2), 's')
     # make_report_from(Path(r'test-data/sad-final.cif'))
     # make_report_from(Path(r'/Volumes/home/strukturen/eigene/DK_30011/sad-final.cif'))
     # make_report_from(Path(r'D:\goedaten\strukturen_goe\eigene\DK_4008\xl12\new\r3c.cif'))
-    if sys.platform == 'win' or sys.platform == 'win32':
-        os.startfile(Path(output_filename).absolute())
-    if sys.platform == 'darwin':
-        subprocess.call(['open', output_filename])
