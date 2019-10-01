@@ -4,14 +4,12 @@
 # Daniel Kratzert
 #
 import itertools as it
-import os
 import re
-import subprocess
-import sys
 import time
 from pathlib import Path
 
 from docx import Document
+from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Cm, Pt
@@ -20,9 +18,11 @@ from docx.table import Table, _Cell
 from cif.cif_file_io import CifContainer
 from report.mtools import cif_keywords_list, isfloat, this_or_quest
 from report.report_text import CCDC, CrstalSelection, Crystallization, DataReduct, Disorder, Hydrogens, MachineType, \
-    SolveRefine, format_radiation
+    SolveRefine, format_radiation, math_to_word
+from report.spgrps import SpaceGroups
 from report.symm import SymmetryElement
 from tools.misc import prot_space
+from app_path import application_path
 
 
 def format_space_group(table, cif):
@@ -32,28 +32,12 @@ def format_space_group(table, cif):
     # The HM space group symbol
     space_group = cif['_space_group_name_H-M_alt'].strip("'")
     it_number = cif['_space_group_IT_number']
-    if space_group:
-        if len(space_group) > 4:  # don't modify P 1
-            space_group = re.sub(r'\s1', '', space_group)  # remove extra Hall "1" for mono and tric
-        space_group = re.sub(r'\s', '', space_group)  # remove all remaining whitespace
-        # space_group = re.sub(r'-1', u'\u0031\u0305', space_group)  # exchange -1 with 1bar
-        space_group_formated_text = [char for char in space_group]  # ???)
-        sgrun = table.cell(5, 1).paragraphs[0]
-        is_sub = False
-        for k, char in enumerate(space_group_formated_text):
-            sgrunsub = sgrun.add_run(char)
-            if not char.isdigit():
-                sgrunsub.font.italic = True
-            else:
-                if space_group_formated_text[k - 1].isdigit() and not is_sub:
-                    is_sub = True
-                    sgrunsub.font.subscript = True  # lowercase the second digit if previous is also digit
-                else:
-                    is_sub = False  # only every second number as subscript for P212121 etc.
-        if it_number:
-            sgrun.add_run(' (' + it_number + ')')
-    else:
-        space_group = 'no space group'
+    s = SpaceGroups()
+    spgrxml = s.iucrNumberToMathml(it_number)
+    paragraph = table.cell(5, 1).paragraphs[0]  # add_paragraph('')
+    paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
+    paragraph._element.append(math_to_word(spgrxml))
+    paragraph.add_run(' (' + it_number + ')')
     return space_group
 
 
@@ -64,8 +48,9 @@ def make_report_from(file_obj: Path, output_filename: str = None, path: str = ''
     :param output_filename: the table is saved to this file.
     """
     try:
-        document = Document(Path(path).joinpath('template/template1.docx').absolute())
-    except FileNotFoundError:
+        document = Document(Path(path).joinpath(application_path, 'template/template1.docx').absolute())
+    except FileNotFoundError as e:
+        print(e)
         document = Document()
     # Deleting first (empty) paragraph, otherwise first line would be an empty one:
     try:
@@ -250,7 +235,7 @@ def populate_main_table_values(main_table: Table, cif: CifContainer):
             if isfloat(word):
                 formrunsub.font.subscript = True
 
-    space_group = format_space_group(main_table, cif)
+    format_space_group(main_table, cif)
     radiation_type = cif['_diffrn_radiation_type']
     radiation_wavelength = cif['_diffrn_radiation_wavelength']
     crystal_size_min = cif['_exptl_crystal_size_min']
@@ -380,7 +365,7 @@ def add_coords_table(document: Document, cif: CifContainer, table_num: int):
     h.add_run(' and U')
     eq = h.add_run('eq')
     eq.subscript = True
-    #eq.italic = True
+    # eq.italic = True
     h.add_run(prot_space + '[Å')
     h.add_run('2').font.superscript = True
     h.add_run('] for {}.'.format(cif.fileobj.name))
@@ -797,14 +782,10 @@ if __name__ == '__main__':
     output_filename = 'tables.docx'
     # make_report_from(get_files_from_current_dir()[5])
     t1 = time.perf_counter()
-    make_report_from(Path(r'test-data/DK_zucker2_0m-finalcif.cif'))
+    make_report_from(Path(r'test-data/DK_zucker2_0m.cif'), output_filename=Path(output_filename))
     # make_report_from(Path(r'/Volumes/nifty/p-1.cif'))
     t2 = time.perf_counter()
     print('complete table:', round(t2 - t1, 2), 's')
     # make_report_from(Path(r'test-data/sad-final.cif'))
     # make_report_from(Path(r'/Volumes/home/strukturen/eigene/DK_30011/sad-final.cif'))
     # make_report_from(Path(r'D:\goedaten\strukturen_goe\eigene\DK_4008\xl12\new\r3c.cif'))
-    if sys.platform == 'win' or sys.platform == 'win32':
-        os.startfile(Path(output_filename).absolute())
-    if sys.platform == 'darwin':
-        subprocess.call(['open', output_filename])
