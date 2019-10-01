@@ -1,14 +1,26 @@
+import os
 from builtins import str
 
 import gemmi
 from docx.text.paragraph import Paragraph
 from docx.text.run import Run
+from lxml import etree
 
 from cif.cif_file_io import CifContainer, retranslate_delimiter
+from tools.misc import prot_space
+from app_path import application_path
 
-"""
-TODO: Add references of the used programs to the end.
-"""
+
+# TODO: Add references of the used programs to the end.
+
+
+def math_to_word(eq):
+    """Transform a sympy equation to be printed in word document."""
+    tree = etree.fromstring(eq)
+    xslt = etree.parse(os.path.join(application_path, 'template/mathml2omml.xsl'))
+    transform = etree.XSLT(xslt)
+    new_dom = transform(tree)
+    return new_dom.getroot()
 
 
 class FormatMixin():
@@ -42,7 +54,7 @@ class CrstalSelection(FormatMixin):
         self.temperature = gstr(self.cif['_diffrn_ambient_temperature'])
         self._name = cif.fileobj.name
         method = 'shock-cooled '
-        sentence = "The data for {} were collected from a {}single crystal at {}\u00A0K "
+        sentence = "The data for {} were collected from a {}single crystal at {}" + prot_space + "K "
         try:
             if float(self.temperature.split('(')[0]) > 200:
                 method = ''
@@ -80,7 +92,7 @@ class MachineType():
             self.detector_type = " and a {} detector".format(detector_type)
         sentence1 = "on {} {} {} with {} {} using {} as monochromator{}. " \
                     "The diffractometer was equipped with {} {} low temperature device and used "
-        sentence2 = " radiation, λ = {}\u00A0Å. "
+        sentence2 = " radiation, λ = {}" + prot_space + "Å. "
         txt = sentence1.format(get_inf_article(self.difftype), self.difftype, self.device,
                                get_inf_article(self.source), self.source, self.monochrom,
                                self.detector_type, get_inf_article(self.cooling), self.cooling)
@@ -191,7 +203,7 @@ class CCDC():
                    "paper have been deposited with the Cambridge Crystallographic Data Centre. CCDC ?????? contain " \
                    "the supplementary crystallographic data for this paper. Copies of the data can " \
                    "be obtained free of charge from The Cambridge Crystallographic Data Centre " \
-                   "via www.ccdc.cam.ac.uk/data_request/cif."
+                   "via www.ccdc.cam.ac.uk/structures."
         paragraph.add_run(sentence)
 
 

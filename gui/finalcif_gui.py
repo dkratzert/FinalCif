@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/Users/daniel/GitHub/FinalCif/./gui/finalcif_gui.ui'
+# Form implementation generated from reading ui file './gui\finalcif_gui.ui'
 #
-# Created by: PyQt5 UI code generator 5.13.0
+# Created by: PyQt5 UI code generator 5.12.2
 #
 # WARNING! All changes made in this file will be lost!
-
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
@@ -25,10 +24,12 @@ class Ui_FinalCifWindow(object):
         sizePolicy.setHeightForWidth(self.splitter.sizePolicy().hasHeightForWidth())
         self.splitter.setSizePolicy(sizePolicy)
         self.splitter.setStyleSheet("QSplitter::handle {\n"
-"    background-color: rgb(197, 197, 197);\n"
+"    background-color: rgb(200, 200, 200);\n"
+"    margin: 0px 0px;\n"
 "}")
+        self.splitter.setLineWidth(0)
         self.splitter.setOrientation(QtCore.Qt.Horizontal)
-        self.splitter.setHandleWidth(5)
+        self.splitter.setHandleWidth(3)
         self.splitter.setObjectName("splitter")
         self.LeftFrame = QtWidgets.QFrame(self.splitter)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
@@ -232,7 +233,6 @@ class Ui_FinalCifWindow(object):
         self.CifDataItemsFrame.setSizePolicy(sizePolicy)
         self.CifDataItemsFrame.setMinimumSize(QtCore.QSize(0, 0))
         self.CifDataItemsFrame.setBaseSize(QtCore.QSize(0, 0))
-        self.CifDataItemsFrame.setLineWidth(0)
         self.CifDataItemsFrame.setObjectName("CifDataItemsFrame")
         self.CifTableGridLayout = QtWidgets.QGridLayout(self.CifDataItemsFrame)
         self.CifTableGridLayout.setContentsMargins(0, 0, 0, 0)
@@ -441,4 +441,6 @@ class Ui_FinalCifWindow(object):
         self.actionSave_Report.setText(_translate("FinalCifWindow", "Save Report"))
         self.actionSave_CIF_File.setText(_translate("FinalCifWindow", "Save CIF File"))
         self.actionedit_templates.setText(_translate("FinalCifWindow", "edit templates"))
+
+
 from gui.custom_classes import MyCifTable, MyEQTableWidget

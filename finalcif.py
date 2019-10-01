@@ -20,28 +20,24 @@ from PyQt5.QtWebEngineWidgets import QWebEngineView
 from gemmi import cif
 from requests import ReadTimeout
 
+from cif.cif_file_io import CifContainer, set_pair_delimited
 from cif.core_dict import cif_core
+from datafiles.bruker_data import BrukerData
+from datafiles.platon import Platon
 from datafiles.rigaku_data import RigakuData
 from gui.custom_classes import MyComboBox, MyEQTableWidget, MyQPlainTextEdit, \
     MyTableWidgetItem, blue, light_green, yellow
-from gui.responseformseditor import Ui_ResponseFormsEditor
 from gui.vrf_classes import MyVRFContainer, VREF
 from report.tables import make_report_from
 from tools.checkcif import AlertHelp, MakeCheckCif, MyHTMLParser
+from tools.misc import combobox_fields, essential_keys, excluded_imports, predef_equipment_templ, predef_prop_templ, \
+    strip_finalcif_of_name, text_field_keys, to_float
+from app_path import application_path
+from tools.settings import FinalCifSettings
 from tools.update import mainurl
 from tools.version import VERSION
 
-DEBUG = True
-
-if getattr(sys, 'frozen', False):
-    # If the application is run as a bundle, the pyInstaller bootloader
-    # extends the sys module by a flag frozen=True and sets the app
-    # path into variable _MEIPASS'.
-    # noinspection PyProtectedMember
-    os.environ['PATH'] = sys._MEIPASS + os.pathsep + os.environ['PATH']
-    application_path = sys._MEIPASS
-else:
-    application_path = os.path.dirname(os.path.abspath(__file__))
+DEBUG = False
 
 if DEBUG:
     from PyQt5 import uic
@@ -55,45 +51,27 @@ from PyQt5.QtGui import QFont, QIcon, QBrush
 from PyQt5.QtWidgets import QApplication, QFileDialog, QHeaderView, QListWidget, QListWidgetItem, \
     QMainWindow, QMessageBox, QPlainTextEdit, QStackedWidget, QStyle, QTableWidget, QSplashScreen
 
-from cif.cif_file_io import CifContainer, set_pair_delimited
-from datafiles.bruker_data import BrukerData
-from datafiles.platon import Platon
-from tools.misc import essential_keys, predef_equipment_templ, predef_prop_templ, combobox_fields, \
-    text_field_keys, to_float, strip_finalcif_of_name
-from tools.settings import FinalCifSettings
-
 """
 TODO:
-- make report two columns
-- items = self.table.findItems(self.edit.text(), QtCore.Qt.MatchExactly). Open find dialog with strg+f and close 
-  on escape or edit actions
--detect twins and write proper report text about them.
+- detect twins and write proper report text about them.
 - add loops to templates
 - write more tests!
 - support stoe cif
 - support all of .cifod
 - Add one picture of the vzs file to report.
 - option for default directory?
-- Checkcif: http://journals.iucr.org/services/cif/checking/validlist.html
-- load pairs and loops, add new content with order, write back
 
+# cif core dictionary to python dictionary:
 c = CifContainer(Path('cif_core_dict.cif'))
 cdic = json.loads(c.as_json())
 [cdic[x]['_name'] for x in cdic.keys() if '_name' in cdic[x]]
 
 as dict:
 {str(cdic[x]['_name']): ' '.join(cdic[x]['_definition'].split()) for x in cdic.keys() if '_name' in cdic[x]}
-
-# iterate over pairs and loops: 
-for item in c.block:
-    if item.line_number < 670:
-        if item.pair is not None:
-            print('pair', item.pair)
-        elif item.loop is not None:
-            print('loop', item.loop)
-            print([c.block.find_values(x) for x in item.loop.tags])
 """
+# They must be here in order to have directly updated ui files from the ui compiler:
 from gui.finalcif_gui import Ui_FinalCifWindow
+from gui.responseformseditor import Ui_ResponseFormsEditor
 
 [COL_CIF,
  COL_DATA,
@@ -290,9 +268,7 @@ class AppWindow(QMainWindow):
                 return '\n'.join(helptext[2:])
             if found:
                 helptext.append(line)
-        if len(self.checkdef) < 100:
-            return "No help available. Could not get 'check.def' file from platon server."
-        return 'No help available.'
+        return ''
 
     def explore_dir(self):
         try:
@@ -390,8 +366,7 @@ class AppWindow(QMainWindow):
         dialog.show()
         # The picture file linked in the html file:
         imageobj = Path(strip_finalcif_of_name(str(self.cif.fileobj.stem)) + '-finalcif.gif')
-        parser = MyHTMLParser()
-        parser.feed(htmlfile.read_text())
+        parser = MyHTMLParser(htmlfile.read_text())
         gif = parser.get_image()
         self.ui.statusBar.showMessage('Report finished.')
         splash.finish(self)
@@ -409,7 +384,12 @@ class AppWindow(QMainWindow):
             item.setSizeHint(vrf.sizeHint())
             self.subwin.responseFormsListWidget.addItem(item)
             self.subwin.responseFormsListWidget.setItemWidget(item, vrf)
-        dialog.raise_()
+        if not forms:
+            iteme = QListWidgetItem(' ')
+            item = QListWidgetItem(' No level A or B alerts to explain.')
+            self.subwin.responseFormsListWidget.addItem(iteme)
+            self.subwin.responseFormsListWidget.addItem(item)
+        dialog.show()
         self.subwin.SavePushButton.clicked.connect(self.save_responses)
         if gif:
             imageobj.write_bytes(gif)
@@ -622,14 +602,14 @@ class AppWindow(QMainWindow):
         rowcount = table.model().rowCount()
         columncount = table.model().columnCount()
         for row in range(rowcount):
-            col0 = None  # cif content
+            # col0 = None  # cif content
             col1 = None  # from datafiles
             col2 = None  # own text
             for col in range(columncount):
                 txt = table.text(row, col)
                 if txt:
-                    if col == COL_CIF and txt != (None or '' or '?'):
-                        col0 = txt
+                    # if col == COL_CIF and txt != (None or '' or '?'):
+                    #    col0 = txt
                     # removed: not col0 and
                     if col == COL_DATA and txt != (None or '' or '?'):
                         col1 = txt
@@ -738,10 +718,6 @@ class AppWindow(QMainWindow):
         if not self.cif.block.find_value(key):
             cif_lst = self.cif.cif_file_text.splitlines()
             self.cif.add_to_cif(cif_lst, key)
-            # data_position = find_line(cif_lst, '^data_')
-            # cif_lst.insert(data_position + 1, key + ' ' * (31 - len(key)) + '    ?')
-            # self.cif.cif_file_text = "\n".join(cif_lst)
-            # TODO: can this be here?
             self.cif.cif_file_text = "\n".join(cif_lst)
             self.cif.open_cif_by_string()
 
@@ -861,6 +837,7 @@ class AppWindow(QMainWindow):
         """
         Import an equipment entry from a cif file.
         """
+        import gemmi
         filename = self.cif_file_open_dialog()
         if not filename:
             return
@@ -873,11 +850,10 @@ class AppWindow(QMainWindow):
         table_data = []
         for item in block:
             if item.pair is not None:
-                # print(item.pair)
-                table_data.append(item.pair)
-                # TODO: add a list of items that should not be imported, like: _cell_length_a
-            # elif item.loop is not None:
-            #    print(item.loop)
+                key, value = item.pair
+                if key in excluded_imports:
+                    continue
+                table_data.append([key, gemmi.cif.as_string(value)])
         if filename.endswith('.cif_od'):
             name = Path(filename).stem
         else:
@@ -1077,6 +1053,9 @@ class AppWindow(QMainWindow):
         property_list = self.settings.settings.value('property_list')
         if not property_list:
             property_list = ['']
+        # TODO: replace this with  
+        #  for item in block:
+        #      if item.loop is not None:
         block = doc.sole_block()
         block_name = block.name.replace('__', ' ')
         property_list.append(block_name)
