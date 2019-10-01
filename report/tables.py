@@ -29,16 +29,43 @@ def format_space_group(table, cif):
     """
     Sets formating of the space group symbol in row 6.
     """
-    # The HM space group symbol
     space_group = cif['_space_group_name_H-M_alt'].strip("'")
     it_number = cif['_space_group_IT_number']
-    s = SpaceGroups()
-    spgrxml = s.iucrNumberToMathml(it_number)
-    paragraph = table.cell(5, 1).paragraphs[0]  # add_paragraph('')
-    paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
-    paragraph._element.append(math_to_word(spgrxml))
-    paragraph.add_run(' (' + it_number + ')')
-    return space_group
+    try:
+        # The HM space group symbol
+
+        s = SpaceGroups()
+        spgrxml = s.iucrNumberToMathml(it_number)
+        paragraph = table.cell(5, 1).paragraphs[0]  # add_paragraph('')
+        paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
+        paragraph._element.append(math_to_word(spgrxml))
+        paragraph.add_run(' (' + it_number + ')')
+    except Exception:
+        # Use fallback:
+        if space_group:
+            if len(space_group) > 4:  # don't modify P 1
+                space_group = re.sub(r'\s1', '', space_group)  # remove extra Hall "1" for mono and tric
+            space_group = re.sub(r'\s', '', space_group)  # remove all remaining whitespace
+            # space_group = re.sub(r'-1', u'\u0031\u0305', space_group)  # exchange -1 with 1bar
+            space_group_formated_text = [char for char in space_group]  # ???)
+            sgrun = table.cell(5, 1).paragraphs[0]
+            is_sub = False
+            for k, char in enumerate(space_group_formated_text):
+                sgrunsub = sgrun.add_run(char)
+                if not char.isdigit():
+                    sgrunsub.font.italic = True
+                else:
+                    if space_group_formated_text[k - 1].isdigit() and not is_sub:
+                        is_sub = True
+                        sgrunsub.font.subscript = True  # lowercase the second digit if previous is also digit
+                    else:
+                        is_sub = False  # only every second number as subscript for P212121 etc.
+            if it_number:
+                sgrun.add_run(' (' + it_number + ')')
+        else:
+            sgrun = table.cell(5, 1).paragraphs[0]
+            sgrun.add_run('?')
+
 
 
 def make_report_from(file_obj: Path, output_filename: str = None, path: str = '', without_H: bool = False):
@@ -127,6 +154,7 @@ def make_culumns_section(document, columns: str = '1'):
     available sections:
     CONTINUOUS, NEW_COLUMN, NEW_PAGE, EVEN_PAGE, ODD_PAGE
     """
+    # noinspection PyUnresolvedReferences
     from docx.enum.section import WD_SECTION
     section = document.add_section(WD_SECTION.CONTINUOUS)
     sectPr = section._sectPr
