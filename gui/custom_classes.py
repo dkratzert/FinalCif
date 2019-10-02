@@ -1,7 +1,9 @@
+from textwrap import wrap
+
 from PyQt5.QtCore import QEvent, QObject, Qt
 from PyQt5.QtGui import QColor, QTextOption
 from PyQt5.QtWidgets import QAbstractScrollArea, QComboBox, QFrame, QPlainTextEdit, QSizePolicy, QTableWidget, \
-    QTableWidgetItem, QWidget
+    QTableWidgetItem, QWidget, QLabel
 
 from cif.cif_file_io import retranslate_delimiter
 
@@ -179,7 +181,11 @@ class MyComboBox(QComboBox):
         self.setFlags(self.flags() ^ Qt.ItemIsEditable)
 
     def setText(self, txt: str):
-        self.setEditText(txt)
+        self.setEditText(wrap(txt, width=10))
+
+    def addItem(self, *__args):
+        text = '\n'.join(wrap(__args[0], width=60))
+        super().addItem(text, __args[1])
 
 
 class MyTableWidgetItem(QTableWidgetItem):
