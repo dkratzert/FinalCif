@@ -37,7 +37,7 @@ from tools.settings import FinalCifSettings
 from tools.update import mainurl
 from tools.version import VERSION
 
-DEBUG = False
+DEBUG = True
 
 if DEBUG:
     from PyQt5 import uic
@@ -1420,6 +1420,8 @@ class AppWindow(QMainWindow):
                 combobox.addItem(value, num)
             except TypeError:
                 print('Bad value in property:', value)
+                if DEBUG:
+                    raise 
                 continue
         combobox.setCurrentIndex(0)
 
