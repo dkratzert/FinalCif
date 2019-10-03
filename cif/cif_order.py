@@ -1,3 +1,19 @@
+special_keys = ['_iucr_refine_instructions_details',
+                '_iucr_refine_reflections_details',
+                '_shelx_res_file', '_shelx_res_checksum',
+                '_shelx_hkl_file', '_shelx_hkl_checksum',
+                '_shelx_fab_file', '_shelx_fab_checksum',
+                '_refln_index_h',
+                '_refln_index_k',
+                '_refln_index_l',
+                '_refln_F_meas',
+                '_refln_F_squared_meas',
+                '_refln_F_sigma',
+                '_refln_F_squared_sigma',
+                '_refln_F_calc',
+                '_refln_F_squared_calc',
+                ]
+
 order = [
     '_journal_data_validation_number',
     '                                    ',
