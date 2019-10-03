@@ -53,9 +53,9 @@ order = [
     '_space_group_name_H-M_alt',
     '_space_group_name_Hall',
     '_shelx_space_group_comment',
-    '_space_group_symop_id',
     '_symmetry_equiv_pos_site_id',  # superseeded by '_space_group_symop_id'
     '_symmetry_equiv_pos_as_xyz',  # superseeded by '_space_group_symop_operation_xyz'
+    '_space_group_symop_id',
     '_space_group_symop_operation_xyz',
     '_cell_length_a',
     '_cell_length_b',
