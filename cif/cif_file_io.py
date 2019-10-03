@@ -121,7 +121,6 @@ class CifContainer():
         self.block = None
         self.doc = None
         self.cif_file_text = ''
-        self.atomic_struct = None
         self.open_cif_with_gemmi()
         self.symmops = self._get_symmops()
         self.hkl_extra_info = self.abs_hkl_details()
@@ -158,16 +157,14 @@ class CifContainer():
         except Exception as e:
             print('Unable to read file:', e)
             raise
-        try:
-            self.atomic_struct = gemmi.make_atomic_structure_from_block(self.block)
-        except Exception as e:
-            print('Unable to read atomic structure:', e)
-            raise
 
     def open_cif_by_string(self) -> None:
         self.doc = gemmi.cif.read_string(self.cif_file_text)
         self.block = self.doc.sole_block()
-        self.atomic_struct = gemmi.make_atomic_structure_from_block(self.block)
+
+    @property
+    def atomic_struct(self):
+        return gemmi.make_atomic_structure_from_block(self.block)
 
     def abs_hkl_details(self) -> Dict[str, str]:
         """
@@ -500,14 +497,11 @@ class CifContainer():
         for k in missing_keys:
             if self.is_centrokey(k):
                 continue
-            self.add_to_cif(cif_as_list, k)
-        self.cif_file_text = "\n".join(cif_as_list)
-        self.open_cif_by_string()
+            self.block.set_pair(k, '?')
         return sorted(questions), sorted(with_values)
 
-    def add_to_cif(self, cif_as_list: list, key: str, value='    ?'):
+    def add_to_cif(self, key: str, value:str='?'):
         """
-        Add an additional key value pair to the cif text right behind the data_ tag.
+        Add an additional key value pair to the cif block.
         """
-        data_position = find_line(cif_as_list, '^data_')
-        cif_as_list.insert(data_position + 1, key + ' ' * (31 - len(key)) + value)
+        self.block.set_pair(key, value)

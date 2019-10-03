@@ -407,7 +407,7 @@ class AppWindow(QMainWindow):
             v.problem = self.vrfs[response_row].form['problem']
             v.response = txt
             # add a key with '?' as value
-            self.add_new_table_key(v.key)
+            self.add_new_table_key(v.key, v.value)
             vheader_row = self.vheaderitems.index(v.key)
             # add data to this key:
             self.ui.CifItemsTable.setText(vheader_row, COL_EDIT, v.value)
@@ -694,14 +694,14 @@ class AppWindow(QMainWindow):
         if self.vheaderitems:
             for key in equipment:
                 if key not in self.vheaderitems:
-                    self.add_new_table_key(key)
+                    self.add_new_table_key(key, equipment[key])
                 row = self.vheaderitems.index(key)
                 # add missing item to data sources column:
                 self.ui.CifItemsTable.setText(row, COL_DATA, equipment[key])
                 self.ui.CifItemsTable.setBackground(row, COL_DATA, light_green)
                 self.ui.CifItemsTable.setText(row, COL_EDIT, equipment[key])
 
-    def add_new_table_key(self, key: str) -> None:
+    def add_new_table_key(self, key: str, value: str = '?') -> None:
         """
         Adds a new row with a respective vheaderitem to the main cif table.
         Also the currently opened cif file is updated.
@@ -713,13 +713,8 @@ class AppWindow(QMainWindow):
         if key in [x.lower() for x in combobox_fields]:
             self.add_property_combobox(combobox_fields[key], 0)
         self.missing_data.append(key)
-        # This is a crude hack to get the new values to the start of the cif file:
-        # It seems to be fast and stable though...
         if not self.cif.block.find_value(key):
-            cif_lst = self.cif.cif_file_text.splitlines()
-            self.cif.add_to_cif(cif_lst, key)
-            self.cif.cif_file_text = "\n".join(cif_lst)
-            self.cif.open_cif_by_string()
+            self.cif.add_to_cif(key, value)
 
     def new_property(self):
         item = QListWidgetItem('')
