@@ -181,7 +181,7 @@ class MyComboBox(QComboBox):
         self.setFlags(self.flags() ^ Qt.ItemIsEditable)
 
     def setText(self, txt: str):
-        self.setEditText(wrap(txt, width=10))
+        self.setEditText('\n'.join(wrap(txt, width=30)))
 
     def addItem(self, *__args):
         text = '\n'.join(wrap(__args[0], width=60))

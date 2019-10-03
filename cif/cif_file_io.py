@@ -13,8 +13,9 @@ from typing import Dict, List, Tuple
 
 import gemmi
 
+from cif.cif_order import order
 from datafiles.utils import DSRFind
-from tools.misc import essential_keys, find_line, non_centrosymm_keys
+from tools.misc import essential_keys, non_centrosymm_keys
 
 
 def quote(string: str, wrapping=80) -> str:
@@ -120,7 +121,7 @@ class CifContainer():
         self.fileobj = file
         self.block = None
         self.doc = None
-        self.cif_file_text = ''
+        self.cif_file_text = self.fileobj.read_text(encoding='utf-8', errors='ignore')
         self.open_cif_with_gemmi()
         self.symmops = self._get_symmops()
         self.hkl_extra_info = self.abs_hkl_details()
@@ -138,18 +139,32 @@ class CifContainer():
             return ''
 
     def save(self, filename: str = None) -> None:
+        """
+        Saves the current cif file in the specific order of the order list.
+        :param filename:  Name to save cif file to.
+        """
         if not filename:
             filename = self.fileobj.absolute()
+        for key in reversed(order):
+            try:
+                self.block.move_item(self.block.get_index(key), 0)
+            except RuntimeError:
+                pass
+                # print('Not in list:', key)
+        # make sure hkl file and res file are at the end if the cif file:
+        special_keys = ['_shelx_res_file', '_shelx_res_checksum', '_shelx_hkl_file', '_shelx_hkl_checksum']
+        for key in special_keys:
+            try:
+                self.block.move_item(self.block.get_index(key), -1)
+            except RuntimeError:
+                continue
         # self.doc.write_file(filename, gemmi.cif.Style.Indent35)
-        # or this way:
         Path(filename).write_text(self.doc.as_string(gemmi.cif.Style.Indent35))
 
     def open_cif_with_gemmi(self) -> None:
         """
         Reads a CIF file into gemmi and returns a sole block.
         """
-        # print('File opened:', self.filename)
-        self.cif_file_text = self.fileobj.read_text(encoding='utf-8', errors='ignore')
         try:
             self.doc = gemmi.cif.read_string(self.cif_file_text)
             # self.doc = gemmi.cif.read_file(str(self.fileobj.absolute()))
@@ -466,7 +481,6 @@ class CifContainer():
         """
         Returns the keys to be displayed in the main table as two separate lists.
         """
-        cif_as_list = self.cif_file_text.splitlines()
         questions = []
         # contains the answered keys:
         with_values = []
@@ -500,7 +514,7 @@ class CifContainer():
             self.block.set_pair(k, '?')
         return sorted(questions), sorted(with_values)
 
-    def add_to_cif(self, key: str, value:str='?'):
+    def add_to_cif(self, key: str, value: str = '?'):
         """
         Add an additional key value pair to the cif block.
         """
