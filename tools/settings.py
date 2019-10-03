@@ -50,7 +50,7 @@ class FinalCifSettings():
         equipment_list = self.settings.value('equipment_list')
         if not equipment_list:
             equipment_list = ['']
-        return equipment_list
+        return sorted(equipment_list)
 
     def load_last_equipment(self):
         self.settings.beginGroup('LastEquipment')
@@ -143,7 +143,9 @@ class FinalCifSettings():
         for (p, k) in zip(plist, keylist):
             if k.lower() == key.lower():
                 templ = self.load_template('property/' + p)
-        return [(n, x) for n, x in enumerate(templ[1])]
+        if not templ:
+            return [('', '')]
+        return [(n, x) for n, x in enumerate(templ[1]) if templ and len(templ) > 0]
 
 
 if __name__ == '__main__':
