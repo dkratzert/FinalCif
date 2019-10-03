@@ -1,14 +1,26 @@
+import os
 from builtins import str
 
 import gemmi
 from docx.text.paragraph import Paragraph
 from docx.text.run import Run
+from lxml import etree
 
 from cif.cif_file_io import CifContainer, retranslate_delimiter
+from tools.misc import prot_space
+from app_path import application_path
 
-"""
-TODO: Add references of the used programs to the end.
-"""
+
+# TODO: Add references of the used programs to the end.
+
+
+def math_to_word(eq):
+    """Transform a sympy equation to be printed in word document."""
+    tree = etree.fromstring(eq)
+    xslt = etree.parse(os.path.join(application_path, 'template/mathml2omml.xsl'))
+    transform = etree.XSLT(xslt)
+    new_dom = transform(tree)
+    return new_dom.getroot()
 
 
 class FormatMixin():
@@ -42,8 +54,11 @@ class CrstalSelection(FormatMixin):
         self.temperature = gstr(self.cif['_diffrn_ambient_temperature'])
         self._name = cif.fileobj.name
         method = 'shock-cooled '
-        sentence = "The data for {} were collected from a {}single crystal at {}\u00A0K "
-        if float(self.temperature.split('(')[0]) > 200:
+        sentence = "The data for {} were collected from a {}single crystal at {}" + prot_space + "K "
+        try:
+            if float(self.temperature.split('(')[0]) > 200:
+                method = ''
+        except ValueError:
             method = ''
         self.txt = sentence.format(self.name, method, self.temperature)
         paragraph.add_run(retranslate_delimiter(self.txt))
@@ -60,7 +75,8 @@ class MachineType():
     def __init__(self, cif: CifContainer, paragraph: Paragraph):
         self.cif = cif
         gstr = gemmi.cif.as_string
-        self.difftype = gstr(self.cif['_diffrn_measurement_device_type']).strip("'") or '[No measurement device type given]'
+        self.difftype = gstr(self.cif['_diffrn_measurement_device_type']).strip(
+            "'") or '[No measurement device type given]'
         self.device = gstr(self.cif['_diffrn_measurement_device']).strip("'") or '[No measurement device given]'
         self.source = gstr(self.cif['_diffrn_source']).strip("'") or '[No radiation source given]'
         self.monochrom = gstr(self.cif['_diffrn_radiation_monochromator']).strip("'") or '[No monochromator type given]'
@@ -73,10 +89,10 @@ class MachineType():
         self.detector_type = ''
         detector_type = gstr(self.cif['_diffrn_detector_type']) or '[No detector type given]'
         if detector_type:
-            self.detector_type = " and a {} detector".format(detector_type) 
+            self.detector_type = " and a {} detector".format(detector_type)
         sentence1 = "on {} {} {} with {} {} using {} as monochromator{}. " \
                     "The diffractometer was equipped with {} {} low temperature device and used "
-        sentence2 = " radiation, λ = {}\u00A0Å. "
+        sentence2 = " radiation, λ = {}" + prot_space + "Å. "
         txt = sentence1.format(get_inf_article(self.difftype), self.difftype, self.device,
                                get_inf_article(self.source), self.source, self.monochrom,
                                self.detector_type, get_inf_article(self.cooling), self.cooling)
@@ -187,7 +203,7 @@ class CCDC():
                    "paper have been deposited with the Cambridge Crystallographic Data Centre. CCDC ?????? contain " \
                    "the supplementary crystallographic data for this paper. Copies of the data can " \
                    "be obtained free of charge from The Cambridge Crystallographic Data Centre " \
-                   "via www.ccdc.cam.ac.uk/data_request/cif."
+                   "via www.ccdc.cam.ac.uk/structures."
         paragraph.add_run(sentence)
 
 

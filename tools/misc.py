@@ -11,6 +11,9 @@ import itertools as it
 import re
 from pathlib import Path
 
+# protected space character:
+prot_space = u'\u00A0'
+
 
 def grouper(inputs, n, fillvalue=None):
     iters = [iter(inputs)] * n
@@ -94,7 +97,7 @@ def find_line(inputlist: list, regex: str) -> int:
 
 # '_space_group_centring_type',  # seems to be used nowere
 # '_exptl_absorpt_special_details',   # This is not official?!?
-high_prio_keys = {
+essential_keys = {
     '_audit_contact_author_address'                    : 'The address of the cif author',
     '_audit_contact_author_email'                      : 'The email address of the cif author',
     '_audit_contact_author_name'                       : 'The name of the cif author',
@@ -119,8 +122,8 @@ high_prio_keys = {
     '_exptl_crystal_description'                       : 'A description of the quality and habit of the crystal',
     '_exptl_crystal_colour'                            : 'The colour of the crystal',
     '_exptl_crystal_recrystallization_method'          : 'Describes the method used to crystallize the sample',
-    # '_exptl_crystal_density_meas'                      : 'Density value measured using standard chemical and physical methods',
-    # '_exptl_crystal_density_method'                    : 'The method used to measure _exptl_crystal_density_meas',
+    '_exptl_crystal_density_meas'                      : 'Density value measured using standard chemical and physical methods',
+    '_exptl_crystal_density_method'                    : 'The method used to measure _exptl_crystal_density_meas',
     '_exptl_crystal_density_diffrn'                    : 'Density values calculated from the crystal cell and contents',
     '_exptl_crystal_F_000'                             : 'The effective number of electrons in the crystal unit cell contributing to F(000)',
     '_exptl_crystal_size_max'                          : 'Maximum dimension of the crystal in mm',
@@ -141,9 +144,15 @@ high_prio_keys = {
     '_diffrn_radiation_type'                           : r'The type of the radiation, e.g. Mo K\a',
     '_diffrn_radiation_monochromator'                  : r'The typ monochromator type to get _diffrn_radiation_wavelength',
     '_olex2_diffrn_ambient_temperature_device'         : 'Device to cool the crystal during measurement',
+    '_diffrn_radiation_probe'                          : 'The nature of the radiation used',
     '_diffrn_source'                                   : "The general class of the source of radiation, e.g.'sealed X-ray tube'",
+    '_diffrn_source_type'                              : 'The make, model or name of the source of radiation.',
     '_diffrn_source_current'                           : 'The current in milliamperes at which the radiation source was operated',
     '_diffrn_source_voltage'                           : 'The voltage in kilovolts at which the radiation source was operated',
+    '_diffrn_detector'                                 : 'The general class of the radiation detector.',
+    '_diffrn_detector_type'                            : 'The make, model or name of the detector device used.',
+    '_diffrn_detector_area_resol_mean'                 : 'The resolution of an area detector, in pixels/mm.',
+    '_diffrn_measurement_device'                       : 'The general class of goniometer or device used to support and orient the specimen.',
     '_diffrn_measurement_device_type'                  : 'The make, model or name of the measurement device used.',
     '_diffrn_measurement_method'                       : "Method used to measure the intensities, eg.g 'omega scans'",
     '_diffrn_measurement_specimen_support'             : 'The physical device used to support the crystal during data collection.',
@@ -182,6 +191,7 @@ high_prio_keys = {
     '_refine_ls_weighting_scheme'                      : 'The weighting scheme applied in the least-squares process',
     '_refine_ls_weighting_details'                     : 'A description of special aspects of the weighting scheme used in the least-squares refinement',
     '_atom_sites_solution_primary'                     : 'Codes which identify the methods used to locate the initial atom sites',
+    '_atom_sites_solution_secondary'                   : 'Codes which identify how the remaining non-hydrogen sites were located',
     '_atom_sites_solution_hydrogens'                   : 'Codes which identify the methods used to locate the initial hydrogen atom sites',
     '_refine_ls_extinction_method'                     : 'A description of the extinction-correction method applied',
     '_refine_ls_extinction_coef'                       : 'The extinction coefficient used to calculate the correction factor applied to the structure-factor data',
@@ -216,6 +226,7 @@ text_field_keys = ['_refine_special_details',
                    '_audit_contact_author_address',
                    '_exptl_crystal_recrystallization_method',
                    '_exptl_special_details',
+                   '_geom_special_details',
                    ]
 
 ABSORPTION_CORRECTION_TYPES = (
@@ -344,8 +355,18 @@ combobox_fields = {'_exptl_crystal_colour'               : COLOUR_CHOICES,
                    '_atom_sites_solution_primary'        : SOLUTION_PRIMARY,
                    '_atom_sites_solution_secondary'      : SOLUTION_PRIMARY,
                    '_diffrn_measurement_specimen_support': SPECIMEN_SUPPORT,
+                   '_atom_sites_solution_hydrogens'      : SOLUTION_PRIMARY,
                    # '_diffrn_measurement_specimen_adhesive': ADHESIVE,
                    }
+
+excluded_imports = (
+    '_cell_length_a',
+    '_cell_length_b',
+    '_cell_length_c',
+    '_cell_angle_alpha',
+    '_cell_angle_beta',
+    '_cell_angle_gamma',
+)
 
 
 def to_float(st):
@@ -399,9 +420,10 @@ predef_equipment_templ = [{'name' : 'D8 VENTURE',
                                # ['_diffrn_source_current', '50'],
                                # ['_diffrn_source_voltage', '1.1'],
                                ['_diffrn_detector_area_resol_mean', '7.41'],
-                               ['_diffrn_detector', 'HPAD'],
+                               ['_diffrn_detector', 'CPAD'],
                                ['_diffrn_detector_type', 'Bruker PHOTON III'],
                                ['_diffrn_source_type', r'Incoatec I\ms'],
+                               ['_diffrn_radiation_probe', 'x-ray'],
                                ['_diffrn_measurement_specimen_support', 'MiTeGen micromount'],
                                ['_olex2_diffrn_ambient_temperature_device', 'Oxford Cryostream 800'],
                            ]
@@ -416,7 +438,7 @@ predef_equipment_templ = [{'name' : 'D8 VENTURE',
                                ['_diffrn_source_type', r'Incoatec I\ms'],
                                ['_diffrn_detector', 'CCD'],
                                ['_diffrn_detector_type', 'Bruker APEXII'],
-                               ['_diffrn_detector_area_resol_mean', '7.9'],
+                               ['_diffrn_detector_area_resol_mean', '8.3'],
                                ['_diffrn_radiation_probe', 'x-ray'],
                                ['_diffrn_measurement_specimen_support', 'MiTeGen micromount'],
                                ['_olex2_diffrn_ambient_temperature_device', 'Oxford Cryostream 800'],
@@ -472,7 +494,7 @@ predef_prop_templ = [{'name'  : 'Crystal Color',
                                  ['', 'colourless', 'white', 'black', 'yellow', 'red', 'blue',
                                   'green', 'gray', 'pink', 'orange', 'violet', 'brown']]
                       },
-                     {'name'  : 'Crystal Habit',
+                     {'name'  : 'Crystal Habit Description',
                       'values': ['_exptl_crystal_description',
                                  ['', 'block', 'needle', 'plate', 'prism', 'sphere']]
                       },
@@ -505,6 +527,17 @@ predef_prop_templ = [{'name'  : 'Crystal Color',
                                   'Oxford Cryostream 600',
                                   'Bruker Kryofelx II',
                                   'Bruker Kryofelx I',
+                                  ]
+                                 ]
+
+                      },
+                     {'name'  : 'Radiation Type',
+                      'values': ['_diffrn_radiation_probe',
+                                 ['',
+                                  'x-ray',
+                                  'neutron',
+                                  'electron',
+                                  'gamma',
                                   ]
                                  ]
 
