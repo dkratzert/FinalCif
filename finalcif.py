@@ -112,7 +112,7 @@ class AppWindow(QMainWindow):
         self.ui.CheckcifPDFOnlineButton.setDisabled(True)
         self.ui.SaveCifButton.setDisabled(True)
         self.ui.ExploreDirButton.setDisabled(True)
-        self.cif = None
+        self.cif: CifContainer
         self.fin_file = Path()
         self.missing_data = []
         # This is the index number of the vheader that got clicked last:
@@ -121,7 +121,7 @@ class AppWindow(QMainWindow):
         self.complete_data_row = -1
         self.connect_signals_and_slots()
         self.manufacturer = 'bruker'
-        self.rigakucif = None
+        self.rigakucif: RigakuData
         self.ui.SaveCifButton.setIcon(self.style().standardIcon(QStyle.SP_ArrowDown))
         self.ui.CheckcifButton.setIcon(self.style().standardIcon(QStyle.SP_FileDialogDetailedView))
         self.ui.CheckcifOnlineButton.setIcon(self.style().standardIcon(QStyle.SP_TitleBarNormalButton))
@@ -706,6 +706,9 @@ class AppWindow(QMainWindow):
         Adds a new row with a respective vheaderitem to the main cif table.
         Also the currently opened cif file is updated.
         """
+        # Make sure new (unknown) cif items get to the start of the cif:
+        if key not in self.cif.order:
+            self.cif.order.insert(0, key)
         if not key.startswith('_'):
             return
         self.vheaderitems.insert(0, key)

@@ -13,7 +13,7 @@ from typing import Dict, List, Tuple
 
 import gemmi
 
-from cif.cif_order import order
+from cif.cif_order import order, special_keys
 from datafiles.utils import DSRFind
 from tools.misc import essential_keys, non_centrosymm_keys
 
@@ -123,10 +123,10 @@ class CifContainer():
         self.doc = None
         self.cif_file_text = self.fileobj.read_text(encoding='utf-8', errors='ignore')
         self.open_cif_with_gemmi()
-        self.symmops = self._get_symmops()
         self.hkl_extra_info = self.abs_hkl_details()
         self.resdata = self.block.find_value('_shelx_res_file')
         d = DSRFind(self.resdata)
+        self.order = order
         self.dsr_used = d.dsr_used
 
     def __getitem__(self, item: str) -> str:
@@ -145,14 +145,13 @@ class CifContainer():
         """
         if not filename:
             filename = self.fileobj.absolute()
-        for key in reversed(order):
+        for key in reversed(self.order):
             try:
                 self.block.move_item(self.block.get_index(key), 0)
             except RuntimeError:
                 pass
                 # print('Not in list:', key)
         # make sure hkl file and res file are at the end if the cif file:
-        special_keys = ['_shelx_res_file', '_shelx_res_checksum', '_shelx_hkl_file', '_shelx_hkl_checksum']
         for key in special_keys:
             try:
                 self.block.move_item(self.block.get_index(key), -1)
@@ -329,13 +328,13 @@ class CifContainer():
         sum %= 100000
         return sum
 
-    def _get_symmops(self) -> List[str]:
+    @property
+    def symmops(self) -> List[str]:
         """
         Reads the symmops from the cif file.
 
         >>> cif = CifContainer(Path('test-data/twin4.cif'))
-        >>> cif.open_cif_with_gemmi()
-        >>> cif._get_symmops()
+        >>> cif.symmops
         ['x, y, z', '-x, -y, -z']
         """
         xyz1 = self.block.find(("_symmetry_equiv_pos_as_xyz",))  # deprecated
