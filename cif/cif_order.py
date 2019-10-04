@@ -239,6 +239,7 @@ order = [
     '_refine_diff_density_rms',
     '_refine_ls_extinction_method',
     '_refine_ls_extinction_coef',
+    '_refine_ls_extinction_expression',
     '_refine_ls_abs_structure_Flack',
     '_refine_ls_abs_structure_details',
     '_refine_ls_abs_structure_Rogers',
