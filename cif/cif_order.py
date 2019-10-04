@@ -16,7 +16,6 @@ special_keys = ['_iucr_refine_instructions_details',
 
 order = [
     '_journal_data_validation_number',
-    '                                    ',
     '_journal_date_recd_electronic',
     '_journal_date_to_coeditor',
     '_journal_date_from_coeditor',
@@ -28,7 +27,6 @@ order = [
     '_journal_coeditor_name',
     '_journal_coeditor_code',
     '_journal_coeditor_notes',
-    '',
     '',
     '_journal_techeditor_code',
     '_journal_techeditor_notes',
@@ -161,7 +159,7 @@ order = [
     '_diffrn_detector',
     '_diffrn_detector_type',
     '_diffrn_detector_area_resol_mean',
-    '_diffrn_measurement_device',   # superseeded by _diffrn_measurement_device_type
+    '_diffrn_measurement_device',  # superseeded by _diffrn_measurement_device_type
     '_diffrn_measurement_device_type',
     '_diffrn_measurement_method',
     '_diffrn_measurement_specimen_support',

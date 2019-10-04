@@ -140,6 +140,7 @@ essential_keys = {
     '_cell_measurement_theta_min'                      : 'The maximum theta angles of reflections used to measure the unit cell in degrees',
     '_cell_measurement_theta_max'                      : 'The minimum theta angles of reflections used to measure the unit cell in degrees',
     '_diffrn_ambient_temperature'                      : 'The mean temperature in kelvins at which the intensities were measured',
+    '_diffrn_ambient_environment'                      : 'The gas or liquid surrounding the sample, if not air.',
     '_diffrn_radiation_wavelength'                     : 'The radiation wavelength in angstroms',
     '_diffrn_radiation_type'                           : r'The type of the radiation, e.g. Mo K\a',
     '_diffrn_radiation_monochromator'                  : r'The typ monochromator type to get _diffrn_radiation_wavelength',
@@ -227,6 +228,10 @@ text_field_keys = ['_refine_special_details',
                    '_exptl_crystal_recrystallization_method',
                    '_exptl_special_details',
                    '_geom_special_details',
+                   '_diffrn_measurement_details',
+                   '_diffrn_oxdiff_ac3_digest_frames',
+                   '_diffrn_oxdiff_ac3_digest_hkl',
+                   '_oxdiff_exptl_absorpt_empirical_details',
                    ]
 
 ABSORPTION_CORRECTION_TYPES = (
@@ -541,5 +546,19 @@ predef_prop_templ = [{'name'  : 'Crystal Color',
                                   ]
                                  ]
 
+                      },
+                     {'name'  : 'Sample environment',
+                      'values': ['_diffrn_ambient_environment',
+                                 ['',
+                                  'N~2~',
+                                  'He',
+                                  'vacuum',
+                                  'mother liquor',
+                                  'Ar',
+                                  'H~2~'
+                                  ]
+                                 ]
+
                       }
+
                      ]
