@@ -37,7 +37,7 @@ from tools.settings import FinalCifSettings
 from tools.update import mainurl
 from tools.version import VERSION
 
-DEBUG = True
+DEBUG = False
 
 if DEBUG:
     from PyQt5 import uic
