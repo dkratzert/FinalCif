@@ -1,5 +1,6 @@
 from textwrap import wrap
 
+from PyQt5 import QtCore
 from PyQt5.QtCore import QEvent, QObject, Qt
 from PyQt5.QtGui import QColor, QTextOption
 from PyQt5.QtWidgets import QAbstractScrollArea, QAction, QComboBox, QFrame, QPlainTextEdit, QSizePolicy, QTableWidget, \
@@ -55,6 +56,8 @@ class ItemTextMixin:
 
 
 class MyCifTable(QTableWidget, ItemTextMixin):
+
+    row_deleted = QtCore.pyqtSignal(str)
 
     def __init__(self, parent: QWidget = None):
         super().__init__(parent)
@@ -147,9 +150,14 @@ class MyCifTable(QTableWidget, ItemTextMixin):
                 widget.setBackground(color)
 
     def delete_item(self):
+        """
+        Deletes the current row, but gemmi can not delete items from the block at the moment!
+        """
         row = self.currentRow()
+        key = self.vheaderitems[row]
         del self.vheaderitems[row]
         self.removeRow(row)
+        self.row_deleted.emit(key)
 
 
 class MyQPlainTextEdit(QPlainTextEdit):
