@@ -15,6 +15,7 @@ from docx.oxml.ns import qn
 from docx.shared import Cm, Pt
 from docx.table import Table, _Cell
 
+from app_path import application_path
 from cif.cif_file_io import CifContainer
 from report.mtools import cif_keywords_list, isfloat, this_or_quest
 from report.report_text import CCDC, CrstalSelection, Crystallization, DataReduct, Disorder, Hydrogens, MachineType, \
@@ -22,7 +23,6 @@ from report.report_text import CCDC, CrstalSelection, Crystallization, DataReduc
 from report.spgrps import SpaceGroups
 from report.symm import SymmetryElement
 from tools.misc import prot_space
-from app_path import application_path
 
 
 def format_space_group(table, cif):
@@ -65,7 +65,6 @@ def format_space_group(table, cif):
         else:
             sgrun = table.cell(5, 1).paragraphs[0]
             sgrun.add_run('?')
-
 
 
 def make_report_from(file_obj: Path, output_filename: str = None, path: str = '', without_H: bool = False):
@@ -216,15 +215,6 @@ def add_main_table(document: Document(), cif: CifContainer, table_num: int):
     if exti == '.' or exti == '?':
         rows -= 1
     main_table = document.add_table(rows=rows, cols=2)
-    # table.alignment = WD_TABLE_ALIGNMENT.CENTER
-    # table.allow_autofit = False
-    # table.autofit = False
-    # col = table.columns[0]
-    # col.width = Cm(5.0)
-    # col.autofit = False
-    # col = table.columns[1]
-    # col.width = Cm(5.0)
-    # col.autofit = False
     # setup table format:
     set_column_width(main_table.columns[0], Cm(4.05))
     set_column_width(main_table.columns[1], Cm(4.05))

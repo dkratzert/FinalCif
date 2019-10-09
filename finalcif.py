@@ -11,6 +11,7 @@ import subprocess
 import sys
 import time
 import traceback
+from difflib import SequenceMatcher
 from pathlib import Path, WindowsPath
 from typing import Tuple
 
@@ -29,6 +30,7 @@ from gui.custom_classes import MyComboBox, MyEQTableWidget, MyQPlainTextEdit, \
     MyTableWidgetItem, blue, light_green, yellow
 from gui.vrf_classes import MyVRFContainer, VREF
 from report.tables import make_report_from
+
 from tools.checkcif import AlertHelp, MakeCheckCif, MyHTMLParser
 from tools.misc import combobox_fields, essential_keys, excluded_imports, predef_equipment_templ, predef_prop_templ, \
     strip_finalcif_of_name, text_field_keys, to_float
@@ -1349,6 +1351,30 @@ class AppWindow(QMainWindow):
             sources = BrukerData(self, self.cif).sources
         if self.manufacturer == 'rigaku':
             sources = self.rigakucif.sources
+            for x in sources:
+                if x and x not in self.missing_data:
+                    self.add_row(x, '?', at_start=True)
+                    self.missing_data.append(x.lower())
+                    self.cif.block.set_pair(x, '?')
+            # Adding loop
+            # TODO: make this work
+            loops = self.rigakucif.loops
+            for loop in loops:
+                key1 = loop[0][0]
+                ends = []
+                try:
+                    key2 = loop[0][1]
+                    match = SequenceMatcher(None, key1, key2).find_longest_match(0, len(key1), 0, len(key2))
+                    loopkey = key1[match.a: match.a + match.size]
+                    for key in loop[0]:
+                        ends.append(key[match.a + match.size:])
+                except KeyError:
+                    gloop = self.cif.block.init_loop(key1, [''])
+                    continue
+                gloop = self.cif.block.init_loop(loopkey, ends)
+                print(loopkey, ends)
+                print(loop[1])
+                gloop.add_row(loop[1])
         # Build a dictionary of cif keys and row number values in order to fill the first column
         # of CifItemsTable with cif values:
         for num in range(self.ui.CifItemsTable.model().rowCount()):
@@ -1399,7 +1425,7 @@ class AppWindow(QMainWindow):
                             tab_item.setBackground(yellow)
                 tab_item.setToolTip(str(sources[miss_data.lower()][1]))
             except KeyError as e:
-                # print(e, '##')
+                #print(e, '##', miss_data)
                 pass
             # items from data sources should not be editable
             if not miss_data in text_field_keys:

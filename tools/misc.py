@@ -560,4 +560,5 @@ predef_prop_templ = [{'name'  : 'Crystal Color',
                                  ]
 
                       }
+
                      ]

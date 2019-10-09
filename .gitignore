@@ -161,7 +161,6 @@ test-data/406-0308-finalcif.gif
 test-data/DK_zucker2_0m-finalcif.gif
 test-data/report_406-0308-finalcif.docx
 test-data/report_DK_zucker2_0m-finalcif.docx
-test-data/finalcif-crash.txt
 test-data/1000006-finalcif.cif
 test-data/1000006-finalcif.gif
 finalcif-crash.txt
@@ -171,5 +170,5 @@ test-data/4060308-finalcif.cif
 test-data/4060308-finalcif.gif
 test-data/report_4060308-finalcif.docx
 tables.docx
-
 test.cif
+
