@@ -1353,9 +1353,7 @@ class AppWindow(QMainWindow):
                 elif vhead.lower() in self.settings.load_property_keys():
                     self.add_property_combobox(self.settings.load_property_by_key(vhead.lower()), num)
         # get missing items from sources and put them into the corresponding rows:
-        # These will be yellow if not filled in:
-        self.missing_data.append('_cell_measurement_temperature')
-        self.missing_data.append('_diffrn_ambient_temperature')
+        # missing items will even be used if under the blue separation line:
         self.missing_data.append('_publ_section_references')
         for miss_data in self.missing_data:
             # add missing item to data sources column:
