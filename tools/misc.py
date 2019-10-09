@@ -170,6 +170,7 @@ essential_keys = {
     '_diffrn_reflns_Laue_measured_fraction_full'       : 'Fraction of Laue unique reflections measured out to the resolution given in _diffrn_reflns_theta_full',
     '_diffrn_reflns_point_group_measured_fraction_max' : 'Fraction of crystal point-group unique reflections measured out to the resolution given in _diffrn_reflns_theta_max',
     '_diffrn_reflns_point_group_measured_fraction_full': 'Fraction of crystal point-group unique reflections measured out to the resolution given in _diffrn_reflns_theta_full',
+    '_geom_special_details'                            : 'The description of geometrical extra information such as least-squares planes',
     '_reflns_number_total'                             : 'The total number of reflections in the _refln_ list (not the _diffrn_refln_ list)',
     '_reflns_number_gt'                                : 'The number of reflections in the _refln_ list that are significantly intense',
     '_reflns_threshold_expression'                     : 'The threshold that serves to identify significantly intense reflections',

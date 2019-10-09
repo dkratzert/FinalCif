@@ -95,8 +95,8 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         try:
             txt = essential_keys[itemtext]
             if txt:
-                item.setText('\n'.join(wrap(txt, 20)))
-                #item.setText(txt)
+                #item.setText('\n'.join(wrap(txt, 20)))
+                item.setText(txt)
             self.vheader_clicked = section
             return
         except KeyError:
