@@ -170,7 +170,7 @@ class BrukerData(object):
                    '_space_group_IT_number'                 : (spgrnum, 'calculated by gemmi'),
                    '_space_group_crystal_system'            : (csystem, 'calculated by gemmi'),
                    }
-        self.sources = dict((k.lower(), v) for k, v in sources.items())
+        self.sources = sources  # dict((k.lower(), v) for k, v in sources.items())
 
     def get_solution_program(self):
         """
