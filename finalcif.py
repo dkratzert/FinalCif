@@ -1318,13 +1318,13 @@ class AppWindow(QMainWindow):
         if self.manufacturer == 'rigaku':
             sources = self.rigakucif.sources
             for x in sources:
-                if x and x not in self.missing_data:
+                if x and x.lower() not in self.missing_data:
                     self.add_row(x, '?', at_start=True)
                     self.missing_data.append(x.lower())
                     self.cif.block.set_pair(x, '?')
             # Adding loop
             # TODO: make this work
-            loops = self.rigakucif.loops
+            """loops = self.rigakucif.loops
             for loop in loops:
                 key1 = loop[0][0]
                 ends = []
@@ -1340,7 +1340,7 @@ class AppWindow(QMainWindow):
                 gloop = self.cif.block.init_loop(loopkey, ends)
                 print(loopkey, ends)
                 print(loop[1])
-                gloop.add_row(loop[1])
+                gloop.add_row(loop[1])"""
         # Build a dictionary of cif keys and row number values in order to fill the first column
         # of CifItemsTable with cif values:
         for num in range(self.ui.CifItemsTable.model().rowCount()):
