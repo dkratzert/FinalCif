@@ -265,7 +265,7 @@ class Ui_FinalCifWindow(object):
         self.CifItemsTable.horizontalHeader().setDefaultSectionSize(152)
         self.CifItemsTable.horizontalHeader().setHighlightSections(False)
         self.CifItemsTable.horizontalHeader().setMinimumSectionSize(80)
-        self.CifItemsTable.verticalHeader().setDefaultSectionSize(25)
+        #self.CifItemsTable.verticalHeader().setDefaultSectionSize(25)
         self.CifItemsTable.verticalHeader().setHighlightSections(True)
         self.CifItemsTable.verticalHeader().setMinimumSectionSize(20)
         self.verticalLayout.addWidget(self.CifItemsTable)

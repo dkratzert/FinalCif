@@ -202,7 +202,6 @@ class AppWindow(QMainWindow):
         ##
         self.ui.EquipmentTemplatesListWidget.currentRowChanged.connect(self.load_selected_equipment)
         self.ui.EquipmentTemplatesListWidget.clicked.connect(self.load_selected_equipment)
-        # something like cifItemsTable.selected_field.connect(self.display_data_file)
         ##
         self.ui.SaveFullReportButton.clicked.connect(self.make_table)
         self.ui.RecentComboBox.currentIndexChanged.connect(self.load_recent_file)
@@ -459,8 +458,8 @@ class AppWindow(QMainWindow):
         Performs a checkcif with platon and displays it in the text editor of the MainStackedWidget.
         """
         splash = self.show_splash("Running Checkcif locally. Please wait...")
-        table = self.ui.CifItemsTable
-        table.setCurrentItem(None)  # makes sure also the currently edited item is saved
+        # makes sure also the currently edited item is saved:
+        self.ui.CifItemsTable.setCurrentItem(None)
         self.save_current_cif_file()
         try:
             p = Platon(self.fin_file)
@@ -590,9 +589,9 @@ class AppWindow(QMainWindow):
                         # print(e)
                         pass
                 if col == COL_EDIT:
-                    vhead = self.ui.CifItemsTable.model().headerData(row, Qt.Vertical)
+                    vhead = self.ui.CifItemsTable.vheader_text(row)
                     # vertical header item is surely not a cif keyword:
-                    if not str(vhead).startswith('_'):
+                    if not vhead.startswith('_'):
                         continue
                     # This is my row information
                     # print('col2:', vhead, col0, col1, col2, '#')

@@ -1,0 +1,142 @@
+#===============================================================================
+data_40mm
+#===============================================================================
+
+_audit_creation_date             '0000-00-00'
+_audit_creation_method           'STOE X-Red32'
+_audit_author_name               'ldksfjgh'
+_audit_contact_author            'fghk'
+_audit_contact_author_address 
+;
+   STOE & CIE GmbH
+   Hilpertstr. 10
+   D-64295 Darmstadt
+   Germany
+;
+_audit_contact_author_email      foo@bar.com
+_audit_contact_author_fax        'xfgh'  
+_audit_contact_author_phone      'dfgh'
+
+#-------------------------------------------------------------------------------
+# COMPUTING DATA
+#-------------------------------------------------------------------------------
+
+_computing_data_collection        
+;
+X-Area Pilatus3_SV 1.31.127.0 (STOE, 2016)
+;
+_computing_cell_refinement
+;
+X-Area Recipe 1.33.0.0 (STOE, 2015)
+;
+_computing_data_reduction        'STOE X-Area'
+_computing_publication_material
+;
+STOE & Cie GmbH, X-Area, software package for collecting single-crystal or
+multi-domain crystal data on STOE area-detector diffractometers, for image 
+processing, for the correction and scaling of reflection intensities and 
+for outlier rejection, version 1.77, Darmstadt 2016
+;
+
+#-------------------------------------------------------------------------------
+# CHEMICAL DATA
+#-------------------------------------------------------------------------------
+
+_chemical_name_systematic        ?
+_chemical_name_common            ?
+_chemical_formula_moiety         ?
+_chemical_formula_structural     ?
+_chemical_formula_analytical     ?
+_chemical_formula_sum            ?
+_chemical_formula_weight         ?
+_chemical_melting_point          ?
+_chemical_compound_source        ?
+
+#-------------------------------------------------------------------------------
+# CRYSTAL DATA
+#-------------------------------------------------------------------------------
+
+_symmetry_cell_setting           monoclinic
+
+_cell_length_a                   17.9238(7)
+_cell_length_b                   10.07517(24)
+_cell_length_c                   13.8839(5)
+_cell_angle_alpha                90.00
+_cell_angle_beta                 109.006(3)
+_cell_angle_gamma                90.00
+_cell_volume                     2370.55(14)
+_cell_formula_units_Z            1
+_cell_measurement_temperature    150
+_cell_measurement_reflns_used    7113
+_cell_measurement_theta_min      5.11
+_cell_measurement_theta_max      67.13
+
+_exptl_crystal_description       ?
+_exptl_crystal_colour            ?
+_exptl_crystal_size_max          ?
+_exptl_crystal_size_mid          ?
+_exptl_crystal_size_min          ?
+_exptl_crystal_density_diffrn    0.000
+_exptl_crystal_density_meas      ?
+_exptl_crystal_F_000             0
+_exptl_absorpt_coefficient_mu    0.00
+_exptl_absorpt_correction_type   none
+
+#-------------------------------------------------------------------------------
+# EXPERIMENTAL DATA
+#-------------------------------------------------------------------------------
+
+_diffrn_measurement_device         'Eulerian 4-circle diffractometer'
+_diffrn_measurement_device_type    'STOE STADIVARI'
+
+_diffrn_detector                   'Pilatus300K'
+_diffrn_detector_type              'DECTRIS PILATUS 300K'
+_diffrn_detector_area_resol_mean 5.81
+
+_diffrn_source                   'GeniX 3D HF Cu'
+_diffrn_source_type              ?
+_diffrn_radiation_probe          x-ray
+_diffrn_source_target            ?
+_diffrn_source_voltage           50
+_diffrn_source_current           0.600
+_diffrn_source_power             0.030
+_diffrn_radiation_type           'Cu K\a'
+_diffrn_radiation_wavelength     1.54186
+_diffrn_radiation_monochromator  'Graded multilayer mirror'
+_diffrn_radiation_polarisn_norm  270
+_diffrn_radiation_collimation    '0.5 mm diameter'
+
+_diffrn_ambient_temperature      150
+
+_diffrn_measurement_method       'rotation method, \w scans'
+_diffrn_measurement_details
+; 934 frames, detector distance = 40 mm
+;
+_diffrn_measured_fraction_theta_max  0.982
+_diffrn_measured_fraction_theta_full 0.982
+
+_diffrn_reflns_number            7899
+_diffrn_reflns_theta_min         5.11
+_diffrn_reflns_theta_max         66.83
+_diffrn_reflns_theta_full        66.83
+_diffrn_reflns_av_unetI/netI     0.0739
+_diffrn_reflns_av_R_equivalents  0.2107
+_diffrn_reflns_limit_h_min       -18
+_diffrn_reflns_limit_h_max       21
+_diffrn_reflns_limit_k_min       -7
+_diffrn_reflns_limit_k_max       11
+_diffrn_reflns_limit_l_min       -16
+_diffrn_reflns_limit_l_max       14
+
+_reflns_number_total             2196
+_reflns_number_gt                1398
+_reflns_threshold_expression     'I>4u(I)'
+_reflns_d_resolution_high        0.839
+_reflns_d_resolution_low         8.660
+_reflns_special_details          'Friedel pairs have been merged'
+_reflns_limit_h_min              -21
+_reflns_limit_h_max              19
+_reflns_limit_k_min              0
+_reflns_limit_k_max              11
+_reflns_limit_l_min              0
+_reflns_limit_l_max              16
