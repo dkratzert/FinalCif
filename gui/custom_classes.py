@@ -95,8 +95,8 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         try:
             txt = essential_keys[itemtext]
             if txt:
-                #item.setText('\n'.join(wrap(txt, 20)))
-                item.setText(txt)
+                item.setText('\n'.join(wrap(txt, 20)))
+                #item.setText(txt)
             self.vheader_clicked = section
             return
         except KeyError:
@@ -158,6 +158,10 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         del self.vheaderitems[row]
         self.removeRow(row)
         self.row_deleted.emit(key)
+
+    def vheader_text(self, row):
+        vhead = self.model().headerData(row, Qt.Vertical)
+        return str(vhead)
 
 
 class MyQPlainTextEdit(QPlainTextEdit):
