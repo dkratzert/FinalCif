@@ -138,6 +138,10 @@ class CifContainer():
         else:
             return ''
 
+    def __delitem__(self, key):
+        # TODO: ask if delitem could be possible:
+        self.block.set_pair(key, '?')
+
     def save(self, filename: str = None) -> None:
         """
         Saves the current cif file in the specific order of the order list.

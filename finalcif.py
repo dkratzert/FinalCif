@@ -206,6 +206,11 @@ class AppWindow(QMainWindow):
         ##
         self.ui.SaveFullReportButton.clicked.connect(self.make_table)
         self.ui.RecentComboBox.currentIndexChanged.connect(self.load_recent_file)
+        #
+        self.ui.CifItemsTable.row_deleted.connect(self._deleted_row)
+
+    def _deleted_row(self, key: str):
+        self.cif.block.set_pair(key, '?')
 
     def checkfor_version(self):
         url = QUrl(mainurl + 'version.txt')
