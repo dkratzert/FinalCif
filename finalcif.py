@@ -11,7 +11,6 @@ import subprocess
 import sys
 import time
 import traceback
-from difflib import SequenceMatcher
 from pathlib import Path, WindowsPath
 from typing import Tuple
 
@@ -681,7 +680,7 @@ class AppWindow(QMainWindow):
             return
         self.ui.CifItemsTable.vheaderitems.insert(0, key)
         self.add_row(key=key, value='?', at_start=True)
-        if key in [x.lower() for x in combobox_fields]:
+        if key in [x for x in combobox_fields]:
             self.add_property_combobox(combobox_fields[key], 0)
         self.missing_data.append(key)
         if not self.cif.block.find_value(key):
@@ -1318,9 +1317,9 @@ class AppWindow(QMainWindow):
         if self.manufacturer == 'rigaku':
             sources = self.rigakucif.sources
             for x in sources:
-                if x and x.lower() not in self.missing_data:
+                if x and x not in self.missing_data:
                     self.add_row(x, '?', at_start=True)
-                    self.missing_data.append(x.lower())
+                    self.missing_data.append(x)
                     self.cif.block.set_pair(x, '?')
             # Adding loop
             # TODO: make this work
@@ -1348,10 +1347,10 @@ class AppWindow(QMainWindow):
             if not vhead in self.ui.CifItemsTable.vheaderitems:
                 self.ui.CifItemsTable.vheaderitems.append(vhead)
                 # adding comboboxes:
-                if vhead.lower() in combobox_fields:
-                    self.add_property_combobox(combobox_fields[vhead.lower()], num)
-                elif vhead.lower() in self.settings.load_property_keys():
-                    self.add_property_combobox(self.settings.load_property_by_key(vhead.lower()), num)
+                if vhead in combobox_fields:
+                    self.add_property_combobox(combobox_fields[vhead], num)
+                elif vhead in self.settings.load_property_keys():
+                    self.add_property_combobox(self.settings.load_property_by_key(vhead), num)
         # get missing items from sources and put them into the corresponding rows:
         # missing items will even be used if under the blue separation line:
         self.missing_data.append('_publ_section_references')
@@ -1364,7 +1363,7 @@ class AppWindow(QMainWindow):
             tab_item = MyTableWidgetItem()
             try:
                 # sources are lower case!
-                txt = str(sources[miss_data.lower()][0])
+                txt = str(sources[miss_data][0])
                 if miss_data in text_field_keys:
                     # only text fields:
                     tab_item = MyQPlainTextEdit(self.ui.CifItemsTable)
@@ -1377,7 +1376,7 @@ class AppWindow(QMainWindow):
                             tab_item.setBackground(light_green)
                         else:
                             tab_item.setBackground(yellow)
-                    tab_item.setToolTip(str(sources[miss_data.lower()][1]))
+                    tab_item.setToolTip(str(sources[miss_data][1]))
                 else:
                     # regular linedit fields:
                     self.ui.CifItemsTable.setItem(row_num, COL_DATA, tab_item)
@@ -1387,7 +1386,7 @@ class AppWindow(QMainWindow):
                             tab_item.setBackground(light_green)
                         else:
                             tab_item.setBackground(yellow)
-                tab_item.setToolTip(str(sources[miss_data.lower()][1]))
+                tab_item.setToolTip(str(sources[miss_data][1]))
             except KeyError as e:
                 # print(e, '##', miss_data)
                 pass
