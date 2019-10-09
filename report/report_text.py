@@ -92,7 +92,7 @@ class MachineType():
             self.detector_type = " and a {} detector".format(detector_type)
         sentence1 = "on {} {} {} with {} {} using {} as monochromator{}. " \
                     "The diffractometer was equipped with {} {} low temperature device and used "
-        sentence2 = " radiation (λ" + prot_space + "= {}" + prot_space + "Å). "
+        sentence2 = " radiation (λ = {}" + prot_space + "Å). "
         txt = sentence1.format(get_inf_article(self.difftype), self.difftype, self.device,
                                get_inf_article(self.source), self.source, self.monochrom,
                                self.detector_type, get_inf_article(self.cooling), self.cooling)
