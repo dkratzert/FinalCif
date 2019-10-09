@@ -21,6 +21,7 @@ from PyQt5.QtWebEngineWidgets import QWebEngineView
 from gemmi import cif
 from requests import ReadTimeout
 
+from app_path import application_path
 from cif.cif_file_io import CifContainer, set_pair_delimited
 from cif.core_dict import cif_core
 from datafiles.bruker_data import BrukerData
@@ -30,11 +31,9 @@ from gui.custom_classes import MyComboBox, MyEQTableWidget, MyQPlainTextEdit, \
     MyTableWidgetItem, blue, light_green, yellow
 from gui.vrf_classes import MyVRFContainer, VREF
 from report.tables import make_report_from
-
 from tools.checkcif import AlertHelp, MakeCheckCif, MyHTMLParser
-from tools.misc import combobox_fields, essential_keys, excluded_imports, predef_equipment_templ, predef_prop_templ, \
+from tools.misc import combobox_fields, excluded_imports, predef_equipment_templ, predef_prop_templ, \
     strip_finalcif_of_name, text_field_keys, to_float
-from app_path import application_path
 from tools.settings import FinalCifSettings
 from tools.update import mainurl
 from tools.version import VERSION
@@ -90,7 +89,6 @@ class AppWindow(QMainWindow):
         self.setAcceptDrops(True)
         self.show()
         self.statusBar().showMessage('FinalCif version {}'.format(VERSION))
-        self.vheaderitems = list()
         self.settings = FinalCifSettings(self)
         self.store_predefined_templates()
         self.show_equipment_and_properties()
@@ -117,8 +115,6 @@ class AppWindow(QMainWindow):
         self.cif: CifContainer
         self.fin_file = Path()
         self.missing_data = []
-        # This is the index number of the vheader that got clicked last:
-        self.vheader_clicked = -1
         # True if line with "these are already in" reached:
         self.complete_data_row = -1
         self.connect_signals_and_slots()
@@ -209,11 +205,6 @@ class AppWindow(QMainWindow):
         # something like cifItemsTable.selected_field.connect(self.display_data_file)
         ##
         self.ui.SaveFullReportButton.clicked.connect(self.make_table)
-        # vertical header click:
-        vheader = self.ui.CifItemsTable.verticalHeader()
-        vheader.setSectionsClickable(True)
-        vheader.sectionClicked.connect(self.vheader_section_click)
-        ###
         self.ui.RecentComboBox.currentIndexChanged.connect(self.load_recent_file)
 
     def checkfor_version(self):
@@ -410,9 +401,8 @@ class AppWindow(QMainWindow):
             v.response = txt
             # add a key with '?' as value
             self.add_new_table_key(v.key, v.value)
-            vheader_row = self.vheaderitems.index(v.key)
             # add data to this key:
-            self.ui.CifItemsTable.setText(vheader_row, COL_EDIT, v.value)
+            self.ui.CifItemsTable.setText(v.key, COL_EDIT, v.value)
         self.save_cif_and_display()
         if n:
             self.subwin.statusBar.showMessage('Forms saved')
@@ -503,33 +493,6 @@ class AppWindow(QMainWindow):
             txt = combo.itemText(file_index)
             self.load_cif_file(txt)
 
-    def vheader_section_click(self, section):
-        item = self.ui.CifItemsTable.verticalHeaderItem(section)
-        itemtext = item.text()
-        # be sure not to get vheader with name of last click:
-        if section != self.vheader_clicked and self.vheader_clicked > -1:
-            self.restore_vertical_header()
-            self.vheader_clicked = -1
-            return
-            # get back previous name
-        if self.vheader_clicked > -1:
-            item.setText(self.vheaderitems[self.vheader_clicked])
-            self.vheader_clicked = -1
-            return
-        try:
-            txt = essential_keys[itemtext]
-            if txt:
-                item.setText(txt)
-            self.vheader_clicked = section
-            return
-        except KeyError:
-            pass
-
-    def restore_vertical_header(self):
-        for row_num, key in enumerate(self.vheaderitems):
-            item_key = MyTableWidgetItem(key)
-            self.ui.CifItemsTable.setVerticalHeaderItem(row_num, item_key)
-
     def make_table(self):
         """
         Runs the multitable program to make a report table.
@@ -598,8 +561,8 @@ class AppWindow(QMainWindow):
         Saves the current cif file and stores the information of the third column.
         """
         # restore header, otherwise item is not saved:
-        self.restore_vertical_header()
         table = self.ui.CifItemsTable
+        table.restore_vertical_header()
         table.setCurrentItem(None)  # makes sure also the currently edited item is saved
         rowcount = table.model().rowCount()
         columncount = table.model().columnCount()
@@ -693,15 +656,14 @@ class AppWindow(QMainWindow):
         if not selected_row_text:
             return None
         equipment = self.settings.load_equipment_template_as_dict(selected_row_text)
-        if self.vheaderitems:
+        if self.ui.CifItemsTable.vheaderitems:
             for key in equipment:
-                if key not in self.vheaderitems:
+                if key not in self.ui.CifItemsTable.vheaderitems:
                     self.add_new_table_key(key, equipment[key])
-                row = self.vheaderitems.index(key)
                 # add missing item to data sources column:
-                self.ui.CifItemsTable.setText(row, COL_DATA, equipment[key])
-                self.ui.CifItemsTable.setBackground(row, COL_DATA, light_green)
-                self.ui.CifItemsTable.setText(row, COL_EDIT, equipment[key])
+                self.ui.CifItemsTable.setText(key, COL_DATA, equipment[key])
+                self.ui.CifItemsTable.setBackground(key, COL_DATA, light_green)
+                self.ui.CifItemsTable.setText(key, COL_EDIT, equipment[key])
 
     def add_new_table_key(self, key: str, value: str = '?') -> None:
         """
@@ -713,7 +675,7 @@ class AppWindow(QMainWindow):
             self.cif.order.insert(0, key)
         if not key.startswith('_'):
             return
-        self.vheaderitems.insert(0, key)
+        self.ui.CifItemsTable.vheaderitems.insert(0, key)
         self.add_row(key=key, value='?', at_start=True)
         if key in [x.lower() for x in combobox_fields]:
             self.add_property_combobox(combobox_fields[key], 0)
@@ -1198,7 +1160,7 @@ class AppWindow(QMainWindow):
         """
         Opens the cif file and fills information into the main table.
         """
-        self.vheaderitems.clear()
+        self.ui.CifItemsTable.vheaderitems.clear()
         self.ui.MainStackedWidget.setCurrentIndex(0)
         self.ui.CifItemsTable.setRowCount(0)
         self.ui.CifItemsTable.clear()
@@ -1379,8 +1341,8 @@ class AppWindow(QMainWindow):
         # of CifItemsTable with cif values:
         for num in range(self.ui.CifItemsTable.model().rowCount()):
             vhead = self.ui.CifItemsTable.model().headerData(num, Qt.Vertical)
-            if not vhead in self.vheaderitems:
-                self.vheaderitems.append(vhead)
+            if not vhead in self.ui.CifItemsTable.vheaderitems:
+                self.ui.CifItemsTable.vheaderitems.append(vhead)
                 # adding comboboxes:
                 if vhead.lower() in combobox_fields:
                     self.add_property_combobox(combobox_fields[vhead.lower()], num)
@@ -1394,7 +1356,7 @@ class AppWindow(QMainWindow):
         for miss_data in self.missing_data:
             # add missing item to data sources column:
             try:
-                row_num = self.vheaderitems.index(miss_data)
+                row_num = self.ui.CifItemsTable.vheaderitems.index(miss_data)
             except ValueError:
                 continue
             tab_item = MyTableWidgetItem()
@@ -1425,7 +1387,7 @@ class AppWindow(QMainWindow):
                             tab_item.setBackground(yellow)
                 tab_item.setToolTip(str(sources[miss_data.lower()][1]))
             except KeyError as e:
-                #print(e, '##', miss_data)
+                # print(e, '##', miss_data)
                 pass
             # items from data sources should not be editable
             if not miss_data in text_field_keys:
@@ -1445,7 +1407,7 @@ class AppWindow(QMainWindow):
             except TypeError:
                 print('Bad value in property:', value)
                 if DEBUG:
-                    raise 
+                    raise
                 continue
         combobox.setCurrentIndex(0)
 
