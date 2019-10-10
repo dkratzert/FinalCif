@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/Users/daniel/GitHub/FinalCif/./gui/responseformseditor.ui'
+# Form implementation generated from reading ui file './gui\responseformseditor.ui'
 #
-# Created by: PyQt5 UI code generator 5.13.0
+# Created by: PyQt5 UI code generator 5.12.2
 #
 # WARNING! All changes made in this file will be lost!
-
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
@@ -108,3 +107,5 @@ class Ui_ResponseFormsEditor(object):
         self.SavePushButton.setText(_translate("ResponseFormsEditor", "Save Response Forms"))
         self.show_report_Button.setText(_translate("ResponseFormsEditor", "Back To Report"))
         self.show_Forms_Button.setText(_translate("ResponseFormsEditor", "Edit Response Forms"))
+
+
