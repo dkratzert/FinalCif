@@ -1,5 +1,8 @@
 # -*- mode: python ; coding: utf-8 -*-
 
+import sys
+from os import path
+
 block_cipher = None
 
 site_packages = next(p for p in sys.path if 'site-packages' in p)
