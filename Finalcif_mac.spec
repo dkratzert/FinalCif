@@ -2,12 +2,14 @@
 
 block_cipher = None
 
+site_packages = next(p for p in sys.path if 'site-packages' in p)
 
 a = Analysis(['finalcif.py'],
-             pathex=['D:\\GitHub\\FinalCif'],
+             pathex=['/Users/daniel/GitHub/FinalCif'],
              binaries=[],
-             datas=[],
-             hiddenimports=[],
+             datas=[('./gui', 'gui'), (path.join(site_packages,"docx","templates"), 'docx/templates'),
+                    ('./template', 'template'), ('icon', 'icon')],
+             hiddenimports=['tools.misc', 'tools.settings', 'datafiles', 'gemmi'],
              hookspath=[],
              runtime_hooks=[],
              excludes=[],
@@ -21,12 +23,13 @@ exe = EXE(pyz,
           a.scripts,
           [],
           exclude_binaries=True,
-          name='finalcif',
+          name='FinalCif',
           debug=False,
           bootloader_ignore_signals=False,
           strip=False,
           upx=True,
-          console=True )
+          icon='icon/finalcif2.ico',
+          console=False )
 coll = COLLECT(exe,
                a.binaries,
                a.zipfiles,
@@ -34,4 +37,4 @@ coll = COLLECT(exe,
                strip=False,
                upx=True,
                upx_exclude=[],
-               name='finalcif')
+               name='FinalCif')
