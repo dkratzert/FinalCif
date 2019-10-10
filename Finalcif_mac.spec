@@ -20,24 +20,27 @@ a = Analysis(['finalcif.py'],
              win_private_assemblies=False,
              cipher=block_cipher,
              noarchive=False)
+
 pyz = PYZ(a.pure, a.zipped_data,
              cipher=block_cipher)
+
 exe = EXE(pyz,
           a.scripts,
+          a.binaries,
+          a.zipfiles,
+          a.datas,
           [],
-          exclude_binaries=True,
-          name='FinalCif',
+          name='finalcif',
           debug=False,
           bootloader_ignore_signals=False,
           strip=False,
           upx=True,
           icon='icon/finalcif2.ico',
+          upx_exclude=[],
+          runtime_tmpdir=None,
           console=False )
-coll = COLLECT(exe,
-               a.binaries,
-               a.zipfiles,
-               a.datas,
-               strip=False,
-               upx=True,
-               upx_exclude=[],
-               name='FinalCif')
+
+app = BUNDLE(exe,
+             name='finalcif.app',
+             icon='icon/finalcif2.ico',
+             bundle_identifier=None)
