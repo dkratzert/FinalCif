@@ -60,11 +60,17 @@ disable_debug('finalcif.py')
 
 recompile_ui()
 
-subprocess.run(r""".\venv\Scripts\pyinstaller.exe --icon=icon\multitable.ico -F Finalcif.spec --clean""".split())
-
 print(arg)
 
 if arg == 'copy':
-    copy_to_remote()
+    subprocess.run(r""".\venv\Scripts\pyinstaller.exe --icon=icon\multitable.ico -F Finalcif_onefile.spec --clean""".split())
+    #copy_to_remote()
+else:
+    subprocess.run(r""".\venv\Scripts\pyinstaller.exe -D Finalcif_installer.spec --clean""".split())
+
+    innosetup_compiler = r'D:/Program Files (x86)/Inno Setup 5/ISCC.exe'
+    # Run 64bit setup compiler
+    subprocess.run([innosetup_compiler,
+                    r'scripts\finalcif-install_win64.iss', ])
 
 print('Created version: {}'.format(VERSION))

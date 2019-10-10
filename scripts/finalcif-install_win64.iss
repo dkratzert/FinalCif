@@ -11,7 +11,7 @@
 ; NOTE: The value of AppId uniquely identifies this application.
 ; Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
-AppId={{FD3791DD-E642-47A6-8434-FBD976271019}}
+AppId={3B40F796-CFCE-4C05-9587-2EACA3C1AACC}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 AppPublisher={#MyAppPublisher}
@@ -46,7 +46,7 @@ AppSupportPhone=+49 761 203 6156
 VersionInfoProductName={#MyAppName}
 AlwaysShowComponentsList=False
 ShowComponentSizes=False
-SetupIconFile="..\icons\strf.ico"
+SetupIconFile="..\icon\finalcif2.ico"
 
 [UninstallRun]
 
@@ -60,8 +60,8 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 [Run]
 
 [Icons]
-Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"; IconFilename: "{app}\icons\strf.ico"
-Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppName}.exe"; WorkingDir: "{app}"; IconFilename: "{app}\icons\strf.ico"; Check: IsWin64
+Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"; IconFilename: "{app}\icon\finalcif2.ico"
+Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppName}.exe"; WorkingDir: "{app}"; IconFilename: "{app}\icon\finalcif2.ico"; Check: IsWin64
 
 [UninstallDelete]
 Type: files; Name: "{app}\*.pyc"
