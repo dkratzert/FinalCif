@@ -146,6 +146,7 @@ order = [
     '_exptl_transmission_factor_max',
     '_exptl_special_details',
     '_diffrn_ambient_temperature',
+    '_diffrn_ambient_environment',
     '_diffrn_radiation_type',
     '_diffrn_radiation_wavelength',
     '_diffrn_radiation_source',  # superseeded by _diffrn_source
@@ -249,5 +250,6 @@ order = [
     '_atom_type_scat_source',
 
     '_geom_special_details',
+    
 
 ]
