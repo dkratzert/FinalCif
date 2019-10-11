@@ -1322,8 +1322,13 @@ class AppWindow(QMainWindow):
         if self.manufacturer == 'bruker':
             sources = BrukerData(self, self.cif).sources
         if self.manufacturer == 'rigaku':
+            vheadlist = []
+            for num in range(self.ui.CifItemsTable.model().rowCount()):
+                vheadlist.append(self.ui.CifItemsTable.model().headerData(num, Qt.Vertical))
             sources = self.rigakucif.sources
             for x in sources:
+                if x in vheadlist:
+                    continue
                 if x and x not in self.missing_data:
                     self.add_row(x, '?', at_start=True)
                     self.missing_data.append(x)
