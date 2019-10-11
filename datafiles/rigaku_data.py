@@ -48,7 +48,8 @@ class RigakuData():
                 if key not in self.exclude_keys:
                     #print(key, gemmi.cif.as_string(value))
                     self.sources[key] = (gemmi.cif.as_string(value), self.fileobj.name)
-            if item.loop is not None:
+            # loops currently dont work:
+            '''if item.loop is not None:
                 print('loop')
                 tags = item.loop.tags
                 table = self.block.find(tags)
@@ -61,4 +62,4 @@ class RigakuData():
                     print([x for x in r])
                     loop.append([x for x in r])
                 print(loop)
-                self.loops.append(loop)
+                self.loops.append(loop)'''
