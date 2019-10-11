@@ -56,8 +56,6 @@ TODO:
 - detect twins and write proper report text about them.
 - add loops to templates
 - write more tests!
-- support stoe cif
-- support all of .cifod
 - Add one picture of the vzs file to report.
 - option for default directory?
 
