@@ -146,6 +146,7 @@ essential_keys = {
     '_diffrn_radiation_monochromator'                  : r'The typ monochromator type to get _diffrn_radiation_wavelength',
     '_olex2_diffrn_ambient_temperature_device'         : 'Device to cool the crystal during measurement',
     '_diffrn_radiation_probe'                          : 'The nature of the radiation used',
+    '_diffrn_source_power'                             : 'The power in kilowatts at which the radiation source was operated',
     '_diffrn_source'                                   : "The general class of the source of radiation, e.g.'sealed X-ray tube'",
     '_diffrn_source_type'                              : 'The make, model or name of the source of radiation.',
     '_diffrn_source_current'                           : 'The current in milliamperes at which the radiation source was operated',
