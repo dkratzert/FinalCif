@@ -1211,6 +1211,15 @@ class AppWindow(QMainWindow):
                 self.rigakucif = RigakuData(rigaku)
         except StopIteration:
             pass
+        # quick hack in order to support STOE:
+        # TODO: Make this clean
+        try:
+            rigaku = Path('./').glob('*.cfx').__next__()
+            if rigaku.exists():
+                self.manufacturer = 'rigaku'
+                self.rigakucif = RigakuData(rigaku)
+        except StopIteration:
+            pass
         self.ui.CifItemsTable.clearContents()
         # self.ui.CifItemsTable.clear() # clears header
         try:
@@ -1387,8 +1396,9 @@ class AppWindow(QMainWindow):
                         else:
                             tab_item.setBackground(yellow)
                 tab_item.setToolTip(str(sources[miss_data][1]))
-            except KeyError as e:
-                # print(e, '##', miss_data)
+            except (KeyError, TypeError) as e:
+                # TypeError my originate from incomplete self.missing_data list!
+                #print(e, '##', miss_data)
                 pass
             # items from data sources should not be editable
             if not miss_data in text_field_keys:
