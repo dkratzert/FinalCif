@@ -27,6 +27,8 @@ class Dataset():
         self.filetype = 4
         self.domain = 1
         self.numerical = False
+        # TODO: implement this:
+        self.raw_filetype = 'raw' # or mul
 
     def __repr__(self):
         out = ''
@@ -187,7 +189,7 @@ class Sadabs():
 
 if __name__ == '__main__':
     print('###############\n\n')
-    s = Sadabs(r'D:/frames/BB_29/')
+    s = Sadabs(r'/Volumes/nifty/test_workordner/test766-twin/work/test766_0m')
     print(s)
     for dat in s:
         print(dat)

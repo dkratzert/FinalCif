@@ -214,6 +214,8 @@ essential_keys = {
     '_refine_ls_shift/su_mean'                         : 'The average ratio of the final least-squares parameter shift to the final standard uncertainty',
     '_publ_section_references'                         : 'References for programs used to process the data',
     '_symmetry_cell_setting'                           : 'The cell settings for this space-group symmetry',
+    '_twin_individual_twin_lattice_type'               : 'Identification of the symmetry relationships between the twin lattices',
+    '_twin_special_details'                            : 'Information about twinning in the sample not described elsewhere',
     '_chemical_name_systematic'                        : 'IUPAC or Chemical Abstracts full name of the compound.',
     '_chemical_name_common'                            : 'Trivial name by which the compound is commonly known',
     '_chemical_melting_point'                          : 'The temperature in kelvins at which the crystalline solid changes to a liquid',
@@ -563,6 +565,20 @@ predef_prop_templ = [{'name'  : 'Crystal Color',
                                   ]
                                  ]
 
+                      },
+                     {'name'  : 'Twin relationship',
+                      'values': ['_twin_individual_twin_lattice_type',
+                                 ['',
+                                  'ref',
+                                  'mt_I',
+                                  'mt_II',
+                                  'mt_I+II',
+                                  'rmt',
+                                  'pmt',
+                                  'rpmt',
+                                  'nmt',
+                                  ]
+                                 ]
                       }
 
                      ]

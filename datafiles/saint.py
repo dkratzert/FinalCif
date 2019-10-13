@@ -11,23 +11,33 @@ from pathlib import Path
 
 
 class SaintListFile():
-    def __init__(self, name_patt: str):
+    def __init__(self, name_patt: str, direct_name=None):
         self.cell_reflections = ''
         self.cell_res_min_2t = 0.0
         self.cell_res_max_2t = 0.0
         self.aquire_software = ''
         self.version = ''
         self.filename = Path('.')
-        p = Path('./')
-        saintfiles = p.glob(name_patt)
-        for saintfile in saintfiles:
-            if saintfile:
-                self._fileobj = Path(saintfile)
-                self.filename = self._fileobj.absolute()
-                try:
-                    self.parse_file()
-                except Exception as e:
-                    print('Unable to parse saint list file:', e)
+        self.is_twin = False
+        self.twinlaw = []
+        if direct_name:
+            self._fileobj = Path(direct_name)
+            self.filename = self._fileobj.absolute()
+            try:
+                self.parse_file()
+            except Exception as e:
+                print('Unable to parse saint list file:', e)
+        else:
+            p = Path('./')
+            saintfiles = p.glob(name_patt)
+            for saintfile in saintfiles:
+                if saintfile:
+                    self._fileobj = Path(saintfile)
+                    self.filename = self._fileobj.absolute()
+                    try:
+                        self.parse_file()
+                    except Exception as e:
+                        print('Unable to parse saint list file:', e)
 
     def parse_file(self):
         text = self._fileobj.read_text(encoding='ascii', errors='ignore').splitlines(keepends=False)
@@ -65,8 +75,19 @@ class SaintListFile():
                     self.cell_res_max_2t = summary[7] or 0.0
             if line.startswith("Orientation ('UB') matrix"):
                 orientation += 1
-            if summary and orientation == 2:
-                break
+            if line.startswith('Twin Law'):
+                self.is_twin = True
+                self.twinlaw.clear()
+                # TODO: support multi-twin cases:
+                try:
+                    self.twinlaw.append([float(x) for x in text[num+2].split()])
+                    self.twinlaw.append([float(x) for x in text[num+3].split()])
+                    self.twinlaw.append([float(x) for x in text[num+4].split()])
+                except (KeyError, ValueError):
+                    print('Could not determine twin law fro m._ls file.')
+                    pass
+            #if summary and orientation == 2:
+            #    break
             if line.startswith('Frames were acquired'):
                 """
                 Frames were acquired with BIS 2018.9.0.3/05-Dec-2018 && APEX3_2018.7-2
@@ -91,12 +112,20 @@ class SaintListFile():
         out += 'max 2 theta: {}\n'.format(self.cell_res_max_2t)
         if self.aquire_software:
             out += 'Aquire software: {}\n'.format(self.aquire_software)
+        out += 'Twin integration {}\n'.format(self.is_twin)
+        if self.is_twin:
+            out += 'With twin law: \n'
+            out += '\n'.join(['{:>7.4f} {:>7.4f} {:>7.4f}'.format(*x) for x in self.twinlaw])
         return out
 
 if __name__ == "__main__":
-    saint = SaintListFile('test-data/TB_fs20_v1_0m._ls')
+    saint = SaintListFile('', direct_name='test-data/TB_fs20_v1_0m._ls')
     print(saint)
 
     print('#####')
-    s = SaintListFile('test-data/Esser_JW316_01._ls')
+    s = SaintListFile('', direct_name='test-data/Esser_JW316_01._ls')
+    print(s)
+
+    print('#####')
+    s = SaintListFile('', direct_name='/Volumes/nifty/test_workordner/test766-twin/work/test766_0m._ls')
     print(s)
