@@ -5,8 +5,8 @@
 #  and you think this stuff is worth it, you can buy me a beer in return. 
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
-# 
-
+#
+import os
 from pathlib import Path
 
 
@@ -18,6 +18,32 @@ class ParserMixin():
     def __init__(self, filename: str):
         self._fileobj = Path(filename)
         self.filename = self._fileobj.absolute()
+
+
+def get_file_to_parse(fileobj: Path = None, name_pattern: str = '', base_directory: str = '.'):
+    """
+    Either fileobjs is given, then the parser uses this file, or a name pattern is given, then
+    a file is searched in base_directory in order to parse this file.
+    :param fileobj: The Path object to parse.
+    :param name_pattern: A pattern like '*_0m._ls' to find the file.
+    :param base_directory: The directory where to find files.
+    :return: a Path object
+
+    >>> get_file_to_parse(base_directory='test-data', name_pattern='*_0m._ls')
+    PosixPath('test-data/DK_Zucker2_0m._ls')
+    >>> get_file_to_parse(fileobj=Path('test-data/TB_fs20_v1_0m._ls'))
+    PosixPath('test-data/TB_fs20_v1_0m._ls')
+    """
+    if fileobj and fileobj.is_file():
+        return fileobj
+    else:
+        p = Path(base_directory)
+        files = list(p.glob(name_pattern))
+        files = sorted(files, key=os.path.getmtime, reverse=True)
+        for saintfile in files:
+            if saintfile:
+                fileobj = Path(saintfile)
+                return fileobj
 
 
 class DSRFind():

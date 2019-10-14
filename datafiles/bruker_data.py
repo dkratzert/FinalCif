@@ -206,7 +206,7 @@ class BrukerData(object):
 
     @property
     def sadabs(self):
-        sad = Sadabs(self.basename)
+        sad = Sadabs(basename=self.basename+'*.abs')
         # self.sad_fileLE, button = self.app.add_new_datafile(0, 'SADABS', 'add specific .abs file here, if needed...')
         # self.sad_fileLE.setText(str(sad.filename.absolute()))
         # button.clicked.connect(self.app.get_cif_file_block)
