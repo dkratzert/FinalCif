@@ -14,6 +14,7 @@ import os
 import re
 from pathlib import Path
 
+from datafiles.utils import get_file_to_parse
 from tools.misc import to_float, to_int
 
 
@@ -52,7 +53,7 @@ class Sadabs():
     _rint_regex = re.compile(r'^.*Rint\s=.*observations and')
     _rint3sig_regex = re.compile(r'^.*Rint\s=.*observations with')
 
-    def __init__(self, basename: str):
+    def __init__(self, basename: str = '', fileobj: Path = None):
         """
         >>> s = Sadabs(r'test-data/IK_WU19.abs')  # this is a sadabs file
         >>> s.twin_components
@@ -92,17 +93,12 @@ class Sadabs():
         self.input_files = []
         self.datasets = []
         self.batch_input = None
-        self.filename = Path('./')
-        p = Path('.')
-        sadfiles = list(p.glob(basename+'*.abs'))
-        sadfiles = sorted(sadfiles, key=os.path.getmtime, reverse=True)
-        if not sadfiles:
-            sadfiles = p.glob('*.abs')
-        for sadfile in sadfiles:
-            if sadfile:
-                self._fileobj = Path(sadfile)
-                self.filename = self._fileobj.absolute()
-                self.parse_file()
+        if basename:
+            self._fileobj = get_file_to_parse(name_pattern=basename, base_directory='.')
+        else:
+            self._fileobj = get_file_to_parse(fileobj=fileobj)
+        self.filename = self._fileobj.absolute()
+        self.parse_file()
 
     def parse_file(self):
         n = 0
@@ -189,7 +185,7 @@ class Sadabs():
 
 if __name__ == '__main__':
     print('###############\n\n')
-    s = Sadabs(r'/Volumes/nifty/test_workordner/test766-twin/work/test766_0m')
+    s = Sadabs(fileobj=Path(r'/Volumes/nifty/test_workordner/test766-twin/work/test766.abs'))
     print(s)
     for dat in s:
         print(dat)

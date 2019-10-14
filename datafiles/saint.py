@@ -5,9 +5,10 @@
 #  and you think this stuff is worth it, you can buy me a beer in return. 
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
-# 
-
+#
 from pathlib import Path
+
+from datafiles.utils import get_file_to_parse
 
 
 class SaintListFile():
@@ -17,27 +18,17 @@ class SaintListFile():
         self.cell_res_max_2t = 0.0
         self.aquire_software = ''
         self.version = ''
-        self.filename = Path('.')
         self.is_twin = False
         self.twinlaw = []
         if direct_name:
-            self._fileobj = Path(direct_name)
-            self.filename = self._fileobj.absolute()
-            try:
-                self.parse_file()
-            except Exception as e:
-                print('Unable to parse saint list file:', e)
+            self._fileobj = get_file_to_parse(fileobj=Path(direct_name))
         else:
-            p = Path('./')
-            saintfiles = p.glob(name_patt)
-            for saintfile in saintfiles:
-                if saintfile:
-                    self._fileobj = Path(saintfile)
-                    self.filename = self._fileobj.absolute()
-                    try:
-                        self.parse_file()
-                    except Exception as e:
-                        print('Unable to parse saint list file:', e)
+            self._fileobj = get_file_to_parse(name_pattern=name_patt, base_directory='.')
+        self.filename = self._fileobj.absolute()
+        try:
+            self.parse_file()
+        except Exception as e:
+            print('Unable to parse saint list file:', e)
 
     def parse_file(self):
         text = self._fileobj.read_text(encoding='ascii', errors='ignore').splitlines(keepends=False)
@@ -119,7 +110,7 @@ class SaintListFile():
         return out
 
 if __name__ == "__main__":
-    saint = SaintListFile('', direct_name='test-data/TB_fs20_v1_0m._ls')
+    saint = SaintListFile(name_patt='', direct_name='test-data/TB_fs20_v1_0m._ls')
     print(saint)
 
     print('#####')
