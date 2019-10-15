@@ -195,7 +195,7 @@ essential_keys = {
     '_refine_ls_weighting_scheme'                      : 'The weighting scheme applied in the least-squares process',
     '_refine_ls_weighting_details'                     : 'A description of special aspects of the weighting scheme used in the least-squares refinement',
     '_atom_sites_solution_primary'                     : 'Codes which identify the methods used to locate the initial atom sites',
-    '_atom_sites_solution_secondary'                   : 'Codes which identify how the remaining non-hydrogen sites were located',
+    #'_atom_sites_solution_secondary'                   : 'Codes which identify how the remaining non-hydrogen sites were located',
     '_atom_sites_solution_hydrogens'                   : 'Codes which identify the methods used to locate the initial hydrogen atom sites',
     '_refine_ls_extinction_method'                     : 'A description of the extinction-correction method applied',
     '_refine_ls_extinction_coef'                       : 'The extinction coefficient used to calculate the correction factor applied to the structure-factor data',
