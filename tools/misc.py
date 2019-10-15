@@ -146,7 +146,7 @@ essential_keys = {
     '_diffrn_radiation_monochromator'                  : r'The typ monochromator type to get _diffrn_radiation_wavelength',
     '_olex2_diffrn_ambient_temperature_device'         : 'Device to cool the crystal during measurement',
     '_diffrn_radiation_probe'                          : 'The nature of the radiation used',
-    '_diffrn_source_power'                             : 'The power in kilowatts at which the radiation source was operated',
+    #'_diffrn_source_power'                             : 'The power in kilowatts at which the radiation source was operated',
     '_diffrn_source'                                   : "The general class of the source of radiation, e.g.'sealed X-ray tube'",
     '_diffrn_source_type'                              : 'The make, model or name of the source of radiation.',
     '_diffrn_source_current'                           : 'The current in milliamperes at which the radiation source was operated',
@@ -171,7 +171,7 @@ essential_keys = {
     '_diffrn_reflns_Laue_measured_fraction_full'       : 'Fraction of Laue unique reflections measured out to the resolution given in _diffrn_reflns_theta_full',
     '_diffrn_reflns_point_group_measured_fraction_max' : 'Fraction of crystal point-group unique reflections measured out to the resolution given in _diffrn_reflns_theta_max',
     '_diffrn_reflns_point_group_measured_fraction_full': 'Fraction of crystal point-group unique reflections measured out to the resolution given in _diffrn_reflns_theta_full',
-    '_diffrn_source_target'                            : 'The chemical element symbol for the X-ray target (usually the anode) used to generate X-rays.',
+    #'_diffrn_source_target'                            : 'The chemical element symbol for the X-ray target (usually the anode) used to generate X-rays.',
     '_geom_special_details'                            : 'The description of geometrical extra information such as least-squares planes',
     '_reflns_number_total'                             : 'The total number of reflections in the _refln_ list (not the _diffrn_refln_ list)',
     '_reflns_number_gt'                                : 'The number of reflections in the _refln_ list that are significantly intense',
@@ -213,12 +213,15 @@ essential_keys = {
     '_refine_ls_shift/su_max'                          : 'The largest ratio of the final least-squares parameter shift to the final standard uncertainty',
     '_refine_ls_shift/su_mean'                         : 'The average ratio of the final least-squares parameter shift to the final standard uncertainty',
     '_publ_section_references'                         : 'References for programs used to process the data',
-    '_symmetry_cell_setting'                           : 'The cell settings for this space-group symmetry',
-    '_twin_individual_twin_lattice_type'               : 'Identification of the symmetry relationships between the twin lattices',
-    '_twin_special_details'                            : 'Information about twinning in the sample not described elsewhere',
+    #'_symmetry_cell_setting'                           : 'The cell settings for this space-group symmetry',
     '_chemical_name_systematic'                        : 'IUPAC or Chemical Abstracts full name of the compound.',
     '_chemical_name_common'                            : 'Trivial name by which the compound is commonly known',
     '_chemical_melting_point'                          : 'The temperature in kelvins at which the crystalline solid changes to a liquid',
+}
+
+twin_keys = {
+    '_twin_individual_twin_lattice_type': 'Identification of the symmetry relationships between the twin lattices',
+    '_twin_special_details'             : 'Information about twinning in the sample not described elsewhere',
 }
 
 non_centrosymm_keys = ('_chemical_absolute_configuration', '_refine_ls_abs_structure_Flack',
