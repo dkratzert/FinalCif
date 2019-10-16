@@ -32,7 +32,8 @@ class BrukerData(object):
         self.cif = cif
         self.app = app
         self.basename = cif.fileobj.stem.split('_0m')[0]
-        saint_data = self.saint_log('*_0m._ls')
+        self.saint_data = self.saint_log('*_0m._ls')
+        # This is only in this list file, not in the global:
         saint_first_ls = self.saint_log('*_01._ls')
         sp = self.get_solution_program()
         solution_primary = ''
@@ -137,13 +138,13 @@ class BrukerData(object):
             self.add_to_cif(cif_as_list, key='_loop', value='')"""
         # All sources that are not filled with data will be yellow in the main table
         #                          data                         tooltip
-        sources = {'_cell_measurement_reflns_used'          : (saint_data.cell_reflections, saint_data.filename.name),
-                   '_cell_measurement_theta_min'            : (saint_data.cell_res_min_theta, saint_data.filename.name),
-                   '_cell_measurement_theta_max'            : (saint_data.cell_res_max_theta, saint_data.filename.name),
+        sources = {'_cell_measurement_reflns_used'          : (self.saint_data.cell_reflections, self.saint_data.filename.name),
+                   '_cell_measurement_theta_min'            : (self.saint_data.cell_res_min_theta, self.saint_data.filename.name),
+                   '_cell_measurement_theta_max'            : (self.saint_data.cell_res_max_theta, self.saint_data.filename.name),
                    '_computing_data_collection'             : (
-                       saint_first_ls.aquire_software, saint_data.filename.name),
-                   '_computing_cell_refinement'             : (saint_data.version, saint_data.filename.name),
-                   '_computing_data_reduction'              : (saint_data.version, saint_data.filename.name),
+                       saint_first_ls.aquire_software, self.saint_data.filename.name),
+                   '_computing_cell_refinement'             : (self.saint_data.version, self.saint_data.filename.name),
+                   '_computing_data_reduction'              : (self.saint_data.version, self.saint_data.filename.name),
                    '_exptl_absorpt_correction_type'         : abscorrtype,
                    '_exptl_absorpt_correction_T_min'        : abs_tmin,
                    '_exptl_absorpt_correction_T_max'        : abs_tmax,

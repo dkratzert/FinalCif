@@ -44,8 +44,8 @@ class SaintListFile():
             if line.startswith('Refinement includes'):
                 with suppress(IndexError):
                     self.nsamples = int(line.split()[2])
-                with suppress(IndexError):
-                    self.components_firstsample = text[num+1].split()[3]
+                with suppress(IndexError, ValueError):
+                    self.components_firstsample = int(text[num+1].split()[3])
             if line.startswith('Reflection Summary:'):
                 """
                 Reflection Summary:

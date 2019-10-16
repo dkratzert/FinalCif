@@ -121,11 +121,12 @@ class MyCifTable(QTableWidget, ItemTextMixin):
             return True
         return QObject.eventFilter(self, widget, event)
 
-    def setText(self, key: str, column: int, txt: str):
+    def setText(self, key: str, column: int, txt: str, row: int = None):
         """
         Set text in current table cell regardless of the containing item.
         """
-        row = self.vheaderitems.index(key)
+        if row is None:
+            row = self.vheaderitems.index(key)
         self.setCurrentCell(row, column)
         item = self.currentItem()
         if item:
