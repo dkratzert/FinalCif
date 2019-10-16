@@ -11,7 +11,9 @@ import subprocess
 import sys
 import time
 import traceback
+from contextlib import suppress
 from pathlib import Path, WindowsPath
+from pprint import pprint
 from typing import Tuple
 
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkReply, QNetworkRequest
@@ -53,6 +55,7 @@ from PyQt5.QtWidgets import QApplication, QFileDialog, QHeaderView, QListWidget,
 
 """
 TODO:
+- creation date of report docx is not the current date/time?
 - detect twins and write proper report text about them.
 - add loops to templates
 - write more tests!
@@ -1203,7 +1206,7 @@ class AppWindow(QMainWindow):
         except OSError:
             print("Can't change the Current Working Directory")
         try:
-            rigaku = Path('./').glob('*.cif_od').__next__()
+            rigaku = self.cif.fileobj.parent.glob('*.cif_od').__next__()
             if rigaku.exists():
                 self.manufacturer = 'rigaku'
                 self.rigakucif = RigakuData(rigaku)
@@ -1212,7 +1215,7 @@ class AppWindow(QMainWindow):
         # quick hack in order to support STOE:
         # TODO: Make this clean
         try:
-            rigaku = Path('./').glob('*.cfx').__next__()
+            rigaku = self.cif.fileobj.parent.glob('*.cfx').__next__()
             if rigaku.exists():
                 self.manufacturer = 'rigaku'
                 self.rigakucif = RigakuData(rigaku)
@@ -1313,6 +1316,18 @@ class AppWindow(QMainWindow):
             zinfo.show()
             zinfo.exec()
 
+    def set_pair(self, key: str, value: str):
+        """
+        Start a new cif pair and add it to the main table.
+        """
+        self.ui.CifItemsTable.insertRow(0)
+        head_item_key = MyTableWidgetItem(key)
+        self.ui.CifItemsTable.setVerticalHeaderItem(0, head_item_key)
+        self.ui.CifItemsTable.setText(0, COL_CIF, '?', row=0)
+        self.ui.CifItemsTable.setText(0, COL_DATA, value, row=0)
+        self.missing_data.append(key)
+        self.cif.block.set_pair(key, value)
+
     def get_data_sources(self):
         """
         Tries to determine the sources of missing data in the cif file, e.g. Tmin/Tmax from SADABS.
@@ -1320,7 +1335,22 @@ class AppWindow(QMainWindow):
         sources = None
         self.check_Z()
         if self.manufacturer == 'bruker':
-            sources = BrukerData(self, self.cif).sources
+            bdata = BrukerData(self, self.cif)
+            sources = bdata.sources
+            if bdata.saint_data.is_twin and bdata.saint_data.components_firstsample == 2:
+                with suppress(Exception):
+                    law = bdata.saint_data.twinlaw[list(bdata.saint_data.twinlaw.keys())[0]]
+                    self.set_pair('_twin_individual_twin_matrix_33', str(law[2][2]))
+                    self.set_pair('_twin_individual_twin_matrix_32', str(law[2][1]))
+                    self.set_pair('_twin_individual_twin_matrix_31', str(law[2][0]))
+                    self.set_pair('_twin_individual_twin_matrix_23', str(law[1][2]))
+                    self.set_pair('_twin_individual_twin_matrix_22', str(law[1][1]))
+                    self.set_pair('_twin_individual_twin_matrix_21', str(law[1][0]))
+                    self.set_pair('_twin_individual_twin_matrix_13', str(law[0][2]))
+                    self.set_pair('_twin_individual_twin_matrix_12', str(law[0][1]))
+                    self.set_pair('_twin_individual_twin_matrix_11', str(law[0][0]))
+                    self.set_pair('_twin_individual_id', str(bdata.saint_data.components_firstsample))
+                    self.set_pair('_twin_special_details', 'The data was integrated as a 2-component twin.')
         if self.manufacturer == 'rigaku':
             vheadlist = []
             for num in range(self.ui.CifItemsTable.model().rowCount()):
@@ -1523,7 +1553,7 @@ if __name__ == '__main__':
         """
         errortext = 'FinalCif crash report\n\n'
         errortext += time.asctime(time.localtime(time.time())) + '\n'
-        errortext += "Finalcif crashed during the following opertaion:" + '\n'
+        errortext += "Finalcif crashed during the following operation:" + '\n'
         errortext += '-' * 80 + '\n'
         errortext += ''.join(traceback.format_tb(error_traceback)) + '\n'
         errortext += str(exctype.__name__) + ': '
