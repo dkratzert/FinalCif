@@ -56,7 +56,6 @@ class ItemTextMixin:
 
 
 class MyCifTable(QTableWidget, ItemTextMixin):
-
     row_deleted = QtCore.pyqtSignal(str)
 
     def __init__(self, parent: QWidget = None):
@@ -95,7 +94,7 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         try:
             txt = essential_keys[itemtext]
             if txt:
-                #item.setText('\n'.join(wrap(txt, 20)))
+                # item.setText('\n'.join(wrap(txt, 20)))
                 item.setText(txt)
             self.vheader_clicked = section
             return
@@ -219,6 +218,7 @@ class MyComboBox(QComboBox):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.parent = parent
         self.setFocusPolicy(Qt.StrongFocus)
         self.setSizeAdjustPolicy(QComboBox.AdjustToMinimumContentsLength)
         self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)

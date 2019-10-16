@@ -1411,7 +1411,7 @@ class AppWindow(QMainWindow):
         """
         Adds a QComboBox to the CifItemsTable with the content of special_fields or property templates.
         """
-        combobox = MyComboBox()
+        combobox = MyComboBox(self.ui.CifItemsTable)
         # print('special:', row_num, miss_data)
         self.ui.CifItemsTable.setCellWidget(row_num, COL_EDIT, combobox)
         self.ui.CifItemsTable.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
