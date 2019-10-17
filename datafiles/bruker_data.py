@@ -178,7 +178,7 @@ class BrukerData(object):
         Tries to figure out which program was used for structure solution.
         TODO: figure out more solution programs.
         """
-        p = Path('./')
+        p = self.cif.fileobj.parent
         # for line in cif._ciftext:
         #    if line.startswith('REM SHELXT solution in'):
         xt_files = p.glob(self.basename + '*.lxt')
@@ -216,8 +216,8 @@ class BrukerData(object):
 
     @property
     def frame_header(self):
-        return BrukerFrameHeader(self.basename)
+        return BrukerFrameHeader(self.basename, self.cif)
 
     @property
     def p4p(self):
-        return P4PFile(self.basename)
+        return P4PFile(self.basename, self.cif)

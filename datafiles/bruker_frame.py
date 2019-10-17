@@ -11,10 +11,13 @@ import os
 from pathlib import Path
 from pprint import pformat
 
+from cif.cif_file_io import CifContainer
+
 
 class BrukerFrameHeader():
-    def __init__(self, basename: str):
-        p = Path('./')
+    def __init__(self, basename: str, cif: CifContainer):
+        self.cif = cif
+        p = self.cif.fileobj.parent
         frames = p.glob(basename + '*.sfrm')
         frames = sorted(frames, key=os.path.getmtime, reverse=True)
         self._fileobj = None
