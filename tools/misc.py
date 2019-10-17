@@ -20,10 +20,6 @@ def grouper(inputs, n, fillvalue=None):
     return it.zip_longest(*iters, fillvalue=fillvalue)
 
 
-def get_files_from_current_dir():
-    return list(Path('./').rglob('*.cif'))
-
-
 def isfloat(value):
     try:
         float(value)

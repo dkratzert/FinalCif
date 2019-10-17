@@ -25,6 +25,8 @@ This file reads Bruker p4p files into a data structure.
 """
 from pathlib import Path
 
+from cif.cif_file_io import CifContainer
+
 
 def read_file_to_list(p4pfile: str) -> list:
     """
@@ -41,7 +43,8 @@ def read_file_to_list(p4pfile: str) -> list:
 
 class P4PFile():
 
-    def __init__(self, basename: str):
+    def __init__(self, basename: str, cif: CifContainer):
+        self.cif = cif
         self.fileid = None
         self.siteid = None
         self.chem = None
@@ -61,7 +64,7 @@ class P4PFile():
         self.radiation_type = ''
         self.wavelen = ''
         self.filename = Path()
-        p = Path('./')
+        p = self.cif.fileobj.parent
         p4p_files = p.glob(basename + '*_0m.p4p')
         if not p4p_files:
             p4p_files = p.glob('*.p4p')
