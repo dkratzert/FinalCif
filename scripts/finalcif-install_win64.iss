@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "FinalCif"
-#define MyAppVersion "37"
+#define MyAppVersion "38"
 #define MyAppPublisher "Daniel Kratzert"
 
 ; Remember, first run pyInstaller script!
