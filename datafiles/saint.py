@@ -23,15 +23,17 @@ class SaintListFile():
         self.twinlaw = {}
         self.nsamples = 1
         self.components_firstsample = 1
+        self.filename = Path('')
         if direct_name:
             self._fileobj = get_file_to_parse(fileobj=Path(direct_name))
         else:
             self._fileobj = get_file_to_parse(name_pattern=name_patt, base_directory='.')
-        self.filename = self._fileobj.absolute()
-        try:
-            self.parse_file()
-        except Exception as e:
-            print('Unable to parse saint list file:', e)
+        if self._fileobj:
+            self.filename = self._fileobj.absolute()
+            try:
+                self.parse_file()
+            except Exception as e:
+                print('Unable to parse saint list file:', e)
 
     def parse_file(self):
         text = self._fileobj.read_text(encoding='ascii', errors='ignore').splitlines(keepends=False)
