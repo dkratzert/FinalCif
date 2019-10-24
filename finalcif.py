@@ -803,7 +803,7 @@ class AppWindow(QMainWindow):
         Import an equipment entry from a cif file.
         """
         import gemmi
-        filename = self.cif_file_open_dialog()
+        filename = self.cif_file_open_dialog(filter="CIF file (*.cif *.cif_od)")
         if not filename:
             return
         try:
@@ -1007,7 +1007,7 @@ class AppWindow(QMainWindow):
             self.show_general_warning('No permission to write file to {}'.format(Path(filename).absolute()))
 
     def import_property_from_file(self):
-        filename = self.cif_file_open_dialog()
+        filename = self.cif_file_open_dialog(filter="CIF file (*.cif *.cif_od)")
         if not filename:
             return
         try:
@@ -1139,12 +1139,12 @@ class AppWindow(QMainWindow):
     ##   end of properties
 
     @staticmethod
-    def cif_file_open_dialog() -> str:
+    def cif_file_open_dialog(filter: str = "CIF file (*.cif)") -> str:
         """
         Returns a cif file name from a file dialog.
         """
-        filename, _ = QFileDialog.getOpenFileName(filter="CIF file (*.cif; *.cif_od)",
-                                                  initialFilter="CIF file (*.cif; *.cif_od)",
+        filename, _ = QFileDialog.getOpenFileName(filter=filter,
+                                                  initialFilter=filter,
                                                   caption='Open a .cif File')
         return filename
 
