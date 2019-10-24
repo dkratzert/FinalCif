@@ -93,12 +93,14 @@ class Sadabs():
         self.input_files = []
         self.datasets = []
         self.batch_input = None
+        self.filename = Path('')
         if basename:
             self._fileobj = get_file_to_parse(name_pattern=basename, base_directory='.')
         else:
             self._fileobj = get_file_to_parse(fileobj=fileobj)
-        self.filename = self._fileobj.absolute()
-        self.parse_file()
+        if self._fileobj:
+            self.filename = self._fileobj.absolute()
+            self.parse_file()
 
     def parse_file(self):
         n = 0

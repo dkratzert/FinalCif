@@ -139,8 +139,8 @@ class BrukerData(object):
         # All sources that are not filled with data will be yellow in the main table
         #                          data                         tooltip
         sources = {'_cell_measurement_reflns_used'          : (self.saint_data.cell_reflections, self.saint_data.filename.name),
-                   '_cell_measurement_theta_min'            : (self.saint_data.cell_res_min_theta, self.saint_data.filename.name),
-                   '_cell_measurement_theta_max'            : (self.saint_data.cell_res_max_theta, self.saint_data.filename.name),
+                   '_cell_measurement_theta_min'            : (self.saint_data.cell_res_min_theta or '', self.saint_data.filename.name),
+                   '_cell_measurement_theta_max'            : (self.saint_data.cell_res_max_theta or '', self.saint_data.filename.name),
                    '_computing_data_collection'             : (
                        saint_first_ls.aquire_software, self.saint_data.filename.name),
                    '_computing_cell_refinement'             : (self.saint_data.version, self.saint_data.filename.name),
