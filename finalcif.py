@@ -13,7 +13,6 @@ import time
 import traceback
 from contextlib import suppress
 from pathlib import Path, WindowsPath
-from pprint import pprint
 from typing import Tuple
 
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkReply, QNetworkRequest
@@ -1431,7 +1430,7 @@ class AppWindow(QMainWindow):
                 tab_item.setToolTip(str(sources[miss_data][1]))
             except (KeyError, TypeError) as e:
                 # TypeError my originate from incomplete self.missing_data list!
-                #print(e, '##', miss_data)
+                # print(e, '##', miss_data)
                 pass
             # items from data sources should not be editable
             if not miss_data in text_field_keys:
@@ -1552,6 +1551,8 @@ if __name__ == '__main__':
         Hooks into Exceptions to create debug reports.
         """
         errortext = 'FinalCif crash report\n\n'
+        errortext += 'Python ' + sys.version + '\n'
+        errortext += sys.platform + '\n'
         errortext += time.asctime(time.localtime(time.time())) + '\n'
         errortext += "Finalcif crashed during the following operation:" + '\n'
         errortext += '-' * 80 + '\n'
