@@ -175,6 +175,7 @@ class MyHTMLParser(HTMLParser):
                 for x in self.alert_levels:
                     if form['alert_num'] == x[:7]:
                         form.update({'level': x})
+                        break
                 n += 1
                 forms.append(form)
         return forms

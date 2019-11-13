@@ -20,10 +20,6 @@ def grouper(inputs, n, fillvalue=None):
     return it.zip_longest(*iters, fillvalue=fillvalue)
 
 
-def get_files_from_current_dir():
-    return list(Path('./').rglob('*.cif'))
-
-
 def isfloat(value):
     try:
         float(value)
@@ -146,6 +142,7 @@ essential_keys = {
     '_diffrn_radiation_monochromator'                  : r'The typ monochromator type to get _diffrn_radiation_wavelength',
     '_olex2_diffrn_ambient_temperature_device'         : 'Device to cool the crystal during measurement',
     '_diffrn_radiation_probe'                          : 'The nature of the radiation used',
+    # '_diffrn_source_power'                             : 'The power in kilowatts at which the radiation source was operated',
     '_diffrn_source'                                   : "The general class of the source of radiation, e.g.'sealed X-ray tube'",
     '_diffrn_source_type'                              : 'The make, model or name of the source of radiation.',
     '_diffrn_source_current'                           : 'The current in milliamperes at which the radiation source was operated',
@@ -170,6 +167,8 @@ essential_keys = {
     '_diffrn_reflns_Laue_measured_fraction_full'       : 'Fraction of Laue unique reflections measured out to the resolution given in _diffrn_reflns_theta_full',
     '_diffrn_reflns_point_group_measured_fraction_max' : 'Fraction of crystal point-group unique reflections measured out to the resolution given in _diffrn_reflns_theta_max',
     '_diffrn_reflns_point_group_measured_fraction_full': 'Fraction of crystal point-group unique reflections measured out to the resolution given in _diffrn_reflns_theta_full',
+    # '_diffrn_source_target'                            : 'The chemical element symbol for the X-ray target (usually the anode) used to generate X-rays.',
+    '_geom_special_details'                            : 'The description of geometrical extra information such as least-squares planes',
     '_reflns_number_total'                             : 'The total number of reflections in the _refln_ list (not the _diffrn_refln_ list)',
     '_reflns_number_gt'                                : 'The number of reflections in the _refln_ list that are significantly intense',
     '_reflns_threshold_expression'                     : 'The threshold that serves to identify significantly intense reflections',
@@ -192,7 +191,7 @@ essential_keys = {
     '_refine_ls_weighting_scheme'                      : 'The weighting scheme applied in the least-squares process',
     '_refine_ls_weighting_details'                     : 'A description of special aspects of the weighting scheme used in the least-squares refinement',
     '_atom_sites_solution_primary'                     : 'Codes which identify the methods used to locate the initial atom sites',
-    '_atom_sites_solution_secondary'                   : 'Codes which identify how the remaining non-hydrogen sites were located',
+    # '_atom_sites_solution_secondary'                   : 'Codes which identify how the remaining non-hydrogen sites were located',
     '_atom_sites_solution_hydrogens'                   : 'Codes which identify the methods used to locate the initial hydrogen atom sites',
     '_refine_ls_extinction_method'                     : 'A description of the extinction-correction method applied',
     '_refine_ls_extinction_coef'                       : 'The extinction coefficient used to calculate the correction factor applied to the structure-factor data',
@@ -210,9 +209,26 @@ essential_keys = {
     '_refine_ls_shift/su_max'                          : 'The largest ratio of the final least-squares parameter shift to the final standard uncertainty',
     '_refine_ls_shift/su_mean'                         : 'The average ratio of the final least-squares parameter shift to the final standard uncertainty',
     '_publ_section_references'                         : 'References for programs used to process the data',
+    # '_symmetry_cell_setting'                           : 'The cell settings for this space-group symmetry',
     '_chemical_name_systematic'                        : 'IUPAC or Chemical Abstracts full name of the compound.',
     '_chemical_name_common'                            : 'Trivial name by which the compound is commonly known',
     '_chemical_melting_point'                          : 'The temperature in kelvins at which the crystalline solid changes to a liquid',
+}
+
+twin_keys = {
+    '_twin_individual_id'                   : 'The unique identifier for this twin individual',
+    '_twin_individual_twin_lattice_type'    : 'Identification of the symmetry relationships between the twin lattices',
+    '_twin_special_details'                 : 'Information about twinning in the sample not described elsewhere',
+    '_twin_individual_mass_fraction_refined': 'The refined mass fraction of this twin individual',
+    '_twin_individual_twin_matrix_11'       : 'Elements of the matrix',
+    '_twin_individual_twin_matrix_12'       : 'Elements of the matrix',
+    '_twin_individual_twin_matrix_13'       : 'Elements of the matrix',
+    '_twin_individual_twin_matrix_21'       : 'Elements of the matrix',
+    '_twin_individual_twin_matrix_22'       : 'Elements of the matrix',
+    '_twin_individual_twin_matrix_23'       : 'Elements of the matrix',
+    '_twin_individual_twin_matrix_31'       : 'Elements of the matrix',
+    '_twin_individual_twin_matrix_32'       : 'Elements of the matrix',
+    '_twin_individual_twin_matrix_33'       : 'Elements of the matrix',
 }
 
 non_centrosymm_keys = ('_chemical_absolute_configuration', '_refine_ls_abs_structure_Flack',
@@ -559,5 +575,20 @@ predef_prop_templ = [{'name'  : 'Crystal Color',
                                   ]
                                  ]
 
+                      },
+                     {'name'  : 'Twin relationship',
+                      'values': ['_twin_individual_twin_lattice_type',
+                                 ['',
+                                  'ref',  # reference twin
+                                  'mt_I',  # merohedral class I (simple inversion)
+                                  'mt_II',  # merohedral class II (mirror or twofold)
+                                  'mt_I+II',  # class I and II simultaneously present
+                                  'rmt',  # reticular merohedral
+                                  'pmt',  # pseudo-merohedral
+                                  'rpmt',  # reticular pseudo-merohedral
+                                  'nmt',  # non-merohedral
+                                  ]
+                                 ]
                       }
+
                      ]

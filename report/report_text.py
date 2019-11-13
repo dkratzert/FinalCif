@@ -6,9 +6,9 @@ from docx.text.paragraph import Paragraph
 from docx.text.run import Run
 from lxml import etree
 
+from app_path import application_path
 from cif.cif_file_io import CifContainer, retranslate_delimiter
 from tools.misc import prot_space
-from app_path import application_path
 
 
 # TODO: Add references of the used programs to the end.
@@ -92,7 +92,7 @@ class MachineType():
             self.detector_type = " and a {} detector".format(detector_type)
         sentence1 = "on {} {} {} with {} {} using {} as monochromator{}. " \
                     "The diffractometer was equipped with {} {} low temperature device and used "
-        sentence2 = " radiation (λ" + prot_space + "= {}" + prot_space + "Å). "
+        sentence2 = " radiation (λ = {}" + prot_space + "Å). "
         txt = sentence1.format(get_inf_article(self.difftype), self.difftype, self.device,
                                get_inf_article(self.source), self.source, self.monochrom,
                                self.detector_type, get_inf_article(self.cooling), self.cooling)
@@ -194,6 +194,13 @@ class Disorder():
         paragraph.add_run(sentence1)
         if sentence2:
             paragraph.add_run(sentence2)
+
+
+class Twinning():
+    def __init__(self, cif: CifContainer, paragraph: Paragraph):
+        self.cif = cif
+        sentence = ''
+        # TODO: make is_twinned property of cif
 
 
 class CCDC():

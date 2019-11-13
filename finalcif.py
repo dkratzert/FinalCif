@@ -11,6 +11,7 @@ import subprocess
 import sys
 import time
 import traceback
+from contextlib import suppress
 from pathlib import Path, WindowsPath
 from typing import Tuple
 
@@ -20,6 +21,7 @@ from PyQt5.QtWebEngineWidgets import QWebEngineView
 from gemmi import cif
 from requests import ReadTimeout
 
+from app_path import application_path
 from cif.cif_file_io import CifContainer, set_pair_delimited
 from cif.core_dict import cif_core
 from datafiles.bruker_data import BrukerData
@@ -30,9 +32,8 @@ from gui.custom_classes import MyComboBox, MyEQTableWidget, MyQPlainTextEdit, \
 from gui.vrf_classes import MyVRFContainer, VREF
 from report.tables import make_report_from
 from tools.checkcif import AlertHelp, MakeCheckCif, MyHTMLParser
-from tools.misc import combobox_fields, essential_keys, excluded_imports, predef_equipment_templ, predef_prop_templ, \
+from tools.misc import combobox_fields, excluded_imports, predef_equipment_templ, predef_prop_templ, \
     strip_finalcif_of_name, text_field_keys, to_float
-from app_path import application_path
 from tools.settings import FinalCifSettings
 from tools.update import mainurl
 from tools.version import VERSION
@@ -53,11 +54,10 @@ from PyQt5.QtWidgets import QApplication, QFileDialog, QHeaderView, QListWidget,
 
 """
 TODO:
+- creation date of report docx is not the current date/time?
 - detect twins and write proper report text about them.
 - add loops to templates
 - write more tests!
-- support stoe cif
-- support all of .cifod
 - Add one picture of the vzs file to report.
 - option for default directory?
 
@@ -88,7 +88,6 @@ class AppWindow(QMainWindow):
         self.setAcceptDrops(True)
         self.show()
         self.statusBar().showMessage('FinalCif version {}'.format(VERSION))
-        self.vheaderitems = list()
         self.settings = FinalCifSettings(self)
         self.store_predefined_templates()
         self.show_equipment_and_properties()
@@ -115,8 +114,6 @@ class AppWindow(QMainWindow):
         self.cif: CifContainer
         self.fin_file = Path()
         self.missing_data = []
-        # This is the index number of the vheader that got clicked last:
-        self.vheader_clicked = -1
         # True if line with "these are already in" reached:
         self.complete_data_row = -1
         self.connect_signals_and_slots()
@@ -204,15 +201,14 @@ class AppWindow(QMainWindow):
         ##
         self.ui.EquipmentTemplatesListWidget.currentRowChanged.connect(self.load_selected_equipment)
         self.ui.EquipmentTemplatesListWidget.clicked.connect(self.load_selected_equipment)
-        # something like cifItemsTable.selected_field.connect(self.display_data_file)
         ##
         self.ui.SaveFullReportButton.clicked.connect(self.make_table)
-        # vertical header click:
-        vheader = self.ui.CifItemsTable.verticalHeader()
-        vheader.setSectionsClickable(True)
-        vheader.sectionClicked.connect(self.vheader_section_click)
-        ###
         self.ui.RecentComboBox.currentIndexChanged.connect(self.load_recent_file)
+        #
+        self.ui.CifItemsTable.row_deleted.connect(self._deleted_row)
+
+    def _deleted_row(self, key: str):
+        self.cif.block.set_pair(key, '?')
 
     def checkfor_version(self):
         url = QUrl(mainurl + 'version.txt')
@@ -408,9 +404,8 @@ class AppWindow(QMainWindow):
             v.response = txt
             # add a key with '?' as value
             self.add_new_table_key(v.key, v.value)
-            vheader_row = self.vheaderitems.index(v.key)
             # add data to this key:
-            self.ui.CifItemsTable.setText(vheader_row, COL_EDIT, v.value)
+            self.ui.CifItemsTable.setText(v.key, COL_EDIT, v.value)
         self.save_cif_and_display()
         if n:
             self.subwin.statusBar.showMessage('Forms saved')
@@ -462,8 +457,8 @@ class AppWindow(QMainWindow):
         Performs a checkcif with platon and displays it in the text editor of the MainStackedWidget.
         """
         splash = self.show_splash("Running Checkcif locally. Please wait...")
-        table = self.ui.CifItemsTable
-        table.setCurrentItem(None)  # makes sure also the currently edited item is saved
+        # makes sure also the currently edited item is saved:
+        self.ui.CifItemsTable.setCurrentItem(None)
         self.save_current_cif_file()
         try:
             p = Platon(self.fin_file)
@@ -500,33 +495,6 @@ class AppWindow(QMainWindow):
         if file_index > 0:
             txt = combo.itemText(file_index)
             self.load_cif_file(txt)
-
-    def vheader_section_click(self, section):
-        item = self.ui.CifItemsTable.verticalHeaderItem(section)
-        itemtext = item.text()
-        # be sure not to get vheader with name of last click:
-        if section != self.vheader_clicked and self.vheader_clicked > -1:
-            self.restore_vertical_header()
-            self.vheader_clicked = -1
-            return
-            # get back previous name
-        if self.vheader_clicked > -1:
-            item.setText(self.vheaderitems[self.vheader_clicked])
-            self.vheader_clicked = -1
-            return
-        try:
-            txt = essential_keys[itemtext]
-            if txt:
-                item.setText(txt)
-            self.vheader_clicked = section
-            return
-        except KeyError:
-            pass
-
-    def restore_vertical_header(self):
-        for row_num, key in enumerate(self.vheaderitems):
-            item_key = MyTableWidgetItem(key)
-            self.ui.CifItemsTable.setVerticalHeaderItem(row_num, item_key)
 
     def make_table(self):
         """
@@ -596,8 +564,8 @@ class AppWindow(QMainWindow):
         Saves the current cif file and stores the information of the third column.
         """
         # restore header, otherwise item is not saved:
-        self.restore_vertical_header()
         table = self.ui.CifItemsTable
+        table.restore_vertical_header()
         table.setCurrentItem(None)  # makes sure also the currently edited item is saved
         rowcount = table.model().rowCount()
         columncount = table.model().columnCount()
@@ -620,9 +588,9 @@ class AppWindow(QMainWindow):
                         # print(e)
                         pass
                 if col == COL_EDIT:
-                    vhead = self.ui.CifItemsTable.model().headerData(row, Qt.Vertical)
+                    vhead = self.ui.CifItemsTable.vheader_text(row)
                     # vertical header item is surely not a cif keyword:
-                    if not str(vhead).startswith('_'):
+                    if not vhead.startswith('_'):
                         continue
                     # This is my row information
                     # print('col2:', vhead, col0, col1, col2, '#')
@@ -691,15 +659,14 @@ class AppWindow(QMainWindow):
         if not selected_row_text:
             return None
         equipment = self.settings.load_equipment_template_as_dict(selected_row_text)
-        if self.vheaderitems:
+        if self.ui.CifItemsTable.vheaderitems:
             for key in equipment:
-                if key not in self.vheaderitems:
+                if key not in self.ui.CifItemsTable.vheaderitems:
                     self.add_new_table_key(key, equipment[key])
-                row = self.vheaderitems.index(key)
                 # add missing item to data sources column:
-                self.ui.CifItemsTable.setText(row, COL_DATA, equipment[key])
-                self.ui.CifItemsTable.setBackground(row, COL_DATA, light_green)
-                self.ui.CifItemsTable.setText(row, COL_EDIT, equipment[key])
+                self.ui.CifItemsTable.setText(key, COL_DATA, equipment[key])
+                self.ui.CifItemsTable.setBackground(key, COL_DATA, light_green)
+                self.ui.CifItemsTable.setText(key, COL_EDIT, equipment[key])
 
     def add_new_table_key(self, key: str, value: str = '?') -> None:
         """
@@ -711,9 +678,9 @@ class AppWindow(QMainWindow):
             self.cif.order.insert(0, key)
         if not key.startswith('_'):
             return
-        self.vheaderitems.insert(0, key)
+        self.ui.CifItemsTable.vheaderitems.insert(0, key)
         self.add_row(key=key, value='?', at_start=True)
-        if key in [x.lower() for x in combobox_fields]:
+        if key in [x for x in combobox_fields]:
             self.add_property_combobox(combobox_fields[key], 0)
         self.missing_data.append(key)
         if not self.cif.block.find_value(key):
@@ -836,7 +803,7 @@ class AppWindow(QMainWindow):
         Import an equipment entry from a cif file.
         """
         import gemmi
-        filename = self.cif_file_open_dialog()
+        filename = self.cif_file_open_dialog(filter="CIF file (*.cif *.cif_od)")
         if not filename:
             return
         try:
@@ -1040,7 +1007,7 @@ class AppWindow(QMainWindow):
             self.show_general_warning('No permission to write file to {}'.format(Path(filename).absolute()))
 
     def import_property_from_file(self):
-        filename = self.cif_file_open_dialog()
+        filename = self.cif_file_open_dialog(filter="CIF file (*.cif *.cif_od)")
         if not filename:
             return
         try:
@@ -1172,12 +1139,12 @@ class AppWindow(QMainWindow):
     ##   end of properties
 
     @staticmethod
-    def cif_file_open_dialog() -> str:
+    def cif_file_open_dialog(filter: str = "CIF file (*.cif)") -> str:
         """
         Returns a cif file name from a file dialog.
         """
-        filename, _ = QFileDialog.getOpenFileName(filter="CIF file (*.cif; *.cif_od)",
-                                                  initialFilter="CIF file (*.cif; *.cif_od)",
+        filename, _ = QFileDialog.getOpenFileName(filter=filter,
+                                                  initialFilter=filter,
                                                   caption='Open a .cif File')
         return filename
 
@@ -1196,7 +1163,7 @@ class AppWindow(QMainWindow):
         """
         Opens the cif file and fills information into the main table.
         """
-        self.vheaderitems.clear()
+        self.ui.CifItemsTable.vheaderitems.clear()
         self.ui.MainStackedWidget.setCurrentIndex(0)
         self.ui.CifItemsTable.setRowCount(0)
         self.ui.CifItemsTable.clear()
@@ -1238,7 +1205,16 @@ class AppWindow(QMainWindow):
         except OSError:
             print("Can't change the Current Working Directory")
         try:
-            rigaku = Path('./').glob('*.cif_od').__next__()
+            rigaku = self.cif.fileobj.parent.glob('*.cif_od').__next__()
+            if rigaku.exists():
+                self.manufacturer = 'rigaku'
+                self.rigakucif = RigakuData(rigaku)
+        except StopIteration:
+            pass
+        # quick hack in order to support STOE:
+        # TODO: Make this clean
+        try:
+            rigaku = self.cif.fileobj.parent.glob('*.cfx').__next__()
             if rigaku.exists():
                 self.manufacturer = 'rigaku'
                 self.rigakucif = RigakuData(rigaku)
@@ -1339,6 +1315,18 @@ class AppWindow(QMainWindow):
             zinfo.show()
             zinfo.exec()
 
+    def set_pair(self, key: str, value: str):
+        """
+        Start a new cif pair and add it to the main table.
+        """
+        self.ui.CifItemsTable.insertRow(0)
+        head_item_key = MyTableWidgetItem(key)
+        self.ui.CifItemsTable.setVerticalHeaderItem(0, head_item_key)
+        self.ui.CifItemsTable.setText(0, COL_CIF, '?', row=0)
+        self.ui.CifItemsTable.setText(0, COL_DATA, value, row=0)
+        self.missing_data.append(key)
+        self.cif.block.set_pair(key, value)
+
     def get_data_sources(self):
         """
         Tries to determine the sources of missing data in the cif file, e.g. Tmin/Tmax from SADABS.
@@ -1346,35 +1334,77 @@ class AppWindow(QMainWindow):
         sources = None
         self.check_Z()
         if self.manufacturer == 'bruker':
-            sources = BrukerData(self, self.cif).sources
+            bdata = BrukerData(self, self.cif)
+            sources = bdata.sources
+            if bdata.saint_data.is_twin and bdata.saint_data.components_firstsample == 2:
+                with suppress(Exception):
+                    law = bdata.saint_data.twinlaw[list(bdata.saint_data.twinlaw.keys())[0]]
+                    self.set_pair('_twin_individual_twin_matrix_33', str(law[2][2]))
+                    self.set_pair('_twin_individual_twin_matrix_32', str(law[2][1]))
+                    self.set_pair('_twin_individual_twin_matrix_31', str(law[2][0]))
+                    self.set_pair('_twin_individual_twin_matrix_23', str(law[1][2]))
+                    self.set_pair('_twin_individual_twin_matrix_22', str(law[1][1]))
+                    self.set_pair('_twin_individual_twin_matrix_21', str(law[1][0]))
+                    self.set_pair('_twin_individual_twin_matrix_13', str(law[0][2]))
+                    self.set_pair('_twin_individual_twin_matrix_12', str(law[0][1]))
+                    self.set_pair('_twin_individual_twin_matrix_11', str(law[0][0]))
+                    self.set_pair('_twin_individual_id', str(bdata.saint_data.components_firstsample))
+                    self.set_pair('_twin_special_details', 'The data was integrated as a 2-component twin.')
         if self.manufacturer == 'rigaku':
+            vheadlist = []
+            for num in range(self.ui.CifItemsTable.model().rowCount()):
+                vheadlist.append(self.ui.CifItemsTable.model().headerData(num, Qt.Vertical))
             sources = self.rigakucif.sources
+            for x in sources:
+                if x in vheadlist:
+                    continue
+                if x and x not in self.missing_data:
+                    self.add_row(x, '?', at_start=True)
+                    self.missing_data.append(x)
+                    self.cif.block.set_pair(x, '?')
+            # Adding loop
+            # TODO: make this work
+            """loops = self.rigakucif.loops
+            for loop in loops:
+                key1 = loop[0][0]
+                ends = []
+                try:
+                    key2 = loop[0][1]
+                    match = SequenceMatcher(None, key1, key2).find_longest_match(0, len(key1), 0, len(key2))
+                    loopkey = key1[match.a: match.a + match.size]
+                    for key in loop[0]:
+                        ends.append(key[match.a + match.size:])
+                except KeyError:
+                    gloop = self.cif.block.init_loop(key1, [''])
+                    continue
+                gloop = self.cif.block.init_loop(loopkey, ends)
+                print(loopkey, ends)
+                print(loop[1])
+                gloop.add_row(loop[1])"""
         # Build a dictionary of cif keys and row number values in order to fill the first column
         # of CifItemsTable with cif values:
         for num in range(self.ui.CifItemsTable.model().rowCount()):
             vhead = self.ui.CifItemsTable.model().headerData(num, Qt.Vertical)
-            if not vhead in self.vheaderitems:
-                self.vheaderitems.append(vhead)
+            if not vhead in self.ui.CifItemsTable.vheaderitems:
+                self.ui.CifItemsTable.vheaderitems.append(vhead)
                 # adding comboboxes:
-                if vhead.lower() in combobox_fields:
-                    self.add_property_combobox(combobox_fields[vhead.lower()], num)
-                elif vhead.lower() in self.settings.load_property_keys():
-                    self.add_property_combobox(self.settings.load_property_by_key(vhead.lower()), num)
+                if vhead in combobox_fields:
+                    self.add_property_combobox(combobox_fields[vhead], num)
+                elif vhead in self.settings.load_property_keys():
+                    self.add_property_combobox(self.settings.load_property_by_key(vhead), num)
         # get missing items from sources and put them into the corresponding rows:
-        # These will be yellow if not filled in:
-        self.missing_data.append('_cell_measurement_temperature')
-        self.missing_data.append('_diffrn_ambient_temperature')
+        # missing items will even be used if under the blue separation line:
         self.missing_data.append('_publ_section_references')
         for miss_data in self.missing_data:
             # add missing item to data sources column:
             try:
-                row_num = self.vheaderitems.index(miss_data)
+                row_num = self.ui.CifItemsTable.vheaderitems.index(miss_data)
             except ValueError:
                 continue
             tab_item = MyTableWidgetItem()
             try:
                 # sources are lower case!
-                txt = str(sources[miss_data.lower()][0])
+                txt = str(sources[miss_data][0])
                 if miss_data in text_field_keys:
                     # only text fields:
                     tab_item = MyQPlainTextEdit(self.ui.CifItemsTable)
@@ -1387,7 +1417,7 @@ class AppWindow(QMainWindow):
                             tab_item.setBackground(light_green)
                         else:
                             tab_item.setBackground(yellow)
-                    tab_item.setToolTip(str(sources[miss_data.lower()][1]))
+                    tab_item.setToolTip(str(sources[miss_data][1]))
                 else:
                     # regular linedit fields:
                     self.ui.CifItemsTable.setItem(row_num, COL_DATA, tab_item)
@@ -1397,9 +1427,10 @@ class AppWindow(QMainWindow):
                             tab_item.setBackground(light_green)
                         else:
                             tab_item.setBackground(yellow)
-                tab_item.setToolTip(str(sources[miss_data.lower()][1]))
-            except KeyError as e:
-                # print(e, '##')
+                tab_item.setToolTip(str(sources[miss_data][1]))
+            except (KeyError, TypeError) as e:
+                # TypeError my originate from incomplete self.missing_data list!
+                # print(e, '##', miss_data)
                 pass
             # items from data sources should not be editable
             if not miss_data in text_field_keys:
@@ -1409,7 +1440,7 @@ class AppWindow(QMainWindow):
         """
         Adds a QComboBox to the CifItemsTable with the content of special_fields or property templates.
         """
-        combobox = MyComboBox()
+        combobox = MyComboBox(self.ui.CifItemsTable)
         # print('special:', row_num, miss_data)
         self.ui.CifItemsTable.setCellWidget(row_num, COL_EDIT, combobox)
         self.ui.CifItemsTable.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -1419,7 +1450,7 @@ class AppWindow(QMainWindow):
             except TypeError:
                 print('Bad value in property:', value)
                 if DEBUG:
-                    raise 
+                    raise
                 continue
         combobox.setCurrentIndex(0)
 
@@ -1520,8 +1551,10 @@ if __name__ == '__main__':
         Hooks into Exceptions to create debug reports.
         """
         errortext = 'FinalCif crash report\n\n'
+        errortext += 'Python ' + sys.version + '\n'
+        errortext += sys.platform + '\n'
         errortext += time.asctime(time.localtime(time.time())) + '\n'
-        errortext += "Finalcif crashed during the following opertaion:" + '\n'
+        errortext += "Finalcif crashed during the following operation:" + '\n'
         errortext += '-' * 80 + '\n'
         errortext += ''.join(traceback.format_tb(error_traceback)) + '\n'
         errortext += str(exctype.__name__) + ': '

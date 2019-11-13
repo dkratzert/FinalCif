@@ -5,29 +5,35 @@
 #  and you think this stuff is worth it, you can buy me a beer in return. 
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
-# 
-
+#
+from contextlib import suppress
 from pathlib import Path
+
+from datafiles.utils import get_file_to_parse
 
 
 class SaintListFile():
-    def __init__(self, name_patt: str):
+    def __init__(self, name_patt: str, direct_name=None):
         self.cell_reflections = ''
         self.cell_res_min_2t = 0.0
         self.cell_res_max_2t = 0.0
         self.aquire_software = ''
         self.version = ''
-        self.filename = Path('.')
-        p = Path('./')
-        saintfiles = p.glob(name_patt)
-        for saintfile in saintfiles:
-            if saintfile:
-                self._fileobj = Path(saintfile)
-                self.filename = self._fileobj.absolute()
-                try:
-                    self.parse_file()
-                except Exception as e:
-                    print('Unable to parse saint list file:', e)
+        self.is_twin = False
+        self.twinlaw = {}
+        self.nsamples = 1
+        self.components_firstsample = 1
+        self.filename = Path('')
+        if direct_name:
+            self._fileobj = get_file_to_parse(fileobj=Path(direct_name))
+        else:
+            self._fileobj = get_file_to_parse(name_pattern=name_patt, base_directory='.')
+        if self._fileobj:
+            self.filename = self._fileobj.absolute()
+            try:
+                self.parse_file()
+            except Exception as e:
+                print('Unable to parse saint list file:', e)
 
     def parse_file(self):
         text = self._fileobj.read_text(encoding='ascii', errors='ignore').splitlines(keepends=False)
@@ -37,6 +43,11 @@ class SaintListFile():
             #spline = line.strip().split()
             if num == 0:
                 self.version = line
+            if line.startswith('Refinement includes'):
+                with suppress(IndexError):
+                    self.nsamples = int(line.split()[2])
+                with suppress(IndexError, ValueError):
+                    self.components_firstsample = int(text[num+1].split()[3])
             if line.startswith('Reflection Summary:'):
                 """
                 Reflection Summary:
@@ -53,20 +64,34 @@ class SaintListFile():
                 summary = True
             if summary and line.lstrip().startswith('1.1(1)'):
                 summary = line.split()
-                if len(summary) > 7:
+                if len(summary) == 8:
                     self.cell_reflections = summary[3] or 0
                     self.cell_res_min_2t = summary[6] or 0.0
                     self.cell_res_max_2t = summary[7] or 0.0
-            if summary and not orientation and line.lstrip().startswith('All'):
+            # This is the twin case:
+            if summary and line.lstrip().startswith('All'):
                 summary = line.split()
-                if len(summary) > 7:
+                if len(summary) == 8:
                     self.cell_reflections = summary[3] or 0
                     self.cell_res_min_2t = summary[6] or 0.0
                     self.cell_res_max_2t = summary[7] or 0.0
             if line.startswith("Orientation ('UB') matrix"):
                 orientation += 1
+            if line.startswith('Twin Law'):
+                self.is_twin = True
+                # S.C(F) -> S Sample number, C Combonent number, F number in the file
+                try:
+                    twin = []
+                    transform = text[num+1].strip()
+                    twin.append([float(x) for x in text[num+2].split()])
+                    twin.append([float(x) for x in text[num+3].split()])
+                    twin.append([float(x) for x in text[num+4].split()])
+                    self.twinlaw[transform] = twin
+                except (KeyError, ValueError):
+                    print('Could not determine twin law fro m._ls file.')
+                    pass
             if summary and orientation == 2:
-                break
+                summary = False
             if line.startswith('Frames were acquired'):
                 """
                 Frames were acquired with BIS 2018.9.0.3/05-Dec-2018 && APEX3_2018.7-2
@@ -83,7 +108,8 @@ class SaintListFile():
         return float(self.cell_res_max_2t) / 2.0
 
     def __repr__(self):
-        out = 'Version: {}\n'.format(self.version)
+        out = 'Version: {}, file: {}\n'.format(self.version, self.filename)
+        out += 'Number of samples: {} with {} components.\n'.format(self.nsamples, self.components_firstsample)
         out += 'Used Reflections: {}\n'.format(self.cell_reflections)
         out += 'min thata: {}\n'.format(self.cell_res_min_theta)
         out += 'max theta: {}\n'.format(self.cell_res_max_theta)
@@ -91,12 +117,23 @@ class SaintListFile():
         out += 'max 2 theta: {}\n'.format(self.cell_res_max_2t)
         if self.aquire_software:
             out += 'Aquire software: {}\n'.format(self.aquire_software)
+        out += 'Twin integration {}\n'.format(self.is_twin)
+        if self.is_twin:
+            out += 'With twin law: \n'
+            for n, law in enumerate(self.twinlaw, 1):
+                out += "{}:\n".format(law)
+                out += '\n'.join(['{:>7.4f} {:>7.4f} {:>7.4f}'.format(*x) for x in self.twinlaw[law]])
+                out += '\n'
         return out
 
 if __name__ == "__main__":
-    saint = SaintListFile('test-data/TB_fs20_v1_0m._ls')
+    saint = SaintListFile(name_patt='', direct_name='test-data/TB_fs20_v1_0m._ls')
     print(saint)
 
     print('#####')
-    s = SaintListFile('test-data/Esser_JW316_01._ls')
+    s = SaintListFile('', direct_name='test-data/Esser_JW316_01._ls')
+    print(s)
+
+    print('#####')
+    s = SaintListFile('', direct_name='/Volumes/nifty/test_workordner/test766-twin/work/test766_0m._ls')
     print(s)

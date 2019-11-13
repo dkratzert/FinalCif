@@ -16,7 +16,6 @@ special_keys = ['_iucr_refine_instructions_details',
 
 order = [
     '_journal_data_validation_number',
-    '                                    ',
     '_journal_date_recd_electronic',
     '_journal_date_to_coeditor',
     '_journal_date_from_coeditor',
@@ -28,7 +27,6 @@ order = [
     '_journal_coeditor_name',
     '_journal_coeditor_code',
     '_journal_coeditor_notes',
-    '',
     '',
     '_journal_techeditor_code',
     '_journal_techeditor_notes',
@@ -94,6 +92,7 @@ order = [
     '_chemical_formula_iupac',
     '_chemical_formula_weight',
     '_chemical_melting_point',
+    '_chemical_compound_source',
 
     '_chemical_absolute_configuration',
     '_chemical_properties_biological',
@@ -148,24 +147,29 @@ order = [
     '_exptl_transmission_factor_max',
     '_exptl_special_details',
     '_diffrn_ambient_temperature',
+    '_diffrn_ambient_environment',
     '_diffrn_radiation_type',
     '_diffrn_radiation_wavelength',
     '_diffrn_radiation_source',  # superseeded by _diffrn_source
     '_diffrn_radiation_monochromator',
+    '_diffrn_radiation_polarisn_norm',
+    '_diffrn_radiation_collimation',
     '_olex2_diffrn_ambient_temperature_device',
     '_diffrn_radiation_probe',
     '_diffrn_source',
     '_diffrn_source_type',
-    '_diffrn_source_current',
+    '_diffrn_source_target',
     '_diffrn_source_voltage',
+    '_diffrn_source_current',
     '_diffrn_detector',
     '_diffrn_detector_type',
     '_diffrn_detector_area_resol_mean',
-    '_diffrn_measurement_device',   # superseeded by _diffrn_measurement_device_type
+    '_diffrn_measurement_device',  # superseeded by _diffrn_measurement_device_type
     '_diffrn_measurement_device_type',
     '_diffrn_measurement_method',
     '_diffrn_measurement_specimen_support',
     '_diffrn_measurement_specimen_adhesive',
+    '_diffrn_measurement_details',
     '_diffrn_reflns_number',
     '_diffrn_reflns_av_unetI/netI',  # superseeded by '_diffrn_reflns_av_unetI/netI'
     '_diffrn_reflns_av_R_equivalents',
@@ -200,6 +204,14 @@ order = [
     '_reflns_Friedel_coverage',
     '_reflns_Friedel_fraction_max',
     '_reflns_Friedel_fraction_full',
+    '_reflns_d_resolution_high',
+    '_reflns_d_resolution_low',
+    '_reflns_limit_h_min',
+    '_reflns_limit_h_max',
+    '_reflns_limit_k_min',
+    '_reflns_limit_k_max',
+    '_reflns_limit_l_min',
+    '_reflns_limit_l_max',
     '_reflns_special_details',
 
     '_computing_data_collection',
@@ -244,6 +256,23 @@ order = [
     '_refine_ls_abs_structure_details',
     '_refine_ls_abs_structure_Rogers',
 
+    '_twin_formation_mechanism',
+    '_twin_dimensionality',
+    '_twin_morphology',
+    '_twin_special_details',
+    '_twin_individual_mass_fraction_refined',
+    '_twin_individual_id',
+    '_twin_individual_twin_lattice_type',
+    '_twin_individual_twin_matrix_11',
+    '_twin_individual_twin_matrix_12',
+    '_twin_individual_twin_matrix_13',
+    '_twin_individual_twin_matrix_21',
+    '_twin_individual_twin_matrix_22',
+    '_twin_individual_twin_matrix_23',
+    '_twin_individual_twin_matrix_31',
+    '_twin_individual_twin_matrix_32',
+    '_twin_individual_twin_matrix_33',
+
     '_atom_type_symbol',
     '_atom_type_description',
     '_atom_type_scat_dispersion_real',
@@ -251,5 +280,6 @@ order = [
     '_atom_type_scat_source',
 
     '_geom_special_details',
+    
 
 ]
