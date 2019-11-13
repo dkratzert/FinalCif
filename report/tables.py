@@ -281,7 +281,7 @@ def populate_main_table_values(main_table: Table, cif: CifContainer):
     ls_wR_factor_ref = cif['_refine_ls_wR_factor_ref']
     goof = cif['_refine_ls_goodness_of_fit_ref']
     try:
-        completeness = "{0:.2f}".format(round(float(cif['_diffrn_measured_fraction_theta_full']) * 100, 1))
+        completeness = "{0:.1f} %".format(round(float(cif['_diffrn_measured_fraction_theta_full']) * 100, 1))
     except ValueError:
         completeness = '?'
     try:
@@ -297,7 +297,7 @@ def populate_main_table_values(main_table: Table, cif: CifContainer):
     main_table.cell(17, 1).text = this_or_quest(crystal_size_max) + '\u00d7' + \
                                   this_or_quest(crystal_size_mid) + '\u00d7' + \
                                   this_or_quest(crystal_size_min)
-    wavelength = str(' (\u03bb =' + this_or_quest(radiation_wavelength) + ')').replace(' ', '')
+    wavelength = str(' (\u03bb =' + this_or_quest(radiation_wavelength) + '\u00A0\u00C5)').replace(' ', '')
     # radtype: ('Mo', 'K', '\\a')
     radtype = format_radiation(radiation_type)
     radrun = main_table.cell(20, 1).paragraphs[0]
@@ -386,7 +386,7 @@ def add_coords_table(document: Document, cif: CifContainer, table_num: int):
     eq = h.add_run('eq')
     eq.font.subscript = True
     # eq.italic = True
-    h.add_run(prot_space + '[Å')
+    h.add_run(prot_space + '[\u00C5')
     h.add_run('2').font.superscript = True
     h.add_run('] for {}.'.format(cif.fileobj.name))
     coords_table = document.add_table(rows=ncoords + 1, cols=5)
@@ -459,7 +459,7 @@ def add_bonds_and_angles_table(document: Document, cif: CifContainer, table_num:
     head_row = bond_angle_table.rows[0]
     ar = head_row.cells[0].paragraphs[0].add_run('Atom - Atom')
     ar.bold = True
-    ar = head_row.cells[1].paragraphs[0].add_run('Length [Å]')
+    ar = head_row.cells[1].paragraphs[0].add_run('Length [\u00C5]')
     ar.bold = True
     symms = {}
     newsymms = {}
@@ -677,21 +677,21 @@ def populate_description_columns(main_table, cif: CifContainer):
     lgnd5.add_run('Space group (number)')
     lgnd6 = main_table.cell(6, 0).paragraphs[0]
     lgnd6.add_run('a').font.italic = True
-    lgnd6.add_run(' [Å]')
+    lgnd6.add_run(' [\u00C5]')
     lgnd7 = main_table.cell(7, 0).paragraphs[0]
     lgnd7.add_run('b').font.italic = True
-    lgnd7.add_run(' [Å]')
+    lgnd7.add_run(' [\u00C5]')
     lgnd8 = main_table.cell(8, 0).paragraphs[0]
     lgnd8.add_run('c').font.italic = True
-    lgnd8.add_run(' [Å]')
+    lgnd8.add_run(' [\u00C5]')
     lgnd9 = main_table.cell(9, 0).paragraphs[0]
-    lgnd9.add_run('\u03B1 [Å]')
+    lgnd9.add_run('\u03B1 [\u00C5]')
     lgnd10 = main_table.cell(10, 0).paragraphs[0]
-    lgnd10.add_run('\u03B2 [Å]')
+    lgnd10.add_run('\u03B2 [\u00C5]')
     lgnd11 = main_table.cell(11, 0).paragraphs[0]
-    lgnd11.add_run('\u03B3 [Å]')
+    lgnd11.add_run('\u03B3 [\u00C5]')
     lgnd12 = main_table.cell(12, 0).paragraphs[0]
-    lgnd12.add_run('Volume [Å')
+    lgnd12.add_run('Volume [\u00C5')
     lgnd12.add_run('3').font.superscript = True
     lgnd12.add_run(']')
     lgnd13 = main_table.cell(13, 0).paragraphs[0]
@@ -752,7 +752,7 @@ def populate_description_columns(main_table, cif: CifContainer):
     lgnd29.add_run('R').font.italic = True
     lgnd29.add_run(' indexes \n[all data]')
     lgnd30 = main_table.cell(30, 0).paragraphs[0]
-    lgnd30.add_run('Largest peak/hole [eÅ')
+    lgnd30.add_run('Largest peak/hole [e\u00C5')
     lgnd30.add_run('3').font.superscript = True
     lgnd30.add_run(']')
     if not cif.is_centrosymm:
