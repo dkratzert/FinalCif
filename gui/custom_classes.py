@@ -1,11 +1,13 @@
 from textwrap import wrap
 
+from PyQt5 import QtCore
 from PyQt5.QtCore import QEvent, QObject, Qt
 from PyQt5.QtGui import QColor, QTextOption
-from PyQt5.QtWidgets import QAbstractScrollArea, QComboBox, QFrame, QPlainTextEdit, QSizePolicy, QTableWidget, \
-    QTableWidgetItem, QWidget, QLabel
+from PyQt5.QtWidgets import QAbstractScrollArea, QAction, QComboBox, QFrame, QPlainTextEdit, QSizePolicy, QTableWidget, \
+    QTableWidgetItem, QWidget
 
 from cif.cif_file_io import retranslate_delimiter
+from tools.misc import essential_keys
 
 light_green = QColor(217, 255, 201)
 blue = QColor(102, 150, 179)
@@ -16,9 +18,9 @@ class QHLine(QFrame):
     def __init__(self):
         super(QHLine, self).__init__()
         self.setFrameShape(QFrame.HLine)
-        #self.setFrameShadow(QFrame.Sunken)
+        # self.setFrameShadow(QFrame.Sunken)
         # gives a black line:
-        #self.setFrameShadow(QFrame.Plain)
+        # self.setFrameShadow(QFrame.Plain)
         self.setFrameShadow(QFrame.Raised)
 
 
@@ -54,6 +56,7 @@ class ItemTextMixin:
 
 
 class MyCifTable(QTableWidget, ItemTextMixin):
+    row_deleted = QtCore.pyqtSignal(str)
 
     def __init__(self, parent: QWidget = None):
         super().__init__(parent)
@@ -62,6 +65,46 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         self.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.actionDeletePair = QAction("Delete Row", self)
+        self.setContextMenuPolicy(Qt.ActionsContextMenu)
+        self.addAction(self.actionDeletePair)
+        self.actionDeletePair.triggered.connect(self.delete_item)
+        self.vheaderitems = list()
+        # This is the index number of the vheader that got clicked last:
+        self.vheader_clicked = -1
+        # vertical header click:
+        vheader = self.verticalHeader()
+        vheader.setSectionsClickable(True)
+        # noinspection PyUnresolvedReferences
+        vheader.sectionClicked.connect(self.vheader_section_click)
+
+    def vheader_section_click(self, section):
+        item = self.verticalHeaderItem(section)
+        itemtext = item.text()
+        # be sure not to get vheader with name of last click:
+        if section != self.vheader_clicked and self.vheader_clicked > -1:
+            self.restore_vertical_header()
+            self.vheader_clicked = -1
+            return
+            # get back previous name
+        if self.vheader_clicked > -1:
+            item.setText(self.vheaderitems[self.vheader_clicked])
+            self.vheader_clicked = -1
+            return
+        try:
+            txt = essential_keys[itemtext]
+            if txt:
+                # item.setText('\n'.join(wrap(txt, 20)))
+                item.setText(txt)
+            self.vheader_clicked = section
+            return
+        except KeyError:
+            pass
+
+    def restore_vertical_header(self):
+        for row_num, key in enumerate(self.vheaderitems):
+            item_key = MyTableWidgetItem(key)
+            self.setVerticalHeaderItem(row_num, item_key)
 
     def eventFilter(self, widget: QObject, event: QEvent):
         """
@@ -78,13 +121,12 @@ class MyCifTable(QTableWidget, ItemTextMixin):
             return True
         return QObject.eventFilter(self, widget, event)
 
-    def adjustToContents(self):
-        pass
-
-    def setText(self, row, column, txt):
+    def setText(self, key: str, column: int, txt: str, row: int = None):
         """
         Set text in current table cell regardless of the containing item.
         """
+        if row is None:
+            row = self.vheaderitems.index(key)
         self.setCurrentCell(row, column)
         item = self.currentItem()
         if item:
@@ -96,7 +138,8 @@ class MyCifTable(QTableWidget, ItemTextMixin):
             except AttributeError:
                 pass
 
-    def setBackground(self, row: int, column: int, color: QColor):
+    def setBackground(self, key: str, column: int, color: QColor):
+        row = self.vheaderitems.index(key)
         self.setCurrentCell(row, column)
         item = self.currentItem()
         if item:
@@ -105,6 +148,20 @@ class MyCifTable(QTableWidget, ItemTextMixin):
             widget = self.cellWidget(row, column)
             if widget:
                 widget.setBackground(color)
+
+    def delete_item(self):
+        """
+        Deletes the current row, but gemmi can not delete items from the block at the moment!
+        """
+        row = self.currentRow()
+        key = self.vheaderitems[row]
+        del self.vheaderitems[row]
+        self.removeRow(row)
+        self.row_deleted.emit(key)
+
+    def vheader_text(self, row):
+        vhead = self.model().headerData(row, Qt.Vertical)
+        return str(vhead)
 
 
 class MyQPlainTextEdit(QPlainTextEdit):
@@ -162,6 +219,7 @@ class MyComboBox(QComboBox):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.parent = parent
         self.setFocusPolicy(Qt.StrongFocus)
         self.setSizeAdjustPolicy(QComboBox.AdjustToMinimumContentsLength)
         self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)

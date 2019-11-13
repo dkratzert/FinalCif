@@ -20,6 +20,8 @@ from PyQt5 import uic
 
 from tools.version import VERSION
 
+iss_file = r'scripts\finalcif-install_win64.iss'
+
 try:
     arg = sys.argv[1]
 except IndexError:
@@ -55,16 +57,35 @@ def copy_to_remote():
     shutil.copy(r'dist\FinalCif.exe', r'W:\htdocs\finalcif\FinalCif-v{}.exe'.format(VERSION))
     Path(r'W:\htdocs\finalcif\version.txt').write_text(str(VERSION))
 
+def process_iss(filepath):
+    pth = Path(filepath)
+    iss_file = pth.read_text(encoding="UTF-8").split("\n")
+    for num, line in enumerate(iss_file):
+        if line.startswith("#define MyAppVersion"):
+            l = line.split()
+            l[2] = '"{}"'.format(VERSION)
+            iss_file[num] = " ".join(l)
+            break
+    iss_file = "\n".join(iss_file)
+    print("windows... {}, {}".format(VERSION, filepath))
+    pth.write_text(iss_file, encoding="UTF-8")
 
 disable_debug('finalcif.py')
 
 recompile_ui()
 
-subprocess.run(r""".\venv\Scripts\pyinstaller.exe --icon=icon\multitable.ico -F Finalcif.spec --clean""".split())
-
 print(arg)
 
+process_iss(iss_file)
+
 if arg == 'copy':
-    copy_to_remote()
+    subprocess.run(r""".\venv\Scripts\pyinstaller.exe --icon=icon\multitable.ico -F Finalcif_onefile.spec --clean -y""".split())
+    #copy_to_remote()
+else:
+    subprocess.run(r""".\venv\Scripts\pyinstaller.exe -D Finalcif_installer.spec --clean -y""".split())
+
+    innosetup_compiler = r'D:/Program Files (x86)/Inno Setup 5/ISCC.exe'
+    # Run 64bit setup compiler
+    subprocess.run([innosetup_compiler, iss_file, ])
 
 print('Created version: {}'.format(VERSION))

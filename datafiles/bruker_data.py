@@ -32,7 +32,8 @@ class BrukerData(object):
         self.cif = cif
         self.app = app
         self.basename = cif.fileobj.stem.split('_0m')[0]
-        saint_data = self.saint_log('*_0m._ls')
+        self.saint_data = self.saint_log('*_0m._ls')
+        # This is only in this list file, not in the global:
         saint_first_ls = self.saint_log('*_01._ls')
         sp = self.get_solution_program()
         solution_primary = ''
@@ -137,13 +138,13 @@ class BrukerData(object):
             self.add_to_cif(cif_as_list, key='_loop', value='')"""
         # All sources that are not filled with data will be yellow in the main table
         #                          data                         tooltip
-        sources = {'_cell_measurement_reflns_used'          : (saint_data.cell_reflections, saint_data.filename.name),
-                   '_cell_measurement_theta_min'            : (saint_data.cell_res_min_theta, saint_data.filename.name),
-                   '_cell_measurement_theta_max'            : (saint_data.cell_res_max_theta, saint_data.filename.name),
+        sources = {'_cell_measurement_reflns_used'          : (self.saint_data.cell_reflections, self.saint_data.filename.name),
+                   '_cell_measurement_theta_min'            : (self.saint_data.cell_res_min_theta or '', self.saint_data.filename.name),
+                   '_cell_measurement_theta_max'            : (self.saint_data.cell_res_max_theta or '', self.saint_data.filename.name),
                    '_computing_data_collection'             : (
-                       saint_first_ls.aquire_software, saint_data.filename.name),
-                   '_computing_cell_refinement'             : (saint_data.version, saint_data.filename.name),
-                   '_computing_data_reduction'              : (saint_data.version, saint_data.filename.name),
+                       saint_first_ls.aquire_software, self.saint_data.filename.name),
+                   '_computing_cell_refinement'             : (self.saint_data.version, self.saint_data.filename.name),
+                   '_computing_data_reduction'              : (self.saint_data.version, self.saint_data.filename.name),
                    '_exptl_absorpt_correction_type'         : abscorrtype,
                    '_exptl_absorpt_correction_T_min'        : abs_tmin,
                    '_exptl_absorpt_correction_T_max'        : abs_tmax,
@@ -170,14 +171,14 @@ class BrukerData(object):
                    '_space_group_IT_number'                 : (spgrnum, 'calculated by gemmi'),
                    '_space_group_crystal_system'            : (csystem, 'calculated by gemmi'),
                    }
-        self.sources = dict((k.lower(), v) for k, v in sources.items())
+        self.sources = sources  # dict((k.lower(), v) for k, v in sources.items())
 
     def get_solution_program(self):
         """
         Tries to figure out which program was used for structure solution.
         TODO: figure out more solution programs.
         """
-        p = Path('./')
+        p = self.cif.fileobj.parent
         # for line in cif._ciftext:
         #    if line.startswith('REM SHELXT solution in'):
         xt_files = p.glob(self.basename + '*.lxt')
@@ -206,7 +207,7 @@ class BrukerData(object):
 
     @property
     def sadabs(self):
-        sad = Sadabs(self.basename)
+        sad = Sadabs(basename='*.abs')
         # self.sad_fileLE, button = self.app.add_new_datafile(0, 'SADABS', 'add specific .abs file here, if needed...')
         # self.sad_fileLE.setText(str(sad.filename.absolute()))
         # button.clicked.connect(self.app.get_cif_file_block)
@@ -215,8 +216,8 @@ class BrukerData(object):
 
     @property
     def frame_header(self):
-        return BrukerFrameHeader(self.basename)
+        return BrukerFrameHeader(self.basename, self.cif)
 
     @property
     def p4p(self):
-        return P4PFile(self.basename)
+        return P4PFile(self.basename, self.cif)
