@@ -127,8 +127,15 @@ class AppWindow(QMainWindow):
         self.ui.ExploreDirButton.setIcon(qta.icon('fa5.folder-open'))
         self.ui.SaveCifButton.setIcon(qta.icon('fa5.save'))
         self.ui.SelectCif_PushButton.setIcon(qta.icon('fa5.file-alt'))
-        #mdi-playlist-plus  mdi-playlist-edit  mdi-playlist-minus
+
         self.ui.NewEquipmentTemplateButton.setIcon(qta.icon('mdi.playlist-plus'))
+        self.ui.EditEquipmentTemplateButton.setIcon(qta.icon('mdi.playlist-edit'))
+        self.ui.DeleteEquipmentButton.setIcon(qta.icon('mdi.playlist-minus'))
+        self.ui.ImportEquipmentTemplateButton.setIcon(qta.icon('mdi.import'))
+
+        self.ui.NewPropertyTemplateButton.setIcon(qta.icon('mdi.playlist-plus'))
+        self.ui.EditEquipmentTemplateButton.setIcon(qta.icon('mdi.playlist-edit'))
+
         self.ui.BackPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
         self.ui.BacktoMainpushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
         if len(sys.argv) > 1:
