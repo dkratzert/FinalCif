@@ -120,16 +120,17 @@ class AppWindow(QMainWindow):
         self.connect_signals_and_slots()
         self.manufacturer = 'bruker'
         self.rigakucif: RigakuData
-        self.ui.SaveCifButton.setIcon(self.style().standardIcon(QStyle.SP_ArrowDown))
-        self.ui.CheckcifButton.setIcon(self.style().standardIcon(QStyle.SP_FileDialogDetailedView))
-        self.ui.CheckcifOnlineButton.setIcon(self.style().standardIcon(QStyle.SP_TitleBarNormalButton))
-        self.ui.CheckcifPDFOnlineButton.setIcon(self.style().standardIcon(QStyle.SP_TitleBarNormalButton))
-        self.ui.SaveFullReportButton.setIcon(self.style().standardIcon(QStyle.SP_FileDialogListView))
-        #self.ui.SelectCif_PushButton.setIcon(self.style().standardIcon(QStyle.SP_FileDialogContentsView))
-        filealt_icon = qta.icon('fa5.file-alt')
-        self.ui.SelectCif_PushButton.setIcon(filealt_icon)
-        self.ui.BackPushButton.setIcon(self.style().standardIcon(QStyle.SP_FileDialogBack))
-        self.ui.BacktoMainpushButton.setIcon(self.style().standardIcon(QStyle.SP_FileDialogBack))
+        self.ui.CheckcifButton.setIcon(qta.icon('mdi.file-document-box-outline'))
+        self.ui.CheckcifOnlineButton.setIcon(qta.icon('mdi.file-document-box-check'))
+        self.ui.CheckcifPDFOnlineButton.setIcon(qta.icon('mdi.file-document-box-check-outline'))
+        self.ui.SaveFullReportButton.setIcon(qta.icon('mdi.file-table-outline'))
+        self.ui.ExploreDirButton.setIcon(qta.icon('fa5.folder-open'))
+        self.ui.SaveCifButton.setIcon(qta.icon('fa5.save'))
+        self.ui.SelectCif_PushButton.setIcon(qta.icon('fa5.file-alt'))
+        #mdi-playlist-plus  mdi-playlist-edit  mdi-playlist-minus
+        self.ui.NewEquipmentTemplateButton.setIcon(qta.icon('mdi.playlist-plus'))
+        self.ui.BackPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
+        self.ui.BacktoMainpushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
         if len(sys.argv) > 1:
             self.load_cif_file(sys.argv[1])
         # Sorting desyncronizes header and columns:
