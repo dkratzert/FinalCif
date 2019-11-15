@@ -14,6 +14,7 @@ import traceback
 from contextlib import suppress
 from pathlib import Path, WindowsPath
 from typing import Tuple
+import qtawesome as qta
 
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkReply, QNetworkRequest
 from PyQt5.QtWebEngineWidgets import QWebEngineView
@@ -124,7 +125,9 @@ class AppWindow(QMainWindow):
         self.ui.CheckcifOnlineButton.setIcon(self.style().standardIcon(QStyle.SP_TitleBarNormalButton))
         self.ui.CheckcifPDFOnlineButton.setIcon(self.style().standardIcon(QStyle.SP_TitleBarNormalButton))
         self.ui.SaveFullReportButton.setIcon(self.style().standardIcon(QStyle.SP_FileDialogListView))
-        self.ui.SelectCif_PushButton.setIcon(self.style().standardIcon(QStyle.SP_FileDialogContentsView))
+        #self.ui.SelectCif_PushButton.setIcon(self.style().standardIcon(QStyle.SP_FileDialogContentsView))
+        filealt_icon = qta.icon('fa5.file-alt')
+        self.ui.SelectCif_PushButton.setIcon(filealt_icon)
         self.ui.BackPushButton.setIcon(self.style().standardIcon(QStyle.SP_FileDialogBack))
         self.ui.BacktoMainpushButton.setIcon(self.style().standardIcon(QStyle.SP_FileDialogBack))
         if len(sys.argv) > 1:
