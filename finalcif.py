@@ -359,6 +359,7 @@ class AppWindow(QMainWindow):
             ckf = MakeCheckCif(self, self.fin_file, outfile=htmlfile)
             ckf._get_checkcif(pdf=False)
         except ReadTimeout:
+            splash.finish(self)
             self.show_general_warning(r"The check took too long. Try it at"
                                       r" <a href='https://checkcif.iucr.org/'>https://checkcif.iucr.org/</a> directly.")
         except Exception as e:
@@ -367,6 +368,11 @@ class AppWindow(QMainWindow):
                 raise
             print(e)
             return
+        try:
+            parser = MyHTMLParser(htmlfile.read_text())
+        except FileNotFoundError:
+            # happens if checkcif fails, e.g. takes too much time.
+            return 
         web = QWebEngineView()
         url = QUrl.fromLocalFile(str(htmlfile.absolute()))
         dialog = QMainWindow(self)
@@ -386,11 +392,6 @@ class AppWindow(QMainWindow):
         dialog.show()
         # The picture file linked in the html file:
         imageobj = Path(strip_finalcif_of_name(str(self.cif.fileobj.stem)) + '-finalcif.gif')
-        try:
-            parser = MyHTMLParser(htmlfile.read_text())
-        except FileNotFoundError:
-            # happens if checkcif fails, e.g. takes too much time.
-            return 
         gif = parser.get_image()
         self.ui.statusBar.showMessage('Report finished.')
         splash.finish(self)
