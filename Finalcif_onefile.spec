@@ -45,7 +45,7 @@ exe = EXE(pyz,
           upx=True,
           runtime_tmpdir=None,
           icon='icon/finalcif2.ico',
-          console=True)
+          console=False)
 
 # For a directory release:
 #coll = COLLECT(exe,
