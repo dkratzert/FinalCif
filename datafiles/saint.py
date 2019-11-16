@@ -68,6 +68,7 @@ class SaintListFile():
                     self.cell_reflections = summary[3] or 0
                     self.cell_res_min_2t = summary[6] or 0.0
                     self.cell_res_max_2t = summary[7] or 0.0
+                summary = False
             # This is the twin case:
             if summary and line.lstrip().startswith('All'):
                 summary = line.split()
@@ -75,6 +76,8 @@ class SaintListFile():
                     self.cell_reflections = summary[3] or 0
                     self.cell_res_min_2t = summary[6] or 0.0
                     self.cell_res_max_2t = summary[7] or 0.0
+                # essential to prevent wrong parsing:
+                summary = False
             if line.startswith("Orientation ('UB') matrix"):
                 orientation += 1
             if line.startswith('Twin Law'):
@@ -135,5 +138,9 @@ if __name__ == "__main__":
     print(s)
 
     print('#####')
-    s = SaintListFile('', direct_name='/Volumes/nifty/test_workordner/test766-twin/work/test766_0m._ls')
+    s = SaintListFile('', direct_name='test-data/test766_0m._ls')
+    print(s)
+
+    print('#####')
+    s = SaintListFile('', direct_name='test-data/mo_IKmjs_JD07_0m._ls')
     print(s)
