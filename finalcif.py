@@ -467,8 +467,10 @@ class AppWindow(QMainWindow):
             ckf = MakeCheckCif(self, self.fin_file, outfile=htmlfile)
             ckf.show_pdf_report()
         except ReadTimeout:
+            splash.finish(self)
             self.show_general_warning(r"The check took too long. Try it at"
                                       r" <a href='https://checkcif.iucr.org/'>https://checkcif.iucr.org/</a> directly.")
+            return
         except Exception as e:
             print('Can not do checkcif:')
             if DEBUG:
