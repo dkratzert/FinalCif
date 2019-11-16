@@ -20,7 +20,7 @@ a = Analysis(['./finalcif.py'],
              binaries=[],
              datas=[('./gui', 'gui'), (path.join(site_packages,"docx","templates"), 'docx/templates'), 
                     ('./template', 'template'), ('icon', 'icon')],
-             hiddenimports=['tools.misc', 'tools.settings', 'datafiles', 'gemmi'],
+             hiddenimports=['tools.misc', 'tools.settings', 'datafiles', 'gemmi', 'qtawesome'],
              hookspath=[],
              runtime_hooks=[],
              excludes=[],
@@ -45,7 +45,7 @@ exe = EXE(pyz,
           upx=True,
           runtime_tmpdir=None,
           icon='icon/finalcif2.ico',
-          console=False)
+          console=True)
 
 # For a directory release:
 #coll = COLLECT(exe,
