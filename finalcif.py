@@ -14,8 +14,8 @@ import traceback
 from contextlib import suppress
 from pathlib import Path, WindowsPath
 from typing import Tuple
-import qtawesome as qta
 
+import qtawesome as qta
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkReply, QNetworkRequest
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 # noinspection PyUnresolvedReferences
@@ -51,7 +51,7 @@ if DEBUG:
 from PyQt5.QtCore import QPoint, Qt, QUrl
 from PyQt5.QtGui import QFont, QIcon, QBrush
 from PyQt5.QtWidgets import QApplication, QFileDialog, QHeaderView, QListWidget, QListWidgetItem, \
-    QMainWindow, QMessageBox, QPlainTextEdit, QStackedWidget, QStyle, QTableWidget, QSplashScreen
+    QMainWindow, QMessageBox, QPlainTextEdit, QStackedWidget, QTableWidget, QSplashScreen
 
 """
 TODO:
@@ -120,6 +120,7 @@ class AppWindow(QMainWindow):
         self.connect_signals_and_slots()
         self.manufacturer = 'bruker'
         self.rigakucif: RigakuData
+
         self.ui.CheckcifButton.setIcon(qta.icon('mdi.file-document-box-outline'))
         self.ui.CheckcifOnlineButton.setIcon(qta.icon('mdi.file-document-box-check'))
         self.ui.CheckcifPDFOnlineButton.setIcon(qta.icon('mdi.file-document-box-check-outline'))
@@ -132,12 +133,21 @@ class AppWindow(QMainWindow):
         self.ui.EditEquipmentTemplateButton.setIcon(qta.icon('mdi.playlist-edit'))
         self.ui.DeleteEquipmentButton.setIcon(qta.icon('mdi.playlist-minus'))
         self.ui.ImportEquipmentTemplateButton.setIcon(qta.icon('mdi.import'))
+        self.ui.SaveEquipmentButton.setIcon(qta.icon('mdi.content-save-outline'))
+        self.ui.CancelEquipmentButton.setIcon(qta.icon('mdi.cancel'))
+        self.ui.ExportEquipmentButton.setIcon(qta.icon('mdi.export'))
 
         self.ui.NewPropertyTemplateButton.setIcon(qta.icon('mdi.playlist-plus'))
-        self.ui.EditEquipmentTemplateButton.setIcon(qta.icon('mdi.playlist-edit'))
+        self.ui.EditPropertyTemplateButton.setIcon(qta.icon('mdi.playlist-edit'))
+        self.ui.ImportPropertyTemplateButton.setIcon(qta.icon('mdi.import'))
+        self.ui.DeletePropertiesButton.setIcon(qta.icon('mdi.playlist-minus'))
+        self.ui.SavePropertiesButton.setIcon(qta.icon('mdi.content-save-outline'))
+        self.ui.CancelPropertiesButton.setIcon(qta.icon('mdi.cancel'))
+        self.ui.ExportPropertyButton.setIcon(qta.icon('mdi.export'))
 
         self.ui.BackPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
         self.ui.BacktoMainpushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
+
         if len(sys.argv) > 1:
             self.load_cif_file(sys.argv[1])
         # Sorting desyncronizes header and columns:
@@ -365,6 +375,9 @@ class AppWindow(QMainWindow):
         self.subwin.show_report_Button.hide()
         self.subwin.show_report_Button.clicked.connect(self._switch_to_report)
         self.subwin.show_Forms_Button.clicked.connect(self._switch_to_vrf)
+        self.subwin.SavePushButton.setIcon(qta.icon('mdi.content-save'))
+        self.subwin.show_report_Button.setIcon(qta.icon('mdi.format-columns'))
+        self.subwin.show_Forms_Button.setIcon(qta.icon('mdi.book-open-outline'))
         web.load(url)
         self.subwin.stackedWidget.setCurrentIndex(0)
         dialog.setMinimumWidth(900)
