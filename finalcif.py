@@ -386,7 +386,11 @@ class AppWindow(QMainWindow):
         dialog.show()
         # The picture file linked in the html file:
         imageobj = Path(strip_finalcif_of_name(str(self.cif.fileobj.stem)) + '-finalcif.gif')
-        parser = MyHTMLParser(htmlfile.read_text())
+        try:
+            parser = MyHTMLParser(htmlfile.read_text())
+        except FileNotFoundError:
+            # happens if checkcif fails, e.g. takes too much time.
+            return 
         gif = parser.get_image()
         self.ui.statusBar.showMessage('Report finished.')
         splash.finish(self)
