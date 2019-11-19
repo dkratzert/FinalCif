@@ -7,6 +7,7 @@ import itertools as it
 import re
 import time
 from pathlib import Path
+from typing import List
 
 from docx import Document
 from docx.enum.text import WD_ALIGN_PARAGRAPH
@@ -138,12 +139,16 @@ def make_report_from(file_obj: Path, output_filename: str = None, path: str = ''
     make_culumns_section(document, columns='1')
     table_num = add_coords_table(document, cif, table_num)
     make_culumns_section(document, columns='2')
-    # document.add_paragraph('')
-    table_num = add_bonds_and_angles_table(document, cif, table_num, without_H)
-    table_num = add_torsion_angles(document, cif, table_num)
-    make_culumns_section(document, columns='1')
-    table_num = add_hydrogen_bonds(document, cif, table_num)
-    document.add_paragraph('')
+    if cif.symmops:
+        table_num = add_bonds_and_angles_table(document, cif, table_num, without_H)
+        table_num = add_torsion_angles(document, cif, table_num)
+        make_culumns_section(document, columns='1')
+        table_num = add_hydrogen_bonds(document, cif, table_num)
+        document.add_paragraph('')
+    else:
+        make_culumns_section(document, columns='1')
+        document.add_paragraph('No further tables, because symmetry operators '
+                               '(_space_group_symop_operation_xyz) are missing.')
     document.save(output_filename)
     print('\nTables finished - output file: {}'.format(output_filename))
     return file_obj.name
@@ -795,7 +800,13 @@ def add_last_symminfo_line(newsymms, document):
         run.font.size = Pt(8)
 
 
-def get_card(cif, symm):
+def get_card(cif: CifContainer, symm: str) -> List[str]:
+    """
+    Returns a symmetry card from the _space_group_symop_operation_xyz or _symmetry_equiv_pos_as_xyz list.
+    :param cif: the cif file object
+    :param symm: the symmetry number
+    :return: ['x', ' y', ' z'] etc
+    """
     card = cif.symmops[int(symm.split('_')[0]) - 1].split(',')
     return card
 
