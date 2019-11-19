@@ -552,10 +552,11 @@ class AppWindow(QMainWindow):
                 self.show_general_warning('The report document {} could not be opened.\n'
                                           'Is the file already opened?'.format(output_filename))
                 return
-            if os.name == 'nt':
-                os.startfile(Path(output_filename).absolute())
-            if sys.platform == 'darwin':
-                subprocess.call(['open', Path(output_filename).absolute()])
+            if Path(output_filename).absolute().exists():
+                if os.name == 'nt':
+                    os.startfile(Path(output_filename).absolute())
+                if sys.platform == 'darwin':
+                    subprocess.call(['open', Path(output_filename).absolute()])
 
     def save_current_recent_files_list(self, file):
         if os.name == 'nt':
