@@ -106,9 +106,12 @@ def make_report_from(file_obj: Path, output_filename: str = None, path: str = ''
         except Exception as e:
             print('Unable to open cif file:')
             print(e)
+            raise
     else:
         raise FileNotFoundError
-
+    if not cif:
+        print('Something failed during cif file saving.')
+        return
     # The picture after the header:
     picfile = Path(file_obj.stem + '.gif')
     if picfile.exists():
