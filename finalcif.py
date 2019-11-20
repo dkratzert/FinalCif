@@ -15,6 +15,7 @@ from contextlib import suppress
 from pathlib import Path, WindowsPath
 from typing import Tuple
 
+import qtawesome as qta
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkReply, QNetworkRequest
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 # noinspection PyUnresolvedReferences
@@ -50,7 +51,7 @@ if DEBUG:
 from PyQt5.QtCore import QPoint, Qt, QUrl
 from PyQt5.QtGui import QFont, QIcon, QBrush
 from PyQt5.QtWidgets import QApplication, QFileDialog, QHeaderView, QListWidget, QListWidgetItem, \
-    QMainWindow, QMessageBox, QPlainTextEdit, QStackedWidget, QStyle, QTableWidget, QSplashScreen
+    QMainWindow, QMessageBox, QPlainTextEdit, QStackedWidget, QTableWidget, QSplashScreen
 
 """
 TODO:
@@ -119,14 +120,34 @@ class AppWindow(QMainWindow):
         self.connect_signals_and_slots()
         self.manufacturer = 'bruker'
         self.rigakucif: RigakuData
-        self.ui.SaveCifButton.setIcon(self.style().standardIcon(QStyle.SP_ArrowDown))
-        self.ui.CheckcifButton.setIcon(self.style().standardIcon(QStyle.SP_FileDialogDetailedView))
-        self.ui.CheckcifOnlineButton.setIcon(self.style().standardIcon(QStyle.SP_TitleBarNormalButton))
-        self.ui.CheckcifPDFOnlineButton.setIcon(self.style().standardIcon(QStyle.SP_TitleBarNormalButton))
-        self.ui.SaveFullReportButton.setIcon(self.style().standardIcon(QStyle.SP_FileDialogListView))
-        self.ui.SelectCif_PushButton.setIcon(self.style().standardIcon(QStyle.SP_FileDialogContentsView))
-        self.ui.BackPushButton.setIcon(self.style().standardIcon(QStyle.SP_FileDialogBack))
-        self.ui.BacktoMainpushButton.setIcon(self.style().standardIcon(QStyle.SP_FileDialogBack))
+
+        self.ui.CheckcifButton.setIcon(qta.icon('mdi.file-document-box-outline'))
+        self.ui.CheckcifOnlineButton.setIcon(qta.icon('mdi.file-document-box-check'))
+        self.ui.CheckcifPDFOnlineButton.setIcon(qta.icon('mdi.file-document-box-check-outline'))
+        self.ui.SaveFullReportButton.setIcon(qta.icon('mdi.file-table-outline'))
+        self.ui.ExploreDirButton.setIcon(qta.icon('fa5.folder-open'))
+        self.ui.SaveCifButton.setIcon(qta.icon('fa5.save'))
+        self.ui.SelectCif_PushButton.setIcon(qta.icon('fa5.file-alt'))
+
+        self.ui.NewEquipmentTemplateButton.setIcon(qta.icon('mdi.playlist-plus'))
+        self.ui.EditEquipmentTemplateButton.setIcon(qta.icon('mdi.playlist-edit'))
+        self.ui.DeleteEquipmentButton.setIcon(qta.icon('mdi.playlist-minus'))
+        self.ui.ImportEquipmentTemplateButton.setIcon(qta.icon('mdi.import'))
+        self.ui.SaveEquipmentButton.setIcon(qta.icon('mdi.content-save-outline'))
+        self.ui.CancelEquipmentButton.setIcon(qta.icon('mdi.cancel'))
+        self.ui.ExportEquipmentButton.setIcon(qta.icon('mdi.export'))
+
+        self.ui.NewPropertyTemplateButton.setIcon(qta.icon('mdi.playlist-plus'))
+        self.ui.EditPropertyTemplateButton.setIcon(qta.icon('mdi.playlist-edit'))
+        self.ui.ImportPropertyTemplateButton.setIcon(qta.icon('mdi.import'))
+        self.ui.DeletePropertiesButton.setIcon(qta.icon('mdi.playlist-minus'))
+        self.ui.SavePropertiesButton.setIcon(qta.icon('mdi.content-save-outline'))
+        self.ui.CancelPropertiesButton.setIcon(qta.icon('mdi.cancel'))
+        self.ui.ExportPropertyButton.setIcon(qta.icon('mdi.export'))
+
+        self.ui.BackPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
+        self.ui.BacktoMainpushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
+
         if len(sys.argv) > 1:
             self.load_cif_file(sys.argv[1])
         # Sorting desyncronizes header and columns:
@@ -338,6 +359,7 @@ class AppWindow(QMainWindow):
             ckf = MakeCheckCif(self, self.fin_file, outfile=htmlfile)
             ckf._get_checkcif(pdf=False)
         except ReadTimeout:
+            splash.finish(self)
             self.show_general_warning(r"The check took too long. Try it at"
                                       r" <a href='https://checkcif.iucr.org/'>https://checkcif.iucr.org/</a> directly.")
         except Exception as e:
@@ -346,6 +368,11 @@ class AppWindow(QMainWindow):
                 raise
             print(e)
             return
+        try:
+            parser = MyHTMLParser(htmlfile.read_text())
+        except FileNotFoundError:
+            # happens if checkcif fails, e.g. takes too much time.
+            return 
         web = QWebEngineView()
         url = QUrl.fromLocalFile(str(htmlfile.absolute()))
         dialog = QMainWindow(self)
@@ -354,6 +381,9 @@ class AppWindow(QMainWindow):
         self.subwin.show_report_Button.hide()
         self.subwin.show_report_Button.clicked.connect(self._switch_to_report)
         self.subwin.show_Forms_Button.clicked.connect(self._switch_to_vrf)
+        self.subwin.SavePushButton.setIcon(qta.icon('mdi.content-save'))
+        self.subwin.show_report_Button.setIcon(qta.icon('mdi.format-columns'))
+        self.subwin.show_Forms_Button.setIcon(qta.icon('mdi.book-open-outline'))
         web.load(url)
         self.subwin.stackedWidget.setCurrentIndex(0)
         dialog.setMinimumWidth(900)
@@ -362,7 +392,6 @@ class AppWindow(QMainWindow):
         dialog.show()
         # The picture file linked in the html file:
         imageobj = Path(strip_finalcif_of_name(str(self.cif.fileobj.stem)) + '-finalcif.gif')
-        parser = MyHTMLParser(htmlfile.read_text())
         gif = parser.get_image()
         self.ui.statusBar.showMessage('Report finished.')
         splash.finish(self)
@@ -438,8 +467,10 @@ class AppWindow(QMainWindow):
             ckf = MakeCheckCif(self, self.fin_file, outfile=htmlfile)
             ckf.show_pdf_report()
         except ReadTimeout:
+            splash.finish(self)
             self.show_general_warning(r"The check took too long. Try it at"
                                       r" <a href='https://checkcif.iucr.org/'>https://checkcif.iucr.org/</a> directly.")
+            return
         except Exception as e:
             print('Can not do checkcif:')
             if DEBUG:
@@ -521,10 +552,11 @@ class AppWindow(QMainWindow):
                 self.show_general_warning('The report document {} could not be opened.\n'
                                           'Is the file already opened?'.format(output_filename))
                 return
-            if os.name == 'nt':
-                os.startfile(Path(output_filename).absolute())
-            if sys.platform == 'darwin':
-                subprocess.call(['open', Path(output_filename).absolute()])
+            if Path(output_filename).absolute().exists():
+                if os.name == 'nt':
+                    os.startfile(Path(output_filename).absolute())
+                if sys.platform == 'darwin':
+                    subprocess.call(['open', Path(output_filename).absolute()])
 
     def save_current_recent_files_list(self, file):
         if os.name == 'nt':
