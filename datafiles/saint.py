@@ -40,14 +40,14 @@ class SaintListFile():
         summary = None
         orientation = 0
         for num, line in enumerate(text):
-            #spline = line.strip().split()
+            # spline = line.strip().split()
             if num == 0:
                 self.version = line
             if line.startswith('Refinement includes'):
                 with suppress(IndexError):
                     self.nsamples = int(line.split()[2])
                 with suppress(IndexError, ValueError):
-                    self.components_firstsample = int(text[num+1].split()[3])
+                    self.components_firstsample = int(text[num + 1].split()[3])
             if line.startswith('Reflection Summary:'):
                 """
                 Reflection Summary:
@@ -68,6 +68,7 @@ class SaintListFile():
                     self.cell_reflections = summary[3] or 0
                     self.cell_res_min_2t = summary[6] or 0.0
                     self.cell_res_max_2t = summary[7] or 0.0
+                summary = False
             # This is the twin case:
             if summary and line.lstrip().startswith('All'):
                 summary = line.split()
@@ -75,6 +76,8 @@ class SaintListFile():
                     self.cell_reflections = summary[3] or 0
                     self.cell_res_min_2t = summary[6] or 0.0
                     self.cell_res_max_2t = summary[7] or 0.0
+                # essential to prevent wrong parsing:
+                summary = False
             if line.startswith("Orientation ('UB') matrix"):
                 orientation += 1
             if line.startswith('Twin Law'):
@@ -82,10 +85,10 @@ class SaintListFile():
                 # S.C(F) -> S Sample number, C Combonent number, F number in the file
                 try:
                     twin = []
-                    transform = text[num+1].strip()
-                    twin.append([float(x) for x in text[num+2].split()])
-                    twin.append([float(x) for x in text[num+3].split()])
-                    twin.append([float(x) for x in text[num+4].split()])
+                    transform = text[num + 1].strip()
+                    twin.append([float(x) for x in text[num + 2].split()])
+                    twin.append([float(x) for x in text[num + 3].split()])
+                    twin.append([float(x) for x in text[num + 4].split()])
                     self.twinlaw[transform] = twin
                 except (KeyError, ValueError):
                     print('Could not determine twin law fro m._ls file.')
@@ -126,6 +129,7 @@ class SaintListFile():
                 out += '\n'
         return out
 
+
 if __name__ == "__main__":
     saint = SaintListFile(name_patt='', direct_name='test-data/TB_fs20_v1_0m._ls')
     print(saint)
@@ -135,5 +139,9 @@ if __name__ == "__main__":
     print(s)
 
     print('#####')
-    s = SaintListFile('', direct_name='/Volumes/nifty/test_workordner/test766-twin/work/test766_0m._ls')
+    s = SaintListFile('', direct_name='test-data/test766_0m._ls')
+    print(s)
+
+    print('#####')
+    s = SaintListFile('', direct_name='test-data/mo_IKmjs_JD07_0m._ls')
     print(s)
