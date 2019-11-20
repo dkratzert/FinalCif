@@ -48,7 +48,7 @@ if DEBUG:
     uic.compileUiDir(os.path.join(application_path, './gui'))
     # uic.compileUi('./gui/finalcif_gui.ui', open('./gui/finalcif_gui.py', 'w'))
 
-from PyQt5.QtCore import QPoint, Qt, QUrl
+from PyQt5.QtCore import QPoint, Qt, QUrl, QEvent
 from PyQt5.QtGui import QFont, QIcon, QBrush
 from PyQt5.QtWidgets import QApplication, QFileDialog, QHeaderView, QListWidget, QListWidgetItem, \
     QMainWindow, QMessageBox, QPlainTextEdit, QStackedWidget, QTableWidget, QSplashScreen
@@ -299,13 +299,13 @@ class AppWindow(QMainWindow):
         if sys.platform == 'linux':
             subprocess.call(['xdg-open', curdir])
 
-    def dragEnterEvent(self, e):
+    def dragEnterEvent(self, e: QEvent):
         if e.mimeData().hasText():
             e.accept()
         else:
             e.ignore()
 
-    def dropEvent(self, e):
+    def dropEvent(self, e: QEvent):
         """
         Handles drop events.
         """
@@ -372,7 +372,7 @@ class AppWindow(QMainWindow):
             parser = MyHTMLParser(htmlfile.read_text())
         except FileNotFoundError:
             # happens if checkcif fails, e.g. takes too much time.
-            return 
+            return
         web = QWebEngineView()
         url = QUrl.fromLocalFile(str(htmlfile.absolute()))
         dialog = QMainWindow(self)
@@ -521,13 +521,13 @@ class AppWindow(QMainWindow):
         ccpe.verticalScrollBar().setValue(0)
         splash.finish(self)
 
-    def load_recent_file(self, file_index):
+    def load_recent_file(self, file_index: int) -> None:
         combo = self.ui.RecentComboBox
         if file_index > 0:
             txt = combo.itemText(file_index)
             self.load_cif_file(txt)
 
-    def make_table(self):
+    def make_table(self) -> None:
         """
         Runs the multitable program to make a report table.
         """
@@ -558,7 +558,7 @@ class AppWindow(QMainWindow):
                 if sys.platform == 'darwin':
                     subprocess.call(['open', Path(output_filename).absolute()])
 
-    def save_current_recent_files_list(self, file):
+    def save_current_recent_files_list(self, file: str) -> None:
         if os.name == 'nt':
             file = WindowsPath(file).absolute()
         else:
@@ -572,7 +572,7 @@ class AppWindow(QMainWindow):
         self.settings.settings.setValue('recent_files', recent)
         # print(recent, 'save')
 
-    def load_recent_cifs_list(self):
+    def load_recent_cifs_list(self) -> None:
         self.ui.RecentComboBox.clear()
         recent = list(self.settings.settings.value('recent_files', type=list))
         self.ui.RecentComboBox.addItem('Recent Files')
@@ -586,12 +586,12 @@ class AppWindow(QMainWindow):
                 pass
             self.ui.RecentComboBox.addItem(file, n)
 
-    def save_cif_and_display(self):
+    def save_cif_and_display(self) -> None:
         saved = self.save_current_cif_file()
         if saved:
             self.display_saved_cif()
 
-    def save_current_cif_file(self):
+    def save_current_cif_file(self) -> bool:
         """
         Saves the current cif file and stores the information of the third column.
         """
@@ -646,7 +646,7 @@ class AppWindow(QMainWindow):
             self.show_general_warning('Can not save file: ' + str(e))
             return False
 
-    def display_saved_cif(self):
+    def display_saved_cif(self) -> None:
         """
         Displays the saved cif file into a textfield.
         """
@@ -663,7 +663,7 @@ class AppWindow(QMainWindow):
         final_textedit.setLineWrapMode(QPlainTextEdit.NoWrap)
         final_textedit.setPlainText(self.fin_file.read_text(encoding='utf-8', errors='ignore'))
 
-    def show_equipment_and_properties(self):
+    def show_equipment_and_properties(self) -> None:
         """
         Display saved items in the equipment and properties lists.
         """
@@ -681,7 +681,7 @@ class AppWindow(QMainWindow):
                     item = QListWidgetItem(pr)
                     self.ui.PropertiesTemplatesListWidget.addItem(item)
 
-    def load_selected_equipment(self):
+    def load_selected_equipment(self) -> None:
         """
         Loads equipment data to be shown in the main Cif table.
         Not for template edititng!
@@ -718,7 +718,7 @@ class AppWindow(QMainWindow):
         if not self.cif.block.find_value(key):
             self.cif.add_to_cif(key, value)
 
-    def new_property(self):
+    def new_property(self) -> None:
         item = QListWidgetItem('')
         self.ui.PropertiesTemplatesListWidget.addItem(item)
         self.ui.PropertiesTemplatesListWidget.setCurrentItem(item)
@@ -726,7 +726,7 @@ class AppWindow(QMainWindow):
         self.ui.PropertiesTemplatesListWidget.editItem(item)
         self.ui.cifKeywordLineEdit.clear()
 
-    def add_property_row_if_needed(self):
+    def add_property_row_if_needed(self) -> None:
         """
         Adds an empty row at the bottom of either the EquipmentEditTableWidget, or the PropertiesEditTableWidget.
         """
@@ -747,14 +747,14 @@ class AppWindow(QMainWindow):
 
     # The equipment templates:
 
-    def new_equipment(self):
+    def new_equipment(self) -> None:
         item = QListWidgetItem('')
         self.ui.EquipmentTemplatesListWidget.addItem(item)
         self.ui.EquipmentTemplatesListWidget.setCurrentItem(item)
         item.setFlags(Qt.ItemIsEditable | Qt.ItemIsEnabled | Qt.ItemIsSelectable)
         self.ui.EquipmentTemplatesListWidget.editItem(item)
 
-    def delete_equipment(self):
+    def delete_equipment(self) -> None:
         # First delete the list entries
         index = self.ui.EquipmentTemplatesListWidget.currentIndex()
         selected_template_text = index.data()
@@ -772,7 +772,7 @@ class AppWindow(QMainWindow):
         self.store_predefined_templates()
         self.show_equipment_and_properties()
 
-    def edit_equipment_template(self):
+    def edit_equipment_template(self) -> None:
         it = self.ui.EquipmentTemplatesListWidget.currentItem()
         self.ui.EquipmentTemplatesListWidget.setCurrentItem(None)
         self.ui.EquipmentTemplatesListWidget.setCurrentItem(it)
@@ -782,7 +782,8 @@ class AppWindow(QMainWindow):
         listwidget = self.ui.EquipmentTemplatesListWidget
         self.load_equipment_to_edit(table, stackedwidget, listwidget)
 
-    def load_equipment_to_edit(self, table: MyEQTableWidget, stackedwidget: QStackedWidget, listwidget: QListWidget):
+    def load_equipment_to_edit(self, table: MyEQTableWidget, stackedwidget: QStackedWidget,
+                               listwidget: QListWidget) -> None:
         """
         Load/Edit the key/value list of an equipment entry.
         """
@@ -811,7 +812,7 @@ class AppWindow(QMainWindow):
         table.resizeRowsToContents()
         table.blockSignals(False)
 
-    def save_equipment_template(self):
+    def save_equipment_template(self) -> None:
         """
         Saves the currently selected equipment template to the config file.
         """
@@ -830,7 +831,7 @@ class AppWindow(QMainWindow):
         self.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
         print('saved')
 
-    def import_equipment_from_file(self):
+    def import_equipment_from_file(self) -> None:
         """
         Import an equipment entry from a cif file.
         """
@@ -859,7 +860,7 @@ class AppWindow(QMainWindow):
         self.settings.append_to_equipment_list(name)
         self.show_equipment_and_properties()
 
-    def get_loop(self, item):
+    def get_loop(self, item) -> None:
         """
         TODO: use this to load loops from machine cifs
         """
@@ -916,7 +917,7 @@ class AppWindow(QMainWindow):
                 table_data.append([key, value])
         return selected_template_text, table_data
 
-    def export_equipment_template(self, filename: str = None):
+    def export_equipment_template(self, filename: str = None) -> None:
         """
         Exports the currently selected equipment entry to a file.
 
@@ -939,7 +940,7 @@ class AppWindow(QMainWindow):
                 return
             self.show_general_warning('No permission to write file to {}'.format(Path(filename).absolute()))
 
-    def cancel_equipment_template(self):
+    def cancel_equipment_template(self) -> None:
         """
         Cancel Equipment editing.
         """
@@ -951,7 +952,7 @@ class AppWindow(QMainWindow):
 
     # The properties templates:
 
-    def delete_property(self):
+    def delete_property(self) -> None:
         # First delete the list entries
         index = self.ui.PropertiesTemplatesListWidget.currentIndex()
         selected_template_text = index.data()
@@ -966,7 +967,7 @@ class AppWindow(QMainWindow):
         self.store_predefined_templates()
         self.show_equipment_and_properties()
 
-    def edit_property_template(self):
+    def edit_property_template(self) -> None:
         """
         Edit the Property table.
         """
@@ -981,14 +982,14 @@ class AppWindow(QMainWindow):
         self.load_property_from_settings(table, stackedwidget, listwidget)
         # table.resizeRowsToContents()
 
-    def save_property_template(self):
+    def save_property_template(self) -> None:
         table = self.ui.PropertiesEditTableWidget
         stackedwidget = self.ui.PropertiesTemplatesStackedWidget
         listwidget = self.ui.PropertiesTemplatesListWidget
         keyword = self.ui.cifKeywordLineEdit.text()
         self.save_property(table, stackedwidget, listwidget, keyword)
 
-    def store_predefined_templates(self):
+    def store_predefined_templates(self) -> None:
         property_list = self.settings.settings.value('property_list') or []
         for item in predef_prop_templ:
             if not item['name'] in property_list:
@@ -1006,7 +1007,7 @@ class AppWindow(QMainWindow):
                 self.settings.save_template('equipment_list', newlist)
                 self.settings.save_template('equipment/' + item['name'], item['items'])
 
-    def export_property_template(self):
+    def export_property_template(self) -> None:
         """
         Exports the currently selected property entry to a file.
         """
@@ -1038,7 +1039,7 @@ class AppWindow(QMainWindow):
                 return
             self.show_general_warning('No permission to write file to {}'.format(Path(filename).absolute()))
 
-    def import_property_from_file(self):
+    def import_property_from_file(self) -> None:
         filename = self.cif_file_open_dialog(filter="CIF file (*.cif *.cif_od)")
         if not filename:
             return
@@ -1073,7 +1074,8 @@ class AppWindow(QMainWindow):
         self.settings.save_template('property/' + block_name, table_data)
         self.show_equipment_and_properties()
 
-    def load_property_from_settings(self, table: QTableWidget, stackedwidget: QStackedWidget, listwidget: QListWidget):
+    def load_property_from_settings(self, table: QTableWidget, stackedwidget: QStackedWidget,
+                                    listwidget: QListWidget) -> None:
         """
         Load/Edit the value list of a property entry.
         """
@@ -1116,7 +1118,7 @@ class AppWindow(QMainWindow):
         table.resizeRowsToContents()
 
     @staticmethod
-    def add_propeties_row(table: QTableWidget, value: str = ''):
+    def add_propeties_row(table: QTableWidget, value: str = '') -> None:
         """
         Add a new row with a value to the Property table.
         """
@@ -1130,7 +1132,7 @@ class AppWindow(QMainWindow):
     def save_property(self, table: QTableWidget,
                       stackwidget: QStackedWidget,
                       listwidget: QListWidget,
-                      keyword: str = ''):
+                      keyword: str = '') -> None:
         """
         Saves the currently selected Property template to the config file.
         """
@@ -1158,7 +1160,7 @@ class AppWindow(QMainWindow):
         stackwidget.setCurrentIndex(0)
         print('saved')
 
-    def cancel_property_template(self):
+    def cancel_property_template(self) -> None:
         """
         Cancel editing of the current template.
         """
@@ -1269,7 +1271,8 @@ class AppWindow(QMainWindow):
         # self.ui.EquipmentTemplatesListWidget.setCurrentRow(-1)  # Has to he in front in order to work
         # self.ui.EquipmentTemplatesListWidget.setCurrentRow(self.settings.load_last_equipment())
 
-    def unable_to_open_message(self, filepath, not_ok) -> None:
+    @staticmethod
+    def unable_to_open_message(filepath: Path, not_ok: Exception) -> None:
         info = QMessageBox()
         info.setIcon(QMessageBox.Information)
         print('Output from gemmi:', not_ok)
@@ -1286,7 +1289,7 @@ class AppWindow(QMainWindow):
         info.exec()
         return
 
-    def test_checksums(self):
+    def test_checksums(self) -> None:
         """
         A method to check wether the checksums in the cif file fit to the content.
         """
@@ -1301,7 +1304,7 @@ class AppWindow(QMainWindow):
         if cif_hkl_ckecksum > 0 and cif_hkl_ckecksum != self.cif.hkl_checksum_calcd:
             self.show_checksum_warning(res=False)
 
-    def show_checksum_warning(self, res=True):
+    def show_checksum_warning(self, res=True) -> None:
         """
         A message box to display if the checksums do not agree.
         """
@@ -1314,7 +1317,7 @@ class AppWindow(QMainWindow):
         info.show()
         info.exec()
 
-    def show_general_warning(self, warn_text: str = ''):
+    def show_general_warning(self, warn_text: str = '') -> None:
         """
         A message box to display if the checksums do not agree.
         """
@@ -1322,7 +1325,7 @@ class AppWindow(QMainWindow):
             return
         QMessageBox(self).warning(self, ' ', warn_text)
 
-    def check_Z(self):
+    def check_Z(self) -> None:
         """
         Crude check if Z is much too high e.h. a SEHLXT solution with "C H N O" sum formula.
         """
@@ -1347,7 +1350,7 @@ class AppWindow(QMainWindow):
             zinfo.show()
             zinfo.exec()
 
-    def set_pair(self, key: str, value: str):
+    def set_pair(self, key: str, value: str) -> None:
         """
         Start a new cif pair and add it to the main table.
         """
@@ -1359,7 +1362,7 @@ class AppWindow(QMainWindow):
         self.missing_data.append(key)
         self.cif.block.set_pair(key, value)
 
-    def get_data_sources(self):
+    def get_data_sources(self) -> None:
         """
         Tries to determine the sources of missing data in the cif file, e.g. Tmin/Tmax from SADABS.
         """
@@ -1382,6 +1385,7 @@ class AppWindow(QMainWindow):
                     self.set_pair('_twin_individual_twin_matrix_11', str(law[0][0]))
                     self.set_pair('_twin_individual_id', str(bdata.saint_data.components_firstsample))
                     self.set_pair('_twin_special_details', 'The data was integrated as a 2-component twin.')
+                    self.ui.CifItemsTable.setCurrentItem(None)
         if self.manufacturer == 'rigaku':
             vheadlist = []
             for num in range(self.ui.CifItemsTable.model().rowCount()):
@@ -1468,7 +1472,7 @@ class AppWindow(QMainWindow):
             if not miss_data in text_field_keys:
                 tab_item.set_uneditable()
 
-    def add_property_combobox(self, data: str, row_num: int):
+    def add_property_combobox(self, data: str, row_num: int) -> None:
         """
         Adds a QComboBox to the CifItemsTable with the content of special_fields or property templates.
         """
@@ -1486,7 +1490,7 @@ class AppWindow(QMainWindow):
                 continue
         combobox.setCurrentIndex(0)
 
-    def fill_cif_table(self):
+    def fill_cif_table(self) -> None:
         """
         Adds the cif content to the main table. also add reference to FinalCif.
         """
@@ -1501,7 +1505,7 @@ class AppWindow(QMainWindow):
         self.get_data_sources()
         # self.ui.CifItemsTable.resizeRowsToContents()
 
-    def add_row(self, key, value, at_start=False) -> None:
+    def add_row(self, key: str, value: str, at_start=False) -> None:
         """
         Create a empty row at bottom of CifItemsTable. This method only fills cif data in the
         first column. Not the data from external sources!
@@ -1550,7 +1554,7 @@ class AppWindow(QMainWindow):
                 self.ui.CifItemsTable.resizeRowToContents(row_num)
         self.ui.CifItemsTable.setVerticalHeaderItem(row_num, head_item_key)
 
-    def add_separation_line(self, row_num: int):
+    def add_separation_line(self, row_num: int) -> None:
         """
         Adds a blue separation line between cif content and empty cif keywords.
         """

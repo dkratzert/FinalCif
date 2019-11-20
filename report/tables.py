@@ -7,13 +7,13 @@ import itertools as it
 import re
 import time
 from pathlib import Path
-from typing import List
+from typing import List, Sequence
 
 from docx import Document
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
-from docx.shared import Cm, Pt
+from docx.shared import Cm, Length, Pt
 from docx.table import Table, _Cell
 
 from app_path import application_path
@@ -773,12 +773,12 @@ def populate_description_columns(main_table, cif: CifContainer):
         main_table.columns[0].cells[num - 1].paragraphs[0].add_run('Extinction coefficient')
 
 
-def set_column_width(column, width):
+def set_column_width(column, width: Length):
     for cell in column.cells:
         cell.width = width
 
 
-def make_table_widths(table, widths):
+def make_table_widths(table: Table, widths: Sequence[Length]):
     """
     Sets the width of the columns of a table.
     """
@@ -787,7 +787,7 @@ def make_table_widths(table, widths):
             row.cells[idx].width = width
 
 
-def add_last_symminfo_line(newsymms, document):
+def add_last_symminfo_line(newsymms: dict, document: Document):
     p = document.add_paragraph('')
     line = 'Symmetry transformations used to generate equivalent atoms: '
     nitems = len(newsymms)
