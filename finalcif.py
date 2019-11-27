@@ -36,7 +36,6 @@ from tools.checkcif import AlertHelp, MakeCheckCif, MyHTMLParser
 from tools.misc import combobox_fields, excluded_imports, predef_equipment_templ, predef_prop_templ, \
     strip_finalcif_of_name, text_field_keys, to_float
 from tools.settings import FinalCifSettings
-from tools.update import mainurl
 from tools.version import VERSION
 
 DEBUG = False
@@ -232,6 +231,7 @@ class AppWindow(QMainWindow):
         self.cif.block.set_pair(key, '?')
 
     def checkfor_version(self):
+        mainurl = "https://xs3-data.uni-freiburg.de/finalcif/"
         url = QUrl(mainurl + 'version.txt')
         req = QNetworkRequest(url)
         self.netman.get(req)
