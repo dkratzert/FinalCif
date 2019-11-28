@@ -6,6 +6,7 @@
 import itertools as it
 import re
 import time
+from math import sin, radians
 from pathlib import Path
 from typing import List, Sequence
 
@@ -23,7 +24,7 @@ from report.report_text import CCDC, CrstalSelection, Crystallization, DataReduc
     SolveRefine, format_radiation, math_to_word
 from report.spgrps import SpaceGroups
 from report.symm import SymmetryElement
-from tools.misc import prot_space
+from tools.misc import prot_space, angstrom
 
 
 def format_space_group(table, cif):
@@ -320,8 +321,10 @@ def populate_main_table_values(main_table: Table, cif: CifContainer):
     # wavelength lambda:
     radrun.add_run(' ' + wavelength)
     try:
-        main_table.cell(21, 1).text = "{0:.2f}".format(2 * float(theta_min)) + \
-                                      ' to ' + "{0:.2f}".format(2 * float(theta_max))
+        d_max = ' ({:.2f}{}{})'.format(float(radiation_wavelength) / (2 * sin(radians(float(theta_max)))), 
+                                       prot_space, angstrom)
+        # 2theta range:
+        main_table.cell(21, 1).text = "{:.2f} to {:.2f}{}".format(2 * float(theta_min), 2 * float(theta_max), d_max)
     except ValueError:
         main_table.cell(21, 1).text = '? to ?'
     main_table.cell(22, 1).text = limit_h_min + ' \u2264 h \u2264 ' \
