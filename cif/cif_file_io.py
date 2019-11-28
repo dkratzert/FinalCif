@@ -54,9 +54,9 @@ charcters = {'°'      : r'\%',
              'ô'      : r'\^o',
              'û'      : r'\^u',
              'ç'      : r'\,c',
-             u"\u03B1": r'\a',
-             u"\u03B2": r'\b',
-             u"\u03B3": r'\g',
+             u"\u03B1": r'\a',  # alpha
+             u"\u03B2": r'\b',  # beta
+             u"\u03B3": r'\g',  # ...
              u"\u03B4": r'\d',
              u"\u03B5": r'\e',
              u"\u03B6": r'\z',
@@ -121,7 +121,7 @@ class CifContainer():
         self.fileobj = file
         self.block = None
         self.doc = None
-        #self.cif_file_text = self.fileobj.read_text(encoding='utf-8', errors='ignore')
+        # self.cif_file_text = self.fileobj.read_text(encoding='utf-8', errors='ignore')
         self.open_cif_with_gemmi()
         self.hkl_extra_info = self.abs_hkl_details()
         self.resdata = self.block.find_value('_shelx_res_file')
@@ -162,7 +162,7 @@ class CifContainer():
             except RuntimeError:
                 continue
         self.doc.write_file(filename, gemmi.cif.Style.Indent35)
-        #Path(filename).write_text(self.doc.as_string(gemmi.cif.Style.Indent35))
+        # Path(filename).write_text(self.doc.as_string(gemmi.cif.Style.Indent35))
 
     def open_cif_with_gemmi(self) -> None:
         """
@@ -176,7 +176,7 @@ class CifContainer():
             print('Unable to read file:', e)
             raise
 
-    #def open_cif_by_string(self) -> None:
+    # def open_cif_by_string(self) -> None:
     #    """Not used anymore"""
     #    self.doc = gemmi.cif.read_string(self.cif_file_text)
     #    self.block = self.doc.sole_block()

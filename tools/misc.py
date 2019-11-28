@@ -14,6 +14,8 @@ from typing import Union
 
 # protected space character:
 prot_space = u'\u00A0'
+# Angstrom character:
+angstrom = u'\u00A0\u00C5'
 
 
 def grouper(inputs, n, fillvalue=None):
