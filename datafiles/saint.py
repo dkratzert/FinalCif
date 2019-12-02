@@ -25,7 +25,7 @@ class SaintListFile():
         self.components_firstsample = 1
         self.filename = Path('')
         if direct_name:
-            self._fileobj = get_file_to_parse(fileobj=Path(direct_name))
+            self._fileobj = get_file_to_parse(name_pattern=name_patt, fileobj=Path(direct_name))
         else:
             self._fileobj = get_file_to_parse(name_pattern=name_patt, base_directory='.')
         if self._fileobj:
@@ -131,17 +131,17 @@ class SaintListFile():
 
 
 if __name__ == "__main__":
-    saint = SaintListFile(name_patt='', direct_name='test-data/TB_fs20_v1_0m._ls')
+    saint = SaintListFile(name_patt='*._ls', direct_name='test-data/TB_fs20_v1_0m._ls')
     print(saint)
 
     print('#####')
-    s = SaintListFile('', direct_name='test-data/Esser_JW316_01._ls')
+    s = SaintListFile('*._ls', direct_name='test-data/Esser_JW316_01._ls')
     print(s)
 
     print('#####')
-    s = SaintListFile('', direct_name='test-data/test766_0m._ls')
+    s = SaintListFile('*._ls', direct_name='test-data/test766_0m._ls')
     print(s)
 
     print('#####')
-    s = SaintListFile('', direct_name='test-data/mo_IKmjs_JD07_0m._ls')
+    s = SaintListFile('*_0[?]m._ls', direct_name=r'D:\GitHub\FinalCif\test-data\DK_Zucker2_0m._ls')
     print(s)
