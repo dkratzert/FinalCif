@@ -337,6 +337,7 @@ class AppWindow(QMainWindow):
         splash.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.SplashScreen)
         splash = QSplashScreen()
         splash.show()
+        splash.setStyleSheet("background-color:#fcc77c;")
         splash.setFont(splashFont)
         splash.setMinimumWidth(400)
         splash.setMaximumHeight(100)
