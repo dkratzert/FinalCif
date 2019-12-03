@@ -13,7 +13,7 @@ from html.parser import HTMLParser
 from pathlib import Path
 from pprint import pprint
 from tempfile import mkstemp
-from typing import List, Optional, Union
+from typing import List, Optional, Union, Tuple
 
 import gemmi
 import requests
@@ -63,7 +63,7 @@ class MakeCheckCif():
         print('Report request sent')
         url = 'https://checkcif.iucr.org/cgi-bin/checkcif_hkl.pl'
         t1 = time.perf_counter()
-        r = requests.post(url, files={'file': f}, data=headers, timeout=180)
+        r = requests.post(url, files={'file': f}, data=headers, timeout=240)
         t2 = time.perf_counter()
         print('Report took {}s.'.format(str(round(t2 - t1, 2))))
         self.html_out_file.write_bytes(r.content)
@@ -102,7 +102,7 @@ class MakeCheckCif():
         self._get_checkcif(pdf=True)
         self._open_pdf_result()
 
-    def _get_cif_without_hkl(self) -> None:
+    def _get_cif_without_hkl(self) -> Tuple[Union[bytes, str], int]:
         fd, tmp = mkstemp(prefix='finalcif-', suffix='.cif')
         doc = gemmi.cif.read_string(self.cifobj.read_text())
         block = doc.sole_block()
