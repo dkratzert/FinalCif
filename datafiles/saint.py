@@ -145,3 +145,11 @@ if __name__ == "__main__":
     print('#####')
     s = SaintListFile('*_0[?]m._ls', direct_name=r'D:\GitHub\FinalCif\test-data\DK_Zucker2_0m._ls')
     print(s)
+
+    paths = Path(r'D:\frames').rglob('*_0*m._ls')
+    l = Path(r'D:\refltest.txt')
+    content = []
+    for p in paths:
+        s = SaintListFile(name_patt='*_0*m._ls', direct_name=p.absolute())
+        content.append(s.cell_reflections)
+    l.write_text('\n'.join(content))
