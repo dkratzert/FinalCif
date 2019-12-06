@@ -14,9 +14,12 @@ from typing import Union
 
 # protected space character:
 prot_space = u'\u00A0'
-# Angstrom character:
-angstrom = u'\u00A0\u00C5'
-
+# Angstrom character with a protected space in front:
+angstrom = u'\u00C5'
+# bigger or equal:
+bequal = u'\u2265'
+# small_sigma:
+sigma_sm = u'\u03C3'
 
 def grouper(inputs, n, fillvalue=None):
     iters = [iter(inputs)] * n

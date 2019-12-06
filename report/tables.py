@@ -24,7 +24,7 @@ from report.report_text import CCDC, CrstalSelection, Crystallization, DataReduc
     SolveRefine, format_radiation, math_to_word
 from report.spgrps import SpaceGroups
 from report.symm import SymmetryElement
-from tools.misc import prot_space, angstrom
+from tools.misc import prot_space, angstrom, bequal, sigma_sm
 
 
 def format_space_group(table, cif):
@@ -306,7 +306,8 @@ def populate_main_table_values(main_table: Table, cif: CifContainer):
     main_table.cell(17, 1).text = this_or_quest(crystal_size_max) + '\u00d7' + \
                                   this_or_quest(crystal_size_mid) + '\u00d7' + \
                                   this_or_quest(crystal_size_min)
-    wavelength = str(' (\u03bb =' + this_or_quest(radiation_wavelength) + '\u00A0\u00C5)').replace(' ', '')
+    wavelength = str(' (\u03bb =' + this_or_quest(radiation_wavelength) + 
+                     '{}{})'.format(prot_space, angstrom)).replace(' ', '')
     # radtype: ('Mo', 'K', '\\a')
     radtype = format_radiation(radiation_type)
     radrun = main_table.cell(20, 1).paragraphs[0]
@@ -321,8 +322,8 @@ def populate_main_table_values(main_table: Table, cif: CifContainer):
     # wavelength lambda:
     radrun.add_run(' ' + wavelength)
     try:
-        d_max = ' ({:.2f}{}{})'.format(float(radiation_wavelength) / (2 * sin(radians(float(theta_max)))), 
-                                       prot_space, angstrom)
+        d_max = ' ({:.2f}{}{})'.format(float(radiation_wavelength) / (2 * sin(radians(float(theta_max)))), prot_space,
+                                       angstrom)
         # 2theta range:
         main_table.cell(21, 1).text = "{:.2f} to {:.2f}{}".format(2 * float(theta_min), 2 * float(theta_max), d_max)
     except ValueError:
@@ -397,7 +398,7 @@ def add_coords_table(document: Document, cif: CifContainer, table_num: int):
     eq = h.add_run('eq')
     eq.font.subscript = True
     # eq.italic = True
-    h.add_run(prot_space + '[\u00C5')
+    h.add_run('{}[{}'.format(prot_space, angstrom))
     h.add_run('2').font.superscript = True
     h.add_run('] for {}.'.format(cif.fileobj.name))
     coords_table = document.add_table(rows=ncoords + 1, cols=5)
@@ -755,7 +756,7 @@ def populate_description_columns(main_table, cif: CifContainer):
     lgnd28.add_run('R').font.italic = True
     lgnd28.add_run(' indexes \n[')
     lgnd28.add_run('I').font.italic = True
-    lgnd28.add_run('\u22652\u03C3(')
+    lgnd28.add_run('{}2{}('.format(bequal, sigma_sm))
     lgnd28.add_run('I').font.italic = True
     lgnd28.add_run(')]')
     lgnd29 = main_table.cell(29, 0).paragraphs[0]
@@ -763,7 +764,7 @@ def populate_description_columns(main_table, cif: CifContainer):
     lgnd29.add_run('R').font.italic = True
     lgnd29.add_run(' indexes \n[all data]')
     lgnd30 = main_table.cell(30, 0).paragraphs[0]
-    lgnd30.add_run('Largest peak/hole [e\u00C5')
+    lgnd30.add_run('Largest peak/hole [e{}'.format(angstrom))
     lgnd30.add_run('3').font.superscript = True
     lgnd30.add_run(']')
     if not cif.is_centrosymm:
