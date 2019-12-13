@@ -20,6 +20,14 @@ angstrom = u'\u00C5'
 bequal = u'\u2265'
 # small_sigma:
 sigma_sm = u'\u03C3'
+# en dash:
+halbgeviert = u'\u2013'
+# degree sign:
+degree_sign = u'\u00B0'
+# middle ellipsis
+ellipsis_mid = u'\u22EF'
+# ellipsis
+ellipsis = u'\u2026'
 
 def grouper(inputs, n, fillvalue=None):
     iters = [iter(inputs)] * n
