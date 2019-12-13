@@ -24,7 +24,7 @@ from report.report_text import CCDC, CrstalSelection, Crystallization, DataReduc
     SolveRefine, format_radiation, math_to_word
 from report.spgrps import SpaceGroups
 from report.symm import SymmetryElement
-from tools.misc import prot_space, angstrom, bequal, sigma_sm
+from tools.misc import prot_space, angstrom, bequal, sigma_sm, halbgeviert, degree_sign, ellipsis_mid
 
 
 def format_space_group(table, cif):
@@ -469,9 +469,9 @@ def add_bonds_and_angles_table(document: Document, cif: CifContainer, table_num:
     bond_angle_table = document.add_table(rows=nbonds + nangles + 3, cols=2, style='Table Grid')
     # Bond/Angle  value
     head_row = bond_angle_table.rows[0]
-    ar = head_row.cells[0].paragraphs[0].add_run('Atom - Atom')
+    ar = head_row.cells[0].paragraphs[0].add_run('Atom{}Atom'.format(halbgeviert))
     ar.bold = True
-    ar = head_row.cells[1].paragraphs[0].add_run('Length [\u00C5]')
+    ar = head_row.cells[1].paragraphs[0].add_run(u'Length [\u00C5]')
     ar.bold = True
     symms = {}
     newsymms = {}
@@ -480,6 +480,7 @@ def add_bonds_and_angles_table(document: Document, cif: CifContainer, table_num:
     col1_cells = bond_angle_table.columns[0].cells
     col2_cells = bond_angle_table.columns[1].cells
     rowidx = 1
+    # filling rows:
     for at1, at2, val, symm2 in cif.bonds(without_H):
         c0, c1 = col1_cells[rowidx], col2_cells[rowidx]
         rowidx += 1
@@ -494,15 +495,16 @@ def add_bonds_and_angles_table(document: Document, cif: CifContainer, table_num:
             s.translate(symm2)
             newsymms[num] = s.toShelxl()
             num += 1
-        c0.text = at1 + ' - ' + at2
+        # Atom1 - Atom2:
+        c0.text = '{}{}{}'.format(at1, halbgeviert, at2)
         c0.paragraphs[0].add_run('#' + str(symms[symm2]) if symm2 else '').font.superscript = True
         c1.text = str(val)  # bond
     ############ the angles ####################
     # bond_angle_table.add_row()
     head_row = bond_angle_table.rows[nbonds + 2]
-    ar = head_row.cells[0].paragraphs[0].add_run('Atom - Atom - Atom')
+    ar = head_row.cells[0].paragraphs[0].add_run('Atom{0}Atom{0}Atom'.format(halbgeviert))
     ar.bold = True
-    ar = head_row.cells[1].paragraphs[0].add_run('Angle [°]')
+    ar = head_row.cells[1].paragraphs[0].add_run('Angle [{}]'.format(degree_sign))
     ar.bold = True
     set_cell_border(head_row.cells[0], bottom={"sz": 2, "color": "#000000", "val": "single"})
     set_cell_border(head_row.cells[1], bottom={"sz": 2, "color": "#000000", "val": "single"})
@@ -536,12 +538,11 @@ def add_bonds_and_angles_table(document: Document, cif: CifContainer, table_num:
         c0.text = at1
         cp0 = c0.paragraphs[0]
         cp0.add_run('#' + str(symms[symm1]) if symm1 else '').font.superscript = True
-        cp0.add_run(' - ' + at2 + ' - ')
-        cp0.add_run(at3)  # labels
+        cp0.add_run('{}{}{}{}'.format(halbgeviert, at2, halbgeviert, at3))
         cp0.add_run('#' + str(symms[symm3]) if symm3 else '').font.superscript = True
         c1.text = str(angle)  # angle
-    set_column_width(bond_angle_table.columns[0], Cm(4))
-    set_column_width(bond_angle_table.columns[1], Cm(4))
+    set_column_width(bond_angle_table.columns[0], Cm(4.0))
+    set_column_width(bond_angle_table.columns[1], Cm(3.5))
     add_last_symminfo_line(newsymms, document)
     return table_num
 
@@ -560,7 +561,7 @@ def add_torsion_angles(document: Document, cif: CifContainer, table_num: int):
     torsion_table = document.add_table(rows=ntors + 1, cols=2)
     torsion_table.style = 'Table Grid'
     head_row = torsion_table.rows[0]
-    head_row.cells[0].paragraphs[0].add_run('Atom - Atom - Atom - Atom').bold = True
+    head_row.cells[0].paragraphs[0].add_run('Atom{0}Atom{0}Atom{0}Atom'.format(halbgeviert)).bold = True
     head_row.cells[1].paragraphs[0].add_run('Torsion Angle [°]').bold = True
     symms = {}
     newsymms = {}
@@ -603,17 +604,17 @@ def add_torsion_angles(document: Document, cif: CifContainer, table_num: int):
         cp0 = c0.paragraphs[0]
         cp0.add_run(at1)
         cp0.add_run('#' + str(symms[symm1]) if symm1 else '').font.superscript = True
-        cp0.add_run(' - ')
+        cp0.add_run(halbgeviert)
         cp0.add_run(at2)
         cp0.add_run('#' + str(symms[symm2]) if symm2 else '').font.superscript = True
-        cp0.add_run(' - ')
+        cp0.add_run(halbgeviert)
         cp0.add_run(at3)
         cp0.add_run('#' + str(symms[symm3]) if symm3 else '').font.superscript = True
-        cp0.add_run(' - ')
+        cp0.add_run(halbgeviert)
         cp0.add_run(at4)  # labels
         cp0.add_run('#' + str(symms[symm4]) if symm4 else '').font.superscript = True
         c1.paragraphs[0].add_run(str(angle))  # angle
-    set_column_width(torsion_table.columns[0], Cm(5))
+    set_column_width(torsion_table.columns[0], Cm(4.5))
     set_column_width(torsion_table.columns[1], Cm(3))
     add_last_symminfo_line(newsymms, document)
     return table_num
@@ -634,11 +635,11 @@ def add_hydrogen_bonds(document: Document, cif: CifContainer, table_num: int):
     hydrogen_table.style = 'Table Grid'
     head_row = hydrogen_table.rows[0].cells
     # D-H...A	d(D-H)	d(H...A)	d(D...A)	<(DHA)
-    head_row[0].paragraphs[0].add_run('D-H...A').font.bold = True
-    head_row[1].paragraphs[0].add_run('d(D-H)').font.bold = True
-    head_row[2].paragraphs[0].add_run('d(H...A)').font.bold = True
-    head_row[3].paragraphs[0].add_run('d(D...A)').font.bold = True
-    head_row[4].paragraphs[0].add_run('<(DHA)').font.bold = True
+    head_row[0].paragraphs[0].add_run('D{}H{}A{}[{}]'.format(halbgeviert, ellipsis_mid, prot_space, angstrom)).font.bold = True
+    head_row[1].paragraphs[0].add_run('d(D{}H{}[{})'.format(halbgeviert, prot_space, angstrom)).font.bold = True
+    head_row[2].paragraphs[0].add_run('d(H{}A{}[{})'.format(ellipsis_mid, prot_space, angstrom)).font.bold = True
+    head_row[3].paragraphs[0].add_run('d(D{}A{}[{})'.format(ellipsis_mid, prot_space, angstrom)).font.bold = True
+    head_row[4].paragraphs[0].add_run('<(DHA){}[{}]'.format(prot_space, degree_sign)).font.bold = True
     symms = {}
     newsymms = {}
     num = 1
@@ -661,7 +662,7 @@ def add_hydrogen_bonds(document: Document, cif: CifContainer, table_num: int):
             newsymms[num] = s.toShelxl()
         num += 1
         symmval = ('#' + str(symms[symm])) if symm else ''
-        c0.text = label_d + ' - ' + label_h + ' ... ' + label_a
+        c0.text = label_d + halbgeviert + label_h + ellipsis_mid + label_a
         c0.paragraphs[0].add_run(symmval).font.superscript = True
         c1.text = dist_dh
         c2.text = dist_ha
