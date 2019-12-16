@@ -5,13 +5,12 @@
 #
 import itertools as it
 import re
-import time
 from math import sin, radians
 from pathlib import Path
 from typing import List, Sequence
 
 from docx import Document
-from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_TAB_ALIGNMENT, WD_TAB_LEADER
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Cm, Length, Pt
@@ -306,7 +305,7 @@ def populate_main_table_values(main_table: Table, cif: CifContainer):
     main_table.cell(17, 1).text = this_or_quest(crystal_size_max) + '\u00d7' + \
                                   this_or_quest(crystal_size_mid) + '\u00d7' + \
                                   this_or_quest(crystal_size_min)
-    wavelength = str(' (\u03bb =' + this_or_quest(radiation_wavelength) + 
+    wavelength = str(' (\u03bb =' + this_or_quest(radiation_wavelength) +
                      '{}{})'.format(prot_space, angstrom)).replace(' ', '')
     # radtype: ('Mo', 'K', '\\a')
     radtype = format_radiation(radiation_type)
@@ -383,6 +382,15 @@ def populate_main_table_values(main_table: Table, cif: CifContainer):
         main_table.columns[1].cells[num - 1].text = exti
 
 
+def add_decimal_tab(num_string: str) -> str:
+    """
+    Adds a tab character in front of the decimal point in order to get proper alignment of the tabstops.
+    >>> add_decimal_tab('-0.123')
+    '-0\\t.123'
+    """
+    return '\t.'.join(num_string.split('.'))
+
+
 def add_coords_table(document: Document, cif: CifContainer, table_num: int):
     """
     Adds the table with the atom coordinates.
@@ -408,21 +416,30 @@ def add_coords_table(document: Document, cif: CifContainer, table_num: int):
     head_row = coords_table.rows[0]
     ar = head_row.cells[0].paragraphs[0].add_run('Atom')
     ar.bold = True
-    ar = head_row.cells[1].paragraphs[0].add_run('x')
+    px = head_row.cells[1].paragraphs[0]
+    px.paragraph_format.tab_stops.add_tab_stop(Cm(0.5), WD_TAB_ALIGNMENT.DECIMAL, WD_TAB_LEADER.SPACES)
+    ar = px.add_run('x')
     ar.bold = True
     ar.italic = True
-    ar = head_row.cells[2].paragraphs[0].add_run('y')
+    py = head_row.cells[2].paragraphs[0]
+    py.paragraph_format.tab_stops.add_tab_stop(Cm(0.5), WD_TAB_ALIGNMENT.DECIMAL, WD_TAB_LEADER.SPACES)
+    ar = py.add_run('y')
     ar.bold = True
     ar.italic = True
-    ar = head_row.cells[3].paragraphs[0].add_run('z')
+    pz = head_row.cells[3].paragraphs[0]
+    pz.paragraph_format.tab_stops.add_tab_stop(Cm(0.5), WD_TAB_ALIGNMENT.DECIMAL, WD_TAB_LEADER.SPACES)
+    ar = pz.add_run('z')
     ar.bold = True
     ar.italic = True
-    ar = head_row.cells[4].paragraphs[0].add_run('U')
+    pu = head_row.cells[4].paragraphs[0]
+    pu.paragraph_format.tab_stops.add_tab_stop(Cm(0.8), WD_TAB_ALIGNMENT.DECIMAL, WD_TAB_LEADER.SPACES)
+    ar = pu.add_run('U')
     ar.bold = True
     ar.italic = True
-    ar = head_row.cells[4].paragraphs[0].add_run('eq')
-    ar.bold = True
-    ar.font.subscript = True
+    ar2 = pu.add_run('eq')
+    ar2.bold = True
+    ar2.font.subscript = True
+    #pu.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
     # having a list of column cella before is *much* faster!
     col0_cells = coords_table.columns[0].cells
     col1_cells = coords_table.columns[1].cells
@@ -435,10 +452,18 @@ def add_coords_table(document: Document, cif: CifContainer, table_num: int):
                              col3_cells[rowidx], col4_cells[rowidx]
         rowidx += 1
         c0.text = at[0]  # label
-        c1.text = str(at[2])  # x
-        c2.text = str(at[3])  # y
-        c3.text = str(at[4])  # z
-        c4.text = str(at[7])  # ueq
+        c1.text = add_decimal_tab(str(at[2]))  # x
+        para_x = c1.paragraphs[0]
+        para_x.paragraph_format.tab_stops.add_tab_stop(Cm(0.5), WD_TAB_ALIGNMENT.DECIMAL, WD_TAB_LEADER.SPACES)
+        c2.text = add_decimal_tab(str(at[3]))  # y
+        para_y = c2.paragraphs[0]
+        para_y.paragraph_format.tab_stops.add_tab_stop(Cm(0.5), WD_TAB_ALIGNMENT.DECIMAL, WD_TAB_LEADER.SPACES)
+        c3.text = add_decimal_tab(str(at[4]))  # z
+        para_z = c3.paragraphs[0]
+        para_z.paragraph_format.tab_stops.add_tab_stop(Cm(0.5), WD_TAB_ALIGNMENT.DECIMAL, WD_TAB_LEADER.SPACES)
+        c4.text = add_decimal_tab(str(at[7]))  # ueq
+        para_u = c4.paragraphs[0]
+        para_u.paragraph_format.tab_stops.add_tab_stop(Cm(0.5), WD_TAB_ALIGNMENT.DECIMAL, WD_TAB_LEADER.SPACES)
     p = document.add_paragraph()
     p.style = document.styles['tabunterschr']
     p.add_run('U').font.italic = True
@@ -635,7 +660,8 @@ def add_hydrogen_bonds(document: Document, cif: CifContainer, table_num: int):
     hydrogen_table.style = 'Table Grid'
     head_row = hydrogen_table.rows[0].cells
     # D-H...A	d(D-H)	d(H...A)	d(D...A)	<(DHA)
-    head_row[0].paragraphs[0].add_run('D{}H{}A{}[{}]'.format(halbgeviert, ellipsis_mid, prot_space, angstrom)).font.bold = True
+    head_row[0].paragraphs[0].add_run(
+        'D{}H{}A{}[{}]'.format(halbgeviert, ellipsis_mid, prot_space, angstrom)).font.bold = True
     head_row[1].paragraphs[0].add_run('d(D{}H{}[{})'.format(halbgeviert, prot_space, angstrom)).font.bold = True
     head_row[2].paragraphs[0].add_run('d(H{}A{}[{})'.format(ellipsis_mid, prot_space, angstrom)).font.bold = True
     head_row[3].paragraphs[0].add_run('d(D{}A{}[{})'.format(ellipsis_mid, prot_space, angstrom)).font.bold = True
