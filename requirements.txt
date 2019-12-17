@@ -1,10 +1,9 @@
 altgraph==0.16.1
-certifi==2019.6.16
 chardet==3.0.4
-future==0.17.1
-gemmi>=0.3.1
+future==0.18.2
+gemmi>=0.3.2
 idna==2.8
-lxml==4.4.1
+lxml==4.4.2
 macholib==1.11
 pefile==2019.4.18
 pybind11>=2.4.2
@@ -14,5 +13,5 @@ PyQt5-sip==4.19.18
 PyQt5-stubs==5.12.1.0
 PyQtWebEngine==5.12.1
 python-docx>=0.8.10
-requests>=2.22.0
-qtawesome
+requests>=2.22.0 # for checkcif
+qtawesome #icons

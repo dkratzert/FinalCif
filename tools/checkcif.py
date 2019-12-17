@@ -13,7 +13,7 @@ from html.parser import HTMLParser
 from pathlib import Path
 from pprint import pprint
 from tempfile import mkstemp
-from typing import List
+from typing import List, Optional, Union, Tuple
 
 import gemmi
 import requests
@@ -32,7 +32,7 @@ class MakeCheckCif():
         self.html_out_file = outfile
         self.cifobj = cif
 
-    def _get_checkcif(self, pdf=True):
+    def _get_checkcif(self, pdf: bool = True) -> None:
         """
         Requests a checkcif run from IUCr servers.
         """
@@ -63,7 +63,7 @@ class MakeCheckCif():
         print('Report request sent')
         url = 'https://checkcif.iucr.org/cgi-bin/checkcif_hkl.pl'
         t1 = time.perf_counter()
-        r = requests.post(url, files={'file': f}, data=headers, timeout=180)
+        r = requests.post(url, files={'file': f}, data=headers, timeout=240)
         t2 = time.perf_counter()
         print('Report took {}s.'.format(str(round(t2 - t1, 2))))
         self.html_out_file.write_bytes(r.content)
@@ -79,7 +79,7 @@ class MakeCheckCif():
                 print(tmp)
         print('ready')
 
-    def _open_pdf_result(self):
+    def _open_pdf_result(self) -> None:
         """
         Opens the resulkting pdf file in the systems pdf viewer.
         """
@@ -98,11 +98,11 @@ class MakeCheckCif():
             if sys.platform == 'darwin':
                 subprocess.call(['open', str(pdfobj.absolute())])
 
-    def show_pdf_report(self):
+    def show_pdf_report(self) -> None:
         self._get_checkcif(pdf=True)
         self._open_pdf_result()
 
-    def _get_cif_without_hkl(self):
+    def _get_cif_without_hkl(self) -> Tuple[Union[bytes, str], int]:
         fd, tmp = mkstemp(prefix='finalcif-', suffix='.cif')
         doc = gemmi.cif.read_string(self.cifobj.read_text())
         block = doc.sole_block()
@@ -122,10 +122,10 @@ class MyHTMLParser(HTMLParser):
         self.alert_levels = []
         self.feed(data)
 
-    def get_pdf(self):
+    def get_pdf(self) -> Optional[bytes]:
         return requests.get(self.link).content
 
-    def handle_starttag(self, tag, attrs):
+    def handle_starttag(self, tag: str, attrs: str) -> None:
         if tag == "a":
             if len(attrs) > 1 and attrs[0][1] == '_blank':
                 self.link = attrs[1][1]
@@ -134,13 +134,13 @@ class MyHTMLParser(HTMLParser):
                 if attrs[0][0] == 'width' and '.gif' in attrs[1][1]:
                     self.imageurl = attrs[1][1]
 
-    def handle_data(self, data: str):
+    def handle_data(self, data: str) -> None:
         if 'Validation Reply Form' in data:
             self.vrf = data
         if data.startswith('PLAT') and len(data) == 17:
             self.alert_levels.append(data)
 
-    def get_image(self):
+    def get_image(self) -> bytes:
         try:
             return requests.get(self.imageurl).content
         except MissingSchema:
@@ -185,7 +185,7 @@ class AlertHelp():
     def __init__(self, checkdef: list):
         self.checkdef = checkdef  # Path('../check.def').read_text().splitlines(keepends=False)
 
-    def get_help(self, alert: str):
+    def get_help(self, alert: str) -> str:
         if len(alert) > 4:
             alert = alert[4:]
         help = self._parse_checkdef(alert)
@@ -193,9 +193,9 @@ class AlertHelp():
             return 'No help available.'
         return help
 
-    def _parse_checkdef(self, alert):
+    def _parse_checkdef(self, alert: str) -> str:
         found = False
-        helptext = []
+        helptext = ''
         for line in self.checkdef:
             if line.startswith('_' + alert):
                 found = True
@@ -203,7 +203,7 @@ class AlertHelp():
             if found and line.startswith('#=='):
                 return '\n'.join(helptext[2:])
             if found:
-                helptext.append(line)
+                helptext += line
 
 
 class AlertHelpRemote():
@@ -213,13 +213,13 @@ class AlertHelpRemote():
         print('url:', self.helpurl)
         self.netman.finished.connect(self._parse_result)
 
-    def get_help(self):
+    def get_help(self) -> None:
         url = QUrl(self.helpurl)
         req = QNetworkRequest(url)
         print('doing request')
         self.netman.get(req)
 
-    def _parse_result(self, reply: QNetworkReply):
+    def _parse_result(self, reply: QNetworkReply) -> str:
         if reply.error():
             print(reply.errorString())
         print('parsing reply')
@@ -229,7 +229,6 @@ class AlertHelpRemote():
         except Exception as e:
             print(e)
             pass
-        print(text)
         return text
 
 

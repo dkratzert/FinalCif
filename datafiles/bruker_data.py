@@ -6,7 +6,6 @@
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
 from contextlib import suppress
-from pathlib import Path
 
 from gemmi import cif as gcif
 
@@ -32,9 +31,9 @@ class BrukerData(object):
         self.cif = cif
         self.app = app
         self.basename = cif.fileobj.stem.split('_0m')[0]
-        self.saint_data = self.saint_log('*_0m._ls')
+        self.saint_data = SaintListFile(name_patt='*_0*m._ls')
         # This is only in this list file, not in the global:
-        saint_first_ls = self.saint_log('*_01._ls')
+        saint_first_ls = SaintListFile(name_patt='*_01._ls')
         sp = self.get_solution_program()
         solution_primary = ''
         if 'shelx' in self.cif.block.find_value('_audit_creation_method').lower():
@@ -138,39 +137,42 @@ class BrukerData(object):
             self.add_to_cif(cif_as_list, key='_loop', value='')"""
         # All sources that are not filled with data will be yellow in the main table
         #                          data                         tooltip
-        sources = {'_cell_measurement_reflns_used'          : (self.saint_data.cell_reflections, self.saint_data.filename.name),
-                   '_cell_measurement_theta_min'            : (self.saint_data.cell_res_min_theta or '', self.saint_data.filename.name),
-                   '_cell_measurement_theta_max'            : (self.saint_data.cell_res_max_theta or '', self.saint_data.filename.name),
-                   '_computing_data_collection'             : (
-                       saint_first_ls.aquire_software, self.saint_data.filename.name),
-                   '_computing_cell_refinement'             : (self.saint_data.version, self.saint_data.filename.name),
-                   '_computing_data_reduction'              : (self.saint_data.version, self.saint_data.filename.name),
-                   '_exptl_absorpt_correction_type'         : abscorrtype,
-                   '_exptl_absorpt_correction_T_min'        : abs_tmin,
-                   '_exptl_absorpt_correction_T_max'        : abs_tmax,
-                   '_diffrn_reflns_av_R_equivalents'        : rint,
-                   '_cell_measurement_temperature'          : (temperature, self.p4p.filename.name),
-                   '_diffrn_ambient_temperature'            : (temperature, self.p4p.filename.name),
-                   '_exptl_absorpt_process_details'         : absdetails,
-                   '_exptl_crystal_colour'                  : (self.p4p.crystal_color, self.p4p.filename.name),
-                   '_exptl_crystal_description'             : (self.p4p.morphology, self.p4p.filename.name),
-                   '_exptl_crystal_size_min'                : (self.p4p.crystal_size[0] or '', self.p4p.filename.name),
-                   '_exptl_crystal_size_mid'                : (self.p4p.crystal_size[1] or '', self.p4p.filename.name),
-                   '_exptl_crystal_size_max'                : (self.p4p.crystal_size[2] or '', self.p4p.filename.name),
-                   '_computing_structure_solution'          : solution_program,
-                   '_atom_sites_solution_primary'           : (solution_primary, ''),
-                   '_diffrn_source_voltage'                 : (kilovolt or '', frame_name),
-                   '_diffrn_source_current'                 : (milliamps or '', frame_name),
-                   '_chemical_formula_moiety'               : ('', ''),
-                   '_publ_section_references'               : (shelx, ''),
-                   '_refine_special_details'                : ('', ''),
-                   '_exptl_crystal_recrystallization_method': ('', ''),
-                   '_chemical_absolute_configuration'       : ('', ''),
-                   '_space_group_name_H-M_alt'              : (spgr, 'calculated by gemmi'),
-                   '_space_group_name_Hall'                 : (hallsym, 'calculated by gemmi'),
-                   '_space_group_IT_number'                 : (spgrnum, 'calculated by gemmi'),
-                   '_space_group_crystal_system'            : (csystem, 'calculated by gemmi'),
-                   }
+        sources = {'_cell_measurement_reflns_used'   : (
+            self.saint_data.cell_reflections, self.saint_data.filename.name),
+            '_cell_measurement_theta_min'            : (
+                self.saint_data.cell_res_min_theta or '', self.saint_data.filename.name),
+            '_cell_measurement_theta_max'            : (
+                self.saint_data.cell_res_max_theta or '', saint_first_ls.filename.name),
+            '_computing_data_collection'             : (
+                saint_first_ls.aquire_software, self.saint_data.filename.name),
+            '_computing_cell_refinement'             : (self.saint_data.version, self.saint_data.filename.name),
+            '_computing_data_reduction'              : (self.saint_data.version, self.saint_data.filename.name),
+            '_exptl_absorpt_correction_type'         : abscorrtype,
+            '_exptl_absorpt_correction_T_min'        : abs_tmin,
+            '_exptl_absorpt_correction_T_max'        : abs_tmax,
+            '_diffrn_reflns_av_R_equivalents'        : rint,
+            '_cell_measurement_temperature'          : (temperature, self.p4p.filename.name),
+            '_diffrn_ambient_temperature'            : (temperature, self.p4p.filename.name),
+            '_exptl_absorpt_process_details'         : absdetails,
+            '_exptl_crystal_colour'                  : (self.p4p.crystal_color, self.p4p.filename.name),
+            '_exptl_crystal_description'             : (self.p4p.morphology, self.p4p.filename.name),
+            '_exptl_crystal_size_min'                : (self.p4p.crystal_size[0] or '', self.p4p.filename.name),
+            '_exptl_crystal_size_mid'                : (self.p4p.crystal_size[1] or '', self.p4p.filename.name),
+            '_exptl_crystal_size_max'                : (self.p4p.crystal_size[2] or '', self.p4p.filename.name),
+            '_computing_structure_solution'          : solution_program,
+            '_atom_sites_solution_primary'           : (solution_primary, ''),
+            '_diffrn_source_voltage'                 : (kilovolt or '', frame_name),
+            '_diffrn_source_current'                 : (milliamps or '', frame_name),
+            '_chemical_formula_moiety'               : ('', ''),
+            '_publ_section_references'               : (shelx, ''),
+            '_refine_special_details'                : ('', ''),
+            '_exptl_crystal_recrystallization_method': ('', ''),
+            '_chemical_absolute_configuration'       : ('', ''),
+            '_space_group_name_H-M_alt'              : (spgr, 'calculated by gemmi'),
+            '_space_group_name_Hall'                 : (hallsym, 'calculated by gemmi'),
+            '_space_group_IT_number'                 : (spgrnum, 'calculated by gemmi'),
+            '_space_group_crystal_system'            : (csystem, 'calculated by gemmi'),
+        }
         self.sources = sources  # dict((k.lower(), v) for k, v in sources.items())
 
     def get_solution_program(self):
@@ -198,12 +200,6 @@ class BrukerData(object):
         xt = SHELXTlistfile('')
         xt.version = "SHELXS (G. Sheldrick)"
         return xt
-
-    def saint_log(self, name_patt='*_0m._ls'):
-        """
-        returns a saint parser object from the ._ls files.
-        """
-        return SaintListFile(name_patt)
 
     @property
     def sadabs(self):
