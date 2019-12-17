@@ -417,22 +417,22 @@ def add_coords_table(document: Document, cif: CifContainer, table_num: int):
     ar = head_row.cells[0].paragraphs[0].add_run('Atom')
     ar.bold = True
     px = head_row.cells[1].paragraphs[0]
-    px.paragraph_format.tab_stops.add_tab_stop(Cm(0.5), WD_TAB_ALIGNMENT.DECIMAL, WD_TAB_LEADER.SPACES)
+    #px.paragraph_format.tab_stops.add_tab_stop(Cm(0.5), WD_TAB_ALIGNMENT.DECIMAL, WD_TAB_LEADER.SPACES)
     ar = px.add_run('x')
     ar.bold = True
     ar.italic = True
     py = head_row.cells[2].paragraphs[0]
-    py.paragraph_format.tab_stops.add_tab_stop(Cm(0.5), WD_TAB_ALIGNMENT.DECIMAL, WD_TAB_LEADER.SPACES)
+    #py.paragraph_format.tab_stops.add_tab_stop(Cm(0.5), WD_TAB_ALIGNMENT.DECIMAL, WD_TAB_LEADER.SPACES)
     ar = py.add_run('y')
     ar.bold = True
     ar.italic = True
     pz = head_row.cells[3].paragraphs[0]
-    pz.paragraph_format.tab_stops.add_tab_stop(Cm(0.5), WD_TAB_ALIGNMENT.DECIMAL, WD_TAB_LEADER.SPACES)
+    #pz.paragraph_format.tab_stops.add_tab_stop(Cm(0.5), WD_TAB_ALIGNMENT.DECIMAL, WD_TAB_LEADER.SPACES)
     ar = pz.add_run('z')
     ar.bold = True
     ar.italic = True
     pu = head_row.cells[4].paragraphs[0]
-    pu.paragraph_format.tab_stops.add_tab_stop(Cm(0.8), WD_TAB_ALIGNMENT.DECIMAL, WD_TAB_LEADER.SPACES)
+    #pu.paragraph_format.tab_stops.add_tab_stop(Cm(0.8), WD_TAB_ALIGNMENT.DECIMAL, WD_TAB_LEADER.SPACES)
     ar = pu.add_run('U')
     ar.bold = True
     ar.italic = True
@@ -452,18 +452,18 @@ def add_coords_table(document: Document, cif: CifContainer, table_num: int):
                              col3_cells[rowidx], col4_cells[rowidx]
         rowidx += 1
         c0.text = at[0]  # label
-        c1.text = add_decimal_tab(str(at[2]))  # x
+        c1.text = (str(at[2]))  # x
         para_x = c1.paragraphs[0]
-        para_x.paragraph_format.tab_stops.add_tab_stop(Cm(0.5), WD_TAB_ALIGNMENT.DECIMAL, WD_TAB_LEADER.SPACES)
-        c2.text = add_decimal_tab(str(at[3]))  # y
+        #para_x.paragraph_format.tab_stops.add_tab_stop(Cm(0.4), WD_TAB_ALIGNMENT.DECIMAL, WD_TAB_LEADER.SPACES)
+        c2.text = (str(at[3]))  # y
         para_y = c2.paragraphs[0]
-        para_y.paragraph_format.tab_stops.add_tab_stop(Cm(0.5), WD_TAB_ALIGNMENT.DECIMAL, WD_TAB_LEADER.SPACES)
-        c3.text = add_decimal_tab(str(at[4]))  # z
+        #para_y.paragraph_format.tab_stops.add_tab_stop(Cm(0.4), WD_TAB_ALIGNMENT.DECIMAL, WD_TAB_LEADER.SPACES)
+        c3.text = (str(at[4]))  # z
         para_z = c3.paragraphs[0]
-        para_z.paragraph_format.tab_stops.add_tab_stop(Cm(0.5), WD_TAB_ALIGNMENT.DECIMAL, WD_TAB_LEADER.SPACES)
-        c4.text = add_decimal_tab(str(at[7]))  # ueq
+        #para_z.paragraph_format.tab_stops.add_tab_stop(Cm(0.4), WD_TAB_ALIGNMENT.DECIMAL, WD_TAB_LEADER.SPACES)
+        c4.text = (str(at[7]))  # ueq
         para_u = c4.paragraphs[0]
-        para_u.paragraph_format.tab_stops.add_tab_stop(Cm(0.5), WD_TAB_ALIGNMENT.DECIMAL, WD_TAB_LEADER.SPACES)
+        #para_u.paragraph_format.tab_stops.add_tab_stop(Cm(0.4), WD_TAB_ALIGNMENT.DECIMAL, WD_TAB_LEADER.SPACES)
     p = document.add_paragraph()
     p.style = document.styles['tabunterschr']
     p.add_run('U').font.italic = True
@@ -496,8 +496,10 @@ def add_bonds_and_angles_table(document: Document, cif: CifContainer, table_num:
     head_row = bond_angle_table.rows[0]
     ar = head_row.cells[0].paragraphs[0].add_run('Atom{}Atom'.format(halbgeviert))
     ar.bold = True
-    ar = head_row.cells[1].paragraphs[0].add_run(u'Length [\u00C5]')
+    p_length = head_row.cells[1].paragraphs[0]
+    ar = p_length.add_run('Length [{}]'.format(angstrom))
     ar.bold = True
+    p_length.paragraph_format.tab_stops.add_tab_stop(Cm(0.4), WD_TAB_ALIGNMENT.DECIMAL, WD_TAB_LEADER.SPACES)
     symms = {}
     newsymms = {}
     num = 1
@@ -524,12 +526,16 @@ def add_bonds_and_angles_table(document: Document, cif: CifContainer, table_num:
         c0.text = '{}{}{}'.format(at1, halbgeviert, at2)
         c0.paragraphs[0].add_run('#' + str(symms[symm2]) if symm2 else '').font.superscript = True
         c1.text = str(val)  # bond
+        #para_dist = c1.paragraphs[0]
+        #para_dist.paragraph_format.tab_stops.add_tab_stop(Cm(0.4), WD_TAB_ALIGNMENT.DECIMAL, WD_TAB_LEADER.SPACES)
     ############ the angles ####################
     # bond_angle_table.add_row()
     head_row = bond_angle_table.rows[nbonds + 2]
     ar = head_row.cells[0].paragraphs[0].add_run('Atom{0}Atom{0}Atom'.format(halbgeviert))
     ar.bold = True
-    ar = head_row.cells[1].paragraphs[0].add_run('Angle [{}]'.format(degree_sign))
+    para_angle = head_row.cells[1].paragraphs[0]
+    #para_angle.paragraph_format.tab_stops.add_tab_stop(Cm(0.4), WD_TAB_ALIGNMENT.DECIMAL, WD_TAB_LEADER.SPACES)
+    para_angle.add_run('Angle [{}]'.format(degree_sign))
     ar.bold = True
     set_cell_border(head_row.cells[0], bottom={"sz": 2, "color": "#000000", "val": "single"})
     set_cell_border(head_row.cells[1], bottom={"sz": 2, "color": "#000000", "val": "single"})
@@ -565,6 +571,8 @@ def add_bonds_and_angles_table(document: Document, cif: CifContainer, table_num:
         cp0.add_run('#' + str(symms[symm1]) if symm1 else '').font.superscript = True
         cp0.add_run('{}{}{}{}'.format(halbgeviert, at2, halbgeviert, at3))
         cp0.add_run('#' + str(symms[symm3]) if symm3 else '').font.superscript = True
+        para_angle = c1.paragraphs[0]
+        #para_angle.paragraph_format.tab_stops.add_tab_stop(Cm(0.4), WD_TAB_ALIGNMENT.DECIMAL, WD_TAB_LEADER.SPACES)
         c1.text = str(angle)  # angle
     set_column_width(bond_angle_table.columns[0], Cm(4.0))
     set_column_width(bond_angle_table.columns[1], Cm(3.5))
@@ -587,7 +595,7 @@ def add_torsion_angles(document: Document, cif: CifContainer, table_num: int):
     torsion_table.style = 'Table Grid'
     head_row = torsion_table.rows[0]
     head_row.cells[0].paragraphs[0].add_run('Atom{0}Atom{0}Atom{0}Atom'.format(halbgeviert)).bold = True
-    head_row.cells[1].paragraphs[0].add_run('Torsion Angle [°]').bold = True
+    head_row.cells[1].paragraphs[0].add_run('Torsion Angle [{}]'.format(degree_sign)).bold = True
     symms = {}
     newsymms = {}
     card = ''
@@ -662,9 +670,9 @@ def add_hydrogen_bonds(document: Document, cif: CifContainer, table_num: int):
     # D-H...A	d(D-H)	d(H...A)	d(D...A)	<(DHA)
     head_row[0].paragraphs[0].add_run(
         'D{}H{}A{}[{}]'.format(halbgeviert, ellipsis_mid, prot_space, angstrom)).font.bold = True
-    head_row[1].paragraphs[0].add_run('d(D{}H{}[{})'.format(halbgeviert, prot_space, angstrom)).font.bold = True
-    head_row[2].paragraphs[0].add_run('d(H{}A{}[{})'.format(ellipsis_mid, prot_space, angstrom)).font.bold = True
-    head_row[3].paragraphs[0].add_run('d(D{}A{}[{})'.format(ellipsis_mid, prot_space, angstrom)).font.bold = True
+    head_row[1].paragraphs[0].add_run('d(D{}H){}[{}]'.format(halbgeviert, prot_space, angstrom)).font.bold = True
+    head_row[2].paragraphs[0].add_run('d(H{}A){}[{}]'.format(ellipsis_mid, prot_space, angstrom)).font.bold = True
+    head_row[3].paragraphs[0].add_run('d(D{}A){}[{}]'.format(ellipsis_mid, prot_space, angstrom)).font.bold = True
     head_row[4].paragraphs[0].add_run('<(DHA){}[{}]'.format(prot_space, degree_sign)).font.bold = True
     symms = {}
     newsymms = {}
