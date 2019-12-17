@@ -10,17 +10,23 @@
 import itertools as it
 import re
 from pathlib import Path
+from typing import Union
 
 # protected space character:
 prot_space = u'\u00A0'
-
+# Angstrom character with a protected space in front:
+angstrom = u'\u00C5'
+# bigger or equal:
+bequal = u'\u2265'
+# small_sigma:
+sigma_sm = u'\u03C3'
 
 def grouper(inputs, n, fillvalue=None):
     iters = [iter(inputs)] * n
     return it.zip_longest(*iters, fillvalue=fillvalue)
 
 
-def isfloat(value):
+def isfloat(value: Union[str, int, float]) -> bool:
     try:
         float(value)
         return True
@@ -60,7 +66,7 @@ def strip_finalcif_of_name(pth: str) -> str:
     return re.sub('-finalcif$', '', pth)
 
 
-def flatten(lis):
+def flatten(lis: list) -> list:
     """
     Given a list, possibly nested to any level, return it flattened.
     From: http://code.activestate.com/recipes/578948-flattening-an-arbitrarily-nested-list-in-python/
@@ -77,7 +83,7 @@ def flatten(lis):
     return new_lis
 
 
-def this_or_quest(value):
+def this_or_quest(value: Union[str, int, float, None]) -> str:
     """
     Returns the value or a question mark if the value is None.
     """

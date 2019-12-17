@@ -21,22 +21,22 @@ class FinalCifSettings():
         self.organization = 'DK'
         self.settings = QSettings(self.organization, self.software_name)
         self.settings.setDefaultFormat(QSettings.IniFormat)
-        #print(self.settings.fileName())
+        # print(self.settings.fileName())
 
-    def save_window_position(self, position: QPoint, size: QSize, maximized: bool):
+    def save_window_position(self, position: QPoint, size: QSize, maximized: bool) -> None:
         self.settings.beginGroup("MainWindow")
         self.settings.setValue("position", position)
         self.settings.setValue("size", size)
         self.settings.setValue('maximized', maximized)
         self.settings.endGroup()
 
-    def save_favorite_template(self, app: Ui_FinalCifWindow):
+    def save_favorite_template(self, app: Ui_FinalCifWindow) -> None:
         last_equipment = app.EquipmentTemplatesListWidget.currentRow()
         self.settings.beginGroup('LastEquipment')
         self.settings.setValue('last', last_equipment)
         self.settings.endGroup()
 
-    def append_to_equipment_list(self, selected_template_text):
+    def append_to_equipment_list(self, selected_template_text) -> None:
         equipment_list = self.settings.value('equipment_list')
         if not equipment_list:
             equipment_list = ['']
@@ -46,19 +46,19 @@ class FinalCifSettings():
         # this list keeps track of the equipment items:
         self.save_template('equipment_list', newlist)
 
-    def get_equipment_list(self):
+    def get_equipment_list(self) -> list:
         equipment_list = self.settings.value('equipment_list')
         if not equipment_list:
             equipment_list = ['']
         return sorted(equipment_list)
 
-    def load_last_equipment(self):
+    def load_last_equipment(self) -> int:
         self.settings.beginGroup('LastEquipment')
         last = self.settings.value("last", type=int)
         self.settings.endGroup()
         return last
 
-    def load_window_position(self):
+    def load_window_position(self) -> None:
         self.settings.beginGroup("MainWindow")
         try:
             pos = self.settings.value("position", type=QPoint)
@@ -91,7 +91,7 @@ class FinalCifSettings():
             if p == key:
                 return val
 
-    def load_property_keys(self):
+    def load_property_keys(self) -> list:
         """
         Returns a list of keys like _exptl_crystal_colour from all properties.
         """
