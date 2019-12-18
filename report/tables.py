@@ -535,7 +535,7 @@ def add_bonds_and_angles_table(document: Document, cif: CifContainer, table_num:
     ar.bold = True
     para_angle = head_row.cells[1].paragraphs[0]
     #para_angle.paragraph_format.tab_stops.add_tab_stop(Cm(0.4), WD_TAB_ALIGNMENT.DECIMAL, WD_TAB_LEADER.SPACES)
-    para_angle.add_run('Angle [{}]'.format(degree_sign))
+    ar = para_angle.add_run('Angle [{}]'.format(degree_sign))
     ar.bold = True
     set_cell_border(head_row.cells[0], bottom={"sz": 2, "color": "#000000", "val": "single"})
     set_cell_border(head_row.cells[1], bottom={"sz": 2, "color": "#000000", "val": "single"})
