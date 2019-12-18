@@ -39,7 +39,7 @@ class Crystallization(FormatMixin):
     def __init__(self, cif: CifContainer, paragraph: Paragraph):
         self.cif = cif
         gstr = gemmi.cif.as_string
-        self.crytsalization_method = gstr(self.cif['_exptl_crystal_recrystallization_method'])
+        self.crytsalization_method = gstr(self.cif['_exptl_crystal_recrystallization_method']).strip('\n\r')
         if not self.crytsalization_method:
             self.crytsalization_method = '[No crystallization method was given]'
         sentence = "{} "
@@ -75,19 +75,26 @@ class MachineType():
     def __init__(self, cif: CifContainer, paragraph: Paragraph):
         self.cif = cif
         gstr = gemmi.cif.as_string
-        self.difftype = gstr(self.cif['_diffrn_measurement_device_type']).strip(
-            "'") or '[No measurement device type given]'
-        self.device = gstr(self.cif['_diffrn_measurement_device']).strip("'") or '[No measurement device given]'
-        self.source = gstr(self.cif['_diffrn_source']).strip("'") or '[No radiation source given]'
-        self.monochrom = gstr(self.cif['_diffrn_radiation_monochromator']).strip("'") or '[No monochromator type given]'
+        self.difftype = gstr(self.cif['_diffrn_measurement_device_type']).strip("'").strip('\n\r') \
+                        or '[No measurement device type given]'
+        self.device = gstr(self.cif['_diffrn_measurement_device']).strip("'").strip('\n\r') \
+                      or '[No measurement device given]'
+        self.source = gstr(self.cif['_diffrn_source']).strip("'").strip('\n\r') \
+                      or '[No radiation source given]'
+        self.monochrom = gstr(self.cif['_diffrn_radiation_monochromator']).strip("'").strip('\n\r') \
+                         or '[No monochromator type given]'
         if not self.monochrom:
             self.monochrom = '?'
-        self.cooling = gstr(self.cif['_olex2_diffrn_ambient_temperature_device']) or '[No cooling device given]'
-        self.rad_type = gstr(self.cif['_diffrn_radiation_type']) or '[No radiation type given]'
+        self.cooling = gstr(self.cif['_olex2_diffrn_ambient_temperature_device']).strip('\n\r') \
+                       or '[No cooling device given]'
+        self.rad_type = gstr(self.cif['_diffrn_radiation_type']).strip('\n\r') \
+                        or '[No radiation type given]'
         radtype = format_radiation(self.rad_type)
-        self.wavelen = gstr(self.cif['_diffrn_radiation_wavelength']) or '[No wavelength given]'
+        self.wavelen = gstr(self.cif['_diffrn_radiation_wavelength']).strip('\n\r') \
+                       or '[No wavelength given]'
         self.detector_type = ''
-        detector_type = gstr(self.cif['_diffrn_detector_type']) or '[No detector type given]'
+        detector_type = gstr(self.cif['_diffrn_detector_type']).strip('\n\r') \
+                        or '[No detector type given]'
         if detector_type:
             self.detector_type = " and a {} detector".format(detector_type)
         sentence1 = "on {} {} {} with {} {} using {} as monochromator{}. " \
@@ -113,7 +120,7 @@ class DataReduct():
     def __init__(self, cif: CifContainer, paragraph: Paragraph):
         self.cif = cif
         gstr = gemmi.cif.as_string
-        integration = gstr(self.cif['_computing_data_reduction'])
+        integration = gstr(self.cif['_computing_data_reduction']).strip('\n\r')
         integration_prog = '?'
         if 'saint' in integration.lower():
             integration_prog = 'SAINT'
@@ -127,15 +134,18 @@ class DataReduct():
             abs_details = 'SORTAV'
         if 'sadabs' in abs_details.lower():
             if ':' in abs_details[:16]:
-                abs_details = abs_details.split(':')[0].strip('\n')
+                abs_details = abs_details.split(':')[0].strip('\n\r')
             else:
-                abs_details = abs_details.split()[0].strip('\n')
+                abs_details = abs_details.split()[0].strip('\n\r')
         if 'twinabs' in abs_details.lower():
-            abs_details = abs_details.split(' ')[0].strip('\n')
+            abs_details = abs_details.split(' ')[0].strip('\n\r')
         if 'crysalis' in abs_details.lower():
             abs_details = 'SCALE3 ABSPACK'
         sentence = 'All data were integrated with {} and {} {} absorption correction using {} was applied. '
-        txt = sentence.format(integration_prog, get_inf_article(abstype), abstype, abs_details)
+        txt = sentence.format(integration_prog.strip('\n\r'),
+                              get_inf_article(abstype).strip('\n\r'),
+                              abstype.strip('\n\r'),
+                              abs_details.strip('\n\r'))
         paragraph.add_run(retranslate_delimiter(txt))
 
 
@@ -143,14 +153,14 @@ class SolveRefine():
     def __init__(self, cif: CifContainer, paragraph: Paragraph):
         self.cif = cif
         gstr = gemmi.cif.as_string
-        solution_prog = gstr(self.cif['_computing_structure_solution']).strip("'") or '??'
-        solution_method = gstr(self.cif['_atom_sites_solution_primary']) or '??'
-        refined = gstr(self.cif['_computing_structure_refinement']) or '??'
+        solution_prog = gstr(self.cif['_computing_structure_solution']).strip("'").strip('\n') or '??'
+        solution_method = gstr(self.cif['_atom_sites_solution_primary']).strip('\n') or '??'
+        refined = gstr(self.cif['_computing_structure_refinement']).strip('\n') or '??'
         # dsr = gstr(self.cif['_computing_structure_refinement'])
-        refine_coef = gstr(self.cif['_refine_ls_structure_factor_coef'])
+        refine_coef = gstr(self.cif['_refine_ls_structure_factor_coef']).strip('\n')
         sentence = r"The structure were solved by {} methods using {} and refined by full-matrix " \
                    "least-squares methods against "
-        txt = sentence.format(solution_method, solution_prog)
+        txt = sentence.format(solution_method.strip('\n\r'), solution_prog.strip('\n\r'))
         paragraph.add_run(retranslate_delimiter(txt))
         paragraph.add_run('F').font.italic = True
         if refine_coef.lower() == 'fsqd':
