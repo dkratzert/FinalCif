@@ -833,7 +833,7 @@ def make_table_widths(table: Table, widths: Sequence[Length]):
 
 def add_last_symminfo_line(newsymms: dict, document: Document):
     p = document.add_paragraph('')
-    line = 'Symmetry transformations used to generate equivalent atoms: '
+    line = 'Symmetry transformations used to generate equivalent atoms:\n'
     nitems = len(newsymms)
     n = 0
     for key, value in newsymms.items():
