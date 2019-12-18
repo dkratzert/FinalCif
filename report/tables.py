@@ -474,6 +474,11 @@ def add_coords_table(document: Document, cif: CifContainer, table_num: int):
     ij.font.subscript = True
     ij.font.italic = True
     p.add_run(' tensor.')
+    set_column_width(coords_table.columns[0], Cm(2.3))
+    set_column_width(coords_table.columns[1], Cm(2.8))
+    set_column_width(coords_table.columns[2], Cm(2.8))
+    set_column_width(coords_table.columns[3], Cm(2.8))
+    set_column_width(coords_table.columns[4], Cm(2.8))
     document.add_paragraph()
     return table_num
 
@@ -574,8 +579,8 @@ def add_bonds_and_angles_table(document: Document, cif: CifContainer, table_num:
         para_angle = c1.paragraphs[0]
         #para_angle.paragraph_format.tab_stops.add_tab_stop(Cm(0.4), WD_TAB_ALIGNMENT.DECIMAL, WD_TAB_LEADER.SPACES)
         c1.text = str(angle)  # angle
-    set_column_width(bond_angle_table.columns[0], Cm(4.0))
-    set_column_width(bond_angle_table.columns[1], Cm(3.5))
+    set_column_width(bond_angle_table.columns[0], Cm(3.7))
+    set_column_width(bond_angle_table.columns[1], Cm(2.5))
     add_last_symminfo_line(newsymms, document)
     return table_num
 
@@ -646,9 +651,9 @@ def add_torsion_angles(document: Document, cif: CifContainer, table_num: int):
         cp0.add_run(halbgeviert)
         cp0.add_run(at4)  # labels
         cp0.add_run('#' + str(symms[symm4]) if symm4 else '').font.superscript = True
-        c1.paragraphs[0].add_run(str(angle))  # angle
-    set_column_width(torsion_table.columns[0], Cm(4.5))
-    set_column_width(torsion_table.columns[1], Cm(3))
+        c1.paragraphs[0].add_run(str(angle))  # torsion angle
+    set_column_width(torsion_table.columns[0], Cm(4.2))
+    set_column_width(torsion_table.columns[1], Cm(3.0))
     add_last_symminfo_line(newsymms, document)
     return table_num
 
