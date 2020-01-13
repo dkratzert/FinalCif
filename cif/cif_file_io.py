@@ -412,7 +412,6 @@ class CifContainer():
         label2 = self.block.find_loop('_geom_bond_atom_site_label_2')
         dist = self.block.find_loop('_geom_bond_distance')
         symm = self.block.find_loop('_geom_bond_site_symmetry_2')
-        publ = self.block.find_loop('_geom_bond_publ_flag')
         hat = ('H', 'D')
         for label1, label2, dist, symm in zip(label1, label2, dist, symm):
             if without_H and (label1[0] in hat or label2[0] in hat):
@@ -420,16 +419,19 @@ class CifContainer():
             else:
                 yield (label1, label2, dist, symm)
 
-    def angles(self):
+    def angles(self, without_H: bool = False):
         label1 = self.block.find_loop('_geom_angle_atom_site_label_1')
         label2 = self.block.find_loop('_geom_angle_atom_site_label_2')
         label3 = self.block.find_loop('_geom_angle_atom_site_label_3')
         angle = self.block.find_loop('_geom_angle')
         symm1 = self.block.find_loop('_geom_angle_site_symmetry_1')
         symm2 = self.block.find_loop('_geom_angle_site_symmetry_3')
-        # publ = self.block.find_loop('_geom_angle_publ_flag')
+        hat = ('H', 'D')
         for label1, label2, label3, angle, symm1, symm2 in zip(label1, label2, label3, angle, symm1, symm2):
-            yield (label1, label2, label3, angle, symm1, symm2)
+            if without_H and (label1[0] in hat or label2[0] in hat or label3[0] in hat):
+                continue
+            else:
+                yield (label1, label2, label3, angle, symm1, symm2)
 
     def torsion_angles(self):
         label1 = self.block.find_loop('_geom_torsion_atom_site_label_1')
