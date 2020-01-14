@@ -216,11 +216,13 @@ class Twinning():
 class CCDC():
     def __init__(self, cif: CifContainer, paragraph: Paragraph):
         self.cif = cif
+        gstr = gemmi.cif.as_string
+        ccdc_num = gstr(self.cif['_database_code_depnum_ccdc_archive']) or '??????'
         sentence = "Crystallographic data (including structure factors) for the structures reported in this " \
-                   "paper have been deposited with the Cambridge Crystallographic Data Centre. CCDC ?????? contain " \
+                   "paper have been deposited with the Cambridge Crystallographic Data Centre. CCDC {} contain " \
                    "the supplementary crystallographic data for this paper. Copies of the data can " \
                    "be obtained free of charge from The Cambridge Crystallographic Data Centre " \
-                   "via www.ccdc.cam.ac.uk/structures."
+                   "via www.ccdc.cam.ac.uk/structures.".format(ccdc_num)
         paragraph.add_run(sentence)
 
 
