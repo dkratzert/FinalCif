@@ -29,6 +29,7 @@ ellipsis_mid = u'\u22EF  '
 # ellipsis
 ellipsis = u'\u2026'
 
+
 def grouper(inputs, n, fillvalue=None):
     iters = [iter(inputs)] * n
     return it.zip_longest(*iters, fillvalue=fillvalue)
@@ -501,6 +502,11 @@ predef_equipment_templ = [{'name' : 'D8 VENTURE',
                                ['_audit_contact_author_email', '?'],
                                ['_audit_contact_author_phone', '?'],
                                ['_publ_contact_author_id_orcid', '?'],
+                           ]
+                           },
+                          {'name' : 'CCDC number',
+                           'items': [
+                               ['_database_code_depnum_ccdc_archive', '?'],
                            ]
                            },
                           ]
