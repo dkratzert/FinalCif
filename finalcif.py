@@ -1521,7 +1521,7 @@ class AppWindow(QMainWindow):
         if value is None:
             strval = '?'
         else:
-            strval = str(value).strip(" ").strip("'").strip(';\n')  # or '?')
+            strval = str(value).strip(" ").strip("'").strip(';\n').strip('\r\n')  # or '?')
         if not key:
             strval = ''
         if key in text_field_keys:
