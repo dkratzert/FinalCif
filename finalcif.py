@@ -1324,7 +1324,12 @@ class AppWindow(QMainWindow):
         """
         if not warn_text:
             return
-        QMessageBox(self).warning(self, ' ', warn_text)
+        box = QMessageBox(self)
+        box.setTextFormat(Qt.AutoText)
+        box.setWindowTitle(" ")
+        box.setTextInteractionFlags(Qt.TextBrowserInteraction)
+        box.setText(warn_text)
+        box.exec()
 
     def check_Z(self) -> None:
         """
