@@ -112,16 +112,18 @@ class BrukerData(object):
         if (self.cif['_diffrn_ambient_temperature'].split('(')[0] or
             self.cif['_cell_measurement_temperature']).split('(')[0] == '0':
             self.app.show_general_warning('<b>Warning</b>: You probably entered &minus;273.15 °C instead '
-                                          'of &minus;173.15 °C into the SHELX file. '
+                                          'of &minus;173.15 °C into the SHELX file.<br>'
                                           'Zero temperature is likely to be wrong.')
         try:
             if abs(int(self.cif['_diffrn_ambient_temperature'].split('(')[0]) - int(temperature)) >= 2:
                 self.app.show_general_warning('<b>Warning</b>: The temperature from the measurement and '
                                               'from SHELX differ. Please double-check for correctness.<br><br>'
                                               'SHELX says: {} K<br>'
-                                              'p4p says: {} K<br>'
+                                              'P$P file says: {} K<br>'
                                               'Frame header says: {} K<br><br>'
-                                              'You may add a TEMP instruction (in °C) to your SHELX file.'
+                                              'You may add a '
+                                              '<a href="http://shelx.uni-goettingen.de/shelxl_html.php#TEMP">TEMP</a> '
+                                              'instruction to your SHELX file (in °C).'
                                               .format(self.cif['_diffrn_ambient_temperature'].split('(')[0],
                                                       round(temp2, 1),
                                                       round(temp1, 1)))
