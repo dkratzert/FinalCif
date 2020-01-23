@@ -109,10 +109,25 @@ class BrukerData(object):
         temperature = round(min([temp1, temp2]), 1)
         if temperature < 0.01:
             temperature = '?'
-        if (self.cif['_diffrn_ambient_temperature'] or self.cif['_cell_measurement_temperature']) == ('0(2)' or '0'):
+        if (self.cif['_diffrn_ambient_temperature'].split('(')[0] or
+            self.cif['_cell_measurement_temperature']).split('(')[0] == '0':
             self.app.show_general_warning('<b>Warning</b>: You probably entered &minus;273.15 °C instead '
                                           'of &minus;173.15 °C into the SHELX file. '
                                           'Zero temperature is likely to be wrong.')
+        try:
+            if abs(int(self.cif['_diffrn_ambient_temperature'].split('(')[0]) - int(temperature)) >= 2:
+                self.app.show_general_warning('<b>Warning</b>: The temperature from the measurement and '
+                                              'from SHELX differ. Please double-check for correctness.<br><br>'
+                                              'SHELX says: {} K<br>'
+                                              'p4p says: {} K<br>'
+                                              'Frame header says: {} K<br><br>'
+                                              'You may add a TEMP instruction (in °C) to your SHELX file.'
+                                              .format(self.cif['_diffrn_ambient_temperature'].split('(')[0],
+                                                      round(temp2, 1),
+                                                      round(temp1, 1)))
+        except ValueError:
+            # most probably one value is '?'
+            pass
         # TODO: refrator space group things into a general method:
         spgr = '?'
         if not self.cif['_space_group_name_H-M_alt']:
