@@ -834,7 +834,7 @@ def make_table_widths(table: Table, widths: Sequence[Length]):
 
 def add_hydrogen_omit_info(document: Document):
     p = document.add_paragraph('')
-    line = 'Bonds to hydrogen atoms were omitted.\n'
+    line = 'Bonds to hydrogen atoms were omitted.'
     run = p.add_run(line)
     run.font.size = Pt(8)
 
