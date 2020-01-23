@@ -78,7 +78,7 @@ class BrukerData(object):
             milliamps = ''
         try:
             frame_name = self.frame_header.filename.name
-        except (FileNotFoundError):
+        except FileNotFoundError:
             frame_name = ''
         if self.cif.solution_program_details:
             solution_program = (self.cif.solution_program_details, self.cif.fileobj.name)
@@ -109,6 +109,10 @@ class BrukerData(object):
         temperature = round(min([temp1, temp2]), 1)
         if temperature < 0.01:
             temperature = '?'
+        if (self.cif['_diffrn_ambient_temperature'] or self.cif['_cell_measurement_temperature']) == ('0(2)' or '0'):
+            self.app.show_general_warning('<b>Warning</b>: You probably entered &minus;273.15 °C instead '
+                                          'of &minus;173.15 °C into the SHELX file. '
+                                          'Zero temperature is likely to be wrong.')
         # TODO: refrator space group things into a general method:
         spgr = '?'
         if not self.cif['_space_group_name_H-M_alt']:
