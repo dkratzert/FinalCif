@@ -183,7 +183,7 @@ class CifContainer():
 
     @property
     def atomic_struct(self):
-        return gemmi.make_atomic_structure_from_block(self.block)
+        return gemmi.make_small_structure_from_block(self.block)
 
     def abs_hkl_details(self) -> Dict[str, str]:
         """
@@ -317,7 +317,8 @@ class CifContainer():
             return self.calc_checksum(res[1:-1])
         return 0
 
-    def calc_checksum(self, input_str: str) -> int:
+    @staticmethod
+    def calc_checksum(input_str: str) -> int:
         """
         Calculates the shelx checksum of a cif file.
         """
@@ -371,10 +372,13 @@ class CifContainer():
             #  0    1    2  3  4   5    6     7
             yield label, type, x, y, z, occ, part, ueq
 
+    @property
     def atoms_from_sites(self):
         for at in self.atomic_struct.sites:
+            # yield at.label, at.type_symbol, at.fract.x, at.fract.y, at.fract.z, at.occ, at.part, at.u_iso
             yield at.label, at.type_symbol, at.fract.x, at.fract.y, at.fract.z
 
+    @property
     def atoms_orthogonal(self):
         for at in self.atomic_struct.sites:
             yield [self.atomic_struct.cell.orthogonalize(at.fract).x,

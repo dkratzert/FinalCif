@@ -1,3 +1,4 @@
+from contextlib import suppress
 from textwrap import wrap
 
 from PyQt5 import QtCore
@@ -12,6 +13,11 @@ from tools.misc import essential_keys
 light_green = QColor(217, 255, 201)
 blue = QColor(102, 150, 179)
 yellow = QColor(250, 247, 150)
+
+[COL_CIF,
+ COL_DATA,
+ COL_EDIT
+ ] = range(3)
 
 
 class QHLine(QFrame):
@@ -78,6 +84,14 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         # noinspection PyUnresolvedReferences
         vheader.sectionClicked.connect(self.vheader_section_click)
 
+    @property
+    def rows_count(self):
+        return self.model().rowCount()
+
+    @property
+    def columns_count(self):
+        return self.model().columnCount()
+
     def vheader_section_click(self, section):
         item = self.verticalHeaderItem(section)
         itemtext = item.text()
@@ -138,6 +152,9 @@ class MyCifTable(QTableWidget, ItemTextMixin):
             except AttributeError:
                 pass
 
+    def getText(self, col, row):
+        return self.text(row, col)
+
     def setBackground(self, key: str, column: int, color: QColor):
         row = self.vheaderitems.index(key)
         self.setCurrentCell(row, column)
@@ -147,7 +164,8 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         else:
             widget = self.cellWidget(row, column)
             if widget:
-                widget.setBackground(color)
+                with suppress(Exception):
+                    widget.setBackground(color)
 
     def delete_item(self):
         """
@@ -190,7 +208,7 @@ class MyQPlainTextEdit(QPlainTextEdit):
         # pal.setColor(QPalette.Base, color)
         # self.setPalette(pal)
 
-    def set_uneditable(self):
+    def setUneditable(self):
         self.setReadOnly(True)
 
     def setText(self, text: str):
@@ -235,7 +253,7 @@ class MyComboBox(QComboBox):
             return True
         return QObject.eventFilter(self, widget, event)
 
-    def set_uneditable(self):
+    def setUneditable(self):
         self.setFlags(self.flags() ^ Qt.ItemIsEditable)
 
     def setText(self, txt: str):
@@ -251,7 +269,7 @@ class MyTableWidgetItem(QTableWidgetItem):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-    def set_uneditable(self):
+    def setUneditable(self):
         self.setFlags(self.flags() ^ Qt.ItemIsEditable)
 
 

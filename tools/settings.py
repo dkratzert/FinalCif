@@ -5,13 +5,13 @@
 #  and you think this stuff is worth it, you can buy me a beer in return.
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
-
+from contextlib import suppress
 from typing import List
 
 from PyQt5.QtCore import QPoint, QSettings, QSize
 from PyQt5.QtWidgets import QMainWindow
-
-from gui.finalcif_gui import Ui_FinalCifWindow
+with suppress(Exception):
+    from gui.finalcif_gui import Ui_FinalCifWindow
 
 
 class FinalCifSettings():
@@ -30,7 +30,7 @@ class FinalCifSettings():
         self.settings.setValue('maximized', maximized)
         self.settings.endGroup()
 
-    def save_favorite_template(self, app: Ui_FinalCifWindow) -> None:
+    def save_favorite_template(self, app: 'Ui_FinalCifWindow') -> None:
         last_equipment = app.EquipmentTemplatesListWidget.currentRow()
         self.settings.beginGroup('LastEquipment')
         self.settings.setValue('last', last_equipment)

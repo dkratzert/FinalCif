@@ -398,7 +398,7 @@ def add_coords_table(document: Document, cif: CifContainer, table_num: int):
     :param cif: the cif object from CifContainer.
     :return: None
     """
-    ncoords = len(list(cif.atoms()))
+    atoms = list(cif.atoms())
     table_num += 1
     headline = "Table {}. Atomic coordinates and ".format(table_num)
     h = document.add_heading(headline, 2)
@@ -409,7 +409,7 @@ def add_coords_table(document: Document, cif: CifContainer, table_num: int):
     h.add_run('{}[{}'.format(prot_space, angstrom))
     h.add_run('2').font.superscript = True
     h.add_run('] for {}.'.format(cif.fileobj.name))
-    coords_table = document.add_table(rows=ncoords + 1, cols=5)
+    coords_table = document.add_table(rows=len(atoms) + 1, cols=5)
     # coords_table.style = document.styles['Table Grid']
     coords_table.style = 'Table Grid'
     # Atom	x	y	z	U(eq)
@@ -447,7 +447,7 @@ def add_coords_table(document: Document, cif: CifContainer, table_num: int):
     col3_cells = coords_table.columns[3].cells
     col4_cells = coords_table.columns[4].cells
     rowidx = 1
-    for at in cif.atoms():
+    for at in atoms:
         c0, c1, c2, c3, c4 = col0_cells[rowidx], col1_cells[rowidx], col2_cells[rowidx], \
                              col3_cells[rowidx], col4_cells[rowidx]
         rowidx += 1
