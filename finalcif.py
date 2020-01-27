@@ -558,9 +558,12 @@ class AppWindow(QMainWindow):
             zipfile = Path(strip_finalcif_of_name('archive-' + self.cif.fileobj.stem) + '-finalcif.zip')
             if zipfile.exists():
                 zipfile = next_path(zipfile.stem+'-%s.zip')
-            arc = ArchiveReport(zipfile)
-            arc.zip.write(report_filename)
-            arc.zip.write(self.final_cif_file_name)
+            with suppress(Exception):
+                arc = ArchiveReport(zipfile)
+            with suppress(Exception):
+                arc.zip.write(report_filename)
+            with suppress(Exception):
+                arc.zip.write(self.final_cif_file_name)
             with suppress(Exception):
                 pdfname = Path(strip_finalcif_of_name('checkcif-' + self.cif.fileobj.stem) + '-finalcif.pdf').name
                 arc.zip.write(pdfname)
