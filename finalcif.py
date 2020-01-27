@@ -29,12 +29,13 @@ from datafiles.bruker_data import BrukerData
 from datafiles.platon import Platon
 from datafiles.rigaku_data import RigakuData
 from gui.custom_classes import MyComboBox, MyEQTableWidget, MyQPlainTextEdit, \
-    MyTableWidgetItem, blue, light_green, yellow
+    MyTableWidgetItem, blue, light_green, yellow, COL_CIF, COL_DATA, COL_EDIT
 from gui.vrf_classes import MyVRFContainer, VREF
+from report.archive_report import ArchiveReport
 from report.tables import make_report_from
 from tools.checkcif import AlertHelp, MakeCheckCif, MyHTMLParser
 from tools.misc import combobox_fields, excluded_imports, predef_equipment_templ, predef_prop_templ, \
-    strip_finalcif_of_name, text_field_keys, to_float
+    strip_finalcif_of_name, text_field_keys, to_float, next_path
 from tools.settings import FinalCifSettings
 from tools.version import VERSION
 
@@ -73,10 +74,6 @@ as dict:
 from gui.finalcif_gui import Ui_FinalCifWindow
 from gui.responseformseditor import Ui_ResponseFormsEditor
 
-[COL_CIF,
- COL_DATA,
- COL_EDIT
- ] = range(3)
 
 
 class AppWindow(QMainWindow):
@@ -112,7 +109,7 @@ class AppWindow(QMainWindow):
         self.ui.SaveCifButton.setDisabled(True)
         self.ui.ExploreDirButton.setDisabled(True)
         self.cif: CifContainer
-        self.fin_file = Path()
+        self.final_cif_file_name = Path()
         self.missing_data = []
         # True if line with "these are already in" reached:
         self.complete_data_row = -1
@@ -324,7 +321,7 @@ class AppWindow(QMainWindow):
         """
         Get back to the main table.
         """
-        self.load_cif_file(str(self.fin_file.absolute()))
+        self.load_cif_file(str(self.final_cif_file_name.absolute()))
         self.ui.MainStackedWidget.setCurrentIndex(0)
 
     def show_splash(self, text: str):
@@ -357,7 +354,7 @@ class AppWindow(QMainWindow):
         except FileNotFoundError:
             pass
         try:
-            ckf = MakeCheckCif(self, self.fin_file, outfile=htmlfile)
+            ckf = MakeCheckCif(self, self.final_cif_file_name, outfile=htmlfile)
             ckf._get_checkcif(pdf=False)
         except ReadTimeout:
             splash.finish(self)
@@ -465,7 +462,7 @@ class AppWindow(QMainWindow):
         except FileNotFoundError:
             pass
         try:
-            ckf = MakeCheckCif(self, self.fin_file, outfile=htmlfile)
+            ckf = MakeCheckCif(self, self.final_cif_file_name, outfile=htmlfile)
             ckf.show_pdf_report()
         except ReadTimeout:
             splash.finish(self)
@@ -493,7 +490,7 @@ class AppWindow(QMainWindow):
         self.ui.CifItemsTable.setCurrentItem(None)
         self.save_current_cif_file()
         try:
-            p = Platon(self.fin_file)
+            p = Platon(self.final_cif_file_name)
         except Exception as e:
             print(e)
             # self.ui.CheckcifButton.setDisabled(True)
@@ -535,9 +532,9 @@ class AppWindow(QMainWindow):
         not_ok = None
         if self.cif:
             self.save_current_cif_file()
-            output_filename = strip_finalcif_of_name('report_{}'.format(self.cif.fileobj.stem)) + '-finalcif.docx'
+            report_filename = strip_finalcif_of_name('report_{}'.format(self.cif.fileobj.stem)) + '-finalcif.docx'
             try:
-                make_report_from(self.fin_file, output_filename=output_filename, path=application_path,
+                make_report_from(self.final_cif_file_name, output_filename=report_filename, path=application_path,
                                  without_H=self.ui.HAtomsCheckBox.isChecked())
             except FileNotFoundError as e:
                 if DEBUG:
@@ -551,13 +548,22 @@ class AppWindow(QMainWindow):
                     raise
                 print('Unable to open cif file')
                 self.show_general_warning('The report document {} could not be opened.\n'
-                                          'Is the file already opened?'.format(output_filename))
+                                          'Is the file already opened?'.format(report_filename))
                 return
-            if Path(output_filename).absolute().exists():
+            if Path(report_filename).absolute().exists():
                 if os.name == 'nt':
-                    os.startfile(Path(output_filename).absolute())
+                    os.startfile(Path(report_filename).absolute())
                 if sys.platform == 'darwin':
-                    subprocess.call(['open', Path(output_filename).absolute()])
+                    subprocess.call(['open', Path(report_filename).absolute()])
+            zipfile = Path(strip_finalcif_of_name('archive-' + self.cif.fileobj.stem) + '-finalcif.zip')
+            if zipfile.exists():
+                zipfile = next_path(zipfile.stem+'-%s.zip')
+            arc = ArchiveReport(zipfile)
+            arc.zip.write(report_filename)
+            arc.zip.write(self.final_cif_file_name)
+            with suppress(Exception):
+                pdfname = Path(strip_finalcif_of_name('checkcif-' + self.cif.fileobj.stem) + '-finalcif.pdf').name
+                arc.zip.write(pdfname)
 
     def save_current_recent_files_list(self, file: str) -> None:
         if os.name == 'nt':
@@ -600,13 +606,11 @@ class AppWindow(QMainWindow):
         table = self.ui.CifItemsTable
         table.restore_vertical_header()
         table.setCurrentItem(None)  # makes sure also the currently edited item is saved
-        rowcount = table.model().rowCount()
-        columncount = table.model().columnCount()
-        for row in range(rowcount):
+        for row in range(self.ui.CifItemsTable.rows_count):
             # col0 = None  # cif content
             col1 = None  # from datafiles
             col2 = None  # own text
-            for col in range(columncount):
+            for col in range(self.ui.CifItemsTable.columns_count):
                 txt = table.text(row, col)
                 if txt:
                     # if col == COL_CIF and txt != (None or '' or '?'):
@@ -636,9 +640,9 @@ class AppWindow(QMainWindow):
                             print('Can not take cif info from table:', e)
                             pass
         try:
-            self.fin_file = Path(strip_finalcif_of_name(str(self.cif.fileobj.stem)) + '-finalcif.cif')
-            self.cif.save(self.fin_file.name)
-            self.ui.statusBar.showMessage('  File Saved:  {}'.format(self.fin_file.name), 10000)
+            self.final_cif_file_name = Path(strip_finalcif_of_name(str(self.cif.fileobj.stem)) + '-finalcif.cif')
+            self.cif.save(self.final_cif_file_name.name)
+            self.ui.statusBar.showMessage('  File Saved:  {}'.format(self.final_cif_file_name.name), 10000)
             print('File saved ...')
             return True
         except (AttributeError, UnicodeEncodeError, PermissionError) as e:
@@ -662,7 +666,7 @@ class AppWindow(QMainWindow):
         font.setPointSize(14)
         doc.setDefaultFont(font)
         final_textedit.setLineWrapMode(QPlainTextEdit.NoWrap)
-        final_textedit.setPlainText(self.fin_file.read_text(encoding='utf-8', errors='ignore'))
+        final_textedit.setPlainText(self.final_cif_file_name.read_text(encoding='utf-8', errors='ignore'))
 
     def show_equipment_and_properties(self) -> None:
         """
@@ -712,7 +716,7 @@ class AppWindow(QMainWindow):
         if not key.startswith('_'):
             return
         self.ui.CifItemsTable.vheaderitems.insert(0, key)
-        self.add_row(key=key, value='?', at_start=True)
+        self.add_row(key=key, value=value, at_start=True)
         if key in [x for x in combobox_fields]:
             self.add_property_combobox(combobox_fields[key], 0)
         self.missing_data.append(key)
@@ -1358,15 +1362,21 @@ class AppWindow(QMainWindow):
 
     def set_pair(self, key: str, value: str) -> None:
         """
-        Start a new cif pair and add it to the main table.
+        Start a new cif key/data pair and add it to the main table.
         """
-        self.ui.CifItemsTable.insertRow(0)
-        head_item_key = MyTableWidgetItem(key)
-        self.ui.CifItemsTable.setVerticalHeaderItem(0, head_item_key)
-        self.ui.CifItemsTable.setText(0, COL_CIF, '?', row=0)
-        self.ui.CifItemsTable.setText(0, COL_DATA, value, row=0)
         self.missing_data.append(key)
         self.cif.block.set_pair(key, value)
+        self.ui.CifItemsTable.insertRow(0)
+        tab_cif = MyTableWidgetItem('?')
+        tab_cif.setUneditable()
+        tab_data = MyTableWidgetItem(value)
+        tab_data.setUneditable()
+        self.ui.CifItemsTable.vheaderitems.insert(0, key)
+        head_item_key = MyTableWidgetItem(key)
+        self.ui.CifItemsTable.setItem(0, COL_DATA, tab_data)
+        self.ui.CifItemsTable.setItem(0, COL_CIF, tab_cif)
+        self.ui.CifItemsTable.setVerticalHeaderItem(0, head_item_key)
+        self.ui.CifItemsTable.setBackground(key, COL_DATA, light_green)
 
     def get_data_sources(self) -> None:
         """
@@ -1377,21 +1387,22 @@ class AppWindow(QMainWindow):
         if self.manufacturer == 'bruker':
             bdata = BrukerData(self, self.cif)
             sources = bdata.sources
-            if bdata.saint_data.is_twin and bdata.saint_data.components_firstsample == 2:
+            if bdata.saint_data.is_twin and bdata.saint_data.components_firstsample == 2\
+                    and not self.cif['_twin_individual_twin_matrix_11']:
                 with suppress(Exception):
                     law = bdata.saint_data.twinlaw[list(bdata.saint_data.twinlaw.keys())[0]]
-                    self.set_pair('_twin_individual_twin_matrix_33', str(law[2][2]))
-                    self.set_pair('_twin_individual_twin_matrix_32', str(law[2][1]))
-                    self.set_pair('_twin_individual_twin_matrix_31', str(law[2][0]))
-                    self.set_pair('_twin_individual_twin_matrix_23', str(law[1][2]))
-                    self.set_pair('_twin_individual_twin_matrix_22', str(law[1][1]))
-                    self.set_pair('_twin_individual_twin_matrix_21', str(law[1][0]))
-                    self.set_pair('_twin_individual_twin_matrix_13', str(law[0][2]))
-                    self.set_pair('_twin_individual_twin_matrix_12', str(law[0][1]))
                     self.set_pair('_twin_individual_twin_matrix_11', str(law[0][0]))
+                    self.set_pair('_twin_individual_twin_matrix_12', str(law[0][1]))
+                    self.set_pair('_twin_individual_twin_matrix_13', str(law[0][2]))
+                    self.set_pair('_twin_individual_twin_matrix_21', str(law[1][0]))
+                    self.set_pair('_twin_individual_twin_matrix_22', str(law[1][1]))
+                    self.set_pair('_twin_individual_twin_matrix_23', str(law[1][2]))
+                    self.set_pair('_twin_individual_twin_matrix_31', str(law[2][0]))
+                    self.set_pair('_twin_individual_twin_matrix_32', str(law[2][1]))
+                    self.set_pair('_twin_individual_twin_matrix_33', str(law[2][2]))
                     self.set_pair('_twin_individual_id', str(bdata.saint_data.components_firstsample))
                     self.set_pair('_twin_special_details', 'The data was integrated as a 2-component twin.')
-                    self.ui.CifItemsTable.setCurrentItem(None)
+                self.ui.CifItemsTable.setCurrentItem(None)
         if self.manufacturer == 'rigaku':
             vheadlist = []
             for num in range(self.ui.CifItemsTable.model().rowCount()):
@@ -1401,9 +1412,10 @@ class AppWindow(QMainWindow):
                 if x in vheadlist:
                     continue
                 if x and x not in self.missing_data:
-                    self.add_row(x, '?', at_start=True)
-                    self.missing_data.append(x)
-                    self.cif.block.set_pair(x, '?')
+                    self.set_pair(x, '?')
+                    #self.add_row(x, '?', at_start=True)
+                    #self.missing_data.append(x)
+                    #self.cif.block.set_pair(x, '?')
             # Adding loop
             # TODO: make this work
             """loops = self.rigakucif.loops
@@ -1476,7 +1488,7 @@ class AppWindow(QMainWindow):
                 pass
             # items from data sources should not be editable
             if not miss_data in text_field_keys:
-                tab_item.set_uneditable()
+                tab_item.setUneditable()
 
     def add_property_combobox(self, data: str, row_num: int) -> None:
         """
@@ -1555,8 +1567,8 @@ class AppWindow(QMainWindow):
                 self.ui.CifItemsTable.setItem(row_num, COL_DATA, tab_data)
                 if key == '_audit_creation_method':
                     tab_data.setText('FinalCif by Daniel Kratzert, Freiburg 2019, https://github.com/dkratzert/FinalCif')
-                tab_cif.set_uneditable()
-                tab_data.set_uneditable()
+                tab_cif.setUneditable()
+                tab_data.setUneditable()
                 self.ui.CifItemsTable.resizeRowToContents(row_num)
         self.ui.CifItemsTable.setVerticalHeaderItem(row_num, head_item_key)
 
@@ -1571,11 +1583,11 @@ class AppWindow(QMainWindow):
         diag = QBrush(blue)
         diag.setStyle(Qt.DiagCrossPattern)
         item1.setBackground(diag)
-        item1.set_uneditable()
+        item1.setUneditable()
         item2.setBackground(diag)
-        item2.set_uneditable()
+        item2.setUneditable()
         item3.setBackground(diag)
-        item3.set_uneditable()
+        item3.setUneditable()
         self.ui.CifItemsTable.setItem(row_num, COL_CIF, item1)
         self.ui.CifItemsTable.setItem(row_num, COL_DATA, item2)
         self.ui.CifItemsTable.setItem(row_num, COL_EDIT, item3)
