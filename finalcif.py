@@ -555,7 +555,7 @@ class AppWindow(QMainWindow):
                     os.startfile(Path(report_filename).absolute())
                 if sys.platform == 'darwin':
                     subprocess.call(['open', Path(report_filename).absolute()])
-            zipfile = Path(strip_finalcif_of_name('archive-' + self.cif.fileobj.stem) + '-finalcif.zip')
+            zipfile = Path(strip_finalcif_of_name(self.cif.fileobj.stem) + '-finalcif.zip')
             if zipfile.exists():
                 zipfile = next_path(zipfile.stem+'-%s.zip')
             with suppress(Exception):
