@@ -39,7 +39,8 @@ class Crystallization(FormatMixin):
     def __init__(self, cif: CifContainer, paragraph: Paragraph):
         self.cif = cif
         gstr = gemmi.cif.as_string
-        self.crytsalization_method = gstr(self.cif['_exptl_crystal_recrystallization_method']).strip('\n\r')
+        self.crytsalization_method = gstr(self.cif['_exptl_crystal_recrystallization_method'])\
+                                         .strip('\n\r').strip(' ').strip('.') + '.'
         if not self.crytsalization_method:
             self.crytsalization_method = '[No crystallization method was given]'
         sentence = "{} "
@@ -54,13 +55,13 @@ class CrstalSelection(FormatMixin):
         self.temperature = gstr(self.cif['_diffrn_ambient_temperature'])
         self._name = cif.fileobj.name
         method = 'shock-cooled '
-        sentence = "The data for {} were collected from a {}single crystal at {}" + prot_space + "K "
+        sentence = "The data for {} were collected from a {}single crystal at {}{}K "
         try:
             if float(self.temperature.split('(')[0]) > 200:
                 method = ''
         except ValueError:
             method = ''
-        self.txt = sentence.format(self.name, method, self.temperature)
+        self.txt = sentence.format(self.name, method, self.temperature, prot_space)
         paragraph.add_run(retranslate_delimiter(self.txt))
 
     @property
