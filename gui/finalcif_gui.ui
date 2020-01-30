@@ -7,8 +7,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1400</width>
-    <height>800</height>
+    <width>1278</width>
+    <height>749</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -26,7 +26,7 @@
       </property>
       <property name="styleSheet">
        <string notr="true">QSplitter::handle {
-	background-color: rgb(200, 200, 200);
+	background-color: rgb(220, 220, 220);
 	margin: 0px 0px;
 }</string>
       </property>
@@ -36,8 +36,11 @@
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
+      <property name="opaqueResize">
+       <bool>true</bool>
+      </property>
       <property name="handleWidth">
-       <number>3</number>
+       <number>2</number>
       </property>
       <widget class="QFrame" name="LeftFrame">
        <property name="sizePolicy">
@@ -75,19 +78,31 @@
          <number>0</number>
         </property>
         <property name="rightMargin">
+         <number>4</number>
+        </property>
+        <property name="bottomMargin">
          <number>0</number>
         </property>
         <item>
          <widget class="QGroupBox" name="SelectCifFileGroupBox">
           <property name="title">
-           <string>Cif file</string>
+           <string>CIF File</string>
           </property>
-          <layout class="QGridLayout" name="CifFileGridLayout" columnstretch="0,0">
+          <layout class="QGridLayout" name="CifFileGridLayout">
+           <property name="leftMargin">
+            <number>9</number>
+           </property>
+           <property name="topMargin">
+            <number>4</number>
+           </property>
+           <property name="rightMargin">
+            <number>9</number>
+           </property>
            <property name="horizontalSpacing">
             <number>4</number>
            </property>
            <property name="verticalSpacing">
-            <number>8</number>
+            <number>5</number>
            </property>
            <item row="0" column="1">
             <widget class="QPushButton" name="SelectCif_PushButton">
@@ -219,11 +234,11 @@
                  <attribute name="horizontalHeaderCascadingSectionResizes">
                   <bool>true</bool>
                  </attribute>
-                 <attribute name="horizontalHeaderDefaultSectionSize">
-                  <number>210</number>
-                 </attribute>
                  <attribute name="horizontalHeaderMinimumSectionSize">
                   <number>100</number>
+                 </attribute>
+                 <attribute name="horizontalHeaderDefaultSectionSize">
+                  <number>210</number>
                  </attribute>
                  <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
                   <bool>true</bool>
@@ -308,7 +323,7 @@
             <number>0</number>
            </property>
            <property name="bottomMargin">
-            <number>1</number>
+            <number>0</number>
            </property>
            <item>
             <widget class="QStackedWidget" name="PropertiesTemplatesStackedWidget">
@@ -431,11 +446,11 @@
                  <attribute name="horizontalHeaderVisible">
                   <bool>false</bool>
                  </attribute>
-                 <attribute name="horizontalHeaderDefaultSectionSize">
-                  <number>170</number>
-                 </attribute>
                  <attribute name="horizontalHeaderMinimumSectionSize">
                   <number>90</number>
+                 </attribute>
+                 <attribute name="horizontalHeaderDefaultSectionSize">
+                  <number>170</number>
                  </attribute>
                  <attribute name="horizontalHeaderStretchLastSection">
                   <bool>true</bool>
@@ -494,10 +509,10 @@
        </property>
        <layout class="QGridLayout" name="CifTableGridLayout">
         <property name="leftMargin">
-         <number>0</number>
+         <number>4</number>
         </property>
         <property name="topMargin">
-         <number>0</number>
+         <number>6</number>
         </property>
         <property name="rightMargin">
          <number>0</number>
@@ -512,6 +527,21 @@
           </property>
           <widget class="QWidget" name="page_MainTable">
            <layout class="QVBoxLayout" name="verticalLayout">
+            <property name="spacing">
+             <number>0</number>
+            </property>
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
             <item>
              <widget class="MyCifTable" name="CifItemsTable">
               <property name="autoScroll">
@@ -532,6 +562,9 @@
               <property name="showGrid">
                <bool>true</bool>
               </property>
+              <property name="gridStyle">
+               <enum>Qt::SolidLine</enum>
+              </property>
               <property name="sortingEnabled">
                <bool>false</bool>
               </property>
@@ -541,23 +574,26 @@
               <property name="cornerButtonEnabled">
                <bool>false</bool>
               </property>
+              <property name="columnCount">
+               <number>3</number>
+              </property>
+              <attribute name="horizontalHeaderMinimumSectionSize">
+               <number>80</number>
+              </attribute>
               <attribute name="horizontalHeaderDefaultSectionSize">
                <number>152</number>
               </attribute>
               <attribute name="horizontalHeaderHighlightSections">
                <bool>false</bool>
               </attribute>
-              <attribute name="horizontalHeaderMinimumSectionSize">
-               <number>80</number>
+              <attribute name="verticalHeaderMinimumSectionSize">
+               <number>20</number>
               </attribute>
               <attribute name="verticalHeaderDefaultSectionSize">
                <number>25</number>
               </attribute>
               <attribute name="verticalHeaderHighlightSections">
                <bool>true</bool>
-              </attribute>
-              <attribute name="verticalHeaderMinimumSectionSize">
-               <number>20</number>
               </attribute>
               <column>
                <property name="text">
@@ -649,18 +685,32 @@
                 <property name="title">
                  <string/>
                 </property>
-                <layout class="QVBoxLayout" name="verticalLayout_4">
-                 <item>
-                  <widget class="QPushButton" name="SaveFullReportButton">
+                <layout class="QGridLayout" name="gridLayout">
+                 <item row="0" column="0">
+                  <widget class="QPushButton" name="CODpushButton">
                    <property name="text">
-                    <string>Make Tables</string>
+                    <string>COD Deposit</string>
                    </property>
                   </widget>
                  </item>
-                 <item>
+                 <item row="0" column="1">
+                  <widget class="QPushButton" name="CCDCpushButton">
+                   <property name="text">
+                    <string>CCDC Deposit</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="1">
                   <widget class="QCheckBox" name="HAtomsCheckBox">
                    <property name="text">
-                    <string>without H-Bonds</string>
+                    <string>without Hydrogen Bonds</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QPushButton" name="SaveFullReportButton">
+                   <property name="text">
+                    <string>Make Tables</string>
                    </property>
                   </widget>
                  </item>
@@ -673,6 +723,18 @@
           </widget>
           <widget class="QWidget" name="page_checkcif">
            <layout class="QVBoxLayout" name="verticalLayout_2">
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
             <item>
              <widget class="QLabel" name="label">
               <property name="text">
@@ -737,6 +799,18 @@
           </widget>
           <widget class="QWidget" name="page_FinalCif">
            <layout class="QVBoxLayout" name="verticalLayout_3">
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
             <item>
              <widget class="QPlainTextEdit" name="FinalCifFilePlainTextEdit">
               <property name="textInteractionFlags">
