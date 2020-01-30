@@ -29,8 +29,6 @@ from cif.core_dict import cif_core
 from datafiles.bruker_data import BrukerData
 from datafiles.platon import Platon
 from datafiles.rigaku_data import RigakuData
-from gui.custom_classes import MyComboBox, MyEQTableWidget, MyQPlainTextEdit, \
-    MyTableWidgetItem, blue, light_green, yellow, COL_CIF, COL_DATA, COL_EDIT
 from gui.vrf_classes import MyVRFContainer, VREF
 from report.archive_report import ArchiveReport
 from report.tables import make_report_from
@@ -74,7 +72,8 @@ as dict:
 # They must be here in order to have directly updated ui files from the ui compiler:
 from gui.finalcif_gui import Ui_FinalCifWindow
 from gui.responseformseditor import Ui_ResponseFormsEditor
-
+from gui.custom_classes import MyComboBox, MyEQTableWidget, MyQPlainTextEdit, \
+    MyTableWidgetItem, blue, light_green, yellow, COL_CIF, COL_DATA, COL_EDIT
 
 class AppWindow(QMainWindow):
     def __init__(self):
