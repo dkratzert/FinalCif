@@ -3,9 +3,9 @@ from textwrap import wrap
 
 from PyQt5 import QtCore
 from PyQt5.QtCore import QEvent, QObject, Qt
-from PyQt5.QtGui import QColor, QTextOption
+from PyQt5.QtGui import QColor, QTextOption, QKeySequence
 from PyQt5.QtWidgets import QAbstractScrollArea, QAction, QComboBox, QFrame, QPlainTextEdit, QSizePolicy, QTableWidget, \
-    QTableWidgetItem, QWidget
+    QTableWidgetItem, QWidget, QApplication, QShortcut
 
 from cif.cif_file_io import retranslate_delimiter
 from tools.misc import essential_keys
@@ -65,16 +65,21 @@ class MyCifTable(QTableWidget, ItemTextMixin):
     row_deleted = QtCore.pyqtSignal(str)
 
     def __init__(self, parent: QWidget = None):
-        super().__init__(parent)
         self.parent = parent
+        super().__init__(parent)
         self.installEventFilter(self)
         self.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.actionDeletePair = QAction("Delete Row", self)
+        self.actionCopy = QAction("Copy", self)
         self.setContextMenuPolicy(Qt.ActionsContextMenu)
         self.addAction(self.actionDeletePair)
-        self.actionDeletePair.triggered.connect(self.delete_item)
+        self.addAction(self.actionCopy)
+        self.actionDeletePair.triggered.connect(self.delete_row)
+        self.actionCopy.triggered.connect(self.copy_item)
+        del_shortcut = QShortcut(QKeySequence('Ctrl+Del'), self)
+        del_shortcut.activated.connect(self.delete_row)
         self.vheaderitems = list()
         # This is the index number of the vheader that got clicked last:
         self.vheader_clicked = -1
@@ -167,7 +172,15 @@ class MyCifTable(QTableWidget, ItemTextMixin):
                 with suppress(Exception):
                     widget.setBackground(color)
 
-    def delete_item(self):
+    def copy_item(self):
+        """
+        Copies the content of a field.
+        """
+        text = self.currentItem().text()
+        clipboard = QApplication.clipboard()
+        clipboard.setText(text)
+
+    def delete_row(self):
         """
         Deletes the current row, but gemmi can not delete items from the block at the moment!
         """

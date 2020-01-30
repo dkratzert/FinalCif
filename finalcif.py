@@ -20,6 +20,7 @@ from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkReply, QNetworkReques
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 # noinspection PyUnresolvedReferences
 from gemmi import cif
+from qtpy.QtGui import QDesktopServices, QKeySequence
 from requests import ReadTimeout
 
 from app_path import application_path
@@ -51,7 +52,7 @@ if DEBUG:
 from PyQt5.QtCore import QPoint, Qt, QUrl, QEvent
 from PyQt5.QtGui import QFont, QIcon, QBrush
 from PyQt5.QtWidgets import QApplication, QFileDialog, QHeaderView, QListWidget, QListWidgetItem, \
-    QMainWindow, QMessageBox, QPlainTextEdit, QStackedWidget, QTableWidget, QSplashScreen
+    QMainWindow, QMessageBox, QPlainTextEdit, QStackedWidget, QTableWidget, QSplashScreen, QShortcut
 
 """
 TODO:
@@ -73,7 +74,6 @@ as dict:
 # They must be here in order to have directly updated ui files from the ui compiler:
 from gui.finalcif_gui import Ui_FinalCifWindow
 from gui.responseformseditor import Ui_ResponseFormsEditor
-
 
 
 class AppWindow(QMainWindow):
@@ -143,6 +143,9 @@ class AppWindow(QMainWindow):
 
         self.ui.BackPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
         self.ui.BacktoMainpushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
+
+        self.ui.CCDCpushButton.setIcon(qta.icon('fa5s.upload'))
+        self.ui.CODpushButton.setIcon(qta.icon('mdi.upload'))
 
         if len(sys.argv) > 1:
             self.load_cif_file(sys.argv[1])
@@ -223,6 +226,24 @@ class AppWindow(QMainWindow):
         self.ui.RecentComboBox.currentIndexChanged.connect(self.load_recent_file)
         #
         self.ui.CifItemsTable.row_deleted.connect(self._deleted_row)
+        #
+        self.ui.CODpushButton.clicked.connect(
+            (lambda: QDesktopServices.openUrl(QUrl('http://www.crystallography.net/cod/'))))
+        self.ui.CCDCpushButton.clicked.connect(self._ccdc_deposit)
+        #
+        save_shortcut = QShortcut(QKeySequence('Ctrl+S'), self)
+        save_shortcut.activated.connect(self.save_current_cif_file)
+        save_shortcut = QShortcut(QKeySequence('Ctrl+H'), self)
+        save_shortcut.activated.connect(self.do_html_checkcif)
+        save_shortcut = QShortcut(QKeySequence('Ctrl+P'), self)
+        save_shortcut.activated.connect(self.do_pdf_checkcif)
+
+    def _ccdc_deposit(self):
+        """
+        Open the CCDC deposit web page.
+        """
+        QDesktopServices.openUrl(QUrl('https://www.ccdc.cam.ac.uk/deposit'))
+        self.explore_dir()
 
     def _deleted_row(self, key: str):
         self.cif.block.set_pair(key, '?')
@@ -354,7 +375,7 @@ class AppWindow(QMainWindow):
         except FileNotFoundError:
             pass
         try:
-            ckf = MakeCheckCif(self, self.final_cif_file_name, outfile=htmlfile)
+            ckf = MakeCheckCif(cif=self.cif, outfile=htmlfile, hkl=(not self.ui.structfactCheckBox.isChecked()))
             ckf._get_checkcif(pdf=False)
         except ReadTimeout:
             splash.finish(self)
@@ -371,18 +392,19 @@ class AppWindow(QMainWindow):
         except FileNotFoundError:
             # happens if checkcif fails, e.g. takes too much time.
             return
-        web = QWebEngineView()
+        browser = QWebEngineView()
+        # web_settings = browser. settings()
         url = QUrl.fromLocalFile(str(htmlfile.absolute()))
         dialog = QMainWindow(self)
         self.subwin.setupUi(dialog)
-        self.subwin.reportLayout.addWidget(web)
+        self.subwin.reportLayout.addWidget(browser)
         self.subwin.show_report_Button.hide()
         self.subwin.show_report_Button.clicked.connect(self._switch_to_report)
         self.subwin.show_Forms_Button.clicked.connect(self._switch_to_vrf)
         self.subwin.SavePushButton.setIcon(qta.icon('mdi.content-save'))
         self.subwin.show_report_Button.setIcon(qta.icon('mdi.format-columns'))
         self.subwin.show_Forms_Button.setIcon(qta.icon('mdi.book-open-outline'))
-        web.load(url)
+        browser.load(url)
         self.subwin.stackedWidget.setCurrentIndex(0)
         dialog.setMinimumWidth(900)
         dialog.setMinimumHeight(700)
@@ -462,7 +484,7 @@ class AppWindow(QMainWindow):
         except FileNotFoundError:
             pass
         try:
-            ckf = MakeCheckCif(self, self.final_cif_file_name, outfile=htmlfile)
+            ckf = MakeCheckCif(cif=self.cif, outfile=htmlfile, hkl=(not self.ui.structfactCheckBox.isChecked()))
             ckf.show_pdf_report()
         except ReadTimeout:
             splash.finish(self)
@@ -557,7 +579,7 @@ class AppWindow(QMainWindow):
                     subprocess.call(['open', Path(report_filename).absolute()])
             zipfile = Path(strip_finalcif_of_name(self.cif.fileobj.stem) + '-finalcif.zip')
             if zipfile.exists():
-                zipfile = next_path(zipfile.stem+'-%s.zip')
+                zipfile = next_path(zipfile.stem + '-%s.zip')
             with suppress(Exception):
                 arc = ArchiveReport(zipfile)
             with suppress(Exception):
@@ -1390,7 +1412,7 @@ class AppWindow(QMainWindow):
         if self.manufacturer == 'bruker':
             bdata = BrukerData(self, self.cif)
             sources = bdata.sources
-            if bdata.saint_data.is_twin and bdata.saint_data.components_firstsample == 2\
+            if bdata.saint_data.is_twin and bdata.saint_data.components_firstsample == 2 \
                     and not self.cif['_twin_individual_twin_matrix_11']:
                 with suppress(Exception):
                     law = bdata.saint_data.twinlaw[list(bdata.saint_data.twinlaw.keys())[0]]
@@ -1416,9 +1438,9 @@ class AppWindow(QMainWindow):
                     continue
                 if x and x not in self.missing_data:
                     self.set_pair(x, '?')
-                    #self.add_row(x, '?', at_start=True)
-                    #self.missing_data.append(x)
-                    #self.cif.block.set_pair(x, '?')
+                    # self.add_row(x, '?', at_start=True)
+                    # self.missing_data.append(x)
+                    # self.cif.block.set_pair(x, '?')
             # Adding loop
             # TODO: make this work
             """loops = self.rigakucif.loops
@@ -1569,7 +1591,8 @@ class AppWindow(QMainWindow):
                 self.ui.CifItemsTable.setItem(row_num, COL_CIF, tab_cif)
                 self.ui.CifItemsTable.setItem(row_num, COL_DATA, tab_data)
                 if key == '_audit_creation_method':
-                    tab_data.setText('FinalCif by Daniel Kratzert, Freiburg 2019, https://github.com/dkratzert/FinalCif')
+                    tab_data.setText(
+                        'FinalCif by Daniel Kratzert, Freiburg 2019, https://github.com/dkratzert/FinalCif')
                 tab_cif.setUneditable()
                 tab_data.setUneditable()
                 self.ui.CifItemsTable.resizeRowToContents(row_num)
