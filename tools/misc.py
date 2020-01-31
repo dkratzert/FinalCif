@@ -252,9 +252,10 @@ essential_keys = {
     '_refine_ls_shift/su_mean'                         : 'The average ratio of the final least-squares parameter shift to the final standard uncertainty',
     '_publ_section_references'                         : 'References for programs used to process the data',
     # '_symmetry_cell_setting'                           : 'The cell settings for this space-group symmetry',
-    '_chemical_name_systematic'                        : 'IUPAC or Chemical Abstracts full name of the compound.',
+    '_chemical_name_systematic'                        : 'IUPAC or Chemical Abstracts full name of the compound',
     '_chemical_name_common'                            : 'Trivial name by which the compound is commonly known',
     '_chemical_melting_point'                          : 'The temperature in kelvins at which the crystalline solid changes to a liquid',
+    #'_space_group_symop_operation_xyz'                 : 'Symmetry operations of the space group',
 }
 
 twin_keys = {
