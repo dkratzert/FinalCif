@@ -669,7 +669,7 @@ class AppWindow(QMainWindow):
             self.ui.statusBar.showMessage('  File Saved:  {}'.format(self.final_cif_file_name.name), 10000)
             print('File saved ...')
             return True
-        except (AttributeError, UnicodeEncodeError, PermissionError) as e:
+        except Exception as e:
             print('Unable to save file:')
             print(e)
             self.show_general_warning('Can not save file: ' + str(e))
