@@ -542,7 +542,6 @@ def add_bonds_and_angles_table(document: Document, cif: CifContainer, table_num:
     set_cell_border(head_row.cells[0], bottom={"sz": 2, "color": "#000000", "val": "single"})
     set_cell_border(head_row.cells[1], bottom={"sz": 2, "color": "#000000", "val": "single"})
     card = ''
-    s = SymmetryElement(card)
     rowidx += 2
     for at1, at2, at3, angle, symm1, symm3 in cif.angles(without_H):
         c0, c1 = col1_cells[rowidx], col2_cells[rowidx]
@@ -551,21 +550,20 @@ def add_bonds_and_angles_table(document: Document, cif: CifContainer, table_num:
             symm1 = None
         if symm3 == '.':
             symm3 = None
-        if (symm1 or symm3) and (symm1 or symm3) not in symms.keys():
-            if symm1:
-                symms[symm1] = num
-                card = get_card(cif, symm1)
-            if symm3:
-                symms[symm3] = num
-                card = get_card(cif, symm3)
+        if symm1 and symm1 not in symms.keys():
+            symms[symm1] = num
+            card = get_card(cif, symm1)
             # Applys translational symmetry to symmcards:
             # 3_556 -> 2
-            if symm1 or symm3:
-                s = SymmetryElement(card)
-            if symm1:
-                s.translate(symm1)
-            if symm3:
-                s.translate(symm3)
+            s = SymmetryElement(card)
+            s.translate(symm1)
+            newsymms[num] = s.toShelxl()
+            num += 1
+        if symm3 and symm3 not in symms.keys():
+            symms[symm3] = num
+            card = get_card(cif, symm3)
+            s = SymmetryElement(card)
+            s.translate(symm3)
             newsymms[num] = s.toShelxl()
             num += 1
         c0.text = at1
@@ -573,8 +571,6 @@ def add_bonds_and_angles_table(document: Document, cif: CifContainer, table_num:
         cp0.add_run('#' + str(symms[symm1]) if symm1 else '').font.superscript = True
         cp0.add_run('{}{}{}{}'.format(halbgeviert, at2, halbgeviert, at3))
         cp0.add_run('#' + str(symms[symm3]) if symm3 else '').font.superscript = True
-        para_angle = c1.paragraphs[0]
-        # para_angle.paragraph_format.tab_stops.add_tab_stop(Cm(0.4), WD_TAB_ALIGNMENT.DECIMAL, WD_TAB_LEADER.SPACES)
         c1.text = str(angle)  # angle
     set_column_width(bond_angle_table.columns[0], Cm(3.7))
     set_column_width(bond_angle_table.columns[1], Cm(2.5))
@@ -619,23 +615,28 @@ def add_torsion_angles(document: Document, cif: CifContainer, table_num: int, wi
             symm3 = None
         if symm4 == '.':
             symm4 = None
-        if (symm1 or symm2 or symm3 or symm4) and (symm1 or symm2 or symm3 or symm4) not in symms.keys():
-            if symm1:
-                symms[symm1] = num
-                s = SymmetryElement(get_card(cif, symm1))
-                s.translate(symm1)
-            if symm2:
-                symms[symm2] = num
-                s = SymmetryElement(get_card(cif, symm2))
-                s.translate(symm2)
-            if symm3:
-                symms[symm3] = num
-                s = SymmetryElement(get_card(cif, symm3))
-                s.translate(symm3)
-            if symm4:
-                symms[symm4] = num
-                s = SymmetryElement(get_card(cif, symm4))
-                s.translate(symm4)
+        if symm1 and symm1 not in symms.keys():
+            symms[symm1] = num
+            s = SymmetryElement(get_card(cif, symm1))
+            s.translate(symm1)
+            newsymms[num] = s.toShelxl()
+            num += 1
+        if symm2 and symm2 not in symms.keys():
+            symms[symm2] = num
+            s = SymmetryElement(get_card(cif, symm2))
+            s.translate(symm2)
+            newsymms[num] = s.toShelxl()
+            num += 1
+        if symm3 and symm3 not in symms.keys():
+            symms[symm3] = num
+            s = SymmetryElement(get_card(cif, symm3))
+            s.translate(symm3)
+            newsymms[num] = s.toShelxl()
+            num += 1
+        if symm4 and symm4 not in symms.keys():
+            symms[symm4] = num
+            s = SymmetryElement(get_card(cif, symm4))
+            s.translate(symm4)
             newsymms[num] = s.toShelxl()
             num += 1
         cp0 = c0.paragraphs[0]
@@ -868,6 +869,8 @@ def get_card(cif: CifContainer, symm: str) -> List[str]:
 
 if __name__ == '__main__':
     output_filename = 'tables.docx'
+    import time
+
     # make_report_from(get_files_from_current_dir()[5])
     t1 = time.perf_counter()
     make_report_from(Path(r'test-data/DK_zucker2_0m.cif'), output_filename=Path(output_filename))
