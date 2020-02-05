@@ -57,6 +57,10 @@ def copy_to_remote():
     shutil.copy(r'dist\FinalCif.exe', r'W:\htdocs\finalcif\FinalCif-v{}.exe'.format(VERSION))
     Path(r'W:\htdocs\finalcif\version.txt').write_text(str(VERSION))
 
+def update_installation():
+    print('copying files')
+    shutil.copytree(r'dist/FinalCif', r'C:\Program Files\FinalCif', dirs_exist_ok=True)
+
 def process_iss(filepath):
     pth = Path(filepath)
     iss_file = pth.read_text(encoding="UTF-8").split("\n")
@@ -79,8 +83,9 @@ print(arg)
 process_iss(iss_file)
 
 if arg == 'copy':
-    subprocess.run(r""".\venv\Scripts\pyinstaller.exe --icon=icon\multitable.ico -F Finalcif_onefile.spec --clean -y""".split())
+    subprocess.run(r""".\venv\Scripts\pyinstaller.exe -D Finalcif_installer.spec --clean -y""".split())
     #copy_to_remote()
+    update_installation()
 else:
     subprocess.run(r""".\venv\Scripts\pyinstaller.exe -D Finalcif_installer.spec --clean -y""".split())
 
