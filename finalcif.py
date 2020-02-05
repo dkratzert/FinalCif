@@ -1245,6 +1245,7 @@ class AppWindow(QMainWindow):
         try:
             filepath = Path(fname)
             if not filepath.exists():
+                self.show_general_warning("The file you tried to open does not exist!")
                 return
         except OSError:
             print('Something failed during cif file opening...')
