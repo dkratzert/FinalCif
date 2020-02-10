@@ -121,10 +121,20 @@ class CifContainer():
         self.fileobj = file
         self.block = None
         self.doc = None
-        # self.cif_file_text = self.fileobj.read_text(encoding='utf-8', errors='ignore')
-        self.open_cif_with_gemmi()
+        # will not ok with non-ascii characters in the res file:
+        self.chars_ok = True
+        # self.doc = gemmi.cif.read_string(self.fileobj.read_text(encoding='UTF-8', errors='ignore'))
+        self.doc = gemmi.cif.read_file(str(self.fileobj.absolute()))
+        self.block = self.doc.sole_block()
+        try:
+            self.resdata = self.block.find_value('_shelx_res_file')
+        except UnicodeDecodeError:
+            print('File has non-ascii characters. Switching to compatible mode.')
+            self.doc = gemmi.cif.read_string(self.fileobj.read_text(encoding='cp1250', errors='ignore'))
+            self.block = self.doc.sole_block()
+            self.resdata = self.block.find_value('_shelx_res_file')
+            self.chars_ok = False
         self.hkl_extra_info = self.abs_hkl_details()
-        self.resdata = self.block.find_value('_shelx_res_file')
         d = DSRFind(self.resdata)
         self.order = order
         self.dsr_used = d.dsr_used
@@ -163,23 +173,6 @@ class CifContainer():
                 continue
         self.doc.write_file(filename, gemmi.cif.Style.Indent35)
         # Path(filename).write_text(self.doc.as_string(gemmi.cif.Style.Indent35))
-
-    def open_cif_with_gemmi(self) -> None:
-        """
-        Reads a CIF file into gemmi and returns a sole block.
-        """
-        try:
-            # self.doc = gemmi.cif.read_string(self.cif_file_text)
-            self.doc = gemmi.cif.read_file(str(self.fileobj.absolute()))
-            self.block = self.doc.sole_block()
-        except Exception as e:
-            print('Unable to read file:', e)
-            raise
-
-    # def open_cif_by_string(self) -> None:
-    #    """Not used anymore"""
-    #    self.doc = gemmi.cif.read_string(self.cif_file_text)
-    #    self.block = self.doc.sole_block()
 
     @property
     def atomic_struct(self):
@@ -323,7 +316,10 @@ class CifContainer():
         Calculates the shelx checksum of a cif file.
         """
         sum = 0
-        input_str = input_str.encode('ascii', 'ignore')
+        try:
+            input_str = input_str.encode('cp1250', 'ignore')
+        except Exception:
+            input_str = input_str.encode('ascii', 'ignore')
         for char in input_str:
             # print(char)
             if char > 32:  # ascii 32 is space character

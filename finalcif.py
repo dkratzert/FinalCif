@@ -75,6 +75,7 @@ from gui.responseformseditor import Ui_ResponseFormsEditor
 from gui.custom_classes import MyComboBox, MyEQTableWidget, MyQPlainTextEdit, \
     MyTableWidgetItem, blue, light_green, yellow, COL_CIF, COL_DATA, COL_EDIT
 
+
 class AppWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -1263,6 +1264,11 @@ class AppWindow(QMainWindow):
         if not_ok:
             self.unable_to_open_message(filepath, not_ok)
             return
+        if not self.cif.chars_ok:
+            self.show_general_warning("You have non-ascii characters like umlauts in the SHELX file "
+                                      "attached to this CIF.\n\n"
+                                      "FinalCif tries to convert them, but be warned "
+                                      "(they are not allowed in CIF1 files anyway).\n")
         try:
             # Change the current working Directory
             os.chdir(filepath.absolute().parent)
@@ -1311,8 +1317,12 @@ class AppWindow(QMainWindow):
         except IndexError:
             line = None
         if line:
-            info.setText('This cif file is not readable!\n'
-                         'Please check line {} in\n{}'.format(line, filepath.name))
+            try:
+                int(line)
+                info.setText('This cif file is not readable!\n'
+                             'Please check line {} in\n{}'.format(line, filepath.name))
+            except ValueError:
+                info.setText('This cif file is not readable! "{}"\n{}'.format(filepath.name, not_ok))
         else:
             info.setText('This cif file is not readable! "{}"\n{}'.format(filepath.name, not_ok))
         info.show()
