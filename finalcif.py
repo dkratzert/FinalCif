@@ -274,7 +274,7 @@ class AppWindow(QMainWindow):
         """
         Sends a get request to the platon server in order to get the current check.def file.
         """
-        url = QUrl('http://www.cryst.chem.uu.nl/spek/xraysoft/unix/platon/check.def')
+        url = QUrl('https://www.platonsoft.nl/spek/xraysoft/unix/platon/check.def')
         req = QNetworkRequest(url)
         self.netman_checkdef.get(req)
 
