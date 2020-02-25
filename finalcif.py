@@ -54,6 +54,7 @@ from PyQt5.QtWidgets import QApplication, QFileDialog, QHeaderView, QListWidget,
 
 """
 TODO:
+- Add tab with information about the current cif: Display structure, wR2, R1, completeness, resolution, ...
 - creation date of report docx is not the current date/time?
 - detect twins and write proper report text about them.
 - add loops to templates
