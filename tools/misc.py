@@ -9,6 +9,7 @@
 
 import itertools as it
 import re
+from math import sqrt
 from os import path
 from pathlib import Path
 from typing import Union
@@ -30,6 +31,16 @@ ellipsis_mid = u'\u22EF  '
 # ellipsis
 ellipsis = u'\u2026'
 
+
+def distance(x1: float, y1: float, z1: float, x2: float, y2: float, z2: float) -> float:
+    """
+    distance between two points in space for orthogonal axes.
+    >>> distance(1, 1, 1, 2, 2, 2)
+    1.7320508075688772
+    >>> distance(1, 0, 0, 2, 0, 0)
+    1.0
+    """
+    return sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2 + (z1 - z2) ** 2)
 
 def grouper(inputs, n, fillvalue=None):
     iters = [iter(inputs)] * n
@@ -640,3 +651,36 @@ predef_prop_templ = [{'name'  : 'Crystal Color',
                       }
 
                      ]
+
+
+celltxt = """
+    <html>
+    <body>
+    <div align="right">
+        <table border="0" cellspacing="1" cellpadding="1" style='font-size: 12px'>
+            <tr>
+                <td align='right'><i>a</i> = </td>
+                <td align='right'>{:>7.3f} Å,</td>
+                <td align='right'><i>&alpha;</i> = </td> 
+                <td align='right'>{:>7.3f}°</td>
+            </tr>
+            <tr>
+                <td align='right'><i>b</i> = </td>
+                <td align='right'>{:>7.3f} Å,</td>
+                <td align='right'><i>&beta;</i> = </td> 
+                <td align='right'>{:>7.3f}°</td>
+            </tr>
+            <tr>
+                <td align='right'><i>c</i> = </td>
+                <td align='right'>{:>7.3f} Å,</td>
+                <td align='right'><i>&gamma;</i> = </td> 
+                <td align='right'>{:>7.3f}°</td>
+            </tr>
+       </table>
+   </div>
+   <div align='right' style="margin-left:0">
+    Volume = {:8.2f} Å<sup>3</sup>, <b>{}</b>
+   </div>
+   </body>
+   </html>
+    """
