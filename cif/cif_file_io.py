@@ -356,6 +356,12 @@ class CifContainer():
             return False
 
     def atoms(self) -> Tuple[str, str, str, str, str, str, str, str]:
+        labels, occ, part, types, u_eq, x, y, z = self._get_atoms()
+        for label, type, x, y, z, occ, part, ueq in zip(labels, types, x, y, z, occ, part, u_eq):
+            #  0    1    2  3  4   5    6     7
+            yield label, type, x, y, z, occ, part, ueq
+
+    def _get_atoms(self):
         labels = self.block.find_loop('_atom_site_label')
         types = self.block.find_loop('_atom_site_type_symbol')
         x = self.block.find_loop('_atom_site_fract_x')
@@ -364,9 +370,7 @@ class CifContainer():
         occ = self.block.find_loop('_atom_site_occupancy')
         part = self.block.find_loop('_atom_site_disorder_group')
         u_eq = self.block.find_loop('_atom_site_U_iso_or_equiv')
-        for label, type, x, y, z, occ, part, ueq in zip(labels, types, x, y, z, occ, part, u_eq):
-            #  0    1    2  3  4   5    6     7
-            yield label, type, x, y, z, occ, part, ueq
+        return labels, occ, part, types, u_eq, x, y, z
 
     @property
     def atoms_from_sites(self):
@@ -375,11 +379,13 @@ class CifContainer():
             yield at.label, at.type_symbol, at.fract.x, at.fract.y, at.fract.z
 
     @property
-    def atoms_orthogonal(self):
-        for at in self.atomic_struct.sites:
-            yield [self.atomic_struct.cell.orthogonalize(at.fract).x,
-                   self.atomic_struct.cell.orthogonalize(at.fract).y,
-                   self.atomic_struct.cell.orthogonalize(at.fract).z]
+    def atoms_cartesian(self):
+        labels, occ, part, types, u_eq, x, y, z = self._get_atoms()
+        for label, type, x, y, z, occ, part, ueq in zip(labels, types, x, y, z, occ, part, u_eq):
+            #  0    1    2  3  4   5    6     7
+            yield [self.atomic_struct.cell.orthogonalize(float(x.split('(')[0])).x,
+                   self.atomic_struct.cell.orthogonalize(float(y.split('(')[0])).y,
+                   self.atomic_struct.cell.orthogonalize(float(z.split('(')[0])).z]
 
     @property
     def hydrogen_atoms_present(self) -> bool:
