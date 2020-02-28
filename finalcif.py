@@ -41,7 +41,7 @@ from tools.misc import combobox_fields, excluded_imports, predef_equipment_templ
 from tools.settings import FinalCifSettings
 from tools.version import VERSION
 
-DEBUG = True
+DEBUG = False
 
 if DEBUG:
     from PyQt5 import uic
@@ -1244,6 +1244,8 @@ class AppWindow(QMainWindow):
         """
         Opens the cif file and fills information into the main table.
         """
+        with suppress(AttributeError):
+            self.ui.moleculeLayout.removeWidget(self.view)
         self.ui.CifItemsTable.vheaderitems.clear()
         self.ui.MainStackedWidget.setCurrentIndex(0)
         self.ui.CifItemsTable.setRowCount(0)
@@ -1412,7 +1414,6 @@ class AppWindow(QMainWindow):
             mol = ' '
             if DEBUG:
                 raise
-        #print(self.ui.openglview.width()-30, self.ui.openglview.height()-50)
         content = write_html.write(mol, self.ui.molGroupBox.width() - 80, self.ui.molGroupBox.height() - 150)
         p2 = Path(os.path.join(application_path, "./displaymol/jsmol.htm"))
         p2.write_text(data=content, encoding="utf-8", errors='ignore')
@@ -1428,9 +1429,6 @@ class AppWindow(QMainWindow):
         # self.view.setMaximumHeight(290)
         self.ui.moleculeLayout.addWidget(self.view)
         self.view.loadFinished.connect(self.onWebviewLoadFinished)
-
-    def erase_molecule(self):
-        self.ui.moleculeLayout.removeWidget(self.view)
 
     def onWebviewLoadFinished(self):
         self.view.show()

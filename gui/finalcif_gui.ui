@@ -1257,12 +1257,6 @@
                      <verstretch>0</verstretch>
                     </sizepolicy>
                    </property>
-                   <property name="minimumSize">
-                    <size>
-                     <width>10</width>
-                     <height>42</height>
-                    </size>
-                   </property>
                    <property name="font">
                     <font>
                      <pointsize>11</pointsize>
@@ -1476,7 +1470,7 @@
                 <number>3</number>
                </property>
                <property name="bottomMargin">
-                <number>3</number>
+                <number>8</number>
                </property>
                <item>
                 <layout class="QVBoxLayout" name="moleculeLayout"/>
