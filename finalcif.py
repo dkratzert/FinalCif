@@ -1351,7 +1351,7 @@ class AppWindow(QMainWindow):
         # d = lambda/2sin(theta):
         try:
             d = float(wavelen) / (2 * sin(radians(float(thetamax))))
-        except(ZeroDivisionError, TypeError):
+        except(ZeroDivisionError, TypeError, ValueError):
             d = 0.0
         self.ui.numRestraintsLineEdit.setText(self.cif['_refine_ls_number_restraints'])
         self.ui.thetaMaxLineEdit.setText(thetamax)
