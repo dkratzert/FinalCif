@@ -1478,15 +1478,11 @@
               <property name="title">
                <string>Molecule</string>
               </property>
-              <layout class="QGridLayout" name="gridLayout_8">
-               <item row="0" column="0">
-                <widget class="QLabel" name="label_3">
-                 <property name="text">
-                  <string/>
-                 </property>
-                </widget>
+              <layout class="QVBoxLayout" name="verticalLayout_8">
+               <item>
+                <layout class="QVBoxLayout" name="moleculeLayout"/>
                </item>
-               <item row="1" column="0">
+               <item>
                 <widget class="QCheckBox" name="growCheckBox">
                  <property name="text">
                   <string>Grow Structure</string>

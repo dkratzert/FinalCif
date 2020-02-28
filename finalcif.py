@@ -1373,6 +1373,10 @@ class AppWindow(QMainWindow):
         peak = self.cif['_refine_diff_density_max']
         if peak:
             self.ui.peakLineEdit.setText("{} / {}".format(peak, self.cif['_refine_diff_density_min']))
+        try:
+            self.init_webview()
+        except Exception as e:
+            print(e, '###')
         self.view_molecule()
 
     def view_molecule(self):
@@ -1380,7 +1384,7 @@ class AppWindow(QMainWindow):
         if self.ui.growCheckBox.isChecked():
             self.ui.molGroupBox.setTitle('Completed Molecule')
             #atoms = self.structures.get_atoms_table(structure_id, cartesian=False, as_list=True)
-            atoms = self.cif.atoms()
+            atoms = self.cif.atoms
             if atoms:
                 sdm = SDM(atoms, self.cif.symmops, self.cif.cell[:6])
                 try:
@@ -1392,7 +1396,7 @@ class AppWindow(QMainWindow):
                 # print(len(blist))
         else:
             self.ui.molGroupBox.setTitle('Asymmetric Unit')
-            atoms = self.cif.atoms_cartesian
+            atoms = self.cif.atoms_orth
             blist = []
         try:
             mol = ' '
@@ -1404,11 +1408,34 @@ class AppWindow(QMainWindow):
             mol = ' '
             if DEBUG:
                 raise
-        # print(self.ui.openglview.width()-30, self.ui.openglview.height()-50)
-        #content = write_html.write(mol, self.ui.openglview.width() - 30, self.ui.openglview.height() - 50)
-        #p2 = Path(os.path.join(application_path, "./displaymol/jsmol.htm"))
-        #p2.write_text(data=content, encoding="utf-8", errors='ignore')
-        #self.view.reload()
+        #print(self.ui.openglview.width()-30, self.ui.openglview.height()-50)
+        content = write_html.write(mol, self.ui.molGroupBox.width() - 30, self.ui.molGroupBox.height() - 50)
+        p2 = Path(os.path.join(application_path, "./displaymol/jsmol.htm"))
+        p2.write_text(data=content, encoding="utf-8", errors='ignore')
+        self.view.reload()
+
+    def init_webview(self):
+        """
+        Initializes a QWebengine to view the molecule.
+        """
+        self.view = QWebEngineView()
+        self.view.load(QUrl.fromLocalFile(os.path.abspath(os.path.join(application_path, "./displaymol/jsmol.htm"))))
+        # self.view.setMaximumWidth(260)
+        # self.view.setMaximumHeight(290)
+        self.ui.moleculeLayout.addWidget(self.view)
+        self.view.loadFinished.connect(self.onWebviewLoadFinished)
+
+    def onWebviewLoadFinished(self):
+        self.view.show()
+
+    def clear_molecule(self):
+        """
+        Deletes the current molecule display.
+        :return:
+        """
+        p2 = Path(os.path.join(application_path, "./displaymol/jsmol.htm"))
+        p2.write_text(data='', encoding="utf-8", errors='ignore')
+        self.view.reload()
 
     @staticmethod
     def unable_to_open_message(filepath: Path, not_ok: Exception) -> None:
