@@ -274,11 +274,9 @@ class CifContainer():
         Calculates the shelx checksum for the hkl file content of a cif file.
 
         >>> c = CifContainer(Path('test-data/DK_zucker2_0m.cif'))
-        >>> c.open_cif_with_gemmi()
         >>> c.hkl_checksum_calcd
         69576
         >>> c = CifContainer(Path('test-data/4060310.cif'))
-        >>> c.open_cif_with_gemmi()
         >>> c.hkl_checksum_calcd
         0
         """
@@ -294,11 +292,9 @@ class CifContainer():
         Calculates the shelx checksum for the res file content of a cif file.
 
         >>> c = CifContainer(Path('test-data/DK_zucker2_0m.cif'))
-        >>> c.open_cif_with_gemmi()
         >>> c.res_checksum_calcd
         52593
         >>> c = CifContainer(Path('test-data/4060310.cif'))
-        >>> c.open_cif_with_gemmi()
         >>> c.res_checksum_calcd
         0
         """
@@ -450,7 +446,6 @@ class CifContainer():
         Returns the key/value pairs of a cif file sorted by priority.
 
         >>> c = CifContainer(Path('test-data/P21c-final.cif'))
-        >>> c.open_cif_with_gemmi()
         >>> c.key_value_pairs()[:2]
         [['_audit_contact_author_address', None], ['_audit_contact_author_email', None]]
         """
