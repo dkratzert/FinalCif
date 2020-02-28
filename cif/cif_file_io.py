@@ -9,7 +9,7 @@ import re
 import textwrap
 from pathlib import Path
 # noinspection PyUnresolvedReferences
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Union
 
 import gemmi
 
@@ -138,6 +138,7 @@ class CifContainer():
         d = DSRFind(self.resdata)
         self.order = order
         self.dsr_used = d.dsr_used
+        self.atomic_struct = gemmi.make_small_structure_from_block(self.block)
 
     def __getitem__(self, item: str) -> str:
         result = self.block.find_value(item)
@@ -173,10 +174,6 @@ class CifContainer():
                 continue
         self.doc.write_file(filename, gemmi.cif.Style.Indent35)
         # Path(filename).write_text(self.doc.as_string(gemmi.cif.Style.Indent35))
-
-    @property
-    def atomic_struct(self):
-        return gemmi.make_small_structure_from_block(self.block)
 
     def abs_hkl_details(self) -> Dict[str, str]:
         """
@@ -355,37 +352,28 @@ class CifContainer():
         else:
             return False
 
-    def atoms(self) -> Tuple[str, str, str, str, str, str, str, str]:
-        labels, occ, part, types, u_eq, x, y, z = self._get_atoms()
-        for label, type, x, y, z, occ, part, ueq in zip(labels, types, x, y, z, occ, part, u_eq):
-            #  0    1    2  3  4   5    6     7
-            yield label, type, x, y, z, occ, part, ueq
-
-    def _get_atoms(self):
-        labels = self.block.find_loop('_atom_site_label')
-        types = self.block.find_loop('_atom_site_type_symbol')
-        x = self.block.find_loop('_atom_site_fract_x')
-        y = self.block.find_loop('_atom_site_fract_y')
-        z = self.block.find_loop('_atom_site_fract_z')
-        occ = self.block.find_loop('_atom_site_occupancy')
-        part = self.block.find_loop('_atom_site_disorder_group')
-        u_eq = self.block.find_loop('_atom_site_U_iso_or_equiv')
-        return labels, occ, part, types, u_eq, x, y, z
-
     @property
-    def atoms_from_sites(self):
+    def atoms(self) -> List:
         for at in self.atomic_struct.sites:
-            # yield at.label, at.type_symbol, at.fract.x, at.fract.y, at.fract.z, at.occ, at.part, at.u_iso
-            yield at.label, at.type_symbol, at.fract.x, at.fract.y, at.fract.z
+            part = self.get_part(at)
+            yield at.label, at.type_symbol, at.fract.x, at.fract.y, at.fract.z, part, at.u_iso
+
+    @staticmethod
+    def get_part(at: gemmi.SmallStructure.Site) -> int:
+        part = at.disorder_group
+        if part:
+            part = int(part)
+        else:
+            part = 0
+        return part
 
     @property
-    def atoms_cartesian(self):
-        labels, occ, part, types, u_eq, x, y, z = self._get_atoms()
-        for label, type, x, y, z, occ, part, ueq in zip(labels, types, x, y, z, occ, part, u_eq):
-            #  0    1    2  3  4   5    6     7
-            yield [self.atomic_struct.cell.orthogonalize(float(x.split('(')[0])).x,
-                   self.atomic_struct.cell.orthogonalize(float(y.split('(')[0])).y,
-                   self.atomic_struct.cell.orthogonalize(float(z.split('(')[0])).z]
+    def atoms_orth(self):
+        cell = self.atomic_struct.cell
+        for at in self.atomic_struct.sites:
+            x, y, z = cell.orthogonalize(at.fract)
+            part = self.get_part(at)
+            yield at.label, at.type_symbol, x, y, z, part, at.u_iso
 
     @property
     def hydrogen_atoms_present(self) -> bool:
@@ -397,10 +385,8 @@ class CifContainer():
 
     @property
     def disorder_present(self) -> bool:
-        for at in self.atoms():
-            if at[6] == '.':
-                continue
-            if int(at[6]) > 0:
+        for at in self.atomic_struct.sites:
+            if at.disorder_group:
                 return True
         else:
             return False
