@@ -12,6 +12,7 @@ import sys
 import time
 import traceback
 from contextlib import suppress
+from math import radians, sin
 from pathlib import Path, WindowsPath
 from typing import Tuple
 
@@ -29,16 +30,18 @@ from cif.core_dict import cif_core
 from datafiles.bruker_data import BrukerData
 from datafiles.platon import Platon
 from datafiles.rigaku_data import RigakuData
+from displaymol import mol_file_writer, write_html
+from displaymol.sdm import SDM
 from gui.vrf_classes import MyVRFContainer, VREF
 from report.archive_report import ArchiveReport
 from report.tables import make_report_from
 from tools.checkcif import AlertHelp, MakeCheckCif, MyHTMLParser
 from tools.misc import combobox_fields, excluded_imports, predef_equipment_templ, predef_prop_templ, \
-    strip_finalcif_of_name, text_field_keys, to_float, next_path
+    strip_finalcif_of_name, text_field_keys, to_float, next_path, celltxt
 from tools.settings import FinalCifSettings
 from tools.version import VERSION
 
-DEBUG = False
+DEBUG = True
 
 if DEBUG:
     from PyQt5 import uic
@@ -54,6 +57,7 @@ from PyQt5.QtWidgets import QApplication, QFileDialog, QHeaderView, QListWidget,
 
 """
 TODO:
+- Add tab with information about the current cif: Display structure, wR2, R1, completeness, resolution, ...
 - creation date of report docx is not the current date/time?
 - detect twins and write proper report text about them.
 - add loops to templates
@@ -142,6 +146,7 @@ class AppWindow(QMainWindow):
         self.ui.ExportPropertyButton.setIcon(qta.icon('mdi.export'))
 
         self.ui.BackPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
+        self.ui.BackpushButtonDetails.setIcon(qta.icon('mdi.keyboard-backspace'))
         self.ui.BacktoMainpushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
 
         self.ui.CCDCpushButton.setIcon(qta.icon('fa5s.upload'))
@@ -237,6 +242,9 @@ class AppWindow(QMainWindow):
         save_shortcut.activated.connect(self.do_html_checkcif)
         save_shortcut = QShortcut(QKeySequence('Ctrl+P'), self)
         save_shortcut.activated.connect(self.do_pdf_checkcif)
+        #
+        self.ui.DetailsPushButton.clicked.connect(self.show_properties)
+        self.ui.BackpushButtonDetails.clicked.connect(self.back_to_main_noload)
 
     def _ccdc_deposit(self):
         """
@@ -340,9 +348,15 @@ class AppWindow(QMainWindow):
 
     def back_to_main(self):
         """
-        Get back to the main table.
+        Get back to the main table and load the new cif file.
         """
         self.load_cif_file(str(self.final_cif_file_name.absolute()))
+        self.ui.MainStackedWidget.setCurrentIndex(0)
+
+    def back_to_main_noload(self):
+        """
+        Get back to the main table. Without loading a new cif file.
+        """
         self.ui.MainStackedWidget.setCurrentIndex(0)
 
     def show_splash(self, text: str):
@@ -1306,6 +1320,122 @@ class AppWindow(QMainWindow):
         self.ui.ExploreDirButton.setEnabled(True)
         # self.ui.EquipmentTemplatesListWidget.setCurrentRow(-1)  # Has to he in front in order to work
         # self.ui.EquipmentTemplatesListWidget.setCurrentRow(self.settings.load_last_equipment())
+
+    def show_properties(self):
+        self.ui.MainStackedWidget.setCurrentIndex(3)
+        self.ui.cellField.setText(celltxt.format(*self.cif.cell, self.cif['_space_group_centring_type']))
+        self.ui.SpaceGroupLineEdit.setText("{} ({})".format(self.cif.space_group(), self.cif['_space_group_IT_number']
+        if self.cif['_space_group_IT_number'] else self.cif['_symmetry_Int_Tables_number']))
+        self.ui.SumformLabel.setText(self.cif['_chemical_formula_sum'].strip(" '"))
+        self.ui.zLineEdit.setText(self.cif['_cell_formula_units_Z'])
+        self.ui.temperatureLineEdit.setText(self.cif['_diffrn_ambient_temperature'])
+        self.ui.wR2LineEdit.setText(self.cif['_refine_ls_wR_factor_ref'])
+        self.ui.r1LineEdit.setText(self.cif['_refine_ls_R_factor_gt'])
+        self.ui.goofLineEdit.setText(self.cif['_refine_ls_goodness_of_fit_ref'])
+        self.ui.maxShiftLineEdit.setText(self.cif['_refine_ls_shift/su_max'])
+        self.ui.rintLineEdit.setText(self.cif['_diffrn_reflns_av_R_equivalents'])
+        self.ui.rsigmaLineEdit.setText(
+            self.cif['_diffrn_reflns_av_unetI/netI'] if self.cif['_diffrn_reflns_av_unetI/netI']
+            else self.cif['_diffrn_reflns_av_sigmaI/netI'])
+        self.ui.cCDCNumberLineEdit.setText(self.cif['_database_code_depnum_ccdc_archive'])
+        self.ui.flackXLineEdit.setText(self.cif['_refine_ls_abs_structure_Flack'])
+        try:
+            dat_param = float(self.cif['_refine_ls_number_reflns']) / float(self.cif['_refine_ls_number_parameters'])
+        except (ValueError, ZeroDivisionError, TypeError):
+            dat_param = 0.0
+        self.ui.dataReflnsLineEdit.setText("{:<5.1f}".format(dat_param))
+        self.ui.numParametersLineEdit.setText(self.cif['_refine_ls_number_parameters'])
+        wavelen = self.cif['_diffrn_radiation_wavelength']
+        thetamax = self.cif['_diffrn_reflns_theta_max']
+        # d = lambda/2sin(theta):
+        try:
+            d = float(wavelen) / (2 * sin(radians(float(thetamax))))
+        except(ZeroDivisionError, TypeError):
+            d = 0.0
+        self.ui.numRestraintsLineEdit.setText(self.cif['_refine_ls_number_restraints'])
+        self.ui.thetaMaxLineEdit.setText(thetamax)
+        self.ui.thetaFullLineEdit.setText(self.cif['_diffrn_reflns_theta_full'])
+        self.ui.dLineEdit.setText("{:5.3f}".format(d))
+        try:
+            compl = float(self.cif['_diffrn_measured_fraction_theta_max']) * 100
+            if not compl:
+                compl = 0.0
+        except (TypeError, ValueError):
+            compl = 0.0
+        try:
+            self.ui.completeLineEdit.setText("{:<5.1f}".format(compl))
+        except ValueError:
+            pass
+        self.ui.wavelengthLineEdit.setText("{}".format(wavelen))
+        self.ui.reflTotalLineEdit.setText(self.cif['_diffrn_reflns_number'])
+        self.ui.uniqReflLineEdit.setText(self.cif['_refine_ls_number_reflns'])
+        self.ui.refl2sigmaLineEdit.setText(self.cif['_reflns_number_gt'])
+        peak = self.cif['_refine_diff_density_max']
+        if peak:
+            self.ui.peakLineEdit.setText("{} / {}".format(peak, self.cif['_refine_diff_density_min']))
+        try:
+            self.init_webview()
+        except Exception as e:
+            print(e, '###')
+        self.view_molecule()
+
+    def view_molecule(self):
+        blist = []
+        if self.ui.growCheckBox.isChecked():
+            self.ui.molGroupBox.setTitle('Completed Molecule')
+            #atoms = self.structures.get_atoms_table(structure_id, cartesian=False, as_list=True)
+            atoms = self.cif.atoms
+            if atoms:
+                sdm = SDM(atoms, self.cif.symmops, self.cif.cell[:6])
+                try:
+                    needsymm = sdm.calc_sdm()
+                    atoms = sdm.packer(sdm, needsymm)
+                except IndexError:
+                    atoms = []
+                # blist = [(x[0]+1, x[1]+1) for x in sdm.bondlist]
+                # print(len(blist))
+        else:
+            self.ui.molGroupBox.setTitle('Asymmetric Unit')
+            atoms = self.cif.atoms_orth
+            blist = []
+        try:
+            mol = ' '
+            if atoms:
+                mol = mol_file_writer.MolFile(atoms, blist)
+                mol = mol.make_mol()
+        except (TypeError, KeyError):
+            print("Error while writing mol file.")
+            mol = ' '
+            if DEBUG:
+                raise
+        #print(self.ui.openglview.width()-30, self.ui.openglview.height()-50)
+        content = write_html.write(mol, self.ui.molGroupBox.width() - 30, self.ui.molGroupBox.height() - 50)
+        p2 = Path(os.path.join(application_path, "./displaymol/jsmol.htm"))
+        p2.write_text(data=content, encoding="utf-8", errors='ignore')
+        self.view.reload()
+
+    def init_webview(self):
+        """
+        Initializes a QWebengine to view the molecule.
+        """
+        self.view = QWebEngineView()
+        self.view.load(QUrl.fromLocalFile(os.path.abspath(os.path.join(application_path, "./displaymol/jsmol.htm"))))
+        # self.view.setMaximumWidth(260)
+        # self.view.setMaximumHeight(290)
+        self.ui.moleculeLayout.addWidget(self.view)
+        self.view.loadFinished.connect(self.onWebviewLoadFinished)
+
+    def onWebviewLoadFinished(self):
+        self.view.show()
+
+    def clear_molecule(self):
+        """
+        Deletes the current molecule display.
+        :return:
+        """
+        p2 = Path(os.path.join(application_path, "./displaymol/jsmol.htm"))
+        p2.write_text(data='', encoding="utf-8", errors='ignore')
+        self.view.reload()
 
     @staticmethod
     def unable_to_open_message(filepath: Path, not_ok: Exception) -> None:

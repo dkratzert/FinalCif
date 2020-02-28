@@ -171,9 +171,9 @@ order = [
     '_diffrn_measurement_specimen_adhesive',
     '_diffrn_measurement_details',
     '_diffrn_reflns_number',
-    '_diffrn_reflns_av_unetI/netI',  # superseeded by '_diffrn_reflns_av_unetI/netI'
+    '_diffrn_reflns_av_unetI/netI',
     '_diffrn_reflns_av_R_equivalents',
-    '_diffrn_reflns_av_sigmaI/netI',
+    '_diffrn_reflns_av_sigmaI/netI',   # superseeded by '_diffrn_reflns_av_unetI/netI'
     '_diffrn_reflns_theta_min',
     '_diffrn_reflns_theta_max',
     '_diffrn_reflns_theta_full',
