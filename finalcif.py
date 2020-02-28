@@ -112,6 +112,7 @@ class AppWindow(QMainWindow):
         self.ui.CheckcifPDFOnlineButton.setDisabled(True)
         self.ui.SaveCifButton.setDisabled(True)
         self.ui.ExploreDirButton.setDisabled(True)
+        self.ui.DetailsPushButton.setDisabled(True)
         self.cif: CifContainer
         self.final_cif_file_name = Path()
         self.missing_data = []
@@ -359,6 +360,7 @@ class AppWindow(QMainWindow):
         Get back to the main table. Without loading a new cif file.
         """
         self.ui.MainStackedWidget.setCurrentIndex(0)
+        self.ui.moleculeLayout.removeWidget(self.view)
 
     def show_splash(self, text: str):
         splash = QSplashScreen()
@@ -1248,6 +1250,7 @@ class AppWindow(QMainWindow):
         self.ui.CifItemsTable.clear()
         self.ui.CifItemsTable.clearContents()
         self.ui.CheckcifPlaintextEdit.clear()
+        self.ui.DetailsPushButton.setEnabled(True)
         if not fname:
             fname = self.cif_file_open_dialog()
         if not fname:
@@ -1410,7 +1413,7 @@ class AppWindow(QMainWindow):
             if DEBUG:
                 raise
         #print(self.ui.openglview.width()-30, self.ui.openglview.height()-50)
-        content = write_html.write(mol, self.ui.molGroupBox.width() - 50, self.ui.molGroupBox.height() - 80)
+        content = write_html.write(mol, self.ui.molGroupBox.width() - 80, self.ui.molGroupBox.height() - 150)
         p2 = Path(os.path.join(application_path, "./displaymol/jsmol.htm"))
         p2.write_text(data=content, encoding="utf-8", errors='ignore')
         self.view.reload()
@@ -1426,6 +1429,9 @@ class AppWindow(QMainWindow):
         self.ui.moleculeLayout.addWidget(self.view)
         self.view.loadFinished.connect(self.onWebviewLoadFinished)
 
+    def erase_molecule(self):
+        self.ui.moleculeLayout.removeWidget(self.view)
+
     def onWebviewLoadFinished(self):
         self.view.show()
 
@@ -1436,16 +1442,19 @@ class AppWindow(QMainWindow):
             print(e, ", unable to display molecule")
             if DEBUG:
                 raise 
-            self.write_empty_molfile(' ')
+            self.write_empty_molfile()
             self.view.reload()
 
     @staticmethod
-    def write_empty_molfile(mol_data):
+    def write_empty_molfile():
         molf = Path(os.path.join(application_path, "./displaymol/jsmol.htm"))
-        molf.write_text(data=mol_data, encoding="utf-8", errors='ignore')
+        molf.write_text(data=' ', encoding="utf-8", errors='ignore')
 
     @staticmethod
     def unable_to_open_message(filepath: Path, not_ok: Exception) -> None:
+        """
+        Shows a message if the current cif file can not be opened.
+        """
         info = QMessageBox()
         info.setIcon(QMessageBox.Information)
         print('Output from gemmi:', not_ok)
