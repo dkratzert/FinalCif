@@ -356,7 +356,7 @@ class CifContainer():
     def atoms(self) -> List:
         for at in self.atomic_struct.sites:
             part = self.get_part(at)
-            yield at.label, at.type_symbol, at.fract.x, at.fract.y, at.fract.z, part, at.u_iso
+            yield [at.label, at.type_symbol, at.fract.x, at.fract.y, at.fract.z, part, at.u_iso]
 
     @staticmethod
     def get_part(at: gemmi.SmallStructure.Site) -> int:
@@ -373,7 +373,7 @@ class CifContainer():
         for at in self.atomic_struct.sites:
             x, y, z = cell.orthogonalize(at.fract)
             part = self.get_part(at)
-            yield at.label, at.type_symbol, x, y, z, part, at.u_iso
+            yield [at.label, at.type_symbol, x, y, z, part, at.u_iso]
 
     @property
     def hydrogen_atoms_present(self) -> bool:

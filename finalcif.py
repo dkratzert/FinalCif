@@ -245,6 +245,7 @@ class AppWindow(QMainWindow):
         #
         self.ui.DetailsPushButton.clicked.connect(self.show_properties)
         self.ui.BackpushButtonDetails.clicked.connect(self.back_to_main_noload)
+        self.ui.growCheckBox.toggled.connect(self.redraw_molecule)
 
     def _ccdc_deposit(self):
         """
@@ -1384,7 +1385,7 @@ class AppWindow(QMainWindow):
         if self.ui.growCheckBox.isChecked():
             self.ui.molGroupBox.setTitle('Completed Molecule')
             #atoms = self.structures.get_atoms_table(structure_id, cartesian=False, as_list=True)
-            atoms = self.cif.atoms
+            atoms = list(self.cif.atoms)
             if atoms:
                 sdm = SDM(atoms, self.cif.symmops, self.cif.cell[:6])
                 try:
@@ -1409,7 +1410,7 @@ class AppWindow(QMainWindow):
             if DEBUG:
                 raise
         #print(self.ui.openglview.width()-30, self.ui.openglview.height()-50)
-        content = write_html.write(mol, self.ui.molGroupBox.width() - 30, self.ui.molGroupBox.height() - 50)
+        content = write_html.write(mol, self.ui.molGroupBox.width() - 50, self.ui.molGroupBox.height() - 80)
         p2 = Path(os.path.join(application_path, "./displaymol/jsmol.htm"))
         p2.write_text(data=content, encoding="utf-8", errors='ignore')
         self.view.reload()
@@ -1428,14 +1429,20 @@ class AppWindow(QMainWindow):
     def onWebviewLoadFinished(self):
         self.view.show()
 
-    def clear_molecule(self):
-        """
-        Deletes the current molecule display.
-        :return:
-        """
-        p2 = Path(os.path.join(application_path, "./displaymol/jsmol.htm"))
-        p2.write_text(data='', encoding="utf-8", errors='ignore')
-        self.view.reload()
+    def redraw_molecule(self):
+        try:
+            self.view_molecule()
+        except Exception as e:
+            print(e, ", unable to display molecule")
+            if DEBUG:
+                raise 
+            self.write_empty_molfile(' ')
+            self.view.reload()
+
+    @staticmethod
+    def write_empty_molfile(mol_data):
+        molf = Path(os.path.join(application_path, "./displaymol/jsmol.htm"))
+        molf.write_text(data=mol_data, encoding="utf-8", errors='ignore')
 
     @staticmethod
     def unable_to_open_message(filepath: Path, not_ok: Exception) -> None:

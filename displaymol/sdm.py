@@ -111,7 +111,7 @@ class SDM():
         self.atoms = atoms
         self.symmcards = SymmCards()
         for s in symmcards:
-            self.symmcards.append(s)
+            self.symmcards.append(s.split(','))
         self.cell = cell
         self.cosal = cos(radians(cell[3]))
         self.cosbe = cos(radians(cell[4]))

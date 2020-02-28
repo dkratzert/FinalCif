@@ -692,7 +692,7 @@ class SymmetryElement(object):
                 sign = parts[0][-1]
             else:
                 sign = '+'
-            if sign is '-':
+            if sign == '-':
                 return -1, ''.join((parts[0][:-1], parts[2]))
             else:
                 return 1, ''.join((parts[0], parts[2])).replace('+', '')
