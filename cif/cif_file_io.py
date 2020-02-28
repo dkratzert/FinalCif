@@ -244,7 +244,10 @@ class CifContainer():
         Returns the space group from the symmetry operators.
         spgr.short_name() gives the short name.
         """
-        return self._spgr().xhm()
+        try:
+            return self._spgr().xhm()
+        except AttributeError:
+            return ''
 
     def symmops_from_spgr(self) -> List[str]:
         # _symmetry_space_group_name_Hall
