@@ -357,15 +357,6 @@ class CifContainer():
         for at in self.atomic_struct.sites:
             yield [at.label, at.type_symbol, at.fract.x, at.fract.y, at.fract.z, at.disorder_group, at.u_iso]
 
-    @staticmethod
-    def get_part(at: gemmi.SmallStructure.Site) -> int:
-        part = at.disorder_group
-        if part:
-            part = int(part)
-        else:
-            part = 0
-        return part
-
     @property
     def atoms_orth(self):
         cell = self.atomic_struct.cell
