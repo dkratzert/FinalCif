@@ -111,6 +111,7 @@ class AppWindow(QMainWindow):
         self.ui.SaveCifButton.setDisabled(True)
         self.ui.ExploreDirButton.setDisabled(True)
         self.ui.DetailsPushButton.setDisabled(True)
+        # noinspection PyTypeChecker
         self.cif = None
         self.final_cif_file_name = Path()
         self.missing_data = []
