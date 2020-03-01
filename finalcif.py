@@ -174,10 +174,6 @@ class AppWindow(QMainWindow):
         print('saving position')
         x, y = self.pos().x(), self.pos().y()
         self.settings.save_window_position(QPoint(x, y - 30), self.size(), self.isMaximized())
-        if self.cif:
-            curdir = self.cif.fileobj.absolute().parent
-            print('save chdir:', curdir)
-            self.settings.save_current_dir(curdir)
 
     def connect_signals_and_slots(self):
         """
@@ -1267,9 +1263,12 @@ class AppWindow(QMainWindow):
         self.ui.CheckcifPlaintextEdit.clear()
         self.ui.DetailsPushButton.setEnabled(True)
         if not fname:
-            last = self.settings.load_last_workdir()
+            try:
+                # loading last working directory:
+                last = self.settings.load_last_workdir()
+            except TypeError:
+                last = ''
             if last and Path(last).exists():
-                print('chdir:', last)
                 os.chdir(last)
             fname = self.cif_file_open_dialog()
         if not fname:
@@ -1341,8 +1340,10 @@ class AppWindow(QMainWindow):
         self.ui.CheckcifPDFOnlineButton.setEnabled(True)
         self.ui.SaveCifButton.setEnabled(True)
         self.ui.ExploreDirButton.setEnabled(True)
-        # self.ui.EquipmentTemplatesListWidget.setCurrentRow(-1)  # Has to he in front in order to work
-        # self.ui.EquipmentTemplatesListWidget.setCurrentRow(self.settings.load_last_equipment())
+        if self.cif:
+            curdir = str(self.cif.fileobj.absolute().parent)
+            # saving current cif dir as last working directory:
+            self.settings.save_current_dir(curdir)
 
     def show_properties(self):
         self.ui.MainStackedWidget.setCurrentIndex(3)
