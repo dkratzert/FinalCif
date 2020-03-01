@@ -58,13 +58,8 @@ from PyQt5.QtWidgets import QApplication, QFileDialog, QHeaderView, QListWidget,
 
 """
 TODO:
-- Add tab with information about the current cif: Display structure, wR2, R1, completeness, resolution, ...
-- creation date of report docx is not the current date/time?
-- detect twins and write proper report text about them.
 - add loops to templates
-- write more tests!
-- Add one picture of the vzs file to report.
-- option for default directory?
+- Add one picture of the vzs video file to report.
 
 # cif core dictionary to python dictionary:
 c = CifContainer(Path('cif_core_dict.cif'))
