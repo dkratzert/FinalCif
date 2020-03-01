@@ -5,10 +5,6 @@
 #  and you think this stuff is worth it, you can buy me a beer in return.
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
-from shutil import copyfile, copy2
-from tempfile import TemporaryDirectory
-
-import displaymol
 
 DEBUG = False
 
@@ -27,6 +23,9 @@ import subprocess
 import sys
 import time
 import traceback
+import displaymol
+from shutil import copy2
+from tempfile import TemporaryDirectory
 from contextlib import suppress
 from math import radians, sin
 from pathlib import Path, WindowsPath
@@ -1262,7 +1261,6 @@ class AppWindow(QMainWindow):
         self.ui.CifItemsTable.clear()
         self.ui.CifItemsTable.clearContents()
         self.ui.CheckcifPlaintextEdit.clear()
-        self.ui.DetailsPushButton.setEnabled(True)
         if not fname:
             try:
                 # loading last working directory:
@@ -1345,8 +1343,13 @@ class AppWindow(QMainWindow):
             curdir = str(self.cif.fileobj.absolute().parent)
             # saving current cif dir as last working directory:
             self.settings.save_current_dir(curdir)
+            self.ui.DetailsPushButton.setEnabled(True)
 
     def show_properties(self):
+        try:
+            self.cif.fileobj
+        except AttributeError:
+            return
         self.ui.MainStackedWidget.setCurrentIndex(3)
         self.ui.cellField.setText(celltxt.format(*self.cif.cell, self.cif['_space_group_centring_type']))
         try:
