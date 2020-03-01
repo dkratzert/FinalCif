@@ -5,8 +5,19 @@
 #  and you think this stuff is worth it, you can buy me a beer in return.
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
+DEBUG = False
+
 import json
 import os
+
+from app_path import application_path
+
+if DEBUG:
+    from PyQt5 import uic
+
+    print('Compiling ui ...')
+    uic.compileUiDir(os.path.join(application_path, './gui'))
+    # uic.compileUi('./gui/finalcif_gui.ui', open('./gui/finalcif_gui.py', 'w'))
 import subprocess
 import sys
 import time
@@ -24,7 +35,6 @@ from gemmi import cif
 from qtpy.QtGui import QDesktopServices, QKeySequence
 from requests import ReadTimeout
 
-from app_path import application_path
 from cif.cif_file_io import CifContainer, set_pair_delimited
 from cif.core_dict import cif_core
 from datafiles.bruker_data import BrukerData
@@ -40,15 +50,6 @@ from tools.misc import combobox_fields, excluded_imports, predef_equipment_templ
     strip_finalcif_of_name, text_field_keys, to_float, next_path, celltxt
 from tools.settings import FinalCifSettings
 from tools.version import VERSION
-
-DEBUG = False
-
-if DEBUG:
-    from PyQt5 import uic
-
-    print('Compiling ui ...')
-    uic.compileUiDir(os.path.join(application_path, './gui'))
-    # uic.compileUi('./gui/finalcif_gui.ui', open('./gui/finalcif_gui.py', 'w'))
 
 from PyQt5.QtCore import QPoint, Qt, QUrl, QEvent
 from PyQt5.QtGui import QFont, QIcon, QBrush
@@ -1330,8 +1331,16 @@ class AppWindow(QMainWindow):
     def show_properties(self):
         self.ui.MainStackedWidget.setCurrentIndex(3)
         self.ui.cellField.setText(celltxt.format(*self.cif.cell, self.cif['_space_group_centring_type']))
-        self.ui.SpaceGroupLineEdit.setText("{} ({})".format(self.cif.space_group(), self.cif['_space_group_IT_number']
-        if self.cif['_space_group_IT_number'] else self.cif['_symmetry_Int_Tables_number']))
+        try:
+            spgr = self.cif.space_group()
+        except RuntimeError:
+            spgr = ''
+        intnum = self.cif['_space_group_IT_number'] if self.cif['_space_group_IT_number'] else self.cif[
+            '_symmetry_Int_Tables_number']
+        if intnum:
+            intnum = '({})'.format(intnum)
+        self.ui.SpaceGroupLineEdit.setText("{} {}".format(spgr, intnum))
+
         self.ui.SumformLabel.setText(self.cif['_chemical_formula_sum'].strip(" '"))
         self.ui.zLineEdit.setText(self.cif['_cell_formula_units_Z'])
         self.ui.temperatureLineEdit.setText(self.cif['_diffrn_ambient_temperature'])
@@ -1389,7 +1398,7 @@ class AppWindow(QMainWindow):
         blist = []
         if self.ui.growCheckBox.isChecked():
             self.ui.molGroupBox.setTitle('Completed Molecule')
-            #atoms = self.structures.get_atoms_table(structure_id, cartesian=False, as_list=True)
+            # atoms = self.structures.get_atoms_table(structure_id, cartesian=False, as_list=True)
             atoms = list(self.cif.atoms)
             if atoms:
                 sdm = SDM(atoms, self.cif.symmops, self.cif.cell[:6])
@@ -1414,7 +1423,7 @@ class AppWindow(QMainWindow):
             mol = ' '
             if DEBUG:
                 raise
-        content = write_html.write(mol, self.ui.molGroupBox.width() - 80, self.ui.molGroupBox.height() - 150)
+        content = write_html.write(mol, self.ui.molGroupBox.width() - 90, self.ui.molGroupBox.height() - 180)
         p2 = Path(os.path.join(application_path, "./displaymol/jsmol.htm"))
         p2.write_text(data=content, encoding="utf-8", errors='ignore')
         self.view.reload()
@@ -1439,7 +1448,7 @@ class AppWindow(QMainWindow):
         except Exception as e:
             print(e, ", unable to display molecule")
             if DEBUG:
-                raise 
+                raise
             self.write_empty_molfile()
             self.view.reload()
 

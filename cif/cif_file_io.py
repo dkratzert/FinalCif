@@ -246,8 +246,11 @@ class CifContainer():
         """
         try:
             return self._spgr().xhm()
-        except AttributeError:
-            return ''
+        except (AttributeError, RuntimeError):
+            if self['_space_group_name_H-M_alt']:
+                return self['_space_group_name_H-M_alt'].strip("'")
+            else:
+                return ''
 
     def symmops_from_spgr(self) -> List[str]:
         # _symmetry_space_group_name_Hall
