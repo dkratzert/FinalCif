@@ -51,8 +51,8 @@ from tools.misc import combobox_fields, excluded_imports, predef_equipment_templ
 from tools.settings import FinalCifSettings
 from tools.version import VERSION
 
-from PyQt5.QtCore import QPoint, Qt, QUrl, QEvent
-from PyQt5.QtGui import QFont, QIcon, QBrush
+from PyQt5.QtCore import QPoint, Qt, QUrl, QEvent, QSize
+from PyQt5.QtGui import QFont, QIcon, QBrush, QResizeEvent
 from PyQt5.QtWidgets import QApplication, QFileDialog, QHeaderView, QListWidget, QListWidgetItem, \
     QMainWindow, QMessageBox, QPlainTextEdit, QStackedWidget, QTableWidget, QSplashScreen, QShortcut
 
@@ -1208,6 +1208,13 @@ class AppWindow(QMainWindow):
         stackwidget.setCurrentIndex(0)
         print('saved')
 
+    def resizeEvent(self, a0: QResizeEvent) -> None:
+        super(AppWindow, self).resizeEvent(a0)
+        try:
+            self.view.reload()
+        except AttributeError:
+            pass
+
     def cancel_property_template(self) -> None:
         """
         Cancel editing of the current template.
@@ -1423,7 +1430,7 @@ class AppWindow(QMainWindow):
             mol = ' '
             if DEBUG:
                 raise
-        content = write_html.write(mol, self.ui.molGroupBox.width() - 90, self.ui.molGroupBox.height() - 180)
+        content = write_html.write(mol, self.ui.molGroupBox.width() - 250, self.ui.molGroupBox.height() - 250)
         p2 = Path(os.path.join(application_path, "./displaymol/jsmol.htm"))
         p2.write_text(data=content, encoding="utf-8", errors='ignore')
         self.view.reload()
@@ -1437,6 +1444,7 @@ class AppWindow(QMainWindow):
         # self.view.setMaximumWidth(260)
         # self.view.setMaximumHeight(290)
         self.ui.moleculeLayout.addWidget(self.view)
+        self.view.heightForWidth(1)
         self.view.loadFinished.connect(self.onWebviewLoadFinished)
 
     def onWebviewLoadFinished(self):
