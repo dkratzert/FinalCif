@@ -82,6 +82,8 @@ from gui.custom_classes import MyComboBox, MyEQTableWidget, MyQPlainTextEdit, \
 
 
 class AppWindow(QMainWindow):
+    cif: CifContainer
+
     def __init__(self):
         super().__init__()
         self.ui = Ui_FinalCifWindow()
@@ -114,7 +116,7 @@ class AppWindow(QMainWindow):
         self.ui.SaveCifButton.setDisabled(True)
         self.ui.ExploreDirButton.setDisabled(True)
         self.ui.DetailsPushButton.setDisabled(True)
-        self.cif: CifContainer
+        self.cif = None
         self.final_cif_file_name = Path()
         self.missing_data = []
         # True if line with "these are already in" reached:
@@ -172,7 +174,10 @@ class AppWindow(QMainWindow):
         print('saving position')
         x, y = self.pos().x(), self.pos().y()
         self.settings.save_window_position(QPoint(x, y - 30), self.size(), self.isMaximized())
-        self.settings.save_favorite_template(self.ui)
+        if self.cif:
+            curdir = self.cif.fileobj.absolute().parent
+            print('save chdir:', curdir)
+            self.settings.save_current_dir(curdir)
 
     def connect_signals_and_slots(self):
         """
@@ -1262,6 +1267,10 @@ class AppWindow(QMainWindow):
         self.ui.CheckcifPlaintextEdit.clear()
         self.ui.DetailsPushButton.setEnabled(True)
         if not fname:
+            last = self.settings.load_last_workdir()
+            if last and Path(last).exists():
+                print('chdir:', last)
+                os.chdir(last)
             fname = self.cif_file_open_dialog()
         if not fname:
             return
@@ -1414,8 +1423,6 @@ class AppWindow(QMainWindow):
                     atoms = sdm.packer(sdm, needsymm)
                 except IndexError:
                     atoms = []
-                # blist = [(x[0]+1, x[1]+1) for x in sdm.bondlist]
-                # print(len(blist))
         else:
             self.ui.molGroupBox.setTitle('Asymmetric Unit')
             atoms = self.cif.atoms_orth
