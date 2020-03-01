@@ -5,6 +5,11 @@
 #  and you think this stuff is worth it, you can buy me a beer in return.
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
+from shutil import copyfile, copy2
+from tempfile import TemporaryDirectory
+
+import displaymol
+
 DEBUG = False
 
 import json
@@ -51,7 +56,7 @@ from tools.misc import combobox_fields, excluded_imports, predef_equipment_templ
 from tools.settings import FinalCifSettings
 from tools.version import VERSION
 
-from PyQt5.QtCore import QPoint, Qt, QUrl, QEvent, QSize
+from PyQt5.QtCore import QPoint, Qt, QUrl, QEvent
 from PyQt5.QtGui import QFont, QIcon, QBrush, QResizeEvent
 from PyQt5.QtWidgets import QApplication, QFileDialog, QHeaderView, QListWidget, QListWidgetItem, \
     QMainWindow, QMessageBox, QPlainTextEdit, QStackedWidget, QTableWidget, QSplashScreen, QShortcut
@@ -1439,18 +1444,25 @@ class AppWindow(QMainWindow):
             if DEBUG:
                 raise
         content = write_html.write(mol, self.ui.molGroupBox.width() - 250, self.ui.molGroupBox.height() - 250)
-        p2 = Path(os.path.join(application_path, "./displaymol/jsmol.htm"))
-        p2.write_text(data=content, encoding="utf-8", errors='ignore')
+        Path(os.path.join(self.jsmoldir.name, "./jsmol.htm")).write_text(data=content, encoding="utf-8",
+                                                                         errors='ignore')
         self.view.reload()
 
     def init_webview(self):
         """
         Initializes a QWebengine to view the molecule.
         """
-        self.view = QWebEngineView()
-        self.view.load(QUrl.fromLocalFile(os.path.abspath(os.path.join(application_path, "./displaymol/jsmol.htm"))))
-        # self.view.setMaximumWidth(260)
-        # self.view.setMaximumHeight(290)
+        try:
+            # Otherwise, the views accumulate:
+            self.view.close()
+            self.view = QWebEngineView()
+        except AttributeError:
+            self.view = QWebEngineView()
+        self.jsmoldir = TemporaryDirectory()
+        self.view.load(QUrl.fromLocalFile(os.path.join(self.jsmoldir.name, "./jsmol.htm")))
+        # This is a bit hacky, but it works fast:
+        copy2(os.path.join(str(Path(displaymol.__file__).parent), 'jquery.min.js'), self.jsmoldir.name)
+        copy2(os.path.join(str(Path(displaymol.__file__).parent), 'JSmol_dk.nojq.lite.js'), self.jsmoldir.name)
         self.ui.moleculeLayout.addWidget(self.view)
         self.view.heightForWidth(1)
         self.view.loadFinished.connect(self.onWebviewLoadFinished)
@@ -1465,13 +1477,13 @@ class AppWindow(QMainWindow):
             print(e, ", unable to display molecule")
             if DEBUG:
                 raise
-            self.write_empty_molfile()
+            # self.write_empty_molfile()
             self.view.reload()
 
-    @staticmethod
-    def write_empty_molfile():
-        molf = Path(os.path.join(application_path, "./displaymol/jsmol.htm"))
-        molf.write_text(data=' ', encoding="utf-8", errors='ignore')
+    # @staticmethod
+    # def write_empty_molfile():
+    #    molf = Path(os.path.join(application_path, "./displaymol/jsmol.htm"))
+    #    molf.write_text(data=' ', encoding="utf-8", errors='ignore')
 
     @staticmethod
     def unable_to_open_message(filepath: Path, not_ok: Exception) -> None:
