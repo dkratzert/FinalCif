@@ -38,7 +38,7 @@ from gemmi import cif
 from qtpy.QtGui import QDesktopServices, QKeySequence
 from requests import ReadTimeout
 
-from cif.cif_file_io import CifContainer, set_pair_delimited
+from cif.cif_file_io import CifContainer, set_pair_delimited, utf8_to_str, retranslate_delimiter
 from cif.core_dict import cif_core
 from datafiles.bruker_data import BrukerData
 from datafiles.platon import Platon
@@ -171,30 +171,25 @@ class AppWindow(QMainWindow):
 
     def resizeEvent(self, a0: QResizeEvent) -> None:
         super(AppWindow, self).resizeEvent(a0)
-        try:
+        with suppress(AttributeError):
             self.view.reload()
-        except AttributeError:
-            pass
-        try:
+        with suppress(AttributeError):
             self._savesize()
-        except AttributeError:
-            pass
 
     def moveEvent(self, a0: QMoveEvent) -> None:
         super(AppWindow, self).moveEvent(a0)
-        try:
+        with suppress(AttributeError):
             self._savesize()
-        except AttributeError:
-            pass
+
+    def changeEvent(self, event):
+        if event.type() == QEvent.WindowStateChange:
+            with suppress(AttributeError):
+                self._savesize()
 
     def _savesize(self):
         # print('saving position')
         x, y = self.pos().x(), self.pos().y()
         self.settings.save_window_position(QPoint(x, y), self.size(), self.isMaximized())
-
-    def changeEvent(self, event):
-        if event.type() == QEvent.WindowStateChange:
-            self._savesize()
 
     def connect_signals_and_slots(self):
         """
@@ -871,7 +866,7 @@ class AppWindow(QMainWindow):
             for key, value in table_data:
                 if not key or not value:
                     continue
-                table.add_equipment_row(key, value)
+                table.add_equipment_row(key, retranslate_delimiter(value))
         else:
             # new empty equipment:
             for _ in range(8):
@@ -921,7 +916,7 @@ class AppWindow(QMainWindow):
                 key, value = item.pair
                 if key in excluded_imports:
                     continue
-                table_data.append([key, gemmi.cif.as_string(value)])
+                table_data.append([key, retranslate_delimiter(gemmi.cif.as_string(value))])
         if filename.endswith('.cif_od'):
             name = Path(filename).stem
         else:
@@ -1101,7 +1096,7 @@ class AppWindow(QMainWindow):
         loop = block.init_loop(cif_key, [''])
         for value in table_data:
             if value:
-                loop.add_row([cif.quote(value)])
+                loop.add_row([cif.quote(utf8_to_str(value))])
         filename = self.cif_file_save_dialog(blockname.replace('__', '_') + '.cif')
         try:
             Path(filename).write_text(doc.as_string(cif.Style.Indent35))
@@ -1130,7 +1125,7 @@ class AppWindow(QMainWindow):
         table.setRowCount(0)
         data = json.loads(doc.as_json(mmjson=True))['data_' + block.name]
         loop_column_name = '_' + list(data.keys())[0]
-        template_list = [x.strip(" '") for x in block.find_loop(loop_column_name) if x]
+        template_list = [retranslate_delimiter(x.strip(" '")) for x in block.find_loop(loop_column_name) if x]
         self.ui.cifKeywordLineEdit.setText(loop_column_name)
         newlist = [x for x in list(set(property_list)) if x]
         newlist.sort()
@@ -1173,7 +1168,7 @@ class AppWindow(QMainWindow):
             table_data = ['', '', '']
         for value in table_data:
             try:
-                self.add_propeties_row(table, str(value))
+                self.add_propeties_row(table, retranslate_delimiter(str(value)))
             except TypeError:
                 print('Bad value in property table')
                 continue
