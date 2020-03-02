@@ -8,13 +8,13 @@
 
 DEBUG = False
 
-import json
 import os
 
 from app_path import application_path
 
 if DEBUG:
     from PyQt5 import uic
+
     print('Compiling ui ...')
     uic.compileUiDir(os.path.join(application_path, './gui'))
     # uic.compileUi('./gui/finalcif_gui.ui', open('./gui/finalcif_gui.py', 'w'))
@@ -998,8 +998,11 @@ class AppWindow(QMainWindow):
             set_pair_delimited(block, key, value)
         if not filename:
             filename = self.cif_file_save_dialog(blockname.replace('__', '_') + '.cif')
+        if not filename.strip():
+            return
         try:
-            Path(filename).write_text(doc.as_string(cif.Style.Indent35))
+            doc.write_file(filename, style=cif.Style.Indent35)
+            # Path(filename).write_text(doc.as_string(cif.Style.Indent35))
         except PermissionError:
             if Path(filename).is_dir():
                 return
@@ -1084,28 +1087,37 @@ class AppWindow(QMainWindow):
         cif_key = ''
         if prop_data:
             cif_key = prop_data[0]
-            try:
+            with suppress(Exception):
                 table_data = prop_data[1]
-            except:
-                pass
         if not cif_key:
             return
         doc = cif.Document()
         blockname = '__'.join(selected_row_text.split())
         block = doc.add_new_block(blockname)
-        loop = block.init_loop(cif_key, [''])
+        try:
+            loop = block.init_loop(cif_key, [''])
+        except RuntimeError:
+            # Not a valid loop key
+            self.show_general_warning('"{}" is not a valid cif keyword.'.format(cif_key))
+            return
         for value in table_data:
             if value:
                 loop.add_row([cif.quote(utf8_to_str(value))])
         filename = self.cif_file_save_dialog(blockname.replace('__', '_') + '.cif')
+        if not filename.strip():
+            return
         try:
-            Path(filename).write_text(doc.as_string(cif.Style.Indent35))
+            doc.write_file(filename, style=cif.Style.Indent35)
+            # Path(filename).write_text(doc.as_string(cif.Style.Indent35))
         except PermissionError:
             if Path(filename).is_dir():
                 return
             self.show_general_warning('No permission to write file to {}'.format(Path(filename).absolute()))
 
     def import_property_from_file(self) -> None:
+        """
+        Imports a cif file as entry of the property list.
+        """
         filename = self.cif_file_open_dialog(filter="CIF file (*.cif *.cif_od)")
         if not filename:
             return
@@ -1118,14 +1130,20 @@ class AppWindow(QMainWindow):
         if not property_list:
             property_list = ['']
         block = doc.sole_block()
+        template_list = []
+        loop_column_name = ''
+        for i in block:
+            if i.loop is not None:
+                if len(i.loop.tags) > 0:
+                    loop_column_name = i.loop.tags[0]
+                for n in range(i.loop.length()):
+                    value = i.loop.val(n, 0)
+                    template_list.append(retranslate_delimiter(value.strip(" '")))
         block_name = block.name.replace('__', ' ')
         # This is the list shown in the Main menu:
         property_list.append(block_name)
         table = self.ui.PropertiesEditTableWidget
         table.setRowCount(0)
-        data = json.loads(doc.as_json(mmjson=True))['data_' + block.name]
-        loop_column_name = '_' + list(data.keys())[0]
-        template_list = [retranslate_delimiter(x.strip(" '")) for x in block.find_loop(loop_column_name) if x]
         self.ui.cifKeywordLineEdit.setText(loop_column_name)
         newlist = [x for x in list(set(property_list)) if x]
         newlist.sort()
@@ -1487,11 +1505,6 @@ class AppWindow(QMainWindow):
                 raise
             # self.write_empty_molfile()
             self.view.reload()
-
-    # @staticmethod
-    # def write_empty_molfile():
-    #    molf = Path(os.path.join(application_path, "./displaymol/jsmol.htm"))
-    #    molf.write_text(data=' ', encoding="utf-8", errors='ignore')
 
     @staticmethod
     def unable_to_open_message(filepath: Path, not_ok: Exception) -> None:
