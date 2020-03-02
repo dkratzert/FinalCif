@@ -1100,7 +1100,8 @@ class AppWindow(QMainWindow):
         block = doc.add_new_block(blockname)
         loop = block.init_loop(cif_key, [''])
         for value in table_data:
-            loop.add_row([value])
+            if value:
+                loop.add_row([cif.quote(value)])
         filename = self.cif_file_save_dialog(blockname.replace('__', '_') + '.cif')
         try:
             Path(filename).write_text(doc.as_string(cif.Style.Indent35))
@@ -1121,26 +1122,25 @@ class AppWindow(QMainWindow):
         property_list = self.settings.settings.value('property_list')
         if not property_list:
             property_list = ['']
-        # TODO: replace this with  
-        #  for item in block:
-        #      if item.loop is not None:
         block = doc.sole_block()
         block_name = block.name.replace('__', ' ')
+        # This is the list shown in the Main menu:
         property_list.append(block_name)
         table = self.ui.PropertiesEditTableWidget
         table.setRowCount(0)
         data = json.loads(doc.as_json(mmjson=True))['data_' + block.name]
-        loop_column_name = list(data.keys())[0]
-        template_list = [x for x in block.find_loop('_' + loop_column_name)]
+        loop_column_name = '_' + list(data.keys())[0]
+        template_list = [x.strip(" '") for x in block.find_loop(loop_column_name) if x]
         self.ui.cifKeywordLineEdit.setText(loop_column_name)
         newlist = [x for x in list(set(property_list)) if x]
         newlist.sort()
         # this list keeps track of the equipment items:
         self.settings.save_template('property_list', newlist)
         template_list.insert(0, '')
+        template_list = list(set(template_list))
         # save as dictionary for properties to have "_cif_key : itemlist"
         # for a table item as dropdown menu in the main table.
-        table_data = [block_name, template_list]
+        table_data = [loop_column_name, template_list]
         self.settings.save_template('property/' + block_name, table_data)
         self.show_equipment_and_properties()
 
