@@ -56,7 +56,7 @@ from tools.settings import FinalCifSettings
 from tools.version import VERSION
 
 from PyQt5.QtCore import QPoint, Qt, QUrl, QEvent
-from PyQt5.QtGui import QFont, QIcon, QBrush, QResizeEvent
+from PyQt5.QtGui import QFont, QIcon, QBrush, QResizeEvent, QMoveEvent
 from PyQt5.QtWidgets import QApplication, QFileDialog, QHeaderView, QListWidget, QListWidgetItem, \
     QMainWindow, QMessageBox, QPlainTextEdit, QStackedWidget, QTableWidget, QSplashScreen, QShortcut
 
@@ -92,9 +92,9 @@ class AppWindow(QMainWindow):
         self.show()
         self.statusBar().showMessage('FinalCif version {}'.format(VERSION))
         self.settings = FinalCifSettings(self)
+        self.settings.load_window_position()
         self.store_predefined_templates()
         self.show_equipment_and_properties()
-        self.settings.load_window_position()
         self.ui.CifItemsTable.installEventFilter(self)
         # distribute CifItemsTable Columns evenly:
         hheader = self.ui.CifItemsTable.horizontalHeader()
@@ -170,10 +170,32 @@ class AppWindow(QMainWindow):
         self.get_checkdef()
         self.subwin = Ui_ResponseFormsEditor()
 
-    def __del__(self):
-        print('saving position')
+    def resizeEvent(self, a0: QResizeEvent) -> None:
+        super(AppWindow, self).resizeEvent(a0)
+        try:
+            self.view.reload()
+        except AttributeError:
+            pass
+        try:
+            self._savesize()
+        except AttributeError:
+            pass
+
+    def moveEvent(self, a0: QMoveEvent) -> None:
+        super(AppWindow, self).moveEvent(a0)
+        try:
+            self._savesize()
+        except AttributeError:
+            pass
+
+    def _savesize(self):
+        # print('saving position')
         x, y = self.pos().x(), self.pos().y()
-        self.settings.save_window_position(QPoint(x, y - 30), self.size(), self.isMaximized())
+        self.settings.save_window_position(QPoint(x, y), self.size(), self.isMaximized())
+
+    def changeEvent(self, event):
+        if event.type() == QEvent.WindowStateChange:
+            self._savesize()
 
     def connect_signals_and_slots(self):
         """
@@ -1208,13 +1230,6 @@ class AppWindow(QMainWindow):
         self.settings.save_template('property/' + selected_template_text, table_data)
         stackwidget.setCurrentIndex(0)
         print('saved')
-
-    def resizeEvent(self, a0: QResizeEvent) -> None:
-        super(AppWindow, self).resizeEvent(a0)
-        try:
-            self.view.reload()
-        except AttributeError:
-            pass
 
     def cancel_property_template(self) -> None:
         """
