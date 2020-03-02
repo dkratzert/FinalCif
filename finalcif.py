@@ -15,7 +15,6 @@ from app_path import application_path
 
 if DEBUG:
     from PyQt5 import uic
-
     print('Compiling ui ...')
     uic.compileUiDir(os.path.join(application_path, './gui'))
     # uic.compileUi('./gui/finalcif_gui.ui', open('./gui/finalcif_gui.py', 'w'))
@@ -1435,7 +1434,7 @@ class AppWindow(QMainWindow):
         if self.ui.growCheckBox.isChecked():
             self.ui.molGroupBox.setTitle('Completed Molecule')
             # atoms = self.structures.get_atoms_table(structure_id, cartesian=False, as_list=True)
-            atoms = list(self.cif.atoms)
+            atoms = list(self.cif.atoms_fract)
             if atoms:
                 sdm = SDM(atoms, self.cif.symmops, self.cif.cell[:6])
                 try:

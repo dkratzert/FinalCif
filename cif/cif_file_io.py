@@ -354,17 +354,30 @@ class CifContainer():
         else:
             return False
 
+    def atoms(self) -> Tuple[str, str, str, str, str, str, str, str]:
+        labels = self.block.find_loop('_atom_site_label')
+        types = self.block.find_loop('_atom_site_type_symbol')
+        x = self.block.find_loop('_atom_site_fract_x')
+        y = self.block.find_loop('_atom_site_fract_y')
+        z = self.block.find_loop('_atom_site_fract_z')
+        occ = self.block.find_loop('_atom_site_occupancy')
+        part = self.block.find_loop('_atom_site_disorder_group')
+        u_eq = self.block.find_loop('_atom_site_U_iso_or_equiv')
+        for label, type, x, y, z, occ, part, ueq in zip(labels, types, x, y, z, occ, part, u_eq):
+            #  0    1    2  3  4   5    6     7
+            yield label, type, x, y, z, occ, part, ueq
+
     @property
-    def atoms(self) -> List:
+    def atoms_fract(self) -> List:
         for at in self.atomic_struct.sites:
-            yield [at.label, at.type_symbol, at.fract.x, at.fract.y, at.fract.z, at.disorder_group, at.u_iso]
+            yield [at.label, at.type_symbol, at.fract.x, at.fract.y, at.fract.z, at.occ, at.disorder_group, at.u_iso]
 
     @property
     def atoms_orth(self):
         cell = self.atomic_struct.cell
         for at in self.atomic_struct.sites:
             x, y, z = at.orth(cell)
-            yield [at.label, at.type_symbol, x, y, z, at.disorder_group, at.u_iso]
+            yield [at.label, at.type_symbol, x, y, z, at.occ, at.disorder_group, at.u_iso]
 
     @property
     def hydrogen_atoms_present(self) -> bool:
