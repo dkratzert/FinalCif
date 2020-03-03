@@ -2,6 +2,7 @@
 __pycache__/
 *.py[cod]
 *$py.class
+venv2
 .idea
 scripts/Output
 
