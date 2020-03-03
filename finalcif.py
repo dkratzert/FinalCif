@@ -916,7 +916,7 @@ class AppWindow(QMainWindow):
                 key, value = item.pair
                 if key in excluded_imports:
                     continue
-                table_data.append([key, retranslate_delimiter(gemmi.cif.as_string(value))])
+                table_data.append([key, retranslate_delimiter(gemmi.cif.as_string(value)).strip('\n\r ')])
         if filename.endswith('.cif_od'):
             name = Path(filename).stem
         else:
@@ -975,7 +975,7 @@ class AppWindow(QMainWindow):
             key = ''
             try:
                 key = table.text(rownum, 0)
-                value = table.text(rownum, 1)
+                value = table.text(rownum, 1).strip('\n\r ')
             except AttributeError:
                 value = ''
             if key and value:
@@ -995,7 +995,7 @@ class AppWindow(QMainWindow):
         blockname = '__'.join(selected_template.split())
         block = doc.add_new_block(blockname)
         for key, value in table_data:
-            set_pair_delimited(block, key, value)
+            set_pair_delimited(block, key, value.strip('\n\r '))
         if not filename:
             filename = self.cif_file_save_dialog(blockname.replace('__', '_') + '.cif')
         if not filename.strip():
