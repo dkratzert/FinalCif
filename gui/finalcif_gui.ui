@@ -543,7 +543,7 @@
              <number>0</number>
             </property>
             <item>
-             <widget class="MyCifTable" name="CifItemsTable">
+             <widget class="MyCifTable" name="cif_main_table">
               <property name="autoScroll">
                <bool>false</bool>
               </property>
