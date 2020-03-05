@@ -64,9 +64,9 @@ class ItemTextMixin:
 class MyCifTable(QTableWidget, ItemTextMixin):
     row_deleted = QtCore.pyqtSignal(str)
 
-    def __init__(self, parent: QWidget = None):
+    def __init__(self, parent: QWidget = None, *args, **kwargs):
         self.parent = parent
-        super().__init__(parent)
+        super().__init__(*args, **kwargs)
         self.installEventFilter(self)
         self.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
@@ -96,6 +96,16 @@ class MyCifTable(QTableWidget, ItemTextMixin):
     @property
     def columns_count(self):
         return self.model().columnCount()
+
+    def delete_content(self):
+        """
+        Deletes all content in the table.
+        """
+        self.setRowCount(0)
+        # This deletes the header text and sets 1, 2, 3!!!
+        # self.ui.CifItemsTable.clear()
+        self.clearContents()
+        self.vheaderitems.clear()
 
     def vheader_section_click(self, section):
         item = self.verticalHeaderItem(section)
@@ -200,8 +210,8 @@ class MyQPlainTextEdit(QPlainTextEdit):
     A special plaintextedit with convenient methods to set the background color and other things.
     """
 
-    def __init__(self, parent=None):
-        super().__init__(parent)
+    def __init__(self, parent=None, *args, **kwargs):
+        super().__init__(parent, *args, **kwargs)
         self.parent = parent
         self.setFocusPolicy(Qt.StrongFocus)
         self.setFrameShape(QFrame.NoFrame)
@@ -279,8 +289,9 @@ class MyComboBox(QComboBox):
 
 class MyTableWidgetItem(QTableWidgetItem):
 
-    def __init__(self, parent=None):
-        super().__init__(parent)
+    def __init__(self, parent=None, *args, **kwargs):
+        # args and kwargs are essentiel here. Otherwise, the horizontal header text is missing!
+        super().__init__(parent, *args, **kwargs)
 
     def setUneditable(self):
         self.setFlags(self.flags() ^ Qt.ItemIsEditable)
@@ -291,8 +302,8 @@ class MyEQTableWidget(QTableWidget, ItemTextMixin):
     A table widget for the equipment list.
     """
 
-    def __init__(self, parent=None):
-        super().__init__(parent)
+    def __init__(self, parent=None, *args, **kwargs):
+        super().__init__(parent, *args, **kwargs)
         self.setWordWrap(QTextOption.WrapAtWordBoundaryOrAnywhere)
 
     def eventFilter(self, widget: QObject, event: QEvent):
