@@ -274,6 +274,7 @@ class AppWindow(QMainWindow):
         self.explore_dir()
 
     def _deleted_row(self, key: str):
+        # TODO: delete completely
         self.cif.block.set_pair(key, '?')
 
     def checkfor_version(self):
