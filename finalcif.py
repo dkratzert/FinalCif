@@ -404,6 +404,7 @@ class AppWindow(QMainWindow):
         splash = self.show_splash("Running Checkcif. Please wait...")
         self.ui.statusBar.showMessage('Sending html report request...')
         self.save_current_cif_file()
+        self.load_cif_file(self.final_cif_file_name)
         htmlfile = Path(strip_finalcif_of_name('checkcif-' + self.cif.fileobj.stem) + '-finalcif.html')
         try:
             htmlfile.unlink()
@@ -513,6 +514,7 @@ class AppWindow(QMainWindow):
         splash = self.show_splash("Running Checkcif. Please wait...")
         self.ui.statusBar.showMessage('Sending pdf report request...')
         self.save_current_cif_file()
+        self.load_cif_file(self.final_cif_file_name)
         htmlfile = Path('checkpdf-' + self.cif.fileobj.stem + '.html')
         try:
             htmlfile.unlink()
@@ -546,6 +548,7 @@ class AppWindow(QMainWindow):
         # makes sure also the currently edited item is saved:
         self.ui.CifItemsTable.setCurrentItem(None)
         self.save_current_cif_file()
+        self.load_cif_file(self.final_cif_file_name)
         try:
             p = Platon(self.final_cif_file_name)
         except Exception as e:
@@ -589,6 +592,7 @@ class AppWindow(QMainWindow):
         not_ok = None
         if self.cif:
             self.save_current_cif_file()
+            self.load_cif_file(self.final_cif_file_name)
             report_filename = strip_finalcif_of_name('report_{}'.format(self.cif.fileobj.stem)) + '-finalcif.docx'
             try:
                 make_report_from(self.final_cif_file_name, output_filename=report_filename, path=application_path,
@@ -1373,6 +1377,7 @@ class AppWindow(QMainWindow):
             self.ui.DetailsPushButton.setEnabled(True)
 
     def show_properties(self):
+        self.save_current_cif_file()
         try:
             self.cif.fileobj
         except AttributeError:
@@ -1444,6 +1449,9 @@ class AppWindow(QMainWindow):
 
     def view_molecule(self):
         blist = []
+        # because this is fast with small structures and slow with large:
+        if len(self.cif.atomic_struct.sites) < 400:
+            self.ui.growCheckBox.setChecked(True)
         if self.ui.growCheckBox.isChecked():
             self.ui.molGroupBox.setTitle('Completed Molecule')
             # atoms = self.structures.get_atoms_table(structure_id, cartesian=False, as_list=True)
