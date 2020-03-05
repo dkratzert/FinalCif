@@ -103,7 +103,7 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         """
         self.setRowCount(0)
         # This deletes the header text and sets 1, 2, 3!!!
-        # self.ui.CifItemsTable.clear()
+        # self.ui.cif_main_table.clear()
         self.clearContents()
         self.vheaderitems.clear()
 
