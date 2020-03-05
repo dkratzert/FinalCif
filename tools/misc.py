@@ -9,6 +9,8 @@
 
 import itertools as it
 import re
+from math import sqrt
+from os import path
 from pathlib import Path
 from typing import Union
 
@@ -20,6 +22,25 @@ angstrom = u'\u00C5'
 bequal = u'\u2265'
 # small_sigma:
 sigma_sm = u'\u03C3'
+# en dash:
+halbgeviert = u'\u2013'
+# degree sign:
+degree_sign = u'\u00B0'
+# middle ellipsis
+ellipsis_mid = u'\u22EF  '
+# ellipsis
+ellipsis = u'\u2026'
+
+
+def distance(x1: float, y1: float, z1: float, x2: float, y2: float, z2: float) -> float:
+    """
+    distance between two points in space for orthogonal axes.
+    >>> distance(1, 1, 1, 2, 2, 2)
+    1.7320508075688772
+    >>> distance(1, 0, 0, 2, 0, 0)
+    1.0
+    """
+    return sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2 + (z1 - z2) ** 2)
 
 def grouper(inputs, n, fillvalue=None):
     iters = [iter(inputs)] * n
@@ -32,6 +53,32 @@ def isfloat(value: Union[str, int, float]) -> bool:
         return True
     except ValueError:
         return False
+
+
+def next_path(path_pattern):
+    """
+    Finds the next free path in an sequentially named list of files
+
+    e.g. path_pattern = 'file-%s.txt':
+
+    file-1.txt
+    file-2.txt
+    file-3.txt
+
+    Runs in log(n) time where n is the number of existing files in sequence
+    https://stackoverflow.com/questions/17984809/how-do-i-create-a-incrementing-filename-in-python/47087513
+    """
+    i = 1
+    # First do an exponential search
+    while path.exists(path_pattern % i):
+        i = i * 2
+    # Result lies somewhere in the interval (i/2..i]
+    # We call this interval (a..b] and narrow it down until a + 1 = b
+    a, b = (i // 2, i)
+    while a + 1 < b:
+        c = (a + b) // 2  # interval midpoint
+        a, b = (c, b) if path.exists(path_pattern % c) else (a, c)
+    return path_pattern % b
 
 
 class Multilog(object):
@@ -216,9 +263,10 @@ essential_keys = {
     '_refine_ls_shift/su_mean'                         : 'The average ratio of the final least-squares parameter shift to the final standard uncertainty',
     '_publ_section_references'                         : 'References for programs used to process the data',
     # '_symmetry_cell_setting'                           : 'The cell settings for this space-group symmetry',
-    '_chemical_name_systematic'                        : 'IUPAC or Chemical Abstracts full name of the compound.',
+    '_chemical_name_systematic'                        : 'IUPAC or Chemical Abstracts full name of the compound',
     '_chemical_name_common'                            : 'Trivial name by which the compound is commonly known',
     '_chemical_melting_point'                          : 'The temperature in kelvins at which the crystalline solid changes to a liquid',
+    #'_space_group_symop_operation_xyz'                 : 'Symmetry operations of the space group',
 }
 
 twin_keys = {
@@ -453,6 +501,7 @@ predef_equipment_templ = [{'name' : 'D8 VENTURE',
                                ['_diffrn_radiation_probe', 'x-ray'],
                                ['_diffrn_measurement_specimen_support', 'MiTeGen micromount'],
                                ['_olex2_diffrn_ambient_temperature_device', 'Oxford Cryostream 800'],
+                               ['_diffrn_ambient_environment', 'N~2~'],
                            ]
                            },
                           {'name' : 'APEX2 QUAZAR',
@@ -469,6 +518,7 @@ predef_equipment_templ = [{'name' : 'D8 VENTURE',
                                ['_diffrn_radiation_probe', 'x-ray'],
                                ['_diffrn_measurement_specimen_support', 'MiTeGen micromount'],
                                ['_olex2_diffrn_ambient_temperature_device', 'Oxford Cryostream 800'],
+                               ['_diffrn_ambient_environment', 'N~2~'],
                            ]
                            },
                           {'name' : 'Rigaku Spider',
@@ -493,6 +543,11 @@ predef_equipment_templ = [{'name' : 'D8 VENTURE',
                                ['_audit_contact_author_email', '?'],
                                ['_audit_contact_author_phone', '?'],
                                ['_publ_contact_author_id_orcid', '?'],
+                           ]
+                           },
+                          {'name' : 'CCDC number',
+                           'items': [
+                               ['_database_code_depnum_ccdc_archive', '?'],
                            ]
                            },
                           ]
@@ -538,7 +593,7 @@ predef_prop_templ = [{'name'  : 'Crystal Color',
                      {'name'  : 'Molecular Graphics',
                       'values': ['_computing_molecular_graphics',
                                  ['', 'Olex2 (Dolomanov et al., 2009)',
-                                  'ShelXle (H\"ubschle 2011)',
+                                  'ShelXle (Hübschle 2011)',
                                   'ORTEP Farrujia 2012',
                                   'Bruker SHELXTL, XP (G. Sheldrick)',
                                   'Mercury CSD, C. F. Macrae et al. 2008',
@@ -598,3 +653,36 @@ predef_prop_templ = [{'name'  : 'Crystal Color',
                       }
 
                      ]
+
+
+celltxt = """
+    <html>
+    <body>
+    <div align="right">
+        <table border="0" cellspacing="1" cellpadding="1" style='font-size: 12px'>
+            <tr>
+                <td align='right'><i>a</i> = </td>
+                <td align='right'>{:>7.3f} Å,</td>
+                <td align='right'><i>&alpha;</i> = </td> 
+                <td align='right'>{:>7.3f}°</td>
+            </tr>
+            <tr>
+                <td align='right'><i>b</i> = </td>
+                <td align='right'>{:>7.3f} Å,</td>
+                <td align='right'><i>&beta;</i> = </td> 
+                <td align='right'>{:>7.3f}°</td>
+            </tr>
+            <tr>
+                <td align='right'><i>c</i> = </td>
+                <td align='right'>{:>7.3f} Å,</td>
+                <td align='right'><i>&gamma;</i> = </td> 
+                <td align='right'>{:>7.3f}°</td>
+            </tr>
+       </table>
+   </div>
+   <div align='right' style="margin-left:0">
+    Volume = {:8.2f} Å<sup>3</sup>, <b>{}</b>
+   </div>
+   </body>
+   </html>
+    """
