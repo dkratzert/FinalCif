@@ -97,6 +97,16 @@ class MyCifTable(QTableWidget, ItemTextMixin):
     def columns_count(self):
         return self.model().columnCount()
 
+    def delete_content(self):
+        """
+        Deletes all content in the table.
+        """
+        self.setRowCount(0)
+        # This deletes the header text and sets 1, 2, 3!!!
+        # self.ui.CifItemsTable.clear()
+        self.clearContents()
+        self.vheaderitems.clear()
+
     def vheader_section_click(self, section):
         item = self.verticalHeaderItem(section)
         itemtext = item.text()
