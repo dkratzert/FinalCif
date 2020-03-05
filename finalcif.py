@@ -274,8 +274,15 @@ class AppWindow(QMainWindow):
         self.explore_dir()
 
     def _deleted_row(self, key: str):
-        # TODO: delete completely
-        self.cif.block.set_pair(key, '?')
+        """
+        Deletes a row of the main table and reloads the cif file.
+        """
+        #self.cif.block.find([key]).erase()
+        item = self.cif.block.find_pair_item(key)
+        if item:
+            item.erase()
+            self.save_current_cif_file()
+            self.load_cif_file(self.final_cif_file_name)
 
     def checkfor_version(self):
         mainurl = "https://xs3-data.uni-freiburg.de/finalcif/"
