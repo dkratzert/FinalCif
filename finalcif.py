@@ -1287,11 +1287,9 @@ class AppWindow(QMainWindow):
         """
         with suppress(AttributeError):
             self.ui.moleculeLayout.removeWidget(self.view)
-        self.ui.CifItemsTable.vheaderitems.clear()
         self.ui.MainStackedWidget.setCurrentIndex(0)
-        self.ui.CifItemsTable.setRowCount(0)
-        self.ui.CifItemsTable.clear()
-        self.ui.CifItemsTable.clearContents()
+        # clean table before loading:
+        self.ui.CifItemsTable.delete_content()
         self.ui.CheckcifPlaintextEdit.clear()
         if not fname:
             try:
@@ -1357,8 +1355,8 @@ class AppWindow(QMainWindow):
                 self.rigakucif = RigakuData(rigaku)
         except StopIteration:
             pass
-        self.ui.CifItemsTable.clearContents()
-        # self.ui.CifItemsTable.clear() # clears header
+        # don't do this:
+        # self.ui.CifItemsTable.clear() 
         try:
             self.fill_cif_table()
         except RuntimeError as e:
@@ -1758,7 +1756,6 @@ class AppWindow(QMainWindow):
         """
         Adds the cif content to the main table. also add reference to FinalCif.
         """
-        self.ui.CifItemsTable.setRowCount(0)
         for key, value in self.cif.key_value_pairs():
             if not value or value == '?' or value == "'?'":
                 self.missing_data.append(key)
