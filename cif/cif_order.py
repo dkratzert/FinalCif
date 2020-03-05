@@ -75,6 +75,13 @@ order = [
     '_publ_requested_journal',
     '_publ_requested_category',
 
+    '_database_code_depnum_ccdc_archive',
+    '_database_code_CSD',
+    '_database_code_COD',
+    '_database_code_ICSD',
+    '_database_code_PDB',
+    '_database_CSD_history',
+
     '_audit_contact_author_address',
     '_audit_contact_author_email',
     '_audit_contact_author_name',

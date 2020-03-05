@@ -274,7 +274,15 @@ class AppWindow(QMainWindow):
         self.explore_dir()
 
     def _deleted_row(self, key: str):
-        self.cif.block.set_pair(key, '?')
+        """
+        Deletes a row of the main table and reloads the cif file.
+        """
+        #self.cif.block.find([key]).erase()
+        item = self.cif.block.find_pair_item(key)
+        if item:
+            item.erase()
+            self.save_current_cif_file()
+            self.load_cif_file(self.final_cif_file_name)
 
     def checkfor_version(self):
         mainurl = "https://xs3-data.uni-freiburg.de/finalcif/"
@@ -404,6 +412,7 @@ class AppWindow(QMainWindow):
         splash = self.show_splash("Running Checkcif. Please wait...")
         self.ui.statusBar.showMessage('Sending html report request...')
         self.save_current_cif_file()
+        self.load_cif_file(self.final_cif_file_name)
         htmlfile = Path(strip_finalcif_of_name('checkcif-' + self.cif.fileobj.stem) + '-finalcif.html')
         try:
             htmlfile.unlink()
@@ -513,6 +522,7 @@ class AppWindow(QMainWindow):
         splash = self.show_splash("Running Checkcif. Please wait...")
         self.ui.statusBar.showMessage('Sending pdf report request...')
         self.save_current_cif_file()
+        self.load_cif_file(self.final_cif_file_name)
         htmlfile = Path('checkpdf-' + self.cif.fileobj.stem + '.html')
         try:
             htmlfile.unlink()
@@ -546,6 +556,7 @@ class AppWindow(QMainWindow):
         # makes sure also the currently edited item is saved:
         self.ui.CifItemsTable.setCurrentItem(None)
         self.save_current_cif_file()
+        self.load_cif_file(self.final_cif_file_name)
         try:
             p = Platon(self.final_cif_file_name)
         except Exception as e:
@@ -589,6 +600,7 @@ class AppWindow(QMainWindow):
         not_ok = None
         if self.cif:
             self.save_current_cif_file()
+            self.load_cif_file(self.final_cif_file_name)
             report_filename = strip_finalcif_of_name('report_{}'.format(self.cif.fileobj.stem)) + '-finalcif.docx'
             try:
                 make_report_from(self.final_cif_file_name, output_filename=report_filename, path=application_path,
@@ -1282,11 +1294,9 @@ class AppWindow(QMainWindow):
         """
         with suppress(AttributeError):
             self.ui.moleculeLayout.removeWidget(self.view)
-        self.ui.CifItemsTable.vheaderitems.clear()
         self.ui.MainStackedWidget.setCurrentIndex(0)
-        self.ui.CifItemsTable.setRowCount(0)
-        self.ui.CifItemsTable.clear()
-        self.ui.CifItemsTable.clearContents()
+        # clean table before loading:
+        self.ui.CifItemsTable.delete_content()
         self.ui.CheckcifPlaintextEdit.clear()
         if not fname:
             try:
@@ -1352,8 +1362,8 @@ class AppWindow(QMainWindow):
                 self.rigakucif = RigakuData(rigaku)
         except StopIteration:
             pass
-        self.ui.CifItemsTable.clearContents()
-        # self.ui.CifItemsTable.clear() # clears header
+        # don't do this:
+        # self.ui.CifItemsTable.clear() 
         try:
             self.fill_cif_table()
         except RuntimeError as e:
@@ -1373,6 +1383,7 @@ class AppWindow(QMainWindow):
             self.ui.DetailsPushButton.setEnabled(True)
 
     def show_properties(self):
+        self.save_current_cif_file()
         try:
             self.cif.fileobj
         except AttributeError:
@@ -1444,6 +1455,9 @@ class AppWindow(QMainWindow):
 
     def view_molecule(self):
         blist = []
+        # because this is fast with small structures and slow with large:
+        if len(self.cif.atomic_struct.sites) < 400:
+            self.ui.growCheckBox.setChecked(True)
         if self.ui.growCheckBox.isChecked():
             self.ui.molGroupBox.setTitle('Completed Molecule')
             # atoms = self.structures.get_atoms_table(structure_id, cartesian=False, as_list=True)
@@ -1749,7 +1763,6 @@ class AppWindow(QMainWindow):
         """
         Adds the cif content to the main table. also add reference to FinalCif.
         """
-        self.ui.CifItemsTable.setRowCount(0)
         for key, value in self.cif.key_value_pairs():
             if not value or value == '?' or value == "'?'":
                 self.missing_data.append(key)
