@@ -9,7 +9,7 @@ import re
 import textwrap
 from pathlib import Path
 # noinspection PyUnresolvedReferences
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Union
 
 import gemmi
 
@@ -37,6 +37,13 @@ def quote(string: str, wrapping=80) -> str:
 
 charcters = {'°'      : r'\%',
              '±'      : r'+-',
+             '×'      : r'\\times',
+             '≠'      : r'\\neq',
+             '→'      : '\\rightarrow',
+             '←'      : '\\leftarrow',
+             '∞'      : '\\infty',
+             '≈'      : '\\sim',
+             '≃'      : '\\simeq',
              'ß'      : r'\&s',
              'ü'      : r'u\"',
              'ö'      : r'o\"',
@@ -45,15 +52,38 @@ charcters = {'°'      : r'\%',
              'è'      : r'\`e',
              'ó'      : r"\'o",
              'ò'      : r'\`o',
-             u'\u022F': r'\.o',
+             'ȯ'      : r'\.o',
+             'ø'      : r'\/o',
              'á'      : r'\'a',
              'à'      : r'\`a',
              'â'      : r'\^a',
+             'å'      : r'\%a',
              'ê'      : r'\^e',
              'î'      : r'\^i',
              'ô'      : r'\^o',
              'û'      : r'\^u',
              'ç'      : r'\,c',
+             'ñ'      : r'\~n',
+             'ł'      : r'\/l',
+             'đ'      : r'\/d',
+             u'\u2079': r'^9^',
+             u'\u2078': r'^8^',
+             u'\u2077': r'^7^',
+             u'\u2076': r'^6^',
+             u'\u2075': r'^5^',
+             u'\u2074': r'^4^',
+             u'\u00B3': r'^3^',
+             u'\u00B2': r'^2^',
+             u'\u2081': r'^1^',
+             u'\u2082': r'^2^',
+             u'\u2083': r'^3^',
+             u'\u2084': r'^4^',
+             u'\u2085': r'^5^',
+             u'\u2086': r'^6^',
+             u'\u2087': r'^7^',
+             u'\u2088': r'^8^',
+             u'\u2089': r'^9^',
+             u'\u0131': r'\?i',
              u"\u03B1": r'\a',  # alpha
              u"\u03B2": r'\b',  # beta
              u"\u03B3": r'\g',  # ...
@@ -85,9 +115,7 @@ def set_pair_delimited(block, key: str, txt: str):
     """
     Converts special characters to their markup counterparts.
     """
-    for char in txt:
-        if char in charcters:
-            txt = txt.replace(char, charcters[char])
+    txt = utf8_to_str(txt)
     try:
         # bad hack to get the numbered values correct
         float(txt)
@@ -98,6 +126,18 @@ def set_pair_delimited(block, key: str, txt: str):
             block.set_pair(key, txt)
         else:
             block.set_pair(key, quote(txt))
+
+
+def utf8_to_str(txt):
+    """
+    Translates an utf-8 text to a CIF ascii string.
+    :param txt: utf-8 text
+    :return: delimited ascii string
+    """
+    for char in txt:
+        if char in charcters:
+            txt = txt.replace(char, charcters[char])
+    return txt
 
 
 def retranslate_delimiter(txt: str) -> str:
@@ -121,13 +161,24 @@ class CifContainer():
         self.fileobj = file
         self.block = None
         self.doc = None
-        # self.cif_file_text = self.fileobj.read_text(encoding='utf-8', errors='ignore')
-        self.open_cif_with_gemmi()
+        # will not ok with non-ascii characters in the res file:
+        self.chars_ok = True
+        # self.doc = gemmi.cif.read_string(self.fileobj.read_text(encoding='UTF-8', errors='ignore'))
+        self.doc = gemmi.cif.read_file(str(self.fileobj.absolute()))
+        self.block = self.doc.sole_block()
+        try:
+            self.resdata = self.block.find_value('_shelx_res_file')
+        except UnicodeDecodeError:
+            print('File has non-ascii characters. Switching to compatible mode.')
+            self.doc = gemmi.cif.read_string(self.fileobj.read_text(encoding='cp1250', errors='ignore'))
+            self.block = self.doc.sole_block()
+            self.resdata = self.block.find_value('_shelx_res_file')
+            self.chars_ok = False
         self.hkl_extra_info = self.abs_hkl_details()
-        self.resdata = self.block.find_value('_shelx_res_file')
         d = DSRFind(self.resdata)
         self.order = order
         self.dsr_used = d.dsr_used
+        self.atomic_struct = gemmi.make_small_structure_from_block(self.block)
 
     def __getitem__(self, item: str) -> str:
         result = self.block.find_value(item)
@@ -163,27 +214,6 @@ class CifContainer():
                 continue
         self.doc.write_file(filename, gemmi.cif.Style.Indent35)
         # Path(filename).write_text(self.doc.as_string(gemmi.cif.Style.Indent35))
-
-    def open_cif_with_gemmi(self) -> None:
-        """
-        Reads a CIF file into gemmi and returns a sole block.
-        """
-        try:
-            # self.doc = gemmi.cif.read_string(self.cif_file_text)
-            self.doc = gemmi.cif.read_file(str(self.fileobj.absolute()))
-            self.block = self.doc.sole_block()
-        except Exception as e:
-            print('Unable to read file:', e)
-            raise
-
-    # def open_cif_by_string(self) -> None:
-    #    """Not used anymore"""
-    #    self.doc = gemmi.cif.read_string(self.cif_file_text)
-    #    self.block = self.doc.sole_block()
-
-    @property
-    def atomic_struct(self):
-        return gemmi.make_atomic_structure_from_block(self.block)
 
     def abs_hkl_details(self) -> Dict[str, str]:
         """
@@ -254,7 +284,13 @@ class CifContainer():
         Returns the space group from the symmetry operators.
         spgr.short_name() gives the short name.
         """
-        return self._spgr().xhm()
+        try:
+            return self._spgr().xhm()
+        except (AttributeError, RuntimeError):
+            if self['_space_group_name_H-M_alt']:
+                return self['_space_group_name_H-M_alt'].strip("'")
+            else:
+                return ''
 
     def symmops_from_spgr(self) -> List[str]:
         # _symmetry_space_group_name_Hall
@@ -284,11 +320,9 @@ class CifContainer():
         Calculates the shelx checksum for the hkl file content of a cif file.
 
         >>> c = CifContainer(Path('test-data/DK_zucker2_0m.cif'))
-        >>> c.open_cif_with_gemmi()
         >>> c.hkl_checksum_calcd
         69576
         >>> c = CifContainer(Path('test-data/4060310.cif'))
-        >>> c.open_cif_with_gemmi()
         >>> c.hkl_checksum_calcd
         0
         """
@@ -304,11 +338,9 @@ class CifContainer():
         Calculates the shelx checksum for the res file content of a cif file.
 
         >>> c = CifContainer(Path('test-data/DK_zucker2_0m.cif'))
-        >>> c.open_cif_with_gemmi()
         >>> c.res_checksum_calcd
         52593
         >>> c = CifContainer(Path('test-data/4060310.cif'))
-        >>> c.open_cif_with_gemmi()
         >>> c.res_checksum_calcd
         0
         """
@@ -317,12 +349,16 @@ class CifContainer():
             return self.calc_checksum(res[1:-1])
         return 0
 
-    def calc_checksum(self, input_str: str) -> int:
+    @staticmethod
+    def calc_checksum(input_str: str) -> int:
         """
         Calculates the shelx checksum of a cif file.
         """
         sum = 0
-        input_str = input_str.encode('ascii', 'ignore')
+        try:
+            input_str = input_str.encode('cp1250', 'ignore')
+        except Exception:
+            input_str = input_str.encode('ascii', 'ignore')
         for char in input_str:
             # print(char)
             if char > 32:  # ascii 32 is space character
@@ -371,15 +407,17 @@ class CifContainer():
             #  0    1    2  3  4   5    6     7
             yield label, type, x, y, z, occ, part, ueq
 
-    def atoms_from_sites(self):
+    @property
+    def atoms_fract(self) -> List:
         for at in self.atomic_struct.sites:
-            yield at.label, at.type_symbol, at.fract.x, at.fract.y, at.fract.z
+            yield [at.label, at.type_symbol, at.fract.x, at.fract.y, at.fract.z, at.occ, at.disorder_group, at.u_iso]
 
-    def atoms_orthogonal(self):
+    @property
+    def atoms_orth(self):
+        cell = self.atomic_struct.cell
         for at in self.atomic_struct.sites:
-            yield [self.atomic_struct.cell.orthogonalize(at.fract).x,
-                   self.atomic_struct.cell.orthogonalize(at.fract).y,
-                   self.atomic_struct.cell.orthogonalize(at.fract).z]
+            x, y, z = at.orth(cell)
+            yield [at.label, at.type_symbol, x, y, z, at.occ, at.disorder_group, at.u_iso]
 
     @property
     def hydrogen_atoms_present(self) -> bool:
@@ -391,10 +429,8 @@ class CifContainer():
 
     @property
     def disorder_present(self) -> bool:
-        for at in self.atoms():
-            if at[6] == '.':
-                continue
-            if int(at[6]) > 0:
+        for at in self.atomic_struct.sites:
+            if at.disorder_group:
                 return True
         else:
             return False
@@ -412,7 +448,6 @@ class CifContainer():
         label2 = self.block.find_loop('_geom_bond_atom_site_label_2')
         dist = self.block.find_loop('_geom_bond_distance')
         symm = self.block.find_loop('_geom_bond_site_symmetry_2')
-        publ = self.block.find_loop('_geom_bond_publ_flag')
         hat = ('H', 'D')
         for label1, label2, dist, symm in zip(label1, label2, dist, symm):
             if without_H and (label1[0] in hat or label2[0] in hat):
@@ -420,16 +455,19 @@ class CifContainer():
             else:
                 yield (label1, label2, dist, symm)
 
-    def angles(self):
+    def angles(self, without_H: bool = False):
         label1 = self.block.find_loop('_geom_angle_atom_site_label_1')
         label2 = self.block.find_loop('_geom_angle_atom_site_label_2')
         label3 = self.block.find_loop('_geom_angle_atom_site_label_3')
         angle = self.block.find_loop('_geom_angle')
         symm1 = self.block.find_loop('_geom_angle_site_symmetry_1')
         symm2 = self.block.find_loop('_geom_angle_site_symmetry_3')
-        # publ = self.block.find_loop('_geom_angle_publ_flag')
+        hat = ('H', 'D')
         for label1, label2, label3, angle, symm1, symm2 in zip(label1, label2, label3, angle, symm1, symm2):
-            yield (label1, label2, label3, angle, symm1, symm2)
+            if without_H and (label1[0] in hat or label2[0] in hat or label3[0] in hat):
+                continue
+            else:
+                yield (label1, label2, label3, angle, symm1, symm2)
 
     def torsion_angles(self):
         label1 = self.block.find_loop('_geom_torsion_atom_site_label_1')
@@ -467,7 +505,6 @@ class CifContainer():
         Returns the key/value pairs of a cif file sorted by priority.
 
         >>> c = CifContainer(Path('test-data/P21c-final.cif'))
-        >>> c.open_cif_with_gemmi()
         >>> c.key_value_pairs()[:2]
         [['_audit_contact_author_address', None], ['_audit_contact_author_email', None]]
         """

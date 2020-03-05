@@ -75,6 +75,13 @@ order = [
     '_publ_requested_journal',
     '_publ_requested_category',
 
+    '_database_code_depnum_ccdc_archive',
+    '_database_code_CSD',
+    '_database_code_COD',
+    '_database_code_ICSD',
+    '_database_code_PDB',
+    '_database_CSD_history',
+
     '_audit_contact_author_address',
     '_audit_contact_author_email',
     '_audit_contact_author_name',
@@ -171,9 +178,9 @@ order = [
     '_diffrn_measurement_specimen_adhesive',
     '_diffrn_measurement_details',
     '_diffrn_reflns_number',
-    '_diffrn_reflns_av_unetI/netI',  # superseeded by '_diffrn_reflns_av_unetI/netI'
+    '_diffrn_reflns_av_unetI/netI',
     '_diffrn_reflns_av_R_equivalents',
-    '_diffrn_reflns_av_sigmaI/netI',
+    '_diffrn_reflns_av_sigmaI/netI',   # superseeded by '_diffrn_reflns_av_unetI/netI'
     '_diffrn_reflns_theta_min',
     '_diffrn_reflns_theta_max',
     '_diffrn_reflns_theta_full',

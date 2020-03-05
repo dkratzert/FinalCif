@@ -22,31 +22,38 @@ from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest
 from PyQt5.QtNetwork import QNetworkReply
 from requests.exceptions import MissingSchema
 
+from cif.cif_file_io import CifContainer
 from tools.misc import strip_finalcif_of_name
 
 
 class MakeCheckCif():
 
-    def __init__(self, parent, cif: Path, outfile: Path):
-        self.parent = parent
+    def __init__(self, cif: CifContainer, outfile: Path, hkl: bool = True):
+        # hkl == False means no hkl upload
+        self.hkl = hkl
         self.html_out_file = outfile
-        self.cifobj = cif
+        self.cif = cif
+        if not self.hkl:
+            print('Will not submit hkl data to checkcif.')
+        else:
+            print('Checkcif with hkl data!')
 
     def _get_checkcif(self, pdf: bool = True) -> None:
         """
         Requests a checkcif run from IUCr servers.
         """
         tmp, fd = None, None
-        f = open(str(self.cifobj.absolute()), 'rb')
+        f = open(str(self.cif.fileobj.absolute()), 'rb')
         if pdf:
             report_type = 'PDF'
             vrf = 'vrfno'
         else:
             report_type = 'HTML'
             vrf = 'vrfab'
-        if self.parent and self.parent.cif.block.find_value('_shelx_hkl_file'):
+        if self.cif['_shelx_hkl_file']:
             hkl = 'checkcif_with_hkl'
-            if self.parent.ui.structfactCheckBox.isChecked():
+            # Do not submit hkl data:
+            if not self.hkl:
                 hkl = 'checkcif_only'
                 f.close()
                 tmp, fd = self._get_cif_without_hkl()
@@ -91,7 +98,7 @@ class MakeCheckCif():
             print('Link is not valid anymore...')
             pdf = None
         if pdf:
-            pdfobj = Path(strip_finalcif_of_name('checkcif-' + self.cifobj.stem) + '-finalcif.pdf')
+            pdfobj = Path(strip_finalcif_of_name('checkcif-' + self.cif.fileobj.stem) + '-finalcif.pdf')
             pdfobj.write_bytes(pdf)
             if sys.platform == 'win' or sys.platform == 'win32':
                 subprocess.Popen([str(pdfobj.absolute())], shell=True)
@@ -104,7 +111,7 @@ class MakeCheckCif():
 
     def _get_cif_without_hkl(self) -> Tuple[Union[bytes, str], int]:
         fd, tmp = mkstemp(prefix='finalcif-', suffix='.cif')
-        doc = gemmi.cif.read_string(self.cifobj.read_text())
+        doc = gemmi.cif.read_string(self.cif.fileobj.read_text())
         block = doc.sole_block()
         block.set_pair('_shelx_hkl_file', '')
         p = Path(tmp)

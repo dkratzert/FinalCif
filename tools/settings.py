@@ -5,13 +5,14 @@
 #  and you think this stuff is worth it, you can buy me a beer in return.
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
-
+from contextlib import suppress
 from typing import List
 
 from PyQt5.QtCore import QPoint, QSettings, QSize
 from PyQt5.QtWidgets import QMainWindow
 
-from gui.finalcif_gui import Ui_FinalCifWindow
+with suppress(Exception):
+    from gui.finalcif_gui import Ui_FinalCifWindow
 
 
 class FinalCifSettings():
@@ -27,10 +28,49 @@ class FinalCifSettings():
         self.settings.beginGroup("MainWindow")
         self.settings.setValue("position", position)
         self.settings.setValue("size", size)
+        # print('save:', maximized)
         self.settings.setValue('maximized', maximized)
         self.settings.endGroup()
+        
+    def load_window_position(self) -> None:
+        self.settings.beginGroup("MainWindow")
+        try:
+            pos = self.settings.value("position", type=QPoint)
+        except TypeError:
+            pos = QPoint(20, 20)
+        try:
+            size = QSize(self.settings.value("size"))
+            self.window.resize(size)
+        except TypeError:
+            print('Unable to set window size.')
+        self.window.move(pos)
+        max = self.settings.value('maximized')
+        # print('load max:', max)
+        if isinstance(max, str):
+            if bool(eval(max.capitalize())):
+                self.window.showMaximized()
+        self.settings.endGroup()
 
-    def save_favorite_template(self, app: Ui_FinalCifWindow) -> None:
+    def save_current_dir(self, dir: str) -> None:
+        """
+        Saves the current work directory of the Program.
+        :param dir: Directory as string
+        """
+        self.settings.beginGroup("WorkDir")
+        self.settings.setValue('dir', dir)
+        self.settings.endGroup()
+
+    def load_last_workdir(self) -> str:
+        self.settings.beginGroup('WorkDir')
+        lastdir = self.settings.value("dir", type=str)
+        self.settings.endGroup()
+        return lastdir
+
+    def save_favorite_template(self, app: 'Ui_FinalCifWindow') -> None:
+        """
+        Saves the last used equipment. I curently do not use it.
+        :param app: Appwindow instance
+        """
         last_equipment = app.EquipmentTemplatesListWidget.currentRow()
         self.settings.beginGroup('LastEquipment')
         self.settings.setValue('last', last_equipment)
@@ -57,26 +97,6 @@ class FinalCifSettings():
         last = self.settings.value("last", type=int)
         self.settings.endGroup()
         return last
-
-    def load_window_position(self) -> None:
-        self.settings.beginGroup("MainWindow")
-        try:
-            pos = self.settings.value("position", type=QPoint)
-        except TypeError:
-            pos = QPoint(20, 20)
-        try:
-            size = QSize(self.settings.value("size"))
-            self.window.resize(size)
-        except TypeError:
-            print('Unable to set window size.')
-        self.window.move(pos)
-        max = self.settings.value('maximized')
-        if isinstance(max, str):
-            if bool(eval(max.capitalize())):
-                self.window.showMaximized()
-        elif max:
-            self.window.showMaximized()
-        self.settings.endGroup()
 
     def property_name_by_key(self, key):
         """
