@@ -646,9 +646,10 @@ class AppWindow(QMainWindow):
         else:
             file = Path(file).absolute()
         recent = list(self.settings.settings.value('recent_files', type=list))
-        if str(file) not in recent:
-            # file has to be str not Path():
-            recent.insert(0, str(file))
+        while str(file) in recent:
+            recent.remove(str(file))
+        # file has to be str not Path():
+        recent.insert(0, str(file))
         if len(recent) > 7:
             recent.pop()
         self.settings.settings.setValue('recent_files', recent)
@@ -1316,8 +1317,6 @@ class AppWindow(QMainWindow):
             self.ui.SelectCif_LineEdit.setText(str(WindowsPath(fname).absolute()))
         else:
             self.ui.SelectCif_LineEdit.setText(str(fname))
-        self.save_current_recent_files_list(fname)
-        self.load_recent_cifs_list()
         try:
             filepath = Path(fname)
             if not filepath.exists():
@@ -1374,6 +1373,9 @@ class AppWindow(QMainWindow):
             if DEBUG:
                 raise
             self.unable_to_open_message(filepath, not_ok)
+        # Do this only when sure we can load the file:
+        self.save_current_recent_files_list(fname)
+        self.load_recent_cifs_list()
         self.ui.CheckcifButton.setEnabled(True)
         self.ui.CheckcifOnlineButton.setEnabled(True)
         self.ui.CheckcifPDFOnlineButton.setEnabled(True)
