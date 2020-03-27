@@ -1800,7 +1800,7 @@ class AppWindow(QMainWindow):
             # All textedit fields
             # print(key, strval)
             tab_cif = MyQPlainTextEdit(self.ui.cif_main_table)
-            tab_cif.setPlainText(strval)
+            tab_cif.setPlainText(retranslate_delimiter(strval))
             tab_data = MyQPlainTextEdit(self.ui.cif_main_table)
             tab_edit = MyQPlainTextEdit(self.ui.cif_main_table)
             self.ui.cif_main_table.setCellWidget(row_num, COL_CIF, tab_cif)
@@ -1812,7 +1812,7 @@ class AppWindow(QMainWindow):
             self.ui.cif_main_table.setRowHeight(row_num, 90)
         else:
             # All regular linedit fields:
-            tab_cif = MyTableWidgetItem(strval)
+            tab_cif = MyTableWidgetItem(retranslate_delimiter(strval))
             if key == "These below are already in:":
                 self.add_separation_line(row_num)
                 self.complete_data_row = row_num
