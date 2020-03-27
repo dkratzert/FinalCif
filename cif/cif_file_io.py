@@ -185,6 +185,8 @@ class CifContainer():
         if result:
             if result == '?' or result == "'?'":
                 return ''
+            # TODO: can I do this?:
+            # return retranslate_delimiter(result)
             return result
         else:
             return ''
