@@ -11,6 +11,7 @@ from gemmi import cif as gcif
 
 from cif.cif_file_io import CifContainer
 from datafiles.bruker_frame import BrukerFrameHeader
+from datafiles.data import WorkDataMixin
 from datafiles.p4p_reader import P4PFile
 from datafiles.sadabs import Sadabs
 from datafiles.saint import SaintListFile
@@ -25,7 +26,7 @@ class MissingCifData():
         self.data[key] = value
 
 
-class BrukerData(object):
+class BrukerData(object, WorkDataMixin):
 
     def __init__(self, app: 'AppWindow', cif: CifContainer):
         self.cif = cif
@@ -149,6 +150,21 @@ class BrukerData(object):
         if not self.cif['_space_group_crystal_system']:
             with suppress(AttributeError):
                 csystem = self.cif.crystal_system()
+        if self.saint_data.is_twin and self.saint_data.components_firstsample == 2 \
+                and not self.cif['_twin_individual_twin_matrix_11']:
+            with suppress(Exception):
+                law = self.saint_data.twinlaw[list(self.saint_data.twinlaw.keys())[0]]
+                self.set_pair('_twin_individual_twin_matrix_11', str(law[0][0]))
+                #self.set_pair('_twin_individual_twin_matrix_12', str(law[0][1]))
+                #self.set_pair('_twin_individual_twin_matrix_13', str(law[0][2]))
+                #self.set_pair('_twin_individual_twin_matrix_21', str(law[1][0]))
+                #self.set_pair('_twin_individual_twin_matrix_22', str(law[1][1]))
+                #self.set_pair('_twin_individual_twin_matrix_23', str(law[1][2]))
+                #self.set_pair('_twin_individual_twin_matrix_31', str(law[2][0]))
+                #self.set_pair('_twin_individual_twin_matrix_32', str(law[2][1]))
+                #self.set_pair('_twin_individual_twin_matrix_33', str(law[2][2]))
+                #self.set_pair('_twin_individual_id', str(bdata.saint_data.components_firstsample))
+                #self.set_pair('_twin_special_details', 'The data was integrated as a 2-component twin.')
         """
         #TODO: symmops are missing, need loops for that
         if not self.symmops:
@@ -196,31 +212,6 @@ class BrukerData(object):
         }
         self.sources = sources  # dict((k.lower(), v) for k, v in sources.items())
 
-    def get_solution_program(self):
-        """
-        Tries to figure out which program was used for structure solution.
-        TODO: figure out more solution programs.
-        """
-        p = self.cif.fileobj.parent
-        # for line in cif._ciftext:
-        #    if line.startswith('REM SHELXT solution in'):
-        xt_files = p.glob(self.basename + '*.lxt')
-        try:
-            res = self.cif.block.find_pair('_shelx_res_file')[1]
-        except (TypeError, AttributeError):
-            res = ''
-        byxt = res.find('REM SHELXT solution in')
-        for x in xt_files:
-            shelxt = SHELXTlistfile(x.as_posix())
-            if shelxt.version and byxt:
-                return shelxt
-        if byxt > 0:
-            xt = SHELXTlistfile('')
-            xt.version = "SHELXT (G. Sheldrick)"
-            return xt
-        xt = SHELXTlistfile('')
-        xt.version = "SHELXS (G. Sheldrick)"
-        return xt
 
     @property
     def sadabs(self):

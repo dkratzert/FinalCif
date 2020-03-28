@@ -1643,22 +1643,6 @@ class AppWindow(QMainWindow):
         if self.manufacturer == 'bruker':
             bdata = BrukerData(self, self.cif)
             sources = bdata.sources
-            if bdata.saint_data.is_twin and bdata.saint_data.components_firstsample == 2 \
-                    and not self.cif['_twin_individual_twin_matrix_11']:
-                with suppress(Exception):
-                    law = bdata.saint_data.twinlaw[list(bdata.saint_data.twinlaw.keys())[0]]
-                    self.set_pair('_twin_individual_twin_matrix_11', str(law[0][0]))
-                    self.set_pair('_twin_individual_twin_matrix_12', str(law[0][1]))
-                    self.set_pair('_twin_individual_twin_matrix_13', str(law[0][2]))
-                    self.set_pair('_twin_individual_twin_matrix_21', str(law[1][0]))
-                    self.set_pair('_twin_individual_twin_matrix_22', str(law[1][1]))
-                    self.set_pair('_twin_individual_twin_matrix_23', str(law[1][2]))
-                    self.set_pair('_twin_individual_twin_matrix_31', str(law[2][0]))
-                    self.set_pair('_twin_individual_twin_matrix_32', str(law[2][1]))
-                    self.set_pair('_twin_individual_twin_matrix_33', str(law[2][2]))
-                    self.set_pair('_twin_individual_id', str(bdata.saint_data.components_firstsample))
-                    self.set_pair('_twin_special_details', 'The data was integrated as a 2-component twin.')
-                self.ui.cif_main_table.setCurrentItem(None)
         if self.manufacturer == 'rigaku':
             vheadlist = []
             for num in range(self.ui.cif_main_table.model().rowCount()):
