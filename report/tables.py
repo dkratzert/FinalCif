@@ -220,7 +220,8 @@ def add_main_table(document: Document(), cif: CifContainer, table_num: int):
     rows = 33
     if cif.is_centrosymm:
         rows -= 1
-    if exti == '.' or exti == '?':
+    # Remove one row for the extinction coefficient:
+    if exti in ['.', "'.'", '?', '']:
         rows -= 1
     main_table = document.add_table(rows=rows, cols=2)
     # setup table format:
@@ -377,7 +378,7 @@ def populate_main_table_values(main_table: Table, cif: CifContainer):
     if not cif.is_centrosymm:
         main_table.cell(31, 1).text = cif['_refine_ls_abs_structure_Flack'] or '?'
     exti = cif['_refine_ls_extinction_coef']
-    if exti != '.' and exti != '?':
+    if exti not in ['.', "'.'", '?', '']:
         num = len(main_table.columns[0].cells)
         main_table.columns[1].cells[num - 1].text = exti
 
@@ -813,7 +814,7 @@ def populate_description_columns(main_table, cif: CifContainer):
         lgnd31 = main_table.cell(31, 0).paragraphs[0]
         lgnd31.add_run('Flack X parameter')
     exti = cif['_refine_ls_extinction_coef']
-    if exti != '.' and exti != '?':
+    if exti not in ['.', "'.'", '?', '']:
         # always the last cell
         num = len(main_table.columns[0].cells)
         main_table.columns[0].cells[num - 1].paragraphs[0].add_run('Extinction coefficient')
