@@ -23,8 +23,12 @@ class SHELXTlistfile(ParserMixin):
          +  SHELXT  -  CRYSTAL STRUCTURE SOLUTION - VERSION 2018/2            +
         """
         for num, line in enumerate(self._text):
-            if "SOLUTION" in line:
-                self.version = ' '.join(line.split()).strip('+').strip()
+            if "CRYSTAL STRUCTURE SOLUTION" in line:
+                line = line.strip().strip('+').strip()
+                if 'SHELXTL' in line:
+                    self.version = 'SHELXTL XT ' + line.split()[-1]
+                else:
+                    self.version = 'SHELXT ' + line.split()[-1]
             if line.strip().startswith('R1  Rweak Alpha'):
                 for n in range(100):
                     if not self._text[num + 1 + n]:
