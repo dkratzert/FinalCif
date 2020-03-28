@@ -65,7 +65,7 @@ class ReportText():
 class Crystallization(FormatMixin):
     def __init__(self, cif: CifContainer, paragraph: Paragraph):
         self.cif = cif
-        self.crytsalization_method = clean_string(gstr(self.cif['_exptl_crystal_recrystallization_method'])) + '.'
+        self.crytsalization_method = gstr(self.cif['_exptl_crystal_recrystallization_method']) + '.'
         if not self.crytsalization_method:
             self.crytsalization_method = '[No crystallization method was given]'
         sentence = "{} "
@@ -99,9 +99,9 @@ class CrstalSelection(FormatMixin):
 class MachineType():
     def __init__(self, cif: CifContainer, paragraph: Paragraph):
         self.cif = cif
-        self.difftype = clean_string(gstr(self.cif['_diffrn_measurement_device_type'])) \
+        self.difftype = gstr(self.cif['_diffrn_measurement_device_type']) \
                         or '[No measurement device type given]'
-        self.device = clean_string(gstr(self.cif['_diffrn_measurement_device'])) \
+        self.device = gstr(self.cif['_diffrn_measurement_device']) \
                       or '[No measurement device given]'
         self.source = gstr(self.cif['_diffrn_source']).strip('\n\r') \
                       or '[No radiation source given]'
@@ -143,18 +143,18 @@ class MachineType():
 class DataReduct():
     def __init__(self, cif: CifContainer, paragraph: Paragraph):
         self.cif = cif
-        integration = gstr(self.cif['_computing_data_reduction']).strip('\n\r')
-        integration_prog = '?'
-        if 'saint' in integration.lower():
-            integration_prog = 'SAINT'
-        if 'crysalis' in integration.lower():
-            integration_prog = 'CrysAlisPro'
-        if 'trek' in integration.lower():
-            integration_prog = 'd*trek'
+        integration = gstr(self.cif['_computing_data_reduction']) or '??'
+        #integration_prog = '?'
+        #if 'saint' in integration.lower():
+        #    integration_prog = 'SAINT'
+        #if 'crysalis' in integration.lower():
+        #    integration_prog = 'CrysAlisPro'
+        #if 'trek' in integration.lower():
+        #    integration_prog = 'd*trek'
         abstype = gstr(self.cif['_exptl_absorpt_correction_type']) or '??'
         abs_details = gstr(self.cif['_exptl_absorpt_process_details']) or '??'
-        if 'sortav' in abs_details.lower():
-            abs_details = 'SORTAV'
+        #if 'sortav' in abs_details.lower():
+        #    abs_details = 'SORTAV'
         if 'sadabs' in abs_details.lower():
             if ':' in abs_details[:16]:
                 abs_details = abs_details.split(':')[0]
@@ -165,7 +165,7 @@ class DataReduct():
         if 'crysalis' in abs_details.lower():
             abs_details = 'SCALE3 ABSPACK'
         sentence = 'All data were integrated with {} and {} {} absorption correction using {} was applied. '
-        txt = sentence.format(integration_prog.strip('\n\r'),
+        txt = sentence.format(integration,
                               get_inf_article(abstype),
                               abstype,
                               abs_details)
