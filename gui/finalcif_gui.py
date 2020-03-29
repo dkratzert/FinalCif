@@ -864,7 +864,9 @@ class Ui_FinalCifWindow(object):
         self.completeLabel.setText(_translate("FinalCifWindow", "complete [%]"))
         self.BackSourcesPushButton.setText(_translate("FinalCifWindow", "Back to CIF Table"))
         self.label_3.setText(_translate("FinalCifWindow", "The list of data sources shows the origin of CIF items automatically collected by FinalCif. \n"
-"Uncheck items in order to ignore the respective data source."))
+"\n"
+"Uncheck items in order to ignore the respective data source.\n"
+"The data source will be ignored until next program restart."))
         item = self.SourcesTableWidget.horizontalHeaderItem(0)
         item.setText(_translate("FinalCifWindow", " "))
         item = self.SourcesTableWidget.horizontalHeaderItem(1)

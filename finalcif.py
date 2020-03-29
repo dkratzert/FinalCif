@@ -86,7 +86,7 @@ class AppWindow(QMainWindow):
 
     def __init__(self):
         super().__init__()
-        self.source = None
+        self.sources = None
         self.ui = Ui_FinalCifWindow()
         self.ui.setupUi(self)
         # To make file drag&drop working:
@@ -312,24 +312,39 @@ class AppWindow(QMainWindow):
                 r"<a href='https://www.xs3.uni-freiburg.de/research/finalcif'>"
                 r"https://www.xs3.uni-freiburg.de/research/finalcif</a>".format(remote_version))
 
+    def erase_disabled_items(self):
+        table = self.ui.SourcesTableWidget
+        for row in range(table.rowCount()):
+            if not table.cellWidget(row, 0).isChecked():
+                cifkey = table.item(row, 1).data(2)
+                try:
+                    row_num = self.ui.cif_main_table.vheaderitems.index(cifkey)
+                except ValueError:
+                    continue
+                self.cif.block.set_pair(cifkey, '?')
+                self.ui.cif_main_table.item(row_num, COL_CIF).setText('?')
+                self.ui.cif_main_table.item(row_num, COL_DATA).setText('')
+
     def show_sources(self):
         COL_key = 1
         COL_source_data = 2
-        if not self.source:
+        if not self.sources:
             return
         table = self.ui.SourcesTableWidget
-        for num, s in enumerate(self.source):
-            if not self.source[s]:
+        table.setRowCount(0)
+        for num, s in enumerate(self.sources):
+            if not self.sources[s]:
                 continue
             #if not self.source[s][0]:
             #    continue
             table.insertRow(num)
             box = QCheckBox()
+            box.clicked.connect(self.erase_disabled_items)
             table.setCellWidget(num, 0, box)
             box.setChecked(True)
             source_item = MyTableWidgetItem(s)
             source_item.setUneditable()
-            data_item = MyTableWidgetItem(self.source[s][1])
+            data_item = MyTableWidgetItem(self.sources[s][1])
             data_item.setUneditable()
             table.setItem(num, COL_key, source_item)
             table.setItem(num, COL_source_data, data_item)
@@ -603,6 +618,7 @@ class AppWindow(QMainWindow):
         self.ui.MainStackedWidget.setCurrentIndex(1)
         ccpe = self.ui.CheckcifPlaintextEdit
         ccpe.setPlainText('Platon output: \nThis might not be the same as the IUCr Checkcif!')
+        p.run_platon()
         ccpe.appendPlainText(p.platon_output)
         ccpe.appendPlainText('\n' + '#' * 80)
         doc = ccpe.document()
@@ -623,6 +639,10 @@ class AppWindow(QMainWindow):
                 pass
         ccpe.verticalScrollBar().setValue(0)
         splash.finish(self)
+        plat = Platon(self.cif.fileobj)
+        plat.parse_file()
+        if plat.formula_moiety:
+            self.ui.cif_main_table.setText(key='_chemical_formula_moiety', txt=plat.formula_moiety, column=COL_DATA)
 
     def load_recent_file(self, file_index: int) -> None:
         combo = self.ui.RecentComboBox
@@ -1676,56 +1696,19 @@ class AppWindow(QMainWindow):
         self.check_Z()
         if self.manufacturer == 'bruker':
             bdata = BrukerData(self, self.cif)
-            self.source = bdata.sources
-            if bdata.saint_data.is_twin and bdata.saint_data.components_firstsample == 2 \
-                    and not self.cif['_twin_individual_twin_matrix_11']:
-                with suppress(Exception):
-                    law = bdata.saint_data.twinlaw[list(bdata.saint_data.twinlaw.keys())[0]]
-                    self.set_pair('_twin_individual_twin_matrix_11', str(law[0][0]))
-                    #self.source['_twin_individual_twin_matrix_11'] = (str(law[0][0]), bdata.saint_data.filename.name)
-                    self.set_pair('_twin_individual_twin_matrix_12', str(law[0][1]))
-                    self.set_pair('_twin_individual_twin_matrix_13', str(law[0][2]))
-                    self.set_pair('_twin_individual_twin_matrix_21', str(law[1][0]))
-                    self.set_pair('_twin_individual_twin_matrix_22', str(law[1][1]))
-                    self.set_pair('_twin_individual_twin_matrix_23', str(law[1][2]))
-                    self.set_pair('_twin_individual_twin_matrix_31', str(law[2][0]))
-                    self.set_pair('_twin_individual_twin_matrix_32', str(law[2][1]))
-                    self.set_pair('_twin_individual_twin_matrix_33', str(law[2][2]))
-                    self.set_pair('_twin_individual_id', str(bdata.saint_data.components_firstsample))
-                    self.set_pair('_twin_special_details', 'The data was integrated as a 2-component twin.')
-                self.ui.cif_main_table.setCurrentItem(None)
+            self.sources = bdata.sources
         if self.manufacturer == 'rigaku':
-            vheadlist = []
-            for num in range(self.ui.cif_main_table.model().rowCount()):
-                vheadlist.append(self.ui.cif_main_table.model().headerData(num, Qt.Vertical))
-            self.source = self.rigakucif.sources
-            for x in self.source:
-                if x in vheadlist:
-                    continue
-                if x and x not in self.missing_data:
-                    self.set_pair(x, '?')
-                    # self.add_row(x, '?', at_start=True)
-                    # self.missing_data.append(x)
-                    # self.cif.block.set_pair(x, '?')
-            # Adding loop
-            # TODO: make this work
-            """loops = self.rigakucif.loops
-            for loop in loops:
-                key1 = loop[0][0]
-                ends = []
-                try:
-                    key2 = loop[0][1]
-                    match = SequenceMatcher(None, key1, key2).find_longest_match(0, len(key1), 0, len(key2))
-                    loopkey = key1[match.a: match.a + match.size]
-                    for key in loop[0]:
-                        ends.append(key[match.a + match.size:])
-                except KeyError:
-                    gloop = self.cif.block.init_loop(key1, [''])
-                    continue
-                gloop = self.cif.block.init_loop(loopkey, ends)
-                print(loopkey, ends)
-                print(loop[1])
-                gloop.add_row(loop[1])"""
+            self.sources = self.rigakucif.sources
+        vheadlist = []
+        for num in range(self.ui.cif_main_table.model().rowCount()):
+            vheadlist.append(self.ui.cif_main_table.model().headerData(num, Qt.Vertical))
+        for src in self.sources:
+            if not self.sources[src]:
+                continue
+            if src in vheadlist:
+                continue
+            if src and src not in self.missing_data:
+                self.set_pair(src, '?')
         # Build a dictionary of cif keys and row number values in order to fill the first column
         # of cif_main_table with cif values:
         for num in range(self.ui.cif_main_table.model().rowCount()):
@@ -1749,7 +1732,7 @@ class AppWindow(QMainWindow):
             tab_item = MyTableWidgetItem()
             try:
                 # sources are lower case!
-                txt = str(self.source[miss_data][0])
+                txt = str(self.sources[miss_data][0])
                 if miss_data in text_field_keys:
                     # only text fields:
                     tab_item = MyQPlainTextEdit(self.ui.cif_main_table)
@@ -1762,7 +1745,7 @@ class AppWindow(QMainWindow):
                             tab_item.setBackground(light_green)
                         else:
                             tab_item.setBackground(yellow)
-                    tab_item.setToolTip(str(self.source[miss_data][1]))
+                    tab_item.setToolTip(str(self.sources[miss_data][1]))
                 else:
                     # regular linedit fields:
                     self.ui.cif_main_table.setItem(row_num, COL_DATA, tab_item)
@@ -1772,7 +1755,7 @@ class AppWindow(QMainWindow):
                             tab_item.setBackground(light_green)
                         else:
                             tab_item.setBackground(yellow)
-                tab_item.setToolTip(str(self.source[miss_data][1]))
+                tab_item.setToolTip(str(self.sources[miss_data][1]))
             except (KeyError, TypeError) as e:
                 # TypeError my originate from incomplete self.missing_data list!
                 # print(e, '##', miss_data)
@@ -1811,6 +1794,7 @@ class AppWindow(QMainWindow):
             # print(key, value)
         self.test_checksums()
         self.get_data_sources()
+        self.erase_disabled_items()
         # self.ui.cif_main_table.resizeRowsToContents()
 
     def add_row(self, key: str, value: str, at_start=False) -> None:
