@@ -5,8 +5,9 @@
 #  and you think this stuff is worth it, you can buy me a beer in return.
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
+from datafiles.data import WorkDataMixin
 
-DEBUG = False
+DEBUG = True
 
 import os
 
@@ -57,7 +58,8 @@ from tools.version import VERSION
 from PyQt5.QtCore import QPoint, Qt, QUrl, QEvent
 from PyQt5.QtGui import QFont, QIcon, QBrush, QResizeEvent, QMoveEvent
 from PyQt5.QtWidgets import QApplication, QFileDialog, QHeaderView, QListWidget, QListWidgetItem, \
-    QMainWindow, QMessageBox, QPlainTextEdit, QStackedWidget, QTableWidget, QSplashScreen, QShortcut
+    QMainWindow, QMessageBox, QPlainTextEdit, QStackedWidget, QTableWidget, QSplashScreen, QShortcut, QCheckBox, \
+    QTableWidgetItem
 
 """
 TODO:
@@ -84,6 +86,7 @@ class AppWindow(QMainWindow):
 
     def __init__(self):
         super().__init__()
+        self.source = None
         self.ui = Ui_FinalCifWindow()
         self.ui.setupUi(self)
         # To make file drag&drop working:
@@ -265,6 +268,8 @@ class AppWindow(QMainWindow):
         self.ui.DetailsPushButton.clicked.connect(self.show_properties)
         self.ui.BackpushButtonDetails.clicked.connect(self.back_to_main_noload)
         self.ui.growCheckBox.toggled.connect(self.redraw_molecule)
+        #
+        self.ui.SourcesPushButton.clicked.connect(self.show_sources)
 
     def _ccdc_deposit(self):
         """
@@ -304,6 +309,22 @@ class AppWindow(QMainWindow):
                 r"A newer version {} of FinalCif is available under: <br>"
                 r"<a href='https://www.xs3.uni-freiburg.de/research/finalcif'>"
                 r"https://www.xs3.uni-freiburg.de/research/finalcif</a>".format(remote_version))
+
+    def show_sources(self):
+        if not self.source:
+            return
+        table = self.ui.SourcesTableWidget
+        for num, s in enumerate(self.source):
+            table.insertRow(num)
+            box = QCheckBox()
+            table.setCellWidget(num, 0, box)
+            item = QTableWidgetItem(s)
+            table.setItem(num, 1, item)
+            #item.setText(QApplication.translate("Dialog", s, None))
+            #item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
+            #item.setCheckState(Qt.Checked)
+            #self.ui.SourcesTableWidget.addItem(item)
+        self.ui.MainStackedWidget.setCurrentIndex(4)
 
     def get_checkdef(self):
         """
@@ -1639,11 +1660,10 @@ class AppWindow(QMainWindow):
         """
         Tries to determine the sources of missing data in the cif file, e.g. Tmin/Tmax from SADABS.
         """
-        sources = None
         self.check_Z()
         if self.manufacturer == 'bruker':
             bdata = BrukerData(self, self.cif)
-            sources = bdata.sources
+            self.source = bdata.sources
             if bdata.saint_data.is_twin and bdata.saint_data.components_firstsample == 2 \
                     and not self.cif['_twin_individual_twin_matrix_11']:
                 with suppress(Exception):
@@ -1664,8 +1684,8 @@ class AppWindow(QMainWindow):
             vheadlist = []
             for num in range(self.ui.cif_main_table.model().rowCount()):
                 vheadlist.append(self.ui.cif_main_table.model().headerData(num, Qt.Vertical))
-            sources = self.rigakucif.sources
-            for x in sources:
+            self.source = self.rigakucif.sources
+            for x in self.source:
                 if x in vheadlist:
                     continue
                 if x and x not in self.missing_data:
@@ -1715,7 +1735,7 @@ class AppWindow(QMainWindow):
             tab_item = MyTableWidgetItem()
             try:
                 # sources are lower case!
-                txt = str(sources[miss_data][0])
+                txt = str(self.source[miss_data][0])
                 if miss_data in text_field_keys:
                     # only text fields:
                     tab_item = MyQPlainTextEdit(self.ui.cif_main_table)
@@ -1728,7 +1748,7 @@ class AppWindow(QMainWindow):
                             tab_item.setBackground(light_green)
                         else:
                             tab_item.setBackground(yellow)
-                    tab_item.setToolTip(str(sources[miss_data][1]))
+                    tab_item.setToolTip(str(self.source[miss_data][1]))
                 else:
                     # regular linedit fields:
                     self.ui.cif_main_table.setItem(row_num, COL_DATA, tab_item)
@@ -1738,7 +1758,7 @@ class AppWindow(QMainWindow):
                             tab_item.setBackground(light_green)
                         else:
                             tab_item.setBackground(yellow)
-                tab_item.setToolTip(str(sources[miss_data][1]))
+                tab_item.setToolTip(str(self.source[miss_data][1]))
             except (KeyError, TypeError) as e:
                 # TypeError my originate from incomplete self.missing_data list!
                 # print(e, '##', miss_data)

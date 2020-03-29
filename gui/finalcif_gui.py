@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file './gui\finalcif_gui.ui'
+# Form implementation generated from reading ui file '/Users/daniel/GitHub/FinalCif/./gui/finalcif_gui.ui'
 #
-# Created by: PyQt5 UI code generator 5.13.2
+# Created by: PyQt5 UI code generator 5.14.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -290,6 +290,9 @@ class Ui_FinalCifWindow(object):
         self.DetailsPushButton = QtWidgets.QPushButton(self.groupBox)
         self.DetailsPushButton.setObjectName("DetailsPushButton")
         self.gridLayout_7.addWidget(self.DetailsPushButton, 0, 1, 1, 1)
+        self.SourcesPushButton = QtWidgets.QPushButton(self.groupBox)
+        self.SourcesPushButton.setObjectName("SourcesPushButton")
+        self.gridLayout_7.addWidget(self.SourcesPushButton, 1, 1, 1, 1)
         self.ButtonsHorizontalLayout.addWidget(self.groupBox)
         self.groupBox_checkcif = QtWidgets.QGroupBox(self.page_MainTable)
         self.groupBox_checkcif.setTitle("")
@@ -708,6 +711,25 @@ class Ui_FinalCifWindow(object):
         self.gridLayout_4.addLayout(self.formLayout, 0, 3, 2, 1)
         self.gridLayout_3.addWidget(self.groupBox_3, 1, 0, 1, 3)
         self.MainStackedWidget.addWidget(self.page_molinfo)
+        self.page_Sources = QtWidgets.QWidget()
+        self.page_Sources.setObjectName("page_Sources")
+        self.SourcesGroupBox = QtWidgets.QGroupBox(self.page_Sources)
+        self.SourcesGroupBox.setGeometry(QtCore.QRect(20, 40, 591, 411))
+        self.SourcesGroupBox.setObjectName("SourcesGroupBox")
+        self.horizontalLayout_2 = QtWidgets.QHBoxLayout(self.SourcesGroupBox)
+        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
+        self.SourcesTableWidget = QtWidgets.QTableWidget(self.SourcesGroupBox)
+        self.SourcesTableWidget.setObjectName("SourcesTableWidget")
+        self.SourcesTableWidget.setColumnCount(3)
+        self.SourcesTableWidget.setRowCount(0)
+        item = QtWidgets.QTableWidgetItem()
+        self.SourcesTableWidget.setHorizontalHeaderItem(0, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.SourcesTableWidget.setHorizontalHeaderItem(1, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.SourcesTableWidget.setHorizontalHeaderItem(2, item)
+        self.horizontalLayout_2.addWidget(self.SourcesTableWidget)
+        self.MainStackedWidget.addWidget(self.page_Sources)
         self.CifTableGridLayout.addWidget(self.MainStackedWidget, 0, 0, 1, 3)
         self.horizontalLayout_4.addWidget(self.splitter)
         FinalCifWindow.setCentralWidget(self.Mainwidget)
@@ -724,7 +746,7 @@ class Ui_FinalCifWindow(object):
         self.retranslateUi(FinalCifWindow)
         self.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
         self.PropertiesTemplatesStackedWidget.setCurrentIndex(1)
-        self.MainStackedWidget.setCurrentIndex(3)
+        self.MainStackedWidget.setCurrentIndex(4)
         QtCore.QMetaObject.connectSlotsByName(FinalCifWindow)
         FinalCifWindow.setTabOrder(self.SelectCif_LineEdit, self.EquipmentEditTableWidget)
         FinalCifWindow.setTabOrder(self.EquipmentEditTableWidget, self.cifKeywordLineEdit)
@@ -780,6 +802,7 @@ class Ui_FinalCifWindow(object):
         self.ExploreDirButton.setToolTip(_translate("FinalCifWindow", "Saves the cif file to name-final.cif"))
         self.ExploreDirButton.setText(_translate("FinalCifWindow", "Explore Directory"))
         self.DetailsPushButton.setText(_translate("FinalCifWindow", "Show Details"))
+        self.SourcesPushButton.setText(_translate("FinalCifWindow", "Data Sources"))
         self.CheckcifPDFOnlineButton.setText(_translate("FinalCifWindow", "Checkcif Online PDF"))
         self.CheckcifOnlineButton.setText(_translate("FinalCifWindow", "Checkcif Online HTML"))
         self.CheckcifButton.setText(_translate("FinalCifWindow", "CheckCif Offline"))
@@ -820,6 +843,13 @@ class Ui_FinalCifWindow(object):
         self.thetaFullLabel.setText(_translate("FinalCifWindow", "θ(full) [°]"))
         self.dLabel.setText(_translate("FinalCifWindow", "<html><head/><body><p>Resolution [Å]</p></body></html>"))
         self.completeLabel.setText(_translate("FinalCifWindow", "complete [%]"))
+        self.SourcesGroupBox.setTitle(_translate("FinalCifWindow", "Data Sources"))
+        item = self.SourcesTableWidget.horizontalHeaderItem(0)
+        item.setText(_translate("FinalCifWindow", " "))
+        item = self.SourcesTableWidget.horizontalHeaderItem(1)
+        item.setText(_translate("FinalCifWindow", "cif item"))
+        item = self.SourcesTableWidget.horizontalHeaderItem(2)
+        item.setText(_translate("FinalCifWindow", "data source"))
         self.actionSave_Report.setText(_translate("FinalCifWindow", "Save Report"))
         self.actionSave_CIF_File.setText(_translate("FinalCifWindow", "Save CIF File"))
         self.actionedit_templates.setText(_translate("FinalCifWindow", "edit templates"))
