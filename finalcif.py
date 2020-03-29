@@ -640,18 +640,17 @@ class AppWindow(QMainWindow):
                 pdfname = Path(strip_finalcif_of_name('checkcif-' + self.cif.fileobj.stem) + '-finalcif.pdf').name
                 arc.zip.write(pdfname)
 
-    def save_current_recent_files_list(self, file: str) -> None:
+    def save_current_recent_files_list(self, file: Path) -> None:
         if os.name == 'nt':
-            file = WindowsPath(file).absolute()
+            file = WindowsPath(file.absolute()).absolute()
         else:
-            file = Path(file).absolute()
+            file = Path(file.absolute()).absolute()
         recent = list(self.settings.settings.value('recent_files', type=list))
         while str(file) in recent:
             recent.remove(str(file))
         # file has to be str not Path():
         recent.insert(0, str(file))
-        if len(recent) > 7:
-            recent.pop()
+        recent = recent[:8]
         self.settings.settings.setValue('recent_files', recent)
         # print(recent, 'save')
 
@@ -665,7 +664,9 @@ class AppWindow(QMainWindow):
             try:
                 if not Path(file).exists():
                     del recent[n]
-            except OSError:
+                    continue
+            except OSError as e:
+                print(e)
                 pass
             self.ui.RecentComboBox.addItem(file, n)
 
@@ -1374,7 +1375,7 @@ class AppWindow(QMainWindow):
                 raise
             self.unable_to_open_message(filepath, not_ok)
         # Do this only when sure we can load the file:
-        self.save_current_recent_files_list(fname)
+        self.save_current_recent_files_list(filepath)
         self.load_recent_cifs_list()
         self.ui.CheckcifButton.setEnabled(True)
         self.ui.CheckcifOnlineButton.setEnabled(True)
@@ -1654,7 +1655,7 @@ class AppWindow(QMainWindow):
                 if x and x not in self.missing_data:
                     self.set_pair(x, '?')
                     # self.add_row(x, '?', at_start=True)
-                    # self.missing_data.append(x)
+                    #self.missing_data.append(x)
                     # self.cif.block.set_pair(x, '?')
             # Adding loop
             # TODO: make this work
@@ -1721,6 +1722,7 @@ class AppWindow(QMainWindow):
                             tab_item.setBackground(light_green)
                         else:
                             tab_item.setBackground(yellow)
+                print(miss_data)
                 tab_item.setToolTip(str(sources[miss_data][1]))
             except (KeyError, TypeError) as e:
                 # TypeError my originate from incomplete self.missing_data list!
