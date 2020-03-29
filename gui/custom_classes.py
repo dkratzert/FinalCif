@@ -295,6 +295,7 @@ class MyTableWidgetItem(QTableWidgetItem):
 
     def setUneditable(self):
         self.setFlags(self.flags() ^ Qt.ItemIsEditable)
+        self.setFlags(self.flags() | Qt.ItemIsSelectable)
 
 
 class MyEQTableWidget(QTableWidget, ItemTextMixin):

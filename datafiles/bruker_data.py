@@ -178,24 +178,24 @@ class BrukerData(WorkDataMixin, object):
         self.sources['_cell_measurement_theta_min'] = (
             self.saint_data.cell_res_min_theta or '', self.saint_data.filename.name)
         self.sources['_cell_measurement_theta_max'] = (
-            self.saint_data.cell_res_max_theta or '', saint_first_ls.filename.name)
-        self.sources['_computing_data_collection'] = (saint_first_ls.aquire_software, self.saint_data.filename.name)
+            self.saint_data.cell_res_max_theta or '', self.saint_data.filename.name)
+        self.sources['_computing_data_collection'] = (saint_first_ls.aquire_software, saint_first_ls.filename.name)
         self.sources['_computing_cell_refinement'] = (self.saint_data.version, self.saint_data.filename.name)
         self.sources['_computing_data_reduction'] = (self.saint_data.version, self.saint_data.filename.name)
         self.sources['_exptl_absorpt_correction_type'] = abscorrtype
         self.sources['_exptl_absorpt_correction_T_min'] = abs_tmin
         self.sources['_exptl_absorpt_correction_T_max'] = abs_tmax
         self.sources['_diffrn_reflns_av_R_equivalents'] = rint
+        self.sources['_exptl_absorpt_process_details'] = absdetails
         self.sources['_cell_measurement_temperature'] = (temperature, self.p4p.filename.name)
         self.sources['_diffrn_ambient_temperature'] = (temperature, self.p4p.filename.name)
-        self.sources['_exptl_absorpt_process_details'] = absdetails
         self.sources['_exptl_crystal_colour'] = (self.p4p.crystal_color, self.p4p.filename.name)
         self.sources['_exptl_crystal_description'] = (self.p4p.morphology, self.p4p.filename.name)
         self.sources['_exptl_crystal_size_min'] = (self.p4p.crystal_size[0] or '', self.p4p.filename.name)
         self.sources['_exptl_crystal_size_mid'] = (self.p4p.crystal_size[1] or '', self.p4p.filename.name)
         self.sources['_exptl_crystal_size_max'] = (self.p4p.crystal_size[2] or '', self.p4p.filename.name)
         self.sources['_computing_structure_solution'] = solution_program
-        self.sources['_atom_sites_solution_primary'] = (sol.method, '')
+        self.sources['_atom_sites_solution_primary'] = (sol.method, 'Inherited from solution program.')
         self.sources['_diffrn_source_voltage'] = (kilovolt or '', frame_name)
         self.sources['_diffrn_source_current'] = (milliamps or '', frame_name)
         self.sources['_chemical_formula_moiety'] = ('', '')
@@ -207,6 +207,8 @@ class BrukerData(WorkDataMixin, object):
         self.sources['_space_group_name_Hall'] = (hallsym, 'calculated by gemmi')
         self.sources['_space_group_IT_number'] = (spgrnum, 'calculated by gemmi')
         self.sources['_space_group_crystal_system'] = (csystem, 'calculated by gemmi')
+        #TODO: add this here:
+        self.sources['_twin_individual_twin_matrix_11'] = ('foo', 'bar')
 
     @property
     def sadabs(self):

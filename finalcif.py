@@ -119,6 +119,7 @@ class AppWindow(QMainWindow):
         self.ui.DetailsPushButton.setDisabled(True)
         # noinspection PyTypeChecker
         self.cif = None
+        self.view = None
         self.final_cif_file_name = Path()
         self.missing_data = []
         # True if line with "these are already in" reached:
@@ -270,6 +271,7 @@ class AppWindow(QMainWindow):
         self.ui.growCheckBox.toggled.connect(self.redraw_molecule)
         #
         self.ui.SourcesPushButton.clicked.connect(self.show_sources)
+        self.ui.BackSourcesPushButton.clicked.connect(self.back_to_main_noload)
 
     def _ccdc_deposit(self):
         """
@@ -311,19 +313,29 @@ class AppWindow(QMainWindow):
                 r"https://www.xs3.uni-freiburg.de/research/finalcif</a>".format(remote_version))
 
     def show_sources(self):
+        COL_key = 1
+        COL_source_data = 2
         if not self.source:
             return
         table = self.ui.SourcesTableWidget
         for num, s in enumerate(self.source):
+            if not self.source[s]:
+                continue
+            #if not self.source[s][0]:
+            #    continue
             table.insertRow(num)
             box = QCheckBox()
             table.setCellWidget(num, 0, box)
-            item = QTableWidgetItem(s)
-            table.setItem(num, 1, item)
-            #item.setText(QApplication.translate("Dialog", s, None))
-            #item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
-            #item.setCheckState(Qt.Checked)
-            #self.ui.SourcesTableWidget.addItem(item)
+            box.setChecked(True)
+            source_item = MyTableWidgetItem(s)
+            source_item.setUneditable()
+            data_item = MyTableWidgetItem(self.source[s][1])
+            data_item.setUneditable()
+            table.setItem(num, COL_key, source_item)
+            table.setItem(num, COL_source_data, data_item)
+        table.resizeColumnToContents(0)
+        table.resizeColumnToContents(1)
+        table.resizeColumnToContents(2)
         self.ui.MainStackedWidget.setCurrentIndex(4)
 
     def get_checkdef(self):
@@ -406,7 +418,8 @@ class AppWindow(QMainWindow):
         Get back to the main table. Without loading a new cif file.
         """
         self.ui.MainStackedWidget.setCurrentIndex(0)
-        self.ui.moleculeLayout.removeWidget(self.view)
+        if self.view:
+            self.ui.moleculeLayout.removeWidget(self.view)
 
     def show_splash(self, text: str):
         splash = QSplashScreen()
@@ -1669,6 +1682,7 @@ class AppWindow(QMainWindow):
                 with suppress(Exception):
                     law = bdata.saint_data.twinlaw[list(bdata.saint_data.twinlaw.keys())[0]]
                     self.set_pair('_twin_individual_twin_matrix_11', str(law[0][0]))
+                    #self.source['_twin_individual_twin_matrix_11'] = (str(law[0][0]), bdata.saint_data.filename.name)
                     self.set_pair('_twin_individual_twin_matrix_12', str(law[0][1]))
                     self.set_pair('_twin_individual_twin_matrix_13', str(law[0][2]))
                     self.set_pair('_twin_individual_twin_matrix_21', str(law[1][0]))
