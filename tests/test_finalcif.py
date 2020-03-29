@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import QApplication
 
 import finalcif
 import report
-from datafiles import bruker_data, bruker_frame, p4p_reader, platon, rigaku_data, sadabs, saint, shelxt, utils
+from datafiles import bruker_data, bruker_frame, p4p_reader, platon, rigaku_data, sadabs, saint, shelx, utils
 from finalcif import AppWindow
 from report import mtools, report_text, symm, tables
 from tools import misc
@@ -20,7 +20,7 @@ from tools.version import VERSION
 class DoctestsTest(unittest.TestCase):
     def testrun_doctest(self):
         for name in [finalcif, symm, tables, mtools, report_text, report, bruker_data, bruker_frame,
-                     p4p_reader, platon, rigaku_data, sadabs, saint, shelxt, utils, misc]:
+                     p4p_reader, platon, rigaku_data, sadabs, saint, shelx, utils, misc]:
             failed, attempted = doctest.testmod(name)  # , verbose=True)
             if failed == 0:
                 print('passed all {} tests in {}!'.format(attempted, name.__name__))

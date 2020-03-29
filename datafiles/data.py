@@ -5,8 +5,6 @@
 #  and you think this stuff is worth it, you can buy me a beer in return.
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
-from cif.cif_file_io import CifContainer
-from datafiles.shelxt import SHELXTlistfile
 
 
 class WorkDataMixin():
@@ -61,41 +59,3 @@ class WorkDataMixin():
                         }
 
 
-class SolutionProgram(object):
-    """Handles the solution program: _computing_structure_solution"""
-
-    def __init__(self, cif: CifContainer):
-        self.cif_key = '_computing_structure_solution'
-        self.cif = cif
-        self.basename = cif.fileobj.stem.split('_0m')[0]
-        self.method = ''
-
-    def get_solution_program(self):
-        """
-        Tries to figure out which program was used for structure solution.
-        TODO: figure out more solution programs.
-        """
-        p = self.cif.fileobj.parent
-        xt_files = p.glob(self.basename + '*.lxt')
-        try:
-            res = self.cif.block.find_pair('_shelx_res_file')[1]
-        except (TypeError, AttributeError):
-            res = ''
-        byxt = res.find('REM SHELXT solution in')
-        for x in xt_files:
-            shelxt = SHELXTlistfile(x.as_posix())
-            if shelxt.version and byxt:
-                self.method = 'direct'
-                return shelxt
-        if byxt > 0:
-            xt = SHELXTlistfile('')
-            xt.version = "SHELXT (G. Sheldrick)"
-            self.method = 'direct'
-            return xt
-        xt = SHELXTlistfile('')
-        xt.version = "SHELXS (G. Sheldrick)"
-        self.method = 'direct'
-        return xt
-
-    def __repr__(self):
-        return self.get_solution_program().version
