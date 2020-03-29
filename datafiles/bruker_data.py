@@ -150,8 +150,13 @@ class BrukerData(WorkDataMixin, object):
         if not self.cif['_space_group_crystal_system']:
             with suppress(AttributeError):
                 csystem = self.cif.crystal_system()
+        if not self.cif.symmops and self.cif.symmops_from_spgr():
+            loop = self.cif.block.init_loop('_space_group_symop_operation_', ['xyz'])
+            for symmop in reversed(self.cif.symmops_from_spgr()):
+                loop.add_row([gcif.quote(symmop)])
+        '''
         if self.saint_data.is_twin and self.saint_data.components_firstsample == 2 \
-                and not self.cif['_twin_individual_twin_matrix_11']:
+                and not self.cif['_twin_individual_twin_matrix_11']: 
             with suppress(Exception):
                 law = self.saint_data.twinlaw[list(self.saint_data.twinlaw.keys())[0]]
                 self.sources['_twin_individual_twin_matrix_11'] = (str(law[0][1]), self.saint_data.filename)
@@ -165,16 +170,11 @@ class BrukerData(WorkDataMixin, object):
                 self.sources['_twin_individual_twin_matrix_33'] = (str(law[2][0]), self.saint_data.filename)
                 self.sources['_twin_individual_id']= (str(self.saint_data.components_firstsample), self.saint_data.filename)
                 self.sources['_twin_special_details']= ('The data was integrated as a 2-component twin.', self.saint_data.filename)
-        """
-        #TODO: symmops are missing, need loops for that
-        if not self.symmops:
-            for x in reversed(self.symmops_from_spgr()):
-                self.add_to_cif(cif_as_list, key=x, value='')
-            self.add_to_cif(cif_as_list, key='_space_group_symop_operation_xyz', value='')
-            self.add_to_cif(cif_as_list, key='_loop', value='')"""
+            '''
         # All sources that are not filled with data will be yellow in the main table
         #                          data                         tooltip
-        self.sources['_cell_measurement_reflns_used'] = (self.saint_data.cell_reflections, self.saint_data.filename.name)
+        self.sources['_cell_measurement_reflns_used'] = (
+        self.saint_data.cell_reflections, self.saint_data.filename.name)
         self.sources['_cell_measurement_theta_min'] = (
             self.saint_data.cell_res_min_theta or '', self.saint_data.filename.name)
         self.sources['_cell_measurement_theta_max'] = (
