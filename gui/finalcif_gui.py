@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/Users/daniel/GitHub/FinalCif/./gui/finalcif_gui.ui'
+# Form implementation generated from reading ui file 'C:\Users\daniel\Github\FinalCif\./gui\finalcif_gui.ui'
 #
-# Created by: PyQt5 UI code generator 5.14.1
+# Created by: PyQt5 UI code generator 5.13.2
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -351,10 +351,10 @@ class Ui_FinalCifWindow(object):
         self.gridLayout_8.setObjectName("gridLayout_8")
         spacerItem = QtWidgets.QSpacerItem(20, 28, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
         self.gridLayout_8.addItem(spacerItem, 1, 1, 1, 1)
-        self.BacktoMainpushButton = QtWidgets.QPushButton(self.page_checkcif)
-        self.BacktoMainpushButton.setMinimumSize(QtCore.QSize(120, 0))
-        self.BacktoMainpushButton.setObjectName("BacktoMainpushButton")
-        self.gridLayout_8.addWidget(self.BacktoMainpushButton, 0, 1, 1, 1)
+        self.BackFromPlatonPushButton = QtWidgets.QPushButton(self.page_checkcif)
+        self.BackFromPlatonPushButton.setMinimumSize(QtCore.QSize(120, 0))
+        self.BackFromPlatonPushButton.setObjectName("BackFromPlatonPushButton")
+        self.gridLayout_8.addWidget(self.BackFromPlatonPushButton, 0, 1, 1, 1)
         spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.gridLayout_8.addItem(spacerItem1, 0, 2, 1, 1)
         spacerItem2 = QtWidgets.QSpacerItem(6, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum)
@@ -765,7 +765,7 @@ class Ui_FinalCifWindow(object):
         self.retranslateUi(FinalCifWindow)
         self.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
         self.PropertiesTemplatesStackedWidget.setCurrentIndex(1)
-        self.MainStackedWidget.setCurrentIndex(4)
+        self.MainStackedWidget.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(FinalCifWindow)
         FinalCifWindow.setTabOrder(self.SelectCif_LineEdit, self.EquipmentEditTableWidget)
         FinalCifWindow.setTabOrder(self.EquipmentEditTableWidget, self.cifKeywordLineEdit)
@@ -831,7 +831,7 @@ class Ui_FinalCifWindow(object):
         self.HAtomsCheckBox.setText(_translate("FinalCifWindow", "without Hydrogen Bonds"))
         self.SaveFullReportButton.setText(_translate("FinalCifWindow", "Make Tables"))
         self.label.setText(_translate("FinalCifWindow", "PLATON Checkcif output:"))
-        self.BacktoMainpushButton.setText(_translate("FinalCifWindow", "Back to CIF Table"))
+        self.BackFromPlatonPushButton.setText(_translate("FinalCifWindow", "Back to CIF Table"))
         self.BackPushButton.setText(_translate("FinalCifWindow", "Back to CIF Table"))
         self.molGroupBox.setTitle(_translate("FinalCifWindow", "Molecule"))
         self.growCheckBox.setText(_translate("FinalCifWindow", "Grow Structure"))
@@ -867,8 +867,6 @@ class Ui_FinalCifWindow(object):
 "\n"
 "Uncheck items in order to ignore the respective data source.\n"
 "The data source will be ignored until next program restart."))
-        item = self.SourcesTableWidget.horizontalHeaderItem(0)
-        item.setText(_translate("FinalCifWindow", " "))
         item = self.SourcesTableWidget.horizontalHeaderItem(1)
         item.setText(_translate("FinalCifWindow", "CIF Item"))
         item = self.SourcesTableWidget.horizontalHeaderItem(2)

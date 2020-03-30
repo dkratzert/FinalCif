@@ -167,7 +167,17 @@ class MyCifTable(QTableWidget, ItemTextMixin):
             except AttributeError:
                 pass
 
-    def getText(self, col, row):
+    def getText(self, col: int, row: int):
+        return self.text(row, col)
+
+    def getTextFromKey(self, key: str, col: int):
+        """
+        Get text from field by cif keyword.
+        :param key: CIF keyword like _chemical_formula_moiety
+        :param col: column number to get text from.
+        :return: text
+        """
+        row = self.vheaderitems.index(key)
         return self.text(row, col)
 
     def setBackground(self, key: str, column: int, color: QColor):

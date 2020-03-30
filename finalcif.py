@@ -154,7 +154,7 @@ class AppWindow(QMainWindow):
 
         self.ui.BackPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
         self.ui.BackpushButtonDetails.setIcon(qta.icon('mdi.keyboard-backspace'))
-        self.ui.BacktoMainpushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
+        self.ui.BackFromPlatonPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
 
         self.ui.CCDCpushButton.setIcon(qta.icon('fa5s.upload'))
         self.ui.CODpushButton.setIcon(qta.icon('mdi.upload'))
@@ -205,7 +205,7 @@ class AppWindow(QMainWindow):
         self.ui.CheckcifButton.clicked.connect(self.do_offline_checkcif)
         self.ui.CheckcifOnlineButton.clicked.connect(self.do_html_checkcif)
         self.ui.CheckcifPDFOnlineButton.clicked.connect(self.do_pdf_checkcif)
-        self.ui.BacktoMainpushButton.clicked.connect(self.back_to_main)
+        self.ui.BackFromPlatonPushButton.clicked.connect(self.back_to_main_noload)
         ##
         self.ui.SelectCif_PushButton.clicked.connect(self.load_cif_file)
         self.ui.SaveCifButton.clicked.connect(self.save_cif_and_display)
@@ -607,15 +607,16 @@ class AppWindow(QMainWindow):
         splash = self.show_splash("Running Checkcif locally. Please wait...")
         # makes sure also the currently edited item is saved:
         self.ui.cif_main_table.setCurrentItem(None)
+        self.ui.CheckcifPlaintextEdit.clear()
         self.save_current_cif_file()
         self.load_cif_file(self.final_cif_file_name)
+        self.ui.MainStackedWidget.setCurrentIndex(1)
         try:
             p = Platon(self.final_cif_file_name)
         except Exception as e:
             print(e)
             # self.ui.CheckcifButton.setDisabled(True)
             return
-        self.ui.MainStackedWidget.setCurrentIndex(1)
         ccpe = self.ui.CheckcifPlaintextEdit
         ccpe.setPlainText('Platon output: \nThis might not be the same as the IUCr Checkcif!')
         p.run_platon()
@@ -630,6 +631,7 @@ class AppWindow(QMainWindow):
         font.setPointSize(14)
         doc.setDefaultFont(font)
         ccpe.setLineWrapMode(QPlainTextEdit.NoWrap)
+        p.parse_chk_file()
         if p.chk_file_text:
             try:
                 ccpe.appendPlainText(p.chk_file_text)
@@ -639,10 +641,11 @@ class AppWindow(QMainWindow):
                 pass
         ccpe.verticalScrollBar().setValue(0)
         splash.finish(self)
-        plat = Platon(self.cif.fileobj)
-        plat.parse_file()
-        if plat.formula_moiety:
-            self.ui.cif_main_table.setText(key='_chemical_formula_moiety', txt=plat.formula_moiety, column=COL_DATA)
+        moiety = self.ui.cif_main_table.getTextFromKey(key='_chemical_formula_moiety', col=0)
+        if p.formula_moiety and moiety in ['', '?']:
+            self.ui.MainStackedWidget.setCurrentIndex(0)
+            self.ui.cif_main_table.setText(key='_chemical_formula_moiety', txt=p.formula_moiety, column=COL_EDIT)
+        self.ui.MainStackedWidget.setCurrentIndex(1)
 
     def load_recent_file(self, file_index: int) -> None:
         combo = self.ui.RecentComboBox
@@ -1356,7 +1359,6 @@ class AppWindow(QMainWindow):
         self.ui.MainStackedWidget.setCurrentIndex(0)
         # clean table before loading:
         self.ui.cif_main_table.delete_content()
-        self.ui.CheckcifPlaintextEdit.clear()
         if not fname:
             try:
                 # loading last working directory:
