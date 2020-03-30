@@ -174,28 +174,28 @@ class BrukerData(WorkDataMixin, object):
         # All sources that are not filled with data will be yellow in the main table
         #                          data                         tooltip
         self.sources['_cell_measurement_reflns_used'] = (
-        self.saint_data.cell_reflections, self.saint_data.filename.name)
+            self.saint_data.cell_reflections, self.saint_data.filename.name)
         self.sources['_cell_measurement_theta_min'] = (
             self.saint_data.cell_res_min_theta or '', self.saint_data.filename.name)
         self.sources['_cell_measurement_theta_max'] = (
-            self.saint_data.cell_res_max_theta or '', saint_first_ls.filename.name)
-        self.sources['_computing_data_collection'] = (saint_first_ls.aquire_software, self.saint_data.filename.name)
+            self.saint_data.cell_res_max_theta or '', self.saint_data.filename.name)
+        self.sources['_computing_data_collection'] = (saint_first_ls.aquire_software, saint_first_ls.filename.name)
         self.sources['_computing_cell_refinement'] = (self.saint_data.version, self.saint_data.filename.name)
         self.sources['_computing_data_reduction'] = (self.saint_data.version, self.saint_data.filename.name)
         self.sources['_exptl_absorpt_correction_type'] = abscorrtype
         self.sources['_exptl_absorpt_correction_T_min'] = abs_tmin
         self.sources['_exptl_absorpt_correction_T_max'] = abs_tmax
         self.sources['_diffrn_reflns_av_R_equivalents'] = rint
+        self.sources['_exptl_absorpt_process_details'] = absdetails
         self.sources['_cell_measurement_temperature'] = (temperature, self.p4p.filename.name)
         self.sources['_diffrn_ambient_temperature'] = (temperature, self.p4p.filename.name)
-        self.sources['_exptl_absorpt_process_details'] = absdetails
         self.sources['_exptl_crystal_colour'] = (self.p4p.crystal_color, self.p4p.filename.name)
         self.sources['_exptl_crystal_description'] = (self.p4p.morphology, self.p4p.filename.name)
         self.sources['_exptl_crystal_size_min'] = (self.p4p.crystal_size[0] or '', self.p4p.filename.name)
         self.sources['_exptl_crystal_size_mid'] = (self.p4p.crystal_size[1] or '', self.p4p.filename.name)
         self.sources['_exptl_crystal_size_max'] = (self.p4p.crystal_size[2] or '', self.p4p.filename.name)
         self.sources['_computing_structure_solution'] = solution_program
-        self.sources['_atom_sites_solution_primary'] = (sol.method, '')
+        self.sources['_atom_sites_solution_primary'] = (sol.method, 'Inherited from solution program.')
         self.sources['_diffrn_source_voltage'] = (kilovolt or '', frame_name)
         self.sources['_diffrn_source_current'] = (milliamps or '', frame_name)
         self.sources['_chemical_formula_moiety'] = ('', '')
@@ -203,10 +203,28 @@ class BrukerData(WorkDataMixin, object):
         self.sources['_refine_special_details'] = ('', '')
         self.sources['_exptl_crystal_recrystallization_method'] = ('', '')
         self.sources['_chemical_absolute_configuration'] = ('', '')
-        self.sources['_space_group_name_H-M_alt'] = (spgr, 'calculated by gemmi')
-        self.sources['_space_group_name_Hall'] = (hallsym, 'calculated by gemmi')
-        self.sources['_space_group_IT_number'] = (spgrnum, 'calculated by gemmi')
-        self.sources['_space_group_crystal_system'] = (csystem, 'calculated by gemmi')
+        self.sources['_space_group_name_H-M_alt'] = (spgr, 'Calculated by gemmi: https://gemmi.readthedocs.io')
+        self.sources['_space_group_name_Hall'] = (hallsym, 'Calculated by gemmi: https://gemmi.readthedocs.io')
+        self.sources['_space_group_IT_number'] = (spgrnum, 'Calculated by gemmi: https://gemmi.readthedocs.io')
+        self.sources['_space_group_crystal_system'] = (csystem, 'calculated by gemmi: https://gemmi.readthedocs.io')
+        # TODO: add this here:
+        if self.saint_data.is_twin and self.saint_data.components_firstsample == 2:# \
+            #and not self.cif['_twin_individual_twin_matrix_11']:
+            #with suppress(Exception):
+            law = self.saint_data.twinlaw[list(self.saint_data.twinlaw.keys())[0]]
+            self.sources['_twin_individual_twin_matrix_11'] = (str(law[0][1]), self.saint_data.filename.name)
+            self.sources['_twin_individual_twin_matrix_12'] = (str(law[0][2]), self.saint_data.filename.name)
+            self.sources['_twin_individual_twin_matrix_13'] = (str(law[0][0]), self.saint_data.filename.name)
+            self.sources['_twin_individual_twin_matrix_21'] = (str(law[1][1]), self.saint_data.filename.name)
+            self.sources['_twin_individual_twin_matrix_22'] = (str(law[1][2]), self.saint_data.filename.name)
+            self.sources['_twin_individual_twin_matrix_23'] = (str(law[1][0]), self.saint_data.filename.name)
+            self.sources['_twin_individual_twin_matrix_31'] = (str(law[2][1]), self.saint_data.filename.name)
+            self.sources['_twin_individual_twin_matrix_32'] = (str(law[2][2]), self.saint_data.filename.name)
+            self.sources['_twin_individual_twin_matrix_33'] = (str(law[2][0]), self.saint_data.filename.name)
+            self.sources['_twin_individual_id'] = (
+            str(self.saint_data.components_firstsample), self.saint_data.filename.name)
+            self.sources['_twin_special_details'] = (
+            'The data was integrated as a 2-component twin.', self.saint_data.filename.name)
 
     @property
     def sadabs(self):
