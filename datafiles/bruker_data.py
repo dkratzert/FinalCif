@@ -203,10 +203,10 @@ class BrukerData(WorkDataMixin, object):
         self.sources['_refine_special_details'] = ('', '')
         self.sources['_exptl_crystal_recrystallization_method'] = ('', '')
         self.sources['_chemical_absolute_configuration'] = ('', '')
-        self.sources['_space_group_name_H-M_alt'] = (spgr, 'calculated by gemmi')
-        self.sources['_space_group_name_Hall'] = (hallsym, 'calculated by gemmi')
-        self.sources['_space_group_IT_number'] = (spgrnum, 'calculated by gemmi')
-        self.sources['_space_group_crystal_system'] = (csystem, 'calculated by gemmi')
+        self.sources['_space_group_name_H-M_alt'] = (spgr, 'Calculated by gemmi: https://gemmi.readthedocs.io')
+        self.sources['_space_group_name_Hall'] = (hallsym, 'Calculated by gemmi: https://gemmi.readthedocs.io')
+        self.sources['_space_group_IT_number'] = (spgrnum, 'Calculated by gemmi: https://gemmi.readthedocs.io')
+        self.sources['_space_group_crystal_system'] = (csystem, 'calculated by gemmi: https://gemmi.readthedocs.io')
         # TODO: add this here:
         if self.saint_data.is_twin and self.saint_data.components_firstsample == 2:# \
             #and not self.cif['_twin_individual_twin_matrix_11']:
