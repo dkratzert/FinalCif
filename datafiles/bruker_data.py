@@ -104,8 +104,7 @@ class BrukerData(WorkDataMixin, object):
 
         if self.sadabs.Rint:
             rint = (self.sadabs.Rint, self.sadabs.filename.name)
-        else:
-            rint = ('', '')
+            self.sources['_diffrn_reflns_av_R_equivalents'] = rint
         temp2 = self.p4p.temperature
         temperature = round(min([temp1, temp2]), 1)
         if temperature < 0.01:
@@ -131,46 +130,29 @@ class BrukerData(WorkDataMixin, object):
         except ValueError:
             # most probably one value is '?'
             pass
-        # TODO: refrator space group things into a general method:
-        spgr = '?'
         if not self.cif['_space_group_name_H-M_alt']:
             try:
                 spgr = self.cif.space_group()
+                self.sources['_space_group_name_H-M_alt'] = (spgr, 'Calculated by gemmi: https://gemmi.readthedocs.io')
             except AttributeError:
                 pass
-        hallsym = '?'
         if not self.cif['_space_group_name_Hall']:
             with suppress(AttributeError):
                 hallsym = self.cif.hall_symbol()
-        spgrnum = '?'
+                self.sources['_space_group_name_Hall'] = (hallsym, 'Calculated by gemmi: https://gemmi.readthedocs.io')
         if not self.cif['_space_group_IT_number']:
             with suppress(AttributeError):
                 spgrnum = self.cif.spgr_number_from_symmops()
-        csystem = '?'
+                self.sources['_space_group_IT_number'] = (spgrnum, 'Calculated by gemmi: https://gemmi.readthedocs.io')
         if not self.cif['_space_group_crystal_system']:
             with suppress(AttributeError):
                 csystem = self.cif.crystal_system()
+                self.sources['_space_group_crystal_system'] = (
+                    csystem, 'calculated by gemmi: https://gemmi.readthedocs.io')
         if not self.cif.symmops and self.cif.symmops_from_spgr():
             loop = self.cif.block.init_loop('_space_group_symop_operation_', ['xyz'])
             for symmop in reversed(self.cif.symmops_from_spgr()):
                 loop.add_row([gcif.quote(symmop)])
-        '''
-        if self.saint_data.is_twin and self.saint_data.components_firstsample == 2 \
-                and not self.cif['_twin_individual_twin_matrix_11']: 
-            with suppress(Exception):
-                law = self.saint_data.twinlaw[list(self.saint_data.twinlaw.keys())[0]]
-                self.sources['_twin_individual_twin_matrix_11'] = (str(law[0][1]), self.saint_data.filename)
-                self.sources['_twin_individual_twin_matrix_12'] = (str(law[0][2]), self.saint_data.filename)
-                self.sources['_twin_individual_twin_matrix_13'] = (str(law[0][0]), self.saint_data.filename)
-                self.sources['_twin_individual_twin_matrix_21'] = (str(law[1][1]), self.saint_data.filename)
-                self.sources['_twin_individual_twin_matrix_22'] = (str(law[1][2]), self.saint_data.filename)
-                self.sources['_twin_individual_twin_matrix_23'] = (str(law[1][0]), self.saint_data.filename)
-                self.sources['_twin_individual_twin_matrix_31'] = (str(law[2][1]), self.saint_data.filename)
-                self.sources['_twin_individual_twin_matrix_32'] = (str(law[2][2]), self.saint_data.filename)
-                self.sources['_twin_individual_twin_matrix_33'] = (str(law[2][0]), self.saint_data.filename)
-                self.sources['_twin_individual_id']= (str(self.saint_data.components_firstsample), self.saint_data.filename)
-                self.sources['_twin_special_details']= ('The data was integrated as a 2-component twin.', self.saint_data.filename)
-            '''
         # All sources that are not filled with data will be yellow in the main table
         #                          data                         tooltip
         self.sources['_cell_measurement_reflns_used'] = (
@@ -185,7 +167,6 @@ class BrukerData(WorkDataMixin, object):
         self.sources['_exptl_absorpt_correction_type'] = abscorrtype
         self.sources['_exptl_absorpt_correction_T_min'] = abs_tmin
         self.sources['_exptl_absorpt_correction_T_max'] = abs_tmax
-        self.sources['_diffrn_reflns_av_R_equivalents'] = rint
         self.sources['_exptl_absorpt_process_details'] = absdetails
         self.sources['_cell_measurement_temperature'] = (temperature, self.p4p.filename.name)
         self.sources['_diffrn_ambient_temperature'] = (temperature, self.p4p.filename.name)
@@ -203,14 +184,10 @@ class BrukerData(WorkDataMixin, object):
         self.sources['_refine_special_details'] = ('', '')
         self.sources['_exptl_crystal_recrystallization_method'] = ('', '')
         self.sources['_chemical_absolute_configuration'] = ('', '')
-        self.sources['_space_group_name_H-M_alt'] = (spgr, 'Calculated by gemmi: https://gemmi.readthedocs.io')
-        self.sources['_space_group_name_Hall'] = (hallsym, 'Calculated by gemmi: https://gemmi.readthedocs.io')
-        self.sources['_space_group_IT_number'] = (spgrnum, 'Calculated by gemmi: https://gemmi.readthedocs.io')
-        self.sources['_space_group_crystal_system'] = (csystem, 'calculated by gemmi: https://gemmi.readthedocs.io')
         # TODO: add this here:
-        if self.saint_data.is_twin and self.saint_data.components_firstsample == 2:# \
-            #and not self.cif['_twin_individual_twin_matrix_11']:
-            #with suppress(Exception):
+        if self.saint_data.is_twin and self.saint_data.components_firstsample == 2:  # \
+            # and not self.cif['_twin_individual_twin_matrix_11']:
+            # with suppress(Exception):
             law = self.saint_data.twinlaw[list(self.saint_data.twinlaw.keys())[0]]
             self.sources['_twin_individual_twin_matrix_11'] = (str(law[0][1]), self.saint_data.filename.name)
             self.sources['_twin_individual_twin_matrix_12'] = (str(law[0][2]), self.saint_data.filename.name)
@@ -222,9 +199,9 @@ class BrukerData(WorkDataMixin, object):
             self.sources['_twin_individual_twin_matrix_32'] = (str(law[2][2]), self.saint_data.filename.name)
             self.sources['_twin_individual_twin_matrix_33'] = (str(law[2][0]), self.saint_data.filename.name)
             self.sources['_twin_individual_id'] = (
-            str(self.saint_data.components_firstsample), self.saint_data.filename.name)
+                str(self.saint_data.components_firstsample), self.saint_data.filename.name)
             self.sources['_twin_special_details'] = (
-            'The data was integrated as a 2-component twin.', self.saint_data.filename.name)
+                'The data was integrated as a 2-component twin.', self.saint_data.filename.name)
 
     @property
     def sadabs(self):
