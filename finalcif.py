@@ -5,9 +5,8 @@
 #  and you think this stuff is worth it, you can buy me a beer in return.
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
-from datafiles.data import WorkDataMixin
 
-DEBUG = True
+DEBUG = False
 
 import os
 
@@ -58,8 +57,7 @@ from tools.version import VERSION
 from PyQt5.QtCore import QPoint, Qt, QUrl, QEvent
 from PyQt5.QtGui import QFont, QIcon, QBrush, QResizeEvent, QMoveEvent
 from PyQt5.QtWidgets import QApplication, QFileDialog, QHeaderView, QListWidget, QListWidgetItem, \
-    QMainWindow, QMessageBox, QPlainTextEdit, QStackedWidget, QTableWidget, QSplashScreen, QShortcut, QCheckBox, \
-    QTableWidgetItem
+    QMainWindow, QMessageBox, QPlainTextEdit, QStackedWidget, QTableWidget, QSplashScreen, QShortcut, QCheckBox
 
 """
 TODO:
@@ -335,7 +333,7 @@ class AppWindow(QMainWindow):
         for num, s in enumerate(self.sources):
             if not self.sources[s]:
                 continue
-            #if not self.source[s][0]:
+            # if not self.source[s][0]:
             #    continue
             table.insertRow(num)
             box = QCheckBox()
