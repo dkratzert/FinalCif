@@ -54,8 +54,7 @@ class WorkDataMixin():
                         '_twin_individual_twin_matrix_32'        : None,
                         '_twin_individual_twin_matrix_33'        : None,
                         '_twin_individual_id'                    : None,
-                        '_twin_special_details'                  : (
-                            'The data was integrated as a 2-component twin.', ''),
+                        '_twin_special_details'                  : None,
                         }
 
 
