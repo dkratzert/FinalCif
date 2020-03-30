@@ -3,7 +3,7 @@ from textwrap import wrap
 
 from PyQt5 import QtCore
 from PyQt5.QtCore import QEvent, QObject, Qt
-from PyQt5.QtGui import QColor, QTextOption, QKeySequence
+from PyQt5.QtGui import QColor, QTextOption, QKeySequence, QContextMenuEvent
 from PyQt5.QtWidgets import QAbstractScrollArea, QAction, QComboBox, QFrame, QPlainTextEdit, QSizePolicy, QTableWidget, \
     QTableWidgetItem, QWidget, QApplication, QShortcut
 
@@ -73,11 +73,14 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.actionDeletePair = QAction("Delete Row", self)
         self.actionCopy = QAction("Copy", self)
+        self.actionCopyVhead = QAction("Copy CIF Keyword", self)
         self.setContextMenuPolicy(Qt.ActionsContextMenu)
         self.addAction(self.actionDeletePair)
         self.addAction(self.actionCopy)
+        self.addAction(self.actionCopyVhead)
         self.actionDeletePair.triggered.connect(self.delete_row)
         self.actionCopy.triggered.connect(self.copy_item)
+        self.actionCopyVhead.triggered.connect(self.copy_vhead_item)
         del_shortcut = QShortcut(QKeySequence('Ctrl+Del'), self)
         del_shortcut.activated.connect(self.delete_row)
         self.vheaderitems = list()
@@ -192,6 +195,14 @@ class MyCifTable(QTableWidget, ItemTextMixin):
                 with suppress(Exception):
                     widget.setBackground(color)
 
+    def copy_vhead_item(self):
+        """
+        Copies the content of a field.
+        """
+        row = self.currentRow()
+        clipboard = QApplication.clipboard()
+        clipboard.setText(self.vheaderitems[row])
+
     def copy_item(self):
         """
         Copies the content of a field.
@@ -230,6 +241,20 @@ class MyQPlainTextEdit(QPlainTextEdit):
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setWordWrapMode(QTextOption.WrapAtWordBoundaryOrAnywhere)
+
+    def contextMenuEvent(self, event: QContextMenuEvent):
+        menu = self.createStandardContextMenu(event.pos())
+        actionCopyVhead = menu.addAction("Copy CIF Keyword")
+        actionCopyVhead.triggered.connect(self.copy_vhead_item)
+        choosedAction = menu.exec(event.globalPos())
+
+    def copy_vhead_item(self, row):
+        """
+        Copies the content of a field.
+        """
+        row = self.parent.currentRow()
+        clipboard = QApplication.clipboard()
+        clipboard.setText(self.parent.vheaderitems[row])
 
     def setBackground(self, color):
         """
