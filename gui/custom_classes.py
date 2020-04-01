@@ -162,7 +162,7 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         self.setCurrentCell(row, column)
         item = self.currentItem()
         if item:
-            item.setText(txt)
+            item.setText(retranslate_delimiter(txt))
         else:
             try:
                 # in this case, we have a combobox

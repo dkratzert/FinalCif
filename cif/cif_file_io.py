@@ -74,15 +74,15 @@ charcters = {'°'      : r'\%',
              u'\u2074': r'^4^',
              u'\u00B3': r'^3^',
              u'\u00B2': r'^2^',
-             u'\u2081': r'^1^',
-             u'\u2082': r'^2^',
-             u'\u2083': r'^3^',
-             u'\u2084': r'^4^',
-             u'\u2085': r'^5^',
-             u'\u2086': r'^6^',
-             u'\u2087': r'^7^',
-             u'\u2088': r'^8^',
-             u'\u2089': r'^9^',
+             u'\u2081': r'~1~',
+             u'\u2082': r'~2~',
+             u'\u2083': r'~3~',
+             u'\u2084': r'~4~',
+             u'\u2085': r'~5~',
+             u'\u2086': r'~6~',
+             u'\u2087': r'~7~',
+             u'\u2088': r'~8~',
+             u'\u2089': r'~9~',
              u'\u0131': r'\?i',
              u"\u03B1": r'\a',  # alpha
              u"\u03B2": r'\b',  # beta
@@ -192,8 +192,7 @@ class CifContainer():
             return ''
 
     def __delitem__(self, key):
-        # TODO: ask if delitem could be possible:
-        self.block.set_pair(key, '?')
+        self.block.find_pair_item(key).erase()
 
     def save(self, filename: str = None) -> None:
         """
