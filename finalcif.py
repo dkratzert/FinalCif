@@ -57,7 +57,8 @@ from tools.version import VERSION
 from PyQt5.QtCore import QPoint, Qt, QUrl, QEvent
 from PyQt5.QtGui import QFont, QIcon, QBrush, QResizeEvent, QMoveEvent
 from PyQt5.QtWidgets import QApplication, QFileDialog, QHeaderView, QListWidget, QListWidgetItem, \
-    QMainWindow, QMessageBox, QPlainTextEdit, QStackedWidget, QTableWidget, QSplashScreen, QShortcut, QCheckBox
+    QMainWindow, QMessageBox, QPlainTextEdit, QStackedWidget, QTableWidget, QSplashScreen, QShortcut, QCheckBox, \
+    QHBoxLayout, QWidget
 
 """
 TODO:
@@ -115,6 +116,7 @@ class AppWindow(QMainWindow):
         self.ui.SaveCifButton.setDisabled(True)
         self.ui.ExploreDirButton.setDisabled(True)
         self.ui.DetailsPushButton.setDisabled(True)
+        self.ui.SourcesPushButton.setDisabled(True)
         # noinspection PyTypeChecker
         self.cif = None
         self.view = None
@@ -132,7 +134,12 @@ class AppWindow(QMainWindow):
         self.ui.SaveFullReportButton.setIcon(qta.icon('mdi.file-table-outline'))
         self.ui.ExploreDirButton.setIcon(qta.icon('fa5.folder-open'))
         self.ui.SaveCifButton.setIcon(qta.icon('fa5.save'))
-        self.ui.SelectCif_PushButton.setIcon(qta.icon('fa5.file-alt'))
+        options = [{'color': 'darkgreen'}]
+        self.ui.SelectCif_PushButton.setIcon(qta.icon('fa5.file-alt', options=options))
+        #self.ui.SelectCif_PushButton.setIcon(qta.icon('fa5s.spinner', color='red',
+        #             animation=qta.Spin(self.ui.SelectCif_PushButton)))
+        self.ui.SourcesPushButton.setIcon(qta.icon('fa5s.tasks'))
+        self.ui.DetailsPushButton.setIcon(qta.icon('fa5s.crow'))
 
         self.ui.NewEquipmentTemplateButton.setIcon(qta.icon('mdi.playlist-plus'))
         self.ui.EditEquipmentTemplateButton.setIcon(qta.icon('mdi.playlist-edit'))
@@ -340,6 +347,7 @@ class AppWindow(QMainWindow):
             box.clicked.connect(self.erase_disabled_items)
             table.setCellWidget(num, 0, box)
             box.setChecked(True)
+            box.setStyleSheet("margin-left:10%; margin-right:0%;")
             source_item = MyTableWidgetItem(s)
             source_item.setUneditable()
             data_item = MyTableWidgetItem(self.sources[s][1])
@@ -1441,6 +1449,7 @@ class AppWindow(QMainWindow):
             # saving current cif dir as last working directory:
             self.settings.save_current_dir(curdir)
             self.ui.DetailsPushButton.setEnabled(True)
+            self.ui.SourcesPushButton.setEnabled(True)
 
     def show_properties(self):
         self.save_current_cif_file()
