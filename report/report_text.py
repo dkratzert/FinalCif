@@ -144,16 +144,16 @@ class DataReduct():
     def __init__(self, cif: CifContainer, paragraph: Paragraph):
         self.cif = cif
         integration = gstr(self.cif['_computing_data_reduction']) or '??'
-        #integration_prog = '?'
-        #if 'saint' in integration.lower():
+        # integration_prog = '?'
+        # if 'saint' in integration.lower():
         #    integration_prog = 'SAINT'
-        #if 'crysalis' in integration.lower():
+        # if 'crysalis' in integration.lower():
         #    integration_prog = 'CrysAlisPro'
-        #if 'trek' in integration.lower():
+        # if 'trek' in integration.lower():
         #    integration_prog = 'd*trek'
         abstype = gstr(self.cif['_exptl_absorpt_correction_type']) or '??'
         abs_details = gstr(self.cif['_exptl_absorpt_process_details']) or '??'
-        #if 'sortav' in abs_details.lower():
+        # if 'sortav' in abs_details.lower():
         #    abs_details = 'SORTAV'
         if 'sadabs' in abs_details.lower():
             if ':' in abs_details[:16]:
@@ -222,10 +222,11 @@ class Disorder():
                     "restraints and displacement parameter restraints. "
         if self.cif.dsr_used:
             sentence2 = "Some parts of the disorder model were introduced by the " \
-                        "program DSR. (doi: 10.1107/S1600576718004508) "
+                        "program DSR "
         paragraph.add_run(sentence1)
         if sentence2:
             paragraph.add_run(sentence2)
+            DSRReference(paragraph)
 
 
 class Twinning():
@@ -247,6 +248,13 @@ class CCDC():
         paragraph.add_run(sentence)
 
 
+class FinalCifreport():
+    def __init__(self, paragraph: Paragraph):
+        sentence = "This report and the CIF file were generated using Finalcif (" \
+                   "www.xs3.uni-freiburg.de/research/finalcif). "
+        paragraph.add_run(sentence)
+
+
 def get_inf_article(next_word: str) -> str:
     if not next_word:
         return 'a'
@@ -261,3 +269,66 @@ def format_radiation(radiation_type: str) -> list:
         return radtype
     else:
         return radtype
+
+
+class ReferenceList():
+    def __init__(self, paragraph):
+        self.paragraph = paragraph
+        self.number = 1
+
+    #TODO: implement linked list for reference list counting
+
+
+class ReferenceFormater():
+    def __init__(self, paragraph: Paragraph):
+        self.p = paragraph
+        self.authors = ''
+        self.journal = ''
+        self.year = ''
+        self.volume = ''
+        self.pages = ''
+        self.doi = ''
+        self.program = ''
+
+    def add_reference(self):
+        if self.authors:
+            self.p.add_run(self.authors)
+            self.p.add_run(', ')
+        if self.journal:
+            self.p.add_run(self.journal).italic = True
+            self.p.add_run(', ')
+        if self.year:
+            self.p.add_run(self.year).bold = True
+            self.p.add_run(', ')
+        if self.volume:
+            self.p.add_run(self.volume).italic = True
+            self.p.add_run(', ')
+        if self.pages:
+            self.p.add_run(self.pages)
+        if self.doi:
+            self.p.add_run(', ')
+            self.p.add_run(self.doi)
+        self.p.add_run('. ')
+
+
+class DSRReference(ReferenceFormater):
+    def __init__(self, paragraph: Paragraph):
+        super().__init__(paragraph)
+        self.doi = '(doi: 10.1107/S1600576718004508)'
+        self.add_reference()
+
+
+class BrukerReference(ReferenceFormater):
+    def __init__(self, paragraph: Paragraph, name: str, version: str):
+        """
+        Bruker (2012). Program name(s). Bruker AXS Inc., Madison, Wisconsin, USA.
+        :param paragraph:
+        :param name:
+        :param version:
+        """
+        super().__init__(paragraph)
+        self.authors = 'SAINT'
+        self.journal = 'Bruker'
+        self.year = '2012'
+        self.pages = 'Bruker AXS Inc., Madison, Wisconsin, USA'
+        self.add_reference()

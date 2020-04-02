@@ -108,6 +108,7 @@ charcters = {'°'      : r'\%',
              u"\u03C9": r'\w',
              u"\u03A9": r'\W',
              u"\u03D5": r'\f',
+             #"1̄": r'\=1',  # Does not work in QT?
              }  # , r'\r\n': chr(10)}
 
 

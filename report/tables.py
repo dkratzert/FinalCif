@@ -20,7 +20,7 @@ from app_path import application_path
 from cif.cif_file_io import CifContainer
 from report.mtools import cif_keywords_list, isfloat, this_or_quest
 from report.report_text import CCDC, CrstalSelection, Crystallization, DataReduct, Disorder, Hydrogens, MachineType, \
-    SolveRefine, format_radiation, math_to_word
+    SolveRefine, format_radiation, math_to_word, FinalCifreport, BrukerReference, DSRReference
 from report.spgrps import SpaceGroups
 from report.symm import SymmetryElement
 from tools.misc import prot_space, angstrom, bequal, sigma_sm, halbgeviert, degree_sign, ellipsis_mid
@@ -99,7 +99,6 @@ def make_report_from(file_obj: Path, output_filename: str = None, path: str = ''
     # font = new_heading_style.font
     # font.color.rgb = RGBColor(0, 0, 0)
 
-    cif = None
     if file_obj.exists():
         try:
             cif = CifContainer(file_obj)
@@ -131,6 +130,8 @@ def make_report_from(file_obj: Path, output_filename: str = None, path: str = ''
     if cif.disorder_present:
         Disorder(cif, p_report)
     CCDC(cif, p_report)
+    p_report.add_run(' ')
+    FinalCifreport(p_report)
 
     table_num = 1
     if not picfile.exists():
@@ -152,6 +153,12 @@ def make_report_from(file_obj: Path, output_filename: str = None, path: str = ''
         make_culumns_section(document, columns='1')
         document.add_paragraph('No further tables, because symmetry operators '
                                '(_space_group_symop_operation_xyz) are missing.')
+    ## References:
+    document.add_heading('References', 2)
+    p = document.add_paragraph('')
+    r = BrukerReference(paragraph=p, name='SAINT', version='4.58a')
+    r = DSRReference(paragraph=p)
+    ##
     document.save(output_filename)
     print('\nTables finished - output file: {}'.format(output_filename))
     return file_obj.name
