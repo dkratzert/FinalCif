@@ -64,6 +64,8 @@ from PyQt5.QtWidgets import QApplication, QFileDialog, QHeaderView, QListWidget,
 TODO:
 - add loops to templates
 - Add one picture of the vzs video file to report.
+- Improve handling of SQUEEZEd data
+- matplolib-3d
 
 # cif core dictionary to python dictionary:
 c = CifContainer(Path('cif_core_dict.cif'))
