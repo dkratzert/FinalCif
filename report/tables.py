@@ -119,27 +119,28 @@ def make_report_from(file_obj: Path, output_filename: str = None, path: str = ''
         pic = document.add_paragraph()
         pic.add_run().add_picture(str(picfile), width=Cm(7))
 
-    p_report = document.add_paragraph()
-    ref = ReferenceList(p_report)
-    p_report.style = document.styles['fliesstext']
-    p_report.add_run('The following text is only a suggestion: ').font.bold = True
-    Crystallization(cif, p_report)
-    CrstalSelection(cif, p_report)
-    MachineType(cif, p_report)
-    DataReduct(cif, p_report)
-    sadabs = BrukerReference(p_report, 'SADABS', '2016/2')
-    ref.append([sadabs, BrukerReference(p_report, 'SAINT', '7.68a'),
-                DSRReference2018(p_report)])
-    SolveRefine(cif, p_report)
+    report_p = document.add_paragraph()
+    ref = ReferenceList(report_p)
+    report_p.style = document.styles['fliesstext']
+    report_p.add_run('The following text is only a suggestion: ').font.bold = True
+    Crystallization(cif, report_p)
+    CrstalSelection(cif, report_p)
+    MachineType(cif, report_p)
+    DataReduct(cif, report_p)
+    #TODO: figure out versions and programs!
+    sadabs = BrukerReference(report_p, 'SADABS', '2016/2')
+    ref.append([sadabs,
+                BrukerReference(report_p, 'SAINT', '7.68a'),
+                DSRReference2018(report_p)])
+    SolveRefine(cif, report_p)
     if cif.hydrogen_atoms_present:
-        Hydrogens(cif, p_report)
-    ref.append(DSRReference2015(p_report))
+        Hydrogens(cif, report_p)
     if cif.disorder_present:
-        Disorder(cif, p_report)
-    CCDC(cif, p_report)
+        Disorder(cif, report_p)
+    CCDC(cif, report_p)
     ref.append(sadabs)
-    p_report.add_run(' ')
-    FinalCifreport(p_report)
+    report_p.add_run(' ')
+    FinalCifreport(report_p)
 
     table_num = 1
     if not picfile.exists():
