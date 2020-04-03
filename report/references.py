@@ -20,39 +20,40 @@ class ReferenceList():
 
     def __init__(self, paragraph: Paragraph):
         self.paragraph = paragraph
-        self._references: List[ReferenceFormater] = list()
+        self._references = list()
 
-    def append(self, ref):
+    def append(self, ref) -> None:
+        """Adds a superscript list of reference numbers in brackets to the document."""
         if isinstance(ref, (list, tuple)):
+            if not ref:
+                return None
             self._append_list(ref)
         else:
             if not ref in self._references:
                 self._references.append(ref)
             self.paragraph.add_run('[{}]'.format(self._references.index(ref) + 1)).font.superscript = True
+        self.paragraph.add_run(' ')
 
-    def _append_list(self, reflist):
-        last = len(reflist) - 1
-        reftxt = ''
+    def _append_list(self, reflist: List) -> None:
+        reflst_long = []
         self.paragraph.add_run('[').font.superscript = True
         for n, ref in enumerate(reflist):
             if not ref in self._references:
                 self._references.append(ref)
             refnum = self._references.index(ref) + 1
-            if not n == last:
-                reftxt += str(refnum) + ','
-            else:
-                reftxt += str(refnum)
+            reflst_long.append(refnum)
+        reftxt = self.get_sequence(reflst_long)
         self.paragraph.add_run(reftxt).font.superscript = True
         self.paragraph.add_run(']').font.superscript = True
 
     @staticmethod
-    def get_sequence(stringlist: List[str]):
+    def get_sequence(stringlist: List[int]):
         """
-        Converts a list of numbers into a list of numbers where recuuring sequences
+        Converts a list of numbers into a string of numbers where recurring sequences
         are described with a range.
 
-        >>>ReferenceList.get_sequence(['1', '3', '4', '5', '6', '8', '11'])
-        [1, '3-6', 8, 11]
+        >>>ReferenceList.get_sequence([1, 3, 4, 5, 6, 8, 11])
+        '1,3-6,8,11'
         """
         folg = []
         start = 0
@@ -75,7 +76,7 @@ class ReferenceList():
             # everything outside a sequence:
             if not start:
                 folg.append(val)
-        return folg
+        return ','.join([str(x) for x in folg])
 
     def make_literature_list(self, paragraph_reflist):
         for num, ref in enumerate(self._references, 1):
@@ -198,4 +199,5 @@ class BrukerReference(ReferenceFormater):
         self.pages = 'Bruker AXS Inc., Madison, Wisconsin, USA'
 
 if __name__ == '__main__':
-    get_sequence(['1', '3', '4', '5', '6', '8', '11'])
+    r = ReferenceList.get_sequence([1,2,3, 4])
+    print(r)

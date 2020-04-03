@@ -161,7 +161,7 @@ class DataReduct():
             abs_details = abs_details.split(' ')[0]
         if 'crysalis' in abs_details.lower():
             abs_details = 'SCALE3 ABSPACK'
-        sentence = 'All data were integrated with {} and {} {} absorption correction using {} was applied. '
+        sentence = 'All data were integrated with {} and {} {} absorption correction using {} was applied.'
         txt = sentence.format(integration,
                               get_inf_article(abstype),
                               abstype,
@@ -199,7 +199,7 @@ class Hydrogens():
                     "with their "
         sentence2 = " values constrained to 1.5 times the "
         sentence3 = " of their pivot atoms for terminal sp"
-        sentence4 = " carbon atoms and 1.2 times for all other carbon atoms. "
+        sentence4 = " carbon atoms and 1.2 times for all other carbon atoms."
         paragraph.add_run(sentence1)
         paragraph.add_run('U').font.italic = True
         paragraph.add_run('iso').font.subscript = True
