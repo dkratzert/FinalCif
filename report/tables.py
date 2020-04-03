@@ -128,8 +128,8 @@ def make_report_from(file_obj: Path, output_filename: str = None, path: str = ''
     MachineType(cif, p_report)
     DataReduct(cif, p_report)
     sadabs = BrukerReference(p_report, 'SADABS', '2016/2')
-    ref.append_list([sadabs, BrukerReference(p_report, 'SAINT', '7.68a'),
-                     DSRReference2018(p_report)])
+    ref.append([sadabs, BrukerReference(p_report, 'SAINT', '7.68a'),
+                DSRReference2018(p_report)])
     SolveRefine(cif, p_report)
     if cif.hydrogen_atoms_present:
         Hydrogens(cif, p_report)
