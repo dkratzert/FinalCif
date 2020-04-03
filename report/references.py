@@ -45,6 +45,38 @@ class ReferenceList():
         self.paragraph.add_run(reftxt).font.superscript = True
         self.paragraph.add_run(']').font.superscript = True
 
+    @staticmethod
+    def get_sequence(stringlist: List[str]):
+        """
+        Converts a list of numbers into a list of numbers where recuuring sequences
+        are described with a range.
+
+        >>>ReferenceList.get_sequence(['1', '3', '4', '5', '6', '8', '11'])
+        [1, '3-6', 8, 11]
+        """
+        folg = []
+        start = 0
+        for n, val in enumerate(stringlist):
+            val = int(val)
+            nextval = 0
+            with suppress(IndexError):
+                nextval = int(stringlist[n + 1])
+            nextnext = 0
+            with suppress(IndexError):
+                nextnext = int(stringlist[n + 2])
+            # a sequence starts:
+            if nextnext == val+2 and not start:
+                start = val
+            # in a sequence and next value is not +1 -> squence ends with val:
+            if start and nextval != val+1:
+                folg.append('{}-{}'.format(start, val))
+                start = 0
+                continue
+            # everything outside a sequence:
+            if not start:
+                folg.append(val)
+        return folg
+
     def make_literature_list(self, paragraph_reflist):
         for num, ref in enumerate(self._references, 1):
             paragraph_reflist.add_run('[{}] '.format(str(num)))
@@ -164,3 +196,6 @@ class BrukerReference(ReferenceFormater):
         self.year = '2012'
         # self.volume = 'Bruker'
         self.pages = 'Bruker AXS Inc., Madison, Wisconsin, USA'
+
+if __name__ == '__main__':
+    get_sequence(['1', '3', '4', '5', '6', '8', '11'])
