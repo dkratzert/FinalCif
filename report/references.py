@@ -24,7 +24,7 @@ from docx.text.paragraph import Paragraph
 [1] SAINT V8.37A, Bruker AXS, Madison, Wisconsin, USA, 2015.
 [2] L. Krause, R. Herbst-Irmer, G. M. Sheldrick, D. Stalke, J. Appl. Cryst. 2015, 48, 3–10, doi:10.1107/S1600576714022985
 [3] G. M. Sheldrick, Acta Cryst. 2015, A71, 3–8, doi:10.1107/S2053273314026370
-[4] G. M. Sheldrick, Acta Cryst. 2015, C71, 3–8, doi:10.1107/S2053229614024218
+[4] G. M. Sheldrick, Acta Cryst. 2015, C71, 3–8, doi:10.1107/S2053229614024218.
 [5] C. B. Hubschle, G. M. Sheldrick and B. Dittrich, J. Appl. Cryst. 2011, 44, 1281–1284, 10.1107/S0021889811043202
 [6a] D. Kratzert, I. Krossing, J. Appl. Cryst. 2018, 51, 928-934. doi: 10.1107/S1600576718004508
 [6b] D. Kratzert, J. J. Holstein, I. Krossing, J. Appl. Cryst. 2015, 48, 933–938, doi:10.1107/S1600576715005580
@@ -173,10 +173,9 @@ class ReferenceFormater():
 
 
 class DSRReference2015(ReferenceFormater):
-    """D. Kratzert, J.J. Holstein, I. Krossing, J. Appl. Cryst. 2015, 48, 933-938. doi:10.1107/S1600576715005580
-
+    """
     >>> DSRReference2015('foo')
-    D. Kratzert, J.J. Holstein, I. Krossing, J. Appl. Cryst. 2015, 48, 933-938.
+    D. Kratzert, J.J. Holstein, I. Krossing, J. Appl. Cryst. 2015, 48, 933–938, doi:10.1107/S1600576715005580.
     """
 
     def __init__(self, paragraph: Paragraph):
@@ -186,25 +185,24 @@ class DSRReference2015(ReferenceFormater):
         self.journal = 'J. Appl. Cryst.'
         self.year = '2015'
         self.volume = '48'
-        self.pages = '933-938'
+        self.pages = '933–938'
+        self.doi = 'doi:10.1107/S1600576715005580'
 
 
 class DSRReference2018(ReferenceFormater):
-    """D. Kratzert, I. Krossing, J. Appl. Cryst. 2018, 51, 928-934. doi: 10.1107/S1600576718004508
-
+    """
     >>> DSRReference2018('foo')
-    D. Kratzert, I. Krossing, J. Appl. Cryst. 2018, 51, 928-934.
-
+    D. Kratzert, I. Krossing, J. Appl. Cryst. 2018, 51, 928–934, doi:10.1107/S1600576718004508.
     """
 
     def __init__(self, paragraph: Paragraph):
         super().__init__(paragraph)
-        # self.doi = '(doi: 10.1107/S1600576718004508)'
+        self.doi = 'doi:10.1107/S1600576718004508'
         self.authors = 'D. Kratzert, I. Krossing'
         self.journal = 'J. Appl. Cryst.'
         self.year = '2018'
         self.volume = '51'
-        self.pages = '928-934'
+        self.pages = '928–934'
 
 
 class BrukerReference(ReferenceFormater):
@@ -213,15 +211,92 @@ class BrukerReference(ReferenceFormater):
         Bruker (2012). Program name(s). Bruker AXS Inc., Madison, Wisconsin, USA.
 
         >>> BrukerReference('foo', 'SAINT', '7.68a')
-        SAINT, version 7.68a, 2012, Bruker AXS Inc., Madison, Wisconsin, USA.
+        SAINT, V7.68a, 2012, Bruker AXS Inc., Madison, Wisconsin, USA.
         """
         super().__init__(paragraph)
         self.authors = name
-        self.journal = 'version ' + version
+        self.journal = 'V' + version
         self.year = '2012'
         # self.volume = 'Bruker'
         self.pages = 'Bruker AXS Inc., Madison, Wisconsin, USA'
 
+
+class SADABS_TWINABS_Reference(ReferenceFormater):
+    def __init__(self, paragraph: Paragraph):
+        """
+        L. Krause, R. Herbst-Irmer, G. M. Sheldrick, D. Stalke, J. Appl. Cryst. 2015, 48, 3–10,
+            doi:10.1107/S1600576714022985
+
+        >>> SADABS_TWINABS_Reference('foo')
+        L. Krause, R. Herbst-Irmer, G. M. Sheldrick, D. Stalke, J. Appl. Cryst. 2015, 48, 3–10, doi:10.1107/S1600576714022985.
+        """
+        super().__init__(paragraph)
+        self.authors = 'L. Krause, R. Herbst-Irmer, G. M. Sheldrick, D. Stalke'
+        self.journal = 'J. Appl. Cryst.'
+        self.year = '2015'
+        self.volume = '48'
+        self.pages = '3–10'
+        self.doi = 'doi:10.1107/S1600576714022985'
+
+
+class SHELXTReference(ReferenceFormater):
+    def __init__(self, paragraph: Paragraph):
+        """
+        >>> SHELXTReference('foo')
+        G. M. Sheldrick, Acta Cryst. 2015, A71, 3–8, doi:10.1107/S2053273314026370.
+        """
+        super(SHELXTReference, self).__init__(paragraph)
+        self.authors = 'G. M. Sheldrick'
+        self.journal = 'Acta Cryst.'
+        self.year = '2015'
+        self.volume = 'A71'
+        self.pages = '3–8'
+        self.doi = 'doi:10.1107/S2053273314026370'
+
+
+class SHELXLReference(ReferenceFormater):
+    """
+    >>> SHELXLReference('foo')
+    G. M. Sheldrick, Acta Cryst. 2015, C71, 3–8, doi:10.1107/S2053229614024218.
+    """
+    def __init__(self, paragraph: Paragraph):
+        super(SHELXLReference, self).__init__(paragraph)
+        self.authors = 'G. M. Sheldrick'
+        self.year = '2015'
+        self.journal = 'Acta Cryst.'
+        self.volume = 'C71'
+        self.pages = '3–8'
+        self.doi = 'doi:10.1107/S2053229614024218'
+
+
+class ShelXleReference(ReferenceFormater):
+    """
+    >>> ShelXleReference('foo')
+    C. B. Hubschle, G. M. Sheldrick, B. Dittrich, J. Appl. Cryst. 2011, 44, 1281–1284, doi:10.1107/S0021889811043202.
+    """
+    def __init__(self, paragraph: Paragraph):
+        super().__init__(paragraph)
+        self.authors = 'C. B. Hubschle, G. M. Sheldrick, B. Dittrich'
+        self.year = '2011'
+        self.journal = 'J. Appl. Cryst.'
+        self.volume = '44'
+        self.pages = '1281–1284'
+        self.doi = 'doi:10.1107/S0021889811043202'
+
+
+class Olex2Reference(ReferenceFormater):
+    """
+    >>> Olex2Reference('foo')
+    L. J. Bourhis, O. V. Dolomanov, R. J. Gildea, J. A. K. Howard, H. Puschmann, Acta Cryst. 2015, A71, 59–75, doi:10.1107/S2053273314022207.
+    """
+    def __init__(self, paragraph: Paragraph):
+        super().__init__(paragraph)
+        self.authors = 'L. J. Bourhis, O. V. Dolomanov, R. J. Gildea, J. A. K. Howard, H. Puschmann'
+        self.year = '2015'
+        self.journal = 'Acta Cryst.'
+        self.volume = 'A71'
+        self.pages = '59–75'
+        self.doi = 'doi:10.1107/S2053273314022207'
 
 if __name__ == '__main__':
     r = ReferenceList.get_sequence([1, 2, 3, 4])
