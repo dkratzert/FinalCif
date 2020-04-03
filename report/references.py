@@ -31,6 +31,8 @@ from docx.text.paragraph import Paragraph
 [7] L. J. Bourhis, O. V. Dolomanov, R. J. Gildea, J. A. K. Howard, H. Puschmann, Acta Cryst. 2015, A71, 59–75, doi:10.1107/S2053273314022207
 [8] S. Parsons, H. D. Flack, T. Wagner, Acta Cryst. 2013, B69, 249-259, doi:10.1107/S2052519213010014
 [9] T. Wagner, A. Schonleber, Acta Cryst. 2009, 65, 249–268, doi:10.1107/S0108768109015614
+
+Missing: d*trek, SORTAV, Crysalispro, CCDC, 
 """
 
 
@@ -259,6 +261,7 @@ class SHELXLReference(ReferenceFormater):
     >>> SHELXLReference('foo')
     G. M. Sheldrick, Acta Cryst. 2015, C71, 3–8, doi:10.1107/S2053229614024218.
     """
+
     def __init__(self, paragraph: Paragraph):
         super(SHELXLReference, self).__init__(paragraph)
         self.authors = 'G. M. Sheldrick'
@@ -274,6 +277,7 @@ class ShelXleReference(ReferenceFormater):
     >>> ShelXleReference('foo')
     C. B. Hubschle, G. M. Sheldrick, B. Dittrich, J. Appl. Cryst. 2011, 44, 1281–1284, doi:10.1107/S0021889811043202.
     """
+
     def __init__(self, paragraph: Paragraph):
         super().__init__(paragraph)
         self.authors = 'C. B. Hubschle, G. M. Sheldrick, B. Dittrich'
@@ -289,6 +293,7 @@ class Olex2Reference(ReferenceFormater):
     >>> Olex2Reference('foo')
     L. J. Bourhis, O. V. Dolomanov, R. J. Gildea, J. A. K. Howard, H. Puschmann, Acta Cryst. 2015, A71, 59–75, doi:10.1107/S2053273314022207.
     """
+
     def __init__(self, paragraph: Paragraph):
         super().__init__(paragraph)
         self.authors = 'L. J. Bourhis, O. V. Dolomanov, R. J. Gildea, J. A. K. Howard, H. Puschmann'
@@ -297,6 +302,22 @@ class Olex2Reference(ReferenceFormater):
         self.volume = 'A71'
         self.pages = '59–75'
         self.doi = 'doi:10.1107/S2053273314022207'
+
+
+class ParsonFlackReference(ReferenceFormater):
+    """
+    >>> ParsonFlackReference('foo')
+    S. Parsons, H. D. Flack, T. Wagner, Acta Cryst. 2013, B69, 249–259, doi:10.1107/S2052519213010014.
+    """
+    def __init__(self, paragraph: Paragraph):
+        super().__init__(paragraph)
+        self.authors = 'S. Parsons, H. D. Flack, T. Wagner'
+        self.year = '2013'
+        self.journal = 'Acta Cryst.'
+        self.volume = 'B69'
+        self.pages = '249–259'
+        self.doi = 'doi:10.1107/S2052519213010014'
+
 
 if __name__ == '__main__':
     r = ReferenceList.get_sequence([1, 2, 3, 4])
