@@ -5,12 +5,10 @@
 #  and you think this stuff is worth it, you can buy me a beer in return.
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
-
+from contextlib import suppress
 from typing import List
 
 from docx.text.paragraph import Paragraph
-
-from datafiles.p4p_reader import read_file_to_list
 
 
 class ReferenceList():
@@ -25,23 +23,27 @@ class ReferenceList():
         self._references: List[ReferenceFormater] = list()
 
     def append(self, ref):
-        if not ref in self._references:
-            self._references.append(ref)
-        self.paragraph.add_run('[{}]'.format(self._references.index(ref) + 1)).font.superscript = True
-
-    def append_list(self, reflist):
-        last = len(reflist) - 1
-        for ref in reflist:
+        if isinstance(ref, (list, tuple)):
+            self._append_list(ref)
+        else:
             if not ref in self._references:
                 self._references.append(ref)
-            num = self._references.index(ref)
-            if num == 0:
-                self.paragraph.add_run('[').font.superscript = True
-            self.paragraph.add_run('{}'.format(self._references.index(ref) + 1)).font.superscript = True
-            if num == last:
-                self.paragraph.add_run(']').font.superscript = True
+            self.paragraph.add_run('[{}]'.format(self._references.index(ref) + 1)).font.superscript = True
+
+    def _append_list(self, reflist):
+        last = len(reflist) - 1
+        reftxt = ''
+        self.paragraph.add_run('[').font.superscript = True
+        for n, ref in enumerate(reflist):
+            if not ref in self._references:
+                self._references.append(ref)
+            refnum = self._references.index(ref) + 1
+            if not n == last:
+                reftxt += str(refnum) + ','
             else:
-                self.paragraph.add_run(',').font.superscript = True
+                reftxt += str(refnum)
+        self.paragraph.add_run(reftxt).font.superscript = True
+        self.paragraph.add_run(']').font.superscript = True
 
     def make_literature_list(self, paragraph_reflist):
         for num, ref in enumerate(self._references, 1):
@@ -87,7 +89,7 @@ class ReferenceFormater():
             p.add_run('.')
 
     def __repr__(self):
-        txt = 'Foo: '
+        txt = ''
         if self.authors:
             txt += self.authors
             txt += ', '
