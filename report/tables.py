@@ -5,6 +5,7 @@
 #
 import itertools as it
 import re
+import subprocess
 from math import sin, radians
 from pathlib import Path
 from typing import List, Sequence
@@ -19,8 +20,9 @@ from docx.table import Table, _Cell
 from app_path import application_path
 from cif.cif_file_io import CifContainer
 from report.mtools import cif_keywords_list, isfloat, this_or_quest
+from report.references import BrukerReference, ReferenceList, DSRReference2015, DSRReference2018
 from report.report_text import CCDC, CrstalSelection, Crystallization, DataReduct, Disorder, Hydrogens, MachineType, \
-    SolveRefine, format_radiation, math_to_word, FinalCifreport, BrukerReference, DSRReference
+    SolveRefine, format_radiation, math_to_word, FinalCifreport
 from report.spgrps import SpaceGroups
 from report.symm import SymmetryElement
 from tools.misc import prot_space, angstrom, bequal, sigma_sm, halbgeviert, degree_sign, ellipsis_mid
@@ -118,18 +120,24 @@ def make_report_from(file_obj: Path, output_filename: str = None, path: str = ''
         pic.add_run().add_picture(str(picfile), width=Cm(7))
 
     p_report = document.add_paragraph()
+    ref = ReferenceList(p_report)
     p_report.style = document.styles['fliesstext']
     p_report.add_run('The following text is only a suggestion: ').font.bold = True
     Crystallization(cif, p_report)
     CrstalSelection(cif, p_report)
     MachineType(cif, p_report)
     DataReduct(cif, p_report)
+    sadabs = BrukerReference(p_report, 'SADABS', '2016/2')
+    ref.append_list([sadabs, BrukerReference(p_report, 'SAINT', '7.68a'),
+                     DSRReference2018(p_report)])
     SolveRefine(cif, p_report)
     if cif.hydrogen_atoms_present:
         Hydrogens(cif, p_report)
+    ref.append(DSRReference2015(p_report))
     if cif.disorder_present:
         Disorder(cif, p_report)
     CCDC(cif, p_report)
+    ref.append(sadabs)
     p_report.add_run(' ')
     FinalCifreport(p_report)
 
@@ -155,10 +163,9 @@ def make_report_from(file_obj: Path, output_filename: str = None, path: str = ''
                                '(_space_group_symop_operation_xyz) are missing.')
     ## References:
     document.add_heading('References', 2)
-    p = document.add_paragraph('')
-    r = BrukerReference(paragraph=p, name='SAINT', version='4.58a')
-    r = DSRReference(paragraph=p)
-    ##
+    p_reflist = document.add_paragraph('')
+    ref.make_literature_list(p_reflist)
+
     document.save(output_filename)
     print('\nTables finished - output file: {}'.format(output_filename))
     return file_obj.name
@@ -881,10 +888,11 @@ if __name__ == '__main__':
 
     # make_report_from(get_files_from_current_dir()[5])
     t1 = time.perf_counter()
-    make_report_from(Path(r'test-data/DK_zucker2_0m.cif'), output_filename=Path(output_filename))
+    make_report_from(Path(r'test-data/DK_zucker2_0m-finalcif.cif'), output_filename=Path(output_filename))
     # make_report_from(Path(r'/Volumes/nifty/p-1.cif'))
     t2 = time.perf_counter()
     print('complete table:', round(t2 - t1, 2), 's')
+    subprocess.call(['cmd', '/C', Path(output_filename).absolute()])
     # make_report_from(Path(r'test-data/sad-final.cif'))
     # make_report_from(Path(r'/Volumes/home/strukturen/eigene/DK_30011/sad-final.cif'))
     # make_report_from(Path(r'D:\goedaten\strukturen_goe\eigene\DK_4008\xl12\new\r3c.cif'))

@@ -11,9 +11,6 @@ from cif.cif_file_io import CifContainer, retranslate_delimiter
 from tools.misc import prot_space, angstrom
 
 
-# TODO: Add references of the used programs to the end.
-
-
 def math_to_word(eq):
     """Transform a sympy equation to be printed in word document."""
     tree = etree.fromstring(eq)
@@ -222,11 +219,10 @@ class Disorder():
                     "restraints and displacement parameter restraints. "
         if self.cif.dsr_used:
             sentence2 = "Some parts of the disorder model were introduced by the " \
-                        "program DSR "
+                        "program DSR."
         paragraph.add_run(sentence1)
         if sentence2:
             paragraph.add_run(sentence2)
-            DSRReference(paragraph)
 
 
 class Twinning():
@@ -269,66 +265,3 @@ def format_radiation(radiation_type: str) -> list:
         return radtype
     else:
         return radtype
-
-
-class ReferenceList():
-    def __init__(self, paragraph):
-        self.paragraph = paragraph
-        self.number = 1
-
-    #TODO: implement linked list for reference list counting
-
-
-class ReferenceFormater():
-    def __init__(self, paragraph: Paragraph):
-        self.p = paragraph
-        self.authors = ''
-        self.journal = ''
-        self.year = ''
-        self.volume = ''
-        self.pages = ''
-        self.doi = ''
-        self.program = ''
-
-    def add_reference(self):
-        if self.authors:
-            self.p.add_run(self.authors)
-            self.p.add_run(', ')
-        if self.journal:
-            self.p.add_run(self.journal).italic = True
-            self.p.add_run(', ')
-        if self.year:
-            self.p.add_run(self.year).bold = True
-            self.p.add_run(', ')
-        if self.volume:
-            self.p.add_run(self.volume).italic = True
-            self.p.add_run(', ')
-        if self.pages:
-            self.p.add_run(self.pages)
-        if self.doi:
-            self.p.add_run(', ')
-            self.p.add_run(self.doi)
-        self.p.add_run('. ')
-
-
-class DSRReference(ReferenceFormater):
-    def __init__(self, paragraph: Paragraph):
-        super().__init__(paragraph)
-        self.doi = '(doi: 10.1107/S1600576718004508)'
-        self.add_reference()
-
-
-class BrukerReference(ReferenceFormater):
-    def __init__(self, paragraph: Paragraph, name: str, version: str):
-        """
-        Bruker (2012). Program name(s). Bruker AXS Inc., Madison, Wisconsin, USA.
-        :param paragraph:
-        :param name:
-        :param version:
-        """
-        super().__init__(paragraph)
-        self.authors = 'SAINT'
-        self.journal = 'Bruker'
-        self.year = '2012'
-        self.pages = 'Bruker AXS Inc., Madison, Wisconsin, USA'
-        self.add_reference()
