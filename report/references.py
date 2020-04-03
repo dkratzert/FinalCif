@@ -10,6 +10,29 @@ from typing import List
 
 from docx.text.paragraph import Paragraph
 
+"""
+[1] SAINT
+[2] SADABS/TWINABS
+[3] SHELXT
+[4] SHELXL
+[5] ShelXle
+[6] DSR
+[7] Olex2
+[8] Absolute structure (nach S. Parson)
+[9] Überstrukturen (A non-mathematical introduction to superstructures)
+
+[1] SAINT V8.37A, Bruker AXS, Madison, Wisconsin, USA, 2015.
+[2] L. Krause, R. Herbst-Irmer, G. M. Sheldrick, D. Stalke, J. Appl. Cryst. 2015, 48, 3–10, doi:10.1107/S1600576714022985
+[3] G. M. Sheldrick, Acta Cryst. 2015, A71, 3–8, doi:10.1107/S2053273314026370
+[4] G. M. Sheldrick, Acta Cryst. 2015, C71, 3–8, doi:10.1107/S2053229614024218
+[5] C. B. Hubschle, G. M. Sheldrick and B. Dittrich, J. Appl. Cryst. 2011, 44, 1281–1284, 10.1107/S0021889811043202
+[6a] D. Kratzert, I. Krossing, J. Appl. Cryst. 2018, 51, 928-934. doi: 10.1107/S1600576718004508
+[6b] D. Kratzert, J. J. Holstein, I. Krossing, J. Appl. Cryst. 2015, 48, 933–938, doi:10.1107/S1600576715005580
+[7] L. J. Bourhis, O. V. Dolomanov, R. J. Gildea, J. A. K. Howard, H. Puschmann, Acta Cryst. 2015, A71, 59–75, doi:10.1107/S2053273314022207
+[8] S. Parsons, H. D. Flack, T. Wagner, Acta Cryst. 2013, B69, 249-259, doi:10.1107/S2052519213010014
+[9] T. Wagner, A. Schonleber, Acta Cryst. 2009, 65, 249–268, doi:10.1107/S0108768109015614
+"""
+
 
 class ReferenceList():
     """
@@ -52,7 +75,7 @@ class ReferenceList():
         Converts a list of numbers into a string of numbers where recurring sequences
         are described with a range.
 
-        >>>ReferenceList.get_sequence([1, 3, 4, 5, 6, 8, 11])
+        >>> ReferenceList.get_sequence([1, 3, 4, 5, 6, 8, 11])
         '1,3-6,8,11'
         """
         folg = []
@@ -66,10 +89,10 @@ class ReferenceList():
             with suppress(IndexError):
                 nextnext = int(stringlist[n + 2])
             # a sequence starts:
-            if nextnext == val+2 and not start:
+            if nextnext == val + 2 and not start:
                 start = val
             # in a sequence and next value is not +1 -> squence ends with val:
-            if start and nextval != val+1:
+            if start and nextval != val + 1:
                 folg.append('{}-{}'.format(start, val))
                 start = 0
                 continue
@@ -170,7 +193,8 @@ class DSRReference2018(ReferenceFormater):
     """D. Kratzert, I. Krossing, J. Appl. Cryst. 2018, 51, 928-934. doi: 10.1107/S1600576718004508
 
     >>> DSRReference2018('foo')
-    (doi: 10.1107/S1600576718004508)
+    D. Kratzert, I. Krossing, J. Appl. Cryst. 2018, 51, 928-934.
+
     """
 
     def __init__(self, paragraph: Paragraph):
@@ -189,7 +213,7 @@ class BrukerReference(ReferenceFormater):
         Bruker (2012). Program name(s). Bruker AXS Inc., Madison, Wisconsin, USA.
 
         >>> BrukerReference('foo', 'SAINT', '7.68a')
-        SAINT, Bruker, 2012, Bruker AXS Inc., Madison, Wisconsin, USA.
+        SAINT, version 7.68a, 2012, Bruker AXS Inc., Madison, Wisconsin, USA.
         """
         super().__init__(paragraph)
         self.authors = name
@@ -198,6 +222,7 @@ class BrukerReference(ReferenceFormater):
         # self.volume = 'Bruker'
         self.pages = 'Bruker AXS Inc., Madison, Wisconsin, USA'
 
+
 if __name__ == '__main__':
-    r = ReferenceList.get_sequence([1,2,3, 4])
+    r = ReferenceList.get_sequence([1, 2, 3, 4])
     print(r)
