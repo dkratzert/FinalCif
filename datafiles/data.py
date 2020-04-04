@@ -56,5 +56,3 @@ class WorkDataMixin():
                         '_twin_individual_id'                    : None,
                         '_twin_special_details'                  : None,
                         }
-
-
