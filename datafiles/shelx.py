@@ -27,8 +27,6 @@ class SHELXTlistfile(ParserMixin):
             if "CRYSTAL STRUCTURE SOLUTION" in line:
                 line = line.strip().strip('+').strip()
                 if 'SHELXTL' in line:
-                    self.version = 'SHELXTL XT ' + line.split()[-1]
-                else:
                     self.version = 'SHELXT ' + line.split()[-1]
             if line.strip().startswith('R1  Rweak Alpha'):
                 for n in range(100):
@@ -80,4 +78,4 @@ class SolutionProgram(object):
         return xt
 
     def __repr__(self):
-        return self.version
+        return self.program

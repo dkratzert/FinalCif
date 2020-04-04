@@ -8,6 +8,8 @@ from lxml import etree
 
 from app_path import application_path
 from cif.cif_file_io import CifContainer, retranslate_delimiter
+from report.references import DummyReference, BrukerReference, SORTAVReference, ReferenceList, CCDCReference, \
+    SHELXLReference, SHELXTReference, SHELXSReference, FinalCifReference
 from tools.misc import prot_space, angstrom
 
 
@@ -138,54 +140,70 @@ class MachineType():
 
 
 class DataReduct():
-    def __init__(self, cif: CifContainer, paragraph: Paragraph):
+    def __init__(self, cif: CifContainer, paragraph: Paragraph, ref: ReferenceList):
         self.cif = cif
         integration = gstr(self.cif['_computing_data_reduction']) or '??'
-        # integration_prog = '?'
-        # if 'saint' in integration.lower():
-        #    integration_prog = 'SAINT'
-        # if 'crysalis' in integration.lower():
-        #    integration_prog = 'CrysAlisPro'
-        # if 'trek' in integration.lower():
-        #    integration_prog = 'd*trek'
         abstype = gstr(self.cif['_exptl_absorpt_correction_type']) or '??'
         abs_details = gstr(self.cif['_exptl_absorpt_process_details']) or '??'
-        # if 'sortav' in abs_details.lower():
-        #    abs_details = 'SORTAV'
-        if 'sadabs' in abs_details.lower():
-            if ':' in abs_details[:16]:
-                abs_details = abs_details.split(':')[0]
+        data_reduct_ref = DummyReference()
+        absorpt_ref = DummyReference()
+        integration_prog = '[unknown integration program]'
+        scale_prog = ['unknown program']
+        if 'SAINT' in integration:
+            saintversion = 'unknown version'
+            if len(integration.split()) > 0:
+                saintversion = integration.split()[1]
+            integration_prog = 'SAINT'
+            data_reduct_ref = BrukerReference('SAINT', saintversion)
+        absdetails = cif['_exptl_absorpt_process_details'].replace('-', ' ')
+        if 'SADABS' in absdetails.upper() or 'TWINABS' in absdetails.upper():
+            if len(absdetails.split()) > 0:
+                version = absdetails.split()[1]
             else:
-                abs_details = abs_details.split()[0]
-        if 'twinabs' in abs_details.lower():
-            abs_details = abs_details.split(' ')[0]
+                version = 'unknown version'
+            if 'SADABS' in absdetails:
+                scale_prog = 'SADABS'
+            else:
+                scale_prog = 'TWINABS'
+            absorpt_ref = BrukerReference(scale_prog, version)
+        if 'SORTAV' in absdetails.upper():
+            scale_prog = 'SORTAV'
+            absorpt_ref = SORTAVReference()
         if 'crysalis' in abs_details.lower():
             abs_details = 'SCALE3 ABSPACK'
         sentence = 'All data were integrated with {} and {} {} absorption correction using {} was applied.'
-        txt = sentence.format(integration,
+        txt = sentence.format(integration_prog,
                               get_inf_article(abstype),
                               abstype,
-                              abs_details)
+                              scale_prog)
         paragraph.add_run(retranslate_delimiter(txt))
+        ref.append([data_reduct_ref, absorpt_ref])
 
 
 class SolveRefine():
-    def __init__(self, cif: CifContainer, paragraph: Paragraph):
+    def __init__(self, cif: CifContainer, paragraph: Paragraph, ref: ReferenceList):
         self.cif = cif
+        refineref = DummyReference()
+        solveref = DummyReference()
         solution_prog = gstr(self.cif['_computing_structure_solution']) or '??'
         solution_method = gstr(self.cif['_atom_sites_solution_primary']) or '??'
+        if 'SHELXT' in solution_prog:
+            solveref = SHELXTReference()
+        if 'SHELXS' in solution_prog:
+            solveref = SHELXSReference()
         refined = gstr(self.cif['_computing_structure_refinement']) or '??'
-        # dsr = gstr(self.cif['_computing_structure_refinement'])
+        if 'SHELXL' in refined.upper():
+            refineref = SHELXLReference()
         refine_coef = gstr(self.cif['_refine_ls_structure_factor_coef'])
         sentence = r"The structure were solved by {} methods using {} and refined by full-matrix " \
                    "least-squares methods against "
-        txt = sentence.format(solution_method.strip('\n\r'), solution_prog)
+        txt = sentence.format(solution_method.strip('\n\r'), solution_prog.split()[0])
         paragraph.add_run(retranslate_delimiter(txt))
         paragraph.add_run('F').font.italic = True
         if refine_coef.lower() == 'fsqd':
             paragraph.add_run('2').font.superscript = True
-        paragraph.add_run(' by {}'.format(refined))
-        paragraph.add_run('. ')
+        paragraph.add_run(' by {}.'.format(refined.split()[0]))
+        ref.append([solveref, refineref])
 
 
 class Hydrogens():
@@ -219,7 +237,7 @@ class Disorder():
                     "restraints and displacement parameter restraints. "
         if self.cif.dsr_used:
             self.dsr_sentence = "Some parts of the disorder model were introduced by the " \
-                        "program DSR."
+                                "program DSR."
         paragraph.add_run(sentence1)
         if self.dsr_sentence:
             paragraph.add_run(self.dsr_sentence)
@@ -232,23 +250,35 @@ class Twinning():
         # TODO: make is_twinned property of cif
 
 
+class SpaceChar():
+    def __init__(self, paragraph: Paragraph):
+        self.p = paragraph
+
+    def regular(self):
+        self.p.add_run(' ')
+
+    def porotected(self):
+        self.p.add_run(prot_space)
+
+
 class CCDC():
-    def __init__(self, cif: CifContainer, paragraph: Paragraph):
+    def __init__(self, cif: CifContainer, paragraph: Paragraph, ref: ReferenceList):
         self.cif = cif
         ccdc_num = gstr(self.cif['_database_code_depnum_ccdc_archive']) or '??????'
         sentence = "Crystallographic data (including structure factors) for the structures reported in this " \
                    "paper have been deposited with the Cambridge Crystallographic Data Centre. CCDC {} contain " \
                    "the supplementary crystallographic data for this paper. Copies of the data can " \
-                   "be obtained free of charge from The Cambridge Crystallographic Data Centre " \
+                   "be obtained free of charge from the Cambridge Crystallographic Data Centre " \
                    "via www.ccdc.cam.ac.uk/structures.".format(ccdc_num)
         paragraph.add_run(sentence)
+        ref.append(CCDCReference())
 
 
 class FinalCifreport():
-    def __init__(self, paragraph: Paragraph):
-        sentence = "This report and the CIF file were generated using Finalcif (" \
-                   "www.xs3.uni-freiburg.de/research/finalcif). "
+    def __init__(self, paragraph: Paragraph, ref: ReferenceList):
+        sentence = "This report and the CIF file were generated using FinalCif."
         paragraph.add_run(sentence)
+        ref.append(FinalCifReference())
 
 
 def get_inf_article(next_word: str) -> str:
