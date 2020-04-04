@@ -188,7 +188,7 @@ class CifContainer():
                 return ''
             # TODO: can I do this?:
             # return retranslate_delimiter(result)
-            return result
+            return gemmi.cif.as_string(result)
         else:
             return ''
 

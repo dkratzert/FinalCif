@@ -143,7 +143,7 @@ class ReferenceFormater():
             if all([self.journal, self.year, self.authors]):
                 p.add_run(', ')
             p.add_run(self.doi)
-        if all([self.journal, self.year, self.authors]):
+        if any([self.journal, self.pages, self.year, self.volume]):
             p.add_run('.')
 
     def __repr__(self):
@@ -169,9 +169,20 @@ class ReferenceFormater():
             if txt:
                 txt += ', '
             txt += self.doi
-        if all([self.journal, self.year, self.authors]):
+        if any([self.journal, self.year, self.authors, self.doi, self.pages, self.volume]):
             txt += '.'
         return txt
+
+
+class DummyReference(ReferenceFormater):
+    """
+    >>> DummyReference('foo')
+    Unknown Reference, please add.
+    """
+
+    def __init__(self, paragraph: Paragraph):
+        super().__init__(paragraph)
+        self.doi = 'Unknown Reference, please add'
 
 
 class DSRReference2015(ReferenceFormater):
@@ -210,16 +221,16 @@ class DSRReference2018(ReferenceFormater):
 class BrukerReference(ReferenceFormater):
     def __init__(self, paragraph: Paragraph, name: str, version: str):
         """
-        Bruker (2012). Program name(s). Bruker AXS Inc., Madison, Wisconsin, USA.
-
-        >>> BrukerReference('foo', 'SAINT', '7.68a')
-        SAINT, V7.68a, 2012, Bruker AXS Inc., Madison, Wisconsin, USA.
+        >>> BrukerReference('foo', 'SAINT', 'V7.68a')
+        Bruker, SAINT, V7.68a, Bruker AXS Inc., Madison, Wisconsin, USA.
         """
         super().__init__(paragraph)
-        self.authors = name
-        self.journal = 'V' + version
-        self.year = '2012'
-        # self.volume = 'Bruker'
+        self.authors = 'Bruker'
+        self.journal = name
+        # self.year = '2012'
+        # if '6.28' in self.year:
+        #    self.year = '2001'
+        self.volume = version
         self.pages = 'Bruker AXS Inc., Madison, Wisconsin, USA'
 
 
@@ -309,6 +320,7 @@ class ParsonFlackReference(ReferenceFormater):
     >>> ParsonFlackReference('foo')
     S. Parsons, H. D. Flack, T. Wagner, Acta Cryst. 2013, B69, 249–259, doi:10.1107/S2052519213010014.
     """
+
     def __init__(self, paragraph: Paragraph):
         super().__init__(paragraph)
         self.authors = 'S. Parsons, H. D. Flack, T. Wagner'
@@ -317,6 +329,22 @@ class ParsonFlackReference(ReferenceFormater):
         self.volume = 'B69'
         self.pages = '249–259'
         self.doi = 'doi:10.1107/S2052519213010014'
+
+
+class CCDCReference(ReferenceFormater):
+    """
+    >>> CCDCReference('foo')
+    C. R. Groom, I. J. Bruno, M. P. Lightfoot, S. C. Ward, Acta Cryst. 2016, B72, 171–179, doi:10.1107/S2052520616003954.
+    """
+
+    def __init__(self, paragraph: Paragraph):
+        super().__init__(paragraph)
+        self.authors = 'C. R. Groom, I. J. Bruno, M. P. Lightfoot, S. C. Ward'
+        self.year = '2016'
+        self.journal = 'Acta Cryst.'
+        self.volume = 'B72'
+        self.pages = '171–179'
+        self.doi = 'doi:10.1107/S2052520616003954'
 
 
 if __name__ == '__main__':

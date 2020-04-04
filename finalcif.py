@@ -672,11 +672,11 @@ class AppWindow(QMainWindow):
             report_filename = strip_finalcif_of_name('report_{}'.format(self.cif.fileobj.stem)) + '-finalcif.docx'
             try:
                 make_report_from(self.final_cif_file_name, output_filename=report_filename, path=application_path,
-                                 without_H=self.ui.HAtomsCheckBox.isChecked())
+                                 without_H=self.ui.HAtomsCheckBox.isChecked(), datasources=self.sources)
             except FileNotFoundError as e:
                 if DEBUG:
                     raise
-                print('Unable to open cif file')
+                print('Unable to make report from cif file.')
                 not_ok = e
                 self.unable_to_open_message(self.cif.fileobj, not_ok)
                 return
@@ -1706,8 +1706,7 @@ class AppWindow(QMainWindow):
         """
         self.check_Z()
         if self.manufacturer == 'bruker':
-            bdata = BrukerData(self, self.cif)
-            self.sources = bdata.sources
+            self.sources = BrukerData(self, self.cif).sources
         if self.manufacturer == 'rigaku':
             self.sources = self.rigakucif.sources
         vheadlist = []

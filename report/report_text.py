@@ -214,15 +214,15 @@ class Hydrogens():
 class Disorder():
     def __init__(self, cif: CifContainer, paragraph: Paragraph):
         self.cif = cif
-        sentence2 = ''
+        self.dsr_sentence = ''
         sentence1 = "Disordered moieties were refined using bond lengths " \
                     "restraints and displacement parameter restraints. "
         if self.cif.dsr_used:
-            sentence2 = "Some parts of the disorder model were introduced by the " \
+            self.dsr_sentence = "Some parts of the disorder model were introduced by the " \
                         "program DSR."
         paragraph.add_run(sentence1)
-        if sentence2:
-            paragraph.add_run(sentence2)
+        if self.dsr_sentence:
+            paragraph.add_run(self.dsr_sentence)
 
 
 class Twinning():
