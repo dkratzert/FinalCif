@@ -91,17 +91,8 @@ def make_report_from(file_obj: Path, output_filename: str = None, path: str = ''
         # no paragraph there
         pass
     style = document.styles['Normal']
-    font = style.font
-    # font.name = 'Arial'
-    # font.size = Pt(10)
-    document.add_heading('Structure Tables', 1)
 
-    # a style for the header:
-    styles = document.styles
-    # new_heading_style = styles.add_style('HeaderStyle', WD_STYLE_TYPE.PARAGRAPH)
-    # new_heading_style.base_style = styles['Heading 1']
-    # font = new_heading_style.font
-    # font.color.rgb = RGBColor(0, 0, 0)
+    document.add_heading('Structure Tables', 1)
 
     if file_obj.exists():
         try:
@@ -166,10 +157,7 @@ def make_report_from(file_obj: Path, output_filename: str = None, path: str = ''
                                '(_space_group_symop_operation_xyz) are missing.')
     ## References:
     document.add_heading('References', 2)
-    p_reflist = document.add_paragraph('')
-    paragraph_format = p_reflist.paragraph_format
-    #paragraph_format.first_line_indent = Cm(0.7)
-    ref.make_literature_list(p_reflist)
+    ref.make_literature_list(document)
 
     document.save(output_filename)
     print('\nTables finished - output file: {}'.format(output_filename))
