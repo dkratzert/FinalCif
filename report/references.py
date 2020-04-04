@@ -8,6 +8,7 @@
 from contextlib import suppress
 from typing import List
 
+from docx.shared import Cm
 from docx.text.paragraph import Paragraph
 
 """
