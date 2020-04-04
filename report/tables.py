@@ -129,6 +129,7 @@ def make_report_from(file_obj: Path, output_filename: str = None, path: str = ''
     CrstalSelection(cif, paragr)
     MachineType(cif, paragr)
     DataReduct(cif, paragr, ref)
+    SpaceChar(paragr).regular()
     SolveRefine(cif, paragr, ref)
     SpaceChar(paragr).regular()
     if cif.hydrogen_atoms_present:
@@ -166,6 +167,8 @@ def make_report_from(file_obj: Path, output_filename: str = None, path: str = ''
     ## References:
     document.add_heading('References', 2)
     p_reflist = document.add_paragraph('')
+    paragraph_format = p_reflist.paragraph_format
+    #paragraph_format.first_line_indent = Cm(0.7)
     ref.make_literature_list(p_reflist)
 
     document.save(output_filename)
