@@ -8,7 +8,6 @@ import re
 import subprocess
 from math import sin, radians
 from pathlib import Path
-from pprint import pprint
 from typing import List, Sequence
 
 from docx import Document
@@ -21,10 +20,9 @@ from docx.table import Table, _Cell
 from app_path import application_path
 from cif.cif_file_io import CifContainer
 from report.mtools import cif_keywords_list, isfloat, this_or_quest
-from report.references import BrukerReference, ReferenceList, DSRReference2018, DummyReference, DSRReference2015, \
-    CCDCReference
+from report.references import ReferenceList, DSRReference2018, DSRReference2015
 from report.report_text import CCDC, CrstalSelection, Crystallization, DataReduct, Disorder, Hydrogens, MachineType, \
-    SolveRefine, format_radiation, math_to_word, FinalCifreport
+    SolveRefine, format_radiation, math_to_word, FinalCifreport, SpaceChar
 from report.spgrps import SpaceGroups
 from report.symm import SymmetryElement
 from tools.misc import prot_space, angstrom, bequal, sigma_sm, halbgeviert, degree_sign, ellipsis_mid
@@ -79,7 +77,7 @@ def make_report_from(file_obj: Path, output_filename: str = None, path: str = ''
     :param file_obj: Input cif file.
     :param output_filename: the table is saved to this file.
     """
-    pprint(datasources)
+    # pprint(datasources)
     try:
         document = Document(Path(path).joinpath(application_path, 'template/template1.docx').absolute())
     except FileNotFoundError as e:
@@ -123,44 +121,27 @@ def make_report_from(file_obj: Path, output_filename: str = None, path: str = ''
         pic = document.add_paragraph()
         pic.add_run().add_picture(str(picfile), width=Cm(7))
 
-    report_p = document.add_paragraph()
-    ref = ReferenceList(report_p)
-    report_p.style = document.styles['fliesstext']
-    report_p.add_run('The following text is only a suggestion: ').font.bold = True
-    Crystallization(cif, report_p)
-    CrstalSelection(cif, report_p)
-    MachineType(cif, report_p)
-    DataReduct(cif, report_p)
-    data_reduct = DummyReference('foo')
-    absorpt = DummyReference('foo')
-    reduct = cif['_computing_data_reduction']
-    if 'SAINT' in reduct:
-        saintversion = 'unknown version'
-        if len(reduct.split()) > 0:
-            saintversion = reduct.split()[1]
-        data_reduct = BrukerReference(report_p, 'SAINT', saintversion)
-    absdetails = cif['_exptl_absorpt_process_details'].replace('-', ' ')
-    if 'SADABS' in absdetails.upper() or 'TWINABS' in absdetails.upper():
-        if len(absdetails.split()) > 0:
-            version = absdetails.split()[1]
-        else:
-            version = 'unknown version'
-        if 'SADABS' in absdetails:
-            prog = 'SADABS'
-        else:
-            prog = 'TWINABS'
-        absorpt = BrukerReference(report_p, prog, version)
-    ref.append([data_reduct, absorpt])
+    paragr = document.add_paragraph()
+    ref = ReferenceList(paragr)
+    paragr.style = document.styles['fliesstext']
+    paragr.add_run('The following text is only a suggestion: ').font.bold = True
+    Crystallization(cif, paragr)
+    CrstalSelection(cif, paragr)
+    MachineType(cif, paragr)
+    DataReduct(cif, paragr, ref)
+    SolveRefine(cif, paragr, ref)
+    SpaceChar(paragr).regular()
     if cif.hydrogen_atoms_present:
-        Hydrogens(cif, report_p)
+        Hydrogens(cif, paragr)
+        SpaceChar(paragr).regular()
     if cif.disorder_present:
-        d = Disorder(cif, report_p)
+        d = Disorder(cif, paragr)
         if d.dsr_sentence:
-            ref.append([DSRReference2015(report_p), DSRReference2018(report_p)])
-    CCDC(cif, report_p)
-    ref.append(CCDCReference(report_p))
-    report_p.add_run(' ')
-    FinalCifreport(report_p)
+            ref.append([DSRReference2015(), DSRReference2018()])
+            SpaceChar(paragr).regular()
+    CCDC(cif, paragr, ref)
+    SpaceChar(paragr).regular()
+    FinalCifreport(paragr, ref)
 
     table_num = 1
     if not picfile.exists():

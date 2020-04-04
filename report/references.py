@@ -57,7 +57,8 @@ class ReferenceList():
             if not ref in self._references:
                 self._references.append(ref)
             self.paragraph.add_run('[{}]'.format(self._references.index(ref) + 1)).font.superscript = True
-        self.paragraph.add_run(' ')
+        # better not here:
+        # self.paragraph.add_run(' ')
 
     def _append_list(self, reflist: List) -> None:
         reflst_long = []
@@ -111,8 +112,7 @@ class ReferenceList():
 
 
 class ReferenceFormater():
-    def __init__(self, paragraph: Paragraph):
-        self.p = paragraph
+    def __init__(self):
         self.authors = ''
         self.journal = ''
         self.year = ''
@@ -139,11 +139,11 @@ class ReferenceFormater():
             p.add_run(', ')
         if self.pages:
             p.add_run(self.pages)
-        if self.doi:
-            if all([self.journal, self.year, self.authors]):
+            if self.doi:
                 p.add_run(', ')
+        if self.doi:
             p.add_run(self.doi)
-        if any([self.journal, self.pages, self.year, self.volume]):
+        if any([self.journal, self.pages, self.year, self.volume, self.doi]):
             p.add_run('.')
 
     def __repr__(self):
@@ -165,34 +165,34 @@ class ReferenceFormater():
             txt += ', '
         if self.pages:
             txt += self.pages
-        if self.doi:
-            if txt:
+            if self.doi:
                 txt += ', '
+        if self.doi:
             txt += self.doi
-        if any([self.journal, self.year, self.authors, self.doi, self.pages, self.volume]):
+        if any([self.journal, self.pages, self.year, self.volume, self.doi]):
             txt += '.'
         return txt
 
 
 class DummyReference(ReferenceFormater):
     """
-    >>> DummyReference('foo')
+    >>> DummyReference()
     Unknown Reference, please add.
     """
 
-    def __init__(self, paragraph: Paragraph):
-        super().__init__(paragraph)
+    def __init__(self):
+        super().__init__()
         self.doi = 'Unknown Reference, please add'
 
 
 class DSRReference2015(ReferenceFormater):
     """
-    >>> DSRReference2015('foo')
+    >>> DSRReference2015()
     D. Kratzert, J.J. Holstein, I. Krossing, J. Appl. Cryst. 2015, 48, 933–938, doi:10.1107/S1600576715005580.
     """
 
-    def __init__(self, paragraph: Paragraph):
-        super().__init__(paragraph)
+    def __init__(self):
+        super().__init__()
         # self.doi = '(doi: 10.1107/S1600576715005580)'
         self.authors = 'D. Kratzert, J.J. Holstein, I. Krossing'
         self.journal = 'J. Appl. Cryst.'
@@ -204,12 +204,12 @@ class DSRReference2015(ReferenceFormater):
 
 class DSRReference2018(ReferenceFormater):
     """
-    >>> DSRReference2018('foo')
+    >>> DSRReference2018()
     D. Kratzert, I. Krossing, J. Appl. Cryst. 2018, 51, 928–934, doi:10.1107/S1600576718004508.
     """
 
-    def __init__(self, paragraph: Paragraph):
-        super().__init__(paragraph)
+    def __init__(self):
+        super().__init__()
         self.doi = 'doi:10.1107/S1600576718004508'
         self.authors = 'D. Kratzert, I. Krossing'
         self.journal = 'J. Appl. Cryst.'
@@ -219,12 +219,12 @@ class DSRReference2018(ReferenceFormater):
 
 
 class BrukerReference(ReferenceFormater):
-    def __init__(self, paragraph: Paragraph, name: str, version: str):
+    def __init__(self, name: str, version: str):
         """
-        >>> BrukerReference('foo', 'SAINT', 'V7.68a')
+        >>> BrukerReference('SAINT', 'V7.68a')
         Bruker, SAINT, V7.68a, Bruker AXS Inc., Madison, Wisconsin, USA.
         """
-        super().__init__(paragraph)
+        super().__init__()
         self.authors = 'Bruker'
         self.journal = name
         # self.year = '2012'
@@ -235,15 +235,15 @@ class BrukerReference(ReferenceFormater):
 
 
 class SADABS_TWINABS_Reference(ReferenceFormater):
-    def __init__(self, paragraph: Paragraph):
+    def __init__(self):
         """
         L. Krause, R. Herbst-Irmer, G. M. Sheldrick, D. Stalke, J. Appl. Cryst. 2015, 48, 3–10,
             doi:10.1107/S1600576714022985
 
-        >>> SADABS_TWINABS_Reference('foo')
+        >>> SADABS_TWINABS_Reference()
         L. Krause, R. Herbst-Irmer, G. M. Sheldrick, D. Stalke, J. Appl. Cryst. 2015, 48, 3–10, doi:10.1107/S1600576714022985.
         """
-        super().__init__(paragraph)
+        super().__init__()
         self.authors = 'L. Krause, R. Herbst-Irmer, G. M. Sheldrick, D. Stalke'
         self.journal = 'J. Appl. Cryst.'
         self.year = '2015'
@@ -253,12 +253,12 @@ class SADABS_TWINABS_Reference(ReferenceFormater):
 
 
 class SHELXTReference(ReferenceFormater):
-    def __init__(self, paragraph: Paragraph):
+    def __init__(self):
         """
-        >>> SHELXTReference('foo')
+        >>> SHELXTReference()
         G. M. Sheldrick, Acta Cryst. 2015, A71, 3–8, doi:10.1107/S2053273314026370.
         """
-        super(SHELXTReference, self).__init__(paragraph)
+        super().__init__()
         self.authors = 'G. M. Sheldrick'
         self.journal = 'Acta Cryst.'
         self.year = '2015'
@@ -267,14 +267,29 @@ class SHELXTReference(ReferenceFormater):
         self.doi = 'doi:10.1107/S2053273314026370'
 
 
+class SHELXSReference(ReferenceFormater):
+    def __init__(self):
+        """
+        >>> SHELXSReference()
+        G. M. Sheldrick, Acta Cryst. 2008, A64, 112–122, doi:10.1107/S0108767307043930.
+        """
+        super().__init__()
+        self.authors = 'G. M. Sheldrick'
+        self.journal = 'Acta Cryst.'
+        self.year = '2008'
+        self.volume = 'A64'
+        self.pages = '112–122'
+        self.doi = 'doi:10.1107/S0108767307043930'
+
+
 class SHELXLReference(ReferenceFormater):
     """
-    >>> SHELXLReference('foo')
+    >>> SHELXLReference()
     G. M. Sheldrick, Acta Cryst. 2015, C71, 3–8, doi:10.1107/S2053229614024218.
     """
 
-    def __init__(self, paragraph: Paragraph):
-        super(SHELXLReference, self).__init__(paragraph)
+    def __init__(self):
+        super(SHELXLReference, self).__init__()
         self.authors = 'G. M. Sheldrick'
         self.year = '2015'
         self.journal = 'Acta Cryst.'
@@ -285,12 +300,12 @@ class SHELXLReference(ReferenceFormater):
 
 class ShelXleReference(ReferenceFormater):
     """
-    >>> ShelXleReference('foo')
+    >>> ShelXleReference()
     C. B. Hubschle, G. M. Sheldrick, B. Dittrich, J. Appl. Cryst. 2011, 44, 1281–1284, doi:10.1107/S0021889811043202.
     """
 
-    def __init__(self, paragraph: Paragraph):
-        super().__init__(paragraph)
+    def __init__(self):
+        super().__init__()
         self.authors = 'C. B. Hubschle, G. M. Sheldrick, B. Dittrich'
         self.year = '2011'
         self.journal = 'J. Appl. Cryst.'
@@ -301,12 +316,12 @@ class ShelXleReference(ReferenceFormater):
 
 class Olex2Reference(ReferenceFormater):
     """
-    >>> Olex2Reference('foo')
+    >>> Olex2Reference()
     L. J. Bourhis, O. V. Dolomanov, R. J. Gildea, J. A. K. Howard, H. Puschmann, Acta Cryst. 2015, A71, 59–75, doi:10.1107/S2053273314022207.
     """
 
-    def __init__(self, paragraph: Paragraph):
-        super().__init__(paragraph)
+    def __init__(self):
+        super().__init__()
         self.authors = 'L. J. Bourhis, O. V. Dolomanov, R. J. Gildea, J. A. K. Howard, H. Puschmann'
         self.year = '2015'
         self.journal = 'Acta Cryst.'
@@ -317,12 +332,12 @@ class Olex2Reference(ReferenceFormater):
 
 class ParsonFlackReference(ReferenceFormater):
     """
-    >>> ParsonFlackReference('foo')
+    >>> ParsonFlackReference()
     S. Parsons, H. D. Flack, T. Wagner, Acta Cryst. 2013, B69, 249–259, doi:10.1107/S2052519213010014.
     """
 
-    def __init__(self, paragraph: Paragraph):
-        super().__init__(paragraph)
+    def __init__(self):
+        super().__init__()
         self.authors = 'S. Parsons, H. D. Flack, T. Wagner'
         self.year = '2013'
         self.journal = 'Acta Cryst.'
@@ -333,18 +348,48 @@ class ParsonFlackReference(ReferenceFormater):
 
 class CCDCReference(ReferenceFormater):
     """
-    >>> CCDCReference('foo')
+    >>> CCDCReference()
     C. R. Groom, I. J. Bruno, M. P. Lightfoot, S. C. Ward, Acta Cryst. 2016, B72, 171–179, doi:10.1107/S2052520616003954.
     """
 
-    def __init__(self, paragraph: Paragraph):
-        super().__init__(paragraph)
+    def __init__(self):
+        super().__init__()
         self.authors = 'C. R. Groom, I. J. Bruno, M. P. Lightfoot, S. C. Ward'
         self.year = '2016'
         self.journal = 'Acta Cryst.'
         self.volume = 'B72'
         self.pages = '171–179'
         self.doi = 'doi:10.1107/S2052520616003954'
+
+
+class SORTAVReference(ReferenceFormater):
+    """
+    >>> SORTAVReference()
+    Robert H. Blessing, Cryst. Rev. 1987, 1, 3-58, doi:10.1080/08893118708081678.
+    """
+
+    def __init__(self):
+        super().__init__()
+        self.authors = 'Robert H. Blessing'
+        self.year = '1987'
+        self.journal = 'Cryst. Rev.'
+        self.volume = '1'
+        self.pages = '3-58'
+        self.doi = 'doi:10.1080/08893118708081678'
+
+
+class FinalCifReference(ReferenceFormater):
+    """
+    >>> FinalCifReference()
+    D. Kratzert, FinalCif, 2020, https://www.xs3.uni-freiburg.de/research/finalcif.
+    """
+
+    def __init__(self):
+        super().__init__()
+        self.authors = 'D. Kratzert'
+        self.year = '2020'
+        self.journal = 'FinalCif'
+        self.doi = 'https://www.xs3.uni-freiburg.de/research/finalcif'
 
 
 if __name__ == '__main__':
