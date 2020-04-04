@@ -155,8 +155,8 @@ def make_report_from(file_obj: Path, output_filename: str = None, path: str = ''
         make_culumns_section(document, columns='1')
         document.add_paragraph('No further tables, because symmetry operators '
                                '(_space_group_symop_operation_xyz) are missing.')
-    ## References:
-    document.add_heading('References', 2)
+    ## Bibliography:
+    document.add_heading('Bibliography', 2)
     ref.make_literature_list(document)
 
     document.save(output_filename)
