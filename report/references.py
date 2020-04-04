@@ -105,11 +105,16 @@ class ReferenceList():
                 folg.append(val)
         return ','.join([str(x) for x in folg])
 
-    def make_literature_list(self, paragraph_reflist):
+    def make_literature_list(self, document):
+        if len(self._references) < 10:
+            template = 'references_ni'
+        else:
+            template = 'references'
         for num, ref in enumerate(self._references, 1):
-            paragraph_reflist.add_run('[{}] '.format(str(num)))
+            paragraph_reflist = document.add_paragraph('', template)
+            paragraph_reflist.add_run('[{}] \t'.format(str(num)))
             ref.add_reference(paragraph_reflist)
-            paragraph_reflist.add_run('\n')
+            #paragraph_reflist.add_run('\n')
 
 
 class ReferenceFormater():
