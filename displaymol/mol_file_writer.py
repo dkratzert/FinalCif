@@ -66,6 +66,7 @@ class MolFile(object):
         """
         # t1 = perf_counter()
         conlist = []
+        h = ('H', 'D')
         for num1, at1 in enumerate(self.atoms, 1):
             at1_part = at1[5]
             rad1 = get_radius_from_element(at1[1])
@@ -80,7 +81,7 @@ class MolFile(object):
                     continue
                 rad2 = get_radius_from_element(at2[1])
                 if (rad1 + rad2) + extra_param > d:
-                    if at1[1] == 'H' and at2[1] == 'H':
+                    if at1[1] in h and at2[1] in h:
                         continue
                     # print(num1, num2, d)
                     # The extra time for this is not too much:

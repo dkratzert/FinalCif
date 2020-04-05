@@ -13,7 +13,7 @@ from report.references import DummyReference, BrukerReference, SORTAVReference, 
 from tools.misc import prot_space, angstrom
 
 
-def math_to_word(eq):
+def math_to_word(eq: str) -> str:
     """Transform a sympy equation to be printed in word document."""
     tree = etree.fromstring(eq)
     xslt = etree.parse(os.path.join(application_path, 'template/mathml2omml.xsl'))
@@ -22,7 +22,7 @@ def math_to_word(eq):
     return new_dom.getroot()
 
 
-def clean_string(string):
+def clean_string(string: str) -> str:
     """
     Removes control characters from a string.
     >>> clean_string('This is a sentence\\r with newline.')
@@ -42,7 +42,7 @@ def clean_string(string):
         .strip('.')
 
 
-def gstr(string):
+def gstr(string: str) -> str:
     """
     Turn a string into a gemmi string and remove control characters.
     """
@@ -170,7 +170,7 @@ class DataReduct():
             scale_prog = 'SORTAV'
             absorpt_ref = SORTAVReference()
         if 'crysalis' in abs_details.lower():
-            abs_details = 'SCALE3 ABSPACK'
+            scale_prog = 'SCALE3 ABSPACK'
         sentence = 'All data were integrated with {} and {} {} absorption correction using {} was applied.'
         txt = sentence.format(integration_prog,
                               get_inf_article(abstype),
@@ -243,14 +243,7 @@ class Disorder():
             paragraph.add_run(self.dsr_sentence)
 
 
-class Twinning():
-    def __init__(self, cif: CifContainer, paragraph: Paragraph):
-        self.cif = cif
-        sentence = ''
-        # TODO: make is_twinned property of cif
-
-
-class SpaceChar():
+class SpaceChar(object):
     def __init__(self, paragraph: Paragraph):
         self.p = paragraph
 
@@ -266,11 +259,11 @@ class CCDC():
         self.cif = cif
         ccdc_num = gstr(self.cif['_database_code_depnum_ccdc_archive']) or '??????'
         sentence1 = "Crystallographic data (including structure factors) for the structures reported in this " \
-                   "paper have been deposited with the Cambridge Crystallographic Data Centre."
+                    "paper have been deposited with the Cambridge Crystallographic Data Centre."
         sentence2 = "CCDC {} contain " \
-                   "the supplementary crystallographic data for this paper. Copies of the data can " \
-                   "be obtained free of charge from the Cambridge Crystallographic Data Centre " \
-                   "via www.ccdc.cam.ac.uk/structures.".format(ccdc_num)
+                    "the supplementary crystallographic data for this paper. Copies of the data can " \
+                    "be obtained free of charge from the Cambridge Crystallographic Data Centre " \
+                    "via www.ccdc.cam.ac.uk/structures.".format(ccdc_num)
         paragraph.add_run(sentence1)
         ref.append(CCDCReference())
         SpaceChar(paragraph).regular()
