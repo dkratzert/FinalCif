@@ -108,7 +108,7 @@ charcters = {'°'      : r'\%',
              u"\u03C9": r'\w',
              u"\u03A9": r'\W',
              u"\u03D5": r'\f',
-             #"1̄": r'\=1',  # Does not work in QT?
+             # "1̄": r'\=1',  # Does not work in QT?
              }  # , r'\r\n': chr(10)}
 
 
@@ -180,6 +180,8 @@ class CifContainer():
         self.order = order
         self.dsr_used = d.dsr_used
         self.atomic_struct = gemmi.make_small_structure_from_block(self.block)
+        self._name2elements = dict(
+            zip(self.block.find_loop('_atom_site_label'), self.block.find_loop('_atom_site_type_symbol')))
 
     def __getitem__(self, item: str) -> str:
         result = self.block.find_value(item)
@@ -442,6 +444,13 @@ class CifContainer():
         c = self.atomic_struct.cell
         return c.a, c.b, c.c, c.alpha, c.beta, c.gamma, c.volume
 
+    def ishydrogen(self, label: str) -> bool:
+        hydrogen = ('H', 'D')
+        if self.iselement(label) in hydrogen:
+            return True
+        else:
+            return False
+
     def bonds(self, without_H: bool = False):
         """
         Yields a list of bonds in the cif file.
@@ -450,9 +459,8 @@ class CifContainer():
         label2 = self.block.find_loop('_geom_bond_atom_site_label_2')
         dist = self.block.find_loop('_geom_bond_distance')
         symm = self.block.find_loop('_geom_bond_site_symmetry_2')
-        hat = ('H', 'D')
         for label1, label2, dist, symm in zip(label1, label2, dist, symm):
-            if without_H and (label1[0] in hat or label2[0] in hat):
+            if without_H and (self.ishydrogen(label1) or self.ishydrogen(label2)):
                 continue
             else:
                 yield (label1, label2, dist, symm)
@@ -464,14 +472,34 @@ class CifContainer():
         angle = self.block.find_loop('_geom_angle')
         symm1 = self.block.find_loop('_geom_angle_site_symmetry_1')
         symm2 = self.block.find_loop('_geom_angle_site_symmetry_3')
-        hat = ('H', 'D')
         for label1, label2, label3, angle, symm1, symm2 in zip(label1, label2, label3, angle, symm1, symm2):
-            if without_H and (label1[0] in hat or label2[0] in hat or label3[0] in hat):
+            if without_H and (self.ishydrogen(label1) or self.ishydrogen(label2) or self.ishydrogen(label3)):
                 continue
             else:
                 yield (label1, label2, label3, angle, symm1, symm2)
 
-    def torsion_angles(self):
+    def iselement(self, name: str) -> str:
+        return self._name2elements[name]
+
+    def nbonds(self, without_h: bool = False) -> int:
+        """
+        Number of bonds in the cif object, with and without hydrogen atoms.
+        """
+        return len(list(self.bonds(without_h)))
+
+    def nangles(self, without_h: bool = False) -> int:
+        """
+        Number of bond angles in the cif object, with and without hydrogen atoms.
+        """
+        return len(list(self.angles(without_h)))
+
+    def ntorsion_angles(self, without_h: bool = False) -> int:
+        """
+        Number of torsion angles in the cif object, with and without hydrogen atoms.
+        """
+        return len(list(self.torsion_angles(without_h)))
+
+    def torsion_angles(self, without_h: bool = False):
         label1 = self.block.find_loop('_geom_torsion_atom_site_label_1')
         label2 = self.block.find_loop('_geom_torsion_atom_site_label_2')
         label3 = self.block.find_loop('_geom_torsion_atom_site_label_3')
@@ -485,7 +513,10 @@ class CifContainer():
         for label1, label2, label3, label4, torsang, symm1, symm2, symm3, symm4 in zip(label1, label2, label3, label4,
                                                                                        torsang, symm1, symm2, symm3,
                                                                                        symm4):
-            yield (label1, label2, label3, label4, torsang, symm1, symm2, symm3, symm4)
+            if without_h and (self.ishydrogen(label1) or self.ishydrogen(label2)
+                              or self.ishydrogen(label3) or self.ishydrogen(label3)):
+                continue
+            yield label1, label2, label3, label4, torsang, symm1, symm2, symm3, symm4
 
     def hydrogen_bonds(self):
         label_d = self.block.find_loop('_geom_hbond_atom_site_label_D')

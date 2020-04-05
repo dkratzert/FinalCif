@@ -672,7 +672,7 @@ class AppWindow(QMainWindow):
             report_filename = strip_finalcif_of_name('report_{}'.format(self.cif.fileobj.stem)) + '-finalcif.docx'
             try:
                 make_report_from(self.final_cif_file_name, output_filename=report_filename, path=application_path,
-                                 without_H=self.ui.HAtomsCheckBox.isChecked(), datasources=self.sources)
+                                 without_H=self.ui.HAtomsCheckBox.isChecked())
             except FileNotFoundError as e:
                 if DEBUG:
                     raise
@@ -1522,13 +1522,13 @@ class AppWindow(QMainWindow):
             self.init_webview()
         except Exception as e:
             print(e, '###')
+        # because this is fast with small structures and slow with large:
+        if len(self.cif.atomic_struct.sites) < 400:
+            self.ui.growCheckBox.setChecked(True)
         self.view_molecule()
 
     def view_molecule(self):
         blist = []
-        # because this is fast with small structures and slow with large:
-        if len(self.cif.atomic_struct.sites) < 400:
-            self.ui.growCheckBox.setChecked(True)
         if self.ui.growCheckBox.isChecked():
             self.ui.molGroupBox.setTitle('Completed Molecule')
             # atoms = self.structures.get_atoms_table(structure_id, cartesian=False, as_list=True)

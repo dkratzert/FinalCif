@@ -141,6 +141,7 @@ class SDM():
     def calc_sdm(self) -> list:
         t1 = time.perf_counter()
         self.bondlist.clear()
+        h = ('H', 'D')
         for i, at1 in enumerate(self.atoms):
             prime_array = [Array(at1[2:5]) * symop.matrix + symop.trans for symop in self.symmcards]
             for j, at2 in enumerate(self.atoms):
@@ -168,7 +169,7 @@ class SDM():
                 if not sdmItem.atom1:
                     # Do not grow grown atoms:
                     continue
-                if (not sdmItem.atom1[1] in ['H', 'D'] and not sdmItem.atom2[1] in ['H', 'D']) and \
+                if (not sdmItem.atom1[1] in h and not sdmItem.atom2[1] in h) and \
                         sdmItem.atom1[5] * sdmItem.atom2[5] == 0 or sdmItem.atom1[5] == sdmItem.atom2[5]:
                     dddd = (get_radius_from_element(at1[1]) + get_radius_from_element(at2[1])) * 1.2
                     sdmItem.dddd = dddd
@@ -195,6 +196,7 @@ class SDM():
 
     def collect_needed_symmetry(self) -> list:
         need_symm = []
+        h = ('H', 'D')
         # Collect needsymm list:
         for sdmItem in self.sdm_list:
             if sdmItem.covalent:
@@ -206,7 +208,7 @@ class SDM():
                         # both not part 0 and different part numbers
                         continue
                     # Both the same atomic number and number 0 (hydrogen)
-                    if sdmItem.atom1[1] == sdmItem.atom2[1] and sdmItem.atom1[1] in ['H', 'D']:
+                    if sdmItem.atom1[1] == sdmItem.atom2[1] and sdmItem.atom1[1] in h:
                         continue
                     prime = Array(sdmItem.atom1[2:5]) * symop.matrix + symop.trans
                     D = prime - Array(sdmItem.atom2[2:5]) + Array([0.5, 0.5, 0.5])
@@ -219,7 +221,7 @@ class SDM():
                     # Idea for fast bon list:
                     # self.bondlist.append((sdmItem.a1, sdmItem.a2, sdmItem.atom1[0] + '<',
                     #                      sdmItem.atom2[0] + '<', sdmItem.dist))
-                    if sdmItem.atom1[1] in ['H', 'D'] and sdmItem.atom2[1] in ['H', 'D']:
+                    if sdmItem.atom1[1] in h and sdmItem.atom2[1] in h:
                         dddd = 1.8
                     if (dk > 0.001) and (dddd >= dk):
                         bs = [n + 1, (5 - floorD[0]), (5 - floorD[1]), (5 - floorD[2]), sdmItem.atom1[-1]]
