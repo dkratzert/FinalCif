@@ -128,7 +128,6 @@ class SDM():
         self.sdm_list = []  # list of sdmitems
         self.maxmol = 1
         self.sdmtime = 0
-        self.bondlist = []
 
     def orthogonal_matrix(self):
         """
@@ -143,7 +142,6 @@ class SDM():
 
     def calc_sdm(self) -> list:
         t1 = time.perf_counter()
-        self.bondlist.clear()
         h = ('H', 'D')
         for i, at1 in enumerate(self.atoms):
             prime_array = [Array(at1[2:5]) * symop.matrix + symop.trans for symop in self.symmcards]
@@ -206,9 +204,8 @@ class SDM():
                 if sdmItem.atom1[-1] < 1 or sdmItem.atom1[-1] > 6:
                     continue
                 for n, symop in enumerate(self.symmcards):
-                    if sdmItem.atom1[5] != 0 and sdmItem.atom2[5] != 0 \
-                            and sdmItem.atom1[5] != sdmItem.atom2[5]:
-                        # both not part 0 and different part numbers
+                    if sdmItem.atom1[5] * sdmItem.atom2[5] != 0 and \
+                            sdmItem.atom1[5] != sdmItem.atom2[5]:
                         continue
                     # Both the same atomic number and number 0 (hydrogen)
                     if sdmItem.atom1[1] == sdmItem.atom2[1] and sdmItem.atom1[1] in h:
