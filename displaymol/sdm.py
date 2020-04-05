@@ -62,6 +62,9 @@ class SymmCards():
         for x in self._symmcards:
             yield x
 
+    def __len__(self):
+        return len(self._symmcards)
+
     def append(self, symmData: list) -> None:
         """
         Add the content of a Shelxl SYMM command to generate the appropriate SymmetryElement instance.

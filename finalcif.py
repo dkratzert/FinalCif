@@ -1525,7 +1525,8 @@ class AppWindow(QMainWindow):
         # because this is fast with small structures and slow with large:
         if len(self.cif.atomic_struct.sites) < 400:
             self.ui.growCheckBox.setChecked(True)
-        self.view_molecule()
+        else:
+            self.view_molecule()
 
     def view_molecule(self):
         blist = []
