@@ -126,6 +126,7 @@ class AppWindow(QMainWindow):
         self.missing_data = []
         # True if line with "these are already in" reached:
         self.complete_data_row = -1
+        self.ui.growCheckBox.setChecked(True)
         self.connect_signals_and_slots()
         self.manufacturer = 'bruker'
         self.rigakucif: RigakuData
@@ -1523,10 +1524,7 @@ class AppWindow(QMainWindow):
         except Exception as e:
             print(e, '###')
         # because this is fast with small structures and slow with large:
-        if len(self.cif.atomic_struct.sites) < 400:
-            self.ui.growCheckBox.setChecked(True)
-        else:
-            self.view_molecule()
+        self.view_molecule()
 
     def view_molecule(self):
         blist = []
