@@ -14,6 +14,7 @@ import os
 import shutil
 import subprocess
 import sys
+from datetime import date, datetime
 from pathlib import Path
 
 from PyQt5 import uic
@@ -94,3 +95,4 @@ else:
     subprocess.run([innosetup_compiler, iss_file, ])
 
 print('Created version: {}'.format(VERSION))
+datetime.now().strftime("%d.%m.%Y %H:%M:%S")
