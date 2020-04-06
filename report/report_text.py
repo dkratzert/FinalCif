@@ -9,7 +9,7 @@ from lxml import etree
 from app_path import application_path
 from cif.cif_file_io import CifContainer, retranslate_delimiter
 from report.references import DummyReference, BrukerReference, SORTAVReference, ReferenceList, CCDCReference, \
-    SHELXLReference, SHELXTReference, SHELXSReference, FinalCifReference
+    SHELXLReference, SHELXTReference, SHELXSReference, FinalCifReference, ShelXleReference, Olex2Reference
 from tools.misc import prot_space, angstrom
 
 
@@ -194,6 +194,8 @@ class SolveRefine():
         refined = gstr(self.cif['_computing_structure_refinement']) or '??'
         if 'SHELXL' in refined.upper():
             refineref = SHELXLReference()
+        if 'OLEX' in refined.upper():
+            refineref = Olex2Reference()
         refine_coef = gstr(self.cif['_refine_ls_structure_factor_coef'])
         sentence = r"The structure were solved by {} methods using {} and refined by full-matrix " \
                    "least-squares methods against "
@@ -202,8 +204,13 @@ class SolveRefine():
         paragraph.add_run('F').font.italic = True
         if refine_coef.lower() == 'fsqd':
             paragraph.add_run('2').font.superscript = True
-        paragraph.add_run(' by {}.'.format(refined.split()[0]))
-        ref.append([solveref, refineref])
+        paragraph.add_run(' by {}'.format(refined.split()[0]))
+        shelxle = None
+        if 'shelxle' in refined.lower() or 'shelxle' in self.cif['_computing_molecular_graphics'].lower():
+            paragraph.add_run(' using ShelXle')
+            shelxle = ShelXleReference()
+        paragraph.add_run('.')
+        ref.append([solveref, refineref, shelxle])
 
 
 class Hydrogens():

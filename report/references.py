@@ -8,8 +8,9 @@
 from contextlib import suppress
 from typing import List
 
-from docx.shared import Cm
 from docx.text.paragraph import Paragraph
+
+from tools.version import VERSION
 
 """
 [1] SAINT
@@ -64,6 +65,7 @@ class ReferenceList():
     def _append_list(self, reflist: List) -> None:
         reflst_long = []
         self.paragraph.add_run('[').font.superscript = True
+        reflist = [x for x in reflist if x]
         for n, ref in enumerate(reflist):
             if not ref in self._references:
                 self._references.append(ref)
@@ -114,7 +116,7 @@ class ReferenceList():
             paragraph_reflist = document.add_paragraph('', template)
             paragraph_reflist.add_run('[{}] \t'.format(str(num)))
             ref.add_reference(paragraph_reflist)
-            #paragraph_reflist.add_run('\n')
+            # paragraph_reflist.add_run('\n')
 
 
 class ReferenceFormater():
@@ -307,12 +309,12 @@ class SHELXLReference(ReferenceFormater):
 class ShelXleReference(ReferenceFormater):
     """
     >>> ShelXleReference()
-    C. B. Hubschle, G. M. Sheldrick, B. Dittrich, J. Appl. Cryst. 2011, 44, 1281–1284, doi:10.1107/S0021889811043202.
+    C. B. Hübschle, G. M. Sheldrick, B. Dittrich, J. Appl. Cryst. 2011, 44, 1281–1284, doi:10.1107/S0021889811043202.
     """
 
     def __init__(self):
         super().__init__()
-        self.authors = 'C. B. Hubschle, G. M. Sheldrick, B. Dittrich'
+        self.authors = 'C. B. Hübschle, G. M. Sheldrick, B. Dittrich'
         self.year = '2011'
         self.journal = 'J. Appl. Cryst.'
         self.volume = '44'
@@ -323,6 +325,22 @@ class ShelXleReference(ReferenceFormater):
 class Olex2Reference(ReferenceFormater):
     """
     >>> Olex2Reference()
+    O. V. Dolomanov, L. J. Bourhis, R. J. Gildea, J. A. K. Howard, H. Puschmann, J. Appl. Cryst. 2009, 42, 339-341, doi:10.1107/S0021889808042726.
+    """
+
+    def __init__(self):
+        super().__init__()
+        self.authors = 'O. V. Dolomanov, L. J. Bourhis, R. J. Gildea, J. A. K. Howard, H. Puschmann'
+        self.year = '2009'
+        self.journal = 'J. Appl. Cryst.'
+        self.volume = '42'
+        self.pages = '339-341'
+        self.doi = 'doi:10.1107/S0021889808042726'
+
+
+class Olex2Reference2(ReferenceFormater):
+    """
+    >>> Olex2Reference2()
     L. J. Bourhis, O. V. Dolomanov, R. J. Gildea, J. A. K. Howard, H. Puschmann, Acta Cryst. 2015, A71, 59–75, doi:10.1107/S2053273314022207.
     """
 
@@ -387,15 +405,15 @@ class SORTAVReference(ReferenceFormater):
 class FinalCifReference(ReferenceFormater):
     """
     >>> FinalCifReference()
-    D. Kratzert, FinalCif, 2020, https://www.xs3.uni-freiburg.de/research/finalcif.
+    D. Kratzert, FinalCif, V51, https://www.xs3.uni-freiburg.de/research/finalcif.
     """
 
     def __init__(self):
         super().__init__()
         self.authors = 'D. Kratzert'
-        self.year = '2020'
         self.journal = 'FinalCif'
-        self.doi = 'https://www.xs3.uni-freiburg.de/research/finalcif'
+        self.volume = 'V' + str(VERSION)
+        self.pages = 'https://www.xs3.uni-freiburg.de/research/finalcif'
 
 
 if __name__ == '__main__':
