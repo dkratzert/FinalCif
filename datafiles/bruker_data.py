@@ -115,7 +115,9 @@ class BrukerData(WorkDataMixin):
                                           'of &minus;173.15 °C into the SHELX file.<br>'
                                           'Zero temperature is likely to be wrong.')
         try:
-            if abs(int(self.cif['_diffrn_ambient_temperature'].split('(')[0]) - int(temperature)) >= 2:
+            if abs(int(self.cif['_diffrn_ambient_temperature'].split('(')[0]) - int(temperature)) >= 2 and \
+                    not self.app.tempwarning_displayed:
+                self.app.tempwarning_displayed = True
                 self.app.show_general_warning('<b>Warning</b>: The temperature from the measurement and '
                                               'from SHELX differ. Please double-check for correctness.<br><br>'
                                               'SHELX says: {} K<br>'

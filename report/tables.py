@@ -798,7 +798,7 @@ def populate_description_columns(main_table: Table, cif: CifContainer) -> None:
     lgnd25 = main_table.cell(25, 0).paragraphs[0]
     theta_full = cif['_diffrn_reflns_theta_full']
     if theta_full:
-        lgnd25.add_run('Completeness to \u03B8 = {}°'.format(theta_full))
+        lgnd25.add_run('Completeness to \n\u03B8 = {}°'.format(theta_full))
     else:
         lgnd25.add_run('Completeness')
     main_table.cell(26, 0).paragraphs[0].add_run('Data / Restraints / Parameters')
