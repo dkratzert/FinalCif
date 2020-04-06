@@ -89,13 +89,15 @@ class Platon():
     def run_platon(self):
         """
         >>> fname = Path(r'./test-data/DK_zucker2_0m.cif')
-        >>> Platon(fname)
-        Platon:
+        >>> p = Platon(fname)
+        >>> p.run_platon()
+        trying local platon
+        >>> p.formula_moiety
         C12 H22 O11
         """
-        self.chkfile = Path(self.cif_fileobj.stem + '.chk')
+        #os.chdir(str(self.cif_fileobj.absolute().parent))
+        self.chkfile = Path(self.cif_fileobj.with_suffix('.chk'))
         plat = None
-        #os.chdir(self.cif_fileobj.absolute().parent)
         timeticks = 0
         try:
             # This is only available on windows:
