@@ -66,7 +66,6 @@ TODO:
 - Add one picture of the vzs video file to report.
 - Improve handling of SQUEEZEd data
 - matplolib-3d
-- Add ShelXle (and others) to report document.
 
 # cif core dictionary to python dictionary:
 c = CifContainer(Path('cif_core_dict.cif'))

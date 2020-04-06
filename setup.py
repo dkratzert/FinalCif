@@ -6,12 +6,15 @@
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
 
-from setuptools import setup
+from setuptools import setup, find_packages
+
+from tools.version import VERSION
 
 setup(
     name='FinalCif',
-    version='41',
-    packages=['cif', 'gui', 'tools', 'report', 'report.gui', 'datafiles'],
+    version=str(VERSION),
+    #packages=['cif', 'gui', 'tools', 'report', 'report.gui', 'datafiles', 'displaymol', 'icon', 'template'],
+    packages=find_packages(),
     url='https://www.xs3.uni-freiburg.de/research/finalcif',
     license='Beerware',
     author='Daniel Kratzert',
