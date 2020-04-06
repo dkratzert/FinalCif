@@ -66,6 +66,7 @@ TODO:
 - Add one picture of the vzs video file to report.
 - Improve handling of SQUEEZEd data
 - matplolib-3d
+- Add ShelXle (and others) to report document.
 
 # cif core dictionary to python dictionary:
 c = CifContainer(Path('cif_core_dict.cif'))
@@ -122,6 +123,7 @@ class AppWindow(QMainWindow):
         # noinspection PyTypeChecker
         self.cif = None
         self.view = None
+        self.tempwarning_displayed = False
         self.final_cif_file_name = Path()
         self.missing_data = []
         # True if line with "these are already in" reached:
@@ -1377,6 +1379,7 @@ class AppWindow(QMainWindow):
             if last and Path(last).exists():
                 os.chdir(last)
             fname = self.cif_file_open_dialog()
+            self.tempwarning_displayed = False
         if not fname:
             return
         if os.name == 'nt':

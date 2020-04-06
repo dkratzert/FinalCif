@@ -95,4 +95,4 @@ else:
     subprocess.run([innosetup_compiler, iss_file, ])
 
 print('Created version: {}'.format(VERSION))
-datetime.now().strftime("%d.%m.%Y %H:%M:%S")
+print(datetime.now().strftime("%d.%m.%Y %H:%M:%S"))
