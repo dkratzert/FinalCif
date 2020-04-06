@@ -4,6 +4,7 @@
 # Daniel Kratzert
 #
 import itertools as it
+import os
 import re
 import subprocess
 from math import sin, radians
@@ -37,7 +38,6 @@ def format_space_group(table: Table, cif: CifContainer) -> None:
     paragraph = table.cell(5, 1).paragraphs[0]
     try:
         # The HM space group symbol
-
         s = SpaceGroups()
         spgrxml = s.iucrNumberToMathml(it_number)
         paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
@@ -896,7 +896,10 @@ if __name__ == '__main__':
     # make_report_from(Path(r'/Volumes/nifty/p-1.cif'))
     t2 = time.perf_counter()
     print('complete table:', round(t2 - t1, 2), 's')
-    subprocess.call(['open', Path(output_filename).absolute()])
+    if os.name == 'nt':
+        subprocess.call(['cmd', '/C', Path(output_filename).absolute()])
+    else:
+        subprocess.call(['open', Path(output_filename).absolute()])
     # make_report_from(Path(r'test-data/sad-final.cif'))
     # make_report_from(Path(r'/Volumes/home/strukturen/eigene/DK_30011/sad-final.cif'))
     # make_report_from(Path(r'D:\goedaten\strukturen_goe\eigene\DK_4008\xl12\new\r3c.cif'))
