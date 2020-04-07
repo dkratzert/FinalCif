@@ -66,6 +66,10 @@ TODO:
 - Add one picture of the vzs video file to report.
 - Improve handling of SQUEEZEd data
 - matplolib-3d
+- Find and parse email files (email.parser package)
+    - get ccdc number und unit cell
+    - compare cell with current cell
+    - add ccdc number while doing report
 
 # cif core dictionary to python dictionary:
 c = CifContainer(Path('cif_core_dict.cif'))
