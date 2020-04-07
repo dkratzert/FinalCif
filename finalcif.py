@@ -66,6 +66,8 @@ TODO:
 - Add one picture of the vzs video file to report.
 - Improve handling of SQUEEZEd data
 - matplolib-3d
+- Improove handling of Flack x parameter
+    - citation, method used, success
 - Find and parse email files (email.parser package)
     - get ccdc number und unit cell
     - compare cell with current cell
