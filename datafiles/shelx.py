@@ -65,7 +65,7 @@ class SolutionProgram(object):
             shelxt = SHELXTlistfile(x.as_posix())
             if shelxt.version and byxt:
                 self.method = 'direct'
-                self.solution_listfile = 'foo'#x.name
+                self.solution_listfile = 'foo'  # x.name
                 return shelxt
         if byxt > 0:
             xt = SHELXTlistfile('')

@@ -6,6 +6,7 @@
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
 from contextlib import suppress
+from pathlib import Path
 
 from gemmi import cif as gcif
 
@@ -84,7 +85,7 @@ class BrukerData(WorkDataMixin):
         if self.cif['_computing_structure_solution']:
             solution_program = (gcif.as_string(self.cif['_computing_structure_solution']), self.cif.fileobj.name)
         if not solution_program:
-            solution_program = (sol.program.version, sol.program.filename)
+            solution_program = (sol.program.version, Path(sol.program.filename).name)
         if self.cif.absorpt_process_details:
             absdetails = (self.cif.absorpt_process_details, self.cif.fileobj.name)
         else:
@@ -185,25 +186,24 @@ class BrukerData(WorkDataMixin):
         self.sources['_publ_section_references'] = (shelx, '')
         self.sources['_refine_special_details'] = ('', '')
         self.sources['_exptl_crystal_recrystallization_method'] = ('', '')
-        self.sources['_chemical_absolute_configuration'] = ('', '')
-        # TODO: add this here:
-        if self.saint_data.is_twin and self.saint_data.components_firstsample == 2:  # \
-            # and not self.cif['_twin_individual_twin_matrix_11']:
-            # with suppress(Exception):
-            law = self.saint_data.twinlaw[list(self.saint_data.twinlaw.keys())[0]]
-            self.sources['_twin_individual_twin_matrix_11'] = (str(law[0][1]), self.saint_data.filename.name)
-            self.sources['_twin_individual_twin_matrix_12'] = (str(law[0][2]), self.saint_data.filename.name)
-            self.sources['_twin_individual_twin_matrix_13'] = (str(law[0][0]), self.saint_data.filename.name)
-            self.sources['_twin_individual_twin_matrix_21'] = (str(law[1][1]), self.saint_data.filename.name)
-            self.sources['_twin_individual_twin_matrix_22'] = (str(law[1][2]), self.saint_data.filename.name)
-            self.sources['_twin_individual_twin_matrix_23'] = (str(law[1][0]), self.saint_data.filename.name)
-            self.sources['_twin_individual_twin_matrix_31'] = (str(law[2][1]), self.saint_data.filename.name)
-            self.sources['_twin_individual_twin_matrix_32'] = (str(law[2][2]), self.saint_data.filename.name)
-            self.sources['_twin_individual_twin_matrix_33'] = (str(law[2][0]), self.saint_data.filename.name)
-            self.sources['_twin_individual_id'] = (
-                str(self.saint_data.components_firstsample), self.saint_data.filename.name)
-            self.sources['_twin_special_details'] = (
-                'The data was integrated as a 2-component twin.', self.saint_data.filename.name)
+        if not self.cif.is_centrosymm:
+            self.sources['_chemical_absolute_configuration'] = ('', '')
+        if self.saint_data.is_twin and self.saint_data.components_firstsample == 2:
+            with suppress(Exception):
+                law = self.saint_data.twinlaw[list(self.saint_data.twinlaw.keys())[0]]
+                self.sources['_twin_individual_twin_matrix_11'] = (str(law[0][1]), self.saint_data.filename.name)
+                self.sources['_twin_individual_twin_matrix_12'] = (str(law[0][2]), self.saint_data.filename.name)
+                self.sources['_twin_individual_twin_matrix_13'] = (str(law[0][0]), self.saint_data.filename.name)
+                self.sources['_twin_individual_twin_matrix_21'] = (str(law[1][1]), self.saint_data.filename.name)
+                self.sources['_twin_individual_twin_matrix_22'] = (str(law[1][2]), self.saint_data.filename.name)
+                self.sources['_twin_individual_twin_matrix_23'] = (str(law[1][0]), self.saint_data.filename.name)
+                self.sources['_twin_individual_twin_matrix_31'] = (str(law[2][1]), self.saint_data.filename.name)
+                self.sources['_twin_individual_twin_matrix_32'] = (str(law[2][2]), self.saint_data.filename.name)
+                self.sources['_twin_individual_twin_matrix_33'] = (str(law[2][0]), self.saint_data.filename.name)
+                self.sources['_twin_individual_id'] = (
+                    str(self.saint_data.components_firstsample), self.saint_data.filename.name)
+                self.sources['_twin_special_details'] = (
+                    'The data was integrated as a 2-component twin.', self.saint_data.filename.name)
 
     @property
     def sadabs(self):

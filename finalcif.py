@@ -5,7 +5,6 @@
 #  and you think this stuff is worth it, you can buy me a beer in return.
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
-
 DEBUG = False
 
 import os
@@ -28,7 +27,7 @@ from tempfile import TemporaryDirectory
 from contextlib import suppress
 from math import radians, sin
 from pathlib import Path, WindowsPath
-from typing import Tuple
+from typing import Tuple, Union, Dict
 
 import qtawesome as qta
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkReply, QNetworkRequest
@@ -41,6 +40,7 @@ from requests import ReadTimeout
 from cif.cif_file_io import CifContainer, set_pair_delimited, utf8_to_str, retranslate_delimiter
 from cif.core_dict import cif_core
 from datafiles.bruker_data import BrukerData
+from datafiles.ccdc import CCDCMail
 from datafiles.platon import Platon
 from datafiles.rigaku_data import RigakuData
 from displaymol import mol_file_writer, write_html
@@ -57,8 +57,7 @@ from tools.version import VERSION
 from PyQt5.QtCore import QPoint, Qt, QUrl, QEvent
 from PyQt5.QtGui import QFont, QIcon, QBrush, QResizeEvent, QMoveEvent
 from PyQt5.QtWidgets import QApplication, QFileDialog, QHeaderView, QListWidget, QListWidgetItem, \
-    QMainWindow, QMessageBox, QPlainTextEdit, QStackedWidget, QTableWidget, QSplashScreen, QShortcut, QCheckBox, \
-    QHBoxLayout, QWidget
+    QMainWindow, QMessageBox, QPlainTextEdit, QStackedWidget, QTableWidget, QSplashScreen, QShortcut, QCheckBox
 
 """
 TODO:
@@ -93,7 +92,7 @@ class AppWindow(QMainWindow):
 
     def __init__(self):
         super().__init__()
-        self.sources = None
+        self.sources: Union[None, Dict[str, Tuple[Union[str, None]]]] = None
         self.ui = Ui_FinalCifWindow()
         self.ui.setupUi(self)
         # To make file drag&drop working:
@@ -146,7 +145,7 @@ class AppWindow(QMainWindow):
         self.ui.SaveCifButton.setIcon(qta.icon('fa5.save'))
         options = [{'color': 'darkgreen'}]
         self.ui.SelectCif_PushButton.setIcon(qta.icon('fa5.file-alt', options=options))
-        #self.ui.SelectCif_PushButton.setIcon(qta.icon('fa5s.spinner', color='red',
+        # self.ui.SelectCif_PushButton.setIcon(qta.icon('fa5s.spinner', color='red',
         #             animation=qta.Spin(self.ui.SelectCif_PushButton)))
         self.ui.SourcesPushButton.setIcon(qta.icon('fa5s.tasks'))
         self.ui.DetailsPushButton.setIcon(qta.icon('fa5s.crow'))
@@ -341,29 +340,32 @@ class AppWindow(QMainWindow):
                 self.ui.cif_main_table.item(row_num, COL_DATA).setText('')
 
     def show_sources(self):
+        """
+        Shows data sources in the SourcesTableWidget.
+        """
         COL_key = 1
         COL_source_data = 2
         if not self.sources:
             return
         table = self.ui.SourcesTableWidget
         table.setRowCount(0)
-        for num, s in enumerate(self.sources):
+        rownum = 0
+        for s in self.sources:
             if not self.sources[s]:
                 continue
-            # if not self.source[s][0]:
-            #    continue
-            table.insertRow(num)
+            table.insertRow(rownum)
             box = QCheckBox()
             box.clicked.connect(self.erase_disabled_items)
-            table.setCellWidget(num, 0, box)
+            table.setCellWidget(rownum, 0, box)
             box.setChecked(True)
             box.setStyleSheet("margin-left:10%; margin-right:0%;")
             source_item = MyTableWidgetItem(s)
             source_item.setUneditable()
             data_item = MyTableWidgetItem(self.sources[s][1])
             data_item.setUneditable()
-            table.setItem(num, COL_key, source_item)
-            table.setItem(num, COL_source_data, data_item)
+            table.setItem(rownum, COL_key, source_item)
+            table.setItem(rownum, COL_source_data, data_item)
+            rownum += 1
         table.resizeColumnToContents(0)
         table.resizeColumnToContents(1)
         table.resizeColumnToContents(2)
@@ -1716,6 +1718,11 @@ class AppWindow(QMainWindow):
             self.sources = BrukerData(self, self.cif).sources
         if self.manufacturer == 'rigaku':
             self.sources = self.rigakucif.sources
+        if self.sources:
+            # Add the CCDC number in case we have a deposition mail lying around:
+            ccdc = CCDCMail(self.cif)
+            if int(ccdc.depnum) > 0:
+                self.sources['_database_code_depnum_ccdc_archive'] = (str(ccdc.depnum), str(ccdc.emlfile.name))
         vheadlist = []
         for num in range(self.ui.cif_main_table.model().rowCount()):
             vheadlist.append(self.ui.cif_main_table.model().headerData(num, Qt.Vertical))
