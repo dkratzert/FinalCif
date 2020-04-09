@@ -207,7 +207,7 @@ essential_keys = {
     '_diffrn_measurement_device_type'                  : 'The make, model or name of the measurement device used.',
     '_diffrn_measurement_method'                       : "Method used to measure the intensities, eg.g 'omega scans'",
     '_diffrn_measurement_specimen_support'             : 'The physical device used to support the crystal during data collection.',
-    # '_diffrn_measurement_specimen_adhesive'            : 'Adhesive used to hold the crystal on the _diffrn_measurement_specimen_support during intensity measurement.',
+    '_diffrn_measurement_specimen_adhesive'            : 'Adhesive used to hold the crystal on the _diffrn_measurement_specimen_support during intensity measurement.',
     '_diffrn_reflns_number'                            : 'The total number of measured intensities excluding systematic absent',
     '_diffrn_reflns_av_unetI/netI'                     : 'Measure [sum |u(net I)|/sum|net I|] for all measured reflections',
     '_diffrn_reflns_av_R_equivalents'                  : 'The residual for symmetry-equivalent reflections used to calculate the average intensity',
@@ -345,6 +345,8 @@ SPECIMEN_SUPPORT = (
     (6, 'nylon loop'),
     (7, 'cactus needle'),
     (8, 'cat whisker'),
+    (9, 'carbon fiber'),
+    (10, 'beryllium pin'),
 )
 
 ADHESIVE = (
@@ -431,7 +433,7 @@ combobox_fields = {'_exptl_crystal_colour'               : COLOUR_CHOICES,
                    '_atom_sites_solution_secondary'      : SOLUTION_PRIMARY,
                    '_diffrn_measurement_specimen_support': SPECIMEN_SUPPORT,
                    '_atom_sites_solution_hydrogens'      : SOLUTION_PRIMARY,
-                   # '_diffrn_measurement_specimen_adhesive': ADHESIVE,
+                   '_diffrn_measurement_specimen_adhesive': ADHESIVE,
                    }
 
 excluded_imports = (
