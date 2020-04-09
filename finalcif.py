@@ -67,10 +67,10 @@ TODO:
 - matplolib-3d
 - Improove handling of Flack x parameter
     - citation, method used, success
-- Find and parse email files (email.parser package)
-    - get ccdc number und unit cell
-    - compare cell with current cell
-    - add ccdc number while doing report
+- Try 
+>>> st = gemmi.read_structure(...)
+>>> subcells = gemmi.SubCells(st[0], st.cell, 3)
+>>> subcells.populate()
 
 # cif core dictionary to python dictionary:
 c = CifContainer(Path('cif_core_dict.cif'))
