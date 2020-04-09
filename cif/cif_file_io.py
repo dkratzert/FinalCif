@@ -327,12 +327,12 @@ class CifContainer():
         """
         Calculates the shelx checksum for the hkl file content of a cif file.
 
-        >>> c = CifContainer(Path('test-data/DK_zucker2_0m.cif'))
-        >>> c.hkl_checksum_calcd
-        69576
-        >>> c = CifContainer(Path('test-data/4060310.cif'))
-        >>> c.hkl_checksum_calcd
-        0
+        #>>> c = CifContainer(Path('test-data/DK_zucker2_0m.cif'))
+        #>>> c.hkl_checksum_calcd
+        #69576
+        #>>> c = CifContainer(Path('test-data/4060310.cif'))
+        #>>> c.hkl_checksum_calcd
+        #0
         """
         hkl = self.block.find_value('_shelx_hkl_file')
         if hkl:
@@ -345,12 +345,12 @@ class CifContainer():
         """
         Calculates the shelx checksum for the res file content of a cif file.
 
-        >>> c = CifContainer(Path('test-data/DK_zucker2_0m.cif'))
-        >>> c.res_checksum_calcd
-        52593
-        >>> c = CifContainer(Path('test-data/4060310.cif'))
-        >>> c.res_checksum_calcd
-        0
+        #>>> c = CifContainer(Path('test-data/DK_zucker2_0m.cif'))
+        #>>> c.res_checksum_calcd
+        #52593
+        #>>> c = CifContainer(Path('test-data/4060310.cif'))
+        #>>> c.res_checksum_calcd
+        #0
         """
         res = self.block.find_value('_shelx_res_file')
         if res:
@@ -382,7 +382,7 @@ class CifContainer():
         """
         Reads the symmops from the cif file.
 
-        >>> cif = CifContainer(Path('test-data/twin4.cif'))
+        >>> cif = CifContainer(Path('test-data/DK_ML7-66-final.cif'))
         >>> cif.symmops
         ['x, y, z', '-x, -y, -z']
         """
@@ -397,10 +397,18 @@ class CifContainer():
 
     @property
     def is_centrosymm(self) -> bool:
-        if '-x, -y, -z' in self.symmops:
-            return True
-        else:
-            return False
+        """
+        >>> from cif.cif_file_io import CifContainer
+        >>> from pathlib import Path
+        >>> c = CifContainer(Path('test-data/DK_zucker2_0m-finalcif.cif'))
+        >>> c.is_centrosymm
+        False
+        >>> c = CifContainer(Path('test-data/DK_ML7-66-final.cif'))
+        >>> c.is_centrosymm
+        True
+        """
+        ops = gemmi.GroupOps([gemmi.Op(o) for o in self.symmops])
+        return ops.is_centric()
 
     def atoms(self) -> Tuple[str, str, str, str, str, str, str, str]:
         labels = self.block.find_loop('_atom_site_label')
@@ -543,7 +551,7 @@ class CifContainer():
 
         >>> c = CifContainer(Path('test-data/P21c-final.cif'))
         >>> c.key_value_pairs()[:2]
-        [['_audit_contact_author_address', None], ['_audit_contact_author_email', None]]
+        [['_audit_contact_author_address', '?'], ['_audit_contact_author_email', '?']]
         """
         high_prio_no_values, high_prio_with_values = self.get_keys()
         return high_prio_no_values + [['These below are already in:', '---------------------']] + high_prio_with_values
