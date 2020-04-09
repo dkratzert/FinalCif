@@ -44,7 +44,7 @@ class SymmCards():
     """
 
     def __init__(self):
-        self._symmcards = []
+        self._symmcards = [SymmetryElement(['X', 'Y', 'Z'])]
 
     def _as_str(self) -> str:
         return "\n".join([str(x) for x in self._symmcards])
@@ -72,7 +72,8 @@ class SymmCards():
         :return: None
         """
         newSymm = SymmetryElement(symmData)
-        self._symmcards.append(newSymm)
+        if not newSymm in self._symmcards:
+            self._symmcards.append(newSymm)
 
 
 class SDMItem(object):
@@ -103,17 +104,20 @@ class SDMItem(object):
 
 
 class SDM():
-    def __init__(self, atoms: list, symmcards: list, cell: list):
+    def __init__(self, atoms: list, symmlist: list, cell: list, centric=False):
         """
         Calculates the shortest distance matrix
                         0      1      2  3  4   5     6          7
         :param atoms: [Name, Element, X, Y, Z, Part, ocuupancy, molindex -> (later)]
-        :param symmcards:
+        :param symmlist:
         :param cell:
         """
         self.atoms = atoms
         self.symmcards = SymmCards()
-        for s in symmcards:
+        if centric:
+            self.symmcards.append(['-X', '-Y', '-Z'])
+            self.symmcards[-1].centric = True
+        for s in symmlist:
             self.symmcards.append(s.split(','))
         self.cell = cell
         self.cosal = cos(radians(cell[3]))
