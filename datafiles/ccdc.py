@@ -12,14 +12,24 @@ class CCDCMail():
     If the cell is the same as in the cif file. The deposition number (depnum) is
     set final.
     """
+
     def __init__(self, cif: CifContainer):
         eml_files = cif.fileobj.parent.glob('*.eml')
         self.depnum: int = 0
         self.mail_cell: Union[tuple, None] = None
-        for x in eml_files:
-            if self.parse_emlfile(x):
+        self.emlfile: Path = Path()
+        for emlfile in eml_files:
+            if self.parse_emlfile(emlfile):
+                self.emlfile = emlfile.absolute()
                 if not self.is_same_cell(cif, self.mail_cell):
                     self.depnum = 0
+                    self.emlfile = Path()
+
+    def __repr__(self):
+        cell = 'None'
+        if self.mail_cell:
+            cell = ', '.join([str(x) for x in self.mail_cell])
+        return 'CCDC-Number: {}\nCell from mail: {}\n.eml file name: {}'.format(self.depnum, cell, self.emlfile)
 
     def parse_emlfile(self, file: Path):
         m = message.Message()
@@ -34,8 +44,8 @@ class CCDCMail():
                 if linelen > 9:
                     try:
                         self.mail_cell = (float(spline[4].split('(')[0]),
-                                      float(spline[6].split('(')[0]),
-                                      float(spline[8].split('(')[0]))
+                                          float(spline[6].split('(')[0]),
+                                          float(spline[8].split('(')[0]))
                         return True
                     except (TypeError, ValueError):
                         return False

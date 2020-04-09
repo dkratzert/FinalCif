@@ -3,7 +3,7 @@ chardet==3.0.4
 future==0.18.2
 gemmi>=0.3.6
 idna==2.9
-lxml==4.4.2
+lxml>=4.4.2
 macholib>=1.14
 pefile==2019.4.18
 pybind11>=2.4.3
