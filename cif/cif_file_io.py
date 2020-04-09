@@ -257,6 +257,10 @@ class CifContainer():
         return all
 
     @property
+    def Z_value(self):
+        return self.atomic_struct.cell.volume / self.atomic_struct.cell.volume_per_image()
+
+    @property
     def solution_program_details(self) -> str:
         return self.hkl_extra_info['_computing_structure_solution']
 

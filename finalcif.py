@@ -1541,7 +1541,7 @@ class AppWindow(QMainWindow):
             # atoms = self.structures.get_atoms_table(structure_id, cartesian=False, as_list=True)
             atoms = list(self.cif.atoms_fract)
             if atoms:
-                sdm = SDM(atoms, self.cif.symmops, self.cif.cell[:6])
+                sdm = SDM(atoms, self.cif.symmops, self.cif.cell[:6], centric=self.cif.is_centrosymm)
                 try:
                     needsymm = sdm.calc_sdm()
                     atoms = sdm.packer(sdm, needsymm)
@@ -1896,7 +1896,7 @@ if __name__ == '__main__':
         """
         Hooks into Exceptions to create debug reports.
         """
-        errortext = 'FinalCif crash report\n\n'
+        errortext = 'FinalCif V{} crash report\n\n'.format(VERSION)
         errortext += 'Python ' + sys.version + '\n'
         errortext += sys.platform + '\n'
         errortext += time.asctime(time.localtime(time.time())) + '\n'
@@ -1912,9 +1912,10 @@ if __name__ == '__main__':
         except PermissionError:
             pass
         sys.__excepthook__(exctype, value, error_traceback)
-        # Hier Fesnter für meldung öffnen
+        # Hier Fenster für meldung öffnen
         window = AppWindow()
-        text = 'FinalCif encountered an error.<br>Please send the file <br>"{}" <br>to Daniel Kratzert:  ' \
+        text = 'Congratulations, you found a bug in ' \
+               'FinalCif!<br>Please send the file <br>"{}" <br>to Daniel Kratzert:  ' \
                '<a href="mailto:daniel.kratzert@ac.uni-freiburg.de?subject=FinalCif version {} crash report">' \
                'daniel.kratzert@ac.uni-freiburg.de</a>'.format(logfile.absolute(), VERSION)
         QMessageBox.warning(window, 'Warning', text)
