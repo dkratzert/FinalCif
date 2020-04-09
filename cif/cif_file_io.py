@@ -164,14 +164,27 @@ class CifContainer():
         self.doc = None
         # will not ok with non-ascii characters in the res file:
         self.chars_ok = True
-        # self.doc = gemmi.cif.read_string(self.fileobj.read_text(encoding='UTF-8', errors='ignore'))
-        self.doc = gemmi.cif.read_file(str(self.fileobj.absolute()))
+        # I do this in small steps instead of gemmi.cif.read_file() in order to
+        # leave out the check_for_missing_values. This was gemmi reads cif files
+        # with missing values.
+        path = str(self.fileobj.absolute())
+        self.doc = gemmi.cif.Document()
+        self.doc.source = path
+        self.doc.parse_file(path)
+        # Will not stop reading if only the value is missing and ends with newline:
+        try:
+            self.doc.check_for_missing_values()
+        except RuntimeError as e:
+            print('Missing value:')
+            print(e)
+        self.doc.check_for_duplicates()
         self.block = self.doc.sole_block()
         try:
             self.resdata = self.block.find_value('_shelx_res_file')
         except UnicodeDecodeError:
             print('File has non-ascii characters. Switching to compatible mode.')
-            self.doc = gemmi.cif.read_string(self.fileobj.read_text(encoding='cp1250', errors='ignore'))
+            self.doc = gemmi.cif.Document()
+            self.doc.parse_string(self.fileobj.read_text(encoding='cp1250', errors='ignore'))
             self.block = self.doc.sole_block()
             self.resdata = self.block.find_value('_shelx_res_file')
             self.chars_ok = False
