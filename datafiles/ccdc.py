@@ -1,7 +1,10 @@
 import base64
 import email
+from contextlib import suppress
 from pathlib import Path
 from typing import Union
+
+import html2text as html2text
 
 from cif.cif_file_io import CifContainer
 
@@ -20,13 +23,18 @@ class CCDCMail():
         self.mail_cell: Union[tuple, None] = None
         self.emlfile: Path = Path()
         for emlfile in eml_files:
-            if self.parse_emlfile(emlfile):
+            eml = False
+            with suppress(Exception):
+                eml = self.parse_emlfile(emlfile)
+            if eml:
                 self.emlfile = emlfile.absolute()
                 if not self.mail_cell:
                     continue
                 if not self.is_same_cell(cif, self.mail_cell):
                     self.depnum = 0
                     self.emlfile = Path()
+            else:
+                print('Mail parsing failed!')
 
     def __repr__(self):
         cell = 'None'
@@ -39,18 +47,19 @@ class CCDCMail():
         encoding = m['Content-Transfer-Encoding']
         dirty = m.get_payload()
         mailbody = m.as_string()
+        txt = mailbody.splitlines(keepends=False)
         if encoding == 'base64':
             mailbody = str(base64.decodebytes(bytes(dirty, 'ascii')))
-            # TODO: parse html mails
-        for line in mailbody.splitlines(keepends=False):
+            txt = html2text.html2text(mailbody).splitlines(keepends=False)
+        for line in txt:
             spline = line.split()
             linelen = len(spline)
             if line.startswith('Deposition Number'):
                 if linelen > 1:
-                    self.depnum = spline[2]
+                    self.depnum = int(spline[2])
             if line.startswith('Summary of Data CCDC'):
                 if linelen > 3:
-                    self.depnum = spline[4]
+                    self.depnum = int(spline[4])
             if line.startswith('Unit Cell Parameters:'):
                 if linelen > 9:
                     try:
@@ -60,7 +69,6 @@ class CCDCMail():
                         return True
                     except (TypeError, ValueError):
                         return False
-
         return True
 
     @staticmethod
