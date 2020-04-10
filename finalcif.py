@@ -1879,7 +1879,8 @@ class AppWindow(QMainWindow):
                 self.ui.cif_main_table.setItem(row_num, COL_DATA, tab_data)
                 if key == '_audit_creation_method':
                     tab_data.setText(
-                        'FinalCif by Daniel Kratzert, Freiburg 2019, https://github.com/dkratzert/FinalCif')
+                        'FinalCif V{} by Daniel Kratzert, Freiburg 2019, '
+                        'https://github.com/dkratzert/FinalCif'.format(VERSION))
                 tab_cif.setUneditable()
                 tab_data.setUneditable()
                 self.ui.cif_main_table.resizeRowToContents(row_num)
