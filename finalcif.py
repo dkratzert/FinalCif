@@ -62,15 +62,17 @@ from PyQt5.QtWidgets import QApplication, QFileDialog, QHeaderView, QListWidget,
 """
 TODO:
 - add loops to templates
+for i in block:
+...     if i.loop:
+...         l = i.loop
+...         for tag in l.tags:
+...             for v in block.find_values(tag):
+...                 print(tag, v)
 - Add one picture of the vzs video file to report.
 - Improve handling of SQUEEZEd data
 - matplolib-3d
 - Improove handling of Flack x parameter
     - citation, method used, success
-- Try 
->>> st = gemmi.read_structure(...)
->>> subcells = gemmi.SubCells(st[0], st.cell, 3)
->>> subcells.populate()
 
 # cif core dictionary to python dictionary:
 c = CifContainer(Path('cif_core_dict.cif'))
