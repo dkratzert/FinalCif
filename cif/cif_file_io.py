@@ -160,41 +160,52 @@ class CifContainer():
 
     def __init__(self, file: Path):
         self.fileobj = file
-        self.block = None
-        self.doc = None
-        # will not ok with non-ascii characters in the res file:
-        self.chars_ok = True
         # I do this in small steps instead of gemmi.cif.read_file() in order to
         # leave out the check_for_missing_values. This was gemmi reads cif files
         # with missing values.
-        path = str(self.fileobj.absolute())
-        self.doc = gemmi.cif.Document()
-        self.doc.source = path
-        self.doc.parse_file(path)
-        # Will not stop reading if only the value is missing and ends with newline:
-        try:
-            self.doc.check_for_missing_values()
-        except RuntimeError as e:
-            print('Missing value:')
-            print(e)
-        self.doc.check_for_duplicates()
+        self.doc = self.read_file(str(self.fileobj.absolute()))
         self.block = self.doc.sole_block()
+        # will not ok with non-ascii characters in the res file:
+        self.chars_ok = True
         try:
             self.resdata = self.block.find_value('_shelx_res_file')
         except UnicodeDecodeError:
+            # This is a fallback in case _shelx_res_file has non-ascii characters.
             print('File has non-ascii characters. Switching to compatible mode.')
-            self.doc = gemmi.cif.Document()
-            self.doc.parse_string(self.fileobj.read_text(encoding='cp1250', errors='ignore'))
-            self.block = self.doc.sole_block()
+            self.doc = self.read_string(self.fileobj.read_text(encoding='cp1250', errors='ignore'))
             self.resdata = self.block.find_value('_shelx_res_file')
+            self.block = self.doc.sole_block()
             self.chars_ok = False
+        self.doc.check_for_duplicates()
         self.hkl_extra_info = self.abs_hkl_details()
         d = DSRFind(self.resdata)
         self.order = order
         self.dsr_used = d.dsr_used
         self.atomic_struct = gemmi.make_small_structure_from_block(self.block)
+        # A dictionary to convert Atom names like 'C1_2' or 'Ga3' into Element names like 'C' or 'Ga'
         self._name2elements = dict(
             zip(self.block.find_loop('_atom_site_label'), self.block.find_loop('_atom_site_type_symbol')))
+
+    def read_file(self, path: str) -> gemmi.cif.Document:
+        """
+        Reads a cif file and returns a gemmi document object.
+        :param path: path to the file
+        :return: gemmi document
+        """
+        doc = gemmi.cif.Document()
+        doc.source = path
+        doc.parse_file(path)
+        return doc
+
+    def read_string(self, cif_string: str) -> gemmi.cif.Document:
+        """
+        Reads a cif file from a string and returns a gemmi cif docment.
+        :param cif_string: cif as string
+        :return: gemmi document
+        """
+        doc = gemmi.cif.Document()
+        doc.parse_string(cif_string)
+        return doc
 
     def __getitem__(self, item: str) -> str:
         result = self.block.find_value(item)
