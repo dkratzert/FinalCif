@@ -1,4 +1,5 @@
-from email import message
+import base64
+import email
 from pathlib import Path
 from typing import Union
 
@@ -21,6 +22,8 @@ class CCDCMail():
         for emlfile in eml_files:
             if self.parse_emlfile(emlfile):
                 self.emlfile = emlfile.absolute()
+                if not self.mail_cell:
+                    continue
                 if not self.is_same_cell(cif, self.mail_cell):
                     self.depnum = 0
                     self.emlfile = Path()
@@ -32,14 +35,22 @@ class CCDCMail():
         return 'CCDC-Number: {}\nCell from mail: {}\n.eml file name: {}'.format(self.depnum, cell, self.emlfile)
 
     def parse_emlfile(self, file: Path):
-        m = message.Message()
-        m.set_payload(file.read_bytes())
-        for line in m.as_string().splitlines(keepends=False):
+        m = email.message_from_string(file.read_text())
+        encoding = m['Content-Transfer-Encoding']
+        dirty = m.get_payload()
+        mailbody = m.as_string()
+        if encoding == 'base64':
+            mailbody = str(base64.decodebytes(bytes(dirty, 'ascii')))
+            # TODO: parse html mails
+        for line in mailbody.splitlines(keepends=False):
             spline = line.split()
             linelen = len(spline)
             if line.startswith('Deposition Number'):
                 if linelen > 1:
                     self.depnum = spline[2]
+            if line.startswith('Summary of Data CCDC'):
+                if linelen > 3:
+                    self.depnum = spline[4]
             if line.startswith('Unit Cell Parameters:'):
                 if linelen > 9:
                     try:
@@ -53,7 +64,7 @@ class CCDCMail():
         return True
 
     @staticmethod
-    def is_same_cell(cif: CifContainer, cell):
+    def is_same_cell(cif: CifContainer, cell: Union[list, tuple]):
         """
 
         :param cif:
