@@ -1734,6 +1734,8 @@ class AppWindow(QMainWindow):
             # Add the CCDC number in case we have a deposition mail lying around:
             ccdc = CCDCMail(self.cif)
             if ccdc.depnum > 0:
+                # The next line is necessary, otherwise reopening of a cif would not add the CCDC number:
+                self.set_pair('_database_code_depnum_ccdc_archive', '?')
                 self.sources['_database_code_depnum_ccdc_archive'] = (str(ccdc.depnum), str(ccdc.emlfile.name))
         vheadlist = []
         for num in range(self.ui.cif_main_table.model().rowCount()):
