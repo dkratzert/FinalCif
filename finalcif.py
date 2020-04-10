@@ -1419,6 +1419,16 @@ class AppWindow(QMainWindow):
                                       "attached to this CIF.\n\n"
                                       "FinalCif tries to convert them, but be warned "
                                       "(they are not allowed in CIF1 files anyway).\n")
+        # Will not stop reading if only the value is missing and ends with newline:
+        try:
+            self.cif.doc.check_for_missing_values()
+        except RuntimeError as e:
+            print('Missing value:')
+            print(str(e))
+            errlist = str(e).split(':')
+            if len(errlist) > 1:
+                self.show_general_warning(
+                    "Attention line {}: '{}' has no value.".format(errlist[1], errlist[2].split()[0]))
         try:
             # Change the current working Directory
             os.chdir(filepath.absolute().parent)
