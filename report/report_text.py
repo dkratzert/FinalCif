@@ -187,12 +187,12 @@ class SolveRefine():
         solveref = DummyReference()
         solution_prog = gstr(self.cif['_computing_structure_solution']) or '??'
         solution_method = gstr(self.cif['_atom_sites_solution_primary']) or '??'
-        if 'SHELXT' in solution_prog.upper():
+        if solution_prog.upper().startswith(('SHELXT', 'XT')):
             solveref = SHELXTReference()
         if 'SHELXS' in solution_prog.upper():
             solveref = SHELXSReference()
         refined = gstr(self.cif['_computing_structure_refinement']) or '??'
-        if 'SHELXL' in refined.upper():
+        if refined.upper().startswith(('SHELXL', 'XL')):
             refineref = SHELXLReference()
         if 'OLEX' in refined.upper():
             refineref = Olex2Reference()
