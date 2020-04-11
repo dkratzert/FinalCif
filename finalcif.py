@@ -61,6 +61,7 @@ from PyQt5.QtWidgets import QApplication, QFileDialog, QHeaderView, QListWidget,
 
 """
 TODO:
+- Refreactor all the data handling for the main table!
 - add loops to templates
 for i in block:
 ...     if i.loop:
@@ -1735,8 +1736,10 @@ class AppWindow(QMainWindow):
             ccdc = CCDCMail(self.cif)
             if ccdc.depnum > 0:
                 # The next line is necessary, otherwise reopening of a cif would not add the CCDC number:
-                self.set_pair('_database_code_depnum_ccdc_archive', '?')
-                self.sources['_database_code_depnum_ccdc_archive'] = (str(ccdc.depnum), str(ccdc.emlfile.name))
+                if not '_database_code_depnum_ccdc_archive' in self.ui.cif_main_table.vheaderitems:
+                    #self.ui.cif_main_table.vheaderitems.insert(0, '_database_code_depnum_ccdc_archive')
+                    self.add_new_table_key('_database_code_depnum_ccdc_archive', '?')
+                    self.sources['_database_code_depnum_ccdc_archive'] = (str(ccdc.depnum), str(ccdc.emlfile.name))
         vheadlist = []
         for num in range(self.ui.cif_main_table.model().rowCount()):
             vheadlist.append(self.ui.cif_main_table.model().headerData(num, Qt.Vertical))
@@ -1885,6 +1888,8 @@ class AppWindow(QMainWindow):
                 tab_data.setUneditable()
                 self.ui.cif_main_table.resizeRowToContents(row_num)
         self.ui.cif_main_table.setVerticalHeaderItem(row_num, head_item_key)
+        if not key in self.ui.cif_main_table.vheaderitems:
+            self.ui.cif_main_table.vheaderitems.append(key)
 
     def add_separation_line(self, row_num: int) -> None:
         """
