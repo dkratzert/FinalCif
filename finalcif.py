@@ -37,7 +37,7 @@ from gemmi import cif
 from qtpy.QtGui import QDesktopServices, QKeySequence
 from requests import ReadTimeout
 
-from cif.cif_file_io import CifContainer, set_pair_delimited, utf8_to_str, retranslate_delimiter
+from cif.cif_file_io import CifContainer, set_pair_delimited, utf8_to_str, cifstr_to_utf8
 from cif.core_dict import cif_core
 from datafiles.bruker_data import BrukerData
 from datafiles.ccdc import CCDCMail
@@ -57,7 +57,8 @@ from tools.version import VERSION
 from PyQt5.QtCore import QPoint, Qt, QUrl, QEvent
 from PyQt5.QtGui import QFont, QIcon, QBrush, QResizeEvent, QMoveEvent
 from PyQt5.QtWidgets import QApplication, QFileDialog, QHeaderView, QListWidget, QListWidgetItem, \
-    QMainWindow, QMessageBox, QPlainTextEdit, QStackedWidget, QTableWidget, QSplashScreen, QShortcut, QCheckBox
+    QMainWindow, QMessageBox, QPlainTextEdit, QStackedWidget, QTableWidget, QSplashScreen, QShortcut, QCheckBox, \
+    QVBoxLayout, QHBoxLayout
 
 """
 TODO:
@@ -961,7 +962,7 @@ class AppWindow(QMainWindow):
             for key, value in table_data:
                 if not key or not value:
                     continue
-                table.add_equipment_row(key, retranslate_delimiter(value))
+                table.add_equipment_row(key, cifstr_to_utf8(value))
         else:
             # new empty equipment:
             for _ in range(8):
@@ -1011,7 +1012,7 @@ class AppWindow(QMainWindow):
                 key, value = item.pair
                 if key in excluded_imports:
                     continue
-                table_data.append([key, retranslate_delimiter(gemmi.cif.as_string(value)).strip('\n\r ')])
+                table_data.append([key, cifstr_to_utf8(gemmi.cif.as_string(value)).strip('\n\r ')])
         if filename.endswith('.cif_od'):
             name = Path(filename).stem
         else:
@@ -1233,7 +1234,7 @@ class AppWindow(QMainWindow):
                     loop_column_name = i.loop.tags[0]
                 for n in range(i.loop.length()):
                     value = i.loop.val(n, 0)
-                    template_list.append(retranslate_delimiter(value.strip(" '")))
+                    template_list.append(cifstr_to_utf8(value.strip(" '")))
         block_name = block.name.replace('__', ' ')
         # This is the list shown in the Main menu:
         property_list.append(block_name)
@@ -1281,7 +1282,7 @@ class AppWindow(QMainWindow):
             table_data = ['', '', '']
         for value in table_data:
             try:
-                self.add_propeties_row(table, retranslate_delimiter(str(value)))
+                self.add_propeties_row(table, cifstr_to_utf8(str(value)))
             except TypeError:
                 print('Bad value in property table')
                 continue
@@ -1809,10 +1810,16 @@ class AppWindow(QMainWindow):
         """
         Adds a QComboBox to the cif_main_table with the content of special_fields or property templates.
         """
-        combobox = MyComboBox(self.ui.cif_main_table)
+        combobox = MyComboBox()
+        hbox = QHBoxLayout(self.ui.cif_main_table)
+        hbox.addWidget(combobox)
+        hbox.setContentsMargins(0, 0, 0, 0)
         # print('special:', row_num, miss_data)
-        self.ui.cif_main_table.setCellWidget(row_num, COL_EDIT, combobox)
-        self.ui.cif_main_table.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.ui.cif_main_table.setCurrentCell(row_num, COL_EDIT)
+        item = self.ui.cif_main_table.currentItem()
+        item.set
+        #self.ui.cif_main_table.setCellWidget(row_num, COL_EDIT, combobox)
+        #self.ui.cif_main_table.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         for num, value in data:
             try:
                 combobox.addItem(value, num)
@@ -1860,7 +1867,7 @@ class AppWindow(QMainWindow):
             # All textedit fields
             # print(key, strval)
             tab_cif = MyQPlainTextEdit(self.ui.cif_main_table)
-            tab_cif.setPlainText(retranslate_delimiter(strval))
+            tab_cif.setPlainText(cifstr_to_utf8(strval))
             tab_data = MyQPlainTextEdit(self.ui.cif_main_table)
             tab_edit = MyQPlainTextEdit(self.ui.cif_main_table)
             self.ui.cif_main_table.setCellWidget(row_num, COL_CIF, tab_cif)
@@ -1872,7 +1879,7 @@ class AppWindow(QMainWindow):
             self.ui.cif_main_table.setRowHeight(row_num, 90)
         else:
             # All regular linedit fields:
-            tab_cif = MyTableWidgetItem(retranslate_delimiter(strval))
+            tab_cif = MyTableWidgetItem(cifstr_to_utf8(strval))
             if key == "These below are already in:":
                 self.add_separation_line(row_num)
                 self.complete_data_row = row_num

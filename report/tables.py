@@ -417,7 +417,7 @@ def add_coords_table(document: Document, cif: CifContainer, table_num: int):
     :param cif: the cif object from CifContainer.
     :return: None
     """
-    atoms = list(cif.atoms())
+    atoms = list(cif.atoms_loop())
     table_num += 1
     headline = "Table {}. Atomic coordinates and ".format(table_num)
     h = document.add_heading(headline, 2)

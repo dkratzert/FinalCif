@@ -7,7 +7,7 @@ from docx.text.run import Run
 from lxml import etree
 
 from app_path import application_path
-from cif.cif_file_io import CifContainer, retranslate_delimiter
+from cif.cif_file_io import CifContainer, cifstr_to_utf8
 from report.references import DummyReference, BrukerReference, SORTAVReference, ReferenceList, CCDCReference, \
     SHELXLReference, SHELXTReference, SHELXSReference, FinalCifReference, ShelXleReference, Olex2Reference
 from tools.misc import prot_space, angstrom
@@ -69,7 +69,7 @@ class Crystallization(FormatMixin):
             self.crytsalization_method = '[No crystallization method was given]'
         sentence = "{} "
         self.text = sentence.format(self.crytsalization_method)
-        paragraph.add_run(retranslate_delimiter(self.text))
+        paragraph.add_run(cifstr_to_utf8(self.text))
 
 
 class CrstalSelection(FormatMixin):
@@ -85,7 +85,7 @@ class CrstalSelection(FormatMixin):
         except ValueError:
             method = ''
         self.txt = sentence.format(self.name, method, self.temperature, prot_space)
-        paragraph.add_run(retranslate_delimiter(self.txt))
+        paragraph.add_run(cifstr_to_utf8(self.txt))
 
     @property
     def name(self) -> str:
@@ -126,13 +126,13 @@ class MachineType():
         txt = sentence1.format(get_inf_article(self.difftype), self.difftype, self.device,
                                get_inf_article(self.source), self.source, self.monochrom,
                                self.detector_type, get_inf_article(self.cooling), self.cooling)
-        paragraph.add_run(retranslate_delimiter(txt))
+        paragraph.add_run(cifstr_to_utf8(txt))
         # radiation type e.g. Mo:
-        paragraph.add_run(retranslate_delimiter(radtype[0]))
+        paragraph.add_run(cifstr_to_utf8(radtype[0]))
         # K line:
         radrunita = paragraph.add_run(radtype[1])
         radrunita.font.italic = True
-        alpha = paragraph.add_run(retranslate_delimiter(radtype[2]))
+        alpha = paragraph.add_run(cifstr_to_utf8(radtype[2]))
         alpha.font.italic = True
         alpha.font.subscript = True
         txt2 = sentence2.format(self.wavelen)
@@ -176,7 +176,7 @@ class DataReduct():
                               get_inf_article(abstype),
                               abstype,
                               scale_prog)
-        paragraph.add_run(retranslate_delimiter(txt))
+        paragraph.add_run(cifstr_to_utf8(txt))
         ref.append([data_reduct_ref, absorpt_ref])
 
 
@@ -200,7 +200,7 @@ class SolveRefine():
         sentence = r"The structure were solved by {} methods using {} and refined by full-matrix " \
                    "least-squares methods against "
         txt = sentence.format(solution_method.strip('\n\r'), solution_prog.split()[0])
-        paragraph.add_run(retranslate_delimiter(txt))
+        paragraph.add_run(cifstr_to_utf8(txt))
         paragraph.add_run('F').font.italic = True
         if refine_coef.lower() == 'fsqd':
             paragraph.add_run('2').font.superscript = True
@@ -294,7 +294,7 @@ def get_inf_article(next_word: str) -> str:
 def format_radiation(radiation_type: str) -> list:
     radtype = list(radiation_type.partition("K"))
     if len(radtype) > 2:
-        radtype[2] = retranslate_delimiter(radtype[2])
+        radtype[2] = cifstr_to_utf8(radtype[2])
         return radtype
     else:
         return radtype

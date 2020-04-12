@@ -141,10 +141,10 @@ def utf8_to_str(txt):
     return txt
 
 
-def retranslate_delimiter(txt: str) -> str:
+def cifstr_to_utf8(txt: str) -> str:
     """
     Translates delimited cif characters back to unicode characters.
-    >>> retranslate_delimiter("Crystals were grown from thf at -20 \%C.")
+    >>> cifstr_to_utf8("Crystals were grown from thf at -20 \%C.")
     'Crystals were grown from thf at -20 °C.'
     """
     inv_map = {v: k for k, v in charcters.items()}
@@ -434,7 +434,7 @@ class CifContainer():
         ops = gemmi.GroupOps([gemmi.Op(o) for o in self.symmops])
         return ops.is_centric()
 
-    def atoms(self) -> Tuple[str, str, str, str, str, str, str, str]:
+    def atoms_loop(self) -> Tuple[str, str, str, str, str, str, str, str]:
         labels = self.block.find_loop('_atom_site_label')
         types = self.block.find_loop('_atom_site_type_symbol')
         x = self.block.find_loop('_atom_site_fract_x')
@@ -481,6 +481,7 @@ class CifContainer():
         return c.a, c.b, c.c, c.alpha, c.beta, c.gamma, c.volume
 
     def ishydrogen(self, label: str) -> bool:
+        """Decide wether an atom name is of type hydrogen."""
         hydrogen = ('H', 'D')
         if self.iselement(label) in hydrogen:
             return True
@@ -546,9 +547,8 @@ class CifContainer():
         symm3 = self.block.find_loop('_geom_torsion_site_symmetry_3')
         symm4 = self.block.find_loop('_geom_torsion_site_symmetry_4')
         # publ = self.block.find_loop('_geom_torsion_publ_flag')
-        for label1, label2, label3, label4, torsang, symm1, symm2, symm3, symm4 in zip(label1, label2, label3, label4,
-                                                                                       torsang, symm1, symm2, symm3,
-                                                                                       symm4):
+        for label1, label2, label3, label4, torsang, symm1, symm2, symm3, symm4 in \
+                zip(label1, label2, label3, label4, torsang, symm1, symm2, symm3, symm4):
             if without_h and (self.ishydrogen(label1) or self.ishydrogen(label2)
                               or self.ishydrogen(label3) or self.ishydrogen(label3)):
                 continue
