@@ -1,6 +1,6 @@
 from PyQt5.QtCore import QSize, Qt
 from PyQt5.QtWidgets import QDialog, QFrame, QHBoxLayout, QLabel, QPushButton, QSizePolicy, QSpacerItem, QTextEdit, \
-    QVBoxLayout, QWidget
+    QVBoxLayout
 
 from gui.custom_classes import QHLine
 
@@ -50,7 +50,7 @@ class VREF():
         return self.__repr__()
 
 
-class MyVRFContainer(QWidget):
+class MyVRFContainer(QDialog):
 
     def __init__(self, form: dict, help: str, parent=None):
         """
@@ -65,6 +65,7 @@ class MyVRFContainer(QWidget):
         """
         super().__init__(parent)
         self.form = form
+        self.setModal(True)
         # self.setMinimumWidth(400)
         self.mainVLayout = QVBoxLayout(self)
         self.setLayout(self.mainVLayout)
@@ -168,17 +169,19 @@ class MyVRFContainer(QWidget):
 
 
 if __name__ == '__main__':
-    """
+    import sys
+    from PyQt5.QtWidgets import QApplication
+
     app = QApplication(sys.argv)
     form = {'level'    : 'PLAT035_ALERT_1_B',
             'name'     : '_vrf_PLAT035_DK_zucker2_0m',
             'problem'  : '_chemical_absolute_configuration Info  Not Given     Please Do '
                          '!  ',
             'alert_num': 'PLAT035'}
-    web = MyVRFContainer(form, parent=None)
+    web = MyVRFContainer(form, parent=None, help='')
     app.exec_()
     web.raise_()
-    """
+
     v = VREF()
     v.key = '_vrf_PLAT035_DK_zucker2_0m'
     v.problem = '_chemical_absolute_configuration Info  Not Given     Please Do '

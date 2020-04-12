@@ -5,9 +5,9 @@ from PyQt5 import QtCore
 from PyQt5.QtCore import QEvent, QObject, Qt
 from PyQt5.QtGui import QColor, QTextOption, QKeySequence, QContextMenuEvent
 from PyQt5.QtWidgets import QAbstractScrollArea, QAction, QComboBox, QFrame, QPlainTextEdit, QSizePolicy, QTableWidget, \
-    QTableWidgetItem, QWidget, QApplication, QShortcut
+    QTableWidgetItem, QWidget, QApplication, QShortcut, QDialog
 
-from cif.cif_file_io import retranslate_delimiter
+from cif.cif_file_io import cifstr_to_utf8
 from tools.misc import essential_keys
 
 light_green = QColor(217, 255, 201)
@@ -162,7 +162,7 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         self.setCurrentCell(row, column)
         item = self.currentItem()
         if item:
-            item.setText(retranslate_delimiter(txt))
+            item.setText(cifstr_to_utf8(txt))
         else:
             try:
                 # in this case, we have a combobox
@@ -381,9 +381,23 @@ class MyEQTableWidget(QTableWidget, ItemTextMixin):
         self.setCellWidget(row_num, 0, key_item)
         # if len(value) > 38:
         tab_item = MyQPlainTextEdit(self)
-        tab_item.setPlainText(retranslate_delimiter(value_text))
+        tab_item.setPlainText(cifstr_to_utf8(value_text))
         self.setCellWidget(row_num, 1, tab_item)
 
     def adjustToContents(self):
         # print('adjust')
         self.resizeRowsToContents()
+
+
+if __name__ == '__main__':
+    import sys
+    from PyQt5.QtWidgets import QApplication, QDialog
+    app = QApplication(sys.argv)
+    #####################
+
+    w = MyQPlainTextEdit()
+
+    #####################
+    w.show()
+    app.exec_()
+    w.raise_()
