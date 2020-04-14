@@ -173,8 +173,8 @@ class CifContainer():
             # This is a fallback in case _shelx_res_file has non-ascii characters.
             print('File has non-ascii characters. Switching to compatible mode.')
             self.doc = self.read_string(self.fileobj.read_text(encoding='cp1250', errors='ignore'))
-            self.resdata = self.block.find_value('_shelx_res_file')
             self.block = self.doc.sole_block()
+            self.resdata = self.block.find_value('_shelx_res_file')
             self.chars_ok = False
         self.doc.check_for_duplicates()
         self.hkl_extra_info = self.abs_hkl_details()
