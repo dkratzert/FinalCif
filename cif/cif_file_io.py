@@ -227,7 +227,7 @@ class CifContainer():
         :param filename:  Name to save cif file to.
         """
         if not filename:
-            filename = self.fileobj.absolute()
+            filename = str(self.fileobj.absolute())
         for key in reversed(self.order):
             try:
                 self.block.move_item(self.block.get_index(key), 0)
