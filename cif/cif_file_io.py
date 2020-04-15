@@ -308,9 +308,10 @@ class CifContainer():
         if self.symmops:
             symm_ops = self.symmops
         else:
-            symm_ops = self.symmops_from_spgr()
+            symm_ops = self.symmops_from_spgr
         return gemmi.find_spacegroup_by_ops(gemmi.GroupOps([gemmi.Op(o) for o in symm_ops]))
 
+    @property
     def space_group(self) -> str:
         """
         Returns the space group from the symmetry operators.
@@ -324,6 +325,7 @@ class CifContainer():
             else:
                 return ''
 
+    @property
     def symmops_from_spgr(self) -> List[str]:
         # _symmetry_space_group_name_Hall
         space_group = None
@@ -337,12 +339,15 @@ class CifContainer():
                gemmi.find_spacegroup_by_name(gemmi.cif.as_string(space_group)).operations()]
         return ops
 
+    @property
     def spgr_number_from_symmops(self) -> int:
         return self._spgr().number
 
+    @property
     def crystal_system(self) -> str:
         return self._spgr().crystal_system_str()
 
+    @property
     def hall_symbol(self) -> str:
         return self._spgr().hall
 
