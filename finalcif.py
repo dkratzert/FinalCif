@@ -874,7 +874,7 @@ class AppWindow(QMainWindow):
             return
         self.ui.cif_main_table.vheaderitems.insert(0, key)
         self.add_row(key=key, value=value, at_start=True)
-        if key in [x for x in combobox_fields]:
+        if key in combobox_fields:
             self.add_property_combobox(combobox_fields[key], 0)
         self.missing_data.append(key)
         if not self.cif.block.find_value(key):
@@ -1760,11 +1760,13 @@ class AppWindow(QMainWindow):
             vhead = self.ui.cif_main_table.model().headerData(num, Qt.Vertical)
             if not vhead in self.ui.cif_main_table.vheaderitems:
                 self.ui.cif_main_table.vheaderitems.append(vhead)
-                # adding comboboxes:
-                if vhead in combobox_fields:
-                    self.add_property_combobox(combobox_fields[vhead], num)
-                elif vhead in self.settings.load_property_keys():
-                    self.add_property_combobox(self.settings.load_property_by_key(vhead), num)
+            # adding comboboxes:
+            if vhead in self.settings.load_property_keys():
+                # First add self-made properties:
+                self.add_property_combobox(self.settings.load_property_by_key(vhead), num)
+            elif vhead in combobox_fields:
+                # Then the pre-defined:
+                self.add_property_combobox(combobox_fields[vhead], num)
         # get missing items from sources and put them into the corresponding rows:
         # missing items will even be used if under the blue separation line:
         self.missing_data.append('_publ_section_references')
