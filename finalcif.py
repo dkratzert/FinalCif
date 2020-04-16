@@ -1648,12 +1648,15 @@ class AppWindow(QMainWindow):
         """
         cif_res_ckecksum = 0
         if self.cif.res_checksum_calcd > 0:
-            cif_res_ckecksum = int(self.cif.block.find_value('_shelx_res_checksum')) or -1
+            cif_res_ckecksum = self.cif.block.find_value('_shelx_res_checksum') or -1
+            cif_res_ckecksum = int(cif_res_ckecksum)
         if cif_res_ckecksum > 0 and cif_res_ckecksum != self.cif.res_checksum_calcd:
             self.show_checksum_warning()
         cif_hkl_ckecksum = 0
         if self.cif.hkl_checksum_calcd > 0:
-            cif_hkl_ckecksum = int(self.cif.block.find_value('_shelx_hkl_checksum')) or -1
+            cif_hkl_ckecksum = self.cif.block.find_value('_shelx_hkl_checksum') or -1
+            cif_hkl_ckecksum = int(cif_hkl_ckecksum)
+        print(cif_hkl_ckecksum)
         if cif_hkl_ckecksum > 0 and cif_hkl_ckecksum != self.cif.hkl_checksum_calcd:
             self.show_checksum_warning(res=False)
 
