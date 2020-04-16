@@ -5,7 +5,7 @@
 #  and you think this stuff is worth it, you can buy me a beer in return.
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
-DEBUG = True
+DEBUG = False
 
 import os
 
@@ -758,8 +758,6 @@ class AppWindow(QMainWindow):
         """
         Saves the current cif file and stores the information of the third column.
         """
-        datatxt = ''.join(self.ui.datnameLineEdit.text().split(' '))
-        self.cif.block.name = ''.join([i for i in datatxt if i.isascii()])
         # restore header, otherwise item is not saved:
         table = self.ui.cif_main_table
         table.restore_vertical_header()
@@ -1479,8 +1477,6 @@ class AppWindow(QMainWindow):
             self.settings.save_current_dir(curdir)
             self.ui.DetailsPushButton.setEnabled(True)
             self.ui.SourcesPushButton.setEnabled(True)
-            self.ui.datnameLineEdit.setText(self.cif.block.name)
-            self.ui.spacegroupLineEdit.setText(self.cif.space_group)
 
     def show_properties(self):
         self.save_current_cif_file()
@@ -1491,7 +1487,7 @@ class AppWindow(QMainWindow):
         self.ui.MainStackedWidget.setCurrentIndex(3)
         self.ui.cellField.setText(celltxt.format(*self.cif.cell, self.cif['_space_group_centring_type']))
         try:
-            spgr = self.cif.space_group
+            spgr = self.cif.space_group()
         except RuntimeError:
             spgr = ''
         intnum = self.cif['_space_group_IT_number'] if self.cif['_space_group_IT_number'] else self.cif[
