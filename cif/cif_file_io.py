@@ -173,8 +173,8 @@ class CifContainer():
             # This is a fallback in case _shelx_res_file has non-ascii characters.
             print('File has non-ascii characters. Switching to compatible mode.')
             self.doc = self.read_string(self.fileobj.read_text(encoding='cp1250', errors='ignore'))
-            self.block = self.doc.sole_block()
             self.resdata = self.block.find_value('_shelx_res_file')
+            self.block = self.doc.sole_block()
             self.chars_ok = False
         self.doc.check_for_duplicates()
         self.hkl_extra_info = self.abs_hkl_details()
@@ -227,7 +227,7 @@ class CifContainer():
         :param filename:  Name to save cif file to.
         """
         if not filename:
-            filename = str(self.fileobj.absolute())
+            filename = self.fileobj.absolute()
         for key in reversed(self.order):
             try:
                 self.block.move_item(self.block.get_index(key), 0)
@@ -308,10 +308,9 @@ class CifContainer():
         if self.symmops:
             symm_ops = self.symmops
         else:
-            symm_ops = self.symmops_from_spgr
+            symm_ops = self.symmops_from_spgr()
         return gemmi.find_spacegroup_by_ops(gemmi.GroupOps([gemmi.Op(o) for o in symm_ops]))
 
-    @property
     def space_group(self) -> str:
         """
         Returns the space group from the symmetry operators.
@@ -325,7 +324,6 @@ class CifContainer():
             else:
                 return ''
 
-    @property
     def symmops_from_spgr(self) -> List[str]:
         # _symmetry_space_group_name_Hall
         space_group = None
@@ -339,15 +337,12 @@ class CifContainer():
                gemmi.find_spacegroup_by_name(gemmi.cif.as_string(space_group)).operations()]
         return ops
 
-    @property
     def spgr_number_from_symmops(self) -> int:
         return self._spgr().number
 
-    @property
     def crystal_system(self) -> str:
         return self._spgr().crystal_system_str()
 
-    @property
     def hall_symbol(self) -> str:
         return self._spgr().hall
 

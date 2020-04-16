@@ -135,23 +135,26 @@ class BrukerData(WorkDataMixin):
             pass
         if not self.cif['_space_group_name_H-M_alt']:
             try:
-                self.sources['_space_group_name_H-M_alt'] = (self.cif.space_group, 'Calculated by gemmi: https://gemmi.readthedocs.io')
+                spgr = self.cif.space_group()
+                self.sources['_space_group_name_H-M_alt'] = (spgr, 'Calculated by gemmi: https://gemmi.readthedocs.io')
             except AttributeError:
                 pass
         if not self.cif['_space_group_name_Hall']:
             with suppress(AttributeError):
-                self.sources['_space_group_name_Hall'] = (self.cif.hall_symbol, 'Calculated by gemmi: https://gemmi.readthedocs.io')
+                hallsym = self.cif.hall_symbol()
+                self.sources['_space_group_name_Hall'] = (hallsym, 'Calculated by gemmi: https://gemmi.readthedocs.io')
         if not self.cif['_space_group_IT_number']:
             with suppress(AttributeError):
-                self.sources['_space_group_IT_number'] = (self.cif.spgr_number_from_symmops, 'Calculated by gemmi: https://gemmi.readthedocs.io')
+                spgrnum = self.cif.spgr_number_from_symmops()
+                self.sources['_space_group_IT_number'] = (spgrnum, 'Calculated by gemmi: https://gemmi.readthedocs.io')
         if not self.cif['_space_group_crystal_system']:
             with suppress(AttributeError):
-                csystem = self.cif.crystal_system
+                csystem = self.cif.crystal_system()
                 self.sources['_space_group_crystal_system'] = (
                     csystem, 'calculated by gemmi: https://gemmi.readthedocs.io')
-        if not self.cif.symmops and self.cif.symmops_from_spgr:
+        if not self.cif.symmops and self.cif.symmops_from_spgr():
             loop = self.cif.block.init_loop('_space_group_symop_operation_', ['xyz'])
-            for symmop in reversed(self.cif.symmops_from_spgr):
+            for symmop in reversed(self.cif.symmops_from_spgr()):
                 loop.add_row([gcif.quote(symmop)])
         # All sources that are not filled with data will be yellow in the main table
         #                          data                         tooltip
