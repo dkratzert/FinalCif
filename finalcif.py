@@ -5,7 +5,7 @@
 #  and you think this stuff is worth it, you can buy me a beer in return.
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
-DEBUG = True
+DEBUG = False
 
 import os
 
