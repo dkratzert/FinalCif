@@ -232,7 +232,7 @@ def set_cell_border(cell: _Cell, **kwargs) -> None:
 
 
 def add_main_table(document: Document(), cif: CifContainer, table_num: int) -> Tuple[CifContainer, int]:
-    tab0_head = r"Table {}. Crystal data and structure refinement for {}".format(table_num, cif.fileobj.name)
+    tab0_head = r"Table {}. Crystal data and structure refinement for {}".format(table_num, cif.block.name)
     document.add_heading(tab0_head, 2)
     exti = cif['_refine_ls_extinction_coef']
     rows = 33
@@ -427,7 +427,7 @@ def add_coords_table(document: Document, cif: CifContainer, table_num: int):
     # eq.italic = True
     h.add_run('{}[{}'.format(prot_space, angstrom))
     h.add_run('2').font.superscript = True
-    h.add_run('] for {}.'.format(cif.fileobj.name))
+    h.add_run('] for {}.'.format(cif.block.name))
     coords_table = document.add_table(rows=len(atoms) + 1, cols=5)
     # coords_table.style = document.styles['Table Grid']
     coords_table.style = 'Table Grid'
@@ -507,7 +507,7 @@ def add_bonds_and_angles_table(document: Document, cif: CifContainer, table_num:
     Make table with bonds and angles.
     """
     table_num += 1
-    headline = r"Table {}. Bond lengths and angles for {}.".format(table_num, cif.fileobj.name)
+    headline = r"Table {}. Bond lengths and angles for {}.".format(table_num, cif.block.name)
     document.add_heading(headline, 2)
 
     # creating rows in advance is *much* faster!
@@ -602,7 +602,7 @@ def add_torsion_angles(document: Document, cif: CifContainer, table_num: int, wi
         print('No torsion angles in cif.')
         return table_num
     table_num += 1
-    headline = r"Table {}. Torsion angles for {}.".format(table_num, cif.fileobj.name)
+    headline = r"Table {}. Torsion angles for {}.".format(table_num, cif.block.name)
     document.add_heading(headline, 2)
     torsion_table = document.add_table(rows=cif.ntorsion_angles(without_H) + 1, cols=2)
     torsion_table.style = 'Table Grid'
@@ -682,7 +682,7 @@ def add_hydrogen_bonds(document: Document, cif: CifContainer, table_num: int) ->
         print('No hydrogen bonds in cif.')
         return table_num
     nhydrogenb = len(list(cif.hydrogen_bonds()))
-    headline = r"Table {}. Hydrogen bonds for {}.".format(table_num, cif.fileobj.name)
+    headline = r"Table {}. Hydrogen bonds for {}.".format(table_num, cif.block.name)
     document.add_heading(headline, 2)
     hydrogen_table = document.add_table(rows=nhydrogenb + 1, cols=5)
     hydrogen_table.style = 'Table Grid'
