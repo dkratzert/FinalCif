@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file './gui\finalcif_gui.ui'
+# Form implementation generated from reading ui file '/Users/daniel/GitHub/FinalCif/./gui/finalcif_gui.ui'
 #
 # Created by: PyQt5 UI code generator 5.14.2
 #
@@ -13,7 +13,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_FinalCifWindow(object):
     def setupUi(self, FinalCifWindow):
         FinalCifWindow.setObjectName("FinalCifWindow")
-        FinalCifWindow.resize(1451, 749)
+        FinalCifWindow.resize(1454, 749)
         self.Mainwidget = QtWidgets.QWidget(FinalCifWindow)
         self.Mainwidget.setObjectName("Mainwidget")
         self.horizontalLayout_4 = QtWidgets.QHBoxLayout(self.Mainwidget)
@@ -776,11 +776,29 @@ class Ui_FinalCifWindow(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.spacegroupLineEdit.sizePolicy().hasHeightForWidth())
         self.spacegroupLineEdit.setSizePolicy(sizePolicy)
+        self.spacegroupLineEdit.setMinimumSize(QtCore.QSize(100, 0))
+        self.spacegroupLineEdit.setMaximumSize(QtCore.QSize(120, 16777215))
         self.spacegroupLineEdit.setReadOnly(True)
         self.spacegroupLineEdit.setObjectName("spacegroupLineEdit")
         self.InfobarHLayout.addWidget(self.spacegroupLineEdit)
-        spacerItem14 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem14 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
         self.InfobarHLayout.addItem(spacerItem14)
+        self.CCDCNumLabel = QtWidgets.QLabel(self.CifDataItemsFrame)
+        self.CCDCNumLabel.setObjectName("CCDCNumLabel")
+        self.InfobarHLayout.addWidget(self.CCDCNumLabel)
+        self.CCDCNumLineEdit = QtWidgets.QLineEdit(self.CifDataItemsFrame)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.CCDCNumLineEdit.sizePolicy().hasHeightForWidth())
+        self.CCDCNumLineEdit.setSizePolicy(sizePolicy)
+        self.CCDCNumLineEdit.setMinimumSize(QtCore.QSize(100, 0))
+        self.CCDCNumLineEdit.setMaximumSize(QtCore.QSize(120, 16777215))
+        self.CCDCNumLineEdit.setReadOnly(True)
+        self.CCDCNumLineEdit.setObjectName("CCDCNumLineEdit")
+        self.InfobarHLayout.addWidget(self.CCDCNumLineEdit)
+        spacerItem15 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.InfobarHLayout.addItem(spacerItem15)
         self.CifTableGridLayout.addLayout(self.InfobarHLayout, 0, 0, 1, 3)
         self.horizontalLayout_4.addWidget(self.splitter)
         FinalCifWindow.setCentralWidget(self.Mainwidget)
@@ -905,6 +923,7 @@ class Ui_FinalCifWindow(object):
         item.setText(_translate("FinalCifWindow", "Data Source"))
         self.datanameLabel.setText(_translate("FinalCifWindow", "Data Name:"))
         self.spacegroupLabel.setText(_translate("FinalCifWindow", "Space-Group Type:"))
+        self.CCDCNumLabel.setText(_translate("FinalCifWindow", "CCDC Number:"))
         self.actionSave_Report.setText(_translate("FinalCifWindow", "Save Report"))
         self.actionSave_CIF_File.setText(_translate("FinalCifWindow", "Save CIF File"))
         self.actionedit_templates.setText(_translate("FinalCifWindow", "edit templates"))

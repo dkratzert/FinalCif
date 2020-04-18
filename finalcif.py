@@ -1480,6 +1480,7 @@ class AppWindow(QMainWindow):
             self.ui.SourcesPushButton.setEnabled(True)
             self.ui.datnameLineEdit.setText(self.cif.block.name)
             self.ui.spacegroupLineEdit.setText(self.cif.space_group)
+            self.ui.CCDCNumLineEdit.setText(self.cif['_database_code_depnum_ccdc_archive'])
 
     def show_properties(self):
         self.save_current_cif_file()
@@ -1656,7 +1657,6 @@ class AppWindow(QMainWindow):
         if self.cif.hkl_checksum_calcd > 0:
             cif_hkl_ckecksum = self.cif.block.find_value('_shelx_hkl_checksum') or -1
             cif_hkl_ckecksum = int(cif_hkl_ckecksum)
-        print(cif_hkl_ckecksum)
         if cif_hkl_ckecksum > 0 and cif_hkl_ckecksum != self.cif.hkl_checksum_calcd:
             self.show_checksum_warning(res=False)
 
