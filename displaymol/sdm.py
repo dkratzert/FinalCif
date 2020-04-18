@@ -147,15 +147,17 @@ class SDM():
     def calc_sdm(self) -> list:
         t1 = time.perf_counter()
         h = ('H', 'D')
+        nlen = len(self.symmcards)
+        at2_plushalf = [Array([j+0.5 for j in x[2:5]]) for x in self.atoms]
         for i, at1 in enumerate(self.atoms):
             prime_array = [Array(at1[2:5]) * symop.matrix + symop.trans for symop in self.symmcards]
             for j, at2 in enumerate(self.atoms):
                 mind = 1000000
                 hma = False
-                at2_plushalf = Array(at2[2:5]) + 0.5
+                atp = at2_plushalf[j]
                 sdmItem = SDMItem()
-                for n, symop in enumerate(self.symmcards):
-                    D = prime_array[n] - at2_plushalf
+                for n in range(nlen):
+                    D = prime_array[n] - atp
                     dp = [v - 0.5 for v in D - D.floor]
                     dk = self.vector_length(*dp)
                     if n:
