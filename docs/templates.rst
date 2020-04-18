@@ -3,9 +3,10 @@ Templates
 
 FinalCif uses two different kinds of templates to to simplify recurring tasks:
 
-* Equipment and Author tmeplates
+* Equipment and Author templates
 * Property templates
 
+.. image:: picture_of_templates.png
 
 Sidenote
 --------

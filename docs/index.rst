@@ -21,4 +21,5 @@ Contents
    install
    description
    templates
+   report
    sources

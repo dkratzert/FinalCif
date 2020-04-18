@@ -10,5 +10,6 @@ and do::
 
 The code is only useful for developers, not for users.
 
-(FinalCif uses the great `gemmi cif parser <https://gemmi.readthedocs.io/en/latest/index.html>`_.
-It needs MSVC++ 14 in order to compile in Windows)
+FinalCif uses the great `gemmi cif parser <https://gemmi.readthedocs.io/en/latest/index.html>`_.
+It needs `MSVC++ 14 <https://visualstudio.microsoft.com/de/vs/features/cplusplus>`_ in order to compile in Windows.
+For Linux and MacOS, a regular installatin of the GCC compiler is sufficient.
