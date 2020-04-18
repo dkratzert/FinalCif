@@ -141,7 +141,7 @@ class SDM():
         return Matrix([[self.cell[0], self.cell[1] * cos(self.cell[5]), self.cell[2] * cos(self.cell[4])],
                        [0, self.cell[1] * sin(self.cell[5]),
                         (self.cell[2] * (cos(self.cell[3]) - cos(self.cell[4]) * cos(self.cell[5])) / sin(
-                                self.cell[5]))],
+                            self.cell[5]))],
                        [0, 0, self.cell[6] / (self.cell[0] * self.cell[1] * sin(self.cell[5]))]])
 
     def calc_sdm(self) -> list:
@@ -309,4 +309,40 @@ class SDM():
 
 
 if __name__ == "__main__":
-    pass
+    import sys
+    from pathlib import Path
+    from shutil import copy2
+    from tempfile import TemporaryDirectory
+
+    from PyQt5.QtCore import QUrl
+    from PyQt5.QtWebEngineWidgets import QWebEngineView
+    from PyQt5.QtWidgets import QApplication
+    from cif.cif_file_io import CifContainer
+    from displaymol import mol_file_writer, write_html
+
+    import displaymol
+
+    cif = CifContainer(Path('test-data/p21c.cif'))
+
+    app = QApplication(sys.argv)
+    # w = QWidget()
+    w = QWebEngineView()
+    w.heightForWidth(1)
+    app.setActiveWindow(w)
+    jsmoldir = TemporaryDirectory()
+    atoms = list(cif.atoms_fract)
+    sdm = SDM(atoms, cif.symmops, cif.cell[:6], centric=cif.is_centrosymm)
+    needsymm = sdm.calc_sdm()
+    atoms = sdm.packer(sdm, needsymm)
+    mol = mol_file_writer.MolFile(atoms, bonds=[])
+    mol = mol.make_mol()
+    content = write_html.write(mol, 250, 250)
+    Path(jsmoldir.name).joinpath("./jsmol.htm").write_text(data=content, encoding="utf-8", errors='ignore')
+    copy2(Path(displaymol.__file__).parent.joinpath('jquery.min.js'), jsmoldir.name)
+    copy2(Path(displaymol.__file__).parent.joinpath('JSmol_dk.nojq.lite.js'), jsmoldir.name)
+    print(Path(jsmoldir.name).joinpath("./jsmol.htm").absolute())
+    w.load(QUrl.fromLocalFile(str(Path(jsmoldir.name).joinpath("./jsmol.htm").absolute())))
+    w.show()
+    w.reload()
+
+    sys.exit(app.exec_())
