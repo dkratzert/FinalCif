@@ -23,7 +23,7 @@ def make_report():
                'mytable'      : True,  # disables the table
                'an_image'     : InlineImage(doc, 'icon/finalcif2.png', width=Cm(5)),
                }
-    doc.render(context)
+    doc.render(context, autoescape=True)
     doc.save("generated_doc.docx")
 
 
