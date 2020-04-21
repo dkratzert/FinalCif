@@ -177,3 +177,11 @@ class TestApplication(unittest.TestCase):
         self.assertEqual(179, self.myapp.cif.nangles())
         self.assertEqual(4.0, self.myapp.cif.Z_value)
         self.assertEqual(['x, y, z', '-x, -y, z', '-x+1/2, y+1/2, -z', 'x+1/2, -y+1/2, -z'], self.myapp.cif.symmops)
+        self.assertEqual('SHELXL-2018/3 (Sheldrick, 2018)', self.myapp.cif['_computing_structure_refinement'])
+        del self.myapp.cif['_computing_structure_refinement']
+        self.assertEqual('', self.myapp.cif['_computing_structure_refinement'])
+        self.assertEqual('<gemmi.UnitCell(19.678, 37.0229, 4.772, 90, 90, 90)>', str(self.myapp.cif.atomic_struct.cell))
+        self.assertFalse(self.myapp.cif.ishydrogen('C1'))
+        self.assertTrue(self.myapp.cif.ishydrogen('H1'))
+        self.myapp.cif.add_to_cif('_computing_structure_refinement', 'foobar')
+        self.assertEqual('foobar', self.myapp.cif['_computing_structure_refinement'])
