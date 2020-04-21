@@ -40,24 +40,24 @@ class ItemTextMixin:
         try:
             txt = self.item(row, column).text()
         except AttributeError:
-            txt = None
+            txt = ''
         if not txt:
             try:
                 txt = self.item(row, column).data(0)
             except AttributeError:
-                txt = None
+                txt = ''
         if not txt:
             try:
                 # for QPlaintextWidgets:
                 txt = self.cellWidget(row, column).toPlainText()
             except AttributeError:
-                txt = None
+                txt = ''
         if not txt:
             # for comboboxes:
             try:
                 txt = self.cellWidget(row, column).currentText()
             except AttributeError:
-                txt = None
+                txt = ''
         return txt
 
 
@@ -151,6 +151,8 @@ class MyCifTable(QTableWidget, ItemTextMixin):
             row = self.currentRow()
             self.setCurrentCell(row, 2)
             return True
+        if event.type() == QEvent.Wheel:
+            pass
         return QObject.eventFilter(self, widget, event)
 
     def setText(self, key: str, column: int, txt: str, row: int = None):
@@ -164,11 +166,13 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         if item:
             item.setText(retranslate_delimiter(txt))
         else:
-            try:
-                # in this case, we have a combobox
+            # in this case, we have a combobox
+            if isinstance(self.cellWidget(row, column), MyComboBox):
                 self.cellWidget(row, column).setText(txt)
-            except AttributeError:
-                pass
+            else:
+                # No item in table cell:
+                item = MyTableWidgetItem(txt) 
+                self.setItem(row, column, item)
 
     def getText(self, col: int, row: int):
         return self.text(row, col)
