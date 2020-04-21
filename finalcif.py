@@ -93,7 +93,7 @@ from gui.custom_classes import MyComboBox, MyEQTableWidget, MyQPlainTextEdit, \
 class AppWindow(QMainWindow):
     cif: CifContainer
 
-    def __init__(self):
+    def __init__(self, file=None):
         super().__init__()
         self.sources: Union[None, Dict[str, Tuple[Union[str, None]]]] = None
         self.ui = Ui_FinalCifWindow()
@@ -178,6 +178,8 @@ class AppWindow(QMainWindow):
 
         if len(sys.argv) > 1:
             self.load_cif_file(sys.argv[1])
+        if file:
+            self.load_cif_file(file)
         # Sorting desyncronizes header and columns:
         self.ui.cif_main_table.setSortingEnabled(False)
         self.load_recent_cifs_list()
@@ -861,6 +863,8 @@ class AppWindow(QMainWindow):
                 self.ui.cif_main_table.setText(key, COL_DATA, equipment[key])
                 self.ui.cif_main_table.setBackground(key, COL_DATA, light_green)
                 self.ui.cif_main_table.setText(key, COL_EDIT, equipment[key])
+        else:
+            print('Empty main table!')
 
     def add_new_table_key(self, key: str, value: str = '?') -> None:
         """
@@ -935,6 +939,7 @@ class AppWindow(QMainWindow):
         self.show_equipment_and_properties()
 
     def edit_equipment_template(self) -> None:
+        """Gets called when 'edit equipment' button was clicked."""
         it = self.ui.EquipmentTemplatesListWidget.currentItem()
         self.ui.EquipmentTemplatesListWidget.setCurrentItem(None)
         self.ui.EquipmentTemplatesListWidget.setCurrentItem(it)
@@ -1059,7 +1064,7 @@ class AppWindow(QMainWindow):
 
     def get_equipment_entry_data(self) -> Tuple[str, list]:
         """
-        Returns the string of the currently selected entry and the table date behind it.
+        Returns the string of the currently selected entry and the table data behind it.
         """
         table = self.ui.EquipmentEditTableWidget
         # Set None Item to prevent loss of the currently edited item:
@@ -1348,7 +1353,6 @@ class AppWindow(QMainWindow):
         table.clearContents()
         table.setRowCount(0)
         self.ui.PropertiesTemplatesStackedWidget.setCurrentIndex(0)
-        print('canceled property')
 
     ##   end of properties
 

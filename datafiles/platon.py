@@ -88,7 +88,7 @@ class Platon():
 
     def run_platon(self):
         """
-        >>> fname = Path(r'./test-data/DK_zucker2_0m.cif')
+        >>> fname = Path(r'./tests/examples/1979688.cif')
         >>> p = Platon(fname)
         >>> p.run_platon()
         trying local platon
