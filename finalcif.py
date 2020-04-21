@@ -100,7 +100,7 @@ class AppWindow(QMainWindow):
         self.ui.setupUi(self)
         # To make file drag&drop working:
         self.setAcceptDrops(True)
-        #self.show()
+        self.show()
         self.statusBar().showMessage('FinalCif version {}'.format(VERSION))
         self.settings = FinalCifSettings(self)
         self.settings.load_window_position()
