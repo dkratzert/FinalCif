@@ -12,7 +12,7 @@ from tools.misc import essential_keys
 
 light_green = QColor(217, 255, 201)
 blue = QColor(102, 150, 179)
-yellow = QColor(250, 247, 150)
+yellow = QColor(250, 247, 150)  # #faf796
 
 [COL_CIF,
  COL_DATA,
