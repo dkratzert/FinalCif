@@ -185,3 +185,25 @@ class TestApplication(unittest.TestCase):
         self.assertTrue(self.myapp.cif.ishydrogen('H1'))
         self.myapp.cif.add_to_cif('_computing_structure_refinement', 'foobar')
         self.assertEqual('foobar', self.myapp.cif['_computing_structure_refinement'])
+
+
+class TestWorkfolder(unittest.TestCase):
+    """A CIF fle in a complete work folder"""
+
+    def setUp(self) -> None:
+        self.myapp = AppWindow([x for x in Path('.').rglob('cu_BruecknerJK_153F40_0m.cif')][0])
+        self.myapp.setWindowIcon(QIcon('./icon/multitable.png'))
+        self.myapp.setWindowTitle('FinalCif v{}'.format(VERSION))
+        self.myapp.hide()  # For full screen view
+        # self.myapp.setBaseSize(1200, 780)
+        # I have to load any cif file in order to have vheaderitems in the main table:
+        # self.myapp.load_cif_file(r'tests/examples/1979688.cif')
+
+    def tearDown(self) -> None:
+        super().tearDown()
+
+    def testDataColumn(self):
+        '_computing_structure_solution:'
+        self.assertEqual('SHELXT (G. Sheldrick)', self.myapp.ui.cif_main_table.text(19, 1))
+        self.assertEqual('direct',
+                         self.myapp.ui.cif_main_table.getTextFromKey('_atom_sites_solution_primary', 1))
