@@ -3,11 +3,12 @@ import unittest
 from pathlib import Path
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QColor
 from PyQt5.QtWidgets import QApplication
 from qtpy.QtTest import QTest
 
 from finalcif import AppWindow
+from gui.custom_classes import yellow, light_green
 from tools.version import VERSION
 
 export_templ_data = ['data_D8__VENTURE',
@@ -38,7 +39,7 @@ app = QApplication(sys.argv)
 class TestApplication(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.myapp = AppWindow([x for x in Path('.').rglob('1979688.cif')][0])
+        self.myapp = AppWindow([x for x in Path('.').rglob('1979688.cif')][0].absolute())
         self.myapp.setWindowIcon(QIcon('./icon/multitable.png'))
         self.myapp.setWindowTitle('FinalCif v{}'.format(VERSION))
         self.myapp.hide()  # For full screen view
@@ -191,7 +192,7 @@ class TestWorkfolder(unittest.TestCase):
     """A CIF fle in a complete work folder"""
 
     def setUp(self) -> None:
-        self.myapp = AppWindow([x for x in Path('.').rglob('cu_BruecknerJK_153F40_0m.cif')][0])
+        self.myapp = AppWindow([x for x in Path('.').rglob('cu_BruecknerJK_153F40_0m.cif')][0].absolute())
         self.myapp.setWindowIcon(QIcon('./icon/multitable.png'))
         self.myapp.setWindowTitle('FinalCif v{}'.format(VERSION))
         self.myapp.hide()  # For full screen view
@@ -207,3 +208,49 @@ class TestWorkfolder(unittest.TestCase):
         self.assertEqual('SHELXT (G. Sheldrick)', self.myapp.ui.cif_main_table.text(19, 1))
         self.assertEqual('direct',
                          self.myapp.ui.cif_main_table.getTextFromKey('_atom_sites_solution_primary', 1))
+        self.assertEqual('9624',
+                         self.myapp.ui.cif_main_table.getTextFromKey('_cell_measurement_reflns_used', 1))
+        self.assertEqual('78.8605',
+                         self.myapp.ui.cif_main_table.getTextFromKey('_cell_measurement_theta_max', 1))
+        self.assertEqual('2.547',
+                         self.myapp.ui.cif_main_table.getTextFromKey('_cell_measurement_theta_min', 1))
+        self.assertEqual('',
+                         self.myapp.ui.cif_main_table.getTextFromKey('_chemical_absolute_configuration', 1))
+        self.assertEqual('',
+                         self.myapp.ui.cif_main_table.getTextFromKey('_chemical_absolute_configuration', 2))
+        self.assertEqual("<class 'gui.custom_classes.MyComboBox'>",
+                         str(self.myapp.ui.cif_main_table.cellWidget(9, 2).__class__))
+        self.assertEqual('?',
+                         self.myapp.ui.cif_main_table.getTextFromKey('_chemical_formula_moiety', 0))
+        self.assertEqual('',
+                         self.myapp.ui.cif_main_table.getTextFromKey('_chemical_formula_moiety', 1))
+        self.assertEqual('',
+                         self.myapp.ui.cif_main_table.getTextFromKey('_chemical_formula_moiety', 2))
+        # Test for background color:
+        self.assertEqual(light_green, self.myapp.ui.cif_main_table.item(8, 1).background().color())
+        self.assertEqual(yellow, self.myapp.ui.cif_main_table.item(9, 1).background().color())
+        with self.assertRaises(AttributeError):
+            self.myapp.ui.cif_main_table.item(8, 2).background().color()
+        self.assertEqual('SAINT V8.40A',
+                         self.myapp.ui.cif_main_table.getTextFromKey('_computing_cell_refinement', 1))
+        self.assertEqual('?',
+                         self.myapp.ui.cif_main_table.getTextFromKey('_computing_cell_refinement', 0))
+        self.assertEqual('Bruker BIS V6.2.12/2019-08-12',
+                         self.myapp.ui.cif_main_table.getTextFromKey('_computing_data_collection', 1))
+        self.assertEqual(light_green, self.myapp.ui.cif_main_table.item(14, 1).background().color())
+        self.assertEqual(light_green, self.myapp.ui.cif_main_table.item(15, 1).background().color())
+        self.assertEqual(light_green, self.myapp.ui.cif_main_table.item(16, 1).background().color())
+        self.assertEqual(QColor(0, 0, 0, 255), self.myapp.ui.cif_main_table.item(17, 1).background().color())
+        self.assertEqual('SHELXT (G. Sheldrick)',
+                         self.myapp.ui.cif_main_table.getTextFromKey('_computing_structure_solution', 1))
+        self.assertEqual('1.1',
+                         self.myapp.ui.cif_main_table.getTextFromKey('_diffrn_source_current', 1))
+        self.assertEqual('50.0',
+                         self.myapp.ui.cif_main_table.getTextFromKey('_diffrn_source_voltage', 1))
+        self.assertEqual('colourless',
+                         self.myapp.ui.cif_main_table.getTextFromKey('_exptl_crystal_colour', 1))
+        self.assertEqual('plate',
+                         self.myapp.ui.cif_main_table.getTextFromKey('_exptl_crystal_description', 1))
+        # Yellow:
+        self.assertEqual('QPlainTextEdit {background-color: #faf796;}',
+                         self.myapp.ui.cif_main_table.cellWidget(40, 1).styleSheet())
