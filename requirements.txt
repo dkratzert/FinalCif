@@ -14,8 +14,13 @@ PyQt5-stubs==5.14.2.0
 PyQtWebEngine==5.14.0
 python-docx>=0.8.10
 requests>=2.23.0 # for checkcif
-qtawesome>=0.7.0 #icons
+qtawesome>=0.7.1 #icons
 html2text==2020.1.16
 qtpy==1.9.0
 
+# Upgrade gemmi to Git master:
 # pip install https://github.com/project-gemmi/gemmi/archive/master.zip --upgrade
+
+# For development
+# docxtpl
+# sphinx
