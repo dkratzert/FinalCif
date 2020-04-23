@@ -33,6 +33,17 @@ Freiburg i. Br.
 79104
 Germany"""
 
+export_prop_data = r"""data_Molecular__Graphics
+loop_
+_computing_molecular_graphics
+'Olex2 (Dolomanov et al., 2009)'
+'ShelXle (Hu\"bschle 2011)'
+'ORTEP Farrujia 2012'
+'Bruker SHELXTL, XP (G. Sheldrick)'
+'Mercury CSD, C. F. Macrae et al. 2008'
+'PLATON (A.L.Spek, 2019)'
+"""
+
 app = QApplication(sys.argv)
 
 
@@ -78,7 +89,7 @@ class TestApplication(unittest.TestCase):
         self.myapp.ui.EquipmentTemplatesListWidget.setCurrentRow(1)
         self.assertEqual('daniel.kratzert@ac.uni-freiburg.de', self.myapp.ui.cif_main_table.item(19, 1).text())
 
-    # @unittest.skip('does not really work')
+    # @unittest.skip('')
     def test_export_template(self):
         widget = self.myapp.ui.EquipmentTemplatesListWidget
         self.myapp.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
@@ -95,7 +106,7 @@ class TestApplication(unittest.TestCase):
         self.assertEqual(export_templ_data, outfile.read_text().splitlines(keepends=False))
         outfile.unlink()
 
-    # @unittest.skip('test_load_equipment Is tested in gui_simpl')
+    # @unittest.skip('')
     def test_load_equipment(self):
         # self.myapp.load_cif_file(r'test-data/DK_zucker2_0m.cif')
         item = self.myapp.ui.EquipmentTemplatesListWidget.findItems('Contact author name and address',
@@ -104,6 +115,37 @@ class TestApplication(unittest.TestCase):
         self.myapp.ui.EquipmentTemplatesListWidget.setCurrentItem(item)
         self.myapp.load_selected_equipment()
         self.assertEqual('daniel.kratzert@ac.uni-freiburg.de', self.myapp.ui.cif_main_table.item(19, 1).text())
+
+    def test_properties(self):
+        self.myapp.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
+        item = self.myapp.ui.PropertiesTemplatesListWidget.findItems('Crystal Color', Qt.MatchStartsWith)
+        self.myapp.ui.PropertiesTemplatesListWidget.setCurrentItem(item[0])
+        self.myapp.edit_property_template()
+        self.assertEqual('_exptl_crystal_colour', self.myapp.ui.cifKeywordLineEdit.text())
+        self.assertEqual('', self.myapp.ui.PropertiesEditTableWidget.item(0, 0).text())
+        self.assertEqual('colourless', self.myapp.ui.PropertiesEditTableWidget.item(1, 0).text())
+        self.assertEqual('white', self.myapp.ui.PropertiesEditTableWidget.item(2, 0).text())
+        # Testing export:
+        self.myapp.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
+        item = self.myapp.ui.PropertiesTemplatesListWidget.findItems('Molecular Graph', Qt.MatchStartsWith)
+        self.myapp.ui.PropertiesTemplatesListWidget.setCurrentItem(item[0])
+        self.myapp.edit_property_template()
+        self.assertEqual('ShelXle (Hübschle 2011)', self.myapp.ui.PropertiesEditTableWidget.item(2, 0).text())
+        self.myapp.export_property_template('test_prop_export.cif')
+        self.assertEqual(export_prop_data, Path('test_prop_export.cif').read_text())
+        Path('test_prop_export.cif').unlink()
+        # Testing import:
+        data = """data_Fooo__Baar\nloop_\n_foo\n'bar baz'"""
+        file = Path('test_prop_import.cif')
+        file.write_text(data)
+        self.myapp.import_property_from_file(file.name)
+        item = self.myapp.ui.PropertiesTemplatesListWidget.findItems('Fooo Baar', Qt.MatchStartsWith)
+        self.myapp.ui.PropertiesTemplatesListWidget.setCurrentItem(item[0])
+        self.myapp.edit_property_template()
+        self.assertEqual('_foo', self.myapp.ui.cifKeywordLineEdit.text())
+        self.assertEqual('bar baz', self.myapp.ui.PropertiesEditTableWidget.item(1, 0).text())
+        self.myapp.ui.DeletePropertiesButton.click()
+        file.unlink()
 
     def test_dropdown_widgets(self):
         """
@@ -252,7 +294,9 @@ class TestWorkfolder(unittest.TestCase):
                          self.myapp.ui.cif_main_table.getTextFromKey('_exptl_crystal_colour', 1))
         self.assertEqual('plate',
                          self.myapp.ui.cif_main_table.getTextFromKey('_exptl_crystal_description', 1))
-        # Yellow:
+        # _exptl_crystal_recrystallization_method Yellow:
+        self.assertEqual('',
+                         self.myapp.ui.cif_main_table.getTextFromKey('_exptl_crystal_recrystallization_method', 1))
         self.assertEqual('QPlainTextEdit {background-color: #faf796;}',
                          self.myapp.ui.cif_main_table.cellWidget(40, 1).styleSheet())
 
@@ -267,3 +311,28 @@ class TestWorkfolder(unittest.TestCase):
         self.allrows_test_key('_diffrn_measurement_method', ['?', 'ω and ϕ scans', 'ω and ϕ scans'])
         self.allrows_test_key('_diffrn_measurement_specimen_support', ['?', 'MiTeGen micromount', 'MiTeGen micromount'])
         self.allrows_test_key('_olex2_diffrn_ambient_temperature_device', ['?', 'Oxford Cryostream 800', 'Oxford Cryostream 800'])
+        self.assertEqual('0.220',
+                         self.myapp.ui.cif_main_table.getTextFromKey('_exptl_crystal_size_max', 1))
+        self.assertEqual('0.100',
+                         self.myapp.ui.cif_main_table.getTextFromKey('_exptl_crystal_size_mid', 1))
+        self.assertEqual('0.040',
+                         self.myapp.ui.cif_main_table.getTextFromKey('_exptl_crystal_size_min', 1))
+        self.assertEqual(
+            """Sheldrick, G.M. (2015). Acta Cryst. A71, 3-8.\nSheldrick, G.M. (2015). Acta Cryst. C71, 3-8.\n""",
+            self.myapp.ui.cif_main_table.getTextFromKey('_publ_section_references', 1))
+        self.assertEqual('geom', self.myapp.ui.cif_main_table.getTextFromKey('_atom_sites_solution_hydrogens', 0))
+        self.assertEqual('', self.myapp.ui.cif_main_table.getTextFromKey('_atom_sites_solution_hydrogens', 1))
+        self.assertEqual(
+            """FinalCif V{} by Daniel Kratzert, Freiburg 2019, https://github.com/dkratzert/FinalCif""".format(VERSION),
+            self.myapp.ui.cif_main_table.getTextFromKey('_audit_creation_method', 1))
+        self.assertEqual('18', self.myapp.ui.cif_main_table.getTextFromKey('_space_group_IT_number', 0))
+        self.assertEqual('orthorhombic', self.myapp.ui.cif_main_table.getTextFromKey('_space_group_crystal_system', 0))
+        self.assertEqual('P 21 21 2', self.myapp.ui.cif_main_table.getTextFromKey('_space_group_name_H-M_alt', 0))
+        self.assertEqual('P 2 2ab', self.myapp.ui.cif_main_table.getTextFromKey('_space_group_name_Hall', 0))
+
+    def test_edit_values_and_save(self):
+        pass
+        # insert data in third column
+        # save the file
+        # open saved file
+        # test if data is still the same

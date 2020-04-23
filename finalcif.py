@@ -998,12 +998,12 @@ class AppWindow(QMainWindow):
         self.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
         print('saved')
 
-    def import_equipment_from_file(self) -> None:
+    def import_equipment_from_file(self, filename='') -> None:
         """
         Import an equipment entry from a cif file.
         """
-        import gemmi
-        filename = self.cif_file_open_dialog(filter="CIF file (*.cif *.cif_od)")
+        if not filename:
+            filename = self.cif_file_open_dialog(filter="CIF file (*.cif *.cif_od)")
         if not filename:
             return
         try:
@@ -1018,7 +1018,7 @@ class AppWindow(QMainWindow):
                 key, value = item.pair
                 if key in excluded_imports:
                     continue
-                table_data.append([key, retranslate_delimiter(gemmi.cif.as_string(value)).strip('\n\r ')])
+                table_data.append([key, retranslate_delimiter(cif.as_string(value)).strip('\n\r ')])
         if filename.endswith('.cif_od'):
             name = Path(filename).stem
         else:
@@ -1177,7 +1177,7 @@ class AppWindow(QMainWindow):
                 self.settings.save_template('equipment_list', newlist)
                 self.settings.save_template('equipment/' + item['name'], item['items'])
 
-    def export_property_template(self) -> None:
+    def export_property_template(self, filename: str = '') -> None:
         """
         Exports the currently selected property entry to a file.
         """
@@ -1205,7 +1205,8 @@ class AppWindow(QMainWindow):
         for value in table_data:
             if value:
                 loop.add_row([cif.quote(utf8_to_str(value))])
-        filename = self.cif_file_save_dialog(blockname.replace('__', '_') + '.cif')
+        if not filename:
+            filename = self.cif_file_save_dialog(blockname.replace('__', '_') + '.cif')
         if not filename.strip():
             return
         try:
@@ -1216,11 +1217,12 @@ class AppWindow(QMainWindow):
                 return
             self.show_general_warning('No permission to write file to {}'.format(Path(filename).absolute()))
 
-    def import_property_from_file(self) -> None:
+    def import_property_from_file(self, filename: str = '') -> None:
         """
         Imports a cif file as entry of the property list.
         """
-        filename = self.cif_file_open_dialog(filter="CIF file (*.cif *.cif_od)")
+        if not filename:
+            filename = self.cif_file_open_dialog(filter="CIF file (*.cif *.cif_od)")
         if not filename:
             return
         try:
@@ -1748,7 +1750,7 @@ class AppWindow(QMainWindow):
             if ccdc.depnum > 0:
                 # The next line is necessary, otherwise reopening of a cif would not add the CCDC number:
                 if not '_database_code_depnum_ccdc_archive' in self.ui.cif_main_table.vheaderitems:
-                    #self.ui.cif_main_table.vheaderitems.insert(0, '_database_code_depnum_ccdc_archive')
+                    # self.ui.cif_main_table.vheaderitems.insert(0, '_database_code_depnum_ccdc_archive')
                     self.add_new_table_key('_database_code_depnum_ccdc_archive', '?')
                     self.sources['_database_code_depnum_ccdc_archive'] = (str(ccdc.depnum), str(ccdc.emlfile.name))
         vheadlist = []
