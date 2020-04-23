@@ -299,18 +299,6 @@ class TestWorkfolder(unittest.TestCase):
                          self.myapp.ui.cif_main_table.getTextFromKey('_exptl_crystal_recrystallization_method', 1))
         self.assertEqual('QPlainTextEdit {background-color: #faf796;}',
                          self.myapp.ui.cif_main_table.cellWidget(40, 1).styleSheet())
-
-    def allrows_test_key(self, key: str = '', results: list = None):
-        for n, r in enumerate(results):
-            self.assertEqual(r, self.myapp.ui.cif_main_table.getTextFromKey(key, n))
-
-    def test_equipment_click(self):
-        item = self.myapp.ui.EquipmentTemplatesListWidget.findItems('APEX2 QUAZAR', Qt.MatchExactly)[0]
-        self.myapp.ui.EquipmentTemplatesListWidget.setCurrentItem(item)
-        self.myapp.load_selected_equipment()
-        self.allrows_test_key('_diffrn_measurement_method', ['?', 'ω and ϕ scans', 'ω and ϕ scans'])
-        self.allrows_test_key('_diffrn_measurement_specimen_support', ['?', 'MiTeGen micromount', 'MiTeGen micromount'])
-        self.allrows_test_key('_olex2_diffrn_ambient_temperature_device', ['?', 'Oxford Cryostream 800', 'Oxford Cryostream 800'])
         self.assertEqual('0.220',
                          self.myapp.ui.cif_main_table.getTextFromKey('_exptl_crystal_size_max', 1))
         self.assertEqual('0.100',
@@ -329,6 +317,19 @@ class TestWorkfolder(unittest.TestCase):
         self.assertEqual('orthorhombic', self.myapp.ui.cif_main_table.getTextFromKey('_space_group_crystal_system', 0))
         self.assertEqual('P 21 21 2', self.myapp.ui.cif_main_table.getTextFromKey('_space_group_name_H-M_alt', 0))
         self.assertEqual('P 2 2ab', self.myapp.ui.cif_main_table.getTextFromKey('_space_group_name_Hall', 0))
+
+    def allrows_test_key(self, key: str = '', results: list = None):
+        for n, r in enumerate(results):
+            self.assertEqual(r, self.myapp.ui.cif_main_table.getTextFromKey(key, n))
+
+    def test_equipment_click(self):
+        item = self.myapp.ui.EquipmentTemplatesListWidget.findItems('APEX2 QUAZAR', Qt.MatchExactly)[0]
+        self.myapp.ui.EquipmentTemplatesListWidget.setCurrentItem(item)
+        self.myapp.load_selected_equipment()
+        self.allrows_test_key('_diffrn_measurement_method', ['?', 'ω and ϕ scans', 'ω and ϕ scans'])
+        self.allrows_test_key('_diffrn_measurement_specimen_support', ['?', 'MiTeGen micromount', 'MiTeGen micromount'])
+        self.allrows_test_key('_olex2_diffrn_ambient_temperature_device',
+                              ['?', 'Oxford Cryostream 800', 'Oxford Cryostream 800'])
 
     def test_edit_values_and_save(self):
         pass
