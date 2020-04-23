@@ -755,7 +755,7 @@ class AppWindow(QMainWindow):
         if saved:
             self.display_cif_text()
 
-    def save_current_cif_file(self) -> bool:
+    def save_current_cif_file(self, filename=None) -> bool:
         """
         Saves the current cif file and stores the information of the third column.
         """
@@ -799,8 +799,12 @@ class AppWindow(QMainWindow):
                             print('Can not take cif info from table:', e)
                             pass
         try:
-            self.final_cif_file_name = Path(strip_finalcif_of_name(str(self.cif.fileobj.stem)) + '-finalcif.cif')
-            self.cif.save(self.final_cif_file_name.name)
+            if not filename:
+                self.final_cif_file_name = Path(strip_finalcif_of_name(str(self.cif.fileobj.stem)) + '-finalcif.cif')
+                self.cif.save(self.final_cif_file_name.name)
+            else:
+                self.final_cif_file_name = Path(filename)
+                self.cif.save(str(self.final_cif_file_name.absolute()))
             self.ui.statusBar.showMessage('  File Saved:  {}'.format(self.final_cif_file_name.name), 10000)
             print('File saved ...')
             return True
