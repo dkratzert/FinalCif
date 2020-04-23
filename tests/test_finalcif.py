@@ -103,6 +103,7 @@ class TestApplication(unittest.TestCase):
         self.myapp.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
         self.myapp.ui.EquipmentTemplatesListWidget.setCurrentItem(item)
         self.myapp.load_selected_equipment()
+        self.assertEqual('daniel.kratzert@ac.uni-freiburg.de', self.myapp.ui.cif_main_table.item(19, 1).text())
 
     def test_dropdown_widgets(self):
         """
@@ -254,3 +255,15 @@ class TestWorkfolder(unittest.TestCase):
         # Yellow:
         self.assertEqual('QPlainTextEdit {background-color: #faf796;}',
                          self.myapp.ui.cif_main_table.cellWidget(40, 1).styleSheet())
+
+    def allrows_test_key(self, key: str = '', results: list = None):
+        for n, r in enumerate(results):
+            self.assertEqual(r, self.myapp.ui.cif_main_table.getTextFromKey(key, n))
+
+    def test_equipment_click(self):
+        item = self.myapp.ui.EquipmentTemplatesListWidget.findItems('APEX2 QUAZAR', Qt.MatchExactly)[0]
+        self.myapp.ui.EquipmentTemplatesListWidget.setCurrentItem(item)
+        self.myapp.load_selected_equipment()
+        self.allrows_test_key('_diffrn_measurement_method', ['?', 'ω and ϕ scans', 'ω and ϕ scans'])
+        self.allrows_test_key('_diffrn_measurement_specimen_support', ['?', 'MiTeGen micromount', 'MiTeGen micromount'])
+        self.allrows_test_key('_olex2_diffrn_ambient_temperature_device', ['?', 'Oxford Cryostream 800', 'Oxford Cryostream 800'])
