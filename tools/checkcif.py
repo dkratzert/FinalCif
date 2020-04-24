@@ -70,7 +70,7 @@ class MakeCheckCif():
         print('Report request sent')
         url = 'https://checkcif.iucr.org/cgi-bin/checkcif_hkl.pl'
         t1 = time.perf_counter()
-        r = requests.post(url, files={'file': f}, data=headers, timeout=240)
+        r = requests.post(url, files={'file': f}, data=headers, timeout=400)
         t2 = time.perf_counter()
         print('Report took {}s.'.format(str(round(t2 - t1, 2))))
         self.html_out_file.write_bytes(r.content)
