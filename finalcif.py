@@ -478,13 +478,18 @@ class AppWindow(QMainWindow):
 
     def _checkcif_started(self):
         print('ckf started')
-        print('foo')
+        print(self.ckf.message)
 
     def _checkcif_failed(self):
         print('ckf failed')
+        print(self.ckf.message)
+
+    def _ckf_progress(self):
+        print(self.ckf.message)
 
     def _checkcif_finished(self):
         print('ckf finished')
+        print(self.ckf.message)
         try:
             parser = MyHTMLParser(self.htmlfile.read_text())
         except FileNotFoundError:
@@ -537,9 +542,6 @@ class AppWindow(QMainWindow):
         if gif:
             imageobj.write_bytes(gif)
 
-    def _ckf_progress(self):
-        print(self.ckf.message)
-
     def do_html_checkcif(self):
         """
         Performs an online checkcif via checkcif.iucr.org.
@@ -560,17 +562,6 @@ class AppWindow(QMainWindow):
         self.ckf.progress.connect(self._ckf_progress)
         self.ckf.started.connect(self._checkcif_started)
         self.ckf.start()
-        #except ReadTimeout:
-        #    splash.finish(self)
-        #    self.show_general_warning(r"The check took too long. Try it at"
-        #                              r" <a href='https://checkcif.iucr.org/'>https://checkcif.iucr.org/</a> directly.")
-        #except Exception as e:
-        #    print('Can not do checkcif::')
-        #    if DEBUG:
-        #        raise
-        #    print(e)
-        #    return
-
 
     def save_responses(self):
         """
