@@ -475,20 +475,14 @@ class AppWindow(QMainWindow):
         splash.showMessage(text, alignment=Qt.AlignCenter, )
         return splash
 
-    def _checkcif_started(self):
-        self.ui.statusBar.showMessage(self.ckf.message)
-        print(self.ckf.message)
+    def _checkcif_failed(self, txt: str):
+        self.ui.statusBar.showMessage(txt)
 
-    def _checkcif_failed(self):
-        print('ckf failed')
-        self.ui.statusBar.showMessage(self.ckf.message)
-
-    def _ckf_progress(self):
-        print(self.ckf.message)
+    def _ckf_progress(self, txt: str):
+        self.ui.statusBar.showMessage(txt)
 
     def _checkcif_finished(self):
-        print('ckf finished')
-        print(self.ckf.message)
+        self.ui.CheckcifOnlineButton.setEnabled(True)
         try:
             parser = MyHTMLParser(self.htmlfile.read_text())
         except FileNotFoundError:
@@ -546,7 +540,7 @@ class AppWindow(QMainWindow):
         """
         Performs an online checkcif via checkcif.iucr.org.
         """
-        splash = self.show_splash("Running Checkcif. Please wait...")
+        # splash = self.show_splash("Running Checkcif. Please wait...")
         self.ui.statusBar.showMessage('Sending html report request...')
         self.save_current_cif_file()
         self.load_cif_file(self.final_cif_file_name)
@@ -561,7 +555,7 @@ class AppWindow(QMainWindow):
         self.ckf.failed.connect(self._checkcif_failed)
         self.ckf.finished.connect(self._checkcif_finished)
         self.ckf.progress.connect(self._ckf_progress)
-        self.ckf.started.connect(self._checkcif_started)
+        self.ui.CheckcifOnlineButton.setDisabled(True)
         self.ckf.start()
 
     def save_responses(self):
@@ -601,13 +595,14 @@ class AppWindow(QMainWindow):
         self.subwin.stackedWidget.setCurrentIndex(1)
 
     def _pdf_checkcif_finished(self):
+        self.ui.CheckcifPDFOnlineButton.setEnabled(True)
         self.ckf.show_pdf_report()
 
     def do_pdf_checkcif(self):
         """
         Performs an online checkcif and shows the result as pdf.
         """
-        splash = self.show_splash("Running Checkcif. Please wait...")
+        # splash = self.show_splash("Running Checkcif. Please wait...")
         self.ui.statusBar.showMessage('Sending pdf report request...')
         self.save_current_cif_file()
         self.load_cif_file(self.final_cif_file_name)
@@ -621,7 +616,7 @@ class AppWindow(QMainWindow):
         self.ckf.failed.connect(self._checkcif_failed)
         self.ckf.finished.connect(self._pdf_checkcif_finished)
         self.ckf.progress.connect(self._ckf_progress)
-        self.ckf.started.connect(self._checkcif_started)
+        self.ui.CheckcifPDFOnlineButton.setDisabled(True)
         self.ckf.start()
         # self.show_general_warning(r"The check took too long. Try it at"
         #                          r" <a href='https://checkcif.iucr.org/'>https://checkcif.iucr.org/</a> directly.")
@@ -630,7 +625,7 @@ class AppWindow(QMainWindow):
             htmlfile.unlink()
         except FileNotFoundError:
             pass
-        splash.finish(self)
+        # splash.finish(self)
 
     def do_offline_checkcif(self):
         """

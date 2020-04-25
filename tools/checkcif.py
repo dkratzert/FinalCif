@@ -27,9 +27,8 @@ from tools.misc import strip_finalcif_of_name
 
 
 class MakeCheckCif(QThread):
-    progress = pyqtSignal()
-    failed = pyqtSignal()
-    message = ""
+    progress = pyqtSignal(str)
+    failed = pyqtSignal(str)
 
     def __init__(self, cif: CifContainer, outfile: Path, hkl: bool = True, pdf: bool = False):
         # hkl == False means no hkl upload
@@ -41,14 +40,9 @@ class MakeCheckCif(QThread):
 
     def _html_check(self):
         if not self.hkl:
-            self.message = 'Will not submit hkl data to checkcif.'
-            self.progress.emit()
-            time.sleep(0.1)
+            self.progress.emit('Running Checkcif with no hkl data')
         else:
-            self.message = 'Checkcif with hkl data!'
-            self.progress.emit()
-            time.sleep(0.1)
-        self.message = ''
+            self.progress.emit('Running Checkcif with hkl data')
 
     def run(self) -> None:
         """
@@ -80,31 +74,25 @@ class MakeCheckCif(QThread):
             "validtype" : hkl,
             "valout"    : vrf,
         }
-        self.message = 'Report request sent'
         url = 'https://checkcif.iucr.org/cgi-bin/checkcif_hkl.pl'
         t1 = time.perf_counter()
         r = None
+        self.progress.emit('Report request sent. Please wait...')
         try:
             r = requests.post(url, files={'file': f}, data=headers, timeout=400)
         except requests.exceptions.ReadTimeout:
-            self.message = r"Checkcif took too long. Try it at <a href='https://checkcif.iucr.org/'>" \
-                           r"https://checkcif.iucr.org/</a> directly."
-            self.failed.emit()
-            time.sleep(0.1)
+            message = r"Checkcif took too long. Try it at <a href='https://checkcif.iucr.org/'>" \
+                      r"https://checkcif.iucr.org/</a> directly."
+            self.failed.emit(message)
         if r:
+            self.progress.emit('request finished')
             if not r.status_code == 200:
-                self.message = 'Request failed with code: {}'.format(str(r.status_code))
-                self.failed.emit()
-                time.sleep(0.1)
+                self.failed.emit('Request failed with code: {}'.format(str(r.status_code)))
             else:
-                self.message = 'Got satus code {}'.format(str(r.status_code))
-                self.progress.emit()
+                t2 = time.perf_counter()
                 time.sleep(0.1)
-            t2 = time.perf_counter()
-            self.message = 'Report took {}s.'.format(str(round(t2 - t1, 2)))
-            self.progress.emit()
-            time.sleep(0.1)
-            self.html_out_file.write_bytes(r.content)
+                self.progress.emit('Report took {}s.'.format(str(round(t2 - t1, 2))))
+                self.html_out_file.write_bytes(r.content)
         f.close()
         if hkl == 'checkcif_only' and fd:
             try:
@@ -113,12 +101,8 @@ class MakeCheckCif(QThread):
                 f.close()
                 os.unlink(tmp)
             except ValueError:
-                self.message = 'can not delete tempfile from checkcif:\n' + tmp
-                self.progress.emit()
-                time.sleep(0.1)
-        self.message = 'ready'
-        self.progress.emit()
-        time.sleep(0.1)
+                self.progress.emit('can not delete tempfile from checkcif:\n' + tmp)
+        self.progress.emit('ready')
 
     def _open_pdf_result(self) -> None:
         """
@@ -129,9 +113,7 @@ class MakeCheckCif(QThread):
         try:
             pdf = parser.get_pdf()
         except MissingSchema:
-            self.message = 'Link is not valid anymore...'
-            self.failed.emit()
-            time.sleep(0.1)
+            self.failed.emit('PDF link is not valid anymore...')
             pdf = None
         if pdf:
             pdfobj = Path(strip_finalcif_of_name('checkcif-' + self.cif.fileobj.stem) + '-finalcif.pdf')
