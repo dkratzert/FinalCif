@@ -11,16 +11,10 @@
 
 import os
 import subprocess
-from subprocess import Popen, TimeoutExpired, PIPE
 import sys
 from pathlib import Path
+from subprocess import Popen, TimeoutExpired, PIPE
 from time import sleep
-
-
-def Worker(fname):
-    print("Platon worker")
-    s = Platon(fname)
-    return s
 
 
 class Platon():
@@ -28,11 +22,6 @@ class Platon():
         self.cif_fileobj = cif
         curdir = Path(os.curdir).absolute()
         self.vrf_file = Path(self.cif_fileobj.stem + '.vrf')
-        """try:
-            self.chkfile.unlink()
-        except (ValueError, FileNotFoundError):
-            pass
-        """
         self.chkfile = None
         try:
             self.vrf_file.unlink()
@@ -41,13 +30,6 @@ class Platon():
         os.chdir(str(self.cif_fileobj.absolute().parent))
         self.platon_output = ''
         self.chk_file_text = ''
-        """
-        try:
-            self.run_platon(self.chkfile)
-        except Exception as e:
-            print('Platon failed to run:')
-            print(e)
-            return"""
         try:
             self.vrf_txt = self.vrf_file.read_text(encoding='ascii')
         except FileNotFoundError:
@@ -95,7 +77,7 @@ class Platon():
         >>> p.formula_moiety
         C12 H22 O11
         """
-        #os.chdir(str(self.cif_fileobj.absolute().parent))
+        # os.chdir(str(self.cif_fileobj.absolute().parent))
         self.chkfile = Path(self.cif_fileobj.with_suffix('.chk'))
         plat = None
         timeticks = 0
@@ -107,7 +89,7 @@ class Platon():
         except AttributeError:
             si = None
         try:
-            print('trying local platon')
+            print('running local platon')
             with Popen([r'platon', '-u', self.cif_fileobj.name], stdin=subprocess.DEVNULL,
                        startupinfo=si, stdout=PIPE, stderr=PIPE, shell=False, env=os.environ) as plat:
                 try:
@@ -138,7 +120,7 @@ class Platon():
             if output:
                 self.platon_output = output.strip()
         except Exception as e:
-            print('Could not run local platon:', e)
+            print('Could not run local platon:' + str(e))
             self.platon_output = str(e)
             return
         self.delete_orphaned_files()
