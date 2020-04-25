@@ -483,6 +483,7 @@ class AppWindow(QMainWindow):
 
     def _checkcif_finished(self):
         self.ui.CheckcifOnlineButton.setEnabled(True)
+        self.ui.CheckcifPDFOnlineButton.setEnabled(True)
         try:
             parser = MyHTMLParser(self.htmlfile.read_text())
         except FileNotFoundError:
@@ -556,6 +557,7 @@ class AppWindow(QMainWindow):
         self.ckf.finished.connect(self._checkcif_finished)
         self.ckf.progress.connect(self._ckf_progress)
         self.ui.CheckcifOnlineButton.setDisabled(True)
+        self.ui.CheckcifPDFOnlineButton.setDisabled(True)
         self.ckf.start()
 
     def save_responses(self):
@@ -596,6 +598,7 @@ class AppWindow(QMainWindow):
 
     def _pdf_checkcif_finished(self):
         self.ui.CheckcifPDFOnlineButton.setEnabled(True)
+        self.ui.CheckcifOnlineButton.setEnabled(True)
         self.ckf.show_pdf_report()
 
     def do_pdf_checkcif(self):
@@ -617,6 +620,7 @@ class AppWindow(QMainWindow):
         self.ckf.finished.connect(self._pdf_checkcif_finished)
         self.ckf.progress.connect(self._ckf_progress)
         self.ui.CheckcifPDFOnlineButton.setDisabled(True)
+        self.ui.CheckcifOnlineButton.setDisabled(True)
         self.ckf.start()
         # self.show_general_warning(r"The check took too long. Try it at"
         #                          r" <a href='https://checkcif.iucr.org/'>https://checkcif.iucr.org/</a> directly.")
