@@ -35,7 +35,6 @@ from PyQt5.QtWebEngineWidgets import QWebEngineView
 # noinspection PyUnresolvedReferences
 from gemmi import cif
 from qtpy.QtGui import QDesktopServices, QKeySequence
-from requests import ReadTimeout
 
 from cif.cif_file_io import CifContainer, set_pair_delimited, utf8_to_str, retranslate_delimiter
 from cif.core_dict import cif_core
@@ -477,12 +476,12 @@ class AppWindow(QMainWindow):
         return splash
 
     def _checkcif_started(self):
-        print('ckf started')
+        self.ui.statusBar.showMessage(self.ckf.message)
         print(self.ckf.message)
 
     def _checkcif_failed(self):
         print('ckf failed')
-        print(self.ckf.message)
+        self.ui.statusBar.showMessage(self.ckf.message)
 
     def _ckf_progress(self):
         print(self.ckf.message)
@@ -513,11 +512,12 @@ class AppWindow(QMainWindow):
         dialog.setMinimumHeight(700)
         dialog.move(QPoint(100, 50))
         dialog.show()
+        dialog.raise_()
         # The picture file linked in the html file:
         imageobj = Path(strip_finalcif_of_name(str(self.cif.fileobj.stem)) + '-finalcif.gif')
         gif = parser.get_image()
         self.ui.statusBar.showMessage('Report finished.')
-        #splash.finish(self)
+        # splash.finish(self)
         forms = parser.response_forms
         # makes all gray:
         # self.subwin.responseFormsListWidget.setStyleSheet("background: 'gray';")
@@ -556,7 +556,8 @@ class AppWindow(QMainWindow):
         except FileNotFoundError:
             pass
 
-        self.ckf = MakeCheckCif(cif=self.cif, outfile=self.htmlfile, hkl=(not self.ui.structfactCheckBox.isChecked()), pdf=False)
+        self.ckf = MakeCheckCif(cif=self.cif, outfile=self.htmlfile, hkl=(not self.ui.structfactCheckBox.isChecked()),
+                                pdf=False)
         self.ckf.failed.connect(self._checkcif_failed)
         self.ckf.finished.connect(self._checkcif_finished)
         self.ckf.progress.connect(self._ckf_progress)
@@ -599,6 +600,9 @@ class AppWindow(QMainWindow):
         self.subwin.show_report_Button.show()
         self.subwin.stackedWidget.setCurrentIndex(1)
 
+    def _pdf_checkcif_finished(self):
+        self.ckf.show_pdf_report()
+
     def do_pdf_checkcif(self):
         """
         Performs an online checkcif and shows the result as pdf.
@@ -612,20 +616,16 @@ class AppWindow(QMainWindow):
             htmlfile.unlink()
         except FileNotFoundError:
             pass
-        try:
-            ckf = MakeCheckCif(cif=self.cif, outfile=htmlfile, hkl=(not self.ui.structfactCheckBox.isChecked()), pdf=True)
-            ckf.start()
-        except ReadTimeout:
-            splash.finish(self)
-            self.show_general_warning(r"The check took too long. Try it at"
-                                      r" <a href='https://checkcif.iucr.org/'>https://checkcif.iucr.org/</a> directly.")
-            return
-        except Exception as e:
-            print('Can not do checkcif:')
-            if DEBUG:
-                raise
-            print(e)
-        self.ui.statusBar.showMessage('Report finished.')
+        self.ckf = MakeCheckCif(cif=self.cif, outfile=htmlfile, hkl=(not self.ui.structfactCheckBox.isChecked()),
+                                pdf=True)
+        self.ckf.failed.connect(self._checkcif_failed)
+        self.ckf.finished.connect(self._pdf_checkcif_finished)
+        self.ckf.progress.connect(self._ckf_progress)
+        self.ckf.started.connect(self._checkcif_started)
+        self.ckf.start()
+        # self.show_general_warning(r"The check took too long. Try it at"
+        #                          r" <a href='https://checkcif.iucr.org/'>https://checkcif.iucr.org/</a> directly.")
+        self.ui.statusBar.showMessage('PDF Checkcif report finished.')
         try:
             htmlfile.unlink()
         except FileNotFoundError:
