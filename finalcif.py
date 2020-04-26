@@ -120,7 +120,7 @@ class AppWindow(QMainWindow):
         self.ui.EquipmentEditTableWidget.verticalHeader().hide()
         self.ui.PropertiesEditTableWidget.verticalHeader().hide()
         self.ui.CheckcifButton.setDisabled(True)
-        self.ui.CheckcifOnlineButton.setDisabled(True)
+        self.ui.CheckcifHTMLOnlineButton.setDisabled(True)
         self.ui.CheckcifPDFOnlineButton.setDisabled(True)
         self.ui.SaveCifButton.setDisabled(True)
         self.ui.ExploreDirButton.setDisabled(True)
@@ -140,7 +140,7 @@ class AppWindow(QMainWindow):
         self.rigakucif: RigakuData
 
         self.ui.CheckcifButton.setIcon(qta.icon('mdi.file-document-box-outline'))
-        self.ui.CheckcifOnlineButton.setIcon(qta.icon('mdi.file-document-box-check'))
+        self.ui.CheckcifHTMLOnlineButton.setIcon(qta.icon('mdi.file-document-box-check'))
         self.ui.CheckcifPDFOnlineButton.setIcon(qta.icon('mdi.file-document-box-check-outline'))
         self.ui.SaveFullReportButton.setIcon(qta.icon('mdi.file-table-outline'))
         self.ui.ExploreDirButton.setIcon(qta.icon('fa5.folder-open'))
@@ -221,7 +221,7 @@ class AppWindow(QMainWindow):
         self.ui.ExploreDirButton.clicked.connect(self.explore_dir)
         ##
         self.ui.CheckcifButton.clicked.connect(self.do_offline_checkcif)
-        self.ui.CheckcifOnlineButton.clicked.connect(self.do_html_checkcif)
+        self.ui.CheckcifHTMLOnlineButton.clicked.connect(self.do_html_checkcif)
         self.ui.CheckcifPDFOnlineButton.clicked.connect(self.do_pdf_checkcif)
         self.ui.BackFromPlatonPushButton.clicked.connect(self.back_to_main_noload)
         ##
@@ -482,7 +482,7 @@ class AppWindow(QMainWindow):
         self.ui.statusBar.showMessage(txt)
 
     def _checkcif_finished(self):
-        self.ui.CheckcifOnlineButton.setEnabled(True)
+        self.ui.CheckcifHTMLOnlineButton.setEnabled(True)
         self.ui.CheckcifPDFOnlineButton.setEnabled(True)
         try:
             parser = MyHTMLParser(self.htmlfile.read_text())
@@ -556,7 +556,7 @@ class AppWindow(QMainWindow):
         self.ckf.failed.connect(self._checkcif_failed)
         self.ckf.finished.connect(self._checkcif_finished)
         self.ckf.progress.connect(self._ckf_progress)
-        self.ui.CheckcifOnlineButton.setDisabled(True)
+        self.ui.CheckcifHTMLOnlineButton.setDisabled(True)
         self.ui.CheckcifPDFOnlineButton.setDisabled(True)
         self.ckf.start()
 
@@ -598,7 +598,7 @@ class AppWindow(QMainWindow):
 
     def _pdf_checkcif_finished(self):
         self.ui.CheckcifPDFOnlineButton.setEnabled(True)
-        self.ui.CheckcifOnlineButton.setEnabled(True)
+        self.ui.CheckcifHTMLOnlineButton.setEnabled(True)
         self.ckf.show_pdf_report()
 
     def do_pdf_checkcif(self):
@@ -620,7 +620,7 @@ class AppWindow(QMainWindow):
         self.ckf.finished.connect(self._pdf_checkcif_finished)
         self.ckf.progress.connect(self._ckf_progress)
         self.ui.CheckcifPDFOnlineButton.setDisabled(True)
-        self.ui.CheckcifOnlineButton.setDisabled(True)
+        self.ui.CheckcifHTMLOnlineButton.setDisabled(True)
         self.ckf.start()
         # self.show_general_warning(r"The check took too long. Try it at"
         #                          r" <a href='https://checkcif.iucr.org/'>https://checkcif.iucr.org/</a> directly.")
@@ -1485,8 +1485,9 @@ class AppWindow(QMainWindow):
         # Do this only when sure we can load the file:
         self.save_current_recent_files_list(filepath)
         self.load_recent_cifs_list()
+        # Initial button states:
         self.ui.CheckcifButton.setEnabled(True)
-        self.ui.CheckcifOnlineButton.setEnabled(True)
+        self.ui.CheckcifHTMLOnlineButton.setEnabled(True)
         self.ui.CheckcifPDFOnlineButton.setEnabled(True)
         self.ui.SaveCifButton.setEnabled(True)
         self.ui.ExploreDirButton.setEnabled(True)

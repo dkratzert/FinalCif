@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file './gui\finalcif_gui.ui'
+# Form implementation generated from reading ui file '/Users/daniel/GitHub/FinalCif/./gui/finalcif_gui.ui'
 #
 # Created by: PyQt5 UI code generator 5.14.2
 #
@@ -302,9 +302,9 @@ class Ui_FinalCifWindow(object):
         self.CheckcifPDFOnlineButton = QtWidgets.QPushButton(self.groupBox_checkcif)
         self.CheckcifPDFOnlineButton.setObjectName("CheckcifPDFOnlineButton")
         self.gridLayout_6.addWidget(self.CheckcifPDFOnlineButton, 0, 1, 1, 1)
-        self.CheckcifOnlineButton = QtWidgets.QPushButton(self.groupBox_checkcif)
-        self.CheckcifOnlineButton.setObjectName("CheckcifOnlineButton")
-        self.gridLayout_6.addWidget(self.CheckcifOnlineButton, 0, 0, 1, 1)
+        self.CheckcifHTMLOnlineButton = QtWidgets.QPushButton(self.groupBox_checkcif)
+        self.CheckcifHTMLOnlineButton.setObjectName("CheckcifHTMLOnlineButton")
+        self.gridLayout_6.addWidget(self.CheckcifHTMLOnlineButton, 0, 0, 1, 1)
         self.CheckcifButton = QtWidgets.QPushButton(self.groupBox_checkcif)
         self.CheckcifButton.setObjectName("CheckcifButton")
         self.gridLayout_6.addWidget(self.CheckcifButton, 1, 0, 1, 1)
@@ -873,7 +873,7 @@ class Ui_FinalCifWindow(object):
         self.DetailsPushButton.setText(_translate("FinalCifWindow", "Show Details"))
         self.SourcesPushButton.setText(_translate("FinalCifWindow", "Data Sources"))
         self.CheckcifPDFOnlineButton.setText(_translate("FinalCifWindow", "Checkcif Online PDF"))
-        self.CheckcifOnlineButton.setText(_translate("FinalCifWindow", "Checkcif Online HTML"))
+        self.CheckcifHTMLOnlineButton.setText(_translate("FinalCifWindow", "Checkcif Online HTML"))
         self.CheckcifButton.setText(_translate("FinalCifWindow", "CheckCif Offline"))
         self.structfactCheckBox.setText(_translate("FinalCifWindow", "without structure factors"))
         self.CODpushButton.setText(_translate("FinalCifWindow", "COD Deposit"))

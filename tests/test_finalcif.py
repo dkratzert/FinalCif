@@ -1,4 +1,5 @@
 import sys
+import time
 import unittest
 from pathlib import Path
 
@@ -351,3 +352,25 @@ class TestWorkfolder(unittest.TestCase):
         self.assertEqual('test4',
                          self.myapp.ui.cif_main_table.getTextFromKey(key='_audit_contact_author_email', col=0))
         cif.unlink()
+
+    def test_checkcif_html(self):
+        self.maxDiff = None
+        item = self.myapp.ui.EquipmentTemplatesListWidget.findItems('D8 VENTURE', Qt.MatchStartsWith)[0]
+        self.myapp.ui.EquipmentTemplatesListWidget.setCurrentItem(item)
+        self.myapp.load_selected_equipment()
+        item = self.myapp.ui.EquipmentTemplatesListWidget.findItems('Contact author', Qt.MatchStartsWith)[0]
+        self.myapp.ui.EquipmentTemplatesListWidget.setCurrentItem(item)
+        self.myapp.load_selected_equipment()
+        self.myapp.ui.structfactCheckBox.setChecked(True)
+        QTest.mouseClick(self.myapp.ui.CheckcifHTMLOnlineButton, Qt.LeftButton, Qt.NoModifier)
+        time.sleep(5)
+        html = Path('checkcif-' + self.myapp.cif.fileobj.stem[:-len('-finalcif')] + '-test.html')
+        htmlfile = html.read_text().splitlines()
+        # Filter out changing links:
+        htmlfile = [x for x in htmlfile if not x.startswith(' <a href="http://checkcif.iucr.org')]
+        resobj = Path('checkcif-' + self.myapp.cif.fileobj.stem[:-len('-finalcif')] + '-finalcif.html')
+        result = resobj.read_text().splitlines()
+        result = [x for x in result if not x.startswith(' <a href="http://checkcif.iucr.org')]
+        self.assertEqual(htmlfile, result)
+        resobj.unlink()
+        self.myapp.cif.fileobj.unlink()
