@@ -3,9 +3,13 @@ Installation
 
 Windows
 --------
-Start the installer and click next until finished.
+Start the installer (FinalCif-setup-x64-vXX.exe) and click next until finished.
 
 Linux
 -----
-FinalCif needs no installation. Just download the executable anywhere on you computer.
+FinalCif for linux needs no installation. Just download the executable anywhere on you computer.
 
+MacOS
+-----
+
+Unzip the app (Finalcif-vXX_macos.app.zip) and copy it to the Applications directory.

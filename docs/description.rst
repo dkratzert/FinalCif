@@ -3,6 +3,8 @@ FinalCif
 
 Finalize CIF files without hassle.
 
+CIF files from SHELXL miss a lot of information that should be added prior to publication. Editting CIF files with
+text editors is a tedious task and often leads to errors. Therefore, FinalCif tries to help you with this task.
 Essentially, you must have the corresponding CIF file for FinalCif in its original 'work' folder, which contains
 all other files such as SAINT list files, SADABS list file, SHELX list files, etc. that led to this cif file.
 The main table of FinalCif has three columns. The most left contains the information from the .cif file. Data from
@@ -31,3 +33,11 @@ other programs like ShelXle.
 * Submit the CIF to the CCDC
 * Drag&drop the CCDC deposit reply email into the work folder
 * Click on „Make Tables“
+
+
+**Files used by FinalCif**
+
+* SADBABS .abs
+* SAINT _0m._ls, _01._ls
+* Bruker _0m.p4p
+* One frame like _ib_01_0001.sfrm
