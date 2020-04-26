@@ -354,6 +354,7 @@ class TestWorkfolder(unittest.TestCase):
         cif.unlink()
 
     def test_checkcif_html(self):
+        """Runs a html checkcif without hkl and compares the result with the html file."""
         self.maxDiff = None
         item = self.myapp.ui.EquipmentTemplatesListWidget.findItems('D8 VENTURE', Qt.MatchStartsWith)[0]
         self.myapp.ui.EquipmentTemplatesListWidget.setCurrentItem(item)
@@ -374,3 +375,17 @@ class TestWorkfolder(unittest.TestCase):
         self.assertEqual(htmlfile, result)
         resobj.unlink()
         self.myapp.cif.fileobj.unlink()
+
+    def test_checkcif_pdf(self):
+        self.maxDiff = None
+        item = self.myapp.ui.EquipmentTemplatesListWidget.findItems('D8 VENTURE', Qt.MatchStartsWith)[0]
+        self.myapp.ui.EquipmentTemplatesListWidget.setCurrentItem(item)
+        self.myapp.load_selected_equipment()
+        item = self.myapp.ui.EquipmentTemplatesListWidget.findItems('Contact author', Qt.MatchStartsWith)[0]
+        self.myapp.ui.EquipmentTemplatesListWidget.setCurrentItem(item)
+        self.myapp.load_selected_equipment()
+        self.myapp.ui.structfactCheckBox.setChecked(True)
+        QTest.mouseClick(self.myapp.ui.CheckcifHTMLOnlineButton, Qt.LeftButton, Qt.NoModifier)
+        time.sleep(5)
+        html = Path('checkcif-' + self.myapp.cif.fileobj.stem[:-len('-finalcif')] + '-test.html')
+        htmlfile = html.read_text().splitlines()
