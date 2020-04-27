@@ -85,7 +85,7 @@ class CrstalSelection(FormatMixin):
                 method = ''
         except ValueError:
             method = ''
-        self.txt = sentence.format(self.name, method, self.temperature, prot_space)
+        self.txt = sentence.format(self.cif.block.name, method, self.temperature, prot_space)
         paragraph.add_run(retranslate_delimiter(self.txt))
 
     @property
