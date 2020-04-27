@@ -36,7 +36,8 @@ from PyQt5.QtWebEngineWidgets import QWebEngineView
 from gemmi import cif
 from qtpy.QtGui import QDesktopServices, QKeySequence
 
-from cif.cif_file_io import CifContainer, set_pair_delimited, utf8_to_str, retranslate_delimiter
+from cif.cif_file_io import CifContainer
+from cif.text import set_pair_delimited, utf8_to_str, retranslate_delimiter
 from cif.core_dict import cif_core
 from datafiles.bruker_data import BrukerData
 from datafiles.ccdc import CCDCMail

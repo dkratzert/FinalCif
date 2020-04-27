@@ -7,7 +7,7 @@ from PyQt5.QtGui import QColor, QTextOption, QKeySequence, QContextMenuEvent
 from PyQt5.QtWidgets import QAbstractScrollArea, QAction, QComboBox, QFrame, QPlainTextEdit, QSizePolicy, QTableWidget, \
     QTableWidgetItem, QWidget, QApplication, QShortcut
 
-from cif.cif_file_io import retranslate_delimiter
+from cif.text import retranslate_delimiter
 from tools.misc import essential_keys
 
 light_green = QColor(217, 255, 201)
