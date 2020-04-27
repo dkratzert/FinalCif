@@ -439,7 +439,7 @@ class CifContainer():
         ops = gemmi.GroupOps([gemmi.Op(o) for o in self.symmops])
         return ops.is_centric()
 
-    def atoms(self) -> Tuple[str, str, str, str, str, str, str, str]:
+    def atoms(self, without_h: bool = False) -> Tuple[str, str, str, str, str, str, str, str]:
         labels = self.block.find_loop('_atom_site_label')
         types = self.block.find_loop('_atom_site_type_symbol')
         x = self.block.find_loop('_atom_site_fract_x')
@@ -449,6 +449,8 @@ class CifContainer():
         occ = self.block.find_loop('_atom_site_occupancy')
         u_eq = self.block.find_loop('_atom_site_U_iso_or_equiv')
         for label, type, x, y, z, part, occ, ueq in zip(labels, types, x, y, z, part, occ, u_eq):
+            if without_h and self.ishydrogen(label):
+                continue
             #         0    1   2  3  4   5   6     7
             yield label, type, x, y, z, part, occ, ueq
 
@@ -521,6 +523,9 @@ class CifContainer():
 
     def iselement(self, name: str) -> str:
         return self._name2elements[name]
+
+    def natoms(self, without_h: bool = False) -> int:
+        return len(list(self.atoms(without_h)))
 
     def nbonds(self, without_h: bool = False) -> int:
         """
