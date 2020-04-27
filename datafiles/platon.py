@@ -93,7 +93,7 @@ class Platon():
             with Popen([r'platon', '-u', self.cif_fileobj.name], stdin=subprocess.DEVNULL,
                        startupinfo=si, stdout=PIPE, stderr=PIPE, shell=False, env=os.environ) as plat:
                 try:
-                    stdout, stderr = plat.communicate(sys.stdin, timeout=500)
+                    stdout, stderr = plat.communicate(sys.stdin, timeout=25)
                 except TimeoutExpired:
                     print('Terminating platon (1)')
                     plat.terminate()
