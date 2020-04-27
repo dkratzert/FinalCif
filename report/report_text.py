@@ -7,7 +7,8 @@ from docx.text.run import Run
 from lxml import etree
 
 from app_path import application_path
-from cif.cif_file_io import CifContainer, retranslate_delimiter
+from cif.cif_file_io import CifContainer
+from cif.text import retranslate_delimiter
 from report.references import DummyReference, BrukerReference, SORTAVReference, ReferenceList, CCDCReference, \
     SHELXLReference, SHELXTReference, SHELXSReference, FinalCifReference, ShelXleReference, Olex2Reference
 from tools.misc import prot_space, angstrom
