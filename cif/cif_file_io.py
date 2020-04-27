@@ -270,6 +270,14 @@ class CifContainer():
         sum %= 100000
         return sum
 
+    def rename_data_name(self, newname: str = ''):
+        """Maybe will be able to rename validation response form keys. Have to ask for different search first.
+        _vrf_PLAT113_Breit_ZJ_5_1473
+        block.find_pair('_vrf_*_Breit_ZJ_5_1473')
+        """
+        oldname = self.block.name
+        self.block.name = newname
+
     @property
     def symmops(self) -> List[str]:
         """
