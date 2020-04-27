@@ -334,22 +334,22 @@ class TestWorkfolder(unittest.TestCase):
                               ['?', 'Oxford Cryostream 800', 'Oxford Cryostream 800'])
 
     def test_edit_values_and_save(self):
-        self.myapp.ui.cif_main_table.setText(key='_atom_sites_solution_primary', column=2, txt='test1')
-        self.myapp.ui.cif_main_table.setText(key='_atom_sites_solution_secondary', column=2, txt='test2')
-        self.myapp.ui.cif_main_table.setText(key='_audit_contact_author_address', column=2, txt='test3')
-        self.myapp.ui.cif_main_table.setText(key='_audit_contact_author_email', column=2, txt='test4')
+        self.myapp.ui.cif_main_table.setText(key='_atom_sites_solution_primary', column=2, txt='test1ä')
+        self.myapp.ui.cif_main_table.setText(key='_atom_sites_solution_secondary', column=2, txt='test2ö')
+        self.myapp.ui.cif_main_table.setText(key='_audit_contact_author_address', column=2, txt='test3ü')
+        self.myapp.ui.cif_main_table.setText(key='_audit_contact_author_email', column=2, txt='test4ß')
         cif = Path('testcif_file.cif')
         self.myapp.save_current_cif_file(cif.name)
         self.myapp.ui.cif_main_table.setRowCount(0)
         self.myapp.load_cif_file(cif.name)
         # test if data is still the same:
-        self.assertEqual('test1',
+        self.assertEqual('test1ä',
                          self.myapp.ui.cif_main_table.getTextFromKey(key='_atom_sites_solution_primary', col=0))
-        self.assertEqual('test2',
+        self.assertEqual('test2ö',
                          self.myapp.ui.cif_main_table.getTextFromKey(key='_atom_sites_solution_secondary', col=0))
-        self.assertEqual('test3',
+        self.assertEqual('test3ü',
                          self.myapp.ui.cif_main_table.getTextFromKey(key='_audit_contact_author_address', col=0))
-        self.assertEqual('test4',
+        self.assertEqual('test4ß',
                          self.myapp.ui.cif_main_table.getTextFromKey(key='_audit_contact_author_email', col=0))
         cif.unlink()
 
