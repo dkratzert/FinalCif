@@ -271,12 +271,18 @@ class CifContainer():
         return sum
 
     def rename_data_name(self, newname: str = ''):
-        """Maybe will be able to rename validation response form keys. Have to ask for different search first.
-        _vrf_PLAT113_Breit_ZJ_5_1473
-        block.find_pair('_vrf_*_Breit_ZJ_5_1473')
         """
-        oldname = self.block.name
+        Reanmes data_ tags to the newname. Also _vrf tags are reanmed accordingly.
+        """
+        newname = ''.join([i for i in newname if i.isascii()])
         self.block.name = newname
+        for item in self.block:
+            if item.pair is not None:
+                key, value = item.pair
+                if key.startswith('_vrf'):
+                    newkey = '_' + '_'.join(key.split('_')[1:3]) + '_' + newname
+                    self.block.find_pair_item(key).erase()
+                    self.block.set_pair(newkey, value)
 
     @property
     def symmops(self) -> List[str]:
