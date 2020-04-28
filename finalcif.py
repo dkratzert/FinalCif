@@ -1770,6 +1770,8 @@ class AppWindow(QMainWindow):
                 if not '_database_code_depnum_ccdc_archive' in self.ui.cif_main_table.vheaderitems:
                     # self.ui.cif_main_table.vheaderitems.insert(0, '_database_code_depnum_ccdc_archive')
                     self.add_new_table_key('_database_code_depnum_ccdc_archive', '?')
+                txt = self.ui.cif_main_table.getTextFromKey('_database_code_depnum_ccdc_archive', COL_EDIT)
+                if not txt or (txt == '?'):
                     self.sources['_database_code_depnum_ccdc_archive'] = (str(ccdc.depnum), str(ccdc.emlfile.name))
         vheadlist = []
         for num in range(self.ui.cif_main_table.model().rowCount()):
