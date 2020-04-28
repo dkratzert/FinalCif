@@ -386,5 +386,15 @@ class TestWorkfolder(unittest.TestCase):
         self.myapp.ui.EquipmentTemplatesListWidget.setCurrentItem(item)
         self.myapp.load_selected_equipment()
         self.myapp.ui.structfactCheckBox.setChecked(True)
-        #QTest.mouseClick(self.myapp.ui.CheckcifPDFOnlineButton, Qt.LeftButton, Qt.NoModifier)
-        #self.myapp.ui.CheckcifPDFOnlineButton.click()
+        # QTest.mouseClick(self.myapp.ui.CheckcifPDFOnlineButton, Qt.LeftButton, Qt.NoModifier)
+        # self.myapp.ui.CheckcifPDFOnlineButton.click()
+
+    def test_rename_data_tag(self):
+        self.myapp.ui.datnameLineEdit.setText('foo_bar_yes')
+        self.myapp.ui.SaveCifButton.click()
+        self.myapp.ui.BackPushButton.click()
+        pair = self.myapp.cif.block.find_pair('_vrf_PLAT307_foo_bar_yes')
+        erg = ['_vrf_PLAT307_foo_bar_yes',
+               ';\r\nPROBLEM: Isolated Metal Atom found in Structure (Unusual) Ga1 Check\r\nRESPONSE: foobar\r\n;']
+        self.assertEqual(erg, pair)
+        self.myapp.cif.fileobj.unlink()

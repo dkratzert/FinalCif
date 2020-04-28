@@ -11,6 +11,12 @@ _chemical_formula_sum
  'C38.50 H40 O12.50' 
 _chemical_formula_weight          702.70
 
+_vrf_PLAT307_BruecknerJK_153F40_0m
+;
+PROBLEM: Isolated Metal Atom found in Structure (Unusual) Ga1 Check
+RESPONSE: foobar
+;
+
 loop_
  _atom_type_symbol
  _atom_type_description

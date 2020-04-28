@@ -769,7 +769,7 @@ class AppWindow(QMainWindow):
         Saves the current cif file and stores the information of the third column.
         """
         datatxt = ''.join(self.ui.datnameLineEdit.text().split(' '))
-        self.cif.block.name = ''.join([i for i in datatxt if i.isascii()])
+        self.cif.rename_data_name(datatxt)
         # restore header, otherwise item is not saved:
         table = self.ui.cif_main_table
         table.restore_vertical_header()
