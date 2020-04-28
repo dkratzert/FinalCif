@@ -122,7 +122,7 @@ class BrukerData(WorkDataMixin):
                 self.app.show_general_warning('<b>Warning</b>: The temperature from the measurement and '
                                               'from SHELX differ. Please double-check for correctness.<br><br>'
                                               'SHELX says: {} K<br>'
-                                              'P$P file says: {} K<br>'
+                                              'The P4P file says: {} K<br>'
                                               'Frame header says: {} K<br><br>'
                                               'You may add a '
                                               '<a href="http://shelx.uni-goettingen.de/shelxl_html.php#TEMP">TEMP</a> '
