@@ -248,8 +248,12 @@ class TestWorkfolder(unittest.TestCase):
         super().tearDown()
 
     def testDataColumn(self):
-        '_computing_structure_solution:'
-        self.assertEqual('SHELXT (G. Sheldrick)', self.myapp.ui.cif_main_table.text(19, 1))
+        # test fo ccdc number added from email during load:
+        self.assertEqual('1979688',
+                         self.myapp.ui.cif_main_table.getTextFromKey('_database_code_depnum_ccdc_archive', 1))
+        # '_computing_structure_solution:'
+        self.assertEqual('SHELXT (G. Sheldrick)',
+                         self.myapp.ui.cif_main_table.getTextFromKey('_computing_structure_solution', 1))
         self.assertEqual('direct',
                          self.myapp.ui.cif_main_table.getTextFromKey('_atom_sites_solution_primary', 1))
         self.assertEqual('9624',
@@ -263,7 +267,7 @@ class TestWorkfolder(unittest.TestCase):
         self.assertEqual('',
                          self.myapp.ui.cif_main_table.getTextFromKey('_chemical_absolute_configuration', 2))
         self.assertEqual("<class 'gui.custom_classes.MyComboBox'>",
-                         str(self.myapp.ui.cif_main_table.cellWidget(9, 2).__class__))
+                         str(self.myapp.ui.cif_main_table.cellWidget(10, 2).__class__))
         self.assertEqual('?',
                          self.myapp.ui.cif_main_table.getTextFromKey('_chemical_formula_moiety', 0))
         self.assertEqual('',
@@ -271,10 +275,13 @@ class TestWorkfolder(unittest.TestCase):
         self.assertEqual('',
                          self.myapp.ui.cif_main_table.getTextFromKey('_chemical_formula_moiety', 2))
         # Test for background color:
-        self.assertEqual(light_green, self.myapp.ui.cif_main_table.item(8, 1).background().color())
-        self.assertEqual(yellow, self.myapp.ui.cif_main_table.item(9, 1).background().color())
+        # print(self.myapp.ui.cif_main_table.vheaderitems[8])
+        self.assertEqual(light_green, self.myapp.ui.cif_main_table.itemFromKey('_cell_measurement_theta_max',
+                                                                               1).background().color())
+        self.assertEqual(yellow, self.myapp.ui.cif_main_table.itemFromKey('_chemical_absolute_configuration',
+                                                                          1).background().color())
         with self.assertRaises(AttributeError):
-            self.myapp.ui.cif_main_table.item(8, 2).background().color()
+            self.myapp.ui.cif_main_table.itemFromKey('_cell_measurement_theta_max', 2).background().color()
         # Test for auto-fill data:
         self.assertEqual('SAINT V8.40A',
                          self.myapp.ui.cif_main_table.getTextFromKey('_computing_cell_refinement', 1))
@@ -282,10 +289,14 @@ class TestWorkfolder(unittest.TestCase):
                          self.myapp.ui.cif_main_table.getTextFromKey('_computing_cell_refinement', 0))
         self.assertEqual('Bruker BIS V6.2.12/2019-08-12',
                          self.myapp.ui.cif_main_table.getTextFromKey('_computing_data_collection', 1))
-        self.assertEqual(light_green, self.myapp.ui.cif_main_table.item(14, 1).background().color())
-        self.assertEqual(light_green, self.myapp.ui.cif_main_table.item(15, 1).background().color())
-        self.assertEqual(light_green, self.myapp.ui.cif_main_table.item(16, 1).background().color())
-        self.assertEqual(QColor(0, 0, 0, 255), self.myapp.ui.cif_main_table.item(17, 1).background().color())
+        self.assertEqual(light_green,
+                         self.myapp.ui.cif_main_table.itemFromKey('_computing_cell_refinement', 1).background().color())
+        self.assertEqual(light_green,
+                         self.myapp.ui.cif_main_table.itemFromKey('_computing_data_collection', 1).background().color())
+        self.assertEqual(light_green,
+                         self.myapp.ui.cif_main_table.itemFromKey('_computing_data_reduction', 1).background().color())
+        self.assertEqual(QColor(0, 0, 0, 255), self.myapp.ui.cif_main_table.itemFromKey('_computing_molecular_graphics',
+                                                                                        1).background().color())
         self.assertEqual('SHELXT (G. Sheldrick)',
                          self.myapp.ui.cif_main_table.getTextFromKey('_computing_structure_solution', 1))
         self.assertEqual('1.1',
@@ -300,7 +311,7 @@ class TestWorkfolder(unittest.TestCase):
         self.assertEqual('',
                          self.myapp.ui.cif_main_table.getTextFromKey('_exptl_crystal_recrystallization_method', 1))
         self.assertEqual('QPlainTextEdit {background-color: #faf796;}',
-                         self.myapp.ui.cif_main_table.cellWidget(40, 1).styleSheet())
+                         self.myapp.ui.cif_main_table.cellWidget(41, 1).styleSheet())
         self.assertEqual('0.220',
                          self.myapp.ui.cif_main_table.getTextFromKey('_exptl_crystal_size_max', 1))
         self.assertEqual('0.100',

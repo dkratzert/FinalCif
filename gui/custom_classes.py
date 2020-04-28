@@ -171,7 +171,7 @@ class MyCifTable(QTableWidget, ItemTextMixin):
                 self.cellWidget(row, column).setText(txt)
             else:
                 # No item in table cell:
-                item = MyTableWidgetItem(txt) 
+                item = MyTableWidgetItem(txt)
                 self.setItem(row, column, item)
 
     def getText(self, col: int, row: int):
@@ -186,6 +186,11 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         """
         row = self.vheaderitems.index(key)
         return self.text(row, col)
+
+    def itemFromKey(self, key: str, col: int):
+        """Returns the tableitem of the cell by key and column"""
+        row = self.vheaderitems.index(key)
+        return self.item(row, col)
 
     def setBackground(self, key: str, column: int, color: QColor):
         row = self.vheaderitems.index(key)
