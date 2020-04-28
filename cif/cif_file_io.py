@@ -272,7 +272,8 @@ class CifContainer():
 
     def rename_data_name(self, newname: str = ''):
         """
-        Reanmes data_ tags to the newname. Also _vrf tags are reanmed accordingly.
+        Reanmes data_ tags to the newname. Also _vrf tags are renamed accordingly.
+        http://journals.iucr.org/services/cif/checking/checkfaq.html
         """
         newname = ''.join([i for i in newname if i.isascii()])
         self.block.name = newname
