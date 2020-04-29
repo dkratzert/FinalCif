@@ -108,7 +108,12 @@ class MakeCheckCif(QThread):
         """
         Opens the resulkting pdf file in the systems pdf viewer.
         """
-        parser = MyHTMLParser(self.html_out_file.read_text())
+        try:
+            parser = MyHTMLParser(self.html_out_file.read_text())
+        except FileNotFoundError:
+            self.failed.emit('Could not find checkcif result...')
+            pdf = None
+            return 
         # the link to the pdf file resides in this html file:
         try:
             pdf = parser.get_pdf()
