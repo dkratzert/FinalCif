@@ -113,7 +113,7 @@ class MakeCheckCif(QThread):
         except FileNotFoundError:
             self.failed.emit('Could not find checkcif result...')
             pdf = None
-            return 
+            return
         # the link to the pdf file resides in this html file:
         try:
             pdf = parser.get_pdf()
