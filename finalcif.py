@@ -61,6 +61,9 @@ from PyQt5.QtWidgets import QApplication, QFileDialog, QHeaderView, QListWidget,
 
 """
 TODO:
+- make "delete row" for multi-line keywords work
+- add file dialog für custom picture
+- maybe add refinement model description via ShelXFile parser 
 - Refreactor all the data handling for the main table!
 - add loops to templates
 for i in block:
