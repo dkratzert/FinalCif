@@ -197,6 +197,9 @@ class TestApplication(unittest.TestCase):
         self.assertEqual('foobar', self.myapp.ui.cif_main_table.text(22, 1))
 
     def test_info_fields(self):
+        # test fo ccdc number added from email during load:
+        self.assertEqual('CCDC 1979688',
+                         self.myapp.ui.cif_main_table.getTextFromKey('_database_code_depnum_ccdc_archive', 0))
         self.assertEqual('CCDC 1979688', self.myapp.ui.CCDCNumLineEdit.text())
         self.assertEqual('cu_BruecknerJK_153F40_0m', self.myapp.ui.datnameLineEdit.text())
         self.assertEqual('P 21 21 2', self.myapp.ui.spacegroupLineEdit.text())
@@ -248,7 +251,7 @@ class TestWorkfolder(unittest.TestCase):
         super().tearDown()
 
     def testDataColumn(self):
-        # test fo ccdc number added from email during load:
+        # test of ccdc number added from email during load:
         self.assertEqual('1979688',
                          self.myapp.ui.cif_main_table.getTextFromKey('_database_code_depnum_ccdc_archive', 1))
         # '_computing_structure_solution:'
