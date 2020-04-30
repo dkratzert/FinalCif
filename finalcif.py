@@ -62,7 +62,6 @@ from PyQt5.QtWidgets import QApplication, QFileDialog, QHeaderView, QListWidget,
 """
 TODO:
 - make "delete row" for multi-line keywords work
-- add file dialog für custom picture
 - maybe add refinement model description via ShelXFile parser 
 - Refreactor all the data handling for the main table!
 - add loops to templates
@@ -98,6 +97,7 @@ class AppWindow(QMainWindow):
 
     def __init__(self, file=None):
         super().__init__()
+        self.report_picture: Path
         self.sources: Union[None, Dict[str, Tuple[Union[str, None]]]] = None
         self.ui = Ui_FinalCifWindow()
         self.ui.setupUi(self)
@@ -201,6 +201,11 @@ class AppWindow(QMainWindow):
             self.view.reload()
         with suppress(AttributeError):
             self._savesize()
+        # Adjust with of button:
+        # Picture button fixed and the rest should behave same with each other
+        self.ui.CODpushButton.setFixedSize(self.ui.CheckcifPDFOnlineButton.size())
+        self.ui.SaveFullReportButton.setFixedWidth(
+            self.ui.CODpushButton.width() - self.ui.ReportPicPushButton.width() - 6)
 
     def moveEvent(self, a0: QMoveEvent) -> None:
         super(AppWindow, self).moveEvent(a0)
@@ -294,6 +299,18 @@ class AppWindow(QMainWindow):
         #
         self.ui.SourcesPushButton.clicked.connect(self.show_sources)
         self.ui.BackSourcesPushButton.clicked.connect(self.back_to_main_noload)
+        # Report picture:
+        self.ui.ReportPicPushButton.clicked.connect(self.set_report_picture)
+
+    def set_report_picture(self):
+        filename, _ = QFileDialog.getOpenFileName(filter="Image Files (*.png *.jpg *.jpeg *.bmp "
+                                                         "*.gif *.tif *.tiff *.eps *.emf *.wmf)",
+                                                  caption='Open a Report Picture')
+        with suppress(Exception):
+            self.report_picture = Path(filename)
+        if self.report_picture.exists() and self.report_picture.is_file():
+            self.ui.ReportPicPushButton.setIcon(qta.icon('fa5.image'))
+            self.ui.ReportPicPushButton.setText('')
 
     def _ccdc_deposit(self):
         """
@@ -697,9 +714,14 @@ class AppWindow(QMainWindow):
             self.save_current_cif_file()
             self.load_cif_file(self.final_cif_file_name)
             report_filename = strip_finalcif_of_name('report_{}'.format(self.cif.fileobj.stem)) + '-finalcif.docx'
+            # The picture after the header:
+            if self.report_picture:
+                picfile = self.report_picture
+            else:
+                picfile = Path(self.final_cif_file_name.stem + '.gif')
             try:
                 make_report_from(self.final_cif_file_name, output_filename=report_filename, path=application_path,
-                                 without_H=self.ui.HAtomsCheckBox.isChecked())
+                                 without_H=self.ui.HAtomsCheckBox.isChecked(), picfile=picfile)
             except FileNotFoundError as e:
                 if DEBUG:
                     raise
@@ -767,7 +789,7 @@ class AppWindow(QMainWindow):
         if saved:
             self.display_cif_text()
 
-    def save_current_cif_file(self, filename=None) -> bool:
+    def save_current_cif_file(self, filename: Union[str, None] = None) -> Union[bool, None]:
         """
         Saves the current cif file and stores the information of the third column.
         """
@@ -1719,11 +1741,11 @@ class AppWindow(QMainWindow):
         density = to_float(self.cif['_exptl_crystal_density_diffrn'])
         csystem = self.cif.crystal_system
         bad = False
-        #Z_calc = round((self.cif.atomic_struct.cell.volume / self.cif.natoms(without_h=True))/17.7, 1)
-        #self.ui.EstZLinedit.setText(str(self.cif.Z_value))
-        #print(Z_calc, self.cif.Z_value)
+        # Z_calc = round((self.cif.atomic_struct.cell.volume / self.cif.natoms(without_h=True))/17.7, 1)
+        # self.ui.EstZLinedit.setText(str(self.cif.Z_value))
+        # print(Z_calc, self.cif.Z_value)
         ntypes = len(self.cif['_chemical_formula_sum'].split())
-        #if abs(Z - self.cif.Z_value) > 1:
+        # if abs(Z - self.cif.Z_value) > 1:
         #    bad = True
         if Z and Z > 20.0 and (csystem == 'tricilinic' or csystem == 'monoclinic'):
             bad = True
