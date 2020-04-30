@@ -97,7 +97,7 @@ class AppWindow(QMainWindow):
 
     def __init__(self, file=None):
         super().__init__()
-        self.report_picture: Path
+        self.report_picture: Union[Path, None] = None
         self.sources: Union[None, Dict[str, Tuple[Union[str, None]]]] = None
         self.ui = Ui_FinalCifWindow()
         self.ui.setupUi(self)
