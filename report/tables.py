@@ -68,7 +68,8 @@ def format_space_group(table: Table, cif: CifContainer) -> None:
             paragraph.add_run('?')
 
 
-def make_report_from(file_obj: Path, output_filename: str = None, path: str = '', without_H: bool = False) -> str:
+def make_report_from(file_obj: Path, output_filename: str = None, path: str = '', without_H: bool = False,
+                     picfile: Path = None) -> str:
     """
     Creates a tabular cif report.
     :param file_obj: Input cif file.
@@ -92,8 +93,6 @@ def make_report_from(file_obj: Path, output_filename: str = None, path: str = ''
     if not cif:
         print('Something failed during cif file saving.')
         return ''
-    # The picture after the header:
-    picfile = Path(file_obj.stem + '.gif')
     if picfile.exists():
         pic = document.add_paragraph()
         pic.add_run().add_picture(str(picfile), width=Cm(7))

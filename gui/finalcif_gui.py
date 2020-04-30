@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file './gui\finalcif_gui.ui'
+# Form implementation generated from reading ui file 'D:\GitHub\FinalCif\./gui\finalcif_gui.ui'
 #
 # Created by: PyQt5 UI code generator 5.14.2
 #
@@ -317,18 +317,22 @@ class Ui_FinalCifWindow(object):
         self.groupBox_tables.setObjectName("groupBox_tables")
         self.gridLayout = QtWidgets.QGridLayout(self.groupBox_tables)
         self.gridLayout.setObjectName("gridLayout")
-        self.CODpushButton = QtWidgets.QPushButton(self.groupBox_tables)
-        self.CODpushButton.setObjectName("CODpushButton")
-        self.gridLayout.addWidget(self.CODpushButton, 0, 0, 1, 1)
-        self.CCDCpushButton = QtWidgets.QPushButton(self.groupBox_tables)
-        self.CCDCpushButton.setObjectName("CCDCpushButton")
-        self.gridLayout.addWidget(self.CCDCpushButton, 0, 1, 1, 1)
         self.HAtomsCheckBox = QtWidgets.QCheckBox(self.groupBox_tables)
         self.HAtomsCheckBox.setObjectName("HAtomsCheckBox")
-        self.gridLayout.addWidget(self.HAtomsCheckBox, 1, 1, 1, 1)
+        self.gridLayout.addWidget(self.HAtomsCheckBox, 1, 2, 1, 1)
         self.SaveFullReportButton = QtWidgets.QPushButton(self.groupBox_tables)
         self.SaveFullReportButton.setObjectName("SaveFullReportButton")
-        self.gridLayout.addWidget(self.SaveFullReportButton, 1, 0, 1, 1)
+        self.gridLayout.addWidget(self.SaveFullReportButton, 1, 1, 1, 1)
+        self.CCDCpushButton = QtWidgets.QPushButton(self.groupBox_tables)
+        self.CCDCpushButton.setObjectName("CCDCpushButton")
+        self.gridLayout.addWidget(self.CCDCpushButton, 0, 2, 1, 1)
+        self.ReportPicPushButton = QtWidgets.QPushButton(self.groupBox_tables)
+        self.ReportPicPushButton.setMaximumSize(QtCore.QSize(56, 16777215))
+        self.ReportPicPushButton.setObjectName("ReportPicPushButton")
+        self.gridLayout.addWidget(self.ReportPicPushButton, 1, 0, 1, 1)
+        self.CODpushButton = QtWidgets.QPushButton(self.groupBox_tables)
+        self.CODpushButton.setObjectName("CODpushButton")
+        self.gridLayout.addWidget(self.CODpushButton, 0, 0, 1, 2)
         self.ButtonsHorizontalLayout.addWidget(self.groupBox_tables)
         self.verticalLayout.addLayout(self.ButtonsHorizontalLayout)
         self.MainStackedWidget.addWidget(self.page_MainTable)
@@ -876,10 +880,11 @@ class Ui_FinalCifWindow(object):
         self.CheckcifHTMLOnlineButton.setText(_translate("FinalCifWindow", "Checkcif Online HTML"))
         self.CheckcifButton.setText(_translate("FinalCifWindow", "CheckCif Offline"))
         self.structfactCheckBox.setText(_translate("FinalCifWindow", "without structure factors"))
-        self.CODpushButton.setText(_translate("FinalCifWindow", "COD Deposit"))
-        self.CCDCpushButton.setText(_translate("FinalCifWindow", "CCDC Deposit"))
         self.HAtomsCheckBox.setText(_translate("FinalCifWindow", "without Hydrogen Bonds"))
         self.SaveFullReportButton.setText(_translate("FinalCifWindow", "Make Tables"))
+        self.CCDCpushButton.setText(_translate("FinalCifWindow", "CCDC Deposit"))
+        self.ReportPicPushButton.setText(_translate("FinalCifWindow", "Picture ->"))
+        self.CODpushButton.setText(_translate("FinalCifWindow", "COD Deposit"))
         self.label.setText(_translate("FinalCifWindow", "PLATON Checkcif output:"))
         self.BackFromPlatonPushButton.setText(_translate("FinalCifWindow", "Back to CIF Table"))
         self.BackPushButton.setText(_translate("FinalCifWindow", "Back to CIF Table"))
