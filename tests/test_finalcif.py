@@ -188,7 +188,7 @@ class TestApplication(unittest.TestCase):
         self.assertEqual('foobar', self.myapp.ui.cif_main_table.text(17, 2))
         # A MyPlaintextedit
         self.myapp.ui.cif_main_table.setText(key='_audit_contact_author_address', txt='foobar', column=2)
-        self.assertEqual('foobar', self.myapp.ui.cif_main_table.text(18, 2))
+        self.assertEqual('foobar', self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_address', 2))
         # A empty table cell
         self.myapp.ui.cif_main_table.setText(key='_audit_contact_author_email', txt='foobar', column=2)
         self.assertEqual('foobar', self.myapp.ui.cif_main_table.text(19, 2))
@@ -346,6 +346,13 @@ class TestWorkfolder(unittest.TestCase):
         self.allrows_test_key('_diffrn_measurement_specimen_support', ['?', 'MiTeGen micromount', 'MiTeGen micromount'])
         self.allrows_test_key('_olex2_diffrn_ambient_temperature_device',
                               ['?', 'Oxford Cryostream 800', 'Oxford Cryostream 800'])
+        # Check if click on author adds the address to second and third column:
+        item = self.myapp.ui.EquipmentTemplatesListWidget.findItems('Contact Author', Qt.MatchStartsWith)[0]
+        self.myapp.ui.EquipmentTemplatesListWidget.setCurrentItem(item)
+        self.myapp.load_selected_equipment()
+        self.assertEqual('?', self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_address', 0))
+        self.assertEqual(addr, self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_address', 1))
+        self.assertEqual(addr, self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_address', 2))
 
     def test_edit_values_and_save(self):
         self.myapp.ui.cif_main_table.setText(key='_atom_sites_solution_primary', column=2, txt='test1ä')
