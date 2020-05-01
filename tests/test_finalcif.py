@@ -353,6 +353,12 @@ class TestWorkfolder(unittest.TestCase):
         self.assertEqual('?', self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_address', 0))
         self.assertEqual(addr, self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_address', 1))
         self.assertEqual(addr, self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_address', 2))
+        self.assertEqual("<class 'gui.custom_classes.MyQPlainTextEdit'>",
+                         str(self.myapp.ui.cif_main_table.cellWidget(3, 0).__class__))
+        self.assertEqual("<class 'gui.custom_classes.MyQPlainTextEdit'>",
+                         str(self.myapp.ui.cif_main_table.cellWidget(3, 1).__class__))
+        self.assertEqual("<class 'gui.custom_classes.MyQPlainTextEdit'>",
+                         str(self.myapp.ui.cif_main_table.cellWidget(3, 2).__class__))
 
     def test_edit_values_and_save(self):
         self.myapp.ui.cif_main_table.setText(key='_atom_sites_solution_primary', column=2, txt='test1ä')
