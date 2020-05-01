@@ -5,6 +5,9 @@
 #  and you think this stuff is worth it, you can buy me a beer in return.
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
+from gui.messages import unable_to_open_message, show_checksum_warning, show_general_warning, bad_z_message, \
+    bug_found_warning, show_splash
+
 DEBUG = False
 
 import os
@@ -57,7 +60,7 @@ from tools.version import VERSION
 from PyQt5.QtCore import QPoint, Qt, QUrl, QEvent
 from PyQt5.QtGui import QFont, QIcon, QBrush, QResizeEvent, QMoveEvent
 from PyQt5.QtWidgets import QApplication, QFileDialog, QHeaderView, QListWidget, QListWidgetItem, \
-    QMainWindow, QMessageBox, QPlainTextEdit, QStackedWidget, QTableWidget, QSplashScreen, QShortcut, QCheckBox
+    QMainWindow, QPlainTextEdit, QStackedWidget, QTableWidget, QShortcut, QCheckBox
 
 """
 TODO:
@@ -346,7 +349,7 @@ class AppWindow(QMainWindow):
             pass
         if remote_version > VERSION:
             print('Version {} is outdated (actual is {}).'.format(VERSION, remote_version))
-            self.show_general_warning(
+            show_general_warning(
                 r"A newer version {} of FinalCif is available under: <br>"
                 r"<a href='https://www.xs3.uni-freiburg.de/research/finalcif'>"
                 r"https://www.xs3.uni-freiburg.de/research/finalcif</a>".format(remote_version))
@@ -478,23 +481,6 @@ class AppWindow(QMainWindow):
         self.ui.MainStackedWidget.setCurrentIndex(0)
         if self.view:
             self.ui.moleculeLayout.removeWidget(self.view)
-
-    def show_splash(self, text: str):
-        splash = QSplashScreen()
-        splashFont = QFont()
-        # splashFont.setFamily("Arial")
-        splashFont.setBold(True)
-        splashFont.setPixelSize(16)
-        splashFont.setStretch(120)
-        splash.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.SplashScreen)
-        splash = QSplashScreen()
-        splash.show()
-        splash.setStyleSheet("background-color:#fcc77c;")
-        splash.setFont(splashFont)
-        splash.setMinimumWidth(400)
-        splash.setMaximumHeight(100)
-        splash.showMessage(text, alignment=Qt.AlignCenter, )
-        return splash
 
     def _checkcif_failed(self, txt: str):
         self.ui.statusBar.showMessage(txt)
@@ -656,7 +642,7 @@ class AppWindow(QMainWindow):
         """
         Performs a checkcif with platon and displays it in the text editor of the MainStackedWidget.
         """
-        splash = self.show_splash("Running Checkcif locally. Please wait...")
+        splash = show_splash("Running Checkcif locally. Please wait...")
         # makes sure also the currently edited item is saved:
         self.ui.cif_main_table.setCurrentItem(None)
         self.ui.CheckcifPlaintextEdit.clear()
@@ -727,14 +713,14 @@ class AppWindow(QMainWindow):
                     raise
                 print('Unable to make report from cif file.')
                 not_ok = e
-                self.unable_to_open_message(self.cif.fileobj, not_ok)
+                unable_to_open_message(self.cif.fileobj, not_ok)
                 return
             except PermissionError:
                 if DEBUG:
                     raise
                 print('Unable to open cif file')
-                self.show_general_warning('The report document {} could not be opened.\n'
-                                          'Is the file already opened?'.format(report_filename))
+                show_general_warning('The report document {} could not be opened.\n'
+                                     'Is the file already opened?'.format(report_filename))
                 return
             if Path(report_filename).absolute().exists():
                 if os.name == 'nt':
@@ -845,7 +831,7 @@ class AppWindow(QMainWindow):
         except Exception as e:
             print('Unable to save file:')
             print(e)
-            self.show_general_warning('Can not save file: ' + str(e))
+            show_general_warning('Can not save file: ' + str(e))
             return False
 
     def display_cif_text(self) -> None:
@@ -1026,11 +1012,11 @@ class AppWindow(QMainWindow):
         for key, _ in table_data:
             if key not in cif_core:
                 if not key.startswith('_'):
-                    self.show_general_warning('"{}" is not a valid keyword! '
-                                              '\nChange the name in order to save.\n'
-                                              'Keys must start with an underscore.'.format(key))
+                    show_general_warning('"{}" is not a valid keyword! '
+                                         '\nChange the name in order to save.\n'
+                                         'Keys must start with an underscore.'.format(key))
                     return
-                self.show_general_warning('"{}" is not an official CIF keyword!'.format(key))
+                show_general_warning('"{}" is not an official CIF keyword!'.format(key))
         self.settings.save_template('equipment/' + selected_template_text, table_data)
         self.settings.append_to_equipment_list(selected_template_text)
         self.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
@@ -1047,7 +1033,7 @@ class AppWindow(QMainWindow):
         try:
             doc = cif.read_file(filename)
         except RuntimeError as e:
-            self.show_general_warning(str(e))
+            show_general_warning(str(e))
             return
         block = doc.sole_block()
         table_data = []
@@ -1146,7 +1132,7 @@ class AppWindow(QMainWindow):
         except PermissionError:
             if Path(filename).is_dir():
                 return
-            self.show_general_warning('No permission to write file to {}'.format(Path(filename).absolute()))
+            show_general_warning('No permission to write file to {}'.format(Path(filename).absolute()))
 
     def cancel_equipment_template(self) -> None:
         """
@@ -1238,7 +1224,7 @@ class AppWindow(QMainWindow):
             loop = block.init_loop(cif_key, [''])
         except RuntimeError:
             # Not a valid loop key
-            self.show_general_warning('"{}" is not a valid cif keyword.'.format(cif_key))
+            show_general_warning('"{}" is not a valid cif keyword.'.format(cif_key))
             return
         for value in table_data:
             if value:
@@ -1253,7 +1239,7 @@ class AppWindow(QMainWindow):
         except PermissionError:
             if Path(filename).is_dir():
                 return
-            self.show_general_warning('No permission to write file to {}'.format(Path(filename).absolute()))
+            show_general_warning('No permission to write file to {}'.format(Path(filename).absolute()))
 
     def import_property_from_file(self, filename: str = '') -> None:
         """
@@ -1266,7 +1252,7 @@ class AppWindow(QMainWindow):
         try:
             doc = cif.read_file(filename)
         except RuntimeError as e:
-            self.show_general_warning(str(e))
+            show_general_warning(str(e))
             return
         property_list = self.settings.settings.value('property_list')
         if not property_list:
@@ -1445,7 +1431,7 @@ class AppWindow(QMainWindow):
         try:
             filepath = Path(fname)
             if not filepath.exists():
-                self.show_general_warning("The file you tried to open does not exist!")
+                show_general_warning("The file you tried to open does not exist!")
                 return
         except OSError:
             print('Something failed during cif file opening...')
@@ -1461,13 +1447,13 @@ class AppWindow(QMainWindow):
             print(e)
             not_ok = e
         if not_ok:
-            self.unable_to_open_message(filepath, not_ok)
+            unable_to_open_message(filepath, not_ok)
             return
         if not self.cif.chars_ok:
-            self.show_general_warning("You have non-ascii characters like umlauts in the SHELX file "
-                                      "attached to this CIF.\n\n"
-                                      "FinalCif tries to convert them, but be warned "
-                                      "(they are not allowed in CIF1 files anyway).\n")
+            show_general_warning("You have non-ascii characters like umlauts in the SHELX file "
+                                 "attached to this CIF.\n\n"
+                                 "FinalCif tries to convert them, but be warned "
+                                 "(they are not allowed in CIF1 files anyway).\n")
         # Will not stop reading if only the value is missing and ends with newline:
         try:
             self.cif.doc.check_for_missing_values()
@@ -1476,7 +1462,7 @@ class AppWindow(QMainWindow):
             print(str(e))
             errlist = str(e).split(':')
             if len(errlist) > 1:
-                self.show_general_warning(
+                show_general_warning(
                     "Attention line {}: '{}' has no value.".format(errlist[1], errlist[2].split()[0]))
         try:
             # Change the current working Directory
@@ -1507,7 +1493,7 @@ class AppWindow(QMainWindow):
             not_ok = e
             if DEBUG:
                 raise
-            self.unable_to_open_message(filepath, not_ok)
+            unable_to_open_message(filepath, not_ok)
         # Do this only when sure we can load the file:
         self.save_current_recent_files_list(filepath)
         self.load_recent_cifs_list()
@@ -1663,31 +1649,6 @@ class AppWindow(QMainWindow):
             # self.write_empty_molfile()
             self.view.reload()
 
-    @staticmethod
-    def unable_to_open_message(filepath: Path, not_ok: Exception) -> None:
-        """
-        Shows a message if the current cif file can not be opened.
-        """
-        info = QMessageBox()
-        info.setIcon(QMessageBox.Information)
-        print('Output from gemmi:', not_ok)
-        try:
-            line = str(not_ok)[4:].split(':')[1]
-        except IndexError:
-            line = None
-        if line:
-            try:
-                int(line)
-                info.setText('This cif file is not readable!\n'
-                             'Please check line {} in\n{}'.format(line, filepath.name))
-            except ValueError:
-                info.setText('This cif file is not readable! "{}"\n{}'.format(filepath.name, not_ok))
-        else:
-            info.setText('This cif file is not readable! "{}"\n{}'.format(filepath.name, not_ok))
-        info.show()
-        info.exec()
-        return
-
     def test_checksums(self) -> None:
         """
         A method to check wether the checksums in the cif file fit to the content.
@@ -1697,39 +1658,13 @@ class AppWindow(QMainWindow):
             cif_res_ckecksum = self.cif.block.find_value('_shelx_res_checksum') or -1
             cif_res_ckecksum = int(cif_res_ckecksum)
         if cif_res_ckecksum > 0 and cif_res_ckecksum != self.cif.res_checksum_calcd:
-            self.show_checksum_warning()
+            show_checksum_warning()
         cif_hkl_ckecksum = 0
         if self.cif.hkl_checksum_calcd > 0:
             cif_hkl_ckecksum = self.cif.block.find_value('_shelx_hkl_checksum') or -1
             cif_hkl_ckecksum = int(cif_hkl_ckecksum)
         if cif_hkl_ckecksum > 0 and cif_hkl_ckecksum != self.cif.hkl_checksum_calcd:
-            self.show_checksum_warning(res=False)
-
-    def show_checksum_warning(self, res=True) -> None:
-        """
-        A message box to display if the checksums do not agree.
-        """
-        info = QMessageBox()
-        info.setIcon(QMessageBox.Warning)
-        if res:
-            info.setText('The "_shelx_res_checksum" is not\nconsistent with the .res file content!')
-        else:
-            info.setText('The "_shelx_hkl_checksum" is not\nconsistent with the .hkl file content!')
-        info.show()
-        info.exec()
-
-    def show_general_warning(self, warn_text: str = '') -> None:
-        """
-        A message box to display if the checksums do not agree.
-        """
-        if not warn_text:
-            return
-        box = QMessageBox(self)
-        box.setTextFormat(Qt.AutoText)
-        box.setWindowTitle(" ")
-        box.setTextInteractionFlags(Qt.TextBrowserInteraction)
-        box.setText(warn_text)
-        box.exec()
+            show_checksum_warning(res=False)
 
     def check_Z(self) -> None:
         """
@@ -1753,12 +1688,7 @@ class AppWindow(QMainWindow):
                                or csystem == 'hexagonal' or csystem == 'cubic'):
             bad = True
         if bad:
-            zinfo = QMessageBox()
-            zinfo.setIcon(QMessageBox.Information)
-            zinfo.setText('The number of formula units Z={:.0f} is probably wrong.'
-                          '\nYou may restart refinement with a correct value.'.format(Z))
-            zinfo.show()
-            zinfo.exec()
+            bad_z_message(Z)
 
     def set_pair(self, key: str, value: str) -> None:
         """
@@ -1971,11 +1901,6 @@ class AppWindow(QMainWindow):
         self.ui.cif_main_table.setItem(row_num, COL_DATA, item2)
         self.ui.cif_main_table.setItem(row_num, COL_EDIT, item3)
         self.ui.cif_main_table.resizeRowToContents(row_num)
-        # Not working:
-        # AttributeError: 'NoneType' object has no attribute 'setFont'
-        # itemFont = QFont()
-        # itemFont.setBold(True)
-        # self.ui.cif_main_table.verticalHeaderItem(row_num).setFont(itemFont)
 
 
 if __name__ == '__main__':
@@ -2000,13 +1925,7 @@ if __name__ == '__main__':
             pass
         sys.__excepthook__(exctype, value, error_traceback)
         # Hier Fenster für meldung öffnen
-        window = AppWindow()
-        text = 'Congratulations, you found a bug in ' \
-               'FinalCif!<br>Please send the file <br>"{}" <br>to Daniel Kratzert:  ' \
-               '<a href="mailto:daniel.kratzert@ac.uni-freiburg.de?subject=FinalCif version {} crash report">' \
-               'daniel.kratzert@ac.uni-freiburg.de</a>'.format(logfile.absolute(), VERSION)
-        QMessageBox.warning(window, 'Warning', text)
-        window.show()
+        bug_found_warning(logfile)
         sys.exit(1)
 
 
