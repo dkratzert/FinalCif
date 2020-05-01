@@ -172,6 +172,8 @@ class MyCifTable(QTableWidget, ItemTextMixin):
                 tab_data = MyQPlainTextEdit(self)
                 self.setCellWidget(row, column, tab_data)
                 tab_data.setText(txt)
+                if (column == COL_CIF) or (column == COL_DATA):
+                    tab_data.setUneditable()
                 return
             # in this case, we have a combobox
             if isinstance(self.cellWidget(row, column), MyComboBox):
@@ -181,6 +183,8 @@ class MyCifTable(QTableWidget, ItemTextMixin):
                 # No item in table cell:
                 item = MyTableWidgetItem(txt)
                 self.setItem(row, column, item)
+        if (column == COL_CIF) or (column == COL_DATA):
+            item.setUneditable()
 
     def getText(self, col: int, row: int):
         return self.text(row, col)
