@@ -1690,7 +1690,7 @@ class AppWindow(QMainWindow):
         if bad:
             bad_z_message(Z)
 
-    def set_pair(self, key: str, value: str) -> None:
+    def set_table_pair(self, key: str, value: str) -> None:
         """
         Start a new cif key/data pair and add it to the main table.
         """
@@ -1737,7 +1737,7 @@ class AppWindow(QMainWindow):
             if src in vheadlist:
                 continue
             if src and src not in self.missing_data:
-                self.set_pair(src, '?')
+                self.set_table_pair(src, '?')
         # Build a dictionary of cif keys and row number values in order to fill the first column
         # of cif_main_table with cif values:
         for num in range(self.ui.cif_main_table.model().rowCount()):
@@ -1764,7 +1764,7 @@ class AppWindow(QMainWindow):
             try:
                 # sources are lower case!
                 txt = str(self.sources[miss_data][0])
-                if miss_data in text_field_keys:
+                if (miss_data in text_field_keys) or (len(txt) > 60):
                     # only text fields:
                     tab_item = MyQPlainTextEdit(self.ui.cif_main_table)
                     tab_item.setReadOnly(True)
@@ -1846,7 +1846,7 @@ class AppWindow(QMainWindow):
             strval = str(value).strip(" ").strip("'").strip(';\n').strip('\r\n')  # or '?')
         if not key:
             strval = ''
-        if key in text_field_keys:
+        if (len(strval) > 60) or (key in text_field_keys):
             # All textedit fields
             # print(key, strval)
             tab_cif = MyQPlainTextEdit(self.ui.cif_main_table)
@@ -1859,7 +1859,7 @@ class AppWindow(QMainWindow):
             tab_cif.setReadOnly(True)
             tab_data.setReadOnly(True)
             # Make QPlainTextEdit fields a bit higher than the rest
-            self.ui.cif_main_table.setRowHeight(row_num, 90)
+            self.ui.cif_main_table.setRowHeight(row_num, 95)
         else:
             # All regular linedit fields:
             tab_cif = MyTableWidgetItem(retranslate_delimiter(strval))

@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import QAbstractScrollArea, QAction, QComboBox, QFrame, QPl
     QTableWidgetItem, QWidget, QApplication, QShortcut
 
 from cif.text import retranslate_delimiter
-from tools.misc import essential_keys
+from tools.misc import essential_keys, text_field_keys
 
 light_green = QColor(217, 255, 201)
 blue = QColor(102, 150, 179)
@@ -71,6 +71,8 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         self.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        item = MyTableWidgetItem()
+        self.setItemPrototype(item)
         self.actionDeletePair = QAction("Delete Row", self)
         self.actionCopy = QAction("Copy", self)
         self.actionCopyVhead = QAction("Copy CIF Keyword", self)
@@ -155,7 +157,7 @@ class MyCifTable(QTableWidget, ItemTextMixin):
             pass
         return QObject.eventFilter(self, widget, event)
 
-    def setText(self, key: str, column: int, txt: str, row: int = None):
+    def setText(self, key: str, column: int, txt: str, row: int = None, editable=True):
         """
         Set text in current table cell regardless of the containing item.
         """
@@ -166,8 +168,14 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         if item:
             item.setText(retranslate_delimiter(txt))
         else:
+            if (key in text_field_keys) or (len(txt) > 60):
+                tab_data = MyQPlainTextEdit(self)
+                self.setCellWidget(row, column, tab_data)
+                tab_data.setText(txt)
+                return
             # in this case, we have a combobox
             if isinstance(self.cellWidget(row, column), MyComboBox):
+                # noinspection PyUnresolvedReferences
                 self.cellWidget(row, column).setText(txt)
             else:
                 # No item in table cell:
@@ -321,6 +329,7 @@ class MyComboBox(QComboBox):
         return QObject.eventFilter(self, widget, event)
 
     def setUneditable(self):
+        # noinspection PyUnresolvedReferences
         self.setFlags(self.flags() ^ Qt.ItemIsEditable)
 
     def setText(self, txt: str):
@@ -338,7 +347,9 @@ class MyTableWidgetItem(QTableWidgetItem):
         super().__init__(parent, *args, **kwargs)
 
     def setUneditable(self):
+        # noinspection PyTypeChecker
         self.setFlags(self.flags() ^ Qt.ItemIsEditable)
+        # noinspection PyTypeChecker
         self.setFlags(self.flags() | Qt.ItemIsSelectable)
 
 
