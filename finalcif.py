@@ -64,6 +64,8 @@ from PyQt5.QtWidgets import QApplication, QFileDialog, QHeaderView, QListWidget,
 
 """
 TODO:
+- Extract more data from .xml file
+- Extract "_diffrn_measurement_details from .xml file
 - make "delete row" for multi-line keywords work
 - maybe add refinement model description via ShelXFile parser 
 - Refreactor all the data handling for the main table!
