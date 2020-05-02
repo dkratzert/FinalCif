@@ -2,7 +2,7 @@ from pathlib import Path
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QMessageBox, QMainWindow, QSplashScreen
+from PyQt5.QtWidgets import QMessageBox, QMainWindow, QSplashScreen, QFileDialog
 
 from tools.version import VERSION
 
@@ -95,3 +95,24 @@ def show_splash(text: str):
     splash.setMaximumHeight(100)
     splash.showMessage(text, alignment=Qt.AlignCenter, )
     return splash
+
+
+def cif_file_open_dialog(filter: str = "CIF file (*.cif)") -> str:
+    """
+    Returns a cif file name from a file dialog.
+    """
+    filename, _ = QFileDialog.getOpenFileName(filter=filter,
+                                              initialFilter=filter,
+                                              caption='Open a .cif File')
+    return filename
+
+
+def cif_file_save_dialog(filename: str) -> str:
+    """
+    Returns a cif file name from a file dialog.
+    """
+    dialog = QFileDialog(filter="CIF file (*.cif)", caption='Save .cif File')
+    dialog.setDefaultSuffix('.cif')
+    dialog.selectFile(filename)
+    filename, _ = dialog.getSaveFileName(None, 'Select file name', filename)
+    return filename

@@ -13,6 +13,7 @@
 """
 This file reads Bruker p4p files into a data structure.
 """
+import os
 from pathlib import Path
 
 from cif.cif_file_io import CifContainer
@@ -57,7 +58,7 @@ class P4PFile():
         p = self.cif.fileobj.parent
         p4p_files = p.glob(basename + '*_0m.p4p')
         if not p4p_files:
-            p4p_files = p.glob('*.p4p')
+            p4p_files = Path(os.curdir).absolute().glob('*.p4p')
         for p in p4p_files:
             if p:
                 self.filename = p

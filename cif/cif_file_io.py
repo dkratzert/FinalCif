@@ -518,3 +518,21 @@ class CifContainer():
         Add an additional key value pair to the cif block.
         """
         self.block.set_pair(key, value)
+
+    def test_checksums(self) -> None:
+        """
+        A method to check wether the checksums in the cif file fit to the content.
+        """
+        from gui.dialogs import show_checksum_warning
+        cif_res_ckecksum = 0
+        if self.res_checksum_calcd > 0:
+            cif_res_ckecksum = self.block.find_value('_shelx_res_checksum') or -1
+            cif_res_ckecksum = int(cif_res_ckecksum)
+        if cif_res_ckecksum > 0 and cif_res_ckecksum != self.res_checksum_calcd:
+            show_checksum_warning()
+        cif_hkl_ckecksum = 0
+        if self.hkl_checksum_calcd > 0:
+            cif_hkl_ckecksum = self.block.find_value('_shelx_hkl_checksum') or -1
+            cif_hkl_ckecksum = int(cif_hkl_ckecksum)
+        if cif_hkl_ckecksum > 0 and cif_hkl_ckecksum != self.hkl_checksum_calcd:
+            show_checksum_warning(res=False)

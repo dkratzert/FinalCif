@@ -380,7 +380,7 @@ class TestWorkfolder(unittest.TestCase):
                          self.myapp.ui.cif_main_table.getTextFromKey(key='_audit_contact_author_email', col=0))
         cif.unlink()
 
-    #@unittest.skip('temporary skip')
+    # @unittest.skip('temporary skip')
     def test_checkcif_html(self):
         """Runs a html checkcif without hkl and compares the result with the html file."""
         self.maxDiff = None
