@@ -201,6 +201,7 @@ class AppWindow(QMainWindow):
         self.subwin = Ui_ResponseFormsEditor()
 
     def resizeEvent(self, a0: QResizeEvent) -> None:
+        """It called when the main window resizes."""
         super(AppWindow, self).resizeEvent(a0)
         with suppress(AttributeError):
             self.view.reload()
@@ -213,17 +214,19 @@ class AppWindow(QMainWindow):
             self.ui.CODpushButton.width() - self.ui.ReportPicPushButton.width() - 6)
 
     def moveEvent(self, a0: QMoveEvent) -> None:
+        """Is called when the main window moves."""
         super(AppWindow, self).moveEvent(a0)
         with suppress(AttributeError):
             self._savesize()
 
     def changeEvent(self, event):
+        """Is called when the main window changes its state."""
         if event.type() == QEvent.WindowStateChange:
             with suppress(AttributeError):
                 self._savesize()
 
     def _savesize(self):
-        # print('saving position')
+        """Saves the main window size nd position."""
         x, y = self.pos().x(), self.pos().y()
         self.settings.save_window_position(QPoint(x, y), self.size(), self.isMaximized())
 
@@ -308,6 +311,7 @@ class AppWindow(QMainWindow):
         self.ui.ReportPicPushButton.clicked.connect(self.set_report_picture)
 
     def set_report_picture(self):
+        """Sets the picture of the report document."""
         filename, _ = QFileDialog.getOpenFileName(filter="Image Files (*.png *.jpg *.jpeg *.bmp "
                                                          "*.gif *.tif *.tiff *.eps *.emf *.wmf)",
                                                   caption='Open a Report Picture')
@@ -357,6 +361,9 @@ class AppWindow(QMainWindow):
                 r"https://www.xs3.uni-freiburg.de/research/finalcif</a>".format(remote_version))
 
     def erase_disabled_items(self):
+        """
+        Items that got disabled in the sources list are set to ? here.
+        """
         table = self.ui.SourcesTableWidget
         for row in range(table.rowCount()):
             if not table.cellWidget(row, 0).isChecked():
