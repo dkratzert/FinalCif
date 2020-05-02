@@ -94,6 +94,10 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         # noinspection PyUnresolvedReferences
         vheader.sectionClicked.connect(self.vheader_section_click)
 
+    def setCellWidget(self, row: int, column: int, widget: QWidget) -> None:
+        widget.row = row
+        super(MyCifTable, self).setCellWidget(row, column, widget)
+
     @property
     def rows_count(self):
         return self.model().rowCount()
@@ -232,11 +236,12 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         clipboard = QApplication.clipboard()
         clipboard.setText(text)
 
-    def delete_row(self):
+    def delete_row(self, row: int = None):
         """
         Deletes the current row, but gemmi can not delete items from the block at the moment!
         """
-        row = self.currentRow()
+        if not row:
+            row = self.currentRow()
         key = self.vheaderitems[row]
         del self.vheaderitems[row]
         self.removeRow(row)
@@ -254,7 +259,8 @@ class MyQPlainTextEdit(QPlainTextEdit):
 
     def __init__(self, parent=None, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
-        self.parent = parent
+        self.row: int = -1
+        self.parent: MyCifTable = parent
         self.setFocusPolicy(Qt.StrongFocus)
         self.setFrameShape(QFrame.NoFrame)
         self.setTabChangesFocus(True)
@@ -266,8 +272,13 @@ class MyQPlainTextEdit(QPlainTextEdit):
     def contextMenuEvent(self, event: QContextMenuEvent):
         menu = self.createStandardContextMenu(event.pos())
         actionCopyVhead = menu.addAction("Copy CIF Keyword")
+        deleterow = menu.addAction("Delete Row")
         actionCopyVhead.triggered.connect(self.copy_vhead_item)
+        deleterow.triggered.connect(self._delete_row)
         choosedAction = menu.exec(event.globalPos())
+
+    def _delete_row(self):
+        self.parent.delete_row(self.row)
 
     def copy_vhead_item(self, row):
         """
@@ -306,6 +317,8 @@ class MyQPlainTextEdit(QPlainTextEdit):
         if event.type() == QEvent.Wheel and widget and not widget.hasFocus():
             event.ignore()
             return True
+        # if event.type() == QEvent.MouseButtonPress:
+        #    self.cell_clicked.emit(event.)
         return QObject.eventFilter(self, widget, event)
 
 
@@ -316,12 +329,20 @@ class MyComboBox(QComboBox):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.parent = parent
+        self.parent: MyCifTable = parent
+        self.row: int = -1
         self.setFocusPolicy(Qt.StrongFocus)
         self.setSizeAdjustPolicy(QComboBox.AdjustToMinimumContentsLength)
         self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
         self.setEditable(True)  # only editable as new template
         self.installEventFilter(self)
+        self.actionDelete = QAction("Delete Row", self)
+        self.setContextMenuPolicy(Qt.ActionsContextMenu)
+        self.addAction(self.actionDelete)
+        self.actionDelete.triggered.connect(self._delete_row)
+
+    def _delete_row(self):
+        self.parent.delete_row(self.row)
 
     def eventFilter(self, widget: QObject, event: QEvent):
         """
