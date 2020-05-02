@@ -9,7 +9,7 @@
 from gui.dialogs import cif_file_open_dialog, cif_file_save_dialog, show_general_warning, bug_found_warning, \
     unable_to_open_message, show_splash, bad_z_message
 
-DEBUG = True
+DEBUG = False
 
 import os
 
