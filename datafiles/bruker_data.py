@@ -17,7 +17,7 @@ from datafiles.p4p_reader import P4PFile
 from datafiles.sadabs import Sadabs
 from datafiles.saint import SaintListFile
 from datafiles.shelx import SolutionProgram
-from gui.messages import show_general_warning
+from gui.dialogs import show_general_warning
 
 
 class MissingCifData():

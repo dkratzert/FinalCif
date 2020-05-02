@@ -5,10 +5,11 @@
 #  and you think this stuff is worth it, you can buy me a beer in return.
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
-from gui.messages import unable_to_open_message, show_checksum_warning, show_general_warning, bad_z_message, \
-    bug_found_warning, show_splash
 
-DEBUG = False
+from gui.dialogs import cif_file_open_dialog, cif_file_save_dialog, show_general_warning, bug_found_warning, \
+    unable_to_open_message, show_splash, bad_z_message
+
+DEBUG = True
 
 import os
 
@@ -140,7 +141,7 @@ class AppWindow(QMainWindow):
         self.view = None
         self.tempwarning_displayed = False
         self.final_cif_file_name = Path()
-        self.missing_data = []
+        self.missing_data: list = []
         # True if line with "these are already in" reached:
         self.complete_data_row = -1
         self.ui.growCheckBox.setChecked(True)
@@ -285,7 +286,7 @@ class AppWindow(QMainWindow):
         self.ui.EquipmentTemplatesListWidget.currentRowChanged.connect(self.load_selected_equipment)
         self.ui.EquipmentTemplatesListWidget.clicked.connect(self.load_selected_equipment)
         ##
-        self.ui.SaveFullReportButton.clicked.connect(self.make_table)
+        self.ui.SaveFullReportButton.clicked.connect(self.make_report_tables)
         self.ui.RecentComboBox.currentIndexChanged.connect(self.load_recent_file)
         #
         self.ui.cif_main_table.row_deleted.connect(self._deleted_row)
@@ -444,6 +445,9 @@ class AppWindow(QMainWindow):
         return ''
 
     def explore_dir(self):
+        """
+        Opens the file browser for the current directory.
+        """
         try:
             curdir = self.cif.fileobj.absolute().parent
         except AttributeError:
@@ -456,6 +460,9 @@ class AppWindow(QMainWindow):
             subprocess.call(['xdg-open', curdir])
 
     def dragEnterEvent(self, e: QEvent):
+        """
+        Allow drag of files to the main window
+        """
         if e.mimeData().hasText():
             e.accept()
         else:
@@ -695,14 +702,19 @@ class AppWindow(QMainWindow):
         self.ui.MainStackedWidget.setCurrentIndex(1)
 
     def load_recent_file(self, file_index: int) -> None:
+        """
+        Loads the currently slected file in the recent combobox.
+        :param file_index: index in the combobox
+        :return: None
+        """
         combo = self.ui.RecentComboBox
         if file_index > 0:
             txt = combo.itemText(file_index)
             self.load_cif_file(txt)
 
-    def make_table(self) -> None:
+    def make_report_tables(self) -> None:
         """
-        Runs the multitable program to make a report table.
+        Generates a report document.
         """
         not_ok = None
         if self.cif:
@@ -736,6 +748,7 @@ class AppWindow(QMainWindow):
                     os.startfile(Path(report_filename).absolute())
                 if sys.platform == 'darwin':
                     subprocess.call(['open', Path(report_filename).absolute()])
+            # Save report and other files to a zip file:
             zipfile = Path(strip_finalcif_of_name(self.cif.fileobj.stem) + '-finalcif.zip')
             if zipfile.exists():
                 zipfile = next_path(zipfile.stem + '-%s.zip')
@@ -750,6 +763,9 @@ class AppWindow(QMainWindow):
                 arc.zip.write(pdfname)
 
     def save_current_recent_files_list(self, file: Path) -> None:
+        """
+        Saves the list of the recently opened files. Non-existent files are removed.
+        """
         if os.name == 'nt':
             file = WindowsPath(file.absolute()).absolute()
         else:
@@ -771,7 +787,7 @@ class AppWindow(QMainWindow):
             if not isinstance(file, str):
                 del recent[n]
             try:
-                if not Path(file).exists():
+                if not Path(file).exists() or (not Path(file).is_file()):
                     del recent[n]
                     continue
             except OSError as e:
@@ -910,6 +926,7 @@ class AppWindow(QMainWindow):
         if not key.startswith('_'):
             return
         self.ui.cif_main_table.vheaderitems.insert(0, key)
+        # The main table is filled here:
         self.add_row(key=key, value=value, at_start=True)
         if key in combobox_fields:
             self.add_property_combobox(combobox_fields[key], 0)
@@ -1036,7 +1053,7 @@ class AppWindow(QMainWindow):
         Import an equipment entry from a cif file.
         """
         if not filename:
-            filename = self.cif_file_open_dialog(filter="CIF file (*.cif *.cif_od)")
+            filename = cif_file_open_dialog(filter="CIF file (*.cif *.cif_od)")
         if not filename:
             return
         try:
@@ -1132,7 +1149,7 @@ class AppWindow(QMainWindow):
         for key, value in table_data:
             set_pair_delimited(block, key, value.strip('\n\r '))
         if not filename:
-            filename = self.cif_file_save_dialog(blockname.replace('__', '_') + '.cif')
+            filename = cif_file_save_dialog(blockname.replace('__', '_') + '.cif')
         if not filename.strip():
             return
         try:
@@ -1239,7 +1256,7 @@ class AppWindow(QMainWindow):
             if value:
                 loop.add_row([cif.quote(utf8_to_str(value))])
         if not filename:
-            filename = self.cif_file_save_dialog(blockname.replace('__', '_') + '.cif')
+            filename = cif_file_save_dialog(blockname.replace('__', '_') + '.cif')
         if not filename.strip():
             return
         try:
@@ -1255,7 +1272,7 @@ class AppWindow(QMainWindow):
         Imports a cif file as entry of the property list.
         """
         if not filename:
-            filename = self.cif_file_open_dialog(filter="CIF file (*.cif *.cif_od)")
+            filename = cif_file_open_dialog(filter="CIF file (*.cif *.cif_od)")
         if not filename:
             return
         try:
@@ -1391,27 +1408,6 @@ class AppWindow(QMainWindow):
 
     ##   end of properties
 
-    @staticmethod
-    def cif_file_open_dialog(filter: str = "CIF file (*.cif)") -> str:
-        """
-        Returns a cif file name from a file dialog.
-        """
-        filename, _ = QFileDialog.getOpenFileName(filter=filter,
-                                                  initialFilter=filter,
-                                                  caption='Open a .cif File')
-        return filename
-
-    @staticmethod
-    def cif_file_save_dialog(filename: str) -> str:
-        """
-        Returns a cif file name from a file dialog.
-        """
-        dialog = QFileDialog(filter="CIF file (*.cif)", caption='Save .cif File')
-        dialog.setDefaultSuffix('.cif')
-        dialog.selectFile(filename)
-        filename, _ = dialog.getSaveFileName(None, 'Select file name', filename)
-        return filename
-
     def load_cif_file(self, fname: str) -> None:
         """
         Opens the cif file and fills information into the main table.
@@ -1429,7 +1425,7 @@ class AppWindow(QMainWindow):
                 last = ''
             if last and Path(last).exists():
                 os.chdir(last)
-            fname = self.cif_file_open_dialog()
+            fname = cif_file_open_dialog()
             self.tempwarning_displayed = False
         if not fname:
             return
@@ -1498,7 +1494,7 @@ class AppWindow(QMainWindow):
         # self.ui.cif_main_table.clear()
         try:
             self.fill_cif_table()
-        except RuntimeError as e:
+        except Exception as e:
             not_ok = e
             if DEBUG:
                 raise
@@ -1658,23 +1654,6 @@ class AppWindow(QMainWindow):
             # self.write_empty_molfile()
             self.view.reload()
 
-    def test_checksums(self) -> None:
-        """
-        A method to check wether the checksums in the cif file fit to the content.
-        """
-        cif_res_ckecksum = 0
-        if self.cif.res_checksum_calcd > 0:
-            cif_res_ckecksum = self.cif.block.find_value('_shelx_res_checksum') or -1
-            cif_res_ckecksum = int(cif_res_ckecksum)
-        if cif_res_ckecksum > 0 and cif_res_ckecksum != self.cif.res_checksum_calcd:
-            show_checksum_warning()
-        cif_hkl_ckecksum = 0
-        if self.cif.hkl_checksum_calcd > 0:
-            cif_hkl_ckecksum = self.cif.block.find_value('_shelx_hkl_checksum') or -1
-            cif_hkl_ckecksum = int(cif_hkl_ckecksum)
-        if cif_hkl_ckecksum > 0 and cif_hkl_ckecksum != self.cif.hkl_checksum_calcd:
-            show_checksum_warning(res=False)
-
     def check_Z(self) -> None:
         """
         Crude check if Z is much too high e.h. a SEHLXT solution with "C H N O" sum formula.
@@ -1746,6 +1725,7 @@ class AppWindow(QMainWindow):
             if src in vheadlist:
                 continue
             if src and src not in self.missing_data:
+                # also appends to self.missing_data
                 self.set_table_pair(src, '?')
         # Build a dictionary of cif keys and row number values in order to fill the first column
         # of cif_main_table with cif values:
@@ -1762,31 +1742,30 @@ class AppWindow(QMainWindow):
                 self.add_property_combobox(combobox_fields[vhead], num)
         # get missing items from sources and put them into the corresponding rows:
         # missing items will even be used if under the blue separation line:
-        self.missing_data.append('_publ_section_references')
         for miss_data in self.missing_data:
             # add missing item to data sources column:
             try:
                 row_num = self.ui.cif_main_table.vheaderitems.index(miss_data)
             except ValueError:
                 continue
-            tab_item = MyTableWidgetItem()
             try:
                 # sources are lower case!
                 txt = str(self.sources[miss_data][0])
                 if (miss_data in text_field_keys) or (len(txt) > 60):
                     # only text fields:
-                    tab_item = MyQPlainTextEdit(self.ui.cif_main_table)
-                    tab_item.setReadOnly(True)
-                    self.ui.cif_main_table.setCellWidget(row_num, COL_DATA, tab_item)
-                    tab_item.setPlainText(txt)
-                    # first_col = self.ui.cif_main_table.text(row_num, COL_CIF)
+                    tab_edt = MyQPlainTextEdit(self.ui.cif_main_table)
+                    tab_edt.setReadOnly(True)
+                    self.ui.cif_main_table.setCellWidget(row_num, COL_DATA, tab_edt)
+                    tab_edt.setText(txt)
                     if row_num < self.complete_data_row:
-                        if txt and txt != '?':  # or txt == first_col:
-                            tab_item.setBackground(light_green)
+                        if txt and txt != '?':
+                            tab_edt.setBackground(light_green)
                         else:
-                            tab_item.setBackground(yellow)
-                    tab_item.setToolTip(str(self.sources[miss_data][1]))
+                            tab_edt.setBackground(yellow)
+                    tab_edt.setToolTip(str(self.sources[miss_data][1]))
+                    self.ui.cif_main_table.setRowHeight(row_num, 95)
                 else:
+                    tab_item = MyTableWidgetItem()
                     # regular linedit fields:
                     self.ui.cif_main_table.setItem(row_num, COL_DATA, tab_item)
                     tab_item.setText(txt)  # has to be string
@@ -1795,14 +1774,13 @@ class AppWindow(QMainWindow):
                             tab_item.setBackground(light_green)
                         else:
                             tab_item.setBackground(yellow)
-                tab_item.setToolTip(str(self.sources[miss_data][1]))
+                    tab_item.setToolTip(str(self.sources[miss_data][1]))
+                    # items from data sources should not be editable
+                    tab_item.setUneditable()
             except (KeyError, TypeError) as e:
                 # TypeError my originate from incomplete self.missing_data list!
                 # print(e, '##', miss_data)
                 pass
-            # items from data sources should not be editable
-            if not miss_data in text_field_keys:
-                tab_item.setUneditable()
 
     def add_property_combobox(self, data: str, row_num: int) -> None:
         """
@@ -1832,7 +1810,7 @@ class AppWindow(QMainWindow):
                 value = '?'
             self.add_row(key, value)
             # print(key, value)
-        self.test_checksums()
+        self.cif.test_checksums()
         self.get_data_sources()
         self.erase_disabled_items()
         # self.ui.cif_main_table.resizeRowsToContents()

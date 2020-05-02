@@ -22,7 +22,7 @@ class BrukerFrameHeader():
         frames = sorted(frames, key=os.path.getmtime, reverse=True)
         self._fileobj = None
         if not frames:
-            frames = p.glob('*.sfrm')
+            frames = Path(os.curdir).absolute().glob('*.sfrm')
         for fr in frames:
             if fr:
                 self._fileobj = Path(fr)

@@ -302,7 +302,7 @@ text_field_keys = ['_refine_special_details',
                    '_diffrn_oxdiff_ac3_digest_frames',
                    '_diffrn_oxdiff_ac3_digest_hkl',
                    '_oxdiff_exptl_absorpt_empirical_details',
-                   '_oxdiff_exptl_absorpt_empirical_details',
+                   '',
                    '',
                    '',
                    ]

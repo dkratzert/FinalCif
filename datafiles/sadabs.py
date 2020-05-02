@@ -10,7 +10,6 @@
 # 
 
 #  Copyright (c)  2019 by Daniel Kratzert
-import os
 import re
 from pathlib import Path
 
@@ -29,7 +28,7 @@ class Dataset():
         self.domain = 1
         self.numerical = False
         # TODO: implement this:
-        self.raw_filetype = 'raw' # or mul
+        self.raw_filetype = 'raw'  # or mul
 
     def __repr__(self):
         out = ''
@@ -158,7 +157,7 @@ class Sadabs():
                 self.dataset(n).numerical = self.faces
                 n += 1
             # do not:
-            #if line.startswith(' Unique HKLF'):
+            # if line.startswith(' Unique HKLF'):
             #    n += 1
 
     def __iter__(self):
@@ -191,4 +190,3 @@ if __name__ == '__main__':
     print(s)
     for dat in s:
         print(dat)
-
