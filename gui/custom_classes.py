@@ -163,7 +163,7 @@ class MyCifTable(QTableWidget, ItemTextMixin):
             pass
         return QObject.eventFilter(self, widget, event)
 
-    def setText(self, key: str, column: int, txt: str, row: int = None):
+    def setText(self, key: str, column: int, txt: str, row: int = None, color=None):
         """
         Set text in current table cell regardless of the containing item.
         """
@@ -172,13 +172,13 @@ class MyCifTable(QTableWidget, ItemTextMixin):
             row = self.vheaderitems.index(key)
         self.setCurrentCell(row, column)
         item = self.currentItem()
-        if item:
+        if item and not ((key in text_field_keys) or (len(txt) > 60)):
             item.setText(txt)
         else:
             if (key in text_field_keys) or (len(txt) > 60):
                 textedit = MyQPlainTextEdit(self)
                 self.setCellWidget(row, column, textedit)
-                textedit.setText(txt)
+                textedit.setText(txt, color=color)
                 if (column == COL_CIF) or (column == COL_DATA):
                     textedit.setUneditable()
                 #self.setRowHeight(row, 95)
@@ -219,6 +219,8 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         item = self.currentItem()
         if item:
             item.setBackground(color)
+            if column == COL_DATA:
+                item.setUneditable()
         else:
             widget = self.cellWidget(row, column)
             if widget:
@@ -306,10 +308,12 @@ class MyQPlainTextEdit(QPlainTextEdit):
     def setUneditable(self):
         self.setReadOnly(True)
 
-    def setText(self, text: str):
+    def setText(self, text: str, color=None):
         """
         Set text of a Plaintextfield with lines wrapped at newline characters.
         """
+        if color:
+            self.setBackground(color)
         txtlst = text.split(r'\n')
         # special treatment for text fields in order to get line breaks:
         for txt in txtlst:
