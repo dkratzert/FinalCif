@@ -54,7 +54,7 @@ from report.archive_report import ArchiveReport
 from report.tables import make_report_from
 from tools.checkcif import AlertHelp, MakeCheckCif, MyHTMLParser
 from tools.misc import combobox_fields, excluded_imports, predef_equipment_templ, predef_prop_templ, \
-    strip_finalcif_of_name, text_field_keys, to_float, next_path, celltxt
+    strip_finalcif_of_name, to_float, next_path, celltxt
 from tools.settings import FinalCifSettings
 from tools.version import VERSION
 
@@ -67,9 +67,7 @@ from PyQt5.QtWidgets import QApplication, QFileDialog, QHeaderView, QListWidget,
 TODO:
 - Extract more data from .xml file
 - Extract "_diffrn_measurement_details from .xml file
-- make "delete row" for multi-line keywords work
 - maybe add refinement model description via ShelXFile parser 
-- Refreactor all the data handling for the main table!
 - add loops to templates
 for i in block:
 ...     if i.loop:
@@ -94,8 +92,8 @@ as dict:
 # They must be here in order to have directly updated ui files from the ui compiler:
 from gui.finalcif_gui import Ui_FinalCifWindow
 from gui.responseformseditor import Ui_ResponseFormsEditor
-from gui.custom_classes import MyComboBox, MyEQTableWidget, MyQPlainTextEdit, \
-    MyTableWidgetItem, blue, light_green, yellow, COL_CIF, COL_DATA, COL_EDIT
+from gui.custom_classes import MyComboBox, MyEQTableWidget, MyTableWidgetItem, blue, light_green, yellow, COL_CIF, \
+    COL_DATA, COL_EDIT
 
 
 class AppWindow(QMainWindow):
@@ -909,9 +907,10 @@ class AppWindow(QMainWindow):
                 if key not in self.ui.cif_main_table.vheaderitems:
                     self.add_new_table_key(key, equipment[key])
                 # add missing item to data sources column:
-                self.ui.cif_main_table.setText(key, COL_DATA, equipment[key])
+                self.ui.cif_main_table.setText(key, COL_CIF, txt='?')
+                self.ui.cif_main_table.setText(key, COL_DATA, txt=equipment[key])
                 self.ui.cif_main_table.setBackground(key, COL_DATA, light_green)
-                self.ui.cif_main_table.setText(key, COL_EDIT, equipment[key])
+                self.ui.cif_main_table.setText(key, COL_EDIT, txt=equipment[key])
         else:
             print('Empty main table!')
 
@@ -1445,7 +1444,7 @@ class AppWindow(QMainWindow):
         try:
             e = None
             self.cif = CifContainer(filepath)
-        except Exception as e:
+        except RuntimeError as e:
             print('Unable to open cif file...')
             if DEBUG:
                 raise
@@ -1680,20 +1679,17 @@ class AppWindow(QMainWindow):
 
     def set_table_pair(self, key: str, value: str) -> None:
         """
-        Start a new cif key/data pair and add it to the main table.
+        Add a new cif key/data pair at the start of the main table.
         """
         self.missing_data.append(key)
         self.cif.block.set_pair(key, value)
         self.ui.cif_main_table.insertRow(0)
-        tab_cif = MyTableWidgetItem('?')
-        tab_cif.setUneditable()
-        tab_data = MyTableWidgetItem(value)
-        tab_data.setUneditable()
         self.ui.cif_main_table.vheaderitems.insert(0, key)
         head_item_key = MyTableWidgetItem(key)
-        self.ui.cif_main_table.setItem(0, COL_DATA, tab_data)
-        self.ui.cif_main_table.setItem(0, COL_CIF, tab_cif)
         self.ui.cif_main_table.setVerticalHeaderItem(0, head_item_key)
+        self.ui.cif_main_table.setText(key=key, column=COL_DATA, txt=value)
+        self.ui.cif_main_table.setText(key=key, column=COL_CIF, txt='?')
+        self.ui.cif_main_table.setText(key=key, column=COL_EDIT, txt='')
         self.ui.cif_main_table.setBackground(key, COL_DATA, light_green)
 
     def get_data_sources(self) -> None:
@@ -1723,6 +1719,7 @@ class AppWindow(QMainWindow):
             if not self.sources[src]:
                 continue
             if src in vheadlist:
+                # do not add keys twice
                 continue
             if src and src not in self.missing_data:
                 # also appends to self.missing_data
@@ -1742,44 +1739,22 @@ class AppWindow(QMainWindow):
                 self.add_property_combobox(combobox_fields[vhead], num)
         # get missing items from sources and put them into the corresponding rows:
         # missing items will even be used if under the blue separation line:
-        for miss_data in self.missing_data:
+        for miss_key in self.missing_data:
             # add missing item to data sources column:
             try:
-                row_num = self.ui.cif_main_table.vheaderitems.index(miss_data)
+                row_num = self.ui.cif_main_table.vheaderitems.index(miss_key)
             except ValueError:
                 continue
             try:
-                # sources are lower case!
-                txt = str(self.sources[miss_data][0])
-                if (miss_data in text_field_keys) or (len(txt) > 60):
-                    # only text fields:
-                    tab_edt = MyQPlainTextEdit(self.ui.cif_main_table)
-                    tab_edt.setReadOnly(True)
-                    self.ui.cif_main_table.setCellWidget(row_num, COL_DATA, tab_edt)
-                    tab_edt.setText(txt)
-                    if row_num < self.complete_data_row:
-                        if txt and txt != '?':
-                            tab_edt.setBackground(light_green)
-                        else:
-                            tab_edt.setBackground(yellow)
-                    tab_edt.setToolTip(str(self.sources[miss_data][1]))
-                    self.ui.cif_main_table.setRowHeight(row_num, 95)
+                txt = str(self.sources[miss_key][0])
+                self.ui.cif_main_table.setText(key=miss_key, column=COL_DATA, txt=txt)
+                if txt and txt != '?':
+                    self.ui.cif_main_table.setBackground(key=miss_key, column=COL_DATA, color=light_green)
                 else:
-                    tab_item = MyTableWidgetItem()
-                    # regular linedit fields:
-                    self.ui.cif_main_table.setItem(row_num, COL_DATA, tab_item)
-                    tab_item.setText(txt)  # has to be string
-                    if row_num < self.complete_data_row:
-                        if txt and txt != '?':
-                            tab_item.setBackground(light_green)
-                        else:
-                            tab_item.setBackground(yellow)
-                    tab_item.setToolTip(str(self.sources[miss_data][1]))
-                    # items from data sources should not be editable
-                    tab_item.setUneditable()
+                    self.ui.cif_main_table.setBackground(key=miss_key, column=COL_DATA, color=yellow)
             except (KeyError, TypeError) as e:
                 # TypeError my originate from incomplete self.missing_data list!
-                # print(e, '##', miss_data)
+                # print(e, '##', miss_key)
                 pass
 
     def add_property_combobox(self, data: str, row_num: int) -> None:
@@ -1813,6 +1788,7 @@ class AppWindow(QMainWindow):
         self.cif.test_checksums()
         self.get_data_sources()
         self.erase_disabled_items()
+        self.ui.cif_main_table.setCurrentItem(None)
         # self.ui.cif_main_table.resizeRowsToContents()
 
     def add_row(self, key: str, value: str, at_start=False) -> None:
@@ -1825,46 +1801,29 @@ class AppWindow(QMainWindow):
         else:
             row_num = self.ui.cif_main_table.rowCount()
         self.ui.cif_main_table.insertRow(row_num)
-        # Add cif key and value to the row:
-        head_item_key = MyTableWidgetItem(key)
         if value is None:
             strval = '?'
         else:
             strval = str(value).strip(" ").strip("'").strip(';\n').strip('\r\n')  # or '?')
         if not key:
             strval = ''
-        if (len(strval) > 60) or (key in text_field_keys):
-            # All textedit fields
-            # print(key, strval)
-            tab_cif = MyQPlainTextEdit(self.ui.cif_main_table)
-            tab_cif.setPlainText(retranslate_delimiter(strval))
-            tab_data = MyQPlainTextEdit(self.ui.cif_main_table)
-            tab_edit = MyQPlainTextEdit(self.ui.cif_main_table)
-            self.ui.cif_main_table.setCellWidget(row_num, COL_CIF, tab_cif)
-            self.ui.cif_main_table.setCellWidget(row_num, COL_DATA, tab_data)
-            self.ui.cif_main_table.setCellWidget(row_num, COL_EDIT, tab_edit)
-            tab_cif.setReadOnly(True)
-            tab_data.setReadOnly(True)
-            # Make QPlainTextEdit fields a bit higher than the rest
-            self.ui.cif_main_table.setRowHeight(row_num, 95)
+        # All regular linedit fields:
+        if key == "These below are already in:":
+            self.add_separation_line(row_num)
+            self.complete_data_row = row_num
         else:
-            # All regular linedit fields:
-            tab_cif = MyTableWidgetItem(retranslate_delimiter(strval))
-            if key == "These below are already in:":
-                self.add_separation_line(row_num)
-                self.complete_data_row = row_num
-            else:
-                tab_data = MyTableWidgetItem()
-                self.ui.cif_main_table.setItem(row_num, COL_CIF, tab_cif)
-                self.ui.cif_main_table.setItem(row_num, COL_DATA, tab_data)
-                if key == '_audit_creation_method':
-                    tab_data.setText(
-                        'FinalCif V{} by Daniel Kratzert, Freiburg 2019, '
-                        'https://github.com/dkratzert/FinalCif'.format(VERSION))
-                tab_cif.setUneditable()
-                tab_data.setUneditable()
-                self.ui.cif_main_table.resizeRowToContents(row_num)
-        self.ui.cif_main_table.setVerticalHeaderItem(row_num, head_item_key)
+            if key == '_audit_creation_method':
+                txt = 'FinalCif V{} by Daniel Kratzert, Freiburg 2019, '
+                'https://github.com/dkratzert/FinalCif'
+                strval = txt.format(VERSION)
+            # Cif text is set here:
+            self.ui.cif_main_table.setText(row=row_num, key=key, column=COL_CIF, txt=retranslate_delimiter(strval))
+            # This is to have COL_DATA at a defined state:
+            self.ui.cif_main_table.setText(row=row_num, key=key, column=COL_DATA, txt='')
+            self.ui.cif_main_table.resizeRowToContents(row_num)
+        head_item_key = MyTableWidgetItem(key)
+        if not key == "These below are already in:":
+            self.ui.cif_main_table.setVerticalHeaderItem(row_num, head_item_key)
         if not key in self.ui.cif_main_table.vheaderitems:
             self.ui.cif_main_table.vheaderitems.append(key)
 
@@ -1873,17 +1832,20 @@ class AppWindow(QMainWindow):
         Adds a blue separation line between cif content and empty cif keywords.
         """
         # The blue line in the table:
+        item_vhead = MyTableWidgetItem('These below are already in:')
         item1 = MyTableWidgetItem('')
         item2 = MyTableWidgetItem('')
         item3 = MyTableWidgetItem('')
         diag = QBrush(blue)
         diag.setStyle(Qt.DiagCrossPattern)
+        item_vhead.setBackground(diag)
         item1.setBackground(diag)
         item1.setUneditable()
         item2.setBackground(diag)
         item2.setUneditable()
         item3.setBackground(diag)
         item3.setUneditable()
+        self.ui.cif_main_table.setVerticalHeaderItem(row_num, item_vhead)
         self.ui.cif_main_table.setItem(row_num, COL_CIF, item1)
         self.ui.cif_main_table.setItem(row_num, COL_DATA, item2)
         self.ui.cif_main_table.setItem(row_num, COL_EDIT, item3)
@@ -1901,7 +1863,7 @@ if __name__ == '__main__':
         errortext += time.asctime(time.localtime(time.time())) + '\n'
         errortext += "Finalcif crashed during the following operation:" + '\n'
         errortext += '-' * 80 + '\n'
-        errortext += ''.join(traceback.format_tb(error_traceback)) + '\n'
+        errortext += ''.join(traceback.extract_tb(error_traceback)) + '\n'
         errortext += str(exctype.__name__) + ': '
         errortext += str(value) + '\n'
         errortext += '-' * 80 + '\n'
