@@ -575,6 +575,7 @@ class AppWindow(QMainWindow):
         self.ckf = MakeCheckCif(cif=self.cif, outfile=self.htmlfile, hkl=(not self.ui.structfactCheckBox.isChecked()),
                                 pdf=False)
         self.ckf.failed.connect(self._checkcif_failed)
+        # noinspection PyUnresolvedReferences
         self.ckf.finished.connect(self._checkcif_finished)
         self.ckf.progress.connect(self._ckf_progress)
         self.ui.CheckcifHTMLOnlineButton.setDisabled(True)
@@ -638,6 +639,7 @@ class AppWindow(QMainWindow):
         self.ckf = MakeCheckCif(cif=self.cif, outfile=htmlfile, hkl=(not self.ui.structfactCheckBox.isChecked()),
                                 pdf=True)
         self.ckf.failed.connect(self._checkcif_failed)
+        # noinspection PyUnresolvedReferences
         self.ckf.finished.connect(self._pdf_checkcif_finished)
         self.ckf.progress.connect(self._ckf_progress)
         self.ui.CheckcifPDFOnlineButton.setDisabled(True)
@@ -1495,9 +1497,9 @@ class AppWindow(QMainWindow):
             self.fill_cif_table()
         except Exception as e:
             not_ok = e
-            if DEBUG:
-                raise
-            unable_to_open_message(filepath, not_ok)
+            raise
+            # This is not good:
+            #unable_to_open_message(filepath, not_ok)
         # Do this only when sure we can load the file:
         self.save_current_recent_files_list(filepath)
         self.load_recent_cifs_list()
@@ -1742,10 +1744,6 @@ class AppWindow(QMainWindow):
         for miss_key in self.missing_data:
             # add missing item to data sources column:
             try:
-                row_num = self.ui.cif_main_table.vheaderitems.index(miss_key)
-            except ValueError:
-                continue
-            try:
                 txt = str(self.sources[miss_key][0])
                 self.ui.cif_main_table.setText(key=miss_key, column=COL_DATA, txt=txt)
                 if txt and txt != '?':
@@ -1863,7 +1861,7 @@ if __name__ == '__main__':
         errortext += time.asctime(time.localtime(time.time())) + '\n'
         errortext += "Finalcif crashed during the following operation:" + '\n'
         errortext += '-' * 80 + '\n'
-        errortext += ''.join(traceback.extract_tb(error_traceback)) + '\n'
+        errortext += ''.join(traceback.format_tb(error_traceback)) + '\n'
         errortext += str(exctype.__name__) + ': '
         errortext += str(value) + '\n'
         errortext += '-' * 80 + '\n'
