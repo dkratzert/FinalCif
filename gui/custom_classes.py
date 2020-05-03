@@ -2,7 +2,7 @@ from contextlib import suppress
 from textwrap import wrap
 
 from PyQt5 import QtCore
-from PyQt5.QtCore import QEvent, QObject, Qt
+from PyQt5.QtCore import QEvent, QObject, Qt, QSize
 from PyQt5.QtGui import QColor, QTextOption, QKeySequence, QContextMenuEvent
 from PyQt5.QtWidgets import QAbstractScrollArea, QAction, QComboBox, QFrame, QPlainTextEdit, QSizePolicy, QTableWidget, \
     QTableWidgetItem, QWidget, QApplication, QShortcut
@@ -181,6 +181,8 @@ class MyCifTable(QTableWidget, ItemTextMixin):
                 textedit.setText(txt)
                 if (column == COL_CIF) or (column == COL_DATA):
                     textedit.setUneditable()
+                #self.setRowHeight(row, 95)
+                self.resizeRowToContents(row)
                 return
             # in this case, we have a combobox
             if isinstance(self.cellWidget(row, column), MyComboBox):
@@ -267,7 +269,7 @@ class MyQPlainTextEdit(QPlainTextEdit):
         self.setFocusPolicy(Qt.StrongFocus)
         self.setFrameShape(QFrame.NoFrame)
         self.setTabChangesFocus(True)
-        self.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
+        #self.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setWordWrapMode(QTextOption.WrapAtWordBoundaryOrAnywhere)
@@ -323,6 +325,17 @@ class MyQPlainTextEdit(QPlainTextEdit):
         # if event.type() == QEvent.MouseButtonPress:
         #    self.cell_clicked.emit(event.)
         return QObject.eventFilter(self, widget, event)
+
+    def getText(self):
+        return self.toPlainText()
+
+    def sizeHint(self) -> QSize:
+        if len(self.getText()) > 100:
+            return QSize(100, 95)
+        elif len(self.getText()) > 200:
+            return QSize(100, 120)
+        else:
+            return QSize(100, 60)
 
 
 class MyComboBox(QComboBox):
