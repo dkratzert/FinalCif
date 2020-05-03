@@ -910,7 +910,7 @@ class AppWindow(QMainWindow):
                     self.add_new_table_key(key, equipment[key])
                 # add missing item to data sources column:
                 self.ui.cif_main_table.setText(key, COL_CIF, txt='?')
-                self.ui.cif_main_table.setText(key, COL_DATA, txt=equipment[key])
+                self.ui.cif_main_table.setText(key, COL_DATA, txt=equipment[key], color=light_green)
                 self.ui.cif_main_table.setBackground(key, COL_DATA, light_green)
                 self.ui.cif_main_table.setText(key, COL_EDIT, txt=equipment[key])
         else:
