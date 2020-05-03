@@ -1743,13 +1743,15 @@ class AppWindow(QMainWindow):
         # missing items will even be used if under the blue separation line:
         for miss_key in self.missing_data:
             # add missing item to data sources column:
+            row_num = self.ui.cif_main_table.vheaderitems.index(miss_key)
             try:
                 txt = str(self.sources[miss_key][0])
                 self.ui.cif_main_table.setText(key=miss_key, column=COL_DATA, txt=txt)
-                if txt and txt != '?':
-                    self.ui.cif_main_table.setBackground(key=miss_key, column=COL_DATA, color=light_green)
-                else:
-                    self.ui.cif_main_table.setBackground(key=miss_key, column=COL_DATA, color=yellow)
+                if (row_num < self.complete_data_row):
+                    if txt and txt != '?':
+                        self.ui.cif_main_table.setBackground(key=miss_key, column=COL_DATA, color=light_green)
+                    else:
+                        self.ui.cif_main_table.setBackground(key=miss_key, column=COL_DATA, color=yellow)
             except (KeyError, TypeError) as e:
                 # TypeError my originate from incomplete self.missing_data list!
                 # print(e, '##', miss_key)
