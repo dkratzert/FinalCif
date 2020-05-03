@@ -71,8 +71,8 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         self.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        item = MyTableWidgetItem()
-        self.setItemPrototype(item)
+        #item = MyTableWidgetItem()
+        self.setItemPrototype(MyTableWidgetItem())
         self.actionDeletePair = QAction("Delete Row", self)
         self.actionCopy = QAction("Copy", self)
         self.actionCopyVhead = QAction("Copy CIF Keyword", self)
@@ -94,8 +94,10 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         # noinspection PyUnresolvedReferences
         vheader.sectionClicked.connect(self.vheader_section_click)
 
-    def setCellWidget(self, row: int, column: int, widget: QWidget) -> None:
+    def setCellWidget(self, row: int, column: int, widget) -> None:
         widget.row = row
+        if (column == COL_CIF) or (column == COL_DATA):
+            widget.setUneditable()
         super(MyCifTable, self).setCellWidget(row, column, widget)
 
     @property
@@ -161,23 +163,24 @@ class MyCifTable(QTableWidget, ItemTextMixin):
             pass
         return QObject.eventFilter(self, widget, event)
 
-    def setText(self, key: str, column: int, txt: str, row: int = None, editable=True):
+    def setText(self, key: str, column: int, txt: str, row: int = None):
         """
         Set text in current table cell regardless of the containing item.
         """
+        txt = retranslate_delimiter(txt)
         if row is None:
             row = self.vheaderitems.index(key)
         self.setCurrentCell(row, column)
         item = self.currentItem()
         if item:
-            item.setText(retranslate_delimiter(txt))
+            item.setText(txt)
         else:
             if (key in text_field_keys) or (len(txt) > 60):
-                tab_data = MyQPlainTextEdit(self)
-                self.setCellWidget(row, column, tab_data)
-                tab_data.setText(txt)
+                textedit = MyQPlainTextEdit(self)
+                self.setCellWidget(row, column, textedit)
+                textedit.setText(txt)
                 if (column == COL_CIF) or (column == COL_DATA):
-                    tab_data.setUneditable()
+                    textedit.setUneditable()
                 return
             # in this case, we have a combobox
             if isinstance(self.cellWidget(row, column), MyComboBox):
