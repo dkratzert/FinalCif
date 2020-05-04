@@ -435,22 +435,18 @@ def add_coords_table(document: Document, cif: CifContainer, table_num: int):
     ar = head_row.cells[0].paragraphs[0].add_run('Atom')
     ar.bold = True
     px = head_row.cells[1].paragraphs[0]
-    # px.paragraph_format.tab_stops.add_tab_stop(Cm(0.5), WD_TAB_ALIGNMENT.DECIMAL, WD_TAB_LEADER.SPACES)
     ar = px.add_run('x')
     ar.bold = True
     ar.italic = True
     py = head_row.cells[2].paragraphs[0]
-    # py.paragraph_format.tab_stops.add_tab_stop(Cm(0.5), WD_TAB_ALIGNMENT.DECIMAL, WD_TAB_LEADER.SPACES)
     ar = py.add_run('y')
     ar.bold = True
     ar.italic = True
     pz = head_row.cells[3].paragraphs[0]
-    # pz.paragraph_format.tab_stops.add_tab_stop(Cm(0.5), WD_TAB_ALIGNMENT.DECIMAL, WD_TAB_LEADER.SPACES)
     ar = pz.add_run('z')
     ar.bold = True
     ar.italic = True
     pu = head_row.cells[4].paragraphs[0]
-    # pu.paragraph_format.tab_stops.add_tab_stop(Cm(0.8), WD_TAB_ALIGNMENT.DECIMAL, WD_TAB_LEADER.SPACES)
     ar = pu.add_run('U')
     ar.bold = True
     ar.italic = True
@@ -472,16 +468,12 @@ def add_coords_table(document: Document, cif: CifContainer, table_num: int):
         c0.text = at[0]  # label
         c1.text = (str(at[2]))  # x
         para_x = c1.paragraphs[0]
-        # para_x.paragraph_format.tab_stops.add_tab_stop(Cm(0.4), WD_TAB_ALIGNMENT.DECIMAL, WD_TAB_LEADER.SPACES)
         c2.text = (str(at[3]))  # y
         para_y = c2.paragraphs[0]
-        # para_y.paragraph_format.tab_stops.add_tab_stop(Cm(0.4), WD_TAB_ALIGNMENT.DECIMAL, WD_TAB_LEADER.SPACES)
         c3.text = (str(at[4]))  # z
         para_z = c3.paragraphs[0]
-        # para_z.paragraph_format.tab_stops.add_tab_stop(Cm(0.4), WD_TAB_ALIGNMENT.DECIMAL, WD_TAB_LEADER.SPACES)
         c4.text = (str(at[7]))  # ueq
         para_u = c4.paragraphs[0]
-        # para_u.paragraph_format.tab_stops.add_tab_stop(Cm(0.4), WD_TAB_ALIGNMENT.DECIMAL, WD_TAB_LEADER.SPACES)
     p = document.add_paragraph()
     p.style = document.styles['tabunterschr']
     p.add_run('U').font.italic = True
