@@ -170,9 +170,13 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         txt = retranslate_delimiter(txt)
         if row is None:
             row = self.vheaderitems.index(key)
+        if isinstance(self.cellWidget(row, column), MyComboBox):
+            # noinspection PyUnresolvedReferences
+            self.cellWidget(row, column).setText(txt)
+            return 
         item = MyTableWidgetItem(txt)
         self.setItem(row, column, item)
-        if (key in text_field_keys) or (len(txt) > 60):
+        if not (key in text_field_keys) and (len(txt) < 60):
             item.setText(txt)
             if (column == COL_CIF) or (column == COL_DATA):
                 # noinspection PyUnresolvedReferences
@@ -182,29 +186,17 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         else:
             # Use the maximum text lenth in this row to decide if we want to have a text field:
             lentext = max([len(txt), len(self.getText(0, row)), len(self.getText(1, row))])
-            if (key in text_field_keys) or (lentext > 60):
-                textedit = MyQPlainTextEdit(self)
-                self.setCellWidget(row, column, textedit)
-                textedit.setText(txt, color=color)
-                if (column == COL_CIF) or (column == COL_DATA):
-                    textedit.setUneditable()
-                #self.setRowHeight(row, 95)
-                self.resizeRowToContents(row)
-                if color:
-                    textedit.setBackground(color)
-                return
+            #if (key in text_field_keys) or (lentext > 60):
+            textedit = MyQPlainTextEdit(self)
+            self.setCellWidget(row, column, textedit)
+            textedit.setText(txt, color=color)
+            if (column == COL_CIF) or (column == COL_DATA):
+                textedit.setUneditable()
+            #self.setRowHeight(row, 95)
+            self.resizeRowToContents(row)
+            if color:
+                textedit.setBackground(color)
             # in this case, we have a combobox
-            if isinstance(self.cellWidget(row, column), MyComboBox):
-                # noinspection PyUnresolvedReferences
-                self.cellWidget(row, column).setText(txt)
-            else:
-                # No item in table cell:
-                item = MyTableWidgetItem(txt)
-                self.setItem(row, column, item)
-                if (column == COL_CIF) or (column == COL_DATA):
-                    item.setUneditable()
-                if color:
-                    item.setBackground(color)
 
 
     def getText(self, col: int, row: int):

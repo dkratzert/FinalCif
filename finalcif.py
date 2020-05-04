@@ -912,7 +912,6 @@ class AppWindow(QMainWindow):
                 # add missing item to data sources column:
                 # self.ui.cif_main_table.setText(key, COL_CIF, txt='?')
                 self.ui.cif_main_table.setText(key, COL_DATA, txt=equipment[key], color=light_green)
-                # self.ui.cif_main_table.setBackground(key, COL_DATA, light_green)
                 self.ui.cif_main_table.setText(key, COL_EDIT, txt=equipment[key])
         else:
             print('Empty main table!')
@@ -1747,7 +1746,7 @@ class AppWindow(QMainWindow):
             row_num = self.ui.cif_main_table.vheaderitems.index(miss_key)
             try:
                 txt = str(self.sources[miss_key][0])
-                if (row_num > self.complete_data_row):
+                if row_num > self.complete_data_row:
                     self.ui.cif_main_table.setText(key=miss_key, column=COL_DATA, txt=txt)
                 else:
                     if txt and txt != '?':
@@ -1786,6 +1785,10 @@ class AppWindow(QMainWindow):
                 self.missing_data.append(key)
                 value = '?'
             self.add_row(key, value)
+            if key == '_audit_creation_method':
+                txt = 'FinalCif V{} by Daniel Kratzert, Freiburg 2019, https://github.com/dkratzert/FinalCif'
+                strval = txt.format(VERSION)
+                self.ui.cif_main_table.setText(key=key, column=COL_DATA, txt=strval)
             # print(key, value)
         self.cif.test_checksums()
         self.get_data_sources()
@@ -1816,13 +1819,8 @@ class AppWindow(QMainWindow):
         else:
             # Cif text is set here:
             self.ui.cif_main_table.setText(row=row_num, key=key, column=COL_CIF, txt=retranslate_delimiter(strval))
-            if key == '_audit_creation_method':
-                txt = 'FinalCif V{} by Daniel Kratzert, Freiburg 2019, https://github.com/dkratzert/FinalCif'
-                strval = txt.format(VERSION)
-                self.ui.cif_main_table.setText(row=row_num, key=key, column=COL_DATA, txt=retranslate_delimiter(strval))
-            else:
-                # This is to have COL_DATA at a defined state:
-                self.ui.cif_main_table.setText(row=row_num, key=key, column=COL_DATA, txt='')
+            # This is to have COL_DATA at a defined state:
+            self.ui.cif_main_table.setText(row=row_num, key=key, column=COL_DATA, txt='')
             self.ui.cif_main_table.setText(row=row_num, key=key, column=COL_EDIT, txt='')
         head_item_key = MyTableWidgetItem(key)
         if not key == "These below are already in:":
