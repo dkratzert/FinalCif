@@ -75,14 +75,13 @@ class TestApplication(unittest.TestCase):
         self.myapp.ui.EquipmentTemplatesListWidget.item(2).setSelected(True)
         # make sure contact author is selected
         self.assertEqual('CCDC number', self.myapp.ui.EquipmentTemplatesListWidget.item(1).text())
-        # have to find a better way to select the author row:
-        item = self.myapp.ui.EquipmentTemplatesListWidget.findItems('Contact author name and address',
-                                                                    Qt.MatchExactly)[0]
+        item = self.myapp.ui.EquipmentTemplatesListWidget.findItems('Contact author name and', Qt.MatchStartsWith)[0]
         self.myapp.ui.EquipmentTemplatesListWidget.setCurrentItem(item)
+        self.myapp.load_selected_equipment()
         # A random empty item in the main table:
-        self.assertEqual('?', self.myapp.ui.cif_main_table.item(3, 0).text())
+        #self.assertEqual('?', self.myapp.ui.cif_main_table.item(3, 0).text())
         # I have to click on it with QtClick
-        QTest.mouseClick(self.myapp.ui.EquipmentTemplatesListWidget, Qt.LeftButton, Qt.NoModifier)
+        #QTest.mouseClick(self.myapp.ui.EquipmentTemplatesListWidget, Qt.LeftButton, Qt.NoModifier)
         self.assertEqual('daniel.kratzert@ac.uni-freiburg.de', self.myapp.ui.cif_main_table.item(19, 0).text())
         self.assertEqual('daniel.kratzert@ac.uni-freiburg.de', self.myapp.ui.cif_main_table.item(19, 1).text())
         self.assertEqual('daniel.kratzert@ac.uni-freiburg.de', self.myapp.ui.cif_main_table.item(19, 2).text())
