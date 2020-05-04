@@ -153,20 +153,39 @@ class TestApplication(unittest.TestCase):
         """
         Testing if comboboxes are there and fields have the correct type
         """
-        self.assertEqual('direct', self.myapp.ui.cif_main_table.item(17, 0).text())
-        self.assertEqual('', self.myapp.ui.cif_main_table.item(17, 1).text())
+        self.assertEqual('direct', self.myapp.ui.cif_main_table.getTextFromKey('_atom_sites_solution_primary', 0))
+        self.assertEqual('', self.myapp.ui.cif_main_table.getTextFromKey('_atom_sites_solution_primary', 1))
+
+        # The type of the _atom_sites_solution_primary combobox:
+        self.assertEqual("<class 'gui.custom_classes.MyTableWidgetItem'>",
+                         str(self.myapp.ui.cif_main_table.item(17, 0).__class__))
         self.assertEqual("<class 'gui.custom_classes.MyTableWidgetItem'>",
                          str(self.myapp.ui.cif_main_table.item(17, 1).__class__))
+        self.assertEqual("<class 'gui.custom_classes.MyTableWidgetItem'>",
+                         str(self.myapp.ui.cif_main_table.item(17, 2).__class__))
+
+        self.assertEqual("<class 'NoneType'>",
+                         str(self.myapp.ui.cif_main_table.cellWidget(17, 0).__class__))
         self.assertEqual("<class 'NoneType'>",
                          str(self.myapp.ui.cif_main_table.cellWidget(17, 1).__class__))
-        # The type of the _atom_sites_solution_primary combobox:
         self.assertEqual("<class 'gui.custom_classes.MyComboBox'>",
                          str(self.myapp.ui.cif_main_table.cellWidget(17, 2).__class__))
-        # The first item of the _atom_sites_solution_primary combobox:
+
+        # The first items of the _atom_sites_solution_primary combobox in the third column:
+        self.assertEqual('', self.myapp.ui.cif_main_table.cellWidget(17, 2).itemText(0))
         self.assertEqual('direct', self.myapp.ui.cif_main_table.cellWidget(17, 2).itemText(1))
+        self.assertEqual('vecmap', self.myapp.ui.cif_main_table.cellWidget(17, 2).itemText(2))
+        # _audit_contact_author_address
+        self.assertEqual(addr, self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_address', 0))
+        self.assertEqual('', self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_address', 1))
+        self.assertEqual('', self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_address', 2))
+        # _audit_contact_author_address celwidget classes:
         self.assertEqual("<class 'gui.custom_classes.MyQPlainTextEdit'>",
                          str(self.myapp.ui.cif_main_table.cellWidget(18, 0).__class__))
-        self.assertEqual(addr, self.myapp.ui.cif_main_table.cellWidget(18, 0).toPlainText())
+        self.assertEqual("<class 'gui.custom_classes.MyQPlainTextEdit'>",
+                         str(self.myapp.ui.cif_main_table.cellWidget(18, 1).__class__))
+        self.assertEqual("<class 'gui.custom_classes.MyQPlainTextEdit'>",
+                         str(self.myapp.ui.cif_main_table.cellWidget(18, 2).__class__))
         ###
         # Now the above with MyCifTable methods:
         self.assertEqual('direct', self.myapp.ui.cif_main_table.text(17, 0))
@@ -315,8 +334,8 @@ class TestWorkfolder(unittest.TestCase):
         # _exptl_crystal_recrystallization_method Yellow:
         self.assertEqual('',
                          self.myapp.ui.cif_main_table.getTextFromKey('_exptl_crystal_recrystallization_method', 1))
-        self.assertEqual('QPlainTextEdit {background-color: #faf796;}',
-                         self.myapp.ui.cif_main_table.cellWidget(41, 1).styleSheet())
+        #self.assertEqual('QPlainTextEdit {background-color: #faf796;}',
+        #                 self.myapp.ui.cif_main_table.cellWidget(41, 1).styleSheet())
         self.assertEqual('0.220',
                          self.myapp.ui.cif_main_table.getTextFromKey('_exptl_crystal_size_max', 1))
         self.assertEqual('0.100',
