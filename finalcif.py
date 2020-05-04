@@ -332,8 +332,9 @@ class AppWindow(QMainWindow):
         Deletes a row of the main table and reloads the cif file.
         """
         if self.cif.block.find_pair(key):
-            print('found')
             self.cif.block.find([key]).erase()
+            if key in self.missing_data:
+                del self.missing_data[self.missing_data.index(key)]
             self.save_current_cif_file()
             self.load_cif_file(self.final_cif_file_name)
 
