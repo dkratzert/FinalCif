@@ -81,8 +81,7 @@ class MakeCheckCif(QThread):
         try:
             r = requests.post(url, files={'file': f}, data=headers, timeout=400)
         except requests.exceptions.ReadTimeout:
-            message = r"Checkcif took too long. Try it at <a href='https://checkcif.iucr.org/'>" \
-                      r"https://checkcif.iucr.org/</a> directly."
+            message = r"Checkcif server took too long. Try it at 'https://checkcif.iucr.org' directly."
             self.failed.emit(message)
         if r:
             self.progress.emit('request finished')
