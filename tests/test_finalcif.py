@@ -1,3 +1,4 @@
+import re
 import sys
 import time
 import unittest
@@ -11,6 +12,11 @@ from qtpy.QtTest import QTest
 from finalcif import AppWindow
 from gui.custom_classes import yellow, light_green
 from tools.version import VERSION
+
+
+def replace_newlines(txt):
+    return re.sub(r'\r', '', txt)
+
 
 export_templ_data = ['data_D8__VENTURE',
                      "_diffrn_radiation_monochromator   'mirror optics'",
@@ -176,7 +182,8 @@ class TestApplication(unittest.TestCase):
         self.assertEqual('direct', self.myapp.ui.cif_main_table.cellWidget(17, 2).itemText(1))
         self.assertEqual('vecmap', self.myapp.ui.cif_main_table.cellWidget(17, 2).itemText(2))
         # _audit_contact_author_address
-        self.assertEqual(addr, self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_address', 0))
+        self.assertEqual(addr,
+                         replace_newlines(self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_address', 0)))
         self.assertEqual('', self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_address', 1))
         self.assertEqual('', self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_address', 2))
         # _audit_contact_author_address celwidget classes:
@@ -334,7 +341,7 @@ class TestWorkfolder(unittest.TestCase):
         # _exptl_crystal_recrystallization_method Yellow:
         self.assertEqual('',
                          self.myapp.ui.cif_main_table.getTextFromKey('_exptl_crystal_recrystallization_method', 1))
-        #self.assertEqual('QPlainTextEdit {background-color: #faf796;}',
+        # self.assertEqual('QPlainTextEdit {background-color: #faf796;}',
         #                 self.myapp.ui.cif_main_table.cellWidget(41, 1).styleSheet())
         self.assertEqual('0.220',
                          self.myapp.ui.cif_main_table.getTextFromKey('_exptl_crystal_size_max', 1))
