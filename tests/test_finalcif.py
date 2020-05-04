@@ -71,20 +71,22 @@ class TestApplication(unittest.TestCase):
         # The 17th row in the first column:
         self.assertEqual('geom', self.myapp.ui.cif_main_table.item(16, 0).text())
         self.myapp.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
-        # QTest.mouseClick(self.myapp.ui.EquipmentTemplatesListWidget.item(2), Qt.LeftButton, delay=-1)
-        self.myapp.ui.EquipmentTemplatesListWidget.item(2).setSelected(True)
         # make sure contact author is selected
         self.assertEqual('CCDC number', self.myapp.ui.EquipmentTemplatesListWidget.item(1).text())
         item = self.myapp.ui.EquipmentTemplatesListWidget.findItems('Contact author name and', Qt.MatchStartsWith)[0]
         self.myapp.ui.EquipmentTemplatesListWidget.setCurrentItem(item)
         self.myapp.load_selected_equipment()
         # A random empty item in the main table:
-        #self.assertEqual('?', self.myapp.ui.cif_main_table.item(3, 0).text())
+        self.assertEqual('?', self.myapp.ui.cif_main_table.item(3, 0).text())
         # I have to click on it with QtClick
-        #QTest.mouseClick(self.myapp.ui.EquipmentTemplatesListWidget, Qt.LeftButton, Qt.NoModifier)
-        self.assertEqual('daniel.kratzert@ac.uni-freiburg.de', self.myapp.ui.cif_main_table.item(19, 0).text())
-        self.assertEqual('daniel.kratzert@ac.uni-freiburg.de', self.myapp.ui.cif_main_table.item(19, 1).text())
-        self.assertEqual('daniel.kratzert@ac.uni-freiburg.de', self.myapp.ui.cif_main_table.item(19, 2).text())
+        QTest.mouseClick(self.myapp.ui.EquipmentTemplatesListWidget, Qt.LeftButton, Qt.NoModifier)
+        # It is important here, that the first column has 'daniel.kratzert@ac.uni-freiburg.de' in it:
+        self.assertEqual('daniel.kratzert@ac.uni-freiburg.de',
+                         self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_email', 0))
+        self.assertEqual('daniel.kratzert@ac.uni-freiburg.de',
+                         self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_email', 1))
+        self.assertEqual('daniel.kratzert@ac.uni-freiburg.de',
+                         self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_email', 2))
         # Test if it really selects the row:
         self.myapp.ui.EquipmentTemplatesListWidget.setCurrentRow(1)
         self.assertEqual('daniel.kratzert@ac.uni-freiburg.de', self.myapp.ui.cif_main_table.item(19, 1).text())

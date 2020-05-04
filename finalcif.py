@@ -910,9 +910,9 @@ class AppWindow(QMainWindow):
                 if key not in self.ui.cif_main_table.vheaderitems:
                     self.add_new_table_key(key, equipment[key])
                 # add missing item to data sources column:
-                self.ui.cif_main_table.setText(key, COL_CIF, txt='?')
+                # self.ui.cif_main_table.setText(key, COL_CIF, txt='?')
                 self.ui.cif_main_table.setText(key, COL_DATA, txt=equipment[key], color=light_green)
-                #self.ui.cif_main_table.setBackground(key, COL_DATA, light_green)
+                # self.ui.cif_main_table.setBackground(key, COL_DATA, light_green)
                 self.ui.cif_main_table.setText(key, COL_EDIT, txt=equipment[key])
         else:
             print('Empty main table!')
@@ -1500,7 +1500,7 @@ class AppWindow(QMainWindow):
             not_ok = e
             raise
             # This is not good:
-            #unable_to_open_message(filepath, not_ok)
+            # unable_to_open_message(filepath, not_ok)
         # Do this only when sure we can load the file:
         self.save_current_recent_files_list(filepath)
         self.load_recent_cifs_list()
@@ -1693,7 +1693,7 @@ class AppWindow(QMainWindow):
         self.ui.cif_main_table.setText(key=key, column=COL_DATA, txt=value, color=light_green)
         self.ui.cif_main_table.setText(key=key, column=COL_CIF, txt='?')
         self.ui.cif_main_table.setText(key=key, column=COL_EDIT, txt='')
-        #self.ui.cif_main_table.setBackground(key, COL_DATA, light_green)
+        # self.ui.cif_main_table.setBackground(key, COL_DATA, light_green)
 
     def get_data_sources(self) -> None:
         """
