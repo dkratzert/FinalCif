@@ -284,8 +284,9 @@ class TestWorkfolder(unittest.TestCase):
                                                                                1).background().color())
         self.assertEqual(yellow, self.myapp.ui.cif_main_table.itemFromKey('_chemical_absolute_configuration',
                                                                           1).background().color())
-        with self.assertRaises(AttributeError):
-            self.myapp.ui.cif_main_table.itemFromKey('_cell_measurement_theta_max', 2).background().color()
+        # Has a color now:
+        # with self.assertRaises(AttributeError):
+        #    self.myapp.ui.cif_main_table.itemFromKey('_cell_measurement_theta_max', 0).background().color()
         # Test for auto-fill data:
         self.assertEqual('SAINT V8.40A',
                          self.myapp.ui.cif_main_table.getTextFromKey('_computing_cell_refinement', 1))
