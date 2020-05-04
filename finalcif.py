@@ -1822,6 +1822,7 @@ class AppWindow(QMainWindow):
                 self.ui.cif_main_table.setText(row=row_num, key=key, column=COL_DATA, txt='')
             # Cif text is set here:
             self.ui.cif_main_table.setText(row=row_num, key=key, column=COL_CIF, txt=retranslate_delimiter(strval))
+            self.ui.cif_main_table.setText(row=row_num, key=key, column=COL_EDIT, txt='')
         head_item_key = MyTableWidgetItem(key)
         if not key == "These below are already in:":
             self.ui.cif_main_table.setVerticalHeaderItem(row_num, head_item_key)

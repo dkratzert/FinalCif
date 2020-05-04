@@ -180,7 +180,9 @@ class MyCifTable(QTableWidget, ItemTextMixin):
             if color:
                 item.setBackground(color)
         else:
-            if (key in text_field_keys) or (len(txt) > 60):
+            # Use the maximum text lenth in this row to decide if we want to have a text field:
+            lentext = max([len(txt), len(self.getText(0, row)), len(self.getText(1, row))])
+            if (key in text_field_keys) or (lentext > 60):
                 textedit = MyQPlainTextEdit(self)
                 self.setCellWidget(row, column, textedit)
                 textedit.setText(txt, color=color)
