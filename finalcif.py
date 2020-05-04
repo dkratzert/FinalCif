@@ -1747,12 +1747,13 @@ class AppWindow(QMainWindow):
             row_num = self.ui.cif_main_table.vheaderitems.index(miss_key)
             try:
                 txt = str(self.sources[miss_key][0])
-                self.ui.cif_main_table.setText(key=miss_key, column=COL_DATA, txt=txt)
-                if (row_num < self.complete_data_row):
+                if (row_num > self.complete_data_row):
+                    self.ui.cif_main_table.setText(key=miss_key, column=COL_DATA, txt=txt)
+                else:
                     if txt and txt != '?':
-                        self.ui.cif_main_table.setBackground(key=miss_key, column=COL_DATA, color=light_green)
+                        self.ui.cif_main_table.setText(key=miss_key, column=COL_DATA, txt=txt, color=light_green)
                     else:
-                        self.ui.cif_main_table.setBackground(key=miss_key, column=COL_DATA, color=yellow)
+                        self.ui.cif_main_table.setText(key=miss_key, column=COL_DATA, txt=txt, color=yellow)
             except (KeyError, TypeError) as e:
                 # TypeError my originate from incomplete self.missing_data list!
                 # print(e, '##', miss_key)
@@ -1813,6 +1814,8 @@ class AppWindow(QMainWindow):
             self.add_separation_line(row_num)
             self.complete_data_row = row_num
         else:
+            # Cif text is set here:
+            self.ui.cif_main_table.setText(row=row_num, key=key, column=COL_CIF, txt=retranslate_delimiter(strval))
             if key == '_audit_creation_method':
                 txt = 'FinalCif V{} by Daniel Kratzert, Freiburg 2019, https://github.com/dkratzert/FinalCif'
                 strval = txt.format(VERSION)
@@ -1820,8 +1823,6 @@ class AppWindow(QMainWindow):
             else:
                 # This is to have COL_DATA at a defined state:
                 self.ui.cif_main_table.setText(row=row_num, key=key, column=COL_DATA, txt='')
-            # Cif text is set here:
-            self.ui.cif_main_table.setText(row=row_num, key=key, column=COL_CIF, txt=retranslate_delimiter(strval))
             self.ui.cif_main_table.setText(row=row_num, key=key, column=COL_EDIT, txt='')
         head_item_key = MyTableWidgetItem(key)
         if not key == "These below are already in:":

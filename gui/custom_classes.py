@@ -71,8 +71,8 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         self.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        #item = MyTableWidgetItem()
-        self.setItemPrototype(MyTableWidgetItem())
+        item = MyTableWidgetItem()
+        self.setItemPrototype(item)
         self.actionDeletePair = QAction("Delete Row", self)
         self.actionCopy = QAction("Copy", self)
         self.actionCopyVhead = QAction("Copy CIF Keyword", self)
@@ -170,9 +170,9 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         txt = retranslate_delimiter(txt)
         if row is None:
             row = self.vheaderitems.index(key)
-        self.setCurrentCell(row, column)
-        item = self.currentItem()
-        if item and not ((key in text_field_keys) or (len(txt) > 60)):
+        item = MyTableWidgetItem(txt)
+        self.setItem(row, column, item)
+        if (key in text_field_keys) or (len(txt) > 60):
             item.setText(txt)
             if (column == COL_CIF) or (column == COL_DATA):
                 # noinspection PyUnresolvedReferences
@@ -205,6 +205,7 @@ class MyCifTable(QTableWidget, ItemTextMixin):
                     item.setUneditable()
                 if color:
                     item.setBackground(color)
+
 
     def getText(self, col: int, row: int):
         return self.text(row, col)
