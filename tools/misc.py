@@ -27,7 +27,7 @@ halbgeviert = u'\u2013'
 # degree sign:
 degree_sign = u'\u00B0'
 # middle ellipsis
-ellipsis_mid = u'\u22EF  '
+ellipsis_mid = u'\u22EF'
 # ellipsis
 ellipsis = u'\u2026'
 
