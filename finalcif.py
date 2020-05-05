@@ -208,6 +208,7 @@ class AppWindow(QMainWindow):
         self.ui.CODpushButton.setFixedSize(self.ui.CheckcifPDFOnlineButton.size())
         self.ui.SaveFullReportButton.setFixedWidth(
             self.ui.CODpushButton.width() - self.ui.ReportPicPushButton.width() - 6)
+        self.ui.SumformLabel.setMinimumWidth(self.ui.SpaceGroupLineEdit.width())
 
     def moveEvent(self, a0: QMoveEvent) -> None:
         """Is called when the main window moves."""
@@ -1536,6 +1537,7 @@ class AppWindow(QMainWindow):
             intnum = '({})'.format(intnum)
         self.ui.SpaceGroupLineEdit.setText("{} {}".format(spgr, intnum))
         self.ui.SumformLabel.setText(self.cif['_chemical_formula_sum'].strip(" '"))
+        self.ui.SumformLabel.setMinimumWidth(self.ui.SpaceGroupLineEdit.width())
         self.ui.zLineEdit.setText(self.cif['_cell_formula_units_Z'])
         self.ui.temperatureLineEdit.setText(self.cif['_diffrn_ambient_temperature'])
         self.ui.wR2LineEdit.setText(self.cif['_refine_ls_wR_factor_ref'])
