@@ -176,7 +176,9 @@ class MyCifTable(QTableWidget, ItemTextMixin):
             return 
         item = MyTableWidgetItem(txt)
         self.setItem(row, column, item)
-        if not (key in text_field_keys) and (len(txt) < 60):
+        lentext = max([len(txt), len(self.getText(0, row)), len(self.getText(1, row))])
+        # This is a regular table cell:
+        if not (key in text_field_keys) and (lentext < 60):
             item.setText(txt)
             if (column == COL_CIF) or (column == COL_DATA):
                 # noinspection PyUnresolvedReferences
@@ -184,15 +186,12 @@ class MyCifTable(QTableWidget, ItemTextMixin):
             if color:
                 item.setBackground(color)
         else:
-            # Use the maximum text lenth in this row to decide if we want to have a text field:
-            lentext = max([len(txt), len(self.getText(0, row)), len(self.getText(1, row))])
-            #if (key in text_field_keys) or (lentext > 60):
+            # This is a text field:
             textedit = MyQPlainTextEdit(self)
             self.setCellWidget(row, column, textedit)
             textedit.setText(txt, color=color)
             if (column == COL_CIF) or (column == COL_DATA):
                 textedit.setUneditable()
-            #self.setRowHeight(row, 95)
             self.resizeRowToContents(row)
             if color:
                 textedit.setBackground(color)

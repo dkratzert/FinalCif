@@ -905,11 +905,13 @@ class AppWindow(QMainWindow):
         if self.ui.cif_main_table.vheaderitems:
             for key in equipment:
                 if key not in self.ui.cif_main_table.vheaderitems:
+                    # Key is not in the main table:
                     self.add_new_table_key(key, equipment[key])
-                # add missing item to data sources column:
-                # self.ui.cif_main_table.setText(key, COL_CIF, txt='?')
-                self.ui.cif_main_table.setText(key, COL_DATA, txt=equipment[key], color=light_green)
-                self.ui.cif_main_table.setText(key, COL_EDIT, txt=equipment[key])
+                else:
+                    # Key is already there:
+                    self.ui.cif_main_table.setText(key, COL_CIF, txt=self.ui.cif_main_table.getTextFromKey(key, COL_CIF))
+                    self.ui.cif_main_table.setText(key, COL_DATA, txt=equipment[key], color=light_green)
+                    self.ui.cif_main_table.setText(key, COL_EDIT, txt=equipment[key])
         else:
             print('Empty main table!')
 
@@ -926,8 +928,6 @@ class AppWindow(QMainWindow):
         self.ui.cif_main_table.vheaderitems.insert(0, key)
         # The main table is filled here:
         self.add_row(key=key, value=value, at_start=True)
-        if key in combobox_fields:
-            self.add_property_combobox(combobox_fields[key], 0)
         self.missing_data.append(key)
         if not self.cif.block.find_value(key):
             self.cif.add_to_cif(key, value)
@@ -1535,7 +1535,6 @@ class AppWindow(QMainWindow):
         if intnum:
             intnum = '({})'.format(intnum)
         self.ui.SpaceGroupLineEdit.setText("{} {}".format(spgr, intnum))
-
         self.ui.SumformLabel.setText(self.cif['_chemical_formula_sum'].strip(" '"))
         self.ui.zLineEdit.setText(self.cif['_cell_formula_units_Z'])
         self.ui.temperatureLineEdit.setText(self.cif['_diffrn_ambient_temperature'])
@@ -1688,10 +1687,9 @@ class AppWindow(QMainWindow):
         self.ui.cif_main_table.vheaderitems.insert(0, key)
         head_item_key = MyTableWidgetItem(key)
         self.ui.cif_main_table.setVerticalHeaderItem(0, head_item_key)
-        self.ui.cif_main_table.setText(key=key, column=COL_DATA, txt=value, color=light_green)
         self.ui.cif_main_table.setText(key=key, column=COL_CIF, txt='?')
+        self.ui.cif_main_table.setText(key=key, column=COL_DATA, txt=value, color=light_green)
         self.ui.cif_main_table.setText(key=key, column=COL_EDIT, txt='')
-        # self.ui.cif_main_table.setBackground(key, COL_DATA, light_green)
 
     def get_data_sources(self) -> None:
         """
@@ -1728,17 +1726,17 @@ class AppWindow(QMainWindow):
         # Build a dictionary of cif keys and row number values in order to fill the first column
         # of cif_main_table with cif values:
         for num in range(self.ui.cif_main_table.model().rowCount()):
-            vhead = self.ui.cif_main_table.model().headerData(num, Qt.Vertical)
-            if not vhead in self.ui.cif_main_table.vheaderitems:
-                self.ui.cif_main_table.vheaderitems.append(vhead)
+            vhead_key = self.ui.cif_main_table.model().headerData(num, Qt.Vertical)
+            if not vhead_key in self.ui.cif_main_table.vheaderitems:
+                self.ui.cif_main_table.vheaderitems.append(vhead_key)
             # adding comboboxes:
-            if vhead in self.settings.load_property_keys():
+            if vhead_key in self.settings.load_property_keys():
                 # First add self-made properties:
-                self.add_property_combobox(self.settings.load_property_by_key(vhead), num)
-            elif vhead in combobox_fields:
+                self.add_property_combobox(self.settings.load_property_by_key(vhead_key), num)
+            elif vhead_key in combobox_fields:
                 # Then the pre-defined:
-                self.add_property_combobox(combobox_fields[vhead], num)
-        # get missing items from sources and put them into the corresponding rows:
+                self.add_property_combobox(combobox_fields[vhead_key], num)
+        # Get missing items from sources and put them into the corresponding rows:
         # missing items will even be used if under the blue separation line:
         for miss_key in self.missing_data:
             # add missing item to data sources column:
@@ -1793,7 +1791,6 @@ class AppWindow(QMainWindow):
         self.get_data_sources()
         self.erase_disabled_items()
         self.ui.cif_main_table.setCurrentItem(None)
-        # self.ui.cif_main_table.resizeRowsToContents()
 
     def add_row(self, key: str, value: str, at_start=False) -> None:
         """
