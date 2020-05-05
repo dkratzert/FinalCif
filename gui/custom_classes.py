@@ -85,7 +85,7 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         self.actionCopyVhead.triggered.connect(self.copy_vhead_item)
         del_shortcut = QShortcut(QKeySequence('Ctrl+Del'), self)
         del_shortcut.activated.connect(self.delete_row)
-        self.vheaderitems = list()
+        self.vheaderitems: list = []
         # This is the index number of the vheader that got clicked last:
         self.vheader_clicked = -1
         # vertical header click:
