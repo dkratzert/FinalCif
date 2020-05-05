@@ -146,43 +146,7 @@ class AppWindow(QMainWindow):
         self.connect_signals_and_slots()
         self.manufacturer = 'bruker'
         self.rigakucif: RigakuData
-
-        self.ui.CheckcifButton.setIcon(qta.icon('mdi.file-document-box-outline'))
-        self.ui.CheckcifHTMLOnlineButton.setIcon(qta.icon('mdi.file-document-box-check'))
-        self.ui.CheckcifPDFOnlineButton.setIcon(qta.icon('mdi.file-document-box-check-outline'))
-        self.ui.SaveFullReportButton.setIcon(qta.icon('mdi.file-table-outline'))
-        self.ui.ExploreDirButton.setIcon(qta.icon('fa5.folder-open'))
-        self.ui.SaveCifButton.setIcon(qta.icon('fa5.save'))
-        options = [{'color': 'darkgreen'}]
-        self.ui.SelectCif_PushButton.setIcon(qta.icon('fa5.file-alt', options=options))
-        # self.ui.SelectCif_PushButton.setIcon(qta.icon('fa5s.spinner', color='red',
-        #             animation=qta.Spin(self.ui.SelectCif_PushButton)))
-        self.ui.SourcesPushButton.setIcon(qta.icon('fa5s.tasks'))
-        self.ui.DetailsPushButton.setIcon(qta.icon('fa5s.crow'))
-
-        self.ui.NewEquipmentTemplateButton.setIcon(qta.icon('mdi.playlist-plus'))
-        self.ui.EditEquipmentTemplateButton.setIcon(qta.icon('mdi.playlist-edit'))
-        self.ui.DeleteEquipmentButton.setIcon(qta.icon('mdi.playlist-minus'))
-        self.ui.ImportEquipmentTemplateButton.setIcon(qta.icon('mdi.import'))
-        self.ui.SaveEquipmentButton.setIcon(qta.icon('mdi.content-save-outline'))
-        self.ui.CancelEquipmentButton.setIcon(qta.icon('mdi.cancel'))
-        self.ui.ExportEquipmentButton.setIcon(qta.icon('mdi.export'))
-
-        self.ui.NewPropertyTemplateButton.setIcon(qta.icon('mdi.playlist-plus'))
-        self.ui.EditPropertyTemplateButton.setIcon(qta.icon('mdi.playlist-edit'))
-        self.ui.ImportPropertyTemplateButton.setIcon(qta.icon('mdi.import'))
-        self.ui.DeletePropertiesButton.setIcon(qta.icon('mdi.playlist-minus'))
-        self.ui.SavePropertiesButton.setIcon(qta.icon('mdi.content-save-outline'))
-        self.ui.CancelPropertiesButton.setIcon(qta.icon('mdi.cancel'))
-        self.ui.ExportPropertyButton.setIcon(qta.icon('mdi.export'))
-
-        self.ui.BackPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
-        self.ui.BackpushButtonDetails.setIcon(qta.icon('mdi.keyboard-backspace'))
-        self.ui.BackFromPlatonPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
-
-        self.ui.CCDCpushButton.setIcon(qta.icon('fa5s.upload'))
-        self.ui.CODpushButton.setIcon(qta.icon('mdi.upload'))
-
+        self.make_button_icons()
         if len(sys.argv) > 1:
             self.load_cif_file(sys.argv[1])
         if file:
@@ -198,6 +162,39 @@ class AppWindow(QMainWindow):
         self.checkfor_version()
         self.get_checkdef()
         self.subwin = Ui_ResponseFormsEditor()
+
+    def make_button_icons(self):
+        self.ui.CheckcifButton.setIcon(qta.icon('mdi.file-document-box-outline'))
+        self.ui.CheckcifHTMLOnlineButton.setIcon(qta.icon('mdi.file-document-box-check'))
+        self.ui.CheckcifPDFOnlineButton.setIcon(qta.icon('mdi.file-document-box-check-outline'))
+        self.ui.SaveFullReportButton.setIcon(qta.icon('mdi.file-table-outline'))
+        self.ui.ExploreDirButton.setIcon(qta.icon('fa5.folder-open'))
+        self.ui.SaveCifButton.setIcon(qta.icon('fa5.save'))
+        options = [{'color': 'darkgreen'}]
+        self.ui.SelectCif_PushButton.setIcon(qta.icon('fa5.file-alt', options=options))
+        # self.ui.SelectCif_PushButton.setIcon(qta.icon('fa5s.spinner', color='red',
+        #             animation=qta.Spin(self.ui.SelectCif_PushButton)))
+        self.ui.SourcesPushButton.setIcon(qta.icon('fa5s.tasks'))
+        self.ui.DetailsPushButton.setIcon(qta.icon('fa5s.crow'))
+        self.ui.NewEquipmentTemplateButton.setIcon(qta.icon('mdi.playlist-plus'))
+        self.ui.EditEquipmentTemplateButton.setIcon(qta.icon('mdi.playlist-edit'))
+        self.ui.DeleteEquipmentButton.setIcon(qta.icon('mdi.playlist-minus'))
+        self.ui.ImportEquipmentTemplateButton.setIcon(qta.icon('mdi.import'))
+        self.ui.SaveEquipmentButton.setIcon(qta.icon('mdi.content-save-outline'))
+        self.ui.CancelEquipmentButton.setIcon(qta.icon('mdi.cancel'))
+        self.ui.ExportEquipmentButton.setIcon(qta.icon('mdi.export'))
+        self.ui.NewPropertyTemplateButton.setIcon(qta.icon('mdi.playlist-plus'))
+        self.ui.EditPropertyTemplateButton.setIcon(qta.icon('mdi.playlist-edit'))
+        self.ui.ImportPropertyTemplateButton.setIcon(qta.icon('mdi.import'))
+        self.ui.DeletePropertiesButton.setIcon(qta.icon('mdi.playlist-minus'))
+        self.ui.SavePropertiesButton.setIcon(qta.icon('mdi.content-save-outline'))
+        self.ui.CancelPropertiesButton.setIcon(qta.icon('mdi.cancel'))
+        self.ui.ExportPropertyButton.setIcon(qta.icon('mdi.export'))
+        self.ui.BackPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
+        self.ui.BackpushButtonDetails.setIcon(qta.icon('mdi.keyboard-backspace'))
+        self.ui.BackFromPlatonPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
+        self.ui.CCDCpushButton.setIcon(qta.icon('fa5s.upload'))
+        self.ui.CODpushButton.setIcon(qta.icon('mdi.upload'))
 
     def resizeEvent(self, a0: QResizeEvent) -> None:
         """It called when the main window resizes."""
@@ -1416,7 +1413,9 @@ class AppWindow(QMainWindow):
         with suppress(AttributeError):
             self.ui.moleculeLayout.removeWidget(self.view)
         self.ui.MainStackedWidget.setCurrentIndex(0)
-        # clean table before loading:
+        # Set to empty state bevore loading:
+        self.missing_data = []
+        # clean table and vheader before loading:
         self.ui.cif_main_table.delete_content()
         if not fname:
             try:
