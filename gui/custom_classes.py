@@ -173,12 +173,12 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         if isinstance(self.cellWidget(row, column), MyComboBox):
             # noinspection PyUnresolvedReferences
             self.cellWidget(row, column).setText(txt)
-            return 
+            return
         item = MyTableWidgetItem(txt)
         self.setItem(row, column, item)
         lentext = max([len(txt), len(self.getText(0, row)), len(self.getText(1, row))])
         # This is a regular table cell:
-        if not (key in text_field_keys) and (lentext < 60):
+        if not (key in text_field_keys) and (lentext < 35):
             item.setText(txt)
             if (column == COL_CIF) or (column == COL_DATA):
                 # noinspection PyUnresolvedReferences
@@ -195,8 +195,6 @@ class MyCifTable(QTableWidget, ItemTextMixin):
             self.resizeRowToContents(row)
             if color:
                 textedit.setBackground(color)
-            # in this case, we have a combobox
-
 
     def getText(self, col: int, row: int):
         return self.text(row, col)
@@ -274,7 +272,7 @@ class MyQPlainTextEdit(QPlainTextEdit):
         self.setFocusPolicy(Qt.StrongFocus)
         self.setFrameShape(QFrame.NoFrame)
         self.setTabChangesFocus(True)
-        #self.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
+        # self.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setWordWrapMode(QTextOption.WrapAtWordBoundaryOrAnywhere)
@@ -337,12 +335,8 @@ class MyQPlainTextEdit(QPlainTextEdit):
         return self.toPlainText()
 
     def sizeHint(self) -> QSize:
-        if len(self.getText()) > 100:
-            return QSize(100, 95)
-        elif len(self.getText()) > 200:
-            return QSize(100, 120)
-        else:
-            return QSize(100, 60)
+        """Text field sizes are scaled to text length"""
+        return QSize(100, 0.422 * len(self.getText()) + 30)
 
 
 class MyComboBox(QComboBox):
@@ -390,9 +384,9 @@ class MyComboBox(QComboBox):
 
 class MyTableWidgetItem(QTableWidgetItem):
 
-    def __init__(self, parent=None, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         # args and kwargs are essentiel here. Otherwise, the horizontal header text is missing!
-        super().__init__(parent, *args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def setUneditable(self):
         # noinspection PyTypeChecker
