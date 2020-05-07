@@ -6,23 +6,29 @@
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
 
+import sys
+
 from gui.dialogs import cif_file_open_dialog, cif_file_save_dialog, show_general_warning, bug_found_warning, \
     unable_to_open_message, show_splash, bad_z_message
+from gui.loops import Loop
 
-DEBUG = False
-
+DEBUG = True
+if 'compile' in sys.argv:
+    COMPILE = True
+else:
+    COMPILE = False
 import os
 
 from app_path import application_path
 
-if DEBUG:
+if DEBUG or COMPILE:
     from PyQt5 import uic
 
     print('Compiling ui ...')
     uic.compileUiDir(os.path.join(application_path, './gui'))
     # uic.compileUi('./gui/finalcif_gui.ui', open('./gui/finalcif_gui.py', 'w'))
 import subprocess
-import sys
+
 import time
 import traceback
 import displaymol
@@ -148,7 +154,7 @@ class AppWindow(QMainWindow):
         self.rigakucif: RigakuData
         self.make_button_icons()
         if len(sys.argv) > 1:
-            self.load_cif_file(sys.argv[1])
+            self.load_cif_file(sys.argv[1] if sys.argv[1] != 'compile' else '')
         if file:
             self.load_cif_file(file)
         # Sorting desyncronizes header and columns:
@@ -162,6 +168,10 @@ class AppWindow(QMainWindow):
         self.checkfor_version()
         self.get_checkdef()
         self.subwin = Ui_ResponseFormsEditor()
+        # TODO: make a row for each self.cif.loops and run this onClick():
+        #loop = Loop(self.cif, self.ui)
+        #loop.make_model(2)
+        #self.ui.MainStackedWidget.setCurrentIndex(5)
 
     def make_button_icons(self):
         self.ui.CheckcifButton.setIcon(qta.icon('mdi.file-document-box-outline'))
@@ -195,6 +205,7 @@ class AppWindow(QMainWindow):
         self.ui.BackFromPlatonPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
         self.ui.CCDCpushButton.setIcon(qta.icon('fa5s.upload'))
         self.ui.CODpushButton.setIcon(qta.icon('mdi.upload'))
+
 
     def resizeEvent(self, a0: QResizeEvent) -> None:
         """It called when the main window resizes."""
@@ -233,6 +244,7 @@ class AppWindow(QMainWindow):
         """
         self.ui.BackPushButton.clicked.connect(self.back_to_main)
         self.ui.ExploreDirButton.clicked.connect(self.explore_dir)
+        self.ui.BackFromLooptableButton.clicked.connect(self.back_to_main_noload)
         ##
         self.ui.CheckcifButton.clicked.connect(self.do_offline_checkcif)
         self.ui.CheckcifHTMLOnlineButton.clicked.connect(self.do_html_checkcif)
@@ -910,7 +922,8 @@ class AppWindow(QMainWindow):
                     self.add_new_table_key(key, equipment[key])
                 else:
                     # Key is already there:
-                    self.ui.cif_main_table.setText(key, COL_CIF, txt=self.ui.cif_main_table.getTextFromKey(key, COL_CIF))
+                    self.ui.cif_main_table.setText(key, COL_CIF,
+                                                   txt=self.ui.cif_main_table.getTextFromKey(key, COL_CIF))
                     self.ui.cif_main_table.setText(key, COL_DATA, txt=equipment[key], color=light_green)
                     self.ui.cif_main_table.setText(key, COL_EDIT, txt=equipment[key])
         else:

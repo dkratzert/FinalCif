@@ -145,6 +145,15 @@ class CifContainer():
         return all
 
     @property
+    def loops(self):
+        loops = []
+        for b in self.block:
+            if b.loop:
+                l = b.loop
+                loops.append(l)
+        return loops
+
+    @property
     def Z_value(self):
         return self.atomic_struct.cell.volume / self.atomic_struct.cell.volume_per_image()
 
