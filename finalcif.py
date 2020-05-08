@@ -71,6 +71,7 @@ from PyQt5.QtWidgets import QApplication, QFileDialog, QHeaderView, QListWidget,
 
 """
 TODO:
+- make a modelview for the main table!
 - Extract more data from .xml file
 - Extract "_diffrn_measurement_details from .xml file
 - maybe add refinement model description via ShelXFile parser 
