@@ -67,7 +67,7 @@ from tools.version import VERSION
 from PyQt5.QtCore import QPoint, Qt, QUrl, QEvent
 from PyQt5.QtGui import QFont, QIcon, QBrush, QResizeEvent, QMoveEvent
 from PyQt5.QtWidgets import QApplication, QFileDialog, QHeaderView, QListWidget, QListWidgetItem, \
-    QMainWindow, QPlainTextEdit, QStackedWidget, QTableWidget, QShortcut, QCheckBox
+    QMainWindow, QPlainTextEdit, QStackedWidget, QTableWidget, QShortcut, QCheckBox, QTableView
 
 """
 TODO:
@@ -168,10 +168,6 @@ class AppWindow(QMainWindow):
         self.checkfor_version()
         self.get_checkdef()
         self.subwin = Ui_ResponseFormsEditor()
-        # TODO: make a row for each self.cif.loops and run this onClick():
-        #loop = Loop(self.cif, self.ui)
-        #loop.make_model(2)
-        #self.ui.MainStackedWidget.setCurrentIndex(5)
 
     def make_button_icons(self):
         self.ui.CheckcifButton.setIcon(qta.icon('mdi.file-document-box-outline'))
@@ -205,7 +201,6 @@ class AppWindow(QMainWindow):
         self.ui.BackFromPlatonPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
         self.ui.CCDCpushButton.setIcon(qta.icon('fa5s.upload'))
         self.ui.CODpushButton.setIcon(qta.icon('mdi.upload'))
-
 
     def resizeEvent(self, a0: QResizeEvent) -> None:
         """It called when the main window resizes."""
@@ -245,6 +240,7 @@ class AppWindow(QMainWindow):
         self.ui.BackPushButton.clicked.connect(self.back_to_main)
         self.ui.ExploreDirButton.clicked.connect(self.explore_dir)
         self.ui.BackFromLooptableButton.clicked.connect(self.back_to_main_noload)
+        self.ui.LoopsPushButton.clicked.connect(self.showloops)
         ##
         self.ui.CheckcifButton.clicked.connect(self.do_offline_checkcif)
         self.ui.CheckcifHTMLOnlineButton.clicked.connect(self.do_html_checkcif)
@@ -1806,6 +1802,25 @@ class AppWindow(QMainWindow):
         self.get_data_sources()
         self.erase_disabled_items()
         self.ui.cif_main_table.setCurrentItem(None)
+        # Add loops widgets:
+        self.add_loops_tables()
+
+    def add_loops_tables(self):
+        """
+        Generates a list of tables containing the cif loops
+        """
+        self.ui.LoopsTabWidget.clear()
+        for num in range(len(self.cif.loops)):
+            t = self.cif.loops[num].tags
+            if not t:
+                continue
+            tableview = QTableView()
+            self.ui.LoopsTabWidget.addTab(tableview, t[0])
+            loop = Loop(self.cif, tableview)
+            loop.make_model(num)
+
+    def showloops(self):
+        self.ui.MainStackedWidget.setCurrentIndex(5)
 
     def add_row(self, key: str, value: str, at_start=False) -> None:
         """

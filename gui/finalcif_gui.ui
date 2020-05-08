@@ -1742,38 +1742,6 @@ The data source will be ignored until next program restart.</string>
           </widget>
           <widget class="QWidget" name="page_Loops">
            <layout class="QGridLayout" name="gridLayout_12">
-            <item row="1" column="0">
-             <widget class="QPushButton" name="BackFromLooptableButton">
-              <property name="text">
-               <string>Back to CIF Table</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="0" colspan="2">
-             <widget class="QTableView" name="LoopTableV">
-              <property name="verticalScrollMode">
-               <enum>QAbstractItemView::ScrollPerPixel</enum>
-              </property>
-              <property name="horizontalScrollMode">
-               <enum>QAbstractItemView::ScrollPerPixel</enum>
-              </property>
-              <attribute name="horizontalHeaderCascadingSectionResizes">
-               <bool>true</bool>
-              </attribute>
-              <attribute name="horizontalHeaderDefaultSectionSize">
-               <number>100</number>
-              </attribute>
-              <attribute name="horizontalHeaderStretchLastSection">
-               <bool>false</bool>
-              </attribute>
-              <attribute name="verticalHeaderVisible">
-               <bool>false</bool>
-              </attribute>
-              <attribute name="verticalHeaderMinimumSectionSize">
-               <number>24</number>
-              </attribute>
-             </widget>
-            </item>
             <item row="1" column="1">
              <spacer name="horizontalSpacer_13">
               <property name="orientation">
@@ -1786,6 +1754,25 @@ The data source will be ignored until next program restart.</string>
                </size>
               </property>
              </spacer>
+            </item>
+            <item row="1" column="0">
+             <widget class="QPushButton" name="BackFromLooptableButton">
+              <property name="text">
+               <string>Back to CIF Table</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0" colspan="3">
+             <widget class="QTabWidget" name="LoopsTabWidget">
+              <property name="currentIndex">
+               <number>0</number>
+              </property>
+              <widget class="QWidget" name="tab">
+               <attribute name="title">
+                <string>Tab 1</string>
+               </attribute>
+              </widget>
+             </widget>
             </item>
            </layout>
           </widget>
@@ -1920,6 +1907,9 @@ The data source will be ignored until next program restart.</string>
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
+            <property name="sizeType">
+             <enum>QSizePolicy::Minimum</enum>
+            </property>
             <property name="sizeHint" stdset="0">
              <size>
               <width>40</width>
@@ -1927,6 +1917,13 @@ The data source will be ignored until next program restart.</string>
              </size>
             </property>
            </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="LoopsPushButton">
+            <property name="text">
+             <string>Show Loops</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>

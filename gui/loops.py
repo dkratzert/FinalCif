@@ -9,26 +9,28 @@ from typing import Union
 
 import gemmi
 from PyQt5.QtCore import QAbstractTableModel, QModelIndex, Qt, QSize
+from PyQt5.QtWidgets import QTableView, QHeaderView
 
 from cif.cif_file_io import CifContainer
-from gui.finalcif_gui import Ui_FinalCifWindow
 
 
 class Loop():
-    def __init__(self, cif: CifContainer, ui: Ui_FinalCifWindow):
-        self.ui = ui
+    def __init__(self, cif: CifContainer, tableview: QTableView):
+        self.table = tableview
         self.cif = cif
         self.headerlabels = []
         self.model: Union[TableModel, None] = None
 
-    def __del__(self):
-        self.ui.LoopTableV.reset()
-
     def make_model(self, loopnum: int):
         # get data from cif loop
         self.model = TableModel(self.get_data(loopnum), self.headerlabels)
-        self.ui.LoopTableV.setModel(self.model)
-        self.ui.LoopTableV.resizeColumnsToContents()
+        self.table.setModel(self.model)
+        header = self.table.horizontalHeader()
+        for column in range(header.count()):
+            header.setSectionResizeMode(column, QHeaderView.ResizeToContents)
+            width = header.sectionSize(column) + 10
+            header.setSectionResizeMode(column, QHeaderView.Interactive)
+            header.resizeSection(column, width)
 
     def get_data(self, loopnum: int):
         data = []
@@ -63,11 +65,6 @@ class TableModel(QAbstractTableModel):
 
     def headerData(self, section, orientation, role=None):
         # section is the index of the column/row.
-
-        # I dont need vertical header:
-        # if orientation == Qt.Vertical:
-        #    return str(self._data.index[section])
-        #
         if role == Qt.DisplayRole:
             if orientation == Qt.Horizontal:
                 return str(self._header[section])
