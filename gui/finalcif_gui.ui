@@ -1741,28 +1741,8 @@ The data source will be ignored until next program restart.</string>
            </layout>
           </widget>
           <widget class="QWidget" name="page_Loops">
-           <layout class="QGridLayout" name="gridLayout_12">
-            <item row="1" column="1">
-             <spacer name="horizontalSpacer_13">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item row="1" column="0">
-             <widget class="QPushButton" name="BackFromLooptableButton">
-              <property name="text">
-               <string>Back to CIF Table</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="0" colspan="3">
+           <layout class="QVBoxLayout" name="verticalLayout_9">
+            <item>
              <widget class="QTabWidget" name="LoopsTabWidget">
               <property name="currentIndex">
                <number>0</number>
@@ -1908,7 +1888,7 @@ The data source will be ignored until next program restart.</string>
              <enum>Qt::Horizontal</enum>
             </property>
             <property name="sizeType">
-             <enum>QSizePolicy::Minimum</enum>
+             <enum>QSizePolicy::MinimumExpanding</enum>
             </property>
             <property name="sizeHint" stdset="0">
              <size>

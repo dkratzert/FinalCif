@@ -239,7 +239,6 @@ class AppWindow(QMainWindow):
         """
         self.ui.BackPushButton.clicked.connect(self.back_to_main)
         self.ui.ExploreDirButton.clicked.connect(self.explore_dir)
-        self.ui.BackFromLooptableButton.clicked.connect(self.back_to_main_noload)
         self.ui.LoopsPushButton.clicked.connect(self.showloops)
         ##
         self.ui.CheckcifButton.clicked.connect(self.do_offline_checkcif)
@@ -1783,9 +1782,26 @@ class AppWindow(QMainWindow):
             self.ui.LoopsTabWidget.addTab(tableview, t[0])
             loop = Loop(self.cif, tableview)
             loop.make_model(num)
+        if self.cif['_shelx_res_file']:
+            textedit = QPlainTextEdit()
+            self.ui.LoopsTabWidget.addTab(textedit, 'SHELX res file')
+            textedit.setPlainText(self.cif['_shelx_res_file'])
+            doc = textedit.document()
+            font = doc.defaultFont()
+            font.setFamily("Consolas")
+            font.setStyleHint(QFont.Monospace)
+            font.setPointSize(14)
+            doc.setDefaultFont(font)
+            textedit.setLineWrapMode(QPlainTextEdit.NoWrap)
+            textedit.setReadOnly(True)
 
     def showloops(self):
-        self.ui.MainStackedWidget.setCurrentIndex(5)
+        if self.ui.MainStackedWidget.currentIndex() == 5:
+            self.ui.MainStackedWidget.setCurrentIndex(0)
+            self.ui.LoopsPushButton.setText('Show Loops')
+        else:
+            self.ui.LoopsPushButton.setText('Hide Loops')
+            self.ui.MainStackedWidget.setCurrentIndex(5)
 
     def add_row(self, key: str, value: str, at_start=False) -> None:
         """
