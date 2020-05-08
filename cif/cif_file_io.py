@@ -218,6 +218,8 @@ class CifContainer():
 
     @property
     def crystal_system(self) -> str:
+        if not self._spgr():
+            return ''
         return self._spgr().crystal_system_str()
 
     @property

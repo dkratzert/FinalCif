@@ -1773,6 +1773,7 @@ class AppWindow(QMainWindow):
         """
         Generates a list of tables containing the cif loops
         """
+        self.ui.LoopsPushButton.setText('Show Loops')
         self.ui.LoopsTabWidget.clear()
         for num in range(len(self.cif.loops)):
             t = self.cif.loops[num].tags
