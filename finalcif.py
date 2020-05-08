@@ -12,7 +12,7 @@ from gui.dialogs import cif_file_open_dialog, cif_file_save_dialog, show_general
     unable_to_open_message, show_splash, bad_z_message
 from gui.loops import Loop
 
-DEBUG = True
+DEBUG = False
 if 'compile' in sys.argv:
     COMPILE = True
 else:
@@ -1084,41 +1084,6 @@ class AppWindow(QMainWindow):
         self.settings.save_template('equipment/' + name, table_data)
         self.settings.append_to_equipment_list(name)
         self.show_equipment_and_properties()
-
-    def get_loop(self, item) -> None:
-        """
-        TODO: use this to load loops from machine cifs
-        """
-        # for item in block:
-        if item.loop is not None:
-            n = 0
-            while True:
-                try:
-                    row = [item.loop.val(n, x) for x in range(len(item.loop.tags))]
-                    if not row[0]:
-                        break
-                    n += 1
-                except Exception:
-                    break
-        #####
-        """
-        # get columns:
-        for item in block:
-            if item.loop is not None:
-                for tag in item.loop.tags:
-                    val = block.find_values(tag)
-                    print([str(x) for x in val])
-        
-        # get rows:
-        for item in block:
-            if item.loop is not None:
-                tags = item.loop.tags
-                table = block.find(tags)
-                print('table columns, rows:', table.width(), len(table))
-                row = [x for x in table]
-                for r in row:
-                    print([x for x in r])
-        """
 
     def get_equipment_entry_data(self) -> Tuple[str, list]:
         """
