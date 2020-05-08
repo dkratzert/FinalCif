@@ -336,7 +336,10 @@ class MyQPlainTextEdit(QPlainTextEdit):
 
     def sizeHint(self) -> QSize:
         """Text field sizes are scaled to text length"""
-        return QSize(100, 0.33 * len(self.getText()) + 20)
+        if not self.getText():
+            return QSize(self.width(), 80)
+        else:
+            return QSize(100, 0.33 * len(self.getText()) + 30)
 
 
 class MyComboBox(QComboBox):
