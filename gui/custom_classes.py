@@ -266,9 +266,15 @@ class MyQPlainTextEdit(QPlainTextEdit):
     A special plaintextedit with convenient methods to set the background color and other things.
     """
 
-    def __init__(self, parent=None, *args, **kwargs):
+    def __init__(self, parent=None, minheight: int = 80, *args, **kwargs):
+        """
+        Plaintext edit field for most of the table cells.
+        :param parent:
+        :param minheight: minimum height of the widget.
+        """
         super().__init__(parent, *args, **kwargs)
         self.row: int = -1
+        self.minheight = minheight
         self.parent: MyCifTable = parent
         self.setFocusPolicy(Qt.StrongFocus)
         self.setFrameShape(QFrame.NoFrame)
@@ -338,7 +344,7 @@ class MyQPlainTextEdit(QPlainTextEdit):
     def sizeHint(self) -> QSize:
         """Text field sizes are scaled to text length"""
         if not self.getText():
-            return QSize(self.width(), 80)
+            return QSize(self.width(), self.minheight)
         else:
             return QSize(100, 0.33 * len(self.getText()) + 30)
 
