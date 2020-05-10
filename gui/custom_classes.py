@@ -97,6 +97,7 @@ class MyCifTable(QTableWidget, ItemTextMixin):
     def setCellWidget(self, row: int, column: int, widget) -> None:
         widget.row = row
         if (column == COL_CIF) or (column == COL_DATA):
+            # noinspection PyUnresolvedReferences
             widget.setUneditable()
         super(MyCifTable, self).setCellWidget(row, column, widget)
 

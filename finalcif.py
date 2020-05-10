@@ -426,7 +426,7 @@ class AppWindow(QMainWindow):
         """
         Is called by the finished signal from the network manager.
         """
-        txt = bytes(reply.readAll()).decode('ascii', 'ignore')
+        txt = bytes(reply.readAll()).decode('utf-8', 'ignore')
         self.checkdef = txt.splitlines(keepends=False)
 
     def get_checkdef_help(self, alert: str) -> str:
@@ -1892,6 +1892,8 @@ if __name__ == '__main__':
         sys.excepthook = my_exception_hook
 
     app = QApplication(sys.argv)
+    # windows_style = QStyleFactory.create('Fusion')
+    # app.setStyle(windows_style)
     w = AppWindow()
     app.setWindowIcon(QIcon(os.path.join(application_path, r'icon/finalcif2.png')))
     w.setWindowTitle('FinalCif v{}'.format(VERSION))
