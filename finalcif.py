@@ -100,7 +100,7 @@ as dict:
 from gui.finalcif_gui import Ui_FinalCifWindow
 from gui.responseformseditor import Ui_ResponseFormsEditor
 from gui.custom_classes import MyComboBox, MyEQTableWidget, MyTableWidgetItem, blue, light_green, yellow, COL_CIF, \
-    COL_DATA, COL_EDIT
+    COL_DATA, COL_EDIT, MyQPlainTextEdit
 
 
 class AppWindow(QMainWindow):
@@ -1076,7 +1076,7 @@ class AppWindow(QMainWindow):
                 key, value = item.pair
                 if key in excluded_imports:
                     continue
-                table_data.append([key, retranslate_delimiter(cif.as_string(value)).strip('\n\r ')])
+                table_data.append([key, retranslate_delimiter(cif.as_string(value).strip('\n\r ;'))])
         if filename.endswith('.cif_od'):
             name = Path(filename).stem
         else:
@@ -1265,7 +1265,7 @@ class AppWindow(QMainWindow):
                     loop_column_name = i.loop.tags[0]
                 for n in range(i.loop.length()):
                     value = i.loop.val(n, 0)
-                    template_list.append(retranslate_delimiter(value.strip(" '")))
+                    template_list.append(retranslate_delimiter(cif.as_string(value).strip("\n\r ;")))
         block_name = block.name.replace('__', ' ')
         # This is the list shown in the Main menu:
         property_list.append(block_name)
@@ -1336,8 +1336,13 @@ class AppWindow(QMainWindow):
         row_num = table.rowCount()
         table.insertRow(row_num)
         # Add cif key and value to the row:
-        item_val = MyTableWidgetItem(value)
-        table.setItem(row_num, 0, item_val)
+        #item_val = MyTableWidgetItem(value)
+        #table.setItem(row_num, 0, item_val)
+        key_item = MyQPlainTextEdit(table, minheight=50)
+        key_item.setPlainText(value)
+        ## This is critical, because otherwise the add_row_if_needed does not work as expected:
+        #key_item.textChanged.connect(self.add_row_if_needed)
+        table.setCellWidget(row_num, 0, key_item)
 
     def save_property(self, table: QTableWidget,
                       stackwidget: QStackedWidget,
