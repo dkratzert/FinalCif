@@ -963,6 +963,10 @@ class AppWindow(QMainWindow):
                 key = table.item(row, 0).text()
             except (AttributeError, TypeError) as e:
                 pass
+            try:
+                key = table.cellWidget(row, 0).getText()
+            except (AttributeError, TypeError) as e:
+                pass
             if key:  # don't count empty key rows
                 cont += 1
         diff = rowcount - cont
@@ -1360,7 +1364,7 @@ class AppWindow(QMainWindow):
         for rownum in range(ncolumns):
             try:
                 # only one column!
-                value = table.item(rownum, 0).text()
+                value = table.cellWidget(rownum, 0).getText()
             except AttributeError:
                 value = ''
             if value:
