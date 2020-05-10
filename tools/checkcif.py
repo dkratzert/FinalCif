@@ -223,7 +223,7 @@ class AlertHelp():
 
     def _parse_checkdef(self, alert: str) -> str:
         found = False
-        helptext = ''
+        helptext = []
         for line in self.checkdef:
             if line.startswith('_' + alert):
                 found = True
@@ -231,7 +231,7 @@ class AlertHelp():
             if found and line.startswith('#=='):
                 return '\n'.join(helptext[2:])
             if found:
-                helptext += line
+                helptext.append(line)
 
 
 class AlertHelpRemote():
