@@ -121,7 +121,11 @@ class MakeCheckCif(QThread):
             pdf = None
         if pdf:
             pdfobj = Path(strip_finalcif_of_name('checkcif-' + self.cif.fileobj.stem) + '-finalcif.pdf')
-            pdfobj.write_bytes(pdf)
+            try:
+                pdfobj.write_bytes(pdf)
+            except PermissionError:
+                # Most probably because of an already opened report.
+                return
             if sys.platform == 'win' or sys.platform == 'win32':
                 subprocess.Popen([str(pdfobj.absolute())], shell=True)
             if sys.platform == 'darwin':
