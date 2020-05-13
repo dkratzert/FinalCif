@@ -202,6 +202,8 @@ class AppWindow(QMainWindow):
         self.ui.BackFromPlatonPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
         self.ui.CCDCpushButton.setIcon(qta.icon('fa5s.upload'))
         self.ui.CODpushButton.setIcon(qta.icon('mdi.upload'))
+        self.ui.CODpushButton.setFixedSize(self.ui.CheckcifPDFOnlineButton.size())
+        self.adjust_button_sizes()
 
     def resizeEvent(self, a0: QResizeEvent) -> None:
         """It called when the main window resizes."""
@@ -212,6 +214,9 @@ class AppWindow(QMainWindow):
             self._savesize()
         # Adjust with of button:
         # Picture button fixed and the rest should behave same with each other
+        self.adjust_button_sizes()
+
+    def adjust_button_sizes(self):
         self.ui.CODpushButton.setFixedSize(self.ui.CheckcifPDFOnlineButton.size())
         self.ui.SaveFullReportButton.setFixedWidth(
             self.ui.CODpushButton.width() - self.ui.ReportPicPushButton.width() - 6)
