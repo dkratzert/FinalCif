@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/Users/daniel/GitHub/FinalCif/./gui/finalcif_gui.ui'
+# Form implementation generated from reading ui file 'D:\GitHub\FinalCif\./gui\finalcif_gui.ui'
 #
 # Created by: PyQt5 UI code generator 5.14.2
 #
@@ -898,7 +898,7 @@ class Ui_FinalCifWindow(object):
         self.HAtomsCheckBox.setText(_translate("FinalCifWindow", "without Hydrogen Bonds"))
         self.SaveFullReportButton.setText(_translate("FinalCifWindow", "Make Tables"))
         self.CCDCpushButton.setText(_translate("FinalCifWindow", "CCDC Deposit"))
-        self.ReportPicPushButton.setText(_translate("FinalCifWindow", "Picture ->"))
+        self.ReportPicPushButton.setText(_translate("FinalCifWindow", "Picture"))
         self.CODpushButton.setText(_translate("FinalCifWindow", "COD Deposit"))
         self.label.setText(_translate("FinalCifWindow", "PLATON Checkcif output:"))
         self.BackFromPlatonPushButton.setText(_translate("FinalCifWindow", "Back to CIF Table"))
