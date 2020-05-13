@@ -12,8 +12,12 @@ other sources like the .p4p file is displayed in the middle column and user info
 column. The data typed by the user always rules out the other information. The two different templates on the left
 can be used to fill in author information or machine models (top) as well as to create dropdown menus for specific
 CIF keywords (bottom). Any keyword not already in the CIF file will be added by the template. In the dropdown menus,
-you can be creative to specify the crystallization conditions with a template...
+you can be creative to specify the crystallization conditions with a template.
+
 The CIF keywords with a question mark as value are at the beginning of the table and the keywords with values are below.
+
+Every input field accepts unicode characters like "ω". They will be translated into CIF ascii format automatically. Please tell me if any character does not work.
+
 Various possibilities of Checkcif are available, online with html or pdf result and offline.
 The button "save cif file" saves the current file under 'name'-finalcif.cif. FinalCif will never make Changes to the
 original CIF file. 
