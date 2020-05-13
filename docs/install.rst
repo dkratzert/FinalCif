@@ -7,7 +7,7 @@ Start the installer (FinalCif-setup-x64-vXX.exe) and click next until finished.
 
 Linux
 -----
-FinalCif for linux needs no installation. Just download the executable anywhere on you computer.
+FinalCif for linux needs no installation. Just download the executable FinalCif-vXX_opensuse or FinalCif-vXX_ubuntu anywhere on you computer.
 
 MacOS
 -----

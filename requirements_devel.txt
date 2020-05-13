@@ -22,5 +22,6 @@ qtpy==1.9.0
 # pip install https://github.com/project-gemmi/gemmi/archive/master.zip --upgrade
 
 # For development
-# docxtpl
-# sphinx
+docxtpl
+sphinx
+sphinx-rtd-theme

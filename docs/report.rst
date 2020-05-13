@@ -2,11 +2,12 @@
 Report Document
 ===============
 
-FinalCif is abel to render a nice looking report document from the information contained in the CIF.
+FinalCif is able to render a nice looking report document from the information contained in the CIF.
 For a complete report, you have to finish the CIF first.
 It is also advisable to deposit the file before the report generation in order to have the CCDC number
 listed in the report text.
 
+.. image:: pics/finalcif_report.PNG
 
 CCDC Number
 -----------

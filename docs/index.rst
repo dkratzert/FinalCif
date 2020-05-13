@@ -21,5 +21,6 @@ Contents
    install
    description
    templates
+   checkcif
    report
    sources

@@ -16,12 +16,13 @@ you can be creative to specify the crystallization conditions with a template...
 The CIF keywords with a question mark as value are at the beginning of the table and the keywords with values are below.
 Various possibilities of Checkcif are available, online with html or pdf result and offline.
 The button "save cif file" saves the current file under 'name'-finalcif.cif. FinalCif will never make Changes to the
-original CIF file.
+original CIF file. 
+
 The FinalCif executable accepts a file name as first argument in order to open .cif files from
 other programs like ShelXle.
 
-# TODO:
-.. image:: picture.png
+.. image:: pics/finalcif_main.PNG
+
 
 **A workflow example**
 
@@ -41,3 +42,5 @@ other programs like ShelXle.
 * SAINT _0m._ls, _01._ls
 * Bruker _0m.p4p
 * One frame like _ib_01_0001.sfrm
+* A .eml email file for the CCDC number
+* the .hkl and .res file content of the CIF itself
