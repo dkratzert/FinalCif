@@ -131,14 +131,20 @@ def make_report_from(file_obj: Path, output_filename: str = None, path: str = ''
     cif, table_num = add_main_table(document, cif, table_num)
 
     make_columns_section(document, columns='1')
-
     table_num = add_coords_table(document, cif, table_num)
-    make_columns_section(document, columns='2')
+
     if cif.symmops:
+        document.add_heading(r"Table {}. Bond lengths and angles for {}.".format(table_num, cif.block.name), 2)
+        make_columns_section(document, columns='2')
         table_num = add_bonds_and_angles_table(document, cif, table_num, without_H)
+        make_columns_section(document, columns='1')
+        document.add_heading(r"Table {}. Torsion angles for {}.".format(table_num, cif.block.name), 2)
+        make_columns_section(document, columns='2')
         table_num = add_torsion_angles(document, cif, table_num, without_H)
         make_columns_section(document, columns='1')
-        table_num = add_hydrogen_bonds(document, cif, table_num)
+        if len(list(cif.hydrogen_bonds())) > 0:
+            document.add_heading(r"Table {}. Hydrogen bonds for {}.".format(table_num, cif.block.name), 2)
+            table_num = add_hydrogen_bonds(document, cif, table_num)
         document.add_paragraph('')
     else:
         make_columns_section(document, columns='1')
@@ -498,8 +504,6 @@ def add_bonds_and_angles_table(document: Document, cif: CifContainer, table_num:
     Make table with bonds and angles.
     """
     table_num += 1
-    headline = r"Table {}. Bond lengths and angles for {}.".format(table_num, cif.block.name)
-    document.add_heading(headline, 2)
 
     # creating rows in advance is *much* faster!
     bond_angle_table = document.add_table(rows=cif.nbonds(without_H) + cif.nangles(without_H) + 3, cols=2,
@@ -593,8 +597,6 @@ def add_torsion_angles(document: Document, cif: CifContainer, table_num: int, wi
         print('No torsion angles in cif.')
         return table_num
     table_num += 1
-    headline = r"Table {}. Torsion angles for {}.".format(table_num, cif.block.name)
-    document.add_heading(headline, 2)
     torsion_table = document.add_table(rows=cif.ntorsion_angles(without_H) + 1, cols=2)
     torsion_table.style = 'Table Grid'
     head_row = torsion_table.rows[0]
@@ -669,12 +671,7 @@ def add_hydrogen_bonds(document: Document, cif: CifContainer, table_num: int) ->
     Table 7.  Hydrogen bonds for I-43d_final  [Å and °].
     """
     table_num += 1
-    if not len(list(cif.hydrogen_bonds())) > 0:
-        print('No hydrogen bonds in cif.')
-        return table_num
     nhydrogenb = len(list(cif.hydrogen_bonds()))
-    headline = r"Table {}. Hydrogen bonds for {}.".format(table_num, cif.block.name)
-    document.add_heading(headline, 2)
     hydrogen_table = document.add_table(rows=nhydrogenb + 1, cols=5)
     hydrogen_table.style = 'Table Grid'
     head_row = hydrogen_table.rows[0].cells
