@@ -41,6 +41,10 @@ exe = EXE(pyz,
           console=False )
 
 app = BUNDLE(exe,
-             name='finalcif.app',
+             name='Finalcif-v_macos.app',
              icon='icon/finalcif2.ico',
-             bundle_identifier=None)
+             bundle_identifier=None,
+             info_plist={
+                'NSHighResolutionCapable': 'True'
+             },
+             )
