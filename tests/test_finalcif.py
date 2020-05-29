@@ -364,6 +364,8 @@ class TestWorkfolder(unittest.TestCase):
 
     def allrows_test_key(self, key: str = '', results: list = None):
         for n, r in enumerate(results):
+            #print('##', key, n, r)
+            #print(self.myapp.ui.cif_main_table.getTextFromKey(key, n))
             self.assertEqual(r, self.myapp.ui.cif_main_table.getTextFromKey(key, n))
 
     def test_equipment_click(self):
@@ -372,6 +374,7 @@ class TestWorkfolder(unittest.TestCase):
         self.myapp.load_selected_equipment()
         self.allrows_test_key('_diffrn_measurement_method', ['?', 'ω and ϕ scans', 'ω and ϕ scans'])
         self.allrows_test_key('_diffrn_measurement_specimen_support', ['?', 'MiTeGen micromount', 'MiTeGen micromount'])
+        # TODO: Check why first columns pretends to have a value:
         self.allrows_test_key('_olex2_diffrn_ambient_temperature_device',
                               ['?', 'Oxford Cryostream 800', 'Oxford Cryostream 800'])
         # Check if click on author adds the address to second and third column:
