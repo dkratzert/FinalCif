@@ -12,7 +12,8 @@ from pathlib import Path
 from typing import List, Sequence, Tuple
 
 from docx import Document
-from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_TAB_ALIGNMENT, WD_TAB_LEADER
+from docx.enum.section import WD_SECTION_START
+from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_TAB_ALIGNMENT, WD_TAB_LEADER, WD_BREAK
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Cm, Length, Pt
@@ -69,7 +70,7 @@ def format_space_group(table: Table, cif: CifContainer) -> None:
 
 
 def make_report_from(file_obj: Path, output_filename: str = None, path: str = '', without_H: bool = False,
-                     picfile: Path = None) -> str:
+                     picfile: Path = None, report_text: bool = True) -> str:
     """
     Creates a tabular cif report.
     :param file_obj: Input cif file.
@@ -77,7 +78,6 @@ def make_report_from(file_obj: Path, output_filename: str = None, path: str = ''
     """
     # pprint(datasources)
     document = create_document(path)
-    style = document.styles['Normal']
 
     document.add_heading('Structure Tables', 1)
 
@@ -93,56 +93,66 @@ def make_report_from(file_obj: Path, output_filename: str = None, path: str = ''
     if not cif:
         print('Something failed during cif file saving.')
         return ''
-    if picfile.exists():
-        pic = document.add_paragraph()
-        pic.add_run().add_picture(str(picfile), width=Cm(7))
+    if report_text:
+        make_columns_section(document, columns='2')
 
-    paragr = document.add_paragraph()
-    ref = ReferenceList(paragr)
-    paragr.style = document.styles['fliesstext']
+    if report_text:
+        if picfile and picfile.exists():
+            pic = document.add_paragraph()
+            pic.add_run().add_picture(str(picfile), width=Cm(7))
 
-    # -- The main text:
-    paragr.add_run('The following text is only a suggestion: ').font.bold = True
-    Crystallization(cif, paragr)
-    CrstalSelection(cif, paragr)
-    MachineType(cif, paragr)
-    DataReduct(cif, paragr, ref)
-    SpaceChar(paragr).regular()
-    SolveRefine(cif, paragr, ref)
-    SpaceChar(paragr).regular()
-    if cif.hydrogen_atoms_present:
-        Hydrogens(cif, paragr)
+        paragr = document.add_paragraph()
+        paragr.style = document.styles['fliesstext']
+        ref = ReferenceList(paragr)
+        # -- The main text:
+        paragr.add_run('The following text is only a suggestion: ').font.bold = True
+        Crystallization(cif, paragr)
+        CrstalSelection(cif, paragr)
+        MachineType(cif, paragr)
+        DataReduct(cif, paragr, ref)
         SpaceChar(paragr).regular()
-    if cif.disorder_present:
-        d = Disorder(cif, paragr)
-        if d.dsr_sentence:
-            ref.append([DSRReference2015(), DSRReference2018()])
+        SolveRefine(cif, paragr, ref)
+        SpaceChar(paragr).regular()
+        if cif.hydrogen_atoms_present:
+            Hydrogens(cif, paragr)
             SpaceChar(paragr).regular()
-    CCDC(cif, paragr, ref)
-    SpaceChar(paragr).regular()
-    FinalCifreport(paragr, ref)
+        if cif.disorder_present:
+            d = Disorder(cif, paragr)
+            if d.dsr_sentence:
+                ref.append([DSRReference2015(), DSRReference2018()])
+                SpaceChar(paragr).regular()
+        CCDC(cif, paragr, ref)
+        SpaceChar(paragr).regular()
+        FinalCifreport(paragr, ref)
 
-    # -- The tables:
+    # -- The residuals table:
     table_num = 1
-    if not picfile.exists():
-        document.add_paragraph('\n\n\n\n\n\n')
-    p = document.add_paragraph('')
-    p.space_before = Pt(25)
-    cif, table_num = add_main_table(document, cif, table_num)
-
-    make_columns_section(document, columns='1')
+    if report_text:
+        # I have to do the header and styling here, otherwise I get another paragraph with a line break in front of the heading.
+        p = document.add_paragraph(style='Heading 2')
+        p.add_run().add_break(WD_BREAK.COLUMN)
+        tab0_head = r"Table {}. Crystal data and structure refinement for {}".format(table_num, cif.block.name)
+        p.add_run(text=tab0_head)
+    table_num = add_residuals_table(document, cif, table_num)
+    p = document.add_paragraph()
+    p.add_run().add_break(WD_BREAK.PAGE)
+    if report_text:
+        make_columns_section(document, columns='1')
     table_num = add_coords_table(document, cif, table_num)
 
     if cif.symmops:
+        table_num += 1
         document.add_heading(r"Table {}. Bond lengths and angles for {}.".format(table_num, cif.block.name), 2)
         make_columns_section(document, columns='2')
         table_num = add_bonds_and_angles_table(document, cif, table_num, without_H)
         make_columns_section(document, columns='1')
+        table_num += 1
         document.add_heading(r"Table {}. Torsion angles for {}.".format(table_num, cif.block.name), 2)
         make_columns_section(document, columns='2')
         table_num = add_torsion_angles(document, cif, table_num, without_H)
         make_columns_section(document, columns='1')
         if len(list(cif.hydrogen_bonds())) > 0:
+            table_num += 1
             document.add_heading(r"Table {}. Hydrogen bonds for {}.".format(table_num, cif.block.name), 2)
             table_num = add_hydrogen_bonds(document, cif, table_num)
         document.add_paragraph('')
@@ -150,9 +160,10 @@ def make_report_from(file_obj: Path, output_filename: str = None, path: str = ''
         make_columns_section(document, columns='1')
         document.add_paragraph('No further tables, because symmetry operators '
                                '(_space_group_symop_operation_xyz) are missing.')
-    # -- Bibliography:
-    document.add_heading('Bibliography', 2)
-    ref.make_literature_list(document)
+    if report_text:
+        # -- Bibliography:
+        document.add_heading('Bibliography', 2)
+        ref.make_literature_list(document)
 
     document.save(output_filename)
     print('\nTables finished - output file: {}'.format(output_filename))
@@ -236,9 +247,8 @@ def set_cell_border(cell: _Cell, **kwargs) -> None:
                     element.set(qn('w:{}'.format(key)), str(edge_data[key]))
 
 
-def add_main_table(document: Document(), cif: CifContainer, table_num: int) -> Tuple[CifContainer, int]:
-    tab0_head = r"Table {}. Crystal data and structure refinement for {}".format(table_num, cif.block.name)
-    document.add_heading(tab0_head, 2)
+def add_residuals_table(document: Document(), cif: CifContainer, table_num: int) -> Tuple[CifContainer, int]:
+    # table_num += 1
     exti = cif['_refine_ls_extinction_coef']
     rows = 33
     if cif.is_centrosymm:
@@ -254,7 +264,7 @@ def add_main_table(document: Document(), cif: CifContainer, table_num: int) -> T
     populate_description_columns(main_table, cif)
     # The main residuals table:
     populate_main_table_values(main_table, cif)
-    return cif, table_num
+    return table_num
 
 
 def populate_main_table_values(main_table: Table, cif: CifContainer):
@@ -503,8 +513,6 @@ def add_bonds_and_angles_table(document: Document, cif: CifContainer, table_num:
     """
     Make table with bonds and angles.
     """
-    table_num += 1
-
     # creating rows in advance is *much* faster!
     bond_angle_table = document.add_table(rows=cif.nbonds(without_H) + cif.nangles(without_H) + 3, cols=2,
                                           style='Table Grid')
@@ -596,7 +604,6 @@ def add_torsion_angles(document: Document, cif: CifContainer, table_num: int, wi
     if not len(list(cif.torsion_angles())) > 0:
         print('No torsion angles in cif.')
         return table_num
-    table_num += 1
     torsion_table = document.add_table(rows=cif.ntorsion_angles(without_H) + 1, cols=2)
     torsion_table.style = 'Table Grid'
     head_row = torsion_table.rows[0]
@@ -670,7 +677,6 @@ def add_hydrogen_bonds(document: Document, cif: CifContainer, table_num: int) ->
     """
     Table 7.  Hydrogen bonds for I-43d_final  [Å and °].
     """
-    table_num += 1
     nhydrogenb = len(list(cif.hydrogen_bonds()))
     hydrogen_table = document.add_table(rows=nhydrogenb + 1, cols=5)
     hydrogen_table.style = 'Table Grid'
@@ -880,7 +886,9 @@ if __name__ == '__main__':
 
     # make_report_from(get_files_from_current_dir()[5])
     t1 = time.perf_counter()
-    make_report_from(Path(r'test-data/DK_zucker2_0m-finalcif.cif'), output_filename=Path(output_filename))
+    # TODO: make da dictionary with options like picture size and report text or not and submit to make_report_from()
+    make_report_from(Path(r'tests/examples/1979688.cif'), output_filename=Path(output_filename), report_text=True,
+                     picfile=Path('test-data/P21c-final-finalcif.gif'))
     # make_report_from(Path(r'/Volumes/nifty/p-1.cif'))
     t2 = time.perf_counter()
     print('complete table:', round(t2 - t1, 2), 's')
