@@ -169,7 +169,8 @@ class AppWindow(QMainWindow):
         self.checkfor_version()
         self.get_checkdef()
         self.subwin = Ui_ResponseFormsEditor()
-        self.ui.PictureWidthDoubleSpinBox.setRange(0.01, 25)
+        self.ui.PictureWidthDoubleSpinBox.setRange(0.0, 25)
+        self.ui.PictureWidthDoubleSpinBox.setSingleStep(0.5)
         self.report_options = {}
 
     def make_button_icons(self):
@@ -336,8 +337,8 @@ class AppWindow(QMainWindow):
         self.ui.ReportTextCheckBox.clicked.connect(self.save_options)
         self.ui.PictureWidthDoubleSpinBox.valueChanged.connect(self.save_options)
         options = self.settings.load_report_options()
-        print('loaded options:', options)
         if not options:
+            print('no options found')
             options = {'report_text': True,
                        'picture_width': 7.5,
                        'without_H': False,
@@ -346,7 +347,7 @@ class AppWindow(QMainWindow):
         if self.report_options.get('report_text') != None:
             self.ui.ReportTextCheckBox.setChecked(not self.report_options.get('report_text'))
         if self.report_options.get('without_H') != None:
-            self.ui.HAtomsCheckBox.setChecked(not self.report_options.get('without_H'))
+            self.ui.HAtomsCheckBox.setChecked(self.report_options.get('without_H'))
         if self.report_options.get('picture_width'):
             self.ui.PictureWidthDoubleSpinBox.setValue(self.report_options.get('picture_width'))
         self.ui.MainStackedWidget.setCurrentIndex(6)
@@ -355,9 +356,9 @@ class AppWindow(QMainWindow):
         options = {
             'report_text': not self.ui.ReportTextCheckBox.isChecked(),
             'picture_width': self.ui.PictureWidthDoubleSpinBox.value(),
-            'without_H': not self.ui.HAtomsCheckBox.isChecked(),
+            'without_H': self.ui.HAtomsCheckBox.isChecked(),
         }
-        print('saving options:', options)
+        self.report_options = options
         self.settings.save_report_options(options)
 
     def set_report_picture(self):
