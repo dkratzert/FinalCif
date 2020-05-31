@@ -5,7 +5,6 @@
 #
 import itertools as it
 import os
-import re
 import subprocess
 from math import sin, radians
 from pathlib import Path
@@ -13,7 +12,7 @@ from typing import List, Sequence, Tuple
 
 from docx import Document
 from docx.enum.section import WD_SECTION_START
-from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_TAB_ALIGNMENT, WD_TAB_LEADER, WD_BREAK
+from docx.enum.text import WD_TAB_ALIGNMENT, WD_TAB_LEADER, WD_BREAK
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Cm, Length, Pt
@@ -21,62 +20,23 @@ from docx.table import Table, _Cell
 
 from app_path import application_path
 from cif.cif_file_io import CifContainer
-from report.mtools import cif_keywords_list, isfloat, this_or_quest
+from report.mtools import cif_keywords_list, isfloat, this_or_quest, format_space_group
 from report.references import ReferenceList, DSRReference2018, DSRReference2015
 from report.report_text import CCDC, CrstalSelection, Crystallization, DataReduct, Disorder, Hydrogens, MachineType, \
-    SolveRefine, format_radiation, math_to_word, FinalCifreport, SpaceChar
-from report.spgrps import SpaceGroups
+    SolveRefine, format_radiation, FinalCifreport, SpaceChar
 from report.symm import SymmetryElement
 from tools.misc import prot_space, angstrom, bequal, sigma_sm, halbgeviert, degree_sign, ellipsis_mid
 
 
-def format_space_group(table: Table, cif: CifContainer) -> None:
-    """
-    Sets formating of the space group symbol in row 6.
-    """
-    space_group = cif['_space_group_name_H-M_alt'].strip("'")
-    it_number = cif['_space_group_IT_number']
-    paragraph = table.cell(5, 1).paragraphs[0]
-    try:
-        # The HM space group symbol
-        s = SpaceGroups()
-        spgrxml = s.iucrNumberToMathml(it_number)
-        paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
-        paragraph._element.append(math_to_word(spgrxml))
-        paragraph.add_run(' (' + it_number + ')')
-    except Exception:
-        # Use fallback:
-        if space_group:
-            if len(space_group) > 4:  # don't modify P 1
-                space_group = re.sub(r'\s1', '', space_group)  # remove extra Hall "1" for mono and tric
-            space_group = re.sub(r'\s', '', space_group)  # remove all remaining whitespace
-            # space_group = re.sub(r'-1', u'\u0031\u0305', space_group)  # exchange -1 with 1bar
-            space_group_formated_text = [char for char in space_group]  # ???)
-            is_sub = False
-            for k, char in enumerate(space_group_formated_text):
-                sgrunsub = paragraph.add_run(char)
-                if not char.isdigit():
-                    sgrunsub.font.italic = True
-                else:
-                    if space_group_formated_text[k - 1].isdigit() and not is_sub:
-                        is_sub = True
-                        sgrunsub.font.subscript = True  # lowercase the second digit if previous is also digit
-                    else:
-                        is_sub = False  # only every second number as subscript for P212121 etc.
-            if it_number:
-                paragraph.add_run(' (' + it_number + ')')
-        else:
-            paragraph.add_run('?')
-
-
-def make_report_from(file_obj: Path, output_filename: str = None, path: str = '', without_H: bool = False,
-                     picfile: Path = None, report_text: bool = True) -> str:
+def make_report_from(options: dict, file_obj: Path, output_filename: str = None, path: str = '',
+                     picfile: Path = None) -> str:
     """
     Creates a tabular cif report.
     :param file_obj: Input cif file.
     :param output_filename: the table is saved to this file.
     """
-    # pprint(datasources)
+    without_H = options['without_H']
+    report_text = options['report_text']
     document = create_document(path)
 
     document.add_heading('Structure Tables', 1)
@@ -99,7 +59,11 @@ def make_report_from(file_obj: Path, output_filename: str = None, path: str = ''
     if report_text:
         if picfile and picfile.exists():
             pic = document.add_paragraph()
-            pic.add_run().add_picture(str(picfile), width=Cm(7))
+            try:
+                width = float(options['picture_width'])
+            except ValueError:
+                width = 7.0
+            pic.add_run().add_picture(str(picfile), width=Cm(width))
 
         paragr = document.add_paragraph()
         paragr.style = document.styles['fliesstext']
@@ -886,9 +850,13 @@ if __name__ == '__main__':
 
     # make_report_from(get_files_from_current_dir()[5])
     t1 = time.perf_counter()
-    # TODO: make da dictionary with options like picture size and report text or not and submit to make_report_from()
-    make_report_from(Path(r'tests/examples/1979688.cif'), output_filename=Path(output_filename), report_text=True,
-                     picfile=Path('test-data/P21c-final-finalcif.gif'))
+    report_options = {'report_text': True,
+                      'picture_width': 7.5,
+                      'without_H': False,
+                      }
+    make_report_from(options=report_options, file_obj=Path(r'tests/examples/1979688.cif'),
+                     output_filename=Path(output_filename),
+                     picfile=Path('icon/finalcif.png'))
     # make_report_from(Path(r'/Volumes/nifty/p-1.cif'))
     t2 = time.perf_counter()
     print('complete table:', round(t2 - t1, 2), 's')

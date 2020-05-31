@@ -12,7 +12,7 @@ from gui.dialogs import cif_file_open_dialog, cif_file_save_dialog, show_general
     unable_to_open_message, show_splash, bad_z_message
 from gui.loops import Loop
 
-DEBUG = False
+DEBUG = True
 if 'compile' in sys.argv:
     COMPILE = True
 else:
@@ -65,7 +65,7 @@ from tools.settings import FinalCifSettings
 from tools.version import VERSION
 
 from PyQt5.QtCore import QPoint, Qt, QUrl, QEvent
-from PyQt5.QtGui import QFont, QIcon, QBrush, QResizeEvent, QMoveEvent
+from PyQt5.QtGui import QFont, QIcon, QBrush, QResizeEvent, QMoveEvent, QValidator, QDoubleValidator
 from PyQt5.QtWidgets import QApplication, QFileDialog, QHeaderView, QListWidget, QListWidgetItem, \
     QMainWindow, QPlainTextEdit, QStackedWidget, QTableWidget, QShortcut, QCheckBox, QTableView
 
@@ -169,6 +169,8 @@ class AppWindow(QMainWindow):
         self.checkfor_version()
         self.get_checkdef()
         self.subwin = Ui_ResponseFormsEditor()
+        self.ui.PictureWidthDoubleSpinBox.setRange(0.01, 25)
+        self.report_options = {}
 
     def make_button_icons(self):
         self.ui.CheckcifButton.setIcon(qta.icon('mdi.file-document-box-outline'))
@@ -319,6 +321,44 @@ class AppWindow(QMainWindow):
         self.ui.BackSourcesPushButton.clicked.connect(self.back_to_main_noload)
         # Report picture:
         self.ui.ReportPicPushButton.clicked.connect(self.set_report_picture)
+        # Options:
+        self.ui.OptionsPushButton.clicked.connect(self.showoptions)
+        self.ui.BackFromOptionspPushButton.clicked.connect(self.back_to_main_noload)
+
+    def showoptions(self):
+        """
+        {'report_text': True,
+         'picture_width': 7.5,
+         'without_H': False,
+         }
+         """
+        self.ui.HAtomsCheckBox.clicked.connect(self.save_options)
+        self.ui.ReportTextCheckBox.clicked.connect(self.save_options)
+        self.ui.PictureWidthDoubleSpinBox.valueChanged.connect(self.save_options)
+        options = self.settings.load_report_options()
+        print('loaded options:', options)
+        if not options:
+            options = {'report_text': True,
+                       'picture_width': 7.5,
+                       'without_H': False,
+                       }
+        self.report_options = options
+        if self.report_options.get('report_text') != None:
+            self.ui.ReportTextCheckBox.setChecked(not self.report_options.get('report_text'))
+        if self.report_options.get('without_H') != None:
+            self.ui.HAtomsCheckBox.setChecked(not self.report_options.get('without_H'))
+        if self.report_options.get('picture_width'):
+            self.ui.PictureWidthDoubleSpinBox.setValue(self.report_options.get('picture_width'))
+        self.ui.MainStackedWidget.setCurrentIndex(6)
+
+    def save_options(self):
+        options = {
+            'report_text': not self.ui.ReportTextCheckBox.isChecked(),
+            'picture_width': self.ui.PictureWidthDoubleSpinBox.value(),
+            'without_H': not self.ui.HAtomsCheckBox.isChecked(),
+        }
+        print('saving options:', options)
+        self.settings.save_report_options(options)
 
     def set_report_picture(self):
         """Sets the picture of the report document."""
@@ -739,8 +779,11 @@ class AppWindow(QMainWindow):
             else:
                 picfile = Path(self.final_cif_file_name.stem + '.gif')
             try:
-                make_report_from(self.final_cif_file_name, output_filename=report_filename, path=application_path,
-                                 without_H=self.ui.HAtomsCheckBox.isChecked(), picfile=picfile)
+                make_report_from(options=self.report_options,
+                                 file_obj=self.final_cif_file_name,
+                                 output_filename=report_filename,
+                                 path=application_path,
+                                 picfile=picfile)
             except FileNotFoundError as e:
                 if DEBUG:
                     raise
@@ -1345,12 +1388,12 @@ class AppWindow(QMainWindow):
         row_num = table.rowCount()
         table.insertRow(row_num)
         # Add cif key and value to the row:
-        #item_val = MyTableWidgetItem(value)
-        #table.setItem(row_num, 0, item_val)
+        # item_val = MyTableWidgetItem(value)
+        # table.setItem(row_num, 0, item_val)
         key_item = MyQPlainTextEdit(table, minheight=50)
         key_item.setPlainText(value)
         ## This is critical, because otherwise the add_row_if_needed does not work as expected:
-        #key_item.textChanged.connect(self.add_row_if_needed)
+        # key_item.textChanged.connect(self.add_row_if_needed)
         table.setCellWidget(row_num, 0, key_item)
 
     def save_property(self, table: QTableWidget,
