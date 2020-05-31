@@ -1916,7 +1916,7 @@ The data source will be ignored until next program restart.</string>
                <item row="0" column="0" colspan="2">
                 <widget class="QCheckBox" name="ReportTextCheckBox">
                  <property name="text">
-                  <string>No report text to Structure report</string>
+                  <string>No report text to structure report</string>
                  </property>
                 </widget>
                </item>

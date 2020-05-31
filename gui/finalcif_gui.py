@@ -981,7 +981,7 @@ class Ui_FinalCifWindow(object):
         item.setText(_translate("FinalCifWindow", "Data Source"))
         self.LoopsTabWidget.setTabText(self.LoopsTabWidget.indexOf(self.tab), _translate("FinalCifWindow", "Tab 1"))
         self.groupBox_5.setTitle(_translate("FinalCifWindow", "Report Options"))
-        self.ReportTextCheckBox.setText(_translate("FinalCifWindow", "No report text to Structure report"))
+        self.ReportTextCheckBox.setText(_translate("FinalCifWindow", "No report text to structure report"))
         self.HAtomsCheckBox.setText(_translate("FinalCifWindow", "No bonds and angles to hydrogen atoms"))
         self.PictureWidthLabel.setText(_translate("FinalCifWindow", "Picture width [cm]"))
         self.BackFromOptionspPushButton.setText(_translate("FinalCifWindow", "Back to Main Table"))
