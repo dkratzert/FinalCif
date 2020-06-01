@@ -39,8 +39,6 @@ def make_report_from(options: dict, file_obj: Path, output_filename: str = None,
     report_text = options['report_text']
     document = create_document(path)
 
-    document.add_heading('Structure Tables', 1)
-
     if file_obj.exists():
         try:
             cif = CifContainer(file_obj)
@@ -56,6 +54,10 @@ def make_report_from(options: dict, file_obj: Path, output_filename: str = None,
     if report_text:
         make_columns_section(document, columns='2')
 
+    if not report_text:
+        document.add_heading('Structure Tables for {}'.format(cif.block.name), 1)
+    else:
+        document.add_heading('Structure Tables', 1)
     if report_text:
         if picfile and picfile.exists():
             pic = document.add_paragraph()
