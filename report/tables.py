@@ -694,8 +694,7 @@ def populate_description_columns(main_table: Table, cif: CifContainer) -> None:
     lgnd12.add_run('Volume [\u00C5')
     lgnd12.add_run('3').font.superscript = True
     lgnd12.add_run(']')
-    lgnd13 = main_table.cell(13, 0).paragraphs[0]
-    lgnd13.add_run('Z').font.italic = True
+    lgnd13 = main_table.cell(13, 0).paragraphs[0].add_run('Z').font.italic = True
     lgnd14 = main_table.cell(14, 0).paragraphs[0]
     lgnd14.add_run('\u03C1').font.italic = True
     lgnd14.add_run('calc').font.subscript = True
@@ -714,20 +713,13 @@ def populate_description_columns(main_table: Table, cif: CifContainer) -> None:
     lgnd17.add_run('Crystal size [mm')
     lgnd17.add_run('3').font.superscript = True
     lgnd17.add_run(']')
-    lgnd18 = main_table.cell(18, 0).paragraphs[0]
-    lgnd18.add_run('Crystal colour')
-    lgnd19 = main_table.cell(19, 0).paragraphs[0]
-    lgnd19.add_run('Crystal shape')
-    lgnd20 = main_table.cell(20, 0).paragraphs[0]
-    lgnd20.add_run('Radiation')
-    lgnd21 = main_table.cell(21, 0).paragraphs[0]
-    lgnd21.add_run('2\u03F4 range [\u00b0]')
-    lgnd22 = main_table.cell(22, 0).paragraphs[0]
-    lgnd22.add_run('Index ranges')
-    lgnd23 = main_table.cell(23, 0).paragraphs[0]
-    lgnd23.add_run('Reflections collected')
-    lgnd24 = main_table.cell(24, 0).paragraphs[0]
-    lgnd24.add_run('Independent reflections')
+    lgnd18 = main_table.cell(18, 0).paragraphs[0].add_run('Crystal colour')
+    lgnd19 = main_table.cell(19, 0).paragraphs[0].add_run('Crystal shape')
+    lgnd20 = main_table.cell(20, 0).paragraphs[0].add_run('Radiation')
+    lgnd21 = main_table.cell(21, 0).paragraphs[0].add_run('2\u03F4 range [\u00b0]')
+    lgnd22 = main_table.cell(22, 0).paragraphs[0].add_run('Index ranges')
+    lgnd23 = main_table.cell(23, 0).paragraphs[0].add_run('Reflections collected')
+    lgnd24 = main_table.cell(24, 0).paragraphs[0].add_run('Independent reflections')
     lgnd25 = main_table.cell(25, 0).paragraphs[0]
     theta_full = cif['_diffrn_reflns_theta_full']
     if theta_full:
