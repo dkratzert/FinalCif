@@ -29,7 +29,6 @@ from tools.misc import prot_space, angstrom, bequal, sigma_sm, halbgeviert, degr
     timessym, lambdasym
 
 
-
 def make_report_from(options: dict, file_obj: Path, output_filename: str = None, path: str = '',
                      picfile: Path = None) -> str:
     """
@@ -53,13 +52,13 @@ def make_report_from(options: dict, file_obj: Path, output_filename: str = None,
     if not cif:
         print('Something failed during cif file saving.')
         return ''
-    if report_text:
-        make_columns_section(document, columns='2')
 
     if not report_text:
         document.add_heading('Structure Tables for {}'.format(cif.block.name), 1)
     else:
         document.add_heading('Structure Tables', 1)
+        make_columns_section(document, columns='2')
+
     if report_text:
         if picfile and picfile.exists():
             pic = document.add_paragraph()
@@ -330,8 +329,8 @@ def populate_main_table_values(main_table: Table, cif: CifContainer):
     except ValueError:
         main_table.cell(21, 1).text = '? to ?'
     main_table.cell(22, 1).text = limit_h_min + ' {} h {} '.format(lessequal, lessequal) + limit_h_max + '\n' \
-                                + limit_k_min + ' {} k {} '.format(lessequal, lessequal) + limit_k_max + '\n' \
-                                + limit_l_min + ' {} l {} '.format(lessequal, lessequal) + limit_l_max
+                                  + limit_k_min + ' {} k {} '.format(lessequal, lessequal) + limit_k_max + '\n' \
+                                  + limit_l_min + ' {} l {} '.format(lessequal, lessequal) + limit_l_max
     rint_p = main_table.cell(24, 1).paragraphs[0]
     rint_p.add_run(this_or_quest(reflns_number_total) + '\n')
     rint_p.add_run('R').font.italic = True
@@ -501,7 +500,7 @@ def add_bonds_and_angles_table(document: Document, cif: CifContainer, table_num:
         c0.paragraphs[0].add_run('#' + str(symms[symm2]) if symm2 else '').font.superscript = True
         c1.text = str(val)  # bond
     ############ the angles ####################
-    head_row = bond_angle_table.rows[rowidx+1]
+    head_row = bond_angle_table.rows[rowidx + 1]
     head_row.cells[0].paragraphs[0].add_run('Atom{0}Atom{0}Atom'.format(halbgeviert)).bold = True
     head_row.cells[1].paragraphs[0].add_run('Angle [{}]'.format(degree_sign)).bold = True
     set_cell_border(head_row.cells[0], bottom={"sz": 2, "color": "#000000", "val": "single"})
