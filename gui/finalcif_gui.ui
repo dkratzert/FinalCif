@@ -772,17 +772,17 @@
                  <item row="0" column="0">
                   <widget class="QPushButton" name="SaveCifButton">
                    <property name="toolTip">
-                    <string>Saves the cif file to name-final.cif</string>
+                    <string>Saves the CIF file to name-finalcif.cif</string>
                    </property>
                    <property name="text">
-                    <string>Save Cif File</string>
+                    <string>Save CIF File</string>
                    </property>
                   </widget>
                  </item>
                  <item row="1" column="0">
                   <widget class="QPushButton" name="ExploreDirButton">
                    <property name="toolTip">
-                    <string>Saves the cif file to name-final.cif</string>
+                    <string>Saves the CIF file to name-finalcif.cif</string>
                    </property>
                    <property name="text">
                     <string>Explore Directory</string>
@@ -1958,7 +1958,7 @@ The data source will be ignored until next program restart.</string>
                <item row="0" column="0" colspan="2">
                 <widget class="QCheckBox" name="ReportTextCheckBox">
                  <property name="text">
-                  <string>No report text to structure report</string>
+                  <string>No report text in structure report</string>
                  </property>
                 </widget>
                </item>

@@ -29,6 +29,7 @@ from tools.misc import prot_space, angstrom, bequal, sigma_sm, halbgeviert, degr
     timessym, lambdasym
 
 
+
 def make_report_from(options: dict, file_obj: Path, output_filename: str = None, path: str = '',
                      picfile: Path = None) -> str:
     """
@@ -36,8 +37,8 @@ def make_report_from(options: dict, file_obj: Path, output_filename: str = None,
     :param file_obj: Input cif file.
     :param output_filename: the table is saved to this file.
     """
-    without_H = options['without_H']
-    report_text = options['report_text']
+    without_H = options.get('without_H')
+    report_text = options.get('report_text')
     document = create_document(path)
 
     if file_obj.exists():
@@ -394,7 +395,7 @@ def add_coords_table(document: Document, cif: CifContainer, table_num: int):
     # eq.italic = True
     h.add_run('{}[{}'.format(prot_space, angstrom))
     h.add_run('2').font.superscript = True
-    h.add_run('] for {}.'.format(cif.block.name))
+    h.add_run('] for {}'.format(cif.block.name))
     coords_table = document.add_table(rows=len(atoms) + 1, cols=5)
     # coords_table.style = document.styles['Table Grid']
     coords_table.style = 'Table Grid'

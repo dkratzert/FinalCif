@@ -65,10 +65,10 @@ class ReportText():
 class Crystallization(FormatMixin):
     def __init__(self, cif: CifContainer, paragraph: Paragraph):
         self.cif = cif
-        self.crytsalization_method = gstr(self.cif['_exptl_crystal_recrystallization_method']) + '.'
+        self.crytsalization_method = gstr(self.cif['_exptl_crystal_recrystallization_method'])
         if not self.crytsalization_method:
             self.crytsalization_method = '[No crystallization method was given]'
-        sentence = "{} "
+        sentence = "{}. "
         self.text = sentence.format(self.crytsalization_method)
         paragraph.add_run(retranslate_delimiter(self.text))
 

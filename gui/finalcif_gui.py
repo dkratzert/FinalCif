@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/Users/daniel/Documents/GitHub/FinalCif/./gui/finalcif_gui.ui'
+# Form implementation generated from reading ui file 'D:\GitHub\FinalCif\./gui\finalcif_gui.ui'
 #
 # Created by: PyQt5 UI code generator 5.14.2
 #
@@ -930,9 +930,9 @@ class Ui_FinalCifWindow(object):
         item.setText(_translate("FinalCifWindow", "From Data Source"))
         item = self.cif_main_table.horizontalHeaderItem(2)
         item.setText(_translate("FinalCifWindow", "Own Data"))
-        self.SaveCifButton.setToolTip(_translate("FinalCifWindow", "Saves the cif file to name-final.cif"))
-        self.SaveCifButton.setText(_translate("FinalCifWindow", "Save Cif File"))
-        self.ExploreDirButton.setToolTip(_translate("FinalCifWindow", "Saves the cif file to name-final.cif"))
+        self.SaveCifButton.setToolTip(_translate("FinalCifWindow", "Saves the CIF file to name-finalcif.cif"))
+        self.SaveCifButton.setText(_translate("FinalCifWindow", "Save CIF File"))
+        self.ExploreDirButton.setToolTip(_translate("FinalCifWindow", "Saves the CIF file to name-finalcif.cif"))
         self.ExploreDirButton.setText(_translate("FinalCifWindow", "Explore Directory"))
         self.DetailsPushButton.setText(_translate("FinalCifWindow", "Show Details"))
         self.SourcesPushButton.setText(_translate("FinalCifWindow", "Data Sources"))
@@ -989,7 +989,7 @@ class Ui_FinalCifWindow(object):
         self.LoopsTabWidget.setTabText(self.LoopsTabWidget.indexOf(self.tab), _translate("FinalCifWindow", "Tab 1"))
         self.BackFromOptionspPushButton.setText(_translate("FinalCifWindow", "Back to Main Table"))
         self.groupBox_5.setTitle(_translate("FinalCifWindow", "Report Options"))
-        self.ReportTextCheckBox.setText(_translate("FinalCifWindow", "No report text to structure report"))
+        self.ReportTextCheckBox.setText(_translate("FinalCifWindow", "No report text in structure report"))
         self.HAtomsCheckBox.setText(_translate("FinalCifWindow", "No bonds and angles to hydrogen atoms"))
         self.PictureWidthLabel.setText(_translate("FinalCifWindow", "Picture width [cm]"))
         self.actionSave_Report.setText(_translate("FinalCifWindow", "Save Report"))

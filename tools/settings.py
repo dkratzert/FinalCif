@@ -170,6 +170,11 @@ class FinalCifSettings():
     def load_report_options(self) -> dict:
         self.settings.beginGroup('ReportOptions')
         options = self.settings.value("report", type=dict)
+        if not options:
+            options = {'report_text'  : True,
+                       'picture_width': 7.5,
+                       'without_H'    : False,
+                       }
         self.settings.endGroup()
         return options
 
