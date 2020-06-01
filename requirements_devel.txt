@@ -1,7 +1,7 @@
 altgraph>=0.17
 chardet==3.0.4
 future==0.18.2
-gemmi>=0.3.7
+gemmi>=0.3.8
 idna==2.9
 lxml>=4.5.1
 macholib>=1.14
