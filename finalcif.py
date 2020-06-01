@@ -171,7 +171,7 @@ class AppWindow(QMainWindow):
         self.subwin = Ui_ResponseFormsEditor()
         self.ui.PictureWidthDoubleSpinBox.setRange(0.0, 25)
         self.ui.PictureWidthDoubleSpinBox.setSingleStep(0.5)
-        self.report_options = {}
+        self.report_options = self.settings.load_report_options()
 
     def make_button_icons(self):
         self.ui.CheckcifButton.setIcon(qta.icon('mdi.file-document-box-outline'))
@@ -337,12 +337,6 @@ class AppWindow(QMainWindow):
         self.ui.ReportTextCheckBox.clicked.connect(self.save_options)
         self.ui.PictureWidthDoubleSpinBox.valueChanged.connect(self.save_options)
         options = self.settings.load_report_options()
-        if not options:
-            print('no options found')
-            options = {'report_text': True,
-                       'picture_width': 7.5,
-                       'without_H': False,
-                       }
         self.report_options = options
         if self.report_options.get('report_text') != None:
             self.ui.ReportTextCheckBox.setChecked(not self.report_options.get('report_text'))
