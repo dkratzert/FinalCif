@@ -30,6 +30,12 @@ degree_sign = u'\u00B0'
 ellipsis_mid = u'\u22EF'
 # ellipsis
 ellipsis = u'\u2026'
+# less or equal sign
+lessequal = u'\u2264'
+# times (cross) symbol
+timessym = u'\u00d7'
+# lambda
+lambdasym = u'\u03bb'
 
 
 def distance(x1: float, y1: float, z1: float, x2: float, y2: float, z2: float) -> float:
