@@ -680,18 +680,18 @@ def populate_description_columns(main_table: Table, cif: CifContainer) -> None:
     lgnd5 = main_table.cell(5, 0).paragraphs[0].add_run('Space group (number)')
     lgnd6 = main_table.cell(6, 0).paragraphs[0]
     lgnd6.add_run('a').font.italic = True
-    lgnd6.add_run(' [\u00C5]')
+    lgnd6.add_run(' [{}]'.format(angstrom))
     lgnd7 = main_table.cell(7, 0).paragraphs[0]
     lgnd7.add_run('b').font.italic = True
-    lgnd7.add_run(' [\u00C5]')
+    lgnd7.add_run(' [{}]'.format(angstrom))
     lgnd8 = main_table.cell(8, 0).paragraphs[0]
     lgnd8.add_run('c').font.italic = True
-    lgnd8.add_run(' [\u00C5]')
-    lgnd9 = main_table.cell(9, 0).paragraphs[0].add_run('\u03B1 [\u00C5]')
-    lgnd10 = main_table.cell(10, 0).paragraphs[0].add_run('\u03B2 [\u00C5]')
-    lgnd11 = main_table.cell(11, 0).paragraphs[0].add_run('\u03B3 [\u00C5]')
+    lgnd8.add_run(' [{}]'.format(angstrom))
+    lgnd9 = main_table.cell(9, 0).paragraphs[0].add_run('\u03B1 [{}]'.format(angstrom))
+    lgnd10 = main_table.cell(10, 0).paragraphs[0].add_run('\u03B2 [{}]'.format(angstrom))
+    lgnd11 = main_table.cell(11, 0).paragraphs[0].add_run('\u03B3 [{}]'.format(angstrom))
     lgnd12 = main_table.cell(12, 0).paragraphs[0]
-    lgnd12.add_run('Volume [\u00C5')
+    lgnd12.add_run('Volume [{}'.format(angstrom))
     lgnd12.add_run('3').font.superscript = True
     lgnd12.add_run(']')
     lgnd13 = main_table.cell(13, 0).paragraphs[0].add_run('Z').font.italic = True
@@ -817,9 +817,9 @@ if __name__ == '__main__':
 
     # make_report_from(get_files_from_current_dir()[5])
     t1 = time.perf_counter()
-    report_options = {'report_text': True,
+    report_options = {'report_text'  : True,
                       'picture_width': 7.5,
-                      'without_H': False,
+                      'without_H'    : False,
                       }
     make_report_from(options=report_options, file_obj=Path(r'tests/examples/1979688.cif'),
                      output_filename=Path(output_filename),

@@ -325,6 +325,23 @@ class AppWindow(QMainWindow):
         # Options:
         self.ui.OptionsPushButton.clicked.connect(self.showoptions)
         self.ui.BackFromOptionspPushButton.clicked.connect(self.back_to_main_noload)
+        # Shred Cif
+        self.ui.ShredCifButton.clicked.connect(self.shred_cif)
+
+    def shred_cif(self):
+        res = self.cif.resdata
+        hkl = self.cif.hkl_file.replace(')', ';')
+        if not res:
+            self.ui.ExtractStatusLabel.setText('No .res file data found!')
+            return
+        if not hkl:
+            self.ui.ExtractStatusLabel.setText('No .hkl file data found!')
+            return
+        resfile = Path(self.final_cif_file_name.stem + '.res')
+        hklfile = Path(self.final_cif_file_name.stem + '.hkl')
+        resfile.write_text(res[1:-1], encoding='ascii', errors='ignore')
+        hklfile.write_text(hkl[1:], encoding='ascii', errors='ignore')
+        self.ui.ExtractStatusLabel.setText('Finished!')
 
     def showoptions(self):
         """
@@ -348,9 +365,9 @@ class AppWindow(QMainWindow):
 
     def save_options(self):
         options = {
-            'report_text': not self.ui.ReportTextCheckBox.isChecked(),
+            'report_text'  : not self.ui.ReportTextCheckBox.isChecked(),
             'picture_width': self.ui.PictureWidthDoubleSpinBox.value(),
-            'without_H': self.ui.HAtomsCheckBox.isChecked(),
+            'without_H'    : self.ui.HAtomsCheckBox.isChecked(),
         }
         self.report_options = options
         self.settings.save_report_options(options)
@@ -539,6 +556,7 @@ class AppWindow(QMainWindow):
         """
         Get back to the main table. Without loading a new cif file.
         """
+        self.ui.ExtractStatusLabel.setText('')
         self.ui.MainStackedWidget.setCurrentIndex(0)
         if self.view:
             self.ui.moleculeLayout.removeWidget(self.view)
@@ -1517,6 +1535,7 @@ class AppWindow(QMainWindow):
                 self.rigakucif = RigakuData(rigaku)
         except StopIteration:
             pass
+        self.final_cif_file_name = Path(strip_finalcif_of_name(str(self.cif.fileobj.stem)) + '-finalcif.cif')
         # don't do this:
         # self.ui.cif_main_table.clear()
         try:

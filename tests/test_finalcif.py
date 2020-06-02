@@ -183,7 +183,8 @@ class TestApplication(unittest.TestCase):
         self.assertEqual('vecmap', self.myapp.ui.cif_main_table.cellWidget(17, 2).itemText(2))
         # _audit_contact_author_address
         self.assertEqual(addr,
-                         replace_newlines(self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_address', 0)))
+                         replace_newlines(
+                             self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_address', 0)))
         self.assertEqual('', self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_address', 1))
         self.assertEqual('', self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_address', 2))
         # _audit_contact_author_address celwidget classes:
@@ -364,8 +365,8 @@ class TestWorkfolder(unittest.TestCase):
 
     def allrows_test_key(self, key: str = '', results: list = None):
         for n, r in enumerate(results):
-            #print('##', key, n, r)
-            #print(self.myapp.ui.cif_main_table.getTextFromKey(key, n))
+            # print('##', key, n, r)
+            # print(self.myapp.ui.cif_main_table.getTextFromKey(key, n))
             self.assertEqual(r, self.myapp.ui.cif_main_table.getTextFromKey(key, n))
 
     def test_equipment_click(self):
