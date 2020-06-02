@@ -36,6 +36,8 @@ lessequal = u'\u2264'
 timessym = u'\u00d7'
 # lambda
 lambdasym = u'\u03bb'
+# one bar
+one_bar = u'\u0031\u0305'
 
 
 def distance(x1: float, y1: float, z1: float, x2: float, y2: float, z2: float) -> float:
@@ -47,6 +49,7 @@ def distance(x1: float, y1: float, z1: float, x2: float, y2: float, z2: float) -
     1.0
     """
     return sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2 + (z1 - z2) ** 2)
+
 
 def grouper(inputs, n, fillvalue=None):
     iters = [iter(inputs)] * n
@@ -199,7 +202,7 @@ essential_keys = {
     '_diffrn_radiation_wavelength'                     : 'The radiation wavelength in angstroms',
     '_diffrn_radiation_type'                           : r'The type of the radiation, e.g. Mo K\a',
     '_diffrn_radiation_monochromator'                  : r'The typ monochromator type to get _diffrn_radiation_wavelength',
-    #'_olex2_diffrn_ambient_temperature_device'         : 'Device to cool the crystal during measurement',
+    '_olex2_diffrn_ambient_temperature_device'         : 'Device to cool the crystal during measurement',
     '_diffrn_radiation_probe'                          : 'The nature of the radiation used',
     # '_diffrn_source_power'                             : 'The power in kilowatts at which the radiation source was operated',
     '_diffrn_source'                                   : "The general class of the source of radiation, e.g.'sealed X-ray tube'",
@@ -213,7 +216,7 @@ essential_keys = {
     '_diffrn_measurement_device_type'                  : 'The make, model or name of the measurement device used.',
     '_diffrn_measurement_method'                       : "Method used to measure the intensities, eg.g 'omega scans'",
     '_diffrn_measurement_specimen_support'             : 'The physical device used to support the crystal during data collection.',
-    #'_diffrn_measurement_specimen_adhesive'            : 'Adhesive used to hold the crystal on the _diffrn_measurement_specimen_support during intensity measurement.',
+    # '_diffrn_measurement_specimen_adhesive'            : 'Adhesive used to hold the crystal on the _diffrn_measurement_specimen_support during intensity measurement.',
     '_diffrn_reflns_number'                            : 'The total number of measured intensities excluding systematic absent',
     '_diffrn_reflns_av_unetI/netI'                     : 'Measure [sum |u(net I)|/sum|net I|] for all measured reflections',
     '_diffrn_reflns_av_R_equivalents'                  : 'The residual for symmetry-equivalent reflections used to calculate the average intensity',
@@ -268,11 +271,10 @@ essential_keys = {
     '_refine_ls_shift/su_max'                          : 'The largest ratio of the final least-squares parameter shift to the final standard uncertainty',
     '_refine_ls_shift/su_mean'                         : 'The average ratio of the final least-squares parameter shift to the final standard uncertainty',
     '_publ_section_references'                         : 'References for programs used to process the data',
-    # '_symmetry_cell_setting'                           : 'The cell settings for this space-group symmetry',
     '_chemical_name_systematic'                        : 'IUPAC or Chemical Abstracts full name of the compound',
     '_chemical_name_common'                            : 'Trivial name by which the compound is commonly known',
     '_chemical_melting_point'                          : 'The temperature in kelvins at which the crystalline solid changes to a liquid',
-    #'_space_group_symop_operation_xyz'                 : 'Symmetry operations of the space group',
+    # '_space_group_symop_operation_xyz'                 : 'Symmetry operations of the space group',
 }
 
 twin_keys = {
@@ -433,15 +435,15 @@ SOLUTION_SECONDARY = (
     (11, 'other'),
 )
 
-combobox_fields = {'_exptl_crystal_colour'               : COLOUR_CHOICES,
-                   '_chemical_absolute_configuration'    : ABSOLUTE_CONFIGURATION_CHOICES,
-                   '_exptl_absorpt_correction_type'      : ABSORPTION_CORRECTION_TYPES,
-                   '_refine_ls_hydrogen_treatment'       : REFINE_LS_HYDROGEN_TREATMENT,
-                   '_diffrn_radiation_type'              : RADIATION_TYPE,
-                   '_atom_sites_solution_primary'        : SOLUTION_PRIMARY,
-                   '_atom_sites_solution_secondary'      : SOLUTION_PRIMARY,
-                   '_diffrn_measurement_specimen_support': SPECIMEN_SUPPORT,
-                   '_atom_sites_solution_hydrogens'      : SOLUTION_PRIMARY,
+combobox_fields = {'_exptl_crystal_colour'                : COLOUR_CHOICES,
+                   '_chemical_absolute_configuration'     : ABSOLUTE_CONFIGURATION_CHOICES,
+                   '_exptl_absorpt_correction_type'       : ABSORPTION_CORRECTION_TYPES,
+                   '_refine_ls_hydrogen_treatment'        : REFINE_LS_HYDROGEN_TREATMENT,
+                   '_diffrn_radiation_type'               : RADIATION_TYPE,
+                   '_atom_sites_solution_primary'         : SOLUTION_PRIMARY,
+                   '_atom_sites_solution_secondary'       : SOLUTION_PRIMARY,
+                   '_diffrn_measurement_specimen_support' : SPECIMEN_SUPPORT,
+                   '_atom_sites_solution_hydrogens'       : SOLUTION_PRIMARY,
                    '_diffrn_measurement_specimen_adhesive': ADHESIVE,
                    }
 
@@ -664,7 +666,6 @@ predef_prop_templ = [{'name'  : 'Crystal Color',
                       }
 
                      ]
-
 
 celltxt = """
     <html>

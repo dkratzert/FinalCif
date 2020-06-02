@@ -107,6 +107,14 @@ class CifContainer():
         self.doc.write_file(filename, gemmi.cif.Style.Indent35)
         # Path(filename).write_text(self.doc.as_string(gemmi.cif.Style.Indent35))
 
+    @property
+    def hkl_file(self) -> str:
+        try:
+            return self.block.find_value('_shelx_hkl_file')[1:-1]
+        except Exception:
+            print('No hkl data found in CIF!')
+            return ''
+
     def abs_hkl_details(self) -> Dict[str, str]:
         """
         This method tries to determine the information witten at the end of a cif hkl file by sadabs.
@@ -119,7 +127,7 @@ class CifContainer():
                '_computing_structure_solution'  : '',
                }
         try:
-            hkl = self.block.find_value('_shelx_hkl_file')[:-1]
+            hkl = self.hkl_file
         except Exception:
             pass
         if not hkl:
@@ -238,9 +246,9 @@ class CifContainer():
         #>>> c.hkl_checksum_calcd
         #0
         """
-        hkl = self.block.find_value('_shelx_hkl_file')
+        hkl = self.hkl_file
         if hkl:
-            return self.calc_checksum(hkl[1:-1])
+            return self.calc_checksum(hkl)
         else:
             return 0
 

@@ -98,7 +98,7 @@ def format_space_group(table: Table, cif: CifContainer) -> None:
             if len(space_group) > 4:  # don't modify P 1
                 space_group = re.sub(r'\s1', '', space_group)  # remove extra Hall "1" for mono and tric
             space_group = re.sub(r'\s', '', space_group)  # remove all remaining whitespace
-            # space_group = re.sub(r'-1', u'\u0031\u0305', space_group)  # exchange -1 with 1bar
+            # space_group = re.sub(r'-1', one_bar, space_group)  # exchange -1 with 1bar
             space_group_formated_text = [char for char in space_group]  # ???)
             is_sub = False
             for k, char in enumerate(space_group_formated_text):
