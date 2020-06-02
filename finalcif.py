@@ -345,7 +345,7 @@ class AppWindow(QMainWindow):
             for line in res:
                 f.write(line)
         with open(hklfile, mode='w', newline='\n') as f:
-            for line in hkl[1:]:
+            for line in hkl:
                 f.write(line)
         self.ui.ExtractStatusLabel.setText('Finished writing data to {} \nand {}.'.format(resfile, hklfile))
 
