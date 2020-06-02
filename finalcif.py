@@ -341,7 +341,7 @@ class AppWindow(QMainWindow):
         hklfile = Path(self.final_cif_file_name.stem + '.hkl')
         resfile.write_text(res[1:-1], encoding='ascii', errors='ignore')
         hklfile.write_text(hkl[1:], encoding='ascii', errors='ignore')
-        self.ui.ExtractStatusLabel.setText('Finished!')
+        self.ui.ExtractStatusLabel.setText('Finished writing data to {} \nand {}.'.format(resfile, hklfile))
 
     def showoptions(self):
         """
