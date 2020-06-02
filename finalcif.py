@@ -329,6 +329,8 @@ class AppWindow(QMainWindow):
         self.ui.ShredCifButton.clicked.connect(self.shred_cif)
 
     def shred_cif(self):
+        if not self.cif:
+            return
         res = self.cif.resdata
         hkl = self.cif.hkl_file.replace(')', ';')
         if not res:
@@ -340,7 +342,7 @@ class AppWindow(QMainWindow):
         resfile = Path(self.final_cif_file_name.stem + '.res')
         hklfile = Path(self.final_cif_file_name.stem + '.hkl')
         resfile.write_text(res[1:-1], encoding='ascii', errors='ignore')
-        hklfile.write_text(hkl[1:], encoding='ascii', errors='ignore')
+        hklfile.write_text(hkl, encoding='ascii', errors='ignore')
         self.ui.ExtractStatusLabel.setText('Finished writing data to {} \nand {}.'.format(resfile, hklfile))
 
     def showoptions(self):
@@ -350,6 +352,11 @@ class AppWindow(QMainWindow):
          'without_H': False,
          }
          """
+        if self.cif:
+            if self.cif.resdata and self.cif.hkl_file:
+                self.ui.ShredCifButton.setEnabled(True)
+        else:
+            self.ui.ShredCifButton.setDisabled(True)
         self.ui.HAtomsCheckBox.clicked.connect(self.save_options)
         self.ui.ReportTextCheckBox.clicked.connect(self.save_options)
         self.ui.PictureWidthDoubleSpinBox.valueChanged.connect(self.save_options)
@@ -1455,6 +1462,7 @@ class AppWindow(QMainWindow):
         """
         Opens the cif file and fills information into the main table.
         """
+        self.ui.ExtractStatusLabel.setText('')
         with suppress(AttributeError):
             self.ui.moleculeLayout.removeWidget(self.view)
         self.ui.MainStackedWidget.setCurrentIndex(0)
