@@ -332,7 +332,10 @@ class AppWindow(QMainWindow):
         if not self.cif:
             return
         res = self.cif.resdata[1:-1]
-        hkl = self.cif.hkl_file[1:-1].replace(')', ';')
+        hkl = self.cif.hkl_file[1:-1].splitlines(keepends=True)
+        for num, line in enumerate(hkl):
+            if line[:1] == ')':
+                hkl[num] = ';' + line[1:]
         if not res:
             self.ui.ExtractStatusLabel.setText('No .res file data found!')
             return
