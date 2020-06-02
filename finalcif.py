@@ -331,18 +331,22 @@ class AppWindow(QMainWindow):
     def shred_cif(self):
         if not self.cif:
             return
-        res = self.cif.resdata
-        hkl = self.cif.hkl_file.replace(')', ';')
+        res = self.cif.resdata[1:-1]
+        hkl = self.cif.hkl_file[1:-1].replace(')', ';')
         if not res:
             self.ui.ExtractStatusLabel.setText('No .res file data found!')
             return
         if not hkl:
-            self.ui.ExtractStatusLabel.setText('No .hkl file data found!')
+            self.ui.ExtractStatusLabel.setText('No .hkl files data found!')
             return
         resfile = Path(self.final_cif_file_name.stem + '.res')
         hklfile = Path(self.final_cif_file_name.stem + '.hkl')
-        resfile.write_text(res[1:-1], encoding='ascii', errors='ignore')
-        hklfile.write_text(hkl, encoding='ascii', errors='ignore')
+        with open(resfile, mode='w', newline='\n') as f:
+            for line in res:
+                f.write(line)
+        with open(hklfile, mode='w', newline='\n') as f:
+            for line in hkl[1:]:
+                f.write(line)
         self.ui.ExtractStatusLabel.setText('Finished writing data to {} \nand {}.'.format(resfile, hklfile))
 
     def showoptions(self):
