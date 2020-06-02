@@ -332,11 +332,8 @@ class AppWindow(QMainWindow):
         if not self.cif:
             return
         res = self.cif.resdata[1:-1]
-        hkl = self.cif.hkl_file[1:-1].splitlines(keepends=True)
+        hkl = self.cif.hkl_file.splitlines(keepends=True)[1:-1]
         for num, line in enumerate(hkl):
-            if num < 2 and len(line) < 4:
-                # remove empty line at start
-                del hkl[num]
             if line[:1] == ')':
                 hkl[num] = ';' + line[1:]
         if not res:
