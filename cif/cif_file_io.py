@@ -110,7 +110,7 @@ class CifContainer():
     @property
     def hkl_file(self) -> str:
         try:
-            return self['_shelx_hkl_file'][1:-1]
+            return self['_shelx_hkl_file']
         except Exception as e:
             print('No hkl data found in CIF!, {}'.format(e))
             return ''
