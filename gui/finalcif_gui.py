@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file './gui\finalcif_gui.ui'
+# Form implementation generated from reading ui file 'D:\GitHub\FinalCif\./gui\finalcif_gui.ui'
 #
 # Created by: PyQt5 UI code generator 5.14.2
 #
@@ -13,7 +13,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_FinalCifWindow(object):
     def setupUi(self, FinalCifWindow):
         FinalCifWindow.setObjectName("FinalCifWindow")
-        FinalCifWindow.resize(1507, 749)
+        FinalCifWindow.resize(1407, 813)
         self.Mainwidget = QtWidgets.QWidget(FinalCifWindow)
         self.Mainwidget.setObjectName("Mainwidget")
         self.horizontalLayout_4 = QtWidgets.QHBoxLayout(self.Mainwidget)
@@ -39,7 +39,6 @@ class Ui_FinalCifWindow(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.LeftFrame.sizePolicy().hasHeightForWidth())
         self.LeftFrame.setSizePolicy(sizePolicy)
-        self.LeftFrame.setMinimumSize(QtCore.QSize(0, 0))
         self.LeftFrame.setBaseSize(QtCore.QSize(0, 0))
         self.LeftFrame.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.LeftFrame.setFrameShadow(QtWidgets.QFrame.Plain)
@@ -252,10 +251,10 @@ class Ui_FinalCifWindow(object):
         self.datanameLabel.setObjectName("datanameLabel")
         self.InfobarHLayout.addWidget(self.datanameLabel)
         self.datnameLineEdit = QtWidgets.QLineEdit(self.CifDataItemsFrame)
-        self.datnameLineEdit.setMinimumSize(QtCore.QSize(150, 0))
+        self.datnameLineEdit.setMinimumSize(QtCore.QSize(200, 0))
         self.datnameLineEdit.setObjectName("datnameLineEdit")
         self.InfobarHLayout.addWidget(self.datnameLineEdit, 0, QtCore.Qt.AlignLeft)
-        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        spacerItem = QtWidgets.QSpacerItem(5, 20, QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Minimum)
         self.InfobarHLayout.addItem(spacerItem)
         self.spacegroupLabel = QtWidgets.QLabel(self.CifDataItemsFrame)
         self.spacegroupLabel.setObjectName("spacegroupLabel")
@@ -271,7 +270,7 @@ class Ui_FinalCifWindow(object):
         self.spacegroupLineEdit.setReadOnly(True)
         self.spacegroupLineEdit.setObjectName("spacegroupLineEdit")
         self.InfobarHLayout.addWidget(self.spacegroupLineEdit)
-        spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        spacerItem1 = QtWidgets.QSpacerItem(5, 20, QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Minimum)
         self.InfobarHLayout.addItem(spacerItem1)
         self.CCDCNumLabel = QtWidgets.QLabel(self.CifDataItemsFrame)
         self.CCDCNumLabel.setObjectName("CCDCNumLabel")
@@ -287,7 +286,7 @@ class Ui_FinalCifWindow(object):
         self.CCDCNumLineEdit.setReadOnly(True)
         self.CCDCNumLineEdit.setObjectName("CCDCNumLineEdit")
         self.InfobarHLayout.addWidget(self.CCDCNumLineEdit)
-        spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem2 = QtWidgets.QSpacerItem(5, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.InfobarHLayout.addItem(spacerItem2)
         self.LoopsPushButton = QtWidgets.QPushButton(self.CifDataItemsFrame)
         self.LoopsPushButton.setObjectName("LoopsPushButton")
@@ -864,7 +863,7 @@ class Ui_FinalCifWindow(object):
         self.ShredCifButton = QtWidgets.QPushButton(self.groupBox_6)
         self.ShredCifButton.setObjectName("ShredCifButton")
         self.gridLayout_13.addWidget(self.ShredCifButton, 0, 0, 1, 1)
-        spacerItem19 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        spacerItem19 = QtWidgets.QSpacerItem(20, 0, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.gridLayout_13.addItem(spacerItem19, 2, 0, 1, 1)
         spacerItem20 = QtWidgets.QSpacerItem(0, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.gridLayout_13.addItem(spacerItem20, 0, 1, 1, 1)
@@ -890,7 +889,7 @@ class Ui_FinalCifWindow(object):
         self.retranslateUi(FinalCifWindow)
         self.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
         self.PropertiesTemplatesStackedWidget.setCurrentIndex(1)
-        self.MainStackedWidget.setCurrentIndex(6)
+        self.MainStackedWidget.setCurrentIndex(0)
         self.LoopsTabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(FinalCifWindow)
         FinalCifWindow.setTabOrder(self.SelectCif_LineEdit, self.EquipmentEditTableWidget)
