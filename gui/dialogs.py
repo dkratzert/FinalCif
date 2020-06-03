@@ -60,7 +60,7 @@ def show_general_warning(warn_text: str = '') -> None:
     box.exec()
 
 
-def bad_z_message(Z):
+def bad_z_message(Z) -> None:
     zinfo = QMessageBox()
     zinfo.setIcon(QMessageBox.Information)
     zinfo.setText('The number of formula units Z={:.0f} is probably wrong.'
@@ -69,17 +69,18 @@ def bad_z_message(Z):
     zinfo.exec()
 
 
-def bug_found_warning(logfile):
+def bug_found_warning(logfile) -> None:
     window = QMainWindow()
     text = 'Congratulations, you found a bug in ' \
            'FinalCif!<br>Please send the file <br>"{}" <br>to Daniel Kratzert:  ' \
            '<a href="mailto:daniel.kratzert@ac.uni-freiburg.de?subject=FinalCif version {} crash report">' \
-           'daniel.kratzert@ac.uni-freiburg.de</a>'.format(logfile.absolute(), VERSION)
+           'daniel.kratzert@ac.uni-freiburg.de</a><br>' \
+           'If possible, the corresponding CIF file is also desired.'.format(logfile.absolute(), VERSION)
     QMessageBox.warning(window, 'Warning', text)
     window.show()
 
 
-def show_splash(text: str):
+def show_splash(text: str) -> QSplashScreen:
     splash = QSplashScreen()
     splashFont = QFont()
     # splashFont.setFamily("Arial")
