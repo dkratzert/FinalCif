@@ -11,6 +11,7 @@ import sys
 from gui.dialogs import cif_file_open_dialog, cif_file_save_dialog, show_general_warning, bug_found_warning, \
     unable_to_open_message, show_splash, bad_z_message
 from gui.loops import Loop
+from report.gui import mainwindow
 
 DEBUG = False
 if 'compile' in sys.argv:
@@ -219,7 +220,7 @@ class AppWindow(QMainWindow):
         # Picture button fixed and the rest should behave same with each other
         self.adjust_button_sizes()
 
-    def adjust_button_sizes(self):
+    def adjust_button_sizes(self) -> None:
         self.ui.CODpushButton.setFixedSize(self.ui.CheckcifPDFOnlineButton.size())
         self.ui.SaveFullReportButton.setFixedWidth(
             self.ui.CODpushButton.width() - self.ui.ReportPicPushButton.width() - 6)
@@ -323,12 +324,15 @@ class AppWindow(QMainWindow):
         # Report picture:
         self.ui.ReportPicPushButton.clicked.connect(self.set_report_picture)
         # Options:
-        self.ui.OptionsPushButton.clicked.connect(self.showoptions)
+        self.ui.OptionsPushButton.clicked.connect(self.show_options)
         self.ui.BackFromOptionspPushButton.clicked.connect(self.back_to_main_noload)
         # Shred Cif
         self.ui.ShredCifButton.clicked.connect(self.shred_cif)
 
-    def shred_cif(self):
+    def shred_cif(self) -> None:
+        """
+        Saves res and hkl file from the cif.
+        """
         if not self.cif:
             return
         res = self.cif.resdata[1:-1]
@@ -352,7 +356,7 @@ class AppWindow(QMainWindow):
                 f.write(line)
         self.ui.ExtractStatusLabel.setText('Finished writing data to {} \nand {}.'.format(resfile, hklfile))
 
-    def showoptions(self):
+    def show_options(self) -> None:
         """
         {'report_text': True,
          'picture_width': 7.5,
@@ -369,15 +373,15 @@ class AppWindow(QMainWindow):
         self.ui.PictureWidthDoubleSpinBox.valueChanged.connect(self.save_options)
         options = self.settings.load_report_options()
         self.report_options = options
-        if self.report_options.get('report_text') != None:
+        if self.report_options.get('report_text') is not None:
             self.ui.ReportTextCheckBox.setChecked(not self.report_options.get('report_text'))
-        if self.report_options.get('without_H') != None:
+        if self.report_options.get('without_H') is not None:
             self.ui.HAtomsCheckBox.setChecked(self.report_options.get('without_H'))
         if self.report_options.get('picture_width'):
             self.ui.PictureWidthDoubleSpinBox.setValue(self.report_options.get('picture_width'))
         self.ui.MainStackedWidget.setCurrentIndex(6)
 
-    def save_options(self):
+    def save_options(self) -> None:
         options = {
             'report_text'  : not self.ui.ReportTextCheckBox.isChecked(),
             'picture_width': self.ui.PictureWidthDoubleSpinBox.value(),
@@ -386,7 +390,7 @@ class AppWindow(QMainWindow):
         self.report_options = options
         self.settings.save_report_options(options)
 
-    def set_report_picture(self):
+    def set_report_picture(self) -> None:
         """Sets the picture of the report document."""
         filename, _ = QFileDialog.getOpenFileName(filter="Image Files (*.png *.jpg *.jpeg *.bmp "
                                                          "*.gif *.tif *.tiff *.eps *.emf *.wmf)",
@@ -397,14 +401,14 @@ class AppWindow(QMainWindow):
             self.ui.ReportPicPushButton.setIcon(qta.icon('fa5.image'))
             self.ui.ReportPicPushButton.setText('')
 
-    def _ccdc_deposit(self):
+    def _ccdc_deposit(self) -> None:
         """
         Open the CCDC deposit web page.
         """
         QDesktopServices.openUrl(QUrl('https://www.ccdc.cam.ac.uk/deposit'))
         self.explore_dir()
 
-    def _deleted_row(self, key: str):
+    def _deleted_row(self, key: str) -> None:
         """
         Deletes a row of the main table and reloads the cif file.
         """
@@ -415,13 +419,13 @@ class AppWindow(QMainWindow):
             self.save_current_cif_file()
             self.load_cif_file(self.final_cif_file_name)
 
-    def checkfor_version(self):
+    def checkfor_version(self) -> None:
         mainurl = "https://xs3-data.uni-freiburg.de/finalcif/"
         url = QUrl(mainurl + 'version.txt')
         req = QNetworkRequest(url)
         self.netman.get(req)
 
-    def show_update_warning(self, reply: QNetworkReply):
+    def show_update_warning(self, reply: QNetworkReply) -> None:
         """
         Reads the reply from the server and displays a warning in case of an old version.
         """
@@ -437,7 +441,7 @@ class AppWindow(QMainWindow):
                 r"<a href='https://www.xs3.uni-freiburg.de/research/finalcif'>"
                 r"https://www.xs3.uni-freiburg.de/research/finalcif</a>".format(remote_version))
 
-    def erase_disabled_items(self):
+    def erase_disabled_items(self) -> None:
         """
         Items that got disabled in the sources list are set to ? here.
         """
@@ -453,7 +457,7 @@ class AppWindow(QMainWindow):
                 self.ui.cif_main_table.item(row_num, COL_CIF).setText('?')
                 self.ui.cif_main_table.item(row_num, COL_DATA).setText('')
 
-    def show_sources(self):
+    def show_sources(self) -> None:
         """
         Shows data sources in the SourcesTableWidget.
         """
@@ -485,7 +489,7 @@ class AppWindow(QMainWindow):
         table.resizeColumnToContents(2)
         self.ui.MainStackedWidget.setCurrentIndex(4)
 
-    def get_checkdef(self):
+    def get_checkdef(self) -> None:
         """
         Sends a get request to the platon server in order to get the current check.def file.
         """
@@ -582,6 +586,9 @@ class AppWindow(QMainWindow):
         self.ui.statusBar.showMessage(txt)
 
     def _checkcif_finished(self):
+        """
+        Loads the html checkcif results and displays them in a browser window.
+        """
         self.ui.CheckcifHTMLOnlineButton.setEnabled(True)
         self.ui.CheckcifPDFOnlineButton.setEnabled(True)
         try:
@@ -637,7 +644,7 @@ class AppWindow(QMainWindow):
         if gif:
             imageobj.write_bytes(gif)
 
-    def do_html_checkcif(self):
+    def do_html_checkcif(self) -> None:
         """
         Performs an online checkcif via checkcif.iucr.org.
         """
@@ -650,8 +657,8 @@ class AppWindow(QMainWindow):
             self.htmlfile.unlink()
         except FileNotFoundError:
             pass
-
-        self.ckf = MakeCheckCif(cif=self.cif, outfile=self.htmlfile, hkl=(not self.ui.structfactCheckBox.isChecked()),
+        self.ckf = MakeCheckCif(cif=self.cif, outfile=self.htmlfile,
+                                hkl=(not self.ui.structfactCheckBox.isChecked()),
                                 pdf=False)
         self.ckf.failed.connect(self._checkcif_failed)
         # noinspection PyUnresolvedReferences
@@ -661,7 +668,7 @@ class AppWindow(QMainWindow):
         self.ui.CheckcifPDFOnlineButton.setDisabled(True)
         self.ckf.start()
 
-    def save_responses(self):
+    def save_responses(self) -> None:
         """
         Saves the validation response form text to _vrf_ CIF entries.
         :return: None
@@ -687,22 +694,22 @@ class AppWindow(QMainWindow):
         else:
             self.subwin.statusBar.showMessage('No forms were filled in.')
 
-    def _switch_to_report(self):
+    def _switch_to_report(self) -> None:
         self.subwin.show_Forms_Button.show()
         self.subwin.show_report_Button.hide()
         self.subwin.stackedWidget.setCurrentIndex(0)
 
-    def _switch_to_vrf(self):
+    def _switch_to_vrf(self) -> None:
         self.subwin.show_Forms_Button.hide()
         self.subwin.show_report_Button.show()
         self.subwin.stackedWidget.setCurrentIndex(1)
 
-    def _pdf_checkcif_finished(self):
+    def _pdf_checkcif_finished(self) -> None:
         self.ui.CheckcifPDFOnlineButton.setEnabled(True)
         self.ui.CheckcifHTMLOnlineButton.setEnabled(True)
         self.ckf.show_pdf_report()
 
-    def do_pdf_checkcif(self):
+    def do_pdf_checkcif(self) -> None:
         """
         Performs an online checkcif and shows the result as pdf.
         """
@@ -733,7 +740,7 @@ class AppWindow(QMainWindow):
             pass
         # splash.finish(self)
 
-    def do_offline_checkcif(self):
+    def do_offline_checkcif(self) -> None:
         """
         Performs a checkcif with platon and displays it in the text editor of the MainStackedWidget.
         """
@@ -1579,7 +1586,7 @@ class AppWindow(QMainWindow):
             self.ui.spacegroupLineEdit.setText(self.cif.space_group)
             self.ui.CCDCNumLineEdit.setText(self.cif['_database_code_depnum_ccdc_archive'])
 
-    def show_properties(self):
+    def show_properties(self) -> None:
         self.save_current_cif_file()
         try:
             self.cif.fileobj
@@ -1651,7 +1658,7 @@ class AppWindow(QMainWindow):
         # because this is fast with small structures and slow with large:
         self.view_molecule()
 
-    def view_molecule(self):
+    def view_molecule(self) -> None:
         blist = []
         if self.ui.growCheckBox.isChecked():
             self.ui.molGroupBox.setTitle('Completed Molecule')
@@ -1683,7 +1690,7 @@ class AppWindow(QMainWindow):
                                                                          errors='ignore')
         self.view.reload()
 
-    def init_webview(self):
+    def init_webview(self) -> None:
         """
         Initializes a QWebengine to view the molecule.
         """
@@ -1702,10 +1709,10 @@ class AppWindow(QMainWindow):
         self.view.heightForWidth(1)
         self.view.loadFinished.connect(self.onWebviewLoadFinished)
 
-    def onWebviewLoadFinished(self):
+    def onWebviewLoadFinished(self) -> None:
         self.view.show()
 
-    def redraw_molecule(self):
+    def redraw_molecule(self) -> None:
         try:
             self.view_molecule()
         except Exception as e:
@@ -1856,9 +1863,9 @@ class AppWindow(QMainWindow):
         # Add loops widgets:
         self.add_loops_tables()
 
-    def add_loops_tables(self):
+    def add_loops_tables(self) -> None:
         """
-        Generates a list of tables containing the cif loops
+        Generates a list of tables containing the cif loops.
         """
         self.ui.LoopsPushButton.setText('Show Loops')
         self.ui.LoopsTabWidget.clear()
@@ -1883,11 +1890,13 @@ class AppWindow(QMainWindow):
             textedit.setLineWrapMode(QPlainTextEdit.NoWrap)
             textedit.setReadOnly(True)
 
-    def showloops(self):
+    def showloops(self) -> None:
         if self.ui.MainStackedWidget.currentIndex() == 5:
+            # Go back to main table page:
             self.ui.MainStackedWidget.setCurrentIndex(0)
             self.ui.LoopsPushButton.setText('Show Loops')
         else:
+            # Go to loops page:
             self.ui.LoopsPushButton.setText('Hide Loops')
             self.ui.MainStackedWidget.setCurrentIndex(5)
 
@@ -1954,6 +1963,7 @@ if __name__ == '__main__':
         Hooks into Exceptions to create debug reports.
         """
         errortext = 'FinalCif V{} crash report\n\n'.format(VERSION)
+        errortext += 'Please send also the corresponding CIF file, if possible.'
         errortext += 'Python ' + sys.version + '\n'
         errortext += sys.platform + '\n'
         errortext += time.asctime(time.localtime(time.time())) + '\n'
