@@ -11,7 +11,6 @@ import sys
 from gui.dialogs import cif_file_open_dialog, cif_file_save_dialog, show_general_warning, bug_found_warning, \
     unable_to_open_message, show_splash, bad_z_message
 from gui.loops import Loop
-from report.gui import mainwindow
 
 DEBUG = False
 if 'compile' in sys.argv:
@@ -66,7 +65,7 @@ from tools.settings import FinalCifSettings
 from tools.version import VERSION
 
 from PyQt5.QtCore import QPoint, Qt, QUrl, QEvent
-from PyQt5.QtGui import QFont, QIcon, QBrush, QResizeEvent, QMoveEvent, QValidator, QDoubleValidator
+from PyQt5.QtGui import QFont, QIcon, QBrush, QResizeEvent, QMoveEvent
 from PyQt5.QtWidgets import QApplication, QFileDialog, QHeaderView, QListWidget, QListWidgetItem, \
     QMainWindow, QPlainTextEdit, QStackedWidget, QTableWidget, QShortcut, QCheckBox, QTableView
 

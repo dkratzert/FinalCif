@@ -73,9 +73,9 @@ class TestApplication(unittest.TestCase):
         # self.assertEqual(0, self.myapp.ui.cif_main_table.rowCount())
         # self.myapp.load_cif_file(r'tests/examples/1979688.cif')
         # Size of table:
-        self.assertEqual(131, self.myapp.ui.cif_main_table.rowCount())
+        self.assertEqual(130, self.myapp.ui.cif_main_table.rowCount())
         # The 17th row in the first column:
-        self.assertEqual('geom', self.myapp.ui.cif_main_table.item(16, 0).text())
+        self.assertEqual('geom', self.myapp.ui.cif_main_table.item(15, 0).text())
         self.myapp.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
         # make sure contact author is selected
         self.assertEqual('CCDC number', self.myapp.ui.EquipmentTemplatesListWidget.item(1).text())
@@ -95,7 +95,7 @@ class TestApplication(unittest.TestCase):
                          self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_email', 2))
         # Test if it really selects the row:
         self.myapp.ui.EquipmentTemplatesListWidget.setCurrentRow(1)
-        self.assertEqual('daniel.kratzert@ac.uni-freiburg.de', self.myapp.ui.cif_main_table.item(19, 1).text())
+        self.assertEqual('daniel.kratzert@ac.uni-freiburg.de', self.myapp.ui.cif_main_table.item(18, 1).text())
 
     # @unittest.skip('')
     def test_export_template(self):
@@ -122,7 +122,7 @@ class TestApplication(unittest.TestCase):
         self.myapp.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
         self.myapp.ui.EquipmentTemplatesListWidget.setCurrentItem(item)
         self.myapp.load_selected_equipment()
-        self.assertEqual('daniel.kratzert@ac.uni-freiburg.de', self.myapp.ui.cif_main_table.item(19, 1).text())
+        self.assertEqual('daniel.kratzert@ac.uni-freiburg.de', self.myapp.ui.cif_main_table.item(18, 1).text())
 
     def test_properties(self):
         self.myapp.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
@@ -159,28 +159,29 @@ class TestApplication(unittest.TestCase):
         """
         Testing if comboboxes are there and fields have the correct type
         """
+        _atom_sites_solution_primary = 16
         self.assertEqual('direct', self.myapp.ui.cif_main_table.getTextFromKey('_atom_sites_solution_primary', 0))
         self.assertEqual('', self.myapp.ui.cif_main_table.getTextFromKey('_atom_sites_solution_primary', 1))
 
         # The type of the _atom_sites_solution_primary combobox:
         self.assertEqual("<class 'gui.custom_classes.MyTableWidgetItem'>",
-                         str(self.myapp.ui.cif_main_table.item(17, 0).__class__))
+                         str(self.myapp.ui.cif_main_table.item(_atom_sites_solution_primary, 0).__class__))
         self.assertEqual("<class 'gui.custom_classes.MyTableWidgetItem'>",
-                         str(self.myapp.ui.cif_main_table.item(17, 1).__class__))
+                         str(self.myapp.ui.cif_main_table.item(_atom_sites_solution_primary, 1).__class__))
         self.assertEqual("<class 'gui.custom_classes.MyTableWidgetItem'>",
-                         str(self.myapp.ui.cif_main_table.item(17, 2).__class__))
+                         str(self.myapp.ui.cif_main_table.item(_atom_sites_solution_primary, 2).__class__))
 
         self.assertEqual("<class 'NoneType'>",
-                         str(self.myapp.ui.cif_main_table.cellWidget(17, 0).__class__))
+                         str(self.myapp.ui.cif_main_table.cellWidget(_atom_sites_solution_primary, 0).__class__))
         self.assertEqual("<class 'NoneType'>",
-                         str(self.myapp.ui.cif_main_table.cellWidget(17, 1).__class__))
+                         str(self.myapp.ui.cif_main_table.cellWidget(_atom_sites_solution_primary, 1).__class__))
         self.assertEqual("<class 'gui.custom_classes.MyComboBox'>",
-                         str(self.myapp.ui.cif_main_table.cellWidget(17, 2).__class__))
+                         str(self.myapp.ui.cif_main_table.cellWidget(_atom_sites_solution_primary, 2).__class__))
 
         # The first items of the _atom_sites_solution_primary combobox in the third column:
-        self.assertEqual('', self.myapp.ui.cif_main_table.cellWidget(17, 2).itemText(0))
-        self.assertEqual('direct', self.myapp.ui.cif_main_table.cellWidget(17, 2).itemText(1))
-        self.assertEqual('vecmap', self.myapp.ui.cif_main_table.cellWidget(17, 2).itemText(2))
+        self.assertEqual('', self.myapp.ui.cif_main_table.cellWidget(_atom_sites_solution_primary, 2).itemText(0))
+        self.assertEqual('direct', self.myapp.ui.cif_main_table.cellWidget(_atom_sites_solution_primary, 2).itemText(1))
+        self.assertEqual('vecmap', self.myapp.ui.cif_main_table.cellWidget(_atom_sites_solution_primary, 2).itemText(2))
         # _audit_contact_author_address
         self.assertEqual(addr,
                          replace_newlines(
@@ -189,23 +190,23 @@ class TestApplication(unittest.TestCase):
         self.assertEqual('', self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_address', 2))
         # _audit_contact_author_address celwidget classes:
         self.assertEqual("<class 'gui.custom_classes.MyQPlainTextEdit'>",
-                         str(self.myapp.ui.cif_main_table.cellWidget(18, 0).__class__))
+                         str(self.myapp.ui.cif_main_table.cellWidget(17, 0).__class__))
         self.assertEqual("<class 'gui.custom_classes.MyQPlainTextEdit'>",
-                         str(self.myapp.ui.cif_main_table.cellWidget(18, 1).__class__))
+                         str(self.myapp.ui.cif_main_table.cellWidget(17, 1).__class__))
         self.assertEqual("<class 'gui.custom_classes.MyQPlainTextEdit'>",
-                         str(self.myapp.ui.cif_main_table.cellWidget(18, 2).__class__))
+                         str(self.myapp.ui.cif_main_table.cellWidget(17, 2).__class__))
         ###
         # Now the above with MyCifTable methods:
-        self.assertEqual('direct', self.myapp.ui.cif_main_table.text(17, 0))
-        self.assertEqual('', self.myapp.ui.cif_main_table.text(17, 1))
-        self.assertEqual('', self.myapp.ui.cif_main_table.text(17, 2))
+        self.assertEqual('direct', self.myapp.ui.cif_main_table.text(_atom_sites_solution_primary, 0))
+        self.assertEqual('', self.myapp.ui.cif_main_table.text(_atom_sites_solution_primary, 1))
+        self.assertEqual('', self.myapp.ui.cif_main_table.text(_atom_sites_solution_primary, 2))
         # Click on vertical header in order to see the help text:
-        self.myapp.ui.cif_main_table.vheader_section_click(17)
-        text = self.myapp.ui.cif_main_table.verticalHeaderItem(17).text()
+        self.myapp.ui.cif_main_table.vheader_section_click(16)
+        text = self.myapp.ui.cif_main_table.verticalHeaderItem(16).text()
         self.assertEqual('Codes which identify the methods used to locate the initial atom sites', text)
         # Click again to see the original text:
-        self.myapp.ui.cif_main_table.vheader_section_click(17)
-        text2 = self.myapp.ui.cif_main_table.verticalHeaderItem(17).text()
+        self.myapp.ui.cif_main_table.vheader_section_click(16)
+        text2 = self.myapp.ui.cif_main_table.verticalHeaderItem(16).text()
         self.assertEqual('_atom_sites_solution_primary', text2)
         # Test if table has unicode characters instead of ascii:
         self.assertEqual('ω and ϕ scans', self.myapp.ui.cif_main_table.getTextFromKey('_diffrn_measurement_method', 0))
@@ -213,16 +214,16 @@ class TestApplication(unittest.TestCase):
     def test_set_text(self):
         # A combobox
         self.myapp.ui.cif_main_table.setText(key='_atom_sites_solution_primary', txt='foobar', column=2)
-        self.assertEqual('foobar', self.myapp.ui.cif_main_table.text(17, 2))
+        self.assertEqual('foobar', self.myapp.ui.cif_main_table.getTextFromKey('_atom_sites_solution_primary', 2))
         # A MyPlaintextedit
         self.myapp.ui.cif_main_table.setText(key='_audit_contact_author_address', txt='foobar', column=2)
         self.assertEqual('foobar', self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_address', 2))
         # A empty table cell
         self.myapp.ui.cif_main_table.setText(key='_audit_contact_author_email', txt='foobar', column=2)
-        self.assertEqual('foobar', self.myapp.ui.cif_main_table.text(19, 2))
+        self.assertEqual('foobar', self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_email', 2))
         # A cell with item
         self.myapp.ui.cif_main_table.setText(key='_audit_creation_method', txt='foobar', column=1)
-        self.assertEqual('foobar', self.myapp.ui.cif_main_table.text(22, 1))
+        self.assertEqual('foobar', self.myapp.ui.cif_main_table.getTextFromKey('_audit_creation_method', 1))
 
     def test_info_fields(self):
         # test fo ccdc number added from email during load:
