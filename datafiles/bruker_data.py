@@ -44,7 +44,7 @@ class BrukerData(WorkDataMixin):
             shelx = 'Sheldrick, G.M. (2015). Acta Cryst. A71, 3-8.\nSheldrick, G.M. (2015). Acta Cryst. C71, 3-8.\n'
         else:
             shelx = ''
-        if cif.resdata:
+        if cif.res_data:
             if cif.dsr_used:
                 dsr = 'The program DSR was used for model building:\n' \
                       'D. Kratzert, I. Krossing, J. Appl. Cryst. 2018, 51, 928-934. doi: 10.1107/S1600576718004508'

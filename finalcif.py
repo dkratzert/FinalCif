@@ -336,7 +336,7 @@ class AppWindow(QMainWindow):
         hklfile = ''
         if not self.cif:
             return
-        res = self.cif.resdata.splitlines(keepends=True)
+        res = self.cif.res_data.splitlines(keepends=True)
         hkl = self.cif.hkl_file.splitlines(keepends=True)
         if not res or len(res) < 3:
             self.ui.ExtractStatusLabel.setText('No .res file data found!')
@@ -383,7 +383,7 @@ class AppWindow(QMainWindow):
          }
          """
         if self.cif:
-            if self.cif.resdata and self.cif.hkl_file:
+            if self.cif.res_data and self.cif.hkl_file:
                 self.ui.ShredCifButton.setEnabled(True)
         else:
             self.ui.ShredCifButton.setDisabled(True)
