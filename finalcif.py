@@ -1902,7 +1902,7 @@ class AppWindow(QMainWindow):
             textedit.setPlainText(self.cif['_shelx_res_file'])
             doc = textedit.document()
             font = doc.defaultFont()
-            font.setFamily("Consolas")
+            font.setFamily("Courier")
             font.setStyleHint(QFont.Monospace)
             font.setPointSize(14)
             doc.setDefaultFont(font)
