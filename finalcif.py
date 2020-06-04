@@ -332,28 +332,48 @@ class AppWindow(QMainWindow):
         """
         Saves res and hkl file from the cif.
         """
+        resfile = ''
+        hklfile = ''
         if not self.cif:
             return
-        res = self.cif.resdata[1:-1]
-        hkl = self.cif.hkl_file.splitlines(keepends=True)[1:]
-        for num, line in enumerate(hkl):
-            if line[:1] == ')':
-                hkl[num] = ';' + line[1:]
-        if not res:
+        res = self.cif.resdata
+        hkl = self.cif.hkl_file
+        if not res or len(res) < 3:
             self.ui.ExtractStatusLabel.setText('No .res file data found!')
-            return
-        if not hkl:
-            self.ui.ExtractStatusLabel.setText('No .hkl files data found!')
-            return
-        resfile = Path(self.final_cif_file_name.stem + '.res')
+        else:
+            res = res[1:-1]
+            resfile = self.write_res_file(res)
+        if not hkl or len(hkl) < 3:
+            self.ui.ExtractStatusLabel.setText(self.ui.ExtractStatusLabel.text() + '\n' + 'No .hkl file data found!')
+        else:
+            hkl = hkl.splitlines(keepends=True)[1:]
+            for num, line in enumerate(hkl):
+                if line[:1] == ')':
+                    hkl[num] = ';' + line[1:]
+            hklfile = self.write_hkl_file(hkl)
+        if res and not hkl:
+            self.ui.ExtractStatusLabel.setText(
+                self.ui.ExtractStatusLabel.text() + '\nFinished writing data to {}.'.format(resfile))
+        if hkl and not res:
+            self.ui.ExtractStatusLabel.setText(
+                self.ui.ExtractStatusLabel.text() + '\nFinished writing data to {}.'.format(hklfile))
+        if hkl and res:
+            self.ui.ExtractStatusLabel.setText(
+                self.ui.ExtractStatusLabel.text() + '\nFinished writing data to {} \nand {}.'.format(resfile, hklfile))
+
+    def write_hkl_file(self, hkl):
         hklfile = Path(self.final_cif_file_name.stem + '.hkl')
-        with open(resfile, mode='w', newline='\n') as f:
-            for line in res:
-                f.write(line)
         with open(hklfile, mode='w', newline='\n') as f:
             for line in hkl:
                 f.write(line)
-        self.ui.ExtractStatusLabel.setText('Finished writing data to {} \nand {}.'.format(resfile, hklfile))
+        return hklfile
+
+    def write_res_file(self, res):
+        resfile = Path(self.final_cif_file_name.stem + '.res')
+        with open(resfile, mode='w', newline='\n') as f:
+            for line in res:
+                f.write(line)
+        return resfile
 
     def show_options(self) -> None:
         """
