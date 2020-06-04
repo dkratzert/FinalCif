@@ -460,3 +460,18 @@ class TestWorkfolder(unittest.TestCase):
         pair = [x.replace("\n", "").replace("\r", "") for x in pair]
         self.assertEqual(erg, pair)
         self.myapp.cif.fileobj.unlink()
+
+    def test_export_hkl_res(self):
+        self.myapp.ui.OptionsPushButton.click()
+        self.myapp.ui.ShredCifButton.click()
+        # testing the res file export:
+        test_res_file = Path('test_res_file.txt')
+        outfile = Path('cu_BruecknerJK_153F40_0m-finalcif.res')
+        self.assertEqual(test_res_file.read_text().splitlines(keepends=True), outfile.read_text().splitlines(keepends=True))
+        outfile.unlink()
+        # testing the hkl file export:
+        test_res_file = Path('test_hkl_file.txt')
+        outfile = Path('cu_BruecknerJK_153F40_0m-finalcif.hkl')
+        self.assertEqual(test_res_file.read_text().splitlines(keepends=True),
+                         outfile.read_text().splitlines(keepends=True))
+        outfile.unlink()
