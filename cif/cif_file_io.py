@@ -31,18 +31,9 @@ class CifContainer():
         self.block = self.doc.sole_block()
         # will not ok with non-ascii characters in the res file:
         self.chars_ok = True
-        try:
-            self.resdata = self.block.find_value('_shelx_res_file')
-        except UnicodeDecodeError:
-            # This is a fallback in case _shelx_res_file has non-ascii characters.
-            print('File has non-ascii characters. Switching to compatible mode.')
-            self.doc = self.read_string(self.fileobj.read_text(encoding='cp1250', errors='ignore'))
-            self.block = self.doc.sole_block()
-            self.resdata = self.block.find_value('_shelx_res_file')
-            self.chars_ok = False
+        d = DSRFind(self.resdata)
         self.doc.check_for_duplicates()
         self.hkl_extra_info = self.abs_hkl_details()
-        d = DSRFind(self.resdata)
         self.order = order
         self.dsr_used = d.dsr_used
         self.atomic_struct = gemmi.make_small_structure_from_block(self.block)
@@ -108,9 +99,21 @@ class CifContainer():
         # Path(filename).write_text(self.doc.as_string(gemmi.cif.Style.Indent35))
 
     @property
+    def resdata(self) -> str:
+        try:
+            return self.block.find_value('_shelx_res_file')
+        except UnicodeDecodeError:
+            # This is a fallback in case _shelx_res_file has non-ascii characters.
+            print('File has non-ascii characters. Switching to compatible mode.')
+            self.doc = self.read_string(self.fileobj.read_text(encoding='cp1250', errors='ignore'))
+            self.block = self.doc.sole_block()
+            self.chars_ok = False
+            return self.block.find_value('_shelx_res_file')
+
+    @property
     def hkl_file(self) -> str:
         try:
-            return self['_shelx_hkl_file']
+            return self.block.find_value('_shelx_hkl_file')
         except Exception as e:
             print('No hkl data found in CIF!, {}'.format(e))
             return ''
@@ -132,13 +135,12 @@ class CifContainer():
             pass
         if not hkl:
             return all
-        hkl = hkl[hkl.find('  0   0   0    0'):].split('\n')[1:]
-        hkl = 'data_hkldat\n' + '\n'.join(hkl)
-        # in-html cif has ')' instead of ';':
-        hkl = [re.sub(r'^\)', ';', x) for x in hkl.split('\n')]
+        hkl = hkl[hkl.find('  0   0   0    0'):].splitlines(keepends=False)[1:-1]
+        # html-embedded cif has ')' instead of ';':
+        hkl = [';' if x[:1] == ')' else x for x in hkl]
         # the keys have a blank char in front:
         hkl = [re.sub(r'^ _', '_', x) for x in hkl]
-        hkl = '\n'.join(hkl)
+        hkl = 'data_hkldat\n' + '\n'.join(hkl)
         try:
             hkldoc = gemmi.cif.read_string(hkl)
             hklblock = hkldoc.sole_block()
@@ -248,7 +250,7 @@ class CifContainer():
         """
         hkl = self.hkl_file
         if hkl:
-            return self.calc_checksum(hkl)
+            return self.calc_checksum(hkl[1:-1])
         else:
             return 0
 
@@ -264,9 +266,9 @@ class CifContainer():
         #>>> c.res_checksum_calcd
         #0
         """
-        res = self.block.find_value('_shelx_res_file')
+        res = self.resdata
         if res:
-            return self.calc_checksum(res[1:-1])
+            return self.calc_checksum(self.resdata[1:-1])
         return 0
 
     @staticmethod

@@ -39,7 +39,8 @@ def show_checksum_warning(res=True) -> None:
     info = QMessageBox()
     info.setIcon(QMessageBox.Warning)
     if res:
-        info.setText('The "_shelx_res_checksum" is not\nconsistent with the .res file content!')
+        info.setText('The "_shelx_res_checksum" is not consistent with the .res file content!\n\n'
+                     'This error might originate from non-ascii Characters like Umlauts in you SHELX file.')
     else:
         info.setText('The "_shelx_hkl_checksum" is not\nconsistent with the .hkl file content!')
     info.show()

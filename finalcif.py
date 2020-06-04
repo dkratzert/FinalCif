@@ -336,8 +336,8 @@ class AppWindow(QMainWindow):
         hklfile = ''
         if not self.cif:
             return
-        res = self.cif.resdata
-        hkl = self.cif.hkl_file
+        res = self.cif.resdata.splitlines(keepends=True)
+        hkl = self.cif.hkl_file.splitlines(keepends=True)
         if not res or len(res) < 3:
             self.ui.ExtractStatusLabel.setText('No .res file data found!')
         else:
@@ -346,7 +346,7 @@ class AppWindow(QMainWindow):
         if not hkl or len(hkl) < 3:
             self.ui.ExtractStatusLabel.setText(self.ui.ExtractStatusLabel.text() + '\n' + 'No .hkl file data found!')
         else:
-            hkl = hkl.splitlines(keepends=True)[1:]
+            hkl = hkl[1:-1]
             for num, line in enumerate(hkl):
                 if line[:1] == ')':
                     hkl[num] = ';' + line[1:]
@@ -361,14 +361,14 @@ class AppWindow(QMainWindow):
             self.ui.ExtractStatusLabel.setText(
                 self.ui.ExtractStatusLabel.text() + '\nFinished writing data to {} \nand {}.'.format(resfile, hklfile))
 
-    def write_hkl_file(self, hkl):
+    def write_hkl_file(self, hkl: list):
         hklfile = Path(self.final_cif_file_name.stem + '.hkl')
         with open(hklfile, mode='w', newline='\n') as f:
             for line in hkl:
                 f.write(line)
         return hklfile
 
-    def write_res_file(self, res):
+    def write_res_file(self, res: list):
         resfile = Path(self.final_cif_file_name.stem + '.res')
         with open(resfile, mode='w', newline='\n') as f:
             for line in res:
