@@ -108,15 +108,17 @@ def make_report_from(options: dict, file_obj: Path, output_filename: str = None,
     table_num = add_coords_table(document, cif, table_num)
 
     if cif.symmops:
-        table_num += 1
-        document.add_heading(r"Table {}. Bond lengths and angles for {}".format(table_num, cif.block.name), 2)
-        make_columns_section(document, columns='2')
-        table_num = add_bonds_and_angles_table(document, cif, table_num, without_H)
-        make_columns_section(document, columns='1')
-        table_num += 1
-        document.add_heading(r"Table {}. Torsion angles for {}".format(table_num, cif.block.name), 2)
-        make_columns_section(document, columns='2')
-        table_num = add_torsion_angles(document, cif, table_num, without_H)
+        if len(list(cif.bonds())) + len(list(cif.angles())) > 0:
+            table_num += 1
+            document.add_heading(r"Table {}. Bond lengths and angles for {}".format(table_num, cif.block.name), 2)
+            make_columns_section(document, columns='2')
+            table_num = add_bonds_and_angles_table(document, cif, table_num, without_H)
+        if len(list(cif.torsion_angles())) > 0:
+            make_columns_section(document, columns='1')
+            table_num += 1
+            document.add_heading(r"Table {}. Torsion angles for {}".format(table_num, cif.block.name), 2)
+            make_columns_section(document, columns='2')
+            table_num = add_torsion_angles(document, cif, table_num, without_H)
         make_columns_section(document, columns='1')
         if len(list(cif.hydrogen_bonds())) > 0:
             table_num += 1
