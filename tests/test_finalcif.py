@@ -415,7 +415,7 @@ class TestWorkfolder(unittest.TestCase):
     # @unittest.skip('temporary skip')
     def test_checkcif_html(self):
         """Runs a html checkcif without hkl and compares the result with the html file."""
-        self.maxDiff = None
+        self.maxDiff = 200
         item = self.myapp.ui.EquipmentTemplatesListWidget.findItems('D8 VENTURE', Qt.MatchStartsWith)[0]
         self.myapp.ui.EquipmentTemplatesListWidget.setCurrentItem(item)
         self.myapp.load_selected_equipment()
@@ -428,10 +428,10 @@ class TestWorkfolder(unittest.TestCase):
         html = Path('checkcif-' + self.myapp.cif.fileobj.stem[:-len('-finalcif')] + '-test.html')
         htmlfile = html.read_text().splitlines()
         # Filter out changing links:
-        htmlfile = [x for x in htmlfile if not x.startswith(' <a href="http://checkcif.iucr.org')]
+        htmlfile = [x for x in htmlfile if not x.startswith(' <a href="http://checkcif.iucr.org')][:-12]
         resobj = Path('checkcif-' + self.myapp.cif.fileobj.stem[:-len('-finalcif')] + '-finalcif.html')
         result = resobj.read_text().splitlines()
-        result = [x for x in result if not x.startswith(' <a href="http://checkcif.iucr.org')]
+        result = [x for x in result if not x.startswith(' <a href="http://checkcif.iucr.org')][:-12]
         self.assertEqual(htmlfile, result)
         resobj.unlink()
         self.myapp.cif.fileobj.unlink()
