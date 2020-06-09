@@ -11,7 +11,7 @@ from cif.cif_file_io import CifContainer
 from cif.text import retranslate_delimiter
 from report.references import DummyReference, BrukerReference, SORTAVReference, ReferenceList, CCDCReference, \
     SHELXLReference, SHELXTReference, SHELXSReference, FinalCifReference, ShelXleReference, Olex2Reference
-from tools.misc import prot_space, angstrom
+from tools.misc import prot_space, angstrom, zero_width_space
 
 
 def math_to_word(eq: str) -> str:
@@ -271,7 +271,7 @@ class CCDC():
         sentence2 = "CCDC {} contain " \
                     "the supplementary crystallographic data for this paper. Copies of the data can " \
                     "be obtained free of charge from the Cambridge Crystallographic Data Centre " \
-                    "via www.ccdc.cam.ac.uk/structures.".format(ccdc_num)
+                    "via www.ccdc.cam.ac.uk/{}structures.".format(ccdc_num, zero_width_space)
         paragraph.add_run(sentence1)
         ref.append(CCDCReference())
         SpaceChar(paragraph).regular()

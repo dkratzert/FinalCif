@@ -38,6 +38,8 @@ timessym = u'\u00d7'
 lambdasym = u'\u03bb'
 # one bar
 one_bar = u'\u0031\u0305'
+# Zero with space ZWSP
+zero_width_space = u'\u200B'
 
 
 def distance(x1: float, y1: float, z1: float, x2: float, y2: float, z2: float) -> float:
