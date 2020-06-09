@@ -28,3 +28,5 @@ Ther you have the possibility to reply to A and B level alerts and save them to 
 A resulting response form:
 
 .. image:: pics/response_cell.PNG
+
+

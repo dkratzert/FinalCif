@@ -17,3 +17,9 @@ There are two ways of introducing the CCDC number into the .cif file:
 
 * Drag&Drop the deposition response email from the CCDC into the work folder and reload the .cif file.
 
+Picture
+-------
+FinalCif can add an picture of your structure to the report document. 
+
+* Either by previously performing an html check cif (with structure factors). Then it automatically adds a picture from the checkcif report, as in the example above.
+* Or you can add any other picture with the "Picture" button. 

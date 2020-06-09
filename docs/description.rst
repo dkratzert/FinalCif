@@ -16,7 +16,8 @@ you can be creative to specify the crystallization conditions with a template.
 
 The CIF keywords with a question mark as value are at the beginning of the table and the keywords with values are below.
 
-Every input field accepts unicode characters like "ω". They will be translated into CIF ascii format automatically. Please tell me if any character does not work.
+Each input field accepts Unicode characters like "ω". They are automatically translated into the CIF ascii format. 
+Please let me know if a character does not work.
 
 Various possibilities of Checkcif are available, online with html or pdf result and offline.
 The button "save cif file" saves the current file under 'name'-finalcif.cif. FinalCif will never make Changes to the

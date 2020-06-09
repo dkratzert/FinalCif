@@ -15,6 +15,7 @@ Just be creative...
 
 
 For example the cif author information:
+
 .. image:: pics/equipment_templates.PNG
 
 Or just one keyword for only the absolute configuration information:

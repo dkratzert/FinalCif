@@ -17,10 +17,11 @@ Contents
 
 .. toctree::
    :maxdepth: 2
-
+   
    install
    description
    templates
    checkcif
    report
    sources
+   homepage
