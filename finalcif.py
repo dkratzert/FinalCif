@@ -1044,7 +1044,7 @@ class AppWindow(QMainWindow):
         self.add_row(key=key, value=value, at_start=True)
         self.missing_data.append(key)
         if not self.cif.block.find_value(key):
-            self.cif.add_to_cif(key, value)
+            self.cif.add_to_cif(key, utf8_to_str(value))
 
     def new_property(self) -> None:
         item = QListWidgetItem('')
