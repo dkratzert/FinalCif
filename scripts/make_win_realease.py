@@ -90,7 +90,7 @@ if arg == 'copy':
 else:
     subprocess.run(r""".\venv\Scripts\pyinstaller.exe -D Finalcif_installer.spec --clean -y""".split())
 
-    innosetup_compiler = r'D:/Program Files (x86)/Inno Setup 5/ISCC.exe'
+    innosetup_compiler = r'C:/Program Files (x86)/Inno Setup 6/ISCC.exe'
     # Run 64bit setup compiler
     subprocess.run([innosetup_compiler, iss_file, ])
 
