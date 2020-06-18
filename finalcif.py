@@ -336,6 +336,9 @@ class AppWindow(QMainWindow):
         hklfile = ''
         if not self.cif:
             return
+        if not all([self.cif.res_data, self.cif.hkl_file]):
+            self.ui.ExtractStatusLabel.setText('No .res file data found!')
+            return
         res = self.cif.res_data.splitlines(keepends=True)
         hkl = self.cif.hkl_file.splitlines(keepends=True)
         if not res or len(res) < 3:

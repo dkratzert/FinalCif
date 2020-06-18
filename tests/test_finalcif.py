@@ -462,6 +462,9 @@ class TestWorkfolder(unittest.TestCase):
         self.myapp.cif.fileobj.unlink()
 
     def test_export_hkl_res(self):
+        """
+        Shredcif test
+        """
         self.myapp.ui.OptionsPushButton.click()
         self.myapp.ui.ShredCifButton.click()
         # testing the res file export:

@@ -47,7 +47,7 @@ VersionInfoProductName={#MyAppName}
 AlwaysShowComponentsList=False
 ShowComponentSizes=False
 SetupIconFile="..\icon\finalcif2.ico"
-SignTool=signtool
+;SignTool=signtool
 ArchitecturesInstallIn64BitMode=x64
 
 [UninstallRun]
