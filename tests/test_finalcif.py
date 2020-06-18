@@ -397,13 +397,20 @@ class TestWorkfolder(unittest.TestCase):
         self.myapp.ui.cif_main_table.setText(key='_atom_sites_solution_secondary', column=2, txt='test2ö')
         self.myapp.ui.cif_main_table.setText(key='_audit_contact_author_address', column=2, txt='test3ü')
         self.myapp.ui.cif_main_table.setText(key='_audit_contact_author_email', column=2, txt='test4ß')
+        self.myapp.ui.cif_main_table.setText(key='_diffrn_measurement_method', column=2, txt='test 12 Å')
         cif = Path('testcif_file.cif')
         self.myapp.save_current_cif_file(cif.name)
         self.myapp.ui.cif_main_table.setRowCount(0)
         self.myapp.load_cif_file(cif.name)
         # test if data is still the same:
+        # The character is quoted in the cif file:
+        self.assertEqual(r'test 12 \%A', self.myapp.cif['_diffrn_measurement_method'])
+        # And unquoted in the application:
+        self.assertEqual(r'test 12 Å',
+                         self.myapp.ui.cif_main_table.getTextFromKey(key='_diffrn_measurement_method', col=0))
         self.assertEqual('test1ä',
                          self.myapp.ui.cif_main_table.getTextFromKey(key='_atom_sites_solution_primary', col=0))
+        self.assertEqual(r'test1a\"', self.myapp.cif['_atom_sites_solution_primary'])
         self.assertEqual('test2ö',
                          self.myapp.ui.cif_main_table.getTextFromKey(key='_atom_sites_solution_secondary', col=0))
         self.assertEqual('test3ü',

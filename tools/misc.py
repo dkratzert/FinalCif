@@ -16,8 +16,8 @@ from typing import Union
 
 # protected space character:
 prot_space = u'\u00A0'
-# Angstrom character with a protected space in front:
-angstrom = u'\u00C5'
+# Angstrom character:
+angstrom = u'\u212B'
 # bigger or equal:
 bequal = u'\u2265'
 # small_sigma:
