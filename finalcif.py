@@ -402,6 +402,13 @@ class AppWindow(QMainWindow):
         if self.report_options.get('picture_width'):
             self.ui.PictureWidthDoubleSpinBox.setValue(self.report_options.get('picture_width'))
         self.ui.MainStackedWidget.setCurrentIndex(6)
+        if not self.cif.res_data:
+            self.ui.ExtractStatusLabel.setText('No .res file data found!')
+        if not self.cif.hkl_file:
+            self.ui.ExtractStatusLabel.setText(self.ui.ExtractStatusLabel.text() + '\nNo .res file data found!')
+        if not all([self.cif.res_data, self.cif.hkl_file]):
+            self.ui.ExtractStatusLabel.setText('No .res and .hkl file data found!')
+            self.ui.ShredCifButton.setDisabled(True)
 
     def save_options(self) -> None:
         options = {
