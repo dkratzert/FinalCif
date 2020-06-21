@@ -30,7 +30,7 @@ class MissingCifData():
 
 class BrukerData(WorkDataMixin):
 
-    def __init__(self, app: 'AppWindow', cif: CifContainer):
+    def __init__(self, app, cif: CifContainer):
         super(BrukerData, self).__init__()
         self.cif = cif
         self.app = app
