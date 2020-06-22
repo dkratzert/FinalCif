@@ -11,6 +11,7 @@ from qtpy.QtTest import QTest
 
 from finalcif import AppWindow
 from gui.custom_classes import yellow, light_green
+from tools.misc import strip_finalcif_of_name
 from tools.version import VERSION
 
 
@@ -431,12 +432,12 @@ class TestWorkfolder(unittest.TestCase):
         self.myapp.load_selected_equipment()
         self.myapp.ui.structfactCheckBox.setChecked(True)
         QTest.mouseClick(self.myapp.ui.CheckcifHTMLOnlineButton, Qt.LeftButton, Qt.NoModifier)
-        time.sleep(5)
-        html = Path('checkcif-' + self.myapp.cif.fileobj.stem[:-len('-finalcif')] + '-test.html')
+        time.sleep(10)
+        html = Path('checkcif-' + strip_finalcif_of_name(self.myapp.cif.fileobj.stem) + '-test.html')
         htmlfile = html.read_text().splitlines()
         # Filter out changing links:
         htmlfile = [x for x in htmlfile if not x.startswith(' <a href="http://checkcif.iucr.org')][:-12]
-        resobj = Path('checkcif-' + self.myapp.cif.fileobj.stem[:-len('-finalcif')] + '-finalcif.html')
+        resobj = Path('checkcif-' + strip_finalcif_of_name(self.myapp.cif.fileobj.stem) + '-finalcif.html')
         result = resobj.read_text().splitlines()
         result = [x for x in result if not x.startswith(' <a href="http://checkcif.iucr.org')][:-12]
         self.assertEqual(htmlfile, result)
