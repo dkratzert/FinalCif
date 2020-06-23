@@ -3,8 +3,6 @@
 
 name: Python application
 
-env: 
-  PYTHONPATH: .
 
 on:
   push:
@@ -13,6 +11,9 @@ on:
     branches: [ master ]
 
 jobs:
+  env:
+    PYTHONPATH: .
+
   build:
 
     runs-on: ubuntu-latest
