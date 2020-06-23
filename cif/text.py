@@ -20,7 +20,7 @@ def quote(string: str, wrapping=80) -> str:
     return quoted
 
 
-charcters = {  # '°'      : r'\%',  # pure diacritics make no sense
+charcters = { 
     '±'      : r'+-',
     '×'      : r'\\times',
     '≠'      : r'\\neq',
@@ -95,8 +95,9 @@ charcters = {  # '°'      : r'\%',  # pure diacritics make no sense
     u"\u03C9": r'\w',
     u"\u03A9": r'\W',
     u"\u03D5": r'\f',
+    u"\u00B0": r"\%",
     # "1̄": r'\=1',  # Does not work in QT?
-}  # , r'\r\n': chr(10)}
+}
 
 
 def set_pair_delimited(block, key: str, txt: str):
@@ -121,6 +122,10 @@ def utf8_to_str(txt):
     Translates an utf-8 text to a CIF ascii string.
     :param txt: utf-8 text
     :return: delimited ascii string
+    >>> utf8_to_str('100 °C')
+    '100 \\\\%C'
+    >>> retranslate_delimiter('100 \\%C')
+    '100 °C'
     """
     for char in txt:
         if char in charcters:
@@ -131,7 +136,7 @@ def utf8_to_str(txt):
 def retranslate_delimiter(txt: str) -> str:
     """
     Translates delimited cif characters back to unicode characters.
-    >>> retranslate_delimiter("Crystals were grown from thf at -20 \%C.")
+    >>> retranslate_delimiter("Crystals were grown from thf at -20 \\%C.")
     'Crystals were grown from thf at -20 °C.'
     """
     inv_map = {v: k for k, v in charcters.items()}
