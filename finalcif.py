@@ -392,11 +392,7 @@ class AppWindow(QMainWindow):
                 self.ui.ShredCifButton.setEnabled(True)
         else:
             self.ui.ShredCifButton.setDisabled(True)
-        self.ui.HAtomsCheckBox.clicked.connect(self.save_options)
-        self.ui.ReportTextCheckBox.clicked.connect(self.save_options)
-        self.ui.PictureWidthDoubleSpinBox.valueChanged.connect(self.save_options)
-        options = self.settings.load_report_options()
-        self.report_options = options
+        self.report_options = self.settings.load_report_options()
         if self.report_options.get('report_text') is not None:
             self.ui.ReportTextCheckBox.setChecked(not self.report_options.get('report_text'))
         if self.report_options.get('without_H') is not None:
@@ -404,6 +400,11 @@ class AppWindow(QMainWindow):
         if self.report_options.get('picture_width'):
             self.ui.PictureWidthDoubleSpinBox.setValue(self.report_options.get('picture_width'))
         self.ui.MainStackedWidget.setCurrentIndex(6)
+        self.ui.HAtomsCheckBox.clicked.connect(self.save_options)
+        self.ui.ReportTextCheckBox.clicked.connect(self.save_options)
+        self.ui.PictureWidthDoubleSpinBox.valueChanged.connect(self.save_options)
+        if not self.cif:
+            return
         if not self.cif.res_data:
             self.ui.ExtractStatusLabel.setText('No .res file data found!')
         if not self.cif.hkl_file:
