@@ -152,13 +152,13 @@ class DataReduct():
         scale_prog = ['unknown program']
         if 'SAINT' in integration:
             saintversion = 'unknown version'
-            if len(integration.split()) > 0:
+            if len(integration.split()) > 1:
                 saintversion = integration.split()[1]
             integration_prog = 'SAINT'
             data_reduct_ref = BrukerReference('SAINT', saintversion)
         absdetails = cif['_exptl_absorpt_process_details'].replace('-', ' ')
         if 'SADABS' in absdetails.upper() or 'TWINABS' in absdetails.upper():
-            if len(absdetails.split()) > 0:
+            if len(absdetails.split()) > 1:
                 version = absdetails.split()[1]
             else:
                 version = 'unknown version'
