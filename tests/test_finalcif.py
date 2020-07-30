@@ -439,7 +439,7 @@ class TestWorkfolder(unittest.TestCase):
         htmlfile = [x for x in htmlfile if not x.startswith(' <a href="http://checkcif.iucr.org')][:-12]
         resobj = Path('checkcif-' + strip_finalcif_of_name(self.myapp.cif.fileobj.stem) + '-finalcif.html')
         result = resobj.read_text().splitlines()
-        result = [x for x in result if not x.startswith(' <a href="http://checkcif.iucr.org')][:-12]
+        result = [x for x in result if not x.startswith(' <a href="http://checkcif.iucr.org')][:-15]
         self.assertEqual(htmlfile, result)
         resobj.unlink()
         self.myapp.cif.fileobj.unlink()
