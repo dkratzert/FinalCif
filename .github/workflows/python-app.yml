@@ -35,4 +35,4 @@ jobs:
       - name: Test with pytest
         run: |
           echo "::set-env name=PYTHONPATH::/home/runner/work/FinalCif"
-          pytest --doctest-modules
+          pytest --doctest-modules --rootdir=/home/runner/work/FinalCif
