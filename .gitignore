@@ -192,3 +192,4 @@ generated_doc.docx
 .DS_Store
 tests/examples/work/cu_BruecknerJK_153F40_0m-finalcif.gif
 tests/examples/work/cu_BruecknerJK_153F40_0m-finalcif.cif
+tests/examples/work/checkcif-cu_BruecknerJK_153F40_0m-finalcif.html
