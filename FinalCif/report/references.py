@@ -10,7 +10,7 @@ from typing import List
 
 from docx.text.paragraph import Paragraph
 
-from tools.version import VERSION
+from FinalCif.tools.version import VERSION
 
 """
 [1] SAINT

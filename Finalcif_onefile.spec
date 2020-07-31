@@ -15,12 +15,12 @@ from os import path
 block_cipher = None
 site_packages = next(p for p in sys.path if 'site-packages' in p)
 
-a = Analysis(['./finalcif.py'],
+a = Analysis(['./FinalCif/finalcif.py'],
              pathex=['D:\\Programme\\Windows Kits\\10\\Redist\\ucrt\\DLLs\\x64', 'D:\\GitHub\\FinalCif'],
              binaries=[],
-             datas=[('./gui', 'gui'), (path.join(site_packages,"docx","templates"), 'docx/templates'), 
-                    ('./template', 'template'), ('icon', 'icon'), ('displaymol', 'displaymol')],
-             hiddenimports=['tools.misc', 'tools.settings', 'datafiles', 'gemmi', 'qtawesome'],
+             datas=[('./FinalCif/gui', 'FinalCif/gui'), (path.join(site_packages,"docx","templates"), 'docx/templates'),
+                    ('./FinalCif/template', 'template'), ('FinalCif/icon', 'icon'), ('FinalCif/displaymol', 'displaymol')],
+             hiddenimports=['FinalCif.tools.misc', 'FinalCif.tools.settings', 'FinalCif.datafiles', 'gemmi', 'qtawesome'],
              hookspath=[],
              runtime_hooks=[],
              excludes=[],
@@ -44,7 +44,7 @@ exe = EXE(pyz,
           strip=False,
           upx=True,
           runtime_tmpdir=None,
-          icon='icon/finalcif2.ico',
+          icon='FinalCif/icon/finalcif2.ico',
           console=False)
 
 # For a directory release:

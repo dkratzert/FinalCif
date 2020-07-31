@@ -9,10 +9,11 @@ from PyQt5.QtGui import QIcon, QColor
 from PyQt5.QtWidgets import QApplication
 from qtpy.QtTest import QTest
 
-from finalcif import AppWindow
-from gui.custom_classes import yellow, light_green
-from tools.misc import strip_finalcif_of_name
-from tools.version import VERSION
+
+from FinalCif.finalcif import AppWindow
+from FinalCif.gui.custom_classes import light_green, yellow
+from FinalCif.tools.misc import strip_finalcif_of_name
+from FinalCif.tools.version import VERSION
 
 
 def replace_newlines(txt):
@@ -165,18 +166,18 @@ class TestApplication(unittest.TestCase):
         self.assertEqual('', self.myapp.ui.cif_main_table.getTextFromKey('_atom_sites_solution_primary', 1))
 
         # The type of the _atom_sites_solution_primary combobox:
-        self.assertEqual("<class 'gui.custom_classes.MyTableWidgetItem'>",
+        self.assertEqual("<class 'FinalCif.gui.custom_classes.MyTableWidgetItem'>",
                          str(self.myapp.ui.cif_main_table.item(_atom_sites_solution_primary, 0).__class__))
-        self.assertEqual("<class 'gui.custom_classes.MyTableWidgetItem'>",
+        self.assertEqual("<class 'FinalCif.gui.custom_classes.MyTableWidgetItem'>",
                          str(self.myapp.ui.cif_main_table.item(_atom_sites_solution_primary, 1).__class__))
-        self.assertEqual("<class 'gui.custom_classes.MyTableWidgetItem'>",
+        self.assertEqual("<class 'FinalCif.gui.custom_classes.MyTableWidgetItem'>",
                          str(self.myapp.ui.cif_main_table.item(_atom_sites_solution_primary, 2).__class__))
 
         self.assertEqual("<class 'NoneType'>",
                          str(self.myapp.ui.cif_main_table.cellWidget(_atom_sites_solution_primary, 0).__class__))
         self.assertEqual("<class 'NoneType'>",
                          str(self.myapp.ui.cif_main_table.cellWidget(_atom_sites_solution_primary, 1).__class__))
-        self.assertEqual("<class 'gui.custom_classes.MyComboBox'>",
+        self.assertEqual("<class 'FinalCif.gui.custom_classes.MyComboBox'>",
                          str(self.myapp.ui.cif_main_table.cellWidget(_atom_sites_solution_primary, 2).__class__))
 
         # The first items of the _atom_sites_solution_primary combobox in the third column:
@@ -190,11 +191,11 @@ class TestApplication(unittest.TestCase):
         self.assertEqual('', self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_address', 1))
         self.assertEqual('', self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_address', 2))
         # _audit_contact_author_address celwidget classes:
-        self.assertEqual("<class 'gui.custom_classes.MyQPlainTextEdit'>",
+        self.assertEqual("<class 'FinalCif.gui.custom_classes.MyQPlainTextEdit'>",
                          str(self.myapp.ui.cif_main_table.cellWidget(17, 0).__class__))
-        self.assertEqual("<class 'gui.custom_classes.MyQPlainTextEdit'>",
+        self.assertEqual("<class 'FinalCif.gui.custom_classes.MyQPlainTextEdit'>",
                          str(self.myapp.ui.cif_main_table.cellWidget(17, 1).__class__))
-        self.assertEqual("<class 'gui.custom_classes.MyQPlainTextEdit'>",
+        self.assertEqual("<class 'FinalCif.gui.custom_classes.MyQPlainTextEdit'>",
                          str(self.myapp.ui.cif_main_table.cellWidget(17, 2).__class__))
         ###
         # Now the above with MyCifTable methods:
@@ -299,7 +300,7 @@ class TestWorkfolder(unittest.TestCase):
                          self.myapp.ui.cif_main_table.getTextFromKey('_chemical_absolute_configuration', 1))
         self.assertEqual('',
                          self.myapp.ui.cif_main_table.getTextFromKey('_chemical_absolute_configuration', 2))
-        self.assertEqual("<class 'gui.custom_classes.MyComboBox'>",
+        self.assertEqual("<class 'FinalCif.gui.custom_classes.MyComboBox'>",
                          str(self.myapp.ui.cif_main_table.cellWidget(10, 2).__class__))
         self.assertEqual('?',
                          self.myapp.ui.cif_main_table.getTextFromKey('_chemical_formula_moiety', 0))
@@ -386,11 +387,11 @@ class TestWorkfolder(unittest.TestCase):
         self.assertEqual('?', self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_address', 0))
         self.assertEqual(addr, self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_address', 1))
         self.assertEqual(addr, self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_address', 2))
-        self.assertEqual("<class 'gui.custom_classes.MyQPlainTextEdit'>",
+        self.assertEqual("<class 'FinalCif.gui.custom_classes.MyQPlainTextEdit'>",
                          str(self.myapp.ui.cif_main_table.cellWidget(4, 0).__class__))
-        self.assertEqual("<class 'gui.custom_classes.MyQPlainTextEdit'>",
+        self.assertEqual("<class 'FinalCif.gui.custom_classes.MyQPlainTextEdit'>",
                          str(self.myapp.ui.cif_main_table.cellWidget(4, 1).__class__))
-        self.assertEqual("<class 'gui.custom_classes.MyQPlainTextEdit'>",
+        self.assertEqual("<class 'FinalCif.gui.custom_classes.MyQPlainTextEdit'>",
                          str(self.myapp.ui.cif_main_table.cellWidget(4, 2).__class__))
 
     def test_edit_values_and_save(self):

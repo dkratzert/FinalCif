@@ -5,8 +5,8 @@
 #  and you think this stuff is worth it, you can buy me a beer in return.
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
-from cif.cif_file_io import CifContainer
-from datafiles.utils import ParserMixin
+from FinalCif.cif.cif_file_io import CifContainer
+from FinalCif.datafiles.utils import ParserMixin
 
 
 class SHELXTlistfile(ParserMixin):

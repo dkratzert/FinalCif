@@ -11,7 +11,7 @@ import gemmi
 from PyQt5.QtCore import QAbstractTableModel, QModelIndex, Qt, QSize
 from PyQt5.QtWidgets import QTableView, QHeaderView
 
-from cif.cif_file_io import CifContainer
+from FinalCif.cif.cif_file_io import CifContainer
 
 
 class Loop():

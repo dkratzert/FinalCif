@@ -18,14 +18,14 @@ from docx.oxml.ns import qn
 from docx.shared import Cm, Length, Pt
 from docx.table import Table, _Cell
 
-from app_path import application_path
-from cif.cif_file_io import CifContainer
-from report.mtools import cif_keywords_list, isfloat, this_or_quest, format_space_group
-from report.references import ReferenceList, DSRReference2018, DSRReference2015
-from report.report_text import CCDC, CrstalSelection, Crystallization, DataReduct, Disorder, Hydrogens, MachineType, \
+from FinalCif.app_path import application_path
+from FinalCif.cif.cif_file_io import CifContainer
+from FinalCif.report.mtools import cif_keywords_list, isfloat, this_or_quest, format_space_group
+from FinalCif.report.references import ReferenceList, DSRReference2018, DSRReference2015
+from FinalCif.report.report_text import CCDC, CrstalSelection, Crystallization, DataReduct, Disorder, Hydrogens, MachineType, \
     SolveRefine, format_radiation, FinalCifreport, SpaceChar
-from report.symm import SymmetryElement
-from tools.misc import prot_space, angstrom, bequal, sigma_sm, halbgeviert, degree_sign, ellipsis_mid, lessequal, \
+from FinalCif.report.symm import SymmetryElement
+from FinalCif.tools.misc import prot_space, angstrom, bequal, sigma_sm, halbgeviert, degree_sign, ellipsis_mid, lessequal, \
     timessym, lambdasym
 
 

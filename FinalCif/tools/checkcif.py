@@ -22,8 +22,8 @@ from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest
 from PyQt5.QtNetwork import QNetworkReply
 from requests.exceptions import MissingSchema
 
-from cif.cif_file_io import CifContainer
-from tools.misc import strip_finalcif_of_name
+from FinalCif.cif.cif_file_io import CifContainer
+from FinalCif.tools.misc import strip_finalcif_of_name
 
 
 class MakeCheckCif(QThread):

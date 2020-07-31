@@ -11,7 +11,7 @@ import os
 from pathlib import Path
 from pprint import pformat
 
-from cif.cif_file_io import CifContainer
+from FinalCif.cif.cif_file_io import CifContainer
 
 
 class BrukerFrameHeader():

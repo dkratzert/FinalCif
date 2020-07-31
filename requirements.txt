@@ -16,7 +16,7 @@ python-docx>=0.8.10
 requests>=2.24.0 # for checkcif
 qtawesome>=0.7.2 #icons
 html2text==2020.1.16
-#qtpy==1.9.0  # Abstraction layer for PyQt5/PyQt4/PySide2/PySide
+qtpy==1.9.0  # Abstraction layer for PyQt5/PyQt4/PySide2/PySide - Needed for QTest
 
 # Upgrade gemmi to Git master:
 # pip install https://github.com/project-gemmi/gemmi/archive/master.zip --upgrade

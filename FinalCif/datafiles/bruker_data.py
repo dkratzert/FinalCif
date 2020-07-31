@@ -10,14 +10,14 @@ from pathlib import Path
 
 from gemmi import cif as gcif
 
-from cif.cif_file_io import CifContainer
-from datafiles.bruker_frame import BrukerFrameHeader
-from datafiles.data import WorkDataMixin
-from datafiles.p4p_reader import P4PFile
-from datafiles.sadabs import Sadabs
-from datafiles.saint import SaintListFile
-from datafiles.shelx import SolutionProgram
-from gui.dialogs import show_general_warning
+from FinalCif.cif.cif_file_io import CifContainer
+from FinalCif.datafiles.bruker_frame import BrukerFrameHeader
+from FinalCif.datafiles.data import WorkDataMixin
+from FinalCif.datafiles.p4p_reader import P4PFile
+from FinalCif.datafiles.sadabs import Sadabs
+from FinalCif.datafiles.saint import SaintListFile
+from FinalCif.datafiles.shelx import SolutionProgram
+from FinalCif.gui.dialogs import show_general_warning
 
 
 class MissingCifData():
