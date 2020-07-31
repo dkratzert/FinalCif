@@ -34,5 +34,5 @@ jobs:
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
       - name: Test with pytest
         run: |
-          pytest --doctest-modules --cache-clear --pyargs tests.test_finalcif
-          #pytest --rootdir=/home/runner/work/FinalCif
+          echo "::set-env name=PYTHONPATH::/home/runner/work/FinalCif"
+          pytest --doctest-modules
