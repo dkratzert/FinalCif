@@ -338,10 +338,10 @@ class AppWindow(QMainWindow):
         hklfile = ''
         if not self.cif:
             return
-        if not all([self.cif.res_data, self.cif.hkl_file]):
+        if not all([self.cif.res_file_data, self.cif.hkl_file]):
             self.ui.ExtractStatusLabel.setText('No .res file data found!')
             return
-        res = self.cif.res_data.splitlines(keepends=True)
+        res = self.cif.res_file_data.splitlines(keepends=True)
         hkl = self.cif.hkl_file.splitlines(keepends=True)
         if not res or len(res) < 3:
             self.ui.ExtractStatusLabel.setText('No .res file data found!')
@@ -388,7 +388,7 @@ class AppWindow(QMainWindow):
          }
          """
         if self.cif:
-            if self.cif.res_data and self.cif.hkl_file:
+            if self.cif.res_file_data and self.cif.hkl_file:
                 self.ui.ShredCifButton.setEnabled(True)
         else:
             self.ui.ShredCifButton.setDisabled(True)
@@ -405,11 +405,11 @@ class AppWindow(QMainWindow):
         self.ui.PictureWidthDoubleSpinBox.valueChanged.connect(self.save_options)
         if not self.cif:
             return
-        if not self.cif.res_data:
+        if not self.cif.res_file_data:
             self.ui.ExtractStatusLabel.setText('No .res file data found!')
         if not self.cif.hkl_file:
             self.ui.ExtractStatusLabel.setText(self.ui.ExtractStatusLabel.text() + '\nNo .res file data found!')
-        if not all([self.cif.res_data, self.cif.hkl_file]):
+        if not all([self.cif.res_file_data, self.cif.hkl_file]):
             self.ui.ExtractStatusLabel.setText('No .res and .hkl file data found!')
             self.ui.ShredCifButton.setDisabled(True)
 
