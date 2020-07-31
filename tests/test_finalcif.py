@@ -430,6 +430,9 @@ class TestWorkfolder(unittest.TestCase):
         item = self.myapp.ui.EquipmentTemplatesListWidget.findItems('Contact author', Qt.MatchStartsWith)[0]
         self.myapp.ui.EquipmentTemplatesListWidget.setCurrentItem(item)
         self.myapp.load_selected_equipment()
+        #
+        # Remember: This test is without structure factors! 
+        #
         self.myapp.ui.structfactCheckBox.setChecked(True)
         QTest.mouseClick(self.myapp.ui.CheckcifHTMLOnlineButton, Qt.LeftButton, Qt.NoModifier)
         time.sleep(10)
