@@ -9,7 +9,6 @@ from PyQt5.QtGui import QIcon, QColor
 from PyQt5.QtWidgets import QApplication
 from qtpy.QtTest import QTest
 
-
 from FinalCif.finalcif import AppWindow
 from FinalCif.gui.custom_classes import light_green, yellow
 from FinalCif.tools.misc import strip_finalcif_of_name
