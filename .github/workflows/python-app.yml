@@ -3,6 +3,8 @@
 
 name: Python application
 
+env: 
+  PYTHONPATH: .
 
 on:
   push:
@@ -17,6 +19,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v2
       - name: Set up Python 3.8
         uses: actions/setup-python@v2
         with:
@@ -33,6 +36,7 @@ jobs:
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
       - name: Test with pytest
+        working-directory: ./
         run: |
           echo "::set-env name=PYTHONPATH::/home/runner/work/FinalCif"
           pytest --doctest-modules --rootdir=/home/runner/work/FinalCif --pyargs FinalCif
