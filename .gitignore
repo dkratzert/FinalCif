@@ -4,7 +4,6 @@ __pycache__/
 *.py[cod]
 *$py.class
 .idea
-scripts/Output
 
 
 # C extensions
@@ -150,7 +149,6 @@ test-data/406-0308-finalcif.cif
 test-data/DK_zucker2_0m-finalcif.cif
 test-data/406äöü0310-finalcif.cif
 test-data/report_DK_zucker2_0m.docx
-*.html
 test-data/DK_ML7-66-final-finalcif.cif
 test-data/checkcif-DK_ML7-66-final-finalcif.pdf
 test-data/checkcif-DK_zucker2_0m-finalcif.pdf
@@ -192,3 +190,5 @@ test-data/p21c-finalcif.zip
 generated_doc.docx
 1979688.bin
 .DS_Store
+tests/examples/work/cu_BruecknerJK_153F40_0m-finalcif.gif
+tests/examples/work/cu_BruecknerJK_153F40_0m-finalcif.cif

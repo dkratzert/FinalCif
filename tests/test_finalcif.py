@@ -433,10 +433,12 @@ class TestWorkfolder(unittest.TestCase):
         self.myapp.ui.structfactCheckBox.setChecked(True)
         QTest.mouseClick(self.myapp.ui.CheckcifHTMLOnlineButton, Qt.LeftButton, Qt.NoModifier)
         time.sleep(10)
+        # this is the file on github:
         html = Path('checkcif-' + strip_finalcif_of_name(self.myapp.cif.fileobj.stem) + '-test.html')
         htmlfile = html.read_text().splitlines()
         # Filter out changing links:
         htmlfile = [x for x in htmlfile if not x.startswith(' <a href="http://checkcif.iucr.org')][:-12]
+        # this is the new downloadad file
         resobj = Path('checkcif-' + strip_finalcif_of_name(self.myapp.cif.fileobj.stem) + '-finalcif.html')
         result = resobj.read_text().splitlines()
         result = [x for x in result if not x.startswith(' <a href="http://checkcif.iucr.org')][:-15]
