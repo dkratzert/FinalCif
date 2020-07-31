@@ -31,7 +31,7 @@ class CifContainer():
         self.block = self.doc.sole_block()
         # will not ok with non-ascii characters in the res file:
         self.chars_ok = True
-        d = DSRFind(self.res_data)
+        d = DSRFind(self.res_file_data)
         self.doc.check_for_duplicates()
         self.hkl_extra_info = self.abs_hkl_details()
         self.order = order
@@ -99,7 +99,7 @@ class CifContainer():
         # Path(filename).write_text(self.doc.as_string(gemmi.cif.Style.Indent35))
 
     @property
-    def res_data(self) -> str:
+    def res_file_data(self) -> str:
         try:
             return self.block.find_value('_shelx_res_file')
         except UnicodeDecodeError:
@@ -266,9 +266,9 @@ class CifContainer():
         #>>> c.res_checksum_calcd
         #0
         """
-        res = self.res_data
+        res = self.res_file_data
         if res:
-            return self.calc_checksum(self.res_data[1:-1])
+            return self.calc_checksum(self.res_file_data[1:-1])
         return 0
 
     @staticmethod
