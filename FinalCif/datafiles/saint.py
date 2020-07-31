@@ -9,7 +9,7 @@
 from contextlib import suppress
 from pathlib import Path
 
-from datafiles.utils import get_file_to_parse
+from FinalCif.datafiles.utils import get_file_to_parse
 
 
 class SaintListFile():

@@ -13,8 +13,8 @@
 import re
 from pathlib import Path
 
-from datafiles.utils import get_file_to_parse
-from tools.misc import to_float, to_int
+from FinalCif.datafiles.utils import get_file_to_parse
+from FinalCif.tools.misc import to_float, to_int
 
 
 class Dataset():

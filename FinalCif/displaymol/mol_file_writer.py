@@ -4,8 +4,8 @@ MOl V3000 format
 
 import os
 
-from tools.atoms import get_radius_from_element
-from tools.misc import distance
+from FinalCif.tools.atoms import get_radius_from_element
+from FinalCif.tools.misc import distance
 
 
 class MolFile(object):

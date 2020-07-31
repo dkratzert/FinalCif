@@ -6,12 +6,12 @@ from docx.text.paragraph import Paragraph
 from docx.text.run import Run
 from lxml import etree
 
-from app_path import application_path
-from cif.cif_file_io import CifContainer
-from cif.text import retranslate_delimiter
-from report.references import DummyReference, BrukerReference, SORTAVReference, ReferenceList, CCDCReference, \
+from FinalCif.app_path import application_path
+from FinalCif.cif.cif_file_io import CifContainer
+from FinalCif.cif.text import retranslate_delimiter
+from FinalCif.report.references import DummyReference, BrukerReference, SORTAVReference, ReferenceList, CCDCReference, \
     SHELXLReference, SHELXTReference, SHELXSReference, FinalCifReference, ShelXleReference, Olex2Reference
-from tools.misc import prot_space, angstrom, zero_width_space
+from FinalCif.tools.misc import prot_space, angstrom, zero_width_space
 
 
 def math_to_word(eq: str) -> str:

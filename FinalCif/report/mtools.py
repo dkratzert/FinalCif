@@ -4,9 +4,9 @@ import re
 from docx.table import Table
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 
-from cif.cif_file_io import CifContainer
-from report.report_text import math_to_word
-from report.spgrps import SpaceGroups
+from FinalCif.cif.cif_file_io import CifContainer
+from FinalCif.report.report_text import math_to_word
+from FinalCif.report.spgrps import SpaceGroups
 
 cif_keywords_list = (
     ['_chemical_formula_weight', 1],

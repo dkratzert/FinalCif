@@ -1013,4 +1013,4 @@ class Ui_FinalCifWindow(object):
         self.actionSave_Report.setText(_translate("FinalCifWindow", "Save Report"))
         self.actionSave_CIF_File.setText(_translate("FinalCifWindow", "Save CIF File"))
         self.actionedit_templates.setText(_translate("FinalCifWindow", "edit templates"))
-from gui.custom_classes import MyCifTable, MyEQTableWidget
+from FinalCif.gui.custom_classes import MyCifTable, MyEQTableWidget

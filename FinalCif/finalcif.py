@@ -8,9 +8,12 @@
 
 import sys
 
-from gui.dialogs import cif_file_open_dialog, cif_file_save_dialog, show_general_warning, bug_found_warning, \
+from FinalCif import displaymol
+from FinalCif.displaymol import mol_file_writer, write_html
+from FinalCif.displaymol.sdm import SDM
+from FinalCif.gui.dialogs import cif_file_open_dialog, cif_file_save_dialog, show_general_warning, bug_found_warning, \
     unable_to_open_message, show_splash, bad_z_message
-from gui.loops import Loop
+from FinalCif.gui.loops import Loop
 
 DEBUG = False
 if 'compile' in sys.argv:
@@ -20,7 +23,7 @@ else:
     COMPILE = False
 import os
 
-from app_path import application_path
+from FinalCif.app_path import application_path
 
 if DEBUG or COMPILE:
     from PyQt5 import uic
@@ -32,7 +35,6 @@ import subprocess
 
 import time
 import traceback
-import displaymol
 from shutil import copy2
 from tempfile import TemporaryDirectory
 from contextlib import suppress
@@ -47,23 +49,21 @@ from PyQt5.QtWebEngineWidgets import QWebEngineView
 from gemmi import cif
 from qtpy.QtGui import QDesktopServices, QKeySequence
 
-from cif.cif_file_io import CifContainer
-from cif.text import set_pair_delimited, utf8_to_str, retranslate_delimiter
-from cif.core_dict import cif_core
-from datafiles.bruker_data import BrukerData
-from datafiles.ccdc import CCDCMail
-from datafiles.platon import Platon
-from datafiles.rigaku_data import RigakuData
-from displaymol import mol_file_writer, write_html
-from displaymol.sdm import SDM
-from gui.vrf_classes import MyVRFContainer, VREF
-from report.archive_report import ArchiveReport
-from report.tables import make_report_from
-from tools.checkcif import AlertHelp, MakeCheckCif, MyHTMLParser
-from tools.misc import combobox_fields, excluded_imports, predef_equipment_templ, predef_prop_templ, \
+from FinalCif.cif.cif_file_io import CifContainer
+from FinalCif.cif.text import set_pair_delimited, utf8_to_str, retranslate_delimiter
+from FinalCif.cif.core_dict import cif_core
+from FinalCif.datafiles.bruker_data import BrukerData
+from FinalCif.datafiles.ccdc import CCDCMail
+from FinalCif.datafiles.platon import Platon
+from FinalCif.datafiles.rigaku_data import RigakuData
+from FinalCif.gui.vrf_classes import MyVRFContainer, VREF
+from FinalCif.report.archive_report import ArchiveReport
+from FinalCif.report.tables import make_report_from
+from FinalCif.tools.checkcif import AlertHelp, MakeCheckCif, MyHTMLParser
+from FinalCif.tools.misc import combobox_fields, excluded_imports, predef_equipment_templ, predef_prop_templ, \
     strip_finalcif_of_name, to_float, next_path, celltxt
-from tools.settings import FinalCifSettings
-from tools.version import VERSION
+from FinalCif.tools.settings import FinalCifSettings
+from FinalCif.tools.version import VERSION
 
 from PyQt5.QtCore import QPoint, Qt, QUrl, QEvent
 from PyQt5.QtGui import QFont, QIcon, QBrush, QResizeEvent, QMoveEvent
@@ -99,9 +99,10 @@ as dict:
 {str(cdic[x]['_name']): ' '.join(cdic[x]['_definition'].split()) for x in cdic.keys() if '_name' in cdic[x]}
 """
 # They must be here in order to have directly updated ui files from the ui compiler:
-from gui.finalcif_gui import Ui_FinalCifWindow
-from gui.responseformseditor import Ui_ResponseFormsEditor
-from gui.custom_classes import MyComboBox, MyEQTableWidget, MyTableWidgetItem, blue, light_green, yellow, COL_CIF, \
+from FinalCif.gui.finalcif_gui import Ui_FinalCifWindow
+from FinalCif.gui.responseformseditor import Ui_ResponseFormsEditor
+from FinalCif.gui.custom_classes import MyComboBox, MyEQTableWidget, MyTableWidgetItem, blue, light_green, yellow, \
+    COL_CIF, \
     COL_DATA, COL_EDIT, MyQPlainTextEdit
 
 

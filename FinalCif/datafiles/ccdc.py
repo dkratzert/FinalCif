@@ -6,7 +6,7 @@ from typing import Union
 
 import html2text as html2text
 
-from cif.cif_file_io import CifContainer
+from FinalCif.cif.cif_file_io import CifContainer
 
 
 class CCDCMail():

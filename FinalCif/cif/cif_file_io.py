@@ -12,9 +12,9 @@ from typing import Dict, List, Tuple, Union
 
 import gemmi
 
-from cif.cif_order import order, special_keys
-from datafiles.utils import DSRFind
-from tools.misc import essential_keys, non_centrosymm_keys
+from FinalCif.cif.cif_order import order, special_keys
+from FinalCif.datafiles.utils import DSRFind
+from FinalCif.tools.misc import essential_keys, non_centrosymm_keys
 
 
 class CifContainer():
@@ -545,7 +545,7 @@ class CifContainer():
         """
         A method to check wether the checksums in the cif file fit to the content.
         """
-        from gui.dialogs import show_checksum_warning
+        from FinalCif.gui.dialogs import show_checksum_warning
         cif_res_ckecksum = 0
         if self.res_checksum_calcd > 0:
             cif_res_ckecksum = self.block.find_value('_shelx_res_checksum') or -1

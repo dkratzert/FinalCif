@@ -4,7 +4,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QMessageBox, QMainWindow, QSplashScreen, QFileDialog
 
-from tools.version import VERSION
+from FinalCif.tools.version import VERSION
 
 
 def unable_to_open_message(filepath: Path, not_ok: Exception) -> None:

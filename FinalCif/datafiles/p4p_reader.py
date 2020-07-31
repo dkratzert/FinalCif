@@ -16,7 +16,7 @@ This file reads Bruker p4p files into a data structure.
 import os
 from pathlib import Path
 
-from cif.cif_file_io import CifContainer
+from FinalCif.cif.cif_file_io import CifContainer
 
 
 def read_file_to_list(p4pfile: str) -> list:
