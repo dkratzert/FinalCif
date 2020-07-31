@@ -488,3 +488,6 @@ class TestWorkfolder(unittest.TestCase):
         self.assertEqual(test_res_file.read_text().splitlines(keepends=True),
                          outfile.read_text().splitlines(keepends=True))
         outfile.unlink()
+        
+if __name__ == '__main__':
+    unittest.main()
