@@ -8,7 +8,7 @@
 
 from setuptools import setup, find_packages
 
-from tools.version import VERSION
+from FinalCif.tools.version import VERSION
 
 setup(
     name='FinalCif',
