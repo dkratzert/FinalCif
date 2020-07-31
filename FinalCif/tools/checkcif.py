@@ -53,7 +53,8 @@ class MakeCheckCif(QThread):
         f = open(str(self.cif.fileobj.absolute()), 'rb')
         if self.pdf:
             report_type = 'PDF'
-            vrf = 'vrfno'
+            # I had to do vrf = 'vrfno' in former times, but it seems to work now:
+            vrf = 'vrfab'
         else:
             report_type = 'HTML'
             vrf = 'vrfab'
