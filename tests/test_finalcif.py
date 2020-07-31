@@ -438,13 +438,10 @@ class TestWorkfolder(unittest.TestCase):
         time.sleep(10)
         # this is the file on github:
         html = Path('checkcif-' + strip_finalcif_of_name(self.myapp.cif.fileobj.stem) + '-test.html')
-        htmlfile = html.read_text().splitlines()
-        # Filter out changing links:
-        htmlfile = [x for x in htmlfile if not x.startswith(' <a href="http://checkcif.iucr.org')][:-12]
+        htmlfile = html.read_text().splitlines()[28:-13]
         # this is the new downloadad file
         resobj = Path('checkcif-' + strip_finalcif_of_name(self.myapp.cif.fileobj.stem) + '-finalcif.html')
-        result = resobj.read_text().splitlines()
-        result = [x for x in result if not x.startswith(' <a href="http://checkcif.iucr.org')][:-15]
+        result = resobj.read_text().splitlines()[28:-13]
         self.assertEqual(htmlfile, result)
         resobj.unlink()
         self.myapp.cif.fileobj.unlink()
