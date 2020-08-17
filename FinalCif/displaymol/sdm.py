@@ -148,7 +148,7 @@ class SDM():
         t1 = time.perf_counter()
         h = ('H', 'D')
         nlen = len(self.symmcards)
-        at2_plushalf = [Array([j+0.5 for j in x[2:5]]) for x in self.atoms]
+        at2_plushalf = [Array([j + 0.5 for j in x[2:5]]) for x in self.atoms]
         for i, at1 in enumerate(self.atoms):
             prime_array = [Array(at1[2:5]) * symop.matrix + symop.trans for symop in self.symmcards]
             for j, at2 in enumerate(self.atoms):
@@ -310,22 +310,7 @@ class SDM():
         return list(at[:2]) + frac_to_cart([at[2], at[3], at[4]], self.cell[:6]) + list(at[5:])
 
 
-if __name__ == "__main__":
-    import sys
-    from pathlib import Path
-    from shutil import copy2
-    from tempfile import TemporaryDirectory
-
-    from PyQt5.QtCore import QUrl
-    from PyQt5.QtWebEngineWidgets import QWebEngineView
-    from PyQt5.QtWidgets import QApplication
-    from cif.cif_file_io import CifContainer
-    from displaymol import mol_file_writer, write_html
-
-    import displaymol
-
-    cif = CifContainer(Path('test-data/p21c.cif'))
-
+def display_cif(cif: 'CifContainer'):
     app = QApplication(sys.argv)
     # w = QWidget()
     w = QWebEngineView()
@@ -346,5 +331,24 @@ if __name__ == "__main__":
     w.load(QUrl.fromLocalFile(str(Path(jsmoldir.name).joinpath("./jsmol.htm").absolute())))
     w.show()
     w.reload()
-
     sys.exit(app.exec_())
+
+
+if __name__ == "__main__":
+    import sys
+    from pathlib import Path
+    from shutil import copy2
+    from tempfile import TemporaryDirectory
+
+    from PyQt5.QtCore import QUrl
+    from PyQt5.QtWebEngineWidgets import QWebEngineView
+    from PyQt5.QtWidgets import QApplication
+
+    from FinalCif import displaymol
+    from FinalCif.displaymol import mol_file_writer, write_html
+    from pathlib import Path
+    from FinalCif.cif.cif_file_io import CifContainer
+    
+    cif = CifContainer(Path('test-data/p21c.cif'))
+
+    display_cif(cif)
