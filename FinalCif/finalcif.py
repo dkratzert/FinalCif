@@ -77,6 +77,26 @@ TODO:
 - Extract more data from .xml file
 - Extract "_diffrn_measurement_details from .xml file
 - maybe add refinement model description via ShelXFile parser 
+-Add possibility to add this:
+data_global
+loop_
+_publ_author_name
+'Feurer, Markus'
+'Frey, Georg'
+'Luu, Hieu-Trinh'
+'Kratzert, Daniel'
+'Streuff, Jan'
+_publ_section_title
+'The cross-selective titanium(III)-catalysed acyloin reaction.'
+_journal_issue                   40
+_journal_name_full
+'Chemical communications (Cambridge, England)'
+_journal_page_first              5370
+_journal_page_last               5372
+_journal_paper_doi               10.1039/c3cc46894a
+_journal_volume                  50
+_journal_year                    2014
+
 - add loops to templates
 for i in block:
 ...     if i.loop:
