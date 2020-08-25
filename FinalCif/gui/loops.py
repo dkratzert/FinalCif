@@ -5,13 +5,18 @@
 #  and you think this stuff is worth it, you can buy me a beer in return.
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
-from typing import Union
+from typing import Union, List
 
 import gemmi
 from PyQt5.QtCore import QAbstractTableModel, QModelIndex, Qt, QSize
 from PyQt5.QtWidgets import QTableView, QHeaderView
 
 from FinalCif.cif.cif_file_io import CifContainer
+
+"""
+TODO: I have to get rid of the loopnum in make_model. The tag should be sufficient and add_loops_tables() of 
+        finalcif.py has it!
+"""
 
 
 class Loop():
@@ -32,12 +37,15 @@ class Loop():
             header.setSectionResizeMode(column, QHeaderView.Interactive)
             header.resizeSection(column, width)
 
-    def get_data(self, loopnum: int):
+    def get_data(self, loopnum: int) -> List[List[str]]:
         data = []
-        self.headerlabels = self.cif.loops[loopnum].tags
+        self.get_headerlabels(loopnum)
         for v in self.cif.block.find(self.headerlabels):
             data.append([gemmi.cif.as_string(x) for x in v])
         return data
+
+    def get_headerlabels(self, loopnum):
+        self.headerlabels = self.cif.loops[loopnum].tags
 
 
 class TableModel(QAbstractTableModel):
