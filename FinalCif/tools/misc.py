@@ -687,26 +687,26 @@ celltxt = """
         <table border="0" cellspacing="1" cellpadding="1" style='font-size: 12px'>
             <tr>
                 <td align='right'><i>a</i> = </td>
-                <td align='right'>{:>7.3f} Å,</td>
+                <td align='right'>{0:>7.3f} Å,</td>
                 <td align='right'><i>&alpha;</i> = </td> 
-                <td align='right'>{:>7.3f}°</td>
+                <td align='right'>{3:>7.3f}°</td>
             </tr>
             <tr>
                 <td align='right'><i>b</i> = </td>
-                <td align='right'>{:>7.3f} Å,</td>
+                <td align='right'>{1:>7.3f} Å,</td>
                 <td align='right'><i>&beta;</i> = </td> 
-                <td align='right'>{:>7.3f}°</td>
+                <td align='right'>{4:>7.3f}°</td>
             </tr>
             <tr>
                 <td align='right'><i>c</i> = </td>
-                <td align='right'>{:>7.3f} Å,</td>
+                <td align='right'>{2:>7.3f} Å,</td>
                 <td align='right'><i>&gamma;</i> = </td> 
-                <td align='right'>{:>7.3f}°</td>
+                <td align='right'>{5:>7.3f}°</td>
             </tr>
        </table>
    </div>
    <div align='right' style="margin-left:0">
-    Volume = {:8.2f} Å<sup>3</sup>, <b>{}</b>
+    Volume = {6:8.2f} Å<sup>3</sup>, <b>{7}</b>
    </div>
    </body>
    </html>
