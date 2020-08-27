@@ -18,8 +18,8 @@ site_packages = next(p for p in sys.path if 'site-packages' in p)
 a = Analysis(['./finalcif.py'],
              pathex=['D:\\Programme\\Windows Kits\\10\\Redist\\ucrt\\DLLs\\x64', 'D:\\GitHub\\FinalCif', '.'],
              binaries=[],
-             datas=[('./FinalCif/gui', 'FinalCif/gui'), (path.join(site_packages,"docx","templates"), 'docx/templates'),
-                    ('./FinalCif/template', 'template'), ('FinalCif/icon', 'icon'), ('FinalCif/displaymol', 'displaymol'), ('tools', 'tools')],
+             datas=[('./gui', 'gui'), (path.join(site_packages,"docx","templates"), 'docx/templates'),
+                    ('./template', 'template'), ('icon', 'icon'), ('displaymol', 'displaymol'), ('tools', 'tools')],
              hiddenimports=['FinalCif.tools.misc', 'FinalCif.tools.settings', 'FinalCif.datafiles', 'gemmi', 'qtawesome', 'tools'],
              hookspath=[],
              runtime_hooks=[],
@@ -44,7 +44,7 @@ exe = EXE(pyz,
           strip=False,
           upx=True,
           runtime_tmpdir=None,
-          icon='FinalCif/icon/finalcif2.ico',
+          icon='icon/finalcif2.ico',
           console=False)
 
 # For a directory release:
