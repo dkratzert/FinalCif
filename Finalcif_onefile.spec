@@ -15,12 +15,12 @@ from os import path
 block_cipher = None
 site_packages = next(p for p in sys.path if 'site-packages' in p)
 
-a = Analysis(['./FinalCif/finalcif.py'],
-             pathex=['D:\\Programme\\Windows Kits\\10\\Redist\\ucrt\\DLLs\\x64', 'D:\\GitHub\\FinalCif'],
+a = Analysis(['./finalcif.py'],
+             pathex=['D:\\Programme\\Windows Kits\\10\\Redist\\ucrt\\DLLs\\x64', 'D:\\GitHub\\FinalCif', '.'],
              binaries=[],
              datas=[('./FinalCif/gui', 'FinalCif/gui'), (path.join(site_packages,"docx","templates"), 'docx/templates'),
-                    ('./FinalCif/template', 'template'), ('FinalCif/icon', 'icon'), ('FinalCif/displaymol', 'displaymol')],
-             hiddenimports=['FinalCif.tools.misc', 'FinalCif.tools.settings', 'FinalCif.datafiles', 'gemmi', 'qtawesome'],
+                    ('./FinalCif/template', 'template'), ('FinalCif/icon', 'icon'), ('FinalCif/displaymol', 'displaymol'), ('tools', 'tools')],
+             hiddenimports=['FinalCif.tools.misc', 'FinalCif.tools.settings', 'FinalCif.datafiles', 'gemmi', 'qtawesome', 'tools'],
              hookspath=[],
              runtime_hooks=[],
              excludes=[],
