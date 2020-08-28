@@ -1921,8 +1921,6 @@ class AppWindow(QMainWindow):
         self.get_data_sources()
         self.erase_disabled_items()
         self.ui.cif_main_table.setCurrentItem(None)
-        # Add loops widgets:
-        self.add_loops_tables()
 
     def add_loops_tables(self) -> None:
         """
@@ -1957,6 +1955,11 @@ class AppWindow(QMainWindow):
             self.ui.MainStackedWidget.setCurrentIndex(0)
             self.ui.LoopsPushButton.setText('Show Loops')
         else:
+            # Add loops widgets:
+            if self.cif and self.cif.loops:
+                self.add_loops_tables()
+            else:
+                return
             # Go to loops page:
             self.ui.LoopsPushButton.setText('Hide Loops')
             self.ui.MainStackedWidget.setCurrentIndex(5)

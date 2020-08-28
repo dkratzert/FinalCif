@@ -155,7 +155,7 @@ class CifContainer():
         return all
 
     @property
-    def loops(self):
+    def loops(self) -> List[gemmi.cif.Loop]:
         loops = []
         for b in self.block:
             if b.loop:
