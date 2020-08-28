@@ -4,13 +4,15 @@
 # Daniel Kratzert
 #
 import itertools as it
-import re
+import os
+import subprocess
 from math import sin, radians
 from pathlib import Path
-from typing import List, Sequence
+from typing import List, Sequence, Tuple
 
 from docx import Document
-from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_TAB_ALIGNMENT, WD_TAB_LEADER
+from docx.enum.section import WD_SECTION_START
+from docx.enum.text import WD_TAB_ALIGNMENT, WD_TAB_LEADER, WD_BREAK
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Cm, Length, Pt
@@ -18,88 +20,26 @@ from docx.table import Table, _Cell
 
 from app_path import application_path
 from cif.cif_file_io import CifContainer
-from report.mtools import cif_keywords_list, isfloat, this_or_quest
+from report.mtools import cif_keywords_list, isfloat, this_or_quest, format_space_group
+from report.references import ReferenceList, DSRReference2018, DSRReference2015
 from report.report_text import CCDC, CrstalSelection, Crystallization, DataReduct, Disorder, Hydrogens, MachineType, \
-    SolveRefine, format_radiation, math_to_word
-from report.spgrps import SpaceGroups
+    SolveRefine, format_radiation, FinalCifreport, SpaceChar
 from report.symm import SymmetryElement
-from tools.misc import prot_space, angstrom, bequal, sigma_sm, halbgeviert, degree_sign, ellipsis_mid
+from tools.misc import prot_space, angstrom, bequal, sigma_sm, halbgeviert, degree_sign, ellipsis_mid, lessequal, \
+    timessym, lambdasym
 
 
-def format_space_group(table, cif):
-    """
-    Sets formating of the space group symbol in row 6.
-    """
-    space_group = cif['_space_group_name_H-M_alt'].strip("'")
-    it_number = cif['_space_group_IT_number']
-    try:
-        # The HM space group symbol
-
-        s = SpaceGroups()
-        spgrxml = s.iucrNumberToMathml(it_number)
-        paragraph = table.cell(5, 1).paragraphs[0]  # add_paragraph('')
-        paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
-        paragraph._element.append(math_to_word(spgrxml))
-        paragraph.add_run(' (' + it_number + ')')
-    except Exception:
-        # Use fallback:
-        if space_group:
-            if len(space_group) > 4:  # don't modify P 1
-                space_group = re.sub(r'\s1', '', space_group)  # remove extra Hall "1" for mono and tric
-            space_group = re.sub(r'\s', '', space_group)  # remove all remaining whitespace
-            # space_group = re.sub(r'-1', u'\u0031\u0305', space_group)  # exchange -1 with 1bar
-            space_group_formated_text = [char for char in space_group]  # ???)
-            sgrun = table.cell(5, 1).paragraphs[0]
-            is_sub = False
-            for k, char in enumerate(space_group_formated_text):
-                sgrunsub = sgrun.add_run(char)
-                if not char.isdigit():
-                    sgrunsub.font.italic = True
-                else:
-                    if space_group_formated_text[k - 1].isdigit() and not is_sub:
-                        is_sub = True
-                        sgrunsub.font.subscript = True  # lowercase the second digit if previous is also digit
-                    else:
-                        is_sub = False  # only every second number as subscript for P212121 etc.
-            if it_number:
-                sgrun.add_run(' (' + it_number + ')')
-        else:
-            sgrun = table.cell(5, 1).paragraphs[0]
-            sgrun.add_run('?')
-
-
-def make_report_from(file_obj: Path, output_filename: str = None, path: str = '', without_H: bool = False):
+def make_report_from(options: dict, file_obj: Path, output_filename: str = None, path: str = '',
+                     picfile: Path = None) -> str:
     """
     Creates a tabular cif report.
     :param file_obj: Input cif file.
     :param output_filename: the table is saved to this file.
     """
-    try:
-        document = Document(Path(path).joinpath(application_path, 'template/template1.docx').absolute())
-    except FileNotFoundError as e:
-        print(e)
-        document = Document()
-    # Deleting first (empty) paragraph, otherwise first line would be an empty one:
-    try:
-        p = document.paragraphs[0]
-        delete_paragraph(p)
-    except IndexError:
-        # no paragraph there
-        pass
-    style = document.styles['Normal']
-    font = style.font
-    # font.name = 'Arial'
-    # font.size = Pt(10)
-    document.add_heading('Structure Tables', 1)
+    without_H = options.get('without_H')
+    report_text = options.get('report_text')
+    document = create_document(path)
 
-    # a style for the header:
-    styles = document.styles
-    # new_heading_style = styles.add_style('HeaderStyle', WD_STYLE_TYPE.PARAGRAPH)
-    # new_heading_style.base_style = styles['Heading 1']
-    # font = new_heading_style.font
-    # font.color.rgb = RGBColor(0, 0, 0)
-
-    cif = None
     if file_obj.exists():
         try:
             cif = CifContainer(file_obj)
@@ -111,53 +51,116 @@ def make_report_from(file_obj: Path, output_filename: str = None, path: str = ''
         raise FileNotFoundError
     if not cif:
         print('Something failed during cif file saving.')
-        return
-    # The picture after the header:
-    picfile = Path(file_obj.stem + '.gif')
-    if picfile.exists():
-        pic = document.add_paragraph()
-        pic.add_run().add_picture(str(picfile), width=Cm(7))
+        return ''
 
-    p_report = document.add_paragraph()
-    p_report.style = document.styles['fliesstext']
-    p_report.add_run('The following text is only a suggestion: ').font.bold = True
-    Crystallization(cif, p_report)
-    CrstalSelection(cif, p_report)
-    MachineType(cif, p_report)
-    DataReduct(cif, p_report)
-    SolveRefine(cif, p_report)
-    if cif.hydrogen_atoms_present:
-        Hydrogens(cif, p_report)
-    if cif.disorder_present:
-        Disorder(cif, p_report)
-    CCDC(cif, p_report)
+    if not report_text:
+        document.add_heading('Structure Tables for {}'.format(cif.block.name), 1)
+    else:
+        document.add_heading('Structure Tables', 1)
+        make_columns_section(document, columns='2')
 
+    if report_text:
+        if picfile and picfile.exists():
+            pic = document.add_paragraph()
+            try:
+                width = float(options['picture_width'])
+            except ValueError:
+                width = 7.0
+            pic.add_run().add_picture(str(picfile), width=Cm(width))
+
+        paragr = document.add_paragraph()
+        paragr.style = document.styles['fliesstext']
+        ref = ReferenceList(paragr)
+        # -- The main text:
+        paragr.add_run('The following text is only a suggestion: ').font.bold = True
+        Crystallization(cif, paragr)
+        CrstalSelection(cif, paragr)
+        MachineType(cif, paragr)
+        DataReduct(cif, paragr, ref)
+        SpaceChar(paragr).regular()
+        SolveRefine(cif, paragr, ref)
+        SpaceChar(paragr).regular()
+        if cif.hydrogen_atoms_present:
+            Hydrogens(cif, paragr)
+            SpaceChar(paragr).regular()
+        if cif.disorder_present:
+            d = Disorder(cif, paragr)
+            if d.dsr_sentence:
+                ref.append([DSRReference2015(), DSRReference2018()])
+                SpaceChar(paragr).regular()
+        CCDC(cif, paragr, ref)
+        SpaceChar(paragr).regular()
+        FinalCifreport(paragr, ref)
+
+    # -- The residuals table:
     table_num = 1
-    if not picfile.exists():
-        document.add_paragraph('\n\n\n\n\n\n')
-    p = document.add_paragraph('')
-    p.space_before = Pt(25)
-    cif, table_num = add_main_table(document, cif, table_num)
-    # document.add_paragraph('')
-    make_culumns_section(document, columns='1')
+    if report_text:
+        # I have to do the header and styling here, otherwise I get another paragraph with a line break in front of the heading.
+        p = document.add_paragraph(style='Heading 2')
+        p.add_run().add_break(WD_BREAK.COLUMN)
+        tab0_head = r"Table {}. Crystal data and structure refinement for {}".format(table_num, cif.block.name)
+        p.add_run(text=tab0_head)
+    table_num = add_residuals_table(document, cif, table_num)
+    p = document.add_paragraph()
+    p.add_run().add_break(WD_BREAK.PAGE)
+    if report_text:
+        make_columns_section(document, columns='1')
     table_num = add_coords_table(document, cif, table_num)
-    make_culumns_section(document, columns='2')
+
     if cif.symmops:
-        table_num = add_bonds_and_angles_table(document, cif, table_num, without_H)
-        table_num = add_torsion_angles(document, cif, table_num, without_H)
-        make_culumns_section(document, columns='1')
-        table_num = add_hydrogen_bonds(document, cif, table_num)
+        if len(list(cif.bonds())) + len(list(cif.angles())) > 0:
+            table_num += 1
+            document.add_heading(r"Table {}. Bond lengths and angles for {}".format(table_num, cif.block.name), 2)
+            make_columns_section(document, columns='2')
+            table_num = add_bonds_and_angles_table(document, cif, table_num, without_H)
+        if len(list(cif.torsion_angles())) > 0:
+            make_columns_section(document, columns='1')
+            table_num += 1
+            document.add_heading(r"Table {}. Torsion angles for {}".format(table_num, cif.block.name), 2)
+            make_columns_section(document, columns='2')
+            table_num = add_torsion_angles(document, cif, table_num, without_H)
+        make_columns_section(document, columns='1')
+        if len(list(cif.hydrogen_bonds())) > 0:
+            table_num += 1
+            document.add_heading(r"Table {}. Hydrogen bonds for {}".format(table_num, cif.block.name), 2)
+            table_num = add_hydrogen_bonds(document, cif, table_num)
         document.add_paragraph('')
     else:
-        make_culumns_section(document, columns='1')
+        make_columns_section(document, columns='1')
         document.add_paragraph('No further tables, because symmetry operators '
                                '(_space_group_symop_operation_xyz) are missing.')
+    if report_text:
+        # -- Bibliography:
+        document.add_heading('Bibliography', 2)
+        ref.make_literature_list(document)
+
     document.save(output_filename)
     print('\nTables finished - output file: {}'.format(output_filename))
     return file_obj.name
 
 
-def make_culumns_section(document, columns: str = '1'):
+def create_document(report_docx_path: str) -> Document:
+    """
+    Creates the report docx document.
+    :param report_docx_path: Path to the report file.
+    :return: The document instance.
+    """
+    try:
+        document = Document(Path(report_docx_path).joinpath(application_path, 'template/template1.docx').absolute())
+    except FileNotFoundError as e:
+        print(e)
+        document = Document()
+    # Deleting first (empty) paragraph, otherwise first line would be an empty one:
+    try:
+        p = document.paragraphs[0]
+        delete_paragraph(p)
+    except IndexError:
+        # no paragraph there
+        pass
+    return document
+
+
+def make_columns_section(document, columns: str = '1'):
     """
     Makes a new section (new page) which has a certain number of columns.
     available sections:
@@ -171,17 +174,17 @@ def make_culumns_section(document, columns: str = '1'):
     cols.set(qn('w:num'), '{}'.format(columns))
 
 
-def delete_paragraph(paragraph):
+def delete_paragraph(paragraph) -> None:
     p = paragraph._element
     p.getparent().remove(p)
     p._p = p._element = None
 
 
-def set_cell_border(cell: _Cell, **kwargs):
+def set_cell_border(cell: _Cell, **kwargs) -> None:
     """
-    Set cell`s border
-    Usage:
+    Set cell`s border of a Table cell instance.
 
+    Usage:
     set_cell_border(
         cell,
         top={"sz": 12, "val": "single", "color": "#FF0000", "space": "0"},
@@ -213,14 +216,14 @@ def set_cell_border(cell: _Cell, **kwargs):
                     element.set(qn('w:{}'.format(key)), str(edge_data[key]))
 
 
-def add_main_table(document: Document(), cif: CifContainer, table_num: int):
-    tab0_head = r"Table {}. Crystal data and structure refinement for {}".format(table_num, cif.fileobj.name)
-    document.add_heading(tab0_head, 2)
+def add_residuals_table(document: Document(), cif: CifContainer, table_num: int) -> Tuple[CifContainer, int]:
+    # table_num += 1
     exti = cif['_refine_ls_extinction_coef']
     rows = 33
     if cif.is_centrosymm:
         rows -= 1
-    if exti == '.' or exti == '?':
+    # Remove one row for the extinction coefficient:
+    if exti in ['.', "'.'", '?', '']:
         rows -= 1
     main_table = document.add_table(rows=rows, cols=2)
     # setup table format:
@@ -230,7 +233,7 @@ def add_main_table(document: Document(), cif: CifContainer, table_num: int):
     populate_description_columns(main_table, cif)
     # The main residuals table:
     populate_main_table_values(main_table, cif)
-    return cif, table_num
+    return table_num
 
 
 def populate_main_table_values(main_table: Table, cif: CifContainer):
@@ -302,10 +305,10 @@ def populate_main_table_values(main_table: Table, cif: CifContainer):
         diff_density_max = '?'
 
     # now prepare & write all the concatenated & derived cell contents:
-    main_table.cell(17, 1).text = this_or_quest(crystal_size_max) + '\u00d7' + \
-                                  this_or_quest(crystal_size_mid) + '\u00d7' + \
+    main_table.cell(17, 1).text = this_or_quest(crystal_size_max) + timessym + \
+                                  this_or_quest(crystal_size_mid) + timessym + \
                                   this_or_quest(crystal_size_min)
-    wavelength = str(' (\u03bb =' + this_or_quest(radiation_wavelength) +
+    wavelength = str(' ({} ='.format(lambdasym) + this_or_quest(radiation_wavelength) +
                      '{}{})'.format(prot_space, angstrom)).replace(' ', '')
     # radtype: ('Mo', 'K', '\\a')
     radtype = format_radiation(radiation_type)
@@ -327,57 +330,43 @@ def populate_main_table_values(main_table: Table, cif: CifContainer):
         main_table.cell(21, 1).text = "{:.2f} to {:.2f}{}".format(2 * float(theta_min), 2 * float(theta_max), d_max)
     except ValueError:
         main_table.cell(21, 1).text = '? to ?'
-    main_table.cell(22, 1).text = limit_h_min + ' \u2264 h \u2264 ' \
-                                  + limit_h_max + '\n' \
-                                  + limit_k_min + ' \u2264 k \u2264 ' \
-                                  + limit_k_max + '\n' \
-                                  + limit_l_min + ' \u2264 l \u2264 ' \
-                                  + limit_l_max
-    rintrun = main_table.cell(24, 1).paragraphs[0]
-    rintrun.add_run(this_or_quest(reflns_number_total) + '\n')
-    rintita1 = rintrun.add_run('R')
-    rintita1.font.italic = True
-    rintsub1 = rintrun.add_run('int')
-    rintsub1.font.subscript = True
-    rintrun.add_run(' = ' + this_or_quest(reflns_av_R_equivalents) + '\n')
-    rintita2 = rintrun.add_run('R')
-    rintita2.font.italic = True
-    rintsub2 = rintrun.add_run('sigma')
-    rintsub2.font.subscript = True
-    rintrun.add_run(' = ' + this_or_quest(reflns_av_unetI))
+    main_table.cell(22, 1).text = limit_h_min + ' {} h {} '.format(lessequal, lessequal) + limit_h_max + '\n' \
+                                  + limit_k_min + ' {} k {} '.format(lessequal, lessequal) + limit_k_max + '\n' \
+                                  + limit_l_min + ' {} l {} '.format(lessequal, lessequal) + limit_l_max
+    rint_p = main_table.cell(24, 1).paragraphs[0]
+    rint_p.add_run(this_or_quest(reflns_number_total) + '\n')
+    rint_p.add_run('R').font.italic = True
+    rint_p.add_run('int').font.subscript = True
+    rint_p.add_run(' = ' + this_or_quest(reflns_av_R_equivalents) + '\n')
+    rint_p.add_run('R').font.italic = True
+    rint_p.add_run('sigma').font.subscript = True
+    rint_p.add_run(' = ' + this_or_quest(reflns_av_unetI))
     main_table.cell(25, 1).paragraphs[0].add_run(completeness)
     main_table.cell(26, 1).text = this_or_quest(ls_number_reflns) + '/' \
                                   + this_or_quest(ls_number_restraints) + '/' \
                                   + this_or_quest(ls_number_parameters)
-    goof_run = main_table.cell(27, 1).paragraphs[0]
-    goof_run.add_run(goof)
-    r2sigrun = main_table.cell(28, 1).paragraphs[0]
-    r2sigita1 = r2sigrun.add_run('R')
-    r2sigita1.font.italic = True
-    r2sigsub1 = r2sigrun.add_run('1')
-    r2sigsub1.font.subscript = True
-    r2sigrun.add_run(' = ' + this_or_quest(ls_R_factor_gt) + '\nw')
-    r2sigita2 = r2sigrun.add_run('R')
-    r2sigita2.font.italic = True
-    r2sigsub2 = r2sigrun.add_run('2')
-    r2sigsub2.font.subscript = True
-    r2sigrun.add_run(' = ' + this_or_quest(ls_wR_factor_gt))
-    rfullrun = main_table.cell(29, 1).paragraphs[0]
-    rfullita1 = rfullrun.add_run('R')
-    rfullita1.font.italic = True
-    rfullsub1 = rfullrun.add_run('1')
-    rfullsub1.font.subscript = True
-    rfullrun.add_run(' = ' + this_or_quest(ls_R_factor_all) + '\nw')
-    rfullita2 = rfullrun.add_run('R')
-    rfullita2.font.italic = True
-    rfullsub2 = rfullrun.add_run('2')
-    rfullsub2.font.subscript = True
-    rfullrun.add_run(' = ' + ls_wR_factor_ref)
+    main_table.cell(27, 1).paragraphs[0].add_run(goof)
+    r2sig_p = main_table.cell(28, 1).paragraphs[0]
+    r2sig_p.add_run('R').font.italic = True
+    r2sig_p.add_run('1').font.subscript = True
+    r2sig_p.add_run(' = ' + this_or_quest(ls_R_factor_gt))
+    r2sig_p.add_run('\nw')
+    r2sig_p.add_run('R').font.italic = True
+    r2sig_p.add_run('2').font.subscript = True
+    r2sig_p.add_run(' = ' + this_or_quest(ls_wR_factor_gt))
+    rfull_p = main_table.cell(29, 1).paragraphs[0]
+    rfull_p.add_run('R').font.italic = True
+    rfull_p.add_run('1').font.subscript = True
+    rfull_p.add_run(' = ' + this_or_quest(ls_R_factor_all))
+    rfull_p.add_run('\nw')
+    rfull_p.add_run('R').font.italic = True
+    rfull_p.add_run('2').font.subscript = True
+    rfull_p.add_run(' = ' + ls_wR_factor_ref)
     main_table.cell(30, 1).text = diff_density_max + '/' + diff_density_min
     if not cif.is_centrosymm:
         main_table.cell(31, 1).text = cif['_refine_ls_abs_structure_Flack'] or '?'
     exti = cif['_refine_ls_extinction_coef']
-    if exti != '.' and exti != '?':
+    if exti not in ['.', "'.'", '?', '']:
         num = len(main_table.columns[0].cells)
         main_table.columns[1].cells[num - 1].text = exti
 
@@ -403,36 +392,30 @@ def add_coords_table(document: Document, cif: CifContainer, table_num: int):
     headline = "Table {}. Atomic coordinates and ".format(table_num)
     h = document.add_heading(headline, 2)
     h.add_run('U').font.italic = True
-    eq = h.add_run('eq')
-    eq.font.subscript = True
+    h.add_run('eq').font.subscript = True
     # eq.italic = True
     h.add_run('{}[{}'.format(prot_space, angstrom))
     h.add_run('2').font.superscript = True
-    h.add_run('] for {}.'.format(cif.fileobj.name))
+    h.add_run('] for {}'.format(cif.block.name))
     coords_table = document.add_table(rows=len(atoms) + 1, cols=5)
     # coords_table.style = document.styles['Table Grid']
     coords_table.style = 'Table Grid'
     # Atom	x	y	z	U(eq)
     head_row = coords_table.rows[0]
-    ar = head_row.cells[0].paragraphs[0].add_run('Atom')
-    ar.bold = True
+    ar = head_row.cells[0].paragraphs[0].add_run('Atom').bold = True
     px = head_row.cells[1].paragraphs[0]
-    # px.paragraph_format.tab_stops.add_tab_stop(Cm(0.5), WD_TAB_ALIGNMENT.DECIMAL, WD_TAB_LEADER.SPACES)
     ar = px.add_run('x')
     ar.bold = True
     ar.italic = True
     py = head_row.cells[2].paragraphs[0]
-    # py.paragraph_format.tab_stops.add_tab_stop(Cm(0.5), WD_TAB_ALIGNMENT.DECIMAL, WD_TAB_LEADER.SPACES)
     ar = py.add_run('y')
     ar.bold = True
     ar.italic = True
     pz = head_row.cells[3].paragraphs[0]
-    # pz.paragraph_format.tab_stops.add_tab_stop(Cm(0.5), WD_TAB_ALIGNMENT.DECIMAL, WD_TAB_LEADER.SPACES)
     ar = pz.add_run('z')
     ar.bold = True
     ar.italic = True
     pu = head_row.cells[4].paragraphs[0]
-    # pu.paragraph_format.tab_stops.add_tab_stop(Cm(0.8), WD_TAB_ALIGNMENT.DECIMAL, WD_TAB_LEADER.SPACES)
     ar = pu.add_run('U')
     ar.bold = True
     ar.italic = True
@@ -454,16 +437,12 @@ def add_coords_table(document: Document, cif: CifContainer, table_num: int):
         c0.text = at[0]  # label
         c1.text = (str(at[2]))  # x
         para_x = c1.paragraphs[0]
-        # para_x.paragraph_format.tab_stops.add_tab_stop(Cm(0.4), WD_TAB_ALIGNMENT.DECIMAL, WD_TAB_LEADER.SPACES)
         c2.text = (str(at[3]))  # y
         para_y = c2.paragraphs[0]
-        # para_y.paragraph_format.tab_stops.add_tab_stop(Cm(0.4), WD_TAB_ALIGNMENT.DECIMAL, WD_TAB_LEADER.SPACES)
         c3.text = (str(at[4]))  # z
         para_z = c3.paragraphs[0]
-        # para_z.paragraph_format.tab_stops.add_tab_stop(Cm(0.4), WD_TAB_ALIGNMENT.DECIMAL, WD_TAB_LEADER.SPACES)
         c4.text = (str(at[7]))  # ueq
         para_u = c4.paragraphs[0]
-        # para_u.paragraph_format.tab_stops.add_tab_stop(Cm(0.4), WD_TAB_ALIGNMENT.DECIMAL, WD_TAB_LEADER.SPACES)
     p = document.add_paragraph()
     p.style = document.styles['tabunterschr']
     p.add_run('U').font.italic = True
@@ -483,24 +462,18 @@ def add_coords_table(document: Document, cif: CifContainer, table_num: int):
     return table_num
 
 
-def add_bonds_and_angles_table(document: Document, cif: CifContainer, table_num: int, without_H: bool = False):
+def add_bonds_and_angles_table(document: Document, cif: CifContainer, table_num: int, without_H: bool = False) -> int:
     """
     Make table with bonds and angles.
     """
-    table_num += 1
-    headline = r"Table {}. Bond lengths and angles for {}.".format(table_num, cif.fileobj.name)
-    document.add_heading(headline, 2)
-    nbonds = len(list(cif.bonds(without_H)))
-    nangles = len(list(cif.angles(without_H)))
-    # creating rows before is *much* faster!
-    bond_angle_table = document.add_table(rows=nbonds + nangles + 3, cols=2, style='Table Grid')
+    # creating rows in advance is *much* faster!
+    bond_angle_table = document.add_table(rows=cif.nbonds(without_H) + cif.nangles(without_H) + 3, cols=2,
+                                          style='Table Grid')
     # Bond/Angle  value
     head_row = bond_angle_table.rows[0]
-    ar = head_row.cells[0].paragraphs[0].add_run('Atom{}Atom'.format(halbgeviert))
-    ar.bold = True
+    ar = head_row.cells[0].paragraphs[0].add_run('Atom{}Atom'.format(halbgeviert)).bold = True
     p_length = head_row.cells[1].paragraphs[0]
-    ar = p_length.add_run('Length [{}]'.format(angstrom))
-    ar.bold = True
+    p_length.add_run('Length [{}]'.format(angstrom)).bold = True
     p_length.paragraph_format.tab_stops.add_tab_stop(Cm(0.4), WD_TAB_ALIGNMENT.DECIMAL, WD_TAB_LEADER.SPACES)
     symms = {}
     newsymms = {}
@@ -528,17 +501,10 @@ def add_bonds_and_angles_table(document: Document, cif: CifContainer, table_num:
         c0.text = '{}{}{}'.format(at1, halbgeviert, at2)
         c0.paragraphs[0].add_run('#' + str(symms[symm2]) if symm2 else '').font.superscript = True
         c1.text = str(val)  # bond
-        # para_dist = c1.paragraphs[0]
-        # para_dist.paragraph_format.tab_stops.add_tab_stop(Cm(0.4), WD_TAB_ALIGNMENT.DECIMAL, WD_TAB_LEADER.SPACES)
     ############ the angles ####################
-    # bond_angle_table.add_row()
-    head_row = bond_angle_table.rows[nbonds + 2]
-    ar = head_row.cells[0].paragraphs[0].add_run('Atom{0}Atom{0}Atom'.format(halbgeviert))
-    ar.bold = True
-    para_angle = head_row.cells[1].paragraphs[0]
-    # para_angle.paragraph_format.tab_stops.add_tab_stop(Cm(0.4), WD_TAB_ALIGNMENT.DECIMAL, WD_TAB_LEADER.SPACES)
-    ar = para_angle.add_run('Angle [{}]'.format(degree_sign))
-    ar.bold = True
+    head_row = bond_angle_table.rows[rowidx + 1]
+    head_row.cells[0].paragraphs[0].add_run('Atom{0}Atom{0}Atom'.format(halbgeviert)).bold = True
+    head_row.cells[1].paragraphs[0].add_run('Angle [{}]'.format(degree_sign)).bold = True
     set_cell_border(head_row.cells[0], bottom={"sz": 2, "color": "#000000", "val": "single"})
     set_cell_border(head_row.cells[1], bottom={"sz": 2, "color": "#000000", "val": "single"})
     card = ''
@@ -584,14 +550,10 @@ def add_torsion_angles(document: Document, cif: CifContainer, table_num: int, wi
     """
     Table 6.  Torsion angles [°] for I-43d_final.
     """
-    ntors = len(list(cif.torsion_angles()))
     if not len(list(cif.torsion_angles())) > 0:
         print('No torsion angles in cif.')
         return table_num
-    table_num += 1
-    headline = r"Table {}. Torsion angles for {}.".format(table_num, cif.fileobj.name)
-    document.add_heading(headline, 2)
-    torsion_table = document.add_table(rows=ntors + 1, cols=2)
+    torsion_table = document.add_table(rows=cif.ntorsion_angles(without_H) + 1, cols=2)
     torsion_table.style = 'Table Grid'
     head_row = torsion_table.rows[0]
     head_row.cells[0].paragraphs[0].add_run('Atom{0}Atom{0}Atom{0}Atom'.format(halbgeviert)).bold = True
@@ -660,17 +622,11 @@ def add_torsion_angles(document: Document, cif: CifContainer, table_num: int, wi
     return table_num
 
 
-def add_hydrogen_bonds(document: Document, cif: CifContainer, table_num: int):
+def add_hydrogen_bonds(document: Document, cif: CifContainer, table_num: int) -> int:
     """
     Table 7.  Hydrogen bonds for I-43d_final  [Å and °].
     """
-    if not len(list(cif.hydrogen_bonds())) > 0:
-        print('No hydrogen bonds in cif.')
-        return
     nhydrogenb = len(list(cif.hydrogen_bonds()))
-    table_num += 1
-    headline = r"Table {}. Hydrogen bonds for {}.".format(table_num, cif.fileobj.name)
-    document.add_heading(headline, 2)
     hydrogen_table = document.add_table(rows=nhydrogenb + 1, cols=5)
     hydrogen_table.style = 'Table Grid'
     head_row = hydrogen_table.rows[0].cells
@@ -715,41 +671,32 @@ def add_hydrogen_bonds(document: Document, cif: CifContainer, table_num: int):
     return table_num
 
 
-def populate_description_columns(main_table, cif: CifContainer):
+def populate_description_columns(main_table: Table, cif: CifContainer) -> None:
     """
-    This Method adds the descriptions to the fist table column.
+    This Method adds the descriptions to the fist property table column.
     """
-    lgnd1 = main_table.cell(1, 0).paragraphs[0]
-    lgnd1.add_run('Empirical formula')
-    lgnd2 = main_table.cell(2, 0).paragraphs[0]
-    lgnd2.add_run('Formula weight')
-    lgnd3 = main_table.cell(3, 0).paragraphs[0]
-    lgnd3.add_run('Temperature [K]')
-    lgnd4 = main_table.cell(4, 0).paragraphs[0]
-    lgnd4.add_run('Crystal system')
-    lgnd5 = main_table.cell(5, 0).paragraphs[0]
-    lgnd5.add_run('Space group (number)')
+    lgnd1 = main_table.cell(1, 0).paragraphs[0].add_run('Empirical formula')
+    lgnd2 = main_table.cell(2, 0).paragraphs[0].add_run('Formula weight')
+    lgnd3 = main_table.cell(3, 0).paragraphs[0].add_run('Temperature [K]')
+    lgnd4 = main_table.cell(4, 0).paragraphs[0].add_run('Crystal system')
+    lgnd5 = main_table.cell(5, 0).paragraphs[0].add_run('Space group (number)')
     lgnd6 = main_table.cell(6, 0).paragraphs[0]
     lgnd6.add_run('a').font.italic = True
-    lgnd6.add_run(' [\u00C5]')
+    lgnd6.add_run(' [{}]'.format(angstrom))
     lgnd7 = main_table.cell(7, 0).paragraphs[0]
     lgnd7.add_run('b').font.italic = True
-    lgnd7.add_run(' [\u00C5]')
+    lgnd7.add_run(' [{}]'.format(angstrom))
     lgnd8 = main_table.cell(8, 0).paragraphs[0]
     lgnd8.add_run('c').font.italic = True
-    lgnd8.add_run(' [\u00C5]')
-    lgnd9 = main_table.cell(9, 0).paragraphs[0]
-    lgnd9.add_run('\u03B1 [\u00C5]')
-    lgnd10 = main_table.cell(10, 0).paragraphs[0]
-    lgnd10.add_run('\u03B2 [\u00C5]')
-    lgnd11 = main_table.cell(11, 0).paragraphs[0]
-    lgnd11.add_run('\u03B3 [\u00C5]')
+    lgnd8.add_run(' [{}]'.format(angstrom))
+    lgnd9 = main_table.cell(9, 0).paragraphs[0].add_run('\u03B1 [{}]'.format(angstrom))
+    lgnd10 = main_table.cell(10, 0).paragraphs[0].add_run('\u03B2 [{}]'.format(angstrom))
+    lgnd11 = main_table.cell(11, 0).paragraphs[0].add_run('\u03B3 [{}]'.format(angstrom))
     lgnd12 = main_table.cell(12, 0).paragraphs[0]
-    lgnd12.add_run('Volume [\u00C5')
+    lgnd12.add_run('Volume [{}'.format(angstrom))
     lgnd12.add_run('3').font.superscript = True
     lgnd12.add_run(']')
-    lgnd13 = main_table.cell(13, 0).paragraphs[0]
-    lgnd13.add_run('Z').font.italic = True
+    lgnd13 = main_table.cell(13, 0).paragraphs[0].add_run('Z').font.italic = True
     lgnd14 = main_table.cell(14, 0).paragraphs[0]
     lgnd14.add_run('\u03C1').font.italic = True
     lgnd14.add_run('calc').font.subscript = True
@@ -768,24 +715,17 @@ def populate_description_columns(main_table, cif: CifContainer):
     lgnd17.add_run('Crystal size [mm')
     lgnd17.add_run('3').font.superscript = True
     lgnd17.add_run(']')
-    lgnd18 = main_table.cell(18, 0).paragraphs[0]
-    lgnd18.add_run('Crystal colour')
-    lgnd19 = main_table.cell(19, 0).paragraphs[0]
-    lgnd19.add_run('Crystal shape')
-    lgnd20 = main_table.cell(20, 0).paragraphs[0]
-    lgnd20.add_run('Radiation')
-    lgnd21 = main_table.cell(21, 0).paragraphs[0]
-    lgnd21.add_run('2\u03F4 range [\u00b0]')
-    lgnd22 = main_table.cell(22, 0).paragraphs[0]
-    lgnd22.add_run('Index ranges')
-    lgnd23 = main_table.cell(23, 0).paragraphs[0]
-    lgnd23.add_run('Reflections collected')
-    lgnd24 = main_table.cell(24, 0).paragraphs[0]
-    lgnd24.add_run('Independent reflections')
+    lgnd18 = main_table.cell(18, 0).paragraphs[0].add_run('Crystal colour')
+    lgnd19 = main_table.cell(19, 0).paragraphs[0].add_run('Crystal shape')
+    lgnd20 = main_table.cell(20, 0).paragraphs[0].add_run('Radiation')
+    lgnd21 = main_table.cell(21, 0).paragraphs[0].add_run('2\u03F4 range [\u00b0]')
+    lgnd22 = main_table.cell(22, 0).paragraphs[0].add_run('Index ranges')
+    lgnd23 = main_table.cell(23, 0).paragraphs[0].add_run('Reflections collected')
+    lgnd24 = main_table.cell(24, 0).paragraphs[0].add_run('Independent reflections')
     lgnd25 = main_table.cell(25, 0).paragraphs[0]
     theta_full = cif['_diffrn_reflns_theta_full']
     if theta_full:
-        lgnd25.add_run('Completeness to \u03B8 = {}°'.format(theta_full))
+        lgnd25.add_run('Completeness to \n\u03B8 = {}°'.format(theta_full))
     else:
         lgnd25.add_run('Completeness')
     main_table.cell(26, 0).paragraphs[0].add_run('Data / Restraints / Parameters')
@@ -813,18 +753,18 @@ def populate_description_columns(main_table, cif: CifContainer):
         lgnd31 = main_table.cell(31, 0).paragraphs[0]
         lgnd31.add_run('Flack X parameter')
     exti = cif['_refine_ls_extinction_coef']
-    if exti != '.' and exti != '?':
+    if exti not in ['.', "'.'", '?', '']:
         # always the last cell
         num = len(main_table.columns[0].cells)
         main_table.columns[0].cells[num - 1].paragraphs[0].add_run('Extinction coefficient')
 
 
-def set_column_width(column, width: Length):
+def set_column_width(column, width: Length) -> None:
     for cell in column.cells:
         cell.width = width
 
 
-def make_table_widths(table: Table, widths: Sequence[Length]):
+def make_table_widths(table: Table, widths: Sequence[Length]) -> None:
     """
     Sets the width of the columns of a table.
     """
@@ -833,14 +773,20 @@ def make_table_widths(table: Table, widths: Sequence[Length]):
             row.cells[idx].width = width
 
 
-def add_hydrogen_omit_info(document: Document):
+def add_hydrogen_omit_info(document: Document) -> None:
+    """
+    Adds information if hydrogen atom bond are omitted from the respective table.
+    """
     p = document.add_paragraph('')
     line = 'Bonds to hydrogen atoms were omitted.'
     run = p.add_run(line)
     run.font.size = Pt(8)
 
 
-def add_last_symminfo_line(newsymms: dict, document: Document):
+def add_last_symminfo_line(newsymms: dict, document: Document) -> None:
+    """
+    Adds text about the symmetry generators used in order to add symmetry generated atoms.
+    """
     p = document.add_paragraph('')
     line = 'Symmetry transformations used to generate equivalent atoms:\n'
     nitems = len(newsymms)
@@ -873,10 +819,20 @@ if __name__ == '__main__':
 
     # make_report_from(get_files_from_current_dir()[5])
     t1 = time.perf_counter()
-    make_report_from(Path(r'test-data/DK_zucker2_0m.cif'), output_filename=Path(output_filename))
+    report_options = {'report_text'  : True,
+                      'picture_width': 7.5,
+                      'without_H'    : False,
+                      }
+    make_report_from(options=report_options, file_obj=Path(r'tests/examples/1979688.cif'),
+                     output_filename=Path(output_filename),
+                     picfile=Path('icon/finalcif.png'))
     # make_report_from(Path(r'/Volumes/nifty/p-1.cif'))
     t2 = time.perf_counter()
     print('complete table:', round(t2 - t1, 2), 's')
+    if os.name == 'nt':
+        subprocess.call(['cmd', '/C', Path(output_filename).absolute()])
+    else:
+        subprocess.call(['open', Path(output_filename).absolute()])
     # make_report_from(Path(r'test-data/sad-final.cif'))
     # make_report_from(Path(r'/Volumes/home/strukturen/eigene/DK_30011/sad-final.cif'))
     # make_report_from(Path(r'D:\goedaten\strukturen_goe\eigene\DK_4008\xl12\new\r3c.cif'))

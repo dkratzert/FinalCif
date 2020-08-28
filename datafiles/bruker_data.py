@@ -6,15 +6,18 @@
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
 from contextlib import suppress
+from pathlib import Path
 
 from gemmi import cif as gcif
 
 from cif.cif_file_io import CifContainer
 from datafiles.bruker_frame import BrukerFrameHeader
+from datafiles.data import WorkDataMixin
 from datafiles.p4p_reader import P4PFile
 from datafiles.sadabs import Sadabs
 from datafiles.saint import SaintListFile
-from datafiles.shelxt import SHELXTlistfile
+from datafiles.shelx import SolutionProgram
+from gui.dialogs import show_general_warning
 
 
 class MissingCifData():
@@ -25,29 +28,27 @@ class MissingCifData():
         self.data[key] = value
 
 
-class BrukerData(object):
+class BrukerData(WorkDataMixin):
 
-    def __init__(self, app: 'AppWindow', cif: CifContainer):
+    def __init__(self, app, cif: CifContainer):
+        super(BrukerData, self).__init__()
         self.cif = cif
         self.app = app
         self.basename = cif.fileobj.stem.split('_0m')[0]
         self.saint_data = SaintListFile(name_patt='*_0*m._ls')
         # This is only in this list file, not in the global:
         saint_first_ls = SaintListFile(name_patt='*_01._ls')
-        sp = self.get_solution_program()
-        solution_primary = ''
+        sol = SolutionProgram(cif)
+        solution_program = None
         if 'shelx' in self.cif.block.find_value('_audit_creation_method').lower():
             shelx = 'Sheldrick, G.M. (2015). Acta Cryst. A71, 3-8.\nSheldrick, G.M. (2015). Acta Cryst. C71, 3-8.\n'
         else:
             shelx = ''
-        if cif.resdata:
+        if cif.res_file_data:
             if cif.dsr_used:
                 dsr = 'The program DSR was used for model building:\n' \
                       'D. Kratzert, I. Krossing, J. Appl. Cryst. 2018, 51, 928-934. doi: 10.1107/S1600576718004508'
                 shelx += dsr
-        if sp and 'XT' in sp.version:
-            solution_primary = 'direct'
-        solution_program = (sp.version, sp.filename)
         abstype = '?'
         t_min = '?'
         t_max = '?'
@@ -84,6 +85,8 @@ class BrukerData(object):
             solution_program = (self.cif.solution_program_details, self.cif.fileobj.name)
         if self.cif['_computing_structure_solution']:
             solution_program = (gcif.as_string(self.cif['_computing_structure_solution']), self.cif.fileobj.name)
+        if not solution_program:
+            solution_program = (sol.program.version, Path(sol.program.filename).name)
         if self.cif.absorpt_process_details:
             absdetails = (self.cif.absorpt_process_details, self.cif.fileobj.name)
         else:
@@ -103,124 +106,102 @@ class BrukerData(object):
 
         if self.sadabs.Rint:
             rint = (self.sadabs.Rint, self.sadabs.filename.name)
-        else:
-            rint = ('', '')
+            self.sources['_diffrn_reflns_av_R_equivalents'] = rint
         temp2 = self.p4p.temperature
         temperature = round(min([temp1, temp2]), 1)
         if temperature < 0.01:
             temperature = '?'
         if (self.cif['_diffrn_ambient_temperature'].split('(')[0] or
             self.cif['_cell_measurement_temperature']).split('(')[0] == '0':
-            self.app.show_general_warning('<b>Warning</b>: You probably entered &minus;273.15 °C instead '
+            show_general_warning('<b>Warning</b>: You probably entered &minus;273.15 °C instead '
                                           'of &minus;173.15 °C into the SHELX file.<br>'
                                           'Zero temperature is likely to be wrong.')
         try:
-            if abs(int(self.cif['_diffrn_ambient_temperature'].split('(')[0]) - int(temperature)) >= 2:
-                self.app.show_general_warning('<b>Warning</b>: The temperature from the measurement and '
+            if abs(int(self.cif['_diffrn_ambient_temperature'].split('(')[0]) - int(temperature)) >= 2 and \
+                    not self.app.tempwarning_displayed:
+                self.app.tempwarning_displayed = True
+                show_general_warning('<b>Warning</b>: The temperature from the measurement and '
                                               'from SHELX differ. Please double-check for correctness.<br><br>'
                                               'SHELX says: {} K<br>'
-                                              'P$P file says: {} K<br>'
+                                              'The P4P file says: {} K<br>'
                                               'Frame header says: {} K<br><br>'
                                               'You may add a '
                                               '<a href="http://shelx.uni-goettingen.de/shelxl_html.php#TEMP">TEMP</a> '
                                               'instruction to your SHELX file (in °C).'
-                                              .format(self.cif['_diffrn_ambient_temperature'].split('(')[0],
+                                     .format(self.cif['_diffrn_ambient_temperature'].split('(')[0],
                                                       round(temp2, 1),
                                                       round(temp1, 1)))
         except ValueError:
             # most probably one value is '?'
             pass
-        # TODO: refrator space group things into a general method:
-        spgr = '?'
         if not self.cif['_space_group_name_H-M_alt']:
             try:
-                spgr = self.cif.space_group()
+                self.sources['_space_group_name_H-M_alt'] = (self.cif.space_group, 'Calculated by gemmi: https://gemmi.readthedocs.io')
             except AttributeError:
                 pass
-        hallsym = '?'
         if not self.cif['_space_group_name_Hall']:
             with suppress(AttributeError):
-                hallsym = self.cif.hall_symbol()
-        spgrnum = '?'
+                self.sources['_space_group_name_Hall'] = (self.cif.hall_symbol, 'Calculated by gemmi: https://gemmi.readthedocs.io')
         if not self.cif['_space_group_IT_number']:
             with suppress(AttributeError):
-                spgrnum = self.cif.spgr_number_from_symmops()
-        csystem = '?'
+                self.sources['_space_group_IT_number'] = (self.cif.spgr_number_from_symmops, 'Calculated by gemmi: https://gemmi.readthedocs.io')
         if not self.cif['_space_group_crystal_system']:
             with suppress(AttributeError):
-                csystem = self.cif.crystal_system()
-        """
-        #TODO: symmops are missing, need loops for that
-        if not self.symmops:
-            for x in reversed(self.symmops_from_spgr()):
-                self.add_to_cif(cif_as_list, key=x, value='')
-            self.add_to_cif(cif_as_list, key='_space_group_symop_operation_xyz', value='')
-            self.add_to_cif(cif_as_list, key='_loop', value='')"""
+                csystem = self.cif.crystal_system
+                self.sources['_space_group_crystal_system'] = (
+                    csystem, 'calculated by gemmi: https://gemmi.readthedocs.io')
+        if not self.cif.symmops and self.cif.symmops_from_spgr:
+            loop = self.cif.block.init_loop('_space_group_symop_operation_', ['xyz'])
+            for symmop in reversed(self.cif.symmops_from_spgr):
+                loop.add_row([gcif.quote(symmop)])
         # All sources that are not filled with data will be yellow in the main table
         #                          data                         tooltip
-        sources = {'_cell_measurement_reflns_used'   : (
-            self.saint_data.cell_reflections, self.saint_data.filename.name),
-            '_cell_measurement_theta_min'            : (
-                self.saint_data.cell_res_min_theta or '', self.saint_data.filename.name),
-            '_cell_measurement_theta_max'            : (
-                self.saint_data.cell_res_max_theta or '', saint_first_ls.filename.name),
-            '_computing_data_collection'             : (
-                saint_first_ls.aquire_software, self.saint_data.filename.name),
-            '_computing_cell_refinement'             : (self.saint_data.version, self.saint_data.filename.name),
-            '_computing_data_reduction'              : (self.saint_data.version, self.saint_data.filename.name),
-            '_exptl_absorpt_correction_type'         : abscorrtype,
-            '_exptl_absorpt_correction_T_min'        : abs_tmin,
-            '_exptl_absorpt_correction_T_max'        : abs_tmax,
-            '_diffrn_reflns_av_R_equivalents'        : rint,
-            '_cell_measurement_temperature'          : (temperature, self.p4p.filename.name),
-            '_diffrn_ambient_temperature'            : (temperature, self.p4p.filename.name),
-            '_exptl_absorpt_process_details'         : absdetails,
-            '_exptl_crystal_colour'                  : (self.p4p.crystal_color, self.p4p.filename.name),
-            '_exptl_crystal_description'             : (self.p4p.morphology, self.p4p.filename.name),
-            '_exptl_crystal_size_min'                : (self.p4p.crystal_size[0] or '', self.p4p.filename.name),
-            '_exptl_crystal_size_mid'                : (self.p4p.crystal_size[1] or '', self.p4p.filename.name),
-            '_exptl_crystal_size_max'                : (self.p4p.crystal_size[2] or '', self.p4p.filename.name),
-            '_computing_structure_solution'          : solution_program,
-            '_atom_sites_solution_primary'           : (solution_primary, ''),
-            '_diffrn_source_voltage'                 : (kilovolt or '', frame_name),
-            '_diffrn_source_current'                 : (milliamps or '', frame_name),
-            '_chemical_formula_moiety'               : ('', ''),
-            '_publ_section_references'               : (shelx, ''),
-            '_refine_special_details'                : ('', ''),
-            '_exptl_crystal_recrystallization_method': ('', ''),
-            '_chemical_absolute_configuration'       : ('', ''),
-            '_space_group_name_H-M_alt'              : (spgr, 'calculated by gemmi'),
-            '_space_group_name_Hall'                 : (hallsym, 'calculated by gemmi'),
-            '_space_group_IT_number'                 : (spgrnum, 'calculated by gemmi'),
-            '_space_group_crystal_system'            : (csystem, 'calculated by gemmi'),
-        }
-        self.sources = sources  # dict((k.lower(), v) for k, v in sources.items())
-
-    def get_solution_program(self):
-        """
-        Tries to figure out which program was used for structure solution.
-        TODO: figure out more solution programs.
-        """
-        p = self.cif.fileobj.parent
-        # for line in cif._ciftext:
-        #    if line.startswith('REM SHELXT solution in'):
-        xt_files = p.glob(self.basename + '*.lxt')
-        try:
-            res = self.cif.block.find_pair('_shelx_res_file')[1]
-        except (TypeError, AttributeError):
-            res = ''
-        byxt = res.find('REM SHELXT solution in')
-        for x in xt_files:
-            shelxt = SHELXTlistfile(x.as_posix())
-            if shelxt.version and byxt:
-                return shelxt
-        if byxt > 0:
-            xt = SHELXTlistfile('')
-            xt.version = "SHELXT (G. Sheldrick)"
-            return xt
-        xt = SHELXTlistfile('')
-        xt.version = "SHELXS (G. Sheldrick)"
-        return xt
+        self.sources['_cell_measurement_reflns_used'] = (
+            self.saint_data.cell_reflections, self.saint_data.filename.name)
+        self.sources['_cell_measurement_theta_min'] = (
+            self.saint_data.cell_res_min_theta or '', self.saint_data.filename.name)
+        self.sources['_cell_measurement_theta_max'] = (
+            self.saint_data.cell_res_max_theta or '', self.saint_data.filename.name)
+        self.sources['_computing_data_collection'] = (saint_first_ls.aquire_software, saint_first_ls.filename.name)
+        self.sources['_computing_cell_refinement'] = (self.saint_data.version, self.saint_data.filename.name)
+        self.sources['_computing_data_reduction'] = (self.saint_data.version, self.saint_data.filename.name)
+        self.sources['_exptl_absorpt_correction_type'] = abscorrtype
+        self.sources['_exptl_absorpt_correction_T_min'] = abs_tmin
+        self.sources['_exptl_absorpt_correction_T_max'] = abs_tmax
+        self.sources['_exptl_absorpt_process_details'] = absdetails
+        self.sources['_cell_measurement_temperature'] = (temperature, self.p4p.filename.name)
+        self.sources['_diffrn_ambient_temperature'] = (temperature, self.p4p.filename.name)
+        self.sources['_exptl_crystal_colour'] = (self.p4p.crystal_color, self.p4p.filename.name)
+        self.sources['_exptl_crystal_description'] = (self.p4p.morphology, self.p4p.filename.name)
+        self.sources['_exptl_crystal_size_min'] = (self.p4p.crystal_size[0] or '', self.p4p.filename.name)
+        self.sources['_exptl_crystal_size_mid'] = (self.p4p.crystal_size[1] or '', self.p4p.filename.name)
+        self.sources['_exptl_crystal_size_max'] = (self.p4p.crystal_size[2] or '', self.p4p.filename.name)
+        self.sources['_computing_structure_solution'] = solution_program
+        self.sources['_atom_sites_solution_primary'] = (sol.method, 'Inherited from solution program.')
+        self.sources['_diffrn_source_voltage'] = (kilovolt or '', frame_name)
+        self.sources['_diffrn_source_current'] = (milliamps or '', frame_name)
+        self.sources['_chemical_formula_moiety'] = ('', '')
+        self.sources['_publ_section_references'] = (shelx, '')
+        self.sources['_refine_special_details'] = ('', '')
+        self.sources['_exptl_crystal_recrystallization_method'] = ('', '')
+        if not self.cif.is_centrosymm:
+            self.sources['_chemical_absolute_configuration'] = ('', '')
+        if self.saint_data.is_twin and self.saint_data.components_firstsample == 2:
+            with suppress(Exception):
+                law = self.saint_data.twinlaw[list(self.saint_data.twinlaw.keys())[0]]
+                self.sources['_twin_individual_twin_matrix_11'] = (str(law[0][1]), self.saint_data.filename.name)
+                self.sources['_twin_individual_twin_matrix_12'] = (str(law[0][2]), self.saint_data.filename.name)
+                self.sources['_twin_individual_twin_matrix_13'] = (str(law[0][0]), self.saint_data.filename.name)
+                self.sources['_twin_individual_twin_matrix_21'] = (str(law[1][1]), self.saint_data.filename.name)
+                self.sources['_twin_individual_twin_matrix_22'] = (str(law[1][2]), self.saint_data.filename.name)
+                self.sources['_twin_individual_twin_matrix_23'] = (str(law[1][0]), self.saint_data.filename.name)
+                self.sources['_twin_individual_twin_matrix_31'] = (str(law[2][1]), self.saint_data.filename.name)
+                self.sources['_twin_individual_twin_matrix_32'] = (str(law[2][2]), self.saint_data.filename.name)
+                self.sources['_twin_individual_twin_matrix_33'] = (str(law[2][0]), self.saint_data.filename.name)
+                self.sources['_twin_individual_id'] = (
+                    str(self.saint_data.components_firstsample), self.saint_data.filename.name)
+                self.sources['_twin_special_details'] = (
+                    'The data was integrated as a 2-component twin.', self.saint_data.filename.name)
 
     @property
     def sadabs(self):

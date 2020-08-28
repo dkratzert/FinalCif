@@ -1,19 +1,29 @@
 altgraph>=0.17
 chardet==3.0.4
 future==0.18.2
-gemmi>=0.3.4
-idna==2.8
-lxml==4.4.2
+gemmi
+idna==2.10
+lxml>=4.5.2
 macholib>=1.14
 pefile==2019.4.18
-pybind11>=2.4.3
+pybind11>=2.5.0
 PyInstaller>=3.6
-PyQt5==5.13.2
-PyQt5-sip==12.7.1
-PyQt5-stubs==5.13.1.4
-PyQtWebEngine==5.13.2
+PyQt5==5.15.0
+PyQt5-sip==12.8.0
+PyQt5-stubs==5.14.2.2
+PyQtWebEngine==5.15.0
 python-docx>=0.8.10
-requests>=2.23.0 # for checkcif
-qtawesome>=0.7.0 #icons
+requests>=2.24.0 # for checkcif
+qtawesome>=0.7.2 #icons
+html2text==2020.1.16
+qtpy==1.9.0  # Abstraction layer for PyQt5/PyQt4/PySide2/PySide - Needed for QTest
+pytest
+py
+pluggy
 
+# Upgrade gemmi to Git master:
 # pip install https://github.com/project-gemmi/gemmi/archive/master.zip --upgrade
+
+# For development
+# docxtpl
+# sphinx

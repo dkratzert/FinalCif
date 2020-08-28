@@ -7,11 +7,11 @@ block_cipher = None
 site_packages = next(p for p in sys.path if 'site-packages' in p)
 
 a = Analysis(['finalcif.py'],
-             pathex=['D:\\GitHub\\FinalCif'],
+             pathex=['.'],
              binaries=[],
              datas=[('./gui', 'gui'), (path.join(site_packages,"docx","templates"), 'docx/templates'), 
-                    ('./template', 'template'), ('icon', 'icon'), ('displaymol', 'displaymol')],
-             hiddenimports=['tools.misc', 'tools.settings', 'datafiles', 'gemmi', 'qtawesome'],
+                    ('./template', 'template'), ('icon', 'icon'), ('displaymol', 'displaymol'), ('tools', 'tools')],
+             hiddenimports=['tools', 'tools.misc', 'tools.settings', 'datafiles', 'gemmi', 'qtawesome'],
              hookspath=[],
              runtime_hooks=[],
              excludes=[],

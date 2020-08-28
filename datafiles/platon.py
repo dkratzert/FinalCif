@@ -11,54 +11,38 @@
 
 import os
 import subprocess
-from subprocess import Popen, TimeoutExpired, PIPE
 import sys
 from pathlib import Path
+from subprocess import Popen, TimeoutExpired, PIPE
 from time import sleep
 
 
-def Worker(fname):
-    print("Platon worker")
-    s = Platon(fname)
-    return s
-
-
 class Platon():
-    def __init__(self, file: Path):
-        self.cif_fileobj = file
+    def __init__(self, cif: Path):
+        self.cif_fileobj = cif
         curdir = Path(os.curdir).absolute()
-        self.chkfile = Path(self.cif_fileobj.stem + '.chk')
         self.vrf_file = Path(self.cif_fileobj.stem + '.vrf')
-        try:
-            self.chkfile.unlink()
-        except (ValueError, FileNotFoundError):
-            pass
+        self.chkfile = None
         try:
             self.vrf_file.unlink()
         except (ValueError, FileNotFoundError):
             pass
-        os.chdir(self.cif_fileobj.absolute().parent)
+        os.chdir(str(self.cif_fileobj.absolute().parent))
         self.platon_output = ''
-        try:
-            self.run_platon(self.chkfile)
-        except Exception as e:
-            print('Platon failed to run:')
-            print(e)
-            return
-        try:
-            self.chk_file_text = self.chkfile.read_text(encoding='ascii', errors='ignore')
-        except FileNotFoundError:
-            self.chk_file_text = ''
+        self.chk_file_text = ''
         try:
             self.vrf_txt = self.vrf_file.read_text(encoding='ascii')
         except FileNotFoundError:
             self.vrf_txt = ''
         self.formula_moiety = ''
         self.Z = ''
-        self.parse_file()
+        self.delete_orphaned_files()
+        os.chdir(curdir.absolute())
+
+    def delete_orphaned_files(self):
         # delete orphaned files:
-        for ext in ['.ckf', '.fcf', '.def', '.lis', '.sar', '.ckf', '.sum', '.hkp', '.pjn', '.bin', '_pl.res',
-                    '_pl.spf']:
+        for ext in ['.ckf', '.fcf', '.def', '.lis', '.sar', '.ckf',
+                    '.sum', '.hkp', '.pjn', '.bin', '_pl.res', '_pl.spf']:
             try:
                 file = Path(self.cif_fileobj.stem + ext)
                 if file.stat().st_size < 100:
@@ -68,26 +52,34 @@ class Platon():
             except FileNotFoundError:
                 # print('##')
                 pass
-        os.chdir(curdir.absolute())
 
-    def parse_file(self):
+    def parse_chk_file(self):
         """
         """
+        chkfile = Path(self.cif_fileobj.stem + '.chk')
+        try:
+            self.chk_file_text = chkfile.read_text(encoding='ascii', errors='ignore')
+        except FileNotFoundError as e:
+            print('CHK file not found:', e)
+            self.chk_file_text = ''
         for num, line in enumerate(self.chk_file_text.splitlines(keepends=False)):
             if line.startswith('# MoietyFormula'):
                 self.formula_moiety = ' '.join(line.split(' ')[2:])
             if line.startswith('# Z'):
                 self.Z = line[19:24].strip(' ')
 
-    def run_platon(self, chkfile: Path):
+    def run_platon(self):
         """
-        >>> fname = Path(r'./test-data/DK_zucker2_0m.cif')
-        >>> Platon(fname)
-        Platon:
+        >>> fname = Path(r'./tests/examples/1979688.cif')
+        >>> p = Platon(fname)
+        >>> p.run_platon()
+        trying local platon
+        >>> p.formula_moiety
         C12 H22 O11
         """
+        # os.chdir(str(self.cif_fileobj.absolute().parent))
+        self.chkfile = Path(self.cif_fileobj.with_suffix('.chk'))
         plat = None
-        os.chdir(self.cif_fileobj.absolute().parent)
         timeticks = 0
         try:
             # This is only available on windows:
@@ -97,25 +89,25 @@ class Platon():
         except AttributeError:
             si = None
         try:
-            print('trying local platon')
+            print('running local platon')
             with Popen([r'platon', '-u', self.cif_fileobj.name], stdin=subprocess.DEVNULL,
                        startupinfo=si, stdout=PIPE, stderr=PIPE, shell=False, env=os.environ) as plat:
                 try:
-                    stdout, stderr = plat.communicate(sys.stdin, timeout=20)
+                    stdout, stderr = plat.communicate(sys.stdin, timeout=25)
                 except TimeoutExpired:
                     print('Terminating platon (1)')
                     plat.terminate()
                     stdout, stderr = plat.communicate()
                     # waiting until size does not increase anymore:
-                size1 = chkfile.stat().st_size
+                size1 = self.chkfile.stat().st_size
                 size2 = 99999999
                 timeticks = 0
                 while size1 <= size2:
                     timeticks = timeticks + 1
-                    size2 = chkfile.stat().st_size
+                    size2 = self.chkfile.stat().st_size
                     # print(size1, size2)
                     sleep(0.1)
-                    size1 = chkfile.stat().st_size
+                    size1 = self.chkfile.stat().st_size
                     if timeticks > 10:
                         try:
                             # print('Platon took too much time, terminating platon. (2)')
@@ -128,9 +120,10 @@ class Platon():
             if output:
                 self.platon_output = output.strip()
         except Exception as e:
-            print('Could not run local platon:', e)
+            print('Could not run local platon:' + str(e))
             self.platon_output = str(e)
             return
+        self.delete_orphaned_files()
         # self.platon_output = plat.stdout.decode('ascii')
         # self.platon_output += plat.stderr.decode('ascii')
         # a fresh platon exe from the web:

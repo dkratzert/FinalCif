@@ -31,7 +31,7 @@ class FinalCifSettings():
         # print('save:', maximized)
         self.settings.setValue('maximized', maximized)
         self.settings.endGroup()
-        
+
     def load_window_position(self) -> None:
         self.settings.beginGroup("MainWindow")
         try:
@@ -166,6 +166,22 @@ class FinalCifSettings():
         if not templ:
             return [('', '')]
         return [(n, x) for n, x in enumerate(templ[1]) if templ and len(templ) > 0]
+
+    def load_report_options(self) -> dict:
+        self.settings.beginGroup('ReportOptions')
+        options = self.settings.value("report", type=dict)
+        if not options:
+            options = {'report_text'  : True,
+                       'picture_width': 7.5,
+                       'without_H'    : False,
+                       }
+        self.settings.endGroup()
+        return options
+
+    def save_report_options(self, options: dict):
+        self.settings.beginGroup('ReportOptions')
+        self.settings.setValue('report', options)
+        self.settings.endGroup()
 
 
 if __name__ == '__main__':

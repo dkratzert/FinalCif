@@ -17,7 +17,7 @@ from typing import List, Optional, Union, Tuple
 
 import gemmi
 import requests
-from PyQt5.QtCore import QUrl
+from PyQt5.QtCore import QUrl, QThread, pyqtSignal
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest
 from PyQt5.QtNetwork import QNetworkReply
 from requests.exceptions import MissingSchema
@@ -26,27 +26,35 @@ from cif.cif_file_io import CifContainer
 from tools.misc import strip_finalcif_of_name
 
 
-class MakeCheckCif():
+class MakeCheckCif(QThread):
+    progress = pyqtSignal(str)
+    failed = pyqtSignal(str)
 
-    def __init__(self, cif: CifContainer, outfile: Path, hkl: bool = True):
+    def __init__(self, cif: CifContainer, outfile: Path, hkl: bool = True, pdf: bool = False):
         # hkl == False means no hkl upload
+        super().__init__()
         self.hkl = hkl
         self.html_out_file = outfile
         self.cif = cif
-        if not self.hkl:
-            print('Will not submit hkl data to checkcif.')
-        else:
-            print('Checkcif with hkl data!')
+        self.pdf = pdf
 
-    def _get_checkcif(self, pdf: bool = True) -> None:
+    def _html_check(self):
+        if not self.hkl:
+            self.progress.emit('Running Checkcif with no hkl data')
+        else:
+            self.progress.emit('Running Checkcif with hkl data')
+
+    def run(self) -> None:
         """
         Requests a checkcif run from IUCr servers.
         """
+        self._html_check()
         tmp, fd = None, None
         f = open(str(self.cif.fileobj.absolute()), 'rb')
-        if pdf:
+        if self.pdf:
             report_type = 'PDF'
-            vrf = 'vrfno'
+            # I had to do vrf = 'vrfno' in former times, but it seems to work now:
+            vrf = 'vrfab'
         else:
             report_type = 'HTML'
             vrf = 'vrfab'
@@ -67,13 +75,24 @@ class MakeCheckCif():
             "validtype" : hkl,
             "valout"    : vrf,
         }
-        print('Report request sent')
         url = 'https://checkcif.iucr.org/cgi-bin/checkcif_hkl.pl'
         t1 = time.perf_counter()
-        r = requests.post(url, files={'file': f}, data=headers, timeout=240)
-        t2 = time.perf_counter()
-        print('Report took {}s.'.format(str(round(t2 - t1, 2))))
-        self.html_out_file.write_bytes(r.content)
+        r = None
+        self.progress.emit('Report request sent. Please wait...')
+        try:
+            r = requests.post(url, files={'file': f}, data=headers, timeout=400)
+        except requests.exceptions.ReadTimeout:
+            message = r"Checkcif server took too long. Try it at 'https://checkcif.iucr.org' directly."
+            self.failed.emit(message)
+        if r:
+            self.progress.emit('request finished')
+            if not r.status_code == 200:
+                self.failed.emit('Request failed with code: {}'.format(str(r.status_code)))
+            else:
+                t2 = time.perf_counter()
+                time.sleep(0.1)
+                self.progress.emit('Report took {}s.'.format(str(round(t2 - t1, 2))))
+                self.html_out_file.write_bytes(r.content)
         f.close()
         if hkl == 'checkcif_only' and fd:
             try:
@@ -82,31 +101,38 @@ class MakeCheckCif():
                 f.close()
                 os.unlink(tmp)
             except ValueError:
-                print('can not delete tempfile from checkcif:')
-                print(tmp)
-        print('ready')
+                self.progress.emit('can not delete tempfile from checkcif:\n' + tmp)
+        #self.progress.emit('ready')
 
     def _open_pdf_result(self) -> None:
         """
         Opens the resulkting pdf file in the systems pdf viewer.
         """
-        parser = MyHTMLParser(self.html_out_file.read_text())
+        try:
+            parser = MyHTMLParser(self.html_out_file.read_text())
+        except FileNotFoundError:
+            self.failed.emit('Could not find checkcif result...')
+            pdf = None
+            return
         # the link to the pdf file resides in this html file:
         try:
             pdf = parser.get_pdf()
         except MissingSchema:
-            print('Link is not valid anymore...')
+            self.failed.emit('PDF link is not valid anymore...')
             pdf = None
         if pdf:
             pdfobj = Path(strip_finalcif_of_name('checkcif-' + self.cif.fileobj.stem) + '-finalcif.pdf')
-            pdfobj.write_bytes(pdf)
+            try:
+                pdfobj.write_bytes(pdf)
+            except PermissionError:
+                # Most probably because of an already opened report.
+                return
             if sys.platform == 'win' or sys.platform == 'win32':
                 subprocess.Popen([str(pdfobj.absolute())], shell=True)
             if sys.platform == 'darwin':
                 subprocess.call(['open', str(pdfobj.absolute())])
 
     def show_pdf_report(self) -> None:
-        self._get_checkcif(pdf=True)
         self._open_pdf_result()
 
     def _get_cif_without_hkl(self) -> Tuple[Union[bytes, str], int]:
@@ -202,7 +228,7 @@ class AlertHelp():
 
     def _parse_checkdef(self, alert: str) -> str:
         found = False
-        helptext = ''
+        helptext = []
         for line in self.checkdef:
             if line.startswith('_' + alert):
                 found = True
@@ -210,7 +236,7 @@ class AlertHelp():
             if found and line.startswith('#=='):
                 return '\n'.join(helptext[2:])
             if found:
-                helptext += line
+                helptext.append(line)
 
 
 class AlertHelpRemote():

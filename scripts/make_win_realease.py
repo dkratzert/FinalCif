@@ -14,6 +14,7 @@ import os
 import shutil
 import subprocess
 import sys
+from datetime import date, datetime
 from pathlib import Path
 
 from PyQt5 import uic
@@ -89,8 +90,9 @@ if arg == 'copy':
 else:
     subprocess.run(r""".\venv\Scripts\pyinstaller.exe -D Finalcif_installer.spec --clean -y""".split())
 
-    innosetup_compiler = r'D:/Program Files (x86)/Inno Setup 5/ISCC.exe'
+    innosetup_compiler = r'C:/Program Files (x86)/Inno Setup 6/ISCC.exe'
     # Run 64bit setup compiler
     subprocess.run([innosetup_compiler, iss_file, ])
 
 print('Created version: {}'.format(VERSION))
+print(datetime.now().strftime("%d.%m.%Y %H:%M:%S"))

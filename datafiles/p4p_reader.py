@@ -9,20 +9,11 @@
 #  ----------------------------------------------------------------------------
 # 
 
-# möpß
-#
-# ----------------------------------------------------------------------------
-# "THE BEER-WARE LICENSE" (Revision 42):
-# <daniel.kratzert@ac.uni-freiburg.de> wrote this file. As long as you retain
-# this notice you can do whatever you want with this stuff. If we meet some day,
-# and you think this stuff is worth it, you can buy me a beer in return.
-# Daniel Kratzert
-# ----------------------------------------------------------------------------
-#
 
 """
 This file reads Bruker p4p files into a data structure.
 """
+import os
 from pathlib import Path
 
 from cif.cif_file_io import CifContainer
@@ -67,7 +58,7 @@ class P4PFile():
         p = self.cif.fileobj.parent
         p4p_files = p.glob(basename + '*_0m.p4p')
         if not p4p_files:
-            p4p_files = p.glob('*.p4p')
+            p4p_files = Path(os.curdir).absolute().glob('*.p4p')
         for p in p4p_files:
             if p:
                 self.filename = p
