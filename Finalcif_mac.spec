@@ -7,12 +7,12 @@ block_cipher = None
 
 site_packages = next(p for p in sys.path if 'site-packages' in p)
 
-a = Analysis(['finalcif.py'],
-             pathex=['/Users/daniel/GitHub/FinalCif'],
+a = Analysis(['./finalcif.py'],
+             pathex=['/Users/daniel/Documents/GitHub/FinalCif', '.'],
              binaries=[],
              datas=[('./gui', 'gui'), (path.join(site_packages,"docx","templates"), 'docx/templates'),
                     ('./template', 'template'), ('icon', 'icon'), ('displaymol', 'displaymol')],
-             hiddenimports=['tools.misc', 'tools.settings', 'datafiles', 'gemmi', 'qtawesome'],
+             hiddenimports=['tools.misc', 'tools.settings', 'datafiles', 'gemmi', 'qtawesome', 'tools'],
              hookspath=[],
              runtime_hooks=[],
              excludes=[],
@@ -41,6 +41,10 @@ exe = EXE(pyz,
           console=False )
 
 app = BUNDLE(exe,
-             name='finalcif.app',
+             name='Finalcif-v_macos.app',
              icon='icon/finalcif2.ico',
-             bundle_identifier=None)
+             bundle_identifier=None,
+             info_plist={
+                'NSHighResolutionCapable': 'True'
+             },
+             )

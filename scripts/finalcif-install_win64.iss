@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "FinalCif"
-#define MyAppVersion "48"
+#define MyAppVersion "67"
 #define MyAppPublisher "Daniel Kratzert"
 
 ; Remember, first run pyInstaller script!
@@ -47,7 +47,7 @@ VersionInfoProductName={#MyAppName}
 AlwaysShowComponentsList=False
 ShowComponentSizes=False
 SetupIconFile="..\icon\finalcif2.ico"
-SignTool=signtool
+;SignTool=signtool
 ArchitecturesInstallIn64BitMode=x64
 
 [UninstallRun]

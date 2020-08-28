@@ -16,8 +16,8 @@ from typing import Union
 
 # protected space character:
 prot_space = u'\u00A0'
-# Angstrom character with a protected space in front:
-angstrom = u'\u00C5'
+# Angstrom character:
+angstrom = u'\u212B'
 # bigger or equal:
 bequal = u'\u2265'
 # small_sigma:
@@ -27,9 +27,19 @@ halbgeviert = u'\u2013'
 # degree sign:
 degree_sign = u'\u00B0'
 # middle ellipsis
-ellipsis_mid = u'\u22EF  '
+ellipsis_mid = u'\u22EF'
 # ellipsis
 ellipsis = u'\u2026'
+# less or equal sign
+lessequal = u'\u2264'
+# times (cross) symbol
+timessym = u'\u00d7'
+# lambda
+lambdasym = u'\u03bb'
+# one bar
+one_bar = u'\u0031\u0305'
+# Zero with space ZWSP
+zero_width_space = u'\u200B'
 
 
 def distance(x1: float, y1: float, z1: float, x2: float, y2: float, z2: float) -> float:
@@ -41,6 +51,7 @@ def distance(x1: float, y1: float, z1: float, x2: float, y2: float, z2: float) -
     1.0
     """
     return sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2 + (z1 - z2) ** 2)
+
 
 def grouper(inputs, n, fillvalue=None):
     iters = [iter(inputs)] * n
@@ -102,6 +113,17 @@ class Multilog(object):
             return res
 
         return g
+
+
+def get_file_with_new_ending(file: Path, new_ending: str, strip_from_name: str = '') -> Path:
+    """
+    Retruns a file path with a new ending. If strip_strip_from_name is given, this string is also 
+    removed from the file name before the suffix.
+    """
+    basename = file.stem
+    if strip_from_name:
+        basename = re.sub('{}$'.format(strip_from_name), '', basename)
+    return file.parent.joinpath(Path(basename + new_ending))
 
 
 def strip_finalcif_of_name(pth: str) -> str:
@@ -193,7 +215,7 @@ essential_keys = {
     '_diffrn_radiation_wavelength'                     : 'The radiation wavelength in angstroms',
     '_diffrn_radiation_type'                           : r'The type of the radiation, e.g. Mo K\a',
     '_diffrn_radiation_monochromator'                  : r'The typ monochromator type to get _diffrn_radiation_wavelength',
-    '_olex2_diffrn_ambient_temperature_device'         : 'Device to cool the crystal during measurement',
+    ####'_olex2_diffrn_ambient_temperature_device'         : 'Device to cool the crystal during measurement',
     '_diffrn_radiation_probe'                          : 'The nature of the radiation used',
     # '_diffrn_source_power'                             : 'The power in kilowatts at which the radiation source was operated',
     '_diffrn_source'                                   : "The general class of the source of radiation, e.g.'sealed X-ray tube'",
@@ -262,11 +284,10 @@ essential_keys = {
     '_refine_ls_shift/su_max'                          : 'The largest ratio of the final least-squares parameter shift to the final standard uncertainty',
     '_refine_ls_shift/su_mean'                         : 'The average ratio of the final least-squares parameter shift to the final standard uncertainty',
     '_publ_section_references'                         : 'References for programs used to process the data',
-    # '_symmetry_cell_setting'                           : 'The cell settings for this space-group symmetry',
     '_chemical_name_systematic'                        : 'IUPAC or Chemical Abstracts full name of the compound',
     '_chemical_name_common'                            : 'Trivial name by which the compound is commonly known',
     '_chemical_melting_point'                          : 'The temperature in kelvins at which the crystalline solid changes to a liquid',
-    #'_space_group_symop_operation_xyz'                 : 'Symmetry operations of the space group',
+    # '_space_group_symop_operation_xyz'                 : 'Symmetry operations of the space group',
 }
 
 twin_keys = {
@@ -302,6 +323,9 @@ text_field_keys = ['_refine_special_details',
                    '_diffrn_oxdiff_ac3_digest_frames',
                    '_diffrn_oxdiff_ac3_digest_hkl',
                    '_oxdiff_exptl_absorpt_empirical_details',
+                   '',
+                   '',
+                   '',
                    ]
 
 ABSORPTION_CORRECTION_TYPES = (
@@ -345,6 +369,8 @@ SPECIMEN_SUPPORT = (
     (6, 'nylon loop'),
     (7, 'cactus needle'),
     (8, 'cat whisker'),
+    (9, 'carbon fiber'),
+    (10, 'beryllium pin'),
 )
 
 ADHESIVE = (
@@ -422,16 +448,16 @@ SOLUTION_SECONDARY = (
     (11, 'other'),
 )
 
-combobox_fields = {'_exptl_crystal_colour'               : COLOUR_CHOICES,
-                   '_chemical_absolute_configuration'    : ABSOLUTE_CONFIGURATION_CHOICES,
-                   '_exptl_absorpt_correction_type'      : ABSORPTION_CORRECTION_TYPES,
-                   '_refine_ls_hydrogen_treatment'       : REFINE_LS_HYDROGEN_TREATMENT,
-                   '_diffrn_radiation_type'              : RADIATION_TYPE,
-                   '_atom_sites_solution_primary'        : SOLUTION_PRIMARY,
-                   '_atom_sites_solution_secondary'      : SOLUTION_PRIMARY,
-                   '_diffrn_measurement_specimen_support': SPECIMEN_SUPPORT,
-                   '_atom_sites_solution_hydrogens'      : SOLUTION_PRIMARY,
-                   # '_diffrn_measurement_specimen_adhesive': ADHESIVE,
+combobox_fields = {'_exptl_crystal_colour'                : COLOUR_CHOICES,
+                   '_chemical_absolute_configuration'     : ABSOLUTE_CONFIGURATION_CHOICES,
+                   '_exptl_absorpt_correction_type'       : ABSORPTION_CORRECTION_TYPES,
+                   '_refine_ls_hydrogen_treatment'        : REFINE_LS_HYDROGEN_TREATMENT,
+                   '_diffrn_radiation_type'               : RADIATION_TYPE,
+                   '_atom_sites_solution_primary'         : SOLUTION_PRIMARY,
+                   '_atom_sites_solution_secondary'       : SOLUTION_PRIMARY,
+                   '_diffrn_measurement_specimen_support' : SPECIMEN_SUPPORT,
+                   '_atom_sites_solution_hydrogens'       : SOLUTION_PRIMARY,
+                   '_diffrn_measurement_specimen_adhesive': ADHESIVE,
                    }
 
 excluded_imports = (
@@ -654,7 +680,6 @@ predef_prop_templ = [{'name'  : 'Crystal Color',
 
                      ]
 
-
 celltxt = """
     <html>
     <body>
@@ -662,26 +687,26 @@ celltxt = """
         <table border="0" cellspacing="1" cellpadding="1" style='font-size: 12px'>
             <tr>
                 <td align='right'><i>a</i> = </td>
-                <td align='right'>{:>7.3f} Å,</td>
+                <td align='right'>{0:>7.3f} Å,</td>
                 <td align='right'><i>&alpha;</i> = </td> 
-                <td align='right'>{:>7.3f}°</td>
+                <td align='right'>{3:>7.3f}°</td>
             </tr>
             <tr>
                 <td align='right'><i>b</i> = </td>
-                <td align='right'>{:>7.3f} Å,</td>
+                <td align='right'>{1:>7.3f} Å,</td>
                 <td align='right'><i>&beta;</i> = </td> 
-                <td align='right'>{:>7.3f}°</td>
+                <td align='right'>{4:>7.3f}°</td>
             </tr>
             <tr>
                 <td align='right'><i>c</i> = </td>
-                <td align='right'>{:>7.3f} Å,</td>
+                <td align='right'>{2:>7.3f} Å,</td>
                 <td align='right'><i>&gamma;</i> = </td> 
-                <td align='right'>{:>7.3f}°</td>
+                <td align='right'>{5:>7.3f}°</td>
             </tr>
        </table>
    </div>
    <div align='right' style="margin-left:0">
-    Volume = {:8.2f} Å<sup>3</sup>, <b>{}</b>
+    Volume = {6:8.2f} Å<sup>3</sup>, <b>{7}</b>
    </div>
    </body>
    </html>

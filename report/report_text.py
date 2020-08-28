@@ -7,14 +7,14 @@ from docx.text.run import Run
 from lxml import etree
 
 from app_path import application_path
-from cif.cif_file_io import CifContainer, retranslate_delimiter
-from tools.misc import prot_space, angstrom
+from cif.cif_file_io import CifContainer
+from cif.text import retranslate_delimiter
+from report.references import DummyReference, BrukerReference, SORTAVReference, ReferenceList, CCDCReference, \
+    SHELXLReference, SHELXTReference, SHELXSReference, FinalCifReference, ShelXleReference, Olex2Reference
+from tools.misc import prot_space, angstrom, zero_width_space
 
 
-# TODO: Add references of the used programs to the end.
-
-
-def math_to_word(eq):
+def math_to_word(eq: str) -> str:
     """Transform a sympy equation to be printed in word document."""
     tree = etree.fromstring(eq)
     xslt = etree.parse(os.path.join(application_path, 'template/mathml2omml.xsl'))
@@ -23,7 +23,7 @@ def math_to_word(eq):
     return new_dom.getroot()
 
 
-def clean_string(string):
+def clean_string(string: str) -> str:
     """
     Removes control characters from a string.
     >>> clean_string('This is a sentence\\r with newline.')
@@ -43,7 +43,7 @@ def clean_string(string):
         .strip('.')
 
 
-def gstr(string):
+def gstr(string: str) -> str:
     """
     Turn a string into a gemmi string and remove control characters.
     """
@@ -65,10 +65,10 @@ class ReportText():
 class Crystallization(FormatMixin):
     def __init__(self, cif: CifContainer, paragraph: Paragraph):
         self.cif = cif
-        self.crytsalization_method = clean_string(gstr(self.cif['_exptl_crystal_recrystallization_method'])) + '.'
+        self.crytsalization_method = gstr(self.cif['_exptl_crystal_recrystallization_method'])
         if not self.crytsalization_method:
             self.crytsalization_method = '[No crystallization method was given]'
-        sentence = "{} "
+        sentence = "{}. "
         self.text = sentence.format(self.crytsalization_method)
         paragraph.add_run(retranslate_delimiter(self.text))
 
@@ -85,7 +85,7 @@ class CrstalSelection(FormatMixin):
                 method = ''
         except ValueError:
             method = ''
-        self.txt = sentence.format(self.name, method, self.temperature, prot_space)
+        self.txt = sentence.format(self.cif.block.name, method, self.temperature, prot_space)
         paragraph.add_run(retranslate_delimiter(self.txt))
 
     @property
@@ -99,9 +99,9 @@ class CrstalSelection(FormatMixin):
 class MachineType():
     def __init__(self, cif: CifContainer, paragraph: Paragraph):
         self.cif = cif
-        self.difftype = clean_string(gstr(self.cif['_diffrn_measurement_device_type'])) \
+        self.difftype = gstr(self.cif['_diffrn_measurement_device_type']) \
                         or '[No measurement device type given]'
-        self.device = clean_string(gstr(self.cif['_diffrn_measurement_device'])) \
+        self.device = gstr(self.cif['_diffrn_measurement_device']) \
                       or '[No measurement device given]'
         self.source = gstr(self.cif['_diffrn_source']).strip('\n\r') \
                       or '[No radiation source given]'
@@ -141,54 +141,77 @@ class MachineType():
 
 
 class DataReduct():
-    def __init__(self, cif: CifContainer, paragraph: Paragraph):
+    def __init__(self, cif: CifContainer, paragraph: Paragraph, ref: ReferenceList):
         self.cif = cif
-        integration = gstr(self.cif['_computing_data_reduction']).strip('\n\r')
-        integration_prog = '?'
-        if 'saint' in integration.lower():
-            integration_prog = 'SAINT'
-        if 'crysalis' in integration.lower():
-            integration_prog = 'CrysAlisPro'
-        if 'trek' in integration.lower():
-            integration_prog = 'd*trek'
+        integration = gstr(self.cif['_computing_data_reduction']) or '??'
         abstype = gstr(self.cif['_exptl_absorpt_correction_type']) or '??'
         abs_details = gstr(self.cif['_exptl_absorpt_process_details']) or '??'
-        if 'sortav' in abs_details.lower():
-            abs_details = 'SORTAV'
-        if 'sadabs' in abs_details.lower():
-            if ':' in abs_details[:16]:
-                abs_details = abs_details.split(':')[0]
+        data_reduct_ref = DummyReference()
+        absorpt_ref = DummyReference()
+        integration_prog = '[unknown integration program]'
+        scale_prog = ['unknown program']
+        if 'SAINT' in integration:
+            saintversion = 'unknown version'
+            if len(integration.split()) > 1:
+                saintversion = integration.split()[1]
+            integration_prog = 'SAINT'
+            data_reduct_ref = BrukerReference('SAINT', saintversion)
+        absdetails = cif['_exptl_absorpt_process_details'].replace('-', ' ')
+        if 'SADABS' in absdetails.upper() or 'TWINABS' in absdetails.upper():
+            if len(absdetails.split()) > 1:
+                version = absdetails.split()[1]
             else:
-                abs_details = abs_details.split()[0]
-        if 'twinabs' in abs_details.lower():
-            abs_details = abs_details.split(' ')[0]
+                version = 'unknown version'
+            if 'SADABS' in absdetails:
+                scale_prog = 'SADABS'
+            else:
+                scale_prog = 'TWINABS'
+            absorpt_ref = BrukerReference(scale_prog, version)
+        if 'SORTAV' in absdetails.upper():
+            scale_prog = 'SORTAV'
+            absorpt_ref = SORTAVReference()
         if 'crysalis' in abs_details.lower():
-            abs_details = 'SCALE3 ABSPACK'
-        sentence = 'All data were integrated with {} and {} {} absorption correction using {} was applied. '
-        txt = sentence.format(integration_prog.strip('\n\r'),
+            scale_prog = 'SCALE3 ABSPACK'
+        sentence = 'All data were integrated with {} and {} {} absorption correction using {} was applied.'
+        txt = sentence.format(integration_prog,
                               get_inf_article(abstype),
                               abstype,
-                              abs_details)
+                              scale_prog)
         paragraph.add_run(retranslate_delimiter(txt))
+        ref.append([data_reduct_ref, absorpt_ref])
 
 
 class SolveRefine():
-    def __init__(self, cif: CifContainer, paragraph: Paragraph):
+    def __init__(self, cif: CifContainer, paragraph: Paragraph, ref: ReferenceList):
         self.cif = cif
+        refineref = DummyReference()
+        solveref = DummyReference()
         solution_prog = gstr(self.cif['_computing_structure_solution']) or '??'
         solution_method = gstr(self.cif['_atom_sites_solution_primary']) or '??'
+        if solution_prog.upper().startswith(('SHELXT', 'XT')):
+            solveref = SHELXTReference()
+        if 'SHELXS' in solution_prog.upper():
+            solveref = SHELXSReference()
         refined = gstr(self.cif['_computing_structure_refinement']) or '??'
-        # dsr = gstr(self.cif['_computing_structure_refinement'])
+        if refined.upper().startswith(('SHELXL', 'XL')):
+            refineref = SHELXLReference()
+        if 'OLEX' in refined.upper():
+            refineref = Olex2Reference()
         refine_coef = gstr(self.cif['_refine_ls_structure_factor_coef'])
         sentence = r"The structure were solved by {} methods using {} and refined by full-matrix " \
                    "least-squares methods against "
-        txt = sentence.format(solution_method.strip('\n\r'), solution_prog)
+        txt = sentence.format(solution_method.strip('\n\r'), solution_prog.split()[0])
         paragraph.add_run(retranslate_delimiter(txt))
         paragraph.add_run('F').font.italic = True
         if refine_coef.lower() == 'fsqd':
             paragraph.add_run('2').font.superscript = True
-        paragraph.add_run(' by {}'.format(refined))
-        paragraph.add_run('. ')
+        paragraph.add_run(' by {}'.format(refined.split()[0]))
+        shelxle = None
+        if 'shelxle' in refined.lower() or 'shelxle' in self.cif['_computing_molecular_graphics'].lower():
+            paragraph.add_run(' using ShelXle')
+            shelxle = ShelXleReference()
+        paragraph.add_run('.')
+        ref.append([solveref, refineref, shelxle])
 
 
 class Hydrogens():
@@ -202,7 +225,7 @@ class Hydrogens():
                     "with their "
         sentence2 = " values constrained to 1.5 times the "
         sentence3 = " of their pivot atoms for terminal sp"
-        sentence4 = " carbon atoms and 1.2 times for all other carbon atoms. "
+        sentence4 = " carbon atoms and 1.2 times for all other carbon atoms."
         paragraph.add_run(sentence1)
         paragraph.add_run('U').font.italic = True
         paragraph.add_run('iso').font.subscript = True
@@ -217,34 +240,49 @@ class Hydrogens():
 class Disorder():
     def __init__(self, cif: CifContainer, paragraph: Paragraph):
         self.cif = cif
-        sentence2 = ''
+        self.dsr_sentence = ''
         sentence1 = "Disordered moieties were refined using bond lengths " \
                     "restraints and displacement parameter restraints. "
         if self.cif.dsr_used:
-            sentence2 = "Some parts of the disorder model were introduced by the " \
-                        "program DSR. (doi: 10.1107/S1600576718004508) "
+            self.dsr_sentence = "Some parts of the disorder model were introduced by the " \
+                                "program DSR."
         paragraph.add_run(sentence1)
-        if sentence2:
-            paragraph.add_run(sentence2)
+        if self.dsr_sentence:
+            paragraph.add_run(self.dsr_sentence)
 
 
-class Twinning():
-    def __init__(self, cif: CifContainer, paragraph: Paragraph):
-        self.cif = cif
-        sentence = ''
-        # TODO: make is_twinned property of cif
+class SpaceChar(object):
+    def __init__(self, paragraph: Paragraph):
+        self.p = paragraph
+
+    def regular(self):
+        self.p.add_run(' ')
+
+    def porotected(self):
+        self.p.add_run(prot_space)
 
 
 class CCDC():
-    def __init__(self, cif: CifContainer, paragraph: Paragraph):
+    def __init__(self, cif: CifContainer, paragraph: Paragraph, ref: ReferenceList):
         self.cif = cif
         ccdc_num = gstr(self.cif['_database_code_depnum_ccdc_archive']) or '??????'
-        sentence = "Crystallographic data (including structure factors) for the structures reported in this " \
-                   "paper have been deposited with the Cambridge Crystallographic Data Centre. CCDC {} contain " \
-                   "the supplementary crystallographic data for this paper. Copies of the data can " \
-                   "be obtained free of charge from The Cambridge Crystallographic Data Centre " \
-                   "via www.ccdc.cam.ac.uk/structures.".format(ccdc_num)
+        sentence1 = "Crystallographic data (including structure factors) for the structures reported in this " \
+                    "paper have been deposited with the Cambridge Crystallographic Data Centre."
+        sentence2 = "CCDC {} contain " \
+                    "the supplementary crystallographic data for this paper. Copies of the data can " \
+                    "be obtained free of charge from the Cambridge Crystallographic Data Centre " \
+                    "via www.ccdc.cam.ac.uk/{}structures.".format(ccdc_num, zero_width_space)
+        paragraph.add_run(sentence1)
+        ref.append(CCDCReference())
+        SpaceChar(paragraph).regular()
+        paragraph.add_run(sentence2)
+
+
+class FinalCifreport():
+    def __init__(self, paragraph: Paragraph, ref: ReferenceList):
+        sentence = "This report and the CIF file were generated using FinalCif."
         paragraph.add_run(sentence)
+        ref.append(FinalCifReference())
 
 
 def get_inf_article(next_word: str) -> str:

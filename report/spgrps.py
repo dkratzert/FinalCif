@@ -1,3 +1,4 @@
+from typing import Union
 
 
 class SpaceGroups():
@@ -1769,10 +1770,10 @@ class SpaceGroups():
                     '</math>', 'Ia-3d'),
         }
 
-    def iucrNumberToMathml(self, number: int) -> str:
+    def iucrNumberToMathml(self, number: Union[int, str]) -> str:
         number = str(number)
         return self.spgrps[number][0]
 
-    def iucrNumberToPlainText(self, number) -> str:
+    def iucrNumberToPlainText(self, number: Union[int, str]) -> str:
         number = str(number)
         return self.spgrps[number][1]

@@ -41,12 +41,14 @@ class RigakuData():
         return result if result else ''
 
     def get_sources(self):
-        print('Getting data from .cif_od.')
+        print('Getting data from .cif_od file.')
+        #self.sources['_oxdiff_exptl_absorpt_empirical_details'] = ('', '')
+        #self.sources['_diffrn_measurement_details'] = ('', '')
         for item in self.block:
             if item.pair is not None:
                 key, value = item.pair
                 if key not in self.exclude_keys:
-                    #print(key, gemmi.cif.as_string(value))
+                    # print(key, gemmi.cif.as_string(value))
                     self.sources[key] = (gemmi.cif.as_string(value), self.fileobj.name)
             # loops currently dont work:
             '''if item.loop is not None:
