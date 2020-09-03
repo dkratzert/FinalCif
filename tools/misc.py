@@ -66,6 +66,17 @@ def isfloat(value: Union[str, int, float]) -> bool:
         return False
 
 
+def get_file_with_new_ending(file: Path, new_ending: str, strip_from_name: str = '') -> Path:
+    """
+    Retruns a file path with a new ending. If strip_strip_from_name is given, this string is also 
+    removed from the file name before the suffix.
+    """
+    basename = file.stem
+    if strip_from_name:
+        basename = re.sub('{}$'.format(strip_from_name), '', basename)
+    return file.parent.joinpath(Path(basename + new_ending))
+
+
 def next_path(path_pattern):
     """
     Finds the next free path in an sequentially named list of files

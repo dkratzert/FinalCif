@@ -1,8 +1,10 @@
 special_keys = ['_iucr_refine_instructions_details',
-                '_iucr_refine_reflections_details',
                 '_shelx_res_file', '_shelx_res_checksum',
                 '_shelx_hkl_file', '_shelx_hkl_checksum',
                 '_shelx_fab_file', '_shelx_fab_checksum',
+                '_shelx_fcf_file', '_shelx_fcf_checksum',
+                '_iucr_refine_reflections_details',
+                '_iucr_refine_fcf_details',
                 '_refln_index_h',
                 '_refln_index_k',
                 '_refln_index_l',
@@ -180,7 +182,7 @@ order = [
     '_diffrn_reflns_number',
     '_diffrn_reflns_av_unetI/netI',
     '_diffrn_reflns_av_R_equivalents',
-    '_diffrn_reflns_av_sigmaI/netI',   # superseeded by '_diffrn_reflns_av_unetI/netI'
+    '_diffrn_reflns_av_sigmaI/netI',  # superseeded by '_diffrn_reflns_av_unetI/netI'
     '_diffrn_reflns_theta_min',
     '_diffrn_reflns_theta_max',
     '_diffrn_reflns_theta_full',
@@ -287,6 +289,5 @@ order = [
     '_atom_type_scat_source',
 
     '_geom_special_details',
-    
 
 ]
