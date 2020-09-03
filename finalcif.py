@@ -1009,6 +1009,11 @@ class AppWindow(QMainWindow):
             show_general_warning('Can not save file: ' + str(e))
             return False
 
+    def delete_fcf_data(self):
+        """Removes the attched fcf file data from the current cif file."""
+        if self.cif.block.find_pair('_shelx_fcf_file'):
+            self.cif.block.find(['_shelx_fcf_file']).erase()
+
     def display_cif_text(self) -> None:
         """
         Displays the saved cif file into a textfield.

@@ -102,7 +102,7 @@ class MakeCheckCif(QThread):
                 os.unlink(tmp)
             except ValueError:
                 self.progress.emit('can not delete tempfile from checkcif:\n' + tmp)
-        #self.progress.emit('ready')
+        # self.progress.emit('ready')
 
     def _open_pdf_result(self) -> None:
         """
