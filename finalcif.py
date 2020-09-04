@@ -356,6 +356,7 @@ class AppWindow(QMainWindow):
         # Options:
         self.ui.OptionsPushButton.clicked.connect(self.show_options)
         self.ui.BackFromOptionspPushButton.clicked.connect(self.back_to_main_noload)
+        self.ui.BackFromLoopsPushButton.clicked.connect(self.back_to_main_noload)
         # Shred Cif
         self.ui.ShredCifButton.clicked.connect(self.shred_cif)
 
@@ -428,7 +429,7 @@ class AppWindow(QMainWindow):
             self.ui.HAtomsCheckBox.setChecked(self.report_options.get('without_H'))
         if self.report_options.get('picture_width'):
             self.ui.PictureWidthDoubleSpinBox.setValue(self.report_options.get('picture_width'))
-        self.ui.MainStackedWidget.setCurrentIndex(6)
+        self.ui.MainStackedWidget.setCurrentIndex(4)
         self.ui.HAtomsCheckBox.clicked.connect(self.save_options)
         self.ui.ReportTextCheckBox.clicked.connect(self.save_options)
         self.ui.PictureWidthDoubleSpinBox.valueChanged.connect(self.save_options)
@@ -548,7 +549,7 @@ class AppWindow(QMainWindow):
         table.resizeColumnToContents(0)
         table.resizeColumnToContents(1)
         table.resizeColumnToContents(2)
-        self.ui.MainStackedWidget.setCurrentIndex(4)
+        self.ui.MainStackedWidget.setCurrentIndex(3)
 
     def get_checkdef(self) -> None:
         """
@@ -811,7 +812,7 @@ class AppWindow(QMainWindow):
         self.ui.CheckcifPlaintextEdit.clear()
         self.save_current_cif_file()
         self.load_cif_file(self.final_cif_file_name)
-        self.ui.MainStackedWidget.setCurrentIndex(1)
+        self.ui.MainStackedWidget.setCurrentIndex(6)
         try:
             p = Platon(self.final_cif_file_name)
         except Exception as e:
@@ -846,7 +847,7 @@ class AppWindow(QMainWindow):
         if p.formula_moiety and moiety in ['', '?']:
             self.ui.MainStackedWidget.setCurrentIndex(0)
             self.ui.cif_main_table.setText(key='_chemical_formula_moiety', txt=p.formula_moiety, column=COL_EDIT)
-        self.ui.MainStackedWidget.setCurrentIndex(1)
+        self.ui.MainStackedWidget.setCurrentIndex(6)
 
     def load_recent_file(self, file_index: int) -> None:
         """
@@ -1018,7 +1019,7 @@ class AppWindow(QMainWindow):
         """
         Displays the saved cif file into a textfield.
         """
-        self.ui.MainStackedWidget.setCurrentIndex(2)
+        self.ui.MainStackedWidget.setCurrentIndex(1)
         final_textedit = self.ui.FinalCifFilePlainTextEdit
         doc = final_textedit.document()
         font = doc.defaultFont()
@@ -1658,7 +1659,7 @@ class AppWindow(QMainWindow):
             self.cif.fileobj
         except AttributeError:
             return
-        self.ui.MainStackedWidget.setCurrentIndex(3)
+        self.ui.MainStackedWidget.setCurrentIndex(2)
         self.ui.cellField.setText(celltxt.format(*self.cif.cell, self.cif['_space_group_centring_type']))
         try:
             spgr = self.cif.space_group
