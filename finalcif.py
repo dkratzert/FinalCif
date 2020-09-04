@@ -251,7 +251,7 @@ class AppWindow(QMainWindow):
         self.adjust_button_sizes()
 
     def adjust_button_sizes(self) -> None:
-        self.ui.CODpushButton.setFixedSize(self.ui.CheckcifPDFOnlineButton.size())
+        self.ui.CODpushButton.setFixedSize(self.ui.SaveCifButton.size())
         self.ui.SaveFullReportButton.setFixedWidth(
             self.ui.CODpushButton.width() - self.ui.ReportPicPushButton.width() - 6)
         self.ui.SumformLabel.setMinimumWidth(self.ui.SpaceGroupLineEdit.width())
@@ -281,6 +281,7 @@ class AppWindow(QMainWindow):
         self.ui.ExploreDirButton.clicked.connect(self.explore_dir)
         self.ui.LoopsPushButton.clicked.connect(self.showloops)
         ##
+        self.ui.CheckcifStartButton.clicked.connect(self.switch_to_checkcif)
         self.ui.CheckcifButton.clicked.connect(self.do_offline_checkcif)
         self.ui.CheckcifHTMLOnlineButton.clicked.connect(self.do_html_checkcif)
         self.ui.CheckcifPDFOnlineButton.clicked.connect(self.do_pdf_checkcif)
@@ -359,6 +360,12 @@ class AppWindow(QMainWindow):
         self.ui.BackFromLoopsPushButton.clicked.connect(self.back_to_main_noload)
         # Shred Cif
         self.ui.ShredCifButton.clicked.connect(self.shred_cif)
+
+    def switch_to_checkcif(self):
+        """
+        Opens the checkcif page.
+        """
+        self.ui.MainStackedWidget.setCurrentIndex(6)
 
     def shred_cif(self) -> None:
         """
