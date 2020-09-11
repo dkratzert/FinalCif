@@ -80,7 +80,7 @@ from PyQt5.QtWidgets import QApplication, QFileDialog, QHeaderView, QListWidget,
 
 """
 TODO:
-- support _shelx_fcf_file for new platon
+- Add option to import .cif and/or .sqf files maybe also .pcf files
 - make a modelview for the main table!
 - Extract more data from .xml file
 - Extract "_diffrn_measurement_details from .xml file
