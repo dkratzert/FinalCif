@@ -10,10 +10,10 @@
 # ----------------------------------------------------------------------------
 #
 
-from operator import sub, add
 import random
 import string
 from math import sqrt, radians, cos, sin, acos, degrees, floor
+from operator import sub, add
 
 
 class Array(object):
@@ -75,7 +75,7 @@ class Array(object):
         if isinstance(other, Array):
             return Array(list(map(add, self.values, other)))
         elif type(other) == float or type(other) == int:
-            #return Array( list(map(lambda x: x - other, self.values)) )
+            # return Array( list(map(lambda x: x - other, self.values)) )
             return Array([i + other for i in self.values])
         else:
             raise TypeError('Cannot add type Array to type {}.'.format(str(type(other))))
@@ -579,17 +579,17 @@ class SymmetryElement(object):
         string = "|{aa:2} {ab:2} {ac:2}|   |{v:>4.2}| \n" \
                  "|{ba:2} {bb:2} {bc:2}| + |{vv:>4.2}| \n" \
                  "|{ca:2} {cb:2} {cc:2}|   |{vvv:>4.2}| \n".format(aa=self.matrix[0, 0],
-                                                ab=self.matrix[0, 1],
-                                                ac=self.matrix[0, 2],
-                                                ba=self.matrix[1, 0],
-                                                bb=self.matrix[1, 1],
-                                                bc=self.matrix[1, 2],
-                                                ca=self.matrix[2, 0],
-                                                cb=self.matrix[2, 1],
-                                                cc=self.matrix[2, 2],
-                                                v=float(self.trans[0]),
-                                                vv=float(self.trans[1]),
-                                                vvv=float(self.trans[2]))
+                                                                   ab=self.matrix[0, 1],
+                                                                   ac=self.matrix[0, 2],
+                                                                   ba=self.matrix[1, 0],
+                                                                   bb=self.matrix[1, 1],
+                                                                   bc=self.matrix[1, 2],
+                                                                   ca=self.matrix[2, 0],
+                                                                   cb=self.matrix[2, 1],
+                                                                   cc=self.matrix[2, 2],
+                                                                   v=float(self.trans[0]),
+                                                                   vv=float(self.trans[1]),
+                                                                   vvv=float(self.trans[2]))
         return string
 
     def __repr__(self):
@@ -749,7 +749,8 @@ def median(nums):
         # // is floordiv:
         return ls[n // 2]
     else:
-        return sum(ls[int(int(n) / 2 - 1):int(int(n) / 2 + 1)]) / 2.0
+        i = n // 2
+        return (ls[i - 1] + ls[i]) / 2
 
 
 def std_dev(data):
@@ -798,8 +799,8 @@ def nalimov_test(data):
     [3]
     """
     # q-values for degrees of freedom:
-    f = {1: 1.409, 2: 1.645, 3: 1.757, 4: 1.814, 5: 1.848, 6: 1.870, 7: 1.885, 8: 1.895,
-         9: 1.903, 10: 1.910, 11: 1.916, 12: 1.920, 13: 1.923, 14: 1.926, 15: 1.928,
+    f = {1 : 1.409, 2: 1.645, 3: 1.757, 4: 1.814, 5: 1.848, 6: 1.870, 7: 1.885, 8: 1.895,
+         9 : 1.903, 10: 1.910, 11: 1.916, 12: 1.920, 13: 1.923, 14: 1.926, 15: 1.928,
          16: 1.931, 17: 1.933, 18: 1.935, 19: 1.936, 20: 1.937, 30: 1.945}
     fact = sqrt(float(len(data)) / (len(data) - 1))
     fval = len(data) - 2

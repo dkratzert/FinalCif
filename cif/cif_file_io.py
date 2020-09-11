@@ -14,7 +14,8 @@ import gemmi
 
 from cif.cif_order import order, special_keys
 from datafiles.utils import DSRFind
-from tools.misc import essential_keys, non_centrosymm_keys
+from tools.dsrmath import median
+from tools.misc import essential_keys, non_centrosymm_keys, get_error_from_value
 
 
 class CifContainer():
@@ -186,6 +187,18 @@ class CifContainer():
     @property
     def absorpt_correction_T_min(self) -> str:
         return self.hkl_extra_info['_exptl_absorpt_correction_T_min']
+
+    @property
+    def bond_precision(self):
+        bonderrors = []
+        for bond in self.bonds(without_h=True):
+            if self.iselement(bond[0]) == 'C' and self.iselement(bond[1]) == 'C':
+                dist, error = get_error_from_value(bond[2])
+                bonderrors.append(error)
+        if len(bonderrors) > 2:
+            return median(bonderrors)
+        else:
+            return 0.0
 
     def _spgr(self) -> gemmi.SpaceGroup:
         if self.symmops:
@@ -389,13 +402,16 @@ class CifContainer():
         return c.a, c.b, c.c, c.alpha, c.beta, c.gamma, c.volume
 
     def ishydrogen(self, label: str) -> bool:
+        """
+        Determines if an atom with the name 'label' is a hydrogen atom.
+        """
         hydrogen = ('H', 'D')
         if self.iselement(label) in hydrogen:
             return True
         else:
             return False
 
-    def bonds(self, without_H: bool = False):
+    def bonds(self, without_h: bool = False):
         """
         Yields a list of bonds in the cif file.
         """
@@ -404,7 +420,7 @@ class CifContainer():
         dist = self.block.find_loop('_geom_bond_distance')
         symm = self.block.find_loop('_geom_bond_site_symmetry_2')
         for label1, label2, dist, symm in zip(label1, label2, dist, symm):
-            if without_H and (self.ishydrogen(label1) or self.ishydrogen(label2)):
+            if without_h and (self.ishydrogen(label1) or self.ishydrogen(label2)):
                 continue
             else:
                 yield (label1, label2, dist, symm)

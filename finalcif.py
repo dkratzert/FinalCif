@@ -1653,7 +1653,7 @@ class AppWindow(QMainWindow):
             self.ui.CCDCNumLineEdit.setText(self.cif['_database_code_depnum_ccdc_archive'])
 
     def show_properties(self) -> None:
-        self.save_current_cif_file()
+        # self.save_current_cif_file() # Is this really necessary? 11.09.2020 DK
         try:
             self.cif.fileobj
         except AttributeError:
