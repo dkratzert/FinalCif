@@ -14,7 +14,7 @@ import gemmi
 
 from cif.cif_order import order, special_keys
 from datafiles.utils import DSRFind
-from tools.dsrmath import median
+from tools.dsrmath import median, mean
 from tools.misc import essential_keys, non_centrosymm_keys, get_error_from_value
 
 
@@ -191,12 +191,13 @@ class CifContainer():
     @property
     def bond_precision(self):
         bonderrors = []
+        pair = ('C')
         for bond in self.bonds(without_h=True):
-            if self.iselement(bond[0]) == 'C' and self.iselement(bond[1]) == 'C':
+            if self.iselement(bond[0]) in pair and self.iselement(bond[1]) in pair:
                 dist, error = get_error_from_value(bond[2])
                 bonderrors.append(error)
         if len(bonderrors) > 2:
-            return median(bonderrors)
+            return mean(bonderrors)
         else:
             return 0.0
 
