@@ -6,6 +6,7 @@
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
 import re
+from math import sin, cos, sqrt
 from pathlib import Path
 # noinspection PyUnresolvedReferences
 from typing import Dict, List, Tuple, Union
@@ -14,7 +15,7 @@ import gemmi
 
 from cif.cif_order import order, special_keys
 from datafiles.utils import DSRFind
-from tools.dsrmath import median, mean
+from tools.dsrmath import mean
 from tools.misc import essential_keys, non_centrosymm_keys, get_error_from_value
 
 
@@ -190,14 +191,62 @@ class CifContainer():
 
     @property
     def bond_precision(self):
+        a, aerror = get_error_from_value(self['_cell_length_a'])
+        b, berror = get_error_from_value(self['_cell_length_b'])
+        c, cerror = get_error_from_value(self['_cell_length_c'])
+        alpha, sigalpha = get_error_from_value(self['_cell_angle_alpha'])
+        beta, sigbeta = get_error_from_value(self['_cell_angle_beta'])
+        gamma, siggamma = get_error_from_value(self['_cell_angle_gamma'])
+        A1 = aerror / a
+        A2 = berror / b
+        A3 = cerror / c
+        # B1 = sin(alpha) * (cos(alpha) - cos(beta) * cos(gamma)) * sigalpha
+        # B2 = sin(beta) * (cos(beta) - cos(alpha) * cos(gamma)) * sigbeta
+        # B3 = sin(gamma) * (cos(gamma) - cos(alpha) * cos(beta)) * siggamma
+        name2coords = dict([(x[0], (x[2], x[3], x[4])) for x in self.atoms()])
+        name2part = dict([(x[0], x[5]) for x in self.atoms()])
+        count = 0
         bonderrors = []
+        bb = 0.0
         pair = ('C')
         for bond in self.bonds(without_h=True):
-            if self.iselement(bond[0]) in pair and self.iselement(bond[1]) in pair:
+            atom1 = bond[0]
+            atom2 = bond[1]
+            if 'B' in atom1 or 'B' in atom2:
+                continue
+            if name2part[atom1] != '.' or name2part[atom2] != '.':
+                continue
+            if self.iselement(atom1) in pair and self.iselement(atom2) in pair:
                 dist, error = get_error_from_value(bond[2])
-                bonderrors.append(error)
+                x1, sig_x1 = get_error_from_value(name2coords[atom1][0])
+                y1, sig_y1 = get_error_from_value(name2coords[atom1][1])
+                z1, sig_z1 = get_error_from_value(name2coords[atom1][2])
+                x2, sig_x2 = get_error_from_value(name2coords[atom2][0])
+                y2, sig_y2 = get_error_from_value(name2coords[atom2][1])
+                z2, sig_z2 = get_error_from_value(name2coords[atom2][2])
+                delta1 = a*(x1 - x2)
+                delta2 = b*(y1 - y2)
+                delta3 = c*(z1 - z2)
+                sigd =  (
+                        (delta1 + delta2 * cos(gamma) + delta3 * cos(beta)) ** 2 * (
+                        delta1 ** 2 * A1 ** 2 + a ** 2 * (sig_x1 ** 2 + sig_x2 ** 2))
+                        + (delta1 * cos(gamma) + delta2 + delta3 * cos(alpha)) ** 2 * (
+                                delta2 ** 2 * A2 ** 2 + b ** 2 * (sig_y1 ** 2 + sig_y2 ** 2))
+                        + (delta1 * cos(beta) + delta2 * cos(alpha) + delta3) ** 2 * (
+                                delta3 ** 2 * A3 ** 2 + c ** 2 * (sig_z1 ** 2 + sig_z2 ** 2))
+                        + ((delta1 * delta2 * siggamma * sin(gamma)) ** 2 + 
+                           (delta1 * delta3 * sigbeta * sin(beta)) ** 2 + 
+                           (delta2 * delta3 * sigalpha * sin(alpha)) ** 2)) / dist ** 2
+                # The error is too large:
+                sigd = sqrt(sigd)
+                bb += sigd
+                if sigd > 0.0001:
+                    count += 1
+                    print(atom1, atom2, dist, round(error, 5), round(sigd, 4), round(bb, 5), count)
+                    print('------ dist - sigma - calcsig - sum - num')
+                    bonderrors.append(sigd)
         if len(bonderrors) > 2:
-            return mean(bonderrors)
+            return round(mean(bonderrors), 5)
         else:
             return 0.0
 
@@ -254,7 +303,7 @@ class CifContainer():
     def hkl_checksum_calcd(self) -> int:
         """
         Calculates the shelx checksum for the hkl file content of a cif file.
-
+    
         #>>> c = CifContainer(Path('test-data/DK_zucker2_0m.cif'))
         #>>> c.hkl_checksum_calcd
         #69576
@@ -272,7 +321,7 @@ class CifContainer():
     def res_checksum_calcd(self) -> int:
         """
         Calculates the shelx checksum for the res file content of a cif file.
-
+    
         #>>> c = CifContainer(Path('test-data/DK_zucker2_0m.cif'))
         #>>> c.res_checksum_calcd
         #52593
@@ -325,7 +374,7 @@ class CifContainer():
     def symmops(self) -> List[str]:
         """
         Reads the symmops from the cif file.
-
+    
         >>> cif = CifContainer(Path('test-data/DK_ML7-66-final.cif'))
         >>> cif.symmops
         ['x, y, z', '-x, -y, -z']
@@ -500,7 +549,7 @@ class CifContainer():
     def key_value_pairs(self):
         """
         Returns the key/value pairs of a cif file sorted by priority.
-
+    
         >>> c = CifContainer(Path('test-data/P21c-final.cif'))
         >>> c.key_value_pairs()[:2]
         [['_audit_contact_author_address', '?'], ['_audit_contact_author_email', '?']]

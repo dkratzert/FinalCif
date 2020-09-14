@@ -80,7 +80,9 @@ from PyQt5.QtWidgets import QApplication, QFileDialog, QHeaderView, QListWidget,
 
 """
 TODO:
+- dist errors: Giacovazzo p.122
 - Add option to import .cif and/or .sqf files maybe also .pcf files
+- Read measurement time from SAINT 0m._ls file and its list of integrated files. Or even better from the .xml file.
 - make a modelview for the main table!
 - Extract more data from .xml file
 - Extract "_diffrn_measurement_details from .xml file
