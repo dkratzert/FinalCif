@@ -191,6 +191,9 @@ class CifContainer():
 
     @property
     def bond_precision(self):
+        """
+        This method is unfinished and might result in wrong numbers!
+        """
         a, aerror = get_error_from_value(self['_cell_length_a'])
         b, berror = get_error_from_value(self['_cell_length_b'])
         c, cerror = get_error_from_value(self['_cell_length_c'])
