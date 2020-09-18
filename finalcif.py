@@ -206,6 +206,7 @@ class AppWindow(QMainWindow):
         self.ui.PictureWidthDoubleSpinBox.setRange(0.0, 25)
         self.ui.PictureWidthDoubleSpinBox.setSingleStep(0.5)
         self.report_options = self.settings.load_report_options()
+        self.checkcif_options = self.settings.load_checkcif_options()
 
     def make_button_icons(self):
         self.ui.CheckcifButton.setIcon(qta.icon('mdi.file-document-box-outline'))
@@ -419,22 +420,26 @@ class AppWindow(QMainWindow):
          'without_H': False,
          }
          """
+        self.ui.HAtomsCheckBox.clicked.connect(self.save_options)
+        self.ui.ReportTextCheckBox.clicked.connect(self.save_options)
+        self.ui.PictureWidthDoubleSpinBox.valueChanged.connect(self.save_options)
+        self.ui.CheckCIFServerURLTextedit.textChanged.connect(self.save_options)
+
         if self.cif:
             if self.cif.res_file_data and self.cif.hkl_file:
                 self.ui.ShredCifButton.setEnabled(True)
         else:
             self.ui.ShredCifButton.setDisabled(True)
         self.report_options = self.settings.load_report_options()
+        self.checkcif_options = self.settings.load_checkcif_options()
+        if self.checkcif_options.get('checkcif_url'):
+            self.ui.CheckCIFServerURLTextedit.setText(self.checkcif_options.get('checkcif_url'))
         if self.report_options.get('report_text') is not None:
             self.ui.ReportTextCheckBox.setChecked(not self.report_options.get('report_text'))
         if self.report_options.get('without_H') is not None:
             self.ui.HAtomsCheckBox.setChecked(self.report_options.get('without_H'))
         if self.report_options.get('picture_width'):
             self.ui.PictureWidthDoubleSpinBox.setValue(self.report_options.get('picture_width'))
-        self.ui.MainStackedWidget.setCurrentIndex(6)
-        self.ui.HAtomsCheckBox.clicked.connect(self.save_options)
-        self.ui.ReportTextCheckBox.clicked.connect(self.save_options)
-        self.ui.PictureWidthDoubleSpinBox.valueChanged.connect(self.save_options)
         if not self.cif:
             return
         if not self.cif.res_file_data:
@@ -444,6 +449,7 @@ class AppWindow(QMainWindow):
         if not all([self.cif.res_file_data, self.cif.hkl_file]):
             self.ui.ExtractStatusLabel.setText('No .res and .hkl file data found!')
             self.ui.ShredCifButton.setDisabled(True)
+        self.ui.MainStackedWidget.setCurrentIndex(6)
 
     def save_options(self) -> None:
         options = {
@@ -453,6 +459,11 @@ class AppWindow(QMainWindow):
         }
         self.report_options = options
         self.settings.save_report_options(options)
+        chkcif_options = {
+            'checkcif_url': self.ui.CheckCIFServerURLTextedit.text()
+        }
+        self.checkcif_options = chkcif_options
+        self.settings.save_checkcif_options(chkcif_options)
 
     def set_report_picture(self) -> None:
         """Sets the picture of the report document."""
@@ -723,7 +734,9 @@ class AppWindow(QMainWindow):
             pass
         self.ckf = MakeCheckCif(cif=self.cif, outfile=self.htmlfile,
                                 hkl=(not self.ui.structfactCheckBox.isChecked()),
-                                pdf=False)
+                                pdf=False,
+                                url=self.checkcif_options.get('checkcif_url')
+                                )
         self.ckf.failed.connect(self._checkcif_failed)
         # noinspection PyUnresolvedReferences
         self.ckf.finished.connect(self._checkcif_finished)
@@ -786,8 +799,11 @@ class AppWindow(QMainWindow):
             htmlfile.unlink()
         except FileNotFoundError:
             pass
-        self.ckf = MakeCheckCif(cif=self.cif, outfile=htmlfile, hkl=(not self.ui.structfactCheckBox.isChecked()),
-                                pdf=True)
+        self.ckf = MakeCheckCif(cif=self.cif, outfile=htmlfile, 
+                                hkl=(not self.ui.structfactCheckBox.isChecked()),
+                                pdf=True,
+                                url=self.checkcif_options.get('checkcif_url')
+                                )
         self.ckf.failed.connect(self._checkcif_failed)
         # noinspection PyUnresolvedReferences
         self.ckf.finished.connect(self._pdf_checkcif_finished)
