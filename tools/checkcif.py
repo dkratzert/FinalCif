@@ -75,7 +75,7 @@ class MakeCheckCif(QThread):
             "validtype" : hkl,
             "valout"    : vrf,
         }
-        url = 'https://checkcif.iucr.org/cgi-bin/checkcif_hkl.pl'
+        url = 'https://checkcif.iucr.org/cgi-bin/checkcif_with_hkl'
         t1 = time.perf_counter()
         r = None
         self.progress.emit('Report request sent. Please wait...')
