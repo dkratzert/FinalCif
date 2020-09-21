@@ -175,6 +175,7 @@ class AppWindow(QMainWindow):
         self.ui.ExploreDirButton.setDisabled(True)
         self.ui.DetailsPushButton.setDisabled(True)
         self.ui.SourcesPushButton.setDisabled(True)
+        self.ui.OptionsPushButton.setDisabled(True)
         # noinspection PyTypeChecker
         self.cif = None
         self.view = None
@@ -420,11 +421,6 @@ class AppWindow(QMainWindow):
          'without_H': False,
          }
          """
-        self.ui.HAtomsCheckBox.clicked.connect(self.save_options)
-        self.ui.ReportTextCheckBox.clicked.connect(self.save_options)
-        self.ui.PictureWidthDoubleSpinBox.valueChanged.connect(self.save_options)
-        self.ui.CheckCIFServerURLTextedit.textChanged.connect(self.save_options)
-
         if self.cif:
             if self.cif.res_file_data and self.cif.hkl_file:
                 self.ui.ShredCifButton.setEnabled(True)
@@ -449,6 +445,11 @@ class AppWindow(QMainWindow):
         if not all([self.cif.res_file_data, self.cif.hkl_file]):
             self.ui.ExtractStatusLabel.setText('No .res and .hkl file data found!')
             self.ui.ShredCifButton.setDisabled(True)
+        # This has to be here:
+        self.ui.HAtomsCheckBox.clicked.connect(self.save_options)
+        self.ui.ReportTextCheckBox.clicked.connect(self.save_options)
+        self.ui.PictureWidthDoubleSpinBox.valueChanged.connect(self.save_options)
+        self.ui.CheckCIFServerURLTextedit.textChanged.connect(self.save_options)
         self.ui.MainStackedWidget.setCurrentIndex(6)
 
     def save_options(self) -> None:
@@ -799,7 +800,7 @@ class AppWindow(QMainWindow):
             htmlfile.unlink()
         except FileNotFoundError:
             pass
-        self.ckf = MakeCheckCif(cif=self.cif, outfile=htmlfile, 
+        self.ckf = MakeCheckCif(cif=self.cif, outfile=htmlfile,
                                 hkl=(not self.ui.structfactCheckBox.isChecked()),
                                 pdf=True,
                                 url=self.checkcif_options.get('checkcif_url')
@@ -1667,6 +1668,7 @@ class AppWindow(QMainWindow):
             self.settings.save_current_dir(curdir)
             self.ui.DetailsPushButton.setEnabled(True)
             self.ui.SourcesPushButton.setEnabled(True)
+            self.ui.OptionsPushButton.setEnabled(True)
             self.ui.datnameLineEdit.setText(self.cif.block.name)
             self.ui.spacegroupLineEdit.setText(self.cif.space_group)
             self.ui.CCDCNumLineEdit.setText(self.cif['_database_code_depnum_ccdc_archive'])
