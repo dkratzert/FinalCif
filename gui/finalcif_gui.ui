@@ -299,6 +299,13 @@
          </widget>
         </item>
         <item>
+         <widget class="QPushButton" name="ImportCifPushButton">
+          <property name="text">
+           <string>Import .cif, .pcf files</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QGroupBox" name="PropertiesGroupBox">
           <property name="title">
            <string>Property Templates</string>
