@@ -1,0 +1,7 @@
+data_foo
+
+_computing_data_collection        'Bruker BIS 2018.9.0.3/05-Dec-2018 && APEX3_2018.7-2'
+_computing_cell_refinement        'SAINT V8.38A'
+_computing_data_reduction         'SAINT V8.38A'
+_computing_structure_solution     'SHELXT (G. Sheldrick)'
+_computing_structure_refinement   'SHELXL-2018/3 (Sheldrick, 2018)'

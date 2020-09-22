@@ -293,6 +293,7 @@ class AppWindow(QMainWindow):
         ##
         self.ui.SelectCif_PushButton.clicked.connect(self.load_cif_file)
         self.ui.SaveCifButton.clicked.connect(self.save_cif_and_display)
+        self.ui.ImportCifPushButton.clicked.connect(self.import_additional_cif)
         ##
         self.ui.EquipmentTemplatesListWidget.doubleClicked.connect(self.edit_equipment_template)
         self.ui.EditEquipmentTemplateButton.clicked.connect(self.edit_equipment_template)
@@ -1557,6 +1558,30 @@ class AppWindow(QMainWindow):
         self.ui.PropertiesTemplatesStackedWidget.setCurrentIndex(0)
 
     ##   end of properties
+
+    def import_additional_cif(self, filename: str):
+        """
+        Import an equipment entry from a cif file.
+        """
+        if not filename:
+            filename = cif_file_open_dialog(filter="CIF file (*.cif *.pcf)")
+        if not filename:
+            return
+        try:
+            imp_cif = CifContainer(Path(filename))
+        except RuntimeError as e:
+            show_general_warning(str(e))
+            return
+        for item in imp_cif.block:
+            if item.pair is not None:
+                key, value = item.pair
+                value = cif.as_string(value)
+                # self.cif[key] = value
+                # self.ui.cif_main_table.setText(key=key, column=COL_DATA, txt=value, color=light_green)
+                self.ui.cif_main_table.setText(key=key, column=COL_EDIT, txt=value, color=light_green)
+        # I think I leave the user possibilities to change the imported values:
+        # self.save_current_cif_file()
+        # self.load_cif_file(str(self.final_cif_file_name))
 
     def load_cif_file(self, fname: str) -> None:
         """
