@@ -1578,7 +1578,10 @@ class AppWindow(QMainWindow):
                 value = cif.as_string(value)
                 # self.cif[key] = value
                 # self.ui.cif_main_table.setText(key=key, column=COL_DATA, txt=value, color=light_green)
-                self.ui.cif_main_table.setText(key=key, column=COL_EDIT, txt=value, color=light_green)
+                if key in self.ui.cif_main_table.vheaderitems:
+                    self.ui.cif_main_table.setText(key=key, column=COL_EDIT, txt=value, color=light_green)
+                else:
+                    self.add_row(key, value, at_start=True)
         # I think I leave the user possibilities to change the imported values:
         # self.save_current_cif_file()
         # self.load_cif_file(str(self.final_cif_file_name))
