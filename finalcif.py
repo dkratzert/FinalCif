@@ -210,9 +210,9 @@ class AppWindow(QMainWindow):
         self.checkcif_options = self.settings.load_checkcif_options()
 
     def make_button_icons(self):
-        self.ui.CheckcifButton.setIcon(qta.icon('mdi.file-document-box-outline'))
-        self.ui.CheckcifHTMLOnlineButton.setIcon(qta.icon('mdi.file-document-box-check'))
-        self.ui.CheckcifPDFOnlineButton.setIcon(qta.icon('mdi.file-document-box-check-outline'))
+        self.ui.CheckcifButton.setIcon(qta.icon('mdi.file-document-outline'))
+        self.ui.CheckcifHTMLOnlineButton.setIcon(qta.icon('mdi.comment-check-outline'))
+        self.ui.CheckcifPDFOnlineButton.setIcon(qta.icon('mdi.comment-check'))
         self.ui.SaveFullReportButton.setIcon(qta.icon('mdi.file-table-outline'))
         self.ui.ExploreDirButton.setIcon(qta.icon('fa5.folder-open'))
         self.ui.SaveCifButton.setIcon(qta.icon('fa5.save'))
