@@ -201,7 +201,9 @@ tests/examples/work/cu_BruecknerJK_153F40_0m-finalcif.cif
 tests/examples/work/checkcif-cu_BruecknerJK_153F40_0m-finalcif.html
 tests/examples/work/checkcif-cu_BruecknerJK_153F40_0m-finalcif.pdf
 tests/examples/work/checkpdf-cu_BruecknerJK_153F40_0m-finalcif.html
+
 update-finalcif.exe
 tests/examples/work/report_cu_BruecknerJK_153F40_0m-finalcif.docx
 tests/examples/work/cu_BruecknerJK_153F40_0m-finalcif.zip
+
 
