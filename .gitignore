@@ -1,6 +1,9 @@
 scripts/Output
 # Byte-compiled / optimized / DLL files
 __pycache__/
+updater/FCUpdate/bin
+updater/FCUpdate/obj
+updater/FCUpdate/.vs
 *.py[cod]
 updater
 *$py.class
