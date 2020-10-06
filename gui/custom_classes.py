@@ -346,7 +346,11 @@ class MyQPlainTextEdit(QPlainTextEdit):
         if not self.getText():
             return QSize(self.width(), self.minheight)
         else:
-            return QSize(100, int(0.33 * len(self.getText()) + 30))
+            size = QSize(100, int(0.33 * len(self.getText()) + 30))
+            if size.height() > 500:
+                # Prevent extreme height for long text:
+                return QSize(100, 500)
+            return size
 
 
 class MyComboBox(QComboBox):
