@@ -383,6 +383,14 @@ do_not_import_keys = (
     '_space_group_IT_number',
     '_space_group_crystal_system',
     '_space_group_name_H-M_alt',
+    '_shelx_res_file',
+    '_shelx_hkl_file',
+    '_shelx_res_checksum',
+    '_shelx_hkl_checksum',
+    '_shelx_fab_file',
+    '_shelx_fab_checksum',
+    '_shelx_fcf_file',
+    '_shelx_fcf_checksum',
 )
 
 ABSORPTION_CORRECTION_TYPES = (
