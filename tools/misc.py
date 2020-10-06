@@ -358,7 +358,7 @@ non_centrosymm_keys = ('_chemical_absolute_configuration', '_refine_ls_abs_struc
                        '_refine_ls_abs_structure_details')
 
 # Keys that get a text field in the main list. These fields have more hight.
-text_field_keys = ['_refine_special_details',
+text_field_keys = ('_refine_special_details',
                    '_refine_ls_weighting_details',
                    '_reflns_special_details',
                    '_exptl_absorpt_process_details',
@@ -371,10 +371,19 @@ text_field_keys = ['_refine_special_details',
                    '_diffrn_oxdiff_ac3_digest_frames',
                    '_diffrn_oxdiff_ac3_digest_hkl',
                    '_oxdiff_exptl_absorpt_empirical_details',
-                   '',
-                   '',
-                   '',
-                   ]
+                   )
+
+do_not_import_keys = (
+    '_cell_length_a',
+    '_cell_length_b',
+    '_cell_length_c',
+    '_cell_angle_alpha',
+    '_cell_angle_beta',
+    '_cell_angle_gamma',
+    '_space_group_IT_number',
+    '_space_group_crystal_system',
+    '_space_group_name_H-M_alt',
+)
 
 ABSORPTION_CORRECTION_TYPES = (
     (0, ''),  # , ''),
