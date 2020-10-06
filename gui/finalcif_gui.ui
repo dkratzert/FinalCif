@@ -299,9 +299,23 @@
          </widget>
         </item>
         <item>
+         <widget class="Line" name="line">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QPushButton" name="ImportCifPushButton">
           <property name="text">
-           <string>Import .cif, .pcf files</string>
+           <string>Import .cif, .pcf, .cif_od, .cfx file</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="Line" name="line_2">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
           </property>
          </widget>
         </item>
