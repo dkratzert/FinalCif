@@ -51,7 +51,9 @@ other programs like ShelXle.
 * the .hkl and .res file content of the CIF itself
 
 **Non-Bruker Data**
+
 For Rigaku and STOE datasets, it is not necessary for FinalCif to collect information from various files. 
-Instead, it is sufficient to import a certain CIF created during the experiment. Rigaku produces a '.cif_of' file
-and STOE a '.cfx' file. You can import any additional CIF formated file with the 'Import' button on the left center.
+Instead, it is sufficient to import a certain CIF created during the experiment. Rigaku produces a '.cif_od' file
+and STOE a '.cfx' file for example. Also the Bruker '.pcf' file is importable. You can import any additional CIF 
+formated file with the 'Import' button on the left center.
 This will import all key/values and loops from the file except for unit cell and space group information.
