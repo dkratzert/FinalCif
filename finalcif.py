@@ -6,14 +6,6 @@
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
 
-#  ----------------------------------------------------------------------------
-#  "THE BEER-WARE LICENSE" (Revision 42):
-#  daniel.kratzert@ac.uni-freiburg.de> wrote this file.  As long as you retain
-#  this notice you can do whatever you want with this stuff. If we meet some day,
-#  and you think this stuff is worth it, you can buy me a beer in return.
-#  Dr. Daniel Kratzert
-#  ----------------------------------------------------------------------------
-
 import sys
 
 import displaymol
@@ -63,13 +55,12 @@ from cif.core_dict import cif_core
 from datafiles.bruker_data import BrukerData
 from datafiles.ccdc import CCDCMail
 from datafiles.platon import Platon
-from datafiles.rigaku_data import RigakuData
 from gui.vrf_classes import MyVRFContainer, VREF
 from report.archive_report import ArchiveReport
 from report.tables import make_report_from
 from tools.checkcif import AlertHelp, MakeCheckCif, MyHTMLParser
 from tools.misc import combobox_fields, excluded_imports, predef_equipment_templ, predef_prop_templ, \
-    strip_finalcif_of_name, to_float, next_path, celltxt
+    strip_finalcif_of_name, to_float, next_path, celltxt, do_not_import_keys
 from tools.settings import FinalCifSettings
 from tools.version import VERSION
 
@@ -187,7 +178,6 @@ class AppWindow(QMainWindow):
         self.ui.growCheckBox.setChecked(True)
         self.connect_signals_and_slots()
         self.manufacturer = 'bruker'
-        self.rigakucif: RigakuData
         self.make_button_icons()
         if len(sys.argv) > 1:
             self.load_cif_file(sys.argv[1] if sys.argv[1] != 'compile' else '')
@@ -1575,13 +1565,14 @@ class AppWindow(QMainWindow):
         for item in imp_cif.block:
             if item.pair is not None:
                 key, value = item.pair
+                # leave out unit cell etc.:
+                if key in do_not_import_keys:
+                    continue
                 value = cif.as_string(value)
-                # self.cif[key] = value
-                # self.ui.cif_main_table.setText(key=key, column=COL_DATA, txt=value, color=light_green)
                 if key in self.ui.cif_main_table.vheaderitems:
                     self.ui.cif_main_table.setText(key=key, column=COL_EDIT, txt=value, color=light_green)
                 else:
-                    self.add_row(key, value, at_start=True)
+                    self.set_table_pair(key, value, column=COL_EDIT)
         self.cif.import_loops(imp_cif)
         # I think I leave the user possibilities to change the imported values:
         # self.save_current_cif_file()
@@ -1656,22 +1647,6 @@ class AppWindow(QMainWindow):
             os.chdir(filepath.absolute().parent)
         except OSError:
             print("Can't change the Current Working Directory")
-        try:
-            rigaku = self.cif.fileobj.parent.glob('*.cif_od').__next__()
-            if rigaku.exists():
-                self.manufacturer = 'rigaku'
-                self.rigakucif = RigakuData(rigaku)
-        except StopIteration:
-            pass
-        # quick hack in order to support STOE:
-        # TODO: Make this clean
-        try:
-            rigaku = self.cif.fileobj.parent.glob('*.cfx').__next__()
-            if rigaku.exists():
-                self.manufacturer = 'rigaku'
-                self.rigakucif = RigakuData(rigaku)
-        except StopIteration:
-            pass
         self.final_cif_file_name = Path(strip_finalcif_of_name(str(self.cif.fileobj.stem)) + '-finalcif.cif')
         # don't do this:
         # self.ui.cif_main_table.clear()
@@ -1862,7 +1837,7 @@ class AppWindow(QMainWindow):
         if bad:
             bad_z_message(Z)
 
-    def set_table_pair(self, key: str, value: str) -> None:
+    def set_table_pair(self, key: str, value: str, column: int = COL_DATA) -> None:
         """
         Add a new cif key/data pair at the start of the main table.
         """
@@ -1872,9 +1847,18 @@ class AppWindow(QMainWindow):
         self.ui.cif_main_table.vheaderitems.insert(0, key)
         head_item_key = MyTableWidgetItem(key)
         self.ui.cif_main_table.setVerticalHeaderItem(0, head_item_key)
-        self.ui.cif_main_table.setText(key=key, column=COL_CIF, txt='?')
-        self.ui.cif_main_table.setText(key=key, column=COL_DATA, txt=value, color=light_green)
-        self.ui.cif_main_table.setText(key=key, column=COL_EDIT, txt='')
+        if column == COL_DATA:
+            self.ui.cif_main_table.setText(key=key, column=COL_CIF, txt='?')
+            self.ui.cif_main_table.setText(key=key, column=COL_DATA, txt=value, color=light_green)
+            self.ui.cif_main_table.setText(key=key, column=COL_EDIT, txt='')
+        if column == COL_EDIT:
+            self.ui.cif_main_table.setText(key=key, column=COL_CIF, txt='?')
+            self.ui.cif_main_table.setText(key=key, column=COL_DATA, txt='')
+            self.ui.cif_main_table.setText(key=key, column=COL_EDIT, txt=value, color=light_green)
+        if column == COL_CIF:
+            self.ui.cif_main_table.setText(key=key, column=COL_CIF, txt=value, color=light_green)
+            self.ui.cif_main_table.setText(key=key, column=COL_DATA, txt='')
+            self.ui.cif_main_table.setText(key=key, column=COL_EDIT, txt='')
 
     def get_data_sources(self) -> None:
         """
@@ -1883,8 +1867,6 @@ class AppWindow(QMainWindow):
         self.check_Z()
         if self.manufacturer == 'bruker':
             self.sources = BrukerData(self, self.cif).sources
-        if self.manufacturer == 'rigaku':
-            self.sources = self.rigakucif.sources
         if self.sources:
             # Add the CCDC number in case we have a deposition mail lying around:
             ccdc = CCDCMail(self.cif)
