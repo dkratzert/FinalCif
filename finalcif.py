@@ -1564,7 +1564,7 @@ class AppWindow(QMainWindow):
         Import an equipment entry from a cif file.
         """
         if not filename:
-            filename = cif_file_open_dialog(filter="CIF file (*.cif *.pcf)")
+            filename = cif_file_open_dialog(filter="CIF file (*.cif *.pcf *.cif_od)")
         if not filename:
             return
         try:
@@ -1582,6 +1582,12 @@ class AppWindow(QMainWindow):
                     self.ui.cif_main_table.setText(key=key, column=COL_EDIT, txt=value, color=light_green)
                 else:
                     self.add_row(key, value, at_start=True)
+        loops = []
+        for num, loop_headlist in enumerate(imp_cif.loops):
+            loop = self.cif.block.init_loop('', loop_headlist)
+            for line in loop:
+                # TODO: This does not work at all:
+                loop.add_row([imp_cif.loops_as_list()[num][x] for x in range(len(line))])
         # I think I leave the user possibilities to change the imported values:
         # self.save_current_cif_file()
         # self.load_cif_file(str(self.final_cif_file_name))
