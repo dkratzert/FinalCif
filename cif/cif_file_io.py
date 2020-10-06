@@ -84,11 +84,19 @@ class CifContainer():
 
     def save(self, filename: str = None) -> None:
         """
-        Saves the current cif file in the specific order of the order list.
+        Saves the current cif file.
         :param filename:  Name to save cif file to.
         """
         if not filename:
             filename = str(self.fileobj.absolute())
+        self.order_cif_keys()
+        self.doc.write_file(filename, gemmi.cif.Style.Indent35)
+        # Path(filename).write_text(self.doc.as_string(gemmi.cif.Style.Indent35))
+
+    def order_cif_keys(self):
+        """
+        Brings the current CIF in the specific order of the order list.
+        """
         for key in reversed(self.order):
             try:
                 self.block.move_item(self.block.get_index(key), 0)
@@ -101,8 +109,6 @@ class CifContainer():
                 self.block.move_item(self.block.get_index(key), -1)
             except RuntimeError:
                 continue
-        self.doc.write_file(filename, gemmi.cif.Style.Indent35)
-        # Path(filename).write_text(self.doc.as_string(gemmi.cif.Style.Indent35))
 
     @property
     def res_file_data(self) -> str:
