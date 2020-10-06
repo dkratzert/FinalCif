@@ -1560,7 +1560,7 @@ class AppWindow(QMainWindow):
         try:
             imp_cif = CifContainer(Path(filename))
         except RuntimeError as e:
-            show_general_warning(str(e))
+            show_general_warning('Could not import {}:\n'.format(filename) + str(e))
             return
         for item in imp_cif.block:
             if item.pair is not None:
