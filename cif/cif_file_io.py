@@ -168,39 +168,27 @@ class CifContainer():
 
     @property
     def loops(self) -> List[gemmi.cif.Loop]:
+        """
+        Returns a list of loops contained in the current block.
+        """
         loops = []
         for b in self.block:
             if b.loop:
-                l = b.loop
-                loops.append(l)
+                loops.append(b.loop)
         return loops
 
     @property
     def n_loops(self):
         return len(self.loops)
 
-    @property
-    def loops_tags(self) -> list:
-        tags = []
-        for n in range(self.n_loops):
-            tags.append(self.loops[n].tags)
-        return tags
-
-    def loops_as_list(self):
+    def import_loops(self, imp_cif: 'CifContainer'):
         """
-        for t in c.loops_as_list():
-            for row in t:
-                print(row)
-
-        >>> loop = self.block.init_loop('_ocean_', ['id', 'name'])
-        >>> # empty table is invalid in CIF, we need to add something
-        >>> loop.add_row(['1', gemmi.cif.quote('Atlantic Ocean')])
+        Import all loops from the CifContainer imp_cif to the current block.
         """
-        tables = []
-        for num, l in enumerate(self.loops):
-            tags = self.loops_tags[num]
-            tables.append(self.block.find(tags))
-        return tables
+        for loop in imp_cif.loops:
+            new_loop = self.block.init_loop('', loop.tags)
+            for row in imp_cif.block.find(loop.tags):
+                new_loop.add_row([x for x in row])
 
     @property
     def Z_value(self):
