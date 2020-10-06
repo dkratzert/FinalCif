@@ -1554,7 +1554,7 @@ class AppWindow(QMainWindow):
         Import an equipment entry from a cif file.
         """
         if not filename:
-            filename = cif_file_open_dialog(filter="CIF file (*.cif *.pcf *.cif_od)")
+            filename = cif_file_open_dialog(filter="CIF file (*.cif *.pcf *.cif_od *.cfx)")
         if not filename:
             return
         try:
