@@ -167,6 +167,7 @@ class AppWindow(QMainWindow):
         self.ui.DetailsPushButton.setDisabled(True)
         self.ui.SourcesPushButton.setDisabled(True)
         self.ui.OptionsPushButton.setDisabled(True)
+        self.ui.ImportCifPushButton.setDisabled(True)
         # noinspection PyTypeChecker
         self.cif = None
         self.view = None
@@ -1673,6 +1674,7 @@ class AppWindow(QMainWindow):
             self.ui.DetailsPushButton.setEnabled(True)
             self.ui.SourcesPushButton.setEnabled(True)
             self.ui.OptionsPushButton.setEnabled(True)
+            self.ui.ImportCifPushButton.setEnabled(True)
             self.ui.datnameLineEdit.setText(self.cif.block.name)
             self.ui.spacegroupLineEdit.setText(self.cif.space_group)
             self.ui.CCDCNumLineEdit.setText(self.cif['_database_code_depnum_ccdc_archive'])
