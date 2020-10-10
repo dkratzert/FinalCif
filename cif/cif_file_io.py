@@ -75,11 +75,11 @@ class CifContainer():
         else:
             return ''
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: str, value: str) -> None:
         """Set a key value pair of the current block"""
         self.block.set_pair(key, value)
 
-    def __delitem__(self, key):
+    def __delitem__(self, key: str):
         self.block.find_pair_item(key).erase()
 
     def save(self, filename: str = None) -> None:
