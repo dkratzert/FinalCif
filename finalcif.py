@@ -71,9 +71,9 @@ from PyQt5.QtWidgets import QApplication, QFileDialog, QHeaderView, QListWidget,
 
 """
 TODO:
+- Peters comments on equipment templates:
+    * save state and order of selected templates in order to be able to undo a selection with a second click. 
 - dist errors: Giacovazzo p.122
-- Add option to import .cif and/or .sqf files maybe also .pcf files
-- invent a selv-updater
 - Read measurement time from SAINT 0m._ls file and its list of integrated files. Or even better from the .xml file.
 - make a modelview for the main table!
 - Extract more data from .xml file
@@ -99,16 +99,8 @@ _journal_paper_doi               10.1039/c3cc46894a
 _journal_volume                  50
 _journal_year                    2014
 
-- add loops to templates
-for i in block:
-...     if i.loop:
-...         l = i.loop
-...         for tag in l.tags:
-...             for v in block.find_values(tag):
-...                 print(tag, v)
 - Add one picture of the vzs video file to report.
 - Improve handling of SQUEEZEd data
-- matplolib-3d
 - Improove handling of Flack x parameter
     - citation, method used, success
 
