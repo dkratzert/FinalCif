@@ -6,6 +6,7 @@
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
 import re
+from math import sin, cos, sqrt
 from pathlib import Path
 # noinspection PyUnresolvedReferences
 from typing import Dict, List, Tuple, Union
@@ -14,7 +15,8 @@ import gemmi
 
 from cif.cif_order import order, special_keys
 from datafiles.utils import DSRFind
-from tools.misc import essential_keys, non_centrosymm_keys
+from tools.dsrmath import mean
+from tools.misc import essential_keys, non_centrosymm_keys, get_error_from_value
 
 
 class CifContainer():
@@ -73,16 +75,28 @@ class CifContainer():
         else:
             return ''
 
-    def __delitem__(self, key):
+    def __setitem__(self, key: str, value: str) -> None:
+        """Set a key value pair of the current block"""
+        self.block.set_pair(key, value)
+
+    def __delitem__(self, key: str):
         self.block.find_pair_item(key).erase()
 
     def save(self, filename: str = None) -> None:
         """
-        Saves the current cif file in the specific order of the order list.
+        Saves the current cif file.
         :param filename:  Name to save cif file to.
         """
         if not filename:
             filename = str(self.fileobj.absolute())
+        self.order_cif_keys()
+        self.doc.write_file(filename, gemmi.cif.Style.Indent35)
+        # Path(filename).write_text(self.doc.as_string(gemmi.cif.Style.Indent35))
+
+    def order_cif_keys(self):
+        """
+        Brings the current CIF in the specific order of the order list.
+        """
         for key in reversed(self.order):
             try:
                 self.block.move_item(self.block.get_index(key), 0)
@@ -95,8 +109,6 @@ class CifContainer():
                 self.block.move_item(self.block.get_index(key), -1)
             except RuntimeError:
                 continue
-        self.doc.write_file(filename, gemmi.cif.Style.Indent35)
-        # Path(filename).write_text(self.doc.as_string(gemmi.cif.Style.Indent35))
 
     @property
     def res_file_data(self) -> str:
@@ -156,12 +168,27 @@ class CifContainer():
 
     @property
     def loops(self) -> List[gemmi.cif.Loop]:
+        """
+        Returns a list of loops contained in the current block.
+        """
         loops = []
         for b in self.block:
             if b.loop:
-                l = b.loop
-                loops.append(l)
+                loops.append(b.loop)
         return loops
+
+    @property
+    def n_loops(self):
+        return len(self.loops)
+
+    def import_loops(self, imp_cif: 'CifContainer'):
+        """
+        Import all loops from the CifContainer imp_cif to the current block.
+        """
+        for loop in imp_cif.loops:
+            new_loop = self.block.init_loop('', loop.tags)
+            for row in imp_cif.block.find(loop.tags):
+                new_loop.add_row([x for x in row])
 
     @property
     def Z_value(self):
@@ -186,6 +213,70 @@ class CifContainer():
     @property
     def absorpt_correction_T_min(self) -> str:
         return self.hkl_extra_info['_exptl_absorpt_correction_T_min']
+
+    @property
+    def bond_precision(self):
+        """
+        This method is unfinished and might result in wrong numbers!
+        """
+        a, aerror = get_error_from_value(self['_cell_length_a'])
+        b, berror = get_error_from_value(self['_cell_length_b'])
+        c, cerror = get_error_from_value(self['_cell_length_c'])
+        alpha, sigalpha = get_error_from_value(self['_cell_angle_alpha'])
+        beta, sigbeta = get_error_from_value(self['_cell_angle_beta'])
+        gamma, siggamma = get_error_from_value(self['_cell_angle_gamma'])
+        A1 = aerror / a
+        A2 = berror / b
+        A3 = cerror / c
+        # B1 = sin(alpha) * (cos(alpha) - cos(beta) * cos(gamma)) * sigalpha
+        # B2 = sin(beta) * (cos(beta) - cos(alpha) * cos(gamma)) * sigbeta
+        # B3 = sin(gamma) * (cos(gamma) - cos(alpha) * cos(beta)) * siggamma
+        name2coords = dict([(x[0], (x[2], x[3], x[4])) for x in self.atoms()])
+        name2part = dict([(x[0], x[5]) for x in self.atoms()])
+        count = 0
+        bonderrors = []
+        bb = 0.0
+        pair = ('C')
+        for bond in self.bonds(without_h=True):
+            atom1 = bond[0]
+            atom2 = bond[1]
+            if 'B' in atom1 or 'B' in atom2:
+                continue
+            if name2part[atom1] != '.' or name2part[atom2] != '.':
+                continue
+            if self.iselement(atom1) in pair and self.iselement(atom2) in pair:
+                dist, error = get_error_from_value(bond[2])
+                x1, sig_x1 = get_error_from_value(name2coords[atom1][0])
+                y1, sig_y1 = get_error_from_value(name2coords[atom1][1])
+                z1, sig_z1 = get_error_from_value(name2coords[atom1][2])
+                x2, sig_x2 = get_error_from_value(name2coords[atom2][0])
+                y2, sig_y2 = get_error_from_value(name2coords[atom2][1])
+                z2, sig_z2 = get_error_from_value(name2coords[atom2][2])
+                delta1 = a * (x1 - x2)
+                delta2 = b * (y1 - y2)
+                delta3 = c * (z1 - z2)
+                sigd = (
+                               (delta1 + delta2 * cos(gamma) + delta3 * cos(beta)) ** 2 * (
+                               delta1 ** 2 * A1 ** 2 + a ** 2 * (sig_x1 ** 2 + sig_x2 ** 2))
+                               + (delta1 * cos(gamma) + delta2 + delta3 * cos(alpha)) ** 2 * (
+                                       delta2 ** 2 * A2 ** 2 + b ** 2 * (sig_y1 ** 2 + sig_y2 ** 2))
+                               + (delta1 * cos(beta) + delta2 * cos(alpha) + delta3) ** 2 * (
+                                       delta3 ** 2 * A3 ** 2 + c ** 2 * (sig_z1 ** 2 + sig_z2 ** 2))
+                               + ((delta1 * delta2 * siggamma * sin(gamma)) ** 2 +
+                                  (delta1 * delta3 * sigbeta * sin(beta)) ** 2 +
+                                  (delta2 * delta3 * sigalpha * sin(alpha)) ** 2)) / dist ** 2
+                # The error is too large:
+                sigd = sqrt(sigd)
+                bb += sigd
+                if sigd > 0.0001:
+                    count += 1
+                    # print(atom1, atom2, dist, round(error, 5), round(sigd, 4), round(bb, 5), count)
+                    # print('------ dist - sigma - calcsig - sum - num')
+                    bonderrors.append(sigd)
+        if len(bonderrors) > 2:
+            return round(mean(bonderrors), 5)
+        else:
+            return 0.0
 
     def _spgr(self) -> gemmi.SpaceGroup:
         if self.symmops:
@@ -240,7 +331,7 @@ class CifContainer():
     def hkl_checksum_calcd(self) -> int:
         """
         Calculates the shelx checksum for the hkl file content of a cif file.
-
+    
         #>>> c = CifContainer(Path('test-data/DK_zucker2_0m.cif'))
         #>>> c.hkl_checksum_calcd
         #69576
@@ -258,7 +349,7 @@ class CifContainer():
     def res_checksum_calcd(self) -> int:
         """
         Calculates the shelx checksum for the res file content of a cif file.
-
+    
         #>>> c = CifContainer(Path('test-data/DK_zucker2_0m.cif'))
         #>>> c.res_checksum_calcd
         #52593
@@ -311,7 +402,7 @@ class CifContainer():
     def symmops(self) -> List[str]:
         """
         Reads the symmops from the cif file.
-
+    
         >>> cif = CifContainer(Path('test-data/DK_ML7-66-final.cif'))
         >>> cif.symmops
         ['x, y, z', '-x, -y, -z']
@@ -389,13 +480,16 @@ class CifContainer():
         return c.a, c.b, c.c, c.alpha, c.beta, c.gamma, c.volume
 
     def ishydrogen(self, label: str) -> bool:
+        """
+        Determines if an atom with the name 'label' is a hydrogen atom.
+        """
         hydrogen = ('H', 'D')
         if self.iselement(label) in hydrogen:
             return True
         else:
             return False
 
-    def bonds(self, without_H: bool = False):
+    def bonds(self, without_h: bool = False):
         """
         Yields a list of bonds in the cif file.
         """
@@ -404,7 +498,7 @@ class CifContainer():
         dist = self.block.find_loop('_geom_bond_distance')
         symm = self.block.find_loop('_geom_bond_site_symmetry_2')
         for label1, label2, dist, symm in zip(label1, label2, dist, symm):
-            if without_H and (self.ishydrogen(label1) or self.ishydrogen(label2)):
+            if without_h and (self.ishydrogen(label1) or self.ishydrogen(label2)):
                 continue
             else:
                 yield (label1, label2, dist, symm)
@@ -483,7 +577,7 @@ class CifContainer():
     def key_value_pairs(self):
         """
         Returns the key/value pairs of a cif file sorted by priority.
-
+    
         >>> c = CifContainer(Path('test-data/P21c-final.cif'))
         >>> c.key_value_pairs()[:2]
         [['_audit_contact_author_address', '?'], ['_audit_contact_author_email', '?']]

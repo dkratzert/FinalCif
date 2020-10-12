@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <comment>Python: from gui.custom_classes import MyEQTableWidget</comment>
+ <comment>Python: from gui.custom_classes import MyPropTableWidget</comment>
  <class>FinalCifWindow</class>
  <widget class="QMainWindow" name="FinalCifWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1461</width>
+    <width>1469</width>
     <height>813</height>
    </rect>
   </property>
@@ -157,6 +157,11 @@
               <layout class="QGridLayout" name="TemplatesGridLayout">
                <item row="0" column="0" colspan="3">
                 <widget class="QListWidget" name="EquipmentTemplatesListWidget">
+                 <property name="font">
+                  <font>
+                   <pointsize>11</pointsize>
+                  </font>
+                 </property>
                  <property name="toolTip">
                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Each entry can have a list of key/value pairs. For example a Diffractometer model can have a list of features.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                  </property>
@@ -299,6 +304,27 @@
          </widget>
         </item>
         <item>
+         <widget class="Line" name="line">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="ImportCifPushButton">
+          <property name="text">
+           <string>Import .cif, .pcf, .cif_od or .cfx file</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="Line" name="line_2">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QGroupBox" name="PropertiesGroupBox">
           <property name="title">
            <string>Property Templates</string>
@@ -322,7 +348,7 @@
            <item>
             <widget class="QStackedWidget" name="PropertiesTemplatesStackedWidget">
              <property name="currentIndex">
-              <number>1</number>
+              <number>0</number>
              </property>
              <widget class="QWidget" name="PropertiesSelectPage">
               <layout class="QGridLayout" name="TemplatesGridLayout_2">
@@ -349,6 +375,11 @@
                </item>
                <item row="0" column="0" colspan="3">
                 <widget class="QListWidget" name="PropertiesTemplatesListWidget">
+                 <property name="font">
+                  <font>
+                   <pointsize>11</pointsize>
+                  </font>
+                 </property>
                  <property name="toolTip">
                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A list of common properties like &lt;/p&gt;&lt;p&gt;_exptl_crystal_colour: yellow, red, blue, ...&lt;/p&gt;&lt;p&gt;Lists defined here will appear as dropdown menus in the main Table.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                  </property>
@@ -415,7 +446,7 @@
                 </layout>
                </item>
                <item row="1" column="0" colspan="6">
-                <widget class="QTableWidget" name="PropertiesEditTableWidget">
+                <widget class="MyPropTableWidget" name="PropertiesEditTableWidget">
                  <property name="autoScroll">
                   <bool>false</bool>
                  </property>
@@ -693,6 +724,14 @@
             </property>
             <item>
              <widget class="MyCifTable" name="cif_main_table">
+              <property name="font">
+               <font>
+                <pointsize>11</pointsize>
+               </font>
+              </property>
+              <property name="sizeAdjustPolicy">
+               <enum>QAbstractScrollArea::AdjustToContents</enum>
+              </property>
               <property name="autoScroll">
                <bool>false</bool>
               </property>
@@ -1776,6 +1815,32 @@ The data source will be ignored until next program restart.</string>
           </widget>
           <widget class="QWidget" name="page_options">
            <layout class="QGridLayout" name="gridLayout_12">
+            <item row="2" column="1" colspan="3">
+             <spacer name="horizontalSpacer_14">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="3" column="0">
+             <spacer name="verticalSpacer_5">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>472</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
             <item row="0" column="0" colspan="2">
              <widget class="QGroupBox" name="groupBox_5">
               <property name="title">
@@ -1832,20 +1897,7 @@ The data source will be ignored until next program restart.</string>
               </property>
              </spacer>
             </item>
-            <item row="1" column="1" colspan="3">
-             <spacer name="horizontalSpacer_14">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item row="1" column="0">
+            <item row="2" column="0">
              <widget class="QPushButton" name="BackFromOptionspPushButton">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -1857,19 +1909,6 @@ The data source will be ignored until next program restart.</string>
                <string>Back to Main Table</string>
               </property>
              </widget>
-            </item>
-            <item row="2" column="0">
-             <spacer name="verticalSpacer_5">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>472</height>
-               </size>
-              </property>
-             </spacer>
             </item>
             <item row="0" column="2">
              <widget class="QGroupBox" name="groupBox_6">
@@ -1917,6 +1956,47 @@ The data source will be ignored until next program restart.</string>
                 <widget class="QLabel" name="ExtractStatusLabel">
                  <property name="text">
                   <string/>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="1" column="0" colspan="3">
+             <widget class="QGroupBox" name="groupBox_7">
+              <property name="title">
+               <string>CheckCIF Server</string>
+              </property>
+              <layout class="QFormLayout" name="formLayout_4">
+               <item row="0" column="0">
+                <widget class="QLineEdit" name="CheckCIFServerURLTextedit">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>258</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>https://checkcif.iucr.org/cgi-bin/checkcif_with_hkl</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="QLabel" name="checkcifserverLabel">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>CheckCIF server URL</string>
                  </property>
                 </widget>
                </item>
@@ -2255,6 +2335,11 @@ The data source will be ignored until next program restart.</string>
   </customwidget>
   <customwidget>
    <class>MyEQTableWidget</class>
+   <extends>QTableWidget</extends>
+   <header>gui.custom_classes.h</header>
+  </customwidget>
+  <customwidget>
+   <class>MyPropTableWidget</class>
    <extends>QTableWidget</extends>
    <header>gui.custom_classes.h</header>
   </customwidget>

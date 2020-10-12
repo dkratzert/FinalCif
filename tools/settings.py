@@ -183,6 +183,21 @@ class FinalCifSettings():
         self.settings.setValue('report', options)
         self.settings.endGroup()
 
+    def load_checkcif_options(self):
+        self.settings.beginGroup('CheckCifOptions')
+        options = self.settings.value("checkcif", type=dict)
+        if not options:
+            options = {
+                'checkcif_url': 'https://checkcif.iucr.org/cgi-bin/checkcif_with_hkl'
+            }
+        self.settings.endGroup()
+        return options
+
+    def save_checkcif_options(self, options: dict):
+        self.settings.beginGroup('CheckCifOptions')
+        self.settings.setValue('checkcif', options)
+        self.settings.endGroup()
+
 
 if __name__ == '__main__':
     sett = QSettings('foo', 'bar')

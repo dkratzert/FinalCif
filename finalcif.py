@@ -6,14 +6,6 @@
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
 
-#  ----------------------------------------------------------------------------
-#  "THE BEER-WARE LICENSE" (Revision 42):
-#  daniel.kratzert@ac.uni-freiburg.de> wrote this file.  As long as you retain
-#  this notice you can do whatever you want with this stuff. If we meet some day,
-#  and you think this stuff is worth it, you can buy me a beer in return.
-#  Dr. Daniel Kratzert
-#  ----------------------------------------------------------------------------
-
 import sys
 
 import displaymol
@@ -63,13 +55,12 @@ from cif.core_dict import cif_core
 from datafiles.bruker_data import BrukerData
 from datafiles.ccdc import CCDCMail
 from datafiles.platon import Platon
-from datafiles.rigaku_data import RigakuData
 from gui.vrf_classes import MyVRFContainer, VREF
 from report.archive_report import ArchiveReport
 from report.tables import make_report_from
 from tools.checkcif import AlertHelp, MakeCheckCif, MyHTMLParser
 from tools.misc import combobox_fields, excluded_imports, predef_equipment_templ, predef_prop_templ, \
-    strip_finalcif_of_name, to_float, next_path, celltxt
+    strip_finalcif_of_name, to_float, next_path, celltxt, do_not_import_keys
 from tools.settings import FinalCifSettings
 from tools.version import VERSION
 
@@ -80,7 +71,10 @@ from PyQt5.QtWidgets import QApplication, QFileDialog, QHeaderView, QListWidget,
 
 """
 TODO:
-- support _shelx_fcf_file for new platon
+- Peters comments on equipment templates:
+    * save state and order of selected templates in order to be able to undo a selection with a second click. 
+- dist errors: Giacovazzo p.122
+- Read measurement time from SAINT 0m._ls file and its list of integrated files. Or even better from the .xml file.
 - make a modelview for the main table!
 - Extract more data from .xml file
 - Extract "_diffrn_measurement_details from .xml file
@@ -105,16 +99,8 @@ _journal_paper_doi               10.1039/c3cc46894a
 _journal_volume                  50
 _journal_year                    2014
 
-- add loops to templates
-for i in block:
-...     if i.loop:
-...         l = i.loop
-...         for tag in l.tags:
-...             for v in block.find_values(tag):
-...                 print(tag, v)
 - Add one picture of the vzs video file to report.
 - Improve handling of SQUEEZEd data
-- matplolib-3d
 - Improove handling of Flack x parameter
     - citation, method used, success
 
@@ -172,9 +158,11 @@ class AppWindow(QMainWindow):
         self.ui.ExploreDirButton.setDisabled(True)
         self.ui.DetailsPushButton.setDisabled(True)
         self.ui.SourcesPushButton.setDisabled(True)
+        self.ui.OptionsPushButton.setDisabled(True)
+        self.ui.ImportCifPushButton.setDisabled(True)
         # noinspection PyTypeChecker
-        self.cif = None
-        self.view = None
+        self.cif: CifContainer = None
+        self.view: QWebEngineView
         self.tempwarning_displayed = False
         self.final_cif_file_name = Path()
         self.missing_data: list = []
@@ -183,7 +171,6 @@ class AppWindow(QMainWindow):
         self.ui.growCheckBox.setChecked(True)
         self.connect_signals_and_slots()
         self.manufacturer = 'bruker'
-        self.rigakucif: RigakuData
         self.make_button_icons()
         if len(sys.argv) > 1:
             self.load_cif_file(sys.argv[1] if sys.argv[1] != 'compile' else '')
@@ -203,11 +190,12 @@ class AppWindow(QMainWindow):
         self.ui.PictureWidthDoubleSpinBox.setRange(0.0, 25)
         self.ui.PictureWidthDoubleSpinBox.setSingleStep(0.5)
         self.report_options = self.settings.load_report_options()
+        self.checkcif_options = self.settings.load_checkcif_options()
 
     def make_button_icons(self):
-        self.ui.CheckcifButton.setIcon(qta.icon('mdi.file-document-box-outline'))
-        self.ui.CheckcifHTMLOnlineButton.setIcon(qta.icon('mdi.file-document-box-check'))
-        self.ui.CheckcifPDFOnlineButton.setIcon(qta.icon('mdi.file-document-box-check-outline'))
+        self.ui.CheckcifButton.setIcon(qta.icon('mdi.file-document-outline'))
+        self.ui.CheckcifHTMLOnlineButton.setIcon(qta.icon('mdi.comment-check-outline'))
+        self.ui.CheckcifPDFOnlineButton.setIcon(qta.icon('mdi.comment-check'))
         self.ui.SaveFullReportButton.setIcon(qta.icon('mdi.file-table-outline'))
         self.ui.ExploreDirButton.setIcon(qta.icon('fa5.folder-open'))
         self.ui.SaveCifButton.setIcon(qta.icon('fa5.save'))
@@ -289,6 +277,7 @@ class AppWindow(QMainWindow):
         ##
         self.ui.SelectCif_PushButton.clicked.connect(self.load_cif_file)
         self.ui.SaveCifButton.clicked.connect(self.save_cif_and_display)
+        self.ui.ImportCifPushButton.clicked.connect(self.import_additional_cif)
         ##
         self.ui.EquipmentTemplatesListWidget.doubleClicked.connect(self.edit_equipment_template)
         self.ui.EditEquipmentTemplateButton.clicked.connect(self.edit_equipment_template)
@@ -430,16 +419,15 @@ class AppWindow(QMainWindow):
         else:
             self.ui.ShredCifButton.setDisabled(True)
         self.report_options = self.settings.load_report_options()
+        self.checkcif_options = self.settings.load_checkcif_options()
+        if self.checkcif_options.get('checkcif_url'):
+            self.ui.CheckCIFServerURLTextedit.setText(self.checkcif_options.get('checkcif_url'))
         if self.report_options.get('report_text') is not None:
             self.ui.ReportTextCheckBox.setChecked(not self.report_options.get('report_text'))
         if self.report_options.get('without_H') is not None:
             self.ui.HAtomsCheckBox.setChecked(self.report_options.get('without_H'))
         if self.report_options.get('picture_width'):
             self.ui.PictureWidthDoubleSpinBox.setValue(self.report_options.get('picture_width'))
-        self.ui.MainStackedWidget.setCurrentIndex(4)
-        self.ui.HAtomsCheckBox.clicked.connect(self.save_options)
-        self.ui.ReportTextCheckBox.clicked.connect(self.save_options)
-        self.ui.PictureWidthDoubleSpinBox.valueChanged.connect(self.save_options)
         if not self.cif:
             return
         if not self.cif.res_file_data:
@@ -449,6 +437,12 @@ class AppWindow(QMainWindow):
         if not all([self.cif.res_file_data, self.cif.hkl_file]):
             self.ui.ExtractStatusLabel.setText('No .res and .hkl file data found!')
             self.ui.ShredCifButton.setDisabled(True)
+        # This has to be here:
+        self.ui.HAtomsCheckBox.clicked.connect(self.save_options)
+        self.ui.ReportTextCheckBox.clicked.connect(self.save_options)
+        self.ui.PictureWidthDoubleSpinBox.valueChanged.connect(self.save_options)
+        self.ui.CheckCIFServerURLTextedit.textChanged.connect(self.save_options)
+        self.ui.MainStackedWidget.setCurrentIndex(6)
 
     def save_options(self) -> None:
         options = {
@@ -458,6 +452,11 @@ class AppWindow(QMainWindow):
         }
         self.report_options = options
         self.settings.save_report_options(options)
+        chkcif_options = {
+            'checkcif_url': self.ui.CheckCIFServerURLTextedit.text()
+        }
+        self.checkcif_options = chkcif_options
+        self.settings.save_checkcif_options(chkcif_options)
 
     def set_report_picture(self) -> None:
         """Sets the picture of the report document."""
@@ -728,7 +727,9 @@ class AppWindow(QMainWindow):
             pass
         self.ckf = MakeCheckCif(cif=self.cif, outfile=self.htmlfile,
                                 hkl=(not self.ui.structfactCheckBox.isChecked()),
-                                pdf=False)
+                                pdf=False,
+                                url=self.checkcif_options.get('checkcif_url')
+                                )
         self.ckf.failed.connect(self._checkcif_failed)
         # noinspection PyUnresolvedReferences
         self.ckf.finished.connect(self._checkcif_finished)
@@ -791,8 +792,11 @@ class AppWindow(QMainWindow):
             htmlfile.unlink()
         except FileNotFoundError:
             pass
-        self.ckf = MakeCheckCif(cif=self.cif, outfile=htmlfile, hkl=(not self.ui.structfactCheckBox.isChecked()),
-                                pdf=True)
+        self.ckf = MakeCheckCif(cif=self.cif, outfile=htmlfile,
+                                hkl=(not self.ui.structfactCheckBox.isChecked()),
+                                pdf=True,
+                                url=self.checkcif_options.get('checkcif_url')
+                                )
         self.ckf.failed.connect(self._checkcif_failed)
         # noinspection PyUnresolvedReferences
         self.ckf.finished.connect(self._pdf_checkcif_finished)
@@ -962,6 +966,9 @@ class AppWindow(QMainWindow):
         """
         Saves the current cif file and stores the information of the third column.
         """
+        if not self.cif:
+            # No file is opened
+            return None
         datatxt = ''.join(self.ui.datnameLineEdit.text().split(' '))
         self.cif.rename_data_name(datatxt)
         # restore header, otherwise item is not saved:
@@ -1498,7 +1505,8 @@ class AppWindow(QMainWindow):
         # Add cif key and value to the row:
         # item_val = MyTableWidgetItem(value)
         # table.setItem(row_num, 0, item_val)
-        key_item = MyQPlainTextEdit(table, minheight=50)
+        key_item = MyQPlainTextEdit(parent=table, minheight=50)
+        key_item.row = row_num
         key_item.setPlainText(value)
         ## This is critical, because otherwise the add_row_if_needed does not work as expected:
         # key_item.textChanged.connect(self.add_row_if_needed)
@@ -1545,6 +1553,35 @@ class AppWindow(QMainWindow):
         self.ui.PropertiesTemplatesStackedWidget.setCurrentIndex(0)
 
     ##   end of properties
+
+    def import_additional_cif(self, filename: str):
+        """
+        Import an equipment entry from a cif file.
+        """
+        if not filename:
+            filename = cif_file_open_dialog(filter="CIF file (*.cif *.pcf *.cif_od *.cfx)")
+        if not filename:
+            return
+        try:
+            imp_cif = CifContainer(Path(filename))
+        except RuntimeError as e:
+            show_general_warning('Could not import {}:\n'.format(filename) + str(e))
+            return
+        for item in imp_cif.block:
+            if item.pair is not None:
+                key, value = item.pair
+                # leave out unit cell etc.:
+                if key in do_not_import_keys:
+                    continue
+                value = cif.as_string(value)
+                if key in self.ui.cif_main_table.vheaderitems:
+                    self.ui.cif_main_table.setText(key=key, column=COL_EDIT, txt=value, color=light_green)
+                else:
+                    self.set_table_pair(key, value, column=COL_EDIT)
+        self.cif.import_loops(imp_cif)
+        # I think I leave the user possibilities to change the imported values:
+        # self.save_current_cif_file()
+        # self.load_cif_file(str(self.final_cif_file_name))
 
     def load_cif_file(self, fname: str) -> None:
         """
@@ -1615,22 +1652,6 @@ class AppWindow(QMainWindow):
             os.chdir(filepath.absolute().parent)
         except OSError:
             print("Can't change the Current Working Directory")
-        try:
-            rigaku = self.cif.fileobj.parent.glob('*.cif_od').__next__()
-            if rigaku.exists():
-                self.manufacturer = 'rigaku'
-                self.rigakucif = RigakuData(rigaku)
-        except StopIteration:
-            pass
-        # quick hack in order to support STOE:
-        # TODO: Make this clean
-        try:
-            rigaku = self.cif.fileobj.parent.glob('*.cfx').__next__()
-            if rigaku.exists():
-                self.manufacturer = 'rigaku'
-                self.rigakucif = RigakuData(rigaku)
-        except StopIteration:
-            pass
         self.final_cif_file_name = Path(strip_finalcif_of_name(str(self.cif.fileobj.stem)) + '-finalcif.cif')
         # don't do this:
         # self.ui.cif_main_table.clear()
@@ -1656,12 +1677,14 @@ class AppWindow(QMainWindow):
             self.settings.save_current_dir(curdir)
             self.ui.DetailsPushButton.setEnabled(True)
             self.ui.SourcesPushButton.setEnabled(True)
+            self.ui.OptionsPushButton.setEnabled(True)
+            self.ui.ImportCifPushButton.setEnabled(True)
             self.ui.datnameLineEdit.setText(self.cif.block.name)
             self.ui.spacegroupLineEdit.setText(self.cif.space_group)
             self.ui.CCDCNumLineEdit.setText(self.cif['_database_code_depnum_ccdc_archive'])
 
     def show_properties(self) -> None:
-        self.save_current_cif_file()
+        # self.save_current_cif_file() # Is this really necessary? 11.09.2020 DK
         try:
             self.cif.fileobj
         except AttributeError:
@@ -1820,7 +1843,7 @@ class AppWindow(QMainWindow):
         if bad:
             bad_z_message(Z)
 
-    def set_table_pair(self, key: str, value: str) -> None:
+    def set_table_pair(self, key: str, value: str, column: int = COL_DATA) -> None:
         """
         Add a new cif key/data pair at the start of the main table.
         """
@@ -1830,9 +1853,18 @@ class AppWindow(QMainWindow):
         self.ui.cif_main_table.vheaderitems.insert(0, key)
         head_item_key = MyTableWidgetItem(key)
         self.ui.cif_main_table.setVerticalHeaderItem(0, head_item_key)
-        self.ui.cif_main_table.setText(key=key, column=COL_CIF, txt='?')
-        self.ui.cif_main_table.setText(key=key, column=COL_DATA, txt=value, color=light_green)
-        self.ui.cif_main_table.setText(key=key, column=COL_EDIT, txt='')
+        if column == COL_DATA:
+            self.ui.cif_main_table.setText(key=key, column=COL_CIF, txt='?')
+            self.ui.cif_main_table.setText(key=key, column=COL_DATA, txt=value, color=light_green)
+            self.ui.cif_main_table.setText(key=key, column=COL_EDIT, txt='')
+        if column == COL_EDIT:
+            self.ui.cif_main_table.setText(key=key, column=COL_CIF, txt='?')
+            self.ui.cif_main_table.setText(key=key, column=COL_DATA, txt='')
+            self.ui.cif_main_table.setText(key=key, column=COL_EDIT, txt=value, color=light_green)
+        if column == COL_CIF:
+            self.ui.cif_main_table.setText(key=key, column=COL_CIF, txt=value, color=light_green)
+            self.ui.cif_main_table.setText(key=key, column=COL_DATA, txt='')
+            self.ui.cif_main_table.setText(key=key, column=COL_EDIT, txt='')
 
     def get_data_sources(self) -> None:
         """
@@ -1841,8 +1873,6 @@ class AppWindow(QMainWindow):
         self.check_Z()
         if self.manufacturer == 'bruker':
             self.sources = BrukerData(self, self.cif).sources
-        if self.manufacturer == 'rigaku':
-            self.sources = self.rigakucif.sources
         if self.sources:
             # Add the CCDC number in case we have a deposition mail lying around:
             ccdc = CCDCMail(self.cif)

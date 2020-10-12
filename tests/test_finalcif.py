@@ -34,12 +34,7 @@ export_templ_data = ['data_D8__VENTURE',
                      "_olex2_diffrn_ambient_temperature_device 'Oxford Cryostream 800'",
                      '_diffrn_ambient_environment       N~2~']
 
-addr = """Albert-Ludwigs-Universität Freiburg
-Institut für Anorganische und Analytische Chemie
-Albertstraße 21
-Freiburg i. Br.
-79104
-Germany"""
+addr = """Albert-Ludwigs-Universität Freiburg\r\nInstitut für Anorganische und Analytische Chemie\r\nAlbertstraße 21\r\nFreiburg i. Br.\r\n79104\r\nGermany"""
 
 export_prop_data = r"""data_Molecular__Graphics
 loop_
@@ -392,6 +387,12 @@ class TestWorkfolder(unittest.TestCase):
                          str(self.myapp.ui.cif_main_table.cellWidget(4, 1).__class__))
         self.assertEqual("<class 'gui.custom_classes.MyQPlainTextEdit'>",
                          str(self.myapp.ui.cif_main_table.cellWidget(4, 2).__class__))
+        self.assertEqual("""Albert-Ludwigs-Universität Freiburg
+Institut für Anorganische und Analytische Chemie
+Albertstraße 21
+Freiburg i. Br.
+79104
+Germany""", str(self.myapp.ui.cif_main_table.cellWidget(4, 2)))
 
     def test_edit_values_and_save(self):
         self.myapp.ui.cif_main_table.setText(key='_atom_sites_solution_primary', column=2, txt='test1ä')
@@ -480,7 +481,8 @@ class TestWorkfolder(unittest.TestCase):
         # testing the res file export:
         test_res_file = Path('test_res_file.txt')
         outfile = Path('cu_BruecknerJK_153F40_0m-finalcif.res')
-        self.assertEqual(test_res_file.read_text().splitlines(keepends=True), outfile.read_text().splitlines(keepends=True))
+        self.assertEqual(test_res_file.read_text().splitlines(keepends=True),
+                         outfile.read_text().splitlines(keepends=True))
         outfile.unlink()
         # testing the hkl file export:
         test_res_file = Path('test_hkl_file.txt')
@@ -488,6 +490,7 @@ class TestWorkfolder(unittest.TestCase):
         self.assertEqual(test_res_file.read_text().splitlines(keepends=True),
                          outfile.read_text().splitlines(keepends=True))
         outfile.unlink()
-        
+
+
 if __name__ == '__main__':
     unittest.main()

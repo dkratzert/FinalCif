@@ -30,13 +30,15 @@ class MakeCheckCif(QThread):
     progress = pyqtSignal(str)
     failed = pyqtSignal(str)
 
-    def __init__(self, cif: CifContainer, outfile: Path, hkl: bool = True, pdf: bool = False):
+    def __init__(self, cif: CifContainer, outfile: Path, hkl: bool = True, pdf: bool = False, url=''):
         # hkl == False means no hkl upload
         super().__init__()
         self.hkl = hkl
         self.html_out_file = outfile
         self.cif = cif
         self.pdf = pdf
+        # 'https://checkcif.iucr.org/cgi-bin/checkcif_with_hkl'
+        self.checkcif_url = url 
 
     def _html_check(self):
         if not self.hkl:
@@ -75,14 +77,16 @@ class MakeCheckCif(QThread):
             "validtype" : hkl,
             "valout"    : vrf,
         }
-        url = 'https://checkcif.iucr.org/cgi-bin/checkcif_hkl.pl'
         t1 = time.perf_counter()
         r = None
         self.progress.emit('Report request sent. Please wait...')
         try:
-            r = requests.post(url, files={'file': f}, data=headers, timeout=400)
+            r = requests.post(self.checkcif_url, files={'file': f}, data=headers, timeout=400)
         except requests.exceptions.ReadTimeout:
             message = r"Checkcif server took too long. Try it at 'https://checkcif.iucr.org' directly."
+            self.failed.emit(message)
+        except requests.exceptions.MissingSchema:
+            message = r"URL for checkcif missing in options."
             self.failed.emit(message)
         if r:
             self.progress.emit('request finished')
