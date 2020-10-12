@@ -12,7 +12,7 @@ import re
 from math import sqrt
 from os import path
 from pathlib import Path
-from typing import Union
+from typing import Union, Tuple
 
 # protected space character:
 prot_space = u'\u00A0'
@@ -75,6 +75,43 @@ def get_file_with_new_ending(file: Path, new_ending: str, strip_from_name: str =
     if strip_from_name:
         basename = re.sub('{}$'.format(strip_from_name), '', basename)
     return file.parent.joinpath(Path(basename + new_ending))
+
+
+def get_error_from_value(value: str) -> Tuple[float, float]:
+    """
+    Returns the error value from a number string.
+    :type value: str
+    :rtype: str
+    >>> get_error_from_value("0.0123 (23)")
+    (0.0123, 0.0023)
+    >>> get_error_from_value("0.0123(23)")
+    (0.0123, 0.0023)
+    >>> get_error_from_value('0.0123')
+    (0.0123, 0.0)
+    >>> get_error_from_value("250.0123(23)")
+    (250.0123, 0.0023)
+    >>> get_error_from_value("123(25)")
+    (123.0, 25.0)
+    >>> get_error_from_value("123(25")
+    (123.0, 25.0)
+    """
+    try:
+        value = value.replace(" ", "")
+    except AttributeError:
+        return float(value), 0.0
+    if "(" in value:
+        vval, err = value.split("(")
+        val = vval.split('.')
+        err = err.split(")")[0]
+        if len(val) > 1:
+            return float(vval), int(err) * (10 ** (-1 * len(val[1])))
+        else:
+            return float(vval), float(err)
+    else:
+        try:
+            return float(value), 0.0
+        except ValueError:
+            return 0.0, 0.0
 
 
 def next_path(path_pattern):
@@ -321,7 +358,7 @@ non_centrosymm_keys = ('_chemical_absolute_configuration', '_refine_ls_abs_struc
                        '_refine_ls_abs_structure_details')
 
 # Keys that get a text field in the main list. These fields have more hight.
-text_field_keys = ['_refine_special_details',
+text_field_keys = ('_refine_special_details',
                    '_refine_ls_weighting_details',
                    '_reflns_special_details',
                    '_exptl_absorpt_process_details',
@@ -334,10 +371,27 @@ text_field_keys = ['_refine_special_details',
                    '_diffrn_oxdiff_ac3_digest_frames',
                    '_diffrn_oxdiff_ac3_digest_hkl',
                    '_oxdiff_exptl_absorpt_empirical_details',
-                   '',
-                   '',
-                   '',
-                   ]
+                   )
+
+do_not_import_keys = (
+    '_cell_length_a',
+    '_cell_length_b',
+    '_cell_length_c',
+    '_cell_angle_alpha',
+    '_cell_angle_beta',
+    '_cell_angle_gamma',
+    '_space_group_IT_number',
+    '_space_group_crystal_system',
+    '_space_group_name_H-M_alt',
+    '_shelx_res_file',
+    '_shelx_hkl_file',
+    '_shelx_res_checksum',
+    '_shelx_hkl_checksum',
+    '_shelx_fab_file',
+    '_shelx_fab_checksum',
+    '_shelx_fcf_file',
+    '_shelx_fcf_checksum',
+)
 
 ABSORPTION_CORRECTION_TYPES = (
     (0, ''),  # , ''),

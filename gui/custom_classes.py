@@ -284,6 +284,9 @@ class MyQPlainTextEdit(QPlainTextEdit):
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setWordWrapMode(QTextOption.WrapAtWordBoundaryOrAnywhere)
 
+    def __str__(self):
+        return self.toPlainText()
+
     def contextMenuEvent(self, event: QContextMenuEvent):
         menu = self.createStandardContextMenu(event.pos())
         actionCopyVhead = menu.addAction("Copy CIF Keyword")
@@ -299,9 +302,10 @@ class MyQPlainTextEdit(QPlainTextEdit):
         """
         Copies the content of a field.
         """
-        row = self.parent.currentRow()
-        clipboard = QApplication.clipboard()
-        clipboard.setText(self.parent.vheaderitems[row])
+        if hasattr(self.parent, 'vheaderitems'):
+            row = self.parent.currentRow()
+            clipboard = QApplication.clipboard()
+            clipboard.setText(self.parent.vheaderitems[row])
 
     def setBackground(self, color):
         """
@@ -346,7 +350,11 @@ class MyQPlainTextEdit(QPlainTextEdit):
         if not self.getText():
             return QSize(self.width(), self.minheight)
         else:
-            return QSize(100, int(0.33 * len(self.getText()) + 30))
+            size = QSize(100, int(0.33 * len(self.getText()) + 30))
+            if size.height() > 500:
+                # Prevent extreme height for long text:
+                return QSize(100, 500)
+            return size
 
 
 class MyComboBox(QComboBox):
@@ -367,6 +375,9 @@ class MyComboBox(QComboBox):
         self.setContextMenuPolicy(Qt.ActionsContextMenu)
         self.addAction(self.actionDelete)
         self.actionDelete.triggered.connect(self._delete_row)
+
+    def __str__(self):
+        return self.currentText()
 
     def _delete_row(self):
         self.parent.delete_row(self.row)
@@ -410,8 +421,9 @@ class MyEQTableWidget(QTableWidget, ItemTextMixin):
     A table widget for the equipment list.
     """
 
-    def __init__(self, parent=None, *args, **kwargs):
-        super().__init__(parent, *args, **kwargs)
+    def __init__(self, parent: QTableWidget = None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.parent = parent
         self.setWordWrap(QTextOption.WrapAtWordBoundaryOrAnywhere)
 
     def eventFilter(self, widget: QObject, event: QEvent):
@@ -446,7 +458,8 @@ class MyEQTableWidget(QTableWidget, ItemTextMixin):
         # Create a empty row at bottom of table
         row_num = self.rowCount()
         self.insertRow(row_num)
-        key_item = MyQPlainTextEdit(self)
+        key_item = MyQPlainTextEdit(parent=self)
+        key_item.row = row_num
         key_item.setPlainText(key_text)
         # This is critical, because otherwise the add_row_if_needed does not work as expected:
         key_item.textChanged.connect(self.add_row_if_needed)
@@ -459,3 +472,43 @@ class MyEQTableWidget(QTableWidget, ItemTextMixin):
     def adjustToContents(self):
         # print('adjust')
         self.resizeRowsToContents()
+
+    def delete_row(self, row: int = None):
+        if not row:
+            row = self.currentRow()
+        self.removeRow(row)
+        self.set_row_numbers()
+
+    def set_row_numbers(self):
+        for row in range(self.rowCount()):
+            self.setCurrentCell(row, 1)
+            for col in range(self.columnCount()):
+                try:
+                    self.cellWidget(row, col).row = row
+                except ValueError:
+                    print('Row or Column of MyEQTableWidget does not exist.')
+
+
+class MyPropTableWidget(QTableWidget):
+    """
+    A table widget for the properties table.
+    """
+    def __init__(self, parent: MyQPlainTextEdit, *args, **kwargs):
+        super().__init__(parent, *args, **kwargs)
+        self.parent = parent
+
+    def delete_row(self, row: int = None):
+        if not row:
+            row = self.currentRow()
+        self.removeRow(row)
+        # I need to set the row numbers again because one was deleted.
+        self.set_row_numbers()
+
+    def set_row_numbers(self):
+        for row in range(self.rowCount()):
+            for col in range(self.columnCount()):
+                self.setCurrentCell(row, col)
+                try:
+                    self.cellWidget(row, col).row = row
+                except ValueError:
+                    print('Row or Column of MyEQTableWidget does not exist.')

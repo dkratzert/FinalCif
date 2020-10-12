@@ -39,6 +39,7 @@ def make_report_from(options: dict, file_obj: Path, output_filename: str = None,
     without_H = options.get('without_H')
     report_text = options.get('report_text')
     document = create_document(path)
+    ref = None
 
     if file_obj.exists():
         try:
@@ -216,7 +217,7 @@ def set_cell_border(cell: _Cell, **kwargs) -> None:
                     element.set(qn('w:{}'.format(key)), str(edge_data[key]))
 
 
-def add_residuals_table(document: Document(), cif: CifContainer, table_num: int) -> Tuple[CifContainer, int]:
+def add_residuals_table(document: Document(), cif: CifContainer, table_num: int) -> int:
     # table_num += 1
     exti = cif['_refine_ls_extinction_coef']
     rows = 33
