@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file './gui\finalcif_gui.ui'
+# Form implementation generated from reading ui file 'D:\GitHub\FinalCif\./gui\finalcif_gui.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.1
 #
@@ -79,6 +79,9 @@ class Ui_FinalCifWindow(object):
         self.TemplatesGridLayout = QtWidgets.QGridLayout(self.EquipmentSelectPage)
         self.TemplatesGridLayout.setObjectName("TemplatesGridLayout")
         self.EquipmentTemplatesListWidget = QtWidgets.QListWidget(self.EquipmentSelectPage)
+        font = QtGui.QFont()
+        font.setPointSize(11)
+        self.EquipmentTemplatesListWidget.setFont(font)
         self.EquipmentTemplatesListWidget.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.EquipmentTemplatesListWidget.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
         self.EquipmentTemplatesListWidget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
@@ -174,6 +177,9 @@ class Ui_FinalCifWindow(object):
         self.ImportPropertyTemplateButton.setObjectName("ImportPropertyTemplateButton")
         self.TemplatesGridLayout_2.addWidget(self.ImportPropertyTemplateButton, 1, 2, 1, 1)
         self.PropertiesTemplatesListWidget = QtWidgets.QListWidget(self.PropertiesSelectPage)
+        font = QtGui.QFont()
+        font.setPointSize(11)
+        self.PropertiesTemplatesListWidget.setFont(font)
         self.PropertiesTemplatesListWidget.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
         self.PropertiesTemplatesListWidget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         self.PropertiesTemplatesListWidget.setObjectName("PropertiesTemplatesListWidget")
@@ -315,6 +321,9 @@ class Ui_FinalCifWindow(object):
         self.verticalLayout.setSpacing(0)
         self.verticalLayout.setObjectName("verticalLayout")
         self.cif_main_table = MyCifTable(self.page_MainTable)
+        font = QtGui.QFont()
+        font.setPointSize(11)
+        self.cif_main_table.setFont(font)
         self.cif_main_table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
         self.cif_main_table.setAutoScroll(False)
         self.cif_main_table.setEditTriggers(QtWidgets.QAbstractItemView.AllEditTriggers)
@@ -924,8 +933,8 @@ class Ui_FinalCifWindow(object):
         self.actionedit_templates.setObjectName("actionedit_templates")
 
         self.retranslateUi(FinalCifWindow)
-        self.EquipmentTemplatesStackedWidget.setCurrentIndex(1)
-        self.PropertiesTemplatesStackedWidget.setCurrentIndex(1)
+        self.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
+        self.PropertiesTemplatesStackedWidget.setCurrentIndex(0)
         self.MainStackedWidget.setCurrentIndex(0)
         self.LoopsTabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(FinalCifWindow)
