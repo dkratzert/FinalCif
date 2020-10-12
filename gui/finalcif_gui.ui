@@ -703,7 +703,7 @@
         <item row="1" column="0" colspan="11">
          <widget class="QStackedWidget" name="MainStackedWidget">
           <property name="currentIndex">
-           <number>6</number>
+           <number>0</number>
           </property>
           <widget class="QWidget" name="page_MainTable">
            <layout class="QVBoxLayout" name="verticalLayout">
@@ -724,11 +724,6 @@
             </property>
             <item>
              <widget class="MyCifTable" name="cif_main_table">
-              <property name="font">
-               <font>
-                <pointsize>11</pointsize>
-               </font>
-              </property>
               <property name="sizeAdjustPolicy">
                <enum>QAbstractScrollArea::AdjustToContents</enum>
               </property>
