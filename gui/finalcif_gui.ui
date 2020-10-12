@@ -7,7 +7,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1279</width>
+    <width>1469</width>
     <height>813</height>
    </rect>
   </property>
@@ -687,7 +687,7 @@
         <item row="4" column="0" colspan="3">
          <widget class="QStackedWidget" name="MainStackedWidget">
           <property name="currentIndex">
-           <number>6</number>
+           <number>0</number>
           </property>
           <widget class="QWidget" name="page_MainTable">
            <layout class="QVBoxLayout" name="verticalLayout">
@@ -708,6 +708,9 @@
             </property>
             <item>
              <widget class="MyCifTable" name="cif_main_table">
+              <property name="sizeAdjustPolicy">
+               <enum>QAbstractScrollArea::AdjustToContents</enum>
+              </property>
               <property name="autoScroll">
                <bool>false</bool>
               </property>

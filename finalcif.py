@@ -1494,7 +1494,8 @@ class AppWindow(QMainWindow):
         # Add cif key and value to the row:
         # item_val = MyTableWidgetItem(value)
         # table.setItem(row_num, 0, item_val)
-        key_item = MyQPlainTextEdit(table, minheight=50)
+        key_item = MyQPlainTextEdit(parent=table, minheight=50)
+        key_item.row = row_num
         key_item.setPlainText(value)
         ## This is critical, because otherwise the add_row_if_needed does not work as expected:
         # key_item.textChanged.connect(self.add_row_if_needed)
