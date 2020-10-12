@@ -162,7 +162,7 @@ class AppWindow(QMainWindow):
         self.ui.ImportCifPushButton.setDisabled(True)
         # noinspection PyTypeChecker
         self.cif: CifContainer = None
-        self.view: QWebEngineView
+        self.view: Union[QWebEngineView, None] = None
         self.tempwarning_displayed = False
         self.final_cif_file_name = Path()
         self.missing_data: list = []
