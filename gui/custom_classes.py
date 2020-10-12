@@ -501,6 +501,7 @@ class MyPropTableWidget(QTableWidget):
         if not row:
             row = self.currentRow()
         self.removeRow(row)
+        # I need to set the row numbers again because one was deleted.
         self.set_row_numbers()
 
     def set_row_numbers(self):
