@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <comment>Python: from gui.custom_classes import MyEQTableWidget</comment>
  <comment>Python: from gui.custom_classes import MyPropTableWidget</comment>
  <class>FinalCifWindow</class>
  <widget class="QMainWindow" name="FinalCifWindow">
@@ -152,12 +151,17 @@
            <item>
             <widget class="QStackedWidget" name="EquipmentTemplatesStackedWidget">
              <property name="currentIndex">
-              <number>1</number>
+              <number>0</number>
              </property>
              <widget class="QWidget" name="EquipmentSelectPage">
               <layout class="QGridLayout" name="TemplatesGridLayout">
                <item row="0" column="0" colspan="3">
                 <widget class="QListWidget" name="EquipmentTemplatesListWidget">
+                 <property name="font">
+                  <font>
+                   <pointsize>11</pointsize>
+                  </font>
+                 </property>
                  <property name="toolTip">
                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Each entry can have a list of key/value pairs. For example a Diffractometer model can have a list of features.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                  </property>
@@ -344,7 +348,7 @@
            <item>
             <widget class="QStackedWidget" name="PropertiesTemplatesStackedWidget">
              <property name="currentIndex">
-              <number>1</number>
+              <number>0</number>
              </property>
              <widget class="QWidget" name="PropertiesSelectPage">
               <layout class="QGridLayout" name="TemplatesGridLayout_2">
@@ -371,6 +375,11 @@
                </item>
                <item row="0" column="0" colspan="3">
                 <widget class="QListWidget" name="PropertiesTemplatesListWidget">
+                 <property name="font">
+                  <font>
+                   <pointsize>11</pointsize>
+                  </font>
+                 </property>
                  <property name="toolTip">
                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A list of common properties like &lt;/p&gt;&lt;p&gt;_exptl_crystal_colour: yellow, red, blue, ...&lt;/p&gt;&lt;p&gt;Lists defined here will appear as dropdown menus in the main Table.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                  </property>
@@ -709,6 +718,11 @@
             </property>
             <item>
              <widget class="MyCifTable" name="cif_main_table">
+              <property name="font">
+               <font>
+                <pointsize>11</pointsize>
+               </font>
+              </property>
               <property name="sizeAdjustPolicy">
                <enum>QAbstractScrollArea::AdjustToContents</enum>
               </property>
