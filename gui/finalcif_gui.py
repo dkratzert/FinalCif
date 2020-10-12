@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/Users/daniel/Documents/GitHub/FinalCif/./gui/finalcif_gui.ui'
+# Form implementation generated from reading ui file './gui\finalcif_gui.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.1
 #
@@ -213,7 +213,7 @@ class Ui_FinalCifWindow(object):
         self.ExportPropertyButton.setObjectName("ExportPropertyButton")
         self.horizontalLayout.addWidget(self.ExportPropertyButton)
         self.gridLayout_5.addLayout(self.horizontalLayout, 2, 0, 2, 6)
-        self.PropertiesEditTableWidget = QtWidgets.QTableWidget(self.PropertiesEditPage)
+        self.PropertiesEditTableWidget = MyPropTableWidget(self.PropertiesEditPage)
         self.PropertiesEditTableWidget.setAutoScroll(False)
         self.PropertiesEditTableWidget.setEditTriggers(QtWidgets.QAbstractItemView.AllEditTriggers)
         self.PropertiesEditTableWidget.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
@@ -961,7 +961,7 @@ class Ui_FinalCifWindow(object):
         self.SaveEquipmentButton.setText(_translate("FinalCifWindow", "Save"))
         self.CancelEquipmentButton.setText(_translate("FinalCifWindow", "Cancel"))
         self.ExportEquipmentButton.setText(_translate("FinalCifWindow", "Export"))
-        self.ImportCifPushButton.setText(_translate("FinalCifWindow", "Import .cif, .pcf, .cif_od, .cfx file"))
+        self.ImportCifPushButton.setText(_translate("FinalCifWindow", "Import .cif, .pcf, .cif_od or .cfx file"))
         self.PropertiesGroupBox.setTitle(_translate("FinalCifWindow", "Property Templates"))
         self.NewPropertyTemplateButton.setText(_translate("FinalCifWindow", "New Template"))
         self.EditPropertyTemplateButton.setText(_translate("FinalCifWindow", "Edit Template"))
@@ -1053,4 +1053,4 @@ class Ui_FinalCifWindow(object):
         self.actionSave_Report.setText(_translate("FinalCifWindow", "Save Report"))
         self.actionSave_CIF_File.setText(_translate("FinalCifWindow", "Save CIF File"))
         self.actionedit_templates.setText(_translate("FinalCifWindow", "edit templates"))
-from gui.custom_classes import MyCifTable, MyEQTableWidget
+from gui.custom_classes import MyCifTable, MyEQTableWidget, MyPropTableWidget
