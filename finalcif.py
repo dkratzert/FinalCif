@@ -442,7 +442,7 @@ class AppWindow(QMainWindow):
         self.ui.ReportTextCheckBox.clicked.connect(self.save_options)
         self.ui.PictureWidthDoubleSpinBox.valueChanged.connect(self.save_options)
         self.ui.CheckCIFServerURLTextedit.textChanged.connect(self.save_options)
-        self.ui.MainStackedWidget.setCurrentIndex(6)
+        self.ui.MainStackedWidget.setCurrentIndex(4)
 
     def save_options(self) -> None:
         options = {
