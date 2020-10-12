@@ -414,8 +414,9 @@ class MyEQTableWidget(QTableWidget, ItemTextMixin):
     A table widget for the equipment list.
     """
 
-    def __init__(self, parent=None, *args, **kwargs):
-        super().__init__(parent, *args, **kwargs)
+    def __init__(self, parent: QTableWidget=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.parent = parent
         self.setWordWrap(QTextOption.WrapAtWordBoundaryOrAnywhere)
 
     def eventFilter(self, widget: QObject, event: QEvent):
@@ -450,7 +451,8 @@ class MyEQTableWidget(QTableWidget, ItemTextMixin):
         # Create a empty row at bottom of table
         row_num = self.rowCount()
         self.insertRow(row_num)
-        key_item = MyQPlainTextEdit(self)
+        key_item = MyQPlainTextEdit(parent=self)
+        key_item.row = row_num
         key_item.setPlainText(key_text)
         # This is critical, because otherwise the add_row_if_needed does not work as expected:
         key_item.textChanged.connect(self.add_row_if_needed)
@@ -463,3 +465,8 @@ class MyEQTableWidget(QTableWidget, ItemTextMixin):
     def adjustToContents(self):
         # print('adjust')
         self.resizeRowsToContents()
+
+    def delete_row(self, row: int = None):
+        if not row:
+            row = self.currentRow()
+        self.removeRow(row)

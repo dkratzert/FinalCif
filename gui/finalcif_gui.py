@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file './gui\finalcif_gui.ui'
+# Form implementation generated from reading ui file '/Users/daniel/Documents/GitHub/FinalCif/./gui/finalcif_gui.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.1
 #
@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_FinalCifWindow(object):
     def setupUi(self, FinalCifWindow):
         FinalCifWindow.setObjectName("FinalCifWindow")
-        FinalCifWindow.resize(1279, 813)
+        FinalCifWindow.resize(1469, 813)
         self.Mainwidget = QtWidgets.QWidget(FinalCifWindow)
         self.Mainwidget.setObjectName("Mainwidget")
         self.horizontalLayout_4 = QtWidgets.QHBoxLayout(self.Mainwidget)
@@ -315,6 +315,7 @@ class Ui_FinalCifWindow(object):
         self.verticalLayout.setSpacing(0)
         self.verticalLayout.setObjectName("verticalLayout")
         self.cif_main_table = MyCifTable(self.page_MainTable)
+        self.cif_main_table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
         self.cif_main_table.setAutoScroll(False)
         self.cif_main_table.setEditTriggers(QtWidgets.QAbstractItemView.AllEditTriggers)
         self.cif_main_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
@@ -925,7 +926,7 @@ class Ui_FinalCifWindow(object):
         self.retranslateUi(FinalCifWindow)
         self.EquipmentTemplatesStackedWidget.setCurrentIndex(1)
         self.PropertiesTemplatesStackedWidget.setCurrentIndex(1)
-        self.MainStackedWidget.setCurrentIndex(6)
+        self.MainStackedWidget.setCurrentIndex(0)
         self.LoopsTabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(FinalCifWindow)
         FinalCifWindow.setTabOrder(self.SelectCif_LineEdit, self.EquipmentEditTableWidget)
