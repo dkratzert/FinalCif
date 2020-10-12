@@ -718,11 +718,6 @@
             </property>
             <item>
              <widget class="MyCifTable" name="cif_main_table">
-              <property name="font">
-               <font>
-                <pointsize>11</pointsize>
-               </font>
-              </property>
               <property name="sizeAdjustPolicy">
                <enum>QAbstractScrollArea::AdjustToContents</enum>
               </property>
