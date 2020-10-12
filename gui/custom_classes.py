@@ -302,9 +302,10 @@ class MyQPlainTextEdit(QPlainTextEdit):
         """
         Copies the content of a field.
         """
-        row = self.parent.currentRow()
-        clipboard = QApplication.clipboard()
-        clipboard.setText(self.parent.vheaderitems[row])
+        if hasattr(self.parent, 'vheaderitems'):
+            row = self.parent.currentRow()
+            clipboard = QApplication.clipboard()
+            clipboard.setText(self.parent.vheaderitems[row])
 
     def setBackground(self, color):
         """
