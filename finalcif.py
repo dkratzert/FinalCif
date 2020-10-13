@@ -269,7 +269,7 @@ class AppWindow(QMainWindow):
         self.ui.ExploreDirButton.clicked.connect(self.explore_dir)
         self.ui.LoopsPushButton.clicked.connect(self.showloops)
         ##
-        self.ui.CheckcifStartButton.clicked.connect(self.switch_to_checkcif)
+        self.ui.CheckcifStartButton.clicked.connect(self.ui.MainStackedWidget.go_to_checkcif_page)
         self.ui.CheckcifButton.clicked.connect(self.do_offline_checkcif)
         self.ui.CheckcifHTMLOnlineButton.clicked.connect(self.do_html_checkcif)
         self.ui.CheckcifPDFOnlineButton.clicked.connect(self.do_pdf_checkcif)
@@ -349,12 +349,6 @@ class AppWindow(QMainWindow):
         self.ui.BackFromLoopsPushButton.clicked.connect(self.back_to_main_noload)
         # Shred Cif
         self.ui.ShredCifButton.clicked.connect(self.shred_cif)
-
-    def switch_to_checkcif(self):
-        """
-        Opens the checkcif page.
-        """
-        self.ui.MainStackedWidget.go_to_checkcif_page()
 
     def shred_cif(self) -> None:
         """
@@ -649,9 +643,11 @@ class AppWindow(QMainWindow):
             self.ui.moleculeLayout.removeWidget(self.view)
 
     def _checkcif_failed(self, txt: str):
+        # TODO: output this to self.ui.CheckCifLogPlainTextEdit
         self.ui.statusBar.showMessage(txt)
 
     def _ckf_progress(self, txt: str):
+        # TODO: output this to self.ui.CheckCifLogPlainTextEdit
         self.ui.statusBar.showMessage(txt)
 
     def _checkcif_finished(self):
@@ -666,34 +662,37 @@ class AppWindow(QMainWindow):
             # happens if checkcif fails, e.g. takes too much time.
             return
         browser = QWebEngineView()
+        self.ui.htmlCHeckCifGridLayout.addWidget(browser)
         # web_settings = browser. settings()
         url = QUrl.fromLocalFile(str(self.htmlfile.absolute()))
-        dialog = QMainWindow(self)
-        self.subwin.setupUi(dialog)
-        self.subwin.reportLayout.addWidget(browser)
-        self.subwin.show_report_Button.hide()
-        self.subwin.show_report_Button.clicked.connect(self._switch_to_report)
-        self.subwin.show_Forms_Button.clicked.connect(self._switch_to_vrf)
-        self.subwin.SavePushButton.setIcon(qta.icon('mdi.content-save'))
-        self.subwin.show_report_Button.setIcon(qta.icon('mdi.format-columns'))
-        self.subwin.show_Forms_Button.setIcon(qta.icon('mdi.book-open-outline'))
+        # dialog = QMainWindow(self)
+        # self.subwin.setupUi(dialog)
+        # self.subwin.reportLayout.addWidget(browser)
+        self.ui.MainStackedWidget.go_to_checkcif_page()
+        self.ui.CheckCIFResultsStackedWidget.setCurrentIndex(1)  # Index 1 is html page
+        # self.subwin.show_report_Button.hide()
+        # self.subwin.show_report_Button.clicked.connect(self._switch_to_report)
+        # self.subwin.show_Forms_Button.clicked.connect(self._switch_to_vrf)
+        # self.subwin.SavePushButton.setIcon(qta.icon('mdi.content-save'))
+        # self.subwin.show_report_Button.setIcon(qta.icon('mdi.format-columns'))
+        # self.subwin.show_Forms_Button.setIcon(qta.icon('mdi.book-open-outline'))
         browser.load(url)
-        self.subwin.stackedWidget.setCurrentIndex(0)
-        dialog.setMinimumWidth(900)
-        dialog.setMinimumHeight(700)
-        dialog.move(QPoint(100, 50))
-        dialog.show()
-        dialog.raise_()
+        # self.subwin.stackedWidget.setCurrentIndex(0)
+        # dialog.setMinimumWidth(900)
+        # dialog.setMinimumHeight(700)
+        # dialog.move(QPoint(100, 50))
+        # dialog.show()
+        # dialog.raise_()
         # The picture file linked in the html file:
         imageobj = Path(strip_finalcif_of_name(str(self.cif.fileobj.stem)) + '-finalcif.gif')
         gif = parser.get_image()
         self.ui.statusBar.showMessage('Report finished.')
-        # splash.finish(self)
         forms = parser.response_forms
         # makes all gray:
         # self.subwin.responseFormsListWidget.setStyleSheet("background: 'gray';")
         a = AlertHelp(self.checkdef)
         self.vrfs = []
+        # TODO: add a sub page with response forms
         for form in forms:
             # print(form)
             vrf = MyVRFContainer(form, a.get_help(form['alert_num']))
@@ -701,15 +700,14 @@ class AppWindow(QMainWindow):
             self.vrfs.append(vrf)
             item = QListWidgetItem()
             item.setSizeHint(vrf.sizeHint())
-            self.subwin.responseFormsListWidget.addItem(item)
-            self.subwin.responseFormsListWidget.setItemWidget(item, vrf)
+            # self.subwin.responseFormsListWidget.addItem(item)
+            # self.subwin.responseFormsListWidget.setItemWidget(item, vrf)
         if not forms:
             iteme = QListWidgetItem(' ')
             item = QListWidgetItem(' No level A or B alerts to explain.')
-            self.subwin.responseFormsListWidget.addItem(iteme)
-            self.subwin.responseFormsListWidget.addItem(item)
-        dialog.show()
-        self.subwin.SavePushButton.clicked.connect(self.save_responses)
+            # self.subwin.responseFormsListWidget.addItem(iteme)
+            # self.subwin.responseFormsListWidget.addItem(item)
+        # self.subwin.SavePushButton.clicked.connect(self.save_responses)
         if gif:
             imageobj.write_bytes(gif)
 
@@ -718,6 +716,7 @@ class AppWindow(QMainWindow):
         Performs an online checkcif via checkcif.iucr.org.
         """
         # splash = self.show_splash("Running Checkcif. Please wait...")
+        # TODO: append to CheckCifLogPlainTextEdit
         self.ui.statusBar.showMessage('Sending html report request...')
         self.save_current_cif_file()
         self.load_cif_file(self.final_cif_file_name)
@@ -1591,7 +1590,8 @@ class AppWindow(QMainWindow):
         self.ui.ExtractStatusLabel.setText('')
         with suppress(AttributeError):
             self.ui.moleculeLayout.removeWidget(self.view)
-        self.ui.MainStackedWidget.got_to_main_page()
+        # TODO: Check if I can leave this out, because I don't want to swith to main page during checkcif:
+        # self.ui.MainStackedWidget.got_to_main_page()
         # Set to empty state bevore loading:
         self.missing_data = []
         # clean table and vheader before loading:

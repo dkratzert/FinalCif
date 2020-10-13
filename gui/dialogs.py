@@ -74,8 +74,8 @@ def bug_found_warning(logfile) -> None:
     window = QMainWindow()
     text = 'Congratulations, you found a bug in ' \
            'FinalCif!<br>Please send the file <br>"{}" <br>to Daniel Kratzert:  ' \
-           '<a href="mailto:daniel.kratzert@ac.uni-freiburg.de?subject=FinalCif version {} crash report">' \
-           'daniel.kratzert@ac.uni-freiburg.de</a><br>' \
+           '<a href="mailto:dkratzert@gmx.de?subject=FinalCif version {} crash report">' \
+           'dkratzert@gmx.de</a><br>' \
            'If possible, the corresponding CIF file is also desired.'.format(logfile.absolute(), VERSION)
     QMessageBox.warning(window, 'Warning', text)
     window.show()
