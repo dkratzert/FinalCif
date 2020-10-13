@@ -701,7 +701,7 @@
          </widget>
         </item>
         <item row="1" column="0" colspan="11">
-         <widget class="QStackedWidget" name="MainStackedWidget">
+         <widget class="MyMainStackedWidget" name="MainStackedWidget">
           <property name="currentIndex">
            <number>0</number>
           </property>
@@ -2326,6 +2326,11 @@ The data source will be ignored until next program restart.</string>
   <customwidget>
    <class>MyCifTable</class>
    <extends>QTableWidget</extends>
+   <header>gui.custom_classes.h</header>
+  </customwidget>
+  <customwidget>
+   <class>MyMainStackedWidget</class>
+   <extends>QStackedWidget</extends>
    <header>gui.custom_classes.h</header>
   </customwidget>
   <customwidget>

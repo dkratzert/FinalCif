@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file './gui\finalcif_gui.ui'
+# Form implementation generated from reading ui file '/Users/daniel/Documents/GitHub/FinalCif/./gui/finalcif_gui.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.1
 #
@@ -322,7 +322,7 @@ class Ui_FinalCifWindow(object):
         self.SumFormMainLineEdit.setReadOnly(True)
         self.SumFormMainLineEdit.setObjectName("SumFormMainLineEdit")
         self.gridLayout_6.addWidget(self.SumFormMainLineEdit, 0, 10, 1, 1)
-        self.MainStackedWidget = QtWidgets.QStackedWidget(self.CifDataItemsFrame)
+        self.MainStackedWidget = MyMainStackedWidget(self.CifDataItemsFrame)
         self.MainStackedWidget.setObjectName("MainStackedWidget")
         self.page_MainTable = QtWidgets.QWidget()
         self.page_MainTable.setObjectName("page_MainTable")
@@ -439,6 +439,7 @@ class Ui_FinalCifWindow(object):
         self.page_molinfo = QtWidgets.QWidget()
         self.page_molinfo.setObjectName("page_molinfo")
         self.gridLayout_3 = QtWidgets.QGridLayout(self.page_molinfo)
+        self.gridLayout_3.setContentsMargins(0, 0, 0, 0)
         self.gridLayout_3.setObjectName("gridLayout_3")
         self.molGroupBox = QtWidgets.QGroupBox(self.page_molinfo)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
@@ -766,6 +767,7 @@ class Ui_FinalCifWindow(object):
         self.page_Sources = QtWidgets.QWidget()
         self.page_Sources.setObjectName("page_Sources")
         self.gridLayout_11 = QtWidgets.QGridLayout(self.page_Sources)
+        self.gridLayout_11.setContentsMargins(0, 0, 0, 0)
         self.gridLayout_11.setObjectName("gridLayout_11")
         self.BackSourcesPushButton = QtWidgets.QPushButton(self.page_Sources)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
@@ -804,6 +806,7 @@ class Ui_FinalCifWindow(object):
         self.page_options = QtWidgets.QWidget()
         self.page_options.setObjectName("page_options")
         self.gridLayout_12 = QtWidgets.QGridLayout(self.page_options)
+        self.gridLayout_12.setContentsMargins(0, 0, 0, 0)
         self.gridLayout_12.setObjectName("gridLayout_12")
         spacerItem13 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.gridLayout_12.addItem(spacerItem13, 2, 1, 1, 3)
@@ -883,6 +886,7 @@ class Ui_FinalCifWindow(object):
         self.page_Loops = QtWidgets.QWidget()
         self.page_Loops.setObjectName("page_Loops")
         self.verticalLayout_9 = QtWidgets.QVBoxLayout(self.page_Loops)
+        self.verticalLayout_9.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout_9.setObjectName("verticalLayout_9")
         self.LoopsTabWidget = QtWidgets.QTabWidget(self.page_Loops)
         self.LoopsTabWidget.setObjectName("LoopsTabWidget")
@@ -905,6 +909,7 @@ class Ui_FinalCifWindow(object):
         self.page_checkcif = QtWidgets.QWidget()
         self.page_checkcif.setObjectName("page_checkcif")
         self.gridLayout_15 = QtWidgets.QGridLayout(self.page_checkcif)
+        self.gridLayout_15.setContentsMargins(0, 0, 0, 0)
         self.gridLayout_15.setObjectName("gridLayout_15")
         self.groupBox_71 = QtWidgets.QGroupBox(self.page_checkcif)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
@@ -1151,4 +1156,4 @@ class Ui_FinalCifWindow(object):
         self.actionSave_Report.setText(_translate("FinalCifWindow", "Save Report"))
         self.actionSave_CIF_File.setText(_translate("FinalCifWindow", "Save CIF File"))
         self.actionedit_templates.setText(_translate("FinalCifWindow", "edit templates"))
-from gui.custom_classes import MyCifTable, MyEQTableWidget, MyPropTableWidget
+from gui.custom_classes import MyCifTable, MyEQTableWidget, MyMainStackedWidget, MyPropTableWidget
