@@ -15,7 +15,7 @@ from gui.dialogs import cif_file_open_dialog, cif_file_save_dialog, show_general
     unable_to_open_message, show_splash, bad_z_message
 from gui.loops import Loop
 
-DEBUG = False
+DEBUG = True
 if 'compile' in sys.argv:
     COMPILE = True
     sys.argv = []
@@ -148,7 +148,7 @@ class AppWindow(QMainWindow):
         # Make sure the start page is shown and not the edit page:
         self.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
         self.ui.PropertiesTemplatesStackedWidget.setCurrentIndex(0)
-        self.ui.MainStackedWidget.setCurrentIndex(0)
+        self.ui.MainStackedWidget.got_to_main_page()
         self.ui.EquipmentEditTableWidget.verticalHeader().hide()
         self.ui.PropertiesEditTableWidget.verticalHeader().hide()
         self.ui.CheckcifButton.setDisabled(True)
@@ -354,7 +354,7 @@ class AppWindow(QMainWindow):
         """
         Opens the checkcif page.
         """
-        self.ui.MainStackedWidget.setCurrentIndex(6)
+        self.ui.MainStackedWidget.go_to_checkcif_page()
 
     def shred_cif(self) -> None:
         """
@@ -442,7 +442,7 @@ class AppWindow(QMainWindow):
         self.ui.ReportTextCheckBox.clicked.connect(self.save_options)
         self.ui.PictureWidthDoubleSpinBox.valueChanged.connect(self.save_options)
         self.ui.CheckCIFServerURLTextedit.textChanged.connect(self.save_options)
-        self.ui.MainStackedWidget.setCurrentIndex(4)
+        self.ui.MainStackedWidget.go_to_options_page()
 
     def save_options(self) -> None:
         options = {
@@ -555,7 +555,7 @@ class AppWindow(QMainWindow):
         table.resizeColumnToContents(0)
         table.resizeColumnToContents(1)
         table.resizeColumnToContents(2)
-        self.ui.MainStackedWidget.setCurrentIndex(3)
+        self.ui.MainStackedWidget.go_to_data_sources_page()
 
     def get_checkdef(self) -> None:
         """
@@ -636,14 +636,15 @@ class AppWindow(QMainWindow):
         Get back to the main table and load the new cif file.
         """
         self.load_cif_file(str(self.final_cif_file_name.absolute()))
-        self.ui.MainStackedWidget.setCurrentIndex(0)
+        self.ui.MainStackedWidget.got_to_main_page()
 
     def back_to_main_noload(self):
         """
         Get back to the main table. Without loading a new cif file.
         """
         self.ui.ExtractStatusLabel.setText('')
-        self.ui.MainStackedWidget.setCurrentIndex(0)
+        self.ui.LoopsPushButton.setText('Show Loops')
+        self.ui.MainStackedWidget.got_to_main_page()
         if self.view:
             self.ui.moleculeLayout.removeWidget(self.view)
 
@@ -823,7 +824,7 @@ class AppWindow(QMainWindow):
         self.ui.CheckcifPlaintextEdit.clear()
         self.save_current_cif_file()
         self.load_cif_file(self.final_cif_file_name)
-        self.ui.MainStackedWidget.setCurrentIndex(6)
+        self.ui.MainStackedWidget.go_to_checkcif_page()
         try:
             p = Platon(self.final_cif_file_name)
         except Exception as e:
@@ -856,9 +857,9 @@ class AppWindow(QMainWindow):
         splash.finish(self)
         moiety = self.ui.cif_main_table.getTextFromKey(key='_chemical_formula_moiety', col=0)
         if p.formula_moiety and moiety in ['', '?']:
-            self.ui.MainStackedWidget.setCurrentIndex(0)
+            self.ui.MainStackedWidget.got_to_main_page()
             self.ui.cif_main_table.setText(key='_chemical_formula_moiety', txt=p.formula_moiety, column=COL_EDIT)
-        self.ui.MainStackedWidget.setCurrentIndex(6)
+        self.ui.MainStackedWidget.go_to_checkcif_page()
 
     def load_recent_file(self, file_index: int) -> None:
         """
@@ -1033,7 +1034,7 @@ class AppWindow(QMainWindow):
         """
         Displays the saved cif file into a textfield.
         """
-        self.ui.MainStackedWidget.setCurrentIndex(1)
+        self.ui.MainStackedWidget.go_to_cif_text_page()
         final_textedit = self.ui.FinalCifFilePlainTextEdit
         doc = final_textedit.document()
         font = doc.defaultFont()
@@ -1590,7 +1591,7 @@ class AppWindow(QMainWindow):
         self.ui.ExtractStatusLabel.setText('')
         with suppress(AttributeError):
             self.ui.moleculeLayout.removeWidget(self.view)
-        self.ui.MainStackedWidget.setCurrentIndex(0)
+        self.ui.MainStackedWidget.got_to_main_page()
         # Set to empty state bevore loading:
         self.missing_data = []
         # clean table and vheader before loading:
@@ -1689,7 +1690,7 @@ class AppWindow(QMainWindow):
             self.cif.fileobj
         except AttributeError:
             return
-        self.ui.MainStackedWidget.setCurrentIndex(2)
+        self.ui.MainStackedWidget.go_to_info_page()
         self.ui.cellField.setText(celltxt.format(*self.cif.cell, self.cif['_space_group_centring_type']))
         try:
             spgr = self.cif.space_group
@@ -1993,9 +1994,9 @@ class AppWindow(QMainWindow):
             textedit.setReadOnly(True)
 
     def showloops(self) -> None:
-        if self.ui.MainStackedWidget.currentIndex() == 5:
+        if self.ui.MainStackedWidget.on_loops_page():
             # Go back to main table page:
-            self.ui.MainStackedWidget.setCurrentIndex(0)
+            self.ui.MainStackedWidget.got_to_main_page()
             self.ui.LoopsPushButton.setText('Show Loops')
         else:
             # Add loops widgets:
@@ -2005,7 +2006,7 @@ class AppWindow(QMainWindow):
                 return
             # Go to loops page:
             self.ui.LoopsPushButton.setText('Hide Loops')
-            self.ui.MainStackedWidget.setCurrentIndex(5)
+            self.ui.MainStackedWidget.go_to_loops_page()
 
     def add_row(self, key: str, value: str, at_start=False) -> None:
         """

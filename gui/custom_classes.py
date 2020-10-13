@@ -5,7 +5,7 @@ from PyQt5 import QtCore
 from PyQt5.QtCore import QEvent, QObject, Qt, QSize
 from PyQt5.QtGui import QColor, QTextOption, QKeySequence, QContextMenuEvent
 from PyQt5.QtWidgets import QAbstractScrollArea, QAction, QComboBox, QFrame, QPlainTextEdit, QSizePolicy, QTableWidget, \
-    QTableWidgetItem, QWidget, QApplication, QShortcut
+    QTableWidgetItem, QWidget, QApplication, QShortcut, QStackedWidget
 
 from cif.text import retranslate_delimiter
 from tools.misc import essential_keys, text_field_keys
@@ -493,6 +493,7 @@ class MyPropTableWidget(QTableWidget):
     """
     A table widget for the properties table.
     """
+
     def __init__(self, parent: MyQPlainTextEdit, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
         self.parent = parent
@@ -512,3 +513,33 @@ class MyPropTableWidget(QTableWidget):
                     self.cellWidget(row, col).row = row
                 except ValueError:
                     print('Row or Column of MyEQTableWidget does not exist.')
+
+
+class MyMainStackedWidget(QStackedWidget):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.parent = parent
+
+    def got_to_main_page(self):
+        self.setCurrentIndex(0)
+
+    def go_to_cif_text_page(self):
+        self.setCurrentIndex(1)
+
+    def go_to_info_page(self):
+        self.setCurrentIndex(2)
+
+    def go_to_data_sources_page(self):
+        self.setCurrentIndex(3)
+
+    def go_to_options_page(self):
+        self.setCurrentIndex(4)
+
+    def go_to_loops_page(self):
+        self.setCurrentIndex(5)
+
+    def on_loops_page(self):
+        return self.currentIndex() == 5
+
+    def go_to_checkcif_page(self):
+        self.setCurrentIndex(6)
