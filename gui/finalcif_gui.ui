@@ -703,7 +703,7 @@
         <item row="1" column="0" colspan="11">
          <widget class="MyMainStackedWidget" name="MainStackedWidget">
           <property name="currentIndex">
-           <number>0</number>
+           <number>6</number>
           </property>
           <widget class="QWidget" name="page_MainTable">
            <layout class="QVBoxLayout" name="verticalLayout">
@@ -2009,7 +2009,7 @@ The data source will be ignored until next program restart.</string>
               </property>
               <widget class="QWidget" name="tab">
                <attribute name="title">
-                <string>Tab 1</string>
+                <string>Loops</string>
                </attribute>
               </widget>
              </widget>
@@ -2073,11 +2073,26 @@ The data source will be ignored until next program restart.</string>
                </sizepolicy>
               </property>
               <property name="title">
-               <string>CheckCIF output log window</string>
+               <string>CheckCIF log messages</string>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_10">
+               <property name="spacing">
+                <number>6</number>
+               </property>
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>6</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
                <item>
-                <widget class="QPlainTextEdit" name="plainTextEdit">
+                <widget class="QPlainTextEdit" name="CheckCifLogPlainTextEdit">
                  <property name="tabChangesFocus">
                   <bool>true</bool>
                  </property>
@@ -2098,9 +2113,9 @@ The data source will be ignored until next program restart.</string>
                </sizepolicy>
               </property>
               <property name="currentIndex">
-               <number>0</number>
+               <number>1</number>
               </property>
-              <widget class="QWidget" name="page">
+              <widget class="QWidget" name="platon_page">
                <layout class="QVBoxLayout" name="verticalLayout_11">
                 <property name="spacing">
                  <number>0</number>
@@ -2120,7 +2135,7 @@ The data source will be ignored until next program restart.</string>
                 <item>
                  <widget class="QLabel" name="label">
                   <property name="text">
-                   <string>PLATON CheckCIF output:</string>
+                   <string>PLATON CheckCIF</string>
                   </property>
                  </widget>
                 </item>
@@ -2142,7 +2157,7 @@ The data source will be ignored until next program restart.</string>
                 </item>
                </layout>
               </widget>
-              <widget class="QWidget" name="page_2">
+              <widget class="QWidget" name="html_page">
                <layout class="QVBoxLayout" name="verticalLayout_12">
                 <property name="spacing">
                  <number>0</number>
@@ -2179,7 +2194,7 @@ The data source will be ignored until next program restart.</string>
                  </widget>
                 </item>
                 <item>
-                 <layout class="QGridLayout" name="gridLayout_17">
+                 <layout class="QGridLayout" name="htmlCHeckCifGridLayout">
                   <property name="spacing">
                    <number>6</number>
                   </property>
@@ -2187,22 +2202,83 @@ The data source will be ignored until next program restart.</string>
                 </item>
                </layout>
               </widget>
+              <widget class="QWidget" name="pdf_page">
+               <layout class="QVBoxLayout" name="verticalLayout_13">
+                <property name="spacing">
+                 <number>0</number>
+                </property>
+                <property name="leftMargin">
+                 <number>0</number>
+                </property>
+                <property name="topMargin">
+                 <number>0</number>
+                </property>
+                <property name="rightMargin">
+                 <number>0</number>
+                </property>
+                <property name="bottomMargin">
+                 <number>0</number>
+                </property>
+                <item>
+                 <widget class="QLabel" name="label_5">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="minimumSize">
+                   <size>
+                    <width>0</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string>PDF CheckCIF</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <layout class="QGridLayout" name="gridLayout_18"/>
+                </item>
+               </layout>
+              </widget>
              </widget>
             </item>
-            <item row="2" column="0">
+            <item row="2" column="0" colspan="2">
              <layout class="QGridLayout" name="gridLayout_8">
-              <item row="1" column="1">
-               <spacer name="verticalSpacer_4">
-                <property name="orientation">
-                 <enum>Qt::Vertical</enum>
+              <property name="spacing">
+               <number>6</number>
+              </property>
+              <item row="0" column="4">
+               <widget class="QCheckBox" name="structfactCheckBox">
+                <property name="text">
+                 <string>without structure factors (faster but not complete)</string>
                 </property>
-                <property name="sizeType">
-                 <enum>QSizePolicy::Fixed</enum>
+               </widget>
+              </item>
+              <item row="0" column="5">
+               <spacer name="horizontalSpacer">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
                 </property>
                 <property name="sizeHint" stdset="0">
                  <size>
-                  <width>20</width>
-                  <height>28</height>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item row="0" column="2">
+               <spacer name="horizontalSpacer_17">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
                  </size>
                 </property>
                </spacer>
@@ -2220,19 +2296,6 @@ The data source will be ignored until next program restart.</string>
                 </property>
                </widget>
               </item>
-              <item row="0" column="2">
-               <spacer name="horizontalSpacer">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
               <item row="0" column="0">
                <spacer name="horizontalSpacer_2">
                 <property name="orientation">
@@ -2249,51 +2312,44 @@ The data source will be ignored until next program restart.</string>
                 </property>
                </spacer>
               </item>
+              <item row="0" column="3">
+               <widget class="QGroupBox" name="groupBox_checkcif_2">
+                <property name="title">
+                 <string/>
+                </property>
+                <layout class="QGridLayout" name="gridLayout_14">
+                 <item row="0" column="2">
+                  <widget class="QPushButton" name="CheckcifPDFOnlineButton">
+                   <property name="text">
+                    <string>Checkcif Online PDF</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="1">
+                  <widget class="QPushButton" name="CheckcifHTMLOnlineButton">
+                   <property name="text">
+                    <string>Checkcif Online HTML</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="0">
+                  <widget class="QPushButton" name="CheckcifButton">
+                   <property name="text">
+                    <string>CheckCif Offline</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item row="1" column="4">
+               <widget class="QCheckBox" name="checkBox">
+                <property name="text">
+                 <string>xfghhdhg</string>
+                </property>
+               </widget>
+              </item>
              </layout>
-            </item>
-            <item row="2" column="1">
-             <widget class="QGroupBox" name="groupBox_checkcif_2">
-              <property name="title">
-               <string/>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_14">
-               <item row="0" column="0">
-                <widget class="QPushButton" name="CheckcifHTMLOnlineButton">
-                 <property name="text">
-                  <string>Checkcif Online HTML</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0">
-                <widget class="QPushButton" name="CheckcifButton">
-                 <property name="text">
-                  <string>CheckCif Offline</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="2">
-                <widget class="QCheckBox" name="structfactCheckBox">
-                 <property name="text">
-                  <string>without structure factors (faster but not complete)</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="1">
-                <widget class="QPushButton" name="CheckcifPDFOnlineButton">
-                 <property name="text">
-                  <string>Checkcif Online PDF</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="2">
-                <widget class="QCheckBox" name="checkBox">
-                 <property name="text">
-                  <string>xfghhdhg</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
             </item>
            </layout>
           </widget>
@@ -2332,6 +2388,7 @@ The data source will be ignored until next program restart.</string>
    <class>MyMainStackedWidget</class>
    <extends>QStackedWidget</extends>
    <header>gui.custom_classes.h</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>MyEQTableWidget</class>

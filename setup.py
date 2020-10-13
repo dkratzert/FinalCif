@@ -26,6 +26,6 @@ setup(
     url='https://www.xs3.uni-freiburg.de/research/finalcif',
     license='Beerware',
     author='Daniel Kratzert',
-    author_email='daniel.kratzert@ac.uni-freiburg.de',
+    author_email='dkratzert@gmx.de',
     description='https://www.xs3.uni-freiburg.de/research/finalcif'
 )
