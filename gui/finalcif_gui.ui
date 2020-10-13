@@ -2113,7 +2113,7 @@ The data source will be ignored until next program restart.</string>
                </sizepolicy>
               </property>
               <property name="currentIndex">
-               <number>1</number>
+               <number>3</number>
               </property>
               <widget class="QWidget" name="platon_page">
                <layout class="QVBoxLayout" name="verticalLayout_11">
@@ -2240,6 +2240,185 @@ The data source will be ignored until next program restart.</string>
                 </item>
                 <item>
                  <layout class="QGridLayout" name="gridLayout_18"/>
+                </item>
+               </layout>
+              </widget>
+              <widget class="QWidget" name="page">
+               <layout class="QVBoxLayout" name="verticalLayout_17">
+                <item>
+                 <widget class="QStackedWidget" name="stackedWidget">
+                  <property name="currentIndex">
+                   <number>1</number>
+                  </property>
+                  <widget class="QWidget" name="reportPage">
+                   <layout class="QVBoxLayout" name="verticalLayout_14">
+                    <item>
+                     <layout class="QVBoxLayout" name="reportLayout"/>
+                    </item>
+                   </layout>
+                  </widget>
+                  <widget class="QWidget" name="formsPage">
+                   <layout class="QVBoxLayout" name="verticalLayout_15">
+                    <property name="leftMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="bottomMargin">
+                     <number>0</number>
+                    </property>
+                    <item>
+                     <widget class="QGroupBox" name="groupBox_8">
+                      <property name="title">
+                       <string>List of CheckCif Alerts</string>
+                      </property>
+                      <property name="checkable">
+                       <bool>false</bool>
+                      </property>
+                      <layout class="QVBoxLayout" name="verticalLayout_16">
+                       <property name="leftMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="bottomMargin">
+                        <number>0</number>
+                       </property>
+                       <item>
+                        <widget class="QListWidget" name="responseFormsListWidget">
+                         <property name="sizeAdjustPolicy">
+                          <enum>QAbstractScrollArea::AdjustToContents</enum>
+                         </property>
+                         <property name="autoScroll">
+                          <bool>false</bool>
+                         </property>
+                         <property name="editTriggers">
+                          <set>QAbstractItemView::NoEditTriggers</set>
+                         </property>
+                         <property name="showDropIndicator" stdset="0">
+                          <bool>false</bool>
+                         </property>
+                         <property name="selectionMode">
+                          <enum>QAbstractItemView::NoSelection</enum>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QFrame" name="ButtonFrame">
+                         <property name="frameShape">
+                          <enum>QFrame::NoFrame</enum>
+                         </property>
+                         <property name="frameShadow">
+                          <enum>QFrame::Raised</enum>
+                         </property>
+                         <property name="lineWidth">
+                          <number>0</number>
+                         </property>
+                         <layout class="QHBoxLayout" name="horizontalLayout_3">
+                          <property name="leftMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="topMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="rightMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="bottomMargin">
+                           <number>0</number>
+                          </property>
+                          <item>
+                           <widget class="QLabel" name="label_6">
+                            <property name="text">
+                             <string>Every form you fill out will be written to the cif file.</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <spacer name="horizontalSpacer_18">
+                            <property name="orientation">
+                             <enum>Qt::Horizontal</enum>
+                            </property>
+                            <property name="sizeHint" stdset="0">
+                             <size>
+                              <width>40</width>
+                              <height>20</height>
+                             </size>
+                            </property>
+                           </spacer>
+                          </item>
+                          <item>
+                           <widget class="QPushButton" name="SavePushButton">
+                            <property name="text">
+                             <string>Save Response Forms</string>
+                            </property>
+                           </widget>
+                          </item>
+                         </layout>
+                        </widget>
+                       </item>
+                      </layout>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QFrame" name="frame">
+                  <property name="frameShape">
+                   <enum>QFrame::NoFrame</enum>
+                  </property>
+                  <layout class="QHBoxLayout" name="horizontalLayout_2">
+                   <property name="leftMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="bottomMargin">
+                    <number>0</number>
+                   </property>
+                   <item>
+                    <widget class="QPushButton" name="show_report_Button">
+                     <property name="text">
+                      <string>Back To Report</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="show_Forms_Button">
+                     <property name="text">
+                      <string>Edit Response Forms</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <spacer name="horizontalSpacer_19">
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>40</width>
+                       <height>20</height>
+                      </size>
+                     </property>
+                    </spacer>
+                   </item>
+                  </layout>
+                 </widget>
                 </item>
                </layout>
               </widget>
@@ -2385,12 +2564,6 @@ The data source will be ignored until next program restart.</string>
    <header>gui.custom_classes.h</header>
   </customwidget>
   <customwidget>
-   <class>MyMainStackedWidget</class>
-   <extends>QStackedWidget</extends>
-   <header>gui.custom_classes.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>MyEQTableWidget</class>
    <extends>QTableWidget</extends>
    <header>gui.custom_classes.h</header>
@@ -2399,6 +2572,12 @@ The data source will be ignored until next program restart.</string>
    <class>MyPropTableWidget</class>
    <extends>QTableWidget</extends>
    <header>gui.custom_classes.h</header>
+  </customwidget>
+  <customwidget>
+   <class>MyMainStackedWidget</class>
+   <extends>QStackedWidget</extends>
+   <header>gui.custom_classes.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <tabstops>
