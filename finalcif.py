@@ -186,7 +186,6 @@ class AppWindow(QMainWindow):
         self.netman_checkdef.finished.connect(self._save_checkdef)
         self.checkfor_version()
         self.get_checkdef()
-        self.subwin = Ui_ResponseFormsEditor()
         self.ui.PictureWidthDoubleSpinBox.setRange(0.0, 25)
         self.ui.PictureWidthDoubleSpinBox.setSingleStep(0.5)
         self.report_options = self.settings.load_report_options()
@@ -663,33 +662,24 @@ class AppWindow(QMainWindow):
             return
         browser = QWebEngineView()
         self.ui.htmlCHeckCifGridLayout.addWidget(browser)
-        # web_settings = browser. settings()
         url = QUrl.fromLocalFile(str(self.htmlfile.absolute()))
-        # dialog = QMainWindow(self)
-        # self.subwin.setupUi(dialog)
-        # self.subwin.reportLayout.addWidget(browser)
         self.ui.MainStackedWidget.go_to_checkcif_page()
         self.ui.CheckCIFResultsStackedWidget.setCurrentIndex(1)  # Index 1 is html page
-        # self.subwin.show_report_Button.hide()
-        # self.subwin.show_report_Button.clicked.connect(self._switch_to_report)
-        # self.subwin.show_Forms_Button.clicked.connect(self._switch_to_vrf)
-        # self.subwin.SavePushButton.setIcon(qta.icon('mdi.content-save'))
-        # self.subwin.show_report_Button.setIcon(qta.icon('mdi.format-columns'))
-        # self.subwin.show_Forms_Button.setIcon(qta.icon('mdi.book-open-outline'))
+        self.ui.show_report_Button.hide()
+        self.ui.show_report_Button.clicked.connect(self._switch_to_report)
+        self.ui.show_Forms_Button.clicked.connect(self._switch_to_vrf)
+        self.ui.SavePushButton.setIcon(qta.icon('mdi.content-save'))
+        self.ui.show_report_Button.setIcon(qta.icon('mdi.format-columns'))
+        self.ui.show_Forms_Button.setIcon(qta.icon('mdi.book-open-outline'))
         browser.load(url)
-        # self.subwin.stackedWidget.setCurrentIndex(0)
-        # dialog.setMinimumWidth(900)
-        # dialog.setMinimumHeight(700)
-        # dialog.move(QPoint(100, 50))
-        # dialog.show()
-        # dialog.raise_()
+        self.ui.ResponsesStackedWidget.setCurrentIndex(0)
         # The picture file linked in the html file:
         imageobj = Path(strip_finalcif_of_name(str(self.cif.fileobj.stem)) + '-finalcif.gif')
         gif = parser.get_image()
         self.ui.statusBar.showMessage('Report finished.')
         forms = parser.response_forms
         # makes all gray:
-        # self.subwin.responseFormsListWidget.setStyleSheet("background: 'gray';")
+        # self.ui.responseFormsListWidget.setStyleSheet("background: 'gray';")
         a = AlertHelp(self.checkdef)
         self.vrfs = []
         # TODO: add a sub page with response forms
@@ -700,14 +690,14 @@ class AppWindow(QMainWindow):
             self.vrfs.append(vrf)
             item = QListWidgetItem()
             item.setSizeHint(vrf.sizeHint())
-            # self.subwin.responseFormsListWidget.addItem(item)
-            # self.subwin.responseFormsListWidget.setItemWidget(item, vrf)
+            self.ui.responseFormsListWidget.addItem(item)
+            self.ui.responseFormsListWidget.setItemWidget(item, vrf)
         if not forms:
             iteme = QListWidgetItem(' ')
             item = QListWidgetItem(' No level A or B alerts to explain.')
-            # self.subwin.responseFormsListWidget.addItem(iteme)
-            # self.subwin.responseFormsListWidget.addItem(item)
-        # self.subwin.SavePushButton.clicked.connect(self.save_responses)
+            self.ui.responseFormsListWidget.addItem(iteme)
+            self.ui.responseFormsListWidget.addItem(item)
+        self.ui.SavePushButton.clicked.connect(self.save_responses)
         if gif:
             imageobj.write_bytes(gif)
 
@@ -744,7 +734,7 @@ class AppWindow(QMainWindow):
         :return: None
         """
         n = 0
-        for response_row in range(self.subwin.responseFormsListWidget.count()):
+        for response_row in range(self.ui.responseFormsListWidget.count()):
             txt = self.vrfs[response_row].response_text_edit.toPlainText()
             if not txt:
                 # No response was written
@@ -760,19 +750,19 @@ class AppWindow(QMainWindow):
             self.ui.cif_main_table.setText(v.key, COL_EDIT, v.value)
         self.save_cif_and_display()
         if n:
-            self.subwin.statusBar.showMessage('Forms saved')
+            self.ui.statusBar.showMessage('Forms saved')
         else:
-            self.subwin.statusBar.showMessage('No forms were filled in.')
+            self.ui.statusBar.showMessage('No forms were filled in.')
 
     def _switch_to_report(self) -> None:
-        self.subwin.show_Forms_Button.show()
-        self.subwin.show_report_Button.hide()
-        self.subwin.stackedWidget.setCurrentIndex(0)
+        self.ui.show_Forms_Button.show()
+        self.ui.show_report_Button.hide()
+        self.ui.ResponsesStackedWidget.setCurrentIndex(0)
 
     def _switch_to_vrf(self) -> None:
-        self.subwin.show_Forms_Button.hide()
-        self.subwin.show_report_Button.show()
-        self.subwin.stackedWidget.setCurrentIndex(1)
+        self.ui.show_Forms_Button.hide()
+        self.ui.show_report_Button.show()
+        self.ui.ResponsesStackedWidget.setCurrentIndex(1)
 
     def _pdf_checkcif_finished(self) -> None:
         self.ui.CheckcifPDFOnlineButton.setEnabled(True)
