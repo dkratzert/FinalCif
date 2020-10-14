@@ -114,7 +114,6 @@ as dict:
 """
 # They must be here in order to have directly updated ui files from the ui compiler:
 from gui.finalcif_gui import Ui_FinalCifWindow
-from gui.responseformseditor import Ui_ResponseFormsEditor
 from gui.custom_classes import MyComboBox, MyEQTableWidget, MyTableWidgetItem, blue, light_green, yellow, \
     COL_CIF, \
     COL_DATA, COL_EDIT, MyQPlainTextEdit
@@ -643,11 +642,11 @@ class AppWindow(QMainWindow):
 
     def _checkcif_failed(self, txt: str):
         # TODO: output this to self.ui.CheckCifLogPlainTextEdit
-        self.ui.statusBar.showMessage(txt)
+        self.ui.CheckCifLogPlainTextEdit.appendPlainText(txt)
 
     def _ckf_progress(self, txt: str):
         # TODO: output this to self.ui.CheckCifLogPlainTextEdit
-        self.ui.statusBar.showMessage(txt)
+        self.ui.CheckCifLogPlainTextEdit.appendPlainText(txt)
 
     def _checkcif_finished(self):
         """
@@ -672,7 +671,7 @@ class AppWindow(QMainWindow):
         self.ui.show_report_Button.setIcon(qta.icon('mdi.format-columns'))
         self.ui.show_Forms_Button.setIcon(qta.icon('mdi.book-open-outline'))
         browser.load(url)
-        self.ui.ResponsesStackedWidget.setCurrentIndex(0)
+        self.ui.ResponsesTabWidget.setCurrentIndex(0)
         # The picture file linked in the html file:
         imageobj = Path(strip_finalcif_of_name(str(self.cif.fileobj.stem)) + '-finalcif.gif')
         gif = parser.get_image()
@@ -707,7 +706,8 @@ class AppWindow(QMainWindow):
         """
         # splash = self.show_splash("Running Checkcif. Please wait...")
         # TODO: append to CheckCifLogPlainTextEdit
-        self.ui.statusBar.showMessage('Sending html report request...')
+        self.ui.CheckCIFResultsStackedWidget.setCurrentIndex(1)
+        self.ui.CheckCifLogPlainTextEdit.appendPlainText('Sending html report request...')
         self.save_current_cif_file()
         self.load_cif_file(self.final_cif_file_name)
         self.htmlfile = Path(strip_finalcif_of_name('checkcif-' + self.cif.fileobj.stem) + '-finalcif.html')
@@ -748,22 +748,22 @@ class AppWindow(QMainWindow):
             self.add_new_table_key(v.key, v.value)
             # add data to this key:
             self.ui.cif_main_table.setText(v.key, COL_EDIT, v.value)
-        self.save_cif_and_display()
+        self.self.save_current_cif_file()
         if n:
-            self.ui.statusBar.showMessage('Forms saved')
+            self.ui.CheckCifLogPlainTextEdit.appendPlainText('Forms saved')
         else:
-            self.ui.statusBar.showMessage('No forms were filled in.')
+            self.ui.CheckCifLogPlainTextEdit.appendPlainText('No forms were filled in.')
 
     def _switch_to_report(self) -> None:
-        #self.ui.show_Forms_Button.show()
-        #self.ui.show_report_Button.hide()
-        self.ui.ResponsesStackedWidget.setCurrentIndex(0)
+        # self.ui.show_Forms_Button.show()
+        # self.ui.show_report_Button.hide()
+        self.ui.ResponsesTabWidget.setCurrentIndex(0)
 
     def _switch_to_vrf(self) -> None:
-        #self.ui.show_Forms_Button.hide()
-        #self.ui.show_report_Button.show()
+        # self.ui.show_Forms_Button.hide()
+        # self.ui.show_report_Button.show()
         self.ui.CheckCIFResultsStackedWidget.setCurrentIndex(3)
-        self.ui.ResponsesStackedWidget.setCurrentIndex(1)
+        self.ui.ResponsesTabWidget.setCurrentIndex(1)
 
     def _pdf_checkcif_finished(self) -> None:
         self.ui.CheckcifPDFOnlineButton.setEnabled(True)
@@ -775,7 +775,8 @@ class AppWindow(QMainWindow):
         Performs an online checkcif and shows the result as pdf.
         """
         # splash = self.show_splash("Running Checkcif. Please wait...")
-        self.ui.statusBar.showMessage('Sending pdf report request...')
+        self.ui.CheckCIFResultsStackedWidget.setCurrentIndex(2)
+        self.ui.CheckCifLogPlainTextEdit.appendPlainText('Sending pdf report request...')
         self.save_current_cif_file()
         self.load_cif_file(self.final_cif_file_name)
         htmlfile = Path('checkpdf-' + self.cif.fileobj.stem + '.html')
@@ -808,7 +809,8 @@ class AppWindow(QMainWindow):
         """
         Performs a checkcif with platon and displays it in the text editor of the MainStackedWidget.
         """
-        splash = show_splash("Running Checkcif locally. Please wait...")
+        self.ui.CheckCIFResultsStackedWidget.setCurrentIndex(2)
+        self.ui.CheckCifLogPlainTextEdit.appendPlainText("Running Checkcif locally. Please wait...")
         # makes sure also the currently edited item is saved:
         self.ui.cif_main_table.setCurrentItem(None)
         self.ui.CheckcifPlaintextEdit.clear()
@@ -844,7 +846,7 @@ class AppWindow(QMainWindow):
             except AttributeError:
                 pass
         ccpe.verticalScrollBar().setValue(0)
-        splash.finish(self)
+        #splash.finish(self)
         moiety = self.ui.cif_main_table.getTextFromKey(key='_chemical_formula_moiety', col=0)
         if p.formula_moiety and moiety in ['', '?']:
             self.ui.MainStackedWidget.got_to_main_page()
