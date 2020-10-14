@@ -669,7 +669,7 @@ class AppWindow(QMainWindow):
             self.ui.CheckCifLogPlainTextEdit.appendPlainText('CheckCIF failed to finish. '
                                                              'Please try it at https://checkcif.iucr.org/ instead')
             return
-        self.checkcif_browser = QWebEngineView()
+        self.checkcif_browser = QWebEngineView(self.ui.htmlTabwidgetPage)
         self.ui.htmlCHeckCifGridLayout.addWidget(self.checkcif_browser)
         url = QUrl.fromLocalFile(str(self.htmlfile.absolute()))
         self.ui.MainStackedWidget.go_to_checkcif_page()
@@ -710,7 +710,8 @@ class AppWindow(QMainWindow):
         try:
             self.ui.htmlCHeckCifGridLayout.removeWidget(self.checkcif_browser)
         except Exception as e:
-            print(e)
+            if DEBUG:
+                print(e)
         self.ui.CheckCIFResultsStackedWidget.setCurrentIndex(1)
         self.ui.CheckCifLogPlainTextEdit.appendPlainText('Sending html report request...')
         self.save_current_cif_file()

@@ -703,7 +703,7 @@
         <item row="1" column="0" colspan="11">
          <widget class="MyMainStackedWidget" name="MainStackedWidget">
           <property name="currentIndex">
-           <number>6</number>
+           <number>0</number>
           </property>
           <widget class="QWidget" name="page_MainTable">
            <layout class="QVBoxLayout" name="verticalLayout">
@@ -845,18 +845,24 @@
                 <property name="title">
                  <string/>
                 </property>
-                <layout class="QVBoxLayout" name="verticalLayout_2">
-                 <item>
-                  <widget class="QPushButton" name="CheckcifStartButton">
-                   <property name="text">
-                    <string>CheckCIF</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
+                <layout class="QGridLayout" name="gridLayout_15">
+                 <item row="1" column="0">
                   <widget class="QPushButton" name="LoopsPushButton">
                    <property name="text">
                     <string>Show Loops</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="0">
+                  <widget class="QPushButton" name="CheckcifStartButton">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="text">
+                    <string>CheckCIF</string>
                    </property>
                   </widget>
                  </item>
@@ -887,7 +893,7 @@
                   <widget class="QPushButton" name="ReportPicPushButton">
                    <property name="maximumSize">
                     <size>
-                     <width>56</width>
+                     <width>65</width>
                      <height>16777215</height>
                     </size>
                    </property>
@@ -2100,7 +2106,7 @@ The data source will be ignored until next program restart.</string>
                </sizepolicy>
               </property>
               <property name="currentIndex">
-               <number>2</number>
+               <number>0</number>
               </property>
               <widget class="QWidget" name="platon_page">
                <layout class="QVBoxLayout" name="verticalLayout_11">
@@ -2146,17 +2152,32 @@ The data source will be ignored until next program restart.</string>
               </widget>
               <widget class="QWidget" name="html_page">
                <layout class="QVBoxLayout" name="verticalLayout_12">
+                <property name="leftMargin">
+                 <number>0</number>
+                </property>
+                <property name="topMargin">
+                 <number>0</number>
+                </property>
+                <property name="rightMargin">
+                 <number>0</number>
+                </property>
+                <property name="bottomMargin">
+                 <number>0</number>
+                </property>
                 <item>
                  <widget class="QTabWidget" name="ResponsesTabWidget">
                   <property name="currentIndex">
-                   <number>1</number>
+                   <number>0</number>
+                  </property>
+                  <property name="movable">
+                   <bool>false</bool>
                   </property>
                   <widget class="QWidget" name="htmlTabwidgetPage">
                    <attribute name="title">
                     <string>html report</string>
                    </attribute>
-                   <layout class="QGridLayout" name="gridLayout_17">
-                    <item row="0" column="0">
+                   <layout class="QVBoxLayout" name="verticalLayout_14">
+                    <item>
                      <layout class="QGridLayout" name="htmlCHeckCifGridLayout"/>
                     </item>
                    </layout>
