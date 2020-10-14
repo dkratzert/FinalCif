@@ -192,6 +192,8 @@ class AppWindow(QMainWindow):
 
     def make_button_icons(self):
         self.ui.CheckcifButton.setIcon(qta.icon('mdi.file-document-outline'))
+        self.ui.CheckcifStartButton.setIcon(qta.icon('mdi.file-document-outline'))
+        self.ui.LoopsPushButton.setIcon(qta.icon('mdi.table'))
         self.ui.CheckcifHTMLOnlineButton.setIcon(qta.icon('mdi.comment-check-outline'))
         self.ui.CheckcifPDFOnlineButton.setIcon(qta.icon('mdi.comment-check'))
         self.ui.SaveFullReportButton.setIcon(qta.icon('mdi.file-table-outline'))
@@ -222,8 +224,6 @@ class AppWindow(QMainWindow):
         self.ui.BackFromPlatonPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
         self.ui.CCDCpushButton.setIcon(qta.icon('fa5s.upload'))
         self.ui.CODpushButton.setIcon(qta.icon('mdi.upload'))
-        self.ui.CODpushButton.setFixedSize(self.ui.CheckcifPDFOnlineButton.size())
-        self.adjust_button_sizes()
 
     def resizeEvent(self, a0: QResizeEvent) -> None:
         """It called when the main window resizes."""
@@ -232,15 +232,6 @@ class AppWindow(QMainWindow):
             self.view.reload()
         with suppress(AttributeError):
             self._savesize()
-        # Adjust with of button:
-        # Picture button fixed and the rest should behave same with each other
-        self.adjust_button_sizes()
-
-    def adjust_button_sizes(self) -> None:
-        self.ui.CODpushButton.setFixedSize(self.ui.SaveCifButton.size())
-        self.ui.SaveFullReportButton.setFixedWidth(
-            self.ui.CODpushButton.width() - self.ui.ReportPicPushButton.width() - 6)
-        self.ui.SumformLabel.setMinimumWidth(self.ui.SpaceGroupLineEdit.width())
 
     def moveEvent(self, a0: QMoveEvent) -> None:
         """Is called when the main window moves."""
