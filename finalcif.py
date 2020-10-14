@@ -755,13 +755,14 @@ class AppWindow(QMainWindow):
             self.ui.statusBar.showMessage('No forms were filled in.')
 
     def _switch_to_report(self) -> None:
-        self.ui.show_Forms_Button.show()
-        self.ui.show_report_Button.hide()
+        #self.ui.show_Forms_Button.show()
+        #self.ui.show_report_Button.hide()
         self.ui.ResponsesStackedWidget.setCurrentIndex(0)
 
     def _switch_to_vrf(self) -> None:
-        self.ui.show_Forms_Button.hide()
-        self.ui.show_report_Button.show()
+        #self.ui.show_Forms_Button.hide()
+        #self.ui.show_report_Button.show()
+        self.ui.CheckCIFResultsStackedWidget.setCurrentIndex(3)
         self.ui.ResponsesStackedWidget.setCurrentIndex(1)
 
     def _pdf_checkcif_finished(self) -> None:
