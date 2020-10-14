@@ -2314,7 +2314,7 @@ The data source will be ignored until next program restart.</string>
                </sizepolicy>
               </property>
               <property name="currentIndex">
-               <number>3</number>
+               <number>2</number>
               </property>
               <widget class="QWidget" name="platon_page">
                <layout class="QVBoxLayout" name="verticalLayout_11">
@@ -2360,46 +2360,64 @@ The data source will be ignored until next program restart.</string>
               </widget>
               <widget class="QWidget" name="html_page">
                <layout class="QVBoxLayout" name="verticalLayout_12">
-                <property name="spacing">
-                 <number>0</number>
-                </property>
-                <property name="leftMargin">
-                 <number>0</number>
-                </property>
-                <property name="topMargin">
-                 <number>0</number>
-                </property>
-                <property name="rightMargin">
-                 <number>0</number>
-                </property>
-                <property name="bottomMargin">
-                 <number>0</number>
-                </property>
                 <item>
-                 <widget class="QLabel" name="label_4">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
+                 <widget class="QTabWidget" name="ResponsesTabWidget">
+                  <property name="currentIndex">
+                   <number>0</number>
                   </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>0</width>
-                    <height>20</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>HTML output</string>
-                  </property>
+                  <widget class="QWidget" name="htmlTabwidgetPage">
+                   <attribute name="title">
+                    <string>html report</string>
+                   </attribute>
+                   <layout class="QGridLayout" name="gridLayout_17">
+                    <item row="0" column="0">
+                     <layout class="QGridLayout" name="htmlCHeckCifGridLayout">
+                      <property name="horizontalSpacing">
+                       <number>6</number>
+                      </property>
+                     </layout>
+                    </item>
+                   </layout>
+                  </widget>
+                  <widget class="QWidget" name="ResponsesTabWidgetPage2">
+                   <attribute name="title">
+                    <string>checkcif alerts</string>
+                   </attribute>
+                   <layout class="QVBoxLayout" name="verticalLayout_15">
+                    <property name="leftMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="bottomMargin">
+                     <number>0</number>
+                    </property>
+                    <item>
+                     <widget class="QListWidget" name="responseFormsListWidget">
+                      <property name="sizeAdjustPolicy">
+                       <enum>QAbstractScrollArea::AdjustToContents</enum>
+                      </property>
+                      <property name="autoScroll">
+                       <bool>false</bool>
+                      </property>
+                      <property name="editTriggers">
+                       <set>QAbstractItemView::NoEditTriggers</set>
+                      </property>
+                      <property name="showDropIndicator" stdset="0">
+                       <bool>false</bool>
+                      </property>
+                      <property name="selectionMode">
+                       <enum>QAbstractItemView::NoSelection</enum>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
                  </widget>
-                </item>
-                <item>
-                 <layout class="QGridLayout" name="htmlCHeckCifGridLayout">
-                  <property name="spacing">
-                   <number>6</number>
-                  </property>
-                 </layout>
                 </item>
                </layout>
               </widget>
@@ -2445,81 +2463,7 @@ The data source will be ignored until next program restart.</string>
                </layout>
               </widget>
               <widget class="QWidget" name="page_response">
-               <layout class="QVBoxLayout" name="verticalLayout_17">
-                <item>
-                 <widget class="QStackedWidget" name="ResponsesStackedWidget">
-                  <property name="currentIndex">
-                   <number>1</number>
-                  </property>
-                  <widget class="QWidget" name="reportPage">
-                   <layout class="QVBoxLayout" name="verticalLayout_14">
-                    <item>
-                     <layout class="QVBoxLayout" name="reportLayout"/>
-                    </item>
-                   </layout>
-                  </widget>
-                  <widget class="QWidget" name="formsPage">
-                   <layout class="QVBoxLayout" name="verticalLayout_15">
-                    <property name="leftMargin">
-                     <number>0</number>
-                    </property>
-                    <property name="topMargin">
-                     <number>0</number>
-                    </property>
-                    <property name="rightMargin">
-                     <number>0</number>
-                    </property>
-                    <property name="bottomMargin">
-                     <number>0</number>
-                    </property>
-                    <item>
-                     <widget class="QGroupBox" name="groupBox_8">
-                      <property name="title">
-                       <string>List of CheckCif Alerts</string>
-                      </property>
-                      <property name="checkable">
-                       <bool>false</bool>
-                      </property>
-                      <layout class="QVBoxLayout" name="verticalLayout_16">
-                       <property name="leftMargin">
-                        <number>0</number>
-                       </property>
-                       <property name="topMargin">
-                        <number>0</number>
-                       </property>
-                       <property name="rightMargin">
-                        <number>0</number>
-                       </property>
-                       <property name="bottomMargin">
-                        <number>0</number>
-                       </property>
-                       <item>
-                        <widget class="QListWidget" name="responseFormsListWidget">
-                         <property name="sizeAdjustPolicy">
-                          <enum>QAbstractScrollArea::AdjustToContents</enum>
-                         </property>
-                         <property name="autoScroll">
-                          <bool>false</bool>
-                         </property>
-                         <property name="editTriggers">
-                          <set>QAbstractItemView::NoEditTriggers</set>
-                         </property>
-                         <property name="showDropIndicator" stdset="0">
-                          <bool>false</bool>
-                         </property>
-                         <property name="selectionMode">
-                          <enum>QAbstractItemView::NoSelection</enum>
-                         </property>
-                        </widget>
-                       </item>
-                      </layout>
-                     </widget>
-                    </item>
-                   </layout>
-                  </widget>
-                 </widget>
-                </item>
-               </layout>
+               <layout class="QVBoxLayout" name="verticalLayout_17"/>
               </widget>
              </widget>
             </item>
