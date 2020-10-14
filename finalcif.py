@@ -15,7 +15,7 @@ from gui.dialogs import cif_file_open_dialog, cif_file_save_dialog, show_general
     unable_to_open_message, show_splash, bad_z_message
 from gui.loops import Loop
 
-DEBUG = True
+DEBUG = False
 if 'compile' in sys.argv:
     COMPILE = True
     sys.argv = []
