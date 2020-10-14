@@ -2444,7 +2444,7 @@ The data source will be ignored until next program restart.</string>
                 </item>
                </layout>
               </widget>
-              <widget class="QWidget" name="page">
+              <widget class="QWidget" name="page_response">
                <layout class="QVBoxLayout" name="verticalLayout_17">
                 <item>
                  <widget class="QStackedWidget" name="ResponsesStackedWidget">
