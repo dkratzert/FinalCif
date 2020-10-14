@@ -263,20 +263,22 @@ class AppWindow(QMainWindow):
         """
         this method connects all signals to slots. Only a few mighjt be defined elsewere.
         """
+        ## main
         self.ui.BackPushButton.clicked.connect(self.back_to_main)
         self.ui.ExploreDirButton.clicked.connect(self.explore_dir)
         self.ui.LoopsPushButton.clicked.connect(self.showloops)
-        ##
-        self.ui.CheckcifStartButton.clicked.connect(self.ui.MainStackedWidget.go_to_checkcif_page)
+        ## checkcif
+        self.ui.CheckcifStartButton.clicked.connect(self.open_checkcif_page)
         self.ui.CheckcifButton.clicked.connect(self.do_offline_checkcif)
         self.ui.CheckcifHTMLOnlineButton.clicked.connect(self.do_html_checkcif)
         self.ui.CheckcifPDFOnlineButton.clicked.connect(self.do_pdf_checkcif)
         self.ui.BackFromPlatonPushButton.clicked.connect(self.back_to_main_noload)
-        ##
+        self.ui.SavePushButton.clicked.connect(self.save_responses)
+        ## open, import
         self.ui.SelectCif_PushButton.clicked.connect(self.load_cif_file)
         self.ui.SaveCifButton.clicked.connect(self.save_cif_and_display)
         self.ui.ImportCifPushButton.clicked.connect(self.import_additional_cif)
-        ##
+        ## equipment
         self.ui.EquipmentTemplatesListWidget.doubleClicked.connect(self.edit_equipment_template)
         self.ui.EditEquipmentTemplateButton.clicked.connect(self.edit_equipment_template)
         self.ui.SaveEquipmentButton.clicked.connect(self.save_equipment_template)
@@ -284,20 +286,20 @@ class AppWindow(QMainWindow):
         self.ui.DeleteEquipmentButton.clicked.connect(self.delete_equipment)
         self.ui.ExportEquipmentButton.clicked.connect(self.export_equipment_template)
         self.ui.ImportEquipmentTemplateButton.clicked.connect(self.import_equipment_from_file)
-        ##
+        ## properties
         self.ui.PropertiesTemplatesListWidget.doubleClicked.connect(self.edit_property_template)
         self.ui.EditPropertyTemplateButton.clicked.connect(self.edit_property_template)
         self.ui.SavePropertiesButton.clicked.connect(self.save_property_template)
         self.ui.CancelPropertiesButton.clicked.connect(self.cancel_property_template)
         self.ui.DeletePropertiesButton.clicked.connect(self.delete_property)
-        ##
+        ## equipment
         self.ui.EquipmentEditTableWidget.cellPressed.connect(self.ui.EquipmentEditTableWidget.add_row_if_needed)
         self.ui.EquipmentEditTableWidget.itemSelectionChanged.connect(
             self.ui.EquipmentEditTableWidget.add_row_if_needed)
         self.ui.EquipmentEditTableWidget.itemEntered.connect(self.ui.EquipmentEditTableWidget.add_row_if_needed)
         self.ui.EquipmentEditTableWidget.cellChanged.connect(self.ui.EquipmentEditTableWidget.add_row_if_needed)
         self.ui.EquipmentEditTableWidget.currentItemChanged.connect(self.ui.EquipmentEditTableWidget.add_row_if_needed)
-        ##
+        ## properties
         self.ui.PropertiesEditTableWidget.itemSelectionChanged.connect(self.add_property_row_if_needed)
         self.ui.PropertiesEditTableWidget.cellPressed.connect(self.add_property_row_if_needed)
         self.ui.PropertiesEditTableWidget.itemEntered.connect(self.add_property_row_if_needed)
@@ -307,7 +309,7 @@ class AppWindow(QMainWindow):
         self.ui.PropertiesEditTableWidget.itemPressed.connect(self.add_property_row_if_needed)
         self.ui.PropertiesEditTableWidget.itemClicked.connect(self.add_property_row_if_needed)
         self.ui.PropertiesEditTableWidget.itemChanged.connect(self.add_property_row_if_needed)
-        #
+        # import
         self.ui.ImportPropertyTemplateButton.clicked.connect(self.import_property_from_file)
         self.ui.ExportPropertyButton.clicked.connect(self.export_property_template)
         ##
@@ -316,7 +318,7 @@ class AppWindow(QMainWindow):
         ##
         self.ui.EquipmentTemplatesListWidget.currentRowChanged.connect(self.load_selected_equipment)
         self.ui.EquipmentTemplatesListWidget.clicked.connect(self.load_selected_equipment)
-        ##
+        ## report
         self.ui.SaveFullReportButton.clicked.connect(self.make_report_tables)
         self.ui.RecentComboBox.currentIndexChanged.connect(self.load_recent_file)
         #
@@ -347,6 +349,14 @@ class AppWindow(QMainWindow):
         self.ui.BackFromLoopsPushButton.clicked.connect(self.back_to_main_noload)
         # Shred Cif
         self.ui.ShredCifButton.clicked.connect(self.shred_cif)
+
+    def open_checkcif_page(self):
+        """
+        Opens the checkcif stackwidget page and therein the html report page
+        """
+        self.ui.MainStackedWidget.go_to_checkcif_page()
+        self.ui.CheckCIFResultsStackedWidget.setCurrentIndex(1)  # Index 4 is empty, 1 is html
+        self.ui.ResponsesTabWidget.setCurrentIndex(0)  # the second is alters/responses list
 
     def shred_cif(self) -> None:
         """
@@ -586,7 +596,7 @@ class AppWindow(QMainWindow):
 
     def explore_dir(self):
         """
-        Opens the file browser for the current directory.
+        Opens the file checkcif_browser for the current directory.
         """
         try:
             curdir = self.cif.fileobj.absolute().parent
@@ -641,16 +651,14 @@ class AppWindow(QMainWindow):
             self.ui.moleculeLayout.removeWidget(self.view)
 
     def _checkcif_failed(self, txt: str):
-        # TODO: output this to self.ui.CheckCifLogPlainTextEdit
         self.ui.CheckCifLogPlainTextEdit.appendPlainText(txt)
 
     def _ckf_progress(self, txt: str):
-        # TODO: output this to self.ui.CheckCifLogPlainTextEdit
         self.ui.CheckCifLogPlainTextEdit.appendPlainText(txt)
 
     def _checkcif_finished(self):
         """
-        Loads the html checkcif results and displays them in a browser window.
+        Loads the html checkcif results and displays them in a checkcif_browser window.
         """
         self.ui.CheckcifHTMLOnlineButton.setEnabled(True)
         self.ui.CheckcifPDFOnlineButton.setEnabled(True)
@@ -658,32 +666,27 @@ class AppWindow(QMainWindow):
             parser = MyHTMLParser(self.htmlfile.read_text())
         except FileNotFoundError:
             # happens if checkcif fails, e.g. takes too much time.
+            self.ui.CheckCifLogPlainTextEdit.appendPlainText('CheckCIF failed to finish. '
+                                                             'Please try it at https://checkcif.iucr.org/ instead')
             return
-        browser = QWebEngineView()
-        self.ui.htmlCHeckCifGridLayout.addWidget(browser)
+        self.checkcif_browser = QWebEngineView()
+        self.ui.htmlCHeckCifGridLayout.addWidget(self.checkcif_browser)
         url = QUrl.fromLocalFile(str(self.htmlfile.absolute()))
         self.ui.MainStackedWidget.go_to_checkcif_page()
         self.ui.CheckCIFResultsStackedWidget.setCurrentIndex(1)  # Index 1 is html page
-        self.ui.show_report_Button.hide()
-        self.ui.show_report_Button.clicked.connect(self._switch_to_report)
-        self.ui.show_Forms_Button.clicked.connect(self._switch_to_vrf)
         self.ui.SavePushButton.setIcon(qta.icon('mdi.content-save'))
-        self.ui.show_report_Button.setIcon(qta.icon('mdi.format-columns'))
-        self.ui.show_Forms_Button.setIcon(qta.icon('mdi.book-open-outline'))
-        browser.load(url)
+        self.checkcif_browser.load(url)
         self.ui.ResponsesTabWidget.setCurrentIndex(0)
         # The picture file linked in the html file:
         imageobj = Path(strip_finalcif_of_name(str(self.cif.fileobj.stem)) + '-finalcif.gif')
         gif = parser.get_image()
-        self.ui.statusBar.showMessage('Report finished.')
+        self.ui.CheckCifLogPlainTextEdit.appendPlainText('CheckCIF Report finished.')
         forms = parser.response_forms
         # makes all gray:
         # self.ui.responseFormsListWidget.setStyleSheet("background: 'gray';")
         a = AlertHelp(self.checkdef)
         self.vrfs = []
-        # TODO: add a sub page with response forms
         for form in forms:
-            # print(form)
             vrf = MyVRFContainer(form, a.get_help(form['alert_num']))
             vrf.setAutoFillBackground(False)
             self.vrfs.append(vrf)
@@ -696,7 +699,6 @@ class AppWindow(QMainWindow):
             item = QListWidgetItem(' No level A or B alerts to explain.')
             self.ui.responseFormsListWidget.addItem(iteme)
             self.ui.responseFormsListWidget.addItem(item)
-        self.ui.SavePushButton.clicked.connect(self.save_responses)
         if gif:
             imageobj.write_bytes(gif)
 
@@ -704,8 +706,11 @@ class AppWindow(QMainWindow):
         """
         Performs an online checkcif via checkcif.iucr.org.
         """
-        # splash = self.show_splash("Running Checkcif. Please wait...")
-        # TODO: append to CheckCifLogPlainTextEdit
+        self.ui.CheckCifLogPlainTextEdit.clear()
+        try:
+            self.ui.htmlCHeckCifGridLayout.removeWidget(self.checkcif_browser)
+        except Exception as e:
+            print(e)
         self.ui.CheckCIFResultsStackedWidget.setCurrentIndex(1)
         self.ui.CheckCifLogPlainTextEdit.appendPlainText('Sending html report request...')
         self.save_current_cif_file()
@@ -748,7 +753,7 @@ class AppWindow(QMainWindow):
             self.add_new_table_key(v.key, v.value)
             # add data to this key:
             self.ui.cif_main_table.setText(v.key, COL_EDIT, v.value)
-        self.self.save_current_cif_file()
+        self.save_current_cif_file()
         if n:
             self.ui.CheckCifLogPlainTextEdit.appendPlainText('Forms saved')
         else:
@@ -774,7 +779,7 @@ class AppWindow(QMainWindow):
         """
         Performs an online checkcif and shows the result as pdf.
         """
-        # splash = self.show_splash("Running Checkcif. Please wait...")
+        self.ui.CheckCifLogPlainTextEdit.clear()
         self.ui.CheckCIFResultsStackedWidget.setCurrentIndex(2)
         self.ui.CheckCifLogPlainTextEdit.appendPlainText('Sending pdf report request...')
         self.save_current_cif_file()
@@ -798,18 +803,19 @@ class AppWindow(QMainWindow):
         self.ckf.start()
         # self.show_general_warning(r"The check took too long. Try it at"
         #                          r" <a href='https://checkcif.iucr.org/'>https://checkcif.iucr.org/</a> directly.")
-        self.ui.statusBar.showMessage('PDF Checkcif report finished.')
+        self.ui.CheckCifLogPlainTextEdit.appendPlainText('PDF Checkcif report finished.')
         try:
             htmlfile.unlink()
         except FileNotFoundError:
             pass
-        # splash.finish(self)
 
     def do_offline_checkcif(self) -> None:
         """
         Performs a checkcif with platon and displays it in the text editor of the MainStackedWidget.
         """
-        self.ui.CheckCIFResultsStackedWidget.setCurrentIndex(2)
+        self.ui.CheckCifLogPlainTextEdit.clear()
+        self.ui.MainStackedWidget.go_to_checkcif_page()
+        self.ui.CheckCIFResultsStackedWidget.setCurrentIndex(0)
         self.ui.CheckCifLogPlainTextEdit.appendPlainText("Running Checkcif locally. Please wait...")
         # makes sure also the currently edited item is saved:
         self.ui.cif_main_table.setCurrentItem(None)
@@ -824,7 +830,7 @@ class AppWindow(QMainWindow):
             # self.ui.CheckcifButton.setDisabled(True)
             return
         ccpe = self.ui.CheckcifPlaintextEdit
-        ccpe.setPlainText('Platon output: \nThis might not be the same as the IUCr Checkcif!')
+        ccpe.setPlainText('Platon output: \nThis might not be the same as the IUCr Checkcif!\n')
         p.run_platon()
         ccpe.appendPlainText(p.platon_output)
         ccpe.appendPlainText('\n' + '#' * 80)
@@ -851,7 +857,6 @@ class AppWindow(QMainWindow):
         if p.formula_moiety and moiety in ['', '?']:
             self.ui.MainStackedWidget.got_to_main_page()
             self.ui.cif_main_table.setText(key='_chemical_formula_moiety', txt=p.formula_moiety, column=COL_EDIT)
-        self.ui.MainStackedWidget.go_to_checkcif_page()
 
     def load_recent_file(self, file_index: int) -> None:
         """
