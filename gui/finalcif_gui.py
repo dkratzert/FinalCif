@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file './gui/finalcif_gui.ui'
+# Form implementation generated from reading ui file '/Users/daniel/Documents/GitHub/FinalCif/./gui/finalcif_gui.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.1
 #
@@ -1143,7 +1143,7 @@ class Ui_FinalCifWindow(object):
         self.DetailsPushButton.setText(_translate("FinalCifWindow", "Show Details"))
         self.SourcesPushButton.setText(_translate("FinalCifWindow", "Data Sources"))
         self.LoopsPushButton.setText(_translate("FinalCifWindow", "Show Loops"))
-        self.ReportPicPushButton.setText(_translate("FinalCifWindow", "Picture"))
+        self.ReportPicPushButton.setText(_translate("FinalCifWindow", "Picture for Tables"))
         self.SaveFullReportButton.setText(_translate("FinalCifWindow", "Make Tables"))
         self.CheckcifStartButton.setText(_translate("FinalCifWindow", "CheckCIF"))
         self.OptionsPushButton.setText(_translate("FinalCifWindow", "Options"))
