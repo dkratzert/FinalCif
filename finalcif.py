@@ -809,12 +809,14 @@ class AppWindow(QMainWindow):
         self.ui.MainStackedWidget.go_to_checkcif_page()
         self.ui.CheckCIFResultsStackedWidget.setCurrentIndex(0)
         self.ui.CheckCifLogPlainTextEdit.appendPlainText("Running Checkcif locally. Please wait...")
+        QApplication.processEvents()
         # makes sure also the currently edited item is saved:
         self.ui.cif_main_table.setCurrentItem(None)
         self.ui.CheckcifPlaintextEdit.clear()
         self.save_current_cif_file()
         self.load_cif_file(self.final_cif_file_name)
         self.ui.MainStackedWidget.go_to_checkcif_page()
+        QApplication.processEvents()
         try:
             p = Platon(self.final_cif_file_name)
         except Exception as e:
@@ -823,13 +825,17 @@ class AppWindow(QMainWindow):
             return
         ccpe = self.ui.CheckcifPlaintextEdit
         ccpe.setPlainText('Platon output: \nThis might not be the same as the IUCr Checkcif!\n')
+        QApplication.processEvents()
         p.run_platon()
+        QApplication.processEvents()
         ccpe.appendPlainText(p.platon_output)
         ccpe.appendPlainText('\n' + '#' * 80)
+        QApplication.processEvents()
         doc = ccpe.document()
         font = doc.defaultFont()
         font.setFamily("Courier New")
         font.setStyleHint(QFont.Monospace)
+        QApplication.processEvents()
         # increases the pont size every time a bit more :)
         # size = font.pointSize()
         font.setPointSize(14)
