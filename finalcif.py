@@ -699,8 +699,11 @@ class AppWindow(QMainWindow):
         """
         self.ui.CheckCifLogPlainTextEdit.clear()
         try:
+            self.checkcif_browser.close()
             self.ui.htmlCHeckCifGridLayout.removeWidget(self.checkcif_browser)
+            QApplication.processEvents()
         except Exception as e:
+            print('Browser not removed.')
             if DEBUG:
                 print(e)
         self.ui.CheckCIFResultsStackedWidget.setCurrentIndex(1)
