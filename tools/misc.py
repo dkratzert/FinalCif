@@ -525,13 +525,18 @@ combobox_fields = {'_exptl_crystal_colour'                : COLOUR_CHOICES,
                    '_diffrn_measurement_specimen_adhesive': ADHESIVE,
                    }
 
-excluded_imports = (
-    '_cell_length_a',
-    '_cell_length_b',
-    '_cell_length_c',
-    '_cell_angle_alpha',
-    '_cell_angle_beta',
-    '_cell_angle_gamma',
+include_equipment_imports = (
+    '_diffrn_detector',
+    '_diffrn_detector_area_resol_mean',
+    '_diffrn_detector_type',
+    '_diffrn_measurement_device',
+    '_diffrn_radiation_monochromator',
+    '_diffrn_radiation_probe',
+    '_diffrn_radiation_type',
+    '_diffrn_source',
+    '_diffrn_source_type',
+    '_exptl_absorpt_process_details',
+    '_exptl_absorpt_process_details',
 )
 
 

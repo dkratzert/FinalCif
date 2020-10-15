@@ -59,8 +59,8 @@ from gui.vrf_classes import MyVRFContainer, VREF
 from report.archive_report import ArchiveReport
 from report.tables import make_report_from
 from tools.checkcif import AlertHelp, MakeCheckCif, MyHTMLParser
-from tools.misc import combobox_fields, excluded_imports, predef_equipment_templ, predef_prop_templ, \
-    strip_finalcif_of_name, to_float, next_path, celltxt, do_not_import_keys
+from tools.misc import combobox_fields, predef_equipment_templ, predef_prop_templ, \
+    strip_finalcif_of_name, to_float, next_path, celltxt, do_not_import_keys, include_equipment_imports
 from tools.settings import FinalCifSettings
 from tools.version import VERSION
 
@@ -71,6 +71,7 @@ from PyQt5.QtWidgets import QApplication, QFileDialog, QHeaderView, QListWidget,
 
 """
 TODO:
+- make equipment template name editable
 - Peters comments on equipment templates:
     * save state and order of selected templates in order to be able to undo a selection with a second click. 
 - dist errors: Giacovazzo p.122
@@ -702,8 +703,8 @@ class AppWindow(QMainWindow):
             self.ui.htmlCHeckCifGridLayout.removeWidget(self.checkcif_browser)
             QApplication.processEvents()
         except Exception as e:
-            print('Browser not removed.')
             if DEBUG:
+                print('Browser not removed:')
                 print(e)
         self.ui.CheckCIFResultsStackedWidget.setCurrentIndex(1)
         self.ui.CheckCifLogPlainTextEdit.appendPlainText('Sending html report request...')
@@ -1219,7 +1220,7 @@ class AppWindow(QMainWindow):
         Import an equipment entry from a cif file.
         """
         if not filename:
-            filename = cif_file_open_dialog(filter="CIF file (*.cif *.cif_od)")
+            filename = cif_file_open_dialog(filter="CIF file (*.cif  *.cif_od *.cfx)")
         if not filename:
             return
         try:
@@ -1232,7 +1233,7 @@ class AppWindow(QMainWindow):
         for item in block:
             if item.pair is not None:
                 key, value = item.pair
-                if key in excluded_imports:
+                if filename.endswith('.cif_od') and key not in include_equipment_imports:
                     continue
                 table_data.append([key, retranslate_delimiter(cif.as_string(value).strip('\n\r ;'))])
         if filename.endswith('.cif_od'):
@@ -1400,10 +1401,10 @@ class AppWindow(QMainWindow):
 
     def import_property_from_file(self, filename: str = '') -> None:
         """
-        Imports a cif file as entry of the property list.
+        Imports a cif file as entry of the property templates list.
         """
         if not filename:
-            filename = cif_file_open_dialog(filter="CIF file (*.cif *.cif_od)")
+            filename = cif_file_open_dialog(filter="CIF file (*.cif)")
         if not filename:
             return
         try:
@@ -1684,6 +1685,7 @@ class AppWindow(QMainWindow):
             self.ui.ImportCifPushButton.setEnabled(True)
             self.ui.datnameLineEdit.setText(self.cif.block.name)
             self.ui.spacegroupLineEdit.setText(self.cif.space_group)
+            self.ui.SumFormMainLineEdit.setText(self.cif['_chemical_formula_sum'])
             self.ui.CCDCNumLineEdit.setText(self.cif['_database_code_depnum_ccdc_archive'])
 
     def show_properties(self) -> None:
