@@ -389,6 +389,7 @@ class AppWindow(QMainWindow):
         if hkl and res:
             self.ui.statusBar.showMessage(
                 self.ui.statusBar.currentMessage() + '\nFinished writing data to {} \nand {}.'.format(resfile, hklfile))
+        self.explore_dir()
 
     def write_hkl_file(self, hkl: list):
         hklfile = Path(self.final_cif_file_name.stem + '.hkl')
