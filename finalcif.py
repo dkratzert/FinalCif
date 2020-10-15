@@ -754,13 +754,9 @@ class AppWindow(QMainWindow):
             self.ui.CheckCifLogPlainTextEdit.appendPlainText('No forms were filled in.')
 
     def _switch_to_report(self) -> None:
-        # self.ui.show_Forms_Button.show()
-        # self.ui.show_report_Button.hide()
         self.ui.ResponsesTabWidget.setCurrentIndex(0)
 
     def _switch_to_vrf(self) -> None:
-        # self.ui.show_Forms_Button.hide()
-        # self.ui.show_report_Button.show()
         self.ui.CheckCIFResultsStackedWidget.setCurrentIndex(3)
         self.ui.ResponsesTabWidget.setCurrentIndex(1)
 
@@ -795,8 +791,6 @@ class AppWindow(QMainWindow):
         self.ui.CheckcifPDFOnlineButton.setDisabled(True)
         self.ui.CheckcifHTMLOnlineButton.setDisabled(True)
         self.ckf.start()
-        # self.show_general_warning(r"The check took too long. Try it at"
-        #                          r" <a href='https://checkcif.iucr.org/'>https://checkcif.iucr.org/</a> directly.")
         self.ui.CheckCifLogPlainTextEdit.appendPlainText('PDF Checkcif report finished.')
         try:
             htmlfile.unlink()
@@ -852,7 +846,6 @@ class AppWindow(QMainWindow):
             except AttributeError:
                 pass
         ccpe.verticalScrollBar().setValue(0)
-        # splash.finish(self)
         moiety = self.ui.cif_main_table.getTextFromKey(key='_chemical_formula_moiety', col=0)
         if p.formula_moiety and moiety in ['', '?']:
             self.ui.MainStackedWidget.got_to_main_page()
@@ -1600,8 +1593,6 @@ class AppWindow(QMainWindow):
         self.ui.statusBar.showMessage('')
         with suppress(AttributeError):
             self.ui.moleculeLayout.removeWidget(self.view)
-        # TODO: Check if I can leave this out, because I don't want to swith to main page during checkcif:
-        # self.ui.MainStackedWidget.got_to_main_page()
         # Set to empty state bevore loading:
         self.missing_data = []
         # clean table and vheader before loading:
@@ -1696,7 +1687,9 @@ class AppWindow(QMainWindow):
             self.ui.CCDCNumLineEdit.setText(self.cif['_database_code_depnum_ccdc_archive'])
 
     def show_properties(self) -> None:
-        # self.save_current_cif_file() # Is this really necessary? 11.09.2020 DK
+        """
+        show residuals of the cif file an a special page.
+        """
         try:
             self.cif.fileobj
         except AttributeError:
