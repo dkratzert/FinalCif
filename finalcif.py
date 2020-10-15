@@ -12,7 +12,7 @@ import displaymol
 from displaymol import mol_file_writer, write_html
 from displaymol.sdm import SDM
 from gui.dialogs import cif_file_open_dialog, cif_file_save_dialog, show_general_warning, bug_found_warning, \
-    unable_to_open_message, show_splash, bad_z_message
+    unable_to_open_message, bad_z_message
 from gui.loops import Loop
 
 DEBUG = False
@@ -353,22 +353,27 @@ class AppWindow(QMainWindow):
         """
         Saves res and hkl file from the cif.
         """
+        self.ui.statusBar.showMessage('')
         resfile = ''
         hklfile = ''
+        res = None
+        hkl = None
         if not self.cif:
             return
-        if not all([self.cif.res_file_data, self.cif.hkl_file]):
-            self.ui.ExtractStatusLabel.setText('No .res file data found!')
+        if not any([self.cif.res_file_data, self.cif.hkl_file]):
+            self.ui.statusBar.showMessage('No .res and .hkl file data found!')
             return
-        res = self.cif.res_file_data.splitlines(keepends=True)
-        hkl = self.cif.hkl_file.splitlines(keepends=True)
+        if self.cif.res_file_data:
+            res = self.cif.res_file_data.splitlines(keepends=True)
+        if self.cif.hkl_file:
+            hkl = self.cif.hkl_file.splitlines(keepends=True)
         if not res or len(res) < 3:
-            self.ui.ExtractStatusLabel.setText('No .res file data found!')
+            self.ui.statusBar.showMessage('No .res file data found!')
         else:
             res = res[1:-1]
             resfile = self.write_res_file(res)
         if not hkl or len(hkl) < 3:
-            self.ui.ExtractStatusLabel.setText(self.ui.ExtractStatusLabel.text() + '\n' + 'No .hkl file data found!')
+            self.ui.statusBar.showMessage(self.ui.statusBar.currentMessage() + '  No .hkl file data found!')
         else:
             hkl = hkl[1:-1]
             for num, line in enumerate(hkl):
@@ -376,14 +381,14 @@ class AppWindow(QMainWindow):
                     hkl[num] = ';' + line[1:]
             hklfile = self.write_hkl_file(hkl)
         if res and not hkl:
-            self.ui.ExtractStatusLabel.setText(
-                self.ui.ExtractStatusLabel.text() + '\nFinished writing data to {}.'.format(resfile))
+            self.ui.statusBar.showMessage(
+                self.ui.statusBar.currentMessage() + '\nFinished writing data to {}.'.format(resfile))
         if hkl and not res:
-            self.ui.ExtractStatusLabel.setText(
-                self.ui.ExtractStatusLabel.text() + '\nFinished writing data to {}.'.format(hklfile))
+            self.ui.statusBar.showMessage(
+                self.ui.statusBar.currentMessage() + '\nFinished writing data to {}.'.format(hklfile))
         if hkl and res:
-            self.ui.ExtractStatusLabel.setText(
-                self.ui.ExtractStatusLabel.text() + '\nFinished writing data to {} \nand {}.'.format(resfile, hklfile))
+            self.ui.statusBar.showMessage(
+                self.ui.statusBar.currentMessage() + '\nFinished writing data to {} \nand {}.'.format(resfile, hklfile))
 
     def write_hkl_file(self, hkl: list):
         hklfile = Path(self.final_cif_file_name.stem + '.hkl')
@@ -423,13 +428,6 @@ class AppWindow(QMainWindow):
             self.ui.PictureWidthDoubleSpinBox.setValue(self.report_options.get('picture_width'))
         if not self.cif:
             return
-        if not self.cif.res_file_data:
-            self.ui.ExtractStatusLabel.setText('No .res file data found!')
-        if not self.cif.hkl_file:
-            self.ui.ExtractStatusLabel.setText(self.ui.ExtractStatusLabel.text() + '\nNo .res file data found!')
-        if not all([self.cif.res_file_data, self.cif.hkl_file]):
-            self.ui.ExtractStatusLabel.setText('No .res and .hkl file data found!')
-            self.ui.ShredCifButton.setDisabled(True)
         # This has to be here:
         self.ui.HAtomsCheckBox.clicked.connect(self.save_options)
         self.ui.ReportTextCheckBox.clicked.connect(self.save_options)
@@ -635,7 +633,7 @@ class AppWindow(QMainWindow):
         """
         Get back to the main table. Without loading a new cif file.
         """
-        self.ui.ExtractStatusLabel.setText('')
+        self.ui.statusBar.showMessage('')
         self.ui.LoopsPushButton.setText('Show Loops')
         self.ui.MainStackedWidget.got_to_main_page()
         if self.view:
@@ -853,7 +851,7 @@ class AppWindow(QMainWindow):
             except AttributeError:
                 pass
         ccpe.verticalScrollBar().setValue(0)
-        #splash.finish(self)
+        # splash.finish(self)
         moiety = self.ui.cif_main_table.getTextFromKey(key='_chemical_formula_moiety', col=0)
         if p.formula_moiety and moiety in ['', '?']:
             self.ui.MainStackedWidget.got_to_main_page()
@@ -1582,11 +1580,23 @@ class AppWindow(QMainWindow):
         # self.save_current_cif_file()
         # self.load_cif_file(str(self.final_cif_file_name))
 
+    def check_hkl_res_files(self):
+        """
+        Check wether hkl and/or res file content is included in the cif file.
+        """
+        if not self.cif.res_file_data:
+            self.ui.statusBar.showMessage('No .res file data found!')
+        if not self.cif.hkl_file:
+            self.ui.statusBar.showMessage(self.ui.statusBar.currentMessage() + '\nNo .hkl file data found!')
+        if not any([self.cif.res_file_data, self.cif.hkl_file]):
+            self.ui.statusBar.showMessage('No .res and .hkl file data found!')
+            self.ui.ShredCifButton.setDisabled(True)
+
     def load_cif_file(self, fname: str) -> None:
         """
         Opens the cif file and fills information into the main table.
         """
-        self.ui.ExtractStatusLabel.setText('')
+        self.ui.statusBar.showMessage('')
         with suppress(AttributeError):
             self.ui.moleculeLayout.removeWidget(self.view)
         # TODO: Check if I can leave this out, because I don't want to swith to main page during checkcif:
@@ -1672,6 +1682,7 @@ class AppWindow(QMainWindow):
         self.ui.SaveCifButton.setEnabled(True)
         self.ui.ExploreDirButton.setEnabled(True)
         if self.cif:
+            self.check_hkl_res_files()
             curdir = str(self.cif.fileobj.absolute().parent)
             # saving current cif dir as last working directory:
             self.settings.save_current_dir(curdir)
