@@ -18,7 +18,7 @@ from gui.loops import Loop
 DEBUG = False
 if 'compile' in sys.argv:
     COMPILE = True
-    sys.argv = []
+    del sys.argv[sys.argv.index('compile')]
 else:
     COMPILE = False
 import os
