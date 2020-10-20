@@ -24,6 +24,7 @@ namespace FCUpdate
         {
             Console.WriteLine("FinalCif Updater");
             Console.WriteLine("Fetching update from server...");
+            Console.WriteLine($"OS Platform: {Environment.OSVersion.Platform}");
 
             System.Diagnostics.Process[] processList = Process.GetProcessesByName("FinalCif");
             if (processList.Length > 0) {
