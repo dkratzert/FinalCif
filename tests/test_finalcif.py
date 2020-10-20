@@ -2,6 +2,7 @@ import re
 import sys
 import time
 import unittest
+from datetime import datetime
 from pathlib import Path
 
 from PyQt5.QtCore import Qt
@@ -353,7 +354,7 @@ class TestWorkfolder(unittest.TestCase):
         self.assertEqual('geom', self.myapp.ui.cif_main_table.getTextFromKey('_atom_sites_solution_hydrogens', 0))
         self.assertEqual('', self.myapp.ui.cif_main_table.getTextFromKey('_atom_sites_solution_hydrogens', 1))
         self.assertEqual(
-            """FinalCif V{} by Daniel Kratzert, Freiburg 2019, https://github.com/dkratzert/FinalCif""".format(VERSION),
+            """FinalCif V{} by Daniel Kratzert, Freiburg {}, https://github.com/dkratzert/FinalCif""".format(VERSION, datetime.now().year),
             self.myapp.ui.cif_main_table.getTextFromKey('_audit_creation_method', 1))
         self.assertEqual('18', self.myapp.ui.cif_main_table.getTextFromKey('_space_group_IT_number', 0))
         self.assertEqual('orthorhombic', self.myapp.ui.cif_main_table.getTextFromKey('_space_group_crystal_system', 0))
