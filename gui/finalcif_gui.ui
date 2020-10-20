@@ -703,7 +703,7 @@
         <item row="1" column="0" colspan="11">
          <widget class="MyMainStackedWidget" name="MainStackedWidget">
           <property name="currentIndex">
-           <number>4</number>
+           <number>6</number>
           </property>
           <widget class="QWidget" name="page_MainTable">
            <layout class="QVBoxLayout" name="verticalLayout">
@@ -2066,223 +2066,6 @@ The data source will be ignored until next program restart.</string>
               </layout>
              </widget>
             </item>
-            <item row="1" column="0" colspan="7">
-             <widget class="QStackedWidget" name="CheckCIFResultsStackedWidget">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>4</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="currentIndex">
-               <number>0</number>
-              </property>
-              <widget class="QWidget" name="platon_page">
-               <layout class="QVBoxLayout" name="verticalLayout_11">
-                <property name="spacing">
-                 <number>0</number>
-                </property>
-                <property name="leftMargin">
-                 <number>0</number>
-                </property>
-                <property name="topMargin">
-                 <number>0</number>
-                </property>
-                <property name="rightMargin">
-                 <number>0</number>
-                </property>
-                <property name="bottomMargin">
-                 <number>0</number>
-                </property>
-                <item>
-                 <widget class="QLabel" name="label">
-                  <property name="text">
-                   <string>PLATON CheckCIF</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QPlainTextEdit" name="CheckcifPlaintextEdit">
-                  <property name="lineWrapMode">
-                   <enum>QPlainTextEdit::NoWrap</enum>
-                  </property>
-                  <property name="readOnly">
-                   <bool>true</bool>
-                  </property>
-                  <property name="plainText">
-                   <string notr="true"/>
-                  </property>
-                  <property name="textInteractionFlags">
-                   <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
-              <widget class="QWidget" name="html_page">
-               <layout class="QVBoxLayout" name="verticalLayout_12">
-                <property name="leftMargin">
-                 <number>0</number>
-                </property>
-                <property name="topMargin">
-                 <number>0</number>
-                </property>
-                <property name="rightMargin">
-                 <number>0</number>
-                </property>
-                <property name="bottomMargin">
-                 <number>0</number>
-                </property>
-                <item>
-                 <widget class="QTabWidget" name="ResponsesTabWidget">
-                  <property name="currentIndex">
-                   <number>0</number>
-                  </property>
-                  <property name="movable">
-                   <bool>false</bool>
-                  </property>
-                  <widget class="QWidget" name="htmlTabwidgetPage">
-                   <attribute name="title">
-                    <string>html report</string>
-                   </attribute>
-                   <layout class="QVBoxLayout" name="verticalLayout_14">
-                    <item>
-                     <layout class="QGridLayout" name="htmlCHeckCifGridLayout"/>
-                    </item>
-                   </layout>
-                  </widget>
-                  <widget class="QWidget" name="ResponsesTabWidgetPage2">
-                   <attribute name="title">
-                    <string>checkcif alerts</string>
-                   </attribute>
-                   <layout class="QVBoxLayout" name="verticalLayout_15">
-                    <property name="leftMargin">
-                     <number>0</number>
-                    </property>
-                    <property name="topMargin">
-                     <number>0</number>
-                    </property>
-                    <property name="rightMargin">
-                     <number>0</number>
-                    </property>
-                    <property name="bottomMargin">
-                     <number>0</number>
-                    </property>
-                    <item>
-                     <widget class="QListWidget" name="responseFormsListWidget">
-                      <property name="sizeAdjustPolicy">
-                       <enum>QAbstractScrollArea::AdjustToContents</enum>
-                      </property>
-                      <property name="autoScroll">
-                       <bool>false</bool>
-                      </property>
-                      <property name="editTriggers">
-                       <set>QAbstractItemView::NoEditTriggers</set>
-                      </property>
-                      <property name="showDropIndicator" stdset="0">
-                       <bool>false</bool>
-                      </property>
-                      <property name="selectionMode">
-                       <enum>QAbstractItemView::NoSelection</enum>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QLabel" name="label_6">
-                      <property name="text">
-                       <string>Every form you fill out will be written to the cif file.</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QFrame" name="frame">
-                      <property name="frameShape">
-                       <enum>QFrame::NoFrame</enum>
-                      </property>
-                      <layout class="QHBoxLayout" name="horizontalLayout_2">
-                       <property name="leftMargin">
-                        <number>0</number>
-                       </property>
-                       <property name="topMargin">
-                        <number>0</number>
-                       </property>
-                       <property name="rightMargin">
-                        <number>0</number>
-                       </property>
-                       <property name="bottomMargin">
-                        <number>0</number>
-                       </property>
-                       <item>
-                        <widget class="QPushButton" name="SavePushButton">
-                         <property name="text">
-                          <string>Save Response Forms</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <spacer name="horizontalSpacer_19">
-                         <property name="orientation">
-                          <enum>Qt::Horizontal</enum>
-                         </property>
-                         <property name="sizeHint" stdset="0">
-                          <size>
-                           <width>40</width>
-                           <height>20</height>
-                          </size>
-                         </property>
-                        </spacer>
-                       </item>
-                      </layout>
-                     </widget>
-                    </item>
-                   </layout>
-                  </widget>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
-              <widget class="QWidget" name="pdf_page">
-               <layout class="QVBoxLayout" name="verticalLayout_13">
-                <item>
-                 <widget class="QLabel" name="label_5">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>0</width>
-                    <height>20</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>The resulting PDF file will be displayed in an external program after CheckCIF has completed.</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <spacer name="verticalSpacer_4">
-                  <property name="orientation">
-                   <enum>Qt::Vertical</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>20</width>
-                    <height>40</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-               </layout>
-              </widget>
-              <widget class="QWidget" name="page_response">
-               <layout class="QVBoxLayout" name="verticalLayout_17"/>
-              </widget>
-              <widget class="QWidget" name="page_empty"/>
-             </widget>
-            </item>
             <item row="4" column="1" rowspan="3" colspan="2">
              <spacer name="horizontalSpacer_2">
               <property name="orientation">
@@ -2414,6 +2197,227 @@ The data source will be ignored until next program restart.</string>
                </size>
               </property>
              </spacer>
+            </item>
+            <item row="1" column="0" colspan="7">
+             <widget class="QTabWidget" name="CheckCIFResultsTabWidget">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>4</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="currentIndex">
+               <number>2</number>
+              </property>
+              <property name="documentMode">
+               <bool>false</bool>
+              </property>
+              <property name="tabBarAutoHide">
+               <bool>false</bool>
+              </property>
+              <widget class="QWidget" name="platon_page" native="true">
+               <attribute name="title">
+                <string>PLATON CheckCIF</string>
+               </attribute>
+               <layout class="QVBoxLayout" name="verticalLayout_11">
+                <property name="spacing">
+                 <number>0</number>
+                </property>
+                <property name="leftMargin">
+                 <number>0</number>
+                </property>
+                <property name="topMargin">
+                 <number>0</number>
+                </property>
+                <property name="rightMargin">
+                 <number>0</number>
+                </property>
+                <property name="bottomMargin">
+                 <number>0</number>
+                </property>
+                <item>
+                 <widget class="QPlainTextEdit" name="CheckcifPlaintextEdit">
+                  <property name="lineWrapMode">
+                   <enum>QPlainTextEdit::NoWrap</enum>
+                  </property>
+                  <property name="readOnly">
+                   <bool>true</bool>
+                  </property>
+                  <property name="plainText">
+                   <string notr="true"/>
+                  </property>
+                  <property name="textInteractionFlags">
+                   <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+              <widget class="QWidget" name="html_page" native="true">
+               <attribute name="title">
+                <string>html CheckCIF</string>
+               </attribute>
+               <layout class="QVBoxLayout" name="verticalLayout_12">
+                <property name="leftMargin">
+                 <number>0</number>
+                </property>
+                <property name="topMargin">
+                 <number>0</number>
+                </property>
+                <property name="rightMargin">
+                 <number>0</number>
+                </property>
+                <property name="bottomMargin">
+                 <number>0</number>
+                </property>
+                <item>
+                 <widget class="QTabWidget" name="ResponsesTabWidget">
+                  <property name="currentIndex">
+                   <number>0</number>
+                  </property>
+                  <property name="movable">
+                   <bool>false</bool>
+                  </property>
+                  <widget class="QWidget" name="htmlTabwidgetPage">
+                   <attribute name="title">
+                    <string>html report</string>
+                   </attribute>
+                   <layout class="QVBoxLayout" name="verticalLayout_14">
+                    <item>
+                     <layout class="QGridLayout" name="htmlCHeckCifGridLayout"/>
+                    </item>
+                   </layout>
+                  </widget>
+                  <widget class="QWidget" name="ResponsesTabWidgetPage2">
+                   <attribute name="title">
+                    <string>checkcif alerts</string>
+                   </attribute>
+                   <layout class="QVBoxLayout" name="verticalLayout_15">
+                    <property name="leftMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="bottomMargin">
+                     <number>0</number>
+                    </property>
+                    <item>
+                     <widget class="QListWidget" name="responseFormsListWidget">
+                      <property name="sizeAdjustPolicy">
+                       <enum>QAbstractScrollArea::AdjustToContents</enum>
+                      </property>
+                      <property name="autoScroll">
+                       <bool>false</bool>
+                      </property>
+                      <property name="editTriggers">
+                       <set>QAbstractItemView::NoEditTriggers</set>
+                      </property>
+                      <property name="showDropIndicator" stdset="0">
+                       <bool>false</bool>
+                      </property>
+                      <property name="selectionMode">
+                       <enum>QAbstractItemView::NoSelection</enum>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLabel" name="label_6">
+                      <property name="text">
+                       <string>Every form you fill out will be written to the cif file.</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QFrame" name="frame">
+                      <property name="frameShape">
+                       <enum>QFrame::NoFrame</enum>
+                      </property>
+                      <layout class="QHBoxLayout" name="horizontalLayout_2">
+                       <property name="leftMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="bottomMargin">
+                        <number>0</number>
+                       </property>
+                       <item>
+                        <widget class="QPushButton" name="SavePushButton">
+                         <property name="text">
+                          <string>Save Response Forms</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <spacer name="horizontalSpacer_19">
+                         <property name="orientation">
+                          <enum>Qt::Horizontal</enum>
+                         </property>
+                         <property name="sizeHint" stdset="0">
+                          <size>
+                           <width>40</width>
+                           <height>20</height>
+                          </size>
+                         </property>
+                        </spacer>
+                       </item>
+                      </layout>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+              <widget class="QWidget" name="pdf_page" native="true">
+               <attribute name="title">
+                <string>PDF CheckCIF</string>
+               </attribute>
+               <layout class="QVBoxLayout" name="verticalLayout_13">
+                <item>
+                 <widget class="QLabel" name="label_5">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="minimumSize">
+                   <size>
+                    <width>0</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string>The resulting PDF file will be displayed in an external program after CheckCIF has completed.</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="verticalSpacer_4">
+                  <property name="orientation">
+                   <enum>Qt::Vertical</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>20</width>
+                    <height>40</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </widget>
+             </widget>
             </item>
            </layout>
           </widget>

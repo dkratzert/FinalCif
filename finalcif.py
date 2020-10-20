@@ -7,6 +7,7 @@
 #  ----------------------------------------------------------------------------
 
 import sys
+from datetime import datetime
 
 import displaymol
 from displaymol import mol_file_writer, write_html
@@ -347,7 +348,7 @@ class AppWindow(QMainWindow):
         Opens the checkcif stackwidget page and therein the html report page
         """
         self.ui.MainStackedWidget.go_to_checkcif_page()
-        self.ui.CheckCIFResultsStackedWidget.setCurrentIndex(1)  # Index 4 is empty, 1 is html
+        #self.ui.CheckCIFResultsTabWidget.setCurrentIndex(1)  # Index 4 is empty, 1 is html
         self.ui.ResponsesTabWidget.setCurrentIndex(0)  # the second is alters/responses list
 
     def shred_cif(self) -> None:
@@ -664,7 +665,7 @@ class AppWindow(QMainWindow):
         self.ui.htmlCHeckCifGridLayout.addWidget(self.checkcif_browser)
         url = QUrl.fromLocalFile(str(self.htmlfile.absolute()))
         self.ui.MainStackedWidget.go_to_checkcif_page()
-        self.ui.CheckCIFResultsStackedWidget.setCurrentIndex(1)  # Index 1 is html page
+        self.ui.CheckCIFResultsTabWidget.setCurrentIndex(1)  # Index 1 is html page
         self.ui.SavePushButton.setIcon(qta.icon('mdi.content-save'))
         self.checkcif_browser.load(url)
         self.ui.ResponsesTabWidget.setCurrentIndex(0)
@@ -706,7 +707,7 @@ class AppWindow(QMainWindow):
             if DEBUG:
                 print('Browser not removed:')
                 print(e)
-        self.ui.CheckCIFResultsStackedWidget.setCurrentIndex(1)
+        self.ui.CheckCIFResultsTabWidget.setCurrentIndex(1)
         self.ui.CheckCifLogPlainTextEdit.appendPlainText('Sending html report request...')
         self.save_current_cif_file()
         self.load_cif_file(self.final_cif_file_name)
@@ -757,10 +758,6 @@ class AppWindow(QMainWindow):
     def _switch_to_report(self) -> None:
         self.ui.ResponsesTabWidget.setCurrentIndex(0)
 
-    def _switch_to_vrf(self) -> None:
-        self.ui.CheckCIFResultsStackedWidget.setCurrentIndex(3)
-        self.ui.ResponsesTabWidget.setCurrentIndex(1)
-
     def _pdf_checkcif_finished(self) -> None:
         self.ui.CheckcifPDFOnlineButton.setEnabled(True)
         self.ui.CheckcifHTMLOnlineButton.setEnabled(True)
@@ -771,7 +768,7 @@ class AppWindow(QMainWindow):
         Performs an online checkcif and shows the result as pdf.
         """
         self.ui.CheckCifLogPlainTextEdit.clear()
-        self.ui.CheckCIFResultsStackedWidget.setCurrentIndex(2)
+        self.ui.CheckCIFResultsTabWidget.setCurrentIndex(2)
         self.ui.CheckCifLogPlainTextEdit.appendPlainText('Sending pdf report request...')
         self.save_current_cif_file()
         self.load_cif_file(self.final_cif_file_name)
@@ -804,7 +801,7 @@ class AppWindow(QMainWindow):
         """
         self.ui.CheckCifLogPlainTextEdit.clear()
         self.ui.MainStackedWidget.go_to_checkcif_page()
-        self.ui.CheckCIFResultsStackedWidget.setCurrentIndex(0)
+        self.ui.CheckCIFResultsTabWidget.setCurrentIndex(0)
         self.ui.CheckCifLogPlainTextEdit.appendPlainText("Running Checkcif locally. Please wait...")
         QApplication.processEvents()
         # makes sure also the currently edited item is saved:
@@ -1963,8 +1960,8 @@ class AppWindow(QMainWindow):
                 value = '?'
             self.add_row(key, value)
             if key == '_audit_creation_method':
-                txt = 'FinalCif V{} by Daniel Kratzert, Freiburg 2019, https://github.com/dkratzert/FinalCif'
-                strval = txt.format(VERSION)
+                txt = 'FinalCif V{} by Daniel Kratzert, Freiburg {}, https://github.com/dkratzert/FinalCif'
+                strval = txt.format(VERSION, datetime.now().year)
                 self.ui.cif_main_table.setText(key=key, column=COL_DATA, txt=strval)
             # print(key, value)
         self.cif.test_checksums()
