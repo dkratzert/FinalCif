@@ -685,11 +685,11 @@ class AppWindow(QMainWindow):
         # makes all gray:
         # self.ui.responseFormsListWidget.setStyleSheet("background: 'gray';")
         a = AlertHelp(self.checkdef)
-        self.vrfs = []
+        self.validation_response_foms_list = []
         for form in forms:
             vrf = MyVRFContainer(form, a.get_help(form['alert_num']))
             vrf.setAutoFillBackground(False)
-            self.vrfs.append(vrf)
+            self.validation_response_foms_list.append(vrf)
             item = QListWidgetItem()
             item.setSizeHint(vrf.sizeHint())
             self.ui.responseFormsListWidget.addItem(item)
@@ -716,7 +716,8 @@ class AppWindow(QMainWindow):
                 print('Browser not removed:')
                 print(e)
         self.ui.CheckCIFResultsTabWidget.setCurrentIndex(1)
-        self.ui.CheckCifLogPlainTextEdit.appendPlainText('Sending html report request...')
+        checkcif_url = self.checkcif_options.get('checkcif_url')
+        self.ui.CheckCifLogPlainTextEdit.appendPlainText('Sending html report request to {} ...'.format(checkcif_url))
         if not self.save_current_cif_file():
             self.ui.CheckCifLogPlainTextEdit.appendPlainText('Unable to save CIF file. Aborting action...')
             return None
@@ -729,7 +730,7 @@ class AppWindow(QMainWindow):
         self.ckf = MakeCheckCif(cif=self.cif, outfile=self.htmlfile,
                                 hkl=(not self.ui.structfactCheckBox.isChecked()),
                                 pdf=False,
-                                url=self.checkcif_options.get('checkcif_url')
+                                url=checkcif_url
                                 )
         self.ckf.failed.connect(self._checkcif_failed)
         # noinspection PyUnresolvedReferences
@@ -746,15 +747,15 @@ class AppWindow(QMainWindow):
         """
         n = 0
         for response_row in range(self.ui.responseFormsListWidget.count()):
-            txt = self.vrfs[response_row].response_text_edit.toPlainText()
-            if not txt:
+            response_txt = self.validation_response_foms_list[response_row].response_text_edit.toPlainText()
+            if not response_txt:
                 # No response was written
                 continue
             n += 1
             v = VREF()
-            v.key = self.vrfs[response_row].form['name']
-            v.problem = self.vrfs[response_row].form['problem']
-            v.response = txt
+            v.key = self.validation_response_foms_list[response_row].form['name']
+            v.problem = self.validation_response_foms_list[response_row].form['problem']
+            v.response = response_txt
             # add a key with '?' as value
             self.add_new_table_key(v.key, v.value)
             # add data to this key:
@@ -788,11 +789,12 @@ class AppWindow(QMainWindow):
             htmlfile.unlink()
         except (FileNotFoundError, PermissionError):
             pass
-        self.ui.CheckCifLogPlainTextEdit.appendPlainText('Sending pdf report request...')
+        checkcif_url = self.checkcif_options.get('checkcif_url')
+        self.ui.CheckCifLogPlainTextEdit.appendPlainText('Sending pdf report request to {} ...'.format(checkcif_url))
         self.ckf = MakeCheckCif(cif=self.cif, outfile=htmlfile,
                                 hkl=(not self.ui.structfactCheckBox.isChecked()),
                                 pdf=True,
-                                url=self.checkcif_options.get('checkcif_url')
+                                url=checkcif_url
                                 )
         self.ckf.failed.connect(self._checkcif_failed)
         # noinspection PyUnresolvedReferences
