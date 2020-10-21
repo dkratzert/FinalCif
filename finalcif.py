@@ -348,7 +348,7 @@ class AppWindow(QMainWindow):
         Opens the checkcif stackwidget page and therein the html report page
         """
         self.ui.MainStackedWidget.go_to_checkcif_page()
-        #self.ui.CheckCIFResultsTabWidget.setCurrentIndex(1)  # Index 4 is empty, 1 is html
+        # self.ui.CheckCIFResultsTabWidget.setCurrentIndex(1)  # Index 4 is empty, 1 is html
         self.ui.ResponsesTabWidget.setCurrentIndex(0)  # the second is alters/responses list
 
     def shred_cif(self) -> None:
@@ -356,7 +356,7 @@ class AppWindow(QMainWindow):
         Saves res and hkl file from the cif.
         """
         self.ui.statusBar.showMessage('')
-        resfile = ''
+        resfile = Path(self.final_cif_file_name.stem + '.res')
         hklfile = ''
         res = None
         hkl = None
@@ -373,7 +373,8 @@ class AppWindow(QMainWindow):
             self.ui.statusBar.showMessage('No .res file data found!')
         else:
             res = res[1:-1]
-            resfile = self.write_res_file(res)
+            if not self.write_res_file(resfile, res):
+                return None
         if not hkl or len(hkl) < 3:
             self.ui.statusBar.showMessage(self.ui.statusBar.currentMessage() + '  No .hkl file data found!')
         else:
@@ -400,12 +401,19 @@ class AppWindow(QMainWindow):
                 f.write(line)
         return hklfile
 
-    def write_res_file(self, res: list):
-        resfile = Path(self.final_cif_file_name.stem + '.res')
-        with open(resfile, mode='w', newline='\n') as f:
-            for line in res:
-                f.write(line)
-        return resfile
+    def write_res_file(self, resfile: Path, reslines: list) -> bool:
+        """
+        Writes a res file from the cif content.
+        """
+        try:
+            with open(resfile, mode='w', newline='\n') as f:
+                for line in reslines:
+                    f.write(line)
+            return True
+        except Exception as e:
+            print(e)
+            show_general_warning('Unable to write files: ' + str(e))
+            return False
 
     def show_options(self) -> None:
         """
@@ -709,12 +717,14 @@ class AppWindow(QMainWindow):
                 print(e)
         self.ui.CheckCIFResultsTabWidget.setCurrentIndex(1)
         self.ui.CheckCifLogPlainTextEdit.appendPlainText('Sending html report request...')
-        self.save_current_cif_file()
+        if not self.save_current_cif_file():
+            self.ui.CheckCifLogPlainTextEdit.appendPlainText('Unable to save CIF file. Aborting action...')
+            return None
         self.load_cif_file(self.final_cif_file_name)
         self.htmlfile = Path(strip_finalcif_of_name('checkcif-' + self.cif.fileobj.stem) + '-finalcif.html')
         try:
             self.htmlfile.unlink()
-        except FileNotFoundError:
+        except (FileNotFoundError, PermissionError):
             pass
         self.ckf = MakeCheckCif(cif=self.cif, outfile=self.htmlfile,
                                 hkl=(not self.ui.structfactCheckBox.isChecked()),
@@ -769,14 +779,16 @@ class AppWindow(QMainWindow):
         """
         self.ui.CheckCifLogPlainTextEdit.clear()
         self.ui.CheckCIFResultsTabWidget.setCurrentIndex(2)
-        self.ui.CheckCifLogPlainTextEdit.appendPlainText('Sending pdf report request...')
-        self.save_current_cif_file()
+        if not self.save_current_cif_file():
+            self.ui.CheckCifLogPlainTextEdit.appendPlainText('Unable to save CIF file. Aborting action...')
+            return None
         self.load_cif_file(self.final_cif_file_name)
         htmlfile = Path('checkpdf-' + self.cif.fileobj.stem + '.html')
         try:
             htmlfile.unlink()
-        except FileNotFoundError:
+        except (FileNotFoundError, PermissionError):
             pass
+        self.ui.CheckCifLogPlainTextEdit.appendPlainText('Sending pdf report request...')
         self.ckf = MakeCheckCif(cif=self.cif, outfile=htmlfile,
                                 hkl=(not self.ui.structfactCheckBox.isChecked()),
                                 pdf=True,
@@ -792,7 +804,7 @@ class AppWindow(QMainWindow):
         self.ui.CheckCifLogPlainTextEdit.appendPlainText('PDF Checkcif report finished.')
         try:
             htmlfile.unlink()
-        except FileNotFoundError:
+        except (FileNotFoundError, PermissionError):
             pass
 
     def do_offline_checkcif(self) -> None:
@@ -807,7 +819,9 @@ class AppWindow(QMainWindow):
         # makes sure also the currently edited item is saved:
         self.ui.cif_main_table.setCurrentItem(None)
         self.ui.CheckcifPlaintextEdit.clear()
-        self.save_current_cif_file()
+        if not self.save_current_cif_file():
+            self.ui.CheckCifLogPlainTextEdit.appendPlainText('Unable to save CIF file. Aborting action...')
+            return None
         self.load_cif_file(self.final_cif_file_name)
         self.ui.MainStackedWidget.go_to_checkcif_page()
         QApplication.processEvents()
@@ -865,53 +879,55 @@ class AppWindow(QMainWindow):
         Generates a report document.
         """
         not_ok = None
-        if self.cif:
-            self.save_current_cif_file()
-            self.load_cif_file(self.final_cif_file_name)
-            report_filename = strip_finalcif_of_name('report_{}'.format(self.cif.fileobj.stem)) + '-finalcif.docx'
-            # The picture after the header:
-            if self.report_picture:
-                picfile = self.report_picture
-            else:
-                picfile = Path(self.final_cif_file_name.stem + '.gif')
-            try:
-                make_report_from(options=self.report_options,
-                                 file_obj=self.final_cif_file_name,
-                                 output_filename=report_filename,
-                                 path=application_path,
-                                 picfile=picfile)
-            except FileNotFoundError as e:
-                if DEBUG:
-                    raise
-                print('Unable to make report from cif file.')
-                not_ok = e
-                unable_to_open_message(self.cif.fileobj, not_ok)
-                return
-            except PermissionError:
-                if DEBUG:
-                    raise
-                print('Unable to open cif file')
-                show_general_warning('The report document {} could not be opened.\n'
-                                     'Is the file already opened?'.format(report_filename))
-                return
-            if Path(report_filename).absolute().exists():
-                if os.name == 'nt':
-                    os.startfile(Path(report_filename).absolute())
-                if sys.platform == 'darwin':
-                    subprocess.call(['open', Path(report_filename).absolute()])
-            # Save report and other files to a zip file:
-            zipfile = Path(strip_finalcif_of_name(self.cif.fileobj.stem) + '-finalcif.zip')
-            if zipfile.exists():
-                zipfile = next_path(zipfile.stem + '-%s.zip')
-            with suppress(Exception):
-                arc = ArchiveReport(zipfile)
-            with suppress(Exception):
-                arc.zip.write(report_filename)
-            with suppress(Exception):
-                arc.zip.write(self.final_cif_file_name)
-            with suppress(Exception):
-                pdfname = Path(strip_finalcif_of_name('checkcif-' + self.cif.fileobj.stem) + '-finalcif.pdf').name
-                arc.zip.write(pdfname)
+        if not self.cif:
+            return None
+        if not self.save_current_cif_file():
+            return None
+        self.load_cif_file(self.final_cif_file_name)
+        report_filename = strip_finalcif_of_name('report_{}'.format(self.cif.fileobj.stem)) + '-finalcif.docx'
+        # The picture after the header:
+        if self.report_picture:
+            picfile = self.report_picture
+        else:
+            picfile = Path(self.final_cif_file_name.stem + '.gif')
+        try:
+            make_report_from(options=self.report_options,
+                             file_obj=self.final_cif_file_name,
+                             output_filename=report_filename,
+                             path=application_path,
+                             picfile=picfile)
+        except FileNotFoundError as e:
+            if DEBUG:
+                raise
+            print('Unable to make report from cif file.')
+            not_ok = e
+            unable_to_open_message(self.cif.fileobj, not_ok)
+            return
+        except PermissionError:
+            if DEBUG:
+                raise
+            print('Unable to open cif file')
+            show_general_warning('The report document {} could not be opened.\n'
+                                 'Is the file already opened?'.format(report_filename))
+            return
+        if Path(report_filename).absolute().exists():
+            if os.name == 'nt':
+                os.startfile(Path(report_filename).absolute())
+            if sys.platform == 'darwin':
+                subprocess.call(['open', Path(report_filename).absolute()])
+        # Save report and other files to a zip file:
+        zipfile = Path(strip_finalcif_of_name(self.cif.fileobj.stem) + '-finalcif.zip')
+        if zipfile.exists():
+            zipfile = next_path(zipfile.stem + '-%s.zip')
+        with suppress(Exception):
+            arc = ArchiveReport(zipfile)
+        with suppress(Exception):
+            arc.zip.write(report_filename)
+        with suppress(Exception):
+            arc.zip.write(self.final_cif_file_name)
+        with suppress(Exception):
+            pdfname = Path(strip_finalcif_of_name('checkcif-' + self.cif.fileobj.stem) + '-finalcif.pdf').name
+            arc.zip.write(pdfname)
 
     def save_current_recent_files_list(self, file: Path) -> None:
         """
