@@ -59,7 +59,7 @@ class MakeCheckCif(QThread):
             vrf = 'vrfab'
         else:
             report_type = 'HTML'
-            vrf = 'vrfab'
+            vrf = 'vrfabc'
         if self.cif['_shelx_hkl_file']:
             hkl = 'checkcif_with_hkl'
             # Do not submit hkl data:
