@@ -96,7 +96,11 @@ class MakeCheckCif(QThread):
                 t2 = time.perf_counter()
                 time.sleep(0.1)
                 self.progress.emit('Report took {}s.'.format(str(round(t2 - t1, 2))))
-                self.html_out_file.write_bytes(r.content)
+                try:
+                    self.html_out_file.write_bytes(r.content)
+                except PermissionError:
+                    f.close()
+                    return
         f.close()
         if hkl == 'checkcif_only' and fd:
             try:
