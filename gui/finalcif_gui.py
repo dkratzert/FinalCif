@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/Users/daniel/Documents/GitHub/FinalCif/./gui/finalcif_gui.ui'
+# Form implementation generated from reading ui file 'D:\GitHub\FinalCif\./gui\finalcif_gui.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.1
 #
@@ -979,6 +979,7 @@ class Ui_FinalCifWindow(object):
         self.verticalLayout_12.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout_12.setObjectName("verticalLayout_12")
         self.ResponsesTabWidget = QtWidgets.QTabWidget(self.html_page)
+        self.ResponsesTabWidget.setTabPosition(QtWidgets.QTabWidget.South)
         self.ResponsesTabWidget.setMovable(False)
         self.ResponsesTabWidget.setObjectName("ResponsesTabWidget")
         self.htmlTabwidgetPage = QtWidgets.QWidget()
@@ -1056,7 +1057,7 @@ class Ui_FinalCifWindow(object):
         self.PropertiesTemplatesStackedWidget.setCurrentIndex(0)
         self.MainStackedWidget.setCurrentIndex(6)
         self.LoopsTabWidget.setCurrentIndex(0)
-        self.CheckCIFResultsTabWidget.setCurrentIndex(2)
+        self.CheckCIFResultsTabWidget.setCurrentIndex(0)
         self.ResponsesTabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(FinalCifWindow)
         FinalCifWindow.setTabOrder(self.SelectCif_LineEdit, self.EquipmentEditTableWidget)
