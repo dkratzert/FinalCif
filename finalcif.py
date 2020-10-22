@@ -15,6 +15,7 @@ from displaymol.sdm import SDM
 from gui.dialogs import cif_file_open_dialog, cif_file_save_dialog, show_general_warning, bug_found_warning, \
     unable_to_open_message, bad_z_message
 from gui.loops import Loop
+from tools.shred import ShredCIF
 
 DEBUG = False
 if 'compile' in sys.argv:
@@ -258,7 +259,7 @@ class AppWindow(QMainWindow):
         """
         ## main
         self.ui.BackPushButton.clicked.connect(self.back_to_main)
-        self.ui.ExploreDirButton.clicked.connect(self.explore_dir)
+        self.ui.ExploreDirButton.clicked.connect(self.explore_current_dir)
         self.ui.LoopsPushButton.clicked.connect(self.showloops)
         ## checkcif
         self.ui.CheckcifStartButton.clicked.connect(self.open_checkcif_page)
@@ -341,7 +342,12 @@ class AppWindow(QMainWindow):
         self.ui.BackFromOptionspPushButton.clicked.connect(self.back_to_main_noload)
         self.ui.BackFromLoopsPushButton.clicked.connect(self.back_to_main_noload)
         # Shred Cif
-        self.ui.ShredCifButton.clicked.connect(self.shred_cif)
+        self.ui.ShredCifButton.clicked.connect(self.do_shred_cif)
+
+    def do_shred_cif(self):
+        shred = ShredCIF(cif=self.cif, ui=self.ui, final_cif_name=self.final_cif_file_name)
+        shred.shred_cif()
+        self.explore_current_dir()
 
     def open_checkcif_page(self):
         """
@@ -351,70 +357,6 @@ class AppWindow(QMainWindow):
         # self.ui.CheckCIFResultsTabWidget.setCurrentIndex(1)  # Index 4 is empty, 1 is html
         self.ui.ResponsesTabWidget.setCurrentIndex(0)  # the second is alters/responses list
 
-    def shred_cif(self) -> None:
-        """
-        Saves res and hkl file from the cif.
-        """
-        self.ui.statusBar.showMessage('')
-        resfile = Path(self.final_cif_file_name.stem + '.res')
-        hklfile = ''
-        res = None
-        hkl = None
-        if not self.cif:
-            return
-        if not any([self.cif.res_file_data, self.cif.hkl_file]):
-            self.ui.statusBar.showMessage('No .res and .hkl file data found!')
-            return
-        if self.cif.res_file_data:
-            res = self.cif.res_file_data.splitlines(keepends=True)
-        if self.cif.hkl_file:
-            hkl = self.cif.hkl_file.splitlines(keepends=True)
-        if not res or len(res) < 3:
-            self.ui.statusBar.showMessage('No .res file data found!')
-        else:
-            res = res[1:-1]
-            if not self.write_res_file(resfile, res):
-                return None
-        if not hkl or len(hkl) < 3:
-            self.ui.statusBar.showMessage(self.ui.statusBar.currentMessage() + '  No .hkl file data found!')
-        else:
-            hkl = hkl[1:-1]
-            for num, line in enumerate(hkl):
-                if line[:1] == ')':
-                    hkl[num] = ';' + line[1:]
-            hklfile = self.write_hkl_file(hkl)
-        if res and not hkl:
-            self.ui.statusBar.showMessage(
-                self.ui.statusBar.currentMessage() + '\nFinished writing data to {}.'.format(resfile))
-        if hkl and not res:
-            self.ui.statusBar.showMessage(
-                self.ui.statusBar.currentMessage() + '\nFinished writing data to {}.'.format(hklfile))
-        if hkl and res:
-            self.ui.statusBar.showMessage(
-                self.ui.statusBar.currentMessage() + '\nFinished writing data to {} \nand {}.'.format(resfile, hklfile))
-        self.explore_dir()
-
-    def write_hkl_file(self, hkl: list):
-        hklfile = Path(self.final_cif_file_name.stem + '.hkl')
-        with open(hklfile, mode='w', newline='\n') as f:
-            for line in hkl:
-                f.write(line)
-        return hklfile
-
-    def write_res_file(self, resfile: Path, reslines: list) -> bool:
-        """
-        Writes a res file from the cif content.
-        """
-        try:
-            with open(resfile, mode='w', newline='\n') as f:
-                for line in reslines:
-                    f.write(line)
-            return True
-        except Exception as e:
-            print(e)
-            show_general_warning('Unable to write files: ' + str(e))
-            return False
-
     def show_options(self) -> None:
         """
         {'report_text': True,
@@ -422,11 +364,6 @@ class AppWindow(QMainWindow):
          'without_H': False,
          }
          """
-        if self.cif:
-            if self.cif.res_file_data and self.cif.hkl_file:
-                self.ui.ShredCifButton.setEnabled(True)
-        else:
-            self.ui.ShredCifButton.setDisabled(True)
         self.report_options = self.settings.load_report_options()
         self.checkcif_options = self.settings.load_checkcif_options()
         if self.checkcif_options.get('checkcif_url'):
@@ -445,6 +382,20 @@ class AppWindow(QMainWindow):
         self.ui.PictureWidthDoubleSpinBox.valueChanged.connect(self.save_options)
         self.ui.CheckCIFServerURLTextedit.textChanged.connect(self.save_options)
         self.ui.MainStackedWidget.go_to_options_page()
+
+    def check_hkl_res_files(self):
+        """
+        Check whether hkl and/or res file content is included in the cif file.
+        """
+        if not self.cif.res_file_data:
+            self.ui.statusBar.showMessage('No .res file data found!')
+        if not self.cif.hkl_file:
+            self.ui.statusBar.showMessage(self.ui.statusBar.currentMessage() + '\nNo .hkl file data found!')
+        if not any([self.cif.res_file_data, self.cif.hkl_file]):
+            self.ui.statusBar.showMessage('No .res and .hkl file data found!')
+            self.ui.ShredCifButton.setDisabled(True)
+        else:
+            self.ui.ShredCifButton.setEnabled(True)
 
     def save_options(self) -> None:
         options = {
@@ -476,7 +427,7 @@ class AppWindow(QMainWindow):
         Open the CCDC deposit web page.
         """
         QDesktopServices.openUrl(QUrl('https://www.ccdc.cam.ac.uk/deposit'))
-        self.explore_dir()
+        self.explore_current_dir()
 
     def _deleted_row(self, key: str) -> None:
         """
@@ -594,7 +545,7 @@ class AppWindow(QMainWindow):
                 helptext.append(line)
         return ''
 
-    def explore_dir(self):
+    def explore_current_dir(self):
         """
         Opens the file checkcif_browser for the current directory.
         """
@@ -1589,18 +1540,6 @@ class AppWindow(QMainWindow):
         # I think I leave the user possibilities to change the imported values:
         # self.save_current_cif_file()
         # self.load_cif_file(str(self.final_cif_file_name))
-
-    def check_hkl_res_files(self):
-        """
-        Check wether hkl and/or res file content is included in the cif file.
-        """
-        if not self.cif.res_file_data:
-            self.ui.statusBar.showMessage('No .res file data found!')
-        if not self.cif.hkl_file:
-            self.ui.statusBar.showMessage(self.ui.statusBar.currentMessage() + '\nNo .hkl file data found!')
-        if not any([self.cif.res_file_data, self.cif.hkl_file]):
-            self.ui.statusBar.showMessage('No .res and .hkl file data found!')
-            self.ui.ShredCifButton.setDisabled(True)
 
     def load_cif_file(self, fname: str) -> None:
         """
