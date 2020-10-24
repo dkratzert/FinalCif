@@ -345,7 +345,7 @@ class AppWindow(QMainWindow):
         self.ui.ShredCifButton.clicked.connect(self.do_shred_cif)
 
     def do_shred_cif(self):
-        shred = ShredCIF(cif=self.cif, ui=self.ui, final_cif_name=self.final_cif_file_name)
+        shred = ShredCIF(cif=self.cif, ui=self.ui)
         shred.shred_cif()
         self.explore_current_dir()
 
@@ -382,20 +382,6 @@ class AppWindow(QMainWindow):
         self.ui.PictureWidthDoubleSpinBox.valueChanged.connect(self.save_options)
         self.ui.CheckCIFServerURLTextedit.textChanged.connect(self.save_options)
         self.ui.MainStackedWidget.go_to_options_page()
-
-    def check_hkl_res_files(self):
-        """
-        Check whether hkl and/or res file content is included in the cif file.
-        """
-        if not self.cif.res_file_data:
-            self.ui.statusBar.showMessage('No .res file data found!')
-        if not self.cif.hkl_file:
-            self.ui.statusBar.showMessage(self.ui.statusBar.currentMessage() + '\nNo .hkl file data found!')
-        if not any([self.cif.res_file_data, self.cif.hkl_file]):
-            self.ui.statusBar.showMessage('No .res and .hkl file data found!')
-            self.ui.ShredCifButton.setDisabled(True)
-        else:
-            self.ui.ShredCifButton.setEnabled(True)
 
     def save_options(self) -> None:
         options = {
@@ -1629,7 +1615,7 @@ class AppWindow(QMainWindow):
         self.ui.SaveCifButton.setEnabled(True)
         self.ui.ExploreDirButton.setEnabled(True)
         if self.cif:
-            self.check_hkl_res_files()
+            ShredCIF(cif=self.cif, ui=self.ui).check_hkl_res_files()
             curdir = str(self.cif.fileobj.absolute().parent)
             # saving current cif dir as last working directory:
             self.settings.save_current_dir(curdir)

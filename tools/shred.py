@@ -3,6 +3,7 @@ from pathlib import Path
 from cif.cif_file_io import CifContainer
 from gui.dialogs import show_general_warning
 from gui.finalcif_gui import Ui_FinalCifWindow
+from tools.misc import strip_finalcif_of_name
 
 
 class ShredCIF():
@@ -10,10 +11,10 @@ class ShredCIF():
     This class extracts the .res and .hkl file content from a cif file.
     """
 
-    def __init__(self, cif: CifContainer, ui: Ui_FinalCifWindow, final_cif_name: Path):
+    def __init__(self, cif: CifContainer, ui: Ui_FinalCifWindow):
         self.cif = cif
         self.ui = ui
-        self.final_cif_file_name = final_cif_name
+        self.final_cif_file_name = Path(strip_finalcif_of_name(str(self.cif.fileobj.stem)) + '-finalcif.cif')
 
     def shred_cif(self) -> None:
         """
@@ -84,6 +85,20 @@ class ShredCIF():
             show_general_warning('Unable to write files: ' + str(e))
             return False
         return True
+
+    def check_hkl_res_files(self):
+        """
+        Check whether hkl and/or res file content is included in the cif file.
+        """
+        if not self.cif.res_file_data:
+            self.ui.statusBar.showMessage('No .res file data found!')
+        if not self.cif.hkl_file:
+            self.ui.statusBar.showMessage(self.ui.statusBar.currentMessage() + '\nNo .hkl file data found!')
+        if not any([self.cif.res_file_data, self.cif.hkl_file]):
+            self.ui.statusBar.showMessage('No .res and .hkl file data found!')
+            self.ui.ShredCifButton.setDisabled(True)
+        else:
+            self.ui.ShredCifButton.setEnabled(True)
 
     @staticmethod
     def write_res_file(resfile: Path, reslines: list) -> bool:
