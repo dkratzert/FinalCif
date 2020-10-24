@@ -12,6 +12,7 @@ from datetime import datetime
 import displaymol
 from displaymol import mol_file_writer, write_html
 from displaymol.sdm import SDM
+from tools.options import Options
 
 DEBUG = False
 if 'compile' in sys.argv:
@@ -67,7 +68,7 @@ from tools.version import VERSION
 
 from PyQt5.QtCore import QPoint, Qt, QUrl, QEvent
 from PyQt5.QtGui import QFont, QIcon, QBrush, QResizeEvent, QMoveEvent
-from PyQt5.QtWidgets import QApplication, QFileDialog, QHeaderView, QListWidget, QListWidgetItem, \
+from PyQt5.QtWidgets import QApplication, QHeaderView, QListWidget, QListWidgetItem, \
     QMainWindow, QPlainTextEdit, QStackedWidget, QTableWidget, QShortcut, QCheckBox, QTableView
 
 """
@@ -161,8 +162,8 @@ class AppWindow(QMainWindow):
         self.ui.SourcesPushButton.setDisabled(True)
         self.ui.OptionsPushButton.setDisabled(True)
         self.ui.ImportCifPushButton.setDisabled(True)
-        # noinspection PyTypeChecker
-        self.cif: CifContainer = None
+        self.cif: Union[CifContainer, None] = None
+        self.options: Union[None, Options] = None
         self.view: Union[QWebEngineView, None] = None
         self.tempwarning_displayed = False
         self.final_cif_file_name = Path()
@@ -335,19 +336,22 @@ class AppWindow(QMainWindow):
         #
         self.ui.SourcesPushButton.clicked.connect(self.show_sources)
         self.ui.BackSourcesPushButton.clicked.connect(self.back_to_main_noload)
-        # Report picture:
-        self.ui.ReportPicPushButton.clicked.connect(self.set_report_picture)
-        # Options:
-        self.ui.OptionsPushButton.clicked.connect(self.show_options)
         self.ui.BackFromOptionspPushButton.clicked.connect(self.back_to_main_noload)
         self.ui.BackFromLoopsPushButton.clicked.connect(self.back_to_main_noload)
         # Shred Cif
         self.ui.ShredCifButton.clicked.connect(self.do_shred_cif)
+        self.ui.OptionsPushButton.clicked.connect(self.show_options)
 
     def do_shred_cif(self):
         shred = ShredCIF(cif=self.cif, ui=self.ui)
         shred.shred_cif()
         self.explore_current_dir()
+
+    def show_options(self):
+        self.options = Options(self.cif, self.ui, self.settings)
+        self.ui.MainStackedWidget.go_to_options_page()
+        self.ui.ReportPicPushButton.clicked.connect(self.options.set_report_picture)
+        self.options.show_options()
 
     def open_checkcif_page(self):
         """
@@ -356,57 +360,6 @@ class AppWindow(QMainWindow):
         self.ui.MainStackedWidget.go_to_checkcif_page()
         # self.ui.CheckCIFResultsTabWidget.setCurrentIndex(1)  # Index 4 is empty, 1 is html
         self.ui.ResponsesTabWidget.setCurrentIndex(0)  # the second is alters/responses list
-
-    def show_options(self) -> None:
-        """
-        {'report_text': True,
-         'picture_width': 7.5,
-         'without_H': False,
-         }
-         """
-        self.report_options = self.settings.load_report_options()
-        self.checkcif_options = self.settings.load_checkcif_options()
-        if self.checkcif_options.get('checkcif_url'):
-            self.ui.CheckCIFServerURLTextedit.setText(self.checkcif_options.get('checkcif_url'))
-        if self.report_options.get('report_text') is not None:
-            self.ui.ReportTextCheckBox.setChecked(not self.report_options.get('report_text'))
-        if self.report_options.get('without_H') is not None:
-            self.ui.HAtomsCheckBox.setChecked(self.report_options.get('without_H'))
-        if self.report_options.get('picture_width'):
-            self.ui.PictureWidthDoubleSpinBox.setValue(self.report_options.get('picture_width'))
-        if not self.cif:
-            return
-        # This has to be here:
-        self.ui.HAtomsCheckBox.clicked.connect(self.save_options)
-        self.ui.ReportTextCheckBox.clicked.connect(self.save_options)
-        self.ui.PictureWidthDoubleSpinBox.valueChanged.connect(self.save_options)
-        self.ui.CheckCIFServerURLTextedit.textChanged.connect(self.save_options)
-        self.ui.MainStackedWidget.go_to_options_page()
-
-    def save_options(self) -> None:
-        options = {
-            'report_text'  : not self.ui.ReportTextCheckBox.isChecked(),
-            'picture_width': self.ui.PictureWidthDoubleSpinBox.value(),
-            'without_H'    : self.ui.HAtomsCheckBox.isChecked(),
-        }
-        self.report_options = options
-        self.settings.save_report_options(options)
-        chkcif_options = {
-            'checkcif_url': self.ui.CheckCIFServerURLTextedit.text()
-        }
-        self.checkcif_options = chkcif_options
-        self.settings.save_checkcif_options(chkcif_options)
-
-    def set_report_picture(self) -> None:
-        """Sets the picture of the report document."""
-        filename, _ = QFileDialog.getOpenFileName(filter="Image Files (*.png *.jpg *.jpeg *.bmp "
-                                                         "*.gif *.tif *.tiff *.eps *.emf *.wmf)",
-                                                  caption='Open a Report Picture')
-        with suppress(Exception):
-            self.report_picture = Path(filename)
-        if self.report_picture.exists() and self.report_picture.is_file():
-            self.ui.ReportPicPushButton.setIcon(qta.icon('fa5.image'))
-            self.ui.ReportPicPushButton.setText('')
 
     def _ccdc_deposit(self) -> None:
         """
