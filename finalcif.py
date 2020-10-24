@@ -12,10 +12,6 @@ from datetime import datetime
 import displaymol
 from displaymol import mol_file_writer, write_html
 from displaymol.sdm import SDM
-from gui.dialogs import cif_file_open_dialog, cif_file_save_dialog, show_general_warning, bug_found_warning, \
-    unable_to_open_message, bad_z_message
-from gui.loops import Loop
-from tools.shred import ShredCIF
 
 DEBUG = False
 if 'compile' in sys.argv:
@@ -50,7 +46,10 @@ from PyQt5.QtWebEngineWidgets import QWebEngineView
 # noinspection PyUnresolvedReferences
 from gemmi import cif
 from qtpy.QtGui import QDesktopServices, QKeySequence
-
+from gui.dialogs import cif_file_open_dialog, cif_file_save_dialog, show_general_warning, bug_found_warning, \
+    unable_to_open_message, bad_z_message
+from gui.loops import Loop
+from tools.shred import ShredCIF
 from cif.cif_file_io import CifContainer
 from cif.text import set_pair_delimited, utf8_to_str, retranslate_delimiter
 from cif.core_dict import cif_core
@@ -60,7 +59,7 @@ from datafiles.platon import Platon
 from gui.vrf_classes import MyVRFContainer, VREF
 from report.archive_report import ArchiveReport
 from report.tables import make_report_from
-from tools.checkcif import AlertHelp, MakeCheckCif, MyHTMLParser
+from tools.checkcif import AlertHelp, CheckCif, MyHTMLParser
 from tools.misc import combobox_fields, predef_equipment_templ, predef_prop_templ, \
     strip_finalcif_of_name, to_float, next_path, celltxt, do_not_import_keys, include_equipment_imports
 from tools.settings import FinalCifSettings
@@ -589,7 +588,7 @@ class AppWindow(QMainWindow):
             self.ui.moleculeLayout.removeWidget(self.view)
 
     def _checkcif_failed(self, txt: str):
-        self.ui.CheckCifLogPlainTextEdit.appendPlainText(txt)
+        self.ui.CheckCifLogPlainTextEdit.appendHtml('<b>{}</b>'.format(txt))
 
     def _ckf_progress(self, txt: str):
         self.ui.CheckCifLogPlainTextEdit.appendPlainText(txt)
@@ -604,8 +603,8 @@ class AppWindow(QMainWindow):
             parser = MyHTMLParser(self.htmlfile.read_text())
         except FileNotFoundError:
             # happens if checkcif fails, e.g. takes too much time.
-            self.ui.CheckCifLogPlainTextEdit.appendPlainText('CheckCIF failed to finish. '
-                                                             'Please try it at https://checkcif.iucr.org/ instead')
+            self.ui.CheckCifLogPlainTextEdit.appendHtml('<b>CheckCIF failed to finish. '
+                                                        'Please try it at https://checkcif.iucr.org/ instead</b>')
             return
         self.checkcif_browser = QWebEngineView(self.ui.htmlTabwidgetPage)
         self.ui.htmlCHeckCifGridLayout.addWidget(self.checkcif_browser)
@@ -656,7 +655,7 @@ class AppWindow(QMainWindow):
         checkcif_url = self.checkcif_options.get('checkcif_url')
         self.ui.CheckCifLogPlainTextEdit.appendPlainText('Sending html report request to {} ...'.format(checkcif_url))
         if not self.save_current_cif_file():
-            self.ui.CheckCifLogPlainTextEdit.appendPlainText('Unable to save CIF file. Aborting action...')
+            self.ui.CheckCifLogPlainTextEdit.appendHtml('<b>Unable to save CIF file. Aborting action...</b>')
             return None
         self.load_cif_file(self.final_cif_file_name)
         self.htmlfile = Path(strip_finalcif_of_name('checkcif-' + self.cif.fileobj.stem) + '-finalcif.html')
@@ -664,11 +663,8 @@ class AppWindow(QMainWindow):
             self.htmlfile.unlink()
         except (FileNotFoundError, PermissionError):
             pass
-        self.ckf = MakeCheckCif(cif=self.cif, outfile=self.htmlfile,
-                                hkl=(not self.ui.structfactCheckBox.isChecked()),
-                                pdf=False,
-                                url=checkcif_url
-                                )
+        self.ckf = CheckCif(cif=self.cif, outfile=self.htmlfile,
+                            hkl_upload=(not self.ui.structfactCheckBox.isChecked()), pdf=False, url=checkcif_url)
         self.ckf.failed.connect(self._checkcif_failed)
         # noinspection PyUnresolvedReferences
         self.ckf.finished.connect(self._checkcif_finished)
@@ -718,7 +714,7 @@ class AppWindow(QMainWindow):
         self.ui.CheckCifLogPlainTextEdit.clear()
         self.ui.CheckCIFResultsTabWidget.setCurrentIndex(2)
         if not self.save_current_cif_file():
-            self.ui.CheckCifLogPlainTextEdit.appendPlainText('Unable to save CIF file. Aborting action...')
+            self.ui.CheckCifLogPlainTextEdit.appendHtml('<b>Unable to save CIF file. Aborting action...</b>')
             return None
         self.load_cif_file(self.final_cif_file_name)
         htmlfile = Path('checkpdf-' + self.cif.fileobj.stem + '.html')
@@ -728,11 +724,8 @@ class AppWindow(QMainWindow):
             pass
         checkcif_url = self.checkcif_options.get('checkcif_url')
         self.ui.CheckCifLogPlainTextEdit.appendPlainText('Sending pdf report request to {} ...'.format(checkcif_url))
-        self.ckf = MakeCheckCif(cif=self.cif, outfile=htmlfile,
-                                hkl=(not self.ui.structfactCheckBox.isChecked()),
-                                pdf=True,
-                                url=checkcif_url
-                                )
+        self.ckf = CheckCif(cif=self.cif, outfile=htmlfile, hkl_upload=(not self.ui.structfactCheckBox.isChecked()),
+                            pdf=True, url=checkcif_url)
         self.ckf.failed.connect(self._checkcif_failed)
         # noinspection PyUnresolvedReferences
         self.ckf.finished.connect(self._pdf_checkcif_finished)

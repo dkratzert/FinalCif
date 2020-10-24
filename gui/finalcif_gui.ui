@@ -2207,7 +2207,7 @@ The data source will be ignored until next program restart.</string>
                </sizepolicy>
               </property>
               <property name="currentIndex">
-               <number>0</number>
+               <number>2</number>
               </property>
               <property name="documentMode">
                <bool>false</bool>
@@ -2217,7 +2217,7 @@ The data source will be ignored until next program restart.</string>
               </property>
               <widget class="QWidget" name="platon_page">
                <attribute name="title">
-                <string>PLATON CheckCIF</string>
+                <string>PLATON CheckCIF result</string>
                </attribute>
                <layout class="QVBoxLayout" name="verticalLayout_11">
                 <property name="spacing">
@@ -2255,7 +2255,7 @@ The data source will be ignored until next program restart.</string>
               </widget>
               <widget class="QWidget" name="html_page">
                <attribute name="title">
-                <string>html CheckCIF</string>
+                <string>html CheckCIF result</string>
                </attribute>
                <layout class="QVBoxLayout" name="verticalLayout_12">
                 <property name="leftMargin">
@@ -2383,7 +2383,7 @@ The data source will be ignored until next program restart.</string>
               </widget>
               <widget class="QWidget" name="pdf_page">
                <attribute name="title">
-                <string>PDF CheckCIF</string>
+                <string>PDF CheckCIF result</string>
                </attribute>
                <layout class="QVBoxLayout" name="verticalLayout_13">
                 <item>
