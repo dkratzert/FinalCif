@@ -26,22 +26,21 @@ from cif.cif_file_io import CifContainer
 from tools.misc import strip_finalcif_of_name
 
 
-class MakeCheckCif(QThread):
+class CheckCif(QThread):
     progress = pyqtSignal(str)
     failed = pyqtSignal(str)
 
-    def __init__(self, cif: CifContainer, outfile: Path, hkl: bool = True, pdf: bool = False, url=''):
+    def __init__(self, cif: CifContainer, outfile: Path, hkl_upload: bool = True, pdf: bool = False, url=''):
         # hkl == False means no hkl upload
         super().__init__()
-        self.hkl = hkl
+        self.hkl_upload = hkl_upload
         self.html_out_file = outfile
         self.cif = cif
         self.pdf = pdf
-        # 'https://checkcif.iucr.org/cgi-bin/checkcif_with_hkl'
         self.checkcif_url = url 
 
     def _html_check(self):
-        if not self.hkl:
+        if not self.hkl_upload:
             self.progress.emit('Running Checkcif with no hkl data')
         else:
             self.progress.emit('Running Checkcif with hkl data')
@@ -51,66 +50,45 @@ class MakeCheckCif(QThread):
         Requests a checkcif run from IUCr servers.
         """
         self._html_check()
-        tmp, fd = None, None
-        f = open(str(self.cif.fileobj.absolute()), 'rb')
-        if self.pdf:
-            report_type = 'PDF'
-            # I had to do vrf = 'vrfno' in former times, but it seems to work now:
-            vrf = 'vrfab'
-        else:
-            report_type = 'HTML'
-            vrf = 'vrfabc'
-        if self.cif['_shelx_hkl_file']:
-            hkl = 'checkcif_with_hkl'
-            # Do not submit hkl data:
-            if not self.hkl:
-                hkl = 'checkcif_only'
-                f.close()
-                tmp, fd = self._get_cif_without_hkl()
-                f = open(tmp, 'rb')
+        temp_cif = self.cif.fileobj
+        if not self.hkl_upload:
+            hkl = 'checkcif_only'
+            temp_cif = self._get_cif_without_hkl()
         else:
             hkl = 'checkcif_only'
+            if self.cif['_shelx_hkl_file']:
+                hkl = 'checkcif_with_hkl'
         headers = {
             "runtype"   : "symmonly",
             "referer"   : "checkcif_server",
-            "outputtype": report_type,
+            "outputtype": 'PDF' if self.pdf else 'HTML',
             "validtype" : hkl,
-            "valout"    : vrf,
+            "valout"    : 'vrfab' if self.pdf else 'vrfabc',
         }
         t1 = time.perf_counter()
-        r = None
+        req = None
         self.progress.emit('Report request sent. Please wait...')
         try:
-            r = requests.post(self.checkcif_url, files={'file': f}, data=headers, timeout=400)
+            req = requests.post(self.checkcif_url, files={'file': temp_cif.read_bytes()}, data=headers, timeout=400)
         except requests.exceptions.ReadTimeout:
             message = r"Checkcif server took too long. Try it at 'https://checkcif.iucr.org' directly."
             self.failed.emit(message)
         except requests.exceptions.MissingSchema:
             message = r"URL for checkcif missing in options."
             self.failed.emit(message)
-        if r:
+        if req:
             self.progress.emit('request finished')
-            if not r.status_code == 200:
-                self.failed.emit('Request failed with code: {}'.format(str(r.status_code)))
+            if not req.status_code == 200:
+                self.failed.emit('Request failed with code: {}'.format(str(req.status_code)))
             else:
                 t2 = time.perf_counter()
                 time.sleep(0.1)
                 self.progress.emit('Report took {}s.'.format(str(round(t2 - t1, 2))))
                 try:
-                    self.html_out_file.write_bytes(r.content)
+                    self.html_out_file.write_bytes(req.content)
                 except PermissionError:
-                    f.close()
                     return
-        f.close()
-        if hkl == 'checkcif_only' and fd:
-            try:
-                # a trick to close the file descriptor:
-                f = os.fdopen(fd, 'w')
-                f.close()
-                os.unlink(tmp)
-            except ValueError:
-                self.progress.emit('can not delete tempfile from checkcif:\n' + tmp)
-        # self.progress.emit('ready')
+        Path('finalcif_checkcif_tmp.cif').unlink(missing_ok=True)
 
     def _open_pdf_result(self) -> None:
         """
@@ -143,14 +121,13 @@ class MakeCheckCif(QThread):
     def show_pdf_report(self) -> None:
         self._open_pdf_result()
 
-    def _get_cif_without_hkl(self) -> Tuple[Union[bytes, str], int]:
-        fd, tmp = mkstemp(prefix='finalcif-', suffix='.cif')
+    def _get_cif_without_hkl(self) -> Path:
+        tmp = Path('finalcif_checkcif_tmp.cif')
         doc = gemmi.cif.read_string(self.cif.fileobj.read_text())
         block = doc.sole_block()
         block.set_pair('_shelx_hkl_file', '')
-        p = Path(tmp)
-        p.write_text(doc.as_string(gemmi.cif.Style.Indent35))
-        return tmp, fd
+        tmp.write_text(doc.as_string(gemmi.cif.Style.Indent35))
+        return tmp
 
 
 class MyHTMLParser(HTMLParser):
@@ -276,7 +253,7 @@ class AlertHelpRemote():
 if __name__ == "__main__":
     cif = Path('test-data/1000007-finalcif.cif')
     html = Path(r'./test-data/checkcif-DK_zucker2_0m-finalcif.html')
-    # ckf = MakeCheckCif(None, cif, outfile=html)
+    # ckf = CheckCif(None, cif, outfile=html)
     # ckf.show_html_report()
     # sys.exit()
     # ckf.show_pdf_report()
