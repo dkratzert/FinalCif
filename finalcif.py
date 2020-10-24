@@ -227,6 +227,7 @@ class AppWindow(QMainWindow):
         self.ui.BackFromPlatonPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
         self.ui.CCDCpushButton.setIcon(qta.icon('fa5s.upload'))
         self.ui.CODpushButton.setIcon(qta.icon('mdi.upload'))
+        self.ui.SavePushButton.setIcon(qta.icon('mdi.content-save'))
 
     def resizeEvent(self, a0: QResizeEvent) -> None:
         """It called when the main window resizes."""
@@ -611,7 +612,6 @@ class AppWindow(QMainWindow):
         url = QUrl.fromLocalFile(str(self.htmlfile.absolute()))
         self.ui.MainStackedWidget.go_to_checkcif_page()
         self.ui.CheckCIFResultsTabWidget.setCurrentIndex(1)  # Index 1 is html page
-        self.ui.SavePushButton.setIcon(qta.icon('mdi.content-save'))
         self.checkcif_browser.load(url)
         self.ui.ResponsesTabWidget.setCurrentIndex(0)
         # The picture file linked in the html file:
