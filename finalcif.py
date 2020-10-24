@@ -1615,7 +1615,10 @@ class AppWindow(QMainWindow):
         self.ui.SaveCifButton.setEnabled(True)
         self.ui.ExploreDirButton.setEnabled(True)
         if self.cif:
-            ShredCIF(cif=self.cif, ui=self.ui).check_hkl_res_files()
+            if ShredCIF(cif=self.cif, ui=self.ui).cif_has_hkl_or_res_file():
+                self.ui.ShredCifButton.setEnabled(True)
+            else:
+                self.ui.ShredCifButton.setDisabled(True)
             curdir = str(self.cif.fileobj.absolute().parent)
             # saving current cif dir as last working directory:
             self.settings.save_current_dir(curdir)
