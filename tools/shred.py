@@ -14,10 +14,10 @@ class ShredCIF():
     """
 
     def __init__(self, cif: CifContainer, ui: Union[Ui_FinalCifWindow, None]):
-        self.cif = cif
+        self._cif = cif
         self._statusbar = StatusBar(ui)
         #self.ui = ui
-        self._final_cif_file_name = Path(strip_finalcif_of_name(str(self.cif.fileobj.stem)) + '-finalcif.cif')
+        self._final_cif_file_name = Path(strip_finalcif_of_name(str(self._cif.fileobj.stem)) + '-finalcif.cif')
 
     def shred_cif(self) -> None:
         """
@@ -28,15 +28,15 @@ class ShredCIF():
         hklfile_path = Path(self._final_cif_file_name.stem + '.hkl')
         res_data = None
         hkl_data = None
-        if not self.cif:
+        if not self._cif:
             return
-        if not any([self.cif.res_file_data, self.cif.hkl_file]):
+        if not any([self._cif.res_file_data, self._cif.hkl_file]):
             self._statusbar.show_message('No .res and .hkl file data found!')
             return
-        if self.cif.res_file_data:
-            res_data = self.cif.res_file_data.splitlines(keepends=True)
-        if self.cif.hkl_file:
-            hkl_data = self.cif.hkl_file.splitlines(keepends=True)
+        if self._cif.res_file_data:
+            res_data = self._cif.res_file_data.splitlines(keepends=True)
+        if self._cif.hkl_file:
+            hkl_data = self._cif.hkl_file.splitlines(keepends=True)
         if not self._data_is_valid(res_data):
             self._statusbar.show_message('No .res file data found!')
         else:
@@ -93,11 +93,11 @@ class ShredCIF():
         """
         Check whether hkl and/or res file content is included in the cif file.
         """
-        if not self.cif.res_file_data:
+        if not self._cif.res_file_data:
             self._statusbar.show_message('No .res file data found!')
-        if not self.cif.hkl_file:
+        if not self._cif.hkl_file:
             self._statusbar.show_message(self._statusbar.current_message + '\nNo .hkl file data found!')
-        if not any([self.cif.res_file_data, self.cif.hkl_file]):
+        if not any([self._cif.res_file_data, self._cif.hkl_file]):
             self._statusbar.show_message('No .res and .hkl file data found!')
             return False
         else:
