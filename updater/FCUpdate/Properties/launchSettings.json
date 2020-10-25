@@ -1,9 +1,0 @@
-{
-  "profiles": {
-    "FCUpdate": {
-      "commandName": "Executable",
-      "executablePath": "C:\\Users\\daniel\\Github\\FinalCif\\updater\\FCUpdate\\bin\\Release\\netcoreapp3.1\\FCUpdate.exe",
-      "commandLineArgs": "-v 69"
-    }
-  }
-}
