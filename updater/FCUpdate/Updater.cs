@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.IO;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using CommandLine;
 
 
@@ -9,9 +11,6 @@ namespace FCUpdate
 {
     class Updater
     {
-        //const string download_url = "https://xs3-data.uni-freiburg.de/finalcif/FinalCif-setup-x64-v{0}.exe";
-        //const string setup_name = "FinalCif-setup-x64-v{0}.exe";
-
         public class Options
         {
             [Option('v', "version", Required = true, HelpText = "Update FinalCif to this version.")]
@@ -20,37 +19,54 @@ namespace FCUpdate
 
         private static string GetDownloadUrl()
         {
-            // MacOSX
-            // Unix
-            // Win32NT
-            var downloadUrl = "empty";
-            if (Environment.OSVersion.Platform.ToString().StartsWith("Win"))
+            var downloadUrl = "unknown system";
+            if (IsWindows())
             {
                 downloadUrl = "https://xs3-data.uni-freiburg.de/finalcif/FinalCif-setup-x64-v{0}.exe";
             }
-
-            if (Environment.OSVersion.Platform.ToString().StartsWith("Unix")) // Find a more specific way for MacOS
+            if (IsOSX())
             {
                 downloadUrl = "https://xs3-data.uni-freiburg.de/finalcif/Finalcif-v{0}_macos.app.zip";
             }
-
+            if (IsLinux())
+            {
+                downloadUrl = "https://xs3-data.uni-freiburg.de/finalcif/FinalCif-v{}_ubuntu";
+            }
             return downloadUrl;
         }
 
         private string GetSetupName()
         {
             string setup_name = "no_setup_name";
-            if (Environment.OSVersion.Platform.ToString().StartsWith("Win"))
+            if (IsWindows())
             {
                 setup_name = "FinalCif-setup-x64-v{0}.exe";
             }
-
-            if (Environment.OSVersion.Platform.ToString().StartsWith("Unix"))
+            Console.WriteLine(RuntimeInformation.OSDescription, RuntimeInformation.OSArchitecture);
+            if (IsOSX())
             {
                 setup_name = "Finalcif-v{0}_macos.app.zip";
             }
-
+            if (IsLinux())
+            {
+                setup_name = "FinalCif-v{}_ubuntu";
+            }
             return setup_name;
+        }
+
+        private static bool IsOSX()
+        {
+            return RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
+        }
+
+        private static bool IsLinux()
+        {
+            return RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
+        }
+        
+        private static bool IsWindows()
+        {
+            return RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
         }
 
         public void UpdateRunningFinalCifTo(string version)
@@ -81,7 +97,6 @@ namespace FCUpdate
         {
             Console.WriteLine("FinalCif Updater");
             Console.WriteLine("Fetching update from server...");
-            Console.WriteLine($"OS Platform: {Environment.OSVersion.Platform}");
         }
 
         private void DeleteUpdateFile(string file)
@@ -100,19 +115,17 @@ namespace FCUpdate
                     return process.ExitCode;
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                //Console.WriteLine(e);
                 Console.WriteLine("Unable to run updater");
-                //throw;
                 return 0;
             }
 
             return 0;
         }
 
-        private void KillProcesses(Process[] processList)
-            // Kills all FinalCif processes
+        private static void KillProcesses(IEnumerable<Process> processList)
+            /* Kills all FinalCif processes */
         {
             var i = 1;
             foreach (var process in processList)
@@ -139,18 +152,12 @@ namespace FCUpdate
             return exeFile;
         }
 
-        private string MoveTempToExeFile(string version, string tempfile)
+        private string MoveTempToExeFile(string version, string tempFile)
         {
-            string setupName = GetSetupName();
-            //string tempdir = Path.GetDirectoryName(tempfile);
             string targetDir = Directory.GetCurrentDirectory();
-            //Console.WriteLine(target_dir);
-            string filename = string.Format(setupName, version);
-            //Console.WriteLine(filename);
-            //Console.WriteLine(tempfile);
-            string exeFile = Path.Combine(targetDir, filename);
+            string exeFile = Path.Combine(targetDir, string.Format(GetSetupName(), version));
             Console.WriteLine("Move to exe file: {0}", exeFile);
-            File.Move(tempfile, exeFile, true);
+            File.Move(tempFile, exeFile, true);
             return exeFile;
         }
 
