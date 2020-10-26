@@ -74,17 +74,6 @@ from PyQt5.QtWidgets import QApplication, QHeaderView, QListWidget, QListWidgetI
 
 r"""
 TODO:
-
- __________              ________________  
-| FinalCif| <--------->  | Options      |  
-| ----------------|      ----------------       _____________
-| self.ui.Button.  |     | state changed |  --> |  Settings |
-| clicked.connect( |     ----------------       -------------
-| self.options.    |     | options: dict |
-| setButtonstate)  |     ----------------
-|-----------------|------/\
-
-- add checksum to updater
 - make equipment template name editable
 - Peters comments on equipment templates:
     * save state and order of selected templates in order to be able to undo a selection with a second click. 
