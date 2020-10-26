@@ -49,7 +49,7 @@ from PyQt5.QtWebEngineWidgets import QWebEngineView
 from gemmi import cif
 from qtpy.QtGui import QDesktopServices, QKeySequence
 from gui.dialogs import cif_file_open_dialog, cif_file_save_dialog, show_general_warning, bug_found_warning, \
-    unable_to_open_message, bad_z_message
+    unable_to_open_message, bad_z_message, do_update_program, show_update_warning
 from gui.loops import Loop
 from tools.shred import ShredCIF
 from cif.cif_file_io import CifContainer
@@ -70,7 +70,7 @@ from tools.version import VERSION
 from PyQt5.QtCore import QPoint, Qt, QUrl, QEvent
 from PyQt5.QtGui import QFont, QIcon, QBrush, QResizeEvent, QMoveEvent
 from PyQt5.QtWidgets import QApplication, QHeaderView, QListWidget, QListWidgetItem, \
-    QMainWindow, QPlainTextEdit, QStackedWidget, QTableWidget, QShortcut, QCheckBox, QTableView
+    QMainWindow, QPlainTextEdit, QStackedWidget, QTableWidget, QShortcut, QCheckBox, QTableView, QMessageBox
 
 r"""
 TODO:
@@ -84,6 +84,7 @@ TODO:
 | setButtonstate)  |     ----------------
 |-----------------|------/\
 
+- add checksum to updater
 - make equipment template name editable
 - Peters comments on equipment templates:
     * save state and order of selected templates in order to be able to undo a selection with a second click. 
@@ -404,10 +405,11 @@ class AppWindow(QMainWindow):
             pass
         if remote_version > VERSION:
             print('Version {} is outdated (actual is {}).'.format(VERSION, remote_version))
-            show_general_warning(
+            show_update_warning(
                 r"A newer version {} of FinalCif is available under: <br>"
                 r"<a href='https://www.xs3.uni-freiburg.de/research/finalcif'>"
-                r"https://www.xs3.uni-freiburg.de/research/finalcif</a>".format(remote_version))
+                r"https://www.xs3.uni-freiburg.de/research/finalcif</a>"
+                r"<br><br>Updating now will end all running FinalCIF programs!", remote_version)
 
     def erase_disabled_items(self) -> None:
         """

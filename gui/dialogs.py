@@ -1,4 +1,8 @@
+import ctypes
+import os
+import subprocess
 from pathlib import Path
+from typing import Union
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
@@ -52,13 +56,36 @@ def show_general_warning(warn_text: str = '') -> None:
     A message box to display if the checksums do not agree.
     """
     if not warn_text:
-        return
+        return None
     box = QMessageBox()
     box.setTextFormat(Qt.AutoText)
     box.setWindowTitle(" ")
     box.setTextInteractionFlags(Qt.TextBrowserInteraction)
     box.setText(warn_text)
     box.exec()
+
+
+def show_update_warning(warn_text: str = '', remote_version: int = 0) -> Union[QMessageBox, None]:
+    """
+    A message box to display if the checksums do not agree.
+    """
+    if not warn_text:
+        return None
+    box = QMessageBox()
+    box.setTextFormat(Qt.AutoText)
+    box.setWindowTitle(" ")
+    box.setTextInteractionFlags(Qt.TextBrowserInteraction)
+    box.setText(warn_text.format(remote_version))
+    update_button = box.addButton('Update Now', QMessageBox.AcceptRole)
+    update_button.clicked.connect(lambda: do_update_program(str(remote_version)))
+    box.exec()
+
+
+def do_update_program(version):
+    os.chdir(str(Path(__file__).parent.parent))  # parent path of gui -> main dir
+    args = ['-url', 'https://xs3-data.uni-freiburg.de/finalcif/FinalCif-setup-x64-v{}.exe', '-v', version, '-p', 'finalcif']
+    # Using this, because otherwise I can not write to the program dir:
+    ctypes.windll.shell32.ShellExecuteW(None, "runas", 'update.exe', " ".join(args), None, 1)
 
 
 def bad_z_message(Z) -> None:
