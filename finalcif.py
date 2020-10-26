@@ -13,6 +13,7 @@ import displaymol
 from displaymol import mol_file_writer, write_html
 from displaymol.sdm import SDM
 from tools.options import Options
+from tools.statusbar import StatusBar
 
 DEBUG = False
 if 'compile' in sys.argv:
@@ -144,7 +145,8 @@ class AppWindow(QMainWindow):
         # To make file drag&drop working:
         self.setAcceptDrops(True)
         self.show()
-        self.statusBar().showMessage('FinalCif version {}'.format(VERSION))
+        self.status = StatusBar(ui=self.ui)
+        self.status.show_message('FinalCif version {}'.format(VERSION))
         self.settings = FinalCifSettings(self)
         self.settings.load_window_position()
         self.store_predefined_templates()
@@ -173,7 +175,6 @@ class AppWindow(QMainWindow):
         self.ui.OptionsPushButton.setDisabled(True)
         self.ui.ImportCifPushButton.setDisabled(True)
         self.cif: Union[CifContainer, None] = None
-        self.options: Union[None, Options] = None
         self.view: Union[QWebEngineView, None] = None
         self.tempwarning_displayed = False
         self.final_cif_file_name = Path()
@@ -181,6 +182,7 @@ class AppWindow(QMainWindow):
         # True if line with "these are already in" reached:
         self.complete_data_row = -1
         self.ui.growCheckBox.setChecked(True)
+        self.options = Options(self.ui, self.settings)
         self.connect_signals_and_slots()
         self.manufacturer = 'bruker'
         self.make_button_icons()
@@ -200,8 +202,6 @@ class AppWindow(QMainWindow):
         self.get_checkdef()
         self.ui.PictureWidthDoubleSpinBox.setRange(0.0, 25)
         self.ui.PictureWidthDoubleSpinBox.setSingleStep(0.5)
-        self.report_options = self.settings.load_report_options()
-        self.checkcif_options = self.settings.load_checkcif_options()
 
     def make_button_icons(self):
         self.ui.CheckcifButton.setIcon(qta.icon('mdi.file-document-outline'))
@@ -212,8 +212,7 @@ class AppWindow(QMainWindow):
         self.ui.SaveFullReportButton.setIcon(qta.icon('mdi.file-table-outline'))
         self.ui.ExploreDirButton.setIcon(qta.icon('fa5.folder-open'))
         self.ui.SaveCifButton.setIcon(qta.icon('fa5.save'))
-        options = [{'color': 'darkgreen'}]
-        self.ui.SelectCif_PushButton.setIcon(qta.icon('fa5.file-alt', options=options))
+        self.ui.SelectCif_PushButton.setIcon(qta.icon('fa5.file-alt', options=[{'color': 'darkgreen'}]))
         # self.ui.SelectCif_PushButton.setIcon(qta.icon('fa5s.spinner', color='red',
         #             animation=qta.Spin(self.ui.SelectCif_PushButton)))
         self.ui.SourcesPushButton.setIcon(qta.icon('fa5s.tasks'))
@@ -350,7 +349,7 @@ class AppWindow(QMainWindow):
         self.ui.BackFromLoopsPushButton.clicked.connect(self.back_to_main_noload)
         # Shred Cif
         self.ui.ShredCifButton.clicked.connect(self.do_shred_cif)
-        self.ui.OptionsPushButton.clicked.connect(self.show_options)
+        self.ui.OptionsPushButton.clicked.connect(self.options.show_options)
         # help
         self.ui.HelpPushButton.clicked.connect(self.show_help)
 
@@ -361,12 +360,6 @@ class AppWindow(QMainWindow):
         shred = ShredCIF(cif=self.cif, ui=self.ui)
         shred.shred_cif()
         self.explore_current_dir()
-
-    def show_options(self):
-        self.options = Options(self.cif, self.ui, self.settings)
-        self.ui.MainStackedWidget.go_to_options_page()
-        self.ui.ReportPicPushButton.clicked.connect(self.options.set_report_picture)
-        self.options.show_options()
 
     def open_checkcif_page(self):
         """
@@ -549,7 +542,7 @@ class AppWindow(QMainWindow):
         """
         Get back to the main table. Without loading a new cif file.
         """
-        self.ui.statusBar.showMessage('')
+        self.status.show_message('')
         self.ui.LoopsPushButton.setText('Show Loops')
         self.ui.MainStackedWidget.got_to_main_page()
         if self.view:
@@ -620,8 +613,8 @@ class AppWindow(QMainWindow):
                 print('Browser not removed:')
                 print(e)
         self.ui.CheckCIFResultsTabWidget.setCurrentIndex(1)
-        checkcif_url = self.checkcif_options.get('checkcif_url')
-        self.ui.CheckCifLogPlainTextEdit.appendPlainText('Sending html report request to {} ...'.format(checkcif_url))
+        self.ui.CheckCifLogPlainTextEdit.appendPlainText(
+            'Sending html report request to {} ...'.format(self.options.checkcif_url))
         if not self.save_current_cif_file():
             self.ui.CheckCifLogPlainTextEdit.appendHtml('<b>Unable to save CIF file. Aborting action...</b>')
             return None
@@ -632,7 +625,8 @@ class AppWindow(QMainWindow):
         except (FileNotFoundError, PermissionError):
             pass
         self.ckf = CheckCif(cif=self.cif, outfile=self.htmlfile,
-                            hkl_upload=(not self.ui.structfactCheckBox.isChecked()), pdf=False, url=checkcif_url)
+                            hkl_upload=(not self.ui.structfactCheckBox.isChecked()), pdf=False,
+                            url=self.options.checkcif_url)
         self.ckf.failed.connect(self._checkcif_failed)
         # noinspection PyUnresolvedReferences
         self.ckf.finished.connect(self._checkcif_finished)
@@ -690,10 +684,10 @@ class AppWindow(QMainWindow):
             htmlfile.unlink()
         except (FileNotFoundError, PermissionError):
             pass
-        checkcif_url = self.checkcif_options.get('checkcif_url')
-        self.ui.CheckCifLogPlainTextEdit.appendPlainText('Sending pdf report request to {} ...'.format(checkcif_url))
+        self.ui.CheckCifLogPlainTextEdit.appendPlainText(
+            'Sending pdf report request to {} ...'.format(self.options.checkcif_url))
         self.ckf = CheckCif(cif=self.cif, outfile=htmlfile, hkl_upload=(not self.ui.structfactCheckBox.isChecked()),
-                            pdf=True, url=checkcif_url)
+                            pdf=True, url=self.options.checkcif_url)
         self.ckf.failed.connect(self._checkcif_failed)
         # noinspection PyUnresolvedReferences
         self.ckf.finished.connect(self._pdf_checkcif_finished)
@@ -791,7 +785,7 @@ class AppWindow(QMainWindow):
         else:
             picfile = Path(self.final_cif_file_name.stem + '.gif')
         try:
-            make_report_from(options=self.report_options,
+            make_report_from(options=self.options,
                              file_obj=self.final_cif_file_name,
                              output_filename=report_filename,
                              path=application_path,
@@ -920,7 +914,7 @@ class AppWindow(QMainWindow):
             self.final_cif_file_name = Path(filename)
         try:
             self.cif.save(str(self.final_cif_file_name.absolute()))
-            self.ui.statusBar.showMessage('  File Saved:  {}'.format(self.final_cif_file_name.name), 10000)
+            self.status.show_message('  File Saved:  {}'.format(self.final_cif_file_name.name), 10000)
             print('File saved ...')
             return True
         except Exception as e:
@@ -1492,7 +1486,7 @@ class AppWindow(QMainWindow):
         """
         Opens the cif file and fills information into the main table.
         """
-        self.ui.statusBar.showMessage('')
+        self.status.show_message('')
         with suppress(AttributeError):
             self.ui.moleculeLayout.removeWidget(self.view)
         # Set to empty state bevore loading:
@@ -1576,6 +1570,7 @@ class AppWindow(QMainWindow):
         self.ui.SaveCifButton.setEnabled(True)
         self.ui.ExploreDirButton.setEnabled(True)
         if self.cif:
+            self.options.cif = self.cif
             if ShredCIF(cif=self.cif, ui=self.ui).cif_has_hkl_or_res_file():
                 self.ui.ShredCifButton.setEnabled(True)
             else:

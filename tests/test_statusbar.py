@@ -25,12 +25,17 @@ class TestStausBarWithGraphics(unittest.TestCase):
         self.status = StatusBar(self.ui)
 
     def test_show_hello(self):
-        self.status.set_message('Hello!')
+        self.status.show_message('Hello!')
         self.assertEqual('Hello!', self.status.current_message)
 
     def test_show_list(self):
-        self.status.set_message(['Hello', 'world!'])
+        self.status.show_message(['Hello', 'world!'])
         self.assertEqual('Hello world!', self.status.current_message)
+
+    def test_show_2s(self):
+        self.status.show_message('foobar', timeout=1)
+        self.assertEqual('foobar', self.status.current_message)
+        # I am not sure how to test this really
 
 
 class TestStausBarConsole(unittest.TestCase):
@@ -39,9 +44,9 @@ class TestStausBarConsole(unittest.TestCase):
         self.status = StatusBar()
 
     def test_show_hello(self):
-        self.status.set_message('Hello!')
+        self.status.show_message('Hello!')
         self.assertEqual('Hello!', self.status.current_message)
 
     def test_show_list(self):
-        self.status.set_message(['Hello', 'world!'])
+        self.status.show_message(['Hello', 'world!'])
         self.assertEqual('Hello world!', self.status.current_message)

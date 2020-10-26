@@ -24,10 +24,10 @@ class StatusBar():
         else:
             return self._message
 
-    def set_message(self, message: Union[str, list]):
+    def _set_message(self, message: Union[str, list], timeout: int = 0):
         self._message = self.message_to_string(message)
         if self.graphics:
-            self.ui.statusBar.showMessage(self._message)
+            self.ui.statusBar.showMessage(self._message, msecs=timeout)
         else:
             print(self._message)
 
@@ -36,5 +36,9 @@ class StatusBar():
             return ' '.join(message)
         return message
 
-    def show_message(self, message: str) -> None:
-        self.set_message(message)
+    def show_message(self, message: Union[str, list], timeout: int = 0) -> None:
+        self._set_message(message, timeout=timeout)
+
+
+if __name__ == '__main__':
+    pass

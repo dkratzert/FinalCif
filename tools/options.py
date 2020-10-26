@@ -10,50 +10,68 @@ from tools.settings import FinalCifSettings
 
 
 class Options:
-    def __init__(self, cif: CifContainer, ui: Ui_FinalCifWindow, settings: FinalCifSettings):
-        self.cif: CifContainer = cif
+    def __init__(self, ui: Ui_FinalCifWindow, settings: FinalCifSettings):
+        self._cif = None
         self.ui = ui
         self.settings = settings
+        self._connect_signal_and_slots()
+        self._options = {}
 
-    def save_options(self) -> None:
-        options = {
+    def _connect_signal_and_slots(self):
+        self.ui.HAtomsCheckBox.clicked.connect(self._state_changed)
+        self.ui.ReportTextCheckBox.clicked.connect(self._state_changed)
+        self.ui.PictureWidthDoubleSpinBox.valueChanged.connect(self._state_changed)
+        self.ui.CheckCIFServerURLTextedit.textChanged.connect(self._state_changed)
+
+    def show_options(self):
+        self.ui.HAtomsCheckBox.setChecked(self.without_H)
+        self.ui.ReportTextCheckBox.setChecked(not self.report_text)
+        self.ui.PictureWidthDoubleSpinBox.setValue(self.picture_width)
+        self.ui.CheckCIFServerURLTextedit.setText(self.checkcif_url)
+        self.ui.MainStackedWidget.go_to_options_page()
+        self.ui.ReportPicPushButton.clicked.connect(self.set_report_picture)
+
+    @property
+    def cif(self) -> CifContainer:
+        return self._cif
+
+    @cif.setter
+    def cif(self, obj: CifContainer):
+        self._cif = obj
+
+    def _state_changed(self):
+        self._options = {
             'report_text'  : not self.ui.ReportTextCheckBox.isChecked(),
-            'picture_width': self.ui.PictureWidthDoubleSpinBox.value(),
             'without_H'    : self.ui.HAtomsCheckBox.isChecked(),
+            'picture_width': self.ui.PictureWidthDoubleSpinBox.value(),
+            'checkcif_url' : self.ui.CheckCIFServerURLTextedit.text()
         }
-        self.settings.save_report_options(options)
-        chkcif_options = {
-            'checkcif_url': self.ui.CheckCIFServerURLTextedit.text()
-        }
-        self.checkcif_options = chkcif_options
-        self.settings.save_checkcif_options(chkcif_options)
-        print('options saved')
+        # print('saving:', self._options)
+        self.settings.save_options(self._options)
 
-    def show_options(self) -> None:
-        """
-        {'report_text': True,
-         'picture_width': 7.5,
-         'without_H': False,
-         }
-         """
-        report_options = self.settings.load_report_options()
-        checkcif_options = self.settings.load_checkcif_options()
-        if checkcif_options.get('checkcif_url'):
-            self.ui.CheckCIFServerURLTextedit.setText(checkcif_options.get('checkcif_url'))
-        if report_options.get('report_text') is not None:
-            self.ui.ReportTextCheckBox.setChecked(not report_options.get('report_text'))
-        if report_options.get('without_H') is not None:
-            self.ui.HAtomsCheckBox.setChecked(report_options.get('without_H'))
-        if report_options.get('picture_width'):
-            self.ui.PictureWidthDoubleSpinBox.setValue(report_options.get('picture_width'))
-        # Do I need this?
-        #if not self.cif:
-        #    return
-        # This has to be here:
-        self.ui.HAtomsCheckBox.clicked.connect(self.save_options)
-        self.ui.ReportTextCheckBox.clicked.connect(self.save_options)
-        self.ui.PictureWidthDoubleSpinBox.valueChanged.connect(self.save_options)
-        self.ui.CheckCIFServerURLTextedit.textChanged.connect(self.save_options)
+    @property
+    def values(self):
+        # print('loading:', self._options, self.settings.load_options())
+        return self.settings.load_options()
+
+    def __getitem__(self, item):
+        return self.settings.load_options()[item]
+
+    @property
+    def report_text(self):
+        return self.settings.load_options()['report_text']
+
+    @property
+    def without_H(self):
+        return self.settings.load_options()['without_H']
+
+    @property
+    def picture_width(self):
+        return self.settings.load_options()['picture_width']
+
+    @property
+    def checkcif_url(self):
+        return self.settings.load_options()['checkcif_url']
 
     def set_report_picture(self) -> None:
         """Sets the picture of the report document."""
