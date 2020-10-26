@@ -8,9 +8,10 @@ site_packages = next(p for p in sys.path if 'site-packages' in p)
 
 a = Analysis(['finalcif.py'],
              pathex=['.'],
-             binaries=[],
+             binaries=[('update.exe', '.')],
              datas=[('./gui', 'gui'), (path.join(site_packages,"docx","templates"), 'docx/templates'), 
-                    ('./template', 'template'), ('icon', 'icon'), ('displaymol', 'displaymol'), ('tools', 'tools')],
+                    ('./template', 'template'), ('icon', 'icon'), ('displaymol', 'displaymol'), ('tools', 'tools')
+                    ],
              hiddenimports=['tools', 'tools.misc', 'tools.settings', 'datafiles', 'gemmi', 'qtawesome'],
              hookspath=[],
              runtime_hooks=[],
