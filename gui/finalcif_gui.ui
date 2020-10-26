@@ -533,8 +533,53 @@
         </size>
        </property>
        <layout class="QGridLayout" name="gridLayout_6">
-        <item row="0" column="2">
-         <spacer name="horizontalSpacer_11">
+        <item row="0" column="7">
+         <widget class="QLineEdit" name="CCDCNumLineEdit">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>100</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>120</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="9">
+         <widget class="QLabel" name="SumFormMainLabel">
+          <property name="text">
+           <string>Sum Formula</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="datanameLabel">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>Data Name</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="8">
+         <spacer name="horizontalSpacer_10">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
@@ -543,11 +588,18 @@
           </property>
           <property name="sizeHint" stdset="0">
            <size>
-            <width>20</width>
+            <width>19</width>
             <height>20</height>
            </size>
           </property>
          </spacer>
+        </item>
+        <item row="0" column="6">
+         <widget class="QLabel" name="CCDCNumLabel">
+          <property name="text">
+           <string>CCDC Number</string>
+          </property>
+         </widget>
         </item>
         <item row="0" column="4">
          <widget class="QLineEdit" name="spacegroupLineEdit">
@@ -590,26 +642,6 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="3">
-         <widget class="QLabel" name="spacegroupLabel">
-          <property name="text">
-           <string>Space-Group Type</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0">
-         <widget class="QLabel" name="datanameLabel">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="text">
-           <string>Data Name</string>
-          </property>
-         </widget>
-        </item>
         <item row="0" column="5">
          <spacer name="horizontalSpacer_12">
           <property name="orientation">
@@ -626,35 +658,10 @@
           </property>
          </spacer>
         </item>
-        <item row="0" column="7">
-         <widget class="QLineEdit" name="CCDCNumLineEdit">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>100</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>120</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="readOnly">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="9">
-         <widget class="QLabel" name="SumFormMainLabel">
+        <item row="0" column="3">
+         <widget class="QLabel" name="spacegroupLabel">
           <property name="text">
-           <string>Sum Formula</string>
+           <string>Space-Group Type</string>
           </property>
          </widget>
         </item>
@@ -677,15 +684,8 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="6">
-         <widget class="QLabel" name="CCDCNumLabel">
-          <property name="text">
-           <string>CCDC Number</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="8">
-         <spacer name="horizontalSpacer_10">
+        <item row="0" column="2">
+         <spacer name="horizontalSpacer_11">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
@@ -694,16 +694,23 @@
           </property>
           <property name="sizeHint" stdset="0">
            <size>
-            <width>19</width>
+            <width>20</width>
             <height>20</height>
            </size>
           </property>
          </spacer>
         </item>
-        <item row="1" column="0" colspan="11">
+        <item row="0" column="11">
+         <widget class="QPushButton" name="HelpPushButton">
+          <property name="text">
+           <string>Help</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0" colspan="12">
          <widget class="MyMainStackedWidget" name="MainStackedWidget">
           <property name="currentIndex">
-           <number>6</number>
+           <number>0</number>
           </property>
           <widget class="QWidget" name="page_MainTable">
            <layout class="QVBoxLayout" name="verticalLayout">
@@ -2207,7 +2214,7 @@ The data source will be ignored until next program restart.</string>
                </sizepolicy>
               </property>
               <property name="currentIndex">
-               <number>0</number>
+               <number>2</number>
               </property>
               <property name="documentMode">
                <bool>false</bool>
@@ -2217,7 +2224,7 @@ The data source will be ignored until next program restart.</string>
               </property>
               <widget class="QWidget" name="platon_page">
                <attribute name="title">
-                <string>PLATON CheckCIF</string>
+                <string>PLATON CheckCIF result</string>
                </attribute>
                <layout class="QVBoxLayout" name="verticalLayout_11">
                 <property name="spacing">
@@ -2255,7 +2262,7 @@ The data source will be ignored until next program restart.</string>
               </widget>
               <widget class="QWidget" name="html_page">
                <attribute name="title">
-                <string>html CheckCIF</string>
+                <string>html CheckCIF result</string>
                </attribute>
                <layout class="QVBoxLayout" name="verticalLayout_12">
                 <property name="leftMargin">
@@ -2383,7 +2390,7 @@ The data source will be ignored until next program restart.</string>
               </widget>
               <widget class="QWidget" name="pdf_page">
                <attribute name="title">
-                <string>PDF CheckCIF</string>
+                <string>PDF CheckCIF result</string>
                </attribute>
                <layout class="QVBoxLayout" name="verticalLayout_13">
                 <item>

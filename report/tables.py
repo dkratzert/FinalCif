@@ -8,10 +8,9 @@ import os
 import subprocess
 from math import sin, radians
 from pathlib import Path
-from typing import List, Sequence, Tuple
+from typing import List, Sequence
 
 from docx import Document
-from docx.enum.section import WD_SECTION_START
 from docx.enum.text import WD_TAB_ALIGNMENT, WD_TAB_LEADER, WD_BREAK
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
@@ -27,17 +26,18 @@ from report.report_text import CCDC, CrstalSelection, Crystallization, DataReduc
 from report.symm import SymmetryElement
 from tools.misc import prot_space, angstrom, bequal, sigma_sm, halbgeviert, degree_sign, ellipsis_mid, lessequal, \
     timessym, lambdasym
+from tools.options import Options
 
 
-def make_report_from(options: dict, file_obj: Path, output_filename: str = None, path: str = '',
+def make_report_from(options: Options, file_obj: Path, output_filename: str = None, path: str = '',
                      picfile: Path = None) -> str:
     """
     Creates a tabular cif report.
     :param file_obj: Input cif file.
     :param output_filename: the table is saved to this file.
     """
-    without_H = options.get('without_H')
-    report_text = options.get('report_text')
+    without_H = options.without_H
+    report_text = options.report_text
     document = create_document(path)
     ref = None
 
@@ -64,7 +64,7 @@ def make_report_from(options: dict, file_obj: Path, output_filename: str = None,
         if picfile and picfile.exists():
             pic = document.add_paragraph()
             try:
-                width = float(options['picture_width'])
+                width = float(options.picture_width)
             except ValueError:
                 width = 7.0
             pic.add_run().add_picture(str(picfile), width=Cm(width))

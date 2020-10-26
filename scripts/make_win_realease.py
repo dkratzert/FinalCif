@@ -14,19 +14,21 @@ import os
 import shutil
 import subprocess
 import sys
-from datetime import date, datetime
+from datetime import datetime
 from pathlib import Path
 
 from PyQt5 import uic
 
+from tools.misc import sha512_checksum
 from tools.version import VERSION
 
-iss_file = r'scripts\finalcif-install_win64.iss'
+iss_file = 'scripts/finalcif-install_win64.iss'
 
 try:
     arg = sys.argv[1]
 except IndexError:
-    arg=''
+    arg = ''
+
 
 def disable_debug(filepath: str):
     pth = Path(filepath)
@@ -52,15 +54,25 @@ def recompile_ui():
         raise
 
 
+def make_shasum(filename):
+    sha = sha512_checksum(filename)
+    shafile = Path('scripts/Output/FinalCif-setup-x64-v{}-sha512.sha'.format(VERSION))
+    shafile.unlink(missing_ok=True)
+    shafile.write_text(sha)
+    print("SHA512: {}".format(sha))
+
+
 def copy_to_remote():
     print('copying file')
     print(r'dist\FinalCif.exe', r'W:\htdocs\finalcif\FinalCif-v{}.exe'.format(VERSION))
     shutil.copy(r'dist\FinalCif.exe', r'W:\htdocs\finalcif\FinalCif-v{}.exe'.format(VERSION))
     Path(r'W:\htdocs\finalcif\version.txt').write_text(str(VERSION))
 
+
 def update_installation():
     print('copying files')
     shutil.copytree(r'dist/FinalCif', r'C:\Program Files\FinalCif', dirs_exist_ok=True)
+
 
 def process_iss(filepath):
     pth = Path(filepath)
@@ -78,21 +90,23 @@ def process_iss(filepath):
 disable_debug('finalcif.py')
 
 recompile_ui()
+os.chdir(str(Path(__file__).parent.parent.absolute()))
 
 print(arg)
 
 process_iss(iss_file)
 
 if arg == 'copy':
-    subprocess.run(r""".\venv\Scripts\pyinstaller.exe -D Finalcif_installer.spec --clean -y""".split())
-    #copy_to_remote()
+    subprocess.run("venv/Scripts/pyinstaller.exe -D Finalcif_installer.spec --clean -y".split())
+    # copy_to_remote()
     update_installation()
 else:
-    subprocess.run(r""".\venv\Scripts\pyinstaller.exe -D Finalcif_installer.spec --clean -y""".split())
-
+    # create executable
+    subprocess.run("venv/Scripts/pyinstaller.exe -D Finalcif_installer.spec --clean -y".split())
+    # Run 64bit Inno setup compiler
     innosetup_compiler = r'C:/Program Files (x86)/Inno Setup 6/ISCC.exe'
-    # Run 64bit setup compiler
     subprocess.run([innosetup_compiler, iss_file, ])
 
+make_shasum("scripts/Output/FinalCif-setup-x64-v{}.exe".format(VERSION))
 print('Created version: {}'.format(VERSION))
 print(datetime.now().strftime("%d.%m.%Y %H:%M:%S"))
