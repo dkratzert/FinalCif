@@ -2,6 +2,7 @@ import ctypes
 import os
 import sys
 from pathlib import Path
+from typing import Union
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
@@ -78,6 +79,7 @@ def show_general_warning(warn_text: str = '') -> None:
     box.setTextInteractionFlags(Qt.TextBrowserInteraction)
     box.setText(warn_text)
     box.exec()
+
 
 
 def show_update_warning(remote_version: int = 0) -> None:

@@ -13,6 +13,9 @@ a = Analysis(['finalcif.py'],
                     ('./template', 'template'), ('icon', 'icon'), ('displaymol', 'displaymol'), ('tools', 'tools'),
                     ],
              hiddenimports=['tools', 'tools.misc', 'tools.settings', 'datafiles', 'gemmi', 'qtawesome', 'finalcif'],
+
+                    ('./template', 'template'), ('icon', 'icon'), ('displaymol', 'displaymol'), ('tools', 'tools')
+                    ],
              hookspath=[],
              runtime_hooks=[],
              excludes=[],

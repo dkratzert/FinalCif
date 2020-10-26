@@ -84,6 +84,11 @@ as dict:
 """
 # They must be here in order to have directly updated ui files from the ui compiler:
 
+from gui.finalcif_gui import Ui_FinalCifWindow
+from gui.custom_classes import MyComboBox, MyEQTableWidget, MyTableWidgetItem, blue, light_green, yellow, \
+    COL_CIF, \
+    COL_DATA, COL_EDIT, MyQPlainTextEdit
+
 
 if __name__ == '__main__':
     def my_exception_hook(exctype: Type[BaseException], value: BaseException, error_traceback) -> None:
