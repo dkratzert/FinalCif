@@ -71,8 +71,18 @@ from PyQt5.QtGui import QFont, QIcon, QBrush, QResizeEvent, QMoveEvent
 from PyQt5.QtWidgets import QApplication, QHeaderView, QListWidget, QListWidgetItem, \
     QMainWindow, QPlainTextEdit, QStackedWidget, QTableWidget, QShortcut, QCheckBox, QTableView
 
-"""
+r"""
 TODO:
+
+ __________              ________________  
+| FinalCif| <--------->  | Options      |  
+| ----------------|      ----------------       _____________
+| self.ui.Button.  |     | state changed |  --> |  Settings |
+| clicked.connect( |     ----------------       -------------
+| self.options.    |     | options: dict |
+| setButtonstate)  |     ----------------
+|-----------------|------/\
+
 - make equipment template name editable
 - Peters comments on equipment templates:
     * save state and order of selected templates in order to be able to undo a selection with a second click. 
@@ -341,6 +351,11 @@ class AppWindow(QMainWindow):
         # Shred Cif
         self.ui.ShredCifButton.clicked.connect(self.do_shred_cif)
         self.ui.OptionsPushButton.clicked.connect(self.show_options)
+        # help
+        self.ui.HelpPushButton.clicked.connect(self.show_help)
+
+    def show_help(self):
+        QDesktopServices.openUrl(QUrl('https://xs3-data.uni-freiburg.de/finalcif/help/'))
 
     def do_shred_cif(self):
         shred = ShredCIF(cif=self.cif, ui=self.ui)
