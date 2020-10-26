@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "FinalCif"
-#define MyAppVersion "73"
+#define MyAppVersion "74"
 #define MyAppPublisher "Daniel Kratzert"
 
 ; Remember, first run pyInstaller script!
@@ -70,8 +70,6 @@ Type: files; Name: "{app}\*.pyc"
 Type: files; Name: "{app}\*.*"
 Type: filesandordirs; Name: "{app}\*"
 
-[InstallDelete]
-
 [Tasks]
 
 [Files]
@@ -82,5 +80,27 @@ Name: "{app}\displaymol"; Permissions: everyone-full
 Name: "{app}\gui"; Permissions: everyone-full
 
 [Code]
+procedure CurStepChanged(CurStep: TSetupStep);
+// This procedure deletes the installer executable when it 
+// is named 'update-finalcif.exe'
+var
+  strContent: String;
+  intErrorCode: Integer;
+  strSelf_Delete_BAT: String;
+begin
+  // Pos == str.contains(x)
+  if Pos('update-finalcif.exe', ExpandConstant('{srcexe}')) > 0 then
+    begin
+    if CurStep=ssDone then
+    begin
+      strContent := ':try_delete' + #13 + #10 +
+            'del "' + ExpandConstant('{srcexe}') + '"' + #13 + #10 +
+            'if exist "' + ExpandConstant('{srcexe}') + '" goto try_delete' + #13 + #10 +
+            'del %0';
 
-
+      strSelf_Delete_BAT := ExtractFilePath(ExpandConstant('{tmp}')) + 'SelfDelete.bat';
+      SaveStringToFile(strSelf_Delete_BAT, strContent, False);
+      Exec(strSelf_Delete_BAT, '', '', SW_HIDE, ewNoWait, intErrorCode);
+    end;
+  end;
+end;

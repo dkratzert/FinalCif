@@ -6,7 +6,7 @@
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
 # 
-
+import hashlib
 import itertools as it
 import re
 from math import sqrt
@@ -40,6 +40,17 @@ lambdasym = u'\u03bb'
 one_bar = u'\u0031\u0305'
 # Zero with space ZWSP
 zero_width_space = u'\u200B'
+
+
+def sha512_checksum(filename, block_size=65536):
+    """
+    Calculates a SHA512 checksum from a file.
+    """
+    sha512 = hashlib.sha512()
+    with open(filename, 'rb') as f:
+        for block in iter(lambda: f.read(block_size), b''):
+            sha512.update(block)
+    return sha512.hexdigest()
 
 
 def distance(x1: float, y1: float, z1: float, x2: float, y2: float, z2: float) -> float:

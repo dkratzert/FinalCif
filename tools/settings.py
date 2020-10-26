@@ -167,35 +167,21 @@ class FinalCifSettings():
             return [('', '')]
         return [(n, x) for n, x in enumerate(templ[1]) if templ and len(templ) > 0]
 
-    def load_report_options(self) -> dict:
-        self.settings.beginGroup('ReportOptions')
-        options = self.settings.value("report", type=dict)
+    def load_options(self) -> dict:
+        self.settings.beginGroup('Options')
+        options = self.settings.value("options", type=dict)
         if not options:
             options = {'report_text'  : True,
                        'picture_width': 7.5,
                        'without_H'    : False,
+                       'checkcif_url' : 'https://checkcif.iucr.org/cgi-bin/checkcif_with_hkl'
                        }
         self.settings.endGroup()
         return options
 
-    def save_report_options(self, options: dict):
-        self.settings.beginGroup('ReportOptions')
-        self.settings.setValue('report', options)
-        self.settings.endGroup()
-
-    def load_checkcif_options(self):
-        self.settings.beginGroup('CheckCifOptions')
-        options = self.settings.value("checkcif", type=dict)
-        if not options:
-            options = {
-                'checkcif_url': 'https://checkcif.iucr.org/cgi-bin/checkcif_with_hkl'
-            }
-        self.settings.endGroup()
-        return options
-
-    def save_checkcif_options(self, options: dict):
-        self.settings.beginGroup('CheckCifOptions')
-        self.settings.setValue('checkcif', options)
+    def save_options(self, options: dict):
+        self.settings.beginGroup('Options')
+        self.settings.setValue('options', options)
         self.settings.endGroup()
 
 

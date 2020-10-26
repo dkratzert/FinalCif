@@ -12,10 +12,8 @@ from datetime import datetime
 import displaymol
 from displaymol import mol_file_writer, write_html
 from displaymol.sdm import SDM
-from gui.dialogs import cif_file_open_dialog, cif_file_save_dialog, show_general_warning, bug_found_warning, \
-    unable_to_open_message, bad_z_message
-from gui.loops import Loop
-from tools.shred import ShredCIF
+from tools.options import Options
+from tools.statusbar import StatusBar
 
 DEBUG = False
 if 'compile' in sys.argv:
@@ -50,7 +48,10 @@ from PyQt5.QtWebEngineWidgets import QWebEngineView
 # noinspection PyUnresolvedReferences
 from gemmi import cif
 from qtpy.QtGui import QDesktopServices, QKeySequence
-
+from gui.dialogs import cif_file_open_dialog, cif_file_save_dialog, show_general_warning, bug_found_warning, \
+    unable_to_open_message, bad_z_message, do_update_program, show_update_warning
+from gui.loops import Loop
+from tools.shred import ShredCIF
 from cif.cif_file_io import CifContainer
 from cif.text import set_pair_delimited, utf8_to_str, retranslate_delimiter
 from cif.core_dict import cif_core
@@ -60,7 +61,7 @@ from datafiles.platon import Platon
 from gui.vrf_classes import MyVRFContainer, VREF
 from report.archive_report import ArchiveReport
 from report.tables import make_report_from
-from tools.checkcif import AlertHelp, MakeCheckCif, MyHTMLParser
+from tools.checkcif import AlertHelp, CheckCif, MyHTMLParser
 from tools.misc import combobox_fields, predef_equipment_templ, predef_prop_templ, \
     strip_finalcif_of_name, to_float, next_path, celltxt, do_not_import_keys, include_equipment_imports
 from tools.settings import FinalCifSettings
@@ -68,10 +69,10 @@ from tools.version import VERSION
 
 from PyQt5.QtCore import QPoint, Qt, QUrl, QEvent
 from PyQt5.QtGui import QFont, QIcon, QBrush, QResizeEvent, QMoveEvent
-from PyQt5.QtWidgets import QApplication, QFileDialog, QHeaderView, QListWidget, QListWidgetItem, \
-    QMainWindow, QPlainTextEdit, QStackedWidget, QTableWidget, QShortcut, QCheckBox, QTableView
+from PyQt5.QtWidgets import QApplication, QHeaderView, QListWidget, QListWidgetItem, \
+    QMainWindow, QPlainTextEdit, QStackedWidget, QTableWidget, QShortcut, QCheckBox, QTableView, QMessageBox
 
-"""
+r"""
 TODO:
 - make equipment template name editable
 - Peters comments on equipment templates:
@@ -134,7 +135,8 @@ class AppWindow(QMainWindow):
         # To make file drag&drop working:
         self.setAcceptDrops(True)
         self.show()
-        self.statusBar().showMessage('FinalCif version {}'.format(VERSION))
+        self.status = StatusBar(ui=self.ui)
+        self.status.show_message('FinalCif version {}'.format(VERSION))
         self.settings = FinalCifSettings(self)
         self.settings.load_window_position()
         self.store_predefined_templates()
@@ -162,8 +164,7 @@ class AppWindow(QMainWindow):
         self.ui.SourcesPushButton.setDisabled(True)
         self.ui.OptionsPushButton.setDisabled(True)
         self.ui.ImportCifPushButton.setDisabled(True)
-        # noinspection PyTypeChecker
-        self.cif: CifContainer = None
+        self.cif: Union[CifContainer, None] = None
         self.view: Union[QWebEngineView, None] = None
         self.tempwarning_displayed = False
         self.final_cif_file_name = Path()
@@ -171,6 +172,7 @@ class AppWindow(QMainWindow):
         # True if line with "these are already in" reached:
         self.complete_data_row = -1
         self.ui.growCheckBox.setChecked(True)
+        self.options = Options(self.ui, self.settings)
         self.connect_signals_and_slots()
         self.manufacturer = 'bruker'
         self.make_button_icons()
@@ -190,8 +192,6 @@ class AppWindow(QMainWindow):
         self.get_checkdef()
         self.ui.PictureWidthDoubleSpinBox.setRange(0.0, 25)
         self.ui.PictureWidthDoubleSpinBox.setSingleStep(0.5)
-        self.report_options = self.settings.load_report_options()
-        self.checkcif_options = self.settings.load_checkcif_options()
 
     def make_button_icons(self):
         self.ui.CheckcifButton.setIcon(qta.icon('mdi.file-document-outline'))
@@ -202,8 +202,7 @@ class AppWindow(QMainWindow):
         self.ui.SaveFullReportButton.setIcon(qta.icon('mdi.file-table-outline'))
         self.ui.ExploreDirButton.setIcon(qta.icon('fa5.folder-open'))
         self.ui.SaveCifButton.setIcon(qta.icon('fa5.save'))
-        options = [{'color': 'darkgreen'}]
-        self.ui.SelectCif_PushButton.setIcon(qta.icon('fa5.file-alt', options=options))
+        self.ui.SelectCif_PushButton.setIcon(qta.icon('fa5.file-alt', options=[{'color': 'darkgreen'}]))
         # self.ui.SelectCif_PushButton.setIcon(qta.icon('fa5s.spinner', color='red',
         #             animation=qta.Spin(self.ui.SelectCif_PushButton)))
         self.ui.SourcesPushButton.setIcon(qta.icon('fa5s.tasks'))
@@ -227,6 +226,7 @@ class AppWindow(QMainWindow):
         self.ui.BackFromPlatonPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
         self.ui.CCDCpushButton.setIcon(qta.icon('fa5s.upload'))
         self.ui.CODpushButton.setIcon(qta.icon('mdi.upload'))
+        self.ui.SavePushButton.setIcon(qta.icon('mdi.content-save'))
 
     def resizeEvent(self, a0: QResizeEvent) -> None:
         """It called when the main window resizes."""
@@ -335,17 +335,19 @@ class AppWindow(QMainWindow):
         #
         self.ui.SourcesPushButton.clicked.connect(self.show_sources)
         self.ui.BackSourcesPushButton.clicked.connect(self.back_to_main_noload)
-        # Report picture:
-        self.ui.ReportPicPushButton.clicked.connect(self.set_report_picture)
-        # Options:
-        self.ui.OptionsPushButton.clicked.connect(self.show_options)
         self.ui.BackFromOptionspPushButton.clicked.connect(self.back_to_main_noload)
         self.ui.BackFromLoopsPushButton.clicked.connect(self.back_to_main_noload)
         # Shred Cif
         self.ui.ShredCifButton.clicked.connect(self.do_shred_cif)
+        self.ui.OptionsPushButton.clicked.connect(self.options.show_options)
+        # help
+        self.ui.HelpPushButton.clicked.connect(self.show_help)
+
+    def show_help(self):
+        QDesktopServices.openUrl(QUrl('https://xs3-data.uni-freiburg.de/finalcif/help/'))
 
     def do_shred_cif(self):
-        shred = ShredCIF(cif=self.cif, ui=self.ui, final_cif_name=self.final_cif_file_name)
+        shred = ShredCIF(cif=self.cif, ui=self.ui)
         shred.shred_cif()
         self.explore_current_dir()
 
@@ -356,71 +358,6 @@ class AppWindow(QMainWindow):
         self.ui.MainStackedWidget.go_to_checkcif_page()
         # self.ui.CheckCIFResultsTabWidget.setCurrentIndex(1)  # Index 4 is empty, 1 is html
         self.ui.ResponsesTabWidget.setCurrentIndex(0)  # the second is alters/responses list
-
-    def show_options(self) -> None:
-        """
-        {'report_text': True,
-         'picture_width': 7.5,
-         'without_H': False,
-         }
-         """
-        self.report_options = self.settings.load_report_options()
-        self.checkcif_options = self.settings.load_checkcif_options()
-        if self.checkcif_options.get('checkcif_url'):
-            self.ui.CheckCIFServerURLTextedit.setText(self.checkcif_options.get('checkcif_url'))
-        if self.report_options.get('report_text') is not None:
-            self.ui.ReportTextCheckBox.setChecked(not self.report_options.get('report_text'))
-        if self.report_options.get('without_H') is not None:
-            self.ui.HAtomsCheckBox.setChecked(self.report_options.get('without_H'))
-        if self.report_options.get('picture_width'):
-            self.ui.PictureWidthDoubleSpinBox.setValue(self.report_options.get('picture_width'))
-        if not self.cif:
-            return
-        # This has to be here:
-        self.ui.HAtomsCheckBox.clicked.connect(self.save_options)
-        self.ui.ReportTextCheckBox.clicked.connect(self.save_options)
-        self.ui.PictureWidthDoubleSpinBox.valueChanged.connect(self.save_options)
-        self.ui.CheckCIFServerURLTextedit.textChanged.connect(self.save_options)
-        self.ui.MainStackedWidget.go_to_options_page()
-
-    def check_hkl_res_files(self):
-        """
-        Check whether hkl and/or res file content is included in the cif file.
-        """
-        if not self.cif.res_file_data:
-            self.ui.statusBar.showMessage('No .res file data found!')
-        if not self.cif.hkl_file:
-            self.ui.statusBar.showMessage(self.ui.statusBar.currentMessage() + '\nNo .hkl file data found!')
-        if not any([self.cif.res_file_data, self.cif.hkl_file]):
-            self.ui.statusBar.showMessage('No .res and .hkl file data found!')
-            self.ui.ShredCifButton.setDisabled(True)
-        else:
-            self.ui.ShredCifButton.setEnabled(True)
-
-    def save_options(self) -> None:
-        options = {
-            'report_text'  : not self.ui.ReportTextCheckBox.isChecked(),
-            'picture_width': self.ui.PictureWidthDoubleSpinBox.value(),
-            'without_H'    : self.ui.HAtomsCheckBox.isChecked(),
-        }
-        self.report_options = options
-        self.settings.save_report_options(options)
-        chkcif_options = {
-            'checkcif_url': self.ui.CheckCIFServerURLTextedit.text()
-        }
-        self.checkcif_options = chkcif_options
-        self.settings.save_checkcif_options(chkcif_options)
-
-    def set_report_picture(self) -> None:
-        """Sets the picture of the report document."""
-        filename, _ = QFileDialog.getOpenFileName(filter="Image Files (*.png *.jpg *.jpeg *.bmp "
-                                                         "*.gif *.tif *.tiff *.eps *.emf *.wmf)",
-                                                  caption='Open a Report Picture')
-        with suppress(Exception):
-            self.report_picture = Path(filename)
-        if self.report_picture.exists() and self.report_picture.is_file():
-            self.ui.ReportPicPushButton.setIcon(qta.icon('fa5.image'))
-            self.ui.ReportPicPushButton.setText('')
 
     def _ccdc_deposit(self) -> None:
         """
@@ -457,10 +394,11 @@ class AppWindow(QMainWindow):
             pass
         if remote_version > VERSION:
             print('Version {} is outdated (actual is {}).'.format(VERSION, remote_version))
-            show_general_warning(
+            show_update_warning(
                 r"A newer version {} of FinalCif is available under: <br>"
                 r"<a href='https://www.xs3.uni-freiburg.de/research/finalcif'>"
-                r"https://www.xs3.uni-freiburg.de/research/finalcif</a>".format(remote_version))
+                r"https://www.xs3.uni-freiburg.de/research/finalcif</a>"
+                r"<br><br>Updating now will end all running FinalCIF programs!", remote_version)
 
     def erase_disabled_items(self) -> None:
         """
@@ -595,14 +533,14 @@ class AppWindow(QMainWindow):
         """
         Get back to the main table. Without loading a new cif file.
         """
-        self.ui.statusBar.showMessage('')
+        self.status.show_message('')
         self.ui.LoopsPushButton.setText('Show Loops')
         self.ui.MainStackedWidget.got_to_main_page()
         if self.view:
             self.ui.moleculeLayout.removeWidget(self.view)
 
     def _checkcif_failed(self, txt: str):
-        self.ui.CheckCifLogPlainTextEdit.appendPlainText(txt)
+        self.ui.CheckCifLogPlainTextEdit.appendHtml('<b>{}</b>'.format(txt))
 
     def _ckf_progress(self, txt: str):
         self.ui.CheckCifLogPlainTextEdit.appendPlainText(txt)
@@ -617,15 +555,14 @@ class AppWindow(QMainWindow):
             parser = MyHTMLParser(self.htmlfile.read_text())
         except FileNotFoundError:
             # happens if checkcif fails, e.g. takes too much time.
-            self.ui.CheckCifLogPlainTextEdit.appendPlainText('CheckCIF failed to finish. '
-                                                             'Please try it at https://checkcif.iucr.org/ instead')
+            self.ui.CheckCifLogPlainTextEdit.appendHtml('<b>CheckCIF failed to finish. '
+                                                        'Please try it at https://checkcif.iucr.org/ instead</b>')
             return
         self.checkcif_browser = QWebEngineView(self.ui.htmlTabwidgetPage)
         self.ui.htmlCHeckCifGridLayout.addWidget(self.checkcif_browser)
         url = QUrl.fromLocalFile(str(self.htmlfile.absolute()))
         self.ui.MainStackedWidget.go_to_checkcif_page()
         self.ui.CheckCIFResultsTabWidget.setCurrentIndex(1)  # Index 1 is html page
-        self.ui.SavePushButton.setIcon(qta.icon('mdi.content-save'))
         self.checkcif_browser.load(url)
         self.ui.ResponsesTabWidget.setCurrentIndex(0)
         # The picture file linked in the html file:
@@ -667,10 +604,10 @@ class AppWindow(QMainWindow):
                 print('Browser not removed:')
                 print(e)
         self.ui.CheckCIFResultsTabWidget.setCurrentIndex(1)
-        checkcif_url = self.checkcif_options.get('checkcif_url')
-        self.ui.CheckCifLogPlainTextEdit.appendPlainText('Sending html report request to {} ...'.format(checkcif_url))
+        self.ui.CheckCifLogPlainTextEdit.appendPlainText(
+            'Sending html report request to {} ...'.format(self.options.checkcif_url))
         if not self.save_current_cif_file():
-            self.ui.CheckCifLogPlainTextEdit.appendPlainText('Unable to save CIF file. Aborting action...')
+            self.ui.CheckCifLogPlainTextEdit.appendHtml('<b>Unable to save CIF file. Aborting action...</b>')
             return None
         self.load_cif_file(self.final_cif_file_name)
         self.htmlfile = Path(strip_finalcif_of_name('checkcif-' + self.cif.fileobj.stem) + '-finalcif.html')
@@ -678,11 +615,9 @@ class AppWindow(QMainWindow):
             self.htmlfile.unlink()
         except (FileNotFoundError, PermissionError):
             pass
-        self.ckf = MakeCheckCif(cif=self.cif, outfile=self.htmlfile,
-                                hkl=(not self.ui.structfactCheckBox.isChecked()),
-                                pdf=False,
-                                url=checkcif_url
-                                )
+        self.ckf = CheckCif(cif=self.cif, outfile=self.htmlfile,
+                            hkl_upload=(not self.ui.structfactCheckBox.isChecked()), pdf=False,
+                            url=self.options.checkcif_url)
         self.ckf.failed.connect(self._checkcif_failed)
         # noinspection PyUnresolvedReferences
         self.ckf.finished.connect(self._checkcif_finished)
@@ -732,7 +667,7 @@ class AppWindow(QMainWindow):
         self.ui.CheckCifLogPlainTextEdit.clear()
         self.ui.CheckCIFResultsTabWidget.setCurrentIndex(2)
         if not self.save_current_cif_file():
-            self.ui.CheckCifLogPlainTextEdit.appendPlainText('Unable to save CIF file. Aborting action...')
+            self.ui.CheckCifLogPlainTextEdit.appendHtml('<b>Unable to save CIF file. Aborting action...</b>')
             return None
         self.load_cif_file(self.final_cif_file_name)
         htmlfile = Path('checkpdf-' + self.cif.fileobj.stem + '.html')
@@ -740,13 +675,10 @@ class AppWindow(QMainWindow):
             htmlfile.unlink()
         except (FileNotFoundError, PermissionError):
             pass
-        checkcif_url = self.checkcif_options.get('checkcif_url')
-        self.ui.CheckCifLogPlainTextEdit.appendPlainText('Sending pdf report request to {} ...'.format(checkcif_url))
-        self.ckf = MakeCheckCif(cif=self.cif, outfile=htmlfile,
-                                hkl=(not self.ui.structfactCheckBox.isChecked()),
-                                pdf=True,
-                                url=checkcif_url
-                                )
+        self.ui.CheckCifLogPlainTextEdit.appendPlainText(
+            'Sending pdf report request to {} ...'.format(self.options.checkcif_url))
+        self.ckf = CheckCif(cif=self.cif, outfile=htmlfile, hkl_upload=(not self.ui.structfactCheckBox.isChecked()),
+                            pdf=True, url=self.options.checkcif_url)
         self.ckf.failed.connect(self._checkcif_failed)
         # noinspection PyUnresolvedReferences
         self.ckf.finished.connect(self._pdf_checkcif_finished)
@@ -844,7 +776,7 @@ class AppWindow(QMainWindow):
         else:
             picfile = Path(self.final_cif_file_name.stem + '.gif')
         try:
-            make_report_from(options=self.report_options,
+            make_report_from(options=self.options,
                              file_obj=self.final_cif_file_name,
                              output_filename=report_filename,
                              path=application_path,
@@ -973,7 +905,7 @@ class AppWindow(QMainWindow):
             self.final_cif_file_name = Path(filename)
         try:
             self.cif.save(str(self.final_cif_file_name.absolute()))
-            self.ui.statusBar.showMessage('  File Saved:  {}'.format(self.final_cif_file_name.name), 10000)
+            self.status.show_message('  File Saved:  {}'.format(self.final_cif_file_name.name), 10000)
             print('File saved ...')
             return True
         except Exception as e:
@@ -1545,7 +1477,7 @@ class AppWindow(QMainWindow):
         """
         Opens the cif file and fills information into the main table.
         """
-        self.ui.statusBar.showMessage('')
+        self.status.show_message('')
         with suppress(AttributeError):
             self.ui.moleculeLayout.removeWidget(self.view)
         # Set to empty state bevore loading:
@@ -1629,7 +1561,11 @@ class AppWindow(QMainWindow):
         self.ui.SaveCifButton.setEnabled(True)
         self.ui.ExploreDirButton.setEnabled(True)
         if self.cif:
-            self.check_hkl_res_files()
+            self.options.cif = self.cif
+            if ShredCIF(cif=self.cif, ui=self.ui).cif_has_hkl_or_res_file():
+                self.ui.ShredCifButton.setEnabled(True)
+            else:
+                self.ui.ShredCifButton.setDisabled(True)
             curdir = str(self.cif.fileobj.absolute().parent)
             # saving current cif dir as last working directory:
             self.settings.save_current_dir(curdir)
