@@ -2,6 +2,7 @@ scripts/Output
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
+updater
 *$py.class
 venv2
 .idea
