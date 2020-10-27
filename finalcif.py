@@ -1562,7 +1562,6 @@ class AppWindow(QMainWindow):
         self.ui.SaveCifButton.setEnabled(True)
         self.ui.ExploreDirButton.setEnabled(True)
         if self.cif:
-            self.options.cif = self.cif
             if ShredCIF(cif=self.cif, ui=self.ui).cif_has_hkl_or_res_file():
                 self.ui.ShredCifButton.setEnabled(True)
             else:
