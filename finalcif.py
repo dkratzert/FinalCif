@@ -399,7 +399,7 @@ class AppWindow(QMainWindow):
                 r"A newer version {} of FinalCif is available under: <br>"
                 r"<a href='https://www.xs3.uni-freiburg.de/research/finalcif'>"
                 r"https://www.xs3.uni-freiburg.de/research/finalcif</a>"
-                r"<br><br>Updating now will end all running FinalCIF programs!", remote_version)
+                , remote_version)
 
     def erase_disabled_items(self) -> None:
         """

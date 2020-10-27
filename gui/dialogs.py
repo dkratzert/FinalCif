@@ -1,6 +1,7 @@
 import ctypes
 import os
 import subprocess
+import sys
 from pathlib import Path
 from typing import Union
 
@@ -75,9 +76,11 @@ def show_update_warning(warn_text: str = '', remote_version: int = 0) -> Union[Q
     box.setTextFormat(Qt.AutoText)
     box.setWindowTitle(" ")
     box.setTextInteractionFlags(Qt.TextBrowserInteraction)
+    if sys.platform == "win" or sys.platform == "win32":
+        warn_text += r"<br><br>Updating now will end all running FinalCIF programs!"
+        update_button = box.addButton('Update Now', QMessageBox.AcceptRole)
+        update_button.clicked.connect(lambda: do_update_program(str(remote_version)))
     box.setText(warn_text.format(remote_version))
-    update_button = box.addButton('Update Now', QMessageBox.AcceptRole)
-    update_button.clicked.connect(lambda: do_update_program(str(remote_version)))
     box.exec()
 
 
