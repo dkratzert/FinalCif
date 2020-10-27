@@ -19,10 +19,8 @@ class TestStausBarWithGraphics(unittest.TestCase):
         self.myapp.setWindowIcon(QIcon('./icon/multitable.png'))
         self.myapp.setWindowTitle('FinalCif v{}'.format(VERSION))
         self.myapp.hide()
-        self.ui = Ui_FinalCifWindow()
-        self.ui.setupUi(self.myapp)
         # self.ui = None
-        self.status = StatusBar(self.ui)
+        self.status = StatusBar(self.myapp.ui)
 
     def test_show_hello(self):
         self.status.show_message('Hello!')
