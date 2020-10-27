@@ -317,6 +317,7 @@ class AppWindow(QMainWindow):
         self.ui.OptionsPushButton.clicked.connect(self.options.show_options)
         # help
         self.ui.HelpPushButton.clicked.connect(self.show_help)
+        self.ui.ReportPicPushButton.clicked.connect(self.options.set_report_picture)
 
     def resizeEvent(self, a0: QResizeEvent) -> None:
         """It called when the main window resizes."""
