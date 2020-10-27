@@ -745,7 +745,6 @@ class AppWindow(QMainWindow):
         ccpe.verticalScrollBar().setValue(0)
         moiety = self.ui.cif_main_table.getTextFromKey(key='_chemical_formula_moiety', col=0)
         if p.formula_moiety and moiety in ['', '?']:
-            self.ui.MainStackedWidget.got_to_main_page()
             self.ui.cif_main_table.setText(key='_chemical_formula_moiety', txt=p.formula_moiety, column=COL_EDIT)
 
     def load_recent_file(self, file_index: int) -> None:
