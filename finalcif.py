@@ -228,30 +228,6 @@ class AppWindow(QMainWindow):
         self.ui.CODpushButton.setIcon(qta.icon('mdi.upload'))
         self.ui.SavePushButton.setIcon(qta.icon('mdi.content-save'))
 
-    def resizeEvent(self, a0: QResizeEvent) -> None:
-        """It called when the main window resizes."""
-        super(AppWindow, self).resizeEvent(a0)
-        with suppress(AttributeError):
-            self.view.reload()
-        with suppress(AttributeError):
-            self._savesize()
-
-    def moveEvent(self, a0: QMoveEvent) -> None:
-        """Is called when the main window moves."""
-        super(AppWindow, self).moveEvent(a0)
-        with suppress(AttributeError):
-            self._savesize()
-
-    def changeEvent(self, event):
-        """Is called when the main window changes its state."""
-        if event.type() == QEvent.WindowStateChange:
-            with suppress(AttributeError):
-                self._savesize()
-
-    def _savesize(self):
-        """Saves the main window size nd position."""
-        x, y = self.pos().x(), self.pos().y()
-        self.settings.save_window_position(QPoint(x, y), self.size(), self.isMaximized())
 
     def connect_signals_and_slots(self):
         """
@@ -342,6 +318,31 @@ class AppWindow(QMainWindow):
         self.ui.OptionsPushButton.clicked.connect(self.options.show_options)
         # help
         self.ui.HelpPushButton.clicked.connect(self.show_help)
+
+    def resizeEvent(self, a0: QResizeEvent) -> None:
+        """It called when the main window resizes."""
+        super(AppWindow, self).resizeEvent(a0)
+        with suppress(AttributeError):
+            self.view.reload()
+        with suppress(AttributeError):
+            self._savesize()
+
+    def moveEvent(self, a0: QMoveEvent) -> None:
+        """Is called when the main window moves."""
+        super(AppWindow, self).moveEvent(a0)
+        with suppress(AttributeError):
+            self._savesize()
+
+    def changeEvent(self, event):
+        """Is called when the main window changes its state."""
+        if event.type() == QEvent.WindowStateChange:
+            with suppress(AttributeError):
+                self._savesize()
+
+    def _savesize(self):
+        """Saves the main window size nd position."""
+        x, y = self.pos().x(), self.pos().y()
+        self.settings.save_window_position(QPoint(x, y), self.size(), self.isMaximized())
 
     def show_help(self):
         QDesktopServices.openUrl(QUrl('https://xs3-data.uni-freiburg.de/finalcif/help/'))

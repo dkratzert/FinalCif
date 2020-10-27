@@ -16,8 +16,8 @@ from tools.misc import strip_finalcif_of_name
 from tools.version import VERSION
 
 
-def replace_newlines(txt):
-    return re.sub(r'\r', '', txt)
+def unify_line_endings(text: str):
+    return '\n'.join(text.splitlines())
 
 
 export_templ_data = ['data_D8__VENTURE',
@@ -180,8 +180,8 @@ class TestApplication(unittest.TestCase):
         self.assertEqual('direct', self.myapp.ui.cif_main_table.cellWidget(_atom_sites_solution_primary, 2).itemText(1))
         self.assertEqual('vecmap', self.myapp.ui.cif_main_table.cellWidget(_atom_sites_solution_primary, 2).itemText(2))
         # _audit_contact_author_address
-        self.assertEqual(addr,
-                         replace_newlines(
+        self.assertEqual(unify_line_endings(addr),
+                         unify_line_endings(
                              self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_address', 0)))
         self.assertEqual('', self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_address', 1))
         self.assertEqual('', self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_address', 2))
@@ -380,20 +380,17 @@ class TestWorkfolder(unittest.TestCase):
         self.myapp.ui.EquipmentTemplatesListWidget.setCurrentItem(item)
         self.myapp.load_selected_equipment()
         self.assertEqual('?', self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_address', 0))
-        self.assertEqual(addr, self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_address', 1))
-        self.assertEqual(addr, self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_address', 2))
+        self.assertEqual(unify_line_endings(addr),
+                         unify_line_endings(self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_address', 1)))
+        self.assertEqual(unify_line_endings(addr),
+                         unify_line_endings(self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_address', 2)))
         self.assertEqual("<class 'gui.custom_classes.MyQPlainTextEdit'>",
                          str(self.myapp.ui.cif_main_table.cellWidget(4, 0).__class__))
         self.assertEqual("<class 'gui.custom_classes.MyQPlainTextEdit'>",
                          str(self.myapp.ui.cif_main_table.cellWidget(4, 1).__class__))
         self.assertEqual("<class 'gui.custom_classes.MyQPlainTextEdit'>",
                          str(self.myapp.ui.cif_main_table.cellWidget(4, 2).__class__))
-        self.assertEqual("""Albert-Ludwigs-Universität Freiburg
-Institut für Anorganische und Analytische Chemie
-Albertstraße 21
-Freiburg i. Br.
-79104
-Germany""", str(self.myapp.ui.cif_main_table.cellWidget(4, 2)))
+        self.assertEqual(unify_line_endings(addr), unify_line_endings(str(self.myapp.ui.cif_main_table.cellWidget(4, 2))))
 
     def test_edit_values_and_save(self):
         self.myapp.ui.cif_main_table.setText(key='_atom_sites_solution_primary', column=2, txt='test1ä')
