@@ -16,6 +16,9 @@ import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
+#sys.path.append(r'C:\Users\daniel\Documents\GitHub\FinalCif')
+sys.path.append(str(Path(__file__).parent.parent))
+
 
 from PyQt5 import uic
 
@@ -106,7 +109,6 @@ else:
     # Run 64bit Inno setup compiler
     innosetup_compiler = r'C:/Program Files (x86)/Inno Setup 6/ISCC.exe'
     subprocess.run([innosetup_compiler, iss_file, ])
-
 make_shasum("scripts/Output/FinalCif-setup-x64-v{}.exe".format(VERSION))
 print('Created version: {}'.format(VERSION))
 print(datetime.now().strftime("%d.%m.%Y %H:%M:%S"))
