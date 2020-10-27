@@ -16,9 +16,12 @@ import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
+from pprint import pprint
 
 from PyQt5 import uic
 
+for key, value in os.environ.items():
+    print(key, value, '\n')
 from tools.misc import sha512_checksum
 from tools.version import VERSION
 
