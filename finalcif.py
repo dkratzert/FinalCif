@@ -717,7 +717,7 @@ class AppWindow(QMainWindow):
             # self.ui.CheckcifButton.setDisabled(True)
             return
         ccpe = self.ui.CheckcifPlaintextEdit
-        ccpe.setPlainText('Platon output: \nThis might not be the same as the IUCr Checkcif!\n')
+        ccpe.setPlainText('Platon output: \nThis might not be the same as the IUCr CheckCIF!\n')
         QApplication.processEvents()
         p.run_platon()
         QApplication.processEvents()
