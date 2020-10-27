@@ -90,3 +90,4 @@ class TestExport(unittest.TestCase):
                          self.outfile_hkl.read_text().splitlines(keepends=True))
         message = "\nFinished writing data to cu_BruecknerJK_153F40_0m-finalcif.res \nand cu_BruecknerJK_153F40_0m-finalcif.hkl."
         self.assertEqual(unify_line_endings(self.myapp.status_bar.current_message), unify_line_endings(message))
+
