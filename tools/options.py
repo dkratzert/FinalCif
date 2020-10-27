@@ -11,33 +11,28 @@ from tools.settings import FinalCifSettings
 
 class Options:
     def __init__(self, ui: Ui_FinalCifWindow, settings: FinalCifSettings):
-        self._cif = None
         self.ui = ui
         self.settings = settings
         self._connect_signal_and_slots()
         self._options = {}
 
     def _connect_signal_and_slots(self):
-        self.ui.HAtomsCheckBox.clicked.connect(self._state_changed)
-        self.ui.ReportTextCheckBox.clicked.connect(self._state_changed)
+        self.ui.HAtomsCheckBox.stateChanged.connect(self._state_changed)
+        self.ui.ReportTextCheckBox.stateChanged.connect(self._state_changed)
         self.ui.PictureWidthDoubleSpinBox.valueChanged.connect(self._state_changed)
         self.ui.CheckCIFServerURLTextedit.textChanged.connect(self._state_changed)
 
     def show_options(self):
+        """
+        This method and pnöy this is called in order to show the options page.
+        It also sets the state of the options widgets.
+        """
         self.ui.HAtomsCheckBox.setChecked(self.without_H)
         self.ui.ReportTextCheckBox.setChecked(not self.report_text)
         self.ui.PictureWidthDoubleSpinBox.setValue(self.picture_width)
         self.ui.CheckCIFServerURLTextedit.setText(self.checkcif_url)
         self.ui.MainStackedWidget.go_to_options_page()
         self.ui.ReportPicPushButton.clicked.connect(self.set_report_picture)
-
-    @property
-    def cif(self) -> CifContainer:
-        return self._cif
-
-    @cif.setter
-    def cif(self, obj: CifContainer):
-        self._cif = obj
 
     def _state_changed(self):
         self._options = {
