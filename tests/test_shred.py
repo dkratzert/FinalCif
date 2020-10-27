@@ -37,6 +37,10 @@ class TestShedCifNoData(unittest.TestCase):
         self.cif = CifContainer(Path('../test-data/1000007.cif'))
         self.shred = ShredCIF(self.cif, ui=None)
 
+    def tearDown(self) -> None:
+        Path('p21c-finalcif.hkl').unlink(missing_ok=True)
+        Path('p21c-finalcif.res').unlink(missing_ok=True)
+
     def test_no_shred(self):
         self.assertEqual(Path('../test-data/p21c-finalcif.hkl').exists(), False)
         self.assertEqual(Path('../test-data/p21c-finalcif.res').exists(), False)

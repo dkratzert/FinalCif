@@ -49,7 +49,7 @@ from PyQt5.QtWebEngineWidgets import QWebEngineView
 from gemmi import cif
 from qtpy.QtGui import QDesktopServices, QKeySequence
 from gui.dialogs import cif_file_open_dialog, cif_file_save_dialog, show_general_warning, bug_found_warning, \
-    unable_to_open_message, bad_z_message, do_update_program, show_update_warning
+    unable_to_open_message, bad_z_message, show_update_warning
 from gui.loops import Loop
 from tools.shred import ShredCIF
 from cif.cif_file_io import CifContainer
@@ -70,7 +70,7 @@ from tools.version import VERSION
 from PyQt5.QtCore import QPoint, Qt, QUrl, QEvent
 from PyQt5.QtGui import QFont, QIcon, QBrush, QResizeEvent, QMoveEvent
 from PyQt5.QtWidgets import QApplication, QHeaderView, QListWidget, QListWidgetItem, \
-    QMainWindow, QPlainTextEdit, QStackedWidget, QTableWidget, QShortcut, QCheckBox, QTableView, QMessageBox
+    QMainWindow, QPlainTextEdit, QStackedWidget, QTableWidget, QShortcut, QCheckBox, QTableView
 
 r"""
 TODO:
@@ -135,8 +135,8 @@ class AppWindow(QMainWindow):
         # To make file drag&drop working:
         self.setAcceptDrops(True)
         self.show()
-        self.status = StatusBar(ui=self.ui)
-        self.status.show_message('FinalCif version {}'.format(VERSION))
+        self.status_bar = StatusBar(ui=self.ui)
+        self.status_bar.show_message('FinalCif version {}'.format(VERSION))
         self.settings = FinalCifSettings(self)
         self.settings.load_window_position()
         self.store_predefined_templates()
@@ -227,7 +227,6 @@ class AppWindow(QMainWindow):
         self.ui.CCDCpushButton.setIcon(qta.icon('fa5s.upload'))
         self.ui.CODpushButton.setIcon(qta.icon('mdi.upload'))
         self.ui.SavePushButton.setIcon(qta.icon('mdi.content-save'))
-
 
     def connect_signals_and_slots(self):
         """
@@ -534,7 +533,7 @@ class AppWindow(QMainWindow):
         """
         Get back to the main table. Without loading a new cif file.
         """
-        self.status.show_message('')
+        self.status_bar.show_message('')
         self.ui.LoopsPushButton.setText('Show Loops')
         self.ui.MainStackedWidget.got_to_main_page()
         if self.view:
@@ -906,7 +905,7 @@ class AppWindow(QMainWindow):
             self.final_cif_file_name = Path(filename)
         try:
             self.cif.save(str(self.final_cif_file_name.absolute()))
-            self.status.show_message('  File Saved:  {}'.format(self.final_cif_file_name.name), 10000)
+            self.status_bar.show_message('  File Saved:  {}'.format(self.final_cif_file_name.name), 10000)
             print('File saved ...')
             return True
         except Exception as e:
@@ -1478,7 +1477,7 @@ class AppWindow(QMainWindow):
         """
         Opens the cif file and fills information into the main table.
         """
-        self.status.show_message('')
+        self.status_bar.show_message('')
         with suppress(AttributeError):
             self.ui.moleculeLayout.removeWidget(self.view)
         # Set to empty state bevore loading:

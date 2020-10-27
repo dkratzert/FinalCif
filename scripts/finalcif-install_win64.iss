@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "FinalCif"
-#define MyAppVersion "74"
+#define MyAppVersion "72"
 #define MyAppPublisher "Daniel Kratzert"
 
 ; Remember, first run pyInstaller script!
@@ -78,6 +78,9 @@ Source: "..\dist\{#MyAppName}\*"; DestDir: "{app}"; Flags: ignoreversion createa
 [Dirs]
 Name: "{app}\displaymol"; Permissions: everyone-full
 Name: "{app}\gui"; Permissions: everyone-full
+
+[InstallDelete]
+Type: filesandordirs; Name: "{app}\*"
 
 [Code]
 procedure CurStepChanged(CurStep: TSetupStep);

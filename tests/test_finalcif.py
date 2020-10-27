@@ -1,4 +1,3 @@
-import re
 import sys
 import time
 import unittest
@@ -261,6 +260,37 @@ class TestApplication(unittest.TestCase):
         self.assertEqual('foobar', self.myapp.cif['_computing_structure_refinement'])
 
 
+class TestExport(unittest.TestCase):
+
+    def setUp(self) -> None:
+        self.myapp = AppWindow([x for x in Path('.').rglob('cu_BruecknerJK_153F40_0m.cif')][0].absolute())
+        self.myapp.setWindowIcon(QIcon('./icon/multitable.png'))
+        self.myapp.setWindowTitle('FinalCif v{}'.format(VERSION))
+        self.myapp.hide()  # For full screen view
+        self.outfile_hkl = Path('cu_BruecknerJK_153F40_0m-finalcif.hkl')
+        self.outfile_res = Path('cu_BruecknerJK_153F40_0m-finalcif.res')
+
+    def tearDown(self):
+        self.outfile_hkl.unlink()
+        self.outfile_res.unlink()
+
+    def test_export_hkl_res(self):
+        """
+        Shredcif test
+        """
+        self.myapp.ui.ShredCifButton.click()
+        # testing the res file export:
+        test_res_file = Path('test_res_file.txt')
+        self.assertEqual(test_res_file.read_text().splitlines(keepends=True),
+                         self.outfile_res.read_text().splitlines(keepends=True))
+        # testing the hkl file export:
+        test_res_file = Path('test_hkl_file.txt')
+        self.assertEqual(test_res_file.read_text().splitlines(keepends=True),
+                         self.outfile_hkl.read_text().splitlines(keepends=True))
+        message = "\nFinished writing data to cu_BruecknerJK_153F40_0m-finalcif.res \nand cu_BruecknerJK_153F40_0m-finalcif.hkl."
+        self.assertEqual(unify_line_endings(self.myapp.status_bar.current_message), unify_line_endings(message))
+
+
 class TestWorkfolder(unittest.TestCase):
     """A CIF fle in a complete work folder"""
 
@@ -354,7 +384,8 @@ class TestWorkfolder(unittest.TestCase):
         self.assertEqual('geom', self.myapp.ui.cif_main_table.getTextFromKey('_atom_sites_solution_hydrogens', 0))
         self.assertEqual('', self.myapp.ui.cif_main_table.getTextFromKey('_atom_sites_solution_hydrogens', 1))
         self.assertEqual(
-            """FinalCif V{} by Daniel Kratzert, Freiburg {}, https://github.com/dkratzert/FinalCif""".format(VERSION, datetime.now().year),
+            """FinalCif V{} by Daniel Kratzert, Freiburg {}, https://github.com/dkratzert/FinalCif""".format(VERSION,
+                                                                                                             datetime.now().year),
             self.myapp.ui.cif_main_table.getTextFromKey('_audit_creation_method', 1))
         self.assertEqual('18', self.myapp.ui.cif_main_table.getTextFromKey('_space_group_IT_number', 0))
         self.assertEqual('orthorhombic', self.myapp.ui.cif_main_table.getTextFromKey('_space_group_crystal_system', 0))
@@ -381,16 +412,19 @@ class TestWorkfolder(unittest.TestCase):
         self.myapp.load_selected_equipment()
         self.assertEqual('?', self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_address', 0))
         self.assertEqual(unify_line_endings(addr),
-                         unify_line_endings(self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_address', 1)))
+                         unify_line_endings(
+                             self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_address', 1)))
         self.assertEqual(unify_line_endings(addr),
-                         unify_line_endings(self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_address', 2)))
+                         unify_line_endings(
+                             self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_address', 2)))
         self.assertEqual("<class 'gui.custom_classes.MyQPlainTextEdit'>",
                          str(self.myapp.ui.cif_main_table.cellWidget(4, 0).__class__))
         self.assertEqual("<class 'gui.custom_classes.MyQPlainTextEdit'>",
                          str(self.myapp.ui.cif_main_table.cellWidget(4, 1).__class__))
         self.assertEqual("<class 'gui.custom_classes.MyQPlainTextEdit'>",
                          str(self.myapp.ui.cif_main_table.cellWidget(4, 2).__class__))
-        self.assertEqual(unify_line_endings(addr), unify_line_endings(str(self.myapp.ui.cif_main_table.cellWidget(4, 2))))
+        self.assertEqual(unify_line_endings(addr),
+                         unify_line_endings(str(self.myapp.ui.cif_main_table.cellWidget(4, 2))))
 
     def test_edit_values_and_save(self):
         self.myapp.ui.cif_main_table.setText(key='_atom_sites_solution_primary', column=2, txt='test1ä')
@@ -469,25 +503,6 @@ class TestWorkfolder(unittest.TestCase):
         pair = [x.replace("\n", "").replace("\r", "") for x in pair]
         self.assertEqual(erg, pair)
         self.myapp.cif.fileobj.unlink()
-
-    def test_export_hkl_res(self):
-        """
-        Shredcif test
-        """
-        self.myapp.ui.OptionsPushButton.click()
-        self.myapp.ui.ShredCifButton.click()
-        # testing the res file export:
-        test_res_file = Path('test_res_file.txt')
-        outfile = Path('cu_BruecknerJK_153F40_0m-finalcif.res')
-        self.assertEqual(test_res_file.read_text().splitlines(keepends=True),
-                         outfile.read_text().splitlines(keepends=True))
-        outfile.unlink()
-        # testing the hkl file export:
-        test_res_file = Path('test_hkl_file.txt')
-        outfile = Path('cu_BruecknerJK_153F40_0m-finalcif.hkl')
-        self.assertEqual(test_res_file.read_text().splitlines(keepends=True),
-                         outfile.read_text().splitlines(keepends=True))
-        outfile.unlink()
 
 
 if __name__ == '__main__':
