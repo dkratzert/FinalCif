@@ -820,20 +820,3 @@ if __name__ == '__main__':
 
     # make_report_from(get_files_from_current_dir()[5])
     t1 = time.perf_counter()
-    report_options = {'report_text'  : True,
-                      'picture_width': 7.5,
-                      'without_H'    : False,
-                      }
-    make_report_from(options=report_options, file_obj=Path(r'tests/examples/1979688.cif'),
-                     output_filename=Path(output_filename),
-                     picfile=Path('icon/finalcif.png'))
-    # make_report_from(Path(r'/Volumes/nifty/p-1.cif'))
-    t2 = time.perf_counter()
-    print('complete table:', round(t2 - t1, 2), 's')
-    if os.name == 'nt':
-        subprocess.call(['cmd', '/C', Path(output_filename).absolute()])
-    else:
-        subprocess.call(['open', Path(output_filename).absolute()])
-    # make_report_from(Path(r'test-data/sad-final.cif'))
-    # make_report_from(Path(r'/Volumes/home/strukturen/eigene/DK_30011/sad-final.cif'))
-    # make_report_from(Path(r'D:\goedaten\strukturen_goe\eigene\DK_4008\xl12\new\r3c.cif'))
