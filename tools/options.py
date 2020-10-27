@@ -32,7 +32,6 @@ class Options:
         self.ui.PictureWidthDoubleSpinBox.setValue(self.picture_width)
         self.ui.CheckCIFServerURLTextedit.setText(self.checkcif_url)
         self.ui.MainStackedWidget.go_to_options_page()
-        self.ui.ReportPicPushButton.clicked.connect(self.set_report_picture)
 
     def _state_changed(self):
         self._options = {
