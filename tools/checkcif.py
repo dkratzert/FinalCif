@@ -5,15 +5,14 @@
 #  and you think this stuff is worth it, you can buy me a beer in return.
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
-import os
 import subprocess
 import sys
 import time
+from contextlib import suppress
 from html.parser import HTMLParser
 from pathlib import Path
 from pprint import pprint
-from tempfile import mkstemp
-from typing import List, Optional, Union, Tuple
+from typing import List, Optional
 
 import gemmi
 import requests
@@ -37,7 +36,7 @@ class CheckCif(QThread):
         self.html_out_file = outfile
         self.cif = cif
         self.pdf = pdf
-        self.checkcif_url = url 
+        self.checkcif_url = url
 
     def _html_check(self):
         if not self.hkl_upload:
@@ -88,7 +87,9 @@ class CheckCif(QThread):
                     self.html_out_file.write_bytes(req.content)
                 except PermissionError:
                     return
-        Path('finalcif_checkcif_tmp.cif').unlink(missing_ok=True)
+        with suppress(Exception):
+            # parameter missing_ok=True is only available after 3.8
+            Path('finalcif_checkcif_tmp.cif').unlink()
 
     def _open_pdf_result(self) -> None:
         """
