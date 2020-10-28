@@ -11,6 +11,7 @@
 
 import os
 import subprocess
+import sys
 from contextlib import suppress
 from pathlib import Path
 from subprocess import TimeoutExpired
@@ -31,7 +32,12 @@ class Platon(QThread):
         self.delete_orphaned_files()
 
     def kill(self):
-        subprocess.run(["taskkill", "/f", "/im", "platon.exe"], shell=False)
+        if sys.platform.startswith('win'):
+            with suppress(FileNotFoundError):
+                subprocess.run(["taskkill", "/f", "/im", "platon.exe"], shell=False)
+        if sys.platform[:5] in ('linux', 'darwi'):
+            with suppress(FileNotFoundError):
+                subprocess.run(["killall", "platon"], shell=False)
 
     def delete_orphaned_files(self):
         # delete orphaned files:
