@@ -723,13 +723,8 @@ class AppWindow(QMainWindow):
         checkcif_out.setPlainText('Platon output: \nThis might not be the same as the IUCr CheckCIF!\n')
         QApplication.processEvents()
         p.start()
-        time.sleep(1)
-        while not Path(self.cif.fileobj.stem + '.chk').exists():
-            print('waiting for chk file...')
-            time.sleep(1)
-        QApplication.processEvents()
+        self.wait_for_chk_file()
         checkcif_out.appendPlainText('\n' + '#' * 80)
-        QApplication.processEvents()
         checkcif_out.setLineWrapMode(QPlainTextEdit.NoWrap)
         self.wait_until_platon_finished(timeout)
         checkcif_out.appendPlainText(p.platon_output)
@@ -750,10 +745,24 @@ class AppWindow(QMainWindow):
         print('Killing platon!')
         p.kill()
 
+    def wait_for_chk_file(self):
+        time.sleep(1)
+        stop = 0
+        while not Path(self.cif.fileobj.stem + '.chk').exists():
+            print('waiting for chk file...')
+            QApplication.processEvents()
+            time.sleep(1)
+            stop += 1
+            if stop == 5:
+                break
+
     def wait_until_platon_finished(self, timeout: int = 300):
         stop = 0
+        if not Path(self.cif.fileobj.stem + '.chk').exists():
+            return
         while Path(self.cif.fileobj.stem + '.chk').stat().st_size < 100:
             print('waiting for .chk file to finish...')
+            QApplication.processEvents()
             if stop == timeout:
                 self.ui.CheckcifPlaintextEdit.appendPlainText('PLATON timed out')
                 break
