@@ -11,33 +11,27 @@
 
 import os
 import subprocess
-import sys
+from contextlib import suppress
 from pathlib import Path
-from subprocess import Popen, TimeoutExpired, PIPE
-from time import sleep
+from subprocess import TimeoutExpired
+
+from PyQt5.QtCore import QThread
 
 
-class Platon():
-    def __init__(self, cif: Path):
+class Platon(QThread):
+    def __init__(self, cif: Path, timeout: int = 300):
+        super().__init__()
+        self.timeout = timeout
         self.cif_fileobj = cif
-        curdir = Path(os.curdir).absolute()
-        self.vrf_file = Path(self.cif_fileobj.stem + '.vrf')
         self.chkfile = None
-        try:
-            self.vrf_file.unlink()
-        except (ValueError, FileNotFoundError):
-            pass
-        os.chdir(str(self.cif_fileobj.absolute().parent))
         self.platon_output = ''
         self.chk_file_text = ''
-        try:
-            self.vrf_txt = self.vrf_file.read_text(encoding='ascii')
-        except FileNotFoundError:
-            self.vrf_txt = ''
         self.formula_moiety = ''
         self.Z = ''
         self.delete_orphaned_files()
-        os.chdir(curdir.absolute())
+
+    def kill(self):
+        subprocess.run(["taskkill", "/f", "/im", "platon.exe"], shell=False)
 
     def delete_orphaned_files(self):
         # delete orphaned files:
@@ -68,19 +62,33 @@ class Platon():
             if line.startswith('# Z'):
                 self.Z = line[19:24].strip(' ')
 
-    def run_platon(self):
+    def run(self):
         """
-        >>> fname = Path(r'./tests/examples/1979688.cif')
-        >>> p = Platon(fname)
-        >>> p.run_platon()
-        trying local platon
-        >>> p.formula_moiety
-        C12 H22 O11
+        Runs the platon thread.
         """
-        # os.chdir(str(self.cif_fileobj.absolute().parent))
+        curdir = Path(os.curdir).absolute()
+        with suppress(FileNotFoundError):
+            Path(self.cif_fileobj.stem + '.vrf').unlink()
         self.chkfile = Path(self.cif_fileobj.with_suffix('.chk'))
-        plat = None
-        timeticks = 0
+        with suppress(FileNotFoundError):
+            self.chkfile.unlink()
+        os.chdir(str(self.cif_fileobj.absolute().parent))
+        try:
+            print('running local platon on', self.cif_fileobj.name)
+            subprocess.run([r'platon', '-u', self.cif_fileobj.name],
+                           startupinfo=self.hide_status_window(),
+                           shell=False, env=os.environ, timeout=self.timeout)
+        except TimeoutExpired:
+            print('PLATON timeout!')
+            pass
+        except Exception as e:
+            print('Could not run local platon:' + str(e))
+            self.platon_output = str(e)
+        self.delete_orphaned_files()
+        os.chdir(curdir.absolute())
+
+    @staticmethod
+    def hide_status_window():
         try:
             # This is only available on windows:
             si = subprocess.STARTUPINFO()
@@ -88,59 +96,13 @@ class Platon():
             si.wShowWindow = 0
         except AttributeError:
             si = None
-        try:
-            print('running local platon')
-            with Popen([r'platon', '-u', self.cif_fileobj.name], stdin=subprocess.DEVNULL,
-                       startupinfo=si, stdout=PIPE, stderr=PIPE, shell=False, env=os.environ) as plat:
-                try:
-                    stdout, stderr = plat.communicate(sys.stdin, timeout=25)
-                except TimeoutExpired:
-                    print('Terminating platon (1)')
-                    plat.terminate()
-                    stdout, stderr = plat.communicate()
-                    # waiting until size does not increase anymore:
-                size1 = self.chkfile.stat().st_size
-                size2 = 99999999
-                timeticks = 0
-                while size1 <= size2:
-                    timeticks = timeticks + 1
-                    size2 = self.chkfile.stat().st_size
-                    # print(size1, size2)
-                    sleep(0.1)
-                    size1 = self.chkfile.stat().st_size
-                    if timeticks > 10:
-                        try:
-                            # print('Platon took too much time, terminating platon. (2)')
-                            plat.terminate()
-                            break
-                        except Exception:
-                            pass
-                            break
-            output = stdout.decode('ascii')
-            if output:
-                self.platon_output = output.strip()
-        except Exception as e:
-            print('Could not run local platon:' + str(e))
-            self.platon_output = str(e)
-            return
-        self.delete_orphaned_files()
-        # self.platon_output = plat.stdout.decode('ascii')
-        # self.platon_output += plat.stderr.decode('ascii')
-        # a fresh platon exe from the web:
-        # this runs only wif salflibc.dll. I have to find a solution to download it.
-        # Here is the link to salflib: http://www.chem.gla.ac.uk/~louis/software/dll/salflibc.dll
-        # pexe = get_platon()
+        return si
 
     def __repr__(self):
         return 'Platon:\n{}'.format(self.formula_moiety)
 
 
 if __name__ == '__main__':
-    os.chdir("/Users/daniel/GitHub")
-    fname = Path(r'/Users/daniel/GitHub/FinalCif/test-data/DK_zucker2_0m.cif')
-    # from threading import Thread
-    # t1 = Thread(target=Worker, args=(fname,))
-    # t1.start()
-    # print(s.chk_file_text)
-    # chkfile = Path(fname.stem + '.chk')
-    # chkfile.unlink()
+    fname = Path('test-data/DK_zucker2_0m.cif')
+    p = Platon(fname)
+    p.run_platon()
