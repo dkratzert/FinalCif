@@ -4,7 +4,6 @@ from pathlib import Path
 import qtawesome as qta
 from PyQt5.QtWidgets import QFileDialog
 
-from cif.cif_file_io import CifContainer
 from gui.finalcif_gui import Ui_FinalCifWindow
 from tools.settings import FinalCifSettings
 
@@ -13,6 +12,8 @@ class Options:
     def __init__(self, ui: Ui_FinalCifWindow, settings: FinalCifSettings):
         self.ui = ui
         self.settings = settings
+        # initial default, otherwise we have width=0.0 and no picture visible:
+        self.ui.PictureWidthDoubleSpinBox.setValue(7.5)
         self._connect_signal_and_slots()
         self._options = {}
 

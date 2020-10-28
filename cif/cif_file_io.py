@@ -8,8 +8,7 @@
 import re
 from math import sin, cos, sqrt
 from pathlib import Path
-# noinspection PyUnresolvedReferences
-from typing import Dict, List, Tuple, Union
+from typing import Dict, List, Tuple
 
 import gemmi
 
