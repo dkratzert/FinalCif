@@ -105,7 +105,10 @@ if arg == 'copy':
     update_installation()
 else:
     # create executable
-    subprocess.run("venv/Scripts/pyinstaller.exe -D Finalcif_installer.spec --clean -y".split())
+    pyin = subprocess.run("venv/Scripts/pyinstaller.exe -D Finalcif_installer.spec --clean -y".split())
+    if pyin.returncode != 0:
+        print('Pyinstaller failed with exit code', pyin.returncode)
+        sys.exit()
     # Run 64bit Inno setup compiler
     innosetup_compiler = r'C:/Program Files (x86)/Inno Setup 6/ISCC.exe'
     subprocess.run([innosetup_compiler, iss_file, ])
