@@ -712,45 +712,54 @@ class AppWindow(QMainWindow):
         self.load_cif_file(self.final_cif_file_name)
         self.ui.MainStackedWidget.go_to_checkcif_page()
         QApplication.processEvents()
+        timeout = 300
         try:
-            p = Platon(self.final_cif_file_name)
+            p = Platon(self.final_cif_file_name, timeout)
         except Exception as e:
             print(e)
             # self.ui.CheckcifButton.setDisabled(True)
             return
-        ccpe = self.ui.CheckcifPlaintextEdit
-        ccpe.setPlainText('Platon output: \nThis might not be the same as the IUCr CheckCIF!\n')
+        checkcif_out = self.ui.CheckcifPlaintextEdit
+        checkcif_out.setPlainText('Platon output: \nThis might not be the same as the IUCr CheckCIF!\n')
         QApplication.processEvents()
         p.start()
         time.sleep(1)
         while not Path(self.cif.fileobj.stem + '.chk').exists():
             print('waiting for chk file...')
             time.sleep(1)
-        while Path(self.cif.fileobj.stem + '.chk').stat().st_size < 100:
-            print('waiting for file size...')
-            time.sleep(1)
-        print('no sleep')
-        # chk.finished.connect(p.parse_chk_file)
-        # chk.start()
         QApplication.processEvents()
-        ccpe.appendPlainText(p.platon_output)
-        ccpe.appendPlainText('\n' + '#' * 80)
+        checkcif_out.appendPlainText('\n' + '#' * 80)
         QApplication.processEvents()
-        ccpe.setLineWrapMode(QPlainTextEdit.NoWrap)
+        checkcif_out.setLineWrapMode(QPlainTextEdit.NoWrap)
+        self.wait_until_platon_finished(timeout)
+        checkcif_out.appendPlainText(p.platon_output)
         p.parse_chk_file()
+        with suppress(FileNotFoundError):
+            vrf_txt = Path(self.cif.fileobj.stem + '.vrf').read_text()
         if p.chk_file_text:
             try:
-                ccpe.appendPlainText(p.chk_file_text)
-                ccpe.appendPlainText('\n' + '#' * 27 + ' Validation Response Forms ' + '#' * 26 + '\n')
-                ccpe.appendPlainText(p.vrf_txt)
+                checkcif_out.appendPlainText(p.chk_file_text)
+                checkcif_out.appendPlainText('\n' + '#' * 27 + ' Validation Response Forms ' + '#' * 26 + '\n')
+                checkcif_out.appendPlainText(vrf_txt)
             except AttributeError:
                 pass
-        ccpe.verticalScrollBar().setValue(0)
+        checkcif_out.verticalScrollBar().setValue(0)
         moiety = self.ui.cif_main_table.getTextFromKey(key='_chemical_formula_moiety', col=0)
         if p.formula_moiety and moiety in ['', '?']:
             self.ui.cif_main_table.setText(key='_chemical_formula_moiety', txt=p.formula_moiety, column=COL_EDIT)
         print('Killing platon!')
         p.kill()
+
+    def wait_until_platon_finished(self, timeout: int = 300):
+        stop = 0
+        while Path(self.cif.fileobj.stem + '.chk').stat().st_size < 100:
+            print('waiting for .chk file to finish...')
+            if stop == timeout:
+                self.ui.CheckcifPlaintextEdit.appendPlainText('PLATON timed out')
+                break
+            time.sleep(1)
+            stop += 1
+        time.sleep(0.5)
 
     def set_checkcif_output_font(self, ccpe):
         doc = ccpe.document()
@@ -1518,14 +1527,19 @@ class AppWindow(QMainWindow):
             if not filepath.exists():
                 show_general_warning("The file you tried to open does not exist!")
                 return
-        except OSError:
+            if filepath.stat().st_size == 0:
+                show_general_warning('This file has zero byte size!')
+                return
+        except (OSError, IndexError):
             print('Something failed during cif file opening...')
+            if DEBUG:
+                raise
             return
         not_ok = None
         try:
             e = None
             self.cif = CifContainer(filepath)
-        except RuntimeError as e:
+        except (RuntimeError, IndexError) as e:
             print('Unable to open cif file...')
             if DEBUG:
                 raise

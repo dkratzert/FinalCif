@@ -19,24 +19,19 @@ from PyQt5.QtCore import QThread
 
 
 class Platon(QThread):
-    def __init__(self, cif: Path):
+    def __init__(self, cif: Path, timeout: int = 300):
         super().__init__()
+        self.timeout = timeout
         self.cif_fileobj = cif
-        self.vrf_file = Path(self.cif_fileobj.stem + '.vrf')
         self.chkfile = None
-        try:
-            self.vrf_file.unlink()
-        except (ValueError, FileNotFoundError):
-            pass
         self.platon_output = ''
         self.chk_file_text = ''
         self.formula_moiety = ''
         self.Z = ''
-        self.vrf_txt = ''
         self.delete_orphaned_files()
 
     def kill(self):
-        subprocess.run(["taskkill", "/f", "/im", "platon.exe"])
+        subprocess.run(["taskkill", "/f", "/im", "platon.exe"], shell=False)
 
     def delete_orphaned_files(self):
         # delete orphaned files:
@@ -69,30 +64,26 @@ class Platon(QThread):
 
     def run(self):
         """
-        >>> fname = Path(r'./tests/examples/1979688.cif')
-        >>> p = Platon(fname)
-        >>> p.run_platon()
-        trying local platon on 1979688.cif
-        >>> p.formula_moiety
-        C12 H22 O11
+        Runs the platon thread.
         """
         curdir = Path(os.curdir).absolute()
+        with suppress(FileNotFoundError):
+            Path(self.cif_fileobj.stem + '.vrf').unlink()
         self.chkfile = Path(self.cif_fileobj.with_suffix('.chk'))
         with suppress(FileNotFoundError):
             self.chkfile.unlink()
         os.chdir(str(self.cif_fileobj.absolute().parent))
         try:
             print('running local platon on', self.cif_fileobj.name)
-            subprocess.call([r'platon', '-u', self.cif_fileobj.name],
-                            startupinfo=None,
-                            shell=False, env=os.environ, timeout=30)
+            subprocess.run([r'platon', '-u', self.cif_fileobj.name],
+                           startupinfo=self.hide_status_window(),
+                           shell=False, env=os.environ, timeout=self.timeout)
         except TimeoutExpired:
+            print('PLATON timeout!')
             pass
         except Exception as e:
             print('Could not run local platon:' + str(e))
             self.platon_output = str(e)
-        with suppress(FileNotFoundError):
-            self.vrf_txt = self.vrf_file.read_text(encoding='ascii')
         self.delete_orphaned_files()
         os.chdir(curdir.absolute())
 
