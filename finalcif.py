@@ -192,6 +192,7 @@ class AppWindow(QMainWindow):
         self.get_checkdef()
         self.ui.PictureWidthDoubleSpinBox.setRange(0.0, 25)
         self.ui.PictureWidthDoubleSpinBox.setSingleStep(0.5)
+        self.set_checkcif_output_font(self.ui.CheckcifPlaintextEdit)
 
     def make_button_icons(self):
         self.ui.CheckcifButton.setIcon(qta.icon('mdi.file-document-outline'))
@@ -720,20 +721,21 @@ class AppWindow(QMainWindow):
         ccpe = self.ui.CheckcifPlaintextEdit
         ccpe.setPlainText('Platon output: \nThis might not be the same as the IUCr CheckCIF!\n')
         QApplication.processEvents()
-        p.run_platon()
+        p.start()
+        time.sleep(1)
+        while not Path(self.cif.fileobj.stem + '.chk').exists():
+            print('waiting for chk file...')
+            time.sleep(1)
+        while Path(self.cif.fileobj.stem + '.chk').stat().st_size < 100:
+            print('waiting for file size...')
+            time.sleep(1)
+        print('no sleep')
+        # chk.finished.connect(p.parse_chk_file)
+        # chk.start()
         QApplication.processEvents()
         ccpe.appendPlainText(p.platon_output)
         ccpe.appendPlainText('\n' + '#' * 80)
         QApplication.processEvents()
-        doc = ccpe.document()
-        font = doc.defaultFont()
-        font.setFamily("Courier New")
-        font.setStyleHint(QFont.Monospace)
-        QApplication.processEvents()
-        # increases the pont size every time a bit more :)
-        # size = font.pointSize()
-        font.setPointSize(14)
-        doc.setDefaultFont(font)
         ccpe.setLineWrapMode(QPlainTextEdit.NoWrap)
         p.parse_chk_file()
         if p.chk_file_text:
@@ -747,6 +749,17 @@ class AppWindow(QMainWindow):
         moiety = self.ui.cif_main_table.getTextFromKey(key='_chemical_formula_moiety', col=0)
         if p.formula_moiety and moiety in ['', '?']:
             self.ui.cif_main_table.setText(key='_chemical_formula_moiety', txt=p.formula_moiety, column=COL_EDIT)
+        print('Killing platon!')
+        p.kill()
+
+    def set_checkcif_output_font(self, ccpe):
+        doc = ccpe.document()
+        font = doc.defaultFont()
+        font.setFamily("Courier New")
+        font.setStyleHint(QFont.Monospace)
+        QApplication.processEvents()
+        font.setPointSize(14)
+        doc.setDefaultFont(font)
 
     def load_recent_file(self, file_index: int) -> None:
         """
@@ -1576,6 +1589,7 @@ class AppWindow(QMainWindow):
             self.ui.spacegroupLineEdit.setText(self.cif.space_group)
             self.ui.SumFormMainLineEdit.setText(self.cif['_chemical_formula_sum'])
             self.ui.CCDCNumLineEdit.setText(self.cif['_database_code_depnum_ccdc_archive'])
+            self.ui.CheckcifPlaintextEdit.clear()
 
     def show_properties(self) -> None:
         """
