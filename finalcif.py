@@ -137,8 +137,8 @@ class AppWindow(QMainWindow):
         self.show()
         self.status_bar = StatusBar(ui=self.ui)
         self.status_bar.show_message('FinalCif version {}'.format(VERSION))
-        self.settings = FinalCifSettings(self)
-        self.settings.load_window_position()
+        self.settings = FinalCifSettings()
+        self.set_window_parameters()
         self.store_predefined_templates()
         self.show_equipment_and_properties()
         self.ui.cif_main_table.installEventFilter(self)
@@ -193,6 +193,15 @@ class AppWindow(QMainWindow):
         self.ui.PictureWidthDoubleSpinBox.setRange(0.0, 25)
         self.ui.PictureWidthDoubleSpinBox.setSingleStep(0.5)
         self.set_checkcif_output_font(self.ui.CheckcifPlaintextEdit)
+
+    def set_window_parameters(self):
+        wsettings = self.settings.load_window_position()
+        with suppress(TypeError):
+            self.resize(wsettings['size'])
+        with suppress(TypeError):
+            self.move(wsettings['position'])
+        if wsettings['maximized']:
+            self.showMaximized()
 
     def make_button_icons(self):
         self.ui.CheckcifButton.setIcon(qta.icon('mdi.file-document-outline'))
