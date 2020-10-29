@@ -567,7 +567,7 @@ class AppWindow(QMainWindow):
         except FileNotFoundError:
             # happens if checkcif fails, e.g. takes too much time.
             self.ui.CheckCifLogPlainTextEdit.appendHtml('<b>CheckCIF failed to finish. '
-                                                        'Please try it at https://checkcif.iucr.org/ instead</b>')
+                                                        'Please try it at https://checkcif.iucr.org/ instead.</b>')
             return
         self.checkcif_browser = QWebEngineView(self.ui.htmlTabwidgetPage)
         self.ui.htmlCHeckCifGridLayout.addWidget(self.checkcif_browser)
@@ -738,6 +738,7 @@ class AppWindow(QMainWindow):
         self.wait_until_platon_finished(timeout)
         checkcif_out.appendPlainText(p.platon_output)
         p.parse_chk_file()
+        vrf_txt = ''
         with suppress(FileNotFoundError):
             vrf_txt = Path(self.cif.fileobj.stem + '.vrf').read_text()
         if p.chk_file_text:

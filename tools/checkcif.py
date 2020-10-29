@@ -73,7 +73,11 @@ class CheckCif(QThread):
             message = r"Checkcif server took too long. Try it at 'https://checkcif.iucr.org' directly."
             self.failed.emit(message)
         except requests.exceptions.MissingSchema:
-            message = r"URL for checkcif missing in options."
+            message = "URL for checkcif missing in options."
+            self.failed.emit(message)
+        except requests.exceptions.ConnectionError:
+            message = "The checkcif server is not reachable. Is your network connection working?<br>" \
+                      "The server URL might also have changed..."
             self.failed.emit(message)
         if req:
             self.progress.emit('request finished')
