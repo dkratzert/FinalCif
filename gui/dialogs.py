@@ -84,7 +84,7 @@ def show_update_warning(warn_text: str = '', remote_version: int = 0) -> Union[Q
     box.setTextFormat(Qt.AutoText)
     box.setWindowTitle(" ")
     box.setTextInteractionFlags(Qt.TextBrowserInteraction)
-    if sys.platform == "win" or sys.platform == "win32":
+    if sys.platform.startswith("win"):
         warn_text += r"<br><br>Updating now will end all running FinalCIF programs!"
         update_button = box.addButton('Update Now', QMessageBox.AcceptRole)
         update_button.clicked.connect(lambda: do_update_program(str(remote_version)))
