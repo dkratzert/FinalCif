@@ -62,7 +62,12 @@ class Options:
 
     @property
     def picture_width(self):
-        return self.settings.load_options()['picture_width']
+        width = self.settings.load_options()['picture_width']
+        if width < 0.001:
+            # preventing invisible picture
+            return 7.5
+        else:
+            return width
 
     @property
     def checkcif_url(self):
