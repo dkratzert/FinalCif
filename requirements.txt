@@ -1,21 +1,26 @@
-altgraph>=0.17
+altgraph==0.17
+certifi==2020.6.20
 chardet==3.0.4
 future==0.18.2
-gemmi
+gemmi==0.4.2
+html2text==2020.1.16
 idna==2.10
-lxml>=4.6.1
-macholib>=1.14
+lxml==4.6.1
+macholib==1.14
 pefile==2019.4.18
-pybind11>=2.6.0
-PyInstaller==4.0
+pybind11==2.6.0
+pyinstaller==4.0
+pyinstaller-hooks-contrib==2020.10
 PyQt5==5.15.1
 PyQt5-sip==12.8.1
 PyQt5-stubs==5.14.2.2
 PyQtWebEngine==5.15.1
-python-docx>=0.8.10
-requests>=2.24.0 # for checkcif
-qtawesome>=1.0.1 #icons
-html2text==2020.1.16
+python-docx==0.8.10
+pywin32-ctypes==0.2.0
+QtAwesome==1.0.1
+QtPy==1.9.0
+requests==2.24.0
+urllib3==1.25.11
 
 
 # Upgrade gemmi to Git master:
