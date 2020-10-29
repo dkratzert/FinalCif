@@ -15,6 +15,7 @@ import sys
 from contextlib import suppress
 from pathlib import Path
 from subprocess import TimeoutExpired
+from time import sleep
 
 from PyQt5.QtCore import QThread
 
@@ -68,6 +69,17 @@ class Platon(QThread):
             if line.startswith('# Z'):
                 self.Z = line[19:24].strip(' ')
 
+    @property
+    def platon_exe(self):
+        if sys.platform.startswith('win'):
+            in_pwt = r'C:\pwt\platon.exe'
+        else:
+            in_pwt = 'platon'
+        if Path(in_pwt).exists():
+            return in_pwt
+        else:
+            return 'platon'
+
     def run(self):
         """
         Runs the platon thread.
@@ -81,7 +93,7 @@ class Platon(QThread):
         os.chdir(str(self.cif_fileobj.absolute().parent))
         try:
             print('running local platon on', self.cif_fileobj.name)
-            subprocess.run([r'platon', '-u', self.cif_fileobj.name],
+            subprocess.run([self.platon_exe, '-u', self.cif_fileobj.name],
                            startupinfo=self.hide_status_window(),
                            shell=False, env=os.environ, timeout=self.timeout)
         except TimeoutExpired:
@@ -111,4 +123,7 @@ class Platon(QThread):
 if __name__ == '__main__':
     fname = Path('test-data/DK_zucker2_0m.cif')
     p = Platon(fname)
-    p.run_platon()
+    p.start()
+    sleep(15)
+    p.exit()
+    p.kill()
