@@ -74,6 +74,7 @@ from PyQt5.QtWidgets import QApplication, QHeaderView, QListWidget, QListWidgetI
 
 r"""
 TODO:
+- Make .sqf file importable
 - make equipment template name editable
 - Peters comments on equipment templates:
     * save state and order of selected templates in order to be able to undo a selection with a second click. 
