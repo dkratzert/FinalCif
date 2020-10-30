@@ -16,6 +16,7 @@ from contextlib import suppress
 from pathlib import Path
 from subprocess import TimeoutExpired
 from time import sleep
+from typing import Union
 
 from PyQt5.QtCore import QThread
 
@@ -25,12 +26,13 @@ class Platon(QThread):
         super().__init__()
         self.timeout = timeout
         self.cif_fileobj = cif
-        self.chkfile = None
+        self.chkfile = Path(self.cif_fileobj.with_suffix('.chk'))
         self.platon_output = ''
         self.chk_file_text = ''
         self.formula_moiety = ''
         self.Z = ''
         self.delete_orphaned_files()
+        self.plat: Union[subprocess.CompletedProcess, bool] = True
 
     def kill(self):
         if sys.platform.startswith('win'):
@@ -87,21 +89,27 @@ class Platon(QThread):
         curdir = Path(os.curdir).absolute()
         with suppress(FileNotFoundError):
             Path(self.cif_fileobj.stem + '.vrf').unlink()
-        self.chkfile = Path(self.cif_fileobj.with_suffix('.chk'))
         with suppress(FileNotFoundError):
             self.chkfile.unlink()
         os.chdir(str(self.cif_fileobj.absolute().parent))
         try:
             print('running local platon on', self.cif_fileobj.name)
-            subprocess.run([self.platon_exe, '-u', self.cif_fileobj.name],
-                           startupinfo=self.hide_status_window(),
-                           shell=False, env=os.environ, timeout=self.timeout)
+            self.plat = subprocess.run([self.platon_exe, '-u', self.cif_fileobj.name],
+                                       startupinfo=self.hide_status_window(),
+                                       stdout=subprocess.PIPE,
+                                       stderr=subprocess.PIPE,
+                                       shell=False,
+                                       env=os.environ,
+                                       timeout=self.timeout)
         except TimeoutExpired:
             print('PLATON timeout!')
+            self.platon_output = 'PLATON timeout!'
             pass
         except Exception as e:
             print('Could not run local platon:' + str(e))
             self.platon_output = str(e)
+        if self.plat and self.plat.stdout:
+            self.platon_output = self.plat.stdout.decode('ascii')
         self.delete_orphaned_files()
         os.chdir(curdir.absolute())
 
