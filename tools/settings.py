@@ -31,9 +31,14 @@ class FinalCifSettings():
         self.settings.endGroup()
 
     def load_window_position(self) -> dict:
+        """
+        Loads window position information and sets default values if no configuration exists.
+        """
         self.settings.beginGroup("MainWindow")
         pos = self.settings.value("position", type=QPoint)
-        size = QSize(self.settings.value("size"))
+        size = self.settings.value("size", type=QSize)
+        size = size if size.width() > 0 else QSize(900, 850)
+        pos = pos if pos.x() > 0 else QSize(20, 20)
         max = self.settings.value('maximized')
         maxim = False
         if isinstance(max, str):
@@ -91,7 +96,7 @@ class FinalCifSettings():
         self.settings.endGroup()
         return last
 
-    def property_name_by_key(self, key):
+    def property_name_by_key(self, key) -> str:
         """
         Returns the name in the PropertiesTemplatesListWidget that belongs to the cif keyword.
         """

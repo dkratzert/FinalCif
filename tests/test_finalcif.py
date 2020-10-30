@@ -1,5 +1,5 @@
+import os
 import sys
-import time
 import unittest
 from datetime import datetime
 from pathlib import Path
@@ -11,7 +11,6 @@ from qtpy.QtTest import QTest
 
 from finalcif import AppWindow
 from gui.custom_classes import light_green, yellow
-from tools.misc import strip_finalcif_of_name
 from tools.version import VERSION
 
 
@@ -53,18 +52,12 @@ app = QApplication(sys.argv)
 class TestApplication(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.myapp = AppWindow([x for x in Path('.').rglob('1979688.cif')][0].absolute())
+        os.chdir(Path(__file__).absolute().parent.parent)
+        self.myapp = AppWindow(Path('tests/examples/1979688.cif').absolute())
         self.myapp.setWindowIcon(QIcon('./icon/multitable.png'))
         self.myapp.setWindowTitle('FinalCif v{}'.format(VERSION))
         self.myapp.hide()  # For full screen view
-        # self.myapp.setBaseSize(1200, 780)
-        # I have to load any cif file in order to have vheaderitems in the main table:
-        # self.myapp.load_cif_file(r'tests/examples/1979688.cif')
 
-    def tearDown(self) -> None:
-        super(TestApplication, self).tearDown()
-
-    # @unittest.skip("foo")
     def test_gui_simpl(self):
         # self.assertEqual(0, self.myapp.ui.cif_main_table.rowCount())
         # self.myapp.load_cif_file(r'tests/examples/1979688.cif')
@@ -260,37 +253,6 @@ class TestApplication(unittest.TestCase):
         self.assertEqual('foobar', self.myapp.cif['_computing_structure_refinement'])
 
 
-class TestExport(unittest.TestCase):
-
-    def setUp(self) -> None:
-        self.myapp = AppWindow([x for x in Path('.').rglob('cu_BruecknerJK_153F40_0m.cif')][0].absolute())
-        self.myapp.setWindowIcon(QIcon('./icon/multitable.png'))
-        self.myapp.setWindowTitle('FinalCif v{}'.format(VERSION))
-        self.myapp.hide()  # For full screen view
-        self.outfile_hkl = Path('cu_BruecknerJK_153F40_0m-finalcif.hkl')
-        self.outfile_res = Path('cu_BruecknerJK_153F40_0m-finalcif.res')
-
-    def tearDown(self):
-        self.outfile_hkl.unlink()
-        self.outfile_res.unlink()
-
-    def test_export_hkl_res(self):
-        """
-        Shredcif test
-        """
-        self.myapp.ui.ShredCifButton.click()
-        # testing the res file export:
-        test_res_file = Path('test_res_file.txt')
-        self.assertEqual(test_res_file.read_text().splitlines(keepends=True),
-                         self.outfile_res.read_text().splitlines(keepends=True))
-        # testing the hkl file export:
-        test_res_file = Path('test_hkl_file.txt')
-        self.assertEqual(test_res_file.read_text().splitlines(keepends=True),
-                         self.outfile_hkl.read_text().splitlines(keepends=True))
-        message = "\nFinished writing data to cu_BruecknerJK_153F40_0m-finalcif.res \nand cu_BruecknerJK_153F40_0m-finalcif.hkl."
-        self.assertEqual(unify_line_endings(self.myapp.status_bar.current_message), unify_line_endings(message))
-
-
 class TestWorkfolder(unittest.TestCase):
     """A CIF fle in a complete work folder"""
 
@@ -452,45 +414,6 @@ class TestWorkfolder(unittest.TestCase):
         self.assertEqual('test4ß',
                          self.myapp.ui.cif_main_table.getTextFromKey(key='_audit_contact_author_email', col=0))
         cif.unlink()
-
-    @unittest.skip('temporary skip')
-    def test_checkcif_html(self):
-        """Runs a html checkcif without hkl and compares the result with the html file."""
-        self.maxDiff = 200
-        item = self.myapp.ui.EquipmentTemplatesListWidget.findItems('D8 VENTURE', Qt.MatchStartsWith)[0]
-        self.myapp.ui.EquipmentTemplatesListWidget.setCurrentItem(item)
-        self.myapp.load_selected_equipment()
-        item = self.myapp.ui.EquipmentTemplatesListWidget.findItems('Contact author', Qt.MatchStartsWith)[0]
-        self.myapp.ui.EquipmentTemplatesListWidget.setCurrentItem(item)
-        self.myapp.load_selected_equipment()
-        #
-        # Remember: This test is without structure factors! 
-        #
-        self.myapp.ui.structfactCheckBox.setChecked(True)
-        QTest.mouseClick(self.myapp.ui.CheckcifHTMLOnlineButton, Qt.LeftButton, Qt.NoModifier)
-        time.sleep(10)
-        # this is the file on github:
-        html = Path('checkcif-' + strip_finalcif_of_name(self.myapp.cif.fileobj.stem) + '-test.html')
-        htmlfile = html.read_text().splitlines()[28:-13]
-        # this is the new downloadad file
-        resobj = Path('checkcif-' + strip_finalcif_of_name(self.myapp.cif.fileobj.stem) + '-finalcif.html')
-        result = resobj.read_text().splitlines()[28:-13]
-        self.assertEqual(htmlfile, result)
-        resobj.unlink()
-        self.myapp.cif.fileobj.unlink()
-
-    @unittest.skip
-    def test_checkcif_pdf(self):
-        self.maxDiff = None
-        item = self.myapp.ui.EquipmentTemplatesListWidget.findItems('D8 VENTURE', Qt.MatchStartsWith)[0]
-        self.myapp.ui.EquipmentTemplatesListWidget.setCurrentItem(item)
-        self.myapp.load_selected_equipment()
-        item = self.myapp.ui.EquipmentTemplatesListWidget.findItems('Contact author', Qt.MatchStartsWith)[0]
-        self.myapp.ui.EquipmentTemplatesListWidget.setCurrentItem(item)
-        self.myapp.load_selected_equipment()
-        self.myapp.ui.structfactCheckBox.setChecked(True)
-        # QTest.mouseClick(self.myapp.ui.CheckcifPDFOnlineButton, Qt.LeftButton, Qt.NoModifier)
-        # self.myapp.ui.CheckcifPDFOnlineButton.click()
 
     def test_rename_data_tag(self):
         self.myapp.ui.datnameLineEdit.setText('foo_bar_yes')
