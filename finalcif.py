@@ -732,7 +732,10 @@ class AppWindow(QMainWindow):
         checkcif_out.setPlainText('Platon output: \nThis might not be the same as the IUCr CheckCIF!\n')
         QApplication.processEvents()
         p.start()
-        self.wait_for_chk_file()
+        if not self.wait_for_chk_file():
+            checkcif_out.appendPlainText('No .chk file from Platon found!')
+            p.kill()
+            return
         checkcif_out.appendPlainText('\n' + '#' * 80)
         checkcif_out.setLineWrapMode(QPlainTextEdit.NoWrap)
         self.wait_until_platon_finished(timeout)
@@ -755,30 +758,34 @@ class AppWindow(QMainWindow):
         print('Killing platon!')
         p.kill()
 
-    def wait_for_chk_file(self):
+    def wait_for_chk_file(self) -> bool:
         time.sleep(1)
         stop = 0
         while not Path(self.cif.fileobj.stem + '.chk').exists():
-            print('waiting for chk file...')
+            self.ui.CheckCifLogPlainTextEdit.appendPlainText('.')
             QApplication.processEvents()
             time.sleep(1)
             stop += 1
-            if stop == 5:
-                break
+            if stop == 8:
+                return False
+        return True
 
     def wait_until_platon_finished(self, timeout: int = 300):
         stop = 0
         if not Path(self.cif.fileobj.stem + '.chk').exists():
-            return
-        while Path(self.cif.fileobj.stem + '.chk').stat().st_size < 100:
-            print('waiting for .chk file to finish...')
+            self.ui.CheckCifLogPlainTextEdit.appendPlainText('Platon returned no output.')
             QApplication.processEvents()
-            if stop == timeout:
-                self.ui.CheckcifPlaintextEdit.appendPlainText('PLATON timed out')
-                break
-            time.sleep(1)
-            stop += 1
-        time.sleep(0.5)
+            return
+        with suppress(FileNotFoundError):
+            while Path(self.cif.fileobj.stem + '.chk').stat().st_size < 100:
+                self.ui.CheckCifLogPlainTextEdit.appendPlainText('*')
+                QApplication.processEvents()
+                if stop == timeout:
+                    self.ui.CheckcifPlaintextEdit.appendPlainText('PLATON timed out')
+                    break
+                time.sleep(1)
+                stop += 1
+            time.sleep(0.5)
 
     def set_checkcif_output_font(self, ccpe):
         doc = ccpe.document()
