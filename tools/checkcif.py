@@ -17,8 +17,7 @@ from typing import List, Optional
 import gemmi
 import requests
 from PyQt5.QtCore import QUrl, QThread, pyqtSignal
-from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest
-from PyQt5.QtNetwork import QNetworkReply
+from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply
 from requests.exceptions import MissingSchema
 
 from cif.cif_file_io import CifContainer
