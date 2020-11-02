@@ -53,10 +53,16 @@ class TestApplication(unittest.TestCase):
 
     def setUp(self) -> None:
         os.chdir(Path(__file__).absolute().parent.parent)
-        self.myapp = AppWindow(Path('tests/examples/1979688.cif').absolute())
+        self.testcif = Path('tests/examples/1979688.cif').absolute()
+        self.myapp = AppWindow(self.testcif)
         self.myapp.setWindowIcon(QIcon('./icon/multitable.png'))
         self.myapp.setWindowTitle('FinalCif v{}'.format(VERSION))
         self.myapp.hide()  # For full screen view
+
+    def tearDown(self) -> None:
+        Path(self.testcif.stem + '.ins').unlink(missing_ok=True)
+        Path(self.testcif.stem + '.lst').unlink(missing_ok=True)
+        Path(self.testcif.stem + '.2fcf').unlink(missing_ok=True)
 
     def test_gui_simpl(self):
         # self.assertEqual(0, self.myapp.ui.cif_main_table.rowCount())
@@ -70,7 +76,7 @@ class TestApplication(unittest.TestCase):
         self.assertEqual('CCDC number', self.myapp.ui.EquipmentTemplatesListWidget.item(1).text())
         item = self.myapp.ui.EquipmentTemplatesListWidget.findItems('Contact author name and', Qt.MatchStartsWith)[0]
         self.myapp.ui.EquipmentTemplatesListWidget.setCurrentItem(item)
-        self.myapp.load_selected_equipment()
+        self.myapp.equipment.load_selected_equipment()
         # A random empty item in the main table:
         self.assertEqual('?', self.myapp.ui.cif_main_table.item(3, 0).text())
         # I have to click on it with QtClick
@@ -97,8 +103,8 @@ class TestApplication(unittest.TestCase):
         # rect = widget.visualItemRect(item)
         # QTest.mouseDClick(widget.viewport(), Qt.LeftButton, Qt.NoModifier, rect.center())
         # Why is this not called by the signal?
-        self.myapp.edit_equipment_template()
-        self.myapp.export_equipment_template('unittest_export_template2.cif')
+        self.myapp.equipment.edit_equipment_template()
+        self.myapp.equipment.export_equipment_template('unittest_export_template2.cif')
         outfile = Path('unittest_export_template2.cif')
         self.assertEqual(export_templ_data, outfile.read_text().splitlines(keepends=False))
         outfile.unlink()
@@ -110,14 +116,14 @@ class TestApplication(unittest.TestCase):
                                                                     Qt.MatchExactly)[0]
         self.myapp.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
         self.myapp.ui.EquipmentTemplatesListWidget.setCurrentItem(item)
-        self.myapp.load_selected_equipment()
+        self.myapp.equipment.load_selected_equipment()
         self.assertEqual('daniel.kratzert@ac.uni-freiburg.de', self.myapp.ui.cif_main_table.item(18, 1).text())
 
     def test_properties(self):
         self.myapp.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
         item = self.myapp.ui.PropertiesTemplatesListWidget.findItems('Crystal Color', Qt.MatchStartsWith)
         self.myapp.ui.PropertiesTemplatesListWidget.setCurrentItem(item[0])
-        self.myapp.edit_property_template()
+        self.myapp.properties.edit_property_template()
         self.assertEqual('_exptl_crystal_colour', self.myapp.ui.cifKeywordLineEdit.text())
         self.assertEqual('', self.myapp.ui.PropertiesEditTableWidget.cellWidget(0, 0).getText())
         self.assertEqual('colourless', self.myapp.ui.PropertiesEditTableWidget.cellWidget(1, 0).getText())
@@ -126,19 +132,19 @@ class TestApplication(unittest.TestCase):
         self.myapp.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
         item = self.myapp.ui.PropertiesTemplatesListWidget.findItems('Molecular Graph', Qt.MatchStartsWith)
         self.myapp.ui.PropertiesTemplatesListWidget.setCurrentItem(item[0])
-        self.myapp.edit_property_template()
+        self.myapp.properties.edit_property_template()
         self.assertEqual('ShelXle (Hübschle 2011)', self.myapp.ui.PropertiesEditTableWidget.cellWidget(2, 0).getText())
-        self.myapp.export_property_template('test_prop_export.cif')
+        self.myapp.properties.export_property_template('test_prop_export.cif')
         self.assertEqual(export_prop_data, Path('test_prop_export.cif').read_text())
         Path('test_prop_export.cif').unlink()
         # Testing import:
         data = """data_Fooo__Baar\nloop_\n_foo\n'bar baz'"""
         file = Path('test_prop_import.cif')
         file.write_text(data)
-        self.myapp.import_property_from_file(file.name)
+        self.myapp.properties.import_property_from_file(file.name)
         item = self.myapp.ui.PropertiesTemplatesListWidget.findItems('Fooo Baar', Qt.MatchStartsWith)
         self.myapp.ui.PropertiesTemplatesListWidget.setCurrentItem(item[0])
-        self.myapp.edit_property_template()
+        self.myapp.properties.edit_property_template()
         self.assertEqual('_foo', self.myapp.ui.cifKeywordLineEdit.text())
         self.assertEqual('bar baz', self.myapp.ui.PropertiesEditTableWidget.cellWidget(1, 0).getText())
         self.myapp.ui.DeletePropertiesButton.click()
@@ -257,18 +263,21 @@ class TestWorkfolder(unittest.TestCase):
     """A CIF fle in a complete work folder"""
 
     def setUp(self) -> None:
-        self.myapp = AppWindow([x for x in Path('.').rglob('cu_BruecknerJK_153F40_0m.cif')][0].absolute())
+        os.chdir(Path(__file__).absolute().parent.parent)
+        self.testcif = Path('tests/examples/work/cu_BruecknerJK_153F40_0m.cif').absolute()
+        self.myapp = AppWindow(self.testcif)
         self.myapp.setWindowIcon(QIcon('./icon/multitable.png'))
         self.myapp.setWindowTitle('FinalCif v{}'.format(VERSION))
-        self.myapp.hide()  # For full screen view
-        # self.myapp.setBaseSize(1200, 780)
-        # I have to load any cif file in order to have vheaderitems in the main table:
-        # self.myapp.load_cif_file(r'tests/examples/1979688.cif')
+        self.myapp.hide()
 
     def tearDown(self) -> None:
-        super().tearDown()
+        Path(self.testcif.stem + '.ins').unlink(missing_ok=True)
+        Path(self.testcif.stem + '.lst').unlink(missing_ok=True)
+        Path(self.testcif.stem + '.2fcf').unlink(missing_ok=True)
+        Path('testcif_file.cif').unlink(missing_ok=True)
 
     def testDataColumn(self):
+        self.myapp.hide()
         # test of ccdc number added from email during load:
         self.assertEqual('1979688',
                          self.myapp.ui.cif_main_table.getTextFromKey('_database_code_depnum_ccdc_archive', 1))
@@ -355,15 +364,17 @@ class TestWorkfolder(unittest.TestCase):
         self.assertEqual('P 2 2ab', self.myapp.ui.cif_main_table.getTextFromKey('_space_group_name_Hall', 0))
 
     def allrows_test_key(self, key: str = '', results: list = None):
+        self.myapp.hide()
         for n, r in enumerate(results):
             # print('##', key, n, r)
             # print(self.myapp.ui.cif_main_table.getTextFromKey(key, n))
             self.assertEqual(r, self.myapp.ui.cif_main_table.getTextFromKey(key, n))
 
     def test_equipment_click(self):
+        self.myapp.hide()
         item = self.myapp.ui.EquipmentTemplatesListWidget.findItems('APEX2 QUAZAR', Qt.MatchExactly)[0]
         self.myapp.ui.EquipmentTemplatesListWidget.setCurrentItem(item)
-        self.myapp.load_selected_equipment()
+        self.myapp.equipment.load_selected_equipment()
         self.allrows_test_key('_diffrn_measurement_method', ['?', 'ω and ϕ scans', 'ω and ϕ scans'])
         self.allrows_test_key('_diffrn_measurement_specimen_support', ['?', 'MiTeGen micromount', 'MiTeGen micromount'])
         self.allrows_test_key('_olex2_diffrn_ambient_temperature_device',
@@ -371,7 +382,7 @@ class TestWorkfolder(unittest.TestCase):
         # Check if click on author adds the address to second and third column:
         item = self.myapp.ui.EquipmentTemplatesListWidget.findItems('Contact Author', Qt.MatchStartsWith)[0]
         self.myapp.ui.EquipmentTemplatesListWidget.setCurrentItem(item)
-        self.myapp.load_selected_equipment()
+        self.myapp.equipment.load_selected_equipment()
         self.assertEqual('?', self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_address', 0))
         self.assertEqual(unify_line_endings(addr),
                          unify_line_endings(
@@ -389,6 +400,7 @@ class TestWorkfolder(unittest.TestCase):
                          unify_line_endings(str(self.myapp.ui.cif_main_table.cellWidget(4, 2))))
 
     def test_edit_values_and_save(self):
+        self.myapp.hide()
         self.myapp.ui.cif_main_table.setText(key='_atom_sites_solution_primary', column=2, txt='test1ä')
         self.myapp.ui.cif_main_table.setText(key='_atom_sites_solution_secondary', column=2, txt='test2ö')
         self.myapp.ui.cif_main_table.setText(key='_audit_contact_author_address', column=2, txt='test3ü')
@@ -413,9 +425,9 @@ class TestWorkfolder(unittest.TestCase):
                          self.myapp.ui.cif_main_table.getTextFromKey(key='_audit_contact_author_address', col=0))
         self.assertEqual('test4ß',
                          self.myapp.ui.cif_main_table.getTextFromKey(key='_audit_contact_author_email', col=0))
-        cif.unlink()
 
     def test_rename_data_tag(self):
+        self.myapp.hide()
         self.myapp.ui.datnameLineEdit.setText('foo_bar_yes')
         self.myapp.ui.SaveCifButton.click()
         self.myapp.ui.BackPushButton.click()
@@ -425,7 +437,7 @@ class TestWorkfolder(unittest.TestCase):
         erg = [x.replace("\n", "").replace("\r", "") for x in erg]
         pair = [x.replace("\n", "").replace("\r", "") for x in pair]
         self.assertEqual(erg, pair)
-        self.myapp.cif.fileobj.unlink()
+        self.myapp.final_cif_file_name.unlink()
 
 
 if __name__ == '__main__':

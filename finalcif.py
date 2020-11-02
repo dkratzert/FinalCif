@@ -140,7 +140,7 @@ class AppWindow(QMainWindow):
         self.settings = FinalCifSettings()
         self.set_window_parameters()
         self.equipment = Equipment(app=self, settings=self.settings)
-        self.propertys = Properties(app=self, settings=self.settings)
+        self.properties = Properties(app=self, settings=self.settings)
         self.ui.cif_main_table.installEventFilter(self)
         # distribute cif_main_table Columns evenly:
         hheader = self.ui.cif_main_table.horizontalHeader()
