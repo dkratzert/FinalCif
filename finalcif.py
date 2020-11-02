@@ -68,12 +68,13 @@ from tools.settings import FinalCifSettings
 from tools.version import VERSION
 
 from PyQt5.QtCore import QPoint, Qt, QUrl, QEvent
-from PyQt5.QtGui import QFont, QIcon, QBrush, QResizeEvent, QMoveEvent
+from PyQt5.QtGui import QFont, QIcon, QBrush, QResizeEvent, QMoveEvent, QTextCursor
 from PyQt5.QtWidgets import QApplication, QHeaderView, QListWidget, QListWidgetItem, \
     QMainWindow, QPlainTextEdit, QStackedWidget, QTableWidget, QShortcut, QCheckBox, QTableView
 
 r"""
 TODO:
+- Make .sqf file importable
 - make equipment template name editable
 - Peters comments on equipment templates:
     * save state and order of selected templates in order to be able to undo a selection with a second click. 
@@ -137,8 +138,8 @@ class AppWindow(QMainWindow):
         self.show()
         self.status_bar = StatusBar(ui=self.ui)
         self.status_bar.show_message('FinalCif version {}'.format(VERSION))
-        self.settings = FinalCifSettings(self)
-        self.settings.load_window_position()
+        self.settings = FinalCifSettings()
+        self.set_window_parameters()
         self.store_predefined_templates()
         self.show_equipment_and_properties()
         self.ui.cif_main_table.installEventFilter(self)
@@ -152,6 +153,7 @@ class AppWindow(QMainWindow):
         # Make sure the start page is shown and not the edit page:
         self.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
         self.ui.PropertiesTemplatesStackedWidget.setCurrentIndex(0)
+        self.ui.CheckCIFResultsTabWidget.setCurrentIndex(0)
         self.ui.MainStackedWidget.got_to_main_page()
         self.ui.EquipmentEditTableWidget.verticalHeader().hide()
         self.ui.PropertiesEditTableWidget.verticalHeader().hide()
@@ -193,6 +195,15 @@ class AppWindow(QMainWindow):
         self.ui.PictureWidthDoubleSpinBox.setRange(0.0, 25)
         self.ui.PictureWidthDoubleSpinBox.setSingleStep(0.5)
         self.set_checkcif_output_font(self.ui.CheckcifPlaintextEdit)
+
+    def set_window_parameters(self):
+        wsettings = self.settings.load_window_position()
+        with suppress(TypeError):
+            self.resize(wsettings['size'])
+        with suppress(TypeError):
+            self.move(wsettings['position'])
+        if wsettings['maximized']:
+            self.showMaximized()
 
     def make_button_icons(self):
         self.ui.CheckcifButton.setIcon(qta.icon('mdi.file-document-outline'))
@@ -558,7 +569,7 @@ class AppWindow(QMainWindow):
         except FileNotFoundError:
             # happens if checkcif fails, e.g. takes too much time.
             self.ui.CheckCifLogPlainTextEdit.appendHtml('<b>CheckCIF failed to finish. '
-                                                        'Please try it at https://checkcif.iucr.org/ instead</b>')
+                                                        'Please try it at https://checkcif.iucr.org/ instead.</b>')
             return
         self.checkcif_browser = QWebEngineView(self.ui.htmlTabwidgetPage)
         self.ui.htmlCHeckCifGridLayout.addWidget(self.checkcif_browser)
@@ -694,6 +705,11 @@ class AppWindow(QMainWindow):
         except (FileNotFoundError, PermissionError):
             pass
 
+    def append_to_ciflog_without_newline(self, text: str = '') -> None:
+        self.ui.CheckCifLogPlainTextEdit.moveCursor(QTextCursor.End)
+        self.ui.CheckCifLogPlainTextEdit.insertPlainText(text)
+        self.ui.CheckCifLogPlainTextEdit.moveCursor(QTextCursor.End)
+
     def do_offline_checkcif(self) -> None:
         """
         Performs a checkcif with platon and displays it in the text editor of the MainStackedWidget.
@@ -701,7 +717,7 @@ class AppWindow(QMainWindow):
         self.ui.CheckCifLogPlainTextEdit.clear()
         self.ui.MainStackedWidget.go_to_checkcif_page()
         self.ui.CheckCIFResultsTabWidget.setCurrentIndex(0)
-        self.ui.CheckCifLogPlainTextEdit.appendPlainText("Running Checkcif locally. Please wait...")
+        self.ui.CheckCifLogPlainTextEdit.appendPlainText("Running Checkcif locally. Please wait...\n")
         QApplication.processEvents()
         # makes sure also the currently edited item is saved:
         self.ui.cif_main_table.setCurrentItem(None)
@@ -720,29 +736,27 @@ class AppWindow(QMainWindow):
             # self.ui.CheckcifButton.setDisabled(True)
             return
         checkcif_out = self.ui.CheckcifPlaintextEdit
-        checkcif_out.setPlainText('Platon output: \nThis might not be the same as the IUCr CheckCIF!\n')
+        checkcif_out.setPlainText('Platon output: \nThis might not be the same as the IUCr CheckCIF!')
         QApplication.processEvents()
         p.start()
-        time.sleep(1)
-        while not Path(self.cif.fileobj.stem + '.chk').exists():
-            print('waiting for chk file...')
-            time.sleep(1)
-        QApplication.processEvents()
+        if not self.wait_for_chk_file(p):
+            checkcif_out.appendPlainText('Platon did not start. No .chk file from Platon found!')
+            checkcif_out.appendPlainText(p.platon_output)
+            p.kill()
+            return
         checkcif_out.appendPlainText('\n' + '#' * 80)
-        QApplication.processEvents()
         checkcif_out.setLineWrapMode(QPlainTextEdit.NoWrap)
         self.wait_until_platon_finished(timeout)
         checkcif_out.appendPlainText(p.platon_output)
         p.parse_chk_file()
+        vrf_txt = ''
         with suppress(FileNotFoundError):
             vrf_txt = Path(self.cif.fileobj.stem + '.vrf').read_text()
         if p.chk_file_text:
-            try:
+            with suppress(AttributeError):
                 checkcif_out.appendPlainText(p.chk_file_text)
                 checkcif_out.appendPlainText('\n' + '#' * 27 + ' Validation Response Forms ' + '#' * 26 + '\n')
                 checkcif_out.appendPlainText(vrf_txt)
-            except AttributeError:
-                pass
         checkcif_out.verticalScrollBar().setValue(0)
         moiety = self.ui.cif_main_table.getTextFromKey(key='_chemical_formula_moiety', col=0)
         if p.formula_moiety and moiety in ['', '?']:
@@ -750,16 +764,38 @@ class AppWindow(QMainWindow):
         print('Killing platon!')
         p.kill()
 
+    def wait_for_chk_file(self, p) -> bool:
+        time.sleep(2)
+        stop = 0
+        while not Path(self.cif.fileobj.stem + '.chk').exists():
+            self.append_to_ciflog_without_newline('.')
+            QApplication.processEvents()
+            time.sleep(2)
+            if not p.plat:
+                self.append_to_ciflog_without_newline('aborted here')
+                self.append_to_ciflog_without_newline(p.platon_output)
+                return False
+            stop += 1
+            if stop == 8:
+                return False
+        return True
+
     def wait_until_platon_finished(self, timeout: int = 300):
         stop = 0
-        while Path(self.cif.fileobj.stem + '.chk').stat().st_size < 100:
-            print('waiting for .chk file to finish...')
-            if stop == timeout:
-                self.ui.CheckcifPlaintextEdit.appendPlainText('PLATON timed out')
-                break
-            time.sleep(1)
-            stop += 1
-        time.sleep(0.5)
+        if not Path(self.cif.fileobj.stem + '.chk').exists():
+            self.ui.CheckCifLogPlainTextEdit.appendPlainText('Platon returned no output.')
+            QApplication.processEvents()
+            return
+        with suppress(FileNotFoundError):
+            while Path(self.cif.fileobj.stem + '.chk').stat().st_size < 200:
+                self.append_to_ciflog_without_newline('*')
+                QApplication.processEvents()
+                if stop == timeout:
+                    self.ui.CheckcifPlaintextEdit.appendPlainText('PLATON timed out')
+                    break
+                time.sleep(1)
+                stop += 1
+            time.sleep(0.5)
 
     def set_checkcif_output_font(self, ccpe):
         doc = ccpe.document()
@@ -1471,7 +1507,7 @@ class AppWindow(QMainWindow):
         Import an equipment entry from a cif file.
         """
         if not filename:
-            filename = cif_file_open_dialog(filter="CIF file (*.cif *.pcf *.cif_od *.cfx)")
+            filename = cif_file_open_dialog(filter="CIF file (*.cif *.pcf *.cif_od *.cfx *.sqf)")
         if not filename:
             return
         try:

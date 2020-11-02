@@ -1,11 +1,9 @@
 import sys
 import unittest
 
-from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication
 
 from finalcif import AppWindow
-from tools.version import VERSION
 
 app = QApplication(sys.argv)
 
@@ -13,13 +11,11 @@ app = QApplication(sys.argv)
 class TestOptions(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.myapp = AppWindow()  # ([x for x in Path('.').rglob('1979688.cif')][0].absolute())
-        self.myapp.setWindowIcon(QIcon('./icon/multitable.png'))
-        self.myapp.setWindowTitle('FinalCif v{}'.format(VERSION))
+        self.myapp = AppWindow()
         self.myapp.hide()
 
     def test_save_picture_with(self):
-        self.assertEqual(self.myapp.ui.PictureWidthDoubleSpinBox.value(), 0.0)
+        self.assertEqual(self.myapp.ui.PictureWidthDoubleSpinBox.value(), 7.5)
         self.myapp.ui.PictureWidthDoubleSpinBox.setValue(7.6)
         self.assertEqual(self.myapp.options.picture_width, 7.6)
         self.myapp.ui.PictureWidthDoubleSpinBox.setValue(12.5)
@@ -44,3 +40,15 @@ class TestOptions(unittest.TestCase):
                          'https://checkcif.iucr.org/cgi-bin/checkcif_with_hkl')
         self.myapp.ui.CheckCIFServerURLTextedit.setText('foobar')
         self.assertEqual(self.myapp.options.checkcif_url, 'foobar')
+
+    def test_option_picture_width(self):
+        self.myapp.ui.PictureWidthDoubleSpinBox.setValue(0.0)
+        # a width od < 0.001 defaults to 7.5 cm
+        self.assertEqual(self.myapp.options.picture_width, 7.5)
+        #
+        self.myapp.ui.PictureWidthDoubleSpinBox.setValue(7.6)
+        self.assertEqual(self.myapp.options.picture_width, 7.6)
+
+    def test_without_H_option(self):
+        self.myapp.ui.HAtomsCheckBox.setChecked(False)
+        self.assertEqual(self.myapp.options.without_H, False)

@@ -8,8 +8,7 @@
 import re
 from math import sin, cos, sqrt
 from pathlib import Path
-# noinspection PyUnresolvedReferences
-from typing import Dict, List, Tuple, Union
+from typing import Dict, List, Tuple
 
 import gemmi
 
@@ -50,8 +49,14 @@ class CifContainer():
         :return: gemmi document
         """
         doc = gemmi.cif.Document()
-        doc.source = path
-        doc.parse_file(path)
+        # support for platon squeeze files:
+        if path.endswith('.sqf'):
+            txt = Path(path).read_text(encoding='ascii')
+            txt = 'data_justrandomlkdsadflkmcn\n' + txt
+            doc.parse_string(txt)
+        else:
+            doc.source = path
+            doc.parse_file(path)
         return doc
 
     def read_string(self, cif_string: str) -> gemmi.cif.Document:

@@ -5,7 +5,6 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication
 
 from finalcif import AppWindow
-from gui.finalcif_gui import Ui_FinalCifWindow
 from tools.statusbar import StatusBar
 from tools.version import VERSION
 
