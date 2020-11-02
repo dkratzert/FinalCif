@@ -6,7 +6,7 @@ from pathlib import Path
 
 from PyQt5.QtWidgets import QApplication
 
-from finalcif import AppWindow
+from finalcif.appwindow import AppWindow
 from tools.version import VERSION
 
 app = QApplication(sys.argv)
