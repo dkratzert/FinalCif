@@ -117,16 +117,14 @@ class Equipment:
         self.app.ui.EquipmentTemplatesListWidget.setCurrentItem(None)
         self.app.ui.EquipmentTemplatesListWidget.setCurrentItem(it)
         self.app.ui.CancelPropertiesButton.click()
-        table = self.app.ui.EquipmentEditTableWidget
-        stackedwidget = self.app.ui.EquipmentTemplatesStackedWidget
-        listwidget = self.app.ui.EquipmentTemplatesListWidget
-        self.load_equipment_to_edit(table, stackedwidget, listwidget)
+        self.load_equipment_to_edit()
 
-    def load_equipment_to_edit(self, table: MyEQTableWidget, stackedwidget: QStackedWidget,
-                               listwidget: QListWidget) -> None:
+    def load_equipment_to_edit(self) -> None:
         """
         Load/Edit the key/value list of an equipment entry.
         """
+        table = self.app.ui.EquipmentEditTableWidget
+        listwidget = self.app.ui.EquipmentTemplatesListWidget
         table.blockSignals(True)
         table.clearContents()
         table.setRowCount(0)
@@ -148,7 +146,7 @@ class Equipment:
                 table.add_equipment_row('', '')
         table.add_equipment_row('', '')
         table.add_equipment_row('', '')
-        stackedwidget.setCurrentIndex(1)
+        self.app.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(1)
         table.resizeRowsToContents()
         table.blockSignals(False)
 

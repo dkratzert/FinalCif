@@ -113,11 +113,7 @@ class Properties:
         self.app.ui.PropertiesTemplatesListWidget.setCurrentItem(None)
         self.app.ui.PropertiesTemplatesListWidget.setCurrentItem(it)
         self.app.ui.CancelEquipmentButton.click()
-        table = self.app.ui.PropertiesEditTableWidget
-        stackedwidget = self.app.ui.PropertiesTemplatesStackedWidget
-        listwidget = self.app.ui.PropertiesTemplatesListWidget
-        self.load_property_from_settings(table, stackedwidget, listwidget)
-        # table.resizeRowsToContents()
+        self.load_property_from_settings()
 
     def save_property_template(self) -> None:
         table = self.app.ui.PropertiesEditTableWidget
@@ -220,11 +216,12 @@ class Properties:
         self.settings.save_template('property/' + block_name, table_data)
         self.show_properties()
 
-    def load_property_from_settings(self, table: QTableWidget, stackedwidget: QStackedWidget,
-                                    listwidget: QListWidget) -> None:
+    def load_property_from_settings(self) -> None:
         """
         Load/Edit the value list of a property entry.
         """
+        table = self.app.ui.PropertiesEditTableWidget
+        listwidget = self.app.ui.PropertiesTemplatesListWidget
         table.blockSignals(True)
         property_list = self.settings.settings.value('property_list')
         if not property_list:
@@ -258,7 +255,7 @@ class Properties:
         newlist = [x for x in list(set(property_list)) if x]
         # this list keeps track of the property items:
         self.settings.save_template('property_list', newlist)
-        stackedwidget.setCurrentIndex(1)
+        self.app.ui.PropertiesTemplatesStackedWidget.setCurrentIndex(1)
         table.blockSignals(False)
         # table.setWordWrap(False)
         table.resizeRowsToContents()
