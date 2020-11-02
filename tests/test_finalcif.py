@@ -9,7 +9,7 @@ from PyQt5.QtGui import QIcon, QColor
 from PyQt5.QtWidgets import QApplication
 from qtpy.QtTest import QTest
 
-from finalcif import AppWindow
+from finalcif.appwindow import AppWindow
 from gui.custom_classes import light_green, yellow
 from tools.version import VERSION
 

@@ -3,7 +3,7 @@ import unittest
 from pathlib import Path
 
 from cif.cif_file_io import CifContainer
-from finalcif import AppWindow
+from finalcif.appwindow import AppWindow
 from tests.test_finalcif import unify_line_endings
 from tools.shred import ShredCIF
 

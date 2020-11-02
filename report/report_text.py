@@ -6,7 +6,7 @@ from docx.text.paragraph import Paragraph
 from docx.text.run import Run
 from lxml import etree
 
-from app_path import application_path
+from finalcif.app_path import application_path
 from cif.cif_file_io import CifContainer
 from cif.text import retranslate_delimiter
 from report.references import DummyReference, BrukerReference, SORTAVReference, ReferenceList, CCDCReference, \
