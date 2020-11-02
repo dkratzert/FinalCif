@@ -47,7 +47,6 @@ class Equipment:
 
     def show_equipment(self):
         self.app.ui.EquipmentTemplatesListWidget.clear()
-        self.app.ui.PropertiesTemplatesListWidget.clear()
         for eq in self.settings.get_equipment_list():
             if eq:
                 item = QListWidgetItem(eq)
