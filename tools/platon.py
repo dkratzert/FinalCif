@@ -11,9 +11,12 @@
 
 import os
 import subprocess
+import sys
 from contextlib import suppress
 from pathlib import Path
 from subprocess import TimeoutExpired
+from time import sleep
+from typing import Union
 
 from PyQt5.QtCore import QThread
 
@@ -23,15 +26,21 @@ class Platon(QThread):
         super().__init__()
         self.timeout = timeout
         self.cif_fileobj = cif
-        self.chkfile = None
+        self.chkfile = Path(self.cif_fileobj.with_suffix('.chk'))
         self.platon_output = ''
         self.chk_file_text = ''
         self.formula_moiety = ''
         self.Z = ''
         self.delete_orphaned_files()
+        self.plat: Union[subprocess.CompletedProcess, bool] = True
 
     def kill(self):
-        subprocess.run(["taskkill", "/f", "/im", "platon.exe"], shell=False)
+        if sys.platform.startswith('win'):
+            with suppress(FileNotFoundError):
+                subprocess.run(["taskkill", "/f", "/im", "platon.exe"], shell=False)
+        if sys.platform[:5] in ('linux', 'darwi'):
+            with suppress(FileNotFoundError):
+                subprocess.run(["killall", "platon"], shell=False)
 
     def delete_orphaned_files(self):
         # delete orphaned files:
@@ -62,6 +71,17 @@ class Platon(QThread):
             if line.startswith('# Z'):
                 self.Z = line[19:24].strip(' ')
 
+    @property
+    def platon_exe(self):
+        if sys.platform.startswith('win'):
+            in_pwt = r'C:\pwt\platon.exe'
+        else:
+            in_pwt = 'platon'
+        if Path(in_pwt).exists():
+            return in_pwt
+        else:
+            return 'platon'
+
     def run(self):
         """
         Runs the platon thread.
@@ -69,21 +89,27 @@ class Platon(QThread):
         curdir = Path(os.curdir).absolute()
         with suppress(FileNotFoundError):
             Path(self.cif_fileobj.stem + '.vrf').unlink()
-        self.chkfile = Path(self.cif_fileobj.with_suffix('.chk'))
         with suppress(FileNotFoundError):
             self.chkfile.unlink()
         os.chdir(str(self.cif_fileobj.absolute().parent))
         try:
             print('running local platon on', self.cif_fileobj.name)
-            subprocess.run([r'platon', '-u', self.cif_fileobj.name],
-                           startupinfo=self.hide_status_window(),
-                           shell=False, env=os.environ, timeout=self.timeout)
+            self.plat = subprocess.run([self.platon_exe, '-u', self.cif_fileobj.name],
+                                       startupinfo=self.hide_status_window(),
+                                       stdout=subprocess.PIPE,
+                                       stderr=subprocess.PIPE,
+                                       shell=False,
+                                       env=os.environ,
+                                       timeout=self.timeout)
         except TimeoutExpired:
             print('PLATON timeout!')
+            self.platon_output = 'PLATON timeout!'
             pass
         except Exception as e:
             print('Could not run local platon:' + str(e))
             self.platon_output = str(e)
+        if self.plat and self.plat.stdout:
+            self.platon_output = self.plat.stdout.decode('ascii')
         self.delete_orphaned_files()
         os.chdir(curdir.absolute())
 
@@ -105,4 +131,7 @@ class Platon(QThread):
 if __name__ == '__main__':
     fname = Path('test-data/DK_zucker2_0m.cif')
     p = Platon(fname)
-    p.run_platon()
+    p.start()
+    sleep(15)
+    p.exit()
+    p.kill()

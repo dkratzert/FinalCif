@@ -4,8 +4,6 @@
 # Daniel Kratzert
 #
 import itertools as it
-import os
-import subprocess
 from math import sin, radians
 from pathlib import Path
 from typing import List, Sequence

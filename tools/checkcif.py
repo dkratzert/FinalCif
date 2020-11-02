@@ -17,8 +17,7 @@ from typing import List, Optional
 import gemmi
 import requests
 from PyQt5.QtCore import QUrl, QThread, pyqtSignal
-from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest
-from PyQt5.QtNetwork import QNetworkReply
+from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply
 from requests.exceptions import MissingSchema
 
 from cif.cif_file_io import CifContainer
@@ -73,7 +72,11 @@ class CheckCif(QThread):
             message = r"Checkcif server took too long. Try it at 'https://checkcif.iucr.org' directly."
             self.failed.emit(message)
         except requests.exceptions.MissingSchema:
-            message = r"URL for checkcif missing in options."
+            message = "URL for checkcif missing in options."
+            self.failed.emit(message)
+        except requests.exceptions.ConnectionError:
+            message = "The checkcif server is not reachable. Is your network connection working?<br>" \
+                      "The server URL might also have changed..."
             self.failed.emit(message)
         if req:
             self.progress.emit('request finished')

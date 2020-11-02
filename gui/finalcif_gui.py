@@ -1095,7 +1095,7 @@ class Ui_FinalCifWindow(object):
         self.SaveEquipmentButton.setText(_translate("FinalCifWindow", "Save"))
         self.CancelEquipmentButton.setText(_translate("FinalCifWindow", "Cancel"))
         self.ExportEquipmentButton.setText(_translate("FinalCifWindow", "Export"))
-        self.ImportCifPushButton.setText(_translate("FinalCifWindow", "Import .cif, .pcf, .cif_od or .cfx file"))
+        self.ImportCifPushButton.setText(_translate("FinalCifWindow", "Import .cif, .pcf, .cif_od, .cfx or .sqf file"))
         self.PropertiesGroupBox.setTitle(_translate("FinalCifWindow", "Property Templates"))
         self.NewPropertyTemplateButton.setText(_translate("FinalCifWindow", "New Template"))
         self.EditPropertyTemplateButton.setText(_translate("FinalCifWindow", "Edit Template"))
