@@ -19,6 +19,8 @@ class Equipment:
     def __init__(self, app: 'AppWindow', settings: FinalCifSettings):
         self.app = app
         self.settings = settings
+        self.app.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
+        self.app.ui.EquipmentEditTableWidget.verticalHeader().hide()
         self.signals_and_slots()
         self.show_equipment()
 
