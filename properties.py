@@ -45,8 +45,9 @@ class Properties:
 
     def show_properties(self) -> None:
         """
-        Display saved items in the equipment and properties lists.
+        Display saved items in the properties lists.
         """
+        self.app.ui.PropertiesTemplatesListWidget.clear()
         property_list = self.settings.settings.value('property_list')
         if property_list:
             property_list.sort()
@@ -65,7 +66,7 @@ class Properties:
 
     def add_property_row_if_needed(self) -> None:
         """
-        Adds an empty row at the bottom of either the EquipmentEditTableWidget, or the PropertiesEditTableWidget.
+        Adds an empty row at the bottom of either the PropertiesEditTableWidget.
         """
         table = self.app.ui.PropertiesEditTableWidget
         rowcount = table.rowCount()
@@ -131,7 +132,7 @@ class Properties:
             if not item['name'] in property_list:
                 property_list.append(item['name'])
                 newlist = [x for x in list(set(property_list)) if x]
-                # this list keeps track of the equipment items:
+                # this list keeps track of the property items:
                 self.settings.save_template('property_list', newlist)
                 self.settings.save_template('property/' + item['name'], item['values'])
 
@@ -209,7 +210,7 @@ class Properties:
         self.app.ui.cifKeywordLineEdit.setText(loop_column_name)
         newlist = [x for x in list(set(property_list)) if x]
         newlist.sort()
-        # this list keeps track of the equipment items:
+        # this list keeps track of the property items:
         self.settings.save_template('property_list', newlist)
         template_list.insert(0, '')
         template_list = list(set(template_list))
@@ -255,7 +256,7 @@ class Properties:
         self.add_propeties_row(table, '')
         property_list.append(selected_row_text)
         newlist = [x for x in list(set(property_list)) if x]
-        # this list keeps track of the equipment items:
+        # this list keeps track of the property items:
         self.settings.save_template('property_list', newlist)
         stackedwidget.setCurrentIndex(1)
         table.blockSignals(False)
