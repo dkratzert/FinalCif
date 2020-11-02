@@ -12,6 +12,7 @@ from datetime import datetime
 import displaymol
 from displaymol import mol_file_writer, write_html
 from displaymol.sdm import SDM
+from equipment import Equipment
 from tools.options import Options
 from tools.statusbar import StatusBar
 
@@ -54,7 +55,6 @@ from gui.loops import Loop
 from tools.shred import ShredCIF
 from cif.cif_file_io import CifContainer
 from cif.text import set_pair_delimited, utf8_to_str, retranslate_delimiter
-from cif.core_dict import cif_core
 from datafiles.bruker_data import BrukerData
 from datafiles.ccdc import CCDCMail
 from tools.platon import Platon
@@ -62,8 +62,8 @@ from gui.vrf_classes import MyVRFContainer, VREF
 from report.archive_report import ArchiveReport
 from report.tables import make_report_from
 from tools.checkcif import AlertHelp, CheckCif, MyHTMLParser
-from tools.misc import combobox_fields, predef_equipment_templ, predef_prop_templ, \
-    strip_finalcif_of_name, to_float, next_path, celltxt, do_not_import_keys, include_equipment_imports
+from tools.misc import combobox_fields, predef_prop_templ, \
+    strip_finalcif_of_name, to_float, next_path, celltxt, do_not_import_keys
 from tools.settings import FinalCifSettings
 from tools.version import VERSION
 
@@ -119,7 +119,7 @@ as dict:
 """
 # They must be here in order to have directly updated ui files from the ui compiler:
 from gui.finalcif_gui import Ui_FinalCifWindow
-from gui.custom_classes import MyComboBox, MyEQTableWidget, MyTableWidgetItem, blue, light_green, yellow, \
+from gui.custom_classes import MyComboBox, MyTableWidgetItem, blue, light_green, yellow, \
     COL_CIF, \
     COL_DATA, COL_EDIT, MyQPlainTextEdit
 
@@ -141,7 +141,8 @@ class AppWindow(QMainWindow):
         self.settings = FinalCifSettings()
         self.set_window_parameters()
         self.store_predefined_templates()
-        self.show_equipment_and_properties()
+        self.equipment = Equipment(app=self, settings=self.settings)
+        self.show_properties()
         self.ui.cif_main_table.installEventFilter(self)
         # distribute cif_main_table Columns evenly:
         hheader = self.ui.cif_main_table.horizontalHeader()
@@ -259,27 +260,12 @@ class AppWindow(QMainWindow):
         self.ui.SelectCif_PushButton.clicked.connect(self.load_cif_file)
         self.ui.SaveCifButton.clicked.connect(self.save_cif_and_display)
         self.ui.ImportCifPushButton.clicked.connect(self.import_additional_cif)
-        ## equipment
-        self.ui.EquipmentTemplatesListWidget.doubleClicked.connect(self.edit_equipment_template)
-        self.ui.EditEquipmentTemplateButton.clicked.connect(self.edit_equipment_template)
-        self.ui.SaveEquipmentButton.clicked.connect(self.save_equipment_template)
-        self.ui.CancelEquipmentButton.clicked.connect(self.cancel_equipment_template)
-        self.ui.DeleteEquipmentButton.clicked.connect(self.delete_equipment)
-        self.ui.ExportEquipmentButton.clicked.connect(self.export_equipment_template)
-        self.ui.ImportEquipmentTemplateButton.clicked.connect(self.import_equipment_from_file)
         ## properties
         self.ui.PropertiesTemplatesListWidget.doubleClicked.connect(self.edit_property_template)
         self.ui.EditPropertyTemplateButton.clicked.connect(self.edit_property_template)
         self.ui.SavePropertiesButton.clicked.connect(self.save_property_template)
         self.ui.CancelPropertiesButton.clicked.connect(self.cancel_property_template)
         self.ui.DeletePropertiesButton.clicked.connect(self.delete_property)
-        ## equipment
-        self.ui.EquipmentEditTableWidget.cellPressed.connect(self.ui.EquipmentEditTableWidget.add_row_if_needed)
-        self.ui.EquipmentEditTableWidget.itemSelectionChanged.connect(
-            self.ui.EquipmentEditTableWidget.add_row_if_needed)
-        self.ui.EquipmentEditTableWidget.itemEntered.connect(self.ui.EquipmentEditTableWidget.add_row_if_needed)
-        self.ui.EquipmentEditTableWidget.cellChanged.connect(self.ui.EquipmentEditTableWidget.add_row_if_needed)
-        self.ui.EquipmentEditTableWidget.currentItemChanged.connect(self.ui.EquipmentEditTableWidget.add_row_if_needed)
         ## properties
         self.ui.PropertiesEditTableWidget.itemSelectionChanged.connect(self.add_property_row_if_needed)
         self.ui.PropertiesEditTableWidget.cellPressed.connect(self.add_property_row_if_needed)
@@ -290,15 +276,10 @@ class AppWindow(QMainWindow):
         self.ui.PropertiesEditTableWidget.itemPressed.connect(self.add_property_row_if_needed)
         self.ui.PropertiesEditTableWidget.itemClicked.connect(self.add_property_row_if_needed)
         self.ui.PropertiesEditTableWidget.itemChanged.connect(self.add_property_row_if_needed)
+        self.ui.NewPropertyTemplateButton.clicked.connect(self.new_property)
         # import
         self.ui.ImportPropertyTemplateButton.clicked.connect(self.import_property_from_file)
         self.ui.ExportPropertyButton.clicked.connect(self.export_property_template)
-        ##
-        self.ui.NewEquipmentTemplateButton.clicked.connect(self.new_equipment)
-        self.ui.NewPropertyTemplateButton.clicked.connect(self.new_property)
-        ##
-        self.ui.EquipmentTemplatesListWidget.currentRowChanged.connect(self.load_selected_equipment)
-        self.ui.EquipmentTemplatesListWidget.clicked.connect(self.load_selected_equipment)
         ## report
         self.ui.SaveFullReportButton.clicked.connect(self.make_report_tables)
         self.ui.RecentComboBox.currentIndexChanged.connect(self.load_recent_file)
@@ -316,7 +297,7 @@ class AppWindow(QMainWindow):
         save_shortcut = QShortcut(QKeySequence('Ctrl+P'), self)
         save_shortcut.activated.connect(self.do_pdf_checkcif)
         #
-        self.ui.DetailsPushButton.clicked.connect(self.show_properties)
+        self.ui.DetailsPushButton.clicked.connect(self.show_residuals)
         self.ui.BackpushButtonDetails.clicked.connect(self.back_to_main_noload)
         self.ui.growCheckBox.toggled.connect(self.redraw_molecule)
         #
@@ -994,16 +975,10 @@ class AppWindow(QMainWindow):
         final_textedit.setLineWrapMode(QPlainTextEdit.NoWrap)
         final_textedit.setPlainText(self.final_cif_file_name.read_text(encoding='utf-8', errors='ignore'))
 
-    def show_equipment_and_properties(self) -> None:
+    def show_properties(self) -> None:
         """
         Display saved items in the equipment and properties lists.
         """
-        self.ui.EquipmentTemplatesListWidget.clear()
-        self.ui.PropertiesTemplatesListWidget.clear()
-        for eq in self.settings.get_equipment_list():
-            if eq:
-                item = QListWidgetItem(eq)
-                self.ui.EquipmentTemplatesListWidget.addItem(item)
         property_list = self.settings.settings.value('property_list')
         if property_list:
             property_list.sort()
@@ -1011,30 +986,6 @@ class AppWindow(QMainWindow):
                 if pr:
                     item = QListWidgetItem(pr)
                     self.ui.PropertiesTemplatesListWidget.addItem(item)
-
-    def load_selected_equipment(self) -> None:
-        """
-        Loads equipment data to be shown in the main Cif table.
-        Not for template edititng!
-        """
-        listwidget = self.ui.EquipmentTemplatesListWidget
-        selected_row_text = listwidget.currentIndex().data()
-        if not selected_row_text:
-            return None
-        equipment = self.settings.load_equipment_template_as_dict(selected_row_text)
-        if self.ui.cif_main_table.vheaderitems:
-            for key in equipment:
-                if key not in self.ui.cif_main_table.vheaderitems:
-                    # Key is not in the main table:
-                    self.add_new_table_key(key, equipment[key])
-                else:
-                    # Key is already there:
-                    self.ui.cif_main_table.setText(key, COL_CIF,
-                                                   txt=self.ui.cif_main_table.getTextFromKey(key, COL_CIF))
-                    self.ui.cif_main_table.setText(key, COL_DATA, txt=equipment[key], color=light_green)
-                    self.ui.cif_main_table.setText(key, COL_EDIT, txt=equipment[key])
-        else:
-            print('Empty main table!')
 
     def add_new_table_key(self, key: str, value: str = '?') -> None:
         """
@@ -1084,180 +1035,6 @@ class AppWindow(QMainWindow):
         if diff < 4:
             table.insertRow(rowcount)
 
-    # The equipment templates:
-
-    def new_equipment(self) -> None:
-        item = QListWidgetItem('')
-        self.ui.EquipmentTemplatesListWidget.addItem(item)
-        self.ui.EquipmentTemplatesListWidget.setCurrentItem(item)
-        item.setFlags(Qt.ItemIsEditable | Qt.ItemIsEnabled | Qt.ItemIsSelectable)
-        self.ui.EquipmentTemplatesListWidget.editItem(item)
-
-    def delete_equipment(self) -> None:
-        # First delete the list entries
-        index = self.ui.EquipmentTemplatesListWidget.currentIndex()
-        selected_template_text = index.data()
-        self.settings.delete_template('equipment/' + selected_template_text)
-        equipment_list = self.settings.settings.value('equipment_list') or []
-        try:
-            equipment_list.remove(selected_template_text)
-        except ValueError:
-            pass
-        self.settings.save_template('equipment_list', equipment_list)
-        # now make it invisible:
-        self.ui.EquipmentTemplatesListWidget.takeItem(index.row())
-        self.cancel_equipment_template()
-        # I do these both to clear the list:
-        self.store_predefined_templates()
-        self.show_equipment_and_properties()
-
-    def edit_equipment_template(self) -> None:
-        """Gets called when 'edit equipment' button was clicked."""
-        it = self.ui.EquipmentTemplatesListWidget.currentItem()
-        self.ui.EquipmentTemplatesListWidget.setCurrentItem(None)
-        self.ui.EquipmentTemplatesListWidget.setCurrentItem(it)
-        self.ui.CancelPropertiesButton.click()
-        table = self.ui.EquipmentEditTableWidget
-        stackedwidget = self.ui.EquipmentTemplatesStackedWidget
-        listwidget = self.ui.EquipmentTemplatesListWidget
-        self.load_equipment_to_edit(table, stackedwidget, listwidget)
-
-    def load_equipment_to_edit(self, table: MyEQTableWidget, stackedwidget: QStackedWidget,
-                               listwidget: QListWidget) -> None:
-        """
-        Load/Edit the key/value list of an equipment entry.
-        """
-        table.blockSignals(True)
-        table.clearContents()
-        table.setRowCount(0)
-        index = listwidget.currentIndex()
-        if index.row() == -1:
-            # nothing selected
-            return
-        selected_row_text = listwidget.currentIndex().data()
-        table_data = self.settings.load_template('equipment/' + selected_row_text)
-        # first load the previous values:
-        if table_data:
-            for key, value in table_data:
-                if not key or not value:
-                    continue
-                table.add_equipment_row(key, retranslate_delimiter(value))
-        else:
-            # new empty equipment:
-            for _ in range(8):
-                table.add_equipment_row('', '')
-        table.add_equipment_row('', '')
-        table.add_equipment_row('', '')
-        stackedwidget.setCurrentIndex(1)
-        table.resizeRowsToContents()
-        table.blockSignals(False)
-
-    def save_equipment_template(self) -> None:
-        """
-        Saves the currently selected equipment template to the config file.
-        """
-        selected_template_text, table_data = self.get_equipment_entry_data()
-        # warn if key is not official:
-        for key, _ in table_data:
-            if key not in cif_core:
-                if not key.startswith('_'):
-                    show_general_warning('"{}" is not a valid keyword! '
-                                         '\nChange the name in order to save.\n'
-                                         'Keys must start with an underscore.'.format(key))
-                    return
-                show_general_warning('"{}" is not an official CIF keyword!'.format(key))
-        self.settings.save_template('equipment/' + selected_template_text, table_data)
-        self.settings.append_to_equipment_list(selected_template_text)
-        self.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
-        print('saved')
-
-    def import_equipment_from_file(self, filename='') -> None:
-        """
-        Import an equipment entry from a cif file.
-        """
-        if not filename:
-            filename = cif_file_open_dialog(filter="CIF file (*.cif  *.cif_od *.cfx)")
-        if not filename:
-            return
-        try:
-            doc = cif.read_file(filename)
-        except RuntimeError as e:
-            show_general_warning(str(e))
-            return
-        block = doc.sole_block()
-        table_data = []
-        for item in block:
-            if item.pair is not None:
-                key, value = item.pair
-                if filename.endswith('.cif_od') and key not in include_equipment_imports:
-                    continue
-                table_data.append([key, retranslate_delimiter(cif.as_string(value).strip('\n\r ;'))])
-        if filename.endswith('.cif_od'):
-            name = Path(filename).stem
-        else:
-            name = block.name.replace('__', ' ')
-        self.settings.save_template('equipment/' + name, table_data)
-        self.settings.append_to_equipment_list(name)
-        self.show_equipment_and_properties()
-
-    def get_equipment_entry_data(self) -> Tuple[str, list]:
-        """
-        Returns the string of the currently selected entry and the table data behind it.
-        """
-        table = self.ui.EquipmentEditTableWidget
-        # Set None Item to prevent loss of the currently edited item:
-        # The current item is closed and thus saved.
-        table.setCurrentItem(None)
-        selected_template_text = self.ui.EquipmentTemplatesListWidget.currentIndex().data()
-        table_data = []
-        ncolumns = table.rowCount()
-        for rownum in range(ncolumns):
-            key = ''
-            try:
-                key = table.text(rownum, 0)
-                value = table.text(rownum, 1).strip('\n\r ')
-            except AttributeError:
-                value = ''
-            if key and value:
-                table_data.append([key, value])
-        return selected_template_text, table_data
-
-    def export_equipment_template(self, filename: str = None) -> None:
-        """
-        Exports the currently selected equipment entry to a file.
-
-        I order to export, we have to run self.edit_equipment_template() first!
-        """
-        selected_template, table_data = self.get_equipment_entry_data()
-        if not selected_template:
-            return
-        doc = cif.Document()
-        blockname = '__'.join(selected_template.split())
-        block = doc.add_new_block(blockname)
-        for key, value in table_data:
-            set_pair_delimited(block, key, value.strip('\n\r '))
-        if not filename:
-            filename = cif_file_save_dialog(blockname.replace('__', '_') + '.cif')
-        if not filename.strip():
-            return
-        try:
-            doc.write_file(filename, style=cif.Style.Indent35)
-            # Path(filename).write_text(doc.as_string(cif.Style.Indent35))
-        except PermissionError:
-            if Path(filename).is_dir():
-                return
-            show_general_warning('No permission to write file to {}'.format(Path(filename).absolute()))
-
-    def cancel_equipment_template(self) -> None:
-        """
-        Cancel Equipment editing.
-        """
-        table = self.ui.EquipmentEditTableWidget
-        table.clearContents()
-        table.setRowCount(0)
-        self.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
-        print('cancelled equipment')
-
     # The properties templates:
 
     def delete_property(self) -> None:
@@ -1306,14 +1083,6 @@ class AppWindow(QMainWindow):
                 # this list keeps track of the equipment items:
                 self.settings.save_template('property_list', newlist)
                 self.settings.save_template('property/' + item['name'], item['values'])
-        equipment_list = self.settings.settings.value('equipment_list') or []
-        for item in predef_equipment_templ:
-            if not item['name'] in equipment_list:
-                equipment_list.append(item['name'])
-                newlist = [x for x in list(set(equipment_list)) if x]
-                # this list keeps track of the equipment items:
-                self.settings.save_template('equipment_list', newlist)
-                self.settings.save_template('equipment/' + item['name'], item['items'])
 
     def export_property_template(self, filename: str = '') -> None:
         """
@@ -1641,7 +1410,7 @@ class AppWindow(QMainWindow):
             self.ui.CCDCNumLineEdit.setText(self.cif['_database_code_depnum_ccdc_archive'])
             self.ui.CheckcifPlaintextEdit.clear()
 
-    def show_properties(self) -> None:
+    def show_residuals(self) -> None:
         """
         show residuals of the cif file an a special page.
         """
