@@ -1,6 +1,5 @@
 import os
 import unittest
-from os import chdir
 from pathlib import Path
 
 from cif.cif_file_io import CifContainer

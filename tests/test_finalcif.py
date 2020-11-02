@@ -63,6 +63,9 @@ class TestApplication(unittest.TestCase):
         Path(self.testcif.stem + '.ins').unlink(missing_ok=True)
         Path(self.testcif.stem + '.lst').unlink(missing_ok=True)
         Path(self.testcif.stem + '.2fcf').unlink(missing_ok=True)
+        Path('unittest_export_template2.cif').unlink(missing_ok=True)
+        Path('test_prop_export.cif').unlink(missing_ok=True)
+        Path('test_prop_import.cif').unlink(missing_ok=True)
 
     def test_gui_simpl(self):
         # self.assertEqual(0, self.myapp.ui.cif_main_table.rowCount())
@@ -107,7 +110,6 @@ class TestApplication(unittest.TestCase):
         self.myapp.equipment.export_equipment_template('unittest_export_template2.cif')
         outfile = Path('unittest_export_template2.cif')
         self.assertEqual(export_templ_data, outfile.read_text().splitlines(keepends=False))
-        outfile.unlink()
 
     # @unittest.skip('')
     def test_load_equipment(self):
@@ -136,7 +138,6 @@ class TestApplication(unittest.TestCase):
         self.assertEqual('ShelXle (Hübschle 2011)', self.myapp.ui.PropertiesEditTableWidget.cellWidget(2, 0).getText())
         self.myapp.properties.export_property_template('test_prop_export.cif')
         self.assertEqual(export_prop_data, Path('test_prop_export.cif').read_text())
-        Path('test_prop_export.cif').unlink()
         # Testing import:
         data = """data_Fooo__Baar\nloop_\n_foo\n'bar baz'"""
         file = Path('test_prop_import.cif')
@@ -148,7 +149,6 @@ class TestApplication(unittest.TestCase):
         self.assertEqual('_foo', self.myapp.ui.cifKeywordLineEdit.text())
         self.assertEqual('bar baz', self.myapp.ui.PropertiesEditTableWidget.cellWidget(1, 0).getText())
         self.myapp.ui.DeletePropertiesButton.click()
-        file.unlink()
 
     def test_dropdown_widgets(self):
         """
