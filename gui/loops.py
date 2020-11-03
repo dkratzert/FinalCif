@@ -5,6 +5,7 @@
 #  and you think this stuff is worth it, you can buy me a beer in return.
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
+import copy
 from typing import Union, List, Any
 
 import gemmi
@@ -28,7 +29,6 @@ class Loop():
         """
         self.model = TableModel(self.get_data(loopnum), self.headerlabels)
         self.table.setModel(self.model)
-        # self.table.setEditTriggers(QAbstractItemView.DoubleClicked)
         header = self.table.horizontalHeader()
         for column in range(header.count()):
             header.setSectionResizeMode(column, QHeaderView.ResizeToContents)
@@ -54,34 +54,30 @@ class Loop():
 
 
 class TableModel(QAbstractTableModel):
-    modelChanged = pyqtSignal(tuple, 'PyQt_PyObject', list)
+    modelChanged = pyqtSignal(int, int, 'PyQt_PyObject', list)
 
     def __init__(self, data, header):
         super(TableModel, self).__init__()
         self._data = data
+        self._original = copy.deepcopy(data)
         self._header = header
         self.modified = []  # a list of modified table items 
 
     def data(self, index: QModelIndex, role: int = None):
         row, col = index.row(), index.column()
-
         if role == Qt.SizeHintRole:
             return QSize(120, 50)
-
         if role == Qt.TextAlignmentRole:
             pass
             # value = self._data[index.row()][index.column()]
             # if isinstance(value, int) or isinstance(value, float) or isinstance(value, str):
             #    # Align right, vertical middle.
             #    return Qt.AlignVCenter + Qt.AlignRight
-
         if role == Qt.BackgroundColorRole:
-            if (row, col) in self.modified:
-                return QVariant(QColor("#f77e7e"))
-
+            if (row, col) in [(x['row'], x['column']) for x in self.modified]:
+                return QVariant(QColor("#facaca"))
         if role == Qt.EditRole:
             return self._data[row][col]
-
         if role == Qt.DisplayRole:
             return self._data[row][col]
 
@@ -107,26 +103,27 @@ class TableModel(QAbstractTableModel):
         return len(self._data[0])
 
     def flags(self, index: QModelIndex) -> Qt.ItemFlags:
-        # print('fofo')
         if index.isValid():
             pass
-            # print('baba')
-            # return Qt.ItemIsEnabled
-        # print('baz')
         return QAbstractTableModel.flags(self, index) | Qt.ItemIsEditable | Qt.ItemIsEnabled | Qt.ItemIsSelectable
 
     def setData(self, index: QModelIndex, value: Any, role: int = None) -> bool:
         row, col = index.row(), index.column()
-        # print(index.row(), index.column())
-        # print(value, '#')
-        previous = self._data[row][col]
+        previous = self._original[row][col]
         if not index:
             return False
         if index.isValid() and role == Qt.EditRole and value != previous:
             self._data[row][col] = value
-            self.modified.append((row, col))
-            # print('emitting signal')
-            self.modelChanged.emit((row, col), value, self._header)
-            # print(self._data)
+            self.modified.append({'row': row, 'column': col, 'previous': previous})
+            self.modelChanged.emit(row, col, value, self._header)
             return True
         return False
+
+    def revert(self) -> None:
+        """Reverts the model to the state before editing"""
+        self.beginResetModel()
+        while self.modified:
+            for p in self.modified:
+                self._data[p.get('row')][p.get('column')] = p.get('previous')
+            self.modified.pop(0)
+        self.endResetModel()
