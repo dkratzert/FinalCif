@@ -3,4 +3,4 @@
 
 pip3 install -r requirements.txt
 
-pyinstaller Finalcif_onefile.spec --clean -y
+pyinstaller Finalcif_mac.spec --clean -y
