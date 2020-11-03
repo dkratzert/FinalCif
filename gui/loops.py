@@ -117,16 +117,16 @@ class TableModel(QAbstractTableModel):
 
     def setData(self, index: QModelIndex, value: Any, role: int = None) -> bool:
         row, col = index.row(), index.column()
-        print(index.row(), index.column())
-        print(value, '#')
+        # print(index.row(), index.column())
+        # print(value, '#')
         previous = self._data[row][col]
         if not index:
             return False
         if index.isValid() and role == Qt.EditRole and value != previous:
             self._data[row][col] = value
             self.modified.append((row, col))
-            print('emitting signal')
+            # print('emitting signal')
             self.modelChanged.emit((row, col), value, self._header)
-            print(self._data)
+            # print(self._data)
             return True
         return False
