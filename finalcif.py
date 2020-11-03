@@ -39,7 +39,7 @@ from finalcif.appwindow import AppWindow, DEBUG
 
 r"""
 TODO:
-- make equipment template name editable
+- Make loops editable
 - Peters comments on equipment templates:
     * save state and order of selected templates in order to be able to undo a selection with a second click. 
 - dist errors: Giacovazzo p.122
@@ -48,6 +48,10 @@ TODO:
 - Extract more data from .xml file
 - Extract "_diffrn_measurement_details from .xml file
 - maybe add refinement model description via ShelXFile parser 
+- Add one picture of the vzs video file to report.
+- Improve handling of SQUEEZEd data
+- Improove handling of Flack x parameter
+    - citation, method used, success
 -Add possibility to add this:
 data_global
 loop_
@@ -68,10 +72,7 @@ _journal_paper_doi               10.1039/c3cc46894a
 _journal_volume                  50
 _journal_year                    2014
 
-- Add one picture of the vzs video file to report.
-- Improve handling of SQUEEZEd data
-- Improove handling of Flack x parameter
-    - citation, method used, success
+
 
 # cif core dictionary to python dictionary:
 c = CifContainer(Path('cif_core_dict.cif'))

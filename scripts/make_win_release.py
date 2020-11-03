@@ -16,9 +16,11 @@ import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
-#sys.path.append(r'C:\Users\daniel\Documents\GitHub\FinalCif')
-sys.path.append(str(Path(__file__).parent.parent))
 
+from finalcif.app_path import application_path
+
+sys.path.append(str(Path(__file__).parent.parent))
+sys.path.append(application_path)
 
 from PyQt5 import uic
 
@@ -65,14 +67,7 @@ def make_shasum(filename):
     print("SHA512: {}".format(sha))
 
 
-def copy_to_remote():
-    print('copying file')
-    print(r'dist\FinalCif.exe', r'W:\htdocs\finalcif\FinalCif-v{}.exe'.format(VERSION))
-    shutil.copy(r'dist\FinalCif.exe', r'W:\htdocs\finalcif\FinalCif-v{}.exe'.format(VERSION))
-    Path(r'W:\htdocs\finalcif\version.txt').write_text(str(VERSION))
-
-
-def update_installation():
+def copy_dist_to_install_dir():
     print('copying files')
     shutil.copytree(r'dist/FinalCif', r'C:\Program Files\FinalCif', dirs_exist_ok=True)
 
@@ -90,28 +85,31 @@ def process_iss(filepath):
     print("windows... {}, {}".format(VERSION, filepath))
     pth.write_text(iss_file, encoding="UTF-8")
 
-disable_debug('finalcif.py')
 
 recompile_ui()
-os.chdir(str(Path(__file__).parent.parent.absolute()))
+
+disable_debug('finalcif/appwindow.py')
+
+os.chdir(application_path)
 
 print(arg)
 
 process_iss(iss_file)
 
 if arg == 'copy':
-    subprocess.run("venv/Scripts/pyinstaller.exe -D Finalcif_installer.spec --clean -y".split())
-    # copy_to_remote()
-    update_installation()
+    subprocess.run("venv/Scripts/pyinstaller.exe -D Finalcif_installer_win.spec --clean -y".split())
+    # this copies the content of the dist directory to the install directory
+    copy_dist_to_install_dir()
 else:
     # create executable
-    pyin = subprocess.run("venv/Scripts/pyinstaller.exe -D Finalcif_installer.spec --clean -y".split())
+    pyin = subprocess.run("venv/Scripts/pyinstaller.exe -D Finalcif_installer_win.spec --clean -y".split())
     if pyin.returncode != 0:
         print('Pyinstaller failed with exit code', pyin.returncode)
         sys.exit()
     # Run 64bit Inno setup compiler
     innosetup_compiler = r'C:/Program Files (x86)/Inno Setup 6/ISCC.exe'
     subprocess.run([innosetup_compiler, iss_file, ])
+
 make_shasum("scripts/Output/FinalCif-setup-x64-v{}.exe".format(VERSION))
 print('Created version: {}'.format(VERSION))
 print(datetime.now().strftime("%d.%m.%Y %H:%M:%S"))
