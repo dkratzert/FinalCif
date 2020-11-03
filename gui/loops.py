@@ -5,10 +5,11 @@
 #  and you think this stuff is worth it, you can buy me a beer in return.
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
-from typing import Union, List
+from typing import Union, List, Any
 
 import gemmi
-from PyQt5.QtCore import QAbstractTableModel, QModelIndex, Qt, QSize
+from PyQt5.QtCore import QAbstractTableModel, QModelIndex, Qt, QSize, QVariant
+from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QTableView, QHeaderView
 
 from cif.cif_file_io import CifContainer
@@ -27,6 +28,7 @@ class Loop():
         """
         self.model = TableModel(self.get_data(loopnum), self.headerlabels)
         self.table.setModel(self.model)
+        # self.table.setEditTriggers(QAbstractItemView.DoubleClicked)
         header = self.table.horizontalHeader()
         for column in range(header.count()):
             header.setSectionResizeMode(column, QHeaderView.ResizeToContents)
@@ -56,13 +58,10 @@ class TableModel(QAbstractTableModel):
         super(TableModel, self).__init__()
         self._data = data
         self._header = header
+        self.modified = []  # a list of modified table items 
 
     def data(self, index: QModelIndex, role: int = None):
-        if role == Qt.DisplayRole:
-            # See below for the nested-list data structure.
-            # .row() indexes into the outer list,
-            # .column() indexes into the sub-list
-            return self._data[index.row()][index.column()]
+        row, col = index.row(), index.column()
 
         if role == Qt.SizeHintRole:
             return QSize(120, 50)
@@ -73,6 +72,18 @@ class TableModel(QAbstractTableModel):
             # if isinstance(value, int) or isinstance(value, float) or isinstance(value, str):
             #    # Align right, vertical middle.
             #    return Qt.AlignVCenter + Qt.AlignRight
+
+        if role == Qt.BackgroundColorRole:
+            if (row, col) in self.modified:
+                return QVariant(QColor("#f77e7e"))
+
+        if role == Qt.EditRole:
+            #print('ed')
+            return self._data[row][col]
+
+        if role == Qt.DisplayRole:
+            #print('displ')
+            return self._data[row][col]
 
     def headerData(self, section, orientation, role=None):
         # section is the index of the column/row.
@@ -94,3 +105,26 @@ class TableModel(QAbstractTableModel):
         the length (only works if all rows are an equal length)
         """
         return len(self._data[0])
+
+    def flags(self, index: QModelIndex) -> Qt.ItemFlags:
+        # print('fofo')
+        if index.isValid():
+            pass
+            # print('baba')
+            # return Qt.ItemIsEnabled
+        # print('baz')
+        return QAbstractTableModel.flags(self, index) | Qt.ItemIsEditable | Qt.ItemIsEnabled | Qt.ItemIsSelectable
+
+    def setData(self, index: QModelIndex, value: Any, role: int = None) -> bool:
+        row, col = index.row(), index.column()
+        print(index.row(), index.column())
+        print(value, '#')
+        previous = self._data[row][col]
+        if not index:
+            return False
+        if index.isValid() and role == Qt.EditRole and value != previous:
+            self._data[row][col] = value
+            self.modified.append((row, col))
+            print(self._data)
+            return True
+        return False
