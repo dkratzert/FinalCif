@@ -8,7 +8,7 @@
 from typing import Union, List, Any
 
 import gemmi
-from PyQt5.QtCore import QAbstractTableModel, QModelIndex, Qt, QSize, QVariant
+from PyQt5.QtCore import QAbstractTableModel, QModelIndex, Qt, QSize, QVariant, pyqtSignal
 from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QTableView, QHeaderView
 
@@ -54,6 +54,8 @@ class Loop():
 
 
 class TableModel(QAbstractTableModel):
+    modelChanged = pyqtSignal(tuple, 'PyQt_PyObject', list)
+
     def __init__(self, data, header):
         super(TableModel, self).__init__()
         self._data = data
@@ -78,11 +80,9 @@ class TableModel(QAbstractTableModel):
                 return QVariant(QColor("#f77e7e"))
 
         if role == Qt.EditRole:
-            #print('ed')
             return self._data[row][col]
 
         if role == Qt.DisplayRole:
-            #print('displ')
             return self._data[row][col]
 
     def headerData(self, section, orientation, role=None):
@@ -125,6 +125,8 @@ class TableModel(QAbstractTableModel):
         if index.isValid() and role == Qt.EditRole and value != previous:
             self._data[row][col] = value
             self.modified.append((row, col))
+            print('emitting signal')
+            self.modelChanged.emit((row, col), value, self._header)
             print(self._data)
             return True
         return False
