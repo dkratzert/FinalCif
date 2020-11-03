@@ -1329,7 +1329,8 @@ class AppWindow(QMainWindow):
             self.ui.LoopsTabWidget.addTab(tableview, t[0])
             loop = Loop(self.cif, tableview)
             loop.make_model(num)
-            loop.model.modelChanged.connect(self.foo)
+            loop.model.modelChanged.connect(self.save_new_value_to_cif_block)
+            self.ui.revertLoopsPushButton.clicked.connect(loop.model.revert)
         if self.cif['_shelx_res_file']:
             textedit = QPlainTextEdit()
             self.ui.LoopsTabWidget.addTab(textedit, 'SHELX res file')
@@ -1343,12 +1344,9 @@ class AppWindow(QMainWindow):
             textedit.setLineWrapMode(QPlainTextEdit.NoWrap)
             textedit.setReadOnly(True)
 
-    def foo(self, index: tuple, value: Union[str, int, float], header: list):
-        print('#!#', index, value, header)
-        row, col = index
-        loop = self.cif.block.find_loop_item(header[col]).loop
-        # I need a way to edit the loop by index for example:
-        #loop[row][col] = value
+    def save_new_value_to_cif_block(self, row: int, col: int, value: Union[str, int, float], header: list):
+        column = self.cif.block.find_values(header[col])
+        column[row] = value
 
     def showloops(self) -> None:
         if self.ui.MainStackedWidget.on_loops_page():

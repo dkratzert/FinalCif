@@ -710,7 +710,7 @@
         <item row="1" column="0" colspan="12">
          <widget class="MyMainStackedWidget" name="MainStackedWidget">
           <property name="currentIndex">
-           <number>0</number>
+           <number>5</number>
           </property>
           <widget class="QWidget" name="page_MainTable">
            <layout class="QVBoxLayout" name="verticalLayout">
@@ -1998,6 +1998,26 @@ The data source will be ignored until next program restart.</string>
             </item>
             <item>
              <layout class="QGridLayout" name="gridLayout_16">
+              <item row="0" column="0">
+               <widget class="QPushButton" name="BackFromLoopsPushButton">
+                <property name="minimumSize">
+                 <size>
+                  <width>120</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Back to CIF Table</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="2">
+               <widget class="QPushButton" name="revertLoopsPushButton">
+                <property name="text">
+                 <string>revert changes</string>
+                </property>
+               </widget>
+              </item>
               <item row="1" column="0">
                <spacer name="verticalSpacer_7">
                 <property name="orientation">
@@ -2014,21 +2034,21 @@ The data source will be ignored until next program restart.</string>
                 </property>
                </spacer>
               </item>
-              <item row="0" column="0">
-               <widget class="QPushButton" name="BackFromLoopsPushButton">
-                <property name="minimumSize">
+              <item row="0" column="3">
+               <spacer name="horizontalSpacer_16">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
                  <size>
-                  <width>120</width>
-                  <height>0</height>
+                  <width>40</width>
+                  <height>20</height>
                  </size>
                 </property>
-                <property name="text">
-                 <string>Back to CIF Table</string>
-                </property>
-               </widget>
+               </spacer>
               </item>
               <item row="0" column="1">
-               <spacer name="horizontalSpacer_16">
+               <spacer name="horizontalSpacer_15">
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
                 </property>
