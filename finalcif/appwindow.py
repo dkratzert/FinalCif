@@ -1329,6 +1329,7 @@ class AppWindow(QMainWindow):
             self.ui.LoopsTabWidget.addTab(tableview, t[0])
             loop = Loop(self.cif, tableview)
             loop.make_model(num)
+            loop.model.modelChanged.connect(self.foo)
         if self.cif['_shelx_res_file']:
             textedit = QPlainTextEdit()
             self.ui.LoopsTabWidget.addTab(textedit, 'SHELX res file')
@@ -1341,6 +1342,9 @@ class AppWindow(QMainWindow):
             doc.setDefaultFont(font)
             textedit.setLineWrapMode(QPlainTextEdit.NoWrap)
             textedit.setReadOnly(True)
+
+    def foo(self, index: tuple, value: Union[str, int, float], header: list):
+        print('#!#', index, value, header)
 
     def showloops(self) -> None:
         if self.ui.MainStackedWidget.on_loops_page():
