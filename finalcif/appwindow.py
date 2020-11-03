@@ -1345,6 +1345,10 @@ class AppWindow(QMainWindow):
 
     def foo(self, index: tuple, value: Union[str, int, float], header: list):
         print('#!#', index, value, header)
+        row, col = index
+        loop = self.cif.block.find_loop_item(header[col]).loop
+        # I need a way to edit the loop by index for example:
+        #loop[row][col] = value
 
     def showloops(self) -> None:
         if self.ui.MainStackedWidget.on_loops_page():
