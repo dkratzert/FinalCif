@@ -161,6 +161,7 @@ class AppWindow(QMainWindow):
         self.ui.CCDCpushButton.setIcon(qta.icon('fa5s.upload'))
         self.ui.CODpushButton.setIcon(qta.icon('mdi.upload'))
         self.ui.SavePushButton.setIcon(qta.icon('mdi.content-save'))
+        self.ui.revertLoopsPushButton.setIcon(qta.icon('mdi.backup-restore'))
 
     def connect_signals_and_slots(self):
         """
