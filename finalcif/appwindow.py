@@ -1116,7 +1116,9 @@ class AppWindow(QMainWindow):
                 try:
                     needsymm = sdm.calc_sdm()
                     atoms = sdm.packer(sdm, needsymm)
-                except IndexError:
+                except (IndexError, ValueError):
+                    if DEBUG:
+                        raise 
                     atoms = []
         else:
             self.ui.molGroupBox.setTitle('Asymmetric Unit')
