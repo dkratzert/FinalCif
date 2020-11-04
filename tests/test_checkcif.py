@@ -14,7 +14,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtTest import QTest
 from PyQt5.QtWidgets import QApplication
 
-from finalcif.appwindow import AppWindow
+from appwindow import AppWindow
 from gui.custom_classes import COL_EDIT
 from tools.misc import strip_finalcif_of_name
 

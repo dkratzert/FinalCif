@@ -4,7 +4,7 @@ import unittest
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication
 
-from finalcif.appwindow import AppWindow
+from appwindow import AppWindow
 from tools.statusbar import StatusBar
 from tools.version import VERSION
 

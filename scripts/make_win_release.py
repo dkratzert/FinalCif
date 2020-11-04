@@ -88,7 +88,7 @@ def process_iss(filepath):
 
 recompile_ui()
 
-disable_debug('finalcif/appwindow.py')
+disable_debug('appwindow.py')
 
 os.chdir(application_path)
 

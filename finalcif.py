@@ -15,7 +15,7 @@ else:
     COMPILE = False
 import os
 
-from finalcif.app_path import application_path
+from app_path import application_path
 
 if COMPILE:
     from PyQt5 import uic
@@ -35,7 +35,7 @@ from tools.version import VERSION
 
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication
-from finalcif.appwindow import AppWindow, DEBUG
+from appwindow import AppWindow, DEBUG
 
 r"""
 TODO:
