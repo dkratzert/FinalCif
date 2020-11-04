@@ -42,6 +42,17 @@ one_bar = u'\u0031\u0305'
 zero_width_space = u'\u200B'
 
 
+def isnumeric(value: str):
+    """
+    Determines if a string can be converted to a number.
+    """
+    value = value.split('(')[0]
+    try:
+        float(value)
+    except ValueError:
+        return False
+    return True
+
 def sha512_checksum(filename, block_size=65536):
     """
     Calculates a SHA512 checksum from a file.

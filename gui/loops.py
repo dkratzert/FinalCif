@@ -8,7 +8,6 @@
 import copy
 from typing import Union, List, Any
 
-import gemmi
 from PyQt5.QtCore import QAbstractTableModel, QModelIndex, Qt, QSize, QVariant, pyqtSignal
 from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QTableView, QHeaderView
@@ -43,7 +42,8 @@ class Loop():
         data = []
         self.get_headerlabels(loopnum)
         for v in self.cif.block.find(self.headerlabels):
-            data.append([gemmi.cif.as_string(x) for x in v])
+            # data.append([gemmi.cif.as_string(x) for x in v]) which one is better?
+            data.append([x for x in v])
         return data
 
     def get_headerlabels(self, loopnum):
@@ -65,21 +65,20 @@ class TableModel(QAbstractTableModel):
 
     def data(self, index: QModelIndex, role: int = None):
         row, col = index.row(), index.column()
+        value = self._data[row][col]
         if role == Qt.SizeHintRole:
             return QSize(120, 50)
         if role == Qt.TextAlignmentRole:
             pass
-            # value = self._data[index.row()][index.column()]
-            # if isinstance(value, int) or isinstance(value, float) or isinstance(value, str):
-            #    # Align right, vertical middle.
-            #    return Qt.AlignVCenter + Qt.AlignRight
+            # if isnumeric(value):
+            #    return Qt.AlignVCenter + Qt.AlignVertical_Mask
         if role == Qt.BackgroundColorRole:
             if (row, col) in [(x['row'], x['column']) for x in self.modified]:
                 return QVariant(QColor("#facaca"))
         if role == Qt.EditRole:
-            return self._data[row][col]
+            return value
         if role == Qt.DisplayRole:
-            return self._data[row][col]
+            return value
 
     def headerData(self, section, orientation, role=None):
         # section is the index of the column/row.
@@ -104,8 +103,7 @@ class TableModel(QAbstractTableModel):
 
     def flags(self, index: QModelIndex) -> Qt.ItemFlags:
         if index.isValid():
-            pass
-        return QAbstractTableModel.flags(self, index) | Qt.ItemIsEditable | Qt.ItemIsEnabled | Qt.ItemIsSelectable
+            return QAbstractTableModel.flags(self, index) | Qt.ItemIsEditable | Qt.ItemIsEnabled | Qt.ItemIsSelectable
 
     def setData(self, index: QModelIndex, value: Any, role: int = None) -> bool:
         row, col = index.row(), index.column()
