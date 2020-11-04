@@ -15,7 +15,7 @@ from docx.oxml.ns import qn
 from docx.shared import Cm, Length, Pt
 from docx.table import Table, _Cell
 
-from finalcif.app_path import application_path
+from app_path import application_path
 from cif.cif_file_io import CifContainer
 from report.mtools import cif_keywords_list, isfloat, this_or_quest, format_space_group
 from report.references import ReferenceList, DSRReference2018, DSRReference2015

@@ -3,7 +3,7 @@ import unittest
 
 from PyQt5.QtWidgets import QApplication
 
-from finalcif.appwindow import AppWindow
+from appwindow import AppWindow
 
 app = QApplication(sys.argv)
 

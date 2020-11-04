@@ -1,3 +1,10 @@
+#   ----------------------------------------------------------------------------
+#   "THE BEER-WARE LICENSE" (Revision 42):
+#   Daniel Kratzert <dkratzert@gmx.de> wrote this file.  As long as you retain
+#   this notice you can do whatever you want with this stuff. If we meet some day,
+#   and you think this stuff is worth it, you can buy me a beer in return.
+#   ----------------------------------------------------------------------------
+
 import os
 import subprocess
 import sys
@@ -27,9 +34,9 @@ from datafiles.bruker_data import BrukerData
 from datafiles.ccdc import CCDCMail
 from displaymol import mol_file_writer, write_html
 from displaymol.sdm import SDM
-from finalcif.app_path import application_path
-from finalcif.equipment import Equipment
-from finalcif.properties import Properties
+from app_path import application_path
+from equip_property.equipment import Equipment
+from equip_property.properties import Properties
 from gui.custom_classes import COL_CIF, COL_DATA, COL_EDIT, MyTableWidgetItem, light_green, yellow, MyComboBox, blue
 from gui.dialogs import show_update_warning, unable_to_open_message, show_general_warning, cif_file_open_dialog, \
     bad_z_message
