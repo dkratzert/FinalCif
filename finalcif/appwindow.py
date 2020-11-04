@@ -22,7 +22,7 @@ from qtpy.QtGui import QDesktopServices
 
 import displaymol
 from cif.cif_file_io import CifContainer
-from cif.text import set_pair_delimited, utf8_to_str, retranslate_delimiter
+from cif.text import set_pair_delimited, utf8_to_str, retranslate_delimiter, quote
 from datafiles.bruker_data import BrukerData
 from datafiles.ccdc import CCDCMail
 from displaymol import mol_file_writer, write_html
@@ -39,6 +39,7 @@ from gui.vrf_classes import MyVRFContainer, VREF
 from report.archive_report import ArchiveReport
 from report.tables import make_report_from
 from tools.checkcif import MyHTMLParser, AlertHelp, CheckCif
+from tools.dsrmath import my_isnumeric
 from tools.misc import strip_finalcif_of_name, next_path, do_not_import_keys, celltxt, to_float, combobox_fields
 from tools.options import Options
 from tools.platon import Platon
@@ -1348,7 +1349,7 @@ class AppWindow(QMainWindow):
 
     def save_new_value_to_cif_block(self, row: int, col: int, value: Union[str, int, float], header: list):
         column = self.cif.block.find_values(header[col])
-        column[row] = value
+        column[row] = value if my_isnumeric(value) else quote(value)
 
     def showloops(self) -> None:
         if self.ui.MainStackedWidget.on_loops_page():
