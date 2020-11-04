@@ -17,7 +17,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-from finalcif.app_path import application_path
+application_path = Path(os.path.abspath(__file__)).parent.parent
 
 sys.path.append(str(Path(__file__).parent.parent))
 sys.path.append(application_path)
