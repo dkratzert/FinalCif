@@ -108,7 +108,7 @@ class Platon(QThread):
         except Exception as e:
             print('Could not run local platon:' + str(e))
             self.platon_output = str(e)
-        if self.plat and self.plat.stdout:
+        if self.plat and hasattr(self.plat, 'stdout'):
             self.platon_output = self.plat.stdout.decode('ascii')
         self.delete_orphaned_files()
         os.chdir(curdir.absolute())
