@@ -21,7 +21,9 @@ class TestPlaton(unittest.TestCase):
 
     def tearDown(self) -> None:
         Path('1979688-finalcif.chk').unlink(missing_ok=True)
+        Path('1979688.chk').unlink(missing_ok=True)
         Path('1979688-finalcif.ckf').unlink(missing_ok=True)
+        Path('1979688.ckf').unlink(missing_ok=True)
         Path('1979688-finalcif.cif').unlink(missing_ok=True)
         Path('1979688-finalcif.fcf').unlink(missing_ok=True)
         Path('check.def').unlink(missing_ok=True)
@@ -34,4 +36,5 @@ class TestPlaton(unittest.TestCase):
 
     def test_checkdef_contains_text(self):
         self.myapp.ui.CheckcifButton.click()
+        time.sleep(0.3)
         self.assertEqual('FINALCIF V{}'.format(VERSION) in Path('1979688-finalcif.chk').read_text(), True)
