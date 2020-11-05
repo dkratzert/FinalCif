@@ -39,7 +39,7 @@ from appwindow import AppWindow, DEBUG
 
 r"""
 TODO:
-- Make loops editable
+- unify set_table_pair, add_new_table_key, add_row
 - Peters comments on equipment templates:
     * save state and order of selected templates in order to be able to undo a selection with a second click. 
 - dist errors: Giacovazzo p.122

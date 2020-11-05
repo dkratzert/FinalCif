@@ -28,13 +28,13 @@ from gemmi import cif
 from qtpy.QtGui import QDesktopServices
 
 import displaymol
+from app_path import application_path
 from cif.cif_file_io import CifContainer
 from cif.text import set_pair_delimited, utf8_to_str, retranslate_delimiter, quote
 from datafiles.bruker_data import BrukerData
 from datafiles.ccdc import CCDCMail
 from displaymol import mol_file_writer, write_html
 from displaymol.sdm import SDM
-from app_path import application_path
 from equip_property.equipment import Equipment
 from equip_property.properties import Properties
 from gui.custom_classes import COL_CIF, COL_DATA, COL_EDIT, MyTableWidgetItem, light_green, yellow, MyComboBox, blue
@@ -62,30 +62,69 @@ class AppWindow(QMainWindow):
 
     def __init__(self, file=None):
         super().__init__()
-        self.report_picture: Union[Path, None] = None
         self.sources: Union[None, Dict[str, Tuple[Union[str, None]]]] = None
+        self.cif: Union[CifContainer, None] = None
+        self.view: Union[QWebEngineView, None] = None
+        self.report_picture: Union[Path, None] = None
+        self.checkdef = []
+        self.final_cif_file_name = Path()
+        self.missing_data: list = []
+        self.temperature_warning_displayed = False
+        # True if line with "these are already in" reached:
+        self.complete_data_row = -1
+        self.manufacturer = 'bruker'
         self.ui = Ui_FinalCifWindow()
         self.ui.setupUi(self)
+        self.settings = FinalCifSettings()
+        self.options = Options(self.ui, self.settings)
+        self.equipment = Equipment(app=self, settings=self.settings)
+        self.properties = Properties(app=self, settings=self.settings)
+        self.status_bar = StatusBar(ui=self.ui)
+        self.status_bar.show_message('FinalCif version {}'.format(VERSION))
+        self.set_window_size_and_position()
+        self.ui.cif_main_table.installEventFilter(self)
+        # Sorting desyncronizes header and columns:
+        self.ui.cif_main_table.setSortingEnabled(False)
+        self.distribute_cif_main_table_columns_evenly()
+        # Make sure the start page is shown and not the edit page:
+        self.ui.CheckCIFResultsTabWidget.setCurrentIndex(0)
+        self.ui.MainStackedWidget.got_to_main_page()
+        self.set_button_states()
+        self.connect_signals_and_slots()
+        self.make_button_icons()
+        if len(sys.argv) > 1:
+            self.load_cif_file(sys.argv[1] if sys.argv[1] != 'compile' else '')
+        elif file:
+            self.load_cif_file(file)
+        self.load_recent_cifs_list()
+        self.initialize_network_manager()
+        self.check_for_update_version()
+        self.get_checkdef_for_response_forms()
+        self.set_checkcif_output_font(self.ui.CheckcifPlaintextEdit)
         # To make file drag&drop working:
         self.setAcceptDrops(True)
         self.show()
-        self.status_bar = StatusBar(ui=self.ui)
-        self.status_bar.show_message('FinalCif version {}'.format(VERSION))
-        self.settings = FinalCifSettings()
-        self.set_window_parameters()
-        self.equipment = Equipment(app=self, settings=self.settings)
-        self.properties = Properties(app=self, settings=self.settings)
-        self.ui.cif_main_table.installEventFilter(self)
-        # distribute cif_main_table Columns evenly:
+
+    def distribute_cif_main_table_columns_evenly(self):
         hheader = self.ui.cif_main_table.horizontalHeader()
         hheader.setSectionResizeMode(COL_CIF, QHeaderView.Stretch)
         hheader.setSectionResizeMode(COL_DATA, QHeaderView.Stretch)
         hheader.setSectionResizeMode(COL_EDIT, QHeaderView.Stretch)
         hheader.setAlternatingRowColors(True)
         self.ui.cif_main_table.verticalHeader().setAlternatingRowColors(True)
-        # Make sure the start page is shown and not the edit page:
-        self.ui.CheckCIFResultsTabWidget.setCurrentIndex(0)
-        self.ui.MainStackedWidget.got_to_main_page()
+
+    def initialize_network_manager(self):
+        self.netman = QNetworkAccessManager()
+        # noinspection PyUnresolvedReferences
+        self.netman.finished.connect(self.show_update_warning)
+        self.netman_checkdef = QNetworkAccessManager()
+        # noinspection PyUnresolvedReferences
+        self.netman_checkdef.finished.connect(self._save_checkdef)
+
+    def set_button_states(self):
+        self.ui.PictureWidthDoubleSpinBox.setRange(0.0, 25)
+        self.ui.PictureWidthDoubleSpinBox.setSingleStep(0.5)
+        self.ui.growCheckBox.setChecked(True)
         self.ui.CheckcifButton.setDisabled(True)
         self.ui.CheckcifHTMLOnlineButton.setDisabled(True)
         self.ui.CheckcifPDFOnlineButton.setDisabled(True)
@@ -95,37 +134,8 @@ class AppWindow(QMainWindow):
         self.ui.SourcesPushButton.setDisabled(True)
         self.ui.OptionsPushButton.setDisabled(True)
         self.ui.ImportCifPushButton.setDisabled(True)
-        self.cif: Union[CifContainer, None] = None
-        self.view: Union[QWebEngineView, None] = None
-        self.tempwarning_displayed = False
-        self.final_cif_file_name = Path()
-        self.missing_data: list = []
-        # True if line with "these are already in" reached:
-        self.complete_data_row = -1
-        self.ui.growCheckBox.setChecked(True)
-        self.options = Options(self.ui, self.settings)
-        self.connect_signals_and_slots()
-        self.manufacturer = 'bruker'
-        self.make_button_icons()
-        if len(sys.argv) > 1:
-            self.load_cif_file(sys.argv[1] if sys.argv[1] != 'compile' else '')
-        if file:
-            self.load_cif_file(file)
-        # Sorting desyncronizes header and columns:
-        self.ui.cif_main_table.setSortingEnabled(False)
-        self.load_recent_cifs_list()
-        self.netman = QNetworkAccessManager()
-        self.netman.finished.connect(self.show_update_warning)
-        self.netman_checkdef = QNetworkAccessManager()
-        self.checkdef = []
-        self.netman_checkdef.finished.connect(self._save_checkdef)
-        self.checkfor_version()
-        self.get_checkdef()
-        self.ui.PictureWidthDoubleSpinBox.setRange(0.0, 25)
-        self.ui.PictureWidthDoubleSpinBox.setSingleStep(0.5)
-        self.set_checkcif_output_font(self.ui.CheckcifPlaintextEdit)
 
-    def set_window_parameters(self):
+    def set_window_size_and_position(self):
         wsettings = self.settings.load_window_position()
         with suppress(TypeError):
             self.resize(wsettings['size'])
@@ -280,7 +290,7 @@ class AppWindow(QMainWindow):
             self.save_current_cif_file()
             self.load_cif_file(self.final_cif_file_name)
 
-    def checkfor_version(self) -> None:
+    def check_for_update_version(self) -> None:
         mainurl = "https://xs3-data.uni-freiburg.de/finalcif/"
         url = QUrl(mainurl + 'version.txt')
         req = QNetworkRequest(url)
@@ -351,7 +361,7 @@ class AppWindow(QMainWindow):
         table.resizeColumnToContents(2)
         self.ui.MainStackedWidget.go_to_data_sources_page()
 
-    def get_checkdef(self) -> None:
+    def get_checkdef_for_response_forms(self) -> None:
         """
         Sends a get request to the platon server in order to get the current check.def file.
         """
@@ -884,23 +894,6 @@ class AppWindow(QMainWindow):
         final_textedit.setLineWrapMode(QPlainTextEdit.NoWrap)
         final_textedit.setPlainText(self.final_cif_file_name.read_text(encoding='utf-8', errors='ignore'))
 
-    def add_new_table_key(self, key: str, value: str = '?') -> None:
-        """
-        Adds a new row with a respective vheaderitem to the main cif table.
-        Also the currently opened cif file is updated.
-        """
-        # Make sure new (unknown) cif items get to the start of the cif:
-        if key not in self.cif.order:
-            self.cif.order.insert(0, key)
-        if not key.startswith('_'):
-            return
-        self.ui.cif_main_table.vheaderitems.insert(0, key)
-        # The main table is filled here:
-        self.add_row(key=key, value=value, at_start=True)
-        self.missing_data.append(key)
-        if not self.cif.block.find_value(key):
-            set_pair_delimited(self.cif.block, key, utf8_to_str(value))
-
     def import_additional_cif(self, filename: str):
         """
         Import an equipment entry from a cif file.
@@ -914,6 +907,13 @@ class AppWindow(QMainWindow):
         except RuntimeError as e:
             show_general_warning('Could not import {}:\n'.format(filename) + str(e))
             return
+        self.import_key_value_pairs(imp_cif)
+        self.cif.import_loops(imp_cif)
+        # I think I leave the user possibilities to change the imported values:
+        # self.save_current_cif_file()
+        # self.load_cif_file(str(self.final_cif_file_name))
+
+    def import_key_value_pairs(self, imp_cif: CifContainer) -> None:
         for item in imp_cif.block:
             if item.pair is not None:
                 key, value = item.pair
@@ -925,10 +925,6 @@ class AppWindow(QMainWindow):
                     self.ui.cif_main_table.setText(key=key, column=COL_EDIT, txt=value, color=light_green)
                 else:
                     self.set_table_pair(key, value, column=COL_EDIT)
-        self.cif.import_loops(imp_cif)
-        # I think I leave the user possibilities to change the imported values:
-        # self.save_current_cif_file()
-        # self.load_cif_file(str(self.final_cif_file_name))
 
     def load_cif_file(self, fname: str) -> None:
         """
@@ -942,28 +938,16 @@ class AppWindow(QMainWindow):
         # clean table and vheader before loading:
         self.ui.cif_main_table.delete_content()
         if not fname:
-            try:
-                # loading last working directory:
-                last = self.settings.load_last_workdir()
-            except TypeError:
-                last = ''
-            if last and Path(last).exists():
-                os.chdir(last)
+            self.set_last_workdir()
             fname = cif_file_open_dialog()
-            self.tempwarning_displayed = False
+            # The warning about inconsistent temperature:
+            self.temperature_warning_displayed = False
         if not fname:
             return
-        if os.name == 'nt':
-            self.ui.SelectCif_LineEdit.setText(str(WindowsPath(fname).absolute()))
-        else:
-            self.ui.SelectCif_LineEdit.setText(str(fname))
+        self.set_path_display_in_file_selector(fname)
         try:
             filepath = Path(fname)
-            if not filepath.exists():
-                show_general_warning("The file you tried to open does not exist!")
-                return
-            if filepath.stat().st_size == 0:
-                show_general_warning('This file has zero byte size!')
+            if not self.able_to_open(filepath):
                 return
         except (OSError, IndexError):
             print('Something failed during cif file opening...')
@@ -984,28 +968,10 @@ class AppWindow(QMainWindow):
             unable_to_open_message(filepath, not_ok)
             return
         if not self.cif.chars_ok:
-            show_general_warning("You have non-ascii characters like umlauts in the SHELX file "
-                                 "attached to this CIF.\n\n"
-                                 "FinalCif tries to convert them, but be warned "
-                                 "(they are not allowed in CIF1 files anyway).\n")
-        # Will not stop reading if only the value is missing and ends with newline:
-        try:
-            self.cif.doc.check_for_missing_values()
-        except RuntimeError as e:
-            print('Missing value:')
-            print(str(e))
-            errlist = str(e).split(':')
-            if len(errlist) > 1:
-                show_general_warning(
-                    "Attention line {}: '{}' has no value.".format(errlist[1], errlist[2].split()[0]))
-        try:
-            # Change the current working Directory
-            os.chdir(filepath.absolute().parent)
-        except OSError:
-            print("Can't change the Current Working Directory")
+            self.warn_about_bad_cif()
+        self.check_cif_for_missing_values_before_really_open_it()
+        self.go_into_cifs_directory(filepath)
         self.final_cif_file_name = Path(strip_finalcif_of_name(str(self.cif.fileobj.stem)) + '-finalcif.cif')
-        # don't do this:
-        # self.ui.cif_main_table.clear()
         try:
             self.fill_cif_table()
         except Exception as e:
@@ -1040,6 +1006,55 @@ class AppWindow(QMainWindow):
             self.ui.CCDCNumLineEdit.setText(self.cif['_database_code_depnum_ccdc_archive'])
             self.ui.CheckcifPlaintextEdit.clear()
 
+    def go_into_cifs_directory(self, filepath):
+        try:
+            # Change the current working Directory
+            os.chdir(filepath.absolute().parent)
+        except OSError:
+            print("Can't change the Current Working Directory")
+
+    def check_cif_for_missing_values_before_really_open_it(self):
+        try:
+            # Will not stop reading if only the value is missing and ends with newline:
+            self.cif.doc.check_for_missing_values()
+        except RuntimeError as e:
+            print('Missing value:')
+            print(str(e))
+            errlist = str(e).split(':')
+            if len(errlist) > 1:
+                show_general_warning(
+                    "Attention CIF line {}: '{}' has no value.".format(errlist[1], errlist[2].split()[0]))
+
+    def set_last_workdir(self):
+        try:
+            # loading last working directory:
+            last = self.settings.load_last_workdir()
+        except TypeError:
+            last = ''
+        if last and Path(last).exists():
+            os.chdir(last)
+
+    def set_path_display_in_file_selector(self, fname: str) -> None:
+        if os.name == 'nt':
+            self.ui.SelectCif_LineEdit.setText(str(WindowsPath(fname).absolute()))
+        else:
+            self.ui.SelectCif_LineEdit.setText(str(fname))
+
+    def able_to_open(self, filepath: Path) -> bool:
+        if not filepath.exists():
+            show_general_warning("The file you tried to open does not exist!")
+            return False
+        if filepath.stat().st_size == 0:
+            show_general_warning('This file has zero byte size!')
+            return False
+        return True
+
+    def warn_about_bad_cif(self):
+        show_general_warning("You have non-ascii characters like umlauts in the SHELX file "
+                             "attached to this CIF.\n\n"
+                             "FinalCif tries to convert them, but be warned "
+                             "(they are not allowed in CIF1 files anyway).\n")
+
     def show_residuals(self) -> None:
         """
         show residuals of the cif file an a special page.
@@ -1054,8 +1069,8 @@ class AppWindow(QMainWindow):
             spgr = self.cif.space_group
         except RuntimeError:
             spgr = ''
-        intnum = self.cif['_space_group_IT_number'] if self.cif['_space_group_IT_number'] else self.cif[
-            '_symmetry_Int_Tables_number']
+        intnum = self.cif['_space_group_IT_number'] if self.cif['_space_group_IT_number'] \
+            else self.cif['_symmetry_Int_Tables_number']
         if intnum:
             intnum = '({})'.format(intnum)
         self.ui.SpaceGroupLineEdit.setText("{} {}".format(spgr, intnum))
@@ -1115,7 +1130,6 @@ class AppWindow(QMainWindow):
         self.view_molecule()
 
     def view_molecule(self) -> None:
-        blist = []
         if self.ui.growCheckBox.isChecked():
             self.ui.molGroupBox.setTitle('Completed Molecule')
             # atoms = self.structures.get_atoms_table(structure_id, cartesian=False, as_list=True)
@@ -1127,16 +1141,15 @@ class AppWindow(QMainWindow):
                     atoms = sdm.packer(sdm, needsymm)
                 except (IndexError, ValueError):
                     if DEBUG:
-                        raise 
+                        raise
                     atoms = []
         else:
             self.ui.molGroupBox.setTitle('Asymmetric Unit')
             atoms = self.cif.atoms_orth
-            blist = []
         try:
             mol = ' '
             if atoms:
-                mol = mol_file_writer.MolFile(atoms, blist)
+                mol = mol_file_writer.MolFile(atoms)
                 mol = mol.make_mol()
         except (TypeError, KeyError):
             print("Error while writing mol file.")
@@ -1161,13 +1174,14 @@ class AppWindow(QMainWindow):
         self.jsmoldir = TemporaryDirectory()
         self.view.load(QUrl.fromLocalFile(os.path.join(self.jsmoldir.name, "./jsmol.htm")))
         # This is a bit hacky, but it works fast:
-        copy2(os.path.join(str(Path(displaymol.__file__).parent), 'jquery.min.js'), self.jsmoldir.name)
-        copy2(os.path.join(str(Path(displaymol.__file__).parent), 'JSmol_dk.nojq.lite.js'), self.jsmoldir.name)
+        copy2(Path(displaymol.__file__).parent.joinpath('jquery.min.js'), self.jsmoldir.name)
+        copy2(Path(displaymol.__file__).parent.joinpath('JSmol_dk.nojq.lite.js'), self.jsmoldir.name)
         self.ui.moleculeLayout.addWidget(self.view)
         self.view.heightForWidth(1)
-        self.view.loadFinished.connect(self.onWebviewLoadFinished)
+        # noinspection PyUnresolvedReferences
+        self.view.loadFinished.connect(self.on_webview_load_finished)
 
-    def onWebviewLoadFinished(self) -> None:
+    def on_webview_load_finished(self) -> None:
         self.view.show()
 
     def redraw_molecule(self) -> None:
@@ -1203,29 +1217,6 @@ class AppWindow(QMainWindow):
             bad = True
         if bad:
             bad_z_message(Z)
-
-    def set_table_pair(self, key: str, value: str, column: int = COL_DATA) -> None:
-        """
-        Add a new cif key/data pair at the start of the main table.
-        """
-        self.missing_data.append(key)
-        self.cif.block.set_pair(key, value)
-        self.ui.cif_main_table.insertRow(0)
-        self.ui.cif_main_table.vheaderitems.insert(0, key)
-        head_item_key = MyTableWidgetItem(key)
-        self.ui.cif_main_table.setVerticalHeaderItem(0, head_item_key)
-        if column == COL_DATA:
-            self.ui.cif_main_table.setText(key=key, column=COL_CIF, txt='?')
-            self.ui.cif_main_table.setText(key=key, column=COL_DATA, txt=value, color=light_green)
-            self.ui.cif_main_table.setText(key=key, column=COL_EDIT, txt='')
-        if column == COL_EDIT:
-            self.ui.cif_main_table.setText(key=key, column=COL_CIF, txt='?')
-            self.ui.cif_main_table.setText(key=key, column=COL_DATA, txt='')
-            self.ui.cif_main_table.setText(key=key, column=COL_EDIT, txt=value, color=light_green)
-        if column == COL_CIF:
-            self.ui.cif_main_table.setText(key=key, column=COL_CIF, txt=value, color=light_green)
-            self.ui.cif_main_table.setText(key=key, column=COL_DATA, txt='')
-            self.ui.cif_main_table.setText(key=key, column=COL_EDIT, txt='')
 
     def get_data_sources(self) -> None:
         """
@@ -1373,6 +1364,46 @@ class AppWindow(QMainWindow):
             # Go to loops page:
             self.ui.LoopsPushButton.setText('Hide Loops')
             self.ui.MainStackedWidget.go_to_loops_page()
+
+    def set_table_pair(self, key: str, value: str, column: int = COL_DATA) -> None:
+        """
+        Add a new cif key/data pair at the start of the main table.
+        """
+        self.missing_data.append(key)
+        self.cif.block.set_pair(key, value)
+        self.ui.cif_main_table.insertRow(0)
+        self.ui.cif_main_table.vheaderitems.insert(0, key)
+        head_item_key = MyTableWidgetItem(key)
+        self.ui.cif_main_table.setVerticalHeaderItem(0, head_item_key)
+        if column == COL_DATA:
+            self.ui.cif_main_table.setText(key=key, column=COL_CIF, txt='?')
+            self.ui.cif_main_table.setText(key=key, column=COL_DATA, txt=value, color=light_green)
+            self.ui.cif_main_table.setText(key=key, column=COL_EDIT, txt='')
+        if column == COL_EDIT:
+            self.ui.cif_main_table.setText(key=key, column=COL_CIF, txt='?')
+            self.ui.cif_main_table.setText(key=key, column=COL_DATA, txt='')
+            self.ui.cif_main_table.setText(key=key, column=COL_EDIT, txt=value, color=light_green)
+        if column == COL_CIF:
+            self.ui.cif_main_table.setText(key=key, column=COL_CIF, txt=value, color=light_green)
+            self.ui.cif_main_table.setText(key=key, column=COL_DATA, txt='')
+            self.ui.cif_main_table.setText(key=key, column=COL_EDIT, txt='')
+
+    def add_new_table_key(self, key: str, value: str = '?') -> None:
+        """
+        Adds a new row with a respective vheaderitem to the main cif table.
+        Also the currently opened cif file is updated.
+        """
+        # Make sure new (unknown) cif items get to the start of the cif:
+        if key not in self.cif.order:
+            self.cif.order.insert(0, key)
+        if not key.startswith('_'):
+            return
+        self.ui.cif_main_table.vheaderitems.insert(0, key)
+        # The main table is filled here:
+        self.add_row(key=key, value=value, at_start=True)
+        self.missing_data.append(key)
+        if not self.cif.block.find_value(key):
+            set_pair_delimited(self.cif.block, key, utf8_to_str(value))
 
     def add_row(self, key: str, value: str, at_start=False) -> None:
         """
