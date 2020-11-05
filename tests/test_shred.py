@@ -4,7 +4,7 @@ from pathlib import Path
 
 from cif.cif_file_io import CifContainer
 from appwindow import AppWindow
-from tests.test_finalcif import unify_line_endings
+from tests.test_finalcif_Workfolder import unify_line_endings
 from tools.shred import ShredCIF
 
 
