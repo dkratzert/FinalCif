@@ -110,7 +110,7 @@ class BrukerData(WorkDataMixin):
         temp2 = self.p4p.temperature
         temperature = round(min([temp1, temp2]), 1)
         if temperature < 0.01:
-            temperature = '?'
+            temperature = ''
         if (self.cif['_diffrn_ambient_temperature'].split('(')[0] or
             self.cif['_cell_measurement_temperature']).split('(')[0] == '0':
             show_general_warning('<b>Warning</b>: You probably entered &minus;273.15 °C instead '

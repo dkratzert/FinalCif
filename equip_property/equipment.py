@@ -66,7 +66,7 @@ class Equipment:
             for key in equipment:
                 if key not in self.app.ui.cif_main_table.vheaderitems:
                     # Key is not in the main table:
-                    self.app.add_new_table_key(key, equipment[key])
+                    self.app.add_row(key, equipment[key])
                 else:
                     # Key is already there:
                     self.app.ui.cif_main_table.setText(key, COL_CIF,
