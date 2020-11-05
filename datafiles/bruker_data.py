@@ -114,37 +114,40 @@ class BrukerData(WorkDataMixin):
         if (self.cif['_diffrn_ambient_temperature'].split('(')[0] or
             self.cif['_cell_measurement_temperature']).split('(')[0] == '0':
             show_general_warning('<b>Warning</b>: You probably entered &minus;273.15 °C instead '
-                                          'of &minus;173.15 °C into the SHELX file.<br>'
-                                          'Zero temperature is likely to be wrong.')
+                                 'of &minus;173.15 °C into the SHELX file.<br>'
+                                 'Zero temperature is likely to be wrong.')
         try:
             if abs(int(self.cif['_diffrn_ambient_temperature'].split('(')[0]) - int(temperature)) >= 2 and \
-                    not self.app.tempwarning_displayed:
-                self.app.tempwarning_displayed = True
+                    not self.app.temperature_warning_displayed:
+                self.app.temperature_warning_displayed = True
                 show_general_warning('<b>Warning</b>: The temperature from the measurement and '
-                                              'from SHELX differ. Please double-check for correctness.<br><br>'
-                                              'SHELX says: {} K<br>'
-                                              'The P4P file says: {} K<br>'
-                                              'Frame header says: {} K<br><br>'
-                                              'You may add a '
-                                              '<a href="http://shelx.uni-goettingen.de/shelxl_html.php#TEMP">TEMP</a> '
-                                              'instruction to your SHELX file (in °C).'
+                                     'from SHELX differ. Please double-check for correctness.<br><br>'
+                                     'SHELX says: {} K<br>'
+                                     'The P4P file says: {} K<br>'
+                                     'Frame header says: {} K<br><br>'
+                                     'You may add a '
+                                     '<a href="http://shelx.uni-goettingen.de/shelxl_html.php#TEMP">TEMP</a> '
+                                     'instruction to your SHELX file (in °C).'
                                      .format(self.cif['_diffrn_ambient_temperature'].split('(')[0],
-                                                      round(temp2, 1),
-                                                      round(temp1, 1)))
+                                             round(temp2, 1),
+                                             round(temp1, 1)))
         except ValueError:
             # most probably one value is '?'
             pass
         if not self.cif['_space_group_name_H-M_alt']:
             try:
-                self.sources['_space_group_name_H-M_alt'] = (self.cif.space_group, 'Calculated by gemmi: https://gemmi.readthedocs.io')
+                self.sources['_space_group_name_H-M_alt'] = (
+                self.cif.space_group, 'Calculated by gemmi: https://gemmi.readthedocs.io')
             except AttributeError:
                 pass
         if not self.cif['_space_group_name_Hall']:
             with suppress(AttributeError):
-                self.sources['_space_group_name_Hall'] = (self.cif.hall_symbol, 'Calculated by gemmi: https://gemmi.readthedocs.io')
+                self.sources['_space_group_name_Hall'] = (
+                self.cif.hall_symbol, 'Calculated by gemmi: https://gemmi.readthedocs.io')
         if not self.cif['_space_group_IT_number']:
             with suppress(AttributeError):
-                self.sources['_space_group_IT_number'] = (self.cif.spgr_number_from_symmops, 'Calculated by gemmi: https://gemmi.readthedocs.io')
+                self.sources['_space_group_IT_number'] = (
+                self.cif.spgr_number_from_symmops, 'Calculated by gemmi: https://gemmi.readthedocs.io')
         if not self.cif['_space_group_crystal_system']:
             with suppress(AttributeError):
                 csystem = self.cif.crystal_system
