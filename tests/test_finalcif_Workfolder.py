@@ -7,10 +7,9 @@ from pathlib import Path
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon, QColor
 from PyQt5.QtWidgets import QApplication
-from qtpy.QtTest import QTest
 
 from appwindow import AppWindow
-from gui.custom_classes import light_green, yellow
+from gui.custom_classes import light_green, yellow, COL_DATA, COL_CIF, COL_EDIT
 from tools.version import VERSION
 
 
@@ -82,27 +81,8 @@ class TestWorkfolder(unittest.TestCase):
                          self.myapp.ui.cif_main_table.getTextFromKey('_cell_measurement_theta_max', 1))
         self.assertEqual('2.547',
                          self.myapp.ui.cif_main_table.getTextFromKey('_cell_measurement_theta_min', 1))
-        self.assertEqual('',
-                         self.myapp.ui.cif_main_table.getTextFromKey('_chemical_absolute_configuration', 1))
-        self.assertEqual('',
-                         self.myapp.ui.cif_main_table.getTextFromKey('_chemical_absolute_configuration', 2))
         self.assertEqual("<class 'gui.custom_classes.MyComboBox'>",
                          str(self.myapp.ui.cif_main_table.cellWidget(10, 2).__class__))
-        self.assertEqual('?',
-                         self.myapp.ui.cif_main_table.getTextFromKey('_chemical_formula_moiety', 0))
-        self.assertEqual('',
-                         self.myapp.ui.cif_main_table.getTextFromKey('_chemical_formula_moiety', 1))
-        self.assertEqual('',
-                         self.myapp.ui.cif_main_table.getTextFromKey('_chemical_formula_moiety', 2))
-        # Test for background color:
-        # print(self.myapp.ui.cif_main_table.vheaderitems[8])
-        self.assertEqual(light_green, self.myapp.ui.cif_main_table.itemFromKey('_cell_measurement_theta_max',
-                                                                               1).background().color())
-        self.assertEqual(yellow, self.myapp.ui.cif_main_table.itemFromKey('_chemical_absolute_configuration',
-                                                                          1).background().color())
-        # Has a color now:
-        # with self.assertRaises(AttributeError):
-        #    self.myapp.ui.cif_main_table.itemFromKey('_cell_measurement_theta_max', 0).background().color()
         # Test for auto-fill data:
         self.assertEqual('SAINT V8.40A',
                          self.myapp.ui.cif_main_table.getTextFromKey('_computing_cell_refinement', 1))
@@ -110,14 +90,6 @@ class TestWorkfolder(unittest.TestCase):
                          self.myapp.ui.cif_main_table.getTextFromKey('_computing_cell_refinement', 0))
         self.assertEqual('Bruker BIS V6.2.12/2019-08-12',
                          self.myapp.ui.cif_main_table.getTextFromKey('_computing_data_collection', 1))
-        self.assertEqual(light_green,
-                         self.myapp.ui.cif_main_table.itemFromKey('_computing_cell_refinement', 1).background().color())
-        self.assertEqual(light_green,
-                         self.myapp.ui.cif_main_table.itemFromKey('_computing_data_collection', 1).background().color())
-        self.assertEqual(light_green,
-                         self.myapp.ui.cif_main_table.itemFromKey('_computing_data_reduction', 1).background().color())
-        self.assertEqual(QColor(0, 0, 0, 255), self.myapp.ui.cif_main_table.itemFromKey('_computing_molecular_graphics',
-                                                                                        1).background().color())
         self.assertEqual('SHELXT (G. Sheldrick)',
                          self.myapp.ui.cif_main_table.getTextFromKey('_computing_structure_solution', 1))
         self.assertEqual('1.1',
@@ -133,12 +105,6 @@ class TestWorkfolder(unittest.TestCase):
                          self.myapp.ui.cif_main_table.getTextFromKey('_exptl_crystal_recrystallization_method', 1))
         # self.assertEqual('QPlainTextEdit {background-color: #faf796;}',
         #                 self.myapp.ui.cif_main_table.cellWidget(41, 1).styleSheet())
-        self.assertEqual('0.220',
-                         self.myapp.ui.cif_main_table.getTextFromKey('_exptl_crystal_size_max', 1))
-        self.assertEqual('0.100',
-                         self.myapp.ui.cif_main_table.getTextFromKey('_exptl_crystal_size_mid', 1))
-        self.assertEqual('0.040',
-                         self.myapp.ui.cif_main_table.getTextFromKey('_exptl_crystal_size_min', 1))
         self.assertEqual(
             """Sheldrick, G.M. (2015). Acta Cryst. A71, 3-8.\nSheldrick, G.M. (2015). Acta Cryst. C71, 3-8.\n""",
             self.myapp.ui.cif_main_table.getTextFromKey('_publ_section_references', 1))
@@ -148,10 +114,57 @@ class TestWorkfolder(unittest.TestCase):
             """FinalCif V{} by Daniel Kratzert, Freiburg {}, https://github.com/dkratzert/FinalCif""".format(VERSION,
                                                                                                              datetime.now().year),
             self.myapp.ui.cif_main_table.getTextFromKey('_audit_creation_method', 1))
+
+    def test_background_data(self):
+        self.assertEqual(light_green,
+                         self.myapp.ui.cif_main_table.itemFromKey('_computing_cell_refinement',
+                                                                  COL_DATA).background().color())
+        self.assertEqual(light_green,
+                         self.myapp.ui.cif_main_table.itemFromKey('_computing_data_collection',
+                                                                  COL_DATA).background().color())
+        self.assertEqual(light_green,
+                         self.myapp.ui.cif_main_table.itemFromKey('_computing_data_reduction',
+                                                                  COL_DATA).background().color())
+        self.assertEqual(QColor(0, 0, 0, 255), self.myapp.ui.cif_main_table.itemFromKey('_computing_molecular_graphics',
+                                                                                        COL_DATA).background().color())
+
+    def test_chemical_formula_moiety(self):
+        self.assertEqual('?',
+                         self.myapp.ui.cif_main_table.getTextFromKey('_chemical_formula_moiety', COL_CIF))
+        self.assertEqual('',
+                         self.myapp.ui.cif_main_table.getTextFromKey('_chemical_formula_moiety', COL_DATA))
+        self.assertEqual('',
+                         self.myapp.ui.cif_main_table.getTextFromKey('_chemical_formula_moiety', COL_EDIT))
+
+    def test_background_color_theta_max(self):
+        self.assertEqual((0, 0, 0, 255), self.myapp.ui.cif_main_table.itemFromKey('_cell_measurement_theta_max',
+                                                                                  COL_CIF).background().color().getRgb())
+        self.assertEqual(light_green, self.myapp.ui.cif_main_table.itemFromKey('_cell_measurement_theta_max',
+                                                                               COL_DATA).background().color())
+        self.assertEqual((0, 0, 0, 255), self.myapp.ui.cif_main_table.itemFromKey('_cell_measurement_theta_max',
+                                                                                  COL_EDIT).background().color().getRgb())
+
+    def test_exptl_crystal_size(self):
+        self.assertEqual('0.220',
+                         self.myapp.ui.cif_main_table.getTextFromKey('_exptl_crystal_size_max', COL_DATA))
+        self.assertEqual('0.100',
+                         self.myapp.ui.cif_main_table.getTextFromKey('_exptl_crystal_size_mid', COL_DATA))
+        self.assertEqual('0.040',
+                         self.myapp.ui.cif_main_table.getTextFromKey('_exptl_crystal_size_min', COL_DATA))
+
+    def test_symmetry(self):
         self.assertEqual('18', self.myapp.ui.cif_main_table.getTextFromKey('_space_group_IT_number', 0))
         self.assertEqual('orthorhombic', self.myapp.ui.cif_main_table.getTextFromKey('_space_group_crystal_system', 0))
         self.assertEqual('P 21 21 2', self.myapp.ui.cif_main_table.getTextFromKey('_space_group_name_H-M_alt', 0))
         self.assertEqual('P 2 2ab', self.myapp.ui.cif_main_table.getTextFromKey('_space_group_name_Hall', 0))
+
+    def test_abs_configuration(self):
+        self.assertEqual('',
+                         self.myapp.ui.cif_main_table.getTextFromKey('_chemical_absolute_configuration', 1))
+        self.assertEqual('',
+                         self.myapp.ui.cif_main_table.getTextFromKey('_chemical_absolute_configuration', 2))
+        self.assertEqual(yellow, self.myapp.ui.cif_main_table.itemFromKey('_chemical_absolute_configuration',
+                                                                          1).background().color())
 
     def allrows_test_key(self, key: str = '', results: list = None):
         self.myapp.hide()
@@ -185,8 +198,10 @@ class TestWorkfolder(unittest.TestCase):
         item = self.myapp.ui.EquipmentTemplatesListWidget.findItems('Contact Author', Qt.MatchStartsWith)[0]
         self.myapp.ui.EquipmentTemplatesListWidget.setCurrentItem(item)
         self.assertEqual('?', self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_name', 0))
-        self.assertEqual('Dr. Daniel Kratzert', self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_name', 1))
-        self.assertEqual('Dr. Daniel Kratzert', self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_name', 2))
+        self.assertEqual('Dr. Daniel Kratzert',
+                         self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_name', 1))
+        self.assertEqual('Dr. Daniel Kratzert',
+                         self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_name', 2))
         self.assertEqual(self.myapp.ui.cif_main_table.vheaderitems[5], '_audit_contact_author_name')
         self.assertEqual('Dr. Daniel Kratzert', self.myapp.ui.cif_main_table.getText(5, 1))
         self.assertEqual("<class 'NoneType'>",
