@@ -68,7 +68,7 @@ class AppWindow(QMainWindow):
         self.report_picture: Union[Path, None] = None
         self.checkdef = []
         self.final_cif_file_name = Path()
-        self.missing_data: list = []
+        self.missing_data: set = set()
         self.temperature_warning_displayed = False
         # True if line with "these are already in" reached:
         self.complete_data_row = -1
@@ -286,7 +286,8 @@ class AppWindow(QMainWindow):
         if self.cif.block.find_pair(key):
             self.cif.block.find([key]).erase()
             if key in self.missing_data:
-                del self.missing_data[self.missing_data.index(key)]
+                self.missing_data.discard(key)
+                #del self.missing_data[self.missing_data.index(key)]
             self.save_current_cif_file()
             self.load_cif_file(self.final_cif_file_name)
 
@@ -441,6 +442,7 @@ class AppWindow(QMainWindow):
         """
         self.load_cif_file(str(self.final_cif_file_name.absolute()))
         self.ui.MainStackedWidget.got_to_main_page()
+        self.ui.cif_main_table.scrollToTop()
 
     def back_to_main_noload(self):
         """
@@ -556,7 +558,7 @@ class AppWindow(QMainWindow):
             v.problem = self.validation_response_foms_list[response_row].form['problem']
             v.response = response_txt
             # add a key with '?' as value
-            self.add_new_table_key(v.key, v.value)
+            self.add_row(v.key, v.value)
             # add data to this key:
             self.ui.cif_main_table.setText(v.key, COL_EDIT, v.value)
         self.save_current_cif_file()
@@ -924,7 +926,7 @@ class AppWindow(QMainWindow):
                 if key in self.ui.cif_main_table.vheaderitems:
                     self.ui.cif_main_table.setText(key=key, column=COL_EDIT, txt=value, color=light_green)
                 else:
-                    self.set_table_pair(key, value, column=COL_EDIT)
+                    self.add_row(key, value) #, column=COL_EDIT
 
     def load_cif_file(self, fname: str) -> None:
         """
@@ -934,7 +936,7 @@ class AppWindow(QMainWindow):
         with suppress(AttributeError):
             self.ui.moleculeLayout.removeWidget(self.view)
         # Set to empty state bevore loading:
-        self.missing_data = []
+        self.missing_data = set()
         # clean table and vheader before loading:
         self.ui.cif_main_table.delete_content()
         if not fname:
@@ -1232,10 +1234,11 @@ class AppWindow(QMainWindow):
                 # The next line is necessary, otherwise reopening of a cif would not add the CCDC number:
                 if not '_database_code_depnum_ccdc_archive' in self.ui.cif_main_table.vheaderitems:
                     # self.ui.cif_main_table.vheaderitems.insert(0, '_database_code_depnum_ccdc_archive')
-                    self.add_new_table_key('_database_code_depnum_ccdc_archive', '?')
-                txt = self.ui.cif_main_table.getTextFromKey('_database_code_depnum_ccdc_archive', COL_EDIT)
+                    self.add_row('_database_code_depnum_ccdc_archive', '?', at_start=True)
+                txt = self.ui.cif_main_table.getTextFromKey('_database_code_depnum_ccdc_archive', COL_EDIT).strip()
                 if not txt or (txt == '?'):
                     self.sources['_database_code_depnum_ccdc_archive'] = (str(ccdc.depnum), str(ccdc.emlfile.name))
+                    self.missing_data.add('_database_code_depnum_ccdc_archive')
         vheadlist = []
         for num in range(self.ui.cif_main_table.model().rowCount()):
             vheadlist.append(self.ui.cif_main_table.model().headerData(num, Qt.Vertical))
@@ -1246,8 +1249,7 @@ class AppWindow(QMainWindow):
                 # do not add keys twice
                 continue
             if src and src not in self.missing_data:
-                # also appends to self.missing_data
-                self.set_table_pair(src, '?')
+                self.add_row(src, '?')
         # Build a dictionary of cif keys and row number values in order to fill the first column
         # of cif_main_table with cif values:
         for num in range(self.ui.cif_main_table.model().rowCount()):
@@ -1304,7 +1306,7 @@ class AppWindow(QMainWindow):
         """
         for key, value in self.cif.key_value_pairs():
             if not value or value == '?' or value == "'?'":
-                self.missing_data.append(key)
+                self.missing_data.add(key)
                 value = '?'
             self.add_row(key, value)
             if key == '_audit_creation_method':
@@ -1365,6 +1367,7 @@ class AppWindow(QMainWindow):
             self.ui.LoopsPushButton.setText('Hide Loops')
             self.ui.MainStackedWidget.go_to_loops_page()
 
+    '''
     def set_table_pair(self, key: str, value: str, column: int = COL_DATA) -> None:
         """
         Add a new cif key/data pair at the start of the main table.
@@ -1387,23 +1390,7 @@ class AppWindow(QMainWindow):
             self.ui.cif_main_table.setText(key=key, column=COL_CIF, txt=value, color=light_green)
             self.ui.cif_main_table.setText(key=key, column=COL_DATA, txt='')
             self.ui.cif_main_table.setText(key=key, column=COL_EDIT, txt='')
-
-    def add_new_table_key(self, key: str, value: str = '?') -> None:
-        """
-        Adds a new row with a respective vheaderitem to the main cif table.
-        Also the currently opened cif file is updated.
-        """
-        # Make sure new (unknown) cif items get to the start of the cif:
-        if key not in self.cif.order:
-            self.cif.order.insert(0, key)
-        if not key.startswith('_'):
-            return
-        self.ui.cif_main_table.vheaderitems.insert(0, key)
-        # The main table is filled here:
-        self.add_row(key=key, value=value, at_start=True)
-        self.missing_data.append(key)
-        if not self.cif.block.find_value(key):
-            set_pair_delimited(self.cif.block, key, utf8_to_str(value))
+    '''
 
     def add_row(self, key: str, value: str, at_start=False) -> None:
         """
@@ -1435,7 +1422,13 @@ class AppWindow(QMainWindow):
         if not key == "These below are already in:":
             self.ui.cif_main_table.setVerticalHeaderItem(row_num, head_item_key)
         if not key in self.ui.cif_main_table.vheaderitems:
-            self.ui.cif_main_table.vheaderitems.append(key)
+            self.ui.cif_main_table.vheaderitems.insert(row_num, key)
+        if not key.startswith('_'):
+            return
+        if key not in self.cif.order:
+            self.cif.order.insert(row_num, key)
+        if not self.cif.block.find_value(key):
+            set_pair_delimited(self.cif.block, key, utf8_to_str(value))
 
     def add_separation_line(self, row_num: int) -> None:
         """

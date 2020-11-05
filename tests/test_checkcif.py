@@ -33,7 +33,7 @@ class TestCheckCif(unittest.TestCase):
         self.resobj.unlink(missing_ok=True)
         self.myapp.cif.fileobj.unlink()
 
-    # @unittest.skip('temporary skip')
+    @unittest.skip('temporary skip')
     def test_checkcif_html(self):
         """Runs a html checkcif without hkl and compares the result with the html file."""
         self.maxDiff = 500

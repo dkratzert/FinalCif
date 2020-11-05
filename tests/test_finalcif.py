@@ -150,14 +150,17 @@ class TestApplication(unittest.TestCase):
         self.assertEqual('bar baz', self.myapp.ui.PropertiesEditTableWidget.cellWidget(1, 0).getText())
         self.myapp.ui.DeletePropertiesButton.click()
 
+    def test_atom_sites_solution_primary(self):
+        _atom_sites_solution_primary = 16
+        self.assertEqual('direct', self.myapp.ui.cif_main_table.getTextFromKey('_atom_sites_solution_primary', 0))
+        self.assertEqual('', self.myapp.ui.cif_main_table.getTextFromKey('_atom_sites_solution_primary', 1))
+        self.assertEqual('', self.myapp.ui.cif_main_table.getTextFromKey('_atom_sites_solution_primary', 1))
+
     def test_dropdown_widgets(self):
         """
         Testing if comboboxes are there and fields have the correct type
         """
         _atom_sites_solution_primary = 16
-        self.assertEqual('direct', self.myapp.ui.cif_main_table.getTextFromKey('_atom_sites_solution_primary', 0))
-        self.assertEqual('', self.myapp.ui.cif_main_table.getTextFromKey('_atom_sites_solution_primary', 1))
-
         # The type of the _atom_sites_solution_primary combobox:
         self.assertEqual("<class 'gui.custom_classes.MyTableWidgetItem'>",
                          str(self.myapp.ui.cif_main_table.item(_atom_sites_solution_primary, 0).__class__))
@@ -183,13 +186,6 @@ class TestApplication(unittest.TestCase):
                              self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_address', 0)))
         self.assertEqual('', self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_address', 1))
         self.assertEqual('', self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_address', 2))
-        # _audit_contact_author_address celwidget classes:
-        self.assertEqual("<class 'gui.custom_classes.MyQPlainTextEdit'>",
-                         str(self.myapp.ui.cif_main_table.cellWidget(17, 0).__class__))
-        self.assertEqual("<class 'gui.custom_classes.MyQPlainTextEdit'>",
-                         str(self.myapp.ui.cif_main_table.cellWidget(17, 1).__class__))
-        self.assertEqual("<class 'gui.custom_classes.MyQPlainTextEdit'>",
-                         str(self.myapp.ui.cif_main_table.cellWidget(17, 2).__class__))
         ###
         # Now the above with MyCifTable methods:
         self.assertEqual('direct', self.myapp.ui.cif_main_table.text(_atom_sites_solution_primary, 0))
@@ -205,6 +201,15 @@ class TestApplication(unittest.TestCase):
         self.assertEqual('_atom_sites_solution_primary', text2)
         # Test if table has unicode characters instead of ascii:
         self.assertEqual('ω and ϕ scans', self.myapp.ui.cif_main_table.getTextFromKey('_diffrn_measurement_method', 0))
+
+    def test_audit_contact_author_address_cellwidget_classes(self):
+        self.assertEqual(self.myapp.ui.cif_main_table.vheaderitems[17], '_audit_contact_author_address')
+        self.assertEqual("<class 'gui.custom_classes.MyQPlainTextEdit'>",
+                         str(self.myapp.ui.cif_main_table.cellWidget(17, 0).__class__))
+        self.assertEqual("<class 'gui.custom_classes.MyQPlainTextEdit'>",
+                         str(self.myapp.ui.cif_main_table.cellWidget(17, 1).__class__))
+        self.assertEqual("<class 'gui.custom_classes.MyQPlainTextEdit'>",
+                         str(self.myapp.ui.cif_main_table.cellWidget(17, 2).__class__))
 
     def test_set_text(self):
         # A combobox
@@ -390,14 +395,23 @@ class TestWorkfolder(unittest.TestCase):
         self.assertEqual(unify_line_endings(addr),
                          unify_line_endings(
                              self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_address', 2)))
-        self.assertEqual("<class 'gui.custom_classes.MyQPlainTextEdit'>",
-                         str(self.myapp.ui.cif_main_table.cellWidget(4, 0).__class__))
-        self.assertEqual("<class 'gui.custom_classes.MyQPlainTextEdit'>",
-                         str(self.myapp.ui.cif_main_table.cellWidget(4, 1).__class__))
-        self.assertEqual("<class 'gui.custom_classes.MyQPlainTextEdit'>",
-                         str(self.myapp.ui.cif_main_table.cellWidget(4, 2).__class__))
+
+    def test_contact_author_name(self):
+        item = self.myapp.ui.EquipmentTemplatesListWidget.findItems('Contact Author', Qt.MatchStartsWith)[0]
+        self.myapp.ui.EquipmentTemplatesListWidget.setCurrentItem(item)
+        self.assertEqual('?', self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_name', 0))
+        self.assertEqual('Dr. Daniel Kratzert', self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_name', 1))
+        self.assertEqual('Dr. Daniel Kratzert', self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_name', 2))
+        self.assertEqual(self.myapp.ui.cif_main_table.vheaderitems[5], '_audit_contact_author_name')
+        self.assertEqual('Dr. Daniel Kratzert', self.myapp.ui.cif_main_table.getText(5, 1))
+        self.assertEqual("<class 'NoneType'>",
+                         str(self.myapp.ui.cif_main_table.cellWidget(5, 0).__class__))
+        self.assertEqual("<class 'NoneType'>",
+                         str(self.myapp.ui.cif_main_table.cellWidget(5, 1).__class__))
+        self.assertEqual("<class 'NoneType'>",
+                         str(self.myapp.ui.cif_main_table.cellWidget(5, 2).__class__))
         self.assertEqual(unify_line_endings(addr),
-                         unify_line_endings(str(self.myapp.ui.cif_main_table.cellWidget(4, 2))))
+                         unify_line_endings(str(self.myapp.ui.cif_main_table.cellWidget(3, 2))))
 
     def test_edit_values_and_save(self):
         self.myapp.hide()

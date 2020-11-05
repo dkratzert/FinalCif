@@ -197,7 +197,7 @@ class MyCifTable(QTableWidget, ItemTextMixin):
             if color:
                 textedit.setBackground(color)
 
-    def getText(self, col: int, row: int):
+    def getText(self, row: int, col: int):
         return self.text(row, col)
 
     def getTextFromKey(self, key: str, col: int):
