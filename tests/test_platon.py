@@ -28,13 +28,17 @@ class TestPlaton(unittest.TestCase):
         Path('1979688-finalcif.fcf').unlink(missing_ok=True)
         Path('check.def').unlink(missing_ok=True)
         Path('platon.out').unlink(missing_ok=True)
+        Path('examples/work/platon.out').unlink(missing_ok=True)
+        Path('examples/work/check.def').unlink(missing_ok=True)
 
     def test_checkcif_offline(self):
+        self.myapp.hide()
         self.myapp.ui.CheckcifButton.click()
         timediff = int(Path('1979688-finalcif.chk').stat().st_mtime) - int(time.time())
         self.assertLess(timediff, 5)  # .chk file was modified less than 5 seconds ago
 
     def test_checkdef_contains_text(self):
+        self.myapp.hide()
         self.myapp.ui.CheckcifButton.click()
         time.sleep(0.3)
         self.assertEqual('FINALCIF V{}'.format(VERSION) in Path('1979688-finalcif.chk').read_text(), True)

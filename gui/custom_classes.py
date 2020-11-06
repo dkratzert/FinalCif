@@ -210,6 +210,9 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         row = self.vheaderitems.index(key)
         return self.text(row, col)
 
+    def row_from_key(self, key: str) -> int:
+        return self.vheaderitems.index(key)
+
     def itemFromKey(self, key: str, col: int) -> QTableWidgetItem:
         """Returns the tableitem of the cell by key and column"""
         row = self.vheaderitems.index(key)
