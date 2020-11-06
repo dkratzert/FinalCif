@@ -489,11 +489,11 @@ class AppWindow(QMainWindow):
         # makes all gray:
         # self.ui.responseFormsListWidget.setStyleSheet("background: 'gray';")
         a = AlertHelp(self.checkdef)
-        self.validation_response_foms_list = []
+        self.validation_response_forms_list = []
         for form in forms:
             vrf = MyVRFContainer(form, a.get_help(form['alert_num']))
             vrf.setAutoFillBackground(False)
-            self.validation_response_foms_list.append(vrf)
+            self.validation_response_forms_list.append(vrf)
             item = QListWidgetItem()
             item.setSizeHint(vrf.sizeHint())
             self.ui.responseFormsListWidget.addItem(item)
@@ -547,21 +547,20 @@ class AppWindow(QMainWindow):
         Saves the validation response form text to _vrf_ CIF entries.
         :return: None
         """
+        if not self.validation_response_forms_list:
+            return
         n = 0
-        for response_row in range(self.ui.responseFormsListWidget.count()):
-            response_txt = self.validation_response_foms_list[response_row].response_text_edit.toPlainText()
+        for response_row in self.validation_response_forms_list:
+            response_txt = response_row.response_text_edit.toPlainText()
             if not response_txt:
                 # No response was written
                 continue
             n += 1
             v = VREF()
-            v.key = self.validation_response_foms_list[response_row].form['name']
-            v.problem = self.validation_response_foms_list[response_row].form['problem']
+            v.key = response_row.form['name']
+            v.problem = response_row.form['problem']
             v.response = response_txt
-            # add a key with '?' as value
-            self.add_row(v.key, v.value)
-            # add data to this key:
-            self.ui.cif_main_table.setText(v.key, COL_EDIT, v.value)
+            self.add_row(v.key, v.value, at_start=True)
         self.save_current_cif_file()
         if n:
             self.ui.CheckCifLogPlainTextEdit.appendPlainText('Forms saved')
