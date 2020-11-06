@@ -11,6 +11,7 @@ from typing import Union, List, Any
 from PyQt5.QtCore import QAbstractTableModel, QModelIndex, Qt, QSize, QVariant, pyqtSignal
 from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QTableView, QHeaderView
+from gemmi.cif import as_string
 
 from cif.cif_file_io import CifContainer
 
@@ -42,8 +43,7 @@ class Loop():
         data = []
         self.get_headerlabels(loopnum)
         for v in self.cif.block.find(self.headerlabels):
-            # data.append([gemmi.cif.as_string(x) for x in v]) which one is better?
-            data.append([x for x in v])
+            data.append([x if x in ('.', '?') else as_string(x) for x in v])
         return data
 
     def get_headerlabels(self, loopnum):

@@ -15,7 +15,7 @@ from math import sin, radians
 from pathlib import Path, WindowsPath
 from shutil import copy2
 from tempfile import TemporaryDirectory
-from typing import Union, Dict, Tuple
+from typing import Union, Dict, Tuple, List
 
 import qtawesome as qta
 from PyQt5.QtCore import QUrl, QEvent, QPoint, Qt
@@ -67,6 +67,7 @@ class AppWindow(QMainWindow):
         self.view: Union[QWebEngineView, None] = None
         self.report_picture: Union[Path, None] = None
         self.checkdef = []
+        self._loop_tables: List[QTableView] = []
         self.final_cif_file_name = Path()
         self.missing_data: set = set()
         self.temperature_warning_displayed = False
@@ -187,7 +188,7 @@ class AppWindow(QMainWindow):
         ## main
         self.ui.BackPushButton.clicked.connect(self.back_to_main)
         self.ui.ExploreDirButton.clicked.connect(self.explore_current_dir)
-        self.ui.LoopsPushButton.clicked.connect(self.showloops)
+        self.ui.LoopsPushButton.clicked.connect(self.ui.MainStackedWidget.go_to_loops_page)
         ## checkcif
         self.ui.CheckcifStartButton.clicked.connect(self.open_checkcif_page)
         self.ui.CheckcifButton.clicked.connect(self.do_offline_checkcif)
@@ -984,6 +985,7 @@ class AppWindow(QMainWindow):
         # Do this only when sure we can load the file:
         self.save_current_recent_files_list(filepath)
         self.load_recent_cifs_list()
+        self.make_loops_tables()
         # Initial button states:
         self.ui.CheckcifButton.setEnabled(True)
         self.ui.CheckcifHTMLOnlineButton.setEnabled(True)
@@ -1325,14 +1327,17 @@ class AppWindow(QMainWindow):
         """
         self.ui.LoopsPushButton.setText('Show Loops')
         self.ui.LoopsTabWidget.clear()
+        self._loop_tables.clear()
         for num in range(len(self.cif.loops)):
-            t = self.cif.loops[num].tags
-            if not t:
+            tags = self.cif.loops[num].tags
+            if not tags:
                 continue
             tableview = QTableView()
-            self.ui.LoopsTabWidget.addTab(tableview, t[0])
+            self.ui.LoopsTabWidget.addTab(tableview, tags[0])
             loop = Loop(self.cif, tableview)
             loop.make_model(num)
+            tableview.setObjectName('loop_table_{}'.format(num))
+            self._loop_tables.append(tableview)
             loop.model.modelChanged.connect(self.save_new_value_to_cif_block)
             self.ui.revertLoopsPushButton.clicked.connect(loop.model.revert)
         if self.cif['_shelx_res_file']:
@@ -1352,45 +1357,11 @@ class AppWindow(QMainWindow):
         column = self.cif.block.find_values(header[col])
         column[row] = value if my_isnumeric(value) else quote(value)
 
-    def showloops(self) -> None:
-        if self.ui.MainStackedWidget.on_loops_page():
-            # Go back to main table page:
-            self.ui.MainStackedWidget.got_to_main_page()
-            self.ui.LoopsPushButton.setText('Show Loops')
+    def make_loops_tables(self) -> None:
+        if self.cif and self.cif.loops:
+            self.add_loops_tables()
         else:
-            # Add loops widgets:
-            if self.cif and self.cif.loops:
-                self.add_loops_tables()
-            else:
-                return
-            # Go to loops page:
-            self.ui.LoopsPushButton.setText('Hide Loops')
-            self.ui.MainStackedWidget.go_to_loops_page()
-
-    '''
-    def set_table_pair(self, key: str, value: str, column: int = COL_DATA) -> None:
-        """
-        Add a new cif key/data pair at the start of the main table.
-        """
-        self.missing_data.append(key)
-        self.cif.block.set_pair(key, value)
-        self.ui.cif_main_table.insertRow(0)
-        self.ui.cif_main_table.vheaderitems.insert(0, key)
-        head_item_key = MyTableWidgetItem(key)
-        self.ui.cif_main_table.setVerticalHeaderItem(0, head_item_key)
-        if column == COL_DATA:
-            self.ui.cif_main_table.setText(key=key, column=COL_CIF, txt='?')
-            self.ui.cif_main_table.setText(key=key, column=COL_DATA, txt=value, color=light_green)
-            self.ui.cif_main_table.setText(key=key, column=COL_EDIT, txt='')
-        if column == COL_EDIT:
-            self.ui.cif_main_table.setText(key=key, column=COL_CIF, txt='?')
-            self.ui.cif_main_table.setText(key=key, column=COL_DATA, txt='')
-            self.ui.cif_main_table.setText(key=key, column=COL_EDIT, txt=value, color=light_green)
-        if column == COL_CIF:
-            self.ui.cif_main_table.setText(key=key, column=COL_CIF, txt=value, color=light_green)
-            self.ui.cif_main_table.setText(key=key, column=COL_DATA, txt='')
-            self.ui.cif_main_table.setText(key=key, column=COL_EDIT, txt='')
-    '''
+            return
 
     def add_row(self, key: str, value: str, at_start=False) -> None:
         """
