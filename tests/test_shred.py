@@ -1,12 +1,16 @@
 import os
+import sys
 import unittest
 from pathlib import Path
+
+from PyQt5.QtWidgets import QApplication
 
 from cif.cif_file_io import CifContainer
 from appwindow import AppWindow
 from tests.helpers import unify_line_endings
 from tools.shred import ShredCIF
 
+app = QApplication(sys.argv)
 
 class TestShedCifWithData(unittest.TestCase):
 

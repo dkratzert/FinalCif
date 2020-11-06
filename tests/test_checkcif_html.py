@@ -48,7 +48,7 @@ class TestCheckCifHTML(unittest.TestCase):
         self.myapp.ui.EquipmentTemplatesListWidget.setCurrentItem(item)
         self.myapp.equipment.load_selected_equipment()
 
-    #@unittest.skip('temporary skip')
+    # @unittest.skip('temporary skip')
     def test_checkcif_html(self):
         """Runs a html checkcif without hkl and compares the result with the html file."""
         self.maxDiff = 500
@@ -65,4 +65,3 @@ class TestCheckCifHTML(unittest.TestCase):
         # this is the new downloadad file
         result = self.resobj.read_text().splitlines()[28:-13]
         self.assertEqual(htmlfile, result)
-        self.assertTrue(Path('cu_BruecknerJK_153F40_0m-finalcif.gif').exists())
