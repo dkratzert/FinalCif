@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/Users/daniel/Documents/GitHub/FinalCif/gui/finalcif_gui.ui'
+# Form implementation generated from reading ui file './gui\finalcif_gui.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.1
 #
@@ -1063,7 +1063,7 @@ class Ui_FinalCifWindow(object):
         self.retranslateUi(FinalCifWindow)
         self.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
         self.PropertiesTemplatesStackedWidget.setCurrentIndex(0)
-        self.MainStackedWidget.setCurrentIndex(5)
+        self.MainStackedWidget.setCurrentIndex(0)
         self.LoopsTabWidget.setCurrentIndex(0)
         self.CheckCIFResultsTabWidget.setCurrentIndex(2)
         self.ResponsesTabWidget.setCurrentIndex(0)
