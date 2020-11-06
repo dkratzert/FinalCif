@@ -266,11 +266,10 @@ class CCDC():
     def __init__(self, cif: CifContainer, paragraph: Paragraph, ref: ReferenceList):
         self.cif = cif
         ccdc_num = gstr(self.cif['_database_code_depnum_ccdc_archive']) or '??????'
-        sentence1 = "Crystallographic data (including structure factors) for the structures reported in this " \
+        sentence1 = "Crystallographic data for the structures reported in this " \
                     "paper have been deposited with the Cambridge Crystallographic Data Centre."
-        sentence2 = "CCDC {} contain " \
-                    "the supplementary crystallographic data for this paper. Copies of the data can " \
-                    "be obtained free of charge from the Cambridge Crystallographic Data Centre " \
+        sentence2 = "CCDC {} contain the supplementary crystallographic data for this paper. " \
+                    "These data can be obtained free of charge from The Cambridge Crystallographic Data Centre " \
                     "via www.ccdc.cam.ac.uk/{}structures.".format(ccdc_num, zero_width_space)
         paragraph.add_run(sentence1)
         ref.append(CCDCReference())

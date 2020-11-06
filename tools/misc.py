@@ -38,7 +38,7 @@ timessym = u'\u00d7'
 lambdasym = u'\u03bb'
 # one bar
 one_bar = u'\u0031\u0305'
-# Zero with space ZWSP
+# Zero-with space ZWSP
 zero_width_space = u'\u200B'
 
 

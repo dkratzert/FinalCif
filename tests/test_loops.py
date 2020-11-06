@@ -11,6 +11,7 @@ from pathlib import Path
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication
+from gemmi.cif import as_string
 
 from appwindow import AppWindow
 from cif.cif_file_io import CifContainer
@@ -29,7 +30,7 @@ class TestLoops(unittest.TestCase):
         self.myapp.ui.LoopsPushButton.click()
 
     def tearDown(self) -> None:
-        self.myapp.final_cif_file_name.unlink()
+        self.myapp.final_cif_file_name.unlink(missing_ok=True)
 
     def test_loop_data(self):
         index = self.myapp._loop_tables[0].model().index(0, 1)
@@ -55,10 +56,14 @@ class TestLoops(unittest.TestCase):
         index = self.myapp._loop_tables[6].model().index(1, 4)
         self.assertEqual('?', index.data())
 
+    def test_loop_no_edit(self):
+        self.myapp.ui.SaveCifButton.click()
+        c = CifContainer(self.myapp.final_cif_file_name)
+        self.assertEqual('0.0181', c.loops[3].val(0, 2))
+
     def test_loop_edit(self):
         index = self.myapp._loop_tables[3].model().index(0, 2)
         self.myapp._loop_tables[3].model().setData(index, 'foo bar', role=Qt.EditRole)
         self.myapp.ui.SaveCifButton.click()
         c = CifContainer(self.myapp.final_cif_file_name)
-        self.assertNotEqual('0.0181', c.loops[3].val(0, 2))
-        self.assertNotEqual('foo bar', c.loops[3].val(0, 2))
+        self.assertEqual('foo bar', as_string(c.loops[3].val(0, 2)))
