@@ -8,11 +8,12 @@
 import re
 from math import sin, cos, sqrt
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Union
 
 import gemmi
 
 from cif.cif_order import order, special_keys
+from cif.text import retranslate_delimiter
 from datafiles.utils import DSRFind
 from tools.dsrmath import mean
 from tools.misc import essential_keys, non_centrosymm_keys, get_error_from_value
@@ -23,8 +24,14 @@ class CifContainer():
     This class holds the content of a cif file, independent of the file parser used.
     """
 
-    def __init__(self, file: Path):
-        self.fileobj = file
+    def __init__(self, file: Union[Path, str]):
+        self.fileobj: Path
+        if isinstance(file, str):
+            self.fileobj = Path(file)
+        elif isinstance(file, Path):
+            self.fileobj = file
+        else:
+            raise TypeError('The file parameter must be string or Path object.')
         # I do this in small steps instead of gemmi.cif.read_file() in order to
         # leave out the check_for_missing_values. This was gemmi reads cif files
         # with missing values.
@@ -40,13 +47,12 @@ class CifContainer():
         self.atomic_struct = gemmi.make_small_structure_from_block(self.block)
         # A dictionary to convert Atom names like 'C1_2' or 'Ga3' into Element names like 'C' or 'Ga'
         self._name2elements = dict(
-            zip(self.block.find_loop('_atom_site_label'), self.block.find_loop('_atom_site_type_symbol')))
+            zip([x.upper() for x in self.block.find_loop('_atom_site_label')],
+                [x.upper() for x in self.block.find_loop('_atom_site_type_symbol')]))
 
     def read_file(self, path: str) -> gemmi.cif.Document:
         """
         Reads a cif file and returns a gemmi document object.
-        :param path: path to the file
-        :return: gemmi document
         """
         doc = gemmi.cif.Document()
         # support for platon squeeze files:
@@ -74,7 +80,7 @@ class CifContainer():
         if result:
             if result == '?' or result == "'?'":
                 return ''
-            # TODO: can I do this?:
+            # can I do this? No:
             # return retranslate_delimiter(result)
             return gemmi.cif.as_string(result)
         else:
@@ -300,7 +306,7 @@ class CifContainer():
             return self._spgr().xhm()
         except (AttributeError, RuntimeError):
             if self['_space_group_name_H-M_alt']:
-                return self['_space_group_name_H-M_alt'].strip("'")
+                return gemmi.cif.as_string(self['_space_group_name_H-M_alt'])
             else:
                 return ''
 
@@ -336,13 +342,6 @@ class CifContainer():
     def hkl_checksum_calcd(self) -> int:
         """
         Calculates the shelx checksum for the hkl file content of a cif file.
-    
-        #>>> c = CifContainer(Path('test-data/DK_zucker2_0m.cif'))
-        #>>> c.hkl_checksum_calcd
-        #69576
-        #>>> c = CifContainer(Path('test-data/4060310.cif'))
-        #>>> c.hkl_checksum_calcd
-        #0
         """
         hkl = self.hkl_file
         if hkl:
@@ -354,13 +353,6 @@ class CifContainer():
     def res_checksum_calcd(self) -> int:
         """
         Calculates the shelx checksum for the res file content of a cif file.
-    
-        #>>> c = CifContainer(Path('test-data/DK_zucker2_0m.cif'))
-        #>>> c.res_checksum_calcd
-        #52593
-        #>>> c = CifContainer(Path('test-data/4060310.cif'))
-        #>>> c.res_checksum_calcd
-        #0
         """
         res = self.res_file_data
         if res:
@@ -407,10 +399,6 @@ class CifContainer():
     def symmops(self) -> List[str]:
         """
         Reads the symmops from the cif file.
-    
-        >>> cif = CifContainer(Path('test-data/DK_ML7-66-final.cif'))
-        >>> cif.symmops
-        ['x, y, z', '-x, -y, -z']
         """
         xyz1 = self.block.find(("_symmetry_equiv_pos_as_xyz",))  # deprecated
         xyz2 = self.block.find(("_space_group_symop_operation_xyz",))  # New definition
@@ -419,19 +407,12 @@ class CifContainer():
         elif xyz2:
             return [i.str(0) for i in xyz2]
         else:
-            return []
+            return self.symmops_from_spgr
 
     @property
     def is_centrosymm(self) -> bool:
         """
-        >>> from cif.cif_file_io import CifContainer
-        >>> from pathlib import Path
-        >>> c = CifContainer(Path('test-data/DK_zucker2_0m-finalcif.cif'))
-        >>> c.is_centrosymm
-        False
-        >>> c = CifContainer(Path('test-data/DK_ML7-66-final.cif'))
-        >>> c.is_centrosymm
-        True
+        Weather a structuere is centro symmetric or not.
         """
         ops = gemmi.GroupOps([gemmi.Op(o) for o in self.symmops])
         return ops.is_centric()
@@ -522,28 +503,28 @@ class CifContainer():
                 yield (label1, label2, label3, angle, symm1, symm2)
 
     def iselement(self, name: str) -> str:
-        return self._name2elements[name]
+        return self._name2elements[name.upper()]
 
     def natoms(self, without_h: bool = False) -> int:
-        return len(list(self.atoms(without_h)))
+        return len(tuple(self.atoms(without_h)))
 
     def nbonds(self, without_h: bool = False) -> int:
         """
         Number of bonds in the cif object, with and without hydrogen atoms.
         """
-        return len(list(self.bonds(without_h)))
+        return len(tuple(self.bonds(without_h)))
 
     def nangles(self, without_h: bool = False) -> int:
         """
         Number of bond angles in the cif object, with and without hydrogen atoms.
         """
-        return len(list(self.angles(without_h)))
+        return len(tuple(self.angles(without_h)))
 
     def ntorsion_angles(self, without_h: bool = False) -> int:
         """
         Number of torsion angles in the cif object, with and without hydrogen atoms.
         """
-        return len(list(self.torsion_angles(without_h)))
+        return len(tuple(self.torsion_angles(without_h)))
 
     def torsion_angles(self, without_h: bool = False):
         label1 = self.block.find_loop('_geom_torsion_atom_site_label_1')
@@ -582,13 +563,9 @@ class CifContainer():
     def key_value_pairs(self):
         """
         Returns the key/value pairs of a cif file sorted by priority.
-    
-        >>> c = CifContainer(Path('test-data/P21c-final.cif'))
-        >>> c.key_value_pairs()[:2]
-        [['_audit_contact_author_address', '?'], ['_audit_contact_author_email', '?']]
         """
-        high_prio_no_values, high_prio_with_values = self.get_keys()
-        return high_prio_no_values + [['These below are already in:', '---------------------']] + high_prio_with_values
+        keys_without_values, keys_with_values = self.get_keys()
+        return keys_without_values + [['These below are already in:', '---------------------']] + keys_with_values
 
     def is_centrokey(self, key):
         """
@@ -613,20 +590,21 @@ class CifContainer():
                     # do not include res and hkl file:
                     continue
                 if key.startswith('_shelx'):
+                    # No-one should edit shelx values:
                     continue
                 if self.is_centrokey(key):
                     continue
                 if not value or value == '?' or value == "'?'":
-                    questions.append([key, value])
+                    questions.append((key, value))
                 else:
-                    with_values.append([key, value])
+                    with_values.append((key, value))
         all_keys = [x[0] for x in with_values] + [x[0] for x in questions]
         # check if there are keys not in the cif but in essential_keys:
         for key in essential_keys:
             if key not in all_keys:
                 if self.is_centrokey(key):
                     continue
-                questions.append([key, '?'])
+                questions.append((key, '?'))
                 missing_keys.append(key)
         for k in missing_keys:
             if self.is_centrokey(k):
