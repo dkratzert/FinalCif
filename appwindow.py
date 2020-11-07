@@ -23,7 +23,7 @@ from PyQt5.QtGui import QKeySequence, QResizeEvent, QMoveEvent, QTextCursor, QFo
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtWidgets import QMainWindow, QHeaderView, QShortcut, QCheckBox, QListWidgetItem, QApplication, \
-    QPlainTextEdit, QTableView
+    QPlainTextEdit, QTableView, QFileDialog
 from gemmi import cif
 from qtpy.QtGui import QDesktopServices
 
@@ -65,7 +65,7 @@ class AppWindow(QMainWindow):
         self.sources: Union[None, Dict[str, Tuple[Union[str, None]]]] = None
         self.cif: Union[CifContainer, None] = None
         self.view: Union[QWebEngineView, None] = None
-        self.report_picture: Union[Path, None] = None
+        self.report_picture_path: Union[Path, None] = None
         self.checkdef = []
         self._loop_tables: List[QTableView] = []
         self.final_cif_file_name = Path()
@@ -230,7 +230,7 @@ class AppWindow(QMainWindow):
         self.ui.OptionsPushButton.clicked.connect(self.options.show_options)
         # help
         self.ui.HelpPushButton.clicked.connect(self.show_help)
-        self.ui.ReportPicPushButton.clicked.connect(self.options.set_report_picture)
+        self.ui.ReportPicPushButton.clicked.connect(self.set_report_picture)
 
     def resizeEvent(self, a0: QResizeEvent) -> None:
         """It called when the main window resizes."""
@@ -719,6 +719,17 @@ class AppWindow(QMainWindow):
             txt = combo.itemText(file_index)
             self.load_cif_file(txt)
 
+    def set_report_picture(self) -> None:
+        """Sets the picture of the report document."""
+        filename, _ = QFileDialog.getOpenFileName(filter="Image Files (*.png *.jpg *.jpeg *.bmp "
+                                                         "*.gif *.tif *.tiff *.eps *.emf *.wmf)",
+                                                  caption='Open a Report Picture')
+        with suppress(Exception):
+            self.report_picture_path = Path(filename)
+        if self.report_picture_path.exists() and self.report_picture_path.is_file():
+            self.ui.ReportPicPushButton.setIcon(qta.icon('fa5.image'))
+            self.ui.ReportPicPushButton.setText('')
+
     def make_report_tables(self) -> None:
         """
         Generates a report document.
@@ -731,8 +742,8 @@ class AppWindow(QMainWindow):
         self.load_cif_file(self.final_cif_file_name)
         report_filename = strip_finalcif_of_name('report_{}'.format(self.cif.fileobj.stem)) + '-finalcif.docx'
         # The picture after the header:
-        if self.report_picture:
-            picfile = self.report_picture
+        if self.report_picture_path:
+            picfile = self.report_picture_path
         else:
             picfile = Path(self.final_cif_file_name.stem + '.gif')
         try:

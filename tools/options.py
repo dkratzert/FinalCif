@@ -72,14 +72,3 @@ class Options:
     @property
     def checkcif_url(self):
         return self.settings.load_options()['checkcif_url']
-
-    def set_report_picture(self) -> None:
-        """Sets the picture of the report document."""
-        filename, _ = QFileDialog.getOpenFileName(filter="Image Files (*.png *.jpg *.jpeg *.bmp "
-                                                         "*.gif *.tif *.tiff *.eps *.emf *.wmf)",
-                                                  caption='Open a Report Picture')
-        with suppress(Exception):
-            self.report_picture = Path(filename)
-        if self.report_picture.exists() and self.report_picture.is_file():
-            self.ui.ReportPicPushButton.setIcon(qta.icon('fa5.image'))
-            self.ui.ReportPicPushButton.setText('')
