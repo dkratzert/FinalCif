@@ -55,5 +55,15 @@ class CifFileTestCase(unittest.TestCase):
         self.assertEqual(94, self.cif.natoms())
         self.assertEqual(52, self.cif.natoms(without_h=True))
 
+    def test_checksum_tests(self):
+        self.assertEqual(True, self.cif.test_hkl_checksum())
+        self.assertEqual(True, self.cif.test_res_checksum())
+
+    def test_checksum_test_without_checksum(self):
+        self.assertEqual(True, CifContainer('test-data/1000006.cif').test_res_checksum())
+        self.assertEqual(True, CifContainer('test-data/1000006.cif').test_hkl_checksum())
+
+
+
 if __name__ == '__main__':
     unittest.main()

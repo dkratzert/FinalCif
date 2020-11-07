@@ -39,7 +39,7 @@ from equip_property.equipment import Equipment
 from equip_property.properties import Properties
 from gui.custom_classes import COL_CIF, COL_DATA, COL_EDIT, MyTableWidgetItem, light_green, yellow, MyComboBox, blue
 from gui.dialogs import show_update_warning, unable_to_open_message, show_general_warning, cif_file_open_dialog, \
-    bad_z_message
+    bad_z_message, show_res_checksum_warning, show_hkl_checksum_warning
 from gui.finalcif_gui import Ui_FinalCifWindow
 from gui.loops import Loop
 from gui.vrf_classes import MyVRFContainer, VREF
@@ -288,7 +288,7 @@ class AppWindow(QMainWindow):
             self.cif.block.find([key]).erase()
             if key in self.missing_data:
                 self.missing_data.discard(key)
-                #del self.missing_data[self.missing_data.index(key)]
+                # del self.missing_data[self.missing_data.index(key)]
             self.save_current_cif_file()
             self.load_cif_file(self.final_cif_file_name)
 
@@ -926,7 +926,7 @@ class AppWindow(QMainWindow):
                 if key in self.ui.cif_main_table.vheaderitems:
                     self.ui.cif_main_table.setText(key=key, column=COL_EDIT, txt=value, color=light_green)
                 else:
-                    self.add_row(key, value) #, column=COL_EDIT
+                    self.add_row(key, value)  # , column=COL_EDIT
 
     def load_cif_file(self, fname: str) -> None:
         """
@@ -1315,7 +1315,10 @@ class AppWindow(QMainWindow):
                 strval = txt.format(VERSION, datetime.now().year)
                 self.ui.cif_main_table.setText(key=key, column=COL_DATA, txt=strval)
             # print(key, value)
-        self.cif.test_checksums()
+        if not self.cif.test_res_checksum():
+            show_res_checksum_warning()
+        if not self.cif.test_hkl_checksum():
+            show_hkl_checksum_warning()
         self.get_data_sources()
         self.erase_disabled_items()
         self.ui.cif_main_table.setCurrentItem(None)
