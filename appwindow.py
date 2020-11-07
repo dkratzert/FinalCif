@@ -1142,7 +1142,7 @@ class AppWindow(QMainWindow):
                 try:
                     needsymm = sdm.calc_sdm()
                     atoms = sdm.packer(sdm, needsymm)
-                except (IndexError, ValueError):
+                except Exception:
                     if DEBUG:
                         raise
                     atoms = []
