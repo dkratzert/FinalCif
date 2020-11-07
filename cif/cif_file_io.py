@@ -13,7 +13,6 @@ from typing import Dict, List, Tuple, Union
 import gemmi
 
 from cif.cif_order import order, special_keys
-from cif.text import retranslate_delimiter
 from datafiles.utils import DSRFind
 from tools.dsrmath import mean
 from tools.misc import essential_keys, non_centrosymm_keys, get_error_from_value
@@ -74,6 +73,9 @@ class CifContainer():
         doc = gemmi.cif.Document()
         doc.parse_string(cif_string)
         return doc
+
+    def __str__(self):
+        return str(self.fileobj.absolute())
 
     def __getitem__(self, item: str) -> str:
         result = self.block.find_value(item)
@@ -412,7 +414,7 @@ class CifContainer():
     @property
     def is_centrosymm(self) -> bool:
         """
-        Weather a structuere is centro symmetric or not.
+        Whether a structuere is centro symmetric or not.
         """
         ops = gemmi.GroupOps([gemmi.Op(o) for o in self.symmops])
         return ops.is_centric()
@@ -560,21 +562,21 @@ class CifContainer():
                                                                                          angle_dha, symm):
             yield label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm
 
-    def key_value_pairs(self):
+    def key_value_pairs(self) -> List[Tuple[str, str]]:
         """
         Returns the key/value pairs of a cif file sorted by priority.
         """
         keys_without_values, keys_with_values = self.get_keys()
-        return keys_without_values + [['These below are already in:', '---------------------']] + keys_with_values
+        return keys_without_values + [('These below are already in:', '---------------------')] + keys_with_values
 
-    def is_centrokey(self, key):
+    def is_centrokey(self, key) -> bool:
         """
         Is True if the kurrent key is only valid 
         for non-centrosymmetric structures
         """
         return self.is_centrosymm and key in non_centrosymm_keys
 
-    def get_keys(self):
+    def get_keys(self) -> Tuple[List[Tuple[str, str]], List[Tuple[str, str]]]:
         """
         Returns the keys to be displayed in the main table as two separate lists.
         """
@@ -612,26 +614,34 @@ class CifContainer():
             self.block.set_pair(k, '?')
         return sorted(questions), sorted(with_values)
 
-    def add_to_cif(self, key: str, value: str = '?'):
+    def test_res_checksum(self) -> bool:
         """
-        Add an additional key value pair to the cif block.
+        A method to check whether the checksums in the cif file fit to the content.
         """
-        self.block.set_pair(key, value)
-
-    def test_checksums(self) -> None:
-        """
-        A method to check wether the checksums in the cif file fit to the content.
-        """
-        from gui.dialogs import show_checksum_warning
         cif_res_ckecksum = 0
         if self.res_checksum_calcd > 0:
-            cif_res_ckecksum = self.block.find_value('_shelx_res_checksum') or -1
-            cif_res_ckecksum = int(cif_res_ckecksum)
+            cif_res_ckecksum = self['_shelx_res_checksum'] or -1
+            try:
+                cif_res_ckecksum = int(cif_res_ckecksum)
+            except ValueError:
+                cif_res_ckecksum = -1
         if cif_res_ckecksum > 0 and cif_res_ckecksum != self.res_checksum_calcd:
-            show_checksum_warning()
+            return False
+        else:
+            return True
+
+    def test_hkl_checksum(self) -> bool:
+        """
+        A method to check whether the checksums in the cif file fit to the content.
+        """
         cif_hkl_ckecksum = 0
         if self.hkl_checksum_calcd > 0:
-            cif_hkl_ckecksum = self.block.find_value('_shelx_hkl_checksum') or -1
-            cif_hkl_ckecksum = int(cif_hkl_ckecksum)
+            cif_hkl_ckecksum = self['_shelx_hkl_checksum'] or -1
+            try:
+                cif_hkl_ckecksum = int(cif_hkl_ckecksum)
+            except ValueError:
+                cif_hkl_ckecksum = -1
         if cif_hkl_ckecksum > 0 and cif_hkl_ckecksum != self.hkl_checksum_calcd:
-            show_checksum_warning(res=False)
+            return False
+        else:
+            return True

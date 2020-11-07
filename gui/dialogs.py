@@ -45,17 +45,25 @@ def unable_to_open_message(filepath: Path, not_ok: Exception) -> None:
     return
 
 
-def show_checksum_warning(res=True) -> None:
+def show_res_checksum_warning() -> None:
     """
     A message box to display if the checksums do not agree.
     """
     info = QMessageBox()
     info.setIcon(QMessageBox.Warning)
-    if res:
-        info.setText('The "_shelx_res_checksum" is not consistent with the .res file content!\n\n'
-                     'This error might originate from non-ascii Characters like Umlauts in you SHELX file.')
-    else:
-        info.setText('The "_shelx_hkl_checksum" is not\nconsistent with the .hkl file content!')
+    info.setText('The "_shelx_res_checksum" is not consistent with the .res file content!\n\n'
+                 'This error might originate from non-ascii Characters like Umlauts in you SHELX file.')
+    info.show()
+    info.exec()
+
+
+def show_hkl_checksum_warning() -> None:
+    """
+    A message box to display if the checksums do not agree.
+    """
+    info = QMessageBox()
+    info.setIcon(QMessageBox.Warning)
+    info.setText('The "_shelx_hkl_checksum" is not\nconsistent with the .hkl file content!')
     info.show()
     info.exec()
 
