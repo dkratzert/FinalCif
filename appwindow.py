@@ -719,16 +719,19 @@ class AppWindow(QMainWindow):
             txt = combo.itemText(file_index)
             self.load_cif_file(txt)
 
-    def set_report_picture(self) -> None:
+    def set_report_picture(self, file: Path) -> None:
         """Sets the picture of the report document."""
-        filename, _ = QFileDialog.getOpenFileName(filter="Image Files (*.png *.jpg *.jpeg *.bmp "
-                                                         "*.gif *.tif *.tiff *.eps *.emf *.wmf)",
-                                                  caption='Open a Report Picture')
-        with suppress(Exception):
-            self.report_picture_path = Path(filename)
-        if self.report_picture_path.exists() and self.report_picture_path.is_file():
-            self.ui.ReportPicPushButton.setIcon(qta.icon('fa5.image'))
-            self.ui.ReportPicPushButton.setText('')
+        if file:
+            self.report_picture_path = Path(file)
+        else:
+            filename, _ = QFileDialog.getOpenFileName(filter="Image Files (*.png *.jpg *.jpeg *.bmp "
+                                                             "*.gif *.tif *.tiff *.eps *.emf *.wmf)",
+                                                      caption='Open a Report Picture')
+            with suppress(Exception):
+                self.report_picture_path = Path(filename)
+            if self.report_picture_path.exists() and self.report_picture_path.is_file():
+                self.ui.ReportPicPushButton.setIcon(qta.icon('fa5.image'))
+                self.ui.ReportPicPushButton.setText('')
 
     def make_report_tables(self) -> None:
         """
