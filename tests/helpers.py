@@ -1,3 +1,11 @@
+#   ----------------------------------------------------------------------------
+#   "THE BEER-WARE LICENSE" (Revision 42):
+#   Daniel Kratzert <dkratzert@gmx.de> wrote this file.  As long as you retain
+#   this notice you can do whatever you want with this stuff. If we meet some day,
+#   and you think this stuff is worth it, you can buy me a beer in return.
+#   ----------------------------------------------------------------------------
+
+
 def unify_line_endings(text: str):
     return '\n'.join(text.splitlines())
 
@@ -16,12 +24,14 @@ export_templ_data = ['data_D8__VENTURE',
                      "_diffrn_measurement_specimen_support 'MiTeGen micromount'",
                      "_olex2_diffrn_ambient_temperature_device 'Oxford Cryostream 800'",
                      '_diffrn_ambient_environment       N~2~']
+
 addr = """Albert-Ludwigs-Universität Freiburg
 Institut für Anorganische und Analytische Chemie
 Albertstraße 21
 Freiburg i. Br.
 79104
 Germany"""
+
 export_prop_data = r"""data_Molecular__Graphics
 loop_
 _computing_molecular_graphics

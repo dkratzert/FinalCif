@@ -492,6 +492,7 @@ class AppWindow(QMainWindow):
         # self.ui.responseFormsListWidget.setStyleSheet("background: 'gray';")
         a = AlertHelp(self.checkdef)
         self.validation_response_forms_list = []
+        self.ui.responseFormsListWidget.clear()
         for form in forms:
             vrf = MyVRFContainer(form, a.get_help(form['alert_num']))
             vrf.setAutoFillBackground(False)

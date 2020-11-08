@@ -45,6 +45,7 @@ class TestPlatonCheckCIF(unittest.TestCase):
         self.myapp.ui.CheckcifButton.click()
         time.sleep(0.3)
         self.assertEqual('FINALCIF V{}'.format(VERSION) in Path('1979688-finalcif.chk').read_text(), True)
+        self.assertEqual('SumFormula C77 H80 O25' in Path('1979688-finalcif.chk').read_text(), True)
 
     def test_offline_checkcif_writes_gif(self):
         self.myapp.hide()

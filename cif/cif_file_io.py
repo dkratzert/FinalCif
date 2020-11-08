@@ -74,6 +74,16 @@ class CifContainer():
         doc.parse_string(cif_string)
         return doc
 
+    def cif_as_string(self, without_hkl=False) -> str:
+        if not without_hkl:
+            return self.doc.as_string(style=gemmi.cif.Style.Indent35)
+        else:
+            doc = gemmi.cif.Document()
+            doc.parse_string(self.doc.as_string(style=gemmi.cif.Style.Indent35))
+            block = doc.sole_block()
+            block.find_pair_item('_shelx_hkl_file').erase()
+            return doc.as_string(style=gemmi.cif.Style.Indent35)
+
     def __str__(self):
         return str(self.fileobj.absolute())
 
