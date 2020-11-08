@@ -87,6 +87,12 @@ class TablesTestCase(TablesTestMixin, unittest.TestCase):
         doc = Document(self.reportdoc.absolute())
         self.assertEqual('Ueq is defined as 1/3 of t', doc.paragraphs[3].text[:26])
 
+    def test_option_with_report_text(self):
+        self.myapp.ui.ReportTextCheckBox.setChecked(False)
+        self.myapp.ui.SaveFullReportButton.click()
+        doc = Document(self.reportdoc.absolute())
+        self.assertEqual('The following text is only', doc.paragraphs[3].text[:26])
+
     def test_citations(self):
         self.myapp.ui.SaveFullReportButton.click()
         doc = Document(self.reportdoc.absolute())
