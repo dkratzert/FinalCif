@@ -16,7 +16,7 @@ from tools.version import VERSION
 app = QApplication(sys.argv)
 
 
-class TablesTestCase(unittest.TestCase):
+class TablesTestMixin():
 
     def setUp(self) -> None:
         os.chdir(Path(__file__).absolute().parent.parent)
@@ -29,8 +29,6 @@ class TablesTestCase(unittest.TestCase):
         self.myapp.hide()
         self.reportdoc = Path('report_' + self.testcif.stem + '-finalcif.docx')
         self.report_zip = Path(self.testcif.stem + '-finalcif.zip')
-        self.myapp.ui.PictureWidthDoubleSpinBox.setValue(7.43)
-        self.myapp.set_report_picture(Path('../../icon/finalcif.png'))
         self.myapp.hide()
         app.processEvents()
 
@@ -42,7 +40,15 @@ class TablesTestCase(unittest.TestCase):
         self.myapp.ui.HAtomsCheckBox.setChecked(False)
         self.myapp.ui.PictureWidthDoubleSpinBox.setValue(7.5)
 
-    def save_report_works(self):
+
+class TablesTestCase(TablesTestMixin, unittest.TestCase):
+
+    def setUp(self) -> None:
+        super().setUp()
+        self.myapp.ui.PictureWidthDoubleSpinBox.setValue(7.43)
+        self.myapp.set_report_picture(Path('../../icon/finalcif.png'))
+
+    def test_save_report_works(self):
         self.myapp.ui.SaveFullReportButton.click()
         self.assertEqual(True, self.reportdoc.exists())
 
@@ -93,6 +99,22 @@ class TablesTestCase(unittest.TestCase):
         doc = Document(self.reportdoc.absolute())
         table: Table = doc.tables[0]
         self.assertEqual('CCDC 1979688', table.cell(row_idx=0, col_idx=1).text)
+
+
+class TablesNoPictureTestCase(TablesTestMixin, unittest.TestCase):
+
+    def setUp(self) -> None:
+        super().setUp()
+
+    def test_save_report_works(self):
+        self.myapp.ui.SaveFullReportButton.click()
+        self.assertEqual(True, self.reportdoc.exists())
+
+    def test_picture_has_correct_size(self):
+        self.myapp.ui.SaveFullReportButton.click()
+        doc = Document(self.reportdoc.absolute())
+        shapes: InlineShapes = doc.inline_shapes
+        self.assertEqual(0, len(shapes))
 
 
 if __name__ == '__main__':
