@@ -16,7 +16,6 @@ class ShredCIF():
     def __init__(self, cif: CifContainer, ui: Union[Ui_FinalCifWindow, None]):
         self._cif = cif
         self._statusbar = StatusBar(ui)
-        #self.ui = ui
         self._final_cif_file_name = Path(strip_finalcif_of_name(str(self._cif.fileobj.stem)) + '-finalcif.cif')
 
     def shred_cif(self) -> None:

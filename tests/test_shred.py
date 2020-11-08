@@ -5,12 +5,13 @@ from pathlib import Path
 
 from PyQt5.QtWidgets import QApplication
 
-from cif.cif_file_io import CifContainer
 from appwindow import AppWindow
+from cif.cif_file_io import CifContainer
 from tests.helpers import unify_line_endings
 from tools.shred import ShredCIF
 
 app = QApplication(sys.argv)
+
 
 class TestShedCifWithData(unittest.TestCase):
 
@@ -65,6 +66,7 @@ class TestExport(unittest.TestCase):
     def setUp(self) -> None:
         os.chdir(Path(__file__).absolute().parent.parent)
         self.myapp = AppWindow(Path('tests/examples/work/cu_BruecknerJK_153F40_0m.cif').absolute())
+        self.myapp.running_inside_unit_test = True
         self.myapp.hide()  # For full screen view
         self.outfile_hkl = Path('cu_BruecknerJK_153F40_0m-finalcif.hkl')
         self.outfile_res = Path('cu_BruecknerJK_153F40_0m-finalcif.res')

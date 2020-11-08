@@ -62,6 +62,7 @@ class AppWindow(QMainWindow):
 
     def __init__(self, file=None):
         super().__init__()
+        self.running_inside_unit_test = False
         self.sources: Union[None, Dict[str, Tuple[Union[str, None]]]] = None
         self.cif: Union[CifContainer, None] = None
         self.view: Union[QWebEngineView, None] = None
@@ -263,7 +264,8 @@ class AppWindow(QMainWindow):
     def do_shred_cif(self):
         shred = ShredCIF(cif=self.cif, ui=self.ui)
         shred.shred_cif()
-        self.explore_current_dir()
+        if not self.running_inside_unit_test:
+            self.explore_current_dir()
 
     def open_checkcif_page(self):
         """
@@ -769,11 +771,8 @@ class AppWindow(QMainWindow):
             show_general_warning('The report document {} could not be opened.\n'
                                  'Is the file already opened?'.format(report_filename))
             return
-        if Path(report_filename).absolute().exists():
-            if os.name == 'nt':
-                os.startfile(Path(report_filename).absolute())
-            if sys.platform == 'darwin':
-                subprocess.call(['open', Path(report_filename).absolute()])
+        if not self.running_inside_unit_test:
+            self.open_report_document(report_filename)
         # Save report and other files to a zip file:
         zipfile = Path(strip_finalcif_of_name(self.cif.fileobj.stem) + '-finalcif.zip')
         if zipfile.exists():
@@ -787,6 +786,13 @@ class AppWindow(QMainWindow):
         with suppress(Exception):
             pdfname = Path(strip_finalcif_of_name('checkcif-' + self.cif.fileobj.stem) + '-finalcif.pdf').name
             arc.zip.write(pdfname)
+
+    def open_report_document(self, report_filename: str):
+        if Path(report_filename).absolute().exists():
+            if os.name == 'nt':
+                os.startfile(Path(report_filename).absolute())
+            if sys.platform == 'darwin':
+                subprocess.call(['open', Path(report_filename).absolute()])
 
     def save_current_recent_files_list(self, file: Path) -> None:
         """
