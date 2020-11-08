@@ -14,7 +14,6 @@ from pathlib import Path
 from pprint import pprint
 from typing import List, Optional
 
-import gemmi
 import requests
 from PyQt5.QtCore import QUrl, QThread, pyqtSignal
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply
@@ -48,36 +47,22 @@ class CheckCif(QThread):
         Requests a checkcif run from IUCr servers.
         """
         self._html_check()
-        temp_cif = self.cif.fileobj
+        temp_cif = bytes(self.cif.cif_as_string(), encoding='ascii')
+        hkl = 'checkcif_only'
         if not self.hkl_upload:
-            hkl = 'checkcif_only'
-            temp_cif = self._get_cif_without_hkl()
-        else:
-            hkl = 'checkcif_only'
-            if self.cif['_shelx_hkl_file']:
-                hkl = 'checkcif_with_hkl'
+            temp_cif = bytes(self.cif.cif_as_string(without_hkl=True), encoding='ascii')
+        elif self.cif['_shelx_hkl_file']:
+            hkl = 'checkcif_with_hkl'
         headers = {
             "runtype"   : "symmonly",
             "referer"   : "checkcif_server",
             "outputtype": 'PDF' if self.pdf else 'HTML',
             "validtype" : hkl,
-            "valout"    : 'vrfab' if self.pdf else 'vrfabc',
+            "valout"    : 'vrfab'# if self.pdf else 'vrfabc',
         }
         t1 = time.perf_counter()
-        req = None
         self.progress.emit('Report request sent. Please wait...')
-        try:
-            req = requests.post(self.checkcif_url, files={'file': temp_cif.read_bytes()}, data=headers, timeout=400)
-        except requests.exceptions.ReadTimeout:
-            message = r"Checkcif server took too long. Try it at 'https://checkcif.iucr.org' directly."
-            self.failed.emit(message)
-        except requests.exceptions.MissingSchema:
-            message = "URL for checkcif missing in options."
-            self.failed.emit(message)
-        except requests.exceptions.ConnectionError:
-            message = "The checkcif server is not reachable. Is your network connection working?<br>" \
-                      "The server URL might also have changed..."
-            self.failed.emit(message)
+        req = self._do_the_server_request(headers, temp_cif)
         if req:
             self.progress.emit('request finished')
             if not req.status_code == 200:
@@ -93,6 +78,22 @@ class CheckCif(QThread):
         with suppress(Exception):
             # parameter missing_ok=True is only available after 3.8
             Path('finalcif_checkcif_tmp.cif').unlink()
+
+    def _do_the_server_request(self, headers: dict, temp_cif: bytes):
+        req = None
+        try:
+            req = requests.post(self.checkcif_url, files={'file': temp_cif}, data=headers, timeout=400)
+        except requests.exceptions.ReadTimeout:
+            message = r"Checkcif server took too long. Try it at 'https://checkcif.iucr.org' directly."
+            self.failed.emit(message)
+        except requests.exceptions.MissingSchema:
+            message = "URL for checkcif missing in options."
+            self.failed.emit(message)
+        except requests.exceptions.ConnectionError:
+            message = "The checkcif server is not reachable. Is your network connection working?<br>" \
+                      "The server URL might also have changed..."
+            self.failed.emit(message)
+        return req
 
     def _open_pdf_result(self) -> None:
         """
@@ -124,14 +125,6 @@ class CheckCif(QThread):
 
     def show_pdf_report(self) -> None:
         self._open_pdf_result()
-
-    def _get_cif_without_hkl(self) -> Path:
-        tmp = Path('finalcif_checkcif_tmp.cif')
-        doc = gemmi.cif.read_string(self.cif.fileobj.read_text())
-        block = doc.sole_block()
-        block.set_pair('_shelx_hkl_file', '')
-        tmp.write_text(doc.as_string(gemmi.cif.Style.Indent35))
-        return tmp
 
 
 class MyHTMLParser(HTMLParser):
