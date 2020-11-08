@@ -12,10 +12,18 @@ class TestOptions(unittest.TestCase):
 
     def setUp(self) -> None:
         self.myapp = AppWindow()
+        self.myapp.ui.HAtomsCheckBox.setChecked(False)
+        self.myapp.ui.ReportTextCheckBox.setChecked(False)
+        self.myapp.ui.PictureWidthDoubleSpinBox.setValue(0.0)
         self.myapp.hide()
 
+    def tearDown(self) -> None:
+        self.myapp.ui.HAtomsCheckBox.setChecked(False)
+        self.myapp.ui.ReportTextCheckBox.setChecked(False)
+        self.myapp.ui.PictureWidthDoubleSpinBox.setValue(0.0)
+
     def test_save_picture_with(self):
-        self.assertEqual(self.myapp.ui.PictureWidthDoubleSpinBox.value(), 7.5)
+        self.assertEqual(self.myapp.ui.PictureWidthDoubleSpinBox.value(), 0.0)
         self.myapp.ui.PictureWidthDoubleSpinBox.setValue(7.6)
         self.assertEqual(self.myapp.options.picture_width, 7.6)
         self.myapp.ui.PictureWidthDoubleSpinBox.setValue(12.5)

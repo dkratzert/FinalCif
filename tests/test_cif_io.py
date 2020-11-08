@@ -64,6 +64,5 @@ class CifFileTestCase(unittest.TestCase):
         self.assertEqual(True, CifContainer('test-data/1000006.cif').test_hkl_checksum())
 
 
-
 if __name__ == '__main__':
     unittest.main()
