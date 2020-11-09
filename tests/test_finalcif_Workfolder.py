@@ -22,6 +22,7 @@ class TestNothingOpened(unittest.TestCase):
     def setUp(self) -> None:
         os.chdir(Path(__file__).absolute().parent.parent)
         self.myapp = AppWindow()
+        self.myapp.running_inside_unit_test = True
         self.myapp.hide()
         self.myapp.setWindowIcon(QIcon('./icon/multitable.png'))
         self.myapp.setWindowTitle('FinalCif v{}'.format(VERSION))

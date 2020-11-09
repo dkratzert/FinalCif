@@ -42,6 +42,13 @@ class CheckCif(QThread):
         else:
             self.progress.emit('Running Checkcif with hkl data')
 
+    def get_vrf(self):
+        if self.pdf:
+            return 'vrfno'
+        else:
+            # Currently, the vrfabc option misses some validation response forms. Only vrfab gives correct results.
+            return 'vrfab'
+
     def run(self) -> None:
         """
         Requests a checkcif run from IUCr servers.
@@ -53,12 +60,13 @@ class CheckCif(QThread):
             temp_cif = bytes(self.cif.cif_as_string(without_hkl=True), encoding='ascii')
         elif self.cif['_shelx_hkl_file']:
             hkl = 'checkcif_with_hkl'
+        vrf = self.get_vrf()
         headers = {
             "runtype"   : "symmonly",
             "referer"   : "checkcif_server",
             "outputtype": 'PDF' if self.pdf else 'HTML',
             "validtype" : hkl,
-            "valout"    : 'vrfab'# if self.pdf else 'vrfabc',
+            "valout"    : vrf,
         }
         t1 = time.perf_counter()
         self.progress.emit('Report request sent. Please wait...')
@@ -255,7 +263,6 @@ if __name__ == "__main__":
     # sys.exit()
     # ckf.show_pdf_report()
     # html = Path(r'D:\frames\guest\BreitPZ_R_122\BreitPZ_R_122\checkcif-BreitPZ_R_122_0m_a.html')
-
     parser = MyHTMLParser(html.read_text())
     # print(parser.imageurl)
     pprint(parser.response_forms)

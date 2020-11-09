@@ -110,7 +110,7 @@ class Platon(QThread):
             self.platon_output = str(e)
         if self.plat and hasattr(self.plat, 'stdout'):
             self.platon_output = self.plat.stdout.decode('ascii')
-        self.delete_orphaned_files()
+        #self.delete_orphaned_files()
         os.chdir(curdir.absolute())
 
     @staticmethod

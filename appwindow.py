@@ -62,6 +62,10 @@ class AppWindow(QMainWindow):
 
     def __init__(self, file=None):
         super().__init__()
+        # This prevents some things to happen during unit tests:
+        # Open of target dir of shred cif,
+        # open report doc,
+        # get check.def from platon server
         self.running_inside_unit_test = False
         self.sources: Union[None, Dict[str, Tuple[Union[str, None]]]] = None
         self.cif: Union[CifContainer, None] = None
@@ -101,7 +105,8 @@ class AppWindow(QMainWindow):
         self.load_recent_cifs_list()
         self.initialize_network_manager()
         self.check_for_update_version()
-        self.get_checkdef_for_response_forms()
+        if not self.running_inside_unit_test:
+            self.get_checkdef_for_response_forms()
         self.set_checkcif_output_font(self.ui.CheckcifPlaintextEdit)
         # To make file drag&drop working:
         self.setAcceptDrops(True)
@@ -648,6 +653,7 @@ class AppWindow(QMainWindow):
             checkcif_out.appendPlainText('Platon did not start. No .chk file from Platon found!')
             checkcif_out.appendPlainText(p.platon_output)
             p.kill()
+            p.delete_orphaned_files()
             return
         checkcif_out.appendPlainText('\n' + '#' * 80)
         checkcif_out.setLineWrapMode(QPlainTextEdit.NoWrap)
@@ -668,6 +674,7 @@ class AppWindow(QMainWindow):
             self.ui.cif_main_table.setText(key='_chemical_formula_moiety', txt=p.formula_moiety, column=COL_EDIT)
         print('Killing platon!')
         p.kill()
+        p.delete_orphaned_files()
 
     def wait_for_chk_file(self, p) -> bool:
         time.sleep(2)

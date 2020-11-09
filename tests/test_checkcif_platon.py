@@ -18,6 +18,7 @@ class TestPlatonCheckCIF(unittest.TestCase):
         os.chdir(Path(__file__).absolute().parent.parent)
         self.myapp = AppWindow(Path('tests/examples/1979688.cif').absolute())
         self.myapp.hide()
+        self.myapp.running_inside_unit_test = True
 
     def tearDown(self) -> None:
         Path('checkcif-1979688-finalcif.html').unlink(missing_ok=True)
