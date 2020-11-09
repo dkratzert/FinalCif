@@ -2,12 +2,12 @@ from pathlib import Path
 from typing import Tuple
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QListWidgetItem, QListWidget, QStackedWidget
+from PyQt5.QtWidgets import QListWidgetItem
 from gemmi import cif
 
-from cif.core_dict import cif_core
+from cif.core_dict import cif_all_dict
 from cif.text import retranslate_delimiter, set_pair_delimited
-from gui.custom_classes import COL_CIF, COL_DATA, light_green, COL_EDIT, MyEQTableWidget
+from gui.custom_classes import COL_CIF, COL_DATA, light_green, COL_EDIT
 from gui.dialogs import show_general_warning, cif_file_open_dialog, cif_file_save_dialog
 from tools import misc
 from tools.misc import include_equipment_imports
@@ -157,7 +157,7 @@ class Equipment:
         selected_template_text, table_data = self.get_equipment_entry_data()
         # warn if key is not official:
         for key, _ in table_data:
-            if key not in cif_core:
+            if key not in cif_all_dict:
                 if not key.startswith('_'):
                     show_general_warning('"{}" is not a valid keyword! '
                                          '\nChange the name in order to save.\n'
