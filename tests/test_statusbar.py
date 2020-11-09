@@ -14,7 +14,8 @@ app = QApplication(sys.argv)
 class TestStausBarWithGraphics(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.myapp = AppWindow()  # ([x for x in Path('.').rglob('1979688.cif')][0].absolute())
+        self.myapp = AppWindow()
+        self.myapp.running_inside_unit_test = True
         self.myapp.setWindowIcon(QIcon('./icon/multitable.png'))
         self.myapp.setWindowTitle('FinalCif v{}'.format(VERSION))
         self.myapp.hide()

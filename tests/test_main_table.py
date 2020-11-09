@@ -26,6 +26,7 @@ class TestMainTableFieldBehavior(unittest.TestCase):
         os.chdir(Path(__file__).absolute().parent.parent)
         self.testcif = Path('tests/examples/1979688.cif').absolute()
         self.myapp = AppWindow(self.testcif)
+        self.myapp.running_inside_unit_test = True
         self.myapp.hide()  # For full screen view
 
     def tearDown(self) -> None:
