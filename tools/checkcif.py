@@ -12,7 +12,7 @@ from contextlib import suppress
 from html.parser import HTMLParser
 from pathlib import Path
 from pprint import pprint
-from typing import List, Optional
+from typing import List, Optional, Dict
 
 import requests
 from PyQt5.QtCore import QUrl, QThread, pyqtSignal
@@ -27,7 +27,7 @@ class CheckCif(QThread):
     progress = pyqtSignal(str)
     failed = pyqtSignal(str)
 
-    def __init__(self, cif: CifContainer, outfile: Path, hkl_upload: bool = True, pdf: bool = False, url=''):
+    def __init__(self, cif: CifContainer, outfile: Path, hkl_upload: bool = True, pdf: bool = False, url: str = ''):
         # hkl == False means no hkl upload
         super().__init__()
         self.hkl_upload = hkl_upload
@@ -170,7 +170,7 @@ class MyHTMLParser(HTMLParser):
             return b''
 
     @property
-    def response_forms(self) -> List[dict]:
+    def response_forms(self) -> List[Dict[str, str]]:
         """
         :returns
         [
@@ -183,24 +183,24 @@ class MyHTMLParser(HTMLParser):
          ]
         """
         forms = []
-        form = {}
+        single_form = {}
         n = 0
         for line in self.vrf.split('\n'):
             if line.startswith('_vrf'):
-                form = {'level': ''}
+                single_form = {'level': ''}
                 plat = line.split('_')[2]
-                form.update({'name': line, 'alert_num': plat})
+                single_form.update({'name': line, 'alert_num': plat})
             if line.startswith(';'):
                 continue
             if line.startswith('PROBLEM'):
                 problem = line[9:]
-                form.update({'problem': problem})
+                single_form.update({'problem': problem})
                 for x in self.alert_levels:
-                    if form['alert_num'] == x[:7]:
-                        form.update({'level': x})
+                    if single_form['alert_num'] == x[:7]:
+                        single_form.update({'level': x})
                         break
                 n += 1
-                forms.append(form)
+                forms.append(single_form)
         return forms
 
 
