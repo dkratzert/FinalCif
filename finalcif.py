@@ -7,6 +7,7 @@
 #  ----------------------------------------------------------------------------
 
 import sys
+from typing import Type
 
 if 'compile' in sys.argv:
     COMPILE = True
@@ -39,7 +40,6 @@ from appwindow import AppWindow, DEBUG
 
 r"""
 TODO:
-- unify set_table_pair, add_new_table_key, add_row
 - Peters comments on equipment templates:
     * save state and order of selected templates in order to be able to undo a selection with a second click. 
 - dist errors: Giacovazzo p.122
@@ -86,7 +86,7 @@ as dict:
 
 
 if __name__ == '__main__':
-    def my_exception_hook(exctype, value, error_traceback):
+    def my_exception_hook(exctype: Type[BaseException], value: BaseException, error_traceback) -> None:
         """
         Hooks into Exceptions to create debug reports.
         """
