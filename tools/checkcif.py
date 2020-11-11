@@ -47,7 +47,7 @@ class CheckCif(QThread):
             return 'vrfno'
         else:
             # Currently, the vrfabc option misses some validation response forms. Only vrfab gives correct results.
-            return 'vrfab'
+            return 'vrfabc'
 
     def run(self) -> None:
         """
