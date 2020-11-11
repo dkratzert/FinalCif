@@ -186,6 +186,13 @@ class AppWindow(QMainWindow):
         self.ui.CODpushButton.setIcon(qta.icon('mdi.upload'))
         self.ui.SavePushButton.setIcon(qta.icon('mdi.content-save'))
         self.ui.revertLoopsPushButton.setIcon(qta.icon('mdi.backup-restore'))
+        # Backbuttons:
+        self.ui.BackPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
+        self.ui.BackpushButtonDetails.setIcon(qta.icon('mdi.keyboard-backspace'))
+        self.ui.BackSourcesPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
+        self.ui.BackFromOptionspPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
+        self.ui.BackFromLoopsPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
+        self.ui.BackFromPlatonPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
 
     def connect_signals_and_slots(self):
         """
