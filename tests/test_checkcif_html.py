@@ -48,10 +48,10 @@ class TestCheckCifHTML(unittest.TestCase):
         self.myapp.ui.EquipmentTemplatesListWidget.setCurrentItem(item)
         self.myapp.equipment.load_selected_equipment()
 
-    @unittest.skip('temporary skip')
+    #@unittest.skip('temporary skip')
     def test_checkcif_html(self):
         """Runs a html checkcif without hkl and compares the result with the html file."""
-        self.maxDiff = 500
+        self.maxDiff = None
         self.equipment_click('D8 VENTURE')
         self.equipment_click('Contact author')
         self.myapp.ui.cif_main_table.setText(key='_chemical_absolute_configuration', txt='ad', column=COL_EDIT)
