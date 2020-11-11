@@ -1470,6 +1470,12 @@
                  </item>
                  <item row="9" column="0" colspan="2">
                   <widget class="QPushButton" name="BackpushButtonDetails">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
                    <property name="text">
                     <string>Back to CIF Table</string>
                    </property>
@@ -1738,19 +1744,6 @@
           </widget>
           <widget class="QWidget" name="page_Sources">
            <layout class="QGridLayout" name="gridLayout_11">
-            <item row="1" column="2">
-             <widget class="QPushButton" name="BackSourcesPushButton">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>Back to CIF Table</string>
-              </property>
-             </widget>
-            </item>
             <item row="1" column="1">
              <spacer name="horizontalSpacer_9">
               <property name="orientation">
@@ -1814,6 +1807,19 @@ The data source will be ignored until next program restart.</string>
               </layout>
              </widget>
             </item>
+            <item row="1" column="2" colspan="2">
+             <widget class="QPushButton" name="BackSourcesPushButton">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Back to CIF Table</string>
+              </property>
+             </widget>
+            </item>
            </layout>
           </widget>
           <widget class="QWidget" name="page_options">
@@ -1866,7 +1872,7 @@ The data source will be ignored until next program restart.</string>
             <item row="7" column="0">
              <widget class="QPushButton" name="BackFromOptionspPushButton">
               <property name="sizePolicy">
-               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
@@ -2000,6 +2006,12 @@ The data source will be ignored until next program restart.</string>
              <layout class="QGridLayout" name="gridLayout_16">
               <item row="0" column="0">
                <widget class="QPushButton" name="BackFromLoopsPushButton">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
                 <property name="minimumSize">
                  <size>
                   <width>120</width>
