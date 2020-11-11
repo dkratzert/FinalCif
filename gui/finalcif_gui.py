@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/Users/daniel/Documents/GitHub/FinalCif/gui/finalcif_gui.ui'
+# Form implementation generated from reading ui file './gui\finalcif_gui.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.1
 #
@@ -651,6 +651,11 @@ class Ui_FinalCifWindow(object):
         self.maxShiftLineEdit.setObjectName("maxShiftLineEdit")
         self.formLayout_3.setWidget(7, QtWidgets.QFormLayout.FieldRole, self.maxShiftLineEdit)
         self.BackpushButtonDetails = QtWidgets.QPushButton(self.groupBox_3)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.BackpushButtonDetails.sizePolicy().hasHeightForWidth())
+        self.BackpushButtonDetails.setSizePolicy(sizePolicy)
         self.BackpushButtonDetails.setObjectName("BackpushButtonDetails")
         self.formLayout_3.setWidget(9, QtWidgets.QFormLayout.SpanningRole, self.BackpushButtonDetails)
         self.SumformLabel = QtWidgets.QLabel(self.groupBox_3)
@@ -774,14 +779,6 @@ class Ui_FinalCifWindow(object):
         self.gridLayout_11 = QtWidgets.QGridLayout(self.page_Sources)
         self.gridLayout_11.setContentsMargins(0, 0, 0, 0)
         self.gridLayout_11.setObjectName("gridLayout_11")
-        self.BackSourcesPushButton = QtWidgets.QPushButton(self.page_Sources)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.BackSourcesPushButton.sizePolicy().hasHeightForWidth())
-        self.BackSourcesPushButton.setSizePolicy(sizePolicy)
-        self.BackSourcesPushButton.setObjectName("BackSourcesPushButton")
-        self.gridLayout_11.addWidget(self.BackSourcesPushButton, 1, 2, 1, 1)
         spacerItem12 = QtWidgets.QSpacerItem(3, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum)
         self.gridLayout_11.addItem(spacerItem12, 1, 1, 1, 1)
         self.groupBox_2 = QtWidgets.QGroupBox(self.page_Sources)
@@ -807,6 +804,14 @@ class Ui_FinalCifWindow(object):
         self.SourcesTableWidget.verticalHeader().setVisible(False)
         self.verticalLayout_4.addWidget(self.SourcesTableWidget)
         self.gridLayout_11.addWidget(self.groupBox_2, 0, 1, 1, 3)
+        self.BackSourcesPushButton = QtWidgets.QPushButton(self.page_Sources)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.BackSourcesPushButton.sizePolicy().hasHeightForWidth())
+        self.BackSourcesPushButton.setSizePolicy(sizePolicy)
+        self.BackSourcesPushButton.setObjectName("BackSourcesPushButton")
+        self.gridLayout_11.addWidget(self.BackSourcesPushButton, 1, 2, 1, 2)
         self.MainStackedWidget.addWidget(self.page_Sources)
         self.page_options = QtWidgets.QWidget()
         self.page_options.setObjectName("page_options")
@@ -820,7 +825,7 @@ class Ui_FinalCifWindow(object):
         spacerItem15 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Preferred)
         self.gridLayout_12.addItem(spacerItem15, 8, 0, 1, 1)
         self.BackFromOptionspPushButton = QtWidgets.QPushButton(self.page_options)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.BackFromOptionspPushButton.sizePolicy().hasHeightForWidth())
@@ -885,6 +890,11 @@ class Ui_FinalCifWindow(object):
         self.gridLayout_16 = QtWidgets.QGridLayout()
         self.gridLayout_16.setObjectName("gridLayout_16")
         self.BackFromLoopsPushButton = QtWidgets.QPushButton(self.page_Loops)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.BackFromLoopsPushButton.sizePolicy().hasHeightForWidth())
+        self.BackFromLoopsPushButton.setSizePolicy(sizePolicy)
         self.BackFromLoopsPushButton.setMinimumSize(QtCore.QSize(120, 0))
         self.BackFromLoopsPushButton.setObjectName("BackFromLoopsPushButton")
         self.gridLayout_16.addWidget(self.BackFromLoopsPushButton, 0, 0, 1, 1)
@@ -1167,7 +1177,6 @@ class Ui_FinalCifWindow(object):
         self.thetaFullLabel.setText(_translate("FinalCifWindow", "θ(full) [°]"))
         self.dLabel.setText(_translate("FinalCifWindow", "<html><head/><body><p>Resolution [Å]</p></body></html>"))
         self.completeLabel.setText(_translate("FinalCifWindow", "complete [%]"))
-        self.BackSourcesPushButton.setText(_translate("FinalCifWindow", "Back to CIF Table"))
         self.label_3.setText(_translate("FinalCifWindow", "The list of data sources shows the origin of CIF items automatically collected by FinalCif. \n"
 "\n"
 "Uncheck items in order to ignore the respective data source.\n"
@@ -1176,6 +1185,7 @@ class Ui_FinalCifWindow(object):
         item.setText(_translate("FinalCifWindow", "CIF Item"))
         item = self.SourcesTableWidget.horizontalHeaderItem(2)
         item.setText(_translate("FinalCifWindow", "Data Source"))
+        self.BackSourcesPushButton.setText(_translate("FinalCifWindow", "Back to CIF Table"))
         self.BackFromOptionspPushButton.setText(_translate("FinalCifWindow", "Back to Main Table"))
         self.groupBox_5.setTitle(_translate("FinalCifWindow", "Report Options"))
         self.ReportTextCheckBox.setText(_translate("FinalCifWindow", "No report text in structure report"))
