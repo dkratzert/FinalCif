@@ -53,6 +53,7 @@ def isnumeric(value: str):
         return False
     return True
 
+
 def sha512_checksum(filename, block_size=65536):
     """
     Calculates a SHA512 checksum from a file.
@@ -183,17 +184,6 @@ class Multilog(object):
             return res
 
         return g
-
-
-def get_file_with_new_ending(file: Path, new_ending: str, strip_from_name: str = '') -> Path:
-    """
-    Retruns a file path with a new ending. If strip_strip_from_name is given, this string is also 
-    removed from the file name before the suffix.
-    """
-    basename = file.stem
-    if strip_from_name:
-        basename = re.sub('{}$'.format(strip_from_name), '', basename)
-    return file.parent.joinpath(Path(basename + new_ending))
 
 
 def strip_finalcif_of_name(pth: str) -> str:
