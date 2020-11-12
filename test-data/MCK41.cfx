@@ -1,0 +1,136 @@
+data_MCK41
+
+_audit_creation_date             19-02-18
+_audit_creation_method           'STOE X-RED'
+_audit_author_name               'J. Richter'
+_audit_contact_author            'J. Richter'
+_audit_contact_author_address 
+;
+   STOE & CIE GmbH
+   Hilpertstr. 10
+   D-64295 Darmstadt
+   Germany
+;
+_audit_contact_author_email      richter@stoe.com
+_audit_contact_author_fax        '+49 6151 988788'  
+_audit_contact_author_phone      '+49 6151 988720'
+
+_computing_data_collection       'STOE X-AREA'
+_computing_cell_refinement       'STOE X-AREA'
+_computing_data_reduction        'STOE X-RED'
+_computing_publication_material  ?
+
+_chemical_name_systematic        ?
+_chemical_name_common            ?
+_chemical_formula_moiety         ?
+_chemical_formula_structural     ?
+_chemical_formula_analytical     ?
+_chemical_formula_sum            'Pb Cl2'
+_chemical_formula_weight         278.11
+_chemical_melting_point          ?
+_chemical_compound_source        ?
+
+_cell_length_a                   4.5292(3)
+_cell_length_b                   7.6110(7)
+_cell_length_c                   9.0384(6)
+_cell_angle_alpha                90.00
+_cell_angle_beta                 90.00
+_cell_angle_gamma                90.00
+_cell_volume                     311.57(4)
+_cell_formula_units_Z            4
+_cell_measurement_temperature    0
+_cell_measurement_reflns_used    5752
+_cell_measurement_theta_min      2.11
+_cell_measurement_theta_max      25.06
+
+_symmetry_cell_setting           orthorhombic
+_symmetry_space_group_name_H-M   'P n m a'
+_symmetry_Int_Tables_number      62
+loop_
+    _symmetry_equiv_pos_as_xyz
+  'x,y,z'
+  '1/2-x,-y,1/2+z'
+  '1/2+x,1/2-y,1/2-z'
+  '-x,1/2+y,-z'
+  '-x,-y,-z'
+  '1/2+x,y,1/2-z'
+  '1/2-x,1/2+y,1/2+z'
+  'x,1/2-y,z'
+
+_exptl_crystal_description       'plate'
+_exptl_crystal_colour            'colorless'
+_exptl_crystal_size_max          0.060
+_exptl_crystal_size_mid          0.027
+_exptl_crystal_size_min          0.010
+_exptl_crystal_density_diffrn    5.929
+_exptl_crystal_density_meas      ?
+_exptl_crystal_F_000             464
+_exptl_absorpt_coefficient_mu    30.29
+_exptl_absorpt_correction_type   integration
+_exptl_absorpt_correction_T_min  0.0754
+_exptl_absorpt_correction_T_max  0.6164
+loop_
+    _exptl_crystal_face_index_h
+    _exptl_crystal_face_index_k
+    _exptl_crystal_face_index_l
+    _exptl_crystal_face_perp_dist
+  30  -7   8  0.0434
+   9  30 -11  0.0545
+   3   0  30  0.0109
+  22 -30   6  0.0291
+   2  -2 -30  0.0085
+   1  30  -1  0.0510
+   0   0  30  0.0076
+   0  -5  30  0.0144
+ -30   1   4  0.0494
+ -19  30  -1  0.0243
+  -3 -30   0  0.0539
+   0   0 -30  0.0072
+
+_diffrn_measurement_device         '2-circle goniometer'
+_diffrn_measurement_device_type    'STOE IPDS 2'
+_diffrn_detector                   'image plate (34 cm diameter)'
+_diffrn_detector_type              'STOE'
+_diffrn_detector_area_resol_mean   6.67
+_diffrn_source           'sealed X-ray tube, 12 x 0.4 mm long-fine focus'
+_diffrn_source_voltage             55
+_diffrn_source_current             30
+_diffrn_source_power               1.65
+_diffrn_radiation_type             'Ag K\a'
+_diffrn_radiation_wavelength       0.56087
+_diffrn_radiation_monochromator    'plane graphite'
+_diffrn_radiation_polarisn_norm    0
+_diffrn_radiation_collimation      '0.5 mm diameter, multiple pinhole'
+_diffrn_ambient_temperature        0
+_diffrn_measurement_method         'rotation method'
+_diffrn_measurement_details
+; 360 frames, detector distance = 140 mm
+;
+_diffrn_measured_fraction_theta_max  1.000
+_diffrn_measured_fraction_theta_full 1.000
+
+_diffrn_reflns_number             3974
+_diffrn_reflns_theta_min          1.78
+_diffrn_reflns_theta_max          20.00
+_diffrn_reflns_theta_full         20.00
+_diffrn_reflns_av_unetI/netI      0.0465
+_diffrn_reflns_av_R_equivalents   0.0587
+_diffrn_reflns_limit_h_min        -5
+_diffrn_reflns_limit_h_max        5
+_diffrn_reflns_limit_k_min        -9
+_diffrn_reflns_limit_k_max        9
+_diffrn_reflns_limit_l_min        -10
+_diffrn_reflns_limit_l_max        11
+
+_reflns_number_total              319
+_reflns_number_gt                 195
+_reflns_threshold_expression      'I>4u(I)'
+_reflns_d_resolution_high         0.820
+_reflns_d_resolution_low          9.038
+_reflns_special_details           'Friedel pairs have been merged'
+_reflns_limit_h_min               0
+_reflns_limit_h_max               5
+_reflns_limit_k_min               0
+_reflns_limit_k_max               9
+_reflns_limit_l_min               0
+_reflns_limit_l_max               10

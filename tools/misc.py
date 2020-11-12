@@ -5,7 +5,7 @@
 #  and you think this stuff is worth it, you can buy me a beer in return. 
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
-# 
+#
 import hashlib
 import itertools as it
 import re
@@ -29,7 +29,7 @@ degree_sign = u'\u00B0'
 # middle ellipsis
 ellipsis_mid = u'\u22EF'
 # ellipsis
-ellipsis = u'\u2026'
+ellipsis_char = u'\u2026'
 # less or equal sign
 lessequal = u'\u2264'
 # times (cross) symbol
@@ -91,7 +91,7 @@ def isfloat(value: Union[str, int, float]) -> bool:
 
 def get_file_with_new_ending(file: Path, new_ending: str, strip_from_name: str = '') -> Path:
     """
-    Retruns a file path with a new ending. If strip_strip_from_name is given, this string is also 
+    Retruns a file path with a new ending. If strip_strip_from_name is given, this string is also
     removed from the file name before the suffix.
     """
     basename = file.stem
@@ -205,7 +205,7 @@ def flatten(lis: list) -> list:
     """
     new_lis = []
     for item in lis:
-        if type(item) == type([]):
+        if isinstance(item, list):
             new_lis.extend(flatten(item))
         else:
             new_lis.append(item)
@@ -275,7 +275,7 @@ essential_keys = {
     '_diffrn_radiation_wavelength'                     : 'The radiation wavelength in angstroms',
     '_diffrn_radiation_type'                           : r'The type of the radiation, e.g. Mo K\a',
     '_diffrn_radiation_monochromator'                  : r'The typ monochromator type to get _diffrn_radiation_wavelength',
-    ####'_olex2_diffrn_ambient_temperature_device'         : 'Device to cool the crystal during measurement',
+    # '_olex2_diffrn_ambient_temperature_device'         : 'Device to cool the crystal during measurement',
     '_diffrn_radiation_probe'                          : 'The nature of the radiation used',
     # '_diffrn_source_power'                             : 'The power in kilowatts at which the radiation source was operated',
     '_diffrn_source'                                   : "The general class of the source of radiation, e.g.'sealed X-ray tube'",
@@ -403,6 +403,39 @@ do_not_import_keys = (
     '_shelx_fab_checksum',
     '_shelx_fcf_file',
     '_shelx_fcf_checksum',
+    '_exptl_absorpt_coefficient_mu',
+    '_exptl_crystal_F_000',
+    '_exptl_crystal_density_diffrn',
+    '_reflns_number_total',
+    '_reflns_number_gt',
+)
+
+do_not_import_from_stoe_cfx = (
+    '_diffrn_measured_fraction_theta_max',
+    '_diffrn_measured_fraction_theta_full',
+    '_diffrn_reflns_av_R_equivalents',
+    '_diffrn_reflns_av_unetI/netI',
+    '_diffrn_reflns_limit_h_min',
+    '_diffrn_reflns_limit_h_max',
+    '_diffrn_reflns_limit_k_min',
+    '_diffrn_reflns_limit_k_max',
+    '_diffrn_reflns_limit_l_min',
+    '_diffrn_reflns_limit_l_max',
+    '_diffrn_reflns_number',
+    '_diffrn_reflns_theta_min',
+    '_diffrn_reflns_theta_max',
+    '_diffrn_reflns_theta_full',
+    '_reflns_special_details',
+    '_audit_author_name',
+    '_audit_contact_author',
+    '_audit_contact_author_address',
+    '_audit_contact_author_email',
+    '_audit_contact_author_fax',
+    '_audit_contact_author_phone',
+    '_audit_creation_method',
+    '',
+    '',
+    '',
 )
 
 ABSORPTION_CORRECTION_TYPES = (
