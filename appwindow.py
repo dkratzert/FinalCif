@@ -47,7 +47,8 @@ from report.archive_report import ArchiveReport
 from report.tables import make_report_from
 from tools.checkcif import MyHTMLParser, AlertHelp, CheckCif
 from tools.dsrmath import my_isnumeric
-from tools.misc import strip_finalcif_of_name, next_path, do_not_import_keys, celltxt, to_float, combobox_fields
+from tools.misc import strip_finalcif_of_name, next_path, do_not_import_keys, celltxt, to_float, combobox_fields, \
+    do_not_import_from_stoe_cfx
 from tools.options import Options
 from tools.platon import Platon
 from tools.settings import FinalCifSettings
@@ -933,7 +934,7 @@ class AppWindow(QMainWindow):
 
     def import_additional_cif(self, filename: str):
         """
-        Import an equipment entry from a cif file.
+        Import an additional cif file to the main table.
         """
         if not filename:
             filename = cif_file_open_dialog(filter="CIF file (*.cif *.pcf *.cif_od *.cfx *.sqf)")
@@ -955,13 +956,23 @@ class AppWindow(QMainWindow):
             if item.pair is not None:
                 key, value = item.pair
                 # leave out unit cell etc.:
-                if key in do_not_import_keys:
+                if self.do_not_import_this_key(key, value, imp_cif):
                     continue
                 value = cif.as_string(value)
                 if key in self.ui.cif_main_table.vheaderitems:
                     self.ui.cif_main_table.setText(key=key, column=COL_EDIT, txt=value, color=light_green)
                 else:
                     self.add_row(key, value)  # , column=COL_EDIT
+
+    @staticmethod
+    def do_not_import_this_key(key: str, value: str, cif: CifContainer) -> bool:
+        if value == '?' or value.strip() == '':
+            return True
+        if key in do_not_import_keys:
+            return True
+        if key in do_not_import_from_stoe_cfx and cif.fileobj.suffix == '.cfx':
+            return True
+        return False
 
     def load_cif_file(self, fname: str) -> None:
         """
