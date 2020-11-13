@@ -317,21 +317,26 @@ def display_cif(cif: 'CifContainer'):
     w.heightForWidth(1)
     app.setActiveWindow(w)
     jsmoldir = TemporaryDirectory()
+    mol = make_molecule(cif)
+    content = write_html.write(mol, 250, 250)
+    Path(jsmoldir.name).joinpath("./jsmol.htm").write_text(data=content, encoding="utf-8", errors='ignore')
+    copy2(Path(__file__).parent.joinpath('jquery.min.js'), jsmoldir.name)
+    copy2(Path(__file__).parent.joinpath('JSmol_dk.nojq.lite.js'), jsmoldir.name)
+    print(Path(jsmoldir.name).joinpath("./jsmol.htm").absolute())
+    w.load(QUrl.fromLocalFile(str(Path(jsmoldir.name).joinpath("./jsmol.htm").absolute())))
+    w.show()
+    w.reload()
+    sys.exit(app.exec_())
+
+
+def make_molecule(cif: 'CifContainer') -> str:
     atoms = list(cif.atoms_fract)
     sdm = SDM(atoms, cif.symmops, cif.cell[:6], centric=cif.is_centrosymm)
     needsymm = sdm.calc_sdm()
     atoms = sdm.packer(sdm, needsymm)
     mol = mol_file_writer.MolFile(atoms, bonds=[])
     mol = mol.make_mol()
-    content = write_html.write(mol, 250, 250)
-    Path(jsmoldir.name).joinpath("./jsmol.htm").write_text(data=content, encoding="utf-8", errors='ignore')
-    copy2(Path(displaymol.__file__).parent.joinpath('jquery.min.js'), jsmoldir.name)
-    copy2(Path(displaymol.__file__).parent.joinpath('JSmol_dk.nojq.lite.js'), jsmoldir.name)
-    print(Path(jsmoldir.name).joinpath("./jsmol.htm").absolute())
-    w.load(QUrl.fromLocalFile(str(Path(jsmoldir.name).joinpath("./jsmol.htm").absolute())))
-    w.show()
-    w.reload()
-    sys.exit(app.exec_())
+    return mol
 
 
 if __name__ == "__main__":
@@ -344,11 +349,12 @@ if __name__ == "__main__":
     from PyQt5.QtWebEngineWidgets import QWebEngineView
     from PyQt5.QtWidgets import QApplication
 
-    import displaymol
     from displaymol import mol_file_writer, write_html
     from pathlib import Path
     from cif.cif_file_io import CifContainer
-    
+
     cif = CifContainer(Path('test-data/p21c.cif'))
 
     display_cif(cif)
+    #make_molecule(cif)
+
