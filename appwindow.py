@@ -324,11 +324,7 @@ class AppWindow(QMainWindow):
             pass
         if remote_version > VERSION:
             print('Version {} is outdated (actual is {}).'.format(VERSION, remote_version))
-            show_update_warning(
-                r"A newer version {} of FinalCif is available under: <br>"
-                r"<a href='https://www.xs3.uni-freiburg.de/research/finalcif'>"
-                r"https://www.xs3.uni-freiburg.de/research/finalcif</a>"
-                , remote_version)
+            show_update_warning(remote_version)
 
     def erase_disabled_items(self) -> None:
         """
