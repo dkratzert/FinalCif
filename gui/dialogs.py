@@ -2,7 +2,6 @@ import ctypes
 import os
 import sys
 from pathlib import Path
-from typing import Union
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
@@ -13,8 +12,7 @@ from tools.version import VERSION
 
 def do_update_program(version):
     os.chdir(str(Path(__file__).parent.parent))  # parent path of gui -> main dir
-    args = ['-url', 'https://xs3-data.uni-freiburg.de/finalcif/FinalCif-setup-x64-v{}.exe',
-            '-v', version,
+    args = ['-v', version,
             '-p', 'finalcif']
     # Using this, because otherwise I can not write to the program dir:
     ctypes.windll.shell32.ShellExecuteW(None, "runas", 'update.exe', " ".join(args), None, 1)
@@ -82,12 +80,13 @@ def show_general_warning(warn_text: str = '') -> None:
     box.exec()
 
 
-def show_update_warning(warn_text: str = '', remote_version: int = 0) -> Union[QMessageBox, None]:
+def show_update_warning(remote_version: int = 0) -> None:
     """
     A message box to display if the checksums do not agree.
     """
-    if not warn_text:
-        return None
+    warn_text = "A newer version {} of FinalCif is available under: <br>" \
+                "<a href='https://www.xs3.uni-freiburg.de/research/finalcif'>" \
+                "https://www.xs3.uni-freiburg.de/research/finalcif</a>"
     box = QMessageBox()
     box.setTextFormat(Qt.AutoText)
     box.setWindowTitle(" ")
