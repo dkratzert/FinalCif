@@ -6,19 +6,18 @@ idna==2.10
 lxml>=4.6.1
 macholib>=1.14
 pefile==2019.4.18
-pybind11>=2.6.0
+pybind11>=2.6.1
 PyInstaller
 PyQt5==5.15.1
 PyQt5-sip==12.8.1
 PyQt5-stubs==5.14.2.2
 PyQtWebEngine==5.15.1
 python-docx>=0.8.10
-requests>=2.24.0 # for checkcif
+requests>=2.25.0 # for checkcif
 qtawesome>=1.0.1 #icons
 html2text==2020.1.16
 qtpy==1.9.0  # Abstraction layer for PyQt5/PyQt4/PySide2/PySide - Needed for QTest
-py
-pluggy
+
 
 # Upgrade gemmi to Git master:
 # pip install https://github.com/project-gemmi/gemmi/archive/master.zip --upgrade
@@ -31,3 +30,5 @@ pluggy
 docxtpl
 sphinx
 sphinx-rtd-theme
+py
+pluggy
