@@ -254,17 +254,16 @@ def populate_main_table_values(main_table: Table, cif: CifContainer):
             continue
     # Now the special handling:
     # The sum formula:
-    sum_formula = 'no sum formula'
     if cif['_chemical_formula_sum']:
-        sum_formula = cif['_chemical_formula_sum']
-        ltext2 = sum_formula.replace(" ", "").replace("'", "")
-        ltext3 = [''.join(x[1]) for x in it.groupby(ltext2, lambda x: x.isalpha())]
-        for _, word in enumerate(ltext3):
+        sum_formula = cif['_chemical_formula_sum'].replace(" ", "")
+        sum_formula_group = [''.join(x[1]) for x in it.groupby(sum_formula, lambda x: x.isalpha())]
+        for _, word in enumerate(sum_formula_group):
             formrun = main_table.cell(1, 1).paragraphs[0]
             formrunsub = formrun.add_run(word)
             if isfloat(word):
                 formrunsub.font.subscript = True
-
+    else:
+        main_table.cell(1, 1).paragraphs[0].add_run('no sum formula')
     format_space_group(main_table, cif)
     radiation_type = cif['_diffrn_radiation_type']
     radiation_wavelength = cif['_diffrn_radiation_wavelength']
