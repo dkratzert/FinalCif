@@ -41,7 +41,8 @@ def make_report(cif: CifContainer):
                'bold_italic_F'       : RichText('F', italic=True, bold=True),
                'crystal_table_header': RichText('Crystal data and structure refinement for {}'.format(cif.block.name),
                                                 style='Heading_2'),
-               'structure_figure'    : InlineImage(doc, './test-data/P21c-final-finalcif.gif', width=Cm(8)),
+               'structure_figure'    : InlineImage(doc, './test-data/DK_zucker2_0m-finalcif.gif', width=Cm(8)),
+               'crystallization_method' : cif['_exptl_crystal_recrystallization_method'] or '[No crystallization method given!]'
                }
     doc.render(context, autoescape=True)
     doc.save("generated_doc.docx")
