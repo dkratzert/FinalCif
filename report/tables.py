@@ -34,8 +34,6 @@ def make_report_from(options: Options, file_obj: Path, output_filename: str = No
     :param file_obj: Input cif file.
     :param output_filename: the table is saved to this file.
     """
-    without_H = options.without_H
-    report_text = options.report_text
     document = create_document(path)
     ref = None
 
@@ -52,48 +50,20 @@ def make_report_from(options: Options, file_obj: Path, output_filename: str = No
         print('Something failed during cif file saving.')
         return ''
 
-    if not report_text:
+    if not options.report_text:
         document.add_heading('Structure Tables for {}'.format(cif.block.name), 1)
     else:
         document.add_heading('Structure Tables', 1)
         make_columns_section(document, columns='2')
 
-    if report_text:
+    if options.report_text:
         if picfile and picfile.exists():
-            pic = document.add_paragraph()
-            try:
-                width = float(options.picture_width)
-            except ValueError:
-                width = 7.0
-            pic.add_run().add_picture(str(picfile), width=Cm(width))
-
-        paragr = document.add_paragraph()
-        paragr.style = document.styles['fliesstext']
-        ref = ReferenceList(paragr)
-        # -- The main text:
-        paragr.add_run('The following text is only a suggestion: ').font.bold = True
-        Crystallization(cif, paragr)
-        CrstalSelection(cif, paragr)
-        MachineType(cif, paragr)
-        DataReduct(cif, paragr, ref)
-        SpaceChar(paragr).regular()
-        SolveRefine(cif, paragr, ref)
-        SpaceChar(paragr).regular()
-        if cif.hydrogen_atoms_present:
-            Hydrogens(cif, paragr)
-            SpaceChar(paragr).regular()
-        if cif.disorder_present:
-            d = Disorder(cif, paragr)
-            if d.dsr_sentence:
-                ref.append([DSRReference2015(), DSRReference2018()])
-                SpaceChar(paragr).regular()
-        CCDC(cif, paragr, ref)
-        SpaceChar(paragr).regular()
-        FinalCifreport(paragr, ref)
+            add_picture(document, options, picfile)
+        ref = make_report_text(cif, document, ref)
 
     # -- The residuals table:
     table_num = 1
-    if report_text:
+    if options.report_text:
         # I have to do the header and styling here, otherwise I get another paragraph with a line break in front of the heading.
         p = document.add_paragraph(style='Heading 2')
         p.add_run().add_break(WD_BREAK.COLUMN)
@@ -102,7 +72,7 @@ def make_report_from(options: Options, file_obj: Path, output_filename: str = No
     table_num = add_residuals_table(document, cif, table_num)
     p = document.add_paragraph()
     p.add_run().add_break(WD_BREAK.PAGE)
-    if report_text:
+    if options.report_text:
         make_columns_section(document, columns='1')
     table_num = add_coords_table(document, cif, table_num)
 
@@ -111,13 +81,13 @@ def make_report_from(options: Options, file_obj: Path, output_filename: str = No
             table_num += 1
             document.add_heading(r"Table {}. Bond lengths and angles for {}".format(table_num, cif.block.name), 2)
             make_columns_section(document, columns='2')
-            table_num = add_bonds_and_angles_table(document, cif, table_num, without_H)
+            table_num = add_bonds_and_angles_table(document, cif, table_num, options.without_H)
         if len(list(cif.torsion_angles())) > 0:
             make_columns_section(document, columns='1')
             table_num += 1
             document.add_heading(r"Table {}. Torsion angles for {}".format(table_num, cif.block.name), 2)
             make_columns_section(document, columns='2')
-            table_num = add_torsion_angles(document, cif, table_num, without_H)
+            table_num = add_torsion_angles(document, cif, table_num, options.without_H)
         make_columns_section(document, columns='1')
         if len(list(cif.hydrogen_bonds())) > 0:
             table_num += 1
@@ -128,7 +98,7 @@ def make_report_from(options: Options, file_obj: Path, output_filename: str = No
         make_columns_section(document, columns='1')
         document.add_paragraph('No further tables, because symmetry operators '
                                '(_space_group_symop_operation_xyz) are missing.')
-    if report_text:
+    if options.report_text:
         # -- Bibliography:
         document.add_heading('Bibliography', 2)
         ref.make_literature_list(document)
@@ -138,6 +108,42 @@ def make_report_from(options: Options, file_obj: Path, output_filename: str = No
     return file_obj.name
 
 
+def add_picture(document, options, picfile):
+    pic = document.add_paragraph()
+    try:
+        width = float(options.picture_width)
+    except ValueError:
+        width = 7.0
+    pic.add_run().add_picture(str(picfile), width=Cm(width))
+
+
+def make_report_text(cif, document, ref):
+    paragr = document.add_paragraph()
+    paragr.style = document.styles['fliesstext']
+    ref = ReferenceList(paragr)
+    # -- The main text:
+    paragr.add_run('The following text is only a suggestion: ').font.bold = True
+    Crystallization(cif, paragr)
+    CrstalSelection(cif, paragr)
+    MachineType(cif, paragr)
+    DataReduct(cif, paragr, ref)
+    SpaceChar(paragr).regular()
+    SolveRefine(cif, paragr, ref)
+    SpaceChar(paragr).regular()
+    if cif.hydrogen_atoms_present:
+        Hydrogens(cif, paragr)
+        SpaceChar(paragr).regular()
+    if cif.disorder_present:
+        d = Disorder(cif, paragr)
+        if d.dsr_sentence:
+            ref.append([DSRReference2015(), DSRReference2018()])
+            SpaceChar(paragr).regular()
+    CCDC(cif, paragr, ref)
+    SpaceChar(paragr).regular()
+    FinalCifreport(paragr, ref)
+    return ref
+
+
 def create_document(report_docx_path: str) -> Document:
     """
     Creates the report docx document.
@@ -145,7 +151,7 @@ def create_document(report_docx_path: str) -> Document:
     :return: The document instance.
     """
     try:
-        document = Document(Path(report_docx_path).joinpath(application_path, 'template/template1.docx').absolute())
+        document = Document(Path(report_docx_path).joinpath(application_path, 'template/template2.docx').absolute())
     except FileNotFoundError as e:
         print(e)
         document = Document()
