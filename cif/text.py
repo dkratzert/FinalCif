@@ -6,8 +6,6 @@ import gemmi
 def quote(string: str, wrapping=80) -> str:
     """
     Quotes a cif string and wrapps it. The shorter strings are directly handled by cif.quote().
-    >>> quote('Hello this is a test for a quoted text')
-    "'Hello this is a test for a quoted text'"
     """
     if len(string) < 80:
         return gemmi.cif.quote(string)
