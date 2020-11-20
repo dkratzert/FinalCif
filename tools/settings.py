@@ -168,12 +168,18 @@ class FinalCifSettings():
     def load_options(self) -> dict:
         self.settings.beginGroup('Options')
         options = self.settings.value("options", type=dict)
-        if not options:
-            options = {'report_text'  : True,
-                       'picture_width': 7.5,
-                       'without_H'    : False,
-                       'checkcif_url' : 'https://checkcif.iucr.org/cgi-bin/checkcif_with_hkl'
-                       }
+        print('loading:', options)
+        options_defaults = {'report_text'       : True,
+                            'picture_width'     : 7.5,
+                            'without_H'         : False,
+                            'checkcif_url'      : 'https://checkcif.iucr.org/cgi-bin/checkcif_with_hkl',
+                            'atom_coords_table' : True,
+                            'bonds_angles_table': True,
+                            'torsion_table'     : True,
+                            'hydrogen_table'    : True,
+                            }
+        if not options or len(options) != options_defaults:
+            options = options_defaults
         self.settings.endGroup()
         return options
 

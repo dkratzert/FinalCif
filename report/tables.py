@@ -31,8 +31,6 @@ def make_report_from(options: Options, file_obj: Path, output_filename: str = No
                      picfile: Path = None) -> str:
     """
     Creates a tabular cif report.
-    :param file_obj: Input cif file.
-    :param output_filename: the table is saved to this file.
     """
     document = create_document(path)
     ref: Union[ReferenceList, None] = None
@@ -73,22 +71,27 @@ def make_report_from(options: Options, file_obj: Path, output_filename: str = No
     p.add_run().add_break(WD_BREAK.PAGE)
     if options.report_text:
         make_columns_section(document, columns='1')
-    table_num = add_coords_table(document, cif, table_num)
-
+    print(options.atom_coords_table, '# atomcoords')
+    if options.atom_coords_table:
+        table_num += 1
+        table_num = add_coords_table(document, cif, table_num)
     if cif.symmops:
-        if len(list(cif.bonds())) + len(list(cif.angles())) > 0:
+        print(options.bonds_angles_table, '# bonangles')
+        if len(list(cif.bonds())) + len(list(cif.angles())) > 0 and options.bonds_angles_table:
             table_num += 1
             document.add_heading(r"Table {}. Bond lengths and angles for {}".format(table_num, cif.block.name), 2)
             make_columns_section(document, columns='2')
             table_num = add_bonds_and_angles_table(document, cif, table_num, options.without_H)
-        if len(list(cif.torsion_angles())) > 0:
+        print(options.torsion_table, '# torsion')
+        if len(list(cif.torsion_angles())) > 0 and options.torsion_table:
             make_columns_section(document, columns='1')
             table_num += 1
             document.add_heading(r"Table {}. Torsion angles for {}".format(table_num, cif.block.name), 2)
             make_columns_section(document, columns='2')
             table_num = add_torsion_angles(document, cif, table_num, options.without_H)
         make_columns_section(document, columns='1')
-        if len(list(cif.hydrogen_bonds())) > 0:
+        print(options.hydrogen_table, '# hydrogen')
+        if len(list(cif.hydrogen_bonds())) > 0 and options.hydrogen_table:
             table_num += 1
             document.add_heading(r"Table {}. Hydrogen bonds for {}".format(table_num, cif.block.name), 2)
             table_num = add_hydrogen_bonds(document, cif, table_num)
