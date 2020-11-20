@@ -6,7 +6,7 @@
 import itertools as it
 from math import sin, radians
 from pathlib import Path
-from typing import List, Sequence
+from typing import List, Sequence, Union
 
 from docx import Document
 from docx.enum.text import WD_TAB_ALIGNMENT, WD_TAB_LEADER, WD_BREAK
@@ -35,8 +35,7 @@ def make_report_from(options: Options, file_obj: Path, output_filename: str = No
     :param output_filename: the table is saved to this file.
     """
     document = create_document(path)
-    ref = None
-
+    ref: Union[ReferenceList, None] = None
     if file_obj.exists():
         try:
             cif = CifContainer(file_obj)
@@ -59,7 +58,7 @@ def make_report_from(options: Options, file_obj: Path, output_filename: str = No
     if options.report_text:
         if picfile and picfile.exists():
             add_picture(document, options, picfile)
-        ref = make_report_text(cif, document, ref)
+        ref = make_report_text(cif, document)
 
     # -- The residuals table:
     table_num = 1
@@ -108,7 +107,7 @@ def make_report_from(options: Options, file_obj: Path, output_filename: str = No
     return file_obj.name
 
 
-def add_picture(document, options, picfile):
+def add_picture(document: Document, options: Options, picfile: Path) -> None:
     pic = document.add_paragraph()
     try:
         width = float(options.picture_width)
@@ -117,7 +116,7 @@ def add_picture(document, options, picfile):
     pic.add_run().add_picture(str(picfile), width=Cm(width))
 
 
-def make_report_text(cif, document, ref):
+def make_report_text(cif, document: Document) -> ReferenceList:
     paragr = document.add_paragraph()
     paragr.style = document.styles['fliesstext']
     ref = ReferenceList(paragr)
@@ -151,7 +150,7 @@ def create_document(report_docx_path: str) -> Document:
     :return: The document instance.
     """
     try:
-        document = Document(Path(report_docx_path).joinpath(application_path, 'template/template2.docx').absolute())
+        document = Document(Path(report_docx_path).joinpath(application_path, 'template/template1.docx').absolute())
     except FileNotFoundError as e:
         print(e)
         document = Document()
