@@ -1,114 +1,125 @@
-#  ----------------------------------------------------------------------------
-#  "THE BEER-WARE LICENSE" (Revision 42):
-#  daniel.kratzert@ac.uni-freiburg.de> wrote this file.  As long as you retain
-#  this notice you can do whatever you want with this stuff. If we meet some day,
-#  and you think this stuff is worth it, you can buy me a beer in return.
-#  Dr. Daniel Kratzert
-#  ----------------------------------------------------------------------------
+#   ----------------------------------------------------------------------------
+#   "THE BEER-WARE LICENSE" (Revision 42):
+#   Daniel Kratzert <dkratzert@gmx.de> wrote this file.  As long as you retain
+#   this notice you can do whatever you want with this stuff. If we meet some day,
+#   and you think this stuff is worth it, you can buy me a beer in return.
+#   ----------------------------------------------------------------------------
+
+# /usr/bin/env python
+# -*- encoding: utf-8 -*-
+# möp
+# ----------------------------------------------------------------------------
+# "THE BEER-WARE LICENSE" (Revision 42):
+# <daniel.kratzert@ac.uni-freiburg.de> wrote this file. As long as you retain
+# this notice you can do whatever you want with this stuff. If we meet some day,
+# and you think this stuff is worth it, you can buy me a beer in return.
+# Daniel Kratzert
+# ----------------------------------------------------------------------------
+#
 
 import re
 
 num2element = {
-    0: 'n',
-    1: 'H',
-    2: 'He',
-    3: 'Li',
-    4: 'Be',
-    5: 'B',
-    6: 'C',
-    7: 'N',
-    8: 'O',
-    9: 'F',
-    10: 'Ne',
-    11: 'Na',
-    12: 'Mg',
-    13: 'Al',
-    14: 'Si',
-    15: 'P',
-    16: 'S',
-    17: 'Cl',
-    18: 'Ar',
-    19: 'K',
-    20: 'Ca',
-    21: 'Sc',
-    22: 'Ti',
-    23: 'V',
-    24: 'Cr',
-    25: 'Mn',
-    26: 'Fe',
-    27: 'Co',
-    28: 'Ni',
-    29: 'Cu',
-    30: 'Zn',
-    31: 'Ga',
-    32: 'Ge',
-    33: 'As',
-    34: 'Se',
-    35: 'Br',
-    36: 'Kr',
-    37: 'Rb',
-    38: 'Sr',
-    39: 'Y',
-    40: 'Zr',
-    41: 'Nb',
-    42: 'Mo',
-    43: 'Tc',
-    44: 'Ru',
-    45: 'Rh',
-    46: 'Pd',
-    47: 'Ag',
-    48: 'Cd',
-    49: 'In',
-    50: 'Sn',
-    51: 'Sb',
-    52: 'Te',
-    53: 'I',
-    54: 'Xe',
-    55: 'Cs',
-    56: 'Ba',
-    57: 'La',
-    58: 'Ce',
-    59: 'Pr',
-    60: 'Nd',
-    61: 'Pm',
-    62: 'Sm',
-    63: 'Eu',
-    64: 'Gd',
-    65: 'Tb',
-    66: 'Dy',
-    67: 'Ho',
-    68: 'Er',
-    69: 'Tm',
-    70: 'Yb',
-    71: 'Lu',
-    72: 'Hf',
-    73: 'Ta',
-    74: 'W',
-    75: 'Re',
-    76: 'Os',
-    77: 'Ir',
-    78: 'Pt',
-    79: 'Au',
-    80: 'Hg',
-    81: 'Tl',
-    82: 'Pb',
-    83: 'Bi',
-    84: 'Po',
-    85: 'At',
-    86: 'Rn',
-    87: 'Fr',
-    88: 'Ra',
-    89: 'Ac',
-    90: 'Th',
-    91: 'Pa',
-    92: 'U',
-    93: 'Np',
-    94: 'Pu',
-    95: 'Am',
-    96: 'Cm',
-    97: 'Bk',
-    98: 'Cf',
-    99: 'Es',
+    0  : 'n',
+    1  : 'H',
+    2  : 'He',
+    3  : 'Li',
+    4  : 'Be',
+    5  : 'B',
+    6  : 'C',
+    7  : 'N',
+    8  : 'O',
+    9  : 'F',
+    10 : 'Ne',
+    11 : 'Na',
+    12 : 'Mg',
+    13 : 'Al',
+    14 : 'Si',
+    15 : 'P',
+    16 : 'S',
+    17 : 'Cl',
+    18 : 'Ar',
+    19 : 'K',
+    20 : 'Ca',
+    21 : 'Sc',
+    22 : 'Ti',
+    23 : 'V',
+    24 : 'Cr',
+    25 : 'Mn',
+    26 : 'Fe',
+    27 : 'Co',
+    28 : 'Ni',
+    29 : 'Cu',
+    30 : 'Zn',
+    31 : 'Ga',
+    32 : 'Ge',
+    33 : 'As',
+    34 : 'Se',
+    35 : 'Br',
+    36 : 'Kr',
+    37 : 'Rb',
+    38 : 'Sr',
+    39 : 'Y',
+    40 : 'Zr',
+    41 : 'Nb',
+    42 : 'Mo',
+    43 : 'Tc',
+    44 : 'Ru',
+    45 : 'Rh',
+    46 : 'Pd',
+    47 : 'Ag',
+    48 : 'Cd',
+    49 : 'In',
+    50 : 'Sn',
+    51 : 'Sb',
+    52 : 'Te',
+    53 : 'I',
+    54 : 'Xe',
+    55 : 'Cs',
+    56 : 'Ba',
+    57 : 'La',
+    58 : 'Ce',
+    59 : 'Pr',
+    60 : 'Nd',
+    61 : 'Pm',
+    62 : 'Sm',
+    63 : 'Eu',
+    64 : 'Gd',
+    65 : 'Tb',
+    66 : 'Dy',
+    67 : 'Ho',
+    68 : 'Er',
+    69 : 'Tm',
+    70 : 'Yb',
+    71 : 'Lu',
+    72 : 'Hf',
+    73 : 'Ta',
+    74 : 'W',
+    75 : 'Re',
+    76 : 'Os',
+    77 : 'Ir',
+    78 : 'Pt',
+    79 : 'Au',
+    80 : 'Hg',
+    81 : 'Tl',
+    82 : 'Pb',
+    83 : 'Bi',
+    84 : 'Po',
+    85 : 'At',
+    86 : 'Rn',
+    87 : 'Fr',
+    88 : 'Ra',
+    89 : 'Ac',
+    90 : 'Th',
+    91 : 'Pa',
+    92 : 'U',
+    93 : 'Np',
+    94 : 'Pu',
+    95 : 'Am',
+    96 : 'Cm',
+    97 : 'Bk',
+    98 : 'Cf',
+    99 : 'Es',
     100: 'Fm',
     101: 'Md',
     102: 'No',
@@ -127,29 +138,29 @@ num2element = {
 }
 
 element2num = {
-    'H': 1,
+    'H' : 1,
     'He': 2,
     'Li': 3,
     'Be': 4,
-    'B': 5,
-    'C': 6,
-    'N': 7,
-    'O': 8,
-    'F': 9,
+    'B' : 5,
+    'C' : 6,
+    'N' : 7,
+    'O' : 8,
+    'F' : 9,
     'Ne': 10,
     'Na': 11,
     'Mg': 12,
     'Al': 13,
     'Si': 14,
-    'P': 15,
-    'S': 16,
+    'P' : 15,
+    'S' : 16,
     'Cl': 17,
     'Ar': 18,
-    'K': 19,
+    'K' : 19,
     'Ca': 20,
     'Sc': 21,
     'Ti': 22,
-    'V': 23,
+    'V' : 23,
     'Cr': 24,
     'Mn': 25,
     'Fe': 26,
@@ -165,7 +176,7 @@ element2num = {
     'Kr': 36,
     'Rb': 37,
     'Sr': 38,
-    'Y': 39,
+    'Y' : 39,
     'Zr': 40,
     'Nb': 41,
     'Mo': 42,
@@ -179,7 +190,7 @@ element2num = {
     'Sn': 50,
     'Sb': 51,
     'Te': 52,
-    'I': 53,
+    'I' : 53,
     'Xe': 54,
     'Cs': 55,
     'Ba': 56,
@@ -200,7 +211,7 @@ element2num = {
     'Lu': 71,
     'Hf': 72,
     'Ta': 73,
-    'W': 74,
+    'W' : 74,
     'Re': 75,
     'Os': 76,
     'Ir': 77,
@@ -218,14 +229,121 @@ element2num = {
     'Ac': 89,
     'Th': 90,
     'Pa': 91,
-    'U': 92,
+    'U' : 92,
     'Np': 93,
     'Pu': 94,
     'Am': 95,
     'Cm': 96,
     'Bk': 97,
     'Cf': 98,
-    'D': 1,
+    'D' : 1,
+}
+
+"""
+'#FF1493';
+"#FFFFFF";
+"#e2e6e6";
+"""
+element2color = {
+    'H' : "#FFFFFF",
+    'He': "#FFFFFF",
+    'Li': "#CC80FF",
+    'Be': "#c9d5e9",
+    'B' : "#FFB5B5",
+    'C' : "#797979",
+    'N' : "#3050F8",
+    'O' : "#FF0D0D",
+    'F' : "#90e001",
+    'Ne': "#B3E3F5",
+    'Na': "#AB5CF2",
+    'Mg': "#bbc7db",
+    'Al': "#BFA6A6",
+    'Si': "#F0C8A0",
+    'P' : "#FF8000",
+    'S' : "#eeee2c",
+    'Cl': "#419941",
+    'Ar': "#80D1E3",
+    'K' : "#8F40D4",
+    'Ca': "#bbc7db",
+    'Sc': "#E6E6E6",
+    'Ti': "#BFC2C7",
+    'V' : "#A6A6AB",
+    'Cr': "#8A99C7",
+    'Mn': "#9C7AC7",
+    'Fe': "#E06633",
+    'Co': "#F090A0",
+    'Ni': "#50D050",
+    'Cu': "#C88033",
+    'Zn': "#7D80B0",
+    'Ga': "#C28F8F",
+    'Ge': "#668F8F",
+    'As': "#BD80E3",
+    'Se': "#FFA100",
+    'Br': "#A62929",
+    'Kr': "#5CB8D1",
+    'Rb': "#702EB0",
+    'Sr': "#bbc7db",
+    'Y' : "#94FFFF",
+    'Zr': "#94E0E0",
+    'Nb': "#73C2C9",
+    'Mo': "#54B5B5",
+    'Tc': "#3B9E9E",
+    'Ru': "#248F8F",
+    'Rh': "#0A7D8C",
+    'Pd': "#006985",
+    'Ag': "#C0C0C0",
+    'Cd': "#FFD98F",
+    'In': "#A67573",
+    'Sn': "#668080",
+    'Sb': "#9E63B5",
+    'Te': "#D47A00",
+    'I' : "#940094",
+    'Xe': "#429EB0",
+    'Cs': "#57178F",
+    'Ba': "#bbc7db",
+    'La': "#d9ffff",
+    'Ce': "#d9ffff",
+    'Pr': "#d9ffff",
+    'Nd': "#d9ffff",
+    'Pm': "#d9ffff",
+    'Sm': "#d9ffff",
+    'Eu': "#d9ffff",
+    'Gd': "#d9ffff",
+    'Tb': "#d9ffff",
+    'Dy': "#d9ffff",
+    'Ho': "#d9ffff",
+    'Er': "#d9ffff",
+    'Tm': "#d9ffff",
+    'Yb': "#d9ffff",
+    'Lu': "#d9ffff",
+    'Hf': "#d9ffff",
+    'Ta': "#d9ffff",
+    'W' : "#d9ffff",
+    'Re': "#d9ffff",
+    'Os': "#d9ffff",
+    'Ir': "#d9ffff",
+    'Pt': "#d9ffff",
+    'Au': "#d9ffff",
+    'Hg': "#d9ffff",
+    'Tl': "#d9ffff",
+    'Pb': "#d9ffff",
+    'Bi': "#d9ffff",
+    'Po': "#d9ffff",
+    'At': "#d9ffff",
+    'Rn': "#d9ffff",
+    'Fr': "#d9ffff",
+    'Ra': "#d9ffff",
+    'Ac': "#d9ffff",
+    'Th': "#d9ffff",
+    'Pa': "#d9ffff",
+    'U' : "#d9ffff",
+    'Np': "#d9ffff",
+    'Pu': "#d9ffff",
+    'Am': "#d9ffff",
+    'Cm': "#d9ffff",
+    'Bk': "#d9ffff",
+    'Cf': "#d9ffff",
+    'D' : "#e2e6e6",
 }
 
 atoms = ['H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne', 'Na', 'Mg',
@@ -246,18 +364,17 @@ sorted_atoms = ['C', 'D', 'H', 'N', 'O', 'Cl', 'Br', 'I', 'F', 'S', 'P', 'Ac', '
                 'Si', 'Sm', 'Sn', 'Sr', 'Ta', 'Tb', 'Tc', 'Te', 'Th', 'Ti', 'Tl', 'Tm', 'U',
                 'V', 'W', 'Xe', 'Y', 'Yb', 'Zn', 'Zr']
 
-
 num2covradius = {
-    0: 0.74,
-    1: 0.50,
-    2: 1.23,
-    3: 0.9,
-    4: 0.82,
-    5: 0.77,
-    6: 0.75,
-    7: 0.73,
-    8: 0.72,
-    9: 0.71,
+    0 : 0.74,
+    1 : 0.50,
+    2 : 1.23,
+    3 : 0.9,
+    4 : 0.82,
+    5 : 0.77,
+    6 : 0.75,
+    7 : 0.73,
+    8 : 0.72,
+    9 : 0.71,
     10: 1.54,
     11: 1.36,
     12: 1.18,
@@ -350,31 +467,30 @@ num2covradius = {
     99: 0.5
 }
 
-
 element2cov = {
-    'H': 0.50,
+    'H' : 0.50,
     'He': 1.23,
     'Li': 0.9,
     'Be': 0.82,
-    'B': 0.77,
-    'C': 0.75,
-    'N': 0.73,
-    'O': 0.72,
-    'F': 0.71,
+    'B' : 0.77,
+    'C' : 0.75,
+    'N' : 0.73,
+    'O' : 0.72,
+    'F' : 0.71,
     'Ne': 1.54,
     'Na': 1.36,
     'Mg': 1.18,
     'Al': 1.11,
     'Si': 1.06,
-    'P':  1.02,
-    'S':  0.99,
+    'P' : 1.02,
+    'S' : 0.99,
     'Cl': 0.98,
     'Ar': 2.03,
-    'K':  1.74,
+    'K' : 1.74,
     'Ca': 1.44,
     'Sc': 1.32,
     'Ti': 1.22,
-    'V':  1.18,
+    'V' : 1.18,
     'Cr': 1.17,
     'Mn': 1.17,
     'Fe': 1.16,
@@ -390,7 +506,7 @@ element2cov = {
     'Kr': 2.16,
     'Rb': 1.91,
     'Sr': 1.62,
-    'Y':  1.45,
+    'Y' : 1.45,
     'Zr': 1.34,
     'Nb': 1.3,
     'Mo': 1.27,
@@ -404,7 +520,7 @@ element2cov = {
     'Sn': 1.4,
     'Sb': 1.36,
     'Te': 1.33,
-    'I':  1.31,
+    'I' : 1.31,
     'Xe': 2.35,
     'Cs': 1.98,
     'Ba': 1.69,
@@ -425,7 +541,7 @@ element2cov = {
     'Lu': 1.44,
     'Hf': 1.34,
     'Ta': 1.3,
-    'W':  1.28,
+    'W' : 1.28,
     'Re': 1.26,
     'Os': 1.27,
     'Ir': 1.3,
@@ -443,22 +559,27 @@ element2cov = {
     'Ac': 1.65,
     'Th': 1.61,
     'Pa': 1.42,
-    'U':  1.30,
+    'U' : 1.30,
     'Np': 1.51,
     'Pu': 1.82,
     'Am': 1.20,
     'Cm': 1.20,
     'Bk': 1.20,
     'Cf': 1.20,
-    'D':  0.5
+    'D' : 0.5
 }
+
+
+def get_element_color(element: str) -> str:
+    """
+    Retruns RGB color code in Hex for the element.
+    """
+    return element2color.get(element.capitalize())
+
 
 def get_radius(atomic_number: int) -> float:
     """
     Get the covalent radius in pm for the element.
-
-    >>> get_radius(6)
-    0.75
     """
     return num2covradius[atomic_number]
 
@@ -466,9 +587,6 @@ def get_radius(atomic_number: int) -> float:
 def get_radius_from_element(element: str) -> float:
     """
     Returns the radius of an atom by its element name.
-
-    >>> get_radius_from_element('F')
-    0.71
     """
     return element2cov[element.capitalize()]
 
@@ -476,9 +594,6 @@ def get_radius_from_element(element: str) -> float:
 def get_atomic_number(element: str) -> int:
     """
     returns the atomic number from the element symbol
-
-    >>> get_atomic_number('F')
-    9
     """
     return element2num[element]
 
@@ -486,9 +601,6 @@ def get_atomic_number(element: str) -> int:
 def get_element(atomic_number: int) -> str:
     """
     returns the element symbol from the atomic number
-
-    >>> get_element(7)
-    'N'
     """
     return num2element[atomic_number]
 
@@ -496,11 +608,6 @@ def get_element(atomic_number: int) -> str:
 def get_atomlabel(input_atom: str) -> str:
     """
     converts an atom name like C12 to the element symbol C.
-
-    >>> get_atomlabel('C12')
-    'C'
-    >>> get_atomlabel('Te1+')
-    'Te'
     """
     atom = ''
     for x in input_atom:  # iterate over characters in i
@@ -514,10 +621,10 @@ def get_atomlabel(input_atom: str) -> str:
         elif atom[0].upper() in atoms:
             return atom[0]  # then for all one-letter atoms
         else:
-            #print('*** {} is not a valid atom!! ***'.format(atom))
+            # print('*** {} is not a valid atom!! ***'.format(atom))
             raise KeyError
     except(IndexError):
-        #print('*** {} is not a valid atom! ***'.format(atom))
+        # print('*** {} is not a valid atom! ***'.format(atom))
         raise KeyError
 
 

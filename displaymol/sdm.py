@@ -14,7 +14,7 @@
 import time
 from math import sqrt, cos, radians, sin
 
-from tools.atoms import get_radius_from_element
+from cif.atoms import get_radius_from_element
 from tools.dsrmath import Array, SymmetryElement, Matrix, frac_to_cart
 
 DEBUG = False

@@ -4,7 +4,7 @@ MOl V3000 format
 
 import os
 
-from tools.atoms import get_radius_from_element
+from cif.atoms import get_radius_from_element
 from tools.misc import distance
 
 
