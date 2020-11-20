@@ -239,32 +239,17 @@ def populate_main_table_values(main_table: Table, cif: CifContainer):
     """
     Fills the main table with residuals. Column, by column.
     """
-    header_cells = main_table.rows[0].cells
-    header_cells[0].paragraphs[0].add_run('CCDC number')  # .bold = True
-    header_cells[1].paragraphs[0].add_run(cif['_database_code_depnum_ccdc_archive'])  # .bold = True
-
+    main_table.cell(0, 1).paragraphs[0].add_run(cif['_database_code_depnum_ccdc_archive'])
     # Set text for all usual cif keywords by a lookup table:
-    for _, key in enumerate(cif_keywords_list):
-        # key[1] contains the row number:
-        cell = main_table.cell(key[1] + 1, 1)
-        if cif[key[0]]:
-            cell.text = cif[key[0]]
-        else:
-            cell.text = '?'
-            continue
+    add_regular_key_value_pairs(cif, main_table)
     # Now the special handling:
-    # The sum formula:
-    if cif['_chemical_formula_sum']:
-        sum_formula = cif['_chemical_formula_sum'].replace(" ", "")
-        sum_formula_group = [''.join(x[1]) for x in it.groupby(sum_formula, lambda x: x.isalpha())]
-        for _, word in enumerate(sum_formula_group):
-            formrun = main_table.cell(1, 1).paragraphs[0]
-            formrunsub = formrun.add_run(word)
-            if isfloat(word):
-                formrunsub.font.subscript = True
-    else:
-        main_table.cell(1, 1).paragraphs[0].add_run('no sum formula')
-    format_space_group(main_table, cif)
+    formula_paragraph = main_table.cell(1, 1).paragraphs[0]
+    sum_formula = cif['_chemical_formula_sum'].replace(" ", "")
+    add_sum_formula(formula_paragraph, sum_formula)
+    spgr_paragraph = main_table.cell(5, 1).paragraphs[0]
+    space_group = cif['_space_group_name_H-M_alt']
+    it_number = cif['_space_group_IT_number']
+    format_space_group(spgr_paragraph, space_group, it_number)
     radiation_type = cif['_diffrn_radiation_type']
     radiation_wavelength = cif['_diffrn_radiation_wavelength']
     crystal_size_min = cif['_exptl_crystal_size_min']
@@ -278,16 +263,9 @@ def populate_main_table_values(main_table: Table, cif: CifContainer):
     theta_max = cif['_diffrn_reflns_theta_max']
     limit_l_min = cif['_diffrn_reflns_limit_l_min']
     limit_l_max = cif['_diffrn_reflns_limit_l_max']
-    reflns_number_total = cif['_reflns_number_total']
-    reflns_av_R_equivalents = cif['_diffrn_reflns_av_R_equivalents']
-    reflns_av_unetI = cif['_diffrn_reflns_av_unetI/netI']
     ls_number_reflns = cif['_refine_ls_number_reflns']
     ls_number_restraints = cif['_refine_ls_number_restraints']
     ls_number_parameters = cif['_refine_ls_number_parameters']
-    ls_R_factor_gt = cif['_refine_ls_R_factor_gt']
-    ls_wR_factor_gt = cif['_refine_ls_wR_factor_gt']
-    ls_R_factor_all = cif['_refine_ls_R_factor_all']
-    ls_wR_factor_ref = cif['_refine_ls_wR_factor_ref']
     goof = cif['_refine_ls_goodness_of_fit_ref']
     try:
         completeness = "{0:.1f} %".format(round(float(cif['_diffrn_measured_fraction_theta_full']) * 100, 1))
@@ -332,34 +310,15 @@ def populate_main_table_values(main_table: Table, cif: CifContainer):
                                   + limit_k_min + ' {} k {} '.format(lessequal, lessequal) + limit_k_max + '\n' \
                                   + limit_l_min + ' {} l {} '.format(lessequal, lessequal) + limit_l_max
     rint_p = main_table.cell(24, 1).paragraphs[0]
-    rint_p.add_run(this_or_quest(reflns_number_total) + '\n')
-    rint_p.add_run('R').font.italic = True
-    rint_p.add_run('int').font.subscript = True
-    rint_p.add_run(' = ' + this_or_quest(reflns_av_R_equivalents) + '\n')
-    rint_p.add_run('R').font.italic = True
-    rint_p.add_run('sigma').font.subscript = True
-    rint_p.add_run(' = ' + this_or_quest(reflns_av_unetI))
+    add_r_int_value(cif, rint_p)
     main_table.cell(25, 1).paragraphs[0].add_run(completeness)
     main_table.cell(26, 1).text = this_or_quest(ls_number_reflns) + '/' \
                                   + this_or_quest(ls_number_restraints) + '/' \
                                   + this_or_quest(ls_number_parameters)
     main_table.cell(27, 1).paragraphs[0].add_run(goof)
-    r2sig_p = main_table.cell(28, 1).paragraphs[0]
-    r2sig_p.add_run('R').font.italic = True
-    r2sig_p.add_run('1').font.subscript = True
-    r2sig_p.add_run(' = ' + this_or_quest(ls_R_factor_gt))
-    r2sig_p.add_run('\nw')
-    r2sig_p.add_run('R').font.italic = True
-    r2sig_p.add_run('2').font.subscript = True
-    r2sig_p.add_run(' = ' + this_or_quest(ls_wR_factor_gt))
+    r1sig_p = main_table.cell(28, 1).paragraphs[0]
     rfull_p = main_table.cell(29, 1).paragraphs[0]
-    rfull_p.add_run('R').font.italic = True
-    rfull_p.add_run('1').font.subscript = True
-    rfull_p.add_run(' = ' + this_or_quest(ls_R_factor_all))
-    rfull_p.add_run('\nw')
-    rfull_p.add_run('R').font.italic = True
-    rfull_p.add_run('2').font.subscript = True
-    rfull_p.add_run(' = ' + ls_wR_factor_ref)
+    add_r1sig_and_wr2full(cif, r1sig_p, rfull_p)
     main_table.cell(30, 1).text = diff_density_max + '/' + diff_density_min
     if not cif.is_centrosymm:
         main_table.cell(31, 1).text = cif['_refine_ls_abs_structure_Flack'] or '?'
@@ -367,6 +326,62 @@ def populate_main_table_values(main_table: Table, cif: CifContainer):
     if exti not in ['.', "'.'", '?', '']:
         num = len(main_table.columns[0].cells)
         main_table.columns[1].cells[num - 1].text = exti
+
+
+def add_r1sig_and_wr2full(cif, r2sig_p, rfull_p):
+    ls_R_factor_gt = cif['_refine_ls_R_factor_gt']
+    ls_wR_factor_gt = cif['_refine_ls_wR_factor_gt']
+    ls_R_factor_all = cif['_refine_ls_R_factor_all']
+    ls_wR_factor_ref = cif['_refine_ls_wR_factor_ref']
+    r2sig_p.add_run('R').font.italic = True
+    r2sig_p.add_run('1').font.subscript = True
+    r2sig_p.add_run(' = ' + this_or_quest(ls_R_factor_gt))
+    r2sig_p.add_run('\nw')
+    r2sig_p.add_run('R').font.italic = True
+    r2sig_p.add_run('2').font.subscript = True
+    r2sig_p.add_run(' = ' + this_or_quest(ls_wR_factor_gt))
+    rfull_p.add_run('R').font.italic = True
+    rfull_p.add_run('1').font.subscript = True
+    rfull_p.add_run(' = ' + this_or_quest(ls_R_factor_all))
+    rfull_p.add_run('\nw')
+    rfull_p.add_run('R').font.italic = True
+    rfull_p.add_run('2').font.subscript = True
+    rfull_p.add_run(' = ' + ls_wR_factor_ref)
+
+
+def add_r_int_value(cif, rint_p):
+    reflns_number_total = cif['_reflns_number_total']
+    reflns_av_R_equivalents = cif['_diffrn_reflns_av_R_equivalents']
+    reflns_av_unetI = cif['_diffrn_reflns_av_unetI/netI']
+    rint_p.add_run(this_or_quest(reflns_number_total) + '\n')
+    rint_p.add_run('R').font.italic = True
+    rint_p.add_run('int').font.subscript = True
+    rint_p.add_run(' = ' + this_or_quest(reflns_av_R_equivalents) + '\n')
+    rint_p.add_run('R').font.italic = True
+    rint_p.add_run('sigma').font.subscript = True
+    rint_p.add_run(' = ' + this_or_quest(reflns_av_unetI))
+
+
+def add_regular_key_value_pairs(cif, main_table):
+    for _, key in enumerate(cif_keywords_list):
+        # key[1] contains the row number:
+        cell = main_table.cell(key[1] + 1, 1)
+        if cif[key[0]]:
+            cell.text = cif[key[0]]
+        else:
+            cell.text = '?'
+            continue
+
+
+def add_sum_formula(formula_paragraph, sum_formula):
+    if sum_formula:
+        sum_formula_group = [''.join(x[1]) for x in it.groupby(sum_formula, lambda x: x.isalpha())]
+        for _, word in enumerate(sum_formula_group):
+            formrunsub = formula_paragraph.add_run(word)
+            if isfloat(word):
+                formrunsub.font.subscript = True
+    else:
+        formula_paragraph.add_run('no sum formula')
 
 
 def add_decimal_tab(num_string: str) -> str:
@@ -673,11 +688,12 @@ def populate_description_columns(main_table: Table, cif: CifContainer) -> None:
     """
     This Method adds the descriptions to the fist property table column.
     """
-    lgnd1 = main_table.cell(1, 0).paragraphs[0].add_run('Empirical formula')
-    lgnd2 = main_table.cell(2, 0).paragraphs[0].add_run('Formula weight')
-    lgnd3 = main_table.cell(3, 0).paragraphs[0].add_run('Temperature [K]')
-    lgnd4 = main_table.cell(4, 0).paragraphs[0].add_run('Crystal system')
-    lgnd5 = main_table.cell(5, 0).paragraphs[0].add_run('Space group (number)')
+    main_table.cell(0, 0).paragraphs[0].add_run('CCDC number')
+    main_table.cell(1, 0).paragraphs[0].add_run('Empirical formula')
+    main_table.cell(2, 0).paragraphs[0].add_run('Formula weight')
+    main_table.cell(3, 0).paragraphs[0].add_run('Temperature [K]')
+    main_table.cell(4, 0).paragraphs[0].add_run('Crystal system')
+    main_table.cell(5, 0).paragraphs[0].add_run('Space group (number)')
     lgnd6 = main_table.cell(6, 0).paragraphs[0]
     lgnd6.add_run('a').font.italic = True
     lgnd6.add_run(' [{}]'.format(angstrom))

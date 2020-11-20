@@ -117,15 +117,9 @@ def set_pair_delimited(block, key: str, txt: str):
             block.set_pair(key, quote(txt))
 
 
-def utf8_to_str(txt):
+def utf8_to_str(txt) -> str:
     """
     Translates an utf-8 text to a CIF ascii string.
-    :param txt: utf-8 text
-    :return: delimited ascii string
-    >>> utf8_to_str('100 °C')
-    '100 \\\\%C'
-    >>> retranslate_delimiter('100 \\%C')
-    '100 °C'
     """
     for char in txt:
         if char in charcters:
@@ -136,8 +130,6 @@ def utf8_to_str(txt):
 def retranslate_delimiter(txt: str) -> str:
     """
     Translates delimited cif characters back to unicode characters.
-    >>> retranslate_delimiter("Crystals were grown from thf at -20 \\%C.")
-    'Crystals were grown from thf at -20 °C.'
     """
     inv_map = {v: k for k, v in charcters.items()}
     for char in inv_map.keys():
