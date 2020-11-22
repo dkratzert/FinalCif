@@ -5,6 +5,15 @@ from pathlib import Path
 from cif.cif_file_io import CifContainer
 
 
+class CifFileCRCTestCase(unittest.TestCase):
+    def setUp(self) -> None:
+        os.chdir(Path(__file__).absolute().parent.parent)
+        self.cif = CifContainer(Path('tests/examples/1979688.cif'))
+
+    def test_calc_crc(self):
+        self.assertEqual(20714, self.cif.calc_checksum(self.cif['_shelx_hkl_file'][1:-1]))
+
+
 class CifFileTestCase(unittest.TestCase):
     def setUp(self) -> None:
         os.chdir(Path(__file__).absolute().parent.parent)

@@ -12,7 +12,7 @@ import re
 from math import sqrt
 from os import path
 from pathlib import Path
-from typing import Union, Tuple
+from typing import Union, Tuple, List
 
 # protected space character:
 prot_space = u'\u00A0'
@@ -42,7 +42,7 @@ one_bar = u'\u0031\u0305'
 zero_width_space = u'\u200B'
 
 
-def isnumeric(value: str):
+def isnumeric(value: str) -> bool:
     """
     Determines if a string can be converted to a number.
     """
@@ -54,7 +54,7 @@ def isnumeric(value: str):
     return True
 
 
-def sha512_checksum(filename, block_size=65536):
+def sha512_checksum_of_file(filename: str, block_size=65536):
     """
     Calculates a SHA512 checksum from a file.
     """
@@ -68,10 +68,6 @@ def sha512_checksum(filename, block_size=65536):
 def distance(x1: float, y1: float, z1: float, x2: float, y2: float, z2: float) -> float:
     """
     distance between two points in space for orthogonal axes.
-    >>> distance(1, 1, 1, 2, 2, 2)
-    1.7320508075688772
-    >>> distance(1, 0, 0, 2, 0, 0)
-    1.0
     """
     return sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2 + (z1 - z2) ** 2)
 
@@ -79,14 +75,6 @@ def distance(x1: float, y1: float, z1: float, x2: float, y2: float, z2: float) -
 def grouper(inputs, n, fillvalue=None):
     iters = [iter(inputs)] * n
     return it.zip_longest(*iters, fillvalue=fillvalue)
-
-
-def isfloat(value: Union[str, int, float]) -> bool:
-    try:
-        float(value)
-        return True
-    except ValueError:
-        return False
 
 
 def get_file_with_new_ending(file: Path, new_ending: str, strip_from_name: str = '') -> Path:
@@ -103,20 +91,6 @@ def get_file_with_new_ending(file: Path, new_ending: str, strip_from_name: str =
 def get_error_from_value(value: str) -> Tuple[float, float]:
     """
     Returns the error value from a number string.
-    :type value: str
-    :rtype: str
-    >>> get_error_from_value("0.0123 (23)")
-    (0.0123, 0.0023)
-    >>> get_error_from_value("0.0123(23)")
-    (0.0123, 0.0023)
-    >>> get_error_from_value('0.0123')
-    (0.0123, 0.0)
-    >>> get_error_from_value("250.0123(23)")
-    (250.0123, 0.0023)
-    >>> get_error_from_value("123(25)")
-    (123.0, 25.0)
-    >>> get_error_from_value("123(25")
-    (123.0, 25.0)
     """
     try:
         value = value.replace(" ", "")
@@ -126,6 +100,8 @@ def get_error_from_value(value: str) -> Tuple[float, float]:
         vval, err = value.split("(")
         val = vval.split('.')
         err = err.split(")")[0]
+        if not err:
+            return float(vval), 0.0
         if len(val) > 1:
             return float(vval), int(err) * (10 ** (-1 * len(val[1])))
         else:
@@ -137,7 +113,7 @@ def get_error_from_value(value: str) -> Tuple[float, float]:
             return 0.0, 0.0
 
 
-def next_path(path_pattern):
+def next_path(path_pattern: str) -> str:
     """
     Finds the next free path in an sequentially named list of files
 
@@ -189,8 +165,6 @@ class Multilog(object):
 def strip_finalcif_of_name(pth: str) -> str:
     """
     Strips '-finalcif' from the stem path
-    >>> strip_finalcif_of_name(Path('406-0308-finalcif.cif').stem)
-    '406-0308'
     """
     return re.sub('-finalcif$', '', pth)
 
@@ -199,9 +173,6 @@ def flatten(lis: list) -> list:
     """
     Given a list, possibly nested to any level, return it flattened.
     From: http://code.activestate.com/recipes/578948-flattening-an-arbitrarily-nested-list-in-python/
-
-    >>> flatten([['wer', 234, 'brdt5'], ['dfg'], [[21, 34,5], ['fhg', 4]]])
-    ['wer', 234, 'brdt5', 'dfg', 21, 34, 5, 'fhg', 4]
     """
     new_lis = []
     for item in lis:
@@ -212,18 +183,44 @@ def flatten(lis: list) -> list:
     return new_lis
 
 
-def this_or_quest(value: Union[str, int, float, None]) -> str:
-    """
-    Returns the value or a question mark if the value is None.
-    """
-    return value if value else '?'
-
-
 def find_line(inputlist: list, regex: str) -> int:
     for num, string in enumerate(inputlist):
         if re.match(regex, string, re.IGNORECASE):
             return num  # returns the index number if regex found
     return 0
+
+
+def this_or_quest(value: Union[str, int, float, None]) -> Union[str, int, float]:
+    """
+    Returns the value or a question mark if the value is None.
+    """
+    return value if value is not None else '?'
+
+
+def to_float(st) -> Union[float, List[float], None]:
+    if isinstance(st, list):
+        try:
+            return [float(x) for x in st[-2:]]
+        except ValueError:
+            return None
+    else:
+        try:
+            return float(st.split('(')[0])
+        except ValueError:
+            return None
+
+
+def to_int(st: Union[str, List[Union[str, int]]]) -> Union[int, List[int], None]:
+    if isinstance(st, list):
+        try:
+            return [int(x) for x in st[-2:]]
+        except ValueError:
+            return None
+    else:
+        try:
+            return int(float(st.split('(')[0]))
+        except ValueError:
+            return None
 
 
 # '_space_group_centring_type',  # seems to be used nowere
@@ -583,33 +580,6 @@ include_equipment_imports = (
     '_exptl_absorpt_process_details',
     '_exptl_absorpt_process_details',
 )
-
-
-def to_float(st):
-    if isinstance(st, list):
-        try:
-            return [float(x) for x in st[-2:]]
-        except ValueError:
-            return None
-    else:
-        try:
-            return float(st.split('(')[0])
-        except ValueError:
-            return None
-
-
-def to_int(st):
-    if isinstance(st, list):
-        try:
-            return [int(x) for x in st[-2:]]
-        except ValueError:
-            return None
-    else:
-        try:
-            return int(st.split('(')[0])
-        except ValueError:
-            return None
-
 
 """
 _publ_section_references

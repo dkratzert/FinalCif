@@ -1,11 +1,8 @@
-import itertools as it
 import re
 
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
-from docx.table import Table
 from docx.text.paragraph import Paragraph
 
-from cif.cif_file_io import CifContainer
 from report.report_text import math_to_word
 from report.spgrps import SpaceGroups
 
@@ -31,26 +28,6 @@ cif_keywords_list = (
     ['_diffrn_reflns_number', 22],
     ['_refine_ls_goodness_of_fit_ref', 25],
 )
-
-
-def grouper(inputs, n, fillvalue=None):
-    iters = [iter(inputs)] * n
-    return it.zip_longest(*iters, fillvalue=fillvalue)
-
-
-def isfloat(value):
-    try:
-        float(value)
-        return True
-    except ValueError:
-        return False
-
-
-def this_or_quest(value):
-    """
-    Returns the value or a question mark if the value is None.
-    """
-    return value if value else '?'
 
 
 def format_space_group(paragraph: Paragraph, space_group: str, it_number) -> None:

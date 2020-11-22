@@ -24,7 +24,7 @@ sys.path.append(application_path)
 
 from PyQt5 import uic
 
-from tools.misc import sha512_checksum
+from tools.misc import sha512_checksum_of_file
 from tools.version import VERSION
 
 iss_file = 'scripts/finalcif-install_win64.iss'
@@ -60,7 +60,7 @@ def recompile_ui():
 
 
 def make_shasum(filename):
-    sha = sha512_checksum(filename)
+    sha = sha512_checksum_of_file(filename)
     shafile = Path('scripts/Output/FinalCif-setup-x64-v{}-sha512.sha'.format(VERSION))
     shafile.unlink(missing_ok=True)
     shafile.write_text(sha)
