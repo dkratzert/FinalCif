@@ -811,17 +811,18 @@ class AppWindow(QMainWindow):
         Saves the list of the recently opened files. Non-existent files are removed.
         """
         if os.name == 'nt':
-            file = WindowsPath(file.absolute()).absolute()
+            # Used path with backslash for windows systems:
+            file: str = str(WindowsPath(file.absolute()).absolute())
         else:
-            file = Path(file.absolute()).absolute()
+            file: str = str(Path(file.absolute()).absolute())
         recent = list(self.settings.settings.value('recent_files', type=list))
-        while str(file) in recent:
-            recent.remove(str(file))
+        # delete possible previous occurence of new file:
+        while file in recent:
+            recent.remove(file)
         # file has to be str not Path():
-        recent.insert(0, str(file))
+        recent.insert(0, file)
         recent = recent[:8]
         self.settings.settings.setValue('recent_files', recent)
-        # print(recent, 'save')
 
     def load_recent_cifs_list(self) -> None:
         self.ui.RecentComboBox.clear()
@@ -830,13 +831,6 @@ class AppWindow(QMainWindow):
         for n, file in enumerate(recent):
             if not isinstance(file, str):
                 del recent[n]
-            try:
-                if not Path(file).exists() or (not Path(file).is_file()):
-                    del recent[n]
-                    continue
-            except OSError as e:
-                print(e)
-                pass
             self.ui.RecentComboBox.addItem(file, n)
 
     def save_cif_and_display(self) -> None:

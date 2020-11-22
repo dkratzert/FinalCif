@@ -17,13 +17,13 @@ from docx.table import Table, _Cell
 
 from app_path import application_path
 from cif.cif_file_io import CifContainer
-from report.mtools import cif_keywords_list, isfloat, this_or_quest, format_space_group
+from report.mtools import cif_keywords_list, format_space_group
 from report.references import ReferenceList, DSRReference2018, DSRReference2015
 from report.report_text import CCDC, CrstalSelection, Crystallization, DataReduct, Disorder, Hydrogens, MachineType, \
     SolveRefine, format_radiation, FinalCifreport, SpaceChar
 from report.symm import SymmetryElement
 from tools.misc import prot_space, angstrom, bequal, sigma_sm, halbgeviert, degree_sign, ellipsis_mid, lessequal, \
-    timessym, lambdasym
+    timessym, lambdasym, this_or_quest, isnumeric
 from tools.options import Options
 
 
@@ -383,7 +383,7 @@ def add_sum_formula(formula_paragraph, sum_formula):
         sum_formula_group = [''.join(x[1]) for x in it.groupby(sum_formula, lambda x: x.isalpha())]
         for _, word in enumerate(sum_formula_group):
             formrunsub = formula_paragraph.add_run(word)
-            if isfloat(word):
+            if isnumeric(word):
                 formrunsub.font.subscript = True
     else:
         formula_paragraph.add_run('no sum formula')
