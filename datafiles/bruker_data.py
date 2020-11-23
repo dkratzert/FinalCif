@@ -218,7 +218,7 @@ class BrukerData(WorkDataMixin):
 
     @property
     def frame_header(self):
-        return BrukerFrameHeader(self.basename, self.cif)
+        return BrukerFrameHeader(self.basename, self.cif.fileobj.parent)
 
     @property
     def p4p(self):
