@@ -74,15 +74,6 @@ class CCDCMail():
     @staticmethod
     def is_same_cell(cif: CifContainer, cell: Union[list, tuple]):
         """
-
-        :param cif:
-        :param cell:
-        :return:
-
-        >>> cif = CifContainer(Path('test-data/DK_zucker2_0m.cif'))
-        >>> ccdc = CCDCMail(cif)
-        >>> ccdc.is_same_cell(cif, [7.716, 8.664, 10.812])
-        True
         """
         is_same = False
         for n in range(3):

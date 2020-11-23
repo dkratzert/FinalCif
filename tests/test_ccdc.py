@@ -32,3 +32,7 @@ class TestCCDCnoMail(unittest.TestCase):
         ccdc = CCDCMail(self.cif)
         self.assertEqual(0, ccdc.depnum)
         self.assertEqual('', ccdc.emlfile.name)
+
+    def test_same_cell(self):
+        ccdc = CCDCMail(self.cif)
+        self.assertEqual(True, ccdc.is_same_cell(self.cif, [7.716, 8.664, 10.812]))
