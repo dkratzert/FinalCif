@@ -15,10 +15,9 @@ from cif.cif_file_io import CifContainer
 
 
 class BrukerFrameHeader():
-    def __init__(self, basename: str, cif: CifContainer):
-        self.cif = cif
-        p = self.cif.fileobj.parent
-        frames = p.glob(basename + '*.sfrm')
+    def __init__(self, basename: str, searchpath:Path=Path(__file__).parent.parent):
+        frames = searchpath.glob(basename + '*.sfrm')
+        print(searchpath.absolute())
         frames = sorted(frames, key=os.path.getmtime, reverse=True)
         self._fileobj = None
         if not frames:
