@@ -54,33 +54,6 @@ class Sadabs():
 
     def __init__(self, basename: str = '', fileobj: Path = None):
         """
-        >>> s = Sadabs(r'test-data/IK_WU19.abs')  # this is a sadabs file
-        >>> s.twin_components
-        0
-        >>> s.dataset(0).hklfile
-        'IK_WU19_0m.hkl'
-        >>> s.dataset(0).Rint  # the WR2(int)
-        0.0472
-        >>> s.dataset(0).transmission
-        [0.7135, 0.7459]
-        >>> s.dataset(0).version
-        'SADABS-2016/2 - Bruker AXS area detector scaling and absorption correction'
-        >>> s.dataset(0).written_reflections
-        152800
-
-        >>> s = Sadabs(r'test-data/twin-4-5.abs')  # this is a twinabs file
-        >>> s.dataset(0).transmission
-        [0.605537, 0.744178]
-        >>> s.dataset(0).Rint
-        0.0873
-        >>> s.dataset(0).hklfile
-        'twin5.hkl'
-        >>> s.twin_components
-        2
-        >>> s.version
-        'TWINABS - Bruker AXS scaling for twinned crystals - Version 2012/1'
-        >>> s.dataset(0).written_reflections
-        2330
         """
         self.faces = False
         self.version = ''
