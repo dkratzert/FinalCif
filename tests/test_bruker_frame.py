@@ -4,6 +4,7 @@
 #   this notice you can do whatever you want with this stuff. If we meet some day,
 #   and you think this stuff is worth it, you can buy me a beer in return.
 #   ----------------------------------------------------------------------------
+import os
 import unittest
 from pathlib import Path
 
@@ -12,7 +13,7 @@ from datafiles.bruker_frame import BrukerFrameHeader
 
 class TestBrukerFrame(unittest.TestCase):
     def setUp(self) -> None:
-        pass
+        os.chdir(Path(__file__).absolute().parent.parent)
 
     def test_str(self):
         sfrm = BrukerFrameHeader(basename='apex_frame', searchpath=Path('./test-data'))

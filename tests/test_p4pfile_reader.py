@@ -4,6 +4,7 @@
 #   this notice you can do whatever you want with this stuff. If we meet some day,
 #   and you think this stuff is worth it, you can buy me a beer in return.
 #   ----------------------------------------------------------------------------
+import os
 import unittest
 from pathlib import Path
 
@@ -12,7 +13,7 @@ from datafiles.p4p_reader import P4PFile
 
 class TestBrukerFrame(unittest.TestCase):
     def setUp(self) -> None:
-        pass
+        os.chdir(Path(__file__).absolute().parent.parent)
 
     def test_str(self):
         p4p = P4PFile(basename='DK_Zucker2', searchpath=Path('./test-data'))
