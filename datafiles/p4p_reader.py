@@ -16,8 +16,6 @@ This file reads Bruker p4p files into a data structure.
 import os
 from pathlib import Path
 
-from cif.cif_file_io import CifContainer
-
 
 def read_file_to_list(p4pfile: str) -> list:
     """
@@ -34,8 +32,7 @@ def read_file_to_list(p4pfile: str) -> list:
 
 class P4PFile():
 
-    def __init__(self, basename: str, cif: CifContainer):
-        self.cif = cif
+    def __init__(self, basename: str = '', searchpath: Path = Path(__file__).parent.parent):
         self.fileid = None
         self.siteid = None
         self.chem = None
@@ -48,25 +45,26 @@ class P4PFile():
         self.source = None
         self.volume = None
         self.ortmatrix = None
-        self.temperature = 0.0
+        self._temperature = 0.0
         self.crystal_color = ''
         self.crystal_size = ['', '', '']
         self.morphology = ''
-        self.radiation_type = ''
+        self._radiation_type = ''
         self.wavelen = ''
         self.filename = Path()
-        p = self.cif.fileobj.parent
-        p4p_files = p.glob(basename + '*_0m.p4p')
+        p4p_files = searchpath.glob(basename + '*_0m.p4p')
         if not p4p_files:
             p4p_files = Path(os.curdir).absolute().glob('*.p4p')
-        for p in p4p_files:
-            if p:
-                self.filename = p
+        for p4p in p4p_files:
+            if p4p:
+                self.filename = p4p
                 self.p4plist = read_file_to_list(str(self.filename))
                 try:
                     self.parse_p4p()
                 except Exception:
                     raise ValueError('*** p4p not readable ***')
+        if not p4p_files:
+            print('No p4p file found')
 
     def parse_p4p(self):
         for line in self.p4plist:
@@ -91,7 +89,7 @@ class P4PFile():
             if card == "CHEM":
                 self.chem = spline[1]
             if card == 'SOURCE':
-                self.radiation_type = spline[1]
+                self._radiation_type = spline[1]
                 self.wavelen = spline[2]
             if card == 'MORPH':
                 self.morphology = spline[1]
@@ -102,7 +100,7 @@ class P4PFile():
                 self.crystal_size = spline[1:4]
                 try:
                     # in Kelvin:
-                    self.temperature = float(spline[-1]) + 273.15
+                    self._temperature = float(spline[-1]) + 273.15
                 except ValueError:
                     pass
 
@@ -110,9 +108,17 @@ class P4PFile():
     def to_float_list(items):
         return [float(x) for x in items]
 
+    @property
+    def radiation_type(self):
+        return self._radiation_type.capitalize()
+
+    @property
+    def temperature(self):
+        return round(self._temperature, 2)
+
 
 if __name__ == '__main__':
-    p4p = P4PFile('./test-data/test1.p4p')
+    p4p = P4PFile(searchpath=Path('./test-data/test1.p4p'))
     print(p4p.cell)
     print(p4p.cellsd)
     print(p4p.volume)

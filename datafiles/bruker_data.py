@@ -222,4 +222,4 @@ class BrukerData(WorkDataMixin):
 
     @property
     def p4p(self):
-        return P4PFile(self.basename, self.cif)
+        return P4PFile(self.basename, self.cif.fileobj.parent)
