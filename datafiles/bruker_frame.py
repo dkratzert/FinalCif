@@ -11,13 +11,12 @@ import os
 from pathlib import Path
 from pprint import pformat
 
-from cif.cif_file_io import CifContainer
+from tools.misc import isnumeric
 
 
 class BrukerFrameHeader():
-    def __init__(self, basename: str, searchpath:Path=Path(__file__).parent.parent):
+    def __init__(self, basename: str, searchpath: Path = Path(__file__).parent.parent):
         frames = searchpath.glob(basename + '*.sfrm')
-        print(searchpath.absolute())
         frames = sorted(frames, key=os.path.getmtime, reverse=True)
         self._fileobj = None
         if not frames:
@@ -60,19 +59,25 @@ class BrukerFrameHeader():
     def temperature(self):
         try:
             tmp = self.header['LOWTEMP'].split()[1]
-            return (float(tmp) / 100.0) + 273.15
+            return round((float(tmp) / 100.0) + 273.15, 2)
         except (ValueError, KeyError):
             return 293.15
 
     @property
-    def kilovolts(self):
+    def kilovolts(self) -> float:
         tmp = self.header['SOURCEK']
-        return round(float(tmp), 2)
+        if isnumeric(tmp):
+            return round(float(tmp), 2)
+        else:
+            return 0.0
 
     @property
-    def milliamps(self):
+    def milliamps(self) -> float:
         tmp = self.header['SOURCEM']
-        return round(float(tmp), 2)
+        if isnumeric(tmp):
+            return round(float(tmp), 2)
+        else:
+            return 0.0
 
 
 if __name__ == '__main__':
