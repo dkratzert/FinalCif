@@ -40,6 +40,7 @@ from appwindow import AppWindow, DEBUG
 
 r"""
 TODO:
+- Options: set path for own report template.
 - Peters comments on equipment templates:
     * save state and order of selected templates in order to be able to undo a selection with a second click. 
 - dist errors: Giacovazzo p.122
