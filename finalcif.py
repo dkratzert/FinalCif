@@ -40,6 +40,8 @@ from appwindow import AppWindow, DEBUG
 
 r"""
 TODO:
+- While opening loops tab: Equipment editor should change to loop creator. the loop creator has the possibility 
+  to add a list oh headers in order to fill that table in the right pane.
 - Options: set path for own report template.
 - Peters comments on equipment templates:
     * save state and order of selected templates in order to be able to undo a selection with a second click. 
