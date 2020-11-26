@@ -1,9 +1,3 @@
-from contextlib import suppress
-from pathlib import Path
-
-import qtawesome as qta
-from PyQt5.QtWidgets import QFileDialog
-
 from gui.finalcif_gui import Ui_FinalCifWindow
 from tools.settings import FinalCifSettings
 
