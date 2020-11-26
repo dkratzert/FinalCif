@@ -439,7 +439,7 @@ class CifContainer():
         part = self.block.find_loop('_atom_site_disorder_group')
         occ = self.block.find_loop('_atom_site_occupancy')
         u_eq = self.block.find_loop('_atom_site_U_iso_or_equiv')
-        for label, type, x, y, z, part, occ, ueq in zip(labels, types, x, y, z, part, occ, u_eq):
+        for label, type, x, y, z, part, occ, u_eq in zip(labels, types, x, y, z, part, occ, u_eq):
             if without_h and self.ishydrogen(label):
                 continue
             #         0    1   2  3  4   5   6     7
