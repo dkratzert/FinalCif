@@ -113,3 +113,5 @@ else:
 make_shasum("scripts/Output/FinalCif-setup-x64-v{}.exe".format(VERSION))
 print('Created version: {}'.format(VERSION))
 print(datetime.now().strftime("%d.%m.%Y %H:%M:%S"))
+
+subprocess.call("scripts/Output/FinalCif-setup-x64-v{}.exe".format(VERSION))
