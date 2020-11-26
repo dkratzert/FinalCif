@@ -6,6 +6,7 @@
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
 import re
+from collections import namedtuple
 from math import sin, cos, sqrt
 from pathlib import Path
 from typing import Dict, List, Tuple, Union
@@ -442,7 +443,9 @@ class CifContainer():
             if without_h and self.ishydrogen(label):
                 continue
             #         0    1   2  3  4   5   6     7
-            yield label, type, x, y, z, part, occ, ueq
+            #yield label, type, x, y, z, part, occ, ueq
+            atom = namedtuple('Atom', ('label', 'type', 'x', 'y', 'z', 'part', 'occ', 'u_eq'))
+            yield atom(label=label, type=type, x=x, y=y, z=z, part=part, occ=occ, u_eq=u_eq)
 
     @property
     def atoms_fract(self) -> List:
