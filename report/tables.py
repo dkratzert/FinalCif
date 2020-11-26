@@ -14,6 +14,7 @@ from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Cm, Length, Pt
 from docx.table import Table, _Cell
+from docx.text.paragraph import Paragraph
 
 from app_path import application_path
 from cif.cif_file_io import CifContainer
@@ -354,7 +355,7 @@ def add_r1sig_and_wr2full(cif, r2sig_p, rfull_p):
     rfull_p.add_run(' = ' + ls_wR_factor_ref)
 
 
-def add_r_int_value(cif, rint_p):
+def add_r_int_value(cif: CifContainer, rint_p: Paragraph):
     reflns_number_total = cif['_reflns_number_total']
     reflns_av_R_equivalents = cif['_diffrn_reflns_av_R_equivalents']
     reflns_av_unetI = cif['_diffrn_reflns_av_unetI/netI']
@@ -367,7 +368,7 @@ def add_r_int_value(cif, rint_p):
     rint_p.add_run(' = ' + this_or_quest(reflns_av_unetI))
 
 
-def add_regular_key_value_pairs(cif, main_table):
+def add_regular_key_value_pairs(cif: CifContainer, main_table: Table) -> None:
     for _, key in enumerate(cif_keywords_list):
         # key[1] contains the row number:
         cell = main_table.cell(key[1] + 1, 1)
