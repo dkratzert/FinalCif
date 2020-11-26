@@ -11,7 +11,7 @@ from cif.cif_file_io import CifContainer
 from cif.text import retranslate_delimiter
 from report.references import DummyReference, BrukerReference, SORTAVReference, ReferenceList, CCDCReference, \
     SHELXLReference, SHELXTReference, SHELXSReference, FinalCifReference, ShelXleReference, Olex2Reference
-from tools.misc import prot_space, angstrom, zero_width_space
+from tools.misc import protected_space, angstrom, zero_width_space
 
 
 def math_to_word(eq: str) -> str:
@@ -85,7 +85,7 @@ class CrstalSelection(FormatMixin):
                 method = ''
         except ValueError:
             method = ''
-        self.txt = sentence.format(self.cif.block.name, method, self.temperature, prot_space)
+        self.txt = sentence.format(self.cif.block.name, method, self.temperature, protected_space)
         paragraph.add_run(retranslate_delimiter(self.txt))
 
     @property
@@ -121,9 +121,9 @@ class MachineType():
                         or '[No detector type given]'
         if detector_type:
             self.detector_type = " and a {} detector".format(detector_type)
-        sentence1 = "on {} {} {} with {} {} using {} as monochromator{}. " \
-                    "The diffractometer was equipped with {} {} low temperature device and used "
-        sentence2 = " radiation (λ = {}" + prot_space + "{}). ".format(angstrom)
+        sentence1 = "on {0} {1} {2} with {3} {4} using {5} as monochromator{6}. " \
+                    "The diffractometer was equipped with {7} {8} low temperature device and used "
+        sentence2 = " radiation (λ = {}" + protected_space + "{}). ".format(angstrom)
         txt = sentence1.format(get_inf_article(self.difftype), self.difftype, self.device,
                                get_inf_article(self.source), self.source, self.monochrom,
                                self.detector_type, get_inf_article(self.cooling), self.cooling)
@@ -259,7 +259,7 @@ class SpaceChar(object):
         self.p.add_run(' ')
 
     def porotected(self):
-        self.p.add_run(prot_space)
+        self.p.add_run(protected_space)
 
 
 class CCDC():

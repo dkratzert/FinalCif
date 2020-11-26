@@ -15,7 +15,7 @@ from pathlib import Path
 from typing import Union, Tuple, List
 
 # protected space character:
-prot_space = u'\u00A0'
+protected_space = u'\u00A0'
 # Angstrom character:
 angstrom = u'\u212B'
 # bigger or equal:
@@ -31,7 +31,7 @@ ellipsis_mid = u'\u22EF'
 # ellipsis
 ellipsis_char = u'\u2026'
 # less or equal sign
-lessequal = u'\u2264'
+less_or_equal = u'\u2264'
 # times (cross) symbol
 timessym = u'\u00d7'
 # lambda

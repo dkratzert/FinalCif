@@ -23,7 +23,7 @@ from report.references import ReferenceList, DSRReference2018, DSRReference2015
 from report.report_text import CCDC, CrstalSelection, Crystallization, DataReduct, Disorder, Hydrogens, MachineType, \
     SolveRefine, format_radiation, FinalCifreport, SpaceChar
 from report.symm import SymmetryElement
-from tools.misc import prot_space, angstrom, bequal, sigma_sm, halbgeviert, degree_sign, ellipsis_mid, lessequal, \
+from tools.misc import protected_space, angstrom, bequal, sigma_sm, halbgeviert, degree_sign, ellipsis_mid, less_or_equal, \
     timessym, lambdasym, this_or_quest, isnumeric
 from tools.options import Options
 
@@ -261,12 +261,12 @@ def populate_main_table_values(main_table: Table, cif: CifContainer):
     crystal_size_min = cif['_exptl_crystal_size_min']
     crystal_size_mid = cif['_exptl_crystal_size_mid']
     crystal_size_max = cif['_exptl_crystal_size_max']
+    theta_min = cif['_diffrn_reflns_theta_min']
+    theta_max = cif['_diffrn_reflns_theta_max']
     limit_h_min = cif['_diffrn_reflns_limit_h_min']
     limit_h_max = cif['_diffrn_reflns_limit_h_max']
     limit_k_min = cif['_diffrn_reflns_limit_k_min']
     limit_k_max = cif['_diffrn_reflns_limit_k_max']
-    theta_min = cif['_diffrn_reflns_theta_min']
-    theta_max = cif['_diffrn_reflns_theta_max']
     limit_l_min = cif['_diffrn_reflns_limit_l_min']
     limit_l_max = cif['_diffrn_reflns_limit_l_max']
     ls_number_reflns = cif['_refine_ls_number_reflns']
@@ -291,7 +291,7 @@ def populate_main_table_values(main_table: Table, cif: CifContainer):
                                   this_or_quest(crystal_size_mid) + timessym + \
                                   this_or_quest(crystal_size_min)
     wavelength = str(' ({} ='.format(lambdasym) + this_or_quest(radiation_wavelength) +
-                     '{}{})'.format(prot_space, angstrom)).replace(' ', '')
+                     '{}{})'.format(protected_space, angstrom)).replace(' ', '')
     # radtype: ('Mo', 'K', '\\a')
     radtype = format_radiation(radiation_type)
     radrun = main_table.cell(20, 1).paragraphs[0]
@@ -306,15 +306,15 @@ def populate_main_table_values(main_table: Table, cif: CifContainer):
     # wavelength lambda:
     radrun.add_run(' ' + wavelength)
     try:
-        d_max = ' ({:.2f}{}{})'.format(float(radiation_wavelength) / (2 * sin(radians(float(theta_max)))), prot_space,
+        d_max = ' ({:.2f}{}{})'.format(float(radiation_wavelength) / (2 * sin(radians(float(theta_max)))), protected_space,
                                        angstrom)
         # 2theta range:
         main_table.cell(21, 1).text = "{:.2f} to {:.2f}{}".format(2 * float(theta_min), 2 * float(theta_max), d_max)
     except ValueError:
         main_table.cell(21, 1).text = '? to ?'
-    main_table.cell(22, 1).text = limit_h_min + ' {} h {} '.format(lessequal, lessequal) + limit_h_max + '\n' \
-                                  + limit_k_min + ' {} k {} '.format(lessequal, lessequal) + limit_k_max + '\n' \
-                                  + limit_l_min + ' {} l {} '.format(lessequal, lessequal) + limit_l_max
+    main_table.cell(22, 1).text = limit_h_min + ' {} h {} '.format(less_or_equal, less_or_equal) + limit_h_max + '\n' \
+                                  + limit_k_min + ' {} k {} '.format(less_or_equal, less_or_equal) + limit_k_max + '\n' \
+                                  + limit_l_min + ' {} l {} '.format(less_or_equal, less_or_equal) + limit_l_max
     rint_p = main_table.cell(24, 1).paragraphs[0]
     add_r_int_value(cif, rint_p)
     main_table.cell(25, 1).paragraphs[0].add_run(completeness)
@@ -413,7 +413,7 @@ def add_coords_table(document: Document, cif: CifContainer, table_num: int):
     h.add_run('U').font.italic = True
     h.add_run('eq').font.subscript = True
     # eq.italic = True
-    h.add_run('{}[{}'.format(prot_space, angstrom))
+    h.add_run('{}[{}'.format(protected_space, angstrom))
     h.add_run('2').font.superscript = True
     h.add_run('] for {}'.format(cif.block.name))
     coords_table = document.add_table(rows=len(atoms) + 1, cols=5)
@@ -651,11 +651,11 @@ def add_hydrogen_bonds(document: Document, cif: CifContainer, table_num: int) ->
     head_row = hydrogen_table.rows[0].cells
     # D-H...A	d(D-H)	d(H...A)	d(D...A)	<(DHA)
     head_row[0].paragraphs[0].add_run(
-        'D{}H{}A{}[{}]'.format(halbgeviert, ellipsis_mid, prot_space, angstrom)).font.bold = True
-    head_row[1].paragraphs[0].add_run('d(D{}H){}[{}]'.format(halbgeviert, prot_space, angstrom)).font.bold = True
-    head_row[2].paragraphs[0].add_run('d(H{}A){}[{}]'.format(ellipsis_mid, prot_space, angstrom)).font.bold = True
-    head_row[3].paragraphs[0].add_run('d(D{}A){}[{}]'.format(ellipsis_mid, prot_space, angstrom)).font.bold = True
-    head_row[4].paragraphs[0].add_run('<(DHA){}[{}]'.format(prot_space, degree_sign)).font.bold = True
+        'D{}H{}A{}[{}]'.format(halbgeviert, ellipsis_mid, protected_space, angstrom)).font.bold = True
+    head_row[1].paragraphs[0].add_run('d(D{}H){}[{}]'.format(halbgeviert, protected_space, angstrom)).font.bold = True
+    head_row[2].paragraphs[0].add_run('d(H{}A){}[{}]'.format(ellipsis_mid, protected_space, angstrom)).font.bold = True
+    head_row[3].paragraphs[0].add_run('d(D{}A){}[{}]'.format(ellipsis_mid, protected_space, angstrom)).font.bold = True
+    head_row[4].paragraphs[0].add_run('<(DHA){}[{}]'.format(protected_space, degree_sign)).font.bold = True
     symms = {}
     newsymms = {}
     num = 1
