@@ -114,9 +114,30 @@ def get_exti():
         return ''
 
 
+def get_flackx(cif: CifContainer):
+    if not cif.is_centrosymm:
+        return cif['_refine_ls_abs_structure_Flack'] or '?'
+    else:
+        return ''
+
+
+def get_integration_program(cif: CifContainer):
+    integration = gstr(cif['_computing_data_reduction']) or '??'
+    integration_prog = '[unknown integration program]'
+    scale_prog = ['unknown program']
+    if 'SAINT' in integration:
+        saintversion = ''
+        if len(integration.split()) > 1:
+            saintversion = integration.split()[1]
+        integration_prog = 'SAINT'
+        integration_prog += " " + saintversion
+        # data_reduct_ref = BrukerReference('SAINT', saintversion)
+    return integration_prog
+
+
 def make_report(cif: CifContainer, options: 'Options' = None):
     tpl_doc = DocxTemplate("./template/template_text.docx")
-    context = {'options'               : options,
+    context = {'options'               : {'without_h': False, 'atoms_table': True},
                'cif'                   : cif,
                'space_group'           : space_group_subdoc(tpl_doc, cif),
                'bold_italic_F'         : RichText('F', italic=True, bold=True),
@@ -124,7 +145,7 @@ def make_report(cif: CifContainer, options: 'Options' = None):
                                                   .format(cif.block.name), style='Heading_2'),
                'data_name_header'      : RichText('{}'.format(cif.block.name), style='Heading_2'),
                'structure_figure'      : InlineImage(tpl_doc,
-                                                     r'D:\frames\guest\DK_IK_Cy5_PF6\DK_IK_Cy5_PF6\mo_DK_IK_Cy5_PF6_0m_a-finalcif.gif',
+                                                     r'tests/examples/work/cu_BruecknerJK_153F40_0m-finalcif.gif',
                                                      width=Cm(7.5)),
                'crystallization_method': remove_line_endings(retranslate_delimiter(
                    cif['_exptl_crystal_recrystallization_method'])) or '[No crystallization method given!]',
@@ -166,7 +187,10 @@ def make_report(cif: CifContainer, options: 'Options' = None):
                'diff_dens_min'         : get_diff_density_min(),
                'diff_dens_max'         : get_diff_density_max(),
                'exti'                  : get_exti(),
+               'flack_x'               : get_flackx(cif),
+               'integration_progr'     : get_integration_program(cif)
                }
+
     # Filter definition for {{foobar|filter}} things:
     jinja_env = jinja2.Environment()
     jinja_env.filters['inv_article'] = get_inf_article
@@ -175,7 +199,7 @@ def make_report(cif: CifContainer, options: 'Options' = None):
 
 
 if __name__ == '__main__':
-    cif = CifContainer(Path(r'D:\frames\guest\DK_IK_Cy5_PF6\DK_IK_Cy5_PF6\mo_DK_IK_Cy5_PF6_0m_a-finalcif.cif'))
+    cif = CifContainer(Path(r'test-data/DK_zucker2_0m-finalcif.cif'))
     make_report(cif)
     output_filename = "generated_doc.docx"
     if os.name == 'nt':
