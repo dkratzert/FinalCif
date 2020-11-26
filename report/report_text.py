@@ -149,7 +149,7 @@ class DataReduct():
         data_reduct_ref = DummyReference()
         absorpt_ref = DummyReference()
         integration_prog = '[unknown integration program]'
-        scale_prog = ['unknown program']
+        scale_prog = '[unknown program]'
         if 'SAINT' in integration:
             saintversion = 'unknown version'
             if len(integration.split()) > 1:

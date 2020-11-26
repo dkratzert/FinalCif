@@ -502,7 +502,9 @@ class CifContainer():
             if without_h and (self.ishydrogen(label1) or self.ishydrogen(label2)):
                 continue
             else:
-                yield (label1, label2, dist, symm)
+                bond = namedtuple('Bond', ('label1', 'label2', 'dist', 'symm'))
+                yield bond(label1=label1, label2=label2,dist=dist, symm=symm)
+
 
     def angles(self, without_H: bool = False):
         label1 = self.block.find_loop('_geom_angle_atom_site_label_1')
