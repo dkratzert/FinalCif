@@ -30,19 +30,21 @@ def make_columns_section(document, columns: str = '1'):
 
 
 def make_report(cif: CifContainer):
-    doc = DocxTemplate("./template/template3.docx")
+    doc = DocxTemplate("./template/template_text.docx")
     s = SpaceGroups()
     spgrxml = s.iucrNumberToMathml(cif['_space_group_IT_number'])
-    context = {'options'             : {'report_text': True},
+    context = {'options'             : {'report_text': True, 'atoms_table': True, 'without_h': False},
                'cif'                 : cif,
                'twocolumns'          : make_columns_section(document=doc, columns='2'),
                'onecolumn'           : make_columns_section(document=doc, columns='2'),
                'space_group'         : math_to_word(spgrxml),
                'bold_italic_F'       : RichText('F', italic=True, bold=True),
-               'crystal_table_header': RichText('Crystal data and structure refinement for {}'.format(cif.block.name),
-                                                style='Heading_2'),
-               'structure_figure'    : InlineImage(doc, './test-data/DK_zucker2_0m-finalcif.gif', width=Cm(8)),
-               'crystallization_method' : cif['_exptl_crystal_recrystallization_method'] or '[No crystallization method given!]'
+               'crystal_table_header': RichText('Crystal data and structure refinement for {}'
+                                                .format(cif.block.name), style='Heading_2'),
+               'data_name_header': RichText('{}'.format(cif.block.name), style='Heading_2'),
+               'structure_figure'    : InlineImage(doc, './icon/finalcif.png', width=Cm(7)),
+               'crystallization_method' : cif['_exptl_crystal_recrystallization_method'] or '[No crystallization method given!]',
+               'atomic_coordinates' : cif.atoms(without_h=False),
                }
     doc.render(context, autoescape=True)
     doc.save("generated_doc.docx")
