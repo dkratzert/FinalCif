@@ -3,6 +3,7 @@ import os
 import subprocess
 from math import sin, radians
 from pathlib import Path
+from typing import List
 
 import jinja2
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
@@ -14,8 +15,9 @@ from cif.cif_file_io import CifContainer
 from cif.text import retranslate_delimiter
 from report.report_text import math_to_word, gstr, format_radiation, get_inf_article
 from report.spgrps import SpaceGroups
+from report.symm import SymmetryElement
 from tests.helpers import remove_line_endings
-from tools.misc import isnumeric, this_or_quest, timessym, angstrom, protected_space, less_or_equal
+from tools.misc import isnumeric, this_or_quest, timessym, angstrom, protected_space, less_or_equal, halbgeviert
 
 
 def format_sum_formula(sum_formula: str) -> RichText:
@@ -61,6 +63,15 @@ def get_from_to_theta_range() -> str:
     except ValueError:
         return '? to ?'
 
+def get_card(cif: CifContainer, symm: str) -> List[str]:
+    """
+    Returns a symmetry card from the _space_group_symop_operation_xyz or _symmetry_equiv_pos_as_xyz list.
+    :param cif: the cif file object
+    :param symm: the symmetry number
+    :return: ['x', ' y', ' z'] etc
+    """
+    card = cif.symmops[int(symm.split('_')[0]) - 1].split(',')
+    return card
 
 def hkl_index_limits() -> str:
     limit_h_min = cif['_diffrn_reflns_limit_h_min']
@@ -74,7 +85,7 @@ def hkl_index_limits() -> str:
            + limit_l_min + ' {} l {} '.format(less_or_equal, less_or_equal) + limit_l_max
 
 
-def get_radiation(cif):
+def get_radiation(cif) -> RichText:
     rad_element, radtype, radline = format_radiation(cif['_diffrn_radiation_type'])
     radiation = RichText(rad_element)
     radiation.add(radtype, italic=True)
@@ -82,7 +93,7 @@ def get_radiation(cif):
     return radiation
 
 
-def get_completeness(cif: CifContainer):
+def get_completeness(cif: CifContainer) -> str:
     try:
         completeness = "{0:.1f} %".format(round(float(cif['_diffrn_measured_fraction_theta_full']) * 100, 1))
     except ValueError:
@@ -90,7 +101,7 @@ def get_completeness(cif: CifContainer):
     return completeness
 
 
-def get_diff_density_min():
+def get_diff_density_min() -> str:
     try:
         diff_density_min = "{0:.2f}".format(round(float(cif['_refine_diff_density_min']), 2))
     except ValueError:
@@ -98,7 +109,7 @@ def get_diff_density_min():
     return diff_density_min
 
 
-def get_diff_density_max():
+def get_diff_density_max() -> str:
     try:
         diff_density_max = "{0:.2f}".format(round(float(cif['_refine_diff_density_max']), 2))
     except ValueError:
@@ -106,7 +117,7 @@ def get_diff_density_max():
     return diff_density_max
 
 
-def get_exti():
+def get_exti() -> str:
     exti = cif['_refine_ls_extinction_coef']
     if exti not in ['.', "'.'", '?', '']:
         return exti
@@ -114,17 +125,16 @@ def get_exti():
         return ''
 
 
-def get_flackx(cif: CifContainer):
+def get_flackx(cif: CifContainer) -> str:
     if not cif.is_centrosymm:
         return cif['_refine_ls_abs_structure_Flack'] or '?'
     else:
         return ''
 
 
-def get_integration_program(cif: CifContainer):
+def get_integration_program(cif: CifContainer) -> str:
     integration = gstr(cif['_computing_data_reduction']) or '??'
     integration_prog = '[unknown integration program]'
-    scale_prog = ['unknown program']
     if 'SAINT' in integration:
         saintversion = ''
         if len(integration.split()) > 1:
@@ -135,9 +145,66 @@ def get_integration_program(cif: CifContainer):
     return integration_prog
 
 
+def get_absortion_correction_program(cif: CifContainer) -> str:
+    absdetails = cif['_exptl_absorpt_process_details'].replace('-', ' ').replace(':', '')
+    scale_prog = ''
+    version = ''
+    if 'SADABS' in absdetails.upper() or 'TWINABS' in absdetails.upper():
+        if len(absdetails.split()) > 1:
+            version = absdetails.split()[1]
+        else:
+            version = 'unknown version'
+        if 'SADABS' in absdetails:
+            scale_prog = 'SADABS'
+        else:
+            scale_prog = 'TWINABS'
+    scale_prog += version
+    return scale_prog
+
+
+def solution_method(cif: CifContainer) -> str:
+    solution_method = gstr(cif['_atom_sites_solution_primary']) or '??'
+    return solution_method.strip('\n\r')
+
+
+def solution_program(cif: CifContainer) -> str:
+    solution_prog = gstr(cif['_computing_structure_solution']) or '??'
+    return solution_prog.split()[0]
+
+
+def refinement_prog(cif: CifContainer) -> str:
+    refined = gstr(cif['_computing_structure_refinement']) or '??'
+    return refined.split()[0]
+
+
+def get_bonds_list(cif: CifContainer, without_H):
+    bonds = []
+    symms = {}
+    newsymms = {}
+    num = 1
+    for at1, at2, dist, symm2 in cif.bonds(without_H):
+        if symm2 == '.':
+            symm2 = None
+        if symm2 and symm2 not in symms.keys():
+            symms[symm2] = num
+            # Applys translational symmetry to symmcards:
+            # 3_556 -> 2
+            card = get_card(cif, symm2)
+            s = SymmetryElement(card)
+            s.translate(symm2)
+            newsymms[num] = s.toShelxl()
+            num += 1
+        # Atom1 - Atom2:
+        bond = '{}{}{}'.format(at1, halbgeviert, at2)
+        r = RichText(bond)
+        r.add('#' + str(symms[symm2]) if symm2 else '', superscript=True)
+        bonds.append({'bond':r, 'dist': dist})
+    return bonds
+
+
 def make_report(cif: CifContainer, options: 'Options' = None):
     tpl_doc = DocxTemplate("./template/template_text.docx")
-    context = {'options'               : {'without_h': False, 'atoms_table': True},
+    context = {'options'               : {'without_h': True, 'atoms_table': True},
                'cif'                   : cif,
                'space_group'           : space_group_subdoc(tpl_doc, cif),
                'bold_italic_F'         : RichText('F', italic=True, bold=True),
@@ -188,7 +255,13 @@ def make_report(cif: CifContainer, options: 'Options' = None):
                'diff_dens_max'         : get_diff_density_max(),
                'exti'                  : get_exti(),
                'flack_x'               : get_flackx(cif),
-               'integration_progr'     : get_integration_program(cif)
+               'integration_progr'     : get_integration_program(cif),
+               'abstype'               : gstr(cif['_exptl_absorpt_correction_type']) or '??',
+               'abs_details'           : get_absortion_correction_program(cif),
+               'solution_method'       : solution_method(cif),
+               'solution_program'      : solution_program(cif),
+               'refinement_prog'       : refinement_prog(cif),
+               'bonds'                 : get_bonds_list(cif, without_H=True)
                }
 
     # Filter definition for {{foobar|filter}} things:
@@ -199,7 +272,7 @@ def make_report(cif: CifContainer, options: 'Options' = None):
 
 
 if __name__ == '__main__':
-    cif = CifContainer(Path(r'test-data/DK_zucker2_0m-finalcif.cif'))
+    cif = CifContainer(Path(r'tests/examples/work/cu_BruecknerJK_153F40_0m-finalcif.cif'))
     make_report(cif)
     output_filename = "generated_doc.docx"
     if os.name == 'nt':
