@@ -196,7 +196,7 @@ def this_or_quest(value: Union[str, int, float, None]) -> Union[str, int, float]
     """
     Returns the value or a question mark if the value is None.
     """
-    return value if value is not None else '?'
+    return value if value else '?'
 
 
 def to_float(st) -> Union[float, List[float], None]:
