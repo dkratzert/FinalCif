@@ -18,7 +18,7 @@ from report.spgrps import SpaceGroups
 from report.symm import SymmetryElement
 from tests.helpers import remove_line_endings
 from tools.misc import isnumeric, this_or_quest, timessym, angstrom, protected_space, less_or_equal, halbgeviert, \
-    minus_sign
+    minus_sign, ellipsis_mid
 
 
 def format_sum_formula(sum_formula: str) -> RichText:
@@ -180,128 +180,107 @@ def refinement_prog(cif: CifContainer) -> str:
     return refined.split()[0]
 
 
-def get_bonds_list(cif: CifContainer, without_H):
-    bonds = []
-    symms = {}
-    newsymms = {}
-    num = 1
-    for at1, at2, dist, symm2 in cif.bonds(without_H):
-        if symm2 == '.':
-            symm2 = None
-        if symm2 and symm2 not in symms.keys():
-            symms[symm2] = num
-            # Apply translational symmetry to symmcards:
-            # 3_556 -> 2
-            card = get_card(cif, symm2)
-            s = SymmetryElement(card)
-            s.translate(symm2)
-            newsymms[num] = s.toShelxl()
-            num += 1
-        # Atom1 - Atom2:
-        atoms = RichText('{}{}{}'.format(at1, halbgeviert, at2))
-        atoms.add('#' + str(symms[symm2]) if symm2 else '', superscript=True)
-        bonds.append({'atoms': atoms, 'dist': dist.replace('-', minus_sign)})
-    return bonds
+class BondsAndAngles():
+    def __init__(self, cif: CifContainer, without_h: bool):
+        self.cif = cif
+        self._symmlist = {}
+        self._symms = {}
+        self.bonds = self._get_bonds_list(without_h)
+        self.angles = self._get_angles_list(without_h)
+        self.symminfo = get_symminfo(self._symmlist)
+
+    def _get_bonds_list(self, without_h):
+        bonds = []
+        num = 1
+        newsymms = {}
+        for at1, at2, dist, symm2 in self.cif.bonds(without_h):
+            if symm2 == '.':
+                symm2 = None
+            num = symmsearch(self.cif, newsymms, num, symm2, self._symms)
+            # Atom1 - Atom2:
+            atoms = RichText('{}{}{}'.format(at1, halbgeviert, at2))
+            atoms.add('#' + str(self._symms[symm2]) if symm2 else '', superscript=True)
+            bonds.append({'atoms': atoms, 'dist': dist.replace('-', minus_sign)})
+        return bonds
+
+    def _get_angles_list(self, without_h):
+        angles_list = []
+        newsymms = {}
+        num = 1
+        for ang in cif.angles(without_h):
+            symm1 = ang.symm1
+            symm2 = ang.symm2
+            if ang.symm1 == '.':
+                symm1 = None
+            if ang.symm2 == '.':
+                symm2 = None
+            num = symmsearch(cif, newsymms, num, symm1, self._symms)
+            num = symmsearch(cif, newsymms, num, symm2, self._symms)
+            atoms = RichText(ang.label1)
+            atoms.add('#' + str(self._symms[symm1]) if symm1 else '', superscript=True)
+            atoms.add('{}{}{}{}'.format(halbgeviert, ang.label2, halbgeviert, ang.label3), superscript=False)
+            atoms.add('#' + str(self._symms[symm2]) if symm2 else '', superscript=True)
+            angles_list.append({'atoms': atoms, 'angle': ang.angle_val.replace('-', minus_sign)})
+        return angles_list
 
 
-def get_angles_list(cif: CifContainer, without_H):
-    angles_list = []
-    symms = {}
-    newsymms = {}
-    num = 1
-    for ang in cif.angles(without_H):
-        symm1 = ang.symm1
-        symm2 = ang.symm2
-        if ang.symm1 == '.':
-            symm1 = None
-        if ang.symm2 == '.':
-            symm2 = None
-        if symm1 and symm1 not in symms.keys():
-            symms[symm1] = num
-            card = get_card(cif, symm1)
-            # Applys translational symmetry to symmcards:
-            # 3_556 -> 2
-            s = SymmetryElement(card)
-            s.translate(symm1)
-            newsymms[num] = s.toShelxl()
-            num += 1
-        if symm2 and symm2 not in symms.keys():
-            symms[symm2] = num
-            card = get_card(cif, symm2)
-            s = SymmetryElement(card)
-            s.translate(ang.symm3)
-            newsymms[num] = s.toShelxl()
-            num += 1
-        atoms = RichText(ang.label1)
-        atoms.add('#' + str(symms[symm1]) if symm1 else '', superscript=True)
-        atoms.add('{}{}{}{}'.format(halbgeviert, ang.label2, halbgeviert, ang.label3), superscript=False)
-        atoms.add('#' + str(symms[symm2]) if symm2 else '', superscript=True)
-        angles_list.append({'atoms': atoms, 'angle': ang.angle_val.replace('-', minus_sign)})
-    return angles_list
+class TorsionAngles():
+
+    def __init__(self, cif: CifContainer, without_h: bool):
+        self.cif = cif
+        self._symmlist = {}
+        self.torsion_angles = self._get_torsion_angles_list(without_h)
+        self.torsions_symminfo = get_symminfo(self._symmlist)
+
+    def _get_torsion_angles_list(self, without_h: bool):
+        if not self.cif.nangles(without_h) > 0:
+            return []
+        symms = {}
+        newsymms = {}
+        num = 1
+        torsion_angles = []
+        rowidx = 1
+        for tors in cif.torsion_angles(without_h):
+            at1, at2, at3, at4, angle, symm1, symm2, symm3, symm4 = \
+                tors.label1, tors.label2, tors.label3, tors.label4, tors.torsang, \
+                tors.symm1, tors.symm2, tors.symm3, tors.symm4
+            rowidx += 1
+            if symm1 == '.':
+                symm1 = None
+            if symm2 == '.':
+                symm2 = None
+            if symm3 == '.':
+                symm3 = None
+            if symm4 == '.':
+                symm4 = None
+            num = symmsearch(cif, newsymms, num, symm1, symms)
+            num = symmsearch(cif, newsymms, num, symm2, symms)
+            num = symmsearch(cif, newsymms, num, symm3, symms)
+            num = symmsearch(cif, newsymms, num, symm4, symms)
+            atoms = RichText(at1)
+            atoms.add('#' + str(symms[symm1]) if symm1 else '', superscript=True)
+            atoms.add(halbgeviert)
+            atoms.add(at2)
+            atoms.add('#' + str(symms[symm2]) if symm2 else '', superscript=True)
+            atoms.add(halbgeviert)
+            atoms.add(at3)
+            atoms.add('#' + str(symms[symm3]) if symm3 else '', superscript=True)
+            atoms.add(halbgeviert)
+            atoms.add(at4)  # labels
+            atoms.add('#' + str(symms[symm4]) if symm4 else '', superscript=True)
+            torsion_angles.append({'atoms': atoms, 'angle': angle.replace('-', minus_sign)})
+        self._symmlist = newsymms
+        return torsion_angles
 
 
-def get_torsion_angles_list(cif: CifContainer, without_H):
-    if not len(list(cif.torsion_angles())) > 0:
-        print('No torsion angles in cif.')
-        return []
-    symms = {}
-    newsymms = {}
-    card = ''
-    s = SymmetryElement(card)
-    num = 1
-    torsion_angles = []
-    rowidx = 1
-    for tors in cif.torsion_angles():
-        at1, at2, at3, at4, angle, symm1, symm2, symm3, symm4 = \
-            tors.label1, tors.label2, tors.label3, tors.label4, tors.torsang, \
-            tors.symm1, tors.symm2, tors.symm3, tors.symm4
-        rowidx += 1
-        if symm1 == '.':
-            symm1 = None
-        if symm2 == '.':
-            symm2 = None
-        if symm3 == '.':
-            symm3 = None
-        if symm4 == '.':
-            symm4 = None
-        if symm1 and symm1 not in symms.keys():
-            symms[symm1] = num
-            s = SymmetryElement(get_card(cif, symm1))
-            s.translate(symm1)
-            newsymms[num] = s.toShelxl()
-            num += 1
-        if symm2 and symm2 not in symms.keys():
-            symms[symm2] = num
-            s = SymmetryElement(get_card(cif, symm2))
-            s.translate(symm2)
-            newsymms[num] = s.toShelxl()
-            num += 1
-        if symm3 and symm3 not in symms.keys():
-            symms[symm3] = num
-            s = SymmetryElement(get_card(cif, symm3))
-            s.translate(symm3)
-            newsymms[num] = s.toShelxl()
-            num += 1
-        if symm4 and symm4 not in symms.keys():
-            symms[symm4] = num
-            s = SymmetryElement(get_card(cif, symm4))
-            s.translate(symm4)
-            newsymms[num] = s.toShelxl()
-            num += 1
-        atoms = RichText(at1)
-        atoms.add('#' + str(symms[symm1]) if symm1 else '', superscript=True)
-        atoms.add(halbgeviert)
-        atoms.add(at2)
-        atoms.add('#' + str(symms[symm2]) if symm2 else '', superscript=True)
-        atoms.add(halbgeviert)
-        atoms.add(at3)
-        atoms.add('#' + str(symms[symm3]) if symm3 else '', superscript=True)
-        atoms.add(halbgeviert)
-        atoms.add(at4)  # labels
-        atoms.add('#' + str(symms[symm4]) if symm4 else '', superscript=True)
-        torsion_angles.append({'atoms': atoms, 'angle': angle.replace('-', minus_sign)})
-    # add_last_symminfo_line(newsymms, document)
-    return torsion_angles
+def symmsearch(cif: CifContainer, newsymms, num, symm, symms_list) -> int:
+    if symm and symm not in symms_list.keys():
+        symms_list[symm] = num
+        s = SymmetryElement(get_card(cif, symm))
+        s.translate(symm)
+        newsymms[num] = s.toShelxl()
+        num += 1
+    return num
 
 
 def get_atomic_coordinates(cif: CifContainer):
@@ -312,8 +291,55 @@ def get_atomic_coordinates(cif: CifContainer):
                'u_eq' : at.u_eq.replace('-', minus_sign)}
 
 
+def get_symminfo(newsymms: dict) -> str:
+    """
+    Adds text about the symmetry generators used in order to add symmetry generated atoms.
+    """
+    line = 'Symmetry transformations used to generate equivalent atoms:\n'
+    nitems = len(newsymms)
+    n = 0
+    for key, value in newsymms.items():
+        sep = ';'
+        if n == nitems:
+            sep = ''
+        n += 1
+        line += "#{}: {}{}   ".format(key, value, sep)
+    if newsymms:
+        return line
+    else:
+        return ''
+
+
+class HydrogenAtoms():
+    def __init__(self, cif: CifContainer):
+        self.cif = cif
+        self.symmlist = {}
+        self.hydrogen_bonds = self._get_hydrogen_bonds()
+        self.hydrogen_symminfo = get_symminfo(self.symmlist)
+
+    def _get_hydrogen_bonds(self) -> List[dict]:
+        symms = {}
+        newsymms = {}
+        num = 1
+        atoms_list = []
+        for label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm in self.cif.hydrogen_bonds():
+            if symm == '.':
+                symm = None
+            num = symmsearch(self.cif, newsymms, num, symm, symms)
+            symmval = ('#' + str(symms[symm])) if symm else ''
+            atoms = RichText(label_d + halbgeviert + label_h + ellipsis_mid + label_a)
+            atoms.add(symmval, superscript=True)
+            atoms_list.append(
+                {'atoms': atoms, 'dist_dh': dist_dh, 'dist_ha': dist_ha, 'dist_da': dist_da, 'angle_dha': angle_dha})
+        self.symmlist = newsymms
+        return atoms_list
+
+
 def make_report(cif: CifContainer, options: 'Options' = None):
     tpl_doc = DocxTemplate("./template/template_text.docx")
+    h = HydrogenAtoms(cif)
+    t = TorsionAngles(cif, False)
+    ba = BondsAndAngles(cif, False)
     context = {'options'               : {'without_h': True, 'atoms_table': True},
                'cif'                   : cif,
                'space_group'           : space_group_subdoc(tpl_doc, cif),
@@ -322,7 +348,7 @@ def make_report(cif: CifContainer, options: 'Options' = None):
                                                   .format(cif.block.name), style='Heading_2'),
                'data_name_header'      : RichText('{}'.format(cif.block.name), style='Heading_2'),
                'structure_figure'      : InlineImage(tpl_doc,
-                                                     r'tests/examples/work/cu_BruecknerJK_153F40_0m-finalcif.gif',
+                                                     r'icon/finalcif.png',
                                                      width=Cm(7.5)),
                'crystallization_method': remove_line_endings(retranslate_delimiter(
                    cif['_exptl_crystal_recrystallization_method'])) or '[No crystallization method given!]',
@@ -371,9 +397,13 @@ def make_report(cif: CifContainer, options: 'Options' = None):
                'solution_program'      : solution_program(cif),
                'refinement_prog'       : refinement_prog(cif),
                'atomic_coordinates'    : get_atomic_coordinates(cif),
-               'bonds'                 : get_bonds_list(cif, without_H=True),
-               'angles'                : get_angles_list(cif, without_H=True),
-               'torsions'              : get_torsion_angles_list(cif, without_H=True),
+               'bonds'                 : ba.bonds,
+               'angles'                : ba.angles,
+               'ba_symminfo'           : ba.symminfo,
+               'torsions'              : t.torsion_angles,
+               'torsion_symminfo'      : t.torsions_symminfo,
+               'hydrogen_bonds'        : h.hydrogen_bonds,
+               'hydrogen_symminfo'     : h.hydrogen_symminfo,
                }
 
     # Filter definition for {{foobar|filter}} things:
@@ -384,7 +414,7 @@ def make_report(cif: CifContainer, options: 'Options' = None):
 
 
 if __name__ == '__main__':
-    cif = CifContainer(Path(r'tests/examples/work/cu_BruecknerJK_153F40_0m-finalcif.cif'))
+    cif = CifContainer(Path(r'D:\tmp\p31c\sad-final.cif'))
     make_report(cif)
     output_filename = "generated_doc.docx"
     if os.name == 'nt':
