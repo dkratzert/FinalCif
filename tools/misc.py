@@ -24,6 +24,8 @@ bequal = u'\u2265'
 sigma_sm = u'\u03C3'
 # en dash:
 halbgeviert = u'\u2013'
+# minus sign:
+minus_sign = u'\u2212'
 # degree sign:
 degree_sign = u'\u00B0'
 # middle ellipsis
