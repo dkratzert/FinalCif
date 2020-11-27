@@ -81,13 +81,13 @@ def make_report_from(options: Options, file_obj: Path, output_filename: str = No
             table_num += 1
             document.add_heading(r"Table {}. Bond lengths and angles for {}".format(table_num, cif.block.name), 2)
             make_columns_section(document, columns='2')
-            table_num = add_bonds_and_angles_table(document, cif, table_num, options.without_H)
+            table_num = add_bonds_and_angles_table(document, cif, table_num, options.without_h)
         if len(list(cif.torsion_angles())) > 0:
             make_columns_section(document, columns='1')
             table_num += 1
             document.add_heading(r"Table {}. Torsion angles for {}".format(table_num, cif.block.name), 2)
             make_columns_section(document, columns='2')
-            table_num = add_torsion_angles(document, cif, table_num, options.without_H)
+            table_num = add_torsion_angles(document, cif, table_num, options.without_h)
         make_columns_section(document, columns='1')
         if len(list(cif.hydrogen_bonds())) > 0:
             table_num += 1

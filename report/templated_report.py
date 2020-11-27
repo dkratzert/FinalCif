@@ -19,6 +19,7 @@ from report.symm import SymmetryElement
 from tests.helpers import remove_line_endings
 from tools.misc import isnumeric, this_or_quest, timessym, angstrom, protected_space, less_or_equal, halbgeviert, \
     minus_sign, ellipsis_mid
+from tools.options import Options
 
 
 def format_sum_formula(sum_formula: str) -> RichText:
@@ -51,7 +52,7 @@ def space_group_subdoc(tpl_doc: DocxTemplate, cif: CifContainer) -> Subdoc:
     return sd
 
 
-def get_from_to_theta_range() -> str:
+def get_from_to_theta_range(cif: CifContainer) -> str:
     theta_min = cif['_diffrn_reflns_theta_min']
     theta_max = cif['_diffrn_reflns_theta_max']
     radiation_wavelength = cif['_diffrn_radiation_wavelength']
@@ -76,7 +77,7 @@ def get_card(cif: CifContainer, symm: str) -> List[str]:
     return card
 
 
-def hkl_index_limits() -> str:
+def hkl_index_limits(cif: CifContainer) -> str:
     limit_h_min = cif['_diffrn_reflns_limit_h_min']
     limit_h_max = cif['_diffrn_reflns_limit_h_max']
     limit_k_min = cif['_diffrn_reflns_limit_k_min']
@@ -88,7 +89,7 @@ def hkl_index_limits() -> str:
            + limit_l_min + ' {} l {} '.format(less_or_equal, less_or_equal) + limit_l_max
 
 
-def get_radiation(cif) -> RichText:
+def get_radiation(cif: CifContainer) -> RichText:
     rad_element, radtype, radline = format_radiation(cif['_diffrn_radiation_type'])
     radiation = RichText(rad_element)
     radiation.add(radtype, italic=True)
@@ -104,7 +105,7 @@ def get_completeness(cif: CifContainer) -> str:
     return completeness
 
 
-def get_diff_density_min() -> str:
+def get_diff_density_min(cif: CifContainer) -> str:
     try:
         diff_density_min = "{0:.2f}".format(round(float(cif['_refine_diff_density_min']), 2))
     except ValueError:
@@ -112,7 +113,7 @@ def get_diff_density_min() -> str:
     return diff_density_min
 
 
-def get_diff_density_max() -> str:
+def get_diff_density_max(cif: CifContainer) -> str:
     try:
         diff_density_max = "{0:.2f}".format(round(float(cif['_refine_diff_density_max']), 2))
     except ValueError:
@@ -120,7 +121,7 @@ def get_diff_density_max() -> str:
     return diff_density_max
 
 
-def get_exti() -> str:
+def get_exti(cif: CifContainer) -> str:
     exti = cif['_refine_ls_extinction_coef']
     if exti not in ['.', "'.'", '?', '']:
         return exti
@@ -248,15 +249,15 @@ class BondsAndAngles():
         newsymms = {}
         symms = {}
         num = 1
-        for ang in cif.angles(without_h):
+        for ang in self.cif.angles(without_h):
             symm1 = ang.symm1
             symm2 = ang.symm2
             if ang.symm1 == '.':
                 symm1 = None
             if ang.symm2 == '.':
                 symm2 = None
-            num = symmsearch(cif, newsymms, num, symm1, symms)
-            num = symmsearch(cif, newsymms, num, symm2, symms)
+            num = symmsearch(self.cif, newsymms, num, symm1, symms)
+            num = symmsearch(self.cif, newsymms, num, symm2, symms)
             atoms = RichText(ang.label1)
             atoms.add('#' + str(symms[symm1]) if symm1 else '', superscript=True)
             atoms.add('{}{}{}{}'.format(halbgeviert, ang.label2, halbgeviert, ang.label3), superscript=False)
@@ -282,7 +283,7 @@ class TorsionAngles():
         num = 1
         torsion_angles = []
         rowidx = 1
-        for tors in cif.torsion_angles(without_h):
+        for tors in self.cif.torsion_angles(without_h):
             at1, at2, at3, at4, angle, symm1, symm2, symm3, symm4 = \
                 tors.label1, tors.label2, tors.label3, tors.label4, tors.torsang, \
                 tors.symm1, tors.symm2, tors.symm3, tors.symm4
@@ -295,10 +296,10 @@ class TorsionAngles():
                 symm3 = None
             if symm4 == '.':
                 symm4 = None
-            num = symmsearch(cif, newsymms, num, symm1, symms)
-            num = symmsearch(cif, newsymms, num, symm2, symms)
-            num = symmsearch(cif, newsymms, num, symm3, symms)
-            num = symmsearch(cif, newsymms, num, symm4, symms)
+            num = symmsearch(self.cif, newsymms, num, symm1, symms)
+            num = symmsearch(self.cif, newsymms, num, symm2, symms)
+            num = symmsearch(self.cif, newsymms, num, symm3, symms)
+            num = symmsearch(self.cif, newsymms, num, symm4, symms)
             atoms = RichText(at1)
             atoms.add('#' + str(symms[symm1]) if symm1 else '', superscript=True)
             atoms.add(halbgeviert)
@@ -340,19 +341,29 @@ class HydrogenAtoms():
         return atoms_list
 
 
-def make_report(cif: CifContainer, options: 'Options' = None):
-    tpl_doc = DocxTemplate("./template/template_text.docx")
+def make_picture(options: Options, picfile: Path, tpl_doc: DocxTemplate):
+    if options.report_text:
+        if picfile and picfile.exists():
+            return InlineImage(tpl_doc, str(picfile.absolute()), width=Cm(options.picture_width))
+    return None
+
+
+def make_templated_report(options: Options, file_obj: Path, output_filename: str, picfile: Path):
+    cif = CifContainer(file_obj)
+    print(file_obj.absolute())
+    tpl_doc = DocxTemplate(Path(__file__).parent.parent.joinpath(Path("./template/template_text.docx")))
+    ba = BondsAndAngles(cif, without_h=options.without_h)
+    t = TorsionAngles(cif, without_h=options.without_h)
     h = HydrogenAtoms(cif)
-    t = TorsionAngles(cif, without_h=True)
-    ba = BondsAndAngles(cif, without_h=True)
-    context = {'options'               : {'without_h': True, 'atoms_table': True, 'text': True, 'bonds_table': True},
+    context = {'options'               : options,
+               # {'without_h': True, 'atoms_table': True, 'text': True, 'bonds_table': True},
                'cif'                   : cif,
                'space_group'           : space_group_subdoc(tpl_doc, cif),
                'bold_italic_F'         : RichText('F', italic=True, bold=True),
                'crystal_table_header'  : RichText('Crystal data and structure refinement for {}'
                                                   .format(cif.block.name), style='Heading_2'),
                'data_name_header'      : RichText('{}'.format(cif.block.name), style='Heading_2'),
-               'structure_figure'      : InlineImage(tpl_doc, r'icon/finalcif.png', width=Cm(5.5)),
+               'structure_figure'      : make_picture(options, picfile, tpl_doc),
                'crystallization_method': remove_line_endings(retranslate_delimiter(
                    cif['_exptl_crystal_recrystallization_method'])) or '[No crystallization method given!]',
                'sum_formula'           : format_sum_formula(cif['_chemical_formula_sum'].replace(" ", "")),
@@ -364,7 +375,7 @@ def make_report(cif: CifContainer, options: 'Options' = None):
                'crystal_shape'         : this_or_quest(cif['_exptl_crystal_description']),
                'radiation'             : get_radiation(cif),
                'wavelength'            : cif['_diffrn_radiation_wavelength'],
-               'theta_range'           : get_from_to_theta_range(),
+               'theta_range'           : get_from_to_theta_range(cif),
                'diffr_type'            : gstr(cif['_diffrn_measurement_device_type'])
                                          or '[No measurement device type given]',
                'diffr_device'          : gstr(cif['_diffrn_measurement_device'])
@@ -377,7 +388,7 @@ def make_report(cif: CifContainer, options: 'Options' = None):
                                          or '[No detector type given]',
                'lowtemp_dev'           : gstr(cif['_olex2_diffrn_ambient_temperature_device']) \
                                          or '',
-               'index_ranges'          : hkl_index_limits(),
+               'index_ranges'          : hkl_index_limits(cif),
                'indepentent_refl'      : this_or_quest(cif['_reflns_number_total']),
                'r_int'                 : this_or_quest(cif['_diffrn_reflns_av_R_equivalents']),
                'r_sigma'               : this_or_quest(cif['_diffrn_reflns_av_unetI/netI']),
@@ -391,9 +402,9 @@ def make_report(cif: CifContainer, options: 'Options' = None):
                'ls_wR_factor_gt'       : this_or_quest(cif['_refine_ls_wR_factor_gt']),
                'ls_R_factor_all'       : this_or_quest(cif['_refine_ls_R_factor_all']),
                'ls_wR_factor_ref'      : this_or_quest(cif['_refine_ls_wR_factor_ref']),
-               'diff_dens_min'         : get_diff_density_min().replace('-', minus_sign),
-               'diff_dens_max'         : get_diff_density_max().replace('-', minus_sign),
-               'exti'                  : get_exti(),
+               'diff_dens_min'         : get_diff_density_min(cif).replace('-', minus_sign),
+               'diff_dens_max'         : get_diff_density_max(cif).replace('-', minus_sign),
+               'exti'                  : get_exti(cif),
                'flack_x'               : get_flackx(cif),
                'integration_progr'     : get_integration_program(cif),
                'abstype'               : gstr(cif['_exptl_absorpt_correction_type']) or '??',
@@ -415,12 +426,12 @@ def make_report(cif: CifContainer, options: 'Options' = None):
     jinja_env = jinja2.Environment()
     jinja_env.filters['inv_article'] = get_inf_article
     tpl_doc.render(context, jinja_env=jinja_env, autoescape=True)
-    tpl_doc.save("generated_doc.docx")
+    tpl_doc.save(output_filename)
 
 
 if __name__ == '__main__':
-    cif = CifContainer(Path(r'test-data/p21c.cif'))
-    make_report(cif)
+    # cif = CifContainer(Path(r'test-data/p21c.cif'))
+    make_templated_report(cif)
     output_filename = "generated_doc.docx"
     if os.name == 'nt':
         subprocess.call(['cmd', '/C', Path(output_filename).absolute()])

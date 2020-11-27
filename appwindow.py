@@ -45,6 +45,7 @@ from gui.loops import Loop
 from gui.vrf_classes import MyVRFContainer, VREF
 from report.archive_report import ArchiveReport
 from report.tables import make_report_from
+from report.templated_report import make_templated_report
 from tools.checkcif import MyHTMLParser, AlertHelp, CheckCif
 from tools.dsrmath import my_isnumeric
 from tools.misc import strip_finalcif_of_name, next_path, do_not_import_keys, celltxt, to_float, combobox_fields, \
@@ -764,11 +765,8 @@ class AppWindow(QMainWindow):
         else:
             picfile = Path(self.final_cif_file_name.stem + '.gif')
         try:
-            make_report_from(options=self.options,
-                             file_obj=self.final_cif_file_name,
-                             output_filename=report_filename,
-                             path=application_path,
-                             picfile=picfile)
+            make_templated_report(options=self.options, file_obj=self.final_cif_file_name,
+                             output_filename=report_filename, picfile=picfile)
         except FileNotFoundError as e:
             if DEBUG:
                 raise

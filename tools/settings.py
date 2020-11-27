@@ -171,10 +171,15 @@ class FinalCifSettings():
         if not options:
             options = {'report_text'  : True,
                        'picture_width': 7.5,
-                       'without_H'    : False,
-                       'checkcif_url' : 'https://checkcif.iucr.org/cgi-bin/checkcif_with_hkl'
+                       'without_h'    : False,
+                       'checkcif_url' : 'https://checkcif.iucr.org/cgi-bin/checkcif_with_hkl',
                        }
         self.settings.endGroup()
+        # These are default values for now:
+        options.update({'atoms_table'   : True,
+                        'bonds_table'   : True,
+                        'hydrogen_bonds': True,  # Wasserstoffbrückenbindungen
+                        })
         return options
 
     def save_options(self, options: dict):

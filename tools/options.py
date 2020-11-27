@@ -22,7 +22,7 @@ class Options:
         This method and pnöy this is called in order to show the options page.
         It also sets the state of the options widgets.
         """
-        self.ui.HAtomsCheckBox.setChecked(self.without_H)
+        self.ui.HAtomsCheckBox.setChecked(self.without_h)
         self.ui.ReportTextCheckBox.setChecked(not self.report_text)
         self.ui.PictureWidthDoubleSpinBox.setValue(self.picture_width)
         self.ui.CheckCIFServerURLTextedit.setText(self.checkcif_url)
@@ -31,9 +31,12 @@ class Options:
     def _state_changed(self):
         self._options = {
             'report_text'  : not self.ui.ReportTextCheckBox.isChecked(),
-            'without_H'    : self.ui.HAtomsCheckBox.isChecked(),
+            'without_h'    : self.ui.HAtomsCheckBox.isChecked(),
             'picture_width': self.ui.PictureWidthDoubleSpinBox.value(),
-            'checkcif_url' : self.ui.CheckCIFServerURLTextedit.text()
+            'checkcif_url' : self.ui.CheckCIFServerURLTextedit.text(),
+            'atoms_table': True,
+            'bonds_table': True,
+            'hydrogen_bonds': True,
         }
         # print('saving:', self._options)
         self.settings.save_options(self._options)
@@ -48,11 +51,17 @@ class Options:
 
     @property
     def report_text(self):
-        return self.settings.load_options()['report_text']
+        try:
+            return self.settings.load_options()['report_text']
+        except KeyError:
+            return True
 
     @property
-    def without_H(self):
-        return self.settings.load_options()['without_H']
+    def without_h(self):
+        try:
+            return self.settings.load_options()['without_h']
+        except KeyError:
+            return False
 
     @property
     def picture_width(self):
