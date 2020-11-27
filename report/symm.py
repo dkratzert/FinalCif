@@ -50,21 +50,20 @@ class SymmetryElement():
         else:
             return 0, symm
 
-    def translate(self, ort_code: str):
+    def translate(self, ort_code: str) -> None:
         tr = ort_code.split('_')[-1]
         for n, x in enumerate(tr):
             t = int(x) - 5
             self.trans[n] += t
 
-    def toShelxl(self):
+    def toShelxl(self) -> str:
         """
         Generate and return string representation of Symmetry Operation in Shelxl syntax.
-        :return: string.
         """
         axes = ['X', 'Y', 'Z']
         lines = []
         for i in range(3):
-            text = str(self.trans[i]) if self.trans[i] else ''
+            text = str(round(self.trans[i], 5)) if self.trans[i] else ''
             for j in range(3):
                 s = '' if not self.matrix[i][j] else axes[j]
                 if self.matrix[i][j] < 0:
