@@ -36,7 +36,7 @@ class TestMisc(unittest.TestCase):
         self.assertEqual('0', this_or_quest('0'))
 
     def test_this_or_quest_emptystring(self):
-        self.assertEqual('', this_or_quest(''))
+        self.assertEqual('?', this_or_quest(''))
 
     def test_this_or_quest_zeropzero(self):
         self.assertEqual(0.0, this_or_quest(0.0))
