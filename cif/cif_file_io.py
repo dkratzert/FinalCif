@@ -490,6 +490,12 @@ class CifContainer():
         else:
             return False
 
+    def checksymm(self, symm):
+        """Add translation of 555 to symmetry elements without translation"""
+        if len(symm) == 1 and not (symm == '.' or symm == '?'):
+            symm = symm + '_555'
+        return symm
+
     def bonds(self, without_h: bool = False):
         """
         Yields a list of bonds in the cif file.
@@ -499,11 +505,12 @@ class CifContainer():
         dist = self.block.find_loop('_geom_bond_distance')
         symm = self.block.find_loop('_geom_bond_site_symmetry_2')
         for label1, label2, dist, symm in zip(label1, label2, dist, symm):
+            symm = self.checksymm(symm)
             if without_h and (self.ishydrogen(label1) or self.ishydrogen(label2)):
                 continue
             else:
                 bond = namedtuple('Bond', ('label1', 'label2', 'dist', 'symm'))
-                yield bond(label1=label1, label2=label2, dist=dist, symm=symm)
+                yield bond(label1=label1, label2=label2, dist=dist, symm=self.checksymm(symm))
 
     def angles(self, without_H: bool = False) -> NamedTuple:
         label1 = self.block.find_loop('_geom_angle_atom_site_label_1')
@@ -517,7 +524,8 @@ class CifContainer():
                 continue
             else:
                 angle = namedtuple('Angle', ('label1', 'label2', 'label3', 'angle_val', 'symm1', 'symm2'))
-                yield angle(label1=label1, label2=label2, label3=label3, angle_val=angle_val, symm1=symm1, symm2=symm2)
+                yield angle(label1=label1, label2=label2, label3=label3, angle_val=angle_val,
+                            symm1=self.checksymm(symm1), symm2=self.checksymm(symm2))
 
     def iselement(self, name: str) -> str:
         return self._name2elements[name.upper()]
@@ -562,8 +570,11 @@ class CifContainer():
                 continue
             tors = namedtuple('Torsion',
                               ('label1', 'label2', 'label3', 'label4', 'torsang', 'symm1', 'symm2', 'symm3', 'symm4'))
-            yield tors(label1=label1, label2=label2, label3=label3, label4=label4, torsang=torsang, symm1=symm1, symm2=symm2,
-                 symm3=symm3, symm4=symm4)
+            yield tors(label1=label1, label2=label2, label3=label3, label4=label4, torsang=torsang,
+                       symm1=self.checksymm(symm1),
+                       symm2=self.checksymm(symm2),
+                       symm3=self.checksymm(symm3),
+                       symm4=self.checksymm(symm4))
 
     def hydrogen_bonds(self):
         label_d = self.block.find_loop('_geom_hbond_atom_site_label_D')
@@ -577,7 +588,8 @@ class CifContainer():
         # publ = self.block.find_loop('_geom_hbond_publ_flag')
         for label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm in zip(label_d, label_h, label_a,
                                                                                          dist_dh, dist_ha, dist_da,
-                                                                                         angle_dha, symm):
+                                                                                         angle_dha,
+                                                                                         self.checksymm(symm)):
             yield label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm
 
     def key_value_pairs(self) -> List[Tuple[str, str]]:

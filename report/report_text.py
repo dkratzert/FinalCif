@@ -11,6 +11,7 @@ from cif.cif_file_io import CifContainer
 from cif.text import retranslate_delimiter
 from report.references import DummyReference, BrukerReference, SORTAVReference, ReferenceList, CCDCReference, \
     SHELXLReference, SHELXTReference, SHELXSReference, FinalCifReference, ShelXleReference, Olex2Reference
+from tests.helpers import remove_line_endings
 from tools.misc import protected_space, angstrom, zero_width_space
 
 
@@ -69,7 +70,7 @@ class Crystallization(FormatMixin):
         if not self.crytsalization_method:
             self.crytsalization_method = '[No crystallization method was given]'
         sentence = "{}. "
-        self.text = sentence.format(self.crytsalization_method)
+        self.text = sentence.format(remove_line_endings(retranslate_delimiter(self.crytsalization_method)))
         paragraph.add_run(retranslate_delimiter(self.text))
 
 

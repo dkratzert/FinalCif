@@ -180,11 +180,49 @@ def refinement_prog(cif: CifContainer) -> str:
     return refined.split()[0]
 
 
+def symmsearch(cif: CifContainer, newsymms, num, symm, symms_list) -> int:
+    if symm and symm not in symms_list.keys():
+        symms_list[symm] = num
+        s = SymmetryElement(get_card(cif, symm))
+        s.translate(symm)
+        newsymms[num] = s.toShelxl()
+        num += 1
+    return num
+
+
+def get_atomic_coordinates(cif: CifContainer):
+    for at in cif.atoms(without_h=False):
+        yield {'label': at.label, 'type': at.type, 'x': at.x.replace('-', minus_sign),
+               'y'    : at.y.replace('-', minus_sign),
+               'z'    : at.z, 'part': at.part.replace('-', minus_sign), 'occ': at.occ,
+               'u_eq' : at.u_eq.replace('-', minus_sign)}
+
+
+def get_symminfo(newsymms: dict) -> str:
+    """
+    Adds text about the symmetry generators used in order to add symmetry generated atoms.
+    """
+    line = 'Symmetry transformations used to generate equivalent atoms:\n'
+    nitems = len(newsymms)
+    n = 0
+    for key, value in newsymms.items():
+        sep = ';'
+        if n == nitems:
+            sep = ''
+        n += 1
+        line += "#{}: {}{}   ".format(key, value, sep)
+    if newsymms:
+        return line
+    else:
+        return ''
+
+
 class BondsAndAngles():
     def __init__(self, cif: CifContainer, without_h: bool):
         self.cif = cif
         self._symmlist = {}
-        self._symms = {}
+        # self._newsymms = {}
+        # self._symms = {}
         self.bonds = self._get_bonds_list(without_h)
         self.angles = self._get_angles_list(without_h)
         self.symminfo = get_symminfo(self._symmlist)
@@ -193,19 +231,22 @@ class BondsAndAngles():
         bonds = []
         num = 1
         newsymms = {}
+        symms = {}
         for at1, at2, dist, symm2 in self.cif.bonds(without_h):
             if symm2 == '.':
                 symm2 = None
-            num = symmsearch(self.cif, newsymms, num, symm2, self._symms)
+            num = symmsearch(self.cif, newsymms, num, symm2, symms)
             # Atom1 - Atom2:
             atoms = RichText('{}{}{}'.format(at1, halbgeviert, at2))
-            atoms.add('#' + str(self._symms[symm2]) if symm2 else '', superscript=True)
+            atoms.add('#' + str(symms[symm2]) if symm2 else '', superscript=True)
             bonds.append({'atoms': atoms, 'dist': dist.replace('-', minus_sign)})
+        self._symmlist.update(newsymms)
         return bonds
 
     def _get_angles_list(self, without_h):
         angles_list = []
         newsymms = {}
+        symms = {}
         num = 1
         for ang in cif.angles(without_h):
             symm1 = ang.symm1
@@ -214,13 +255,14 @@ class BondsAndAngles():
                 symm1 = None
             if ang.symm2 == '.':
                 symm2 = None
-            num = symmsearch(cif, newsymms, num, symm1, self._symms)
-            num = symmsearch(cif, newsymms, num, symm2, self._symms)
+            num = symmsearch(cif, newsymms, num, symm1, symms)
+            num = symmsearch(cif, newsymms, num, symm2, symms)
             atoms = RichText(ang.label1)
-            atoms.add('#' + str(self._symms[symm1]) if symm1 else '', superscript=True)
+            atoms.add('#' + str(symms[symm1]) if symm1 else '', superscript=True)
             atoms.add('{}{}{}{}'.format(halbgeviert, ang.label2, halbgeviert, ang.label3), superscript=False)
-            atoms.add('#' + str(self._symms[symm2]) if symm2 else '', superscript=True)
+            atoms.add('#' + str(symms[symm2]) if symm2 else '', superscript=True)
             angles_list.append({'atoms': atoms, 'angle': ang.angle_val.replace('-', minus_sign)})
+        self._symmlist.update(newsymms)
         return angles_list
 
 
@@ -273,43 +315,6 @@ class TorsionAngles():
         return torsion_angles
 
 
-def symmsearch(cif: CifContainer, newsymms, num, symm, symms_list) -> int:
-    if symm and symm not in symms_list.keys():
-        symms_list[symm] = num
-        s = SymmetryElement(get_card(cif, symm))
-        s.translate(symm)
-        newsymms[num] = s.toShelxl()
-        num += 1
-    return num
-
-
-def get_atomic_coordinates(cif: CifContainer):
-    for at in cif.atoms(without_h=False):
-        yield {'label': at.label, 'type': at.type, 'x': at.x.replace('-', minus_sign),
-               'y'    : at.y.replace('-', minus_sign),
-               'z'    : at.z, 'part': at.part.replace('-', minus_sign), 'occ': at.occ,
-               'u_eq' : at.u_eq.replace('-', minus_sign)}
-
-
-def get_symminfo(newsymms: dict) -> str:
-    """
-    Adds text about the symmetry generators used in order to add symmetry generated atoms.
-    """
-    line = 'Symmetry transformations used to generate equivalent atoms:\n'
-    nitems = len(newsymms)
-    n = 0
-    for key, value in newsymms.items():
-        sep = ';'
-        if n == nitems:
-            sep = ''
-        n += 1
-        line += "#{}: {}{}   ".format(key, value, sep)
-    if newsymms:
-        return line
-    else:
-        return ''
-
-
 class HydrogenAtoms():
     def __init__(self, cif: CifContainer):
         self.cif = cif
@@ -338,18 +343,16 @@ class HydrogenAtoms():
 def make_report(cif: CifContainer, options: 'Options' = None):
     tpl_doc = DocxTemplate("./template/template_text.docx")
     h = HydrogenAtoms(cif)
-    t = TorsionAngles(cif, False)
-    ba = BondsAndAngles(cif, False)
-    context = {'options'               : {'without_h': True, 'atoms_table': True},
+    t = TorsionAngles(cif, without_h=True)
+    ba = BondsAndAngles(cif, without_h=True)
+    context = {'options'               : {'without_h': True, 'atoms_table': True, 'text': True, 'bonds_table': True},
                'cif'                   : cif,
                'space_group'           : space_group_subdoc(tpl_doc, cif),
                'bold_italic_F'         : RichText('F', italic=True, bold=True),
                'crystal_table_header'  : RichText('Crystal data and structure refinement for {}'
                                                   .format(cif.block.name), style='Heading_2'),
                'data_name_header'      : RichText('{}'.format(cif.block.name), style='Heading_2'),
-               'structure_figure'      : InlineImage(tpl_doc,
-                                                     r'icon/finalcif.png',
-                                                     width=Cm(7.5)),
+               'structure_figure'      : InlineImage(tpl_doc, r'icon/finalcif.png', width=Cm(5.5)),
                'crystallization_method': remove_line_endings(retranslate_delimiter(
                    cif['_exptl_crystal_recrystallization_method'])) or '[No crystallization method given!]',
                'sum_formula'           : format_sum_formula(cif['_chemical_formula_sum'].replace(" ", "")),
@@ -357,6 +360,8 @@ def make_report(cif: CifContainer, options: 'Options' = None):
                'crystal_size'          : this_or_quest(cif['_exptl_crystal_size_min']) + timessym +
                                          this_or_quest(cif['_exptl_crystal_size_mid']) + timessym +
                                          this_or_quest(cif['_exptl_crystal_size_max']),
+               'crystal_colour'        : this_or_quest(cif['_exptl_crystal_colour']),
+               'crystal_shape'         : this_or_quest(cif['_exptl_crystal_description']),
                'radiation'             : get_radiation(cif),
                'wavelength'            : cif['_diffrn_radiation_wavelength'],
                'theta_range'           : get_from_to_theta_range(),
@@ -386,8 +391,8 @@ def make_report(cif: CifContainer, options: 'Options' = None):
                'ls_wR_factor_gt'       : this_or_quest(cif['_refine_ls_wR_factor_gt']),
                'ls_R_factor_all'       : this_or_quest(cif['_refine_ls_R_factor_all']),
                'ls_wR_factor_ref'      : this_or_quest(cif['_refine_ls_wR_factor_ref']),
-               'diff_dens_min'         : get_diff_density_min(),
-               'diff_dens_max'         : get_diff_density_max(),
+               'diff_dens_min'         : get_diff_density_min().replace('-', minus_sign),
+               'diff_dens_max'         : get_diff_density_max().replace('-', minus_sign),
                'exti'                  : get_exti(),
                'flack_x'               : get_flackx(cif),
                'integration_progr'     : get_integration_program(cif),
@@ -414,7 +419,7 @@ def make_report(cif: CifContainer, options: 'Options' = None):
 
 
 if __name__ == '__main__':
-    cif = CifContainer(Path(r'D:\tmp\p31c\sad-final.cif'))
+    cif = CifContainer(Path(r'test-data/p21c.cif'))
     make_report(cif)
     output_filename = "generated_doc.docx"
     if os.name == 'nt':
