@@ -221,14 +221,23 @@ def get_symminfo(newsymms: dict) -> str:
 class BondsAndAngles():
     def __init__(self, cif: CifContainer, without_h: bool):
         self.cif = cif
+        self.without_h = without_h
         self._symmlist = {}
-        self.bonds_as_string: List[Dict[str, str]] = []
+        # These can be used as strings for python-docx:
+        self.bonds_as_string: List[Dict[str:str]] = []
+        self.angles_as_string: List[Dict[str:str]] = []
+        # These can be used as Richtext for python-docx-tpl:
         self.bonds: List[dict] = self._get_bonds_list(without_h)
         self.angles: List[dict] = self._get_angles_list(without_h)
+        # The list of symmetry elements at the table end used for generated atoms:
         self.symminfo: str = get_symminfo(self._symmlist)
 
     def __len__(self):
         return len(self.bonds) + len(self.angles)
+
+    @property
+    def symmetry_generated_atoms_used(self):
+        return len(self._symmlist) > 0
 
     def _get_bonds_list(self, without_h):
         bonds = []
@@ -264,11 +273,21 @@ class BondsAndAngles():
                 symm2 = None
             num = symmsearch(self.cif, newsymms, num, symm1, symms)
             num = symmsearch(self.cif, newsymms, num, symm2, symms)
+            symm1_str = '#' + str(symms[symm1]) if symm1 else ''
+            symm2_str = '#' + str(symms[symm2]) if symm2 else ''
+            angle_val = ang.angle_val.replace('-', minus_sign)
+            # atom1 symm1_str a symm2_str
             atoms = RichText(ang.label1)
-            atoms.add('#' + str(symms[symm1]) if symm1 else '', superscript=True)
-            atoms.add('{}{}{}{}'.format(halbgeviert, ang.label2, halbgeviert, ang.label3), superscript=False)
-            atoms.add('#' + str(symms[symm2]) if symm2 else '', superscript=True)
-            angles_list.append({'atoms': atoms, 'angle': ang.angle_val.replace('-', minus_sign)})
+            atoms.add(symm1_str, superscript=True)
+            a = '{}{}{}{}'.format(halbgeviert, ang.label2, halbgeviert, ang.label3)
+            atoms.add(a, superscript=False)
+            atoms.add(symm2_str, superscript=True)
+            angles_list.append({'atoms': atoms, 'angle': angle_val})
+            self.angles_as_string.append({'atom1': ang.label1,
+                                          'atom2': a,
+                                          'symm1': symm1_str,
+                                          'symm2': symm2_str,
+                                          'angle': angle_val})
         self._symmlist.update(newsymms)
         return angles_list
 
@@ -277,9 +296,19 @@ class TorsionAngles():
 
     def __init__(self, cif: CifContainer, without_h: bool):
         self.cif = cif
+        self.without_h = without_h
         self._symmlist = {}
+        self.torsion_angles_as_string: List[Dict[str:str]] = []
         self.torsion_angles = self._get_torsion_angles_list(without_h)
-        self.torsions_symminfo = get_symminfo(self._symmlist)
+        # The list of symmetry elements at the table end used for generated atoms:
+        self.symminfo: str = get_symminfo(self._symmlist)
+
+    def __len__(self):
+        return len(self.torsion_angles)
+
+    @property
+    def symmetry_generated_atoms_used(self):
+        return len(self._symmlist) > 0
 
     def _get_torsion_angles_list(self, without_h: bool):
         if not self.cif.nangles(without_h) > 0:
@@ -288,62 +317,84 @@ class TorsionAngles():
         newsymms = {}
         num = 1
         torsion_angles = []
-        rowidx = 1
         for tors in self.cif.torsion_angles(without_h):
-            at1, at2, at3, at4, angle, symm1, symm2, symm3, symm4 = \
-                tors.label1, tors.label2, tors.label3, tors.label4, tors.torsang, \
-                tors.symm1, tors.symm2, tors.symm3, tors.symm4
-            rowidx += 1
-            if symm1 == '.':
+            symm1, symm2, symm3, symm4 = tors.symm1, tors.symm2, tors.symm3, tors.symm4
+            if tors.symm1 == '.':
                 symm1 = None
-            if symm2 == '.':
+            if tors.symm2 == '.':
                 symm2 = None
-            if symm3 == '.':
+            if tors.symm3 == '.':
                 symm3 = None
-            if symm4 == '.':
+            if tors.symm4 == '.':
                 symm4 = None
             num = symmsearch(self.cif, newsymms, num, symm1, symms)
             num = symmsearch(self.cif, newsymms, num, symm2, symms)
             num = symmsearch(self.cif, newsymms, num, symm3, symms)
             num = symmsearch(self.cif, newsymms, num, symm4, symms)
-            atoms = RichText(at1)
-            atoms.add('#' + str(symms[symm1]) if symm1 else '', superscript=True)
+            symmstr1 = '#' + str(symms[symm1]) if symm1 else ''
+            symmstr2 = '#' + str(symms[symm2]) if symm2 else ''
+            symmstr3 = '#' + str(symms[symm3]) if symm3 else ''
+            symmstr4 = '#' + str(symms[symm4]) if symm4 else ''
+            atoms = RichText(tors.label1)
+            atoms.add(symmstr1, superscript=True)
             atoms.add(halbgeviert)
-            atoms.add(at2)
-            atoms.add('#' + str(symms[symm2]) if symm2 else '', superscript=True)
+            atoms.add(tors.label2)
+            atoms.add(symmstr2, superscript=True)
             atoms.add(halbgeviert)
-            atoms.add(at3)
-            atoms.add('#' + str(symms[symm3]) if symm3 else '', superscript=True)
+            atoms.add(tors.label3)
+            atoms.add(symmstr3, superscript=True)
             atoms.add(halbgeviert)
-            atoms.add(at4)  # labels
-            atoms.add('#' + str(symms[symm4]) if symm4 else '', superscript=True)
-            torsion_angles.append({'atoms': atoms, 'angle': angle.replace('-', minus_sign)})
+            atoms.add(tors.label4)  # labels
+            atoms.add(symmstr4, superscript=True)
+            angle = tors.torsang.replace('-', minus_sign)
+            torsion_angles.append({'atoms': atoms, 'angle': angle})
+            self.torsion_angles_as_string.append({'atom1': tors.label1,
+                                                  'atom2': tors.label2,
+                                                  'atom3': tors.label3,
+                                                  'atom4': tors.label4,
+                                                  'symm1': symmstr1,
+                                                  'symm2': symmstr2,
+                                                  'symm3': symmstr3,
+                                                  'symm4': symmstr4,
+                                                  'angle': angle})
         self._symmlist = newsymms
         return torsion_angles
 
 
-class HydrogenAtoms():
+class HydrogenBonds():
     def __init__(self, cif: CifContainer):
         self.cif = cif
-        self.symmlist = {}
+        self._symmlist = {}
+        self.hydrogen_bonds_as_str: List[Dict[str:str]] = []
         self.hydrogen_bonds = self._get_hydrogen_bonds()
-        self.hydrogen_symminfo = get_symminfo(self.symmlist)
+        self.symminfo = get_symminfo(self._symmlist)
+
+    def __len__(self):
+        return len(self.hydrogen_bonds)
+
+    @property
+    def symmetry_generated_atoms_used(self):
+        return len(self._symmlist) > 0
 
     def _get_hydrogen_bonds(self) -> List[dict]:
         symms = {}
         newsymms = {}
         num = 1
         atoms_list = []
-        for label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm in self.cif.hydrogen_bonds():
+        for h in self.cif.hydrogen_bonds():
+            symm = h.symm
             if symm == '.':
                 symm = None
             num = symmsearch(self.cif, newsymms, num, symm, symms)
             symmval = ('#' + str(symms[symm])) if symm else ''
-            atoms = RichText(label_d + halbgeviert + label_h + ellipsis_mid + label_a)
+            a = h.label_d + halbgeviert + h.label_h + ellipsis_mid + h.label_a
+            atoms = RichText(a)
             atoms.add(symmval, superscript=True)
-            atoms_list.append(
-                {'atoms': atoms, 'dist_dh': dist_dh, 'dist_ha': dist_ha, 'dist_da': dist_da, 'angle_dha': angle_dha})
-        self.symmlist = newsymms
+            atoms_list.append({'atoms'  : atoms, 'dist_dh': h.dist_dh, 'dist_ha': h.dist_ha,
+                               'dist_da': h.dist_da, 'angle_dha': h.angle_dha})
+            self.hydrogen_bonds_as_str.append({'atoms': a, 'dist_dh': h.dist_dh, 'dist_ha': h.dist_ha,
+                               'dist_da': h.dist_da, 'angle_dha': h.angle_dha, 'symm': symmval})
+        self._symmlist = newsymms
         return atoms_list
 
 
@@ -360,7 +411,7 @@ def make_templated_report(options: Options, file_obj: Path, output_filename: str
     tpl_doc = DocxTemplate(Path(__file__).parent.parent.joinpath(Path("./template/template_text.docx")))
     ba = BondsAndAngles(cif, without_h=options.without_h)
     t = TorsionAngles(cif, without_h=options.without_h)
-    h = HydrogenAtoms(cif)
+    h = HydrogenBonds(cif)
     context = {'options'               : options,
                # {'without_h': True, 'atoms_table': True, 'text': True, 'bonds_table': True},
                'cif'                   : cif,
@@ -423,9 +474,9 @@ def make_templated_report(options: Options, file_obj: Path, output_filename: str
                'angles'                : ba.angles,
                'ba_symminfo'           : ba.symminfo,
                'torsions'              : t.torsion_angles,
-               'torsion_symminfo'      : t.torsions_symminfo,
+               'torsion_symminfo'      : t.symminfo,
                'hydrogen_bonds'        : h.hydrogen_bonds,
-               'hydrogen_symminfo'     : h.hydrogen_symminfo,
+               'hydrogen_symminfo'     : h.symminfo,
                }
 
     # Filter definition for {{foobar|filter}} things:
