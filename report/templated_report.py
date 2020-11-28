@@ -162,7 +162,7 @@ def get_absortion_correction_program(cif: CifContainer) -> str:
             scale_prog = 'SADABS'
         else:
             scale_prog = 'TWINABS'
-    scale_prog += version
+    scale_prog += " " + version
     return scale_prog
 
 
