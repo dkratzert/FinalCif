@@ -28,7 +28,6 @@ from gemmi import cif
 from qtpy.QtGui import QDesktopServices
 
 import displaymol
-from app_path import application_path
 from cif.cif_file_io import CifContainer
 from cif.text import set_pair_delimited, utf8_to_str, retranslate_delimiter, quote
 from datafiles.bruker_data import BrukerData
@@ -44,7 +43,6 @@ from gui.finalcif_gui import Ui_FinalCifWindow
 from gui.loops import Loop
 from gui.vrf_classes import MyVRFContainer, VREF
 from report.archive_report import ArchiveReport
-from report.tables import make_report_from
 from report.templated_report import make_templated_report
 from tools.checkcif import MyHTMLParser, AlertHelp, CheckCif
 from tools.dsrmath import my_isnumeric
@@ -113,6 +111,8 @@ class AppWindow(QMainWindow):
         # To make file drag&drop working:
         self.setAcceptDrops(True)
         self.show()
+        self.load_templates_list()
+        self.ui.TemplatesListWidget.setCurrentItem(self.ui.TemplatesListWidget.item(self.options.current_template))
 
     def distribute_cif_main_table_columns_evenly(self):
         hheader = self.ui.cif_main_table.horizontalHeader()
@@ -246,6 +246,11 @@ class AppWindow(QMainWindow):
         # help
         self.ui.HelpPushButton.clicked.connect(self.show_help)
         self.ui.ReportPicPushButton.clicked.connect(self.set_report_picture)
+        #
+        self.ui.AddNewTemplPushButton.clicked.connect(self.add_new_template)
+        self.ui.RemoveTemplPushButton.clicked.connect(self.remove_current_template)
+        #
+        self.ui.TemplatesListWidget.currentItemChanged.connect(self.template_changed)
 
     def resizeEvent(self, a0: QResizeEvent) -> None:
         """It called when the main window resizes."""
@@ -280,6 +285,54 @@ class AppWindow(QMainWindow):
         shred.shred_cif()
         if not self.running_inside_unit_test:
             self.explore_current_dir()
+
+    def add_new_template(self) -> None:
+        templ_path, _ = QFileDialog.getOpenFileName(filter="DOCX file (*.docx)",
+                                                    initialFilter="DOCX file (*.docx)",
+                                                    caption='Open a Report Template File')
+        itemslist = self.get_templates_list_from_widget()
+        if templ_path in itemslist:
+            return
+        item = QListWidgetItem(templ_path)
+        self.ui.TemplatesListWidget.addItem(item)
+        self.save_templates_list()
+
+    def load_templates_list(self):
+        templates = self.settings.load_template('report_templates_list')
+        if not templates:
+            return
+        for t in templates:
+            if t.startswith('Use internal default'):
+                continue
+            item = QListWidgetItem(t)
+            self.ui.TemplatesListWidget.addItem(item)
+
+    def save_templates_list(self):
+        itemslist = self.get_templates_list_from_widget()
+        self.settings.save_template('report_templates_list', itemslist)
+
+    def get_templates_list_from_widget(self) -> List:
+        itemslist = []
+        lw = self.ui.TemplatesListWidget
+        for num in range(lw.count()):
+            itemtext = lw.item(num).text()
+            if not itemtext in itemslist:
+                itemslist.append(itemtext)
+        return itemslist
+
+    def remove_current_template(self) -> None:
+        lw = self.ui.TemplatesListWidget
+        if lw.currentItem().text().startswith('Use internal default'):
+            return
+        lw.takeItem(lw.row(lw.currentItem()))
+        self.save_templates_list()
+
+    def template_changed(self):
+        lw = self.ui.TemplatesListWidget
+        # print(lw.row(lw.currentItem()))
+        options = self.settings.load_options()
+        options.update({'current_report_template': lw.row(lw.currentItem())})
+        self.settings.save_options(options)
 
     def open_checkcif_page(self):
         """
@@ -766,11 +819,12 @@ class AppWindow(QMainWindow):
             picfile = Path(self.final_cif_file_name.stem + '.gif')
         try:
             # Hard-wired report:
-            #make_report_from(options=self.options, file_obj=self.final_cif_file_name,
+            # make_report_from(options=self.options, file_obj=self.final_cif_file_name,
             #                 output_filename=report_filename, path=application_path, picfile=picfile)
             # Templated report:
+            template_path = Path("./template/template_text.docx")
             make_templated_report(options=self.options, file_obj=self.final_cif_file_name,
-                             output_filename=report_filename, picfile=picfile)
+                                  output_filename=report_filename, picfile=picfile, template_path=template_path)
         except FileNotFoundError as e:
             if DEBUG:
                 raise
@@ -788,6 +842,9 @@ class AppWindow(QMainWindow):
         if not self.running_inside_unit_test:
             self.open_report_document(report_filename)
         # Save report and other files to a zip file:
+        self.zip_report(report_filename)
+
+    def zip_report(self, report_filename):
         zipfile = Path(strip_finalcif_of_name(self.cif.fileobj.stem) + '-finalcif.zip')
         if zipfile.exists():
             zipfile = next_path(zipfile.stem + '-%s.zip')

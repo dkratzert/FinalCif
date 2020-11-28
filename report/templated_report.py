@@ -392,8 +392,8 @@ class HydrogenBonds():
             atoms.add(symmval, superscript=True)
             atoms_list.append({'atoms'  : atoms, 'dist_dh': h.dist_dh, 'dist_ha': h.dist_ha,
                                'dist_da': h.dist_da, 'angle_dha': h.angle_dha})
-            self.hydrogen_bonds_as_str.append({'atoms': a, 'dist_dh': h.dist_dh, 'dist_ha': h.dist_ha,
-                               'dist_da': h.dist_da, 'angle_dha': h.angle_dha, 'symm': symmval})
+            self.hydrogen_bonds_as_str.append({'atoms'  : a, 'dist_dh': h.dist_dh, 'dist_ha': h.dist_ha,
+                                               'dist_da': h.dist_da, 'angle_dha': h.angle_dha, 'symm': symmval})
         self._symmlist = newsymms
         return atoms_list
 
@@ -405,10 +405,9 @@ def make_picture(options: Options, picfile: Path, tpl_doc: DocxTemplate):
     return None
 
 
-def make_templated_report(options: Options, file_obj: Path, output_filename: str, picfile: Path):
+def make_templated_report(options: Options, file_obj: Path, output_filename: str, picfile: Path, template_path: Path):
     cif = CifContainer(file_obj)
-    print(file_obj.absolute())
-    tpl_doc = DocxTemplate(Path(__file__).parent.parent.joinpath(Path("./template/template_text.docx")))
+    tpl_doc = DocxTemplate(Path(__file__).parent.parent.joinpath(template_path))
     ba = BondsAndAngles(cif, without_h=options.without_h)
     t = TorsionAngles(cif, without_h=options.without_h)
     h = HydrogenBonds(cif)

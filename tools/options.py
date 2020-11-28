@@ -29,14 +29,16 @@ class Options:
         self.ui.MainStackedWidget.go_to_options_page()
 
     def _state_changed(self):
+        lw = self.ui.TemplatesListWidget
         self._options = {
-            'report_text'  : not self.ui.ReportTextCheckBox.isChecked(),
-            'without_h'    : self.ui.HAtomsCheckBox.isChecked(),
-            'picture_width': self.ui.PictureWidthDoubleSpinBox.value(),
-            'checkcif_url' : self.ui.CheckCIFServerURLTextedit.text(),
-            'atoms_table': True,
-            'bonds_table': True,
-            'hydrogen_bonds': True,
+            'report_text'            : not self.ui.ReportTextCheckBox.isChecked(),
+            'without_h'              : self.ui.HAtomsCheckBox.isChecked(),
+            'picture_width'          : self.ui.PictureWidthDoubleSpinBox.value(),
+            'checkcif_url'           : self.ui.CheckCIFServerURLTextedit.text(),
+            'atoms_table'            : True,
+            'bonds_table'            : True,
+            'hydrogen_bonds'         : True,
+            'current_report_template': lw.row(lw.currentItem())
         }
         # print('saving:', self._options)
         self.settings.save_options(self._options)
@@ -64,8 +66,18 @@ class Options:
             return False
 
     @property
+    def current_template(self):
+        try:
+            return self.settings.load_options()['current_report_template']
+        except KeyError:
+            return 0
+
+    @property
     def picture_width(self):
-        width = self.settings.load_options()['picture_width']
+        try:
+            width = self.settings.load_options()['picture_width']
+        except KeyError:
+            return 7.5
         if width < 0.001:
             # preventing invisible picture
             return 7.5
@@ -74,4 +86,7 @@ class Options:
 
     @property
     def checkcif_url(self):
-        return self.settings.load_options()['checkcif_url']
+        try:
+            return self.settings.load_options()['checkcif_url']
+        except KeyError:
+            return ''
