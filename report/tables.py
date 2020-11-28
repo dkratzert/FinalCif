@@ -29,14 +29,13 @@ from tools.misc import protected_space, angstrom, bequal, sigma_sm, halbgeviert,
 from tools.options import Options
 
 
-def make_report_from(options: Options, file_obj: Path, output_filename: str = None, path: str = '',
-                     picfile: Path = None) -> str:
+def make_report_from(options: Options, file_obj: Path, output_filename: str = None, picfile: Path = None) -> str:
     """
     Creates a tabular cif report.
     :param file_obj: Input cif file.
     :param output_filename: the table is saved to this file.
     """
-    document = create_document(path)
+    document = create_document()
     ref: Union[ReferenceList, None] = None
     if file_obj.exists():
         try:
@@ -148,14 +147,14 @@ def make_report_text(cif, document: Document) -> ReferenceList:
     return ref
 
 
-def create_document(report_docx_path: str) -> Document:
+def create_document() -> Document:
     """
     Creates the report docx document.
     :param report_docx_path: Path to the report file.
     :return: The document instance.
     """
     try:
-        document = Document(Path(report_docx_path).joinpath(application_path, 'template/template1.docx').absolute())
+        document = Document(Path(application_path).joinpath('template/template1.docx').absolute())
     except FileNotFoundError as e:
         print(e)
         document = Document()
