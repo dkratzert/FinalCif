@@ -43,6 +43,7 @@ from gui.finalcif_gui import Ui_FinalCifWindow
 from gui.loops import Loop
 from gui.vrf_classes import MyVRFContainer, VREF
 from report.archive_report import ArchiveReport
+from report.tables import make_report_from
 from report.templated_report import make_templated_report
 from tools.checkcif import MyHTMLParser, AlertHelp, CheckCif
 from tools.dsrmath import my_isnumeric
@@ -819,12 +820,14 @@ class AppWindow(QMainWindow):
             picfile = Path(self.final_cif_file_name.stem + '.gif')
         try:
             # Hard-wired report:
-            # make_report_from(options=self.options, file_obj=self.final_cif_file_name,
-            #                 output_filename=report_filename, path=application_path, picfile=picfile)
+            if self.ui.TemplatesListWidget.currentRow() == 0:
+                make_report_from(options=self.options, file_obj=self.final_cif_file_name,
+                                 output_filename=report_filename, picfile=picfile)
             # Templated report:
-            template_path = Path("./template/template_text.docx")
-            make_templated_report(options=self.options, file_obj=self.final_cif_file_name,
-                                  output_filename=report_filename, picfile=picfile, template_path=template_path)
+            else:
+                make_templated_report(options=self.options, file_obj=self.final_cif_file_name,
+                                      output_filename=report_filename, picfile=picfile,
+                                      template_path=Path(self.ui.TemplatesListWidget.currentItem().text()))
         except FileNotFoundError as e:
             if DEBUG:
                 raise
