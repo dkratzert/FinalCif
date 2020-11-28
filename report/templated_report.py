@@ -3,7 +3,7 @@ import os
 import subprocess
 from math import sin, radians
 from pathlib import Path
-from typing import List
+from typing import List, Dict
 
 import jinja2
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
@@ -222,11 +222,13 @@ class BondsAndAngles():
     def __init__(self, cif: CifContainer, without_h: bool):
         self.cif = cif
         self._symmlist = {}
-        # self._newsymms = {}
-        # self._symms = {}
-        self.bonds = self._get_bonds_list(without_h)
-        self.angles = self._get_angles_list(without_h)
-        self.symminfo = get_symminfo(self._symmlist)
+        self.bonds_as_string: List[Dict[str, str]] = []
+        self.bonds: List[dict] = self._get_bonds_list(without_h)
+        self.angles: List[dict] = self._get_angles_list(without_h)
+        self.symminfo: str = get_symminfo(self._symmlist)
+
+    def __len__(self):
+        return len(self.bonds) + len(self.angles)
 
     def _get_bonds_list(self, without_h):
         bonds = []
@@ -234,13 +236,17 @@ class BondsAndAngles():
         newsymms = {}
         symms = {}
         for at1, at2, dist, symm2 in self.cif.bonds(without_h):
+            dist = dist.replace('-', minus_sign)
             if symm2 == '.':
                 symm2 = None
             num = symmsearch(self.cif, newsymms, num, symm2, symms)
             # Atom1 - Atom2:
-            atoms = RichText('{}{}{}'.format(at1, halbgeviert, at2))
-            atoms.add('#' + str(symms[symm2]) if symm2 else '', superscript=True)
-            bonds.append({'atoms': atoms, 'dist': dist.replace('-', minus_sign)})
+            a = '{}{}{}'.format(at1, halbgeviert, at2)
+            symm = '#' + str(symms[symm2]) if symm2 else ''
+            atoms = RichText(a)
+            atoms.add(symm, superscript=True)
+            bonds.append({'atoms': atoms, 'dist': dist})
+            self.bonds_as_string.append({'atoms': a, 'symm': symm, 'dist': dist})
         self._symmlist.update(newsymms)
         return bonds
 

@@ -23,6 +23,7 @@ from report.references import ReferenceList, DSRReference2018, DSRReference2015
 from report.report_text import CCDC, CrstalSelection, Crystallization, DataReduct, Disorder, Hydrogens, MachineType, \
     SolveRefine, format_radiation, FinalCifreport, SpaceChar
 from report.symm import SymmetryElement
+from report.templated_report import BondsAndAngles
 from tools.misc import protected_space, angstrom, bequal, sigma_sm, halbgeviert, degree_sign, ellipsis_mid, less_or_equal, \
     timessym, lambdasym, this_or_quest, isnumeric
 from tools.options import Options
@@ -81,7 +82,8 @@ def make_report_from(options: Options, file_obj: Path, output_filename: str = No
             table_num += 1
             document.add_heading(r"Table {}. Bond lengths and angles for {}".format(table_num, cif.block.name), 2)
             make_columns_section(document, columns='2')
-            table_num = add_bonds_and_angles_table(document, cif, table_num, options.without_h)
+            ba = BondsAndAngles(cif, without_h=options.without_h)
+            table_num = add_bonds_and_angles_table(document, cif, table_num, ba)
         if len(list(cif.torsion_angles())) > 0:
             make_columns_section(document, columns='1')
             table_num += 1
@@ -481,87 +483,48 @@ def add_coords_table(document: Document, cif: CifContainer, table_num: int):
     return table_num
 
 
-def add_bonds_and_angles_table(document: Document, cif: CifContainer, table_num: int, without_H: bool = False) -> int:
+def add_bonds_and_angles_table(document: Document, cif: CifContainer, table_num: int, data: BondsAndAngles = None) -> int:
     """
     Make table with bonds and angles.
     """
     # creating rows in advance is *much* faster!
-    bond_angle_table = document.add_table(rows=cif.nbonds(without_H) + cif.nangles(without_H) + 3, cols=2,
-                                          style='Table Grid')
+    bond_angle_table = document.add_table(rows=len(data) + 3, cols=2, style='Table Grid')
     # Bond/Angle  value
     head_row = bond_angle_table.rows[0]
     ar = head_row.cells[0].paragraphs[0].add_run('Atom{}Atom'.format(halbgeviert)).bold = True
     p_length = head_row.cells[1].paragraphs[0]
     p_length.add_run('Length [{}]'.format(angstrom)).bold = True
     p_length.paragraph_format.tab_stops.add_tab_stop(Cm(0.4), WD_TAB_ALIGNMENT.DECIMAL, WD_TAB_LEADER.SPACES)
-    symms = {}
-    newsymms = {}
-    num = 1
     # having a list of column cella before is *much* faster!
     col1_cells = bond_angle_table.columns[0].cells
     col2_cells = bond_angle_table.columns[1].cells
     rowidx = 1
     # filling rows:
-    for at1, at2, val, symm2 in cif.bonds(without_H):
+    for b in data.bonds_as_string:
         c0, c1 = col1_cells[rowidx], col2_cells[rowidx]
         rowidx += 1
-        if symm2 == '.':
-            symm2 = None
-        if symm2 and symm2 not in symms.keys():
-            symms[symm2] = num
-            # Applys translational symmetry to symmcards:
-            # 3_556 -> 2
-            card = get_card(cif, symm2)
-            s = SymmetryElement(card)
-            s.translate(symm2)
-            newsymms[num] = s.toShelxl()
-            num += 1
-        # Atom1 - Atom2:
-        c0.text = '{}{}{}'.format(at1, halbgeviert, at2)
-        c0.paragraphs[0].add_run('#' + str(symms[symm2]) if symm2 else '').font.superscript = True
-        c1.text = str(val)  # bond
+        c0.text = b.get('atoms')
+        c0.paragraphs[0].add_run(b.get('symm')).font.superscript = True
+        c1.text = str(b.get('dist'))  # bond
     ############ the angles ####################
+    return table_num
     head_row = bond_angle_table.rows[rowidx + 1]
     head_row.cells[0].paragraphs[0].add_run('Atom{0}Atom{0}Atom'.format(halbgeviert)).bold = True
     head_row.cells[1].paragraphs[0].add_run('Angle [{}]'.format(degree_sign)).bold = True
     set_cell_border(head_row.cells[0], bottom={"sz": 2, "color": "#000000", "val": "single"})
     set_cell_border(head_row.cells[1], bottom={"sz": 2, "color": "#000000", "val": "single"})
-    card = ''
     rowidx += 2
-    for at1, at2, at3, angle, symm1, symm3 in cif.angles(without_H):
+    for a in data.angles:
         c0, c1 = col1_cells[rowidx], col2_cells[rowidx]
         rowidx += 1
-        if symm1 == '.':
-            symm1 = None
-        if symm3 == '.':
-            symm3 = None
-        if symm1 and symm1 not in symms.keys():
-            symms[symm1] = num
-            card = get_card(cif, symm1)
-            # Applys translational symmetry to symmcards:
-            # 3_556 -> 2
-            s = SymmetryElement(card)
-            s.translate(symm1)
-            newsymms[num] = s.toShelxl()
-            num += 1
-        if symm3 and symm3 not in symms.keys():
-            symms[symm3] = num
-            card = get_card(cif, symm3)
-            s = SymmetryElement(card)
-            s.translate(symm3)
-            newsymms[num] = s.toShelxl()
-            num += 1
-        c0.text = at1
-        cp0 = c0.paragraphs[0]
-        cp0.add_run('#' + str(symms[symm1]) if symm1 else '').font.superscript = True
-        cp0.add_run('{}{}{}{}'.format(halbgeviert, at2, halbgeviert, at3))
-        cp0.add_run('#' + str(symms[symm3]) if symm3 else '').font.superscript = True
-        c1.text = str(angle)  # angle
+        c0.text = a.get('atoms')
+        c1.text = a.get('angle')
     set_column_width(bond_angle_table.columns[0], Cm(3.7))
     set_column_width(bond_angle_table.columns[1], Cm(2.5))
-    if without_H:
-        add_hydrogen_omit_info(document)
-    add_last_symminfo_line(newsymms, document)
+    #if without_h:
+    #    add_hydrogen_omit_info(document)
+    p = document.add_paragraph('')
+    p.add_run(data.symminfo)
     return table_num
 
 
@@ -837,5 +800,5 @@ if __name__ == '__main__':
     output_filename = 'tables.docx'
     import time
 
-    # make_report_from(get_files_from_current_dir()[5])
+    #make_report_from(Path('./test-data').rglob('*.cif')[1])
     t1 = time.perf_counter()
