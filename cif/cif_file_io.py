@@ -586,11 +586,11 @@ class CifContainer():
         angle_dha = self.block.find_loop('_geom_hbond_angle_DHA')
         symm = self.block.find_loop('_geom_hbond_site_symmetry_A')
         # publ = self.block.find_loop('_geom_hbond_publ_flag')
-        for label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm in zip(label_d, label_h, label_a,
-                                                                                         dist_dh, dist_ha, dist_da,
-                                                                                         angle_dha,
-                                                                                         self.checksymm(symm)):
-            yield label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm
+        for label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm in \
+                zip(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, self.checksymm(symm)):
+            hydr = namedtuple('HydrogenBond', ('label_d', 'label_h', 'label_a', 'dist_dh', 'dist_ha', 'dist_da',
+                                               'angle_dha', 'symm'))
+            yield hydr(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm)
 
     def key_value_pairs(self) -> List[Tuple[str, str]]:
         """

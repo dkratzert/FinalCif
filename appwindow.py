@@ -765,10 +765,12 @@ class AppWindow(QMainWindow):
         else:
             picfile = Path(self.final_cif_file_name.stem + '.gif')
         try:
-            make_report_from(options=self.options, file_obj=self.final_cif_file_name,
-                             output_filename=report_filename, path=application_path, picfile=picfile)
-            #make_templated_report(options=self.options, file_obj=self.final_cif_file_name,
-            #                 output_filename=report_filename, picfile=picfile)
+            # Hard-wired report:
+            #make_report_from(options=self.options, file_obj=self.final_cif_file_name,
+            #                 output_filename=report_filename, path=application_path, picfile=picfile)
+            # Templated report:
+            make_templated_report(options=self.options, file_obj=self.final_cif_file_name,
+                             output_filename=report_filename, picfile=picfile)
         except FileNotFoundError as e:
             if DEBUG:
                 raise
