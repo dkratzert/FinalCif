@@ -124,13 +124,13 @@ class FinalCifSettings():
 
     def save_template(self, name: str, items: list):
         """
-        Saves Equipment templates into the settings as dictionary.
+        Saves Equipment templates into the settings as list.
         :param name: is the name of the template.
         :param items: List of key value pairs
         """
         self.settings.setValue(name, items)
 
-    def load_template(self, name: str) -> List[list]:
+    def load_template(self, name: str) -> List[str]:
         """
         Load templates abnd return them as list of lists.
         """
