@@ -883,7 +883,6 @@ class Ui_FinalCifWindow(object):
         font.setPointSize(14)
         self.TemplatesListWidget.setFont(font)
         self.TemplatesListWidget.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)
-        self.TemplatesListWidget.setTextElideMode(QtCore.Qt.ElideLeft)
         self.TemplatesListWidget.setSelectionRectVisible(False)
         self.TemplatesListWidget.setObjectName("TemplatesListWidget")
         item = QtWidgets.QListWidgetItem()
