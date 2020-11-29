@@ -33,9 +33,9 @@ class TestOptions(unittest.TestCase):
     def test_without_h(self):
         self.assertEqual(self.myapp.ui.HAtomsCheckBox.isChecked(), False)
         self.myapp.ui.HAtomsCheckBox.setChecked(True)
-        self.assertEqual(self.myapp.options.without_H, True)
+        self.assertEqual(self.myapp.options.without_h, True)
         self.myapp.ui.HAtomsCheckBox.setChecked(False)
-        self.assertEqual(self.myapp.options.without_H, False)
+        self.assertEqual(self.myapp.options.without_h, False)
 
     def test_report_text(self):
         self.assertEqual(self.myapp.ui.ReportTextCheckBox.isChecked(), False)
@@ -60,4 +60,4 @@ class TestOptions(unittest.TestCase):
 
     def test_without_H_option(self):
         self.myapp.ui.HAtomsCheckBox.setChecked(False)
-        self.assertEqual(self.myapp.options.without_H, False)
+        self.assertEqual(self.myapp.options.without_h, False)

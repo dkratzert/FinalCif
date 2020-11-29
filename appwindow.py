@@ -28,7 +28,6 @@ from gemmi import cif
 from qtpy.QtGui import QDesktopServices
 
 import displaymol
-from app_path import application_path
 from cif.cif_file_io import CifContainer
 from cif.text import set_pair_delimited, utf8_to_str, retranslate_delimiter, quote
 from datafiles.bruker_data import BrukerData
@@ -45,6 +44,8 @@ from gui.loops import Loop
 from gui.vrf_classes import MyVRFContainer, VREF
 from report.archive_report import ArchiveReport
 from report.tables import make_report_from
+from report.templated_report import TemplatedReport
+from template.templates import ReportTemplates
 from tools.checkcif import MyHTMLParser, AlertHelp, CheckCif
 from tools.dsrmath import my_isnumeric
 from tools.misc import strip_finalcif_of_name, next_path, do_not_import_keys, celltxt, to_float, combobox_fields, \
@@ -112,6 +113,7 @@ class AppWindow(QMainWindow):
         # To make file drag&drop working:
         self.setAcceptDrops(True)
         self.show()
+        self.templates = ReportTemplates(self, self.settings)
 
     def distribute_cif_main_table_columns_evenly(self):
         hheader = self.ui.cif_main_table.horizontalHeader()
@@ -245,6 +247,7 @@ class AppWindow(QMainWindow):
         # help
         self.ui.HelpPushButton.clicked.connect(self.show_help)
         self.ui.ReportPicPushButton.clicked.connect(self.set_report_picture)
+        #
 
     def resizeEvent(self, a0: QResizeEvent) -> None:
         """It called when the main window resizes."""
@@ -764,17 +767,22 @@ class AppWindow(QMainWindow):
         else:
             picfile = Path(self.final_cif_file_name.stem + '.gif')
         try:
-            make_report_from(options=self.options,
-                             file_obj=self.final_cif_file_name,
-                             output_filename=report_filename,
-                             path=application_path,
-                             picfile=picfile)
+            # Hard-wired report:
+            if self.ui.TemplatesListWidget.currentRow() == 0:
+                make_report_from(options=self.options, file_obj=self.final_cif_file_name,
+                                 output_filename=report_filename, picfile=picfile)
+            # Templated report:
+            else:
+                t = TemplatedReport()
+                t.make_templated_report(options=self.options, file_obj=self.final_cif_file_name,
+                                        output_filename=report_filename, picfile=picfile,
+                                        template_path=Path(self.ui.TemplatesListWidget.currentItem().text()))
         except FileNotFoundError as e:
             if DEBUG:
                 raise
             print('Unable to make report from cif file.')
             not_ok = e
-            unable_to_open_message(self.cif.fileobj, not_ok)
+            show_general_warning("The report templates could not be found:\n"+str(not_ok))
             return
         except PermissionError:
             if DEBUG:
@@ -786,6 +794,9 @@ class AppWindow(QMainWindow):
         if not self.running_inside_unit_test:
             self.open_report_document(report_filename)
         # Save report and other files to a zip file:
+        self.zip_report(report_filename)
+
+    def zip_report(self, report_filename):
         zipfile = Path(strip_finalcif_of_name(self.cif.fileobj.stem) + '-finalcif.zip')
         if zipfile.exists():
             zipfile = next_path(zipfile.stem + '-%s.zip')

@@ -111,7 +111,7 @@ class SaintListFile():
         return float(self.cell_res_max_2t) / 2.0
 
     def __repr__(self):
-        out = 'Version: {}, file: {}\n'.format(self.version, self.filename)
+        out = 'Version: {}, file: {}\n'.format(self.version, self.filename.name)
         out += 'Number of samples: {} with {} components.\n'.format(self.nsamples, self.components_firstsample)
         out += 'Used Reflections: {}\n'.format(self.cell_reflections)
         out += 'min thata: {}\n'.format(self.cell_res_min_theta)

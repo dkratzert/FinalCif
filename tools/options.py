@@ -1,9 +1,3 @@
-from contextlib import suppress
-from pathlib import Path
-
-import qtawesome as qta
-from PyQt5.QtWidgets import QFileDialog
-
 from gui.finalcif_gui import Ui_FinalCifWindow
 from tools.settings import FinalCifSettings
 
@@ -28,18 +22,23 @@ class Options:
         This method and pnöy this is called in order to show the options page.
         It also sets the state of the options widgets.
         """
-        self.ui.HAtomsCheckBox.setChecked(self.without_H)
+        self.ui.HAtomsCheckBox.setChecked(self.without_h)
         self.ui.ReportTextCheckBox.setChecked(not self.report_text)
         self.ui.PictureWidthDoubleSpinBox.setValue(self.picture_width)
         self.ui.CheckCIFServerURLTextedit.setText(self.checkcif_url)
         self.ui.MainStackedWidget.go_to_options_page()
 
     def _state_changed(self):
+        lw = self.ui.TemplatesListWidget
         self._options = {
-            'report_text'  : not self.ui.ReportTextCheckBox.isChecked(),
-            'without_H'    : self.ui.HAtomsCheckBox.isChecked(),
-            'picture_width': self.ui.PictureWidthDoubleSpinBox.value(),
-            'checkcif_url' : self.ui.CheckCIFServerURLTextedit.text()
+            'report_text'            : not self.ui.ReportTextCheckBox.isChecked(),
+            'without_h'              : self.ui.HAtomsCheckBox.isChecked(),
+            'picture_width'          : self.ui.PictureWidthDoubleSpinBox.value(),
+            'checkcif_url'           : self.ui.CheckCIFServerURLTextedit.text(),
+            'atoms_table'            : True,
+            'bonds_table'            : True,
+            'hydrogen_bonds'         : True,
+            'current_report_template': lw.row(lw.currentItem())
         }
         # print('saving:', self._options)
         self.settings.save_options(self._options)
@@ -54,15 +53,31 @@ class Options:
 
     @property
     def report_text(self):
-        return self.settings.load_options()['report_text']
+        try:
+            return self.settings.load_options()['report_text']
+        except KeyError:
+            return True
 
     @property
-    def without_H(self):
-        return self.settings.load_options()['without_H']
+    def without_h(self):
+        try:
+            return self.settings.load_options()['without_h']
+        except KeyError:
+            return False
+
+    @property
+    def current_template(self):
+        try:
+            return self.settings.load_options()['current_report_template']
+        except KeyError:
+            return 0
 
     @property
     def picture_width(self):
-        width = self.settings.load_options()['picture_width']
+        try:
+            width = self.settings.load_options()['picture_width']
+        except KeyError:
+            return 7.5
         if width < 0.001:
             # preventing invisible picture
             return 7.5
@@ -71,4 +86,7 @@ class Options:
 
     @property
     def checkcif_url(self):
-        return self.settings.load_options()['checkcif_url']
+        try:
+            return self.settings.load_options()['checkcif_url']
+        except KeyError:
+            return ''

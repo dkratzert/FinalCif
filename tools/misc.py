@@ -15,7 +15,7 @@ from pathlib import Path
 from typing import Union, Tuple, List
 
 # protected space character:
-prot_space = u'\u00A0'
+protected_space = u'\u00A0'
 # Angstrom character:
 angstrom = u'\u212B'
 # bigger or equal:
@@ -24,6 +24,8 @@ bequal = u'\u2265'
 sigma_sm = u'\u03C3'
 # en dash:
 halbgeviert = u'\u2013'
+# minus sign:
+minus_sign = u'\u2212'
 # degree sign:
 degree_sign = u'\u00B0'
 # middle ellipsis
@@ -31,7 +33,7 @@ ellipsis_mid = u'\u22EF'
 # ellipsis
 ellipsis_char = u'\u2026'
 # less or equal sign
-lessequal = u'\u2264'
+less_or_equal = u'\u2264'
 # times (cross) symbol
 timessym = u'\u00d7'
 # lambda
@@ -194,7 +196,10 @@ def this_or_quest(value: Union[str, int, float, None]) -> Union[str, int, float]
     """
     Returns the value or a question mark if the value is None.
     """
-    return value if value is not None else '?'
+    if value == '' or value is None:
+        return '?'
+    else:
+        return value
 
 
 def to_float(st) -> Union[float, List[float], None]:
