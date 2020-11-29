@@ -23,7 +23,7 @@ from PyQt5.QtGui import QKeySequence, QResizeEvent, QMoveEvent, QTextCursor, QFo
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtWidgets import QMainWindow, QHeaderView, QShortcut, QCheckBox, QListWidgetItem, QApplication, \
-    QPlainTextEdit, QTableView, QFileDialog
+    QPlainTextEdit, QTableView, QFileDialog, QListWidget
 from gemmi import cif
 from qtpy.QtGui import QDesktopServices
 
@@ -323,7 +323,7 @@ class AppWindow(QMainWindow):
 
     def remove_current_template(self) -> None:
         lw = self.ui.TemplatesListWidget
-        if lw.currentItem().text().startswith('Use internal default'):
+        if lw.currentRow() == 0:
             return
         lw.takeItem(lw.row(lw.currentItem()))
         self.save_templates_list()
@@ -333,7 +333,13 @@ class AppWindow(QMainWindow):
         # print(lw.row(lw.currentItem()))
         options = self.settings.load_options()
         options.update({'current_report_template': lw.row(lw.currentItem())})
+        self.uncheck_all_templates(lw)
+        lw.currentItem().setCheckState(Qt.Checked)
         self.settings.save_options(options)
+
+    def uncheck_all_templates(self, lw: QListWidget):
+        for num in range(lw.count()):
+            lw.item(num).setCheckState(Qt.Unchecked)
 
     def open_checkcif_page(self):
         """
