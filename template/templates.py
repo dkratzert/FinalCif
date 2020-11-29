@@ -13,12 +13,12 @@ class ReportTemplates:
         self.settings = settings
         self.lw = self.app.ui.TemplatesListWidget
         self.load_templates_list()
-        self.app.ui.TemplatesListWidget.setCurrentItem(
-            self.app.ui.TemplatesListWidget.item(self.app.options.current_template))
         self.app.ui.AddNewTemplPushButton.clicked.connect(self.add_new_template)
         self.app.ui.RemoveTemplPushButton.clicked.connect(self.remove_current_template)
         self.app.ui.TemplatesListWidget.currentItemChanged.connect(self.template_changed)
         self.app.ui.TemplatesListWidget.itemChanged.connect(self.template_changed)
+        self.app.ui.TemplatesListWidget.setCurrentItem(
+            self.app.ui.TemplatesListWidget.item(self.app.options.current_template))
 
     def add_new_template(self) -> None:
         templ_path, _ = QFileDialog.getOpenFileName(filter="DOCX file (*.docx)",
@@ -66,7 +66,7 @@ class ReportTemplates:
         # Blocking signal in order to avoid infinitive recursion:
         self.app.ui.TemplatesListWidget.blockSignals(True)
         options = self.settings.load_options()
-        options.update({'current_report_template': self.lw.row(self.lw.currentItem())})
+        options.update({'current_report_template': self.lw.row(currentItem)})
         self.uncheck_all_templates()
         currentItem.setCheckState(Qt.Checked)
         self.settings.save_options(options)
