@@ -159,13 +159,23 @@ def create_document() -> Document:
         print(e)
         document = Document()
     # Deleting first (empty) paragraph, otherwise first line would be an empty one:
+    delete_first_paragraph(document)
+    return document
+
+
+def delete_paragraph(paragraph: Paragraph) -> None:
+    p = paragraph._element
+    p.getparent().remove(p)
+    p._p = p._element = None
+
+
+def delete_first_paragraph(document: Document):
     try:
         p = document.paragraphs[0]
         delete_paragraph(p)
     except IndexError:
         # no paragraph there
         pass
-    return document
 
 
 def make_columns_section(document, columns: str = '1'):
@@ -180,12 +190,6 @@ def make_columns_section(document, columns: str = '1'):
     sectPr = section._sectPr
     cols = sectPr.xpath('./w:cols')[0]
     cols.set(qn('w:num'), '{}'.format(columns))
-
-
-def delete_paragraph(paragraph) -> None:
-    p = paragraph._element
-    p.getparent().remove(p)
-    p._p = p._element = None
 
 
 def set_cell_border(cell: _Cell, **kwargs) -> None:

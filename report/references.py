@@ -9,6 +9,7 @@ from contextlib import suppress
 from typing import List
 
 from docx.text.paragraph import Paragraph
+from docxtpl import RichText
 
 from tools.version import VERSION
 
@@ -154,6 +155,34 @@ class ReferenceFormater():
         if any([self.journal, self.pages, self.year, self.volume, self.doi]):
             p.add_run('.')
 
+    @property
+    def richtext(self):
+        r = RichText('')
+        if self.authors:
+            r.add(self.authors)
+            r.add(', ')
+        if self.journal:
+            r.add(self.journal, italic=True)
+            if not self.journal.endswith('.'):
+                r.add(', ')
+            else:
+                r.add(' ')
+        if self.year:
+            r.add(self.year, bold=True)
+            r.add(', ')
+        if self.volume:
+            r.add(self.volume, italic=True)
+            r.add(', ')
+        if self.pages:
+            r.add(self.pages)
+            if self.doi:
+                r.add(', ')
+        if self.doi:
+            r.add(self.doi)
+        if any([self.journal, self.pages, self.year, self.volume, self.doi]):
+            r.add('.')
+        return r
+
     def __repr__(self):
         txt = ''
         if self.authors:
@@ -260,6 +289,22 @@ class SADABS_TWINABS_Reference(ReferenceFormater):
         self.doi = 'doi:10.1107/S1600576714022985'
 
 
+class SCALE3_ABSPACK_Reference(ReferenceFormater):
+    def __init__(self):
+        """
+        Oxford Diffraction Ltd., scale3abspack (version 1.04), An Oxford Diffraction program, Abingdon, Oxford (U.K.) 2005
+
+        >>> SCALE3_ABSPACK_Reference()
+        Oxford Diffraction Ltd., scale3abspack, (version 1.04), Abingdon, Oxford (U.K.) 2005.
+        """
+        super().__init__()
+        self.authors = 'Oxford Diffraction Ltd.'
+        self.journal = 'scale3abspack'
+        self.volume = '(version 1.04)'
+        self.pages = 'Abingdon, Oxford (U.K.) 2005'
+
+
+
 class SHELXTReference(ReferenceFormater):
     def __init__(self):
         """
@@ -288,6 +333,21 @@ class SHELXSReference(ReferenceFormater):
         self.volume = 'A64'
         self.pages = '112–122'
         self.doi = 'doi:10.1107/S0108767307043930'
+
+
+class SHELXDReference(ReferenceFormater):
+    def __init__(self):
+        """
+        >>> SHELXDReference()
+        I. Usón, G. M. Sheldrick, Acta Cryst. 2018, D74, 106–116, doi:10.1107/S2059798317015121.
+        """
+        super().__init__()
+        self.authors = 'I. Usón, G. M. Sheldrick'
+        self.journal = 'Acta Cryst.'
+        self.year = '2018'
+        self.volume = 'D74'
+        self.pages = '106–116'
+        self.doi = 'doi:10.1107/S2059798317015121'
 
 
 class SHELXLReference(ReferenceFormater):
