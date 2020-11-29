@@ -2021,7 +2021,7 @@ The data source will be ignored until next program restart.</string>
                       </property>
                       <item>
                        <property name="text">
-                        <string>Use internal default template</string>
+                        <string>Use FinalCif default template</string>
                        </property>
                        <property name="font">
                         <font>

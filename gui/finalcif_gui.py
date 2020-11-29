@@ -1246,7 +1246,7 @@ class Ui_FinalCifWindow(object):
         __sortingEnabled = self.TemplatesListWidget.isSortingEnabled()
         self.TemplatesListWidget.setSortingEnabled(False)
         item = self.TemplatesListWidget.item(0)
-        item.setText(_translate("FinalCifWindow", "Use internal default template"))
+        item.setText(_translate("FinalCifWindow", "Use FinalCif default template"))
         self.TemplatesListWidget.setSortingEnabled(__sortingEnabled)
         self.label.setText(_translate("FinalCifWindow", "<html><head/><body><p>Get more templates here:  <a href=\"https://github.com/dkratzert/FinalCif\"><span style=\" text-decoration: underline; color:#0068da;\">https://github.com/dkratzert/FinalCif</span></a></p></body></html>"))
         self.PictureWidthLabel.setText(_translate("FinalCifWindow", "Picture width [cm]"))

@@ -782,7 +782,7 @@ class AppWindow(QMainWindow):
                 raise
             print('Unable to make report from cif file.')
             not_ok = e
-            unable_to_open_message(self.cif.fileobj, not_ok)
+            show_general_warning(str(not_ok))
             return
         except PermissionError:
             if DEBUG:
