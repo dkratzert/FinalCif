@@ -44,7 +44,7 @@ from gui.loops import Loop
 from gui.vrf_classes import MyVRFContainer, VREF
 from report.archive_report import ArchiveReport
 from report.tables import make_report_from
-from report.templated_report import make_templated_report
+from report.templated_report import TemplatedReport
 from template.templates import ReportTemplates
 from tools.checkcif import MyHTMLParser, AlertHelp, CheckCif
 from tools.dsrmath import my_isnumeric
@@ -773,9 +773,10 @@ class AppWindow(QMainWindow):
                                  output_filename=report_filename, picfile=picfile)
             # Templated report:
             else:
-                make_templated_report(options=self.options, file_obj=self.final_cif_file_name,
-                                      output_filename=report_filename, picfile=picfile,
-                                      template_path=Path(self.ui.TemplatesListWidget.currentItem().text()))
+                t = TemplatedReport()
+                t.make_templated_report(options=self.options, file_obj=self.final_cif_file_name,
+                                        output_filename=report_filename, picfile=picfile,
+                                        template_path=Path(self.ui.TemplatesListWidget.currentItem().text()))
         except FileNotFoundError as e:
             if DEBUG:
                 raise

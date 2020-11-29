@@ -10,7 +10,8 @@ from app_path import application_path
 from cif.cif_file_io import CifContainer
 from cif.text import retranslate_delimiter
 from report.references import DummyReference, BrukerReference, SORTAVReference, ReferenceList, CCDCReference, \
-    SHELXLReference, SHELXTReference, SHELXSReference, FinalCifReference, ShelXleReference, Olex2Reference
+    SHELXLReference, SHELXTReference, SHELXSReference, FinalCifReference, ShelXleReference, Olex2Reference, \
+    SHELXDReference, SADABS_TWINABS_Reference, SCALE3_ABSPACK_Reference
 from tests.helpers import remove_line_endings
 from tools.misc import protected_space, angstrom, zero_width_space
 
@@ -167,12 +168,14 @@ class DataReduct():
                 scale_prog = 'SADABS'
             else:
                 scale_prog = 'TWINABS'
-            absorpt_ref = BrukerReference(scale_prog, version)
+            # absorpt_ref = BrukerReference(scale_prog, version)
+            absorpt_ref = SADABS_TWINABS_Reference()
         if 'SORTAV' in absdetails.upper():
             scale_prog = 'SORTAV'
             absorpt_ref = SORTAVReference()
         if 'crysalis' in abs_details.lower():
             scale_prog = 'SCALE3 ABSPACK'
+            absorpt_ref = SCALE3_ABSPACK_Reference()
         sentence = 'All data were integrated with {} and {} {} absorption correction using {} was applied.'
         txt = sentence.format(integration_prog,
                               get_inf_article(abstype),
@@ -193,6 +196,8 @@ class SolveRefine():
             solveref = SHELXTReference()
         if 'SHELXS' in solution_prog.upper():
             solveref = SHELXSReference()
+        if 'SHELXD' in solution_prog.upper():
+            solveref = SHELXDReference()
         refined = gstr(self.cif['_computing_structure_refinement']) or '??'
         if refined.upper().startswith(('SHELXL', 'XL')):
             refineref = SHELXLReference()
