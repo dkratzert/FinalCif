@@ -1,6 +1,9 @@
+from contextlib import suppress
+from pathlib import Path
 from typing import List
 
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QFileDialog, QListWidgetItem
 
 # from appwindow import AppWindow
@@ -8,6 +11,9 @@ from tools.settings import FinalCifSettings
 
 
 class ReportTemplates:
+    """
+    Displays the list of report templates in the options menu.
+    """
     def __init__(self, app: 'AppWindow', settings: FinalCifSettings):
         self.app = app
         self.settings = settings
@@ -30,6 +36,7 @@ class ReportTemplates:
             self.app.status_bar.show_message('This templates is already in the list.', 10000)
             return
         item = QListWidgetItem(templ_path)
+        item.setCheckState(Qt.Unchecked)
         self.app.ui.TemplatesListWidget.addItem(item)
         self.save_templates_list()
 
@@ -37,10 +44,13 @@ class ReportTemplates:
         templates = self.settings.load_template('report_templates_list')
         if not templates:
             return
-        for t in templates:
-            if t.startswith('Use internal default'):
+        for text in templates:
+            if text.startswith('Use'):
                 continue
-            item = QListWidgetItem(t)
+            item = QListWidgetItem(text)
+            with suppress(Exception):
+                if not Path(text).exists():
+                    item.setForeground(QColor(220, 12, 34))
             self.app.ui.TemplatesListWidget.addItem(item)
             item.setCheckState(Qt.Unchecked)
 
