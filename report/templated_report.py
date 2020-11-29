@@ -476,6 +476,7 @@ def make_templated_report(options: Options, file_obj: Path, output_filename: str
                'torsion_symminfo'      : t.symminfo,
                'hydrogen_bonds'        : h.hydrogen_bonds,
                'hydrogen_symminfo'     : h.symminfo,
+               'literature': ['hjgfjhgf jkjf kjf kj', 'jhgfgkh kuzfkf kzfu ht']
                }
 
     # Filter definition for {{foobar|filter}} things:
