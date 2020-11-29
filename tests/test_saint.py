@@ -18,7 +18,7 @@ class MyTestCase(unittest.TestCase):
         os.chdir(Path(__file__).absolute().parent.parent)
 
     def test_saint_repr(self):
-        output = 'Version: SAINT V8.38A, file: D:\GitHub\FinalCif\\test-data\TB_fs20_v1_0m._ls\n' \
+        output = 'Version: SAINT V8.38A, file: TB_fs20_v1_0m._ls\n' \
                  'Number of samples: 1 with 1 components.\n' \
                  'Used Reflections: 9478\n' \
                  'min thata: 2.33\n' \
