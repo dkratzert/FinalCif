@@ -124,13 +124,13 @@ class FinalCifSettings():
 
     def save_template(self, name: str, items: list):
         """
-        Saves Equipment templates into the settings as dictionary.
+        Saves Equipment templates into the settings as list.
         :param name: is the name of the template.
         :param items: List of key value pairs
         """
         self.settings.setValue(name, items)
 
-    def load_template(self, name: str) -> List[list]:
+    def load_template(self, name: str) -> List[str]:
         """
         Load templates abnd return them as list of lists.
         """
@@ -171,10 +171,15 @@ class FinalCifSettings():
         if not options:
             options = {'report_text'  : True,
                        'picture_width': 7.5,
-                       'without_H'    : False,
-                       'checkcif_url' : 'https://checkcif.iucr.org/cgi-bin/checkcif_with_hkl'
+                       'without_h'    : False,
+                       'checkcif_url' : 'https://checkcif.iucr.org/cgi-bin/checkcif_with_hkl',
                        }
         self.settings.endGroup()
+        # These are default values for now:
+        options.update({'atoms_table'   : True,
+                        'bonds_table'   : True,
+                        'hydrogen_bonds': True,  # Wasserstoffbrückenbindungen
+                        })
         return options
 
     def save_options(self, options: dict):

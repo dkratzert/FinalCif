@@ -4,14 +4,16 @@
 #   this notice you can do whatever you want with this stuff. If we meet some day,
 #   and you think this stuff is worth it, you can buy me a beer in return.
 #   ----------------------------------------------------------------------------
-
+import os
 import unittest
+from pathlib import Path
 
 from datafiles.sadabs import Sadabs
 
 
 class TestSADABSWU19(unittest.TestCase):
     def setUp(self) -> None:
+        os.chdir(Path(__file__).absolute().parent.parent)
         self.s = Sadabs(r'test-data/IK_WU19.abs')  # this is a sadabs file
 
     def test_twincomp(self):
@@ -38,6 +40,7 @@ class TestSADABSWU19(unittest.TestCase):
 
 class TestTWINABS(unittest.TestCase):
     def setUp(self) -> None:
+        os.chdir(Path(__file__).absolute().parent.parent)
         self.s = Sadabs(r'test-data/twin-4-5.abs')  # this is a twinabs file
 
     def test_transmission(self):

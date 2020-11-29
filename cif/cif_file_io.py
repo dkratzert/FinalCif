@@ -6,9 +6,10 @@
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
 import re
+from collections import namedtuple
 from math import sin, cos, sqrt
 from pathlib import Path
-from typing import Dict, List, Tuple, Union
+from typing import Dict, List, Tuple, Union, NamedTuple
 
 import gemmi
 
@@ -429,7 +430,7 @@ class CifContainer():
         ops = gemmi.GroupOps([gemmi.Op(o) for o in self.symmops])
         return ops.is_centric()
 
-    def atoms(self, without_h: bool = False) -> Tuple[str, str, str, str, str, str, str, str]:
+    def atoms(self, without_h: bool = False) -> NamedTuple:
         labels = self.block.find_loop('_atom_site_label')
         types = self.block.find_loop('_atom_site_type_symbol')
         x = self.block.find_loop('_atom_site_fract_x')
@@ -438,11 +439,13 @@ class CifContainer():
         part = self.block.find_loop('_atom_site_disorder_group')
         occ = self.block.find_loop('_atom_site_occupancy')
         u_eq = self.block.find_loop('_atom_site_U_iso_or_equiv')
-        for label, type, x, y, z, part, occ, ueq in zip(labels, types, x, y, z, part, occ, u_eq):
+        for label, type, x, y, z, part, occ, u_eq in zip(labels, types, x, y, z, part, occ, u_eq):
             if without_h and self.ishydrogen(label):
                 continue
             #         0    1   2  3  4   5   6     7
-            yield label, type, x, y, z, part, occ, ueq
+            # yield label, type, x, y, z, part, occ, ueq
+            atom = namedtuple('Atom', ('label', 'type', 'x', 'y', 'z', 'part', 'occ', 'u_eq'))
+            yield atom(label=label, type=type, x=x, y=y, z=z, part=part, occ=occ, u_eq=u_eq)
 
     @property
     def atoms_fract(self) -> List:
@@ -487,6 +490,12 @@ class CifContainer():
         else:
             return False
 
+    def checksymm(self, symm):
+        """Add translation of 555 to symmetry elements without translation"""
+        if len(symm) == 1 and not (symm == '.' or symm == '?'):
+            symm = symm + '_555'
+        return symm
+
     def bonds(self, without_h: bool = False):
         """
         Yields a list of bonds in the cif file.
@@ -496,23 +505,27 @@ class CifContainer():
         dist = self.block.find_loop('_geom_bond_distance')
         symm = self.block.find_loop('_geom_bond_site_symmetry_2')
         for label1, label2, dist, symm in zip(label1, label2, dist, symm):
+            symm = self.checksymm(symm)
             if without_h and (self.ishydrogen(label1) or self.ishydrogen(label2)):
                 continue
             else:
-                yield (label1, label2, dist, symm)
+                bond = namedtuple('Bond', ('label1', 'label2', 'dist', 'symm'))
+                yield bond(label1=label1, label2=label2, dist=dist, symm=self.checksymm(symm))
 
-    def angles(self, without_H: bool = False):
+    def angles(self, without_H: bool = False) -> NamedTuple:
         label1 = self.block.find_loop('_geom_angle_atom_site_label_1')
         label2 = self.block.find_loop('_geom_angle_atom_site_label_2')
         label3 = self.block.find_loop('_geom_angle_atom_site_label_3')
-        angle = self.block.find_loop('_geom_angle')
+        angle_val = self.block.find_loop('_geom_angle')
         symm1 = self.block.find_loop('_geom_angle_site_symmetry_1')
         symm2 = self.block.find_loop('_geom_angle_site_symmetry_3')
-        for label1, label2, label3, angle, symm1, symm2 in zip(label1, label2, label3, angle, symm1, symm2):
+        for label1, label2, label3, angle_val, symm1, symm2 in zip(label1, label2, label3, angle_val, symm1, symm2):
             if without_H and (self.ishydrogen(label1) or self.ishydrogen(label2) or self.ishydrogen(label3)):
                 continue
             else:
-                yield (label1, label2, label3, angle, symm1, symm2)
+                angle = namedtuple('Angle', ('label1', 'label2', 'label3', 'angle_val', 'symm1', 'symm2'))
+                yield angle(label1=label1, label2=label2, label3=label3, angle_val=angle_val,
+                            symm1=self.checksymm(symm1), symm2=self.checksymm(symm2))
 
     def iselement(self, name: str) -> str:
         return self._name2elements[name.upper()]
@@ -555,7 +568,13 @@ class CifContainer():
             if without_h and (self.ishydrogen(label1) or self.ishydrogen(label2)
                               or self.ishydrogen(label3) or self.ishydrogen(label3)):
                 continue
-            yield label1, label2, label3, label4, torsang, symm1, symm2, symm3, symm4
+            tors = namedtuple('Torsion',
+                              ('label1', 'label2', 'label3', 'label4', 'torsang', 'symm1', 'symm2', 'symm3', 'symm4'))
+            yield tors(label1=label1, label2=label2, label3=label3, label4=label4, torsang=torsang,
+                       symm1=self.checksymm(symm1),
+                       symm2=self.checksymm(symm2),
+                       symm3=self.checksymm(symm3),
+                       symm4=self.checksymm(symm4))
 
     def hydrogen_bonds(self):
         label_d = self.block.find_loop('_geom_hbond_atom_site_label_D')
@@ -567,10 +586,11 @@ class CifContainer():
         angle_dha = self.block.find_loop('_geom_hbond_angle_DHA')
         symm = self.block.find_loop('_geom_hbond_site_symmetry_A')
         # publ = self.block.find_loop('_geom_hbond_publ_flag')
-        for label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm in zip(label_d, label_h, label_a,
-                                                                                         dist_dh, dist_ha, dist_da,
-                                                                                         angle_dha, symm):
-            yield label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm
+        for label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm in \
+                zip(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, self.checksymm(symm)):
+            hydr = namedtuple('HydrogenBond', ('label_d', 'label_h', 'label_a', 'dist_dh', 'dist_ha', 'dist_da',
+                                               'angle_dha', 'symm'))
+            yield hydr(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm)
 
     def key_value_pairs(self) -> List[Tuple[str, str]]:
         """

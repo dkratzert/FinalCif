@@ -9,6 +9,8 @@
 def unify_line_endings(text: str):
     return '\n'.join(text.splitlines())
 
+def remove_line_endings(text: str):
+    return ' '.join(text.splitlines())
 
 export_templ_data = ['data_D8__VENTURE',
                      "_diffrn_radiation_monochromator   'mirror optics'",

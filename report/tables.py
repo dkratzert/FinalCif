@@ -9,11 +9,12 @@ from pathlib import Path
 from typing import List, Sequence, Union
 
 from docx import Document
-from docx.enum.text import WD_TAB_ALIGNMENT, WD_TAB_LEADER, WD_BREAK
+from docx.enum.text import WD_BREAK
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Cm, Length, Pt
 from docx.table import Table, _Cell
+from docx.text.paragraph import Paragraph
 
 from app_path import application_path
 from cif.cif_file_io import CifContainer
@@ -21,20 +22,20 @@ from report.mtools import cif_keywords_list, format_space_group
 from report.references import ReferenceList, DSRReference2018, DSRReference2015
 from report.report_text import CCDC, CrstalSelection, Crystallization, DataReduct, Disorder, Hydrogens, MachineType, \
     SolveRefine, format_radiation, FinalCifreport, SpaceChar
-from report.symm import SymmetryElement
-from tools.misc import prot_space, angstrom, bequal, sigma_sm, halbgeviert, degree_sign, ellipsis_mid, lessequal, \
+from report.templated_report import BondsAndAngles, TorsionAngles, HydrogenBonds
+from tools.misc import protected_space, angstrom, bequal, sigma_sm, halbgeviert, degree_sign, ellipsis_mid, \
+    less_or_equal, \
     timessym, lambdasym, this_or_quest, isnumeric
 from tools.options import Options
 
 
-def make_report_from(options: Options, file_obj: Path, output_filename: str = None, path: str = '',
-                     picfile: Path = None) -> str:
+def make_report_from(options: Options, file_obj: Path, output_filename: str = None, picfile: Path = None) -> str:
     """
     Creates a tabular cif report.
     :param file_obj: Input cif file.
     :param output_filename: the table is saved to this file.
     """
-    document = create_document(path)
+    document = create_document()
     ref: Union[ReferenceList, None] = None
     if file_obj.exists():
         try:
@@ -80,18 +81,21 @@ def make_report_from(options: Options, file_obj: Path, output_filename: str = No
             table_num += 1
             document.add_heading(r"Table {}. Bond lengths and angles for {}".format(table_num, cif.block.name), 2)
             make_columns_section(document, columns='2')
-            table_num = add_bonds_and_angles_table(document, cif, table_num, options.without_H)
+            ba = BondsAndAngles(cif, without_h=options.without_h)
+            table_num = add_bonds_and_angles_table(document, table_num, ba)
         if len(list(cif.torsion_angles())) > 0:
             make_columns_section(document, columns='1')
             table_num += 1
             document.add_heading(r"Table {}. Torsion angles for {}".format(table_num, cif.block.name), 2)
             make_columns_section(document, columns='2')
-            table_num = add_torsion_angles(document, cif, table_num, options.without_H)
+            tors = TorsionAngles(cif, without_h=options.without_h)
+            table_num = add_torsion_angles(document, table_num, tors)
         make_columns_section(document, columns='1')
         if len(list(cif.hydrogen_bonds())) > 0:
             table_num += 1
+            h = HydrogenBonds(cif)
             document.add_heading(r"Table {}. Hydrogen bonds for {}".format(table_num, cif.block.name), 2)
-            table_num = add_hydrogen_bonds(document, cif, table_num)
+            table_num = add_hydrogen_bonds(document, table_num, h)
         document.add_paragraph('')
     else:
         make_columns_section(document, columns='1')
@@ -143,25 +147,35 @@ def make_report_text(cif, document: Document) -> ReferenceList:
     return ref
 
 
-def create_document(report_docx_path: str) -> Document:
+def create_document() -> Document:
     """
     Creates the report docx document.
     :param report_docx_path: Path to the report file.
     :return: The document instance.
     """
     try:
-        document = Document(Path(report_docx_path).joinpath(application_path, 'template/template1.docx').absolute())
+        document = Document(Path(application_path).joinpath('template/template1.docx').absolute())
     except FileNotFoundError as e:
         print(e)
         document = Document()
     # Deleting first (empty) paragraph, otherwise first line would be an empty one:
+    delete_first_paragraph(document)
+    return document
+
+
+def delete_paragraph(paragraph: Paragraph) -> None:
+    p = paragraph._element
+    p.getparent().remove(p)
+    p._p = p._element = None
+
+
+def delete_first_paragraph(document: Document):
     try:
         p = document.paragraphs[0]
         delete_paragraph(p)
     except IndexError:
         # no paragraph there
         pass
-    return document
 
 
 def make_columns_section(document, columns: str = '1'):
@@ -176,12 +190,6 @@ def make_columns_section(document, columns: str = '1'):
     sectPr = section._sectPr
     cols = sectPr.xpath('./w:cols')[0]
     cols.set(qn('w:num'), '{}'.format(columns))
-
-
-def delete_paragraph(paragraph) -> None:
-    p = paragraph._element
-    p.getparent().remove(p)
-    p._p = p._element = None
 
 
 def set_cell_border(cell: _Cell, **kwargs) -> None:
@@ -260,12 +268,12 @@ def populate_main_table_values(main_table: Table, cif: CifContainer):
     crystal_size_min = cif['_exptl_crystal_size_min']
     crystal_size_mid = cif['_exptl_crystal_size_mid']
     crystal_size_max = cif['_exptl_crystal_size_max']
+    theta_min = cif['_diffrn_reflns_theta_min']
+    theta_max = cif['_diffrn_reflns_theta_max']
     limit_h_min = cif['_diffrn_reflns_limit_h_min']
     limit_h_max = cif['_diffrn_reflns_limit_h_max']
     limit_k_min = cif['_diffrn_reflns_limit_k_min']
     limit_k_max = cif['_diffrn_reflns_limit_k_max']
-    theta_min = cif['_diffrn_reflns_theta_min']
-    theta_max = cif['_diffrn_reflns_theta_max']
     limit_l_min = cif['_diffrn_reflns_limit_l_min']
     limit_l_max = cif['_diffrn_reflns_limit_l_max']
     ls_number_reflns = cif['_refine_ls_number_reflns']
@@ -290,7 +298,7 @@ def populate_main_table_values(main_table: Table, cif: CifContainer):
                                   this_or_quest(crystal_size_mid) + timessym + \
                                   this_or_quest(crystal_size_min)
     wavelength = str(' ({} ='.format(lambdasym) + this_or_quest(radiation_wavelength) +
-                     '{}{})'.format(prot_space, angstrom)).replace(' ', '')
+                     '{}{})'.format(protected_space, angstrom)).replace(' ', '')
     # radtype: ('Mo', 'K', '\\a')
     radtype = format_radiation(radiation_type)
     radrun = main_table.cell(20, 1).paragraphs[0]
@@ -305,15 +313,16 @@ def populate_main_table_values(main_table: Table, cif: CifContainer):
     # wavelength lambda:
     radrun.add_run(' ' + wavelength)
     try:
-        d_max = ' ({:.2f}{}{})'.format(float(radiation_wavelength) / (2 * sin(radians(float(theta_max)))), prot_space,
+        d_max = ' ({:.2f}{}{})'.format(float(radiation_wavelength) / (2 * sin(radians(float(theta_max)))),
+                                       protected_space,
                                        angstrom)
         # 2theta range:
         main_table.cell(21, 1).text = "{:.2f} to {:.2f}{}".format(2 * float(theta_min), 2 * float(theta_max), d_max)
     except ValueError:
         main_table.cell(21, 1).text = '? to ?'
-    main_table.cell(22, 1).text = limit_h_min + ' {} h {} '.format(lessequal, lessequal) + limit_h_max + '\n' \
-                                  + limit_k_min + ' {} k {} '.format(lessequal, lessequal) + limit_k_max + '\n' \
-                                  + limit_l_min + ' {} l {} '.format(lessequal, lessequal) + limit_l_max
+    main_table.cell(22, 1).text = limit_h_min + ' {} h {} '.format(less_or_equal, less_or_equal) + limit_h_max + '\n' \
+                                  + limit_k_min + ' {} k {} '.format(less_or_equal, less_or_equal) + limit_k_max + '\n' \
+                                  + limit_l_min + ' {} l {} '.format(less_or_equal, less_or_equal) + limit_l_max
     rint_p = main_table.cell(24, 1).paragraphs[0]
     add_r_int_value(cif, rint_p)
     main_table.cell(25, 1).paragraphs[0].add_run(completeness)
@@ -354,7 +363,7 @@ def add_r1sig_and_wr2full(cif, r2sig_p, rfull_p):
     rfull_p.add_run(' = ' + ls_wR_factor_ref)
 
 
-def add_r_int_value(cif, rint_p):
+def add_r_int_value(cif: CifContainer, rint_p: Paragraph):
     reflns_number_total = cif['_reflns_number_total']
     reflns_av_R_equivalents = cif['_diffrn_reflns_av_R_equivalents']
     reflns_av_unetI = cif['_diffrn_reflns_av_unetI/netI']
@@ -367,7 +376,7 @@ def add_r_int_value(cif, rint_p):
     rint_p.add_run(' = ' + this_or_quest(reflns_av_unetI))
 
 
-def add_regular_key_value_pairs(cif, main_table):
+def add_regular_key_value_pairs(cif: CifContainer, main_table: Table) -> None:
     for _, key in enumerate(cif_keywords_list):
         # key[1] contains the row number:
         cell = main_table.cell(key[1] + 1, 1)
@@ -411,16 +420,13 @@ def add_coords_table(document: Document, cif: CifContainer, table_num: int):
     h = document.add_heading(headline, 2)
     h.add_run('U').font.italic = True
     h.add_run('eq').font.subscript = True
-    # eq.italic = True
-    h.add_run('{}[{}'.format(prot_space, angstrom))
+    h.add_run('{}[{}'.format(protected_space, angstrom))
     h.add_run('2').font.superscript = True
     h.add_run('] for {}'.format(cif.block.name))
-    coords_table = document.add_table(rows=len(atoms) + 1, cols=5)
-    # coords_table.style = document.styles['Table Grid']
-    coords_table.style = 'Table Grid'
+    coords_table = document.add_table(rows=len(atoms) + 1, cols=5, style='Table Grid')
     # Atom	x	y	z	U(eq)
     head_row = coords_table.rows[0]
-    ar = head_row.cells[0].paragraphs[0].add_run('Atom').bold = True
+    head_row.cells[0].paragraphs[0].add_run('Atom').bold = True
     px = head_row.cells[1].paragraphs[0]
     ar = px.add_run('x')
     ar.bold = True
@@ -440,8 +446,7 @@ def add_coords_table(document: Document, cif: CifContainer, table_num: int):
     ar2 = pu.add_run('eq')
     ar2.bold = True
     ar2.font.subscript = True
-    # pu.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-    # having a list of column cella before is *much* faster!
+    # having a list of column cells before is *much* faster!
     col0_cells = coords_table.columns[0].cells
     col1_cells = coords_table.columns[1].cells
     col2_cells = coords_table.columns[2].cells
@@ -480,212 +485,122 @@ def add_coords_table(document: Document, cif: CifContainer, table_num: int):
     return table_num
 
 
-def add_bonds_and_angles_table(document: Document, cif: CifContainer, table_num: int, without_H: bool = False) -> int:
+def add_bonds_and_angles_table(document: Document, table_num: int, data: BondsAndAngles = None) -> int:
     """
     Make table with bonds and angles.
     """
     # creating rows in advance is *much* faster!
-    bond_angle_table = document.add_table(rows=cif.nbonds(without_H) + cif.nangles(without_H) + 3, cols=2,
-                                          style='Table Grid')
-    # Bond/Angle  value
+    bond_angle_table = document.add_table(rows=len(data) + 3, cols=2, style='Table Grid')
     head_row = bond_angle_table.rows[0]
-    ar = head_row.cells[0].paragraphs[0].add_run('Atom{}Atom'.format(halbgeviert)).bold = True
+    head_row.cells[0].paragraphs[0].add_run('Atom{}Atom'.format(halbgeviert)).bold = True
     p_length = head_row.cells[1].paragraphs[0]
     p_length.add_run('Length [{}]'.format(angstrom)).bold = True
-    p_length.paragraph_format.tab_stops.add_tab_stop(Cm(0.4), WD_TAB_ALIGNMENT.DECIMAL, WD_TAB_LEADER.SPACES)
-    symms = {}
-    newsymms = {}
-    num = 1
     # having a list of column cella before is *much* faster!
     col1_cells = bond_angle_table.columns[0].cells
     col2_cells = bond_angle_table.columns[1].cells
     rowidx = 1
     # filling rows:
-    for at1, at2, val, symm2 in cif.bonds(without_H):
+    for b in data.bonds_as_string:
         c0, c1 = col1_cells[rowidx], col2_cells[rowidx]
         rowidx += 1
-        if symm2 == '.':
-            symm2 = None
-        if symm2 and symm2 not in symms.keys():
-            symms[symm2] = num
-            # Applys translational symmetry to symmcards:
-            # 3_556 -> 2
-            card = get_card(cif, symm2)
-            s = SymmetryElement(card)
-            s.translate(symm2)
-            newsymms[num] = s.toShelxl()
-            num += 1
-        # Atom1 - Atom2:
-        c0.text = '{}{}{}'.format(at1, halbgeviert, at2)
-        c0.paragraphs[0].add_run('#' + str(symms[symm2]) if symm2 else '').font.superscript = True
-        c1.text = str(val)  # bond
+        c0.text = b.get('atoms')
+        c0.paragraphs[0].add_run(b.get('symm')).font.superscript = True
+        c1.text = str(b.get('dist'))  # bond
     ############ the angles ####################
     head_row = bond_angle_table.rows[rowidx + 1]
     head_row.cells[0].paragraphs[0].add_run('Atom{0}Atom{0}Atom'.format(halbgeviert)).bold = True
     head_row.cells[1].paragraphs[0].add_run('Angle [{}]'.format(degree_sign)).bold = True
     set_cell_border(head_row.cells[0], bottom={"sz": 2, "color": "#000000", "val": "single"})
     set_cell_border(head_row.cells[1], bottom={"sz": 2, "color": "#000000", "val": "single"})
-    card = ''
     rowidx += 2
-    for at1, at2, at3, angle, symm1, symm3 in cif.angles(without_H):
+    for a in data.angles_as_string:
         c0, c1 = col1_cells[rowidx], col2_cells[rowidx]
         rowidx += 1
-        if symm1 == '.':
-            symm1 = None
-        if symm3 == '.':
-            symm3 = None
-        if symm1 and symm1 not in symms.keys():
-            symms[symm1] = num
-            card = get_card(cif, symm1)
-            # Applys translational symmetry to symmcards:
-            # 3_556 -> 2
-            s = SymmetryElement(card)
-            s.translate(symm1)
-            newsymms[num] = s.toShelxl()
-            num += 1
-        if symm3 and symm3 not in symms.keys():
-            symms[symm3] = num
-            card = get_card(cif, symm3)
-            s = SymmetryElement(card)
-            s.translate(symm3)
-            newsymms[num] = s.toShelxl()
-            num += 1
-        c0.text = at1
+        # atom1 symm1_str atom2 symm2_str
+        c0.text = a.get('atom1')
         cp0 = c0.paragraphs[0]
-        cp0.add_run('#' + str(symms[symm1]) if symm1 else '').font.superscript = True
-        cp0.add_run('{}{}{}{}'.format(halbgeviert, at2, halbgeviert, at3))
-        cp0.add_run('#' + str(symms[symm3]) if symm3 else '').font.superscript = True
-        c1.text = str(angle)  # angle
+        cp0.add_run(a.get('symm1_str')).font.superscript = True
+        cp0.add_run(a.get('atom2'))
+        cp0.add_run(a.get('symm2_str')).font.superscript = True
+        c1.text = a.get('angle')
     set_column_width(bond_angle_table.columns[0], Cm(3.7))
     set_column_width(bond_angle_table.columns[1], Cm(2.5))
-    if without_H:
+    if data.without_h:
         add_hydrogen_omit_info(document)
-    add_last_symminfo_line(newsymms, document)
+    if data.symmetry_generated_atoms_used:
+        add_last_symminfo_line(data.symminfo, document)
     return table_num
 
 
-def add_torsion_angles(document: Document, cif: CifContainer, table_num: int, without_H: bool = False):
+def add_torsion_angles(document: Document, table_num: int, data: TorsionAngles = None):
     """
     Table 6.  Torsion angles [°] for I-43d_final.
     """
-    if not len(list(cif.torsion_angles())) > 0:
-        print('No torsion angles in cif.')
-        return table_num
-    torsion_table = document.add_table(rows=cif.ntorsion_angles(without_H) + 1, cols=2)
-    torsion_table.style = 'Table Grid'
+    torsion_table = document.add_table(rows=len(data) + 1, cols=2, style='Table Grid')
     head_row = torsion_table.rows[0]
     head_row.cells[0].paragraphs[0].add_run('Atom{0}Atom{0}Atom{0}Atom'.format(halbgeviert)).bold = True
     head_row.cells[1].paragraphs[0].add_run('Torsion Angle [{}]'.format(degree_sign)).bold = True
-    symms = {}
-    newsymms = {}
-    card = ''
-    s = SymmetryElement(card)
-    num = 1
     col0_cells = torsion_table.columns[0].cells
     col1_cells = torsion_table.columns[1].cells
     rowidx = 1
-    for at1, at2, at3, at4, angle, symm1, symm2, symm3, symm4 in cif.torsion_angles():
+    for tor in data.torsion_angles_as_string:
         c0, c1 = col0_cells[rowidx], col1_cells[rowidx]
         rowidx += 1
-        if symm1 == '.':
-            symm1 = None
-        if symm2 == '.':
-            symm2 = None
-        if symm3 == '.':
-            symm3 = None
-        if symm4 == '.':
-            symm4 = None
-        if symm1 and symm1 not in symms.keys():
-            symms[symm1] = num
-            s = SymmetryElement(get_card(cif, symm1))
-            s.translate(symm1)
-            newsymms[num] = s.toShelxl()
-            num += 1
-        if symm2 and symm2 not in symms.keys():
-            symms[symm2] = num
-            s = SymmetryElement(get_card(cif, symm2))
-            s.translate(symm2)
-            newsymms[num] = s.toShelxl()
-            num += 1
-        if symm3 and symm3 not in symms.keys():
-            symms[symm3] = num
-            s = SymmetryElement(get_card(cif, symm3))
-            s.translate(symm3)
-            newsymms[num] = s.toShelxl()
-            num += 1
-        if symm4 and symm4 not in symms.keys():
-            symms[symm4] = num
-            s = SymmetryElement(get_card(cif, symm4))
-            s.translate(symm4)
-            newsymms[num] = s.toShelxl()
-            num += 1
         cp0 = c0.paragraphs[0]
-        cp0.add_run(at1)
-        cp0.add_run('#' + str(symms[symm1]) if symm1 else '').font.superscript = True
+        cp0.add_run(tor.get('atom1'))
+        cp0.add_run(tor.get('symm1')).font.superscript = True
         cp0.add_run(halbgeviert)
-        cp0.add_run(at2)
-        cp0.add_run('#' + str(symms[symm2]) if symm2 else '').font.superscript = True
+        cp0.add_run(tor.get('atom2'))
+        cp0.add_run(tor.get('symm2')).font.superscript = True
         cp0.add_run(halbgeviert)
-        cp0.add_run(at3)
-        cp0.add_run('#' + str(symms[symm3]) if symm3 else '').font.superscript = True
+        cp0.add_run(tor.get('atom3'))
+        cp0.add_run(tor.get('symm3')).font.superscript = True
         cp0.add_run(halbgeviert)
-        cp0.add_run(at4)  # labels
-        cp0.add_run('#' + str(symms[symm4]) if symm4 else '').font.superscript = True
-        c1.paragraphs[0].add_run(str(angle))  # torsion angle
+        cp0.add_run(tor.get('atom4'))  # labels
+        cp0.add_run(tor.get('symm4')).font.superscript = True
+        c1.paragraphs[0].add_run(tor.get('angle'))  # torsion angle
     set_column_width(torsion_table.columns[0], Cm(4.2))
     set_column_width(torsion_table.columns[1], Cm(3.0))
-    if without_H:
+    if data.without_h:
         add_hydrogen_omit_info(document)
-    add_last_symminfo_line(newsymms, document)
+    if data.symmetry_generated_atoms_used:
+        add_last_symminfo_line(data.symminfo, document)
     return table_num
 
 
-def add_hydrogen_bonds(document: Document, cif: CifContainer, table_num: int) -> int:
+def add_hydrogen_bonds(document: Document, table_num: int, data: HydrogenBonds = None) -> int:
     """
     Table 7.  Hydrogen bonds for I-43d_final  [Å and °].
     """
-    nhydrogenb = len(list(cif.hydrogen_bonds()))
-    hydrogen_table = document.add_table(rows=nhydrogenb + 1, cols=5)
-    hydrogen_table.style = 'Table Grid'
+    hydrogen_table = document.add_table(rows=len(data) + 1, cols=5, style='Table Grid')
     head_row = hydrogen_table.rows[0].cells
     # D-H...A	d(D-H)	d(H...A)	d(D...A)	<(DHA)
     head_row[0].paragraphs[0].add_run(
-        'D{}H{}A{}[{}]'.format(halbgeviert, ellipsis_mid, prot_space, angstrom)).font.bold = True
-    head_row[1].paragraphs[0].add_run('d(D{}H){}[{}]'.format(halbgeviert, prot_space, angstrom)).font.bold = True
-    head_row[2].paragraphs[0].add_run('d(H{}A){}[{}]'.format(ellipsis_mid, prot_space, angstrom)).font.bold = True
-    head_row[3].paragraphs[0].add_run('d(D{}A){}[{}]'.format(ellipsis_mid, prot_space, angstrom)).font.bold = True
-    head_row[4].paragraphs[0].add_run('<(DHA){}[{}]'.format(prot_space, degree_sign)).font.bold = True
-    symms = {}
-    newsymms = {}
-    num = 1
+        'D{}H{}A{}[{}]'.format(halbgeviert, ellipsis_mid, protected_space, angstrom)).font.bold = True
+    head_row[1].paragraphs[0].add_run('d(D{}H){}[{}]'.format(halbgeviert, protected_space, angstrom)).font.bold = True
+    head_row[2].paragraphs[0].add_run('d(H{}A){}[{}]'.format(ellipsis_mid, protected_space, angstrom)).font.bold = True
+    head_row[3].paragraphs[0].add_run('d(D{}A){}[{}]'.format(ellipsis_mid, protected_space, angstrom)).font.bold = True
+    head_row[4].paragraphs[0].add_run('<(DHA){}[{}]'.format(protected_space, degree_sign)).font.bold = True
     col0_cells = hydrogen_table.columns[0].cells
     col1_cells = hydrogen_table.columns[1].cells
     col2_cells = hydrogen_table.columns[2].cells
     col3_cells = hydrogen_table.columns[3].cells
     col4_cells = hydrogen_table.columns[4].cells
     rowidx = 1
-    for label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm in cif.hydrogen_bonds():
-        c0, c1, c2, c3, c4 = col0_cells[rowidx], col1_cells[rowidx], col2_cells[rowidx], \
-                             col3_cells[rowidx], col4_cells[rowidx]
+    for h in data.hydrogen_bonds_as_str:
+        c0, c1, c2, c3, c4 = col0_cells[rowidx], col1_cells[rowidx], \
+                             col2_cells[rowidx], col3_cells[rowidx], col4_cells[rowidx]
         rowidx += 1
-        if symm == '.':
-            symm = None
-        if symm and symm not in symms.keys():
-            symms[symm] = num
-            s = SymmetryElement(get_card(cif, symm))
-            s.translate(symm)
-            newsymms[num] = s.toShelxl()
-        num += 1
-        symmval = ('#' + str(symms[symm])) if symm else ''
-        c0.text = label_d + halbgeviert + label_h + ellipsis_mid + label_a
-        c0.paragraphs[0].add_run(symmval).font.superscript = True
-        c1.text = dist_dh
-        c2.text = dist_ha
-        c3.text = dist_da
-        c4.text = angle_dha
+        c0.text = h.get('atoms')
+        c0.paragraphs[0].add_run(h.get('symm')).font.superscript = True
+        c1.text = h.get('dist_dh')
+        c2.text = h.get('dist_ha')
+        c3.text = h.get('dist_da')
+        c4.text = h.get('angle_dha')
     widths = (Cm(4), Cm(2.5), Cm(2.5), Cm(2.5), Cm(2.5))
     make_table_widths(hydrogen_table, widths)
-    add_last_symminfo_line(newsymms, document)
+    if data.symmetry_generated_atoms_used:
+        add_last_symminfo_line(data.symminfo, document)
     return table_num
 
 
@@ -802,23 +717,13 @@ def add_hydrogen_omit_info(document: Document) -> None:
     run.font.size = Pt(8)
 
 
-def add_last_symminfo_line(newsymms: dict, document: Document) -> None:
+def add_last_symminfo_line(newsymms: str, document: Document) -> None:
     """
     Adds text about the symmetry generators used in order to add symmetry generated atoms.
     """
     p = document.add_paragraph('')
-    line = 'Symmetry transformations used to generate equivalent atoms:\n'
-    nitems = len(newsymms)
-    n = 0
-    for key, value in newsymms.items():
-        sep = ';'
-        if n == nitems:
-            sep = ''
-        n += 1
-        line += "#{}: {}{}   ".format(key, value, sep)
-    if newsymms:
-        run = p.add_run(line)
-        run.font.size = Pt(8)
+    run = p.add_run(newsymms)
+    run.font.size = Pt(8)
 
 
 def get_card(cif: CifContainer, symm: str) -> List[str]:
@@ -836,5 +741,5 @@ if __name__ == '__main__':
     output_filename = 'tables.docx'
     import time
 
-    # make_report_from(get_files_from_current_dir()[5])
+    # make_report_from(Path('./test-data').rglob('*.cif')[1])
     t1 = time.perf_counter()
