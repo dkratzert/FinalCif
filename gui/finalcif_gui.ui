@@ -2013,12 +2013,24 @@ The data source will be ignored until next program restart.</string>
                         <pointsize>14</pointsize>
                        </font>
                       </property>
+                      <property name="selectionMode">
+                       <enum>QAbstractItemView::NoSelection</enum>
+                      </property>
                       <property name="selectionRectVisible">
-                       <bool>true</bool>
+                       <bool>false</bool>
                       </property>
                       <item>
                        <property name="text">
                         <string>Use internal default template</string>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <weight>75</weight>
+                         <bold>true</bold>
+                        </font>
+                       </property>
+                       <property name="checkState">
+                        <enum>Checked</enum>
                        </property>
                       </item>
                      </widget>
