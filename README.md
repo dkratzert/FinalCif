@@ -7,6 +7,8 @@ FinalCif helps you to get a complete cif file from a single-xrystal X-ray diffra
 - [A template without the report text](https://github.com/dkratzert/FinalCif/raw/master/template/template_without_text.docx)
 
 
+**Some screenshots**
+
 (click to enlarge)
 ![FinalCif main Window](https://github.com/dkratzert/FinalCif/raw/master/screenshots/finalcif_main.PNG)
 
