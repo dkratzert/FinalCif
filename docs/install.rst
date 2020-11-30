@@ -11,5 +11,4 @@ FinalCif for linux needs no installation. Just download the executable FinalCif-
 
 MacOS
 -----
-
 Unzip the app (Finalcif-vXX_macos.app.zip) and copy it to the Applications directory.

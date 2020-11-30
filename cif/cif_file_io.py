@@ -41,7 +41,7 @@ class CifContainer():
         self.chars_ok = True
         d = DSRFind(self.res_file_data)
         self.doc.check_for_duplicates()
-        self.hkl_extra_info = self.abs_hkl_details()
+        self.hkl_extra_info = self._abs_hkl_details()
         self.order = order
         self.dsr_used = d.dsr_used
         self.atomic_struct = gemmi.make_small_structure_from_block(self.block)
@@ -154,7 +154,7 @@ class CifContainer():
             print('No hkl data found in CIF!, {}'.format(e))
             return ''
 
-    def abs_hkl_details(self) -> Dict[str, str]:
+    def _abs_hkl_details(self) -> Dict[str, str]:
         """
         This method tries to determine the information witten at the end of a cif hkl file by sadabs.
         """
@@ -268,7 +268,7 @@ class CifContainer():
                 continue
             if name2part[atom1] != '.' or name2part[atom2] != '.':
                 continue
-            if self.iselement(atom1) in pair and self.iselement(atom2) in pair:
+            if self._iselement(atom1) in pair and self._iselement(atom2) in pair:
                 dist, error = get_error_from_value(bond[2])
                 x1, sig_x1 = get_error_from_value(name2coords[atom1][0])
                 y1, sig_y1 = get_error_from_value(name2coords[atom1][1])
@@ -394,7 +394,7 @@ class CifContainer():
 
     def rename_data_name(self, newname: str = ''):
         """
-        Reanmes data_ tags to the newname. Also _vrf tags are renamed accordingly.
+        Renames data_ tags to the newname. Also _vrf tags are renamed accordingly.
         http://journals.iucr.org/services/cif/checking/checkfaq.html
         """
         # Have to use ord(), because Python 3.6 has not str.isascii():
@@ -485,7 +485,7 @@ class CifContainer():
         Determines if an atom with the name 'label' is a hydrogen atom.
         """
         hydrogen = ('H', 'D')
-        if self.iselement(label) in hydrogen:
+        if self._iselement(label) in hydrogen:
             return True
         else:
             return False
@@ -527,7 +527,7 @@ class CifContainer():
                 yield angle(label1=label1, label2=label2, label3=label3, angle_val=angle_val,
                             symm1=self.checksymm(symm1), symm2=self.checksymm(symm2))
 
-    def iselement(self, name: str) -> str:
+    def _iselement(self, name: str) -> str:
         return self._name2elements[name.upper()]
 
     def natoms(self, without_h: bool = False) -> int:
@@ -599,7 +599,7 @@ class CifContainer():
         keys_without_values, keys_with_values = self.get_keys()
         return keys_without_values + [('These below are already in:', '---------------------')] + keys_with_values
 
-    def is_centrokey(self, key) -> bool:
+    def _is_centrokey(self, key) -> bool:
         """
         Is True if the kurrent key is only valid 
         for non-centrosymmetric structures
@@ -624,7 +624,7 @@ class CifContainer():
                 if key.startswith('_shelx'):
                     # No-one should edit shelx values:
                     continue
-                if self.is_centrokey(key):
+                if self._is_centrokey(key):
                     continue
                 if not value or value == '?' or value == "'?'":
                     questions.append((key, value))
@@ -634,12 +634,12 @@ class CifContainer():
         # check if there are keys not in the cif but in essential_keys:
         for key in essential_keys:
             if key not in all_keys:
-                if self.is_centrokey(key):
+                if self._is_centrokey(key):
                     continue
                 questions.append((key, '?'))
                 missing_keys.append(key)
         for k in missing_keys:
-            if self.is_centrokey(k):
+            if self._is_centrokey(k):
                 continue
             self.block.set_pair(k, '?')
         return sorted(questions), sorted(with_values)
