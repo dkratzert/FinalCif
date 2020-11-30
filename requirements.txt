@@ -5,7 +5,7 @@ future==0.18.2
 gemmi==0.4.3
 html2text==2020.1.16
 idna==2.10
-lxml==4.6.1
+lxml==4.6.2
 macholib==1.14
 pefile==2019.4.18
 pybind11==2.6.1
@@ -21,6 +21,7 @@ QtAwesome==1.0.1
 QtPy==1.9.0
 requests==2.25.0
 urllib3==1.26.2
+docxtpl==0.11.2
 
 
 # Upgrade gemmi to Git master:
