@@ -14,6 +14,7 @@ class ReportTemplates:
     """
     Displays the list of report templates in the options menu.
     """
+
     def __init__(self, app: 'AppWindow', settings: FinalCifSettings):
         self.app = app
         self.settings = settings
@@ -27,8 +28,7 @@ class ReportTemplates:
             self.app.ui.TemplatesListWidget.item(self.app.options.current_template))
 
     def add_new_template(self) -> None:
-        templ_path, _ = QFileDialog.getOpenFileName(filter="DOCX file (*.docx)",
-                                                    initialFilter="DOCX file (*.docx)",
+        templ_path, _ = QFileDialog.getOpenFileName(filter="DOCX file (*.docx)", initialFilter="DOCX file (*.docx)",
                                                     caption='Open a Report Template File')
         itemslist = self.get_templates_list_from_widget()
         self.app.status_bar.show_message('')

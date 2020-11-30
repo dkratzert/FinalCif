@@ -406,9 +406,13 @@ class TemplatedReport():
 
     def get_atomic_coordinates(self, cif: CifContainer):
         for at in cif.atoms(without_h=False):
-            yield {'label': at.label, 'type': at.type, 'x': at.x.replace('-', minus_sign),
+            yield {'label': at.label,
+                   'type' : at.type,
+                   'x'    : at.x.replace('-', minus_sign),
                    'y'    : at.y.replace('-', minus_sign),
-                   'z'    : at.z, 'part': at.part.replace('-', minus_sign), 'occ': at.occ,
+                   'z'    : at.z.replace('-', minus_sign),
+                   'part' : at.part.replace('-', minus_sign),
+                   'occ'  : at.occ.replace('-', minus_sign),
                    'u_eq' : at.u_eq.replace('-', minus_sign)}
 
     def make_picture(self, options: Options, picfile: Path, tpl_doc: DocxTemplate):
