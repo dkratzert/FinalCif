@@ -22,7 +22,7 @@ class Equipment:
         self.app.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
         self.app.ui.EquipmentEditTableWidget.verticalHeader().hide()
         self.signals_and_slots()
-        self.show_equipment()
+        self.load_default_equipment()
 
     def signals_and_slots(self):
         ## equipment
@@ -98,6 +98,9 @@ class Equipment:
         self.app.ui.EquipmentTemplatesListWidget.takeItem(index.row())
         self.cancel_equipment_template()
         # I do these both to clear the list:
+        self.load_default_equipment()
+
+    def load_default_equipment(self):
         self.store_predefined_templates()
         self.show_equipment()
 
@@ -176,6 +179,7 @@ class Equipment:
         if not filename:
             filename = cif_file_open_dialog(filter="CIF file (*.cif  *.cif_od *.cfx)")
         if not filename:
+            print('No file given')
             return
         try:
             doc = cif.read_file(filename)
