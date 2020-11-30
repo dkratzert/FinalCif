@@ -3,8 +3,8 @@
 FinalCif helps you to get a complete cif file from a single-xrystal X-ray diffraction experiment. See here [https://www.xs3.uni-freiburg.de/research/finalcif/](https://www.xs3.uni-freiburg.de/research/finalcif/) for details.
 
 **Report templates**
-- ![A template with everything in](https://github.com/dkratzert/FinalCif/raw/master/template/template_text.docx)
-- ![A template without the report text](https://github.com/dkratzert/FinalCif/raw/master/template/template_without_text.docx)
+- [A template with everything in](https://github.com/dkratzert/FinalCif/raw/master/template/template_text.docx)
+- [A template without the report text](https://github.com/dkratzert/FinalCif/raw/master/template/template_without_text.docx)
 
 
 (click to enlarge)
