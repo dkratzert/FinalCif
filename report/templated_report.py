@@ -428,10 +428,6 @@ class TemplatedReport():
                    # {'without_h': True, 'atoms_table': True, 'text': True, 'bonds_table': True},
                    'cif'                   : cif,
                    'space_group'           : self.space_group_subdoc(tpl_doc, cif),
-                   'bold_italic_F'         : RichText('F', italic=True, bold=True),
-                   'crystal_table_header'  : RichText('Crystal data and structure refinement for {}'
-                                                      .format(cif.block.name), style='Heading_2'),
-                   'data_name_header'      : RichText('{}'.format(cif.block.name), style='Heading_2'),
                    'structure_figure'      : self.make_picture(options, picfile, tpl_doc),
                    'crystallization_method': remove_line_endings(retranslate_delimiter(
                        cif['_exptl_crystal_recrystallization_method'])) or '[No crystallization method given!]',
