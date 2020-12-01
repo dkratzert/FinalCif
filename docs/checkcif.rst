@@ -24,7 +24,7 @@ This is done via validation response forms. FinalCif has a convenient method to 
 After an Online CheckCif with structure factors you have the option to click on "Edit Response Forms".
 Ther you have the possibility to reply to A and B level alerts and save them to the CIF:
 
-.. image:: pics/responseformseditor.png
+.. image:: pics/finalcif_responses.png
 
 ----
 
