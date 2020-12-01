@@ -10,11 +10,11 @@ FinalCif helps you to get a complete cif file from a single-xrystal X-ray diffra
 **Some screenshots**
 
 (click to enlarge)
-![FinalCif main Window](https://github.com/dkratzert/FinalCif/raw/master/screenshots/finalcif_main.PNG)
+![FinalCif main Window](https://github.com/dkratzert/FinalCif/raw/master/screenshots/finalcif_main.png)
 
-![FinalCif details](https://github.com/dkratzert/FinalCif/raw/master/screenshots/finalcif_details.PNG)
+![FinalCif details](https://github.com/dkratzert/FinalCif/raw/master/screenshots/finalcif_details.png)
 
-![FinalCif report](https://github.com/dkratzert/FinalCif/raw/master/screenshots/finalcif_report.PNG)
+![FinalCif report](https://github.com/dkratzert/FinalCif/raw/master/screenshots/finalcif_report.png)
 
 ![FinalCif CheckCIF](https://github.com/dkratzert/FinalCif/raw/master/screenshots/finalcif_checkcif.png)
 

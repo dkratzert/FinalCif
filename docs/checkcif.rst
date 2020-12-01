@@ -14,6 +14,9 @@ and reachable by the systems PATH variable.
 any Checkcif can be performes with or without structure factors (hkl data). Without structure factors has the
 advantage of beeing fast, but the resulting ckecks are far less deeply. 
 
+.. image:: pics/finalcif_checkcif.png 
+    :width: 700
+
 Validation Response Forms
 -------------------------
 Sometimes you have to explain certain alerts from CheckCif. For example rearding the experiment resolution.
@@ -21,12 +24,12 @@ This is done via validation response forms. FinalCif has a convenient method to 
 After an Online CheckCif with structure factors you have the option to click on "Edit Response Forms".
 Ther you have the possibility to reply to A and B level alerts and save them to the CIF:
 
-.. image:: pics/responseformseditor.PNG
+.. image:: pics/responseformseditor.png
 
 ----
 
 A resulting response form:
 
-.. image:: pics/response_cell.PNG
+.. image:: pics/response_cell.png
 
 
