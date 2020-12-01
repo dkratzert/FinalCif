@@ -11,29 +11,39 @@ from tools.version import VERSION
 
 app = QApplication(sys.argv)
 
+filenames = (
+    'tests/examples/checkcif-1979688-finalcif.html',
+    'tests/examples/1979688-finalcif.chk',
+    'tests/examples/1979688-finalcif.ckf',
+    'tests/examples/1979688-finalcif.vrf',
+    'tests/examples/1979688-finalcif.cif',
+    'tests/examples/1979688-finalcif.gif',
+    'tests/examples/1979688-finalcif.fcf',
+    'tests/examples/1979688.ckf',
+    'tests/examples/1979688.chk',
+    'tests/examples/check.def',
+    'test-data/check.def',
+    'tests/examples/platon.out',
+    'tests/examples/work/platon.out',
+    'tests/examples/work/check.def',
+    'test-data/1000007-finalcif.chk',
+    'test-data/1000007-finalcif.cif',
+    'test-data/1000007-finalcif.vrf',
+)
+
 
 class TestPlatonCheckCIF(unittest.TestCase):
+    def tearDown(self) -> None:
+        print('running teardown')
+        os.chdir(Path(__file__).absolute().parent.parent)
+        for file in filenames:
+            Path(file).unlink(missing_ok=True)
 
     def setUp(self) -> None:
         os.chdir(Path(__file__).absolute().parent.parent)
         self.myapp = AppWindow(Path('tests/examples/1979688.cif').absolute())
         self.myapp.hide()
         self.myapp.running_inside_unit_test = True
-
-    def tearDown(self) -> None:
-        Path('checkcif-1979688-finalcif.html').unlink(missing_ok=True)
-        Path('1979688-finalcif.chk').unlink(missing_ok=True)
-        Path('1979688-finalcif.ckf').unlink(missing_ok=True)
-        Path('1979688-finalcif.vrf').unlink(missing_ok=True)
-        Path('1979688-finalcif.cif').unlink(missing_ok=True)
-        Path('1979688-finalcif.gif').unlink(missing_ok=True)
-        Path('1979688-finalcif.fcf').unlink(missing_ok=True)
-        Path('1979688.ckf').unlink(missing_ok=True)
-        Path('1979688.chk').unlink(missing_ok=True)
-        Path('check.def').unlink(missing_ok=True)
-        Path('platon.out').unlink(missing_ok=True)
-        Path('examples/work/platon.out').unlink(missing_ok=True)
-        Path('examples/work/check.def').unlink(missing_ok=True)
 
     def test_checkcif_offline(self):
         self.myapp.hide()
@@ -52,3 +62,24 @@ class TestPlatonCheckCIF(unittest.TestCase):
         self.myapp.hide()
         self.myapp.ui.CheckcifButton.click()
         self.assertFalse(Path('1979688-finalcif.gif').exists())
+
+
+class TestPlatonCheckCIF_with_CIF_without_hkl_data(unittest.TestCase):
+    def tearDown(self) -> None:
+        print('running teardown')
+        os.chdir(Path(__file__).absolute().parent.parent)
+        for file in filenames:
+            Path(file).unlink(missing_ok=True)
+
+    def setUp(self) -> None:
+        os.chdir(Path(__file__).absolute().parent.parent)
+        self.myapp = AppWindow(Path('./test-data/1000007.cif').absolute())
+        self.myapp.hide()
+        self.myapp.ui.structfactCheckBox.setChecked(True)
+        self.myapp.running_inside_unit_test = True
+
+    def test_checkcif_offline(self):
+        self.myapp.hide()
+        self.myapp.ui.CheckcifButton.click()
+        timediff = int(Path('./1000007-finalcif.chk').stat().st_mtime) - int(time.time())
+        self.assertLess(timediff, 5)  # .chk file was modified less than 5 seconds ago
