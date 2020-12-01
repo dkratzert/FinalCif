@@ -40,6 +40,7 @@ from appwindow import AppWindow, DEBUG
 
 r"""
 TODO:
+- test all checkcif with and without html and with and without html data in the cif file
 - While opening loops tab: Equipment editor should change to loop creator. the loop creator has the possibility 
   to add a list oh headers in order to fill that table in the right pane.
 - Peters comments on equipment templates:
