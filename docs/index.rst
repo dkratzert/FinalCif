@@ -12,8 +12,6 @@ In ideal cases, it takes one click to have a publication-ready file. But check t
 no software is perfect!
 
 
-Contents
---------
 
 .. toctree::
    :maxdepth: 2

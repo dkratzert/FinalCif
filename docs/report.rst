@@ -6,7 +6,7 @@ For a complete report, you have to finish the CIF first.
 It is also advisable to deposit the file before the report generation in order to have the CCDC number
 listed in the report text.
 
-.. image:: pics/finalcif_report.PNG
+.. image:: pics/finalcif_report.png
 
 CCDC Number
 -----------
@@ -126,6 +126,8 @@ Data Available for the Report
 | hydrogen_bonds            : The list of hydrogen atoms involved in HTAB listings as 'label_d', 'label_h', 'label_a', 'dist_dh', 'dist_ha', 'dist_da', 'angle_dha', 'symm'
 | test_res_checksum         : True if the checksum of the SHELX .res file fits to the file content.
 | test_hkl_checksum         : True if the checksum of the SHELX .hkl file fits to the file content.
+
+The above is not limited to the templates of FinalCif. It is also possible to insert template tags into any other Word document and replace them with values from a CIF file. There are no limits to the imagination.
 
 
 Further information for programmers:

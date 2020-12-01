@@ -6,21 +6,21 @@ FinalCif uses two different kinds of templates to to simplify recurring tasks:
 * Equipment and Author templates
 * Property templates
 
-.. image:: pics/templates.PNG
+.. image:: pics/templates.png
 
 You can anytime edit one of the templates and save them. You can use them for any cif keyword. 
 Just be creative...
 
-.. image:: pics/property_templates.PNG
+.. image:: pics/property_templates.png
 
 
 For example the cif author information:
 
-.. image:: pics/equipment_templates.PNG
+.. image:: pics/equipment_templates.png
 
 Or just one keyword for only the absolute configuration information:
 
-.. image:: pics/absolute_configuration.PNG
+.. image:: pics/absolute_configuration.png
 
 Sidenote
 --------
