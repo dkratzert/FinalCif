@@ -1389,10 +1389,10 @@ class AppWindow(QMainWindow):
             self._loop_tables.append(tableview)
             loop.model.modelChanged.connect(self.save_new_value_to_cif_block)
             self.ui.revertLoopsPushButton.clicked.connect(loop.model.revert)
-        if self.cif['_shelx_res_file']:
+        if self.cif.res_file_data:
             textedit = QPlainTextEdit()
             self.ui.LoopsTabWidget.addTab(textedit, 'SHELX res file')
-            textedit.setPlainText(self.cif['_shelx_res_file'])
+            textedit.setPlainText(self.cif.res_file_data)
             doc = textedit.document()
             font = doc.defaultFont()
             font.setFamily("Courier")

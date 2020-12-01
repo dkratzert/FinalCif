@@ -58,7 +58,7 @@ class CheckCif(QThread):
         hkl = 'checkcif_only'
         if not self.hkl_upload:
             temp_cif = bytes(self.cif.cif_as_string(without_hkl=True), encoding='ascii')
-        elif self.cif['_shelx_hkl_file']:
+        elif self.cif.hkl_file:
             hkl = 'checkcif_with_hkl'
         vrf = self.get_vrf()
         headers = {
