@@ -459,13 +459,9 @@ def add_coords_table(document: Document, cif: CifContainer, table_num: int):
         rowidx += 1
         c0.text = at[0]  # label
         c1.text = (str(at[2]))  # x
-        para_x = c1.paragraphs[0]
         c2.text = (str(at[3]))  # y
-        para_y = c2.paragraphs[0]
         c3.text = (str(at[4]))  # z
-        para_z = c3.paragraphs[0]
         c4.text = (str(at[7]))  # ueq
-        para_u = c4.paragraphs[0]
     p = document.add_paragraph()
     p.style = document.styles['tabunterschr']
     p.add_run('U').font.italic = True
