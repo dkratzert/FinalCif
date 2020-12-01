@@ -114,6 +114,7 @@ Data Available for the Report
 
 
 **This information from the 'cif' variable can also be useful:**
+
 | res_file_data             : The SHELX res file text
 | is_centrosymm             : It true if the space group of the structure is centrosymmetric
 | atoms                     : The list of atoms with 'label', 'type', 'x', 'y', 'z', 'part', 'occ', 'u_eq'
