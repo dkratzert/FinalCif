@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Make Documentation" type="ShConfigurationType">
+  <configuration default="false" name="Make MAC Documentation" type="ShConfigurationType">
     <option name="INDEPENDENT_SCRIPT_PATH" value="true" />
     <option name="SCRIPT_PATH" value="/usr/bin/make" />
     <option name="SCRIPT_OPTIONS" value="singlehtml" />
