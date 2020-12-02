@@ -22,8 +22,12 @@ from PyQt5.QtCore import QThread
 
 
 class Platon(QThread):
-    def __init__(self, cif: Path, timeout: int = 300):
+    def __init__(self, cif: Path, timeout: int = 300, cmdoption='-u'):
+        """
+        Option -u is for checkcif 
+        """
         super().__init__()
+        self.cmdoption = cmdoption
         self.timeout = timeout
         self.cif_fileobj = cif
         self.chkfile = Path(self.cif_fileobj.with_suffix('.chk'))
@@ -94,7 +98,7 @@ class Platon(QThread):
         os.chdir(str(self.cif_fileobj.absolute().parent))
         try:
             print('running local platon on', self.cif_fileobj.name)
-            self.plat = subprocess.run([self.platon_exe, '-u', self.cif_fileobj.name],
+            self.plat = subprocess.run([self.platon_exe, self.cmdoption, self.cif_fileobj.name],
                                        startupinfo=self.hide_status_window(),
                                        stdout=subprocess.PIPE,
                                        stderr=subprocess.PIPE,
@@ -110,7 +114,7 @@ class Platon(QThread):
             self.platon_output = str(e)
         if self.plat and hasattr(self.plat, 'stdout'):
             self.platon_output = self.plat.stdout.decode('ascii')
-        #self.delete_orphaned_files()
+        # self.delete_orphaned_files()
         os.chdir(curdir.absolute())
 
     @staticmethod

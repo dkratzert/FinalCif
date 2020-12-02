@@ -648,7 +648,7 @@ class AppWindow(QMainWindow):
         QApplication.processEvents()
         timeout = 300
         try:
-            p = Platon(self.final_cif_file_name, timeout)
+            p = Platon(self.final_cif_file_name, timeout, '-u')
         except Exception as e:
             print(e)
             # self.ui.CheckcifButton.setDisabled(True)
