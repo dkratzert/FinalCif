@@ -41,6 +41,7 @@ from appwindow import AppWindow, DEBUG
 r"""
 TODO:
 - Try https://qpageview.org/usage.html
+- generate picture with local platon
 - While opening loops tab: Equipment editor should change to loop creator. the loop creator has the possibility 
   to add a list oh headers in order to fill that table in the right pane.
 - Peters comments on equipment templates:
