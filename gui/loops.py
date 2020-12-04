@@ -13,23 +13,34 @@ from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QTableView, QHeaderView
 from gemmi.cif import as_string
 
-from cif.cif_file_io import CifContainer
-
 
 class Loop():
-    def __init__(self, tags: List[str], values: List[List[str]], table: QTableView):
-        self.table = table
-        self.values = values
+    def __init__(self, tags: List[str], values: List[List[str]]):
+        self.tableview = QTableView()
+        self._values: List[List[str]] = self.get_string_values(values)
         self.tags = tags
         self.model: Union[TableModel, None] = None
+        self.make_model()
 
-    def make_model(self, ) -> None:
+    def set_or_update_model(self, values: List[List[str]]):
+        self.values = values
+        self.model = TableModel(self.values, self.tags)
+        self.tableview.setModel(self.model)
+
+    @property
+    def values(self):
+        return self._values
+
+    @values.setter
+    def values(self, values):
+        self._values = self.get_string_values(values)
+
+    def make_model(self) -> None:
         """
         Creates the model and applies data to it
         """
-        self.model = TableModel(self.get_string_values(), self.tags)
-        self.table.setModel(self.model)
-        header = self.table.horizontalHeader()
+        self.set_or_update_model(self.values)
+        header = self.tableview.horizontalHeader()
         # Format the header sizes:
         for column in range(header.count()):
             header.setSectionResizeMode(column, QHeaderView.ResizeToContents)
@@ -37,12 +48,12 @@ class Loop():
             header.setSectionResizeMode(column, QHeaderView.Interactive)
             header.resizeSection(column, width)
 
-    def get_string_values(self) -> List[List[str]]:
+    def get_string_values(self, values: List[List[str]]) -> List[List[str]]:
         """
         Get data for a loop by tags
         """
         data = []
-        for v in self.values:
+        for v in values:
             # as_string() would make . and ? to empty strings otherwise: 
             data.append([x if x in ('.', '?') else as_string(x) for x in v])
         return data
