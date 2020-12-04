@@ -586,6 +586,30 @@ include_equipment_imports = (
     '_exptl_absorpt_process_details',
 )
 
+cif_to_header_label = {
+    # translates CIF keys into regular headers for loops
+    '_atom_site_aniso_label'          : 'Displacement Parameters',
+    '_atom_site_label'                : 'Atomic Coordinates',
+    '_atom_type_symbol'               : 'Sacttering Factors',
+    '_audit_author_name'              : 'Authors',
+    '_citation_doi'                   : 'Citations',
+    '_citation_id'                    : 'Citations',
+    '_citation_year'                  : 'Citations',
+    '_geom_angle_atom_site_label_1'   : 'Angles',
+    '_geom_bond_atom_site_label_1'    : 'Bonds',
+    '_geom_torsion_atom_site_label_1' : 'Torsion Angles',
+    '_shelx_res_file'                 : 'SHELX res File',
+    '_space_group_symop_id'           : 'Symmetry',
+    '_space_group_symop_operation_xyz': 'Symmetry',
+    '_symmetry_equiv_pos_site_id'     : 'Symmetry',
+    '_symmetry_equiv_pos_as_xyz'      : 'Symmetry',
+    '_publ_author_names'              : 'Author Names',
+    '_publ_author_name'               : 'Author Names',
+    '_geom_hbond_atom_site_label_D'   : 'Hydrogen Bonds',
+    '_geom_hbond_atom_site_label_H'   : 'Hydrogen Bonds',
+    '_geom_hbond_atom_site_label_A'   : 'Hydrogen Bonds',
+}
+
 """
 _publ_section_references
 ;

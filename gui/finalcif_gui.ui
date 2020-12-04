@@ -133,7 +133,7 @@
            <number>0</number>
           </property>
           <property name="currentIndex">
-           <number>0</number>
+           <number>1</number>
           </property>
           <widget class="QWidget" name="page_equipment">
            <layout class="QVBoxLayout" name="verticalLayout_16">
@@ -582,7 +582,7 @@
              <number>0</number>
             </property>
             <item>
-             <widget class="QGroupBox" name="EquipmentGroupBox_2">
+             <widget class="QGroupBox" name="LoopsGroupBox">
               <property name="title">
                <string>Loop Templates</string>
               </property>
@@ -606,204 +606,76 @@
                 <number>0</number>
                </property>
                <item>
-                <widget class="QStackedWidget" name="EquipmentTemplatesStackedWidget_2">
-                 <property name="currentIndex">
-                  <number>0</number>
+                <widget class="QListWidget" name="LoopTemplatesListWidget">
+                 <property name="font">
+                  <font>
+                   <pointsize>11</pointsize>
+                  </font>
                  </property>
-                 <widget class="QWidget" name="EquipmentSelectPage_2">
-                  <layout class="QGridLayout" name="TemplatesGridLayout_3">
-                   <property name="leftMargin">
-                    <number>0</number>
-                   </property>
-                   <property name="topMargin">
-                    <number>6</number>
-                   </property>
-                   <property name="rightMargin">
-                    <number>0</number>
-                   </property>
-                   <property name="bottomMargin">
-                    <number>6</number>
-                   </property>
-                   <property name="horizontalSpacing">
-                    <number>6</number>
-                   </property>
-                   <item row="4" column="0">
-                    <spacer name="verticalSpacer_9">
-                     <property name="orientation">
-                      <enum>Qt::Vertical</enum>
-                     </property>
-                     <property name="sizeHint" stdset="0">
-                      <size>
-                       <width>20</width>
-                       <height>40</height>
-                      </size>
-                     </property>
-                    </spacer>
-                   </item>
-                   <item row="3" column="0" colspan="3">
-                    <widget class="Line" name="line_2">
-                     <property name="orientation">
-                      <enum>Qt::Horizontal</enum>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="1" column="0" colspan="3">
-                    <widget class="QListWidget" name="LoopTemplatesListWidget">
-                     <property name="font">
-                      <font>
-                       <pointsize>11</pointsize>
-                      </font>
-                     </property>
-                     <property name="toolTip">
-                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Each entry can have a list of key/value pairs. For example a Diffractometer model can have a list of features.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                     </property>
-                     <property name="editTriggers">
-                      <set>QAbstractItemView::NoEditTriggers</set>
-                     </property>
-                     <property name="selectionMode">
-                      <enum>QAbstractItemView::SingleSelection</enum>
-                     </property>
-                     <property name="selectionBehavior">
-                      <enum>QAbstractItemView::SelectRows</enum>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="2" column="0">
-                    <widget class="QPushButton" name="NewLoopTemplateButton">
-                     <property name="text">
-                      <string>New Template</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="2" column="1">
-                    <widget class="QPushButton" name="EditLoopTemplateButton">
-                     <property name="text">
-                      <string>Edit Template</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="2" column="2">
-                    <widget class="QPushButton" name="ImportLoopTemplateButton">
-                     <property name="text">
-                      <string>Import</string>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </widget>
-                 <widget class="QWidget" name="EquipmentEditPage_2">
-                  <layout class="QGridLayout" name="gridLayout_18">
-                   <item row="2" column="1" colspan="4">
-                    <layout class="QHBoxLayout" name="horizontalLayout_8">
-                     <item>
-                      <widget class="QPushButton" name="DeleteLoopButton">
-                       <property name="text">
-                        <string>Delete Template</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QPushButton" name="SaveLoopButton">
-                       <property name="text">
-                        <string>Save</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QPushButton" name="CancelLoopButton">
-                       <property name="text">
-                        <string>Cancel</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QPushButton" name="ExportLoopButton">
-                       <property name="text">
-                        <string>Export</string>
-                       </property>
-                      </widget>
-                     </item>
-                    </layout>
-                   </item>
-                   <item row="0" column="1" colspan="4">
-                    <widget class="MyEQTableWidget" name="LoopEditTableWidget">
-                     <property name="autoScroll">
-                      <bool>false</bool>
-                     </property>
-                     <property name="editTriggers">
-                      <set>QAbstractItemView::AllEditTriggers</set>
-                     </property>
-                     <property name="alternatingRowColors">
-                      <bool>false</bool>
-                     </property>
-                     <property name="selectionMode">
-                      <enum>QAbstractItemView::SingleSelection</enum>
-                     </property>
-                     <property name="selectionBehavior">
-                      <enum>QAbstractItemView::SelectRows</enum>
-                     </property>
-                     <property name="verticalScrollMode">
-                      <enum>QAbstractItemView::ScrollPerPixel</enum>
-                     </property>
-                     <property name="horizontalScrollMode">
-                      <enum>QAbstractItemView::ScrollPerPixel</enum>
-                     </property>
-                     <property name="sortingEnabled">
-                      <bool>true</bool>
-                     </property>
-                     <property name="rowCount">
-                      <number>1</number>
-                     </property>
-                     <attribute name="horizontalHeaderCascadingSectionResizes">
-                      <bool>true</bool>
-                     </attribute>
-                     <attribute name="horizontalHeaderMinimumSectionSize">
-                      <number>100</number>
-                     </attribute>
-                     <attribute name="horizontalHeaderDefaultSectionSize">
-                      <number>210</number>
-                     </attribute>
-                     <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
-                      <bool>true</bool>
-                     </attribute>
-                     <attribute name="horizontalHeaderStretchLastSection">
-                      <bool>true</bool>
-                     </attribute>
-                     <attribute name="verticalHeaderVisible">
-                      <bool>false</bool>
-                     </attribute>
-                     <attribute name="verticalHeaderDefaultSectionSize">
-                      <number>30</number>
-                     </attribute>
-                     <row/>
-                     <column>
-                      <property name="text">
-                       <string>key</string>
-                      </property>
-                     </column>
-                     <column>
-                      <property name="text">
-                       <string>value</string>
-                      </property>
-                     </column>
-                    </widget>
-                   </item>
-                   <item row="3" column="1">
-                    <spacer name="verticalSpacer_10">
-                     <property name="orientation">
-                      <enum>Qt::Vertical</enum>
-                     </property>
-                     <property name="sizeHint" stdset="0">
-                      <size>
-                       <width>20</width>
-                       <height>40</height>
-                      </size>
-                     </property>
-                    </spacer>
-                   </item>
-                  </layout>
-                 </widget>
+                 <property name="toolTip">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Each entry can have a list of key/value pairs. For example a Diffractometer model can have a list of features.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
+                 <property name="editTriggers">
+                  <set>QAbstractItemView::NoEditTriggers</set>
+                 </property>
+                 <property name="selectionMode">
+                  <enum>QAbstractItemView::SingleSelection</enum>
+                 </property>
+                 <property name="selectionBehavior">
+                  <enum>QAbstractItemView::SelectRows</enum>
+                 </property>
                 </widget>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_7">
+                 <property name="topMargin">
+                  <number>6</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>6</number>
+                 </property>
+                 <item>
+                  <widget class="QPushButton" name="NewLoopTemplateButton">
+                   <property name="text">
+                    <string>New Template</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="EditLoopTemplateButton">
+                   <property name="text">
+                    <string>Edit Template</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="ImportLoopTemplateButton">
+                   <property name="text">
+                    <string>Import</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <widget class="Line" name="line_2">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <spacer name="verticalSpacer_9">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
                </item>
               </layout>
              </widget>
@@ -2455,26 +2327,7 @@ The data source will be ignored until next program restart.</string>
             </item>
             <item>
              <layout class="QGridLayout" name="gridLayout_16">
-              <item row="0" column="0">
-               <widget class="QPushButton" name="BackFromLoopsPushButton">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>120</width>
-                  <height>0</height>
-                 </size>
-                </property>
-                <property name="text">
-                 <string>Back to CIF Table</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="2">
+              <item row="0" column="3">
                <widget class="QPushButton" name="revertLoopsPushButton">
                 <property name="text">
                  <string>revert changes</string>
@@ -2497,7 +2350,7 @@ The data source will be ignored until next program restart.</string>
                 </property>
                </spacer>
               </item>
-              <item row="0" column="3">
+              <item row="0" column="4">
                <spacer name="horizontalSpacer_16">
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
@@ -2510,7 +2363,71 @@ The data source will be ignored until next program restart.</string>
                 </property>
                </spacer>
               </item>
+              <item row="0" column="0">
+               <widget class="QPushButton" name="BackFromLoopsPushButton">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>120</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Back to CIF Table</string>
+                </property>
+               </widget>
+              </item>
               <item row="0" column="1">
+               <layout class="QHBoxLayout" name="horizontalLayout_8">
+                <item>
+                 <spacer name="horizontalSpacer_21">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="DeleteLoopButton">
+                  <property name="text">
+                   <string>Delete Template</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="SaveLoopButton">
+                  <property name="text">
+                   <string>Save</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="CancelLoopButton">
+                  <property name="text">
+                   <string>Cancel</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="ExportLoopButton">
+                  <property name="text">
+                   <string>Export</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item row="0" column="2">
                <spacer name="horizontalSpacer_15">
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
