@@ -98,6 +98,18 @@
            <property name="verticalSpacing">
             <number>5</number>
            </property>
+           <item row="1" column="0" colspan="2">
+            <widget class="QComboBox" name="RecentComboBox">
+             <property name="currentText">
+              <string>Recent Files</string>
+             </property>
+             <item>
+              <property name="text">
+               <string>Recent Files</string>
+              </property>
+             </item>
+            </widget>
+           </item>
            <item row="0" column="1">
             <widget class="QPushButton" name="SelectCif_PushButton">
              <property name="text">
@@ -112,34 +124,19 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="0" colspan="2">
-            <widget class="QComboBox" name="RecentComboBox">
-             <property name="currentText">
-              <string>Recent Files</string>
-             </property>
-             <item>
-              <property name="text">
-               <string>Recent Files</string>
-              </property>
-             </item>
-            </widget>
-           </item>
           </layout>
          </widget>
         </item>
         <item>
          <widget class="QStackedWidget" name="TemplatesStackedWidget">
           <property name="lineWidth">
-           <number>0</number>
+           <number>1</number>
           </property>
           <property name="currentIndex">
-           <number>1</number>
+           <number>0</number>
           </property>
           <widget class="QWidget" name="page_equipment">
            <layout class="QVBoxLayout" name="verticalLayout_16">
-            <property name="spacing">
-             <number>0</number>
-            </property>
             <property name="leftMargin">
              <number>0</number>
             </property>
@@ -157,18 +154,12 @@
               <property name="title">
                <string>Equipment and Author Templates</string>
               </property>
-              <property name="flat">
-               <bool>true</bool>
-              </property>
               <layout class="QVBoxLayout" name="verticalLayout_7">
-               <property name="spacing">
-                <number>0</number>
-               </property>
                <property name="leftMargin">
                 <number>0</number>
                </property>
                <property name="topMargin">
-                <number>0</number>
+                <number>3</number>
                </property>
                <property name="rightMargin">
                 <number>0</number>
@@ -179,40 +170,23 @@
                <item>
                 <widget class="QStackedWidget" name="EquipmentTemplatesStackedWidget">
                  <property name="currentIndex">
-                  <number>0</number>
+                  <number>1</number>
                  </property>
                  <widget class="QWidget" name="EquipmentSelectPage">
-                  <layout class="QGridLayout" name="TemplatesGridLayout">
+                  <layout class="QVBoxLayout" name="verticalLayout_19">
                    <property name="leftMargin">
                     <number>0</number>
                    </property>
                    <property name="topMargin">
-                    <number>6</number>
+                    <number>3</number>
                    </property>
                    <property name="rightMargin">
                     <number>0</number>
                    </property>
                    <property name="bottomMargin">
-                    <number>6</number>
+                    <number>3</number>
                    </property>
-                   <property name="horizontalSpacing">
-                    <number>6</number>
-                   </property>
-                   <item row="2" column="1">
-                    <widget class="QPushButton" name="EditEquipmentTemplateButton">
-                     <property name="text">
-                      <string>Edit Template</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="2" column="0">
-                    <widget class="QPushButton" name="NewEquipmentTemplateButton">
-                     <property name="text">
-                      <string>New Template</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="1" column="0" colspan="3">
+                   <item>
                     <widget class="QListWidget" name="EquipmentTemplatesListWidget">
                      <property name="font">
                       <font>
@@ -233,237 +207,51 @@
                      </property>
                     </widget>
                    </item>
-                   <item row="3" column="0" colspan="3">
-                    <widget class="Line" name="line">
-                     <property name="orientation">
-                      <enum>Qt::Horizontal</enum>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_Buttons">
+                     <property name="spacing">
+                      <number>-1</number>
                      </property>
-                    </widget>
-                   </item>
-                   <item row="2" column="2">
-                    <widget class="QPushButton" name="ImportEquipmentTemplateButton">
-                     <property name="text">
-                      <string>Import</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="4" column="0" colspan="3">
-                    <widget class="QPushButton" name="ImportCifPushButton">
-                     <property name="text">
-                      <string>Import .cif, .pcf, .cif_od, .cfx or .sqf file</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="5" column="0" colspan="3">
-                    <widget class="QGroupBox" name="PropertiesGroupBox">
-                     <property name="title">
-                      <string>Property Templates</string>
-                     </property>
-                     <property name="flat">
-                      <bool>true</bool>
-                     </property>
-                     <layout class="QVBoxLayout" name="verticalLayout_6">
-                      <property name="spacing">
-                       <number>6</number>
-                      </property>
-                      <property name="leftMargin">
-                       <number>0</number>
-                      </property>
-                      <property name="topMargin">
-                       <number>0</number>
-                      </property>
-                      <property name="rightMargin">
-                       <number>0</number>
-                      </property>
-                      <property name="bottomMargin">
-                       <number>0</number>
-                      </property>
-                      <item>
-                       <widget class="QStackedWidget" name="PropertiesTemplatesStackedWidget">
-                        <property name="currentIndex">
-                         <number>0</number>
-                        </property>
-                        <widget class="QWidget" name="PropertiesSelectPage">
-                         <layout class="QGridLayout" name="TemplatesGridLayout_2">
-                          <property name="leftMargin">
-                           <number>0</number>
-                          </property>
-                          <property name="topMargin">
-                           <number>6</number>
-                          </property>
-                          <property name="rightMargin">
-                           <number>0</number>
-                          </property>
-                          <property name="bottomMargin">
-                           <number>0</number>
-                          </property>
-                          <property name="horizontalSpacing">
-                           <number>6</number>
-                          </property>
-                          <item row="1" column="0">
-                           <widget class="QPushButton" name="NewPropertyTemplateButton">
-                            <property name="text">
-                             <string>New Template</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="1" column="1">
-                           <widget class="QPushButton" name="EditPropertyTemplateButton">
-                            <property name="text">
-                             <string>Edit Template</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="1" column="2">
-                           <widget class="QPushButton" name="ImportPropertyTemplateButton">
-                            <property name="text">
-                             <string>Import</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="0" column="0" colspan="3">
-                           <widget class="QListWidget" name="PropertiesTemplatesListWidget">
-                            <property name="font">
-                             <font>
-                              <pointsize>11</pointsize>
-                             </font>
-                            </property>
-                            <property name="toolTip">
-                             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A list of common properties like &lt;/p&gt;&lt;p&gt;_exptl_crystal_colour: yellow, red, blue, ...&lt;/p&gt;&lt;p&gt;Lists defined here will appear as dropdown menus in the main Table.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                            </property>
-                            <property name="selectionMode">
-                             <enum>QAbstractItemView::SingleSelection</enum>
-                            </property>
-                            <property name="selectionBehavior">
-                             <enum>QAbstractItemView::SelectRows</enum>
-                            </property>
-                           </widget>
-                          </item>
-                         </layout>
-                        </widget>
-                        <widget class="QWidget" name="PropertiesEditPage">
-                         <layout class="QGridLayout" name="gridLayout_5">
-                          <item row="2" column="0" rowspan="2" colspan="6">
-                           <layout class="QHBoxLayout" name="horizontalLayout">
-                            <item>
-                             <widget class="QPushButton" name="DeletePropertiesButton">
-                              <property name="sizePolicy">
-                               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                                <horstretch>1</horstretch>
-                                <verstretch>0</verstretch>
-                               </sizepolicy>
-                              </property>
-                              <property name="text">
-                               <string>Delete Template</string>
-                              </property>
-                             </widget>
-                            </item>
-                            <item>
-                             <widget class="QPushButton" name="SavePropertiesButton">
-                              <property name="sizePolicy">
-                               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                                <horstretch>1</horstretch>
-                                <verstretch>0</verstretch>
-                               </sizepolicy>
-                              </property>
-                              <property name="text">
-                               <string>Save</string>
-                              </property>
-                             </widget>
-                            </item>
-                            <item>
-                             <widget class="QPushButton" name="CancelPropertiesButton">
-                              <property name="sizePolicy">
-                               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                                <horstretch>1</horstretch>
-                                <verstretch>0</verstretch>
-                               </sizepolicy>
-                              </property>
-                              <property name="text">
-                               <string>Cancel</string>
-                              </property>
-                             </widget>
-                            </item>
-                            <item>
-                             <widget class="QPushButton" name="ExportPropertyButton">
-                              <property name="text">
-                               <string>Export</string>
-                              </property>
-                             </widget>
-                            </item>
-                           </layout>
-                          </item>
-                          <item row="1" column="0" colspan="6">
-                           <widget class="MyPropTableWidget" name="PropertiesEditTableWidget">
-                            <property name="autoScroll">
-                             <bool>false</bool>
-                            </property>
-                            <property name="editTriggers">
-                             <set>QAbstractItemView::AllEditTriggers</set>
-                            </property>
-                            <property name="selectionMode">
-                             <enum>QAbstractItemView::SingleSelection</enum>
-                            </property>
-                            <property name="selectionBehavior">
-                             <enum>QAbstractItemView::SelectRows</enum>
-                            </property>
-                            <property name="verticalScrollMode">
-                             <enum>QAbstractItemView::ScrollPerPixel</enum>
-                            </property>
-                            <property name="horizontalScrollMode">
-                             <enum>QAbstractItemView::ScrollPerPixel</enum>
-                            </property>
-                            <property name="rowCount">
-                             <number>1</number>
-                            </property>
-                            <attribute name="horizontalHeaderVisible">
-                             <bool>false</bool>
-                            </attribute>
-                            <attribute name="horizontalHeaderMinimumSectionSize">
-                             <number>90</number>
-                            </attribute>
-                            <attribute name="horizontalHeaderDefaultSectionSize">
-                             <number>170</number>
-                            </attribute>
-                            <attribute name="horizontalHeaderStretchLastSection">
-                             <bool>true</bool>
-                            </attribute>
-                            <attribute name="verticalHeaderVisible">
-                             <bool>false</bool>
-                            </attribute>
-                            <attribute name="verticalHeaderDefaultSectionSize">
-                             <number>30</number>
-                            </attribute>
-                            <row/>
-                            <column>
-                             <property name="text">
-                              <string/>
-                             </property>
-                            </column>
-                           </widget>
-                          </item>
-                          <item row="0" column="0">
-                           <widget class="QLabel" name="cifKeywordLB">
-                            <property name="text">
-                             <string>cif keyword</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="0" column="1" colspan="5">
-                           <widget class="QLineEdit" name="cifKeywordLineEdit"/>
-                          </item>
-                         </layout>
-                        </widget>
-                       </widget>
-                      </item>
-                     </layout>
-                    </widget>
+                     <item>
+                      <widget class="QPushButton" name="NewEquipmentTemplateButton">
+                       <property name="text">
+                        <string>New Template</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QPushButton" name="EditEquipmentTemplateButton">
+                       <property name="text">
+                        <string>Edit Template</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QPushButton" name="ImportEquipmentTemplateButton">
+                       <property name="text">
+                        <string>Import</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
                    </item>
                   </layout>
                  </widget>
                  <widget class="QWidget" name="EquipmentEditPage">
-                  <layout class="QGridLayout" name="gridLayout_2">
-                   <item row="0" column="1" colspan="4">
+                  <layout class="QVBoxLayout" name="verticalLayout_21">
+                   <property name="leftMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>3</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="bottomMargin">
+                    <number>3</number>
+                   </property>
+                   <item>
                     <widget class="MyEQTableWidget" name="EquipmentEditTableWidget">
                      <property name="autoScroll">
                       <bool>false</bool>
@@ -526,7 +314,7 @@
                      </column>
                     </widget>
                    </item>
-                   <item row="2" column="1" colspan="4">
+                   <item>
                     <layout class="QHBoxLayout" name="horizontalLayout_5">
                      <item>
                       <widget class="QPushButton" name="DeleteEquipmentButton">
@@ -551,6 +339,243 @@
                      </item>
                      <item>
                       <widget class="QPushButton" name="ExportEquipmentButton">
+                       <property name="text">
+                        <string>Export</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                  </layout>
+                 </widget>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="Line" name="line">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="ImportCifPushButton">
+              <property name="text">
+               <string>Import .cif, .pcf, .cif_od, .cfx or .sqf file</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="Line" name="line_5">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QGroupBox" name="PropertiesGroupBox">
+              <property name="title">
+               <string>Property Templates</string>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_6">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>3</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>3</number>
+               </property>
+               <item>
+                <widget class="QStackedWidget" name="PropertiesTemplatesStackedWidget">
+                 <property name="currentIndex">
+                  <number>1</number>
+                 </property>
+                 <widget class="QWidget" name="PropertiesSelectPage">
+                  <layout class="QVBoxLayout" name="verticalLayout_20">
+                   <property name="leftMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>3</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="bottomMargin">
+                    <number>3</number>
+                   </property>
+                   <item>
+                    <widget class="QListWidget" name="PropertiesTemplatesListWidget">
+                     <property name="font">
+                      <font>
+                       <pointsize>11</pointsize>
+                      </font>
+                     </property>
+                     <property name="toolTip">
+                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A list of common properties like &lt;/p&gt;&lt;p&gt;_exptl_crystal_colour: yellow, red, blue, ...&lt;/p&gt;&lt;p&gt;Lists defined here will appear as dropdown menus in the main Table.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                     </property>
+                     <property name="selectionMode">
+                      <enum>QAbstractItemView::SingleSelection</enum>
+                     </property>
+                     <property name="selectionBehavior">
+                      <enum>QAbstractItemView::SelectRows</enum>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_Buttons2">
+                     <item>
+                      <widget class="QPushButton" name="EditPropertyTemplateButton">
+                       <property name="text">
+                        <string>Edit Template</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QPushButton" name="NewPropertyTemplateButton">
+                       <property name="text">
+                        <string>New Template</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QPushButton" name="ImportPropertyTemplateButton">
+                       <property name="text">
+                        <string>Import</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                  </layout>
+                 </widget>
+                 <widget class="QWidget" name="PropertiesEditPage">
+                  <layout class="QVBoxLayout" name="verticalLayout_22">
+                   <property name="leftMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>3</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="bottomMargin">
+                    <number>3</number>
+                   </property>
+                   <item>
+                    <layout class="QVBoxLayout" name="KeywordVerticalLayout">
+                     <item>
+                      <widget class="QLabel" name="cifKeywordLB">
+                       <property name="text">
+                        <string>cif keyword</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QLineEdit" name="cifKeywordLineEdit"/>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <widget class="MyPropTableWidget" name="PropertiesEditTableWidget">
+                     <property name="autoScroll">
+                      <bool>false</bool>
+                     </property>
+                     <property name="editTriggers">
+                      <set>QAbstractItemView::AllEditTriggers</set>
+                     </property>
+                     <property name="selectionMode">
+                      <enum>QAbstractItemView::SingleSelection</enum>
+                     </property>
+                     <property name="selectionBehavior">
+                      <enum>QAbstractItemView::SelectRows</enum>
+                     </property>
+                     <property name="verticalScrollMode">
+                      <enum>QAbstractItemView::ScrollPerPixel</enum>
+                     </property>
+                     <property name="horizontalScrollMode">
+                      <enum>QAbstractItemView::ScrollPerPixel</enum>
+                     </property>
+                     <property name="rowCount">
+                      <number>1</number>
+                     </property>
+                     <attribute name="horizontalHeaderVisible">
+                      <bool>false</bool>
+                     </attribute>
+                     <attribute name="horizontalHeaderMinimumSectionSize">
+                      <number>90</number>
+                     </attribute>
+                     <attribute name="horizontalHeaderDefaultSectionSize">
+                      <number>170</number>
+                     </attribute>
+                     <attribute name="horizontalHeaderStretchLastSection">
+                      <bool>true</bool>
+                     </attribute>
+                     <attribute name="verticalHeaderVisible">
+                      <bool>false</bool>
+                     </attribute>
+                     <attribute name="verticalHeaderDefaultSectionSize">
+                      <number>30</number>
+                     </attribute>
+                     <row/>
+                     <column>
+                      <property name="text">
+                       <string/>
+                      </property>
+                     </column>
+                    </widget>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout">
+                     <item>
+                      <widget class="QPushButton" name="DeletePropertiesButton">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                         <horstretch>1</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="text">
+                        <string>Delete Template</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QPushButton" name="SavePropertiesButton">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                         <horstretch>1</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="text">
+                        <string>Save</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QPushButton" name="CancelPropertiesButton">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                         <horstretch>1</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="text">
+                        <string>Cancel</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QPushButton" name="ExportPropertyButton">
                        <property name="text">
                         <string>Export</string>
                        </property>
@@ -597,13 +622,13 @@
                 <number>0</number>
                </property>
                <property name="topMargin">
-                <number>0</number>
+                <number>6</number>
                </property>
                <property name="rightMargin">
                 <number>0</number>
                </property>
                <property name="bottomMargin">
-                <number>0</number>
+                <number>6</number>
                </property>
                <item>
                 <widget class="QListWidget" name="LoopTemplatesListWidget">
@@ -628,6 +653,9 @@
                </item>
                <item>
                 <layout class="QHBoxLayout" name="horizontalLayout_7">
+                 <property name="spacing">
+                  <number>9</number>
+                 </property>
                  <property name="topMargin">
                   <number>6</number>
                  </property>
@@ -2334,54 +2362,6 @@ The data source will be ignored until next program restart.</string>
                 </property>
                </widget>
               </item>
-              <item row="1" column="0">
-               <spacer name="verticalSpacer_7">
-                <property name="orientation">
-                 <enum>Qt::Vertical</enum>
-                </property>
-                <property name="sizeType">
-                 <enum>QSizePolicy::Fixed</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>20</width>
-                  <height>28</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-              <item row="0" column="4">
-               <spacer name="horizontalSpacer_16">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-              <item row="0" column="0">
-               <widget class="QPushButton" name="BackFromLoopsPushButton">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>120</width>
-                  <height>0</height>
-                 </size>
-                </property>
-                <property name="text">
-                 <string>Back to CIF Table</string>
-                </property>
-               </widget>
-              </item>
               <item row="0" column="1">
                <layout class="QHBoxLayout" name="horizontalLayout_8">
                 <item>
@@ -2427,8 +2407,56 @@ The data source will be ignored until next program restart.</string>
                 </item>
                </layout>
               </item>
+              <item row="1" column="0">
+               <spacer name="verticalSpacer_7">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+                <property name="sizeType">
+                 <enum>QSizePolicy::Fixed</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>20</width>
+                  <height>28</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item row="0" column="0">
+               <widget class="QPushButton" name="BackFromLoopsPushButton">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>120</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Back to CIF Table</string>
+                </property>
+               </widget>
+              </item>
               <item row="0" column="2">
                <spacer name="horizontalSpacer_15">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item row="0" column="4">
+               <spacer name="horizontalSpacer_16">
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
                 </property>
@@ -2882,13 +2910,9 @@ The data source will be ignored until next program restart.</string>
  <tabstops>
   <tabstop>SelectCif_LineEdit</tabstop>
   <tabstop>EquipmentEditTableWidget</tabstop>
-  <tabstop>cifKeywordLineEdit</tabstop>
   <tabstop>PropertiesEditTableWidget</tabstop>
   <tabstop>SelectCif_PushButton</tabstop>
-  <tabstop>NewPropertyTemplateButton</tabstop>
   <tabstop>PropertiesTemplatesListWidget</tabstop>
-  <tabstop>EditPropertyTemplateButton</tabstop>
-  <tabstop>NewEquipmentTemplateButton</tabstop>
   <tabstop>EquipmentTemplatesListWidget</tabstop>
  </tabstops>
  <includes>
