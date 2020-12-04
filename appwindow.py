@@ -23,7 +23,7 @@ from PyQt5.QtGui import QKeySequence, QResizeEvent, QMoveEvent, QTextCursor, QFo
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtWidgets import QMainWindow, QHeaderView, QShortcut, QCheckBox, QListWidgetItem, QApplication, \
-    QPlainTextEdit, QTableView, QFileDialog
+    QPlainTextEdit, QFileDialog
 from gemmi import cif
 from qtpy.QtGui import QDesktopServices
 
@@ -74,7 +74,6 @@ class AppWindow(QMainWindow):
         self.view: Union[QWebEngineView, None] = None
         self.report_picture_path: Union[Path, None] = None
         self.checkdef = []
-        self._loop_tables: List[Loop] = []
         self.final_cif_file_name = Path()
         self.missing_data: set = set()
         self.temperature_warning_displayed = False
@@ -1399,24 +1398,11 @@ class AppWindow(QMainWindow):
             if not tags or len(tags) < 1:
                 continue
             loop = Loop(tags, values=grouper(loop.values, loop.width()))
-            # I need this list for testing (access to the tableviews):
-            self._loop_tables.append(loop)
             self.ui.LoopsTabWidget.addTab(loop.tableview, cif_to_header_label.get(tags[0]) or tags[0])
             loop.model.modelChanged.connect(self.save_new_value_to_cif_block)
-            #
             self.ui.revertLoopsPushButton.clicked.connect(loop.model.revert)
         if self.cif.res_file_data:
-            textedit = QPlainTextEdit()
-            self.ui.LoopsTabWidget.addTab(textedit, 'SHELX res file')
-            textedit.setPlainText(self.cif.res_file_data)
-            doc = textedit.document()
-            font = doc.defaultFont()
-            font.setFamily("Courier")
-            font.setStyleHint(QFont.Monospace)
-            font.setPointSize(14)
-            doc.setDefaultFont(font)
-            textedit.setLineWrapMode(QPlainTextEdit.NoWrap)
-            textedit.setReadOnly(True)
+            self.add_res_file_to_loops()
 
     def save_new_value_to_cif_block(self, row: int, col: int, value: Union[str, int, float], header: list):
         column = self.cif.block.find_values(header[col])
@@ -1424,13 +1410,25 @@ class AppWindow(QMainWindow):
 
     def make_loops_tables(self) -> None:
         self.ui.LoopsTabWidget.clear()
-        self._loop_tables.clear()
         for tab in range(30):
             self.ui.LoopsTabWidget.removeTab(0)
         if self.cif and self.cif.loops:
             self.add_loops_tables()
         else:
             return
+
+    def add_res_file_to_loops(self):
+        textedit = QPlainTextEdit()
+        self.ui.LoopsTabWidget.addTab(textedit, 'SHELX res file')
+        textedit.setPlainText(self.cif.res_file_data[1:-1])
+        doc = textedit.document()
+        font = doc.defaultFont()
+        font.setFamily("Courier")
+        font.setStyleHint(QFont.Monospace)
+        font.setPointSize(14)
+        doc.setDefaultFont(font)
+        textedit.setLineWrapMode(QPlainTextEdit.NoWrap)
+        textedit.setReadOnly(True)
 
     def add_row(self, key: str, value: str, at_start=False) -> None:
         """
