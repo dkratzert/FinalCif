@@ -74,6 +74,7 @@ class AppWindow(QMainWindow):
         self.view: Union[QWebEngineView, None] = None
         self.report_picture_path: Union[Path, None] = None
         self.checkdef = []
+        self._loop_tables: List[QTableView] = []
         self.final_cif_file_name = Path()
         self.missing_data: set = set()
         self.temperature_warning_displayed = False
@@ -1398,6 +1399,8 @@ class AppWindow(QMainWindow):
             if not tags or len(tags) < 1:
                 continue
             tableview = QTableView()
+            # I need this list for testing (access to the tableviews):
+            self._loop_tables.append(tableview)
             # Adds a label to each loop tabwidget:
             self.ui.LoopsTabWidget.addTab(tableview, cif_to_header_label.get(tags[0]) or tags[0])
             loop = Loop(tags, values=grouper(loop.values, loop.width()), table=tableview)
@@ -1423,6 +1426,7 @@ class AppWindow(QMainWindow):
 
     def make_loops_tables(self) -> None:
         self.ui.LoopsTabWidget.clear()
+        self._loop_tables.clear()
         for tab in range(30):
             self.ui.LoopsTabWidget.removeTab(0)
         if self.cif and self.cif.loops:
