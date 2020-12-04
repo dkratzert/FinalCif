@@ -96,6 +96,7 @@ class AppWindow(QMainWindow):
         self.distribute_cif_main_table_columns_evenly()
         # Make sure the start page is shown and not the edit page:
         self.ui.CheckCIFResultsTabWidget.setCurrentIndex(0)
+        self.ui.TemplatesStackedWidget.setCurrentIndex(0)
         self.ui.MainStackedWidget.got_to_main_page()
         self.set_button_states()
         self.connect_signals_and_slots()
@@ -205,6 +206,7 @@ class AppWindow(QMainWindow):
         self.ui.BackPushButton.clicked.connect(self.back_to_main)
         self.ui.ExploreDirButton.clicked.connect(self.explore_current_dir)
         self.ui.LoopsPushButton.clicked.connect(self.ui.MainStackedWidget.go_to_loops_page)
+        self.ui.LoopsPushButton.clicked.connect(lambda: self.ui.TemplatesStackedWidget.setCurrentIndex(1))
         ## checkcif
         self.ui.CheckcifStartButton.clicked.connect(self.open_checkcif_page)
         self.ui.CheckcifButton.clicked.connect(self.do_offline_checkcif)
@@ -459,13 +461,14 @@ class AppWindow(QMainWindow):
         self.load_cif_file(str(self.final_cif_file_name.absolute()))
         self.ui.MainStackedWidget.got_to_main_page()
         self.ui.cif_main_table.scrollToTop()
+        self.ui.TemplatesStackedWidget.setCurrentIndex(0)
 
     def back_to_main_noload(self):
         """
         Get back to the main table. Without loading a new cif file.
         """
         self.status_bar.show_message('')
-        self.ui.LoopsPushButton.setText('Show Loops')
+        self.ui.TemplatesStackedWidget.setCurrentIndex(0)
         self.ui.MainStackedWidget.got_to_main_page()
         if self.view:
             self.ui.moleculeLayout.removeWidget(self.view)
@@ -1056,6 +1059,7 @@ class AppWindow(QMainWindow):
             self.ui.SumFormMainLineEdit.setText(self.cif['_chemical_formula_sum'])
             self.ui.CCDCNumLineEdit.setText(self.cif['_database_code_depnum_ccdc_archive'])
             self.ui.CheckcifPlaintextEdit.clear()
+            self.ui.TemplatesStackedWidget.setCurrentIndex(0)
 
     def go_into_cifs_directory(self, filepath):
         try:
@@ -1375,7 +1379,6 @@ class AppWindow(QMainWindow):
         """
         Generates a list of tables containing the cif loops.
         """
-        self.ui.LoopsPushButton.setText('Show Loops')
         self.ui.LoopsTabWidget.clear()
         self._loop_tables.clear()
         for num in range(len(self.cif.loops)):
