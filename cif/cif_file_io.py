@@ -357,9 +357,8 @@ class CifContainer():
         """
         Calculates the shelx checksum for the hkl file content of a cif file.
         """
-        hkl = self.hkl_file
-        if hkl:
-            return self.calc_checksum(hkl[1:-1])
+        if self.hkl_file:
+            return self.calc_checksum(self.hkl_file[1:-1])
         else:
             return 0
 
@@ -368,8 +367,7 @@ class CifContainer():
         """
         Calculates the shelx checksum for the res file content of a cif file.
         """
-        res = self.res_file_data
-        if res:
+        if self.res_file_data:
             return self.calc_checksum(self.res_file_data[1:-1])
         return 0
 
@@ -650,13 +648,14 @@ class CifContainer():
         A method to check whether the checksums in the cif file fit to the content.
         """
         cif_res_ckecksum = 0
-        if self.res_checksum_calcd > 0:
+        res_checksum_calcd = self.res_checksum_calcd
+        if res_checksum_calcd > 0:
             cif_res_ckecksum = self['_shelx_res_checksum'] or -1
             try:
                 cif_res_ckecksum = int(cif_res_ckecksum)
             except ValueError:
                 cif_res_ckecksum = -1
-        if cif_res_ckecksum > 0 and cif_res_ckecksum != self.res_checksum_calcd:
+        if cif_res_ckecksum > 0 and cif_res_ckecksum != res_checksum_calcd:
             return False
         else:
             return True
@@ -666,13 +665,14 @@ class CifContainer():
         A method to check whether the checksums in the cif file fit to the content.
         """
         cif_hkl_ckecksum = 0
-        if self.hkl_checksum_calcd > 0:
+        hkl_checksum_calcd = self.hkl_checksum_calcd
+        if hkl_checksum_calcd > 0:
             cif_hkl_ckecksum = self['_shelx_hkl_checksum'] or -1
             try:
                 cif_hkl_ckecksum = int(cif_hkl_ckecksum)
             except ValueError:
                 cif_hkl_ckecksum = -1
-        if cif_hkl_ckecksum > 0 and cif_hkl_ckecksum != self.hkl_checksum_calcd:
+        if cif_hkl_ckecksum > 0 and cif_hkl_ckecksum != hkl_checksum_calcd:
             return False
         else:
             return True
