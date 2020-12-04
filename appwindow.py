@@ -49,7 +49,7 @@ from template.templates import ReportTemplates
 from tools.checkcif import MyHTMLParser, AlertHelp, CheckCif
 from tools.dsrmath import my_isnumeric
 from tools.misc import strip_finalcif_of_name, next_path, do_not_import_keys, celltxt, to_float, combobox_fields, \
-    do_not_import_from_stoe_cfx
+    do_not_import_from_stoe_cfx, cif_to_header_label
 from tools.options import Options
 from tools.platon import Platon
 from tools.settings import FinalCifSettings
@@ -786,7 +786,7 @@ class AppWindow(QMainWindow):
                 raise
             print('Unable to make report from cif file.')
             not_ok = e
-            show_general_warning("The report templates could not be found:\n"+str(not_ok))
+            show_general_warning("The report templates could not be found:\n" + str(not_ok))
             return
         except PermissionError:
             if DEBUG:
@@ -1379,14 +1379,13 @@ class AppWindow(QMainWindow):
         """
         Generates a list of tables containing the cif loops.
         """
-        self.ui.LoopsTabWidget.clear()
-        self._loop_tables.clear()
         for num in range(len(self.cif.loops)):
             tags = self.cif.loops[num].tags
             if not tags:
                 continue
             tableview = QTableView()
-            self.ui.LoopsTabWidget.addTab(tableview, tags[0])
+            # Adds a label to each loop tabwidget:
+            self.ui.LoopsTabWidget.addTab(tableview, cif_to_header_label.get(tags[0]) or tags[0])
             loop = Loop(self.cif, tableview)
             loop.make_model(num)
             tableview.setObjectName('loop_table_{}'.format(num))
@@ -1411,6 +1410,10 @@ class AppWindow(QMainWindow):
         column[row] = value if my_isnumeric(value) else quote(value)
 
     def make_loops_tables(self) -> None:
+        self.ui.LoopsTabWidget.clear()
+        for tab in range(30):
+            self.ui.LoopsTabWidget.removeTab(0)
+        self._loop_tables.clear()
         if self.cif and self.cif.loops:
             self.add_loops_tables()
         else:
