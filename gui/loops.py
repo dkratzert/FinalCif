@@ -17,40 +17,35 @@ from cif.cif_file_io import CifContainer
 
 
 class Loop():
-    def __init__(self, cif: CifContainer, tableview: QTableView):
-        self.table = tableview
-        self.cif = cif
-        self.headerlabels = []
+    def __init__(self, tags: List[str], values: List[List[str]], table: QTableView):
+        self.table = table
+        self.values = values
+        self.tags = tags
         self.model: Union[TableModel, None] = None
 
-    def make_model(self, loopnum: int):
+    def make_model(self, ) -> None:
         """
         Creates the model and applies data to it
         """
-        self.model = TableModel(self.get_data(loopnum), self.headerlabels)
+        self.model = TableModel(self.get_string_values(), self.tags)
         self.table.setModel(self.model)
         header = self.table.horizontalHeader()
+        # Format the header sizes:
         for column in range(header.count()):
             header.setSectionResizeMode(column, QHeaderView.ResizeToContents)
             width = header.sectionSize(column) + 10
             header.setSectionResizeMode(column, QHeaderView.Interactive)
             header.resizeSection(column, width)
 
-    def get_data(self, loopnum: int) -> List[List[str]]:
+    def get_string_values(self) -> List[List[str]]:
         """
-        Get data for a loop with number loopnum
+        Get data for a loop by tags
         """
         data = []
-        self.get_headerlabels(loopnum)
-        for v in self.cif.block.find(self.headerlabels):
+        for v in self.values:
+            # as_string() would make . and ? to empty strings otherwise: 
             data.append([x if x in ('.', '?') else as_string(x) for x in v])
         return data
-
-    def get_headerlabels(self, loopnum):
-        """
-        Loop header labels like _space_group_symop_operation_xyz for the current loop
-        """
-        self.headerlabels = self.cif.loops[loopnum].tags
 
 
 class TableModel(QAbstractTableModel):

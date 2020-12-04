@@ -49,7 +49,7 @@ from template.templates import ReportTemplates
 from tools.checkcif import MyHTMLParser, AlertHelp, CheckCif
 from tools.dsrmath import my_isnumeric
 from tools.misc import strip_finalcif_of_name, next_path, do_not_import_keys, celltxt, to_float, combobox_fields, \
-    do_not_import_from_stoe_cfx, cif_to_header_label
+    do_not_import_from_stoe_cfx, cif_to_header_label, grouper
 from tools.options import Options
 from tools.platon import Platon
 from tools.settings import FinalCifSettings
@@ -74,7 +74,6 @@ class AppWindow(QMainWindow):
         self.view: Union[QWebEngineView, None] = None
         self.report_picture_path: Union[Path, None] = None
         self.checkdef = []
-        self._loop_tables: List[QTableView] = []
         self.final_cif_file_name = Path()
         self.missing_data: set = set()
         self.temperature_warning_displayed = False
@@ -1378,18 +1377,31 @@ class AppWindow(QMainWindow):
     def add_loops_tables(self) -> None:
         """
         Generates a list of tables containing the cif loops.
+
+        for l in loop:
+            print(l.tags)
+        ['_space_group_symop_operation_xyz']
+        ['_atom_type_symbol', '_atom_type_description', '_atom_type_scat_dispersion_real', '_atom_type_scat_dispersion_imag', '_atom_type_scat_source']
+        [...]
+
+        l.values
+        ["'x, y, z'", "'-x+1/2, y+1/2, -z+1/2'", "'-x, -y, -z'", "'x-1/2, -y-1/2, z-1/2'"]
+        ["'C'", "'C'", '0.0033', '0.0016', "'International Tables Vol C Tables 4.2.6.8 and 6.1.1.4'", "'H'", "'H'", '0.0000', '0.0000', "'International Tables Vol C Tables 4.2.6.8 and 6.1.1.4'", "'Li'", "'Li'", '-0.0003', '0.0001', "'International Tables Vol C Tables 4.2.6.8 and 6.1.1.4'", "'B'", "'B'", '0.0013', '0.0007', "'International Tables Vol C Tables 4.2.6.8 and 6.1.1.4'", "'N'", "'N'", '0.0061', '0.0033', "'International Tables Vol C Tables 4.2.6.8 and 6.1.1.4'", "'O'", "'O'", '0.0106', '0.0060', "'International Tables Vol C Tables 4.2.6.8 and 6.1.1.4'"]
+
+        for l in loop:
+            print(list(grouper(l.values, l.width())))
+        [("'x, y, z'",), ("'-x+1/2, y+1/2, -z+1/2'",), ("'-x, -y, -z'",), ("'x-1/2, -y-1/2, z-1/2'",)]
+        [("'C'", "'C'", '0.0033', '0.0016', "'International Tables Vol C Tables 4.2.6.8 and 6.1.1.4'"), ("'H'", "'H'", '0.0000', '0.0000', "'International Tables Vol C Tables 4.2.6.8 and 6.1.1.4'"), ... 
         """
-        for num in range(len(self.cif.loops)):
-            tags = self.cif.loops[num].tags
-            if not tags:
+        for num, loop in enumerate(self.cif.loops):
+            tags = loop.tags
+            if not tags or len(tags) < 1:
                 continue
             tableview = QTableView()
             # Adds a label to each loop tabwidget:
             self.ui.LoopsTabWidget.addTab(tableview, cif_to_header_label.get(tags[0]) or tags[0])
-            loop = Loop(self.cif, tableview)
-            loop.make_model(num)
-            tableview.setObjectName('loop_table_{}'.format(num))
-            self._loop_tables.append(tableview)
+            loop = Loop(tags, values=grouper(loop.values, loop.width()), table=tableview)
+            loop.make_model()
             loop.model.modelChanged.connect(self.save_new_value_to_cif_block)
             self.ui.revertLoopsPushButton.clicked.connect(loop.model.revert)
         if self.cif.res_file_data:
@@ -1413,7 +1425,6 @@ class AppWindow(QMainWindow):
         self.ui.LoopsTabWidget.clear()
         for tab in range(30):
             self.ui.LoopsTabWidget.removeTab(0)
-        self._loop_tables.clear()
         if self.cif and self.cif.loops:
             self.add_loops_tables()
         else:
