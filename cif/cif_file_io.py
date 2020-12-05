@@ -213,7 +213,7 @@ class CifContainer():
         for loop in imp_cif.loops:
             new_loop = self.block.init_loop('', loop.tags)
             for row in imp_cif.block.find(loop.tags):
-                new_loop.add_row([x for x in row])
+                new_loop.add_row(row)
 
     @property
     def Z_value(self):
