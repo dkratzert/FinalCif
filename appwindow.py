@@ -15,7 +15,7 @@ from math import sin, radians
 from pathlib import Path, WindowsPath
 from shutil import copy2
 from tempfile import TemporaryDirectory
-from typing import Union, Dict, Tuple, List
+from typing import Union, Dict, Tuple
 
 import qtawesome as qta
 from PyQt5.QtCore import QUrl, QEvent, QPoint, Qt
@@ -40,7 +40,7 @@ from gui.custom_classes import COL_CIF, COL_DATA, COL_EDIT, MyTableWidgetItem, l
 from gui.dialogs import show_update_warning, unable_to_open_message, show_general_warning, cif_file_open_dialog, \
     bad_z_message, show_res_checksum_warning, show_hkl_checksum_warning
 from gui.finalcif_gui import Ui_FinalCifWindow
-from gui.loops import Loop
+from gui.loops import Loop, LoopTableModel
 from gui.vrf_classes import MyVRFContainer, VREF
 from report.archive_report import ArchiveReport
 from report.tables import make_report_from
@@ -1378,6 +1378,10 @@ class AppWindow(QMainWindow):
         """
         Generates a list of tables containing the cif loops.
 
+        New template: open list of empty loop header keys
+        Edit template: open list of loop header keys
+        export Loop: write cif with loop
+
         for l in loop:
             print(l.tags)
         ['_space_group_symop_operation_xyz']
@@ -1403,14 +1407,40 @@ class AppWindow(QMainWindow):
             self.ui.revertLoopsPushButton.clicked.connect(loop.model.revert)
         if self.cif.res_file_data:
             self.add_res_file_to_loops()
+        self.add_new_templated_loop()
+        self.ui.SaveLoopButton.clicked.connect(self.save_current_loop)
+
+    def add_new_templated_loop(self):
+        tags = ['_citation_abstract_id_CAS', '_citation_author_name', '_citation_book_title']
+        values = ['12345234', 'Bernd', 'Vom abseits des Balls',
+                  '8765432', 'Harald', 'Foobar Title',
+                  '547393', 'Ida', 'Ein neuer Titel']
+        width = len(tags)
+        loop = Loop(tags, values=grouper(values, width))
+        self.ui.LoopsTabWidget.addTab(loop.tableview, cif_to_header_label.get(tags[0]) or tags[0])
+        loop.model.modelChanged.connect(self.save_new_value_to_cif_block)
+        # self.ui.revertLoopsPushButton.clicked.connect(loop.model.revert)
+        self.ui.LoopsTabWidget.setCurrentIndex(self.ui.LoopsTabWidget.count() - 1)
+
+    def save_current_loop(self):
+        current_loop_tab_index = self.ui.LoopsTabWidget.currentIndex()
+        loop_model: LoopTableModel = self.ui.LoopsTabWidget.widget(current_loop_tab_index).model()
+        print('saving loop\n', loop_model.loop_data)
+        new_loop = self.cif.block.init_loop('', loop_model._header)
+        for row in loop_model.loop_data:
+            print([quote(x) for x in row], '##')
+            new_loop.add_row([quote(x) for x in row])
 
     def save_new_value_to_cif_block(self, row: int, col: int, value: Union[str, int, float], header: list):
         column = self.cif.block.find_values(header[col])
+        if not column:
+            self.save_current_loop()
+            column = self.cif.block.find_values(header[col])
         column[row] = value if my_isnumeric(value) else quote(value)
 
     def make_loops_tables(self) -> None:
         self.ui.LoopsTabWidget.clear()
-        for tab in range(30):
+        for tab in range(self.ui.LoopsTabWidget.count() + 1):
             self.ui.LoopsTabWidget.removeTab(0)
         if self.cif and self.cif.loops:
             self.add_loops_tables()

@@ -19,12 +19,12 @@ class Loop():
         self.tableview = QTableView()
         self._values: List[List[str]] = self.get_string_values(values)
         self.tags = tags
-        self.model: Union[TableModel, None] = None
+        self.model: Union[LoopTableModel, None] = None
         self.make_model()
 
     def set_or_update_model(self, values: List[List[str]]):
         self.values = values
-        self.model = TableModel(self.values, self.tags)
+        self.model = LoopTableModel(self.values, self.tags)
         self.tableview.setModel(self.model)
 
     @property
@@ -59,15 +59,19 @@ class Loop():
         return data
 
 
-class TableModel(QAbstractTableModel):
+class LoopTableModel(QAbstractTableModel):
     modelChanged = pyqtSignal(int, int, 'PyQt_PyObject', list)
 
     def __init__(self, data, header):
-        super(TableModel, self).__init__()
+        super(LoopTableModel, self).__init__()
         self._data = data
         self._original = copy.deepcopy(data)
         self._header = header
-        self.modified = []  # a list of modified table items 
+        self.modified = []  # a list of modified table items
+
+    @property
+    def loop_data(self) -> List[List[str]]:
+        return self._data
 
     def data(self, index: QModelIndex, role: int = None):
         row, col = index.row(), index.column()
