@@ -18,13 +18,14 @@ class Loop():
     def __init__(self, tags: List[str], values: List[List[str]]):
         self.tableview = QTableView()
         self._values: List[List[str]] = self.get_string_values(values)
+        # print(self._values, '#_values')
         self.tags = tags
         self.model: Union[LoopTableModel, None] = None
         self.make_model()
 
     def set_or_update_model(self, values: List[List[str]]):
         self.values = values
-        self.model = LoopTableModel(self.values, self.tags)
+        self.model = LoopTableModel(self.tags, self.values)
         self.tableview.setModel(self.model)
 
     @property
@@ -39,7 +40,7 @@ class Loop():
         """
         Creates the model and applies data to it
         """
-        self.set_or_update_model(self.values)
+        self.update_model = self.set_or_update_model(self.values)
         header = self.tableview.horizontalHeader()
         # Format the header sizes:
         for column in range(header.count()):
@@ -62,7 +63,7 @@ class Loop():
 class LoopTableModel(QAbstractTableModel):
     modelChanged = pyqtSignal(int, int, 'PyQt_PyObject', list)
 
-    def __init__(self, data, header):
+    def __init__(self, header, data):
         super(LoopTableModel, self).__init__()
         self._data = data
         self._original = copy.deepcopy(data)
