@@ -1,3 +1,4 @@
+from contextlib import suppress
 from pathlib import Path
 from typing import Tuple
 
@@ -12,7 +13,8 @@ from gui.dialogs import show_general_warning, cif_file_open_dialog, cif_file_sav
 from tools import misc
 from tools.misc import include_equipment_imports
 from tools.settings import FinalCifSettings
-
+with suppress(ImportError):
+    from appwindow import AppWindow
 
 class Equipment:
 

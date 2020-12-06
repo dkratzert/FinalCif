@@ -140,6 +140,12 @@ class FinalCifSettings():
         """
         self.settings.setValue(name, items)
 
+    def get_loops_list(self) -> list:
+        loops_list = self.settings.value('loops_list')
+        if not loops_list:
+            loops_list = ['']
+        return sorted(loops_list)
+
     def load_equipment_template_as_dict(self, name: str) -> dict:
         """
         """

@@ -10,7 +10,8 @@ from gui.custom_classes import MyQPlainTextEdit
 from gui.dialogs import cif_file_open_dialog, show_general_warning, cif_file_save_dialog
 from tools.misc import predef_prop_templ
 from tools.settings import FinalCifSettings
-
+with suppress(ImportError):
+    from appwindow import AppWindow
 
 class Properties:
     def __init__(self, app: 'AppWindow', settings: FinalCifSettings):

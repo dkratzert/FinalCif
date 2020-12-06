@@ -29,25 +29,25 @@ from qtpy.QtGui import QDesktopServices
 
 import displaymol
 from cif.cif_file_io import CifContainer
-from cif.text import set_pair_delimited, utf8_to_str, retranslate_delimiter, quote
+from cif.text import set_pair_delimited, utf8_to_str, retranslate_delimiter
 from datafiles.bruker_data import BrukerData
 from datafiles.ccdc import CCDCMail
 from displaymol import mol_file_writer, write_html
 from displaymol.sdm import SDM
 from equip_property.equipment import Equipment
+from equip_property.loop_templates import LoopTemplates
 from equip_property.properties import Properties
 from gui.custom_classes import COL_CIF, COL_DATA, COL_EDIT, MyTableWidgetItem, light_green, yellow, MyComboBox, blue
 from gui.dialogs import show_update_warning, unable_to_open_message, show_general_warning, cif_file_open_dialog, \
     bad_z_message, show_res_checksum_warning, show_hkl_checksum_warning
 from gui.finalcif_gui import Ui_FinalCifWindow
-from gui.loops import Loop, LoopTableModel
+from gui.loops import Loop
 from gui.vrf_classes import MyVRFContainer, VREF
 from report.archive_report import ArchiveReport
 from report.tables import make_report_from
 from report.templated_report import TemplatedReport
 from template.templates import ReportTemplates
 from tools.checkcif import MyHTMLParser, AlertHelp, CheckCif
-from tools.dsrmath import my_isnumeric
 from tools.misc import strip_finalcif_of_name, next_path, do_not_import_keys, celltxt, to_float, combobox_fields, \
     do_not_import_from_stoe_cfx, cif_to_header_label, grouper
 from tools.options import Options
@@ -86,6 +86,7 @@ class AppWindow(QMainWindow):
         self.options = Options(self.ui, self.settings)
         self.equipment = Equipment(app=self, settings=self.settings)
         self.properties = Properties(app=self, settings=self.settings)
+        self.loops_templates = LoopTemplates(app=self, settings=self.settings)
         self.status_bar = StatusBar(ui=self.ui)
         self.status_bar.show_message('FinalCif version {}'.format(VERSION))
         self.set_window_size_and_position()
@@ -1377,25 +1378,6 @@ class AppWindow(QMainWindow):
     def add_loops_tables(self) -> None:
         """
         Generates a list of tables containing the cif loops.
-
-        New template: open list of empty loop header keys
-        Edit template: open list of loop header keys
-        export Loop: write cif with loop
-
-        for l in loop:
-            print(l.tags)
-        ['_space_group_symop_operation_xyz']
-        ['_atom_type_symbol', '_atom_type_description', '_atom_type_scat_dispersion_real', '_atom_type_scat_dispersion_imag', '_atom_type_scat_source']
-        [...]
-
-        l.values
-        ["'x, y, z'", "'-x+1/2, y+1/2, -z+1/2'", "'-x, -y, -z'", "'x-1/2, -y-1/2, z-1/2'"]
-        ["'C'", "'C'", '0.0033', '0.0016', "'International Tables Vol C Tables 4.2.6.8 and 6.1.1.4'", "'H'", "'H'", '0.0000', '0.0000', "'International Tables Vol C Tables 4.2.6.8 and 6.1.1.4'", "'Li'", "'Li'", '-0.0003', '0.0001', "'International Tables Vol C Tables 4.2.6.8 and 6.1.1.4'", "'B'", "'B'", '0.0013', '0.0007', "'International Tables Vol C Tables 4.2.6.8 and 6.1.1.4'", "'N'", "'N'", '0.0061', '0.0033', "'International Tables Vol C Tables 4.2.6.8 and 6.1.1.4'", "'O'", "'O'", '0.0106', '0.0060', "'International Tables Vol C Tables 4.2.6.8 and 6.1.1.4'"]
-
-        for l in loop:
-            print(list(grouper(l.values, l.width())))
-        [("'x, y, z'",), ("'-x+1/2, y+1/2, -z+1/2'",), ("'-x, -y, -z'",), ("'x-1/2, -y-1/2, z-1/2'",)]
-        [("'C'", "'C'", '0.0033', '0.0016', "'International Tables Vol C Tables 4.2.6.8 and 6.1.1.4'"), ("'H'", "'H'", '0.0000', '0.0000', "'International Tables Vol C Tables 4.2.6.8 and 6.1.1.4'"), ... 
         """
         for num, loop in enumerate(self.cif.loops):
             tags = loop.tags
@@ -1403,40 +1385,10 @@ class AppWindow(QMainWindow):
                 continue
             loop = Loop(tags, values=grouper(loop.values, loop.width()))
             self.ui.LoopsTabWidget.addTab(loop.tableview, cif_to_header_label.get(tags[0]) or tags[0])
-            loop.model.modelChanged.connect(self.save_new_value_to_cif_block)
+            loop.model.modelChanged.connect(self.loops_templates.save_new_value_to_cif_block)
             self.ui.revertLoopsPushButton.clicked.connect(loop.model.revert)
         if self.cif.res_file_data:
             self.add_res_file_to_loops()
-        self.add_new_templated_loop()
-        self.ui.SaveLoopButton.clicked.connect(self.save_current_loop)
-
-    def add_new_templated_loop(self):
-        tags = ['_citation_abstract_id_CAS', '_citation_author_name', '_citation_book_title']
-        values = ['12345234', 'Bernd', 'Vom abseits des Balls',
-                  '8765432', 'Harald', 'Foobar Title',
-                  '547393', 'Ida', 'Ein neuer Titel']
-        width = len(tags)
-        loop = Loop(tags, values=grouper(values, width))
-        self.ui.LoopsTabWidget.addTab(loop.tableview, cif_to_header_label.get(tags[0]) or tags[0])
-        loop.model.modelChanged.connect(self.save_new_value_to_cif_block)
-        # self.ui.revertLoopsPushButton.clicked.connect(loop.model.revert)
-        self.ui.LoopsTabWidget.setCurrentIndex(self.ui.LoopsTabWidget.count() - 1)
-
-    def save_current_loop(self):
-        current_loop_tab_index = self.ui.LoopsTabWidget.currentIndex()
-        loop_model: LoopTableModel = self.ui.LoopsTabWidget.widget(current_loop_tab_index).model()
-        print('saving loop\n', loop_model.loop_data)
-        new_loop = self.cif.block.init_loop('', loop_model._header)
-        for row in loop_model.loop_data:
-            print([quote(x) for x in row], '##')
-            new_loop.add_row([quote(x) for x in row])
-
-    def save_new_value_to_cif_block(self, row: int, col: int, value: Union[str, int, float], header: list):
-        column = self.cif.block.find_values(header[col])
-        if not column:
-            self.save_current_loop()
-            column = self.cif.block.find_values(header[col])
-        column[row] = value if my_isnumeric(value) else quote(value)
 
     def make_loops_tables(self) -> None:
         self.ui.LoopsTabWidget.clear()

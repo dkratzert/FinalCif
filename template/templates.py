@@ -6,7 +6,8 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QFileDialog, QListWidgetItem
 
-# from appwindow import AppWindow
+with suppress(ImportError):
+    from appwindow import AppWindow
 from tools.settings import FinalCifSettings
 
 
