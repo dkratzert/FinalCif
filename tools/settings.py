@@ -6,7 +6,7 @@
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
 from contextlib import suppress
-from typing import List
+from typing import List, Dict
 
 from PyQt5.QtCore import QPoint, QSettings, QSize
 
@@ -128,7 +128,7 @@ class FinalCifSettings():
         """
         self.settings.setValue(name, items)
 
-    def load_template(self, name: str) -> List[str]:
+    def load_template(self, name: str) -> Dict:
         """
         Load templates abnd return them as list of lists.
         """
