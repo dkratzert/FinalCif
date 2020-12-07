@@ -8,8 +8,8 @@
 import copy
 from typing import Union, List, Any
 
-from PyQt5.QtCore import QAbstractTableModel, QModelIndex, Qt, QSize, QVariant, pyqtSignal
-from PyQt5.QtGui import QColor
+from PyQt5.QtCore import QAbstractTableModel, QModelIndex, Qt, QSize, QVariant, pyqtSignal, QEvent
+from PyQt5.QtGui import QColor, QContextMenuEvent
 from PyQt5.QtWidgets import QTableView, QHeaderView
 from gemmi.cif import as_string
 
@@ -95,7 +95,10 @@ class LoopTableModel(QAbstractTableModel):
         # section is the index of the column/row.
         if role == Qt.DisplayRole:
             if orientation == Qt.Horizontal:
-                return str(self._header[section])
+                try:
+                    return str(self._header[section])
+                except IndexError:
+                    return ''
         if role == Qt.TextAlignmentRole:
             return Qt.AlignVCenter + Qt.AlignLeft
 
