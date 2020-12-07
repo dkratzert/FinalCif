@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'D:\GitHub\FinalCif\gui\finalcif_gui.ui'
+# Form implementation generated from reading ui file '/Users/daniel/Documents/GitHub/FinalCif/gui/finalcif_gui.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.2
 #
@@ -1037,12 +1037,12 @@ class Ui_FinalCifWindow(object):
         self.ExportLoopButton = QtWidgets.QPushButton(self.page_Loops)
         self.ExportLoopButton.setObjectName("ExportLoopButton")
         self.gridLayout_16.addWidget(self.ExportLoopButton, 1, 3, 1, 1)
-        self.pushButton = QtWidgets.QPushButton(self.page_Loops)
-        self.pushButton.setObjectName("pushButton")
-        self.gridLayout_16.addWidget(self.pushButton, 0, 2, 1, 1)
-        self.pushButton_2 = QtWidgets.QPushButton(self.page_Loops)
-        self.pushButton_2.setObjectName("pushButton_2")
-        self.gridLayout_16.addWidget(self.pushButton_2, 0, 3, 1, 1)
+        self.AddRowPushButton = QtWidgets.QPushButton(self.page_Loops)
+        self.AddRowPushButton.setObjectName("AddRowPushButton")
+        self.gridLayout_16.addWidget(self.AddRowPushButton, 0, 2, 1, 1)
+        self.AddColumnPushButton = QtWidgets.QPushButton(self.page_Loops)
+        self.AddColumnPushButton.setObjectName("AddColumnPushButton")
+        self.gridLayout_16.addWidget(self.AddColumnPushButton, 0, 3, 1, 1)
         self.verticalLayout_9.addLayout(self.gridLayout_16)
         self.MainStackedWidget.addWidget(self.page_Loops)
         self.page_checkcif = QtWidgets.QWidget()
@@ -1345,8 +1345,8 @@ class Ui_FinalCifWindow(object):
         self.revertLoopsPushButton.setText(_translate("FinalCifWindow", "revert changes"))
         self.ImportLoopTemplateButton.setText(_translate("FinalCifWindow", "Import Loop"))
         self.ExportLoopButton.setText(_translate("FinalCifWindow", "Export Loop"))
-        self.pushButton.setText(_translate("FinalCifWindow", "Add Row ->"))
-        self.pushButton_2.setText(_translate("FinalCifWindow", "Add Column \\/"))
+        self.AddRowPushButton.setText(_translate("FinalCifWindow", "Add Row ->"))
+        self.AddColumnPushButton.setText(_translate("FinalCifWindow", "Add Column \\/"))
         self.groupBox_71.setTitle(_translate("FinalCifWindow", "CheckCIF log messages"))
         self.BackFromPlatonPushButton.setText(_translate("FinalCifWindow", "Back to CIF Table"))
         self.CheckcifButton.setText(_translate("FinalCifWindow", "CheckCif Offline"))
