@@ -1,5 +1,5 @@
 altgraph==0.17
-certifi==2020.11.8
+certifi==2020.12.5
 chardet==3.0.4
 future==0.18.2
 gemmi==0.4.3
