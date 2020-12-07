@@ -55,6 +55,22 @@ class LoopTemplates():
         self.app.ui.SaveLoopButton.clicked.connect(self.save_current_loop)
         self.app.ui.DeleteLoopButton.clicked.connect(self.delete_loop)
         self.app.ui.NewLoopTemplateButton.clicked.connect(self.new_loop)
+        self.app.ui.AddRowPushButton.clicked.connect(self.add_row)
+        self.app.ui.AddColumnPushButton.clicked.connect(self.add_column)
+
+    def add_row(self):
+        current_loop_tab_index = self.app.ui.LoopsTabWidget.currentIndex()
+        loop_model: LoopTableModel = self.app.ui.LoopsTabWidget.widget(current_loop_tab_index).model()
+        data = loop_model.loop_data
+        if len(data) > 0:
+            print(data)
+            data.append(['',]*len(data[0]))
+            loop_model._data = data
+            loop_model.modelChanged
+
+
+    def add_column(self):
+        pass
 
     def delete_loop(self) -> None:
         # First delete the list entries

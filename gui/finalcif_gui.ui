@@ -2435,14 +2435,14 @@ The data source will be ignored until next program restart.</string>
                </widget>
               </item>
               <item row="0" column="2">
-               <widget class="QPushButton" name="pushButton">
+               <widget class="QPushButton" name="AddRowPushButton">
                 <property name="text">
                  <string>Add Row -&gt;</string>
                 </property>
                </widget>
               </item>
               <item row="0" column="3">
-               <widget class="QPushButton" name="pushButton_2">
+               <widget class="QPushButton" name="AddColumnPushButton">
                 <property name="text">
                  <string>Add Column \/</string>
                 </property>

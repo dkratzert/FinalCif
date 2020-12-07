@@ -115,6 +115,9 @@ class LoopTableModel(QAbstractTableModel):
         """
         return len(self._data[0])
 
+    def insertRow(self, row: int, parent: QModelIndex = None) -> bool:
+        pass
+
     def flags(self, index: QModelIndex) -> Qt.ItemFlags:
         if index.isValid():
             return QAbstractTableModel.flags(self, index) | Qt.ItemIsEditable | Qt.ItemIsEnabled | Qt.ItemIsSelectable
