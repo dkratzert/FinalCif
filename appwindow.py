@@ -29,7 +29,7 @@ from qtpy.QtGui import QDesktopServices
 
 import displaymol
 from cif.cif_file_io import CifContainer
-from cif.text import set_pair_delimited, utf8_to_str, retranslate_delimiter
+from cif.text import set_pair_delimited, utf8_to_str, retranslate_delimiter, quote
 from datafiles.bruker_data import BrukerData
 from datafiles.ccdc import CCDCMail
 from displaymol import mol_file_writer, write_html
@@ -48,6 +48,7 @@ from report.tables import make_report_from
 from report.templated_report import TemplatedReport
 from template.templates import ReportTemplates
 from tools.checkcif import MyHTMLParser, AlertHelp, CheckCif
+from tools.dsrmath import my_isnumeric
 from tools.misc import strip_finalcif_of_name, next_path, do_not_import_keys, celltxt, to_float, combobox_fields, \
     do_not_import_from_stoe_cfx, cif_to_header_label, grouper
 from tools.options import Options
@@ -86,7 +87,7 @@ class AppWindow(QMainWindow):
         self.options = Options(self.ui, self.settings)
         self.equipment = Equipment(app=self, settings=self.settings)
         self.properties = Properties(app=self, settings=self.settings)
-        self.loops_templates = LoopTemplates(app=self, settings=self.settings)
+        #self.loops_templates = LoopTemplates(app=self, settings=self.settings)
         self.status_bar = StatusBar(ui=self.ui)
         self.status_bar.show_message('FinalCif version {}'.format(VERSION))
         self.set_window_size_and_position()
@@ -1385,15 +1386,20 @@ class AppWindow(QMainWindow):
                 continue
             loop = Loop(tags, values=grouper(loop.values, loop.width()))
             self.ui.LoopsTabWidget.addTab(loop.tableview, cif_to_header_label.get(tags[0]) or tags[0])
-            loop.model.modelChanged.connect(self.loops_templates.save_new_value_to_cif_block)
+            loop.model.modelChanged.connect(self.save_new_value_to_cif_block)
             self.ui.revertLoopsPushButton.clicked.connect(loop.model.revert)
         if self.cif.res_file_data:
             self.add_res_file_to_loops()
 
+    def save_new_value_to_cif_block(self, row: int, col: int, value: Union[str, int, float], header: list):
+        column = self.cif.block.find_values(header[col])
+        column[row] = value if my_isnumeric(value) else quote(value) #if value else '.'
+
     def make_loops_tables(self) -> None:
-        self.ui.LoopsTabWidget.clear()
-        for tab in range(self.ui.LoopsTabWidget.count() + 1):
-            self.ui.LoopsTabWidget.removeTab(0)
+        # self.ui.LoopsTabWidget.clear()
+        for tab in range(self.ui.LoopsTabWidget.count()):
+            # I use this, so that always the first tab stays.
+            self.ui.LoopsTabWidget.removeTab(1)
         if self.cif and self.cif.loops:
             self.add_loops_tables()
         else:

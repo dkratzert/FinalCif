@@ -210,7 +210,7 @@
                    <item>
                     <layout class="QHBoxLayout" name="horizontalLayout_Buttons">
                      <property name="spacing">
-                      <number>-1</number>
+                      <number>6</number>
                      </property>
                      <item>
                       <widget class="QPushButton" name="NewEquipmentTemplateButton">
@@ -609,7 +609,7 @@
             <item>
              <widget class="QGroupBox" name="LoopsGroupBox">
               <property name="title">
-               <string>Loop Templates</string>
+               <string>Author Templates</string>
               </property>
               <property name="flat">
                <bool>true</bool>
@@ -662,21 +662,21 @@
                  <item>
                   <widget class="QPushButton" name="NewLoopTemplateButton">
                    <property name="text">
-                    <string>New Loop</string>
+                    <string>New Author</string>
                    </property>
                   </widget>
                  </item>
                  <item>
                   <widget class="QPushButton" name="DeleteLoopButton">
                    <property name="text">
-                    <string>Delete Loop</string>
+                    <string>Delete Author</string>
                    </property>
                   </widget>
                  </item>
                  <item>
                   <widget class="QPushButton" name="SaveLoopButton">
                    <property name="text">
-                    <string>Save Current Loop</string>
+                    <string>Save Author</string>
                    </property>
                   </widget>
                  </item>
@@ -2343,10 +2343,124 @@ The data source will be ignored until next program restart.</string>
               <property name="currentIndex">
                <number>0</number>
               </property>
-              <widget class="QWidget" name="tab">
+              <widget class="QWidget" name="tab_2">
                <attribute name="title">
-                <string>Loops</string>
+                <string>Journal Things</string>
                </attribute>
+               <widget class="QGroupBox" name="groupBox_9">
+                <property name="geometry">
+                 <rect>
+                  <x>10</x>
+                  <y>10</y>
+                  <width>451</width>
+                  <height>471</height>
+                 </rect>
+                </property>
+                <property name="title">
+                 <string>Publication Authors</string>
+                </property>
+                <widget class="QCheckBox" name="checkBox">
+                 <property name="geometry">
+                  <rect>
+                   <x>10</x>
+                   <y>42</y>
+                   <width>135</width>
+                   <height>17</height>
+                  </rect>
+                 </property>
+                 <property name="text">
+                  <string>This is a contact author</string>
+                 </property>
+                </widget>
+                <widget class="QLabel" name="label_20">
+                 <property name="geometry">
+                  <rect>
+                   <x>10</x>
+                   <y>23</y>
+                   <width>191</width>
+                   <height>16</height>
+                  </rect>
+                 </property>
+                 <property name="text">
+                  <string>Details of the other publication authors:</string>
+                 </property>
+                </widget>
+                <widget class="QWidget" name="">
+                 <property name="geometry">
+                  <rect>
+                   <x>10</x>
+                   <y>70</y>
+                   <width>361</width>
+                   <height>239</height>
+                  </rect>
+                 </property>
+                 <layout class="QFormLayout" name="formLayout_6">
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="label_22">
+                    <property name="text">
+                     <string>Full Name</string>
+                    </property>
+                    <property name="openExternalLinks">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="1">
+                   <widget class="QLineEdit" name="lineEdit_8"/>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QLabel" name="label_21">
+                    <property name="text">
+                     <string>Adresss</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="1">
+                   <widget class="QPlainTextEdit" name="plainTextEdit_2"/>
+                  </item>
+                  <item row="2" column="0">
+                   <widget class="QLabel" name="label_16">
+                    <property name="text">
+                     <string>email</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="1">
+                   <widget class="QLineEdit" name="lineEdit_5"/>
+                  </item>
+                  <item row="3" column="0">
+                   <widget class="QLabel" name="label_18">
+                    <property name="text">
+                     <string>footnote</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="1">
+                   <widget class="QLineEdit" name="lineEdit_6"/>
+                  </item>
+                  <item row="4" column="0">
+                   <widget class="QLabel" name="label_34">
+                    <property name="text">
+                     <string>ORCID</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="4" column="1">
+                   <widget class="QLineEdit" name="lineEdit_14"/>
+                  </item>
+                  <item row="5" column="0">
+                   <widget class="QLabel" name="label_13">
+                    <property name="text">
+                     <string>phone number</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="5" column="1">
+                   <widget class="QLineEdit" name="lineEdit_4"/>
+                  </item>
+                 </layout>
+                </widget>
+               </widget>
               </widget>
              </widget>
             </item>
@@ -2368,14 +2482,42 @@ The data source will be ignored until next program restart.</string>
                 </property>
                </spacer>
               </item>
-              <item row="0" column="1">
-               <spacer name="horizontalSpacer_15">
+              <item row="1" column="3">
+               <widget class="QPushButton" name="ExportLoopButton">
+                <property name="text">
+                 <string>Export Loop</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="5">
+               <widget class="QPushButton" name="revertLoopsPushButton">
+                <property name="text">
+                 <string>revert changes</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="2">
+               <widget class="QPushButton" name="ImportLoopTemplateButton">
+                <property name="text">
+                 <string>Import Loop</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="2">
+               <widget class="QPushButton" name="AddRowPushButton">
+                <property name="text">
+                 <string>Add Row -&gt;</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="4">
+               <spacer name="horizontalSpacer_16">
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
                 </property>
                 <property name="sizeHint" stdset="0">
                  <size>
-                  <width>40</width>
+                  <width>20</width>
                   <height>20</height>
                  </size>
                 </property>
@@ -2400,53 +2542,25 @@ The data source will be ignored until next program restart.</string>
                 </property>
                </widget>
               </item>
-              <item row="0" column="5">
-               <widget class="QPushButton" name="revertLoopsPushButton">
-                <property name="text">
-                 <string>revert changes</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="4">
-               <spacer name="horizontalSpacer_16">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>20</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-              <item row="1" column="2">
-               <widget class="QPushButton" name="ImportLoopTemplateButton">
-                <property name="text">
-                 <string>Import Loop</string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="3">
-               <widget class="QPushButton" name="ExportLoopButton">
-                <property name="text">
-                 <string>Export Loop</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="2">
-               <widget class="QPushButton" name="AddRowPushButton">
-                <property name="text">
-                 <string>Add Row -&gt;</string>
-                </property>
-               </widget>
-              </item>
               <item row="0" column="3">
                <widget class="QPushButton" name="AddColumnPushButton">
                 <property name="text">
                  <string>Add Column \/</string>
                 </property>
                </widget>
+              </item>
+              <item row="0" column="1">
+               <spacer name="horizontalSpacer_15">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
               </item>
              </layout>
             </item>

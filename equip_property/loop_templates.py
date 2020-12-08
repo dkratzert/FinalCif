@@ -27,7 +27,6 @@ predefined_loops = [{'name'  : 'Publication Details',
                      'keys'  : [
                          '_publ_contact_author_name',
                          '_publ_contact_author_address',
-                         '_publ_contact_author',
                          '_publ_contact_author_email',
                          '_publ_contact_author_phone',
                          '_publ_contact_letter',
@@ -76,8 +75,6 @@ class LoopTemplates():
             print(data)
             data.append(['',]*len(data[0]))
             loop_model._data = data
-            loop_model.modelChanged
-
 
     def add_column(self):
         pass
@@ -126,7 +123,7 @@ class LoopTemplates():
             # in this case, the loop is new and from the GUI
             self.save_current_loop()
             column = self.app.cif.block.find_values(header[col])
-        column[row] = value if my_isnumeric(value) else quote(value)
+        column[row] = value if my_isnumeric(value) else quote(value) #if value else '.'
 
     def load_default_loops(self):
         self.store_predefined_templates()
