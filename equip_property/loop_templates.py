@@ -13,6 +13,16 @@ from PyQt5.QtWidgets import QListWidgetItem
 
 from tools.settings import FinalCifSettings
 
+"""
+TODO: Completely different idea:
+- add hard-wired form with author names, journal, etc. to start of loops page
+- add a "save as template button"
+- add a "delete loop" button to every loop page
+- the save loop button creates a new line in the templates listwidget and asks for a name
+- a click on a template entry in the listwidget fills all data into the form (and the respective loop)
+- 
+"""
+
 predefined_loops = [{'name'  : 'Publication Details',
                      'keys'  : [
                          '_publ_contact_author_name',
