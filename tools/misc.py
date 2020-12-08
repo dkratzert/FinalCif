@@ -676,7 +676,7 @@ predef_equipment_templ = [{'name' : 'D8 VENTURE',
                                ['_olex2_diffrn_ambient_temperature_device', 'Bruker Kryoflex II'],
                            ]
                            },
-                          {'name' : 'Contact author name and address',
+                          {'name' : 'Crystallographer Details',
                            'items': [
                                ['_audit_contact_author_name', '?'],
                                ['_audit_contact_author_address', "?"],
