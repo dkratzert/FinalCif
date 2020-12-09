@@ -2345,122 +2345,31 @@ The data source will be ignored until next program restart.</string>
               </property>
               <widget class="QWidget" name="tab_2">
                <attribute name="title">
-                <string>Journal Things</string>
+                <string>Manuscript related</string>
                </attribute>
-               <widget class="QGroupBox" name="groupBox_9">
-                <property name="geometry">
-                 <rect>
-                  <x>10</x>
-                  <y>10</y>
-                  <width>451</width>
-                  <height>471</height>
-                 </rect>
-                </property>
-                <property name="title">
-                 <string>Publication Authors</string>
-                </property>
-                <widget class="QCheckBox" name="checkBox">
-                 <property name="geometry">
-                  <rect>
-                   <x>10</x>
-                   <y>42</y>
-                   <width>135</width>
-                   <height>17</height>
-                  </rect>
-                 </property>
-                 <property name="text">
-                  <string>This is a contact author</string>
-                 </property>
-                </widget>
-                <widget class="QLabel" name="label_20">
-                 <property name="geometry">
-                  <rect>
-                   <x>10</x>
-                   <y>23</y>
-                   <width>191</width>
-                   <height>16</height>
-                  </rect>
-                 </property>
-                 <property name="text">
-                  <string>Details of the other publication authors:</string>
-                 </property>
-                </widget>
-                <widget class="QWidget" name="">
-                 <property name="geometry">
-                  <rect>
-                   <x>10</x>
-                   <y>70</y>
-                   <width>361</width>
-                   <height>239</height>
-                  </rect>
-                 </property>
-                 <layout class="QFormLayout" name="formLayout_6">
-                  <item row="0" column="0">
-                   <widget class="QLabel" name="label_22">
-                    <property name="text">
-                     <string>Full Name</string>
-                    </property>
-                    <property name="openExternalLinks">
-                     <bool>true</bool>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="1">
-                   <widget class="QLineEdit" name="lineEdit_8"/>
-                  </item>
-                  <item row="1" column="0">
-                   <widget class="QLabel" name="label_21">
-                    <property name="text">
-                     <string>Adresss</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="1" column="1">
-                   <widget class="QPlainTextEdit" name="plainTextEdit_2"/>
-                  </item>
-                  <item row="2" column="0">
-                   <widget class="QLabel" name="label_16">
-                    <property name="text">
-                     <string>email</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="2" column="1">
-                   <widget class="QLineEdit" name="lineEdit_5"/>
-                  </item>
-                  <item row="3" column="0">
-                   <widget class="QLabel" name="label_18">
-                    <property name="text">
-                     <string>footnote</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="3" column="1">
-                   <widget class="QLineEdit" name="lineEdit_6"/>
-                  </item>
-                  <item row="4" column="0">
-                   <widget class="QLabel" name="label_34">
-                    <property name="text">
-                     <string>ORCID</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="4" column="1">
-                   <widget class="QLineEdit" name="lineEdit_14"/>
-                  </item>
-                  <item row="5" column="0">
-                   <widget class="QLabel" name="label_13">
-                    <property name="text">
-                     <string>phone number</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="5" column="1">
-                   <widget class="QLineEdit" name="lineEdit_4"/>
-                  </item>
-                 </layout>
-                </widget>
-               </widget>
+               <layout class="QVBoxLayout" name="verticalLayout_24">
+                <item>
+                 <widget class="QGroupBox" name="groupBox_9">
+                  <property name="title">
+                   <string>Publication Authors</string>
+                  </property>
+                  <layout class="QVBoxLayout" name="verticalLayout_23">
+                   <item>
+                    <widget class="QTabWidget" name="tabWidget">
+                     <property name="currentIndex">
+                      <number>0</number>
+                     </property>
+                     <widget class="QWidget" name="tab">
+                      <attribute name="title">
+                       <string>Author 1</string>
+                      </attribute>
+                     </widget>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+               </layout>
               </widget>
              </widget>
             </item>

@@ -35,7 +35,6 @@ from datafiles.ccdc import CCDCMail
 from displaymol import mol_file_writer, write_html
 from displaymol.sdm import SDM
 from equip_property.equipment import Equipment
-from equip_property.loop_templates import LoopTemplates
 from equip_property.properties import Properties
 from gui.custom_classes import COL_CIF, COL_DATA, COL_EDIT, MyTableWidgetItem, light_green, yellow, MyComboBox, blue
 from gui.dialogs import show_update_warning, unable_to_open_message, show_general_warning, cif_file_open_dialog, \
@@ -87,7 +86,6 @@ class AppWindow(QMainWindow):
         self.options = Options(self.ui, self.settings)
         self.equipment = Equipment(app=self, settings=self.settings)
         self.properties = Properties(app=self, settings=self.settings)
-        #self.loops_templates = LoopTemplates(app=self, settings=self.settings)
         self.status_bar = StatusBar(ui=self.ui)
         self.status_bar.show_message('FinalCif version {}'.format(VERSION))
         self.set_window_size_and_position()
@@ -1393,7 +1391,7 @@ class AppWindow(QMainWindow):
 
     def save_new_value_to_cif_block(self, row: int, col: int, value: Union[str, int, float], header: list):
         column = self.cif.block.find_values(header[col])
-        column[row] = value if my_isnumeric(value) else quote(value) #if value else '.'
+        column[row] = value if my_isnumeric(value) else quote(value)  # if value else '.'
 
     def make_loops_tables(self) -> None:
         # self.ui.LoopsTabWidget.clear()
