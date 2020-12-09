@@ -2347,31 +2347,133 @@ The data source will be ignored until next program restart.</string>
                <attribute name="title">
                 <string>Manuscript related</string>
                </attribute>
-               <layout class="QVBoxLayout" name="verticalLayout_24">
-                <item>
+               <layout class="QGridLayout" name="gridLayout_2">
+                <item row="0" column="0">
                  <widget class="QGroupBox" name="groupBox_9">
                   <property name="title">
                    <string>Publication Authors</string>
                   </property>
                   <layout class="QVBoxLayout" name="verticalLayout_23">
                    <item>
-                    <widget class="QTabWidget" name="tabWidget">
-                     <property name="locale">
-                      <locale language="German" country="Germany"/>
+                    <layout class="QVBoxLayout" name="verticalLayout_24">
+                     <item>
+                      <widget class="QLabel" name="label_20">
+                       <property name="text">
+                        <string>Details about the authors of a manuscript submitted for publication.</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <layout class="QFormLayout" name="formLayout_6">
+                       <item row="0" column="0">
+                        <widget class="QLabel" name="label_22">
+                         <property name="text">
+                          <string>Full Name</string>
+                         </property>
+                         <property name="openExternalLinks">
+                          <bool>true</bool>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="0" column="1">
+                        <widget class="QLineEdit" name="FullNameLineEdit"/>
+                       </item>
+                       <item row="2" column="0">
+                        <widget class="QLabel" name="label_21">
+                         <property name="text">
+                          <string>Adresss</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="3" column="0">
+                        <widget class="QLabel" name="label_16">
+                         <property name="text">
+                          <string>e-mail</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="3" column="1">
+                        <widget class="QLineEdit" name="EMailLineEdit"/>
+                       </item>
+                       <item row="4" column="0">
+                        <widget class="QLabel" name="label_18">
+                         <property name="text">
+                          <string>footnote</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="4" column="1">
+                        <widget class="QLineEdit" name="FootNoteLineEdit"/>
+                       </item>
+                       <item row="5" column="0">
+                        <widget class="QLabel" name="label_34">
+                         <property name="text">
+                          <string>ORCID</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="5" column="1">
+                        <widget class="QLineEdit" name="ORCIDLineEdit"/>
+                       </item>
+                       <item row="6" column="0">
+                        <widget class="QLabel" name="label_13">
+                         <property name="text">
+                          <string>phone number</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="6" column="1">
+                        <widget class="QLineEdit" name="PhoneLineEdit"/>
+                       </item>
+                       <item row="1" column="1">
+                        <widget class="QCheckBox" name="ContactAuthorCheckBox">
+                         <property name="text">
+                          <string>This is a contact author</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="2" column="1">
+                        <widget class="QTextEdit" name="AddressTextedit"/>
+                       </item>
+                      </layout>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="AddThisAuthorPushButton">
+                     <property name="text">
+                      <string>Add This Author</string>
                      </property>
-                     <property name="currentIndex">
-                      <number>0</number>
-                     </property>
-                     <widget class="QWidget" name="tab">
-                      <attribute name="title">
-                       <string>Author 1</string>
-                      </attribute>
-                      <layout class="QVBoxLayout" name="Author_VerticalLayout"/>
-                     </widget>
                     </widget>
                    </item>
                   </layout>
                  </widget>
+                </item>
+                <item row="0" column="1">
+                 <spacer name="horizontalSpacer_21">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>535</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item row="1" column="0">
+                 <spacer name="verticalSpacer_10">
+                  <property name="orientation">
+                   <enum>Qt::Vertical</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>20</width>
+                    <height>162</height>
+                   </size>
+                  </property>
+                 </spacer>
                 </item>
                </layout>
               </widget>
@@ -2379,51 +2481,7 @@ The data source will be ignored until next program restart.</string>
             </item>
             <item>
              <layout class="QGridLayout" name="gridLayout_16">
-              <item row="1" column="0">
-               <spacer name="verticalSpacer_7">
-                <property name="orientation">
-                 <enum>Qt::Vertical</enum>
-                </property>
-                <property name="sizeType">
-                 <enum>QSizePolicy::Fixed</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>20</width>
-                  <height>28</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-              <item row="1" column="3">
-               <widget class="QPushButton" name="ExportLoopButton">
-                <property name="text">
-                 <string>Export Loop</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="5">
-               <widget class="QPushButton" name="revertLoopsPushButton">
-                <property name="text">
-                 <string>revert changes</string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="2">
-               <widget class="QPushButton" name="ImportLoopTemplateButton">
-                <property name="text">
-                 <string>Import Loop</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="2">
-               <widget class="QPushButton" name="AddRowPushButton">
-                <property name="text">
-                 <string>Add Row -&gt;</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="4">
+              <item row="0" column="3">
                <spacer name="horizontalSpacer_16">
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
@@ -2431,6 +2489,19 @@ The data source will be ignored until next program restart.</string>
                 <property name="sizeHint" stdset="0">
                  <size>
                   <width>20</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item row="0" column="1">
+               <spacer name="horizontalSpacer_15">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
                   <height>20</height>
                  </size>
                 </property>
@@ -2455,25 +2526,28 @@ The data source will be ignored until next program restart.</string>
                 </property>
                </widget>
               </item>
-              <item row="0" column="3">
-               <widget class="QPushButton" name="AddColumnPushButton">
-                <property name="text">
-                 <string>Add Column \/</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="1">
-               <spacer name="horizontalSpacer_15">
+              <item row="1" column="0">
+               <spacer name="verticalSpacer_7">
                 <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
+                 <enum>Qt::Vertical</enum>
+                </property>
+                <property name="sizeType">
+                 <enum>QSizePolicy::Fixed</enum>
                 </property>
                 <property name="sizeHint" stdset="0">
                  <size>
-                  <width>40</width>
-                  <height>20</height>
+                  <width>20</width>
+                  <height>28</height>
                  </size>
                 </property>
                </spacer>
+              </item>
+              <item row="0" column="2">
+               <widget class="QPushButton" name="revertLoopsPushButton">
+                <property name="text">
+                 <string>revert changes</string>
+                </property>
+               </widget>
               </item>
              </layout>
             </item>
@@ -2915,12 +2989,110 @@ The data source will be ignored until next program restart.</string>
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>SelectCif_LineEdit</tabstop>
+  <tabstop>FullNameLineEdit</tabstop>
+  <tabstop>ContactAuthorCheckBox</tabstop>
+  <tabstop>AddressTextedit</tabstop>
+  <tabstop>EMailLineEdit</tabstop>
+  <tabstop>FootNoteLineEdit</tabstop>
+  <tabstop>ORCIDLineEdit</tabstop>
+  <tabstop>PhoneLineEdit</tabstop>
+  <tabstop>AddThisAuthorPushButton</tabstop>
+  <tabstop>EditEquipmentTemplateButton</tabstop>
+  <tabstop>ImportEquipmentTemplateButton</tabstop>
+  <tabstop>DeleteEquipmentButton</tabstop>
+  <tabstop>SaveEquipmentButton</tabstop>
+  <tabstop>CancelEquipmentButton</tabstop>
+  <tabstop>ExportEquipmentButton</tabstop>
+  <tabstop>ImportCifPushButton</tabstop>
+  <tabstop>EditPropertyTemplateButton</tabstop>
+  <tabstop>NewPropertyTemplateButton</tabstop>
+  <tabstop>ImportPropertyTemplateButton</tabstop>
+  <tabstop>cifKeywordLineEdit</tabstop>
+  <tabstop>DeletePropertiesButton</tabstop>
+  <tabstop>SavePropertiesButton</tabstop>
+  <tabstop>CancelPropertiesButton</tabstop>
+  <tabstop>ExportPropertyButton</tabstop>
+  <tabstop>LoopTemplatesListWidget</tabstop>
+  <tabstop>NewLoopTemplateButton</tabstop>
+  <tabstop>DeleteLoopButton</tabstop>
+  <tabstop>SaveLoopButton</tabstop>
+  <tabstop>CCDCNumLineEdit</tabstop>
+  <tabstop>spacegroupLineEdit</tabstop>
+  <tabstop>datnameLineEdit</tabstop>
+  <tabstop>SumFormMainLineEdit</tabstop>
+  <tabstop>HelpPushButton</tabstop>
+  <tabstop>cif_main_table</tabstop>
+  <tabstop>SaveCifButton</tabstop>
+  <tabstop>ExploreDirButton</tabstop>
+  <tabstop>DetailsPushButton</tabstop>
+  <tabstop>SourcesPushButton</tabstop>
+  <tabstop>LoopsPushButton</tabstop>
+  <tabstop>ReportPicPushButton</tabstop>
+  <tabstop>SaveFullReportButton</tabstop>
+  <tabstop>CheckcifStartButton</tabstop>
+  <tabstop>CODpushButton</tabstop>
+  <tabstop>ShredCifButton</tabstop>
+  <tabstop>CCDCpushButton</tabstop>
+  <tabstop>OptionsPushButton</tabstop>
+  <tabstop>FinalCifFilePlainTextEdit</tabstop>
+  <tabstop>BackPushButton</tabstop>
+  <tabstop>growCheckBox</tabstop>
+  <tabstop>reflTotalLineEdit</tabstop>
+  <tabstop>refl2sigmaLineEdit</tabstop>
+  <tabstop>uniqReflLineEdit</tabstop>
+  <tabstop>numParametersLineEdit</tabstop>
+  <tabstop>dataReflnsLineEdit</tabstop>
+  <tabstop>wavelengthLineEdit</tabstop>
+  <tabstop>flackXLineEdit</tabstop>
+  <tabstop>cCDCNumberLineEdit</tabstop>
+  <tabstop>SpaceGroupLineEdit</tabstop>
+  <tabstop>zLineEdit</tabstop>
+  <tabstop>temperatureLineEdit</tabstop>
+  <tabstop>wR2LineEdit</tabstop>
+  <tabstop>r1LineEdit</tabstop>
+  <tabstop>goofLineEdit</tabstop>
+  <tabstop>maxShiftLineEdit</tabstop>
+  <tabstop>BackpushButtonDetails</tabstop>
+  <tabstop>peakLineEdit</tabstop>
+  <tabstop>rintLineEdit</tabstop>
+  <tabstop>rsigmaLineEdit</tabstop>
+  <tabstop>numRestraintsLineEdit</tabstop>
+  <tabstop>thetaMaxLineEdit</tabstop>
+  <tabstop>thetaFullLineEdit</tabstop>
+  <tabstop>dLineEdit</tabstop>
+  <tabstop>completeLineEdit</tabstop>
+  <tabstop>SourcesTableWidget</tabstop>
+  <tabstop>BackSourcesPushButton</tabstop>
+  <tabstop>BackFromOptionspPushButton</tabstop>
+  <tabstop>CheckCIFServerURLTextedit</tabstop>
+  <tabstop>ReportTextCheckBox</tabstop>
+  <tabstop>HAtomsCheckBox</tabstop>
+  <tabstop>PictureWidthDoubleSpinBox</tabstop>
+  <tabstop>AddNewTemplPushButton</tabstop>
+  <tabstop>RemoveTemplPushButton</tabstop>
+  <tabstop>TemplatesListWidget</tabstop>
+  <tabstop>LoopsTabWidget</tabstop>
+  <tabstop>revertLoopsPushButton</tabstop>
+  <tabstop>BackFromLoopsPushButton</tabstop>
+  <tabstop>CheckCifLogPlainTextEdit</tabstop>
+  <tabstop>BackFromPlatonPushButton</tabstop>
+  <tabstop>CheckcifButton</tabstop>
+  <tabstop>CheckcifPDFOnlineButton</tabstop>
+  <tabstop>CheckcifHTMLOnlineButton</tabstop>
+  <tabstop>structfactCheckBox</tabstop>
+  <tabstop>CheckCIFResultsTabWidget</tabstop>
+  <tabstop>CheckcifPlaintextEdit</tabstop>
+  <tabstop>ResponsesTabWidget</tabstop>
+  <tabstop>responseFormsListWidget</tabstop>
+  <tabstop>SavePushButton</tabstop>
   <tabstop>EquipmentEditTableWidget</tabstop>
-  <tabstop>PropertiesEditTableWidget</tabstop>
   <tabstop>SelectCif_PushButton</tabstop>
   <tabstop>PropertiesTemplatesListWidget</tabstop>
   <tabstop>EquipmentTemplatesListWidget</tabstop>
+  <tabstop>RecentComboBox</tabstop>
+  <tabstop>SelectCif_LineEdit</tabstop>
+  <tabstop>PropertiesEditTableWidget</tabstop>
+  <tabstop>NewEquipmentTemplateButton</tabstop>
  </tabstops>
  <includes>
   <include location="local">gui.custom_classes.h</include>

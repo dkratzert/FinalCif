@@ -1374,6 +1374,8 @@ class AppWindow(QMainWindow):
         self.get_data_sources()
         self.erase_disabled_items()
         self.ui.cif_main_table.setCurrentItem(None)
+        # TODO: put this in proper place:
+        self.ui.AddThisAuthorPushButton.clicked.connect(self.save_author)
 
     def add_loops_tables(self) -> None:
         """
@@ -1390,13 +1392,16 @@ class AppWindow(QMainWindow):
         if self.cif.res_file_data:
             self.add_res_file_to_loops()
 
-        # The author widget:
-        self.ui.LoopsTabWidget.setCurrentIndex(0)
-        # TODO: make this widget a class that has the values of the input fields as property
-        aui = Ui_AuthorsForm()
-        aui.setupUi(self.ui.tabWidget.currentWidget())
-        self.ui.Author_VerticalLayout.addLayout(aui.verticalLayout)
-
+    def save_author(self):
+        if self.cif.block.find_loop('_publ_contact_author_name'):
+            loop: gemmi.cif.loop = self.cif.block.find_loop('_publ_contact_author_name').get_loop()
+            print(loop)
+        else:
+            loop: gemmi.cif.loop = self.cif.block.init_loop('', ['_publ_contact_author_name', '_publ_contact_author_address'])
+        name = quote(utf8_to_str(self.ui.FullNameLineEdit.text()))
+        address = quote(utf8_to_str(self.ui.AddressTextedit.toPlainText()))
+        loop.add_row([name, address])
+        self.make_loops_tables()
 
     def save_new_value_to_cif_block(self, row: int, col: int, value: Union[str, int, float], header: list):
         column = self.cif.block.find_values(header[col])

@@ -8,10 +8,12 @@
 import copy
 from typing import Union, List, Any
 
-from PyQt5.QtCore import QAbstractTableModel, QModelIndex, Qt, QSize, QVariant, pyqtSignal, QEvent
-from PyQt5.QtGui import QColor, QContextMenuEvent
+from PyQt5.QtCore import QAbstractTableModel, QModelIndex, Qt, QSize, QVariant, pyqtSignal
+from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QTableView, QHeaderView
 from gemmi.cif import as_string
+
+from cif.text import retranslate_delimiter, utf8_to_str
 
 
 class Loop():
@@ -87,9 +89,9 @@ class LoopTableModel(QAbstractTableModel):
             if (row, col) in [(x['row'], x['column']) for x in self.modified]:
                 return QVariant(QColor("#facaca"))
         if role == Qt.EditRole:
-            return value
+            return retranslate_delimiter(value)
         if role == Qt.DisplayRole:
-            return value
+            return retranslate_delimiter(value)
 
     def headerData(self, section, orientation, role=None):
         # section is the index of the column/row.
@@ -127,7 +129,7 @@ class LoopTableModel(QAbstractTableModel):
         if index.isValid() and role == Qt.EditRole and value != previous:
             self._data[row][col] = value
             self.modified.append({'row': row, 'column': col, 'previous': previous})
-            self.modelChanged.emit(row, col, value, self._header)
+            self.modelChanged.emit(row, col, utf8_to_str(value), self._header)
             return True
         return False
 
