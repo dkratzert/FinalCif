@@ -2356,6 +2356,9 @@ The data source will be ignored until next program restart.</string>
                   <layout class="QVBoxLayout" name="verticalLayout_23">
                    <item>
                     <widget class="QTabWidget" name="tabWidget">
+                     <property name="locale">
+                      <locale language="German" country="Germany"/>
+                     </property>
                      <property name="currentIndex">
                       <number>0</number>
                      </property>
@@ -2363,6 +2366,7 @@ The data source will be ignored until next program restart.</string>
                       <attribute name="title">
                        <string>Author 1</string>
                       </attribute>
+                      <layout class="QVBoxLayout" name="Author_VerticalLayout"/>
                      </widget>
                     </widget>
                    </item>

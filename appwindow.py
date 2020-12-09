@@ -23,7 +23,7 @@ from PyQt5.QtGui import QKeySequence, QResizeEvent, QMoveEvent, QTextCursor, QFo
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtWidgets import QMainWindow, QHeaderView, QShortcut, QCheckBox, QListWidgetItem, QApplication, \
-    QPlainTextEdit, QFileDialog
+    QPlainTextEdit, QFileDialog, QVBoxLayout
 from gemmi import cif
 from qtpy.QtGui import QDesktopServices
 
@@ -36,6 +36,7 @@ from displaymol import mol_file_writer, write_html
 from displaymol.sdm import SDM
 from equip_property.equipment import Equipment
 from equip_property.properties import Properties
+from gui.author import Ui_AuthorsForm
 from gui.custom_classes import COL_CIF, COL_DATA, COL_EDIT, MyTableWidgetItem, light_green, yellow, MyComboBox, blue
 from gui.dialogs import show_update_warning, unable_to_open_message, show_general_warning, cif_file_open_dialog, \
     bad_z_message, show_res_checksum_warning, show_hkl_checksum_warning
@@ -1388,6 +1389,14 @@ class AppWindow(QMainWindow):
             self.ui.revertLoopsPushButton.clicked.connect(loop.model.revert)
         if self.cif.res_file_data:
             self.add_res_file_to_loops()
+
+        # The author widget:
+        self.ui.LoopsTabWidget.setCurrentIndex(0)
+        # TODO: make this widget a class that has the values of the input fields as property
+        aui = Ui_AuthorsForm()
+        aui.setupUi(self.ui.tabWidget.currentWidget())
+        self.ui.Author_VerticalLayout.addLayout(aui.verticalLayout)
+
 
     def save_new_value_to_cif_block(self, row: int, col: int, value: Union[str, int, float], header: list):
         column = self.cif.block.find_values(header[col])
