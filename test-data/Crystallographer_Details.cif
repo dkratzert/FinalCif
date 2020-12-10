@@ -1,4 +1,4 @@
-data_Contact__author__name__and__address
+data_Crystallographer__Details
 _audit_contact_author_name        'Dr. Daniel Kratzert'
 _audit_contact_author_address
 ;
