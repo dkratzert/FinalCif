@@ -35,7 +35,7 @@ charcters = {
     'ö'      : r'o\"',  # 'LATIN SMALL LETTER O WITH DIAERESIS'
     'Ö'      : r'O\"',
     'ä'      : r'a\"',
-    'Ä'      : r'a\"',
+    'Ä'      : r'A\"',
     'é'      : r"\'e",
     'É'      : r"\'E",
     'è'      : r'\`e',

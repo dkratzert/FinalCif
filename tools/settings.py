@@ -74,18 +74,18 @@ class FinalCifSettings():
         self.settings.setValue('last', last_equipment)
         self.settings.endGroup()
 
-    def append_to_equipment_list(self, selected_template_text) -> None:
-        equipment_list = self.settings.value('equipment_list')
+    def save_to_equipment_list(self, selected_template_text, templ_type: str = 'equipment_list') -> None:
+        equipment_list = self.settings.value(templ_type)
         if not equipment_list:
             equipment_list = ['']
         equipment_list.sort()
         equipment_list.append(selected_template_text)
         newlist = [x for x in list(set(equipment_list)) if x]
         # this list keeps track of the equipment items:
-        self.save_template('equipment_list', newlist)
+        self.save_template(templ_type, newlist)
 
-    def get_equipment_list(self) -> list:
-        equipment_list = self.settings.value('equipment_list')
+    def get_equipment_list(self, equipment='equipment_list') -> list:
+        equipment_list = self.settings.value(equipment)
         if not equipment_list:
             equipment_list = ['']
         return sorted(equipment_list)
@@ -128,20 +128,29 @@ class FinalCifSettings():
         """
         self.settings.setValue(name, items)
 
-    def load_template(self, name: str) -> Dict:
+    def load_template(self, name: str) -> List[List]:
         """
-        Load templates abnd return them as list of lists.
+        Load templates and return them as list of lists.
         """
         return self.settings.value(name)
+
+    def load_loop_template(self, name: str) -> Dict:
+        """
+        Load templates and return them as list of lists.
+        """
+        return self.settings.value('authors_list/' + name)
 
     def save_loop_template(self, name: str, items: dict):
         """
         Saves Equipment templates into the settings as list.
         """
-        self.settings.setValue(name, items)
+        self.settings.setValue('authors_list/' + name, items)
+
+    def save_authors_list(self, authors):
+        self.settings.setValue('authors_list/', authors)
 
     def get_loops_list(self) -> list:
-        loops_list = self.settings.value('loops_list')
+        loops_list = self.settings.value('authors_list')
         if not loops_list:
             loops_list = ['']
         return sorted(loops_list)
