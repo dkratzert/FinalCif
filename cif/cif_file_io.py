@@ -676,3 +676,20 @@ class CifContainer():
             return False
         else:
             return True
+
+    def init_author_loop(self, contact_author=False):
+        if contact_author:
+            author_loop = ['_publ_contact_author_name',
+                           '_publ_contact_author_address',
+                           '_publ_contact_author_email',
+                           '_publ_contact_author_phone',
+                           '_publ_contact_author_id_orcid', ]
+        else:
+            author_loop = ['_publ_author_name',
+                           '_publ_author_address',
+                           '_publ_author_email',
+                           '_publ_author_phone',
+                           '_publ_author_id_orcid',
+                           '_publ_author_footnote',
+                           ]
+        return self.block.init_loop('', author_loop)

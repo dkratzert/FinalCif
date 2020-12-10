@@ -17,13 +17,14 @@ from shutil import copy2
 from tempfile import TemporaryDirectory
 from typing import Union, Dict, Tuple
 
+import gemmi
 import qtawesome as qta
 from PyQt5.QtCore import QUrl, QEvent, QPoint, Qt
 from PyQt5.QtGui import QKeySequence, QResizeEvent, QMoveEvent, QTextCursor, QFont, QBrush
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtWidgets import QMainWindow, QHeaderView, QShortcut, QCheckBox, QListWidgetItem, QApplication, \
-    QPlainTextEdit, QFileDialog, QVBoxLayout
+    QPlainTextEdit, QFileDialog
 from gemmi import cif
 from qtpy.QtGui import QDesktopServices
 
@@ -36,7 +37,6 @@ from displaymol import mol_file_writer, write_html
 from displaymol.sdm import SDM
 from equip_property.equipment import Equipment
 from equip_property.properties import Properties
-from gui.author import Ui_AuthorsForm
 from gui.custom_classes import COL_CIF, COL_DATA, COL_EDIT, MyTableWidgetItem, light_green, yellow, MyComboBox, blue
 from gui.dialogs import show_update_warning, unable_to_open_message, show_general_warning, cif_file_open_dialog, \
     bad_z_message, show_res_checksum_warning, show_hkl_checksum_warning
@@ -906,7 +906,7 @@ class AppWindow(QMainWindow):
             self.final_cif_file_name = Path(filename)
         try:
             self.cif.save(str(self.final_cif_file_name.absolute()))
-            self.status_bar.show_message('  File Saved:  {}'.format(self.final_cif_file_name.name), 10000)
+            self.status_bar.show_message('  File Saved:  {}'.format(self.final_cif_file_name.name), 10)
             print('File saved ...')
             return True
         except Exception as e:
@@ -1376,6 +1376,8 @@ class AppWindow(QMainWindow):
         self.ui.cif_main_table.setCurrentItem(None)
         # TODO: put this in proper place:
         self.ui.AddThisAuthorPushButton.clicked.connect(self.save_author)
+        self.ui.ContactAuthorCheckBox.clicked.connect(lambda: self.ui.FootNoteLineEdit.setDisabled(
+            self.ui.ContactAuthorCheckBox.isChecked()))
 
     def add_loops_tables(self) -> None:
         """
@@ -1393,14 +1395,28 @@ class AppWindow(QMainWindow):
             self.add_res_file_to_loops()
 
     def save_author(self):
-        if self.cif.block.find_loop('_publ_contact_author_name'):
-            loop: gemmi.cif.loop = self.cif.block.find_loop('_publ_contact_author_name').get_loop()
-            print(loop)
-        else:
-            loop: gemmi.cif.loop = self.cif.block.init_loop('', ['_publ_contact_author_name', '_publ_contact_author_address'])
         name = quote(utf8_to_str(self.ui.FullNameLineEdit.text()))
         address = quote(utf8_to_str(self.ui.AddressTextedit.toPlainText()))
-        loop.add_row([name, address])
+        mail = quote(utf8_to_str(self.ui.EMailLineEdit.text()))
+        footnote = quote(utf8_to_str(self.ui.EMailLineEdit.text()))
+        orcid = quote(utf8_to_str(self.ui.ORCIDLineEdit.text()))
+        phone = quote(utf8_to_str(self.ui.PhoneLineEdit.text()))
+        row = [name, address, mail, phone, orcid, footnote]
+        if self.ui.ContactAuthorCheckBox.isChecked():
+            author_type = '_publ_contact_author_name'
+            contact_author = True
+            del row[-1]  # contact author has no footnote
+        else:
+            author_type = '_publ_author_name'
+            contact_author = False
+        if self.cif.block.find_loop(author_type):
+            gemmi_loop: gemmi.cif.Loop = self.cif.block.find_loop(author_type).get_loop()
+            if tuple(row) in list(grouper(gemmi_loop.values, len(row))):
+                self.status_bar.show_message('This author already exists.', 10)
+                return  # Author already exists
+        else:
+            gemmi_loop: gemmi.cif.Loop = self.cif.init_author_loop(contact_author)
+        gemmi_loop.add_row(row)
         self.make_loops_tables()
 
     def save_new_value_to_cif_block(self, row: int, col: int, value: Union[str, int, float], header: list):

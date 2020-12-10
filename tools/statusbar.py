@@ -37,7 +37,7 @@ class StatusBar():
         return message
 
     def show_message(self, message: Union[str, list], timeout: int = 0) -> None:
-        self._set_message(message, timeout=timeout)
+        self._set_message(message, timeout=timeout*1000)
 
 
 if __name__ == '__main__':
