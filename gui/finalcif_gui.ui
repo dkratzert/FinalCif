@@ -660,11 +660,17 @@
                   <number>6</number>
                  </property>
                  <item>
-                  <widget class="QPushButton" name="NewLoopTemplateButton">
-                   <property name="text">
-                    <string>New Author</string>
+                  <spacer name="horizontalSpacer_24">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
                    </property>
-                  </widget>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
                  </item>
                  <item>
                   <widget class="QPushButton" name="DeleteLoopButton">
@@ -674,11 +680,17 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QPushButton" name="SaveLoopButton">
-                   <property name="text">
-                    <string>Save Author</string>
+                  <spacer name="horizontalSpacer_23">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
                    </property>
-                  </widget>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
                  </item>
                 </layout>
                </item>
@@ -2348,6 +2360,32 @@ The data source will be ignored until next program restart.</string>
                 <string>Manuscript related</string>
                </attribute>
                <layout class="QGridLayout" name="gridLayout_2">
+                <item row="0" column="2">
+                 <spacer name="horizontalSpacer_21">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>535</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item row="1" column="0">
+                 <spacer name="verticalSpacer_10">
+                  <property name="orientation">
+                   <enum>Qt::Vertical</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>20</width>
+                    <height>162</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
                 <item row="0" column="0">
                  <widget class="QGroupBox" name="groupBox_9">
                   <property name="title">
@@ -2457,44 +2495,36 @@ The data source will be ignored until next program restart.</string>
                      </item>
                     </layout>
                    </item>
-                   <item alignment="Qt::AlignHCenter">
-                    <widget class="QPushButton" name="AddThisAuthorPushButton">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                     <property name="text">
-                      <string>Add This Author</string>
-                     </property>
-                    </widget>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_8">
+                     <item>
+                      <widget class="QPushButton" name="AddThisAuthorPushButton">
+                       <property name="text">
+                        <string>Add Author to Loop</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QPushButton" name="SaveLoopButton">
+                       <property name="text">
+                        <string>Save Author to Template</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
                    </item>
                   </layout>
                  </widget>
                 </item>
                 <item row="0" column="1">
-                 <spacer name="horizontalSpacer_21">
+                 <spacer name="horizontalSpacer_22">
                   <property name="orientation">
                    <enum>Qt::Horizontal</enum>
                   </property>
                   <property name="sizeHint" stdset="0">
                    <size>
-                    <width>535</width>
+                    <width>40</width>
                     <height>20</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-                <item row="1" column="0">
-                 <spacer name="verticalSpacer_10">
-                  <property name="orientation">
-                   <enum>Qt::Vertical</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>20</width>
-                    <height>162</height>
                    </size>
                   </property>
                  </spacer>
@@ -3035,9 +3065,6 @@ The data source will be ignored until next program restart.</string>
   <tabstop>CancelPropertiesButton</tabstop>
   <tabstop>ExportPropertyButton</tabstop>
   <tabstop>LoopTemplatesListWidget</tabstop>
-  <tabstop>NewLoopTemplateButton</tabstop>
-  <tabstop>DeleteLoopButton</tabstop>
-  <tabstop>SaveLoopButton</tabstop>
   <tabstop>CCDCNumLineEdit</tabstop>
   <tabstop>spacegroupLineEdit</tabstop>
   <tabstop>datnameLineEdit</tabstop>

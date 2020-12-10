@@ -8,17 +8,34 @@
 import copy
 from typing import Union, List, Any
 
-from PyQt5.QtCore import QAbstractTableModel, QModelIndex, Qt, QSize, QVariant, pyqtSignal
-from PyQt5.QtGui import QColor
-from PyQt5.QtWidgets import QTableView, QHeaderView
+from PyQt5.QtCore import QAbstractTableModel, QModelIndex, Qt, QSize, QVariant, pyqtSignal, QEvent
+from PyQt5.QtGui import QColor, QCursor
+from PyQt5.QtWidgets import QTableView, QHeaderView, QMenu, QAction
 from gemmi.cif import as_string
 
 from cif.text import retranslate_delimiter, utf8_to_str
 
 
+class MyQTableView(QTableView):
+    def __init__(self):
+        super(MyQTableView, self).__init__()
+
+    def contextMenuEvent(self, event):
+        self.menu = QMenu(self)
+        renameAction = QAction('Delete Row', self)
+        renameAction.triggered.connect(lambda: self._delete_row(event))
+        self.menu.addAction(renameAction)
+        # add other required actions
+        self.menu.popup(QCursor.pos())
+
+    def _delete_row(self, event: QEvent):
+        row = self.tableWidget.rowAt(event.pos().y())
+        self.ta
+
+
 class Loop():
     def __init__(self, tags: List[str], values: List[List[str]]):
-        self.tableview = QTableView()
+        self.tableview = MyQTableView()
         self._values: List[List[str]] = self.get_string_values(values)
         # print(self._values, '#_values')
         self.tags = tags
@@ -132,6 +149,15 @@ class LoopTableModel(QAbstractTableModel):
             self.modelChanged.emit(row, col, utf8_to_str(value), self._header)
             return True
         return False
+
+    def removeRow(self, row: int, parent: QModelIndex = None) -> bool:
+        del self._data[row]
+        self.modelChanged.emit(row, 0, utf8_to_str(value), self._header)
+
+    def delete_row(self, row: int):
+        del self._data[row]
+        self.modified.append({'row': row, 'column': col, 'previous': previous})
+        self.modelChanged.emit(row, col, utf8_to_str(value), self._header)
 
     def revert(self) -> None:
         """Reverts the model to the state before editing"""
