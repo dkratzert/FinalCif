@@ -192,19 +192,19 @@ class TestWorkfolder(unittest.TestCase):
 
     def test_equipment_click_author_address(self):
         # Check if click on author adds the address to second and third column:
-        self.equipment_click('Contact Author')
+        self.equipment_click('Crystallographer Details')
         self.assertEqual('?', self.cell_text('_audit_contact_author_address', COL_CIF))
         self.assertEqual(unify_line_endings(addr), self.cell_text('_audit_contact_author_address', COL_DATA))
         self.assertEqual(unify_line_endings(addr), self.cell_text('_audit_contact_author_address', COL_EDIT))
 
     def test_contact_author_name(self):
-        self.equipment_click('Contact Author')
+        self.equipment_click('Crystallographer Details')
         self.assertEqual('?', self.cell_text('_audit_contact_author_name', COL_CIF))
         self.assertEqual('Dr. Daniel Kratzert', self.cell_text('_audit_contact_author_name', COL_DATA))
         self.assertEqual('Dr. Daniel Kratzert', self.cell_text('_audit_contact_author_name', COL_EDIT))
 
     def test_contact_author_cellwidget(self):
-        self.equipment_click('Contact Author')
+        self.equipment_click('Crystallographer Details')
         self.assertEqual(self.myapp.ui.cif_main_table.vheaderitems[5], '_audit_contact_author_name')
         self.assertEqual('Dr. Daniel Kratzert', self.myapp.ui.cif_main_table.getText(5, 1))
         self.assertEqual("<class 'NoneType'>", self.cell_widget(5, COL_CIF))
@@ -213,7 +213,7 @@ class TestWorkfolder(unittest.TestCase):
 
     def test_addr_after_author_click(self):
         self.assertNotEqual(unify_line_endings(addr), self.cell_text('_audit_contact_author_address', COL_EDIT))
-        self.equipment_click('Contact Author')
+        self.equipment_click('Crystallographer Details')
         self.assertEqual(unify_line_endings(addr), self.cell_text('_audit_contact_author_address', COL_EDIT))
         self.assertEqual(unify_line_endings(addr), self.cell_text('_audit_contact_author_address', COL_DATA))
         self.assertEqual('?', self.cell_text('_audit_contact_author_address', COL_CIF))
