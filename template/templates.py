@@ -34,7 +34,7 @@ class ReportTemplates:
         itemslist = self.get_templates_list_from_widget()
         self.app.status_bar.show_message('')
         if templ_path in itemslist:
-            self.app.status_bar.show_message('This templates is already in the list.', 10000)
+            self.app.status_bar.show_message('This templates is already in the list.', 10)
             return
         item = QListWidgetItem(templ_path)
         item.setCheckState(Qt.Unchecked)
