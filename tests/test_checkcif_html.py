@@ -31,7 +31,7 @@ class TestCheckCifHTML(unittest.TestCase):
 
     def tearDown(self) -> None:
         self.resobj.unlink(missing_ok=True)
-        self.myapp.final_cif_file_name.fileobj.unlink()
+        self.myapp.final_cif_file_name.unlink(missing_ok=True)
         Path('platon.out').unlink(missing_ok=True)
         Path('check.def').unlink(missing_ok=True)
         Path('cu_BruecknerJK_153F40_0m-finalcif.chk').unlink(missing_ok=True)
@@ -53,7 +53,7 @@ class TestCheckCifHTML(unittest.TestCase):
         """Runs a html checkcif without hkl and compares the result with the html file."""
         self.maxDiff = None
         self.equipment_click('D8 VENTURE')
-        self.equipment_click('Contact author')
+        self.equipment_click('Crystallographer Details')
         self.myapp.ui.cif_main_table.setText(key='_chemical_absolute_configuration', txt='ad', column=COL_EDIT)
         # Remember: This test is without structure factors!
         self.myapp.ui.structfactCheckBox.setChecked(True)
