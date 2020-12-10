@@ -251,6 +251,15 @@ class AppWindow(QMainWindow):
         self.ui.ReportPicPushButton.clicked.connect(self.set_report_picture)
         # brings the html checkcif in from in order to avoid confusion of an "empty" checkcif report page:
         self.ui.CheckCIFResultsTabWidget.currentChanged.connect(lambda: self.ui.ResponsesTabWidget.setCurrentIndex(0))
+        ##
+        # For authors list:
+        self.ui.AddThisAuthorToLoopPushButton.clicked.connect(self.save_author_to_loop)
+        self.ui.ContactAuthorCheckBox.stateChanged.connect(lambda: self.ui.FootNoteLineEdit.setDisabled(
+            self.ui.ContactAuthorCheckBox.isChecked()))
+        self.ui.SaveAuthorLoopToTemplateButton.clicked.connect(self.save_author_to_loop_template)
+        self.ui.LoopTemplatesListWidget.clicked.connect(self.load_selected_loop)
+        self.ui.DeleteLoopAuthorTemplateButton.clicked.connect(self.delete_current_author)
+        self.show_author_loops()
 
     def resizeEvent(self, a0: QResizeEvent) -> None:
         """It called when the main window resizes."""
@@ -1374,10 +1383,6 @@ class AppWindow(QMainWindow):
         self.get_data_sources()
         self.erase_disabled_items()
         self.ui.cif_main_table.setCurrentItem(None)
-        # TODO: put this in proper place:
-        self.ui.AddThisAuthorPushButton.clicked.connect(self.save_author)
-        self.ui.ContactAuthorCheckBox.clicked.connect(lambda: self.ui.FootNoteLineEdit.setDisabled(
-            self.ui.ContactAuthorCheckBox.isChecked()))
 
     def add_loops_tables(self) -> None:
         """
@@ -1394,14 +1399,10 @@ class AppWindow(QMainWindow):
         if self.cif.res_file_data:
             self.add_res_file_to_loops()
 
-    def save_author(self):
-        name = quote(utf8_to_str(self.ui.FullNameLineEdit.text()))
-        address = quote(utf8_to_str(self.ui.AddressTextedit.toPlainText()))
-        mail = quote(utf8_to_str(self.ui.EMailLineEdit.text()))
-        footnote = quote(utf8_to_str(self.ui.EMailLineEdit.text()))
-        orcid = quote(utf8_to_str(self.ui.ORCIDLineEdit.text()))
-        phone = quote(utf8_to_str(self.ui.PhoneLineEdit.text()))
-        row = [name, address, mail, phone, orcid, footnote]
+    def save_author_to_loop(self):
+        author = self.get_author_info()
+        row = [author.get('name'), author.get('address'), author.get('mail'), author.get('phone'),
+               author.get('orcid'), author.get('footnote')]
         if self.ui.ContactAuthorCheckBox.isChecked():
             author_type = '_publ_contact_author_name'
             contact_author = True
@@ -1418,6 +1419,76 @@ class AppWindow(QMainWindow):
             gemmi_loop: gemmi.cif.Loop = self.cif.init_author_loop(contact_author)
         gemmi_loop.add_row(row)
         self.make_loops_tables()
+        self.show_author_loops()
+
+    def get_author_info(self) -> Dict[str, Union[str, None]]:
+        name = quote(utf8_to_str(self.ui.FullNameLineEdit.text()))
+        address = quote(utf8_to_str(self.ui.AddressTextedit.toPlainText()))
+        mail = quote(utf8_to_str(self.ui.EMailLineEdit.text()))
+        footnote = quote(utf8_to_str(self.ui.EMailLineEdit.text()))
+        orcid = quote(utf8_to_str(self.ui.ORCIDLineEdit.text()))
+        phone = quote(utf8_to_str(self.ui.PhoneLineEdit.text()))
+        contact = self.ui.ContactAuthorCheckBox.isChecked()
+        return {'address': address, 'footnote': footnote, 'mail': mail,
+                'name'   : name, 'orcid': orcid, 'phone': phone, 'contact': contact}
+
+    def set_author_info(self, author: Dict[str, Union[str, None]]):
+        if not author:
+            return
+        self.ui.FullNameLineEdit.setText(retranslate_delimiter(gemmi.cif.as_string(author.get('name'))))
+        self.ui.AddressTextedit.setText(retranslate_delimiter(gemmi.cif.as_string(author.get('address'))))
+        self.ui.EMailLineEdit.setText(retranslate_delimiter(gemmi.cif.as_string(author.get('mail'))))
+        self.ui.EMailLineEdit.setText(retranslate_delimiter(gemmi.cif.as_string(author.get('footnote'))))
+        self.ui.ORCIDLineEdit.setText(retranslate_delimiter(gemmi.cif.as_string(author.get('orcid'))))
+        self.ui.PhoneLineEdit.setText(retranslate_delimiter(gemmi.cif.as_string(author.get('phone'))))
+        self.ui.ContactAuthorCheckBox.setChecked(author.get('contact') or False)
+
+    def save_author_to_loop_template(self):
+        item = QListWidgetItem()
+        author = self.get_author_info()
+        if self.ui.ContactAuthorCheckBox.isChecked():
+            itemtext = '{} (contact author)'.format(retranslate_delimiter(gemmi.cif.as_string(author.get('name'))))
+            item.setText(itemtext)
+        else:
+            itemtext = gemmi.cif.as_string(author.get('name'))
+            item.setText(itemtext)
+        authors = self.settings.get_equipment_list(equipment='authors_list')
+        if itemtext not in authors:
+            self.ui.LoopTemplatesListWidget.addItem(item)
+        self.settings.save_loop_template(name=itemtext, items=author)
+        self.settings.save_to_equipment_list(itemtext, templ_type='authors_list')
+
+    def delete_current_author(self):
+        index = self.ui.LoopTemplatesListWidget.currentIndex()
+        selected_template_text = index.data()
+        self.ui.LoopTemplatesListWidget.clear()
+        self.settings.delete_template('authors_list/' + selected_template_text)
+        equipment_list = self.settings.settings.value('authors_list') or []
+        try:
+            equipment_list.remove(selected_template_text)
+        except ValueError:
+            pass
+        self.settings.save_template('authors_list', equipment_list)
+        self.show_author_loops()
+
+    def load_selected_loop(self):
+        author_loopdata = self.settings.load_loop_template(self.get_selected_loop_name())
+        self.set_author_info(author_loopdata)
+
+    def show_author_loops(self):
+        self.ui.LoopTemplatesListWidget.clear()
+        l = self.settings.get_equipment_list(equipment='authors_list')
+        for loop in l:
+            if loop:
+                item = QListWidgetItem(loop)
+                self.ui.LoopTemplatesListWidget.addItem(item)
+
+    def get_selected_loop_name(self) -> str:
+        listwidget = self.ui.LoopTemplatesListWidget
+        selected_row_text = listwidget.currentIndex().data()
+        if not selected_row_text:
+            return ''
+        return selected_row_text
 
     def save_new_value_to_cif_block(self, row: int, col: int, value: Union[str, int, float], header: list):
         column = self.cif.block.find_values(header[col])

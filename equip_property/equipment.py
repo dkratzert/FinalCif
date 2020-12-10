@@ -170,7 +170,7 @@ class Equipment:
                     return
                 show_general_warning('"{}" is not an official CIF keyword!'.format(key))
         self.settings.save_template('equipment/' + selected_template_text, table_data)
-        self.settings.append_to_equipment_list(selected_template_text)
+        self.settings.save_to_equipment_list(selected_template_text)
         self.app.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
         print('saved')
 
@@ -201,7 +201,7 @@ class Equipment:
         else:
             name = block.name.replace('__', ' ')
         self.settings.save_template('equipment/' + name, table_data)
-        self.settings.append_to_equipment_list(name)
+        self.settings.save_to_equipment_list(name)
         self.show_equipment()
 
     def get_equipment_entry_data(self) -> Tuple[str, list]:

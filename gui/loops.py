@@ -30,7 +30,7 @@ class MyQTableView(QTableView):
 
     def _delete_row(self, event: QEvent):
         row = self.tableWidget.rowAt(event.pos().y())
-        self.ta
+        print(row)
 
 
 class Loop():
