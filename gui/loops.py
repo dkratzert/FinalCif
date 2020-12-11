@@ -22,15 +22,25 @@ class MyQTableView(QTableView):
 
     def contextMenuEvent(self, event):
         self.menu = QMenu(self)
-        renameAction = QAction('Delete Row', self)
-        renameAction.triggered.connect(lambda: self._delete_row(event))
-        self.menu.addAction(renameAction)
+        delAction = QAction('Delete Row', self)
+        delAction.triggered.connect(lambda: self._delete_row(event))
+        addAction = QAction('Add Row', self)
+        addAction.triggered.connect(lambda: self._add_row(event))
+        self.menu.addAction(addAction)
+        self.menu.addAction(delAction)
         # add other required actions
         self.menu.popup(QCursor.pos())
 
     def _delete_row(self, event: QEvent):
-        row = self.tableWidget.rowAt(event.pos().y())
-        print(row)
+        self.model().removeRow(self.currentIndex().row())
+        self.model().modelReset.emit()
+
+    def _add_row(self, event: QEvent):
+        if len(self.model()._data) > 0:
+            rowlen = len(self.model()._data[0])
+            self.model()._data.append(['', ] * rowlen)
+            self.model()._original.append(['', ] * rowlen)
+            self.model().modelReset.emit()
 
 
 class Loop():
@@ -59,12 +69,12 @@ class Loop():
         """
         Creates the model and applies data to it
         """
-        self.update_model = self.set_or_update_model(self.values)
+        self.set_or_update_model(self.values)
         header = self.tableview.horizontalHeader()
         # Format the header sizes:
         for column in range(header.count()):
             header.setSectionResizeMode(column, QHeaderView.ResizeToContents)
-            width = header.sectionSize(column) + 10
+            width = header.sectionSize(column) + 15
             header.setSectionResizeMode(column, QHeaderView.Interactive)
             header.resizeSection(column, width)
 
@@ -129,10 +139,13 @@ class LoopTableModel(QAbstractTableModel):
 
     def columnCount(self, parent=None, *args, **kwargs):
         """
-        Tkes the first sub-list, and returns
+        Takes the first sub-list, and returns
         the length (only works if all rows are an equal length)
         """
-        return len(self._data[0])
+        if len(self._data) > 0:
+            return len(self._data[0])
+        else:
+            return 0
 
     def flags(self, index: QModelIndex) -> Qt.ItemFlags:
         if index.isValid():
@@ -151,13 +164,12 @@ class LoopTableModel(QAbstractTableModel):
         return False
 
     def removeRow(self, row: int, parent: QModelIndex = None) -> bool:
-        del self._data[row]
-        self.modelChanged.emit(row, 0, utf8_to_str(value), self._header)
-
-    def delete_row(self, row: int):
-        del self._data[row]
-        self.modified.append({'row': row, 'column': col, 'previous': previous})
-        self.modelChanged.emit(row, col, utf8_to_str(value), self._header)
+        if len(self._data) > 0:
+            del self._data[row]
+        else:
+            return False
+        self.modelChanged.emit(row, -1, '', self._header)
+        return True
 
     def revert(self) -> None:
         """Reverts the model to the state before editing"""

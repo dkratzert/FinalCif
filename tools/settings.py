@@ -74,7 +74,7 @@ class FinalCifSettings():
         self.settings.setValue('last', last_equipment)
         self.settings.endGroup()
 
-    def save_to_equipment_list(self, selected_template_text, templ_type: str = 'equipment_list') -> None:
+    def save_to_equipment_list(self, selected_template_text: str, templ_type: str = 'equipment_list/') -> None:
         equipment_list = self.settings.value(templ_type)
         if not equipment_list:
             equipment_list = ['']
@@ -144,6 +144,9 @@ class FinalCifSettings():
         """
         Saves Equipment templates into the settings as list.
         """
+        if not isinstance(name, str):
+            print('name was no string')
+            return 
         self.settings.setValue('authors_list/' + name, items)
 
     def save_authors_list(self, authors):
