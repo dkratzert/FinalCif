@@ -550,3 +550,10 @@ class MyMainStackedWidget(QStackedWidget):
 
     def go_to_checkcif_page(self):
         self.setCurrentIndex(6)
+
+    @property
+    def current_page(self):
+        return self.currentIndex()
+
+    def on_checkcif_page(self):
+        return self.current_page == 6
