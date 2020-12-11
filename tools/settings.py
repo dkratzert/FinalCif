@@ -5,13 +5,9 @@
 #  and you think this stuff is worth it, you can buy me a beer in return.
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
-from contextlib import suppress
 from typing import List, Dict
 
 from PyQt5.QtCore import QPoint, QSettings, QSize
-
-with suppress(Exception):
-    from gui.finalcif_gui import Ui_FinalCifWindow
 
 
 class FinalCifSettings():
@@ -64,16 +60,6 @@ class FinalCifSettings():
         self.settings.endGroup()
         return lastdir
 
-    def save_favorite_template(self, app: 'Ui_FinalCifWindow') -> None:
-        """
-        Saves the last used equipment. I curently do not use it.
-        :param app: Appwindow instance
-        """
-        last_equipment = app.EquipmentTemplatesListWidget.currentRow()
-        self.settings.beginGroup('LastEquipment')
-        self.settings.setValue('last', last_equipment)
-        self.settings.endGroup()
-
     def save_to_equipment_list(self, selected_template_text: str, templ_type: str = 'equipment_list/') -> None:
         equipment_list = self.settings.value(templ_type)
         if not equipment_list:
@@ -89,25 +75,6 @@ class FinalCifSettings():
         if not equipment_list:
             equipment_list = ['']
         return sorted(equipment_list)
-
-    def load_last_equipment(self) -> int:
-        self.settings.beginGroup('LastEquipment')
-        last = self.settings.value("last", type=int)
-        self.settings.endGroup()
-        return last
-
-    def property_name_by_key(self, key) -> str:
-        """
-        Returns the name in the PropertiesTemplatesListWidget that belongs to the cif keyword.
-        """
-        plist = self.settings.value('property_list')
-        for p in plist:
-            try:
-                val = self.settings.value('property/' + p)[0]
-            except TypeError:
-                continue
-            if p == key:
-                return val
 
     def load_property_keys(self) -> list:
         """
@@ -146,17 +113,8 @@ class FinalCifSettings():
         """
         if not isinstance(name, str):
             print('name was no string')
-            return 
+            return
         self.settings.setValue('authors_list/' + name, items)
-
-    def save_authors_list(self, authors):
-        self.settings.setValue('authors_list/', authors)
-
-    def get_loops_list(self) -> list:
-        loops_list = self.settings.value('authors_list')
-        if not loops_list:
-            loops_list = ['']
-        return sorted(loops_list)
 
     def load_equipment_template_as_dict(self, name: str) -> dict:
         """

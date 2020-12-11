@@ -21,11 +21,6 @@ from tools.settings import FinalCifSettings
 with suppress(ImportError):
     from appwindow import AppWindow
 
-"""
- self.ui.AddThisAuthorToLoopPushButton.setDisabled(disable)
-        self.ui.SaveAuthorLoopToTemplateButton.setDisabled(disable)
-"""
-
 
 class AuthorLoops():
     def __init__(self, ui: Ui_FinalCifWindow, cif: CifContainer, app: 'AppWindow'):
@@ -128,20 +123,17 @@ class AuthorLoops():
     def general_author_save(self, author: dict):
         if not author.get('name'):
             return
-        item = QListWidgetItem()
         if author.get('contact'):
             itemtext = '{} (contact author)'.format(retranslate_delimiter(cif.as_string(author.get('name'))))
-            item.setText(itemtext)
         else:
             itemtext = cif.as_string(author.get('name'))
-            item.setText(itemtext)
-        authors = self.settings.get_equipment_list(equipment='authors_list/')
+        authors = self.settings.get_equipment_list(equipment='authors_list')
         if itemtext not in authors:
-            self.ui.LoopTemplatesListWidget.addItem(item)
+            self.settings.save_loop_template(name=itemtext, items=author)
+            self.settings.save_to_equipment_list(itemtext, templ_type='authors_list')
         if not itemtext:
             return
-        self.settings.save_loop_template(name=itemtext, items=author)
-        self.settings.save_to_equipment_list(itemtext, templ_type='authors_list')
+        self.show_author_loops()
 
     def export_author_template(self, filename: str = None) -> None:
         """
@@ -179,7 +171,6 @@ class AuthorLoops():
             return
         try:
             doc.write_file(filename, style=cif.Style.Indent35)
-            # Path(filename).write_text(doc.as_string(cif.Style.Indent35))
         except PermissionError:
             if Path(filename).is_dir():
                 return
@@ -234,12 +225,12 @@ class AuthorLoops():
             return
         self.ui.LoopTemplatesListWidget.clear()
         self.settings.delete_template('authors_list/' + selected_template_text)
-        equipment_list = self.settings.settings.value('authors_list') or []
+        authors_list = self.settings.settings.value('authors_list') or []
         try:
-            equipment_list.remove(selected_template_text)
+            authors_list.remove(selected_template_text)
         except ValueError:
             pass
-        self.settings.save_template('authors_list', equipment_list)
+        self.settings.save_template('authors_list', authors_list)
         self.show_author_loops()
 
     def get_selected_loop_name(self) -> str:
@@ -256,7 +247,7 @@ class AuthorLoops():
     def show_author_loops(self):
         self.ui.LoopTemplatesListWidget.clear()
         l = self.settings.get_equipment_list(equipment='authors_list')
-        for loop in l:
+        for loop in sorted(l):
             if loop:
                 item = QListWidgetItem(loop)
                 self.ui.LoopTemplatesListWidget.addItem(item)
