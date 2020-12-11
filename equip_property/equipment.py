@@ -230,7 +230,7 @@ class Equipment:
         """
         Exports the currently selected equipment entry to a file.
 
-        I order to export, we have to run self.edit_equipment_template() first!
+        In order to export, we have to run self.edit_equipment_template() first!
         """
         selected_template, table_data = self.get_equipment_entry_data()
         if not selected_template:

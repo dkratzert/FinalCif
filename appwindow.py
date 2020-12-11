@@ -39,7 +39,7 @@ from equip_property.equipment import Equipment
 from equip_property.properties import Properties
 from gui.custom_classes import COL_CIF, COL_DATA, COL_EDIT, MyTableWidgetItem, light_green, yellow, MyComboBox, blue
 from gui.dialogs import show_update_warning, unable_to_open_message, show_general_warning, cif_file_open_dialog, \
-    bad_z_message, show_res_checksum_warning, show_hkl_checksum_warning
+    bad_z_message, show_res_checksum_warning, show_hkl_checksum_warning, cif_file_save_dialog
 from gui.finalcif_gui import Ui_FinalCifWindow
 from gui.loops import Loop
 from gui.vrf_classes import MyVRFContainer, VREF
@@ -259,6 +259,8 @@ class AppWindow(QMainWindow):
         self.ui.SaveAuthorLoopToTemplateButton.clicked.connect(self.save_author_to_loop_template)
         self.ui.LoopTemplatesListWidget.clicked.connect(self.load_selected_loop)
         self.ui.DeleteLoopAuthorTemplateButton.clicked.connect(self.delete_current_author)
+        self.ui.ExportAuthorPushButton.clicked.connect(self.export_author_template)
+        self.ui.ImportAuthorPushButton.clicked.connect(self.import_author)
         self.show_author_loops()
 
     def resizeEvent(self, a0: QResizeEvent) -> None:
@@ -1401,7 +1403,7 @@ class AppWindow(QMainWindow):
 
     def save_author_to_loop(self):
         author = self.get_author_info()
-        row = [author.get('name'), author.get('address'), author.get('mail'), author.get('phone'),
+        row = [author.get('name'), author.get('address'), author.get('email'), author.get('phone'),
                author.get('orcid'), author.get('footnote')]
         if self.ui.ContactAuthorCheckBox.isChecked():
             author_type = '_publ_contact_author_name'
@@ -1424,12 +1426,12 @@ class AppWindow(QMainWindow):
     def get_author_info(self) -> Dict[str, Union[str, None]]:
         name = quote(utf8_to_str(self.ui.FullNameLineEdit.text()))
         address = quote(utf8_to_str(self.ui.AddressTextedit.toPlainText()))
-        mail = quote(utf8_to_str(self.ui.EMailLineEdit.text()))
-        footnote = quote(utf8_to_str(self.ui.EMailLineEdit.text()))
+        email = quote(utf8_to_str(self.ui.EMailLineEdit.text()))
+        footnote = quote(utf8_to_str(self.ui.FootNoteLineEdit.text()))
         orcid = quote(utf8_to_str(self.ui.ORCIDLineEdit.text()))
         phone = quote(utf8_to_str(self.ui.PhoneLineEdit.text()))
         contact = self.ui.ContactAuthorCheckBox.isChecked()
-        return {'address': address, 'footnote': footnote, 'mail': mail,
+        return {'address': address, 'footnote': footnote, 'email': email,
                 'name'   : name, 'orcid': orcid, 'phone': phone, 'contact': contact}
 
     def set_author_info(self, author: Dict[str, Union[str, None]]):
@@ -1437,16 +1439,20 @@ class AppWindow(QMainWindow):
             return
         self.ui.FullNameLineEdit.setText(retranslate_delimiter(gemmi.cif.as_string(author.get('name'))))
         self.ui.AddressTextedit.setText(retranslate_delimiter(gemmi.cif.as_string(author.get('address'))))
-        self.ui.EMailLineEdit.setText(retranslate_delimiter(gemmi.cif.as_string(author.get('mail'))))
-        self.ui.EMailLineEdit.setText(retranslate_delimiter(gemmi.cif.as_string(author.get('footnote'))))
+        self.ui.EMailLineEdit.setText(retranslate_delimiter(gemmi.cif.as_string(author.get('email'))))
+        if author.get('footnote'):
+            self.ui.FootNoteLineEdit.setText(retranslate_delimiter(gemmi.cif.as_string(author.get('footnote'))))
         self.ui.ORCIDLineEdit.setText(retranslate_delimiter(gemmi.cif.as_string(author.get('orcid'))))
         self.ui.PhoneLineEdit.setText(retranslate_delimiter(gemmi.cif.as_string(author.get('phone'))))
         self.ui.ContactAuthorCheckBox.setChecked(author.get('contact') or False)
 
     def save_author_to_loop_template(self):
-        item = QListWidgetItem()
         author = self.get_author_info()
-        if self.ui.ContactAuthorCheckBox.isChecked():
+        self.general_author_save(author)
+
+    def general_author_save(self, author: dict):
+        item = QListWidgetItem()
+        if author.get('contact'):
             itemtext = '{} (contact author)'.format(retranslate_delimiter(gemmi.cif.as_string(author.get('name'))))
             item.setText(itemtext)
         else:
@@ -1458,9 +1464,93 @@ class AppWindow(QMainWindow):
         self.settings.save_loop_template(name=itemtext, items=author)
         self.settings.save_to_equipment_list(itemtext, templ_type='authors_list')
 
+    def export_author_template(self, filename: str = None) -> None:
+        """
+        Exports the currently selected author to a file.
+        """
+        table_data = self.get_author_info()
+        selected_template = self.ui.LoopTemplatesListWidget.currentIndex().data()
+        if not selected_template:
+            return
+        doc = cif.Document()
+        blockname = '__'.join(selected_template.split())
+        block = doc.add_new_block(blockname)
+        contact_author = table_data.get('contact')
+        for key, value in zip(table_data.keys(), table_data.values()):
+            if key == 'name':
+                key = '_publ_contact_author_name' if contact_author else '_publ_author_name'
+            elif key == 'address':
+                key = '_publ_contact_author_address' if contact_author else '_publ_author_address'
+            elif key == 'email':
+                key = '_publ_contact_author_email' if contact_author else '_publ_author_email'
+            elif key == 'footnote':
+                if contact_author:
+                    continue
+                key = '_publ_author_footnote'
+            elif key == 'phone':
+                key = '_publ_contact_author_phone' if contact_author else '_publ_author_phone'
+            elif key == 'orcid':
+                key = '_publ_contact_author_id_orcid' if contact_author else '_publ_author_id_orcid'
+            else:
+                continue
+            set_pair_delimited(block, key, gemmi.cif.as_string(value.strip('\n\r ')))
+        if not filename:
+            filename = cif_file_save_dialog(blockname.replace('__', '_') + '.cif')
+        if not filename.strip():
+            return
+        try:
+            doc.write_file(filename, style=cif.Style.Indent35)
+            # Path(filename).write_text(doc.as_string(cif.Style.Indent35))
+        except PermissionError:
+            if Path(filename).is_dir():
+                return
+            show_general_warning('No permission to write file to {}'.format(Path(filename).absolute()))
+
+    def import_author(self, filename=''):
+        """
+        Import an author from a cif file.
+        """
+        cif_auth_to_str = {'_publ_contact_author_name'    : 'name',
+                           '_publ_contact_author_address' : 'address',
+                           '_publ_contact_author_email'   : 'email',
+                           '_publ_contact_author_phone'   : 'phone',
+                           '_publ_contact_author_id_orcid': 'orcid',
+                           '_publ_author_name'            : 'name',
+                           '_publ_author_address'         : 'address',
+                           '_publ_author_email'           : 'email',
+                           '_publ_author_phone'           : 'phone',
+                           '_publ_author_id_orcid'        : 'orcid',
+                           '_publ_author_footnote'        : 'footnote', }
+        if not filename:
+            filename = cif_file_open_dialog(filter="CIF file (*.cif)")
+        if not filename:
+            print('No file given')
+            return
+        try:
+            doc = cif.read_file(filename)
+        except RuntimeError as e:
+            show_general_warning(str(e))
+            return
+        block = doc.sole_block()
+        table_data = {}
+        for item in block:
+            if item.pair is not None:
+                key, value = item.pair
+                if not key in cif_auth_to_str:
+                    continue
+                key = cif_auth_to_str.get(key)
+                table_data.update({key: retranslate_delimiter(cif.as_string(value).strip('\n\r ;'))})
+        name = block.name.replace('__', ' ')
+        if 'contact author' in name:
+            table_data.update({'contact': True})
+        self.general_author_save(table_data)
+        self.show_author_loops()
+
     def delete_current_author(self):
         index = self.ui.LoopTemplatesListWidget.currentIndex()
         selected_template_text = index.data()
+        if not selected_template_text:
+            return
         self.ui.LoopTemplatesListWidget.clear()
         self.settings.delete_template('authors_list/' + selected_template_text)
         equipment_list = self.settings.settings.value('authors_list') or []

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'D:\GitHub\FinalCif\gui\finalcif_gui.ui'
+# Form implementation generated from reading ui file '/Users/daniel/Documents/GitHub/FinalCif/gui/finalcif_gui.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.2
 #
@@ -293,12 +293,12 @@ class Ui_FinalCifWindow(object):
         self.horizontalLayout_7.setContentsMargins(-1, 6, -1, 6)
         self.horizontalLayout_7.setSpacing(9)
         self.horizontalLayout_7.setObjectName("horizontalLayout_7")
-        self.pushButton = QtWidgets.QPushButton(self.LoopsGroupBox)
-        self.pushButton.setObjectName("pushButton")
-        self.horizontalLayout_7.addWidget(self.pushButton)
-        self.pushButton_2 = QtWidgets.QPushButton(self.LoopsGroupBox)
-        self.pushButton_2.setObjectName("pushButton_2")
-        self.horizontalLayout_7.addWidget(self.pushButton_2)
+        self.ExportAuthorPushButton = QtWidgets.QPushButton(self.LoopsGroupBox)
+        self.ExportAuthorPushButton.setObjectName("ExportAuthorPushButton")
+        self.horizontalLayout_7.addWidget(self.ExportAuthorPushButton)
+        self.ImportAuthorPushButton = QtWidgets.QPushButton(self.LoopsGroupBox)
+        self.ImportAuthorPushButton.setObjectName("ImportAuthorPushButton")
+        self.horizontalLayout_7.addWidget(self.ImportAuthorPushButton)
         self.DeleteLoopAuthorTemplateButton = QtWidgets.QPushButton(self.LoopsGroupBox)
         self.DeleteLoopAuthorTemplateButton.setObjectName("DeleteLoopAuthorTemplateButton")
         self.horizontalLayout_7.addWidget(self.DeleteLoopAuthorTemplateButton)
@@ -1414,8 +1414,8 @@ class Ui_FinalCifWindow(object):
         self.CancelPropertiesButton.setText(_translate("FinalCifWindow", "Cancel"))
         self.ExportPropertyButton.setText(_translate("FinalCifWindow", "Export"))
         self.LoopsGroupBox.setTitle(_translate("FinalCifWindow", "Author Templates"))
-        self.pushButton.setText(_translate("FinalCifWindow", "Export Author"))
-        self.pushButton_2.setText(_translate("FinalCifWindow", "Import Author"))
+        self.ExportAuthorPushButton.setText(_translate("FinalCifWindow", "Export Author"))
+        self.ImportAuthorPushButton.setText(_translate("FinalCifWindow", "Import Author"))
         self.DeleteLoopAuthorTemplateButton.setText(_translate("FinalCifWindow", "Delete Author"))
         self.SumFormMainLabel.setText(_translate("FinalCifWindow", "Sum Formula"))
         self.datanameLabel.setText(_translate("FinalCifWindow", "Data Name"))
