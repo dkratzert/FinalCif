@@ -1396,13 +1396,17 @@ class AppWindow(QMainWindow):
             self.add_res_file_to_loops()
 
     def save_new_value_to_cif_block(self, row: int, col: int, value: Union[str, int, float], header: list):
+        """
+        Save values of new table rows into cif loops.
+        """
         if col >= 0:
             column = self.cif.block.find_values(header[col])
             while len(column) < row + 1:
+                # fill table fields with values until last new row reached
                 loop = self.cif.block.find_loop(header[col]).get_loop()
                 loop.add_row(['.'] * len(header))
                 column = self.cif.block.find_values(header[col])
-            column[row] = value if my_isnumeric(value) else quote(value)  # if value else '.'
+            column[row] = value if my_isnumeric(value) else quote(value)
         else:
             table: cif.Table = self.cif.block.find(header)
             table.remove_row(row)
