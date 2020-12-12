@@ -48,6 +48,19 @@ class MyTestCase(unittest.TestCase):
         self.app.authors.import_author('../other_templates/AATest_Author.cif')
         self.app.ui.LoopTemplatesListWidget.setCurrentRow(0)
 
+    def test_set_name(self):
+        self.app.ui.FullNameLineEdit.setText('test')
+        self.assertEqual('test', self.app.authors.get_author_info().get('name'))
+
+    def test_set_contact_author(self):
+        self.assertEqual(False, self.app.ui.ContactAuthorCheckBox.isChecked())
+        self.app.ui.ContactAuthorCheckBox.setChecked(True)
+        self.assertEqual(True, self.app.authors.get_author_info().get('contact'))
+
+    def test_set_address(self):
+        self.app.ui.AddressTextedit.setText('Eine Adresse 1')
+        self.assertEqual("'Eine Adresse 1'", self.app.authors.get_author_info().get('address'))
+
 
 if __name__ == '__main__':
     unittest.main()
