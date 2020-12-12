@@ -46,15 +46,15 @@ class TestLoops(unittest.TestCase):
         self.assertEqual('Daniel Kratzert', index.data())
 
     def test_loop_audit_author_address(self):
-        index = self.myapp.ui.LoopsTabWidget.widget(1).model().index(0, 1)
+        index = self.myapp.ui.LoopsTabWidget.widget(2).model().index(0, 1)
         self.assertEqual(unify_line_endings('University of Freiburg\nGermany'), unify_line_endings(index.data()))
 
     def test_loop_dots(self):
-        index = self.myapp.ui.LoopsTabWidget.widget(6).model().index(1, 3)
+        index = self.myapp.ui.LoopsTabWidget.widget(7).model().index(1, 3)
         self.assertEqual('.', index.data())
 
     def test_loop_question_marks(self):
-        index = self.myapp.ui.LoopsTabWidget.widget(6).model().index(1, 4)
+        index = self.myapp.ui.LoopsTabWidget.widget(7).model().index(1, 4)
         self.assertEqual('?', index.data())
 
     def test_loop_no_edit(self):
@@ -62,9 +62,9 @@ class TestLoops(unittest.TestCase):
         c = CifContainer(self.myapp.final_cif_file_name)
         self.assertEqual('0.0181', c.loops[3].val(0, 2))
 
-    def test_loop_edit(self):
-        index = self.myapp.ui.LoopsTabWidget.widget(3).model().index(0, 2)
-        self.myapp._loop_tables[3].model.setData(index, 'foo bar', role=Qt.EditRole)
+    def test_loop_edit_one_single_field(self):
+        model = self.myapp.ui.LoopsTabWidget.widget(4).model()
+        model.setData(model.index(0, 2), 'foo bar', role=Qt.EditRole)
         self.myapp.ui.SaveCifButton.click()
         c = CifContainer(self.myapp.final_cif_file_name)
         self.assertEqual('foo bar', as_string(c.loops[3].val(0, 2)))
