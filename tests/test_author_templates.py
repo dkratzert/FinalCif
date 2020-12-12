@@ -33,6 +33,8 @@ class MyTestCase(unittest.TestCase):
     def delete_test_author(self):
         self.app.ui.LoopTemplatesListWidget.setCurrentRow(0)
         self.app.ui.DeleteLoopAuthorTemplateButton.click()
+        self.app.ui.LoopTemplatesListWidget.setCurrentRow(0)
+        self.assertNotEqual('AATest Author', self.app.authors.get_selected_loop_name())
 
     def test_export_selected_author(self):
         self.delete_test_author()
