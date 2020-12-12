@@ -84,7 +84,7 @@ class TestMainTableFieldBehavior(unittest.TestCase):
 
     def test_load_equipment(self):
         # make sure contact author is selected
-        self.equipment_click('Contact author name and')
+        self.equipment_click('Crystallographer Details')
         # It is important here, that the first column has 'daniel.kratzert@ac.uni-freiburg.de' in it:
         self.assertEqual('daniel.kratzert@ac.uni-freiburg.de',
                          self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_email', COL_CIF))

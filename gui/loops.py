@@ -176,6 +176,9 @@ class LoopTableModel(QAbstractTableModel):
         self.beginResetModel()
         while self.modified:
             for p in self.modified:
-                self._data[p.get('row')][p.get('column')] = p.get('previous')
+                row = p.get('row')
+                col = p.get('column')
+                value = p.get('previous')
+                self._data[row][col] = value
             self.modified.pop(0)
         self.endResetModel()

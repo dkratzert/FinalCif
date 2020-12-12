@@ -185,6 +185,7 @@ class AuthorLoops():
                            '_publ_contact_author_email'   : 'email',
                            '_publ_contact_author_phone'   : 'phone',
                            '_publ_contact_author_id_orcid': 'orcid',
+                           #
                            '_publ_author_name'            : 'name',
                            '_publ_author_address'         : 'address',
                            '_publ_author_email'           : 'email',
@@ -194,7 +195,6 @@ class AuthorLoops():
         if not filename:
             filename = cif_file_open_dialog(filter="CIF file (*.cif)")
         if not filename:
-            print('No file given')
             return
         try:
             doc = cif.read_file(filename)
