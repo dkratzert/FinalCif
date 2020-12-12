@@ -115,7 +115,7 @@ class AuthorLoops():
 
     def save_author_to_loop_template(self):
         author = self.get_author_info()
-        if author.get('name') == '':
+        if author.get('name') == '' or None:
             return
         self.general_author_save(author)
         self.clear_fields()

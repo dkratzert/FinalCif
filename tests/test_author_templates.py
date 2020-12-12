@@ -17,6 +17,8 @@ class MyTestCase(unittest.TestCase):
         self.app = AppWindow(self.testcif)
         self.app.running_inside_unit_test = True
         self.app.hide()
+        self.author = {'address': 'address', 'footnote': 'footnote', 'email': 'email',
+                'name'   : 'name', 'orcid': 'orcid', 'phone': 'phone', 'contact': True}
 
     def tearDown(self) -> None:
         os.chdir(Path(__file__).absolute().parent.parent)
@@ -61,6 +63,45 @@ class MyTestCase(unittest.TestCase):
         self.app.ui.AddressTextedit.setText('Eine Adresse 1')
         self.assertEqual("'Eine Adresse 1'", self.app.authors.get_author_info().get('address'))
 
+    def test_set_footnote(self):
+        self.app.ui.FootNoteLineEdit.setText('notex')
+        self.assertEqual('notex', self.app.authors.get_author_info().get('footnote'))
+
+    def test_set_email(self):
+        self.app.ui.EMailLineEdit.setText('test@foo.de')
+        self.assertEqual('test@foo.de', self.app.authors.get_author_info().get('email'))
+
+    def test_set_orcid(self):
+        self.app.ui.ORCIDLineEdit.setText('12345a')
+        self.assertEqual('12345a', self.app.authors.get_author_info().get('orcid'))
+
+    def test_set_phone(self):
+        self.app.ui.PhoneLineEdit.setText('12345a')
+        self.assertEqual('12345a', self.app.authors.get_author_info().get('phone'))
+
+    def test_set_foo(self):
+        self.assertEqual(None, self.app.authors.get_author_info().get('foo'))
+
+    def test_set_author_info(self):
+        self.app.authors.set_author_info(self.author)
+        self.assertEqual('name', self.app.ui.FullNameLineEdit.text())
+        self.assertEqual('address', self.app.ui.AddressTextedit.toPlainText())
+        self.assertEqual('email', self.app.ui.EMailLineEdit.text())
+        self.assertEqual('orcid', self.app.ui.ORCIDLineEdit.text())
+        self.assertEqual('footnote', self.app.ui.FootNoteLineEdit.text())
+        self.assertEqual('phone', self.app.ui.PhoneLineEdit.text())
+        self.assertEqual(True, self.app.ui.ContactAuthorCheckBox.isChecked())
+
+    def test_set_author_info_and_clear(self):
+        self.app.authors.set_author_info(self.author)
+        self.app.authors.clear_fields()
+        self.assertEqual('', self.app.ui.FullNameLineEdit.text())
+        self.assertEqual('', self.app.ui.AddressTextedit.toPlainText())
+        self.assertEqual('', self.app.ui.EMailLineEdit.text())
+        self.assertEqual('', self.app.ui.ORCIDLineEdit.text())
+        self.assertEqual('', self.app.ui.FootNoteLineEdit.text())
+        self.assertEqual('', self.app.ui.PhoneLineEdit.text())
+        self.assertEqual(False, self.app.ui.ContactAuthorCheckBox.isChecked())
 
 if __name__ == '__main__':
     unittest.main()
