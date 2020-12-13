@@ -18,37 +18,44 @@ class MyTestCase(unittest.TestCase):
         self.app.running_inside_unit_test = True
         self.app.hide()
         self.author = {'address': 'address', 'footnote': 'footnote', 'email': 'email',
-                'name'   : 'name', 'orcid': 'orcid', 'phone': 'phone', 'contact': True}
+                       'name'   : 'name', 'orcid': 'orcid', 'phone': 'phone', 'contact': True}
 
     def tearDown(self) -> None:
         os.chdir(Path(__file__).absolute().parent.parent)
         Path('tests/other_templates/testexport_author.cif').unlink(missing_ok=True)
 
+    def _import_testauthor(self):
+        # To be used in other tests
+        self.app.authors.import_author('../other_templates/AATest_Author.cif')
+        self.app.ui.LoopTemplatesListWidget.setCurrentRow(0)
+
     def test_selected_loop_without_selection(self):
         self.assertEqual(self.app.authors.get_selected_loop_name(), '')
 
     def test_selected_loop_with_selection(self):
-        self.delete_test_author()
-        self.import_testauthor()
+        self._delete_test_author()
+        self._import_testauthor()
         self.assertEqual('AATest Author', self.app.authors.get_selected_loop_name())
 
-    def delete_test_author(self):
-        self.app.ui.LoopTemplatesListWidget.setCurrentRow(0)
+    def _delete_test_author(self, name='AATest Author'):
+        self._select_row_of_author(name)
         self.app.ui.DeleteLoopAuthorTemplateButton.click()
-        self.app.ui.LoopTemplatesListWidget.setCurrentRow(0)
         self.assertNotEqual('AATest Author', self.app.authors.get_selected_loop_name())
 
+    def _select_row_of_author(self, name):
+        listw = self.app.ui.LoopTemplatesListWidget
+        for row in range(listw.count()):
+            listw.setCurrentRow(row)
+            if listw.currentItem().text().startswith(name):
+                break
+
     def test_export_selected_author(self):
-        self.delete_test_author()
-        self.import_testauthor()
+        self._delete_test_author()
+        self._import_testauthor()
         self.app.authors.export_author_template('../other_templates/testexport_author.cif')
         self.assertEqual(True, Path('../other_templates/testexport_author.cif').exists())
         self.assertEqual(Path('../other_templates/testexport_author.cif').read_text(),
                          Path('../other_templates/testexport_author.cif').read_text())
-
-    def import_testauthor(self):
-        self.app.authors.import_author('../other_templates/AATest_Author.cif')
-        self.app.ui.LoopTemplatesListWidget.setCurrentRow(0)
 
     def test_set_name(self):
         self.app.ui.FullNameLineEdit.setText('test')
@@ -102,6 +109,10 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual('', self.app.ui.FootNoteLineEdit.text())
         self.assertEqual('', self.app.ui.PhoneLineEdit.text())
         self.assertEqual(False, self.app.ui.ContactAuthorCheckBox.isChecked())
+
+    def test_save_author(self):
+        pass
+
 
 if __name__ == '__main__':
     unittest.main()
