@@ -30,6 +30,32 @@ cif_keywords_list = (
 )
 
 
+def spgr_to_html(space_group):
+    """
+
+    >>> spgr_to_html('P 1 21 21 2')
+    '<body><i>P</i>2<sub>1</sub>2<sub>1</sub>2</body>'
+    """
+    spgrtxt = ''
+    if space_group:
+        if len(space_group) > 4:  # don't modify P 1
+            space_group = re.sub(r'\s1', '', space_group)  # remove extra Hall "1" for mono and tric
+        space_group = re.sub(r'\s', '', space_group)  # remove all remaining whitespace
+        space_group_formated_text = [char for char in space_group]
+        is_sub = False
+        for k, char in enumerate(space_group_formated_text):
+            if not char.isdigit():
+                spgrtxt = spgrtxt + '<i>' + char + '</i>'
+            else:
+                if space_group_formated_text[k - 1].isdigit() and not is_sub:
+                    is_sub = True
+                    spgrtxt = spgrtxt + '<sub>' + char + '</sub>'
+                else:
+                    is_sub = False
+                    spgrtxt = spgrtxt + char
+        return '<body>{}</body>'.format(spgrtxt)
+
+
 def format_space_group(paragraph: Paragraph, space_group: str, it_number) -> None:
     """
     Sets formating of the space group symbol in row 6.

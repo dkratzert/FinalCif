@@ -44,6 +44,8 @@ from gui.finalcif_gui import Ui_FinalCifWindow
 from gui.loops import Loop
 from gui.vrf_classes import MyVRFContainer, VREF
 from report.archive_report import ArchiveReport
+from report.mtools import spgr_to_html
+from report.spgrps import SpaceGroups
 from report.tables import make_report_from
 from report.templated_report import TemplatedReport
 from template.templates import ReportTemplates
@@ -1061,7 +1063,9 @@ class AppWindow(QMainWindow):
             self.ui.OptionsPushButton.setEnabled(True)
             self.ui.ImportCifPushButton.setEnabled(True)
             self.ui.datnameLineEdit.setText(self.cif.block.name)
-            self.ui.spacegroupLineEdit.setText(self.cif.space_group)
+            #self.ui.Spacegroup_top_LineEdit.setText(self.cif.space_group)
+            #self.ui.Spacegroup_top_LineEdit.setText(spgr_to_html(self.cif.space_group))
+            self.ui.Spacegroup_top_LineEdit.setText(SpaceGroups().iucrNumberToPlainText(self.cif.spgr_number_from_symmops))
             self.ui.SumFormMainLineEdit.setText(self.cif['_chemical_formula_sum'])
             self.ui.CCDCNumLineEdit.setText(self.cif['_database_code_depnum_ccdc_archive'])
             self.ui.CheckcifPlaintextEdit.clear()
