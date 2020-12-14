@@ -590,7 +590,7 @@ cif_to_header_label = {
     # translates CIF keys into regular headers for loops
     '_atom_site_aniso_label'                : 'Displacement Parameters',
     '_atom_site_label'                      : 'Atomic Coordinates',
-    '_atom_type_symbol'                     : 'Sacttering Factors',
+    '_atom_type_symbol'                     : 'Scattering Factors',
     '_audit_author_name'                    : 'CIF Author',
     '_citation_doi'                         : 'Citations',
     '_citation_id'                          : 'Citations',
