@@ -1,7 +1,9 @@
+import xml.etree.ElementTree as ET
 from typing import Union
 
 
 class SpaceGroups():
+
     def __init__(self):
         self.spgrps = {
             #
@@ -1777,3 +1779,31 @@ class SpaceGroups():
     def iucrNumberToPlainText(self, number: Union[int, str]) -> str:
         number = str(number)
         return self.spgrps[number][1]
+
+    def iucr_num_to_html(self, number: Union[int, str]) -> str:
+        """
+        Retrurns the space group als html formated for rich-text Qt text fields. Overlined numbers seem
+        not to be possible...
+
+        >>> SpaceGroups().iucr_num_to_html(14)
+        '<body><i>P</i>2<sub>1</sub>/c</body>'
+        """
+        num = str(number)
+        mxml = self.spgrps.get(num)[0]
+        root = ET.fromstring(mxml)
+        txt = ''
+        for x in root:
+            if x.text:
+                if x.tag.endswith('mi'):
+                    txt = txt + "<i>{}</i>".format(x.text)
+            for i in x:
+                if i.text:
+                    if i.tag.endswith('mo'):
+                        # I do this shift, because the overline shifts from right to left ofer the number:
+                        txt = txt[:-1] + '-' + txt[-1]
+                    elif i.tag.endswith('mn') and i.text == '1' and x.tag.endswith('msub'):
+                        txt = txt + "<sub>{}</sub>".format(i.text)
+                    else:
+                        txt = txt + i.text
+        return '<body>' + txt + '</body>'
+
