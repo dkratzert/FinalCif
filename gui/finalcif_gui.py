@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/Users/daniel/Documents/GitHub/FinalCif/gui/finalcif_gui.ui'
+# Form implementation generated from reading ui file 'D:\GitHub\FinalCif\gui\finalcif_gui.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.2
 #
@@ -323,6 +323,7 @@ class Ui_FinalCifWindow(object):
         self.CifDataItemsFrame.setBaseSize(QtCore.QSize(0, 0))
         self.CifDataItemsFrame.setObjectName("CifDataItemsFrame")
         self.gridLayout_6 = QtWidgets.QGridLayout(self.CifDataItemsFrame)
+        self.gridLayout_6.setContentsMargins(6, -1, 6, 0)
         self.gridLayout_6.setObjectName("gridLayout_6")
         self.CCDCNumLineEdit = QtWidgets.QLineEdit(self.CifDataItemsFrame)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
@@ -1273,10 +1274,10 @@ class Ui_FinalCifWindow(object):
         self.actionedit_templates.setObjectName("actionedit_templates")
 
         self.retranslateUi(FinalCifWindow)
-        self.TemplatesStackedWidget.setCurrentIndex(1)
+        self.TemplatesStackedWidget.setCurrentIndex(0)
         self.EquipmentTemplatesStackedWidget.setCurrentIndex(1)
         self.PropertiesTemplatesStackedWidget.setCurrentIndex(1)
-        self.MainStackedWidget.setCurrentIndex(5)
+        self.MainStackedWidget.setCurrentIndex(0)
         self.LoopsTabWidget.setCurrentIndex(0)
         self.CheckCIFResultsTabWidget.setCurrentIndex(2)
         self.ResponsesTabWidget.setCurrentIndex(0)
@@ -1435,7 +1436,7 @@ class Ui_FinalCifWindow(object):
         self.ExploreDirButton.setText(_translate("FinalCifWindow", "Explore Directory"))
         self.DetailsPushButton.setText(_translate("FinalCifWindow", "Show Details"))
         self.SourcesPushButton.setText(_translate("FinalCifWindow", "Data Sources"))
-        self.LoopsPushButton.setText(_translate("FinalCifWindow", "Show Loops"))
+        self.LoopsPushButton.setText(_translate("FinalCifWindow", "Edit Loops"))
         self.ReportPicPushButton.setText(_translate("FinalCifWindow", "Picture for Tables"))
         self.SaveFullReportButton.setText(_translate("FinalCifWindow", "Make Tables"))
         self.CheckcifStartButton.setText(_translate("FinalCifWindow", "CheckCIF"))
