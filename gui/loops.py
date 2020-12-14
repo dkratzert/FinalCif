@@ -18,7 +18,7 @@ from cif.text import retranslate_delimiter, utf8_to_str
 
 class MyQTableView(QTableView):
     def __init__(self):
-        super(MyQTableView, self).__init__()
+        super().__init__()
 
     def contextMenuEvent(self, event):
         self.menu = QMenu(self)
