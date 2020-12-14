@@ -19,3 +19,5 @@ FinalCif helps you to get a complete cif file from a single-xrystal X-ray diffra
 ![FinalCif CheckCIF](https://github.com/dkratzert/FinalCif/raw/master/screenshots/finalcif_checkcif.png)
 
 ![FinalCif responses](https://github.com/dkratzert/FinalCif/raw/master/screenshots/finalcif_responses.png)
+
+![FinalCif responses](https://github.com/dkratzert/FinalCif/raw/master/screenshots/finalcif_loops.png)
