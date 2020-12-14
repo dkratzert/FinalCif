@@ -198,6 +198,10 @@ class AppWindow(QMainWindow):
         self.ui.BackFromOptionspPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
         self.ui.BackFromLoopsPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
         self.ui.BackFromPlatonPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
+        #
+        self.ui.SaveAuthorLoopToTemplateButton.setIcon(qta.icon('mdi.badge-account-outline'))
+        self.ui.AddThisAuthorToLoopPushButton.setIcon(qta.icon('mdi.folder-table-outline'))
+        self.ui.DeleteLoopAuthorTemplateButton.setIcon(qta.icon('mdi.delete-forever-outline'))
 
     def connect_signals_and_slots(self):
         """
