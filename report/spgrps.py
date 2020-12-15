@@ -1,14 +1,14 @@
 import xml.etree.ElementTree as ET
+from pathlib import Path
 from typing import Union
+
+from tools.misc import isnumeric
 
 
 class SpaceGroups():
 
     def __init__(self):
         self.spgrps = {
-            #
-            # triclinic
-            #
             '1'  : ('<math xmlns="http://www.w3.org/1998/Math/MathML">'
                     '<mi>P</mi>'
                     '<mn>1</mn>'
@@ -20,9 +20,6 @@ class SpaceGroups():
                     '<mo stretchy="false">&#x0305;</mo>'
                     '</mover>'
                     '</math>', 'P-1'),
-            #
-            # monoclinic
-            #
             '3'  : ('<math xmlns="http://www.w3.org/1998/Math/MathML">'
                     '<mi>P</mi>'
                     '<mn>2</mn>'
@@ -96,9 +93,6 @@ class SpaceGroups():
                     '<mn>/</mn>'
                     '<mn>c</mn>'
                     '</math>', 'C2/c'),
-            #
-            # orthorombic
-            #
             '16' : ('<math xmlns="http://www.w3.org/1998/Math/MathML">'
                     '<mi>P</mi>'
                     '<mn>2</mn>'
@@ -498,9 +492,6 @@ class SpaceGroups():
                     '<mn>m</mn>'
                     '<mn>a</mn>'
                     '</math>', 'Imma'),
-            #
-            # tetragonal
-            #
             '75' : ('<math xmlns="http://www.w3.org/1998/Math/MathML">'
                     '<mi>P</mi>'
                     '<mn>4</mn>'
@@ -529,7 +520,7 @@ class SpaceGroups():
             '79' : ('<math xmlns="http://www.w3.org/1998/Math/MathML">'
                     '<mi>I</mi>'
                     '<mn>4</mn>'
-                    '</math>'),
+                    '</math>', 'I4'),
             '80' : ('<math xmlns="http://www.w3.org/1998/Math/MathML">'
                     '<mi>I</mi>'
                     '<msub>'
@@ -723,7 +714,8 @@ class SpaceGroups():
                     '<mi>P</mi>'
                     '<mn>4</mn>'
                     '<mn>c</mn>'
-                    '<mn>c</mn>', 'P4cc'),
+                    '<mn>c</mn>'
+                    '</math>', 'P4cc'),
             '104': ('<math xmlns="http://www.w3.org/1998/Math/MathML">'
                     '<mi>P</mi>'
                     '<mn>4</mn>'
@@ -1144,7 +1136,7 @@ class SpaceGroups():
                     '</math>', 'P3112'),
             '152': ('<math xmlns="http://www.w3.org/1998/Math/MathML">'
                     '<mi>P</mi>'
-                    '<msub'
+                    '<msub>'
                     '<mn>3</mn>'
                     '<mn>1</mn>'
                     '</msub>'
@@ -1260,9 +1252,6 @@ class SpaceGroups():
                     '</mover>'
                     '<mn>c</mn>'
                     '</math>', 'R-3c'),
-            #
-            # hexagonal
-            #
             '168': ('<math xmlns="http://www.w3.org/1998/Math/MathML">'
                     '<mi>P</mi>'
                     '<mn>6</mn>'
@@ -1473,9 +1462,6 @@ class SpaceGroups():
                     '<mn>m</mn>'
                     '<mn>c</mn>'
                     '</math>', 'P6/mmc'),
-            #
-            # cubic
-            #
             '195': ('<math xmlns="http://www.w3.org/1998/Math/MathML">'
                     '<mi>P</mi>'
                     '<mn>2</mn>'
@@ -1780,7 +1766,7 @@ class SpaceGroups():
         number = str(number)
         return self.spgrps[number][1]
 
-    def iucr_num_to_html(self, number: Union[int, str]) -> str:
+    def _to_html_without_body(self, number: Union[int, str]) -> str:
         """
         Retrurns the space group als html formated for rich-text Qt text fields. Overlined numbers seem
         not to be possible...
@@ -1792,18 +1778,38 @@ class SpaceGroups():
         mxml = self.spgrps.get(num)[0]
         root = ET.fromstring(mxml)
         txt = ''
-        for x in root:
-            if x.text:
-                if x.tag.endswith('mi'):
-                    txt = txt + "<i>{}</i>".format(x.text)
-            for i in x:
-                if i.text:
-                    if i.tag.endswith('mo'):
-                        # I do this shift, because the overline shifts from right to left ofer the number:
-                        txt = txt[:-1] + '-' + txt[-1]
-                    elif i.tag.endswith('mn') and i.text == '1' and x.tag.endswith('msub'):
-                        txt = txt + "<sub>{}</sub>".format(i.text)
+        for root_element in root:
+            substart = False
+            if root_element.text:
+                if root_element.tag.endswith('mi'):
+                    txt = txt + "<i>{}</i>".format(root_element.text)
+                elif root_element.tag.endswith('mn'):
+                    if isnumeric(root_element.text) or root_element.text == '/':
+                        txt = txt + root_element.text
                     else:
-                        txt = txt + i.text
-        return '<body>' + txt + '</body>'
+                        txt = txt + "<i>{}</i>".format(root_element.text)
+            for sub_element in root_element:
+                if sub_element.text:
+                    if sub_element.tag.endswith('mo'):
+                        # I do this shift, because the overline shifts from right to left ofer the number:
+                        txt = '{}<span style=" text-decoration: overline;">{}</span>'.format(txt[:-1], txt[-1])
+                    elif sub_element.tag.endswith('mn') and sub_element.text in ['1', '2', '3'] \
+                        and root_element.tag.endswith('msub') and substart:
+                        txt = txt + "<sub>{}</sub>".format(sub_element.text)
+                    else:
+                        txt = txt + sub_element.text
+                        if root_element.tag.endswith('msub') and not substart:
+                            substart = True
+        return txt
 
+    def iucr_num_to_html(self, number: Union[int, str]) -> str:
+        return '<body>{} ({})</body>'.format(self._to_html_without_body(number), number)
+
+
+if __name__ == '__main__':
+    s = SpaceGroups()
+    txt = ''
+    for n in range(1, 231):
+        txt = txt + s.iucr_num_to_html(n) + '<br>\n'
+
+    Path('testing.html').write_text(txt)
