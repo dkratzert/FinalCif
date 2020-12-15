@@ -1132,14 +1132,6 @@ class AppWindow(QMainWindow):
             return
         self.ui.MainStackedWidget.go_to_info_page()
         self.ui.cellField.setText(celltxt.format(*self.cif.cell, self.cif['_space_group_centring_type']))
-        try:
-            spgr = self.cif.space_group
-        except RuntimeError:
-            spgr = ''
-        intnum = self.cif['_space_group_IT_number'] if self.cif['_space_group_IT_number'] \
-            else self.cif['_symmetry_Int_Tables_number']
-        if intnum:
-            intnum = '({})'.format(intnum)
         self.ui.SumformLabel.setText(self.cif['_chemical_formula_sum'].strip(" '"))
         self.ui.SumformLabel.setMinimumWidth(self.ui.Spacegroup_top_LineEdit.width())
         self.ui.zLineEdit.setText(self.cif['_cell_formula_units_Z'])
