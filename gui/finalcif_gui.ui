@@ -775,6 +775,7 @@
           </property>
           <property name="font">
            <font>
+            <family>Arial</family>
             <pointsize>11</pointsize>
            </font>
           </property>
@@ -838,8 +839,12 @@
           </property>
           <property name="font">
            <font>
+            <family>Arial</family>
             <pointsize>11</pointsize>
            </font>
+          </property>
+          <property name="cursor" stdset="0">
+           <cursorShape>IBeamCursor</cursorShape>
           </property>
           <property name="inputMethodHints">
            <set>Qt::ImhNone</set>
@@ -893,6 +898,7 @@
           </property>
           <property name="font">
            <font>
+            <family>Arial</family>
             <pointsize>11</pointsize>
            </font>
           </property>
@@ -912,42 +918,6 @@
          <widget class="QLabel" name="CCDCNumLabel">
           <property name="text">
            <string>CCDC Number</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="4">
-         <widget class="QTextEdit" name="Spacegroup_top_LineEdit">
-          <property name="minimumSize">
-           <size>
-            <width>100</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>120</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>11</pointsize>
-           </font>
-          </property>
-          <property name="verticalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="horizontalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="lineWrapMode">
-           <enum>QTextEdit::NoWrap</enum>
-          </property>
-          <property name="readOnly">
-           <bool>true</bool>
-          </property>
-          <property name="textInteractionFlags">
-           <set>Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
           </property>
          </widget>
         </item>
@@ -2953,6 +2923,47 @@ The data source will be ignored until next program restart.</string>
          <widget class="QLabel" name="spacegroupLabel">
           <property name="text">
            <string>Space-Group Type</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="4">
+         <widget class="QTextEdit" name="Spacegroup_top_LineEdit">
+          <property name="minimumSize">
+           <size>
+            <width>100</width>
+            <height>24</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>120</width>
+            <height>24</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <family>Arial</family>
+            <pointsize>11</pointsize>
+            <stylestrategy>PreferDefault</stylestrategy>
+           </font>
+          </property>
+          <property name="cursor" stdset="0">
+           <cursorShape>IBeamCursor</cursorShape>
+          </property>
+          <property name="verticalScrollBarPolicy">
+           <enum>Qt::ScrollBarAlwaysOff</enum>
+          </property>
+          <property name="horizontalScrollBarPolicy">
+           <enum>Qt::ScrollBarAlwaysOff</enum>
+          </property>
+          <property name="lineWrapMode">
+           <enum>QTextEdit::NoWrap</enum>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+          <property name="textInteractionFlags">
+           <set>Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
           </property>
          </widget>
         </item>
