@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/Users/daniel/Documents/GitHub/FinalCif/gui/finalcif_gui.ui'
+# Form implementation generated from reading ui file 'D:\GitHub\FinalCif\gui\finalcif_gui.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.2
 #
@@ -340,6 +340,10 @@ class Ui_FinalCifWindow(object):
         sizePolicy.setHeightForWidth(self.datnameLineEdit.sizePolicy().hasHeightForWidth())
         self.datnameLineEdit.setSizePolicy(sizePolicy)
         self.datnameLineEdit.setMinimumSize(QtCore.QSize(100, 0))
+        self.datnameLineEdit.setMaximumSize(QtCore.QSize(16777215, 24))
+        font = QtGui.QFont()
+        font.setPointSize(11)
+        self.datnameLineEdit.setFont(font)
         self.datnameLineEdit.setObjectName("datnameLineEdit")
         self.gridLayout_6.addWidget(self.datnameLineEdit, 0, 1, 1, 1)
         spacerItem1 = QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Minimum)
@@ -349,7 +353,10 @@ class Ui_FinalCifWindow(object):
         spacerItem3 = QtWidgets.QSpacerItem(19, 20, QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Minimum)
         self.gridLayout_6.addItem(spacerItem3, 0, 8, 1, 1)
         self.SumFormMainLineEdit = QtWidgets.QTextEdit(self.CifDataItemsFrame)
-        self.SumFormMainLineEdit.setMaximumSize(QtCore.QSize(200, 21))
+        self.SumFormMainLineEdit.setMaximumSize(QtCore.QSize(200, 24))
+        font = QtGui.QFont()
+        font.setPointSize(11)
+        self.SumFormMainLineEdit.setFont(font)
         self.SumFormMainLineEdit.setInputMethodHints(QtCore.Qt.ImhNone)
         self.SumFormMainLineEdit.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.SumFormMainLineEdit.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
@@ -368,8 +375,11 @@ class Ui_FinalCifWindow(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.CCDCNumLineEdit.sizePolicy().hasHeightForWidth())
         self.CCDCNumLineEdit.setSizePolicy(sizePolicy)
-        self.CCDCNumLineEdit.setMinimumSize(QtCore.QSize(100, 0))
-        self.CCDCNumLineEdit.setMaximumSize(QtCore.QSize(120, 16777215))
+        self.CCDCNumLineEdit.setMinimumSize(QtCore.QSize(100, 24))
+        self.CCDCNumLineEdit.setMaximumSize(QtCore.QSize(120, 24))
+        font = QtGui.QFont()
+        font.setPointSize(11)
+        self.CCDCNumLineEdit.setFont(font)
         self.CCDCNumLineEdit.setReadOnly(True)
         self.CCDCNumLineEdit.setObjectName("CCDCNumLineEdit")
         self.gridLayout_6.addWidget(self.CCDCNumLineEdit, 0, 7, 1, 1)
@@ -380,8 +390,11 @@ class Ui_FinalCifWindow(object):
         self.CCDCNumLabel.setObjectName("CCDCNumLabel")
         self.gridLayout_6.addWidget(self.CCDCNumLabel, 0, 6, 1, 1)
         self.Spacegroup_top_LineEdit = QtWidgets.QTextEdit(self.CifDataItemsFrame)
-        self.Spacegroup_top_LineEdit.setMinimumSize(QtCore.QSize(100, 0))
-        self.Spacegroup_top_LineEdit.setMaximumSize(QtCore.QSize(120, 21))
+        self.Spacegroup_top_LineEdit.setMinimumSize(QtCore.QSize(100, 24))
+        self.Spacegroup_top_LineEdit.setMaximumSize(QtCore.QSize(120, 24))
+        font = QtGui.QFont()
+        font.setPointSize(11)
+        self.Spacegroup_top_LineEdit.setFont(font)
         self.Spacegroup_top_LineEdit.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.Spacegroup_top_LineEdit.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.Spacegroup_top_LineEdit.setLineWrapMode(QtWidgets.QTextEdit.NoWrap)
