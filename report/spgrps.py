@@ -1782,7 +1782,7 @@ class SpaceGroups():
             substart = False
             if root_element.text:
                 if root_element.tag.endswith('mi'):
-                    txt = txt + "<i>{}&thinsp;</i>".format(root_element.text)
+                    txt = txt + "<i>{}</i>".format(root_element.text)
                 elif root_element.tag.endswith('mn'):
                     if isnumeric(root_element.text) or root_element.text == '/':
                         txt = txt + root_element.text
