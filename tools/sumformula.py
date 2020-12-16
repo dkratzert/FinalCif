@@ -43,7 +43,7 @@ def formula_str_to_dict(sumform: Union[str, bytes]) -> Dict[str, str]:
     return atlist
 
 
-def sum_formula_to_html(sumform: Dict[str, Union[int, float]], break_after: int = 99) -> str:
+def sum_formula_to_html(sumform: Dict[str, str], break_after: int = 99) -> str:
     """
     Makes html formatted sum formula from dictionary.
     """
@@ -55,13 +55,16 @@ def sum_formula_to_html(sumform: Dict[str, Union[int, float]], break_after: int 
         if sumform[el] == 0 or sumform[el] == None:
             continue
         try:
-            times = round(sumform[el], 1)
-        except TypeError:
+            times = round(float(sumform[el]), 1)
+        except (TypeError, ValueError):
             times = 1
         if num > 3 and num % break_after == 0:
             l.append("<br>")
-        l.append("{}<sub>{:g} </sub>".format(el, times))
+        if times == 1:
+            l.append('{}'.format(el))
+        else:
+            l.append("{}<sub>{:g}</sub>".format(el, times))
         num += 1
-    l.append('</body></html>')
+    l.append('</p></body></html>')
     formula = "".join(l)
     return formula

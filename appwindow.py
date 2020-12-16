@@ -58,6 +58,7 @@ from tools.platon import Platon
 from tools.settings import FinalCifSettings
 from tools.shred import ShredCIF
 from tools.statusbar import StatusBar
+from tools.sumformula import formula_str_to_dict, sum_formula_to_html
 from tools.version import VERSION
 
 DEBUG = False
@@ -1063,9 +1064,12 @@ class AppWindow(QMainWindow):
             self.ui.OptionsPushButton.setEnabled(True)
             self.ui.ImportCifPushButton.setEnabled(True)
             self.ui.datnameLineEdit.setText(self.cif.block.name)
-            #self.ui.Spacegroup_top_LineEdit.setText(self.cif.space_group)
             self.ui.Spacegroup_top_LineEdit.setText(SpaceGroups().iucr_num_to_html(self.cif.spgr_number))
-            self.ui.SumFormMainLineEdit.setText(self.cif['_chemical_formula_sum'])
+            try:
+                self.ui.SumFormMainLineEdit.setText(sum_formula_to_html(formula_str_to_dict(
+                    self.cif['_chemical_formula_sum'].strip(" '"))))
+            except Exception:
+                self.ui.SumFormMainLineEdit.setText(self.cif['_chemical_formula_sum'].strip(" '"))
             self.ui.CCDCNumLineEdit.setText(self.cif['_database_code_depnum_ccdc_archive'])
             self.ui.CheckcifPlaintextEdit.clear()
             self.ui.TemplatesStackedWidget.setCurrentIndex(0)
@@ -1132,8 +1136,6 @@ class AppWindow(QMainWindow):
             return
         self.ui.MainStackedWidget.go_to_info_page()
         self.ui.cellField.setText(celltxt.format(*self.cif.cell, self.cif['_space_group_centring_type']))
-        self.ui.SumformLabel.setText(self.cif['_chemical_formula_sum'].strip(" '"))
-        self.ui.SumformLabel.setMinimumWidth(self.ui.Spacegroup_top_LineEdit.width())
         self.ui.zLineEdit.setText(self.cif['_cell_formula_units_Z'])
         self.ui.temperatureLineEdit.setText(self.cif['_diffrn_ambient_temperature'])
         self.ui.wR2LineEdit.setText(self.cif['_refine_ls_wR_factor_ref'])
