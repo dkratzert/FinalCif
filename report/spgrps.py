@@ -1782,7 +1782,7 @@ class SpaceGroups():
             substart = False
             if root_element.text:
                 if root_element.tag.endswith('mi'):
-                    txt = txt + "<i>{}</i>".format(root_element.text)
+                    txt = txt + "<i>{}&thinsp;</i>".format(root_element.text)
                 elif root_element.tag.endswith('mn'):
                     if isnumeric(root_element.text) or root_element.text == '/':
                         txt = txt + root_element.text
@@ -1803,7 +1803,8 @@ class SpaceGroups():
         return txt
 
     def iucr_num_to_html(self, number: Union[int, str]) -> str:
-        return '<body>{} ({})</body>'.format(self._to_html_without_body(number), number)
+        txt = self._to_html_without_body(number)
+        return '<body style="">{} &thinsp;({})</body>'.format(txt, number)
 
 
 if __name__ == '__main__':
