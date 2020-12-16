@@ -65,6 +65,6 @@ def sum_formula_to_html(sumform: Dict[str, str], break_after: int = 99) -> str:
         else:
             l.append("{}<sub>{:g}</sub>".format(el, times))
         num += 1
-    l.append('</p></body></html>')
+    l.append('</body></html>')
     formula = "".join(l)
     return formula

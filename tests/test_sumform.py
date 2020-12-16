@@ -47,8 +47,8 @@ class MyTestCase(unittest.TestCase):
 class TestSumformHTLM(unittest.TestCase):
 
     def test_sumform_to_html(self):
-        self.assertEqual('<html><body>C<sub>12 </sub>H<sub>6 </sub>O<sub>3 </sub>Mn<sub>7 </sub></body></html>',
-                         sum_formula_to_html({'C': 12, 'H': 6, 'O': 3, 'Mn': 7}))
+        self.assertEqual('<html><body>C<sub>12</sub>H<sub>6</sub>O<sub>3</sub>Mn<sub>7</sub></body></html>',
+                         sum_formula_to_html({'C': '12', 'H': '6', 'O': '3', 'Mn': '7'}))
 
 
 if __name__ == '__main__':
