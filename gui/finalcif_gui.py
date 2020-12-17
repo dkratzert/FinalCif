@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'D:\GitHub\FinalCif\gui\finalcif_gui.ui'
+# Form implementation generated from reading ui file '/Users/daniel/Documents/GitHub/FinalCif/gui/finalcif_gui.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.2
 #
@@ -359,6 +359,7 @@ class Ui_FinalCifWindow(object):
         font.setFamily("Arial")
         font.setPointSize(11)
         self.SumFormMainLineEdit.setFont(font)
+        self.SumFormMainLineEdit.viewport().setProperty("cursor", QtGui.QCursor(QtCore.Qt.IBeamCursor))
         self.SumFormMainLineEdit.setInputMethodHints(QtCore.Qt.ImhNone)
         self.SumFormMainLineEdit.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.SumFormMainLineEdit.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
@@ -1227,9 +1228,9 @@ class Ui_FinalCifWindow(object):
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setPointSize(11)
-        font.setKerning(True)
-        font.setStyleStrategy(QtGui.QFont.NoAntialias)
+        font.setStyleStrategy(QtGui.QFont.PreferDefault)
         self.Spacegroup_top_LineEdit.setFont(font)
+        self.Spacegroup_top_LineEdit.viewport().setProperty("cursor", QtGui.QCursor(QtCore.Qt.IBeamCursor))
         self.Spacegroup_top_LineEdit.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.Spacegroup_top_LineEdit.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.Spacegroup_top_LineEdit.setLineWrapMode(QtWidgets.QTextEdit.NoWrap)

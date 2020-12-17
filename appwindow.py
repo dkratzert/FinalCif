@@ -112,8 +112,6 @@ class AppWindow(QMainWindow):
         self.load_recent_cifs_list()
         self.initialize_network_manager()
         self.check_for_update_version()
-        if not self.running_inside_unit_test:
-            self.get_checkdef_for_response_forms()
         self.set_checkcif_output_font(self.ui.CheckcifPlaintextEdit)
         # To make file drag&drop working:
         self.setAcceptDrops(True)
@@ -492,6 +490,8 @@ class AppWindow(QMainWindow):
         """
         Loads the html checkcif results and displays them in a checkcif_browser window.
         """
+        if not self.running_inside_unit_test:
+            self.get_checkdef_for_response_forms()
         self.ui.CheckcifHTMLOnlineButton.setEnabled(True)
         self.ui.CheckcifPDFOnlineButton.setEnabled(True)
         try:
