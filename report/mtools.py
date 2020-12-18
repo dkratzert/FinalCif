@@ -4,7 +4,7 @@ from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 from docx.text.paragraph import Paragraph
 
 from report.report_text import math_to_word
-from report.spgrps import SpaceGroups
+from tools.space_groups import SpaceGroups
 
 cif_keywords_list = (
     ['_chemical_formula_weight', 1],

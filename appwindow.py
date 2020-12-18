@@ -44,8 +44,6 @@ from gui.finalcif_gui import Ui_FinalCifWindow
 from gui.loops import Loop
 from gui.vrf_classes import MyVRFContainer, VREF
 from report.archive_report import ArchiveReport
-from report.mtools import spgr_to_html
-from report.spgrps import SpaceGroups
 from report.tables import make_report_from
 from report.templated_report import TemplatedReport
 from template.templates import ReportTemplates
@@ -1064,7 +1062,9 @@ class AppWindow(QMainWindow):
             self.ui.OptionsPushButton.setEnabled(True)
             self.ui.ImportCifPushButton.setEnabled(True)
             self.ui.datnameLineEdit.setText(self.cif.block.name)
-            self.ui.Spacegroup_top_LineEdit.setText(SpaceGroups().iucr_num_to_html(self.cif.spgr_number))
+            # self.ui.Spacegroup_top_LineEdit.setText(SpaceGroups().iucr_num_to_html(self.cif.spgr_number))
+            self.ui.Spacegroup_top_LineEdit.setText(
+                '{} ({})'.format(self.cif._spgr().short_name(), self.cif.spgr_number))
             try:
                 self.ui.SumFormMainLineEdit.setText(sum_formula_to_html(formula_str_to_dict(
                     self.cif['_chemical_formula_sum'].strip(" '"))))
