@@ -1794,7 +1794,7 @@ class SpaceGroups():
                         # I do this shift, because the overline shifts from right to left ofer the number:
                         txt = '{}<span style=" text-decoration: overline;">{}</span>'.format(txt[:-1], txt[-1])
                     elif sub_element.tag.endswith('mn') and sub_element.text in ['1', '2', '3'] \
-                        and root_element.tag.endswith('msub') and substart:
+                            and root_element.tag.endswith('msub') and substart:
                         txt = txt + "<sub>{}</sub>".format(sub_element.text)
                     else:
                         txt = txt + sub_element.text
