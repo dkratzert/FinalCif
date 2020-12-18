@@ -1146,7 +1146,6 @@ class AppWindow(QMainWindow):
         self.ui.rsigmaLineEdit.setText(
             self.cif['_diffrn_reflns_av_unetI/netI'] if self.cif['_diffrn_reflns_av_unetI/netI']
             else self.cif['_diffrn_reflns_av_sigmaI/netI'])
-        self.ui.cCDCNumberLineEdit.setText(self.cif['_database_code_depnum_ccdc_archive'])
         self.ui.flackXLineEdit.setText(self.cif['_refine_ls_abs_structure_Flack'])
         try:
             dat_param = float(self.cif['_refine_ls_number_reflns']) / float(self.cif['_refine_ls_number_parameters'])

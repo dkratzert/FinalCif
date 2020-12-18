@@ -19,7 +19,7 @@ python-docx==0.8.10
 pywin32-ctypes==0.2.0
 QtAwesome==1.0.2
 QtPy==1.9.0
-requests==2.25.0
+requests==2.25.1
 urllib3==1.26.2
 docxtpl==0.11.2
 

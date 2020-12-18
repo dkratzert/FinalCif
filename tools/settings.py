@@ -5,7 +5,7 @@
 #  and you think this stuff is worth it, you can buy me a beer in return.
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
-from typing import List, Dict
+from typing import List, Dict, Union
 
 from PyQt5.QtCore import QPoint, QSettings, QSize
 
@@ -95,7 +95,7 @@ class FinalCifSettings():
         """
         self.settings.setValue(name, items)
 
-    def load_template(self, name: str) -> List[List]:
+    def load_template(self, name: str) -> Union[List[str], List[List]]:
         """
         Load templates and return them as list of lists.
         """
