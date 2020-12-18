@@ -623,8 +623,6 @@ class CifContainer():
         questions = []
         # contains the answered keys:
         with_values = []
-        # holds keys that are not in the cif file but in essential_keys:
-        missing_keys = []
         for item in self.block:
             if item.pair is not None:
                 key, value = item.pair
@@ -641,18 +639,20 @@ class CifContainer():
                 else:
                     with_values.append((key, value))
         all_keys = [x[0] for x in with_values] + [x[0] for x in questions]
-        # check if there are keys not in the cif but in essential_keys:
+        self.check_for_missing_essential_keys(all_keys, questions)
+        return sorted(questions), sorted(with_values)
+
+    def check_for_missing_essential_keys(self, all_keys: List[Tuple[str, str]],
+                                         questions: List[Tuple[str, str]]) -> None:
+        """
+        Check if there are keys not in the cif but in essential_keys and append them if so.
+        """
         for key in essential_keys:
             if key not in all_keys:
                 if self._is_centrokey(key):
                     continue
                 questions.append((key, '?'))
-                missing_keys.append(key)
-        for k in missing_keys:
-            if self._is_centrokey(k):
-                continue
-            self.block.set_pair(k, '?')
-        return sorted(questions), sorted(with_values)
+                self.block.set_pair(key, '?')
 
     def test_res_checksum(self) -> bool:
         """
@@ -688,7 +688,7 @@ class CifContainer():
         else:
             return True
 
-    def init_author_loop(self, contact_author=False):
+    def init_author_loop(self, contact_author: bool = False) -> gemmi.cif.Loop:
         if contact_author:
             author_loop = ['_publ_contact_author_name',
                            '_publ_contact_author_address',
