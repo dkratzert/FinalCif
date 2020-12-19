@@ -266,7 +266,7 @@ class TemplatedReport():
         Generates a Subdoc subdocument with the xml code for a math element in MSWord.
         """
         s = SpaceGroups()
-        spgrxml = s.iucrNumberToMathml(cif['_space_group_IT_number'])
+        spgrxml = s.to_mathml(cif.space_group)
         spgr_word = math_to_word(spgrxml)
         # I have to create a subdocument in order to add the xml:
         sd = tpl_doc.new_subdoc()
