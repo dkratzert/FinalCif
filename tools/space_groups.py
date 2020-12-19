@@ -91,7 +91,7 @@ class SpaceGroups():
                 '61': sub, '62': sub, '63': sub, '64': sub, '65': sub, }.get(symbol)
 
     def get_screw_format(self, symbol: str):
-        sub = '("{}", "regular"), \n("{}", "sub"),\n'.format(symbol[0], symbol[1])
+        sub = "         ('{}', 'regular'), \n         ('{}', 'sub'),\n".format(symbol[0], symbol[1])
         return {'21': sub, '31': sub, '32': sub, '41': sub, '42': sub, '43': sub,
                 '61': sub, '62': sub, '63': sub, '64': sub, '65': sub, }.get(symbol)
 
@@ -100,7 +100,6 @@ class SpaceGroups():
 
     def _general_format_out(self):
         Path('testing2.py').unlink(missing_ok=True)
-        # special: P 21212(a)
         htxt = 'spgrps = {\n'
         for s in gemmi.spacegroup_table():
             s: gemmi.SpaceGroup
@@ -108,36 +107,33 @@ class SpaceGroups():
             splitted_s = s.xhm().split(' ')
             if s.short_name() == self.myshort(s):
                 splitted_s = [x for x in s.xhm().split(':')[0].split(' ') if x != '1']
-                # print('short:', s.short_name(), self.myshort(s))
             else:
                 pass
-            # print('{}:"{}"'.format(s.number, s.ext), s.short_name(), splitted_s, s.xhm(), '#'+s.ext)
-            html.append('"{}": (\n(("{}", "italic"),\n'.format(s.xhm(), splitted_s.pop(0)))
+            html.append("    '{}'         : (\n        (('{}', 'italic'),\n".format(s.xhm(), splitted_s.pop(0)))
             if s.short_name() == 'P21212(a)':
                 # This one is differently formated as the others in gemmi:
-                html.append('("2", "regular"),\n ("1" ,"sub"),\n ("2", "regular"),\n ("1", "sub"),\n ("2", "regular"),'
-                            '\n ("1", "sub"),\n ("2(a)", "regular"),\n')
-                # print('{}:{}'.format(s.number, s.qualifier), s.short_name(), splitted_s)
+                html.append("('2', 'regular'),\n ('1' ,'sub'),\n ('2', 'regular'),\n ('1', 'sub'),\n ('2', 'regular'),"
+                            "\n ('1', 'sub'),\n ('2(a)', 'regular'),\n")
             else:
                 for num, c in enumerate(splitted_s):
                     if ':' in c:
                         c, append = c.split(':')
                         if c.startswith('-'):
-                            html.append('({}, "overline"),\n'.format(c[-1]))
+                            html.append("            ({}, 'overline'),\n".format(c[-1]))
                         else:
                             self.italize_chars_format(c, html)
                         self.italize_chars_format(':' + append, html)
                         continue
                     if len(c) == 1:
                         if isnumeric(c):
-                            html.append("('{}', 'regular'),\n".format(c))
+                            html.append("         ('{}', 'regular'),\n".format(c))
                         else:
-                            html.append('("{}", "italic"),\n'.format(c))
+                            html.append("         ('{}', 'italic'),\n".format(c))
                     if len(c) == 2 and self.get_screw(c):
                         html.append(self.get_screw_format(c))
                     if len(c) == 2 and not self.get_screw(c):
                         if c.startswith('-'):
-                            html.append('("{}", "overline"),\n'.format(c[-1]))
+                            html.append("         ('{}', 'overline'),\n".format(c[-1]))
                         else:
                             self.italize_chars_format(c, html)
                     if len(c) > 2:
@@ -148,15 +144,12 @@ class SpaceGroups():
                         for char in c:
                             self.make_italic_format(char, txt)
                         html.append("{}".format(''.join(txt)))
-                    # html.append(',\n')
-            # print(len(splitted_s) + 1 - len(html))
-            # print(html)
-            htxt = htxt + ''.join(html) + "),\n {{'itnumber': {}, 'crystal_system': '{}', " \
-                                          "'short-hm':'{}', 'is_reference':{}}},\n),\n".format(s.number,
-                                                                                               s.crystal_system_str(),
-                                                                                               s.short_name(),
-                                                                                               s.is_reference_setting(),
-                                                                                               )
+            htxt = htxt + ''.join(html) + "         ), {{'itnumber': {}, 'crystal_system': '{}', " \
+                                          "'short-hm': '{}', 'is_reference': {}}},\n    ),\n".format(s.number,
+                                                                                                     s.crystal_system_str(),
+                                                                                                     s.short_name(),
+                                                                                                     s.is_reference_setting(),
+                                                                                                     )
         Path('testing2.py').write_text(htxt + '\n}')
 
     def italize_chars(self, c, html):
@@ -173,9 +166,9 @@ class SpaceGroups():
 
     def make_italic_format(self, char, txt):
         if char.isalpha():
-            txt.append('("{}", "italic"),\n'.format(char))
+            txt.append("         ('{}', 'italic'),\n".format(char))
         else:
-            txt.append("('{}', 'regular'),\n".format(char))
+            txt.append("         ('{}', 'regular'),\n".format(char))
 
     def make_italic(self, char, txt):
         if char.isalpha():
@@ -206,7 +199,7 @@ def write_html():
 
 if __name__ == '__main__':
     s = SpaceGroups()
-    # s._general_format_out()
+    s._general_format_out()
 
     # write_html()
     # wite_xml()
