@@ -10,8 +10,8 @@ from pathlib import Path
 
 import gemmi
 
-from testing2 import spgrps
 from tools.misc import isnumeric
+from tools.spgr_format import spgrps
 
 
 class SpaceGroups():
@@ -33,16 +33,12 @@ class SpaceGroups():
         """
         if not space_group:
             return ''
-        xml = '<math xmlns="http://www.w3.org/1998/Math/MathML">'
+        xml = '<math xmlns="http://www.w3.org/1998/Math/MathML">\n'
         sp = self.spgrps[space_group][0]
         overline = False
         sub = False
         for n, word in enumerate(sp):
             char, format = word
-            # print(len(sp), sp[n], n+1, word)
-            if n == 0:
-                xml = xml + '\n<mi>{}</mi>\n'.format(char)
-                continue
             if len(sp) >= n + 1:
                 with suppress(Exception):
                     if sp[n][1] == 'overline':
@@ -103,16 +99,16 @@ class SpaceGroups():
         return ''.join([x for x in s.xhm().split(' ') if x != '1']).split(':')[0]
 
     def _general_format_out(self):
+        Path('testing2.py').unlink(missing_ok=True)
         # special: P 21212(a)
         htxt = 'spgrps = {\n'
         for s in gemmi.spacegroup_table():
             s: gemmi.SpaceGroup
             html = []
             splitted_s = s.xhm().split(' ')
-            # html.append(str(s.number)+ s.qualifier + ' ->')
             if s.short_name() == self.myshort(s):
                 splitted_s = [x for x in s.xhm().split(':')[0].split(' ') if x != '1']
-                print('short:', s.short_name(), self.myshort(s))
+                # print('short:', s.short_name(), self.myshort(s))
             else:
                 pass
             # print('{}:"{}"'.format(s.number, s.ext), s.short_name(), splitted_s, s.xhm(), '#'+s.ext)
@@ -156,14 +152,12 @@ class SpaceGroups():
             # print(len(splitted_s) + 1 - len(html))
             # print(html)
             htxt = htxt + ''.join(html) + "),\n {{'itnumber': {}, 'crystal_system': '{}', " \
-                                          "'hm':'{}', 'short-hm':'{}', 'is_reference':{}}},\n),\n".format(s.number,
-                                                                                                          s.crystal_system_str(),
-                                                                                                          s.hm,
-                                                                                                          s.short_name(),
-                                                                                                          s.is_reference_setting(),
-                                                                                                          )
-            Path('testing2.py').write_text(htxt + '\n}')
-            print('---------------')
+                                          "'short-hm':'{}', 'is_reference':{}}},\n),\n".format(s.number,
+                                                                                               s.crystal_system_str(),
+                                                                                               s.short_name(),
+                                                                                               s.is_reference_setting(),
+                                                                                               )
+        Path('testing2.py').write_text(htxt + '\n}')
 
     def italize_chars(self, c, html):
         txt = []
@@ -190,24 +184,29 @@ class SpaceGroups():
             txt.append(char)
 
 
-if __name__ == '__main__':
+def wite_xml():
     sp = SpaceGroups()
-    # s.test_generalout()
-
-    # p = s.to_html(gemmi.find_spacegroup_by_name('P-1').xhm())
-    # print(p)
     txt = ''
-    # for n in range(1, 331):
-    #    txt = txt + s.iucr_num_to_html(n) + '<br>\n'
-
-    # Path('testing.html').write_text(txt)
-
     for s in gemmi.spacegroup_table():
         print(s.number, s.short_name())
         p = sp.to_mathml(s.xhm())
         print(p)
+        txt = txt + '{} {}\n'.format(s.number, s.short_name())
         txt = txt + p + '\n'
-        if '-' in s.xhm() and s.number > 167:
-            break
+    Path('testing_xml.html').write_text(txt)
 
+
+def write_html():
+    s = SpaceGroups()
+    txt = ''
+    for sp in gemmi.spacegroup_table():
+        txt = txt + s.to_html(sp.xhm(), sp.number) + '<br>\n'
     Path('testing.html').write_text(txt)
+
+
+if __name__ == '__main__':
+    s = SpaceGroups()
+    # s._general_format_out()
+
+    # write_html()
+    # wite_xml()
