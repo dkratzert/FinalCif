@@ -14,12 +14,12 @@ from cif.text import retranslate_delimiter
 from report.references import BrukerReference, SHELXLReference, SADABS_TWINABS_Reference, SHELXTReference, \
     SHELXSReference, SHELXDReference, SORTAVReference, SCALE3_ABSPACK_Reference, FinalCifReference, CCDCReference
 from report.report_text import math_to_word, gstr, format_radiation, get_inf_article
-from report.spgrps import SpaceGroups
 from report.symm import SymmetryElement
 from tests.helpers import remove_line_endings
 from tools.misc import isnumeric, this_or_quest, timessym, angstrom, protected_space, less_or_equal, halbgeviert, \
     minus_sign, ellipsis_mid
 from tools.options import Options
+from tools.space_groups import SpaceGroups
 
 
 class BondsAndAngles():
