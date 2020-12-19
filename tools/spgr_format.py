@@ -3,19 +3,19 @@ spgrps = {
         (("P", "italic"),
          ('1', 'regular'),
          ),
-        {'itnumber': 1, 'crystal_system': 'triclinic', 'hm': 'P 1', 'short-hm': 'P1', 'is_reference': True},
+        {'itnumber': 1, 'crystal_system': 'triclinic', 'short-hm': 'P1', 'is_reference': True},
     ),
     "P -1"        : (
         (("P", "italic"),
          ("1", "overline"),
          ),
-        {'itnumber': 2, 'crystal_system': 'triclinic', 'hm': 'P -1', 'short-hm': 'P-1', 'is_reference': True},
+        {'itnumber': 2, 'crystal_system': 'triclinic', 'short-hm': 'P-1', 'is_reference': True},
     ),
     "P 1 2 1"     : (
         (("P", "italic"),
          ('2', 'regular'),
          ),
-        {'itnumber': 3, 'crystal_system': 'monoclinic', 'hm': 'P 1 2 1', 'short-hm': 'P2', 'is_reference': True},
+        {'itnumber': 3, 'crystal_system': 'monoclinic', 'short-hm': 'P2', 'is_reference': True},
     ),
     "P 1 1 2"     : (
         (("P", "italic"),
@@ -23,7 +23,7 @@ spgrps = {
          ('1', 'regular'),
          ('2', 'regular'),
          ),
-        {'itnumber': 3, 'crystal_system': 'monoclinic', 'hm': 'P 1 1 2', 'short-hm': 'P112', 'is_reference': False},
+        {'itnumber': 3, 'crystal_system': 'monoclinic', 'short-hm': 'P112', 'is_reference': False},
     ),
     "P 2 1 1"     : (
         (("P", "italic"),
@@ -31,14 +31,14 @@ spgrps = {
          ('1', 'regular'),
          ('1', 'regular'),
          ),
-        {'itnumber': 3, 'crystal_system': 'monoclinic', 'hm': 'P 2 1 1', 'short-hm': 'P211', 'is_reference': False},
+        {'itnumber': 3, 'crystal_system': 'monoclinic', 'short-hm': 'P211', 'is_reference': False},
     ),
     "P 1 21 1"    : (
         (("P", "italic"),
          ("2", "regular"),
          ("1", "sub"),
          ),
-        {'itnumber': 4, 'crystal_system': 'monoclinic', 'hm': 'P 1 21 1', 'short-hm': 'P21', 'is_reference': True},
+        {'itnumber': 4, 'crystal_system': 'monoclinic', 'short-hm': 'P21', 'is_reference': True},
     ),
     "P 1 1 21"    : (
         (("P", "italic"),
@@ -47,7 +47,7 @@ spgrps = {
          ("2", "regular"),
          ("1", "sub"),
          ),
-        {'itnumber': 4, 'crystal_system': 'monoclinic', 'hm': 'P 1 1 21', 'short-hm': 'P1121', 'is_reference': False},
+        {'itnumber': 4, 'crystal_system': 'monoclinic', 'short-hm': 'P1121', 'is_reference': False},
     ),
     "P 21 1 1"    : (
         (("P", "italic"),
@@ -56,25 +56,25 @@ spgrps = {
          ('1', 'regular'),
          ('1', 'regular'),
          ),
-        {'itnumber': 4, 'crystal_system': 'monoclinic', 'hm': 'P 21 1 1', 'short-hm': 'P2111', 'is_reference': False},
+        {'itnumber': 4, 'crystal_system': 'monoclinic', 'short-hm': 'P2111', 'is_reference': False},
     ),
     "C 1 2 1"     : (
         (("C", "italic"),
          ('2', 'regular'),
          ),
-        {'itnumber': 5, 'crystal_system': 'monoclinic', 'hm': 'C 1 2 1', 'short-hm': 'C2', 'is_reference': True},
+        {'itnumber': 5, 'crystal_system': 'monoclinic', 'short-hm': 'C2', 'is_reference': True},
     ),
     "A 1 2 1"     : (
         (("A", "italic"),
          ('2', 'regular'),
          ),
-        {'itnumber': 5, 'crystal_system': 'monoclinic', 'hm': 'A 1 2 1', 'short-hm': 'A2', 'is_reference': False},
+        {'itnumber': 5, 'crystal_system': 'monoclinic', 'short-hm': 'A2', 'is_reference': False},
     ),
     "I 1 2 1"     : (
         (("I", "italic"),
          ('2', 'regular'),
          ),
-        {'itnumber': 5, 'crystal_system': 'monoclinic', 'hm': 'I 1 2 1', 'short-hm': 'I2', 'is_reference': False},
+        {'itnumber': 5, 'crystal_system': 'monoclinic', 'short-hm': 'I2', 'is_reference': False},
     ),
     "A 1 1 2"     : (
         (("A", "italic"),
@@ -82,7 +82,7 @@ spgrps = {
          ('1', 'regular'),
          ('2', 'regular'),
          ),
-        {'itnumber': 5, 'crystal_system': 'monoclinic', 'hm': 'A 1 1 2', 'short-hm': 'A112', 'is_reference': False},
+        {'itnumber': 5, 'crystal_system': 'monoclinic', 'short-hm': 'A112', 'is_reference': False},
     ),
     "B 1 1 2"     : (
         (("B", "italic"),
@@ -90,7 +90,7 @@ spgrps = {
          ('1', 'regular'),
          ('2', 'regular'),
          ),
-        {'itnumber': 5, 'crystal_system': 'monoclinic', 'hm': 'B 1 1 2', 'short-hm': 'B112', 'is_reference': False},
+        {'itnumber': 5, 'crystal_system': 'monoclinic', 'short-hm': 'B112', 'is_reference': False},
     ),
     "I 1 1 2"     : (
         (("I", "italic"),
@@ -98,7 +98,7 @@ spgrps = {
          ('1', 'regular'),
          ('2', 'regular'),
          ),
-        {'itnumber': 5, 'crystal_system': 'monoclinic', 'hm': 'I 1 1 2', 'short-hm': 'I112', 'is_reference': False},
+        {'itnumber': 5, 'crystal_system': 'monoclinic', 'short-hm': 'I112', 'is_reference': False},
     ),
     "B 2 1 1"     : (
         (("B", "italic"),
@@ -106,7 +106,7 @@ spgrps = {
          ('1', 'regular'),
          ('1', 'regular'),
          ),
-        {'itnumber': 5, 'crystal_system': 'monoclinic', 'hm': 'B 2 1 1', 'short-hm': 'B211', 'is_reference': False},
+        {'itnumber': 5, 'crystal_system': 'monoclinic', 'short-hm': 'B211', 'is_reference': False},
     ),
     "C 2 1 1"     : (
         (("C", "italic"),
@@ -114,7 +114,7 @@ spgrps = {
          ('1', 'regular'),
          ('1', 'regular'),
          ),
-        {'itnumber': 5, 'crystal_system': 'monoclinic', 'hm': 'C 2 1 1', 'short-hm': 'C211', 'is_reference': False},
+        {'itnumber': 5, 'crystal_system': 'monoclinic', 'short-hm': 'C211', 'is_reference': False},
     ),
     "I 2 1 1"     : (
         (("I", "italic"),
@@ -122,13 +122,13 @@ spgrps = {
          ('1', 'regular'),
          ('1', 'regular'),
          ),
-        {'itnumber': 5, 'crystal_system': 'monoclinic', 'hm': 'I 2 1 1', 'short-hm': 'I211', 'is_reference': False},
+        {'itnumber': 5, 'crystal_system': 'monoclinic', 'short-hm': 'I211', 'is_reference': False},
     ),
     "P 1 m 1"     : (
         (("P", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 6, 'crystal_system': 'monoclinic', 'hm': 'P 1 m 1', 'short-hm': 'Pm', 'is_reference': True},
+        {'itnumber': 6, 'crystal_system': 'monoclinic', 'short-hm': 'Pm', 'is_reference': True},
     ),
     "P 1 1 m"     : (
         (("P", "italic"),
@@ -136,7 +136,7 @@ spgrps = {
          ('1', 'regular'),
          ("m", "italic"),
          ),
-        {'itnumber': 6, 'crystal_system': 'monoclinic', 'hm': 'P 1 1 m', 'short-hm': 'P11m', 'is_reference': False},
+        {'itnumber': 6, 'crystal_system': 'monoclinic', 'short-hm': 'P11m', 'is_reference': False},
     ),
     "P m 1 1"     : (
         (("P", "italic"),
@@ -144,25 +144,25 @@ spgrps = {
          ('1', 'regular'),
          ('1', 'regular'),
          ),
-        {'itnumber': 6, 'crystal_system': 'monoclinic', 'hm': 'P m 1 1', 'short-hm': 'Pm11', 'is_reference': False},
+        {'itnumber': 6, 'crystal_system': 'monoclinic', 'short-hm': 'Pm11', 'is_reference': False},
     ),
     "P 1 c 1"     : (
         (("P", "italic"),
          ("c", "italic"),
          ),
-        {'itnumber': 7, 'crystal_system': 'monoclinic', 'hm': 'P 1 c 1', 'short-hm': 'Pc', 'is_reference': True},
+        {'itnumber': 7, 'crystal_system': 'monoclinic', 'short-hm': 'Pc', 'is_reference': True},
     ),
     "P 1 n 1"     : (
         (("P", "italic"),
          ("n", "italic"),
          ),
-        {'itnumber': 7, 'crystal_system': 'monoclinic', 'hm': 'P 1 n 1', 'short-hm': 'Pn', 'is_reference': False},
+        {'itnumber': 7, 'crystal_system': 'monoclinic', 'short-hm': 'Pn', 'is_reference': False},
     ),
     "P 1 a 1"     : (
         (("P", "italic"),
          ("a", "italic"),
          ),
-        {'itnumber': 7, 'crystal_system': 'monoclinic', 'hm': 'P 1 a 1', 'short-hm': 'Pa', 'is_reference': False},
+        {'itnumber': 7, 'crystal_system': 'monoclinic', 'short-hm': 'Pa', 'is_reference': False},
     ),
     "P 1 1 a"     : (
         (("P", "italic"),
@@ -170,7 +170,7 @@ spgrps = {
          ('1', 'regular'),
          ("a", "italic"),
          ),
-        {'itnumber': 7, 'crystal_system': 'monoclinic', 'hm': 'P 1 1 a', 'short-hm': 'P11a', 'is_reference': False},
+        {'itnumber': 7, 'crystal_system': 'monoclinic', 'short-hm': 'P11a', 'is_reference': False},
     ),
     "P 1 1 n"     : (
         (("P", "italic"),
@@ -178,7 +178,7 @@ spgrps = {
          ('1', 'regular'),
          ("n", "italic"),
          ),
-        {'itnumber': 7, 'crystal_system': 'monoclinic', 'hm': 'P 1 1 n', 'short-hm': 'P11n', 'is_reference': False},
+        {'itnumber': 7, 'crystal_system': 'monoclinic', 'short-hm': 'P11n', 'is_reference': False},
     ),
     "P 1 1 b"     : (
         (("P", "italic"),
@@ -186,7 +186,7 @@ spgrps = {
          ('1', 'regular'),
          ("b", "italic"),
          ),
-        {'itnumber': 7, 'crystal_system': 'monoclinic', 'hm': 'P 1 1 b', 'short-hm': 'P11b', 'is_reference': False},
+        {'itnumber': 7, 'crystal_system': 'monoclinic', 'short-hm': 'P11b', 'is_reference': False},
     ),
     "P b 1 1"     : (
         (("P", "italic"),
@@ -194,7 +194,7 @@ spgrps = {
          ('1', 'regular'),
          ('1', 'regular'),
          ),
-        {'itnumber': 7, 'crystal_system': 'monoclinic', 'hm': 'P b 1 1', 'short-hm': 'Pb11', 'is_reference': False},
+        {'itnumber': 7, 'crystal_system': 'monoclinic', 'short-hm': 'Pb11', 'is_reference': False},
     ),
     "P n 1 1"     : (
         (("P", "italic"),
@@ -202,7 +202,7 @@ spgrps = {
          ('1', 'regular'),
          ('1', 'regular'),
          ),
-        {'itnumber': 7, 'crystal_system': 'monoclinic', 'hm': 'P n 1 1', 'short-hm': 'Pn11', 'is_reference': False},
+        {'itnumber': 7, 'crystal_system': 'monoclinic', 'short-hm': 'Pn11', 'is_reference': False},
     ),
     "P c 1 1"     : (
         (("P", "italic"),
@@ -210,25 +210,25 @@ spgrps = {
          ('1', 'regular'),
          ('1', 'regular'),
          ),
-        {'itnumber': 7, 'crystal_system': 'monoclinic', 'hm': 'P c 1 1', 'short-hm': 'Pc11', 'is_reference': False},
+        {'itnumber': 7, 'crystal_system': 'monoclinic', 'short-hm': 'Pc11', 'is_reference': False},
     ),
     "C 1 m 1"     : (
         (("C", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 8, 'crystal_system': 'monoclinic', 'hm': 'C 1 m 1', 'short-hm': 'Cm', 'is_reference': True},
+        {'itnumber': 8, 'crystal_system': 'monoclinic', 'short-hm': 'Cm', 'is_reference': True},
     ),
     "A 1 m 1"     : (
         (("A", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 8, 'crystal_system': 'monoclinic', 'hm': 'A 1 m 1', 'short-hm': 'Am', 'is_reference': False},
+        {'itnumber': 8, 'crystal_system': 'monoclinic', 'short-hm': 'Am', 'is_reference': False},
     ),
     "I 1 m 1"     : (
         (("I", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 8, 'crystal_system': 'monoclinic', 'hm': 'I 1 m 1', 'short-hm': 'Im', 'is_reference': False},
+        {'itnumber': 8, 'crystal_system': 'monoclinic', 'short-hm': 'Im', 'is_reference': False},
     ),
     "A 1 1 m"     : (
         (("A", "italic"),
@@ -236,7 +236,7 @@ spgrps = {
          ('1', 'regular'),
          ("m", "italic"),
          ),
-        {'itnumber': 8, 'crystal_system': 'monoclinic', 'hm': 'A 1 1 m', 'short-hm': 'A11m', 'is_reference': False},
+        {'itnumber': 8, 'crystal_system': 'monoclinic', 'short-hm': 'A11m', 'is_reference': False},
     ),
     "B 1 1 m"     : (
         (("B", "italic"),
@@ -244,7 +244,7 @@ spgrps = {
          ('1', 'regular'),
          ("m", "italic"),
          ),
-        {'itnumber': 8, 'crystal_system': 'monoclinic', 'hm': 'B 1 1 m', 'short-hm': 'B11m', 'is_reference': False},
+        {'itnumber': 8, 'crystal_system': 'monoclinic', 'short-hm': 'B11m', 'is_reference': False},
     ),
     "I 1 1 m"     : (
         (("I", "italic"),
@@ -252,7 +252,7 @@ spgrps = {
          ('1', 'regular'),
          ("m", "italic"),
          ),
-        {'itnumber': 8, 'crystal_system': 'monoclinic', 'hm': 'I 1 1 m', 'short-hm': 'I11m', 'is_reference': False},
+        {'itnumber': 8, 'crystal_system': 'monoclinic', 'short-hm': 'I11m', 'is_reference': False},
     ),
     "B m 1 1"     : (
         (("B", "italic"),
@@ -260,7 +260,7 @@ spgrps = {
          ('1', 'regular'),
          ('1', 'regular'),
          ),
-        {'itnumber': 8, 'crystal_system': 'monoclinic', 'hm': 'B m 1 1', 'short-hm': 'Bm11', 'is_reference': False},
+        {'itnumber': 8, 'crystal_system': 'monoclinic', 'short-hm': 'Bm11', 'is_reference': False},
     ),
     "C m 1 1"     : (
         (("C", "italic"),
@@ -268,7 +268,7 @@ spgrps = {
          ('1', 'regular'),
          ('1', 'regular'),
          ),
-        {'itnumber': 8, 'crystal_system': 'monoclinic', 'hm': 'C m 1 1', 'short-hm': 'Cm11', 'is_reference': False},
+        {'itnumber': 8, 'crystal_system': 'monoclinic', 'short-hm': 'Cm11', 'is_reference': False},
     ),
     "I m 1 1"     : (
         (("I", "italic"),
@@ -276,43 +276,43 @@ spgrps = {
          ('1', 'regular'),
          ('1', 'regular'),
          ),
-        {'itnumber': 8, 'crystal_system': 'monoclinic', 'hm': 'I m 1 1', 'short-hm': 'Im11', 'is_reference': False},
+        {'itnumber': 8, 'crystal_system': 'monoclinic', 'short-hm': 'Im11', 'is_reference': False},
     ),
     "C 1 c 1"     : (
         (("C", "italic"),
          ("c", "italic"),
          ),
-        {'itnumber': 9, 'crystal_system': 'monoclinic', 'hm': 'C 1 c 1', 'short-hm': 'Cc', 'is_reference': True},
+        {'itnumber': 9, 'crystal_system': 'monoclinic', 'short-hm': 'Cc', 'is_reference': True},
     ),
     "A 1 n 1"     : (
         (("A", "italic"),
          ("n", "italic"),
          ),
-        {'itnumber': 9, 'crystal_system': 'monoclinic', 'hm': 'A 1 n 1', 'short-hm': 'An', 'is_reference': False},
+        {'itnumber': 9, 'crystal_system': 'monoclinic', 'short-hm': 'An', 'is_reference': False},
     ),
     "I 1 a 1"     : (
         (("I", "italic"),
          ("a", "italic"),
          ),
-        {'itnumber': 9, 'crystal_system': 'monoclinic', 'hm': 'I 1 a 1', 'short-hm': 'Ia', 'is_reference': False},
+        {'itnumber': 9, 'crystal_system': 'monoclinic', 'short-hm': 'Ia', 'is_reference': False},
     ),
     "A 1 a 1"     : (
         (("A", "italic"),
          ("a", "italic"),
          ),
-        {'itnumber': 9, 'crystal_system': 'monoclinic', 'hm': 'A 1 a 1', 'short-hm': 'Aa', 'is_reference': False},
+        {'itnumber': 9, 'crystal_system': 'monoclinic', 'short-hm': 'Aa', 'is_reference': False},
     ),
     "C 1 n 1"     : (
         (("C", "italic"),
          ("n", "italic"),
          ),
-        {'itnumber': 9, 'crystal_system': 'monoclinic', 'hm': 'C 1 n 1', 'short-hm': 'Cn', 'is_reference': False},
+        {'itnumber': 9, 'crystal_system': 'monoclinic', 'short-hm': 'Cn', 'is_reference': False},
     ),
     "I 1 c 1"     : (
         (("I", "italic"),
          ("c", "italic"),
          ),
-        {'itnumber': 9, 'crystal_system': 'monoclinic', 'hm': 'I 1 c 1', 'short-hm': 'Ic', 'is_reference': False},
+        {'itnumber': 9, 'crystal_system': 'monoclinic', 'short-hm': 'Ic', 'is_reference': False},
     ),
     "A 1 1 a"     : (
         (("A", "italic"),
@@ -320,7 +320,7 @@ spgrps = {
          ('1', 'regular'),
          ("a", "italic"),
          ),
-        {'itnumber': 9, 'crystal_system': 'monoclinic', 'hm': 'A 1 1 a', 'short-hm': 'A11a', 'is_reference': False},
+        {'itnumber': 9, 'crystal_system': 'monoclinic', 'short-hm': 'A11a', 'is_reference': False},
     ),
     "B 1 1 n"     : (
         (("B", "italic"),
@@ -328,7 +328,7 @@ spgrps = {
          ('1', 'regular'),
          ("n", "italic"),
          ),
-        {'itnumber': 9, 'crystal_system': 'monoclinic', 'hm': 'B 1 1 n', 'short-hm': 'B11n', 'is_reference': False},
+        {'itnumber': 9, 'crystal_system': 'monoclinic', 'short-hm': 'B11n', 'is_reference': False},
     ),
     "I 1 1 b"     : (
         (("I", "italic"),
@@ -336,7 +336,7 @@ spgrps = {
          ('1', 'regular'),
          ("b", "italic"),
          ),
-        {'itnumber': 9, 'crystal_system': 'monoclinic', 'hm': 'I 1 1 b', 'short-hm': 'I11b', 'is_reference': False},
+        {'itnumber': 9, 'crystal_system': 'monoclinic', 'short-hm': 'I11b', 'is_reference': False},
     ),
     "B 1 1 b"     : (
         (("B", "italic"),
@@ -344,7 +344,7 @@ spgrps = {
          ('1', 'regular'),
          ("b", "italic"),
          ),
-        {'itnumber': 9, 'crystal_system': 'monoclinic', 'hm': 'B 1 1 b', 'short-hm': 'B11b', 'is_reference': False},
+        {'itnumber': 9, 'crystal_system': 'monoclinic', 'short-hm': 'B11b', 'is_reference': False},
     ),
     "A 1 1 n"     : (
         (("A", "italic"),
@@ -352,7 +352,7 @@ spgrps = {
          ('1', 'regular'),
          ("n", "italic"),
          ),
-        {'itnumber': 9, 'crystal_system': 'monoclinic', 'hm': 'A 1 1 n', 'short-hm': 'A11n', 'is_reference': False},
+        {'itnumber': 9, 'crystal_system': 'monoclinic', 'short-hm': 'A11n', 'is_reference': False},
     ),
     "I 1 1 a"     : (
         (("I", "italic"),
@@ -360,7 +360,7 @@ spgrps = {
          ('1', 'regular'),
          ("a", "italic"),
          ),
-        {'itnumber': 9, 'crystal_system': 'monoclinic', 'hm': 'I 1 1 a', 'short-hm': 'I11a', 'is_reference': False},
+        {'itnumber': 9, 'crystal_system': 'monoclinic', 'short-hm': 'I11a', 'is_reference': False},
     ),
     "B b 1 1"     : (
         (("B", "italic"),
@@ -368,7 +368,7 @@ spgrps = {
          ('1', 'regular'),
          ('1', 'regular'),
          ),
-        {'itnumber': 9, 'crystal_system': 'monoclinic', 'hm': 'B b 1 1', 'short-hm': 'Bb11', 'is_reference': False},
+        {'itnumber': 9, 'crystal_system': 'monoclinic', 'short-hm': 'Bb11', 'is_reference': False},
     ),
     "C n 1 1"     : (
         (("C", "italic"),
@@ -376,7 +376,7 @@ spgrps = {
          ('1', 'regular'),
          ('1', 'regular'),
          ),
-        {'itnumber': 9, 'crystal_system': 'monoclinic', 'hm': 'C n 1 1', 'short-hm': 'Cn11', 'is_reference': False},
+        {'itnumber': 9, 'crystal_system': 'monoclinic', 'short-hm': 'Cn11', 'is_reference': False},
     ),
     "I c 1 1"     : (
         (("I", "italic"),
@@ -384,7 +384,7 @@ spgrps = {
          ('1', 'regular'),
          ('1', 'regular'),
          ),
-        {'itnumber': 9, 'crystal_system': 'monoclinic', 'hm': 'I c 1 1', 'short-hm': 'Ic11', 'is_reference': False},
+        {'itnumber': 9, 'crystal_system': 'monoclinic', 'short-hm': 'Ic11', 'is_reference': False},
     ),
     "C c 1 1"     : (
         (("C", "italic"),
@@ -392,7 +392,7 @@ spgrps = {
          ('1', 'regular'),
          ('1', 'regular'),
          ),
-        {'itnumber': 9, 'crystal_system': 'monoclinic', 'hm': 'C c 1 1', 'short-hm': 'Cc11', 'is_reference': False},
+        {'itnumber': 9, 'crystal_system': 'monoclinic', 'short-hm': 'Cc11', 'is_reference': False},
     ),
     "B n 1 1"     : (
         (("B", "italic"),
@@ -400,7 +400,7 @@ spgrps = {
          ('1', 'regular'),
          ('1', 'regular'),
          ),
-        {'itnumber': 9, 'crystal_system': 'monoclinic', 'hm': 'B n 1 1', 'short-hm': 'Bn11', 'is_reference': False},
+        {'itnumber': 9, 'crystal_system': 'monoclinic', 'short-hm': 'Bn11', 'is_reference': False},
     ),
     "I b 1 1"     : (
         (("I", "italic"),
@@ -408,7 +408,7 @@ spgrps = {
          ('1', 'regular'),
          ('1', 'regular'),
          ),
-        {'itnumber': 9, 'crystal_system': 'monoclinic', 'hm': 'I b 1 1', 'short-hm': 'Ib11', 'is_reference': False},
+        {'itnumber': 9, 'crystal_system': 'monoclinic', 'short-hm': 'Ib11', 'is_reference': False},
     ),
     "P 1 2/m 1"   : (
         (("P", "italic"),
@@ -416,7 +416,7 @@ spgrps = {
          ('/', 'regular'),
          ("m", "italic"),
          ),
-        {'itnumber': 10, 'crystal_system': 'monoclinic', 'hm': 'P 1 2/m 1', 'short-hm': 'P2/m', 'is_reference': True},
+        {'itnumber': 10, 'crystal_system': 'monoclinic', 'short-hm': 'P2/m', 'is_reference': True},
     ),
     "P 1 1 2/m"   : (
         (("P", "italic"),
@@ -426,8 +426,7 @@ spgrps = {
          ('/', 'regular'),
          ("m", "italic"),
          ),
-        {'itnumber'    : 10, 'crystal_system': 'monoclinic', 'hm': 'P 1 1 2/m', 'short-hm': 'P112/m',
-         'is_reference': False},
+        {'itnumber': 10, 'crystal_system': 'monoclinic', 'short-hm': 'P112/m', 'is_reference': False},
     ),
     "P 2/m 1 1"   : (
         (("P", "italic"),
@@ -437,8 +436,7 @@ spgrps = {
          ('1', 'regular'),
          ('1', 'regular'),
          ),
-        {'itnumber'    : 10, 'crystal_system': 'monoclinic', 'hm': 'P 2/m 1 1', 'short-hm': 'P2/m11',
-         'is_reference': False},
+        {'itnumber': 10, 'crystal_system': 'monoclinic', 'short-hm': 'P2/m11', 'is_reference': False},
     ),
     "P 1 21/m 1"  : (
         (("P", "italic"),
@@ -447,7 +445,7 @@ spgrps = {
          ('/', 'regular'),
          ("m", "italic"),
          ),
-        {'itnumber': 11, 'crystal_system': 'monoclinic', 'hm': 'P 1 21/m 1', 'short-hm': 'P21/m', 'is_reference': True},
+        {'itnumber': 11, 'crystal_system': 'monoclinic', 'short-hm': 'P21/m', 'is_reference': True},
     ),
     "P 1 1 21/m"  : (
         (("P", "italic"),
@@ -458,8 +456,7 @@ spgrps = {
          ('/', 'regular'),
          ("m", "italic"),
          ),
-        {'itnumber'    : 11, 'crystal_system': 'monoclinic', 'hm': 'P 1 1 21/m', 'short-hm': 'P1121/m',
-         'is_reference': False},
+        {'itnumber': 11, 'crystal_system': 'monoclinic', 'short-hm': 'P1121/m', 'is_reference': False},
     ),
     "P 21/m 1 1"  : (
         (("P", "italic"),
@@ -470,8 +467,7 @@ spgrps = {
          ('1', 'regular'),
          ('1', 'regular'),
          ),
-        {'itnumber'    : 11, 'crystal_system': 'monoclinic', 'hm': 'P 21/m 1 1', 'short-hm': 'P21/m11',
-         'is_reference': False},
+        {'itnumber': 11, 'crystal_system': 'monoclinic', 'short-hm': 'P21/m11', 'is_reference': False},
     ),
     "C 1 2/m 1"   : (
         (("C", "italic"),
@@ -479,7 +475,7 @@ spgrps = {
          ('/', 'regular'),
          ("m", "italic"),
          ),
-        {'itnumber': 12, 'crystal_system': 'monoclinic', 'hm': 'C 1 2/m 1', 'short-hm': 'C2/m', 'is_reference': True},
+        {'itnumber': 12, 'crystal_system': 'monoclinic', 'short-hm': 'C2/m', 'is_reference': True},
     ),
     "A 1 2/m 1"   : (
         (("A", "italic"),
@@ -487,7 +483,7 @@ spgrps = {
          ('/', 'regular'),
          ("m", "italic"),
          ),
-        {'itnumber': 12, 'crystal_system': 'monoclinic', 'hm': 'A 1 2/m 1', 'short-hm': 'A2/m', 'is_reference': False},
+        {'itnumber': 12, 'crystal_system': 'monoclinic', 'short-hm': 'A2/m', 'is_reference': False},
     ),
     "I 1 2/m 1"   : (
         (("I", "italic"),
@@ -495,7 +491,7 @@ spgrps = {
          ('/', 'regular'),
          ("m", "italic"),
          ),
-        {'itnumber': 12, 'crystal_system': 'monoclinic', 'hm': 'I 1 2/m 1', 'short-hm': 'I2/m', 'is_reference': False},
+        {'itnumber': 12, 'crystal_system': 'monoclinic', 'short-hm': 'I2/m', 'is_reference': False},
     ),
     "A 1 1 2/m"   : (
         (("A", "italic"),
@@ -505,8 +501,7 @@ spgrps = {
          ('/', 'regular'),
          ("m", "italic"),
          ),
-        {'itnumber'    : 12, 'crystal_system': 'monoclinic', 'hm': 'A 1 1 2/m', 'short-hm': 'A112/m',
-         'is_reference': False},
+        {'itnumber': 12, 'crystal_system': 'monoclinic', 'short-hm': 'A112/m', 'is_reference': False},
     ),
     "B 1 1 2/m"   : (
         (("B", "italic"),
@@ -516,8 +511,7 @@ spgrps = {
          ('/', 'regular'),
          ("m", "italic"),
          ),
-        {'itnumber'    : 12, 'crystal_system': 'monoclinic', 'hm': 'B 1 1 2/m', 'short-hm': 'B112/m',
-         'is_reference': False},
+        {'itnumber': 12, 'crystal_system': 'monoclinic', 'short-hm': 'B112/m', 'is_reference': False},
     ),
     "I 1 1 2/m"   : (
         (("I", "italic"),
@@ -527,8 +521,7 @@ spgrps = {
          ('/', 'regular'),
          ("m", "italic"),
          ),
-        {'itnumber'    : 12, 'crystal_system': 'monoclinic', 'hm': 'I 1 1 2/m', 'short-hm': 'I112/m',
-         'is_reference': False},
+        {'itnumber': 12, 'crystal_system': 'monoclinic', 'short-hm': 'I112/m', 'is_reference': False},
     ),
     "B 2/m 1 1"   : (
         (("B", "italic"),
@@ -538,8 +531,7 @@ spgrps = {
          ('1', 'regular'),
          ('1', 'regular'),
          ),
-        {'itnumber'    : 12, 'crystal_system': 'monoclinic', 'hm': 'B 2/m 1 1', 'short-hm': 'B2/m11',
-         'is_reference': False},
+        {'itnumber': 12, 'crystal_system': 'monoclinic', 'short-hm': 'B2/m11', 'is_reference': False},
     ),
     "C 2/m 1 1"   : (
         (("C", "italic"),
@@ -549,8 +541,7 @@ spgrps = {
          ('1', 'regular'),
          ('1', 'regular'),
          ),
-        {'itnumber'    : 12, 'crystal_system': 'monoclinic', 'hm': 'C 2/m 1 1', 'short-hm': 'C2/m11',
-         'is_reference': False},
+        {'itnumber': 12, 'crystal_system': 'monoclinic', 'short-hm': 'C2/m11', 'is_reference': False},
     ),
     "I 2/m 1 1"   : (
         (("I", "italic"),
@@ -560,8 +551,7 @@ spgrps = {
          ('1', 'regular'),
          ('1', 'regular'),
          ),
-        {'itnumber'    : 12, 'crystal_system': 'monoclinic', 'hm': 'I 2/m 1 1', 'short-hm': 'I2/m11',
-         'is_reference': False},
+        {'itnumber': 12, 'crystal_system': 'monoclinic', 'short-hm': 'I2/m11', 'is_reference': False},
     ),
     "P 1 2/c 1"   : (
         (("P", "italic"),
@@ -569,7 +559,7 @@ spgrps = {
          ('/', 'regular'),
          ("c", "italic"),
          ),
-        {'itnumber': 13, 'crystal_system': 'monoclinic', 'hm': 'P 1 2/c 1', 'short-hm': 'P2/c', 'is_reference': True},
+        {'itnumber': 13, 'crystal_system': 'monoclinic', 'short-hm': 'P2/c', 'is_reference': True},
     ),
     "P 1 2/n 1"   : (
         (("P", "italic"),
@@ -577,7 +567,7 @@ spgrps = {
          ('/', 'regular'),
          ("n", "italic"),
          ),
-        {'itnumber': 13, 'crystal_system': 'monoclinic', 'hm': 'P 1 2/n 1', 'short-hm': 'P2/n', 'is_reference': False},
+        {'itnumber': 13, 'crystal_system': 'monoclinic', 'short-hm': 'P2/n', 'is_reference': False},
     ),
     "P 1 2/a 1"   : (
         (("P", "italic"),
@@ -585,7 +575,7 @@ spgrps = {
          ('/', 'regular'),
          ("a", "italic"),
          ),
-        {'itnumber': 13, 'crystal_system': 'monoclinic', 'hm': 'P 1 2/a 1', 'short-hm': 'P2/a', 'is_reference': False},
+        {'itnumber': 13, 'crystal_system': 'monoclinic', 'short-hm': 'P2/a', 'is_reference': False},
     ),
     "P 1 1 2/a"   : (
         (("P", "italic"),
@@ -595,8 +585,7 @@ spgrps = {
          ('/', 'regular'),
          ("a", "italic"),
          ),
-        {'itnumber'    : 13, 'crystal_system': 'monoclinic', 'hm': 'P 1 1 2/a', 'short-hm': 'P112/a',
-         'is_reference': False},
+        {'itnumber': 13, 'crystal_system': 'monoclinic', 'short-hm': 'P112/a', 'is_reference': False},
     ),
     "P 1 1 2/n"   : (
         (("P", "italic"),
@@ -606,8 +595,7 @@ spgrps = {
          ('/', 'regular'),
          ("n", "italic"),
          ),
-        {'itnumber'    : 13, 'crystal_system': 'monoclinic', 'hm': 'P 1 1 2/n', 'short-hm': 'P112/n',
-         'is_reference': False},
+        {'itnumber': 13, 'crystal_system': 'monoclinic', 'short-hm': 'P112/n', 'is_reference': False},
     ),
     "P 1 1 2/b"   : (
         (("P", "italic"),
@@ -617,8 +605,7 @@ spgrps = {
          ('/', 'regular'),
          ("b", "italic"),
          ),
-        {'itnumber'    : 13, 'crystal_system': 'monoclinic', 'hm': 'P 1 1 2/b', 'short-hm': 'P112/b',
-         'is_reference': False},
+        {'itnumber': 13, 'crystal_system': 'monoclinic', 'short-hm': 'P112/b', 'is_reference': False},
     ),
     "P 2/b 1 1"   : (
         (("P", "italic"),
@@ -628,8 +615,7 @@ spgrps = {
          ('1', 'regular'),
          ('1', 'regular'),
          ),
-        {'itnumber'    : 13, 'crystal_system': 'monoclinic', 'hm': 'P 2/b 1 1', 'short-hm': 'P2/b11',
-         'is_reference': False},
+        {'itnumber': 13, 'crystal_system': 'monoclinic', 'short-hm': 'P2/b11', 'is_reference': False},
     ),
     "P 2/n 1 1"   : (
         (("P", "italic"),
@@ -639,8 +625,7 @@ spgrps = {
          ('1', 'regular'),
          ('1', 'regular'),
          ),
-        {'itnumber'    : 13, 'crystal_system': 'monoclinic', 'hm': 'P 2/n 1 1', 'short-hm': 'P2/n11',
-         'is_reference': False},
+        {'itnumber': 13, 'crystal_system': 'monoclinic', 'short-hm': 'P2/n11', 'is_reference': False},
     ),
     "P 2/c 1 1"   : (
         (("P", "italic"),
@@ -650,8 +635,7 @@ spgrps = {
          ('1', 'regular'),
          ('1', 'regular'),
          ),
-        {'itnumber'    : 13, 'crystal_system': 'monoclinic', 'hm': 'P 2/c 1 1', 'short-hm': 'P2/c11',
-         'is_reference': False},
+        {'itnumber': 13, 'crystal_system': 'monoclinic', 'short-hm': 'P2/c11', 'is_reference': False},
     ),
     "P 1 21/c 1"  : (
         (("P", "italic"),
@@ -660,7 +644,7 @@ spgrps = {
          ('/', 'regular'),
          ("c", "italic"),
          ),
-        {'itnumber': 14, 'crystal_system': 'monoclinic', 'hm': 'P 1 21/c 1', 'short-hm': 'P21/c', 'is_reference': True},
+        {'itnumber': 14, 'crystal_system': 'monoclinic', 'short-hm': 'P21/c', 'is_reference': True},
     ),
     "P 1 21/n 1"  : (
         (("P", "italic"),
@@ -669,8 +653,7 @@ spgrps = {
          ('/', 'regular'),
          ("n", "italic"),
          ),
-        {'itnumber'    : 14, 'crystal_system': 'monoclinic', 'hm': 'P 1 21/n 1', 'short-hm': 'P21/n',
-         'is_reference': False},
+        {'itnumber': 14, 'crystal_system': 'monoclinic', 'short-hm': 'P21/n', 'is_reference': False},
     ),
     "P 1 21/a 1"  : (
         (("P", "italic"),
@@ -679,8 +662,7 @@ spgrps = {
          ('/', 'regular'),
          ("a", "italic"),
          ),
-        {'itnumber'    : 14, 'crystal_system': 'monoclinic', 'hm': 'P 1 21/a 1', 'short-hm': 'P21/a',
-         'is_reference': False},
+        {'itnumber': 14, 'crystal_system': 'monoclinic', 'short-hm': 'P21/a', 'is_reference': False},
     ),
     "P 1 1 21/a"  : (
         (("P", "italic"),
@@ -691,8 +673,7 @@ spgrps = {
          ('/', 'regular'),
          ("a", "italic"),
          ),
-        {'itnumber'    : 14, 'crystal_system': 'monoclinic', 'hm': 'P 1 1 21/a', 'short-hm': 'P1121/a',
-         'is_reference': False},
+        {'itnumber': 14, 'crystal_system': 'monoclinic', 'short-hm': 'P1121/a', 'is_reference': False},
     ),
     "P 1 1 21/n"  : (
         (("P", "italic"),
@@ -703,8 +684,7 @@ spgrps = {
          ('/', 'regular'),
          ("n", "italic"),
          ),
-        {'itnumber'    : 14, 'crystal_system': 'monoclinic', 'hm': 'P 1 1 21/n', 'short-hm': 'P1121/n',
-         'is_reference': False},
+        {'itnumber': 14, 'crystal_system': 'monoclinic', 'short-hm': 'P1121/n', 'is_reference': False},
     ),
     "P 1 1 21/b"  : (
         (("P", "italic"),
@@ -715,8 +695,7 @@ spgrps = {
          ('/', 'regular'),
          ("b", "italic"),
          ),
-        {'itnumber'    : 14, 'crystal_system': 'monoclinic', 'hm': 'P 1 1 21/b', 'short-hm': 'P1121/b',
-         'is_reference': False},
+        {'itnumber': 14, 'crystal_system': 'monoclinic', 'short-hm': 'P1121/b', 'is_reference': False},
     ),
     "P 21/b 1 1"  : (
         (("P", "italic"),
@@ -727,8 +706,7 @@ spgrps = {
          ('1', 'regular'),
          ('1', 'regular'),
          ),
-        {'itnumber'    : 14, 'crystal_system': 'monoclinic', 'hm': 'P 21/b 1 1', 'short-hm': 'P21/b11',
-         'is_reference': False},
+        {'itnumber': 14, 'crystal_system': 'monoclinic', 'short-hm': 'P21/b11', 'is_reference': False},
     ),
     "P 21/n 1 1"  : (
         (("P", "italic"),
@@ -739,8 +717,7 @@ spgrps = {
          ('1', 'regular'),
          ('1', 'regular'),
          ),
-        {'itnumber'    : 14, 'crystal_system': 'monoclinic', 'hm': 'P 21/n 1 1', 'short-hm': 'P21/n11',
-         'is_reference': False},
+        {'itnumber': 14, 'crystal_system': 'monoclinic', 'short-hm': 'P21/n11', 'is_reference': False},
     ),
     "P 21/c 1 1"  : (
         (("P", "italic"),
@@ -751,8 +728,7 @@ spgrps = {
          ('1', 'regular'),
          ('1', 'regular'),
          ),
-        {'itnumber'    : 14, 'crystal_system': 'monoclinic', 'hm': 'P 21/c 1 1', 'short-hm': 'P21/c11',
-         'is_reference': False},
+        {'itnumber': 14, 'crystal_system': 'monoclinic', 'short-hm': 'P21/c11', 'is_reference': False},
     ),
     "C 1 2/c 1"   : (
         (("C", "italic"),
@@ -760,7 +736,7 @@ spgrps = {
          ('/', 'regular'),
          ("c", "italic"),
          ),
-        {'itnumber': 15, 'crystal_system': 'monoclinic', 'hm': 'C 1 2/c 1', 'short-hm': 'C2/c', 'is_reference': True},
+        {'itnumber': 15, 'crystal_system': 'monoclinic', 'short-hm': 'C2/c', 'is_reference': True},
     ),
     "A 1 2/n 1"   : (
         (("A", "italic"),
@@ -768,7 +744,7 @@ spgrps = {
          ('/', 'regular'),
          ("n", "italic"),
          ),
-        {'itnumber': 15, 'crystal_system': 'monoclinic', 'hm': 'A 1 2/n 1', 'short-hm': 'A2/n', 'is_reference': False},
+        {'itnumber': 15, 'crystal_system': 'monoclinic', 'short-hm': 'A2/n', 'is_reference': False},
     ),
     "I 1 2/a 1"   : (
         (("I", "italic"),
@@ -776,7 +752,7 @@ spgrps = {
          ('/', 'regular'),
          ("a", "italic"),
          ),
-        {'itnumber': 15, 'crystal_system': 'monoclinic', 'hm': 'I 1 2/a 1', 'short-hm': 'I2/a', 'is_reference': False},
+        {'itnumber': 15, 'crystal_system': 'monoclinic', 'short-hm': 'I2/a', 'is_reference': False},
     ),
     "A 1 2/a 1"   : (
         (("A", "italic"),
@@ -784,7 +760,7 @@ spgrps = {
          ('/', 'regular'),
          ("a", "italic"),
          ),
-        {'itnumber': 15, 'crystal_system': 'monoclinic', 'hm': 'A 1 2/a 1', 'short-hm': 'A2/a', 'is_reference': False},
+        {'itnumber': 15, 'crystal_system': 'monoclinic', 'short-hm': 'A2/a', 'is_reference': False},
     ),
     "C 1 2/n 1"   : (
         (("C", "italic"),
@@ -792,7 +768,7 @@ spgrps = {
          ('/', 'regular'),
          ("n", "italic"),
          ),
-        {'itnumber': 15, 'crystal_system': 'monoclinic', 'hm': 'C 1 2/n 1', 'short-hm': 'C2/n', 'is_reference': False},
+        {'itnumber': 15, 'crystal_system': 'monoclinic', 'short-hm': 'C2/n', 'is_reference': False},
     ),
     "I 1 2/c 1"   : (
         (("I", "italic"),
@@ -800,7 +776,7 @@ spgrps = {
          ('/', 'regular'),
          ("c", "italic"),
          ),
-        {'itnumber': 15, 'crystal_system': 'monoclinic', 'hm': 'I 1 2/c 1', 'short-hm': 'I2/c', 'is_reference': False},
+        {'itnumber': 15, 'crystal_system': 'monoclinic', 'short-hm': 'I2/c', 'is_reference': False},
     ),
     "A 1 1 2/a"   : (
         (("A", "italic"),
@@ -810,8 +786,7 @@ spgrps = {
          ('/', 'regular'),
          ("a", "italic"),
          ),
-        {'itnumber'    : 15, 'crystal_system': 'monoclinic', 'hm': 'A 1 1 2/a', 'short-hm': 'A112/a',
-         'is_reference': False},
+        {'itnumber': 15, 'crystal_system': 'monoclinic', 'short-hm': 'A112/a', 'is_reference': False},
     ),
     "B 1 1 2/n"   : (
         (("B", "italic"),
@@ -821,8 +796,7 @@ spgrps = {
          ('/', 'regular'),
          ("n", "italic"),
          ),
-        {'itnumber'    : 15, 'crystal_system': 'monoclinic', 'hm': 'B 1 1 2/n', 'short-hm': 'B112/n',
-         'is_reference': False},
+        {'itnumber': 15, 'crystal_system': 'monoclinic', 'short-hm': 'B112/n', 'is_reference': False},
     ),
     "I 1 1 2/b"   : (
         (("I", "italic"),
@@ -832,8 +806,7 @@ spgrps = {
          ('/', 'regular'),
          ("b", "italic"),
          ),
-        {'itnumber'    : 15, 'crystal_system': 'monoclinic', 'hm': 'I 1 1 2/b', 'short-hm': 'I112/b',
-         'is_reference': False},
+        {'itnumber': 15, 'crystal_system': 'monoclinic', 'short-hm': 'I112/b', 'is_reference': False},
     ),
     "B 1 1 2/b"   : (
         (("B", "italic"),
@@ -843,8 +816,7 @@ spgrps = {
          ('/', 'regular'),
          ("b", "italic"),
          ),
-        {'itnumber'    : 15, 'crystal_system': 'monoclinic', 'hm': 'B 1 1 2/b', 'short-hm': 'B112/b',
-         'is_reference': False},
+        {'itnumber': 15, 'crystal_system': 'monoclinic', 'short-hm': 'B112/b', 'is_reference': False},
     ),
     "A 1 1 2/n"   : (
         (("A", "italic"),
@@ -854,8 +826,7 @@ spgrps = {
          ('/', 'regular'),
          ("n", "italic"),
          ),
-        {'itnumber'    : 15, 'crystal_system': 'monoclinic', 'hm': 'A 1 1 2/n', 'short-hm': 'A112/n',
-         'is_reference': False},
+        {'itnumber': 15, 'crystal_system': 'monoclinic', 'short-hm': 'A112/n', 'is_reference': False},
     ),
     "I 1 1 2/a"   : (
         (("I", "italic"),
@@ -865,8 +836,7 @@ spgrps = {
          ('/', 'regular'),
          ("a", "italic"),
          ),
-        {'itnumber'    : 15, 'crystal_system': 'monoclinic', 'hm': 'I 1 1 2/a', 'short-hm': 'I112/a',
-         'is_reference': False},
+        {'itnumber': 15, 'crystal_system': 'monoclinic', 'short-hm': 'I112/a', 'is_reference': False},
     ),
     "B 2/b 1 1"   : (
         (("B", "italic"),
@@ -876,8 +846,7 @@ spgrps = {
          ('1', 'regular'),
          ('1', 'regular'),
          ),
-        {'itnumber'    : 15, 'crystal_system': 'monoclinic', 'hm': 'B 2/b 1 1', 'short-hm': 'B2/b11',
-         'is_reference': False},
+        {'itnumber': 15, 'crystal_system': 'monoclinic', 'short-hm': 'B2/b11', 'is_reference': False},
     ),
     "C 2/n 1 1"   : (
         (("C", "italic"),
@@ -887,8 +856,7 @@ spgrps = {
          ('1', 'regular'),
          ('1', 'regular'),
          ),
-        {'itnumber'    : 15, 'crystal_system': 'monoclinic', 'hm': 'C 2/n 1 1', 'short-hm': 'C2/n11',
-         'is_reference': False},
+        {'itnumber': 15, 'crystal_system': 'monoclinic', 'short-hm': 'C2/n11', 'is_reference': False},
     ),
     "I 2/c 1 1"   : (
         (("I", "italic"),
@@ -898,8 +866,7 @@ spgrps = {
          ('1', 'regular'),
          ('1', 'regular'),
          ),
-        {'itnumber'    : 15, 'crystal_system': 'monoclinic', 'hm': 'I 2/c 1 1', 'short-hm': 'I2/c11',
-         'is_reference': False},
+        {'itnumber': 15, 'crystal_system': 'monoclinic', 'short-hm': 'I2/c11', 'is_reference': False},
     ),
     "C 2/c 1 1"   : (
         (("C", "italic"),
@@ -909,8 +876,7 @@ spgrps = {
          ('1', 'regular'),
          ('1', 'regular'),
          ),
-        {'itnumber'    : 15, 'crystal_system': 'monoclinic', 'hm': 'C 2/c 1 1', 'short-hm': 'C2/c11',
-         'is_reference': False},
+        {'itnumber': 15, 'crystal_system': 'monoclinic', 'short-hm': 'C2/c11', 'is_reference': False},
     ),
     "B 2/n 1 1"   : (
         (("B", "italic"),
@@ -920,8 +886,7 @@ spgrps = {
          ('1', 'regular'),
          ('1', 'regular'),
          ),
-        {'itnumber'    : 15, 'crystal_system': 'monoclinic', 'hm': 'B 2/n 1 1', 'short-hm': 'B2/n11',
-         'is_reference': False},
+        {'itnumber': 15, 'crystal_system': 'monoclinic', 'short-hm': 'B2/n11', 'is_reference': False},
     ),
     "I 2/b 1 1"   : (
         (("I", "italic"),
@@ -931,8 +896,7 @@ spgrps = {
          ('1', 'regular'),
          ('1', 'regular'),
          ),
-        {'itnumber'    : 15, 'crystal_system': 'monoclinic', 'hm': 'I 2/b 1 1', 'short-hm': 'I2/b11',
-         'is_reference': False},
+        {'itnumber': 15, 'crystal_system': 'monoclinic', 'short-hm': 'I2/b11', 'is_reference': False},
     ),
     "P 2 2 2"     : (
         (("P", "italic"),
@@ -940,7 +904,7 @@ spgrps = {
          ('2', 'regular'),
          ('2', 'regular'),
          ),
-        {'itnumber': 16, 'crystal_system': 'orthorhombic', 'hm': 'P 2 2 2', 'short-hm': 'P222', 'is_reference': True},
+        {'itnumber': 16, 'crystal_system': 'orthorhombic', 'short-hm': 'P222', 'is_reference': True},
     ),
     "P 2 2 21"    : (
         (("P", "italic"),
@@ -949,7 +913,7 @@ spgrps = {
          ("2", "regular"),
          ("1", "sub"),
          ),
-        {'itnumber': 17, 'crystal_system': 'orthorhombic', 'hm': 'P 2 2 21', 'short-hm': 'P2221', 'is_reference': True},
+        {'itnumber': 17, 'crystal_system': 'orthorhombic', 'short-hm': 'P2221', 'is_reference': True},
     ),
     "P 21 2 2"    : (
         (("P", "italic"),
@@ -958,8 +922,7 @@ spgrps = {
          ('2', 'regular'),
          ('2', 'regular'),
          ),
-        {'itnumber'    : 17, 'crystal_system': 'orthorhombic', 'hm': 'P 21 2 2', 'short-hm': 'P2122',
-         'is_reference': False},
+        {'itnumber': 17, 'crystal_system': 'orthorhombic', 'short-hm': 'P2122', 'is_reference': False},
     ),
     "P 2 21 2"    : (
         (("P", "italic"),
@@ -968,8 +931,7 @@ spgrps = {
          ("1", "sub"),
          ('2', 'regular'),
          ),
-        {'itnumber'    : 17, 'crystal_system': 'orthorhombic', 'hm': 'P 2 21 2', 'short-hm': 'P2212',
-         'is_reference': False},
+        {'itnumber': 17, 'crystal_system': 'orthorhombic', 'short-hm': 'P2212', 'is_reference': False},
     ),
     "P 21 21 2"   : (
         (("P", "italic"),
@@ -979,8 +941,7 @@ spgrps = {
          ("1", "sub"),
          ('2', 'regular'),
          ),
-        {'itnumber'    : 18, 'crystal_system': 'orthorhombic', 'hm': 'P 21 21 2', 'short-hm': 'P21212',
-         'is_reference': True},
+        {'itnumber': 18, 'crystal_system': 'orthorhombic', 'short-hm': 'P21212', 'is_reference': True},
     ),
     "P 2 21 21"   : (
         (("P", "italic"),
@@ -990,8 +951,7 @@ spgrps = {
          ("2", "regular"),
          ("1", "sub"),
          ),
-        {'itnumber'    : 18, 'crystal_system': 'orthorhombic', 'hm': 'P 2 21 21', 'short-hm': 'P22121',
-         'is_reference': False},
+        {'itnumber': 18, 'crystal_system': 'orthorhombic', 'short-hm': 'P22121', 'is_reference': False},
     ),
     "P 21 2 21"   : (
         (("P", "italic"),
@@ -1001,8 +961,7 @@ spgrps = {
          ("2", "regular"),
          ("1", "sub"),
          ),
-        {'itnumber'    : 18, 'crystal_system': 'orthorhombic', 'hm': 'P 21 2 21', 'short-hm': 'P21221',
-         'is_reference': False},
+        {'itnumber': 18, 'crystal_system': 'orthorhombic', 'short-hm': 'P21221', 'is_reference': False},
     ),
     "P 21 21 21"  : (
         (("P", "italic"),
@@ -1013,8 +972,7 @@ spgrps = {
          ("2", "regular"),
          ("1", "sub"),
          ),
-        {'itnumber'    : 19, 'crystal_system': 'orthorhombic', 'hm': 'P 21 21 21', 'short-hm': 'P212121',
-         'is_reference': True},
+        {'itnumber': 19, 'crystal_system': 'orthorhombic', 'short-hm': 'P212121', 'is_reference': True},
     ),
     "C 2 2 21"    : (
         (("C", "italic"),
@@ -1023,7 +981,7 @@ spgrps = {
          ("2", "regular"),
          ("1", "sub"),
          ),
-        {'itnumber': 20, 'crystal_system': 'orthorhombic', 'hm': 'C 2 2 21', 'short-hm': 'C2221', 'is_reference': True},
+        {'itnumber': 20, 'crystal_system': 'orthorhombic', 'short-hm': 'C2221', 'is_reference': True},
     ),
     "A 21 2 2"    : (
         (("A", "italic"),
@@ -1032,8 +990,7 @@ spgrps = {
          ('2', 'regular'),
          ('2', 'regular'),
          ),
-        {'itnumber'    : 20, 'crystal_system': 'orthorhombic', 'hm': 'A 21 2 2', 'short-hm': 'A2122',
-         'is_reference': False},
+        {'itnumber': 20, 'crystal_system': 'orthorhombic', 'short-hm': 'A2122', 'is_reference': False},
     ),
     "B 2 21 2"    : (
         (("B", "italic"),
@@ -1042,8 +999,7 @@ spgrps = {
          ("1", "sub"),
          ('2', 'regular'),
          ),
-        {'itnumber'    : 20, 'crystal_system': 'orthorhombic', 'hm': 'B 2 21 2', 'short-hm': 'B2212',
-         'is_reference': False},
+        {'itnumber': 20, 'crystal_system': 'orthorhombic', 'short-hm': 'B2212', 'is_reference': False},
     ),
     "C 2 2 2"     : (
         (("C", "italic"),
@@ -1051,7 +1007,7 @@ spgrps = {
          ('2', 'regular'),
          ('2', 'regular'),
          ),
-        {'itnumber': 21, 'crystal_system': 'orthorhombic', 'hm': 'C 2 2 2', 'short-hm': 'C222', 'is_reference': True},
+        {'itnumber': 21, 'crystal_system': 'orthorhombic', 'short-hm': 'C222', 'is_reference': True},
     ),
     "A 2 2 2"     : (
         (("A", "italic"),
@@ -1059,7 +1015,7 @@ spgrps = {
          ('2', 'regular'),
          ('2', 'regular'),
          ),
-        {'itnumber': 21, 'crystal_system': 'orthorhombic', 'hm': 'A 2 2 2', 'short-hm': 'A222', 'is_reference': False},
+        {'itnumber': 21, 'crystal_system': 'orthorhombic', 'short-hm': 'A222', 'is_reference': False},
     ),
     "B 2 2 2"     : (
         (("B", "italic"),
@@ -1067,7 +1023,7 @@ spgrps = {
          ('2', 'regular'),
          ('2', 'regular'),
          ),
-        {'itnumber': 21, 'crystal_system': 'orthorhombic', 'hm': 'B 2 2 2', 'short-hm': 'B222', 'is_reference': False},
+        {'itnumber': 21, 'crystal_system': 'orthorhombic', 'short-hm': 'B222', 'is_reference': False},
     ),
     "F 2 2 2"     : (
         (("F", "italic"),
@@ -1075,7 +1031,7 @@ spgrps = {
          ('2', 'regular'),
          ('2', 'regular'),
          ),
-        {'itnumber': 22, 'crystal_system': 'orthorhombic', 'hm': 'F 2 2 2', 'short-hm': 'F222', 'is_reference': True},
+        {'itnumber': 22, 'crystal_system': 'orthorhombic', 'short-hm': 'F222', 'is_reference': True},
     ),
     "I 2 2 2"     : (
         (("I", "italic"),
@@ -1083,7 +1039,7 @@ spgrps = {
          ('2', 'regular'),
          ('2', 'regular'),
          ),
-        {'itnumber': 23, 'crystal_system': 'orthorhombic', 'hm': 'I 2 2 2', 'short-hm': 'I222', 'is_reference': True},
+        {'itnumber': 23, 'crystal_system': 'orthorhombic', 'short-hm': 'I222', 'is_reference': True},
     ),
     "I 21 21 21"  : (
         (("I", "italic"),
@@ -1094,8 +1050,7 @@ spgrps = {
          ("2", "regular"),
          ("1", "sub"),
          ),
-        {'itnumber'    : 24, 'crystal_system': 'orthorhombic', 'hm': 'I 21 21 21', 'short-hm': 'I212121',
-         'is_reference': True},
+        {'itnumber': 24, 'crystal_system': 'orthorhombic', 'short-hm': 'I212121', 'is_reference': True},
     ),
     "P m m 2"     : (
         (("P", "italic"),
@@ -1103,7 +1058,7 @@ spgrps = {
          ("m", "italic"),
          ('2', 'regular'),
          ),
-        {'itnumber': 25, 'crystal_system': 'orthorhombic', 'hm': 'P m m 2', 'short-hm': 'Pmm2', 'is_reference': True},
+        {'itnumber': 25, 'crystal_system': 'orthorhombic', 'short-hm': 'Pmm2', 'is_reference': True},
     ),
     "P 2 m m"     : (
         (("P", "italic"),
@@ -1111,7 +1066,7 @@ spgrps = {
          ("m", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 25, 'crystal_system': 'orthorhombic', 'hm': 'P 2 m m', 'short-hm': 'P2mm', 'is_reference': False},
+        {'itnumber': 25, 'crystal_system': 'orthorhombic', 'short-hm': 'P2mm', 'is_reference': False},
     ),
     "P m 2 m"     : (
         (("P", "italic"),
@@ -1119,7 +1074,7 @@ spgrps = {
          ('2', 'regular'),
          ("m", "italic"),
          ),
-        {'itnumber': 25, 'crystal_system': 'orthorhombic', 'hm': 'P m 2 m', 'short-hm': 'Pm2m', 'is_reference': False},
+        {'itnumber': 25, 'crystal_system': 'orthorhombic', 'short-hm': 'Pm2m', 'is_reference': False},
     ),
     "P m c 21"    : (
         (("P", "italic"),
@@ -1128,7 +1083,7 @@ spgrps = {
          ("2", "regular"),
          ("1", "sub"),
          ),
-        {'itnumber': 26, 'crystal_system': 'orthorhombic', 'hm': 'P m c 21', 'short-hm': 'Pmc21', 'is_reference': True},
+        {'itnumber': 26, 'crystal_system': 'orthorhombic', 'short-hm': 'Pmc21', 'is_reference': True},
     ),
     "P c m 21"    : (
         (("P", "italic"),
@@ -1137,8 +1092,7 @@ spgrps = {
          ("2", "regular"),
          ("1", "sub"),
          ),
-        {'itnumber'    : 26, 'crystal_system': 'orthorhombic', 'hm': 'P c m 21', 'short-hm': 'Pcm21',
-         'is_reference': False},
+        {'itnumber': 26, 'crystal_system': 'orthorhombic', 'short-hm': 'Pcm21', 'is_reference': False},
     ),
     "P 21 m a"    : (
         (("P", "italic"),
@@ -1147,8 +1101,7 @@ spgrps = {
          ("m", "italic"),
          ("a", "italic"),
          ),
-        {'itnumber'    : 26, 'crystal_system': 'orthorhombic', 'hm': 'P 21 m a', 'short-hm': 'P21ma',
-         'is_reference': False},
+        {'itnumber': 26, 'crystal_system': 'orthorhombic', 'short-hm': 'P21ma', 'is_reference': False},
     ),
     "P 21 a m"    : (
         (("P", "italic"),
@@ -1157,8 +1110,7 @@ spgrps = {
          ("a", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber'    : 26, 'crystal_system': 'orthorhombic', 'hm': 'P 21 a m', 'short-hm': 'P21am',
-         'is_reference': False},
+        {'itnumber': 26, 'crystal_system': 'orthorhombic', 'short-hm': 'P21am', 'is_reference': False},
     ),
     "P b 21 m"    : (
         (("P", "italic"),
@@ -1167,8 +1119,7 @@ spgrps = {
          ("1", "sub"),
          ("m", "italic"),
          ),
-        {'itnumber'    : 26, 'crystal_system': 'orthorhombic', 'hm': 'P b 21 m', 'short-hm': 'Pb21m',
-         'is_reference': False},
+        {'itnumber': 26, 'crystal_system': 'orthorhombic', 'short-hm': 'Pb21m', 'is_reference': False},
     ),
     "P m 21 b"    : (
         (("P", "italic"),
@@ -1177,8 +1128,7 @@ spgrps = {
          ("1", "sub"),
          ("b", "italic"),
          ),
-        {'itnumber'    : 26, 'crystal_system': 'orthorhombic', 'hm': 'P m 21 b', 'short-hm': 'Pm21b',
-         'is_reference': False},
+        {'itnumber': 26, 'crystal_system': 'orthorhombic', 'short-hm': 'Pm21b', 'is_reference': False},
     ),
     "P c c 2"     : (
         (("P", "italic"),
@@ -1186,7 +1136,7 @@ spgrps = {
          ("c", "italic"),
          ('2', 'regular'),
          ),
-        {'itnumber': 27, 'crystal_system': 'orthorhombic', 'hm': 'P c c 2', 'short-hm': 'Pcc2', 'is_reference': True},
+        {'itnumber': 27, 'crystal_system': 'orthorhombic', 'short-hm': 'Pcc2', 'is_reference': True},
     ),
     "P 2 a a"     : (
         (("P", "italic"),
@@ -1194,7 +1144,7 @@ spgrps = {
          ("a", "italic"),
          ("a", "italic"),
          ),
-        {'itnumber': 27, 'crystal_system': 'orthorhombic', 'hm': 'P 2 a a', 'short-hm': 'P2aa', 'is_reference': False},
+        {'itnumber': 27, 'crystal_system': 'orthorhombic', 'short-hm': 'P2aa', 'is_reference': False},
     ),
     "P b 2 b"     : (
         (("P", "italic"),
@@ -1202,7 +1152,7 @@ spgrps = {
          ('2', 'regular'),
          ("b", "italic"),
          ),
-        {'itnumber': 27, 'crystal_system': 'orthorhombic', 'hm': 'P b 2 b', 'short-hm': 'Pb2b', 'is_reference': False},
+        {'itnumber': 27, 'crystal_system': 'orthorhombic', 'short-hm': 'Pb2b', 'is_reference': False},
     ),
     "P m a 2"     : (
         (("P", "italic"),
@@ -1210,7 +1160,7 @@ spgrps = {
          ("a", "italic"),
          ('2', 'regular'),
          ),
-        {'itnumber': 28, 'crystal_system': 'orthorhombic', 'hm': 'P m a 2', 'short-hm': 'Pma2', 'is_reference': True},
+        {'itnumber': 28, 'crystal_system': 'orthorhombic', 'short-hm': 'Pma2', 'is_reference': True},
     ),
     "P b m 2"     : (
         (("P", "italic"),
@@ -1218,7 +1168,7 @@ spgrps = {
          ("m", "italic"),
          ('2', 'regular'),
          ),
-        {'itnumber': 28, 'crystal_system': 'orthorhombic', 'hm': 'P b m 2', 'short-hm': 'Pbm2', 'is_reference': False},
+        {'itnumber': 28, 'crystal_system': 'orthorhombic', 'short-hm': 'Pbm2', 'is_reference': False},
     ),
     "P 2 m b"     : (
         (("P", "italic"),
@@ -1226,7 +1176,7 @@ spgrps = {
          ("m", "italic"),
          ("b", "italic"),
          ),
-        {'itnumber': 28, 'crystal_system': 'orthorhombic', 'hm': 'P 2 m b', 'short-hm': 'P2mb', 'is_reference': False},
+        {'itnumber': 28, 'crystal_system': 'orthorhombic', 'short-hm': 'P2mb', 'is_reference': False},
     ),
     "P 2 c m"     : (
         (("P", "italic"),
@@ -1234,7 +1184,7 @@ spgrps = {
          ("c", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 28, 'crystal_system': 'orthorhombic', 'hm': 'P 2 c m', 'short-hm': 'P2cm', 'is_reference': False},
+        {'itnumber': 28, 'crystal_system': 'orthorhombic', 'short-hm': 'P2cm', 'is_reference': False},
     ),
     "P c 2 m"     : (
         (("P", "italic"),
@@ -1242,7 +1192,7 @@ spgrps = {
          ('2', 'regular'),
          ("m", "italic"),
          ),
-        {'itnumber': 28, 'crystal_system': 'orthorhombic', 'hm': 'P c 2 m', 'short-hm': 'Pc2m', 'is_reference': False},
+        {'itnumber': 28, 'crystal_system': 'orthorhombic', 'short-hm': 'Pc2m', 'is_reference': False},
     ),
     "P m 2 a"     : (
         (("P", "italic"),
@@ -1250,7 +1200,7 @@ spgrps = {
          ('2', 'regular'),
          ("a", "italic"),
          ),
-        {'itnumber': 28, 'crystal_system': 'orthorhombic', 'hm': 'P m 2 a', 'short-hm': 'Pm2a', 'is_reference': False},
+        {'itnumber': 28, 'crystal_system': 'orthorhombic', 'short-hm': 'Pm2a', 'is_reference': False},
     ),
     "P c a 21"    : (
         (("P", "italic"),
@@ -1259,7 +1209,7 @@ spgrps = {
          ("2", "regular"),
          ("1", "sub"),
          ),
-        {'itnumber': 29, 'crystal_system': 'orthorhombic', 'hm': 'P c a 21', 'short-hm': 'Pca21', 'is_reference': True},
+        {'itnumber': 29, 'crystal_system': 'orthorhombic', 'short-hm': 'Pca21', 'is_reference': True},
     ),
     "P b c 21"    : (
         (("P", "italic"),
@@ -1268,8 +1218,7 @@ spgrps = {
          ("2", "regular"),
          ("1", "sub"),
          ),
-        {'itnumber'    : 29, 'crystal_system': 'orthorhombic', 'hm': 'P b c 21', 'short-hm': 'Pbc21',
-         'is_reference': False},
+        {'itnumber': 29, 'crystal_system': 'orthorhombic', 'short-hm': 'Pbc21', 'is_reference': False},
     ),
     "P 21 a b"    : (
         (("P", "italic"),
@@ -1278,8 +1227,7 @@ spgrps = {
          ("a", "italic"),
          ("b", "italic"),
          ),
-        {'itnumber'    : 29, 'crystal_system': 'orthorhombic', 'hm': 'P 21 a b', 'short-hm': 'P21ab',
-         'is_reference': False},
+        {'itnumber': 29, 'crystal_system': 'orthorhombic', 'short-hm': 'P21ab', 'is_reference': False},
     ),
     "P 21 c a"    : (
         (("P", "italic"),
@@ -1288,8 +1236,7 @@ spgrps = {
          ("c", "italic"),
          ("a", "italic"),
          ),
-        {'itnumber'    : 29, 'crystal_system': 'orthorhombic', 'hm': 'P 21 c a', 'short-hm': 'P21ca',
-         'is_reference': False},
+        {'itnumber': 29, 'crystal_system': 'orthorhombic', 'short-hm': 'P21ca', 'is_reference': False},
     ),
     "P c 21 b"    : (
         (("P", "italic"),
@@ -1298,8 +1245,7 @@ spgrps = {
          ("1", "sub"),
          ("b", "italic"),
          ),
-        {'itnumber'    : 29, 'crystal_system': 'orthorhombic', 'hm': 'P c 21 b', 'short-hm': 'Pc21b',
-         'is_reference': False},
+        {'itnumber': 29, 'crystal_system': 'orthorhombic', 'short-hm': 'Pc21b', 'is_reference': False},
     ),
     "P b 21 a"    : (
         (("P", "italic"),
@@ -1308,8 +1254,7 @@ spgrps = {
          ("1", "sub"),
          ("a", "italic"),
          ),
-        {'itnumber'    : 29, 'crystal_system': 'orthorhombic', 'hm': 'P b 21 a', 'short-hm': 'Pb21a',
-         'is_reference': False},
+        {'itnumber': 29, 'crystal_system': 'orthorhombic', 'short-hm': 'Pb21a', 'is_reference': False},
     ),
     "P n c 2"     : (
         (("P", "italic"),
@@ -1317,7 +1262,7 @@ spgrps = {
          ("c", "italic"),
          ('2', 'regular'),
          ),
-        {'itnumber': 30, 'crystal_system': 'orthorhombic', 'hm': 'P n c 2', 'short-hm': 'Pnc2', 'is_reference': True},
+        {'itnumber': 30, 'crystal_system': 'orthorhombic', 'short-hm': 'Pnc2', 'is_reference': True},
     ),
     "P c n 2"     : (
         (("P", "italic"),
@@ -1325,7 +1270,7 @@ spgrps = {
          ("n", "italic"),
          ('2', 'regular'),
          ),
-        {'itnumber': 30, 'crystal_system': 'orthorhombic', 'hm': 'P c n 2', 'short-hm': 'Pcn2', 'is_reference': False},
+        {'itnumber': 30, 'crystal_system': 'orthorhombic', 'short-hm': 'Pcn2', 'is_reference': False},
     ),
     "P 2 n a"     : (
         (("P", "italic"),
@@ -1333,7 +1278,7 @@ spgrps = {
          ("n", "italic"),
          ("a", "italic"),
          ),
-        {'itnumber': 30, 'crystal_system': 'orthorhombic', 'hm': 'P 2 n a', 'short-hm': 'P2na', 'is_reference': False},
+        {'itnumber': 30, 'crystal_system': 'orthorhombic', 'short-hm': 'P2na', 'is_reference': False},
     ),
     "P 2 a n"     : (
         (("P", "italic"),
@@ -1341,7 +1286,7 @@ spgrps = {
          ("a", "italic"),
          ("n", "italic"),
          ),
-        {'itnumber': 30, 'crystal_system': 'orthorhombic', 'hm': 'P 2 a n', 'short-hm': 'P2an', 'is_reference': False},
+        {'itnumber': 30, 'crystal_system': 'orthorhombic', 'short-hm': 'P2an', 'is_reference': False},
     ),
     "P b 2 n"     : (
         (("P", "italic"),
@@ -1349,7 +1294,7 @@ spgrps = {
          ('2', 'regular'),
          ("n", "italic"),
          ),
-        {'itnumber': 30, 'crystal_system': 'orthorhombic', 'hm': 'P b 2 n', 'short-hm': 'Pb2n', 'is_reference': False},
+        {'itnumber': 30, 'crystal_system': 'orthorhombic', 'short-hm': 'Pb2n', 'is_reference': False},
     ),
     "P n 2 b"     : (
         (("P", "italic"),
@@ -1357,7 +1302,7 @@ spgrps = {
          ('2', 'regular'),
          ("b", "italic"),
          ),
-        {'itnumber': 30, 'crystal_system': 'orthorhombic', 'hm': 'P n 2 b', 'short-hm': 'Pn2b', 'is_reference': False},
+        {'itnumber': 30, 'crystal_system': 'orthorhombic', 'short-hm': 'Pn2b', 'is_reference': False},
     ),
     "P m n 21"    : (
         (("P", "italic"),
@@ -1366,7 +1311,7 @@ spgrps = {
          ("2", "regular"),
          ("1", "sub"),
          ),
-        {'itnumber': 31, 'crystal_system': 'orthorhombic', 'hm': 'P m n 21', 'short-hm': 'Pmn21', 'is_reference': True},
+        {'itnumber': 31, 'crystal_system': 'orthorhombic', 'short-hm': 'Pmn21', 'is_reference': True},
     ),
     "P n m 21"    : (
         (("P", "italic"),
@@ -1375,8 +1320,7 @@ spgrps = {
          ("2", "regular"),
          ("1", "sub"),
          ),
-        {'itnumber'    : 31, 'crystal_system': 'orthorhombic', 'hm': 'P n m 21', 'short-hm': 'Pnm21',
-         'is_reference': False},
+        {'itnumber': 31, 'crystal_system': 'orthorhombic', 'short-hm': 'Pnm21', 'is_reference': False},
     ),
     "P 21 m n"    : (
         (("P", "italic"),
@@ -1385,8 +1329,7 @@ spgrps = {
          ("m", "italic"),
          ("n", "italic"),
          ),
-        {'itnumber'    : 31, 'crystal_system': 'orthorhombic', 'hm': 'P 21 m n', 'short-hm': 'P21mn',
-         'is_reference': False},
+        {'itnumber': 31, 'crystal_system': 'orthorhombic', 'short-hm': 'P21mn', 'is_reference': False},
     ),
     "P 21 n m"    : (
         (("P", "italic"),
@@ -1395,8 +1338,7 @@ spgrps = {
          ("n", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber'    : 31, 'crystal_system': 'orthorhombic', 'hm': 'P 21 n m', 'short-hm': 'P21nm',
-         'is_reference': False},
+        {'itnumber': 31, 'crystal_system': 'orthorhombic', 'short-hm': 'P21nm', 'is_reference': False},
     ),
     "P n 21 m"    : (
         (("P", "italic"),
@@ -1405,8 +1347,7 @@ spgrps = {
          ("1", "sub"),
          ("m", "italic"),
          ),
-        {'itnumber'    : 31, 'crystal_system': 'orthorhombic', 'hm': 'P n 21 m', 'short-hm': 'Pn21m',
-         'is_reference': False},
+        {'itnumber': 31, 'crystal_system': 'orthorhombic', 'short-hm': 'Pn21m', 'is_reference': False},
     ),
     "P m 21 n"    : (
         (("P", "italic"),
@@ -1415,8 +1356,7 @@ spgrps = {
          ("1", "sub"),
          ("n", "italic"),
          ),
-        {'itnumber'    : 31, 'crystal_system': 'orthorhombic', 'hm': 'P m 21 n', 'short-hm': 'Pm21n',
-         'is_reference': False},
+        {'itnumber': 31, 'crystal_system': 'orthorhombic', 'short-hm': 'Pm21n', 'is_reference': False},
     ),
     "P b a 2"     : (
         (("P", "italic"),
@@ -1424,7 +1364,7 @@ spgrps = {
          ("a", "italic"),
          ('2', 'regular'),
          ),
-        {'itnumber': 32, 'crystal_system': 'orthorhombic', 'hm': 'P b a 2', 'short-hm': 'Pba2', 'is_reference': True},
+        {'itnumber': 32, 'crystal_system': 'orthorhombic', 'short-hm': 'Pba2', 'is_reference': True},
     ),
     "P 2 c b"     : (
         (("P", "italic"),
@@ -1432,7 +1372,7 @@ spgrps = {
          ("c", "italic"),
          ("b", "italic"),
          ),
-        {'itnumber': 32, 'crystal_system': 'orthorhombic', 'hm': 'P 2 c b', 'short-hm': 'P2cb', 'is_reference': False},
+        {'itnumber': 32, 'crystal_system': 'orthorhombic', 'short-hm': 'P2cb', 'is_reference': False},
     ),
     "P c 2 a"     : (
         (("P", "italic"),
@@ -1440,7 +1380,7 @@ spgrps = {
          ('2', 'regular'),
          ("a", "italic"),
          ),
-        {'itnumber': 32, 'crystal_system': 'orthorhombic', 'hm': 'P c 2 a', 'short-hm': 'Pc2a', 'is_reference': False},
+        {'itnumber': 32, 'crystal_system': 'orthorhombic', 'short-hm': 'Pc2a', 'is_reference': False},
     ),
     "P n a 21"    : (
         (("P", "italic"),
@@ -1449,7 +1389,7 @@ spgrps = {
          ("2", "regular"),
          ("1", "sub"),
          ),
-        {'itnumber': 33, 'crystal_system': 'orthorhombic', 'hm': 'P n a 21', 'short-hm': 'Pna21', 'is_reference': True},
+        {'itnumber': 33, 'crystal_system': 'orthorhombic', 'short-hm': 'Pna21', 'is_reference': True},
     ),
     "P b n 21"    : (
         (("P", "italic"),
@@ -1458,8 +1398,7 @@ spgrps = {
          ("2", "regular"),
          ("1", "sub"),
          ),
-        {'itnumber'    : 33, 'crystal_system': 'orthorhombic', 'hm': 'P b n 21', 'short-hm': 'Pbn21',
-         'is_reference': False},
+        {'itnumber': 33, 'crystal_system': 'orthorhombic', 'short-hm': 'Pbn21', 'is_reference': False},
     ),
     "P 21 n b"    : (
         (("P", "italic"),
@@ -1468,8 +1407,7 @@ spgrps = {
          ("n", "italic"),
          ("b", "italic"),
          ),
-        {'itnumber'    : 33, 'crystal_system': 'orthorhombic', 'hm': 'P 21 n b', 'short-hm': 'P21nb',
-         'is_reference': False},
+        {'itnumber': 33, 'crystal_system': 'orthorhombic', 'short-hm': 'P21nb', 'is_reference': False},
     ),
     "P 21 c n"    : (
         (("P", "italic"),
@@ -1478,8 +1416,7 @@ spgrps = {
          ("c", "italic"),
          ("n", "italic"),
          ),
-        {'itnumber'    : 33, 'crystal_system': 'orthorhombic', 'hm': 'P 21 c n', 'short-hm': 'P21cn',
-         'is_reference': False},
+        {'itnumber': 33, 'crystal_system': 'orthorhombic', 'short-hm': 'P21cn', 'is_reference': False},
     ),
     "P c 21 n"    : (
         (("P", "italic"),
@@ -1488,8 +1425,7 @@ spgrps = {
          ("1", "sub"),
          ("n", "italic"),
          ),
-        {'itnumber'    : 33, 'crystal_system': 'orthorhombic', 'hm': 'P c 21 n', 'short-hm': 'Pc21n',
-         'is_reference': False},
+        {'itnumber': 33, 'crystal_system': 'orthorhombic', 'short-hm': 'Pc21n', 'is_reference': False},
     ),
     "P n 21 a"    : (
         (("P", "italic"),
@@ -1498,8 +1434,7 @@ spgrps = {
          ("1", "sub"),
          ("a", "italic"),
          ),
-        {'itnumber'    : 33, 'crystal_system': 'orthorhombic', 'hm': 'P n 21 a', 'short-hm': 'Pn21a',
-         'is_reference': False},
+        {'itnumber': 33, 'crystal_system': 'orthorhombic', 'short-hm': 'Pn21a', 'is_reference': False},
     ),
     "P n n 2"     : (
         (("P", "italic"),
@@ -1507,7 +1442,7 @@ spgrps = {
          ("n", "italic"),
          ('2', 'regular'),
          ),
-        {'itnumber': 34, 'crystal_system': 'orthorhombic', 'hm': 'P n n 2', 'short-hm': 'Pnn2', 'is_reference': True},
+        {'itnumber': 34, 'crystal_system': 'orthorhombic', 'short-hm': 'Pnn2', 'is_reference': True},
     ),
     "P 2 n n"     : (
         (("P", "italic"),
@@ -1515,7 +1450,7 @@ spgrps = {
          ("n", "italic"),
          ("n", "italic"),
          ),
-        {'itnumber': 34, 'crystal_system': 'orthorhombic', 'hm': 'P 2 n n', 'short-hm': 'P2nn', 'is_reference': False},
+        {'itnumber': 34, 'crystal_system': 'orthorhombic', 'short-hm': 'P2nn', 'is_reference': False},
     ),
     "P n 2 n"     : (
         (("P", "italic"),
@@ -1523,7 +1458,7 @@ spgrps = {
          ('2', 'regular'),
          ("n", "italic"),
          ),
-        {'itnumber': 34, 'crystal_system': 'orthorhombic', 'hm': 'P n 2 n', 'short-hm': 'Pn2n', 'is_reference': False},
+        {'itnumber': 34, 'crystal_system': 'orthorhombic', 'short-hm': 'Pn2n', 'is_reference': False},
     ),
     "C m m 2"     : (
         (("C", "italic"),
@@ -1531,7 +1466,7 @@ spgrps = {
          ("m", "italic"),
          ('2', 'regular'),
          ),
-        {'itnumber': 35, 'crystal_system': 'orthorhombic', 'hm': 'C m m 2', 'short-hm': 'Cmm2', 'is_reference': True},
+        {'itnumber': 35, 'crystal_system': 'orthorhombic', 'short-hm': 'Cmm2', 'is_reference': True},
     ),
     "A 2 m m"     : (
         (("A", "italic"),
@@ -1539,7 +1474,7 @@ spgrps = {
          ("m", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 35, 'crystal_system': 'orthorhombic', 'hm': 'A 2 m m', 'short-hm': 'A2mm', 'is_reference': False},
+        {'itnumber': 35, 'crystal_system': 'orthorhombic', 'short-hm': 'A2mm', 'is_reference': False},
     ),
     "B m 2 m"     : (
         (("B", "italic"),
@@ -1547,7 +1482,7 @@ spgrps = {
          ('2', 'regular'),
          ("m", "italic"),
          ),
-        {'itnumber': 35, 'crystal_system': 'orthorhombic', 'hm': 'B m 2 m', 'short-hm': 'Bm2m', 'is_reference': False},
+        {'itnumber': 35, 'crystal_system': 'orthorhombic', 'short-hm': 'Bm2m', 'is_reference': False},
     ),
     "C m c 21"    : (
         (("C", "italic"),
@@ -1556,7 +1491,7 @@ spgrps = {
          ("2", "regular"),
          ("1", "sub"),
          ),
-        {'itnumber': 36, 'crystal_system': 'orthorhombic', 'hm': 'C m c 21', 'short-hm': 'Cmc21', 'is_reference': True},
+        {'itnumber': 36, 'crystal_system': 'orthorhombic', 'short-hm': 'Cmc21', 'is_reference': True},
     ),
     "C c m 21"    : (
         (("C", "italic"),
@@ -1565,8 +1500,7 @@ spgrps = {
          ("2", "regular"),
          ("1", "sub"),
          ),
-        {'itnumber'    : 36, 'crystal_system': 'orthorhombic', 'hm': 'C c m 21', 'short-hm': 'Ccm21',
-         'is_reference': False},
+        {'itnumber': 36, 'crystal_system': 'orthorhombic', 'short-hm': 'Ccm21', 'is_reference': False},
     ),
     "A 21 m a"    : (
         (("A", "italic"),
@@ -1575,8 +1509,7 @@ spgrps = {
          ("m", "italic"),
          ("a", "italic"),
          ),
-        {'itnumber'    : 36, 'crystal_system': 'orthorhombic', 'hm': 'A 21 m a', 'short-hm': 'A21ma',
-         'is_reference': False},
+        {'itnumber': 36, 'crystal_system': 'orthorhombic', 'short-hm': 'A21ma', 'is_reference': False},
     ),
     "A 21 a m"    : (
         (("A", "italic"),
@@ -1585,8 +1518,7 @@ spgrps = {
          ("a", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber'    : 36, 'crystal_system': 'orthorhombic', 'hm': 'A 21 a m', 'short-hm': 'A21am',
-         'is_reference': False},
+        {'itnumber': 36, 'crystal_system': 'orthorhombic', 'short-hm': 'A21am', 'is_reference': False},
     ),
     "B b 21 m"    : (
         (("B", "italic"),
@@ -1595,8 +1527,7 @@ spgrps = {
          ("1", "sub"),
          ("m", "italic"),
          ),
-        {'itnumber'    : 36, 'crystal_system': 'orthorhombic', 'hm': 'B b 21 m', 'short-hm': 'Bb21m',
-         'is_reference': False},
+        {'itnumber': 36, 'crystal_system': 'orthorhombic', 'short-hm': 'Bb21m', 'is_reference': False},
     ),
     "B m 21 b"    : (
         (("B", "italic"),
@@ -1605,8 +1536,7 @@ spgrps = {
          ("1", "sub"),
          ("b", "italic"),
          ),
-        {'itnumber'    : 36, 'crystal_system': 'orthorhombic', 'hm': 'B m 21 b', 'short-hm': 'Bm21b',
-         'is_reference': False},
+        {'itnumber': 36, 'crystal_system': 'orthorhombic', 'short-hm': 'Bm21b', 'is_reference': False},
     ),
     "C c c 2"     : (
         (("C", "italic"),
@@ -1614,7 +1544,7 @@ spgrps = {
          ("c", "italic"),
          ('2', 'regular'),
          ),
-        {'itnumber': 37, 'crystal_system': 'orthorhombic', 'hm': 'C c c 2', 'short-hm': 'Ccc2', 'is_reference': True},
+        {'itnumber': 37, 'crystal_system': 'orthorhombic', 'short-hm': 'Ccc2', 'is_reference': True},
     ),
     "A 2 a a"     : (
         (("A", "italic"),
@@ -1622,7 +1552,7 @@ spgrps = {
          ("a", "italic"),
          ("a", "italic"),
          ),
-        {'itnumber': 37, 'crystal_system': 'orthorhombic', 'hm': 'A 2 a a', 'short-hm': 'A2aa', 'is_reference': False},
+        {'itnumber': 37, 'crystal_system': 'orthorhombic', 'short-hm': 'A2aa', 'is_reference': False},
     ),
     "B b 2 b"     : (
         (("B", "italic"),
@@ -1630,7 +1560,7 @@ spgrps = {
          ('2', 'regular'),
          ("b", "italic"),
          ),
-        {'itnumber': 37, 'crystal_system': 'orthorhombic', 'hm': 'B b 2 b', 'short-hm': 'Bb2b', 'is_reference': False},
+        {'itnumber': 37, 'crystal_system': 'orthorhombic', 'short-hm': 'Bb2b', 'is_reference': False},
     ),
     "A m m 2"     : (
         (("A", "italic"),
@@ -1638,7 +1568,7 @@ spgrps = {
          ("m", "italic"),
          ('2', 'regular'),
          ),
-        {'itnumber': 38, 'crystal_system': 'orthorhombic', 'hm': 'A m m 2', 'short-hm': 'Amm2', 'is_reference': True},
+        {'itnumber': 38, 'crystal_system': 'orthorhombic', 'short-hm': 'Amm2', 'is_reference': True},
     ),
     "B m m 2"     : (
         (("B", "italic"),
@@ -1646,7 +1576,7 @@ spgrps = {
          ("m", "italic"),
          ('2', 'regular'),
          ),
-        {'itnumber': 38, 'crystal_system': 'orthorhombic', 'hm': 'B m m 2', 'short-hm': 'Bmm2', 'is_reference': False},
+        {'itnumber': 38, 'crystal_system': 'orthorhombic', 'short-hm': 'Bmm2', 'is_reference': False},
     ),
     "B 2 m m"     : (
         (("B", "italic"),
@@ -1654,7 +1584,7 @@ spgrps = {
          ("m", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 38, 'crystal_system': 'orthorhombic', 'hm': 'B 2 m m', 'short-hm': 'B2mm', 'is_reference': False},
+        {'itnumber': 38, 'crystal_system': 'orthorhombic', 'short-hm': 'B2mm', 'is_reference': False},
     ),
     "C 2 m m"     : (
         (("C", "italic"),
@@ -1662,7 +1592,7 @@ spgrps = {
          ("m", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 38, 'crystal_system': 'orthorhombic', 'hm': 'C 2 m m', 'short-hm': 'C2mm', 'is_reference': False},
+        {'itnumber': 38, 'crystal_system': 'orthorhombic', 'short-hm': 'C2mm', 'is_reference': False},
     ),
     "C m 2 m"     : (
         (("C", "italic"),
@@ -1670,7 +1600,7 @@ spgrps = {
          ('2', 'regular'),
          ("m", "italic"),
          ),
-        {'itnumber': 38, 'crystal_system': 'orthorhombic', 'hm': 'C m 2 m', 'short-hm': 'Cm2m', 'is_reference': False},
+        {'itnumber': 38, 'crystal_system': 'orthorhombic', 'short-hm': 'Cm2m', 'is_reference': False},
     ),
     "A m 2 m"     : (
         (("A", "italic"),
@@ -1678,7 +1608,7 @@ spgrps = {
          ('2', 'regular'),
          ("m", "italic"),
          ),
-        {'itnumber': 38, 'crystal_system': 'orthorhombic', 'hm': 'A m 2 m', 'short-hm': 'Am2m', 'is_reference': False},
+        {'itnumber': 38, 'crystal_system': 'orthorhombic', 'short-hm': 'Am2m', 'is_reference': False},
     ),
     "A b m 2"     : (
         (("A", "italic"),
@@ -1686,7 +1616,7 @@ spgrps = {
          ("m", "italic"),
          ('2', 'regular'),
          ),
-        {'itnumber': 39, 'crystal_system': 'orthorhombic', 'hm': 'A b m 2', 'short-hm': 'Abm2', 'is_reference': True},
+        {'itnumber': 39, 'crystal_system': 'orthorhombic', 'short-hm': 'Abm2', 'is_reference': True},
     ),
     "B m a 2"     : (
         (("B", "italic"),
@@ -1694,7 +1624,7 @@ spgrps = {
          ("a", "italic"),
          ('2', 'regular'),
          ),
-        {'itnumber': 39, 'crystal_system': 'orthorhombic', 'hm': 'B m a 2', 'short-hm': 'Bma2', 'is_reference': False},
+        {'itnumber': 39, 'crystal_system': 'orthorhombic', 'short-hm': 'Bma2', 'is_reference': False},
     ),
     "B 2 c m"     : (
         (("B", "italic"),
@@ -1702,7 +1632,7 @@ spgrps = {
          ("c", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 39, 'crystal_system': 'orthorhombic', 'hm': 'B 2 c m', 'short-hm': 'B2cm', 'is_reference': False},
+        {'itnumber': 39, 'crystal_system': 'orthorhombic', 'short-hm': 'B2cm', 'is_reference': False},
     ),
     "C 2 m b"     : (
         (("C", "italic"),
@@ -1710,7 +1640,7 @@ spgrps = {
          ("m", "italic"),
          ("b", "italic"),
          ),
-        {'itnumber': 39, 'crystal_system': 'orthorhombic', 'hm': 'C 2 m b', 'short-hm': 'C2mb', 'is_reference': False},
+        {'itnumber': 39, 'crystal_system': 'orthorhombic', 'short-hm': 'C2mb', 'is_reference': False},
     ),
     "C m 2 a"     : (
         (("C", "italic"),
@@ -1718,7 +1648,7 @@ spgrps = {
          ('2', 'regular'),
          ("a", "italic"),
          ),
-        {'itnumber': 39, 'crystal_system': 'orthorhombic', 'hm': 'C m 2 a', 'short-hm': 'Cm2a', 'is_reference': False},
+        {'itnumber': 39, 'crystal_system': 'orthorhombic', 'short-hm': 'Cm2a', 'is_reference': False},
     ),
     "A c 2 m"     : (
         (("A", "italic"),
@@ -1726,7 +1656,7 @@ spgrps = {
          ('2', 'regular'),
          ("m", "italic"),
          ),
-        {'itnumber': 39, 'crystal_system': 'orthorhombic', 'hm': 'A c 2 m', 'short-hm': 'Ac2m', 'is_reference': False},
+        {'itnumber': 39, 'crystal_system': 'orthorhombic', 'short-hm': 'Ac2m', 'is_reference': False},
     ),
     "A m a 2"     : (
         (("A", "italic"),
@@ -1734,7 +1664,7 @@ spgrps = {
          ("a", "italic"),
          ('2', 'regular'),
          ),
-        {'itnumber': 40, 'crystal_system': 'orthorhombic', 'hm': 'A m a 2', 'short-hm': 'Ama2', 'is_reference': True},
+        {'itnumber': 40, 'crystal_system': 'orthorhombic', 'short-hm': 'Ama2', 'is_reference': True},
     ),
     "B b m 2"     : (
         (("B", "italic"),
@@ -1742,7 +1672,7 @@ spgrps = {
          ("m", "italic"),
          ('2', 'regular'),
          ),
-        {'itnumber': 40, 'crystal_system': 'orthorhombic', 'hm': 'B b m 2', 'short-hm': 'Bbm2', 'is_reference': False},
+        {'itnumber': 40, 'crystal_system': 'orthorhombic', 'short-hm': 'Bbm2', 'is_reference': False},
     ),
     "B 2 m b"     : (
         (("B", "italic"),
@@ -1750,7 +1680,7 @@ spgrps = {
          ("m", "italic"),
          ("b", "italic"),
          ),
-        {'itnumber': 40, 'crystal_system': 'orthorhombic', 'hm': 'B 2 m b', 'short-hm': 'B2mb', 'is_reference': False},
+        {'itnumber': 40, 'crystal_system': 'orthorhombic', 'short-hm': 'B2mb', 'is_reference': False},
     ),
     "C 2 c m"     : (
         (("C", "italic"),
@@ -1758,7 +1688,7 @@ spgrps = {
          ("c", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 40, 'crystal_system': 'orthorhombic', 'hm': 'C 2 c m', 'short-hm': 'C2cm', 'is_reference': False},
+        {'itnumber': 40, 'crystal_system': 'orthorhombic', 'short-hm': 'C2cm', 'is_reference': False},
     ),
     "C c 2 m"     : (
         (("C", "italic"),
@@ -1766,7 +1696,7 @@ spgrps = {
          ('2', 'regular'),
          ("m", "italic"),
          ),
-        {'itnumber': 40, 'crystal_system': 'orthorhombic', 'hm': 'C c 2 m', 'short-hm': 'Cc2m', 'is_reference': False},
+        {'itnumber': 40, 'crystal_system': 'orthorhombic', 'short-hm': 'Cc2m', 'is_reference': False},
     ),
     "A m 2 a"     : (
         (("A", "italic"),
@@ -1774,7 +1704,7 @@ spgrps = {
          ('2', 'regular'),
          ("a", "italic"),
          ),
-        {'itnumber': 40, 'crystal_system': 'orthorhombic', 'hm': 'A m 2 a', 'short-hm': 'Am2a', 'is_reference': False},
+        {'itnumber': 40, 'crystal_system': 'orthorhombic', 'short-hm': 'Am2a', 'is_reference': False},
     ),
     "A b a 2"     : (
         (("A", "italic"),
@@ -1782,7 +1712,7 @@ spgrps = {
          ("a", "italic"),
          ('2', 'regular'),
          ),
-        {'itnumber': 41, 'crystal_system': 'orthorhombic', 'hm': 'A b a 2', 'short-hm': 'Aba2', 'is_reference': True},
+        {'itnumber': 41, 'crystal_system': 'orthorhombic', 'short-hm': 'Aba2', 'is_reference': True},
     ),
     "B b a 2"     : (
         (("B", "italic"),
@@ -1790,7 +1720,7 @@ spgrps = {
          ("a", "italic"),
          ('2', 'regular'),
          ),
-        {'itnumber': 41, 'crystal_system': 'orthorhombic', 'hm': 'B b a 2', 'short-hm': 'Bba2', 'is_reference': False},
+        {'itnumber': 41, 'crystal_system': 'orthorhombic', 'short-hm': 'Bba2', 'is_reference': False},
     ),
     "B 2 c b"     : (
         (("B", "italic"),
@@ -1798,7 +1728,7 @@ spgrps = {
          ("c", "italic"),
          ("b", "italic"),
          ),
-        {'itnumber': 41, 'crystal_system': 'orthorhombic', 'hm': 'B 2 c b', 'short-hm': 'B2cb', 'is_reference': False},
+        {'itnumber': 41, 'crystal_system': 'orthorhombic', 'short-hm': 'B2cb', 'is_reference': False},
     ),
     "C 2 c b"     : (
         (("C", "italic"),
@@ -1806,7 +1736,7 @@ spgrps = {
          ("c", "italic"),
          ("b", "italic"),
          ),
-        {'itnumber': 41, 'crystal_system': 'orthorhombic', 'hm': 'C 2 c b', 'short-hm': 'C2cb', 'is_reference': False},
+        {'itnumber': 41, 'crystal_system': 'orthorhombic', 'short-hm': 'C2cb', 'is_reference': False},
     ),
     "C c 2 a"     : (
         (("C", "italic"),
@@ -1814,7 +1744,7 @@ spgrps = {
          ('2', 'regular'),
          ("a", "italic"),
          ),
-        {'itnumber': 41, 'crystal_system': 'orthorhombic', 'hm': 'C c 2 a', 'short-hm': 'Cc2a', 'is_reference': False},
+        {'itnumber': 41, 'crystal_system': 'orthorhombic', 'short-hm': 'Cc2a', 'is_reference': False},
     ),
     "A c 2 a"     : (
         (("A", "italic"),
@@ -1822,7 +1752,7 @@ spgrps = {
          ('2', 'regular'),
          ("a", "italic"),
          ),
-        {'itnumber': 41, 'crystal_system': 'orthorhombic', 'hm': 'A c 2 a', 'short-hm': 'Ac2a', 'is_reference': False},
+        {'itnumber': 41, 'crystal_system': 'orthorhombic', 'short-hm': 'Ac2a', 'is_reference': False},
     ),
     "F m m 2"     : (
         (("F", "italic"),
@@ -1830,7 +1760,7 @@ spgrps = {
          ("m", "italic"),
          ('2', 'regular'),
          ),
-        {'itnumber': 42, 'crystal_system': 'orthorhombic', 'hm': 'F m m 2', 'short-hm': 'Fmm2', 'is_reference': True},
+        {'itnumber': 42, 'crystal_system': 'orthorhombic', 'short-hm': 'Fmm2', 'is_reference': True},
     ),
     "F 2 m m"     : (
         (("F", "italic"),
@@ -1838,7 +1768,7 @@ spgrps = {
          ("m", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 42, 'crystal_system': 'orthorhombic', 'hm': 'F 2 m m', 'short-hm': 'F2mm', 'is_reference': False},
+        {'itnumber': 42, 'crystal_system': 'orthorhombic', 'short-hm': 'F2mm', 'is_reference': False},
     ),
     "F m 2 m"     : (
         (("F", "italic"),
@@ -1846,7 +1776,7 @@ spgrps = {
          ('2', 'regular'),
          ("m", "italic"),
          ),
-        {'itnumber': 42, 'crystal_system': 'orthorhombic', 'hm': 'F m 2 m', 'short-hm': 'Fm2m', 'is_reference': False},
+        {'itnumber': 42, 'crystal_system': 'orthorhombic', 'short-hm': 'Fm2m', 'is_reference': False},
     ),
     "F d d 2"     : (
         (("F", "italic"),
@@ -1854,7 +1784,7 @@ spgrps = {
          ("d", "italic"),
          ('2', 'regular'),
          ),
-        {'itnumber': 43, 'crystal_system': 'orthorhombic', 'hm': 'F d d 2', 'short-hm': 'Fdd2', 'is_reference': True},
+        {'itnumber': 43, 'crystal_system': 'orthorhombic', 'short-hm': 'Fdd2', 'is_reference': True},
     ),
     "F 2 d d"     : (
         (("F", "italic"),
@@ -1862,7 +1792,7 @@ spgrps = {
          ("d", "italic"),
          ("d", "italic"),
          ),
-        {'itnumber': 43, 'crystal_system': 'orthorhombic', 'hm': 'F 2 d d', 'short-hm': 'F2dd', 'is_reference': False},
+        {'itnumber': 43, 'crystal_system': 'orthorhombic', 'short-hm': 'F2dd', 'is_reference': False},
     ),
     "F d 2 d"     : (
         (("F", "italic"),
@@ -1870,7 +1800,7 @@ spgrps = {
          ('2', 'regular'),
          ("d", "italic"),
          ),
-        {'itnumber': 43, 'crystal_system': 'orthorhombic', 'hm': 'F d 2 d', 'short-hm': 'Fd2d', 'is_reference': False},
+        {'itnumber': 43, 'crystal_system': 'orthorhombic', 'short-hm': 'Fd2d', 'is_reference': False},
     ),
     "I m m 2"     : (
         (("I", "italic"),
@@ -1878,7 +1808,7 @@ spgrps = {
          ("m", "italic"),
          ('2', 'regular'),
          ),
-        {'itnumber': 44, 'crystal_system': 'orthorhombic', 'hm': 'I m m 2', 'short-hm': 'Imm2', 'is_reference': True},
+        {'itnumber': 44, 'crystal_system': 'orthorhombic', 'short-hm': 'Imm2', 'is_reference': True},
     ),
     "I 2 m m"     : (
         (("I", "italic"),
@@ -1886,7 +1816,7 @@ spgrps = {
          ("m", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 44, 'crystal_system': 'orthorhombic', 'hm': 'I 2 m m', 'short-hm': 'I2mm', 'is_reference': False},
+        {'itnumber': 44, 'crystal_system': 'orthorhombic', 'short-hm': 'I2mm', 'is_reference': False},
     ),
     "I m 2 m"     : (
         (("I", "italic"),
@@ -1894,7 +1824,7 @@ spgrps = {
          ('2', 'regular'),
          ("m", "italic"),
          ),
-        {'itnumber': 44, 'crystal_system': 'orthorhombic', 'hm': 'I m 2 m', 'short-hm': 'Im2m', 'is_reference': False},
+        {'itnumber': 44, 'crystal_system': 'orthorhombic', 'short-hm': 'Im2m', 'is_reference': False},
     ),
     "I b a 2"     : (
         (("I", "italic"),
@@ -1902,7 +1832,7 @@ spgrps = {
          ("a", "italic"),
          ('2', 'regular'),
          ),
-        {'itnumber': 45, 'crystal_system': 'orthorhombic', 'hm': 'I b a 2', 'short-hm': 'Iba2', 'is_reference': True},
+        {'itnumber': 45, 'crystal_system': 'orthorhombic', 'short-hm': 'Iba2', 'is_reference': True},
     ),
     "I 2 c b"     : (
         (("I", "italic"),
@@ -1910,7 +1840,7 @@ spgrps = {
          ("c", "italic"),
          ("b", "italic"),
          ),
-        {'itnumber': 45, 'crystal_system': 'orthorhombic', 'hm': 'I 2 c b', 'short-hm': 'I2cb', 'is_reference': False},
+        {'itnumber': 45, 'crystal_system': 'orthorhombic', 'short-hm': 'I2cb', 'is_reference': False},
     ),
     "I c 2 a"     : (
         (("I", "italic"),
@@ -1918,7 +1848,7 @@ spgrps = {
          ('2', 'regular'),
          ("a", "italic"),
          ),
-        {'itnumber': 45, 'crystal_system': 'orthorhombic', 'hm': 'I c 2 a', 'short-hm': 'Ic2a', 'is_reference': False},
+        {'itnumber': 45, 'crystal_system': 'orthorhombic', 'short-hm': 'Ic2a', 'is_reference': False},
     ),
     "I m a 2"     : (
         (("I", "italic"),
@@ -1926,7 +1856,7 @@ spgrps = {
          ("a", "italic"),
          ('2', 'regular'),
          ),
-        {'itnumber': 46, 'crystal_system': 'orthorhombic', 'hm': 'I m a 2', 'short-hm': 'Ima2', 'is_reference': True},
+        {'itnumber': 46, 'crystal_system': 'orthorhombic', 'short-hm': 'Ima2', 'is_reference': True},
     ),
     "I b m 2"     : (
         (("I", "italic"),
@@ -1934,7 +1864,7 @@ spgrps = {
          ("m", "italic"),
          ('2', 'regular'),
          ),
-        {'itnumber': 46, 'crystal_system': 'orthorhombic', 'hm': 'I b m 2', 'short-hm': 'Ibm2', 'is_reference': False},
+        {'itnumber': 46, 'crystal_system': 'orthorhombic', 'short-hm': 'Ibm2', 'is_reference': False},
     ),
     "I 2 m b"     : (
         (("I", "italic"),
@@ -1942,7 +1872,7 @@ spgrps = {
          ("m", "italic"),
          ("b", "italic"),
          ),
-        {'itnumber': 46, 'crystal_system': 'orthorhombic', 'hm': 'I 2 m b', 'short-hm': 'I2mb', 'is_reference': False},
+        {'itnumber': 46, 'crystal_system': 'orthorhombic', 'short-hm': 'I2mb', 'is_reference': False},
     ),
     "I 2 c m"     : (
         (("I", "italic"),
@@ -1950,7 +1880,7 @@ spgrps = {
          ("c", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 46, 'crystal_system': 'orthorhombic', 'hm': 'I 2 c m', 'short-hm': 'I2cm', 'is_reference': False},
+        {'itnumber': 46, 'crystal_system': 'orthorhombic', 'short-hm': 'I2cm', 'is_reference': False},
     ),
     "I c 2 m"     : (
         (("I", "italic"),
@@ -1958,7 +1888,7 @@ spgrps = {
          ('2', 'regular'),
          ("m", "italic"),
          ),
-        {'itnumber': 46, 'crystal_system': 'orthorhombic', 'hm': 'I c 2 m', 'short-hm': 'Ic2m', 'is_reference': False},
+        {'itnumber': 46, 'crystal_system': 'orthorhombic', 'short-hm': 'Ic2m', 'is_reference': False},
     ),
     "I m 2 a"     : (
         (("I", "italic"),
@@ -1966,7 +1896,7 @@ spgrps = {
          ('2', 'regular'),
          ("a", "italic"),
          ),
-        {'itnumber': 46, 'crystal_system': 'orthorhombic', 'hm': 'I m 2 a', 'short-hm': 'Im2a', 'is_reference': False},
+        {'itnumber': 46, 'crystal_system': 'orthorhombic', 'short-hm': 'Im2a', 'is_reference': False},
     ),
     "P m m m"     : (
         (("P", "italic"),
@@ -1974,7 +1904,7 @@ spgrps = {
          ("m", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 47, 'crystal_system': 'orthorhombic', 'hm': 'P m m m', 'short-hm': 'Pmmm', 'is_reference': True},
+        {'itnumber': 47, 'crystal_system': 'orthorhombic', 'short-hm': 'Pmmm', 'is_reference': True},
     ),
     "P n n n:1"   : (
         (("P", "italic"),
@@ -1982,7 +1912,7 @@ spgrps = {
          ("n", "italic"),
          ("n", "italic"),
          ),
-        {'itnumber': 48, 'crystal_system': 'orthorhombic', 'hm': 'P n n n', 'short-hm': 'Pnnn', 'is_reference': False},
+        {'itnumber': 48, 'crystal_system': 'orthorhombic', 'short-hm': 'Pnnn', 'is_reference': False},
     ),
     "P n n n:2"   : (
         (("P", "italic"),
@@ -1990,7 +1920,7 @@ spgrps = {
          ("n", "italic"),
          ("n", "italic"),
          ),
-        {'itnumber': 48, 'crystal_system': 'orthorhombic', 'hm': 'P n n n', 'short-hm': 'Pnnn', 'is_reference': True},
+        {'itnumber': 48, 'crystal_system': 'orthorhombic', 'short-hm': 'Pnnn', 'is_reference': True},
     ),
     "P c c m"     : (
         (("P", "italic"),
@@ -1998,7 +1928,7 @@ spgrps = {
          ("c", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 49, 'crystal_system': 'orthorhombic', 'hm': 'P c c m', 'short-hm': 'Pccm', 'is_reference': True},
+        {'itnumber': 49, 'crystal_system': 'orthorhombic', 'short-hm': 'Pccm', 'is_reference': True},
     ),
     "P m a a"     : (
         (("P", "italic"),
@@ -2006,7 +1936,7 @@ spgrps = {
          ("a", "italic"),
          ("a", "italic"),
          ),
-        {'itnumber': 49, 'crystal_system': 'orthorhombic', 'hm': 'P m a a', 'short-hm': 'Pmaa', 'is_reference': False},
+        {'itnumber': 49, 'crystal_system': 'orthorhombic', 'short-hm': 'Pmaa', 'is_reference': False},
     ),
     "P b m b"     : (
         (("P", "italic"),
@@ -2014,7 +1944,7 @@ spgrps = {
          ("m", "italic"),
          ("b", "italic"),
          ),
-        {'itnumber': 49, 'crystal_system': 'orthorhombic', 'hm': 'P b m b', 'short-hm': 'Pbmb', 'is_reference': False},
+        {'itnumber': 49, 'crystal_system': 'orthorhombic', 'short-hm': 'Pbmb', 'is_reference': False},
     ),
     "P b a n:1"   : (
         (("P", "italic"),
@@ -2022,7 +1952,7 @@ spgrps = {
          ("a", "italic"),
          ("n", "italic"),
          ),
-        {'itnumber': 50, 'crystal_system': 'orthorhombic', 'hm': 'P b a n', 'short-hm': 'Pban', 'is_reference': False},
+        {'itnumber': 50, 'crystal_system': 'orthorhombic', 'short-hm': 'Pban', 'is_reference': False},
     ),
     "P b a n:2"   : (
         (("P", "italic"),
@@ -2030,7 +1960,7 @@ spgrps = {
          ("a", "italic"),
          ("n", "italic"),
          ),
-        {'itnumber': 50, 'crystal_system': 'orthorhombic', 'hm': 'P b a n', 'short-hm': 'Pban', 'is_reference': True},
+        {'itnumber': 50, 'crystal_system': 'orthorhombic', 'short-hm': 'Pban', 'is_reference': True},
     ),
     "P n c b:1"   : (
         (("P", "italic"),
@@ -2038,7 +1968,7 @@ spgrps = {
          ("c", "italic"),
          ("b", "italic"),
          ),
-        {'itnumber': 50, 'crystal_system': 'orthorhombic', 'hm': 'P n c b', 'short-hm': 'Pncb', 'is_reference': False},
+        {'itnumber': 50, 'crystal_system': 'orthorhombic', 'short-hm': 'Pncb', 'is_reference': False},
     ),
     "P n c b:2"   : (
         (("P", "italic"),
@@ -2046,7 +1976,7 @@ spgrps = {
          ("c", "italic"),
          ("b", "italic"),
          ),
-        {'itnumber': 50, 'crystal_system': 'orthorhombic', 'hm': 'P n c b', 'short-hm': 'Pncb', 'is_reference': False},
+        {'itnumber': 50, 'crystal_system': 'orthorhombic', 'short-hm': 'Pncb', 'is_reference': False},
     ),
     "P c n a:1"   : (
         (("P", "italic"),
@@ -2054,7 +1984,7 @@ spgrps = {
          ("n", "italic"),
          ("a", "italic"),
          ),
-        {'itnumber': 50, 'crystal_system': 'orthorhombic', 'hm': 'P c n a', 'short-hm': 'Pcna', 'is_reference': False},
+        {'itnumber': 50, 'crystal_system': 'orthorhombic', 'short-hm': 'Pcna', 'is_reference': False},
     ),
     "P c n a:2"   : (
         (("P", "italic"),
@@ -2062,7 +1992,7 @@ spgrps = {
          ("n", "italic"),
          ("a", "italic"),
          ),
-        {'itnumber': 50, 'crystal_system': 'orthorhombic', 'hm': 'P c n a', 'short-hm': 'Pcna', 'is_reference': False},
+        {'itnumber': 50, 'crystal_system': 'orthorhombic', 'short-hm': 'Pcna', 'is_reference': False},
     ),
     "P m m a"     : (
         (("P", "italic"),
@@ -2070,7 +2000,7 @@ spgrps = {
          ("m", "italic"),
          ("a", "italic"),
          ),
-        {'itnumber': 51, 'crystal_system': 'orthorhombic', 'hm': 'P m m a', 'short-hm': 'Pmma', 'is_reference': True},
+        {'itnumber': 51, 'crystal_system': 'orthorhombic', 'short-hm': 'Pmma', 'is_reference': True},
     ),
     "P m m b"     : (
         (("P", "italic"),
@@ -2078,7 +2008,7 @@ spgrps = {
          ("m", "italic"),
          ("b", "italic"),
          ),
-        {'itnumber': 51, 'crystal_system': 'orthorhombic', 'hm': 'P m m b', 'short-hm': 'Pmmb', 'is_reference': False},
+        {'itnumber': 51, 'crystal_system': 'orthorhombic', 'short-hm': 'Pmmb', 'is_reference': False},
     ),
     "P b m m"     : (
         (("P", "italic"),
@@ -2086,7 +2016,7 @@ spgrps = {
          ("m", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 51, 'crystal_system': 'orthorhombic', 'hm': 'P b m m', 'short-hm': 'Pbmm', 'is_reference': False},
+        {'itnumber': 51, 'crystal_system': 'orthorhombic', 'short-hm': 'Pbmm', 'is_reference': False},
     ),
     "P c m m"     : (
         (("P", "italic"),
@@ -2094,7 +2024,7 @@ spgrps = {
          ("m", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 51, 'crystal_system': 'orthorhombic', 'hm': 'P c m m', 'short-hm': 'Pcmm', 'is_reference': False},
+        {'itnumber': 51, 'crystal_system': 'orthorhombic', 'short-hm': 'Pcmm', 'is_reference': False},
     ),
     "P m c m"     : (
         (("P", "italic"),
@@ -2102,7 +2032,7 @@ spgrps = {
          ("c", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 51, 'crystal_system': 'orthorhombic', 'hm': 'P m c m', 'short-hm': 'Pmcm', 'is_reference': False},
+        {'itnumber': 51, 'crystal_system': 'orthorhombic', 'short-hm': 'Pmcm', 'is_reference': False},
     ),
     "P m a m"     : (
         (("P", "italic"),
@@ -2110,7 +2040,7 @@ spgrps = {
          ("a", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 51, 'crystal_system': 'orthorhombic', 'hm': 'P m a m', 'short-hm': 'Pmam', 'is_reference': False},
+        {'itnumber': 51, 'crystal_system': 'orthorhombic', 'short-hm': 'Pmam', 'is_reference': False},
     ),
     "P n n a"     : (
         (("P", "italic"),
@@ -2118,7 +2048,7 @@ spgrps = {
          ("n", "italic"),
          ("a", "italic"),
          ),
-        {'itnumber': 52, 'crystal_system': 'orthorhombic', 'hm': 'P n n a', 'short-hm': 'Pnna', 'is_reference': True},
+        {'itnumber': 52, 'crystal_system': 'orthorhombic', 'short-hm': 'Pnna', 'is_reference': True},
     ),
     "P n n b"     : (
         (("P", "italic"),
@@ -2126,7 +2056,7 @@ spgrps = {
          ("n", "italic"),
          ("b", "italic"),
          ),
-        {'itnumber': 52, 'crystal_system': 'orthorhombic', 'hm': 'P n n b', 'short-hm': 'Pnnb', 'is_reference': False},
+        {'itnumber': 52, 'crystal_system': 'orthorhombic', 'short-hm': 'Pnnb', 'is_reference': False},
     ),
     "P b n n"     : (
         (("P", "italic"),
@@ -2134,7 +2064,7 @@ spgrps = {
          ("n", "italic"),
          ("n", "italic"),
          ),
-        {'itnumber': 52, 'crystal_system': 'orthorhombic', 'hm': 'P b n n', 'short-hm': 'Pbnn', 'is_reference': False},
+        {'itnumber': 52, 'crystal_system': 'orthorhombic', 'short-hm': 'Pbnn', 'is_reference': False},
     ),
     "P c n n"     : (
         (("P", "italic"),
@@ -2142,7 +2072,7 @@ spgrps = {
          ("n", "italic"),
          ("n", "italic"),
          ),
-        {'itnumber': 52, 'crystal_system': 'orthorhombic', 'hm': 'P c n n', 'short-hm': 'Pcnn', 'is_reference': False},
+        {'itnumber': 52, 'crystal_system': 'orthorhombic', 'short-hm': 'Pcnn', 'is_reference': False},
     ),
     "P n c n"     : (
         (("P", "italic"),
@@ -2150,7 +2080,7 @@ spgrps = {
          ("c", "italic"),
          ("n", "italic"),
          ),
-        {'itnumber': 52, 'crystal_system': 'orthorhombic', 'hm': 'P n c n', 'short-hm': 'Pncn', 'is_reference': False},
+        {'itnumber': 52, 'crystal_system': 'orthorhombic', 'short-hm': 'Pncn', 'is_reference': False},
     ),
     "P n a n"     : (
         (("P", "italic"),
@@ -2158,7 +2088,7 @@ spgrps = {
          ("a", "italic"),
          ("n", "italic"),
          ),
-        {'itnumber': 52, 'crystal_system': 'orthorhombic', 'hm': 'P n a n', 'short-hm': 'Pnan', 'is_reference': False},
+        {'itnumber': 52, 'crystal_system': 'orthorhombic', 'short-hm': 'Pnan', 'is_reference': False},
     ),
     "P m n a"     : (
         (("P", "italic"),
@@ -2166,7 +2096,7 @@ spgrps = {
          ("n", "italic"),
          ("a", "italic"),
          ),
-        {'itnumber': 53, 'crystal_system': 'orthorhombic', 'hm': 'P m n a', 'short-hm': 'Pmna', 'is_reference': True},
+        {'itnumber': 53, 'crystal_system': 'orthorhombic', 'short-hm': 'Pmna', 'is_reference': True},
     ),
     "P n m b"     : (
         (("P", "italic"),
@@ -2174,7 +2104,7 @@ spgrps = {
          ("m", "italic"),
          ("b", "italic"),
          ),
-        {'itnumber': 53, 'crystal_system': 'orthorhombic', 'hm': 'P n m b', 'short-hm': 'Pnmb', 'is_reference': False},
+        {'itnumber': 53, 'crystal_system': 'orthorhombic', 'short-hm': 'Pnmb', 'is_reference': False},
     ),
     "P b m n"     : (
         (("P", "italic"),
@@ -2182,7 +2112,7 @@ spgrps = {
          ("m", "italic"),
          ("n", "italic"),
          ),
-        {'itnumber': 53, 'crystal_system': 'orthorhombic', 'hm': 'P b m n', 'short-hm': 'Pbmn', 'is_reference': False},
+        {'itnumber': 53, 'crystal_system': 'orthorhombic', 'short-hm': 'Pbmn', 'is_reference': False},
     ),
     "P c n m"     : (
         (("P", "italic"),
@@ -2190,7 +2120,7 @@ spgrps = {
          ("n", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 53, 'crystal_system': 'orthorhombic', 'hm': 'P c n m', 'short-hm': 'Pcnm', 'is_reference': False},
+        {'itnumber': 53, 'crystal_system': 'orthorhombic', 'short-hm': 'Pcnm', 'is_reference': False},
     ),
     "P n c m"     : (
         (("P", "italic"),
@@ -2198,7 +2128,7 @@ spgrps = {
          ("c", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 53, 'crystal_system': 'orthorhombic', 'hm': 'P n c m', 'short-hm': 'Pncm', 'is_reference': False},
+        {'itnumber': 53, 'crystal_system': 'orthorhombic', 'short-hm': 'Pncm', 'is_reference': False},
     ),
     "P m a n"     : (
         (("P", "italic"),
@@ -2206,7 +2136,7 @@ spgrps = {
          ("a", "italic"),
          ("n", "italic"),
          ),
-        {'itnumber': 53, 'crystal_system': 'orthorhombic', 'hm': 'P m a n', 'short-hm': 'Pman', 'is_reference': False},
+        {'itnumber': 53, 'crystal_system': 'orthorhombic', 'short-hm': 'Pman', 'is_reference': False},
     ),
     "P c c a"     : (
         (("P", "italic"),
@@ -2214,7 +2144,7 @@ spgrps = {
          ("c", "italic"),
          ("a", "italic"),
          ),
-        {'itnumber': 54, 'crystal_system': 'orthorhombic', 'hm': 'P c c a', 'short-hm': 'Pcca', 'is_reference': True},
+        {'itnumber': 54, 'crystal_system': 'orthorhombic', 'short-hm': 'Pcca', 'is_reference': True},
     ),
     "P c c b"     : (
         (("P", "italic"),
@@ -2222,7 +2152,7 @@ spgrps = {
          ("c", "italic"),
          ("b", "italic"),
          ),
-        {'itnumber': 54, 'crystal_system': 'orthorhombic', 'hm': 'P c c b', 'short-hm': 'Pccb', 'is_reference': False},
+        {'itnumber': 54, 'crystal_system': 'orthorhombic', 'short-hm': 'Pccb', 'is_reference': False},
     ),
     "P b a a"     : (
         (("P", "italic"),
@@ -2230,7 +2160,7 @@ spgrps = {
          ("a", "italic"),
          ("a", "italic"),
          ),
-        {'itnumber': 54, 'crystal_system': 'orthorhombic', 'hm': 'P b a a', 'short-hm': 'Pbaa', 'is_reference': False},
+        {'itnumber': 54, 'crystal_system': 'orthorhombic', 'short-hm': 'Pbaa', 'is_reference': False},
     ),
     "P c a a"     : (
         (("P", "italic"),
@@ -2238,7 +2168,7 @@ spgrps = {
          ("a", "italic"),
          ("a", "italic"),
          ),
-        {'itnumber': 54, 'crystal_system': 'orthorhombic', 'hm': 'P c a a', 'short-hm': 'Pcaa', 'is_reference': False},
+        {'itnumber': 54, 'crystal_system': 'orthorhombic', 'short-hm': 'Pcaa', 'is_reference': False},
     ),
     "P b c b"     : (
         (("P", "italic"),
@@ -2246,7 +2176,7 @@ spgrps = {
          ("c", "italic"),
          ("b", "italic"),
          ),
-        {'itnumber': 54, 'crystal_system': 'orthorhombic', 'hm': 'P b c b', 'short-hm': 'Pbcb', 'is_reference': False},
+        {'itnumber': 54, 'crystal_system': 'orthorhombic', 'short-hm': 'Pbcb', 'is_reference': False},
     ),
     "P b a b"     : (
         (("P", "italic"),
@@ -2254,7 +2184,7 @@ spgrps = {
          ("a", "italic"),
          ("b", "italic"),
          ),
-        {'itnumber': 54, 'crystal_system': 'orthorhombic', 'hm': 'P b a b', 'short-hm': 'Pbab', 'is_reference': False},
+        {'itnumber': 54, 'crystal_system': 'orthorhombic', 'short-hm': 'Pbab', 'is_reference': False},
     ),
     "P b a m"     : (
         (("P", "italic"),
@@ -2262,7 +2192,7 @@ spgrps = {
          ("a", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 55, 'crystal_system': 'orthorhombic', 'hm': 'P b a m', 'short-hm': 'Pbam', 'is_reference': True},
+        {'itnumber': 55, 'crystal_system': 'orthorhombic', 'short-hm': 'Pbam', 'is_reference': True},
     ),
     "P m c b"     : (
         (("P", "italic"),
@@ -2270,7 +2200,7 @@ spgrps = {
          ("c", "italic"),
          ("b", "italic"),
          ),
-        {'itnumber': 55, 'crystal_system': 'orthorhombic', 'hm': 'P m c b', 'short-hm': 'Pmcb', 'is_reference': False},
+        {'itnumber': 55, 'crystal_system': 'orthorhombic', 'short-hm': 'Pmcb', 'is_reference': False},
     ),
     "P c m a"     : (
         (("P", "italic"),
@@ -2278,7 +2208,7 @@ spgrps = {
          ("m", "italic"),
          ("a", "italic"),
          ),
-        {'itnumber': 55, 'crystal_system': 'orthorhombic', 'hm': 'P c m a', 'short-hm': 'Pcma', 'is_reference': False},
+        {'itnumber': 55, 'crystal_system': 'orthorhombic', 'short-hm': 'Pcma', 'is_reference': False},
     ),
     "P c c n"     : (
         (("P", "italic"),
@@ -2286,7 +2216,7 @@ spgrps = {
          ("c", "italic"),
          ("n", "italic"),
          ),
-        {'itnumber': 56, 'crystal_system': 'orthorhombic', 'hm': 'P c c n', 'short-hm': 'Pccn', 'is_reference': True},
+        {'itnumber': 56, 'crystal_system': 'orthorhombic', 'short-hm': 'Pccn', 'is_reference': True},
     ),
     "P n a a"     : (
         (("P", "italic"),
@@ -2294,7 +2224,7 @@ spgrps = {
          ("a", "italic"),
          ("a", "italic"),
          ),
-        {'itnumber': 56, 'crystal_system': 'orthorhombic', 'hm': 'P n a a', 'short-hm': 'Pnaa', 'is_reference': False},
+        {'itnumber': 56, 'crystal_system': 'orthorhombic', 'short-hm': 'Pnaa', 'is_reference': False},
     ),
     "P b n b"     : (
         (("P", "italic"),
@@ -2302,7 +2232,7 @@ spgrps = {
          ("n", "italic"),
          ("b", "italic"),
          ),
-        {'itnumber': 56, 'crystal_system': 'orthorhombic', 'hm': 'P b n b', 'short-hm': 'Pbnb', 'is_reference': False},
+        {'itnumber': 56, 'crystal_system': 'orthorhombic', 'short-hm': 'Pbnb', 'is_reference': False},
     ),
     "P b c m"     : (
         (("P", "italic"),
@@ -2310,7 +2240,7 @@ spgrps = {
          ("c", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 57, 'crystal_system': 'orthorhombic', 'hm': 'P b c m', 'short-hm': 'Pbcm', 'is_reference': True},
+        {'itnumber': 57, 'crystal_system': 'orthorhombic', 'short-hm': 'Pbcm', 'is_reference': True},
     ),
     "P c a m"     : (
         (("P", "italic"),
@@ -2318,7 +2248,7 @@ spgrps = {
          ("a", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 57, 'crystal_system': 'orthorhombic', 'hm': 'P c a m', 'short-hm': 'Pcam', 'is_reference': False},
+        {'itnumber': 57, 'crystal_system': 'orthorhombic', 'short-hm': 'Pcam', 'is_reference': False},
     ),
     "P m c a"     : (
         (("P", "italic"),
@@ -2326,7 +2256,7 @@ spgrps = {
          ("c", "italic"),
          ("a", "italic"),
          ),
-        {'itnumber': 57, 'crystal_system': 'orthorhombic', 'hm': 'P m c a', 'short-hm': 'Pmca', 'is_reference': False},
+        {'itnumber': 57, 'crystal_system': 'orthorhombic', 'short-hm': 'Pmca', 'is_reference': False},
     ),
     "P m a b"     : (
         (("P", "italic"),
@@ -2334,7 +2264,7 @@ spgrps = {
          ("a", "italic"),
          ("b", "italic"),
          ),
-        {'itnumber': 57, 'crystal_system': 'orthorhombic', 'hm': 'P m a b', 'short-hm': 'Pmab', 'is_reference': False},
+        {'itnumber': 57, 'crystal_system': 'orthorhombic', 'short-hm': 'Pmab', 'is_reference': False},
     ),
     "P b m a"     : (
         (("P", "italic"),
@@ -2342,7 +2272,7 @@ spgrps = {
          ("m", "italic"),
          ("a", "italic"),
          ),
-        {'itnumber': 57, 'crystal_system': 'orthorhombic', 'hm': 'P b m a', 'short-hm': 'Pbma', 'is_reference': False},
+        {'itnumber': 57, 'crystal_system': 'orthorhombic', 'short-hm': 'Pbma', 'is_reference': False},
     ),
     "P c m b"     : (
         (("P", "italic"),
@@ -2350,7 +2280,7 @@ spgrps = {
          ("m", "italic"),
          ("b", "italic"),
          ),
-        {'itnumber': 57, 'crystal_system': 'orthorhombic', 'hm': 'P c m b', 'short-hm': 'Pcmb', 'is_reference': False},
+        {'itnumber': 57, 'crystal_system': 'orthorhombic', 'short-hm': 'Pcmb', 'is_reference': False},
     ),
     "P n n m"     : (
         (("P", "italic"),
@@ -2358,7 +2288,7 @@ spgrps = {
          ("n", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 58, 'crystal_system': 'orthorhombic', 'hm': 'P n n m', 'short-hm': 'Pnnm', 'is_reference': True},
+        {'itnumber': 58, 'crystal_system': 'orthorhombic', 'short-hm': 'Pnnm', 'is_reference': True},
     ),
     "P m n n"     : (
         (("P", "italic"),
@@ -2366,7 +2296,7 @@ spgrps = {
          ("n", "italic"),
          ("n", "italic"),
          ),
-        {'itnumber': 58, 'crystal_system': 'orthorhombic', 'hm': 'P m n n', 'short-hm': 'Pmnn', 'is_reference': False},
+        {'itnumber': 58, 'crystal_system': 'orthorhombic', 'short-hm': 'Pmnn', 'is_reference': False},
     ),
     "P n m n"     : (
         (("P", "italic"),
@@ -2374,7 +2304,7 @@ spgrps = {
          ("m", "italic"),
          ("n", "italic"),
          ),
-        {'itnumber': 58, 'crystal_system': 'orthorhombic', 'hm': 'P n m n', 'short-hm': 'Pnmn', 'is_reference': False},
+        {'itnumber': 58, 'crystal_system': 'orthorhombic', 'short-hm': 'Pnmn', 'is_reference': False},
     ),
     "P m m n:1"   : (
         (("P", "italic"),
@@ -2382,7 +2312,7 @@ spgrps = {
          ("m", "italic"),
          ("n", "italic"),
          ),
-        {'itnumber': 59, 'crystal_system': 'orthorhombic', 'hm': 'P m m n', 'short-hm': 'Pmmn', 'is_reference': False},
+        {'itnumber': 59, 'crystal_system': 'orthorhombic', 'short-hm': 'Pmmn', 'is_reference': False},
     ),
     "P m m n:2"   : (
         (("P", "italic"),
@@ -2390,7 +2320,7 @@ spgrps = {
          ("m", "italic"),
          ("n", "italic"),
          ),
-        {'itnumber': 59, 'crystal_system': 'orthorhombic', 'hm': 'P m m n', 'short-hm': 'Pmmn', 'is_reference': True},
+        {'itnumber': 59, 'crystal_system': 'orthorhombic', 'short-hm': 'Pmmn', 'is_reference': True},
     ),
     "P n m m:1"   : (
         (("P", "italic"),
@@ -2398,7 +2328,7 @@ spgrps = {
          ("m", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 59, 'crystal_system': 'orthorhombic', 'hm': 'P n m m', 'short-hm': 'Pnmm', 'is_reference': False},
+        {'itnumber': 59, 'crystal_system': 'orthorhombic', 'short-hm': 'Pnmm', 'is_reference': False},
     ),
     "P n m m:2"   : (
         (("P", "italic"),
@@ -2406,7 +2336,7 @@ spgrps = {
          ("m", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 59, 'crystal_system': 'orthorhombic', 'hm': 'P n m m', 'short-hm': 'Pnmm', 'is_reference': False},
+        {'itnumber': 59, 'crystal_system': 'orthorhombic', 'short-hm': 'Pnmm', 'is_reference': False},
     ),
     "P m n m:1"   : (
         (("P", "italic"),
@@ -2414,7 +2344,7 @@ spgrps = {
          ("n", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 59, 'crystal_system': 'orthorhombic', 'hm': 'P m n m', 'short-hm': 'Pmnm', 'is_reference': False},
+        {'itnumber': 59, 'crystal_system': 'orthorhombic', 'short-hm': 'Pmnm', 'is_reference': False},
     ),
     "P m n m:2"   : (
         (("P", "italic"),
@@ -2422,7 +2352,7 @@ spgrps = {
          ("n", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 59, 'crystal_system': 'orthorhombic', 'hm': 'P m n m', 'short-hm': 'Pmnm', 'is_reference': False},
+        {'itnumber': 59, 'crystal_system': 'orthorhombic', 'short-hm': 'Pmnm', 'is_reference': False},
     ),
     "P b c n"     : (
         (("P", "italic"),
@@ -2430,7 +2360,7 @@ spgrps = {
          ("c", "italic"),
          ("n", "italic"),
          ),
-        {'itnumber': 60, 'crystal_system': 'orthorhombic', 'hm': 'P b c n', 'short-hm': 'Pbcn', 'is_reference': True},
+        {'itnumber': 60, 'crystal_system': 'orthorhombic', 'short-hm': 'Pbcn', 'is_reference': True},
     ),
     "P c a n"     : (
         (("P", "italic"),
@@ -2438,7 +2368,7 @@ spgrps = {
          ("a", "italic"),
          ("n", "italic"),
          ),
-        {'itnumber': 60, 'crystal_system': 'orthorhombic', 'hm': 'P c a n', 'short-hm': 'Pcan', 'is_reference': False},
+        {'itnumber': 60, 'crystal_system': 'orthorhombic', 'short-hm': 'Pcan', 'is_reference': False},
     ),
     "P n c a"     : (
         (("P", "italic"),
@@ -2446,7 +2376,7 @@ spgrps = {
          ("c", "italic"),
          ("a", "italic"),
          ),
-        {'itnumber': 60, 'crystal_system': 'orthorhombic', 'hm': 'P n c a', 'short-hm': 'Pnca', 'is_reference': False},
+        {'itnumber': 60, 'crystal_system': 'orthorhombic', 'short-hm': 'Pnca', 'is_reference': False},
     ),
     "P n a b"     : (
         (("P", "italic"),
@@ -2454,7 +2384,7 @@ spgrps = {
          ("a", "italic"),
          ("b", "italic"),
          ),
-        {'itnumber': 60, 'crystal_system': 'orthorhombic', 'hm': 'P n a b', 'short-hm': 'Pnab', 'is_reference': False},
+        {'itnumber': 60, 'crystal_system': 'orthorhombic', 'short-hm': 'Pnab', 'is_reference': False},
     ),
     "P b n a"     : (
         (("P", "italic"),
@@ -2462,7 +2392,7 @@ spgrps = {
          ("n", "italic"),
          ("a", "italic"),
          ),
-        {'itnumber': 60, 'crystal_system': 'orthorhombic', 'hm': 'P b n a', 'short-hm': 'Pbna', 'is_reference': False},
+        {'itnumber': 60, 'crystal_system': 'orthorhombic', 'short-hm': 'Pbna', 'is_reference': False},
     ),
     "P c n b"     : (
         (("P", "italic"),
@@ -2470,7 +2400,7 @@ spgrps = {
          ("n", "italic"),
          ("b", "italic"),
          ),
-        {'itnumber': 60, 'crystal_system': 'orthorhombic', 'hm': 'P c n b', 'short-hm': 'Pcnb', 'is_reference': False},
+        {'itnumber': 60, 'crystal_system': 'orthorhombic', 'short-hm': 'Pcnb', 'is_reference': False},
     ),
     "P b c a"     : (
         (("P", "italic"),
@@ -2478,7 +2408,7 @@ spgrps = {
          ("c", "italic"),
          ("a", "italic"),
          ),
-        {'itnumber': 61, 'crystal_system': 'orthorhombic', 'hm': 'P b c a', 'short-hm': 'Pbca', 'is_reference': True},
+        {'itnumber': 61, 'crystal_system': 'orthorhombic', 'short-hm': 'Pbca', 'is_reference': True},
     ),
     "P c a b"     : (
         (("P", "italic"),
@@ -2486,7 +2416,7 @@ spgrps = {
          ("a", "italic"),
          ("b", "italic"),
          ),
-        {'itnumber': 61, 'crystal_system': 'orthorhombic', 'hm': 'P c a b', 'short-hm': 'Pcab', 'is_reference': False},
+        {'itnumber': 61, 'crystal_system': 'orthorhombic', 'short-hm': 'Pcab', 'is_reference': False},
     ),
     "P n m a"     : (
         (("P", "italic"),
@@ -2494,7 +2424,7 @@ spgrps = {
          ("m", "italic"),
          ("a", "italic"),
          ),
-        {'itnumber': 62, 'crystal_system': 'orthorhombic', 'hm': 'P n m a', 'short-hm': 'Pnma', 'is_reference': True},
+        {'itnumber': 62, 'crystal_system': 'orthorhombic', 'short-hm': 'Pnma', 'is_reference': True},
     ),
     "P m n b"     : (
         (("P", "italic"),
@@ -2502,7 +2432,7 @@ spgrps = {
          ("n", "italic"),
          ("b", "italic"),
          ),
-        {'itnumber': 62, 'crystal_system': 'orthorhombic', 'hm': 'P m n b', 'short-hm': 'Pmnb', 'is_reference': False},
+        {'itnumber': 62, 'crystal_system': 'orthorhombic', 'short-hm': 'Pmnb', 'is_reference': False},
     ),
     "P b n m"     : (
         (("P", "italic"),
@@ -2510,7 +2440,7 @@ spgrps = {
          ("n", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 62, 'crystal_system': 'orthorhombic', 'hm': 'P b n m', 'short-hm': 'Pbnm', 'is_reference': False},
+        {'itnumber': 62, 'crystal_system': 'orthorhombic', 'short-hm': 'Pbnm', 'is_reference': False},
     ),
     "P c m n"     : (
         (("P", "italic"),
@@ -2518,7 +2448,7 @@ spgrps = {
          ("m", "italic"),
          ("n", "italic"),
          ),
-        {'itnumber': 62, 'crystal_system': 'orthorhombic', 'hm': 'P c m n', 'short-hm': 'Pcmn', 'is_reference': False},
+        {'itnumber': 62, 'crystal_system': 'orthorhombic', 'short-hm': 'Pcmn', 'is_reference': False},
     ),
     "P m c n"     : (
         (("P", "italic"),
@@ -2526,7 +2456,7 @@ spgrps = {
          ("c", "italic"),
          ("n", "italic"),
          ),
-        {'itnumber': 62, 'crystal_system': 'orthorhombic', 'hm': 'P m c n', 'short-hm': 'Pmcn', 'is_reference': False},
+        {'itnumber': 62, 'crystal_system': 'orthorhombic', 'short-hm': 'Pmcn', 'is_reference': False},
     ),
     "P n a m"     : (
         (("P", "italic"),
@@ -2534,7 +2464,7 @@ spgrps = {
          ("a", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 62, 'crystal_system': 'orthorhombic', 'hm': 'P n a m', 'short-hm': 'Pnam', 'is_reference': False},
+        {'itnumber': 62, 'crystal_system': 'orthorhombic', 'short-hm': 'Pnam', 'is_reference': False},
     ),
     "C m c m"     : (
         (("C", "italic"),
@@ -2542,7 +2472,7 @@ spgrps = {
          ("c", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 63, 'crystal_system': 'orthorhombic', 'hm': 'C m c m', 'short-hm': 'Cmcm', 'is_reference': True},
+        {'itnumber': 63, 'crystal_system': 'orthorhombic', 'short-hm': 'Cmcm', 'is_reference': True},
     ),
     "C c m m"     : (
         (("C", "italic"),
@@ -2550,7 +2480,7 @@ spgrps = {
          ("m", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 63, 'crystal_system': 'orthorhombic', 'hm': 'C c m m', 'short-hm': 'Ccmm', 'is_reference': False},
+        {'itnumber': 63, 'crystal_system': 'orthorhombic', 'short-hm': 'Ccmm', 'is_reference': False},
     ),
     "A m m a"     : (
         (("A", "italic"),
@@ -2558,7 +2488,7 @@ spgrps = {
          ("m", "italic"),
          ("a", "italic"),
          ),
-        {'itnumber': 63, 'crystal_system': 'orthorhombic', 'hm': 'A m m a', 'short-hm': 'Amma', 'is_reference': False},
+        {'itnumber': 63, 'crystal_system': 'orthorhombic', 'short-hm': 'Amma', 'is_reference': False},
     ),
     "A m a m"     : (
         (("A", "italic"),
@@ -2566,7 +2496,7 @@ spgrps = {
          ("a", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 63, 'crystal_system': 'orthorhombic', 'hm': 'A m a m', 'short-hm': 'Amam', 'is_reference': False},
+        {'itnumber': 63, 'crystal_system': 'orthorhombic', 'short-hm': 'Amam', 'is_reference': False},
     ),
     "B b m m"     : (
         (("B", "italic"),
@@ -2574,7 +2504,7 @@ spgrps = {
          ("m", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 63, 'crystal_system': 'orthorhombic', 'hm': 'B b m m', 'short-hm': 'Bbmm', 'is_reference': False},
+        {'itnumber': 63, 'crystal_system': 'orthorhombic', 'short-hm': 'Bbmm', 'is_reference': False},
     ),
     "B m m b"     : (
         (("B", "italic"),
@@ -2582,7 +2512,7 @@ spgrps = {
          ("m", "italic"),
          ("b", "italic"),
          ),
-        {'itnumber': 63, 'crystal_system': 'orthorhombic', 'hm': 'B m m b', 'short-hm': 'Bmmb', 'is_reference': False},
+        {'itnumber': 63, 'crystal_system': 'orthorhombic', 'short-hm': 'Bmmb', 'is_reference': False},
     ),
     "C m c a"     : (
         (("C", "italic"),
@@ -2590,7 +2520,7 @@ spgrps = {
          ("c", "italic"),
          ("a", "italic"),
          ),
-        {'itnumber': 64, 'crystal_system': 'orthorhombic', 'hm': 'C m c a', 'short-hm': 'Cmca', 'is_reference': True},
+        {'itnumber': 64, 'crystal_system': 'orthorhombic', 'short-hm': 'Cmca', 'is_reference': True},
     ),
     "C c m b"     : (
         (("C", "italic"),
@@ -2598,7 +2528,7 @@ spgrps = {
          ("m", "italic"),
          ("b", "italic"),
          ),
-        {'itnumber': 64, 'crystal_system': 'orthorhombic', 'hm': 'C c m b', 'short-hm': 'Ccmb', 'is_reference': False},
+        {'itnumber': 64, 'crystal_system': 'orthorhombic', 'short-hm': 'Ccmb', 'is_reference': False},
     ),
     "A b m a"     : (
         (("A", "italic"),
@@ -2606,7 +2536,7 @@ spgrps = {
          ("m", "italic"),
          ("a", "italic"),
          ),
-        {'itnumber': 64, 'crystal_system': 'orthorhombic', 'hm': 'A b m a', 'short-hm': 'Abma', 'is_reference': False},
+        {'itnumber': 64, 'crystal_system': 'orthorhombic', 'short-hm': 'Abma', 'is_reference': False},
     ),
     "A c a m"     : (
         (("A", "italic"),
@@ -2614,7 +2544,7 @@ spgrps = {
          ("a", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 64, 'crystal_system': 'orthorhombic', 'hm': 'A c a m', 'short-hm': 'Acam', 'is_reference': False},
+        {'itnumber': 64, 'crystal_system': 'orthorhombic', 'short-hm': 'Acam', 'is_reference': False},
     ),
     "B b c m"     : (
         (("B", "italic"),
@@ -2622,7 +2552,7 @@ spgrps = {
          ("c", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 64, 'crystal_system': 'orthorhombic', 'hm': 'B b c m', 'short-hm': 'Bbcm', 'is_reference': False},
+        {'itnumber': 64, 'crystal_system': 'orthorhombic', 'short-hm': 'Bbcm', 'is_reference': False},
     ),
     "B m a b"     : (
         (("B", "italic"),
@@ -2630,7 +2560,7 @@ spgrps = {
          ("a", "italic"),
          ("b", "italic"),
          ),
-        {'itnumber': 64, 'crystal_system': 'orthorhombic', 'hm': 'B m a b', 'short-hm': 'Bmab', 'is_reference': False},
+        {'itnumber': 64, 'crystal_system': 'orthorhombic', 'short-hm': 'Bmab', 'is_reference': False},
     ),
     "C m m m"     : (
         (("C", "italic"),
@@ -2638,7 +2568,7 @@ spgrps = {
          ("m", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 65, 'crystal_system': 'orthorhombic', 'hm': 'C m m m', 'short-hm': 'Cmmm', 'is_reference': True},
+        {'itnumber': 65, 'crystal_system': 'orthorhombic', 'short-hm': 'Cmmm', 'is_reference': True},
     ),
     "A m m m"     : (
         (("A", "italic"),
@@ -2646,7 +2576,7 @@ spgrps = {
          ("m", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 65, 'crystal_system': 'orthorhombic', 'hm': 'A m m m', 'short-hm': 'Ammm', 'is_reference': False},
+        {'itnumber': 65, 'crystal_system': 'orthorhombic', 'short-hm': 'Ammm', 'is_reference': False},
     ),
     "B m m m"     : (
         (("B", "italic"),
@@ -2654,7 +2584,7 @@ spgrps = {
          ("m", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 65, 'crystal_system': 'orthorhombic', 'hm': 'B m m m', 'short-hm': 'Bmmm', 'is_reference': False},
+        {'itnumber': 65, 'crystal_system': 'orthorhombic', 'short-hm': 'Bmmm', 'is_reference': False},
     ),
     "C c c m"     : (
         (("C", "italic"),
@@ -2662,7 +2592,7 @@ spgrps = {
          ("c", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 66, 'crystal_system': 'orthorhombic', 'hm': 'C c c m', 'short-hm': 'Cccm', 'is_reference': True},
+        {'itnumber': 66, 'crystal_system': 'orthorhombic', 'short-hm': 'Cccm', 'is_reference': True},
     ),
     "A m a a"     : (
         (("A", "italic"),
@@ -2670,7 +2600,7 @@ spgrps = {
          ("a", "italic"),
          ("a", "italic"),
          ),
-        {'itnumber': 66, 'crystal_system': 'orthorhombic', 'hm': 'A m a a', 'short-hm': 'Amaa', 'is_reference': False},
+        {'itnumber': 66, 'crystal_system': 'orthorhombic', 'short-hm': 'Amaa', 'is_reference': False},
     ),
     "B b m b"     : (
         (("B", "italic"),
@@ -2678,7 +2608,7 @@ spgrps = {
          ("m", "italic"),
          ("b", "italic"),
          ),
-        {'itnumber': 66, 'crystal_system': 'orthorhombic', 'hm': 'B b m b', 'short-hm': 'Bbmb', 'is_reference': False},
+        {'itnumber': 66, 'crystal_system': 'orthorhombic', 'short-hm': 'Bbmb', 'is_reference': False},
     ),
     "C m m a"     : (
         (("C", "italic"),
@@ -2686,7 +2616,7 @@ spgrps = {
          ("m", "italic"),
          ("a", "italic"),
          ),
-        {'itnumber': 67, 'crystal_system': 'orthorhombic', 'hm': 'C m m a', 'short-hm': 'Cmma', 'is_reference': True},
+        {'itnumber': 67, 'crystal_system': 'orthorhombic', 'short-hm': 'Cmma', 'is_reference': True},
     ),
     "C m m b"     : (
         (("C", "italic"),
@@ -2694,7 +2624,7 @@ spgrps = {
          ("m", "italic"),
          ("b", "italic"),
          ),
-        {'itnumber': 67, 'crystal_system': 'orthorhombic', 'hm': 'C m m b', 'short-hm': 'Cmmb', 'is_reference': False},
+        {'itnumber': 67, 'crystal_system': 'orthorhombic', 'short-hm': 'Cmmb', 'is_reference': False},
     ),
     "A b m m"     : (
         (("A", "italic"),
@@ -2702,7 +2632,7 @@ spgrps = {
          ("m", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 67, 'crystal_system': 'orthorhombic', 'hm': 'A b m m', 'short-hm': 'Abmm', 'is_reference': False},
+        {'itnumber': 67, 'crystal_system': 'orthorhombic', 'short-hm': 'Abmm', 'is_reference': False},
     ),
     "A c m m"     : (
         (("A", "italic"),
@@ -2710,7 +2640,7 @@ spgrps = {
          ("m", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 67, 'crystal_system': 'orthorhombic', 'hm': 'A c m m', 'short-hm': 'Acmm', 'is_reference': False},
+        {'itnumber': 67, 'crystal_system': 'orthorhombic', 'short-hm': 'Acmm', 'is_reference': False},
     ),
     "B m c m"     : (
         (("B", "italic"),
@@ -2718,7 +2648,7 @@ spgrps = {
          ("c", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 67, 'crystal_system': 'orthorhombic', 'hm': 'B m c m', 'short-hm': 'Bmcm', 'is_reference': False},
+        {'itnumber': 67, 'crystal_system': 'orthorhombic', 'short-hm': 'Bmcm', 'is_reference': False},
     ),
     "B m a m"     : (
         (("B", "italic"),
@@ -2726,7 +2656,7 @@ spgrps = {
          ("a", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 67, 'crystal_system': 'orthorhombic', 'hm': 'B m a m', 'short-hm': 'Bmam', 'is_reference': False},
+        {'itnumber': 67, 'crystal_system': 'orthorhombic', 'short-hm': 'Bmam', 'is_reference': False},
     ),
     "C c c a:1"   : (
         (("C", "italic"),
@@ -2734,7 +2664,7 @@ spgrps = {
          ("c", "italic"),
          ("a", "italic"),
          ),
-        {'itnumber': 68, 'crystal_system': 'orthorhombic', 'hm': 'C c c a', 'short-hm': 'Ccca', 'is_reference': False},
+        {'itnumber': 68, 'crystal_system': 'orthorhombic', 'short-hm': 'Ccca', 'is_reference': False},
     ),
     "C c c a:2"   : (
         (("C", "italic"),
@@ -2742,7 +2672,7 @@ spgrps = {
          ("c", "italic"),
          ("a", "italic"),
          ),
-        {'itnumber': 68, 'crystal_system': 'orthorhombic', 'hm': 'C c c a', 'short-hm': 'Ccca', 'is_reference': True},
+        {'itnumber': 68, 'crystal_system': 'orthorhombic', 'short-hm': 'Ccca', 'is_reference': True},
     ),
     "C c c b:1"   : (
         (("C", "italic"),
@@ -2750,7 +2680,7 @@ spgrps = {
          ("c", "italic"),
          ("b", "italic"),
          ),
-        {'itnumber': 68, 'crystal_system': 'orthorhombic', 'hm': 'C c c b', 'short-hm': 'Cccb', 'is_reference': False},
+        {'itnumber': 68, 'crystal_system': 'orthorhombic', 'short-hm': 'Cccb', 'is_reference': False},
     ),
     "C c c b:2"   : (
         (("C", "italic"),
@@ -2758,7 +2688,7 @@ spgrps = {
          ("c", "italic"),
          ("b", "italic"),
          ),
-        {'itnumber': 68, 'crystal_system': 'orthorhombic', 'hm': 'C c c b', 'short-hm': 'Cccb', 'is_reference': False},
+        {'itnumber': 68, 'crystal_system': 'orthorhombic', 'short-hm': 'Cccb', 'is_reference': False},
     ),
     "A b a a:1"   : (
         (("A", "italic"),
@@ -2766,7 +2696,7 @@ spgrps = {
          ("a", "italic"),
          ("a", "italic"),
          ),
-        {'itnumber': 68, 'crystal_system': 'orthorhombic', 'hm': 'A b a a', 'short-hm': 'Abaa', 'is_reference': False},
+        {'itnumber': 68, 'crystal_system': 'orthorhombic', 'short-hm': 'Abaa', 'is_reference': False},
     ),
     "A b a a:2"   : (
         (("A", "italic"),
@@ -2774,7 +2704,7 @@ spgrps = {
          ("a", "italic"),
          ("a", "italic"),
          ),
-        {'itnumber': 68, 'crystal_system': 'orthorhombic', 'hm': 'A b a a', 'short-hm': 'Abaa', 'is_reference': False},
+        {'itnumber': 68, 'crystal_system': 'orthorhombic', 'short-hm': 'Abaa', 'is_reference': False},
     ),
     "A c a a:1"   : (
         (("A", "italic"),
@@ -2782,7 +2712,7 @@ spgrps = {
          ("a", "italic"),
          ("a", "italic"),
          ),
-        {'itnumber': 68, 'crystal_system': 'orthorhombic', 'hm': 'A c a a', 'short-hm': 'Acaa', 'is_reference': False},
+        {'itnumber': 68, 'crystal_system': 'orthorhombic', 'short-hm': 'Acaa', 'is_reference': False},
     ),
     "A c a a:2"   : (
         (("A", "italic"),
@@ -2790,7 +2720,7 @@ spgrps = {
          ("a", "italic"),
          ("a", "italic"),
          ),
-        {'itnumber': 68, 'crystal_system': 'orthorhombic', 'hm': 'A c a a', 'short-hm': 'Acaa', 'is_reference': False},
+        {'itnumber': 68, 'crystal_system': 'orthorhombic', 'short-hm': 'Acaa', 'is_reference': False},
     ),
     "B b c b:1"   : (
         (("B", "italic"),
@@ -2798,7 +2728,7 @@ spgrps = {
          ("c", "italic"),
          ("b", "italic"),
          ),
-        {'itnumber': 68, 'crystal_system': 'orthorhombic', 'hm': 'B b c b', 'short-hm': 'Bbcb', 'is_reference': False},
+        {'itnumber': 68, 'crystal_system': 'orthorhombic', 'short-hm': 'Bbcb', 'is_reference': False},
     ),
     "B b c b:2"   : (
         (("B", "italic"),
@@ -2806,7 +2736,7 @@ spgrps = {
          ("c", "italic"),
          ("b", "italic"),
          ),
-        {'itnumber': 68, 'crystal_system': 'orthorhombic', 'hm': 'B b c b', 'short-hm': 'Bbcb', 'is_reference': False},
+        {'itnumber': 68, 'crystal_system': 'orthorhombic', 'short-hm': 'Bbcb', 'is_reference': False},
     ),
     "B b a b:1"   : (
         (("B", "italic"),
@@ -2814,7 +2744,7 @@ spgrps = {
          ("a", "italic"),
          ("b", "italic"),
          ),
-        {'itnumber': 68, 'crystal_system': 'orthorhombic', 'hm': 'B b a b', 'short-hm': 'Bbab', 'is_reference': False},
+        {'itnumber': 68, 'crystal_system': 'orthorhombic', 'short-hm': 'Bbab', 'is_reference': False},
     ),
     "B b a b:2"   : (
         (("B", "italic"),
@@ -2822,7 +2752,7 @@ spgrps = {
          ("a", "italic"),
          ("b", "italic"),
          ),
-        {'itnumber': 68, 'crystal_system': 'orthorhombic', 'hm': 'B b a b', 'short-hm': 'Bbab', 'is_reference': False},
+        {'itnumber': 68, 'crystal_system': 'orthorhombic', 'short-hm': 'Bbab', 'is_reference': False},
     ),
     "F m m m"     : (
         (("F", "italic"),
@@ -2830,7 +2760,7 @@ spgrps = {
          ("m", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 69, 'crystal_system': 'orthorhombic', 'hm': 'F m m m', 'short-hm': 'Fmmm', 'is_reference': True},
+        {'itnumber': 69, 'crystal_system': 'orthorhombic', 'short-hm': 'Fmmm', 'is_reference': True},
     ),
     "F d d d:1"   : (
         (("F", "italic"),
@@ -2838,7 +2768,7 @@ spgrps = {
          ("d", "italic"),
          ("d", "italic"),
          ),
-        {'itnumber': 70, 'crystal_system': 'orthorhombic', 'hm': 'F d d d', 'short-hm': 'Fddd', 'is_reference': False},
+        {'itnumber': 70, 'crystal_system': 'orthorhombic', 'short-hm': 'Fddd', 'is_reference': False},
     ),
     "F d d d:2"   : (
         (("F", "italic"),
@@ -2846,7 +2776,7 @@ spgrps = {
          ("d", "italic"),
          ("d", "italic"),
          ),
-        {'itnumber': 70, 'crystal_system': 'orthorhombic', 'hm': 'F d d d', 'short-hm': 'Fddd', 'is_reference': True},
+        {'itnumber': 70, 'crystal_system': 'orthorhombic', 'short-hm': 'Fddd', 'is_reference': True},
     ),
     "I m m m"     : (
         (("I", "italic"),
@@ -2854,7 +2784,7 @@ spgrps = {
          ("m", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 71, 'crystal_system': 'orthorhombic', 'hm': 'I m m m', 'short-hm': 'Immm', 'is_reference': True},
+        {'itnumber': 71, 'crystal_system': 'orthorhombic', 'short-hm': 'Immm', 'is_reference': True},
     ),
     "I b a m"     : (
         (("I", "italic"),
@@ -2862,7 +2792,7 @@ spgrps = {
          ("a", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 72, 'crystal_system': 'orthorhombic', 'hm': 'I b a m', 'short-hm': 'Ibam', 'is_reference': True},
+        {'itnumber': 72, 'crystal_system': 'orthorhombic', 'short-hm': 'Ibam', 'is_reference': True},
     ),
     "I m c b"     : (
         (("I", "italic"),
@@ -2870,7 +2800,7 @@ spgrps = {
          ("c", "italic"),
          ("b", "italic"),
          ),
-        {'itnumber': 72, 'crystal_system': 'orthorhombic', 'hm': 'I m c b', 'short-hm': 'Imcb', 'is_reference': False},
+        {'itnumber': 72, 'crystal_system': 'orthorhombic', 'short-hm': 'Imcb', 'is_reference': False},
     ),
     "I c m a"     : (
         (("I", "italic"),
@@ -2878,7 +2808,7 @@ spgrps = {
          ("m", "italic"),
          ("a", "italic"),
          ),
-        {'itnumber': 72, 'crystal_system': 'orthorhombic', 'hm': 'I c m a', 'short-hm': 'Icma', 'is_reference': False},
+        {'itnumber': 72, 'crystal_system': 'orthorhombic', 'short-hm': 'Icma', 'is_reference': False},
     ),
     "I b c a"     : (
         (("I", "italic"),
@@ -2886,7 +2816,7 @@ spgrps = {
          ("c", "italic"),
          ("a", "italic"),
          ),
-        {'itnumber': 73, 'crystal_system': 'orthorhombic', 'hm': 'I b c a', 'short-hm': 'Ibca', 'is_reference': True},
+        {'itnumber': 73, 'crystal_system': 'orthorhombic', 'short-hm': 'Ibca', 'is_reference': True},
     ),
     "I c a b"     : (
         (("I", "italic"),
@@ -2894,7 +2824,7 @@ spgrps = {
          ("a", "italic"),
          ("b", "italic"),
          ),
-        {'itnumber': 73, 'crystal_system': 'orthorhombic', 'hm': 'I c a b', 'short-hm': 'Icab', 'is_reference': False},
+        {'itnumber': 73, 'crystal_system': 'orthorhombic', 'short-hm': 'Icab', 'is_reference': False},
     ),
     "I m m a"     : (
         (("I", "italic"),
@@ -2902,7 +2832,7 @@ spgrps = {
          ("m", "italic"),
          ("a", "italic"),
          ),
-        {'itnumber': 74, 'crystal_system': 'orthorhombic', 'hm': 'I m m a', 'short-hm': 'Imma', 'is_reference': True},
+        {'itnumber': 74, 'crystal_system': 'orthorhombic', 'short-hm': 'Imma', 'is_reference': True},
     ),
     "I m m b"     : (
         (("I", "italic"),
@@ -2910,7 +2840,7 @@ spgrps = {
          ("m", "italic"),
          ("b", "italic"),
          ),
-        {'itnumber': 74, 'crystal_system': 'orthorhombic', 'hm': 'I m m b', 'short-hm': 'Immb', 'is_reference': False},
+        {'itnumber': 74, 'crystal_system': 'orthorhombic', 'short-hm': 'Immb', 'is_reference': False},
     ),
     "I b m m"     : (
         (("I", "italic"),
@@ -2918,7 +2848,7 @@ spgrps = {
          ("m", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 74, 'crystal_system': 'orthorhombic', 'hm': 'I b m m', 'short-hm': 'Ibmm', 'is_reference': False},
+        {'itnumber': 74, 'crystal_system': 'orthorhombic', 'short-hm': 'Ibmm', 'is_reference': False},
     ),
     "I c m m"     : (
         (("I", "italic"),
@@ -2926,7 +2856,7 @@ spgrps = {
          ("m", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 74, 'crystal_system': 'orthorhombic', 'hm': 'I c m m', 'short-hm': 'Icmm', 'is_reference': False},
+        {'itnumber': 74, 'crystal_system': 'orthorhombic', 'short-hm': 'Icmm', 'is_reference': False},
     ),
     "I m c m"     : (
         (("I", "italic"),
@@ -2934,7 +2864,7 @@ spgrps = {
          ("c", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 74, 'crystal_system': 'orthorhombic', 'hm': 'I m c m', 'short-hm': 'Imcm', 'is_reference': False},
+        {'itnumber': 74, 'crystal_system': 'orthorhombic', 'short-hm': 'Imcm', 'is_reference': False},
     ),
     "I m a m"     : (
         (("I", "italic"),
@@ -2942,59 +2872,59 @@ spgrps = {
          ("a", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 74, 'crystal_system': 'orthorhombic', 'hm': 'I m a m', 'short-hm': 'Imam', 'is_reference': False},
+        {'itnumber': 74, 'crystal_system': 'orthorhombic', 'short-hm': 'Imam', 'is_reference': False},
     ),
     "P 4"         : (
         (("P", "italic"),
          ('4', 'regular'),
          ),
-        {'itnumber': 75, 'crystal_system': 'tetragonal', 'hm': 'P 4', 'short-hm': 'P4', 'is_reference': True},
+        {'itnumber': 75, 'crystal_system': 'tetragonal', 'short-hm': 'P4', 'is_reference': True},
     ),
     "P 41"        : (
         (("P", "italic"),
          ("4", "regular"),
          ("1", "sub"),
          ),
-        {'itnumber': 76, 'crystal_system': 'tetragonal', 'hm': 'P 41', 'short-hm': 'P41', 'is_reference': True},
+        {'itnumber': 76, 'crystal_system': 'tetragonal', 'short-hm': 'P41', 'is_reference': True},
     ),
     "P 42"        : (
         (("P", "italic"),
          ("4", "regular"),
          ("2", "sub"),
          ),
-        {'itnumber': 77, 'crystal_system': 'tetragonal', 'hm': 'P 42', 'short-hm': 'P42', 'is_reference': True},
+        {'itnumber': 77, 'crystal_system': 'tetragonal', 'short-hm': 'P42', 'is_reference': True},
     ),
     "P 43"        : (
         (("P", "italic"),
          ("4", "regular"),
          ("3", "sub"),
          ),
-        {'itnumber': 78, 'crystal_system': 'tetragonal', 'hm': 'P 43', 'short-hm': 'P43', 'is_reference': True},
+        {'itnumber': 78, 'crystal_system': 'tetragonal', 'short-hm': 'P43', 'is_reference': True},
     ),
     "I 4"         : (
         (("I", "italic"),
          ('4', 'regular'),
          ),
-        {'itnumber': 79, 'crystal_system': 'tetragonal', 'hm': 'I 4', 'short-hm': 'I4', 'is_reference': True},
+        {'itnumber': 79, 'crystal_system': 'tetragonal', 'short-hm': 'I4', 'is_reference': True},
     ),
     "I 41"        : (
         (("I", "italic"),
          ("4", "regular"),
          ("1", "sub"),
          ),
-        {'itnumber': 80, 'crystal_system': 'tetragonal', 'hm': 'I 41', 'short-hm': 'I41', 'is_reference': True},
+        {'itnumber': 80, 'crystal_system': 'tetragonal', 'short-hm': 'I41', 'is_reference': True},
     ),
     "P -4"        : (
         (("P", "italic"),
          ("4", "overline"),
          ),
-        {'itnumber': 81, 'crystal_system': 'tetragonal', 'hm': 'P -4', 'short-hm': 'P-4', 'is_reference': True},
+        {'itnumber': 81, 'crystal_system': 'tetragonal', 'short-hm': 'P-4', 'is_reference': True},
     ),
     "I -4"        : (
         (("I", "italic"),
          ("4", "overline"),
          ),
-        {'itnumber': 82, 'crystal_system': 'tetragonal', 'hm': 'I -4', 'short-hm': 'I-4', 'is_reference': True},
+        {'itnumber': 82, 'crystal_system': 'tetragonal', 'short-hm': 'I-4', 'is_reference': True},
     ),
     "P 4/m"       : (
         (("P", "italic"),
@@ -3002,7 +2932,7 @@ spgrps = {
          ('/', 'regular'),
          ("m", "italic"),
          ),
-        {'itnumber': 83, 'crystal_system': 'tetragonal', 'hm': 'P 4/m', 'short-hm': 'P4/m', 'is_reference': True},
+        {'itnumber': 83, 'crystal_system': 'tetragonal', 'short-hm': 'P4/m', 'is_reference': True},
     ),
     "P 42/m"      : (
         (("P", "italic"),
@@ -3011,7 +2941,7 @@ spgrps = {
          ('/', 'regular'),
          ("m", "italic"),
          ),
-        {'itnumber': 84, 'crystal_system': 'tetragonal', 'hm': 'P 42/m', 'short-hm': 'P42/m', 'is_reference': True},
+        {'itnumber': 84, 'crystal_system': 'tetragonal', 'short-hm': 'P42/m', 'is_reference': True},
     ),
     "P 4/n:1"     : (
         (("P", "italic"),
@@ -3019,7 +2949,7 @@ spgrps = {
          ('/', 'regular'),
          ("n", "italic"),
          ),
-        {'itnumber': 85, 'crystal_system': 'tetragonal', 'hm': 'P 4/n', 'short-hm': 'P4/n', 'is_reference': False},
+        {'itnumber': 85, 'crystal_system': 'tetragonal', 'short-hm': 'P4/n', 'is_reference': False},
     ),
     "P 4/n:2"     : (
         (("P", "italic"),
@@ -3027,7 +2957,7 @@ spgrps = {
          ('/', 'regular'),
          ("n", "italic"),
          ),
-        {'itnumber': 85, 'crystal_system': 'tetragonal', 'hm': 'P 4/n', 'short-hm': 'P4/n', 'is_reference': True},
+        {'itnumber': 85, 'crystal_system': 'tetragonal', 'short-hm': 'P4/n', 'is_reference': True},
     ),
     "P 42/n:1"    : (
         (("P", "italic"),
@@ -3036,7 +2966,7 @@ spgrps = {
          ('/', 'regular'),
          ("n", "italic"),
          ),
-        {'itnumber': 86, 'crystal_system': 'tetragonal', 'hm': 'P 42/n', 'short-hm': 'P42/n', 'is_reference': False},
+        {'itnumber': 86, 'crystal_system': 'tetragonal', 'short-hm': 'P42/n', 'is_reference': False},
     ),
     "P 42/n:2"    : (
         (("P", "italic"),
@@ -3045,7 +2975,7 @@ spgrps = {
          ('/', 'regular'),
          ("n", "italic"),
          ),
-        {'itnumber': 86, 'crystal_system': 'tetragonal', 'hm': 'P 42/n', 'short-hm': 'P42/n', 'is_reference': True},
+        {'itnumber': 86, 'crystal_system': 'tetragonal', 'short-hm': 'P42/n', 'is_reference': True},
     ),
     "I 4/m"       : (
         (("I", "italic"),
@@ -3053,7 +2983,7 @@ spgrps = {
          ('/', 'regular'),
          ("m", "italic"),
          ),
-        {'itnumber': 87, 'crystal_system': 'tetragonal', 'hm': 'I 4/m', 'short-hm': 'I4/m', 'is_reference': True},
+        {'itnumber': 87, 'crystal_system': 'tetragonal', 'short-hm': 'I4/m', 'is_reference': True},
     ),
     "I 41/a:1"    : (
         (("I", "italic"),
@@ -3062,7 +2992,7 @@ spgrps = {
          ('/', 'regular'),
          ("a", "italic"),
          ),
-        {'itnumber': 88, 'crystal_system': 'tetragonal', 'hm': 'I 41/a', 'short-hm': 'I41/a', 'is_reference': False},
+        {'itnumber': 88, 'crystal_system': 'tetragonal', 'short-hm': 'I41/a', 'is_reference': False},
     ),
     "I 41/a:2"    : (
         (("I", "italic"),
@@ -3071,7 +3001,7 @@ spgrps = {
          ('/', 'regular'),
          ("a", "italic"),
          ),
-        {'itnumber': 88, 'crystal_system': 'tetragonal', 'hm': 'I 41/a', 'short-hm': 'I41/a', 'is_reference': True},
+        {'itnumber': 88, 'crystal_system': 'tetragonal', 'short-hm': 'I41/a', 'is_reference': True},
     ),
     "P 4 2 2"     : (
         (("P", "italic"),
@@ -3079,7 +3009,7 @@ spgrps = {
          ('2', 'regular'),
          ('2', 'regular'),
          ),
-        {'itnumber': 89, 'crystal_system': 'tetragonal', 'hm': 'P 4 2 2', 'short-hm': 'P422', 'is_reference': True},
+        {'itnumber': 89, 'crystal_system': 'tetragonal', 'short-hm': 'P422', 'is_reference': True},
     ),
     "P 4 21 2"    : (
         (("P", "italic"),
@@ -3088,7 +3018,7 @@ spgrps = {
          ("1", "sub"),
          ('2', 'regular'),
          ),
-        {'itnumber': 90, 'crystal_system': 'tetragonal', 'hm': 'P 4 21 2', 'short-hm': 'P4212', 'is_reference': True},
+        {'itnumber': 90, 'crystal_system': 'tetragonal', 'short-hm': 'P4212', 'is_reference': True},
     ),
     "P 41 2 2"    : (
         (("P", "italic"),
@@ -3097,7 +3027,7 @@ spgrps = {
          ('2', 'regular'),
          ('2', 'regular'),
          ),
-        {'itnumber': 91, 'crystal_system': 'tetragonal', 'hm': 'P 41 2 2', 'short-hm': 'P4122', 'is_reference': True},
+        {'itnumber': 91, 'crystal_system': 'tetragonal', 'short-hm': 'P4122', 'is_reference': True},
     ),
     "P 41 21 2"   : (
         (("P", "italic"),
@@ -3107,7 +3037,7 @@ spgrps = {
          ("1", "sub"),
          ('2', 'regular'),
          ),
-        {'itnumber': 92, 'crystal_system': 'tetragonal', 'hm': 'P 41 21 2', 'short-hm': 'P41212', 'is_reference': True},
+        {'itnumber': 92, 'crystal_system': 'tetragonal', 'short-hm': 'P41212', 'is_reference': True},
     ),
     "P 42 2 2"    : (
         (("P", "italic"),
@@ -3116,7 +3046,7 @@ spgrps = {
          ('2', 'regular'),
          ('2', 'regular'),
          ),
-        {'itnumber': 93, 'crystal_system': 'tetragonal', 'hm': 'P 42 2 2', 'short-hm': 'P4222', 'is_reference': True},
+        {'itnumber': 93, 'crystal_system': 'tetragonal', 'short-hm': 'P4222', 'is_reference': True},
     ),
     "P 42 21 2"   : (
         (("P", "italic"),
@@ -3126,7 +3056,7 @@ spgrps = {
          ("1", "sub"),
          ('2', 'regular'),
          ),
-        {'itnumber': 94, 'crystal_system': 'tetragonal', 'hm': 'P 42 21 2', 'short-hm': 'P42212', 'is_reference': True},
+        {'itnumber': 94, 'crystal_system': 'tetragonal', 'short-hm': 'P42212', 'is_reference': True},
     ),
     "P 43 2 2"    : (
         (("P", "italic"),
@@ -3135,7 +3065,7 @@ spgrps = {
          ('2', 'regular'),
          ('2', 'regular'),
          ),
-        {'itnumber': 95, 'crystal_system': 'tetragonal', 'hm': 'P 43 2 2', 'short-hm': 'P4322', 'is_reference': True},
+        {'itnumber': 95, 'crystal_system': 'tetragonal', 'short-hm': 'P4322', 'is_reference': True},
     ),
     "P 43 21 2"   : (
         (("P", "italic"),
@@ -3145,7 +3075,7 @@ spgrps = {
          ("1", "sub"),
          ('2', 'regular'),
          ),
-        {'itnumber': 96, 'crystal_system': 'tetragonal', 'hm': 'P 43 21 2', 'short-hm': 'P43212', 'is_reference': True},
+        {'itnumber': 96, 'crystal_system': 'tetragonal', 'short-hm': 'P43212', 'is_reference': True},
     ),
     "I 4 2 2"     : (
         (("I", "italic"),
@@ -3153,7 +3083,7 @@ spgrps = {
          ('2', 'regular'),
          ('2', 'regular'),
          ),
-        {'itnumber': 97, 'crystal_system': 'tetragonal', 'hm': 'I 4 2 2', 'short-hm': 'I422', 'is_reference': True},
+        {'itnumber': 97, 'crystal_system': 'tetragonal', 'short-hm': 'I422', 'is_reference': True},
     ),
     "I 41 2 2"    : (
         (("I", "italic"),
@@ -3162,7 +3092,7 @@ spgrps = {
          ('2', 'regular'),
          ('2', 'regular'),
          ),
-        {'itnumber': 98, 'crystal_system': 'tetragonal', 'hm': 'I 41 2 2', 'short-hm': 'I4122', 'is_reference': True},
+        {'itnumber': 98, 'crystal_system': 'tetragonal', 'short-hm': 'I4122', 'is_reference': True},
     ),
     "P 4 m m"     : (
         (("P", "italic"),
@@ -3170,7 +3100,7 @@ spgrps = {
          ("m", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 99, 'crystal_system': 'tetragonal', 'hm': 'P 4 m m', 'short-hm': 'P4mm', 'is_reference': True},
+        {'itnumber': 99, 'crystal_system': 'tetragonal', 'short-hm': 'P4mm', 'is_reference': True},
     ),
     "P 4 b m"     : (
         (("P", "italic"),
@@ -3178,7 +3108,7 @@ spgrps = {
          ("b", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 100, 'crystal_system': 'tetragonal', 'hm': 'P 4 b m', 'short-hm': 'P4bm', 'is_reference': True},
+        {'itnumber': 100, 'crystal_system': 'tetragonal', 'short-hm': 'P4bm', 'is_reference': True},
     ),
     "P 42 c m"    : (
         (("P", "italic"),
@@ -3187,7 +3117,7 @@ spgrps = {
          ("c", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 101, 'crystal_system': 'tetragonal', 'hm': 'P 42 c m', 'short-hm': 'P42cm', 'is_reference': True},
+        {'itnumber': 101, 'crystal_system': 'tetragonal', 'short-hm': 'P42cm', 'is_reference': True},
     ),
     "P 42 n m"    : (
         (("P", "italic"),
@@ -3196,7 +3126,7 @@ spgrps = {
          ("n", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 102, 'crystal_system': 'tetragonal', 'hm': 'P 42 n m', 'short-hm': 'P42nm', 'is_reference': True},
+        {'itnumber': 102, 'crystal_system': 'tetragonal', 'short-hm': 'P42nm', 'is_reference': True},
     ),
     "P 4 c c"     : (
         (("P", "italic"),
@@ -3204,7 +3134,7 @@ spgrps = {
          ("c", "italic"),
          ("c", "italic"),
          ),
-        {'itnumber': 103, 'crystal_system': 'tetragonal', 'hm': 'P 4 c c', 'short-hm': 'P4cc', 'is_reference': True},
+        {'itnumber': 103, 'crystal_system': 'tetragonal', 'short-hm': 'P4cc', 'is_reference': True},
     ),
     "P 4 n c"     : (
         (("P", "italic"),
@@ -3212,7 +3142,7 @@ spgrps = {
          ("n", "italic"),
          ("c", "italic"),
          ),
-        {'itnumber': 104, 'crystal_system': 'tetragonal', 'hm': 'P 4 n c', 'short-hm': 'P4nc', 'is_reference': True},
+        {'itnumber': 104, 'crystal_system': 'tetragonal', 'short-hm': 'P4nc', 'is_reference': True},
     ),
     "P 42 m c"    : (
         (("P", "italic"),
@@ -3221,7 +3151,7 @@ spgrps = {
          ("m", "italic"),
          ("c", "italic"),
          ),
-        {'itnumber': 105, 'crystal_system': 'tetragonal', 'hm': 'P 42 m c', 'short-hm': 'P42mc', 'is_reference': True},
+        {'itnumber': 105, 'crystal_system': 'tetragonal', 'short-hm': 'P42mc', 'is_reference': True},
     ),
     "P 42 b c"    : (
         (("P", "italic"),
@@ -3230,7 +3160,7 @@ spgrps = {
          ("b", "italic"),
          ("c", "italic"),
          ),
-        {'itnumber': 106, 'crystal_system': 'tetragonal', 'hm': 'P 42 b c', 'short-hm': 'P42bc', 'is_reference': True},
+        {'itnumber': 106, 'crystal_system': 'tetragonal', 'short-hm': 'P42bc', 'is_reference': True},
     ),
     "I 4 m m"     : (
         (("I", "italic"),
@@ -3238,7 +3168,7 @@ spgrps = {
          ("m", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 107, 'crystal_system': 'tetragonal', 'hm': 'I 4 m m', 'short-hm': 'I4mm', 'is_reference': True},
+        {'itnumber': 107, 'crystal_system': 'tetragonal', 'short-hm': 'I4mm', 'is_reference': True},
     ),
     "I 4 c m"     : (
         (("I", "italic"),
@@ -3246,7 +3176,7 @@ spgrps = {
          ("c", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 108, 'crystal_system': 'tetragonal', 'hm': 'I 4 c m', 'short-hm': 'I4cm', 'is_reference': True},
+        {'itnumber': 108, 'crystal_system': 'tetragonal', 'short-hm': 'I4cm', 'is_reference': True},
     ),
     "I 41 m d"    : (
         (("I", "italic"),
@@ -3255,7 +3185,7 @@ spgrps = {
          ("m", "italic"),
          ("d", "italic"),
          ),
-        {'itnumber': 109, 'crystal_system': 'tetragonal', 'hm': 'I 41 m d', 'short-hm': 'I41md', 'is_reference': True},
+        {'itnumber': 109, 'crystal_system': 'tetragonal', 'short-hm': 'I41md', 'is_reference': True},
     ),
     "I 41 c d"    : (
         (("I", "italic"),
@@ -3264,7 +3194,7 @@ spgrps = {
          ("c", "italic"),
          ("d", "italic"),
          ),
-        {'itnumber': 110, 'crystal_system': 'tetragonal', 'hm': 'I 41 c d', 'short-hm': 'I41cd', 'is_reference': True},
+        {'itnumber': 110, 'crystal_system': 'tetragonal', 'short-hm': 'I41cd', 'is_reference': True},
     ),
     "P -4 2 m"    : (
         (("P", "italic"),
@@ -3272,7 +3202,7 @@ spgrps = {
          ('2', 'regular'),
          ("m", "italic"),
          ),
-        {'itnumber': 111, 'crystal_system': 'tetragonal', 'hm': 'P -4 2 m', 'short-hm': 'P-42m', 'is_reference': True},
+        {'itnumber': 111, 'crystal_system': 'tetragonal', 'short-hm': 'P-42m', 'is_reference': True},
     ),
     "P -4 2 c"    : (
         (("P", "italic"),
@@ -3280,7 +3210,7 @@ spgrps = {
          ('2', 'regular'),
          ("c", "italic"),
          ),
-        {'itnumber': 112, 'crystal_system': 'tetragonal', 'hm': 'P -4 2 c', 'short-hm': 'P-42c', 'is_reference': True},
+        {'itnumber': 112, 'crystal_system': 'tetragonal', 'short-hm': 'P-42c', 'is_reference': True},
     ),
     "P -4 21 m"   : (
         (("P", "italic"),
@@ -3289,8 +3219,7 @@ spgrps = {
          ("1", "sub"),
          ("m", "italic"),
          ),
-        {'itnumber'    : 113, 'crystal_system': 'tetragonal', 'hm': 'P -4 21 m', 'short-hm': 'P-421m',
-         'is_reference': True},
+        {'itnumber': 113, 'crystal_system': 'tetragonal', 'short-hm': 'P-421m', 'is_reference': True},
     ),
     "P -4 21 c"   : (
         (("P", "italic"),
@@ -3299,8 +3228,7 @@ spgrps = {
          ("1", "sub"),
          ("c", "italic"),
          ),
-        {'itnumber'    : 114, 'crystal_system': 'tetragonal', 'hm': 'P -4 21 c', 'short-hm': 'P-421c',
-         'is_reference': True},
+        {'itnumber': 114, 'crystal_system': 'tetragonal', 'short-hm': 'P-421c', 'is_reference': True},
     ),
     "P -4 m 2"    : (
         (("P", "italic"),
@@ -3308,7 +3236,7 @@ spgrps = {
          ("m", "italic"),
          ('2', 'regular'),
          ),
-        {'itnumber': 115, 'crystal_system': 'tetragonal', 'hm': 'P -4 m 2', 'short-hm': 'P-4m2', 'is_reference': True},
+        {'itnumber': 115, 'crystal_system': 'tetragonal', 'short-hm': 'P-4m2', 'is_reference': True},
     ),
     "P -4 c 2"    : (
         (("P", "italic"),
@@ -3316,7 +3244,7 @@ spgrps = {
          ("c", "italic"),
          ('2', 'regular'),
          ),
-        {'itnumber': 116, 'crystal_system': 'tetragonal', 'hm': 'P -4 c 2', 'short-hm': 'P-4c2', 'is_reference': True},
+        {'itnumber': 116, 'crystal_system': 'tetragonal', 'short-hm': 'P-4c2', 'is_reference': True},
     ),
     "P -4 b 2"    : (
         (("P", "italic"),
@@ -3324,7 +3252,7 @@ spgrps = {
          ("b", "italic"),
          ('2', 'regular'),
          ),
-        {'itnumber': 117, 'crystal_system': 'tetragonal', 'hm': 'P -4 b 2', 'short-hm': 'P-4b2', 'is_reference': True},
+        {'itnumber': 117, 'crystal_system': 'tetragonal', 'short-hm': 'P-4b2', 'is_reference': True},
     ),
     "P -4 n 2"    : (
         (("P", "italic"),
@@ -3332,7 +3260,7 @@ spgrps = {
          ("n", "italic"),
          ('2', 'regular'),
          ),
-        {'itnumber': 118, 'crystal_system': 'tetragonal', 'hm': 'P -4 n 2', 'short-hm': 'P-4n2', 'is_reference': True},
+        {'itnumber': 118, 'crystal_system': 'tetragonal', 'short-hm': 'P-4n2', 'is_reference': True},
     ),
     "I -4 m 2"    : (
         (("I", "italic"),
@@ -3340,7 +3268,7 @@ spgrps = {
          ("m", "italic"),
          ('2', 'regular'),
          ),
-        {'itnumber': 119, 'crystal_system': 'tetragonal', 'hm': 'I -4 m 2', 'short-hm': 'I-4m2', 'is_reference': True},
+        {'itnumber': 119, 'crystal_system': 'tetragonal', 'short-hm': 'I-4m2', 'is_reference': True},
     ),
     "I -4 c 2"    : (
         (("I", "italic"),
@@ -3348,7 +3276,7 @@ spgrps = {
          ("c", "italic"),
          ('2', 'regular'),
          ),
-        {'itnumber': 120, 'crystal_system': 'tetragonal', 'hm': 'I -4 c 2', 'short-hm': 'I-4c2', 'is_reference': True},
+        {'itnumber': 120, 'crystal_system': 'tetragonal', 'short-hm': 'I-4c2', 'is_reference': True},
     ),
     "I -4 2 m"    : (
         (("I", "italic"),
@@ -3356,7 +3284,7 @@ spgrps = {
          ('2', 'regular'),
          ("m", "italic"),
          ),
-        {'itnumber': 121, 'crystal_system': 'tetragonal', 'hm': 'I -4 2 m', 'short-hm': 'I-42m', 'is_reference': True},
+        {'itnumber': 121, 'crystal_system': 'tetragonal', 'short-hm': 'I-42m', 'is_reference': True},
     ),
     "I -4 2 d"    : (
         (("I", "italic"),
@@ -3364,7 +3292,7 @@ spgrps = {
          ('2', 'regular'),
          ("d", "italic"),
          ),
-        {'itnumber': 122, 'crystal_system': 'tetragonal', 'hm': 'I -4 2 d', 'short-hm': 'I-42d', 'is_reference': True},
+        {'itnumber': 122, 'crystal_system': 'tetragonal', 'short-hm': 'I-42d', 'is_reference': True},
     ),
     "P 4/m m m"   : (
         (("P", "italic"),
@@ -3374,8 +3302,7 @@ spgrps = {
          ("m", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber'    : 123, 'crystal_system': 'tetragonal', 'hm': 'P 4/m m m', 'short-hm': 'P4/mmm',
-         'is_reference': True},
+        {'itnumber': 123, 'crystal_system': 'tetragonal', 'short-hm': 'P4/mmm', 'is_reference': True},
     ),
     "P 4/m c c"   : (
         (("P", "italic"),
@@ -3385,8 +3312,7 @@ spgrps = {
          ("c", "italic"),
          ("c", "italic"),
          ),
-        {'itnumber'    : 124, 'crystal_system': 'tetragonal', 'hm': 'P 4/m c c', 'short-hm': 'P4/mcc',
-         'is_reference': True},
+        {'itnumber': 124, 'crystal_system': 'tetragonal', 'short-hm': 'P4/mcc', 'is_reference': True},
     ),
     "P 4/n b m:1" : (
         (("P", "italic"),
@@ -3396,8 +3322,7 @@ spgrps = {
          ("b", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber'    : 125, 'crystal_system': 'tetragonal', 'hm': 'P 4/n b m', 'short-hm': 'P4/nbm',
-         'is_reference': False},
+        {'itnumber': 125, 'crystal_system': 'tetragonal', 'short-hm': 'P4/nbm', 'is_reference': False},
     ),
     "P 4/n b m:2" : (
         (("P", "italic"),
@@ -3407,8 +3332,7 @@ spgrps = {
          ("b", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber'    : 125, 'crystal_system': 'tetragonal', 'hm': 'P 4/n b m', 'short-hm': 'P4/nbm',
-         'is_reference': True},
+        {'itnumber': 125, 'crystal_system': 'tetragonal', 'short-hm': 'P4/nbm', 'is_reference': True},
     ),
     "P 4/n n c:1" : (
         (("P", "italic"),
@@ -3418,8 +3342,7 @@ spgrps = {
          ("n", "italic"),
          ("c", "italic"),
          ),
-        {'itnumber'    : 126, 'crystal_system': 'tetragonal', 'hm': 'P 4/n n c', 'short-hm': 'P4/nnc',
-         'is_reference': False},
+        {'itnumber': 126, 'crystal_system': 'tetragonal', 'short-hm': 'P4/nnc', 'is_reference': False},
     ),
     "P 4/n n c:2" : (
         (("P", "italic"),
@@ -3429,8 +3352,7 @@ spgrps = {
          ("n", "italic"),
          ("c", "italic"),
          ),
-        {'itnumber'    : 126, 'crystal_system': 'tetragonal', 'hm': 'P 4/n n c', 'short-hm': 'P4/nnc',
-         'is_reference': True},
+        {'itnumber': 126, 'crystal_system': 'tetragonal', 'short-hm': 'P4/nnc', 'is_reference': True},
     ),
     "P 4/m b m"   : (
         (("P", "italic"),
@@ -3440,8 +3362,7 @@ spgrps = {
          ("b", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber'    : 127, 'crystal_system': 'tetragonal', 'hm': 'P 4/m b m', 'short-hm': 'P4/mbm',
-         'is_reference': True},
+        {'itnumber': 127, 'crystal_system': 'tetragonal', 'short-hm': 'P4/mbm', 'is_reference': True},
     ),
     "P 4/m n c"   : (
         (("P", "italic"),
@@ -3451,8 +3372,7 @@ spgrps = {
          ("n", "italic"),
          ("c", "italic"),
          ),
-        {'itnumber'    : 128, 'crystal_system': 'tetragonal', 'hm': 'P 4/m n c', 'short-hm': 'P4/mnc',
-         'is_reference': True},
+        {'itnumber': 128, 'crystal_system': 'tetragonal', 'short-hm': 'P4/mnc', 'is_reference': True},
     ),
     "P 4/n m m:1" : (
         (("P", "italic"),
@@ -3462,8 +3382,7 @@ spgrps = {
          ("m", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber'    : 129, 'crystal_system': 'tetragonal', 'hm': 'P 4/n m m', 'short-hm': 'P4/nmm',
-         'is_reference': False},
+        {'itnumber': 129, 'crystal_system': 'tetragonal', 'short-hm': 'P4/nmm', 'is_reference': False},
     ),
     "P 4/n m m:2" : (
         (("P", "italic"),
@@ -3473,8 +3392,7 @@ spgrps = {
          ("m", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber'    : 129, 'crystal_system': 'tetragonal', 'hm': 'P 4/n m m', 'short-hm': 'P4/nmm',
-         'is_reference': True},
+        {'itnumber': 129, 'crystal_system': 'tetragonal', 'short-hm': 'P4/nmm', 'is_reference': True},
     ),
     "P 4/n c c:1" : (
         (("P", "italic"),
@@ -3484,8 +3402,7 @@ spgrps = {
          ("c", "italic"),
          ("c", "italic"),
          ),
-        {'itnumber'    : 130, 'crystal_system': 'tetragonal', 'hm': 'P 4/n c c', 'short-hm': 'P4/ncc',
-         'is_reference': False},
+        {'itnumber': 130, 'crystal_system': 'tetragonal', 'short-hm': 'P4/ncc', 'is_reference': False},
     ),
     "P 4/n c c:2" : (
         (("P", "italic"),
@@ -3495,8 +3412,7 @@ spgrps = {
          ("c", "italic"),
          ("c", "italic"),
          ),
-        {'itnumber'    : 130, 'crystal_system': 'tetragonal', 'hm': 'P 4/n c c', 'short-hm': 'P4/ncc',
-         'is_reference': True},
+        {'itnumber': 130, 'crystal_system': 'tetragonal', 'short-hm': 'P4/ncc', 'is_reference': True},
     ),
     "P 42/m m c"  : (
         (("P", "italic"),
@@ -3507,8 +3423,7 @@ spgrps = {
          ("m", "italic"),
          ("c", "italic"),
          ),
-        {'itnumber'    : 131, 'crystal_system': 'tetragonal', 'hm': 'P 42/m m c', 'short-hm': 'P42/mmc',
-         'is_reference': True},
+        {'itnumber': 131, 'crystal_system': 'tetragonal', 'short-hm': 'P42/mmc', 'is_reference': True},
     ),
     "P 42/m c m"  : (
         (("P", "italic"),
@@ -3519,8 +3434,7 @@ spgrps = {
          ("c", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber'    : 132, 'crystal_system': 'tetragonal', 'hm': 'P 42/m c m', 'short-hm': 'P42/mcm',
-         'is_reference': True},
+        {'itnumber': 132, 'crystal_system': 'tetragonal', 'short-hm': 'P42/mcm', 'is_reference': True},
     ),
     "P 42/n b c:1": (
         (("P", "italic"),
@@ -3531,8 +3445,7 @@ spgrps = {
          ("b", "italic"),
          ("c", "italic"),
          ),
-        {'itnumber'    : 133, 'crystal_system': 'tetragonal', 'hm': 'P 42/n b c', 'short-hm': 'P42/nbc',
-         'is_reference': False},
+        {'itnumber': 133, 'crystal_system': 'tetragonal', 'short-hm': 'P42/nbc', 'is_reference': False},
     ),
     "P 42/n b c:2": (
         (("P", "italic"),
@@ -3543,8 +3456,7 @@ spgrps = {
          ("b", "italic"),
          ("c", "italic"),
          ),
-        {'itnumber'    : 133, 'crystal_system': 'tetragonal', 'hm': 'P 42/n b c', 'short-hm': 'P42/nbc',
-         'is_reference': True},
+        {'itnumber': 133, 'crystal_system': 'tetragonal', 'short-hm': 'P42/nbc', 'is_reference': True},
     ),
     "P 42/n n m:1": (
         (("P", "italic"),
@@ -3555,8 +3467,7 @@ spgrps = {
          ("n", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber'    : 134, 'crystal_system': 'tetragonal', 'hm': 'P 42/n n m', 'short-hm': 'P42/nnm',
-         'is_reference': False},
+        {'itnumber': 134, 'crystal_system': 'tetragonal', 'short-hm': 'P42/nnm', 'is_reference': False},
     ),
     "P 42/n n m:2": (
         (("P", "italic"),
@@ -3567,8 +3478,7 @@ spgrps = {
          ("n", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber'    : 134, 'crystal_system': 'tetragonal', 'hm': 'P 42/n n m', 'short-hm': 'P42/nnm',
-         'is_reference': True},
+        {'itnumber': 134, 'crystal_system': 'tetragonal', 'short-hm': 'P42/nnm', 'is_reference': True},
     ),
     "P 42/m b c"  : (
         (("P", "italic"),
@@ -3579,8 +3489,7 @@ spgrps = {
          ("b", "italic"),
          ("c", "italic"),
          ),
-        {'itnumber'    : 135, 'crystal_system': 'tetragonal', 'hm': 'P 42/m b c', 'short-hm': 'P42/mbc',
-         'is_reference': True},
+        {'itnumber': 135, 'crystal_system': 'tetragonal', 'short-hm': 'P42/mbc', 'is_reference': True},
     ),
     "P 42/m n m"  : (
         (("P", "italic"),
@@ -3591,8 +3500,7 @@ spgrps = {
          ("n", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber'    : 136, 'crystal_system': 'tetragonal', 'hm': 'P 42/m n m', 'short-hm': 'P42/mnm',
-         'is_reference': True},
+        {'itnumber': 136, 'crystal_system': 'tetragonal', 'short-hm': 'P42/mnm', 'is_reference': True},
     ),
     "P 42/n m c:1": (
         (("P", "italic"),
@@ -3603,8 +3511,7 @@ spgrps = {
          ("m", "italic"),
          ("c", "italic"),
          ),
-        {'itnumber'    : 137, 'crystal_system': 'tetragonal', 'hm': 'P 42/n m c', 'short-hm': 'P42/nmc',
-         'is_reference': False},
+        {'itnumber': 137, 'crystal_system': 'tetragonal', 'short-hm': 'P42/nmc', 'is_reference': False},
     ),
     "P 42/n m c:2": (
         (("P", "italic"),
@@ -3615,8 +3522,7 @@ spgrps = {
          ("m", "italic"),
          ("c", "italic"),
          ),
-        {'itnumber'    : 137, 'crystal_system': 'tetragonal', 'hm': 'P 42/n m c', 'short-hm': 'P42/nmc',
-         'is_reference': True},
+        {'itnumber': 137, 'crystal_system': 'tetragonal', 'short-hm': 'P42/nmc', 'is_reference': True},
     ),
     "P 42/n c m:1": (
         (("P", "italic"),
@@ -3627,8 +3533,7 @@ spgrps = {
          ("c", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber'    : 138, 'crystal_system': 'tetragonal', 'hm': 'P 42/n c m', 'short-hm': 'P42/ncm',
-         'is_reference': False},
+        {'itnumber': 138, 'crystal_system': 'tetragonal', 'short-hm': 'P42/ncm', 'is_reference': False},
     ),
     "P 42/n c m:2": (
         (("P", "italic"),
@@ -3639,8 +3544,7 @@ spgrps = {
          ("c", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber'    : 138, 'crystal_system': 'tetragonal', 'hm': 'P 42/n c m', 'short-hm': 'P42/ncm',
-         'is_reference': True},
+        {'itnumber': 138, 'crystal_system': 'tetragonal', 'short-hm': 'P42/ncm', 'is_reference': True},
     ),
     "I 4/m m m"   : (
         (("I", "italic"),
@@ -3650,8 +3554,7 @@ spgrps = {
          ("m", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber'    : 139, 'crystal_system': 'tetragonal', 'hm': 'I 4/m m m', 'short-hm': 'I4/mmm',
-         'is_reference': True},
+        {'itnumber': 139, 'crystal_system': 'tetragonal', 'short-hm': 'I4/mmm', 'is_reference': True},
     ),
     "I 4/m c m"   : (
         (("I", "italic"),
@@ -3661,8 +3564,7 @@ spgrps = {
          ("c", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber'    : 140, 'crystal_system': 'tetragonal', 'hm': 'I 4/m c m', 'short-hm': 'I4/mcm',
-         'is_reference': True},
+        {'itnumber': 140, 'crystal_system': 'tetragonal', 'short-hm': 'I4/mcm', 'is_reference': True},
     ),
     "I 41/a m d:1": (
         (("I", "italic"),
@@ -3673,8 +3575,7 @@ spgrps = {
          ("m", "italic"),
          ("d", "italic"),
          ),
-        {'itnumber'    : 141, 'crystal_system': 'tetragonal', 'hm': 'I 41/a m d', 'short-hm': 'I41/amd',
-         'is_reference': False},
+        {'itnumber': 141, 'crystal_system': 'tetragonal', 'short-hm': 'I41/amd', 'is_reference': False},
     ),
     "I 41/a m d:2": (
         (("I", "italic"),
@@ -3685,8 +3586,7 @@ spgrps = {
          ("m", "italic"),
          ("d", "italic"),
          ),
-        {'itnumber'    : 141, 'crystal_system': 'tetragonal', 'hm': 'I 41/a m d', 'short-hm': 'I41/amd',
-         'is_reference': True},
+        {'itnumber': 141, 'crystal_system': 'tetragonal', 'short-hm': 'I41/amd', 'is_reference': True},
     ),
     "I 41/a c d:1": (
         (("I", "italic"),
@@ -3697,8 +3597,7 @@ spgrps = {
          ("c", "italic"),
          ("d", "italic"),
          ),
-        {'itnumber'    : 142, 'crystal_system': 'tetragonal', 'hm': 'I 41/a c d', 'short-hm': 'I41/acd',
-         'is_reference': False},
+        {'itnumber': 142, 'crystal_system': 'tetragonal', 'short-hm': 'I41/acd', 'is_reference': False},
     ),
     "I 41/a c d:2": (
         (("I", "italic"),
@@ -3709,28 +3608,27 @@ spgrps = {
          ("c", "italic"),
          ("d", "italic"),
          ),
-        {'itnumber'    : 142, 'crystal_system': 'tetragonal', 'hm': 'I 41/a c d', 'short-hm': 'I41/acd',
-         'is_reference': True},
+        {'itnumber': 142, 'crystal_system': 'tetragonal', 'short-hm': 'I41/acd', 'is_reference': True},
     ),
     "P 3"         : (
         (("P", "italic"),
          ('3', 'regular'),
          ),
-        {'itnumber': 143, 'crystal_system': 'trigonal', 'hm': 'P 3', 'short-hm': 'P3', 'is_reference': True},
+        {'itnumber': 143, 'crystal_system': 'trigonal', 'short-hm': 'P3', 'is_reference': True},
     ),
     "P 31"        : (
         (("P", "italic"),
          ("3", "regular"),
          ("1", "sub"),
          ),
-        {'itnumber': 144, 'crystal_system': 'trigonal', 'hm': 'P 31', 'short-hm': 'P31', 'is_reference': True},
+        {'itnumber': 144, 'crystal_system': 'trigonal', 'short-hm': 'P31', 'is_reference': True},
     ),
     "P 32"        : (
         (("P", "italic"),
          ("3", "regular"),
          ("2", "sub"),
          ),
-        {'itnumber': 145, 'crystal_system': 'trigonal', 'hm': 'P 32', 'short-hm': 'P32', 'is_reference': True},
+        {'itnumber': 145, 'crystal_system': 'trigonal', 'short-hm': 'P32', 'is_reference': True},
     ),
     "R 3:H"       : (
         (("R", "italic"),
@@ -3738,19 +3636,19 @@ spgrps = {
          (':', 'regular'),
          ("H", "italic"),
          ),
-        {'itnumber': 146, 'crystal_system': 'trigonal', 'hm': 'R 3', 'short-hm': 'H3', 'is_reference': True},
+        {'itnumber': 146, 'crystal_system': 'trigonal', 'short-hm': 'H3', 'is_reference': True},
     ),
     "R 3:R"       : (
         (("R", "italic"),
          ('3', 'regular'),
          ),
-        {'itnumber': 146, 'crystal_system': 'trigonal', 'hm': 'R 3', 'short-hm': 'R3', 'is_reference': False},
+        {'itnumber': 146, 'crystal_system': 'trigonal', 'short-hm': 'R3', 'is_reference': False},
     ),
     "P -3"        : (
         (("P", "italic"),
          ("3", "overline"),
          ),
-        {'itnumber': 147, 'crystal_system': 'trigonal', 'hm': 'P -3', 'short-hm': 'P-3', 'is_reference': True},
+        {'itnumber': 147, 'crystal_system': 'trigonal', 'short-hm': 'P-3', 'is_reference': True},
     ),
     "R -3:H"      : (
         (("R", "italic"),
@@ -3758,13 +3656,13 @@ spgrps = {
          (':', 'regular'),
          ("H", "italic"),
          ),
-        {'itnumber': 148, 'crystal_system': 'trigonal', 'hm': 'R -3', 'short-hm': 'H-3', 'is_reference': True},
+        {'itnumber': 148, 'crystal_system': 'trigonal', 'short-hm': 'H-3', 'is_reference': True},
     ),
     "R -3:R"      : (
         (("R", "italic"),
          ("3", "overline"),
          ),
-        {'itnumber': 148, 'crystal_system': 'trigonal', 'hm': 'R -3', 'short-hm': 'R-3', 'is_reference': False},
+        {'itnumber': 148, 'crystal_system': 'trigonal', 'short-hm': 'R-3', 'is_reference': False},
     ),
     "P 3 1 2"     : (
         (("P", "italic"),
@@ -3772,7 +3670,7 @@ spgrps = {
          ('1', 'regular'),
          ('2', 'regular'),
          ),
-        {'itnumber': 149, 'crystal_system': 'trigonal', 'hm': 'P 3 1 2', 'short-hm': 'P312', 'is_reference': True},
+        {'itnumber': 149, 'crystal_system': 'trigonal', 'short-hm': 'P312', 'is_reference': True},
     ),
     "P 3 2 1"     : (
         (("P", "italic"),
@@ -3780,7 +3678,7 @@ spgrps = {
          ('2', 'regular'),
          ('1', 'regular'),
          ),
-        {'itnumber': 150, 'crystal_system': 'trigonal', 'hm': 'P 3 2 1', 'short-hm': 'P321', 'is_reference': True},
+        {'itnumber': 150, 'crystal_system': 'trigonal', 'short-hm': 'P321', 'is_reference': True},
     ),
     "P 31 1 2"    : (
         (("P", "italic"),
@@ -3789,7 +3687,7 @@ spgrps = {
          ('1', 'regular'),
          ('2', 'regular'),
          ),
-        {'itnumber': 151, 'crystal_system': 'trigonal', 'hm': 'P 31 1 2', 'short-hm': 'P3112', 'is_reference': True},
+        {'itnumber': 151, 'crystal_system': 'trigonal', 'short-hm': 'P3112', 'is_reference': True},
     ),
     "P 31 2 1"    : (
         (("P", "italic"),
@@ -3798,7 +3696,7 @@ spgrps = {
          ('2', 'regular'),
          ('1', 'regular'),
          ),
-        {'itnumber': 152, 'crystal_system': 'trigonal', 'hm': 'P 31 2 1', 'short-hm': 'P3121', 'is_reference': True},
+        {'itnumber': 152, 'crystal_system': 'trigonal', 'short-hm': 'P3121', 'is_reference': True},
     ),
     "P 32 1 2"    : (
         (("P", "italic"),
@@ -3807,7 +3705,7 @@ spgrps = {
          ('1', 'regular'),
          ('2', 'regular'),
          ),
-        {'itnumber': 153, 'crystal_system': 'trigonal', 'hm': 'P 32 1 2', 'short-hm': 'P3212', 'is_reference': True},
+        {'itnumber': 153, 'crystal_system': 'trigonal', 'short-hm': 'P3212', 'is_reference': True},
     ),
     "P 32 2 1"    : (
         (("P", "italic"),
@@ -3816,7 +3714,7 @@ spgrps = {
          ('2', 'regular'),
          ('1', 'regular'),
          ),
-        {'itnumber': 154, 'crystal_system': 'trigonal', 'hm': 'P 32 2 1', 'short-hm': 'P3221', 'is_reference': True},
+        {'itnumber': 154, 'crystal_system': 'trigonal', 'short-hm': 'P3221', 'is_reference': True},
     ),
     "R 3 2:H"     : (
         (("R", "italic"),
@@ -3825,14 +3723,14 @@ spgrps = {
          (':', 'regular'),
          ("H", "italic"),
          ),
-        {'itnumber': 155, 'crystal_system': 'trigonal', 'hm': 'R 3 2', 'short-hm': 'H32', 'is_reference': True},
+        {'itnumber': 155, 'crystal_system': 'trigonal', 'short-hm': 'H32', 'is_reference': True},
     ),
     "R 3 2:R"     : (
         (("R", "italic"),
          ('3', 'regular'),
          ('2', 'regular'),
          ),
-        {'itnumber': 155, 'crystal_system': 'trigonal', 'hm': 'R 3 2', 'short-hm': 'R32', 'is_reference': False},
+        {'itnumber': 155, 'crystal_system': 'trigonal', 'short-hm': 'R32', 'is_reference': False},
     ),
     "P 3 m 1"     : (
         (("P", "italic"),
@@ -3840,7 +3738,7 @@ spgrps = {
          ("m", "italic"),
          ('1', 'regular'),
          ),
-        {'itnumber': 156, 'crystal_system': 'trigonal', 'hm': 'P 3 m 1', 'short-hm': 'P3m1', 'is_reference': True},
+        {'itnumber': 156, 'crystal_system': 'trigonal', 'short-hm': 'P3m1', 'is_reference': True},
     ),
     "P 3 1 m"     : (
         (("P", "italic"),
@@ -3848,7 +3746,7 @@ spgrps = {
          ('1', 'regular'),
          ("m", "italic"),
          ),
-        {'itnumber': 157, 'crystal_system': 'trigonal', 'hm': 'P 3 1 m', 'short-hm': 'P31m', 'is_reference': True},
+        {'itnumber': 157, 'crystal_system': 'trigonal', 'short-hm': 'P31m', 'is_reference': True},
     ),
     "P 3 c 1"     : (
         (("P", "italic"),
@@ -3856,7 +3754,7 @@ spgrps = {
          ("c", "italic"),
          ('1', 'regular'),
          ),
-        {'itnumber': 158, 'crystal_system': 'trigonal', 'hm': 'P 3 c 1', 'short-hm': 'P3c1', 'is_reference': True},
+        {'itnumber': 158, 'crystal_system': 'trigonal', 'short-hm': 'P3c1', 'is_reference': True},
     ),
     "P 3 1 c"     : (
         (("P", "italic"),
@@ -3864,7 +3762,7 @@ spgrps = {
          ('1', 'regular'),
          ("c", "italic"),
          ),
-        {'itnumber': 159, 'crystal_system': 'trigonal', 'hm': 'P 3 1 c', 'short-hm': 'P31c', 'is_reference': True},
+        {'itnumber': 159, 'crystal_system': 'trigonal', 'short-hm': 'P31c', 'is_reference': True},
     ),
     "R 3 m:H"     : (
         (("R", "italic"),
@@ -3873,14 +3771,14 @@ spgrps = {
          (':', 'regular'),
          ("H", "italic"),
          ),
-        {'itnumber': 160, 'crystal_system': 'trigonal', 'hm': 'R 3 m', 'short-hm': 'H3m', 'is_reference': True},
+        {'itnumber': 160, 'crystal_system': 'trigonal', 'short-hm': 'H3m', 'is_reference': True},
     ),
     "R 3 m:R"     : (
         (("R", "italic"),
          ('3', 'regular'),
          ("m", "italic"),
          ),
-        {'itnumber': 160, 'crystal_system': 'trigonal', 'hm': 'R 3 m', 'short-hm': 'R3m', 'is_reference': False},
+        {'itnumber': 160, 'crystal_system': 'trigonal', 'short-hm': 'R3m', 'is_reference': False},
     ),
     "R 3 c:H"     : (
         (("R", "italic"),
@@ -3889,14 +3787,14 @@ spgrps = {
          (':', 'regular'),
          ("H", "italic"),
          ),
-        {'itnumber': 161, 'crystal_system': 'trigonal', 'hm': 'R 3 c', 'short-hm': 'H3c', 'is_reference': True},
+        {'itnumber': 161, 'crystal_system': 'trigonal', 'short-hm': 'H3c', 'is_reference': True},
     ),
     "R 3 c:R"     : (
         (("R", "italic"),
          ('3', 'regular'),
          ("c", "italic"),
          ),
-        {'itnumber': 161, 'crystal_system': 'trigonal', 'hm': 'R 3 c', 'short-hm': 'R3c', 'is_reference': False},
+        {'itnumber': 161, 'crystal_system': 'trigonal', 'short-hm': 'R3c', 'is_reference': False},
     ),
     "P -3 1 m"    : (
         (("P", "italic"),
@@ -3904,7 +3802,7 @@ spgrps = {
          ('1', 'regular'),
          ("m", "italic"),
          ),
-        {'itnumber': 162, 'crystal_system': 'trigonal', 'hm': 'P -3 1 m', 'short-hm': 'P-31m', 'is_reference': True},
+        {'itnumber': 162, 'crystal_system': 'trigonal', 'short-hm': 'P-31m', 'is_reference': True},
     ),
     "P -3 1 c"    : (
         (("P", "italic"),
@@ -3912,7 +3810,7 @@ spgrps = {
          ('1', 'regular'),
          ("c", "italic"),
          ),
-        {'itnumber': 163, 'crystal_system': 'trigonal', 'hm': 'P -3 1 c', 'short-hm': 'P-31c', 'is_reference': True},
+        {'itnumber': 163, 'crystal_system': 'trigonal', 'short-hm': 'P-31c', 'is_reference': True},
     ),
     "P -3 m 1"    : (
         (("P", "italic"),
@@ -3920,7 +3818,7 @@ spgrps = {
          ("m", "italic"),
          ('1', 'regular'),
          ),
-        {'itnumber': 164, 'crystal_system': 'trigonal', 'hm': 'P -3 m 1', 'short-hm': 'P-3m1', 'is_reference': True},
+        {'itnumber': 164, 'crystal_system': 'trigonal', 'short-hm': 'P-3m1', 'is_reference': True},
     ),
     "P -3 c 1"    : (
         (("P", "italic"),
@@ -3928,7 +3826,7 @@ spgrps = {
          ("c", "italic"),
          ('1', 'regular'),
          ),
-        {'itnumber': 165, 'crystal_system': 'trigonal', 'hm': 'P -3 c 1', 'short-hm': 'P-3c1', 'is_reference': True},
+        {'itnumber': 165, 'crystal_system': 'trigonal', 'short-hm': 'P-3c1', 'is_reference': True},
     ),
     "R -3 m:H"    : (
         (("R", "italic"),
@@ -3937,14 +3835,14 @@ spgrps = {
          (':', 'regular'),
          ("H", "italic"),
          ),
-        {'itnumber': 166, 'crystal_system': 'trigonal', 'hm': 'R -3 m', 'short-hm': 'H-3m', 'is_reference': True},
+        {'itnumber': 166, 'crystal_system': 'trigonal', 'short-hm': 'H-3m', 'is_reference': True},
     ),
     "R -3 m:R"    : (
         (("R", "italic"),
          ("3", "overline"),
          ("m", "italic"),
          ),
-        {'itnumber': 166, 'crystal_system': 'trigonal', 'hm': 'R -3 m', 'short-hm': 'R-3m', 'is_reference': False},
+        {'itnumber': 166, 'crystal_system': 'trigonal', 'short-hm': 'R-3m', 'is_reference': False},
     ),
     "R -3 c:H"    : (
         (("R", "italic"),
@@ -3953,61 +3851,61 @@ spgrps = {
          (':', 'regular'),
          ("H", "italic"),
          ),
-        {'itnumber': 167, 'crystal_system': 'trigonal', 'hm': 'R -3 c', 'short-hm': 'H-3c', 'is_reference': True},
+        {'itnumber': 167, 'crystal_system': 'trigonal', 'short-hm': 'H-3c', 'is_reference': True},
     ),
     "R -3 c:R"    : (
         (("R", "italic"),
          ("3", "overline"),
          ("c", "italic"),
          ),
-        {'itnumber': 167, 'crystal_system': 'trigonal', 'hm': 'R -3 c', 'short-hm': 'R-3c', 'is_reference': False},
+        {'itnumber': 167, 'crystal_system': 'trigonal', 'short-hm': 'R-3c', 'is_reference': False},
     ),
     "P 6"         : (
         (("P", "italic"),
          ('6', 'regular'),
          ),
-        {'itnumber': 168, 'crystal_system': 'hexagonal', 'hm': 'P 6', 'short-hm': 'P6', 'is_reference': True},
+        {'itnumber': 168, 'crystal_system': 'hexagonal', 'short-hm': 'P6', 'is_reference': True},
     ),
     "P 61"        : (
         (("P", "italic"),
          ("6", "regular"),
          ("1", "sub"),
          ),
-        {'itnumber': 169, 'crystal_system': 'hexagonal', 'hm': 'P 61', 'short-hm': 'P61', 'is_reference': True},
+        {'itnumber': 169, 'crystal_system': 'hexagonal', 'short-hm': 'P61', 'is_reference': True},
     ),
     "P 65"        : (
         (("P", "italic"),
          ("6", "regular"),
          ("5", "sub"),
          ),
-        {'itnumber': 170, 'crystal_system': 'hexagonal', 'hm': 'P 65', 'short-hm': 'P65', 'is_reference': True},
+        {'itnumber': 170, 'crystal_system': 'hexagonal', 'short-hm': 'P65', 'is_reference': True},
     ),
     "P 62"        : (
         (("P", "italic"),
          ("6", "regular"),
          ("2", "sub"),
          ),
-        {'itnumber': 171, 'crystal_system': 'hexagonal', 'hm': 'P 62', 'short-hm': 'P62', 'is_reference': True},
+        {'itnumber': 171, 'crystal_system': 'hexagonal', 'short-hm': 'P62', 'is_reference': True},
     ),
     "P 64"        : (
         (("P", "italic"),
          ("6", "regular"),
          ("4", "sub"),
          ),
-        {'itnumber': 172, 'crystal_system': 'hexagonal', 'hm': 'P 64', 'short-hm': 'P64', 'is_reference': True},
+        {'itnumber': 172, 'crystal_system': 'hexagonal', 'short-hm': 'P64', 'is_reference': True},
     ),
     "P 63"        : (
         (("P", "italic"),
          ("6", "regular"),
          ("3", "sub"),
          ),
-        {'itnumber': 173, 'crystal_system': 'hexagonal', 'hm': 'P 63', 'short-hm': 'P63', 'is_reference': True},
+        {'itnumber': 173, 'crystal_system': 'hexagonal', 'short-hm': 'P63', 'is_reference': True},
     ),
     "P -6"        : (
         (("P", "italic"),
          ("6", "overline"),
          ),
-        {'itnumber': 174, 'crystal_system': 'hexagonal', 'hm': 'P -6', 'short-hm': 'P-6', 'is_reference': True},
+        {'itnumber': 174, 'crystal_system': 'hexagonal', 'short-hm': 'P-6', 'is_reference': True},
     ),
     "P 6/m"       : (
         (("P", "italic"),
@@ -4015,7 +3913,7 @@ spgrps = {
          ('/', 'regular'),
          ("m", "italic"),
          ),
-        {'itnumber': 175, 'crystal_system': 'hexagonal', 'hm': 'P 6/m', 'short-hm': 'P6/m', 'is_reference': True},
+        {'itnumber': 175, 'crystal_system': 'hexagonal', 'short-hm': 'P6/m', 'is_reference': True},
     ),
     "P 63/m"      : (
         (("P", "italic"),
@@ -4024,7 +3922,7 @@ spgrps = {
          ('/', 'regular'),
          ("m", "italic"),
          ),
-        {'itnumber': 176, 'crystal_system': 'hexagonal', 'hm': 'P 63/m', 'short-hm': 'P63/m', 'is_reference': True},
+        {'itnumber': 176, 'crystal_system': 'hexagonal', 'short-hm': 'P63/m', 'is_reference': True},
     ),
     "P 6 2 2"     : (
         (("P", "italic"),
@@ -4032,7 +3930,7 @@ spgrps = {
          ('2', 'regular'),
          ('2', 'regular'),
          ),
-        {'itnumber': 177, 'crystal_system': 'hexagonal', 'hm': 'P 6 2 2', 'short-hm': 'P622', 'is_reference': True},
+        {'itnumber': 177, 'crystal_system': 'hexagonal', 'short-hm': 'P622', 'is_reference': True},
     ),
     "P 61 2 2"    : (
         (("P", "italic"),
@@ -4041,7 +3939,7 @@ spgrps = {
          ('2', 'regular'),
          ('2', 'regular'),
          ),
-        {'itnumber': 178, 'crystal_system': 'hexagonal', 'hm': 'P 61 2 2', 'short-hm': 'P6122', 'is_reference': True},
+        {'itnumber': 178, 'crystal_system': 'hexagonal', 'short-hm': 'P6122', 'is_reference': True},
     ),
     "P 65 2 2"    : (
         (("P", "italic"),
@@ -4050,7 +3948,7 @@ spgrps = {
          ('2', 'regular'),
          ('2', 'regular'),
          ),
-        {'itnumber': 179, 'crystal_system': 'hexagonal', 'hm': 'P 65 2 2', 'short-hm': 'P6522', 'is_reference': True},
+        {'itnumber': 179, 'crystal_system': 'hexagonal', 'short-hm': 'P6522', 'is_reference': True},
     ),
     "P 62 2 2"    : (
         (("P", "italic"),
@@ -4059,7 +3957,7 @@ spgrps = {
          ('2', 'regular'),
          ('2', 'regular'),
          ),
-        {'itnumber': 180, 'crystal_system': 'hexagonal', 'hm': 'P 62 2 2', 'short-hm': 'P6222', 'is_reference': True},
+        {'itnumber': 180, 'crystal_system': 'hexagonal', 'short-hm': 'P6222', 'is_reference': True},
     ),
     "P 64 2 2"    : (
         (("P", "italic"),
@@ -4068,7 +3966,7 @@ spgrps = {
          ('2', 'regular'),
          ('2', 'regular'),
          ),
-        {'itnumber': 181, 'crystal_system': 'hexagonal', 'hm': 'P 64 2 2', 'short-hm': 'P6422', 'is_reference': True},
+        {'itnumber': 181, 'crystal_system': 'hexagonal', 'short-hm': 'P6422', 'is_reference': True},
     ),
     "P 63 2 2"    : (
         (("P", "italic"),
@@ -4077,7 +3975,7 @@ spgrps = {
          ('2', 'regular'),
          ('2', 'regular'),
          ),
-        {'itnumber': 182, 'crystal_system': 'hexagonal', 'hm': 'P 63 2 2', 'short-hm': 'P6322', 'is_reference': True},
+        {'itnumber': 182, 'crystal_system': 'hexagonal', 'short-hm': 'P6322', 'is_reference': True},
     ),
     "P 6 m m"     : (
         (("P", "italic"),
@@ -4085,7 +3983,7 @@ spgrps = {
          ("m", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 183, 'crystal_system': 'hexagonal', 'hm': 'P 6 m m', 'short-hm': 'P6mm', 'is_reference': True},
+        {'itnumber': 183, 'crystal_system': 'hexagonal', 'short-hm': 'P6mm', 'is_reference': True},
     ),
     "P 6 c c"     : (
         (("P", "italic"),
@@ -4093,7 +3991,7 @@ spgrps = {
          ("c", "italic"),
          ("c", "italic"),
          ),
-        {'itnumber': 184, 'crystal_system': 'hexagonal', 'hm': 'P 6 c c', 'short-hm': 'P6cc', 'is_reference': True},
+        {'itnumber': 184, 'crystal_system': 'hexagonal', 'short-hm': 'P6cc', 'is_reference': True},
     ),
     "P 63 c m"    : (
         (("P", "italic"),
@@ -4102,7 +4000,7 @@ spgrps = {
          ("c", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 185, 'crystal_system': 'hexagonal', 'hm': 'P 63 c m', 'short-hm': 'P63cm', 'is_reference': True},
+        {'itnumber': 185, 'crystal_system': 'hexagonal', 'short-hm': 'P63cm', 'is_reference': True},
     ),
     "P 63 m c"    : (
         (("P", "italic"),
@@ -4111,7 +4009,7 @@ spgrps = {
          ("m", "italic"),
          ("c", "italic"),
          ),
-        {'itnumber': 186, 'crystal_system': 'hexagonal', 'hm': 'P 63 m c', 'short-hm': 'P63mc', 'is_reference': True},
+        {'itnumber': 186, 'crystal_system': 'hexagonal', 'short-hm': 'P63mc', 'is_reference': True},
     ),
     "P -6 m 2"    : (
         (("P", "italic"),
@@ -4119,7 +4017,7 @@ spgrps = {
          ("m", "italic"),
          ('2', 'regular'),
          ),
-        {'itnumber': 187, 'crystal_system': 'hexagonal', 'hm': 'P -6 m 2', 'short-hm': 'P-6m2', 'is_reference': True},
+        {'itnumber': 187, 'crystal_system': 'hexagonal', 'short-hm': 'P-6m2', 'is_reference': True},
     ),
     "P -6 c 2"    : (
         (("P", "italic"),
@@ -4127,7 +4025,7 @@ spgrps = {
          ("c", "italic"),
          ('2', 'regular'),
          ),
-        {'itnumber': 188, 'crystal_system': 'hexagonal', 'hm': 'P -6 c 2', 'short-hm': 'P-6c2', 'is_reference': True},
+        {'itnumber': 188, 'crystal_system': 'hexagonal', 'short-hm': 'P-6c2', 'is_reference': True},
     ),
     "P -6 2 m"    : (
         (("P", "italic"),
@@ -4135,7 +4033,7 @@ spgrps = {
          ('2', 'regular'),
          ("m", "italic"),
          ),
-        {'itnumber': 189, 'crystal_system': 'hexagonal', 'hm': 'P -6 2 m', 'short-hm': 'P-62m', 'is_reference': True},
+        {'itnumber': 189, 'crystal_system': 'hexagonal', 'short-hm': 'P-62m', 'is_reference': True},
     ),
     "P -6 2 c"    : (
         (("P", "italic"),
@@ -4143,7 +4041,7 @@ spgrps = {
          ('2', 'regular'),
          ("c", "italic"),
          ),
-        {'itnumber': 190, 'crystal_system': 'hexagonal', 'hm': 'P -6 2 c', 'short-hm': 'P-62c', 'is_reference': True},
+        {'itnumber': 190, 'crystal_system': 'hexagonal', 'short-hm': 'P-62c', 'is_reference': True},
     ),
     "P 6/m m m"   : (
         (("P", "italic"),
@@ -4153,7 +4051,7 @@ spgrps = {
          ("m", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 191, 'crystal_system': 'hexagonal', 'hm': 'P 6/m m m', 'short-hm': 'P6/mmm', 'is_reference': True},
+        {'itnumber': 191, 'crystal_system': 'hexagonal', 'short-hm': 'P6/mmm', 'is_reference': True},
     ),
     "P 6/m c c"   : (
         (("P", "italic"),
@@ -4163,7 +4061,7 @@ spgrps = {
          ("c", "italic"),
          ("c", "italic"),
          ),
-        {'itnumber': 192, 'crystal_system': 'hexagonal', 'hm': 'P 6/m c c', 'short-hm': 'P6/mcc', 'is_reference': True},
+        {'itnumber': 192, 'crystal_system': 'hexagonal', 'short-hm': 'P6/mcc', 'is_reference': True},
     ),
     "P 63/m c m"  : (
         (("P", "italic"),
@@ -4174,8 +4072,7 @@ spgrps = {
          ("c", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber'    : 193, 'crystal_system': 'hexagonal', 'hm': 'P 63/m c m', 'short-hm': 'P63/mcm',
-         'is_reference': True},
+        {'itnumber': 193, 'crystal_system': 'hexagonal', 'short-hm': 'P63/mcm', 'is_reference': True},
     ),
     "P 63/m m c"  : (
         (("P", "italic"),
@@ -4186,29 +4083,28 @@ spgrps = {
          ("m", "italic"),
          ("c", "italic"),
          ),
-        {'itnumber'    : 194, 'crystal_system': 'hexagonal', 'hm': 'P 63/m m c', 'short-hm': 'P63/mmc',
-         'is_reference': True},
+        {'itnumber': 194, 'crystal_system': 'hexagonal', 'short-hm': 'P63/mmc', 'is_reference': True},
     ),
     "P 2 3"       : (
         (("P", "italic"),
          ('2', 'regular'),
          ('3', 'regular'),
          ),
-        {'itnumber': 195, 'crystal_system': 'cubic', 'hm': 'P 2 3', 'short-hm': 'P23', 'is_reference': True},
+        {'itnumber': 195, 'crystal_system': 'cubic', 'short-hm': 'P23', 'is_reference': True},
     ),
     "F 2 3"       : (
         (("F", "italic"),
          ('2', 'regular'),
          ('3', 'regular'),
          ),
-        {'itnumber': 196, 'crystal_system': 'cubic', 'hm': 'F 2 3', 'short-hm': 'F23', 'is_reference': True},
+        {'itnumber': 196, 'crystal_system': 'cubic', 'short-hm': 'F23', 'is_reference': True},
     ),
     "I 2 3"       : (
         (("I", "italic"),
          ('2', 'regular'),
          ('3', 'regular'),
          ),
-        {'itnumber': 197, 'crystal_system': 'cubic', 'hm': 'I 2 3', 'short-hm': 'I23', 'is_reference': True},
+        {'itnumber': 197, 'crystal_system': 'cubic', 'short-hm': 'I23', 'is_reference': True},
     ),
     "P 21 3"      : (
         (("P", "italic"),
@@ -4216,7 +4112,7 @@ spgrps = {
          ("1", "sub"),
          ('3', 'regular'),
          ),
-        {'itnumber': 198, 'crystal_system': 'cubic', 'hm': 'P 21 3', 'short-hm': 'P213', 'is_reference': True},
+        {'itnumber': 198, 'crystal_system': 'cubic', 'short-hm': 'P213', 'is_reference': True},
     ),
     "I 21 3"      : (
         (("I", "italic"),
@@ -4224,70 +4120,70 @@ spgrps = {
          ("1", "sub"),
          ('3', 'regular'),
          ),
-        {'itnumber': 199, 'crystal_system': 'cubic', 'hm': 'I 21 3', 'short-hm': 'I213', 'is_reference': True},
+        {'itnumber': 199, 'crystal_system': 'cubic', 'short-hm': 'I213', 'is_reference': True},
     ),
     "P m -3"      : (
         (("P", "italic"),
          ("m", "italic"),
          ("3", "overline"),
          ),
-        {'itnumber': 200, 'crystal_system': 'cubic', 'hm': 'P m -3', 'short-hm': 'Pm-3', 'is_reference': True},
+        {'itnumber': 200, 'crystal_system': 'cubic', 'short-hm': 'Pm-3', 'is_reference': True},
     ),
     "P n -3:1"    : (
         (("P", "italic"),
          ("n", "italic"),
          ("3", "overline"),
          ),
-        {'itnumber': 201, 'crystal_system': 'cubic', 'hm': 'P n -3', 'short-hm': 'Pn-3', 'is_reference': False},
+        {'itnumber': 201, 'crystal_system': 'cubic', 'short-hm': 'Pn-3', 'is_reference': False},
     ),
     "P n -3:2"    : (
         (("P", "italic"),
          ("n", "italic"),
          ("3", "overline"),
          ),
-        {'itnumber': 201, 'crystal_system': 'cubic', 'hm': 'P n -3', 'short-hm': 'Pn-3', 'is_reference': True},
+        {'itnumber': 201, 'crystal_system': 'cubic', 'short-hm': 'Pn-3', 'is_reference': True},
     ),
     "F m -3"      : (
         (("F", "italic"),
          ("m", "italic"),
          ("3", "overline"),
          ),
-        {'itnumber': 202, 'crystal_system': 'cubic', 'hm': 'F m -3', 'short-hm': 'Fm-3', 'is_reference': True},
+        {'itnumber': 202, 'crystal_system': 'cubic', 'short-hm': 'Fm-3', 'is_reference': True},
     ),
     "F d -3:1"    : (
         (("F", "italic"),
          ("d", "italic"),
          ("3", "overline"),
          ),
-        {'itnumber': 203, 'crystal_system': 'cubic', 'hm': 'F d -3', 'short-hm': 'Fd-3', 'is_reference': False},
+        {'itnumber': 203, 'crystal_system': 'cubic', 'short-hm': 'Fd-3', 'is_reference': False},
     ),
     "F d -3:2"    : (
         (("F", "italic"),
          ("d", "italic"),
          ("3", "overline"),
          ),
-        {'itnumber': 203, 'crystal_system': 'cubic', 'hm': 'F d -3', 'short-hm': 'Fd-3', 'is_reference': True},
+        {'itnumber': 203, 'crystal_system': 'cubic', 'short-hm': 'Fd-3', 'is_reference': True},
     ),
     "I m -3"      : (
         (("I", "italic"),
          ("m", "italic"),
          ("3", "overline"),
          ),
-        {'itnumber': 204, 'crystal_system': 'cubic', 'hm': 'I m -3', 'short-hm': 'Im-3', 'is_reference': True},
+        {'itnumber': 204, 'crystal_system': 'cubic', 'short-hm': 'Im-3', 'is_reference': True},
     ),
     "P a -3"      : (
         (("P", "italic"),
          ("a", "italic"),
          ("3", "overline"),
          ),
-        {'itnumber': 205, 'crystal_system': 'cubic', 'hm': 'P a -3', 'short-hm': 'Pa-3', 'is_reference': True},
+        {'itnumber': 205, 'crystal_system': 'cubic', 'short-hm': 'Pa-3', 'is_reference': True},
     ),
     "I a -3"      : (
         (("I", "italic"),
          ("a", "italic"),
          ("3", "overline"),
          ),
-        {'itnumber': 206, 'crystal_system': 'cubic', 'hm': 'I a -3', 'short-hm': 'Ia-3', 'is_reference': True},
+        {'itnumber': 206, 'crystal_system': 'cubic', 'short-hm': 'Ia-3', 'is_reference': True},
     ),
     "P 4 3 2"     : (
         (("P", "italic"),
@@ -4295,7 +4191,7 @@ spgrps = {
          ('3', 'regular'),
          ('2', 'regular'),
          ),
-        {'itnumber': 207, 'crystal_system': 'cubic', 'hm': 'P 4 3 2', 'short-hm': 'P432', 'is_reference': True},
+        {'itnumber': 207, 'crystal_system': 'cubic', 'short-hm': 'P432', 'is_reference': True},
     ),
     "P 42 3 2"    : (
         (("P", "italic"),
@@ -4304,7 +4200,7 @@ spgrps = {
          ('3', 'regular'),
          ('2', 'regular'),
          ),
-        {'itnumber': 208, 'crystal_system': 'cubic', 'hm': 'P 42 3 2', 'short-hm': 'P4232', 'is_reference': True},
+        {'itnumber': 208, 'crystal_system': 'cubic', 'short-hm': 'P4232', 'is_reference': True},
     ),
     "F 4 3 2"     : (
         (("F", "italic"),
@@ -4312,7 +4208,7 @@ spgrps = {
          ('3', 'regular'),
          ('2', 'regular'),
          ),
-        {'itnumber': 209, 'crystal_system': 'cubic', 'hm': 'F 4 3 2', 'short-hm': 'F432', 'is_reference': True},
+        {'itnumber': 209, 'crystal_system': 'cubic', 'short-hm': 'F432', 'is_reference': True},
     ),
     "F 41 3 2"    : (
         (("F", "italic"),
@@ -4321,7 +4217,7 @@ spgrps = {
          ('3', 'regular'),
          ('2', 'regular'),
          ),
-        {'itnumber': 210, 'crystal_system': 'cubic', 'hm': 'F 41 3 2', 'short-hm': 'F4132', 'is_reference': True},
+        {'itnumber': 210, 'crystal_system': 'cubic', 'short-hm': 'F4132', 'is_reference': True},
     ),
     "I 4 3 2"     : (
         (("I", "italic"),
@@ -4329,7 +4225,7 @@ spgrps = {
          ('3', 'regular'),
          ('2', 'regular'),
          ),
-        {'itnumber': 211, 'crystal_system': 'cubic', 'hm': 'I 4 3 2', 'short-hm': 'I432', 'is_reference': True},
+        {'itnumber': 211, 'crystal_system': 'cubic', 'short-hm': 'I432', 'is_reference': True},
     ),
     "P 43 3 2"    : (
         (("P", "italic"),
@@ -4338,7 +4234,7 @@ spgrps = {
          ('3', 'regular'),
          ('2', 'regular'),
          ),
-        {'itnumber': 212, 'crystal_system': 'cubic', 'hm': 'P 43 3 2', 'short-hm': 'P4332', 'is_reference': True},
+        {'itnumber': 212, 'crystal_system': 'cubic', 'short-hm': 'P4332', 'is_reference': True},
     ),
     "P 41 3 2"    : (
         (("P", "italic"),
@@ -4347,7 +4243,7 @@ spgrps = {
          ('3', 'regular'),
          ('2', 'regular'),
          ),
-        {'itnumber': 213, 'crystal_system': 'cubic', 'hm': 'P 41 3 2', 'short-hm': 'P4132', 'is_reference': True},
+        {'itnumber': 213, 'crystal_system': 'cubic', 'short-hm': 'P4132', 'is_reference': True},
     ),
     "I 41 3 2"    : (
         (("I", "italic"),
@@ -4356,7 +4252,7 @@ spgrps = {
          ('3', 'regular'),
          ('2', 'regular'),
          ),
-        {'itnumber': 214, 'crystal_system': 'cubic', 'hm': 'I 41 3 2', 'short-hm': 'I4132', 'is_reference': True},
+        {'itnumber': 214, 'crystal_system': 'cubic', 'short-hm': 'I4132', 'is_reference': True},
     ),
     "P -4 3 m"    : (
         (("P", "italic"),
@@ -4364,7 +4260,7 @@ spgrps = {
          ('3', 'regular'),
          ("m", "italic"),
          ),
-        {'itnumber': 215, 'crystal_system': 'cubic', 'hm': 'P -4 3 m', 'short-hm': 'P-43m', 'is_reference': True},
+        {'itnumber': 215, 'crystal_system': 'cubic', 'short-hm': 'P-43m', 'is_reference': True},
     ),
     "F -4 3 m"    : (
         (("F", "italic"),
@@ -4372,7 +4268,7 @@ spgrps = {
          ('3', 'regular'),
          ("m", "italic"),
          ),
-        {'itnumber': 216, 'crystal_system': 'cubic', 'hm': 'F -4 3 m', 'short-hm': 'F-43m', 'is_reference': True},
+        {'itnumber': 216, 'crystal_system': 'cubic', 'short-hm': 'F-43m', 'is_reference': True},
     ),
     "I -4 3 m"    : (
         (("I", "italic"),
@@ -4380,7 +4276,7 @@ spgrps = {
          ('3', 'regular'),
          ("m", "italic"),
          ),
-        {'itnumber': 217, 'crystal_system': 'cubic', 'hm': 'I -4 3 m', 'short-hm': 'I-43m', 'is_reference': True},
+        {'itnumber': 217, 'crystal_system': 'cubic', 'short-hm': 'I-43m', 'is_reference': True},
     ),
     "P -4 3 n"    : (
         (("P", "italic"),
@@ -4388,7 +4284,7 @@ spgrps = {
          ('3', 'regular'),
          ("n", "italic"),
          ),
-        {'itnumber': 218, 'crystal_system': 'cubic', 'hm': 'P -4 3 n', 'short-hm': 'P-43n', 'is_reference': True},
+        {'itnumber': 218, 'crystal_system': 'cubic', 'short-hm': 'P-43n', 'is_reference': True},
     ),
     "F -4 3 c"    : (
         (("F", "italic"),
@@ -4396,7 +4292,7 @@ spgrps = {
          ('3', 'regular'),
          ("c", "italic"),
          ),
-        {'itnumber': 219, 'crystal_system': 'cubic', 'hm': 'F -4 3 c', 'short-hm': 'F-43c', 'is_reference': True},
+        {'itnumber': 219, 'crystal_system': 'cubic', 'short-hm': 'F-43c', 'is_reference': True},
     ),
     "I -4 3 d"    : (
         (("I", "italic"),
@@ -4404,7 +4300,7 @@ spgrps = {
          ('3', 'regular'),
          ("d", "italic"),
          ),
-        {'itnumber': 220, 'crystal_system': 'cubic', 'hm': 'I -4 3 d', 'short-hm': 'I-43d', 'is_reference': True},
+        {'itnumber': 220, 'crystal_system': 'cubic', 'short-hm': 'I-43d', 'is_reference': True},
     ),
     "P m -3 m"    : (
         (("P", "italic"),
@@ -4412,7 +4308,7 @@ spgrps = {
          ("3", "overline"),
          ("m", "italic"),
          ),
-        {'itnumber': 221, 'crystal_system': 'cubic', 'hm': 'P m -3 m', 'short-hm': 'Pm-3m', 'is_reference': True},
+        {'itnumber': 221, 'crystal_system': 'cubic', 'short-hm': 'Pm-3m', 'is_reference': True},
     ),
     "P n -3 n:1"  : (
         (("P", "italic"),
@@ -4420,7 +4316,7 @@ spgrps = {
          ("3", "overline"),
          ("n", "italic"),
          ),
-        {'itnumber': 222, 'crystal_system': 'cubic', 'hm': 'P n -3 n', 'short-hm': 'Pn-3n', 'is_reference': False},
+        {'itnumber': 222, 'crystal_system': 'cubic', 'short-hm': 'Pn-3n', 'is_reference': False},
     ),
     "P n -3 n:2"  : (
         (("P", "italic"),
@@ -4428,7 +4324,7 @@ spgrps = {
          ("3", "overline"),
          ("n", "italic"),
          ),
-        {'itnumber': 222, 'crystal_system': 'cubic', 'hm': 'P n -3 n', 'short-hm': 'Pn-3n', 'is_reference': True},
+        {'itnumber': 222, 'crystal_system': 'cubic', 'short-hm': 'Pn-3n', 'is_reference': True},
     ),
     "P m -3 n"    : (
         (("P", "italic"),
@@ -4436,7 +4332,7 @@ spgrps = {
          ("3", "overline"),
          ("n", "italic"),
          ),
-        {'itnumber': 223, 'crystal_system': 'cubic', 'hm': 'P m -3 n', 'short-hm': 'Pm-3n', 'is_reference': True},
+        {'itnumber': 223, 'crystal_system': 'cubic', 'short-hm': 'Pm-3n', 'is_reference': True},
     ),
     "P n -3 m:1"  : (
         (("P", "italic"),
@@ -4444,7 +4340,7 @@ spgrps = {
          ("3", "overline"),
          ("m", "italic"),
          ),
-        {'itnumber': 224, 'crystal_system': 'cubic', 'hm': 'P n -3 m', 'short-hm': 'Pn-3m', 'is_reference': False},
+        {'itnumber': 224, 'crystal_system': 'cubic', 'short-hm': 'Pn-3m', 'is_reference': False},
     ),
     "P n -3 m:2"  : (
         (("P", "italic"),
@@ -4452,7 +4348,7 @@ spgrps = {
          ("3", "overline"),
          ("m", "italic"),
          ),
-        {'itnumber': 224, 'crystal_system': 'cubic', 'hm': 'P n -3 m', 'short-hm': 'Pn-3m', 'is_reference': True},
+        {'itnumber': 224, 'crystal_system': 'cubic', 'short-hm': 'Pn-3m', 'is_reference': True},
     ),
     "F m -3 m"    : (
         (("F", "italic"),
@@ -4460,7 +4356,7 @@ spgrps = {
          ("3", "overline"),
          ("m", "italic"),
          ),
-        {'itnumber': 225, 'crystal_system': 'cubic', 'hm': 'F m -3 m', 'short-hm': 'Fm-3m', 'is_reference': True},
+        {'itnumber': 225, 'crystal_system': 'cubic', 'short-hm': 'Fm-3m', 'is_reference': True},
     ),
     "F m -3 c"    : (
         (("F", "italic"),
@@ -4468,7 +4364,7 @@ spgrps = {
          ("3", "overline"),
          ("c", "italic"),
          ),
-        {'itnumber': 226, 'crystal_system': 'cubic', 'hm': 'F m -3 c', 'short-hm': 'Fm-3c', 'is_reference': True},
+        {'itnumber': 226, 'crystal_system': 'cubic', 'short-hm': 'Fm-3c', 'is_reference': True},
     ),
     "F d -3 m:1"  : (
         (("F", "italic"),
@@ -4476,7 +4372,7 @@ spgrps = {
          ("3", "overline"),
          ("m", "italic"),
          ),
-        {'itnumber': 227, 'crystal_system': 'cubic', 'hm': 'F d -3 m', 'short-hm': 'Fd-3m', 'is_reference': False},
+        {'itnumber': 227, 'crystal_system': 'cubic', 'short-hm': 'Fd-3m', 'is_reference': False},
     ),
     "F d -3 m:2"  : (
         (("F", "italic"),
@@ -4484,7 +4380,7 @@ spgrps = {
          ("3", "overline"),
          ("m", "italic"),
          ),
-        {'itnumber': 227, 'crystal_system': 'cubic', 'hm': 'F d -3 m', 'short-hm': 'Fd-3m', 'is_reference': True},
+        {'itnumber': 227, 'crystal_system': 'cubic', 'short-hm': 'Fd-3m', 'is_reference': True},
     ),
     "F d -3 c:1"  : (
         (("F", "italic"),
@@ -4492,7 +4388,7 @@ spgrps = {
          ("3", "overline"),
          ("c", "italic"),
          ),
-        {'itnumber': 228, 'crystal_system': 'cubic', 'hm': 'F d -3 c', 'short-hm': 'Fd-3c', 'is_reference': False},
+        {'itnumber': 228, 'crystal_system': 'cubic', 'short-hm': 'Fd-3c', 'is_reference': False},
     ),
     "F d -3 c:2"  : (
         (("F", "italic"),
@@ -4500,7 +4396,7 @@ spgrps = {
          ("3", "overline"),
          ("c", "italic"),
          ),
-        {'itnumber': 228, 'crystal_system': 'cubic', 'hm': 'F d -3 c', 'short-hm': 'Fd-3c', 'is_reference': True},
+        {'itnumber': 228, 'crystal_system': 'cubic', 'short-hm': 'Fd-3c', 'is_reference': True},
     ),
     "I m -3 m"    : (
         (("I", "italic"),
@@ -4508,7 +4404,7 @@ spgrps = {
          ("3", "overline"),
          ("m", "italic"),
          ),
-        {'itnumber': 229, 'crystal_system': 'cubic', 'hm': 'I m -3 m', 'short-hm': 'Im-3m', 'is_reference': True},
+        {'itnumber': 229, 'crystal_system': 'cubic', 'short-hm': 'Im-3m', 'is_reference': True},
     ),
     "I a -3 d"    : (
         (("I", "italic"),
@@ -4516,21 +4412,21 @@ spgrps = {
          ("3", "overline"),
          ("d", "italic"),
          ),
-        {'itnumber': 230, 'crystal_system': 'cubic', 'hm': 'I a -3 d', 'short-hm': 'Ia-3d', 'is_reference': True},
+        {'itnumber': 230, 'crystal_system': 'cubic', 'short-hm': 'Ia-3d', 'is_reference': True},
     ),
     "I 1 21 1"    : (
         (("I", "italic"),
          ("2", "regular"),
          ("1", "sub"),
          ),
-        {'itnumber': 5, 'crystal_system': 'monoclinic', 'hm': 'I 1 21 1', 'short-hm': 'I21', 'is_reference': False},
+        {'itnumber': 5, 'crystal_system': 'monoclinic', 'short-hm': 'I21', 'is_reference': False},
     ),
     "C 1 21 1"    : (
         (("C", "italic"),
          ("2", "regular"),
          ("1", "sub"),
          ),
-        {'itnumber': 5, 'crystal_system': 'monoclinic', 'hm': 'C 1 21 1', 'short-hm': 'C21', 'is_reference': False},
+        {'itnumber': 5, 'crystal_system': 'monoclinic', 'short-hm': 'C21', 'is_reference': False},
     ),
     "P 21212(a)"  : (
         (("P", "italic"),
@@ -4542,8 +4438,7 @@ spgrps = {
          ("1", "sub"),
          ("2(a)", "regular"),
          ),
-        {'itnumber'    : 18, 'crystal_system': 'orthorhombic', 'hm': 'P 21212(a)', 'short-hm': 'P21212(a)',
-         'is_reference': False},
+        {'itnumber': 18, 'crystal_system': 'orthorhombic', 'short-hm': 'P21212(a)', 'is_reference': False},
     ),
     "C 2 2 21a)"  : (
         (("C", "italic"),
@@ -4554,8 +4449,7 @@ spgrps = {
          ("a", "italic"),
          (')', 'regular'),
          ),
-        {'itnumber'    : 20, 'crystal_system': 'orthorhombic', 'hm': 'C 2 2 21a)', 'short-hm': 'C2221a)',
-         'is_reference': False},
+        {'itnumber': 20, 'crystal_system': 'orthorhombic', 'short-hm': 'C2221a)', 'is_reference': False},
     ),
     "C 2 2 2a"    : (
         (("C", "italic"),
@@ -4564,8 +4458,7 @@ spgrps = {
          ('2', 'regular'),
          ("a", "italic"),
          ),
-        {'itnumber'    : 21, 'crystal_system': 'orthorhombic', 'hm': 'C 2 2 2a', 'short-hm': 'C222a',
-         'is_reference': False},
+        {'itnumber': 21, 'crystal_system': 'orthorhombic', 'short-hm': 'C222a', 'is_reference': False},
     ),
     "F 2 2 2a"    : (
         (("F", "italic"),
@@ -4574,8 +4467,7 @@ spgrps = {
          ('2', 'regular'),
          ("a", "italic"),
          ),
-        {'itnumber'    : 22, 'crystal_system': 'orthorhombic', 'hm': 'F 2 2 2a', 'short-hm': 'F222a',
-         'is_reference': False},
+        {'itnumber': 22, 'crystal_system': 'orthorhombic', 'short-hm': 'F222a', 'is_reference': False},
     ),
     "I 2 2 2a"    : (
         (("I", "italic"),
@@ -4584,8 +4476,7 @@ spgrps = {
          ('2', 'regular'),
          ("a", "italic"),
          ),
-        {'itnumber'    : 23, 'crystal_system': 'orthorhombic', 'hm': 'I 2 2 2a', 'short-hm': 'I222a',
-         'is_reference': False},
+        {'itnumber': 23, 'crystal_system': 'orthorhombic', 'short-hm': 'I222a', 'is_reference': False},
     ),
     "P 42 21 2a"  : (
         (("P", "italic"),
@@ -4596,8 +4487,7 @@ spgrps = {
          ('2', 'regular'),
          ("a", "italic"),
          ),
-        {'itnumber'    : 94, 'crystal_system': 'tetragonal', 'hm': 'P 42 21 2a', 'short-hm': 'P42212a',
-         'is_reference': False},
+        {'itnumber': 94, 'crystal_system': 'tetragonal', 'short-hm': 'P42212a', 'is_reference': False},
     ),
     "I 2 3a"      : (
         (("I", "italic"),
@@ -4605,67 +4495,67 @@ spgrps = {
          ('3', 'regular'),
          ("a", "italic"),
          ),
-        {'itnumber': 197, 'crystal_system': 'cubic', 'hm': 'I 2 3a', 'short-hm': 'I23a', 'is_reference': False},
+        {'itnumber': 197, 'crystal_system': 'cubic', 'short-hm': 'I23a', 'is_reference': False},
     ),
     "A 1"         : (
         (("A", "italic"),
          ('1', 'regular'),
          ),
-        {'itnumber': 1, 'crystal_system': 'triclinic', 'hm': 'A 1', 'short-hm': 'A1', 'is_reference': False},
+        {'itnumber': 1, 'crystal_system': 'triclinic', 'short-hm': 'A1', 'is_reference': False},
     ),
     "B 1"         : (
         (("B", "italic"),
          ('1', 'regular'),
          ),
-        {'itnumber': 1, 'crystal_system': 'triclinic', 'hm': 'B 1', 'short-hm': 'B1', 'is_reference': False},
+        {'itnumber': 1, 'crystal_system': 'triclinic', 'short-hm': 'B1', 'is_reference': False},
     ),
     "C 1"         : (
         (("C", "italic"),
          ('1', 'regular'),
          ),
-        {'itnumber': 1, 'crystal_system': 'triclinic', 'hm': 'C 1', 'short-hm': 'C1', 'is_reference': False},
+        {'itnumber': 1, 'crystal_system': 'triclinic', 'short-hm': 'C1', 'is_reference': False},
     ),
     "F 1"         : (
         (("F", "italic"),
          ('1', 'regular'),
          ),
-        {'itnumber': 1, 'crystal_system': 'triclinic', 'hm': 'F 1', 'short-hm': 'F1', 'is_reference': False},
+        {'itnumber': 1, 'crystal_system': 'triclinic', 'short-hm': 'F1', 'is_reference': False},
     ),
     "I 1"         : (
         (("I", "italic"),
          ('1', 'regular'),
          ),
-        {'itnumber': 1, 'crystal_system': 'triclinic', 'hm': 'I 1', 'short-hm': 'I1', 'is_reference': False},
+        {'itnumber': 1, 'crystal_system': 'triclinic', 'short-hm': 'I1', 'is_reference': False},
     ),
     "A -1"        : (
         (("A", "italic"),
          ("1", "overline"),
          ),
-        {'itnumber': 2, 'crystal_system': 'triclinic', 'hm': 'A -1', 'short-hm': 'A-1', 'is_reference': False},
+        {'itnumber': 2, 'crystal_system': 'triclinic', 'short-hm': 'A-1', 'is_reference': False},
     ),
     "B -1"        : (
         (("B", "italic"),
          ("1", "overline"),
          ),
-        {'itnumber': 2, 'crystal_system': 'triclinic', 'hm': 'B -1', 'short-hm': 'B-1', 'is_reference': False},
+        {'itnumber': 2, 'crystal_system': 'triclinic', 'short-hm': 'B-1', 'is_reference': False},
     ),
     "C -1"        : (
         (("C", "italic"),
          ("1", "overline"),
          ),
-        {'itnumber': 2, 'crystal_system': 'triclinic', 'hm': 'C -1', 'short-hm': 'C-1', 'is_reference': False},
+        {'itnumber': 2, 'crystal_system': 'triclinic', 'short-hm': 'C-1', 'is_reference': False},
     ),
     "F -1"        : (
         (("F", "italic"),
          ("1", "overline"),
          ),
-        {'itnumber': 2, 'crystal_system': 'triclinic', 'hm': 'F -1', 'short-hm': 'F-1', 'is_reference': False},
+        {'itnumber': 2, 'crystal_system': 'triclinic', 'short-hm': 'F-1', 'is_reference': False},
     ),
     "I -1"        : (
         (("I", "italic"),
          ("1", "overline"),
          ),
-        {'itnumber': 2, 'crystal_system': 'triclinic', 'hm': 'I -1', 'short-hm': 'I-1', 'is_reference': False},
+        {'itnumber': 2, 'crystal_system': 'triclinic', 'short-hm': 'I-1', 'is_reference': False},
     ),
     "C 1 1 21"    : (
         (("C", "italic"),
@@ -4674,7 +4564,7 @@ spgrps = {
          ("2", "regular"),
          ("1", "sub"),
          ),
-        {'itnumber': 4, 'crystal_system': 'monoclinic', 'hm': 'C 1 1 21', 'short-hm': 'C1121', 'is_reference': False},
+        {'itnumber': 4, 'crystal_system': 'monoclinic', 'short-hm': 'C1121', 'is_reference': False},
     ),
     "F 1 2/m 1"   : (
         (("F", "italic"),
@@ -4682,7 +4572,7 @@ spgrps = {
          ('/', 'regular'),
          ("m", "italic"),
          ),
-        {'itnumber': 12, 'crystal_system': 'monoclinic', 'hm': 'F 1 2/m 1', 'short-hm': 'F2/m', 'is_reference': False},
+        {'itnumber': 12, 'crystal_system': 'monoclinic', 'short-hm': 'F2/m', 'is_reference': False},
     ),
     "A b a m"     : (
         (("A", "italic"),
@@ -4690,7 +4580,7 @@ spgrps = {
          ("a", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber': 64, 'crystal_system': 'orthorhombic', 'hm': 'A b a m', 'short-hm': 'Abam', 'is_reference': False},
+        {'itnumber': 64, 'crystal_system': 'orthorhombic', 'short-hm': 'Abam', 'is_reference': False},
     ),
     "C -4 2 b"    : (
         (("C", "italic"),
@@ -4698,7 +4588,7 @@ spgrps = {
          ('2', 'regular'),
          ("b", "italic"),
          ),
-        {'itnumber': 117, 'crystal_system': 'tetragonal', 'hm': 'C -4 2 b', 'short-hm': 'C-42b', 'is_reference': False},
+        {'itnumber': 117, 'crystal_system': 'tetragonal', 'short-hm': 'C-42b', 'is_reference': False},
     ),
     "F 4 2 2"     : (
         (("F", "italic"),
@@ -4706,7 +4596,7 @@ spgrps = {
          ('2', 'regular'),
          ('2', 'regular'),
          ),
-        {'itnumber': 97, 'crystal_system': 'tetragonal', 'hm': 'F 4 2 2', 'short-hm': 'F422', 'is_reference': False},
+        {'itnumber': 97, 'crystal_system': 'tetragonal', 'short-hm': 'F422', 'is_reference': False},
     ),
     "F 4/m m m"   : (
         (("F", "italic"),
@@ -4716,8 +4606,7 @@ spgrps = {
          ("m", "italic"),
          ("m", "italic"),
          ),
-        {'itnumber'    : 139, 'crystal_system': 'tetragonal', 'hm': 'F 4/m m m', 'short-hm': 'F4/mmm',
-         'is_reference': False},
+        {'itnumber': 139, 'crystal_system': 'tetragonal', 'short-hm': 'F4/mmm', 'is_reference': False},
     ),
 
 }

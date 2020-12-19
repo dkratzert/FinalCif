@@ -200,3 +200,5 @@ update-finalcif.exe
 tests/examples/work/report_cu_BruecknerJK_153F40_0m-finalcif.docx
 tests/examples/work/cu_BruecknerJK_153F40_0m-finalcif.zip
 testing.html
+testing_xml.html
+testing2.py
