@@ -260,8 +260,8 @@ def populate_main_table_values(main_table: Table, cif: CifContainer):
     sum_formula = cif['_chemical_formula_sum'].replace(" ", "")
     add_sum_formula(formula_paragraph, sum_formula)
     spgr_paragraph = main_table.cell(5, 1).paragraphs[0]
-    space_group = cif['_space_group_name_H-M_alt']
-    it_number = cif['_space_group_IT_number']
+    space_group = cif.space_group
+    it_number = str(cif.spgr_number)
     format_space_group(spgr_paragraph, space_group, it_number)
     radiation_type = cif['_diffrn_radiation_type']
     radiation_wavelength = cif['_diffrn_radiation_wavelength']

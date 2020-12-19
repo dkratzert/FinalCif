@@ -56,14 +56,14 @@ def spgr_to_html(space_group):
         return '<body>{}</body>'.format(spgrtxt)
 
 
-def format_space_group(paragraph: Paragraph, space_group: str, it_number) -> None:
+def format_space_group(paragraph: Paragraph, space_group: str, it_number: str) -> None:
     """
     Sets formating of the space group symbol in row 6.
     """
     try:
         # The HM space group symbol
         s = SpaceGroups()
-        spgrxml = s.iucrNumberToMathml(it_number)
+        spgrxml = s.to_mathml(space_group)
         paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
         paragraph._element.append(math_to_word(spgrxml))
         paragraph.add_run(' (' + it_number + ')')

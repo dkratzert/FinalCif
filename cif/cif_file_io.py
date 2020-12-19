@@ -345,7 +345,7 @@ class CifContainer():
         return self._spgr().number
 
     @property
-    def spgr_number(self):
+    def spgr_number(self) -> int:
         if self['_space_group_IT_number'] and isnumeric(self['_space_group_IT_number']):
             return int(self['_space_group_IT_number'])
         elif self['_symmetry_Int_Tables_number'] and isnumeric(self['_symmetry_Int_Tables_number']):
