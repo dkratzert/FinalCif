@@ -55,6 +55,7 @@ from tools.options import Options
 from tools.platon import Platon
 from tools.settings import FinalCifSettings
 from tools.shred import ShredCIF
+from tools.space_groups import SpaceGroups
 from tools.statusbar import StatusBar
 from tools.sumformula import formula_str_to_dict, sum_formula_to_html
 from tools.version import VERSION
@@ -1062,9 +1063,14 @@ class AppWindow(QMainWindow):
             self.ui.OptionsPushButton.setEnabled(True)
             self.ui.ImportCifPushButton.setEnabled(True)
             self.ui.datnameLineEdit.setText(self.cif.block.name)
-            # self.ui.Spacegroup_top_LineEdit.setText(SpaceGroups().iucr_num_to_html(self.cif.spgr_number))
-            self.ui.Spacegroup_top_LineEdit.setText(
-                '{} ({})'.format(self.cif._spgr().short_name(), self.cif.spgr_number))
+            try:
+                self.ui.Spacegroup_top_LineEdit.setText(
+                    SpaceGroups().to_html(self.cif.space_group, self.cif.spgr_number))
+            except Exception as e:
+                print('Space group error:', str(e))
+                self.ui.Spacegroup_top_LineEdit.setText(self.cif.space_group)
+            # self.ui.Spacegroup_top_LineEdit.setText(
+            #    '{} ({})'.format(self.cif._spgr().short_name(), self.cif.spgr_number))
             try:
                 self.ui.SumFormMainLineEdit.setText(sum_formula_to_html(formula_str_to_dict(
                     self.cif['_chemical_formula_sum'].strip(" '"))))
