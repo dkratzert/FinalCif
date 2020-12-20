@@ -1065,7 +1065,7 @@ class AppWindow(QMainWindow):
             self.ui.datnameLineEdit.setText(self.cif.block.name)
             try:
                 self.ui.Spacegroup_top_LineEdit.setText(
-                    SpaceGroups().to_html(self.cif.space_group, self.cif.spgr_number))
+                    SpaceGroups().to_html(self.cif.space_group))
             except Exception as e:
                 print('Space group error:', str(e))
                 self.ui.Spacegroup_top_LineEdit.setText(self.cif.space_group)
