@@ -1069,8 +1069,6 @@ class AppWindow(QMainWindow):
             except Exception as e:
                 print('Space group error:', str(e))
                 self.ui.Spacegroup_top_LineEdit.setText(self.cif.space_group)
-            # self.ui.Spacegroup_top_LineEdit.setText(
-            #    '{} ({})'.format(self.cif._spgr().short_name(), self.cif.spgr_number))
             try:
                 self.ui.SumFormMainLineEdit.setText(sum_formula_to_html(formula_str_to_dict(
                     self.cif['_chemical_formula_sum'].strip(" '"))))

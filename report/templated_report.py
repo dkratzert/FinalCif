@@ -266,14 +266,20 @@ class TemplatedReport():
         Generates a Subdoc subdocument with the xml code for a math element in MSWord.
         """
         s = SpaceGroups()
-        spgrxml = s.to_mathml(cif.space_group)
+        try:
+            spgrxml = s.to_mathml(cif.space_group)
+        except KeyError:
+            spgrxml = '<math xmlns="http://www.w3.org/1998/Math/MathML">?</math>'
         spgr_word = math_to_word(spgrxml)
         # I have to create a subdocument in order to add the xml:
         sd = tpl_doc.new_subdoc()
         p: Paragraph = sd.add_paragraph()
         p.alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
         p._element.append(spgr_word)
-        p.add_run(' ({})'.format(cif['_space_group_IT_number']))
+        try:
+            p.add_run(' ({})'.format(cif.spgr_number))
+        except AttributeError:
+            pass
         return sd
 
     @staticmethod
