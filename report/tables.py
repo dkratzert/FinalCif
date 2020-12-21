@@ -261,7 +261,10 @@ def populate_main_table_values(main_table: Table, cif: CifContainer):
     add_sum_formula(formula_paragraph, sum_formula)
     spgr_paragraph = main_table.cell(5, 1).paragraphs[0]
     space_group = cif.space_group
-    it_number = str(cif.spgr_number)
+    try:
+        it_number = str(cif.spgr_number)
+    except AttributeError:
+        it_number = ''
     format_space_group(spgr_paragraph, space_group, it_number)
     radiation_type = cif['_diffrn_radiation_type']
     radiation_wavelength = cif['_diffrn_radiation_wavelength']
