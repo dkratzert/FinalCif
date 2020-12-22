@@ -19,6 +19,7 @@ no software is perfect!
    install
    description
    templates
+   loops
    checkcif
    report
    sources
