@@ -1412,7 +1412,8 @@ class AppWindow(QMainWindow):
             column[row] = value if my_isnumeric(value) else quote(value)
         else:
             table: cif.Table = self.cif.block.find(header)
-            table.remove_row(row)
+            with suppress(IndexError):
+                table.remove_row(row)
 
     def make_loops_tables(self) -> None:
         for tab in range(self.ui.LoopsTabWidget.count()):
