@@ -6,7 +6,7 @@
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
 from contextlib import suppress
-from typing import List
+from typing import List, Tuple, Union
 
 from docx.text.paragraph import Paragraph
 from docxtpl import RichText
@@ -50,7 +50,7 @@ class ReferenceList():
         self.paragraph = paragraph
         self._references = list()
 
-    def append(self, ref) -> None:
+    def append(self, ref: Union[List, Tuple]) -> None:
         """Adds a superscript list of reference numbers in brackets to the document."""
         if isinstance(ref, (list, tuple)):
             if not ref:
@@ -255,10 +255,10 @@ class DSRReference2018(ReferenceFormater):
         self.pages = '928–934'
 
 
-class BrukerReference(ReferenceFormater):
+class SAINTReference(ReferenceFormater):
     def __init__(self, name: str, version: str):
         """
-        >>> BrukerReference('SAINT', 'V7.68a')
+        >>> SAINTReference('SAINT', 'V7.68a')
         Bruker, SAINT, V7.68a, Bruker AXS Inc., Madison, Wisconsin, USA.
         """
         super().__init__()
@@ -302,7 +302,6 @@ class SCALE3_ABSPACK_Reference(ReferenceFormater):
         self.journal = 'scale3abspack'
         self.volume = '(version 1.04)'
         self.pages = 'Abingdon, Oxford (U.K.) 2005'
-
 
 
 class SHELXTReference(ReferenceFormater):
@@ -474,6 +473,20 @@ class FinalCifReference(ReferenceFormater):
         self.journal = 'FinalCif'
         self.volume = 'V' + str(VERSION)
         self.pages = 'https://www.xs3.uni-freiburg.de/research/finalcif'
+
+
+class CrysalisProReference(ReferenceFormater):
+    """
+    >>> CrysalisProReference(version='1.171.40.68a', year='2019')
+    Crysalispro, 1.171.40.68a, 2019, Rigaku OD.
+    """
+
+    def __init__(self, version: str, year: str):
+        super().__init__()
+        self.authors = 'Crysalispro'
+        self.journal = version
+        self.year = year
+        self.pages = 'Rigaku OD'
 
 
 if __name__ == '__main__':

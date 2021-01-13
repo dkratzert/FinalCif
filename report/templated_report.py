@@ -11,7 +11,7 @@ from docxtpl import DocxTemplate, RichText, InlineImage, Subdoc
 
 from cif.cif_file_io import CifContainer
 from cif.text import retranslate_delimiter
-from report.references import BrukerReference, SHELXLReference, SADABS_TWINABS_Reference, SHELXTReference, \
+from report.references import SAINTReference, SHELXLReference, SADABS_TWINABS_Reference, SHELXTReference, \
     SHELXSReference, SHELXDReference, SORTAVReference, SCALE3_ABSPACK_Reference, FinalCifReference, CCDCReference
 from report.report_text import math_to_word, gstr, format_radiation, get_inf_article
 from report.symm import SymmetryElement
@@ -364,7 +364,7 @@ class TemplatedReport():
                 saintversion = integration.split()[1]
             integration_prog = 'SAINT'
             integration_prog += " " + saintversion
-            self.literature['integration'] = BrukerReference('SAINT', saintversion).richtext
+            self.literature['integration'] = SAINTReference('SAINT', saintversion).richtext
         return integration_prog
 
     def get_absortion_correction_program(self, cif: CifContainer) -> str:
