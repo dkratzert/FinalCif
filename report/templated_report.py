@@ -12,7 +12,8 @@ from docxtpl import DocxTemplate, RichText, InlineImage, Subdoc
 from cif.cif_file_io import CifContainer
 from cif.text import retranslate_delimiter
 from report.references import SAINTReference, SHELXLReference, SADABS_TWINABS_Reference, SHELXTReference, \
-    SHELXSReference, SHELXDReference, SORTAVReference, SCALE3_ABSPACK_Reference, FinalCifReference, CCDCReference
+    SHELXSReference, SHELXDReference, SORTAVReference, SCALE3_ABSPACK_Reference, FinalCifReference, CCDCReference, \
+    CrysalisProReference
 from report.report_text import math_to_word, gstr, format_radiation, get_inf_article
 from report.symm import SymmetryElement
 from tests.helpers import remove_line_endings
@@ -365,6 +366,16 @@ class TemplatedReport():
             integration_prog = 'SAINT'
             integration_prog += " " + saintversion
             self.literature['integration'] = SAINTReference('SAINT', saintversion).richtext
+        if 'CrysAlisPro'.lower() in integration.lower():
+            year = 'unknown version'
+            if len(integration.split()) > 3:
+                year = integration.split()[4][:-1]
+            version = 'unknown year'
+            if len(integration.split()) >= 1:
+                version = integration.split()[1][:-1]
+            integration_prog = 'Crysalispro'
+            self.literature['integration'] = CrysalisProReference(version=version, year=year).richtext
+            self.literature['absorption'] = CrysalisProReference(version=version, year=year).richtext
         return integration_prog
 
     def get_absortion_correction_program(self, cif: CifContainer) -> str:
@@ -386,7 +397,7 @@ class TemplatedReport():
             self.literature['absorption'] = SORTAVReference().richtext
         if 'crysalis' in absdetails.lower():
             scale_prog = 'SCALE3 ABSPACK'
-            self.literature['absorption'] = SCALE3_ABSPACK_Reference().richtext
+            # see above also
         scale_prog += " " + version
 
         return scale_prog
