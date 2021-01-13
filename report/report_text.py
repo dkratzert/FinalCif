@@ -9,9 +9,9 @@ from lxml import etree
 from app_path import application_path
 from cif.cif_file_io import CifContainer
 from cif.text import retranslate_delimiter
-from report.references import DummyReference, BrukerReference, SORTAVReference, ReferenceList, CCDCReference, \
+from report.references import DummyReference, SAINTReference, SORTAVReference, ReferenceList, CCDCReference, \
     SHELXLReference, SHELXTReference, SHELXSReference, FinalCifReference, ShelXleReference, Olex2Reference, \
-    SHELXDReference, SADABS_TWINABS_Reference, SCALE3_ABSPACK_Reference
+    SHELXDReference, SADABS_TWINABS_Reference, SCALE3_ABSPACK_Reference, CrysalisProReference
 from tests.helpers import remove_line_endings
 from tools.misc import protected_space, angstrom, zero_width_space
 
@@ -153,11 +153,9 @@ class DataReduct():
         integration_prog = '[unknown integration program]'
         scale_prog = '[unknown program]'
         if 'SAINT' in integration:
-            saintversion = 'unknown version'
-            if len(integration.split()) > 1:
-                saintversion = integration.split()[1]
-            integration_prog = 'SAINT'
-            data_reduct_ref = BrukerReference('SAINT', saintversion)
+            data_reduct_ref, integration_prog = self.add_saint_reference(integration)
+        if 'CrysAlisPro'.lower() in integration.lower():
+            data_reduct_ref, absorpt_ref, integration_prog = self.add_crysalispro_reference(integration)
         absdetails = cif['_exptl_absorpt_process_details'].replace('-', ' ')
         if 'SADABS' in absdetails.upper() or 'TWINABS' in absdetails.upper():
             if len(absdetails.split()) > 1:
@@ -168,14 +166,13 @@ class DataReduct():
                 scale_prog = 'SADABS'
             else:
                 scale_prog = 'TWINABS'
-            # absorpt_ref = BrukerReference(scale_prog, version)
+            # absorpt_ref = SAINTReference(scale_prog, version)
             absorpt_ref = SADABS_TWINABS_Reference()
         if 'SORTAV' in absdetails.upper():
             scale_prog = 'SORTAV'
             absorpt_ref = SORTAVReference()
         if 'crysalis' in abs_details.lower():
             scale_prog = 'SCALE3 ABSPACK'
-            absorpt_ref = SCALE3_ABSPACK_Reference()
         sentence = 'All data were integrated with {} and {} {} absorption correction using {} was applied.'
         txt = sentence.format(integration_prog,
                               get_inf_article(abstype),
@@ -183,6 +180,26 @@ class DataReduct():
                               scale_prog)
         paragraph.add_run(retranslate_delimiter(txt))
         ref.append([data_reduct_ref, absorpt_ref])
+
+    def add_saint_reference(self, integration):
+        saintversion = 'unknown version'
+        if len(integration.split()) > 1:
+            saintversion = integration.split()[1]
+        integration_prog = 'SAINT'
+        data_reduct_ref = SAINTReference('SAINT', saintversion)
+        return data_reduct_ref, integration_prog
+
+    def add_crysalispro_reference(self, integration):
+        year = 'unknown version'
+        if len(integration.split()) > 3:
+            year = integration.split()[4][:-1]
+        version = 'unknown year'
+        if len(integration.split()) >= 1:
+            version = integration.split()[1][:-1]
+        integration_prog = 'Crysalispro'
+        data_reduct_ref = CrysalisProReference(version=version, year=year)
+        absorpt_ref = CrysalisProReference(version=version, year=year)
+        return data_reduct_ref, absorpt_ref, integration_prog
 
 
 class SolveRefine():
