@@ -40,6 +40,7 @@ from appwindow import AppWindow, DEBUG
 
 r"""
 TODO:
+- Make help buttons in checkcif work
 - Try https://qpageview.org/usage.html
 - generate picture with local platon
 - dist errors: Giacovazzo p.122
