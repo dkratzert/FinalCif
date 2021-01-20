@@ -55,7 +55,9 @@ from tools.options import Options
 from tools.platon import Platon
 from tools.settings import FinalCifSettings
 from tools.shred import ShredCIF
+from tools.space_groups import SpaceGroups
 from tools.statusbar import StatusBar
+from tools.sumformula import formula_str_to_dict, sum_formula_to_html
 from tools.version import VERSION
 
 DEBUG = False
@@ -109,8 +111,6 @@ class AppWindow(QMainWindow):
         self.load_recent_cifs_list()
         self.initialize_network_manager()
         self.check_for_update_version()
-        if not self.running_inside_unit_test:
-            self.get_checkdef_for_response_forms()
         self.set_checkcif_output_font(self.ui.CheckcifPlaintextEdit)
         # To make file drag&drop working:
         self.setAcceptDrops(True)
@@ -198,6 +198,10 @@ class AppWindow(QMainWindow):
         self.ui.BackFromOptionspPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
         self.ui.BackFromLoopsPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
         self.ui.BackFromPlatonPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
+        #
+        self.ui.SaveAuthorLoopToTemplateButton.setIcon(qta.icon('mdi.badge-account-outline'))
+        self.ui.AddThisAuthorToLoopPushButton.setIcon(qta.icon('mdi.folder-table-outline'))
+        self.ui.DeleteLoopAuthorTemplateButton.setIcon(qta.icon('mdi.delete-forever-outline'))
 
     def connect_signals_and_slots(self):
         """
@@ -485,6 +489,8 @@ class AppWindow(QMainWindow):
         """
         Loads the html checkcif results and displays them in a checkcif_browser window.
         """
+        if not self.running_inside_unit_test:
+            self.get_checkdef_for_response_forms()
         self.ui.CheckcifHTMLOnlineButton.setEnabled(True)
         self.ui.CheckcifPDFOnlineButton.setEnabled(True)
         try:
@@ -1057,8 +1063,17 @@ class AppWindow(QMainWindow):
             self.ui.OptionsPushButton.setEnabled(True)
             self.ui.ImportCifPushButton.setEnabled(True)
             self.ui.datnameLineEdit.setText(self.cif.block.name)
-            self.ui.spacegroupLineEdit.setText(self.cif.space_group)
-            self.ui.SumFormMainLineEdit.setText(self.cif['_chemical_formula_sum'])
+            try:
+                self.ui.Spacegroup_top_LineEdit.setText(
+                    SpaceGroups().to_html(self.cif.space_group))
+            except Exception as e:
+                print('Space group error:', str(e))
+                self.ui.Spacegroup_top_LineEdit.setText(self.cif.space_group)
+            try:
+                self.ui.SumFormMainLineEdit.setText(sum_formula_to_html(formula_str_to_dict(
+                    self.cif['_chemical_formula_sum'].strip(" '"))))
+            except Exception:
+                self.ui.SumFormMainLineEdit.setText(self.cif['_chemical_formula_sum'].strip(" '"))
             self.ui.CCDCNumLineEdit.setText(self.cif['_database_code_depnum_ccdc_archive'])
             self.ui.CheckcifPlaintextEdit.clear()
             self.ui.TemplatesStackedWidget.setCurrentIndex(0)
@@ -1125,17 +1140,6 @@ class AppWindow(QMainWindow):
             return
         self.ui.MainStackedWidget.go_to_info_page()
         self.ui.cellField.setText(celltxt.format(*self.cif.cell, self.cif['_space_group_centring_type']))
-        try:
-            spgr = self.cif.space_group
-        except RuntimeError:
-            spgr = ''
-        intnum = self.cif['_space_group_IT_number'] if self.cif['_space_group_IT_number'] \
-            else self.cif['_symmetry_Int_Tables_number']
-        if intnum:
-            intnum = '({})'.format(intnum)
-        self.ui.SpaceGroupLineEdit.setText("{} {}".format(spgr, intnum))
-        self.ui.SumformLabel.setText(self.cif['_chemical_formula_sum'].strip(" '"))
-        self.ui.SumformLabel.setMinimumWidth(self.ui.SpaceGroupLineEdit.width())
         self.ui.zLineEdit.setText(self.cif['_cell_formula_units_Z'])
         self.ui.temperatureLineEdit.setText(self.cif['_diffrn_ambient_temperature'])
         self.ui.wR2LineEdit.setText(self.cif['_refine_ls_wR_factor_ref'])
@@ -1146,7 +1150,6 @@ class AppWindow(QMainWindow):
         self.ui.rsigmaLineEdit.setText(
             self.cif['_diffrn_reflns_av_unetI/netI'] if self.cif['_diffrn_reflns_av_unetI/netI']
             else self.cif['_diffrn_reflns_av_sigmaI/netI'])
-        self.ui.cCDCNumberLineEdit.setText(self.cif['_database_code_depnum_ccdc_archive'])
         self.ui.flackXLineEdit.setText(self.cif['_refine_ls_abs_structure_Flack'])
         try:
             dat_param = float(self.cif['_refine_ls_number_reflns']) / float(self.cif['_refine_ls_number_parameters'])
@@ -1409,7 +1412,8 @@ class AppWindow(QMainWindow):
             column[row] = value if my_isnumeric(value) else quote(value)
         else:
             table: cif.Table = self.cif.block.find(header)
-            table.remove_row(row)
+            with suppress(IndexError):
+                table.remove_row(row)
 
     def make_loops_tables(self) -> None:
         for tab in range(self.ui.LoopsTabWidget.count()):

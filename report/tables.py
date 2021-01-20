@@ -25,7 +25,7 @@ from report.report_text import CCDC, CrstalSelection, Crystallization, DataReduc
 from report.templated_report import BondsAndAngles, TorsionAngles, HydrogenBonds
 from tools.misc import protected_space, angstrom, bequal, sigma_sm, halbgeviert, degree_sign, ellipsis_mid, \
     less_or_equal, \
-    timessym, lambdasym, this_or_quest, isnumeric
+    timessym, lambdasym, this_or_quest, isnumeric, minus_sign, Theta_symbol
 from tools.options import Options
 
 
@@ -260,8 +260,11 @@ def populate_main_table_values(main_table: Table, cif: CifContainer):
     sum_formula = cif['_chemical_formula_sum'].replace(" ", "")
     add_sum_formula(formula_paragraph, sum_formula)
     spgr_paragraph = main_table.cell(5, 1).paragraphs[0]
-    space_group = cif['_space_group_name_H-M_alt']
-    it_number = cif['_space_group_IT_number']
+    space_group = cif.space_group
+    try:
+        it_number = str(cif.spgr_number)
+    except AttributeError:
+        it_number = ''
     format_space_group(spgr_paragraph, space_group, it_number)
     radiation_type = cif['_diffrn_radiation_type']
     radiation_wavelength = cif['_diffrn_radiation_wavelength']
@@ -619,9 +622,9 @@ def populate_description_columns(main_table: Table, cif: CifContainer) -> None:
     lgnd8 = main_table.cell(8, 0).paragraphs[0]
     lgnd8.add_run('c').font.italic = True
     lgnd8.add_run(' [{}]'.format(angstrom))
-    lgnd9 = main_table.cell(9, 0).paragraphs[0].add_run('\u03B1 [{}]'.format(angstrom))
-    lgnd10 = main_table.cell(10, 0).paragraphs[0].add_run('\u03B2 [{}]'.format(angstrom))
-    lgnd11 = main_table.cell(11, 0).paragraphs[0].add_run('\u03B3 [{}]'.format(angstrom))
+    lgnd9 = main_table.cell(9, 0).paragraphs[0].add_run('\u03B1 [{}]'.format(degree_sign))
+    lgnd10 = main_table.cell(10, 0).paragraphs[0].add_run('\u03B2 [{}]'.format(degree_sign))
+    lgnd11 = main_table.cell(11, 0).paragraphs[0].add_run('\u03B3 [{}]'.format(degree_sign))
     lgnd12 = main_table.cell(12, 0).paragraphs[0]
     lgnd12.add_run('Volume [{}'.format(angstrom))
     lgnd12.add_run('3').font.superscript = True
@@ -630,13 +633,13 @@ def populate_description_columns(main_table: Table, cif: CifContainer) -> None:
     lgnd14 = main_table.cell(14, 0).paragraphs[0]
     lgnd14.add_run('\u03C1').font.italic = True
     lgnd14.add_run('calc').font.subscript = True
-    lgnd14.add_run(' [g/cm')
-    lgnd14.add_run('3').font.superscript = True
+    lgnd14.add_run(' [gcm')
+    lgnd14.add_run(minus_sign + '3').font.superscript = True
     lgnd14.add_run(']')
     lgnd15 = main_table.cell(15, 0).paragraphs[0]
     lgnd15.add_run('\u03BC').font.italic = True
     lgnd15.add_run(' [mm')
-    lgnd15.add_run('-1').font.superscript = True
+    lgnd15.add_run(minus_sign + '1').font.superscript = True
     lgnd15.add_run(']')
     lgnd16 = main_table.cell(16, 0).paragraphs[0]
     lgnd16.add_run('F').font.italic = True
@@ -648,14 +651,14 @@ def populate_description_columns(main_table: Table, cif: CifContainer) -> None:
     lgnd18 = main_table.cell(18, 0).paragraphs[0].add_run('Crystal colour')
     lgnd19 = main_table.cell(19, 0).paragraphs[0].add_run('Crystal shape')
     lgnd20 = main_table.cell(20, 0).paragraphs[0].add_run('Radiation')
-    lgnd21 = main_table.cell(21, 0).paragraphs[0].add_run('2\u03F4 range [\u00b0]')
+    lgnd21 = main_table.cell(21, 0).paragraphs[0].add_run('2{} range [{}]'.format(Theta_symbol, degree_sign))
     lgnd22 = main_table.cell(22, 0).paragraphs[0].add_run('Index ranges')
     lgnd23 = main_table.cell(23, 0).paragraphs[0].add_run('Reflections collected')
     lgnd24 = main_table.cell(24, 0).paragraphs[0].add_run('Independent reflections')
     lgnd25 = main_table.cell(25, 0).paragraphs[0]
     theta_full = cif['_diffrn_reflns_theta_full']
     if theta_full:
-        lgnd25.add_run('Completeness to \n\u03B8 = {}°'.format(theta_full))
+        lgnd25.add_run('Completeness to \n{} = {}°'.format(Theta_symbol, theta_full))
     else:
         lgnd25.add_run('Completeness')
     main_table.cell(26, 0).paragraphs[0].add_run('Data / Restraints / Parameters')
@@ -677,7 +680,7 @@ def populate_description_columns(main_table: Table, cif: CifContainer) -> None:
     lgnd29.add_run(' indexes \n[all data]')
     lgnd30 = main_table.cell(30, 0).paragraphs[0]
     lgnd30.add_run('Largest peak/hole [e{}'.format(angstrom))
-    lgnd30.add_run('3').font.superscript = True
+    lgnd30.add_run(minus_sign + '3').font.superscript = True
     lgnd30.add_run(']')
     if not cif.is_centrosymm:
         lgnd31 = main_table.cell(31, 0).paragraphs[0]

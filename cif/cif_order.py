@@ -92,7 +92,7 @@ order = [
     '_audit_author_email',
     '_audit_author_phone',
     '_audit_author_id_orcid',
-    
+
     '_audit_contact_author_name',
     '_audit_contact_author_email',
     '_audit_contact_author_address',

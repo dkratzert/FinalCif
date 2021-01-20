@@ -71,7 +71,7 @@ class AuthorLoops():
                 print('author already there')
                 return  # Author already exists
         else:
-            g_loop: cif.Loop = self.cif.init_author_loop(contact_author)
+            g_loop = self.cif.init_author_loop(contact_author)
         g_loop.add_row(row)
         self.app.make_loops_tables()
         self.show_author_loops()
@@ -115,7 +115,7 @@ class AuthorLoops():
 
     def save_author_to_loop_template(self):
         author = self.get_author_info()
-        if author.get('name') == '':
+        if author.get('name') == '' or None:
             return
         self.general_author_save(author)
         self.clear_fields()

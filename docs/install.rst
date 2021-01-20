@@ -12,3 +12,8 @@ FinalCif for linux needs no installation. Just download the executable FinalCif-
 MacOS
 -----
 Unzip the app (Finalcif-vXX_macos.app.zip) and copy it to the Applications directory.
+
+
+Developers
+----------
+FinalCif can also run directly from python. Please refer to :ref: `sources` for further instructions. 

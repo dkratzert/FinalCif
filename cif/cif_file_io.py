@@ -16,7 +16,7 @@ import gemmi
 from cif.cif_order import order, special_keys
 from datafiles.utils import DSRFind
 from tools.dsrmath import mean
-from tools.misc import essential_keys, non_centrosymm_keys, get_error_from_value
+from tools.misc import essential_keys, non_centrosymm_keys, get_error_from_value, isnumeric
 
 
 class CifContainer():
@@ -281,15 +281,15 @@ class CifContainer():
                 delta2 = b * (y1 - y2)
                 delta3 = c * (z1 - z2)
                 sigd = (
-                               (delta1 + delta2 * cos(gamma) + delta3 * cos(beta)) ** 2 * (
-                               delta1 ** 2 * A1 ** 2 + a ** 2 * (sig_x1 ** 2 + sig_x2 ** 2))
-                               + (delta1 * cos(gamma) + delta2 + delta3 * cos(alpha)) ** 2 * (
-                                       delta2 ** 2 * A2 ** 2 + b ** 2 * (sig_y1 ** 2 + sig_y2 ** 2))
-                               + (delta1 * cos(beta) + delta2 * cos(alpha) + delta3) ** 2 * (
-                                       delta3 ** 2 * A3 ** 2 + c ** 2 * (sig_z1 ** 2 + sig_z2 ** 2))
-                               + ((delta1 * delta2 * siggamma * sin(gamma)) ** 2 +
-                                  (delta1 * delta3 * sigbeta * sin(beta)) ** 2 +
-                                  (delta2 * delta3 * sigalpha * sin(alpha)) ** 2)) / dist ** 2
+                           (delta1 + delta2 * cos(gamma) + delta3 * cos(beta)) ** 2 * (
+                           delta1 ** 2 * A1 ** 2 + a ** 2 * (sig_x1 ** 2 + sig_x2 ** 2))
+                           + (delta1 * cos(gamma) + delta2 + delta3 * cos(alpha)) ** 2 * (
+                               delta2 ** 2 * A2 ** 2 + b ** 2 * (sig_y1 ** 2 + sig_y2 ** 2))
+                           + (delta1 * cos(beta) + delta2 * cos(alpha) + delta3) ** 2 * (
+                               delta3 ** 2 * A3 ** 2 + c ** 2 * (sig_z1 ** 2 + sig_z2 ** 2))
+                           + ((delta1 * delta2 * siggamma * sin(gamma)) ** 2 +
+                              (delta1 * delta3 * sigbeta * sin(beta)) ** 2 +
+                              (delta2 * delta3 * sigalpha * sin(alpha)) ** 2)) / dist ** 2
                 # The error is too large:
                 sigd = sqrt(sigd)
                 bb += sigd
@@ -321,6 +321,8 @@ class CifContainer():
         except (AttributeError, RuntimeError):
             if self['_space_group_name_H-M_alt']:
                 return gemmi.cif.as_string(self['_space_group_name_H-M_alt'])
+            elif self['_symmetry_space_group_name_H-M']:
+                return gemmi.cif.as_string(self['_symmetry_space_group_name_H-M'])
             else:
                 return ''
 
@@ -341,6 +343,15 @@ class CifContainer():
     @property
     def spgr_number_from_symmops(self) -> int:
         return self._spgr().number
+
+    @property
+    def spgr_number(self) -> int:
+        if self['_space_group_IT_number'] and isnumeric(self['_space_group_IT_number']):
+            return int(self['_space_group_IT_number'])
+        elif self['_symmetry_Int_Tables_number'] and isnumeric(self['_symmetry_Int_Tables_number']):
+            return int(self['_symmetry_Int_Tables_number'])
+        else:
+            return self.spgr_number_from_symmops
 
     @property
     def crystal_system(self) -> str:
@@ -586,7 +597,7 @@ class CifContainer():
         symm = self.block.find_loop('_geom_hbond_site_symmetry_A')
         # publ = self.block.find_loop('_geom_hbond_publ_flag')
         for label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm in \
-                zip(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, self.checksymm(symm)):
+            zip(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, self.checksymm(symm)):
             hydr = namedtuple('HydrogenBond', ('label_d', 'label_h', 'label_a', 'dist_dh', 'dist_ha', 'dist_da',
                                                'angle_dha', 'symm'))
             yield hydr(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm)
@@ -612,8 +623,6 @@ class CifContainer():
         questions = []
         # contains the answered keys:
         with_values = []
-        # holds keys that are not in the cif file but in essential_keys:
-        missing_keys = []
         for item in self.block:
             if item.pair is not None:
                 key, value = item.pair
@@ -630,18 +639,20 @@ class CifContainer():
                 else:
                     with_values.append((key, value))
         all_keys = [x[0] for x in with_values] + [x[0] for x in questions]
-        # check if there are keys not in the cif but in essential_keys:
+        self.check_for_missing_essential_keys(all_keys, questions)
+        return sorted(questions), sorted(with_values)
+
+    def check_for_missing_essential_keys(self, all_keys: List[Tuple[str, str]],
+                                         questions: List[Tuple[str, str]]) -> None:
+        """
+        Check if there are keys not in the cif but in essential_keys and append them if so.
+        """
         for key in essential_keys:
             if key not in all_keys:
                 if self._is_centrokey(key):
                     continue
                 questions.append((key, '?'))
-                missing_keys.append(key)
-        for k in missing_keys:
-            if self._is_centrokey(k):
-                continue
-            self.block.set_pair(k, '?')
-        return sorted(questions), sorted(with_values)
+                self.block.set_pair(key, '?')
 
     def test_res_checksum(self) -> bool:
         """
@@ -677,7 +688,7 @@ class CifContainer():
         else:
             return True
 
-    def init_author_loop(self, contact_author=False):
+    def init_author_loop(self, contact_author: bool = False) -> gemmi.cif.Loop:
         if contact_author:
             author_loop = ['_publ_contact_author_name',
                            '_publ_contact_author_address',

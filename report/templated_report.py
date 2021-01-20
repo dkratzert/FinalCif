@@ -11,15 +11,16 @@ from docxtpl import DocxTemplate, RichText, InlineImage, Subdoc
 
 from cif.cif_file_io import CifContainer
 from cif.text import retranslate_delimiter
-from report.references import BrukerReference, SHELXLReference, SADABS_TWINABS_Reference, SHELXTReference, \
-    SHELXSReference, SHELXDReference, SORTAVReference, SCALE3_ABSPACK_Reference, FinalCifReference, CCDCReference
+from report.references import SAINTReference, SHELXLReference, SADABS_TWINABS_Reference, SHELXTReference, \
+    SHELXSReference, SHELXDReference, SORTAVReference, SCALE3_ABSPACK_Reference, FinalCifReference, CCDCReference, \
+    CrysalisProReference
 from report.report_text import math_to_word, gstr, format_radiation, get_inf_article
-from report.spgrps import SpaceGroups
 from report.symm import SymmetryElement
 from tests.helpers import remove_line_endings
 from tools.misc import isnumeric, this_or_quest, timessym, angstrom, protected_space, less_or_equal, halbgeviert, \
     minus_sign, ellipsis_mid
 from tools.options import Options
+from tools.space_groups import SpaceGroups
 
 
 class BondsAndAngles():
@@ -266,14 +267,20 @@ class TemplatedReport():
         Generates a Subdoc subdocument with the xml code for a math element in MSWord.
         """
         s = SpaceGroups()
-        spgrxml = s.iucrNumberToMathml(cif['_space_group_IT_number'])
+        try:
+            spgrxml = s.to_mathml(cif.space_group)
+        except KeyError:
+            spgrxml = '<math xmlns="http://www.w3.org/1998/Math/MathML">?</math>'
         spgr_word = math_to_word(spgrxml)
         # I have to create a subdocument in order to add the xml:
         sd = tpl_doc.new_subdoc()
         p: Paragraph = sd.add_paragraph()
         p.alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
         p._element.append(spgr_word)
-        p.add_run(' ({})'.format(cif['_space_group_IT_number']))
+        try:
+            p.add_run(' ({})'.format(cif.spgr_number))
+        except AttributeError:
+            pass
         return sd
 
     @staticmethod
@@ -358,7 +365,17 @@ class TemplatedReport():
                 saintversion = integration.split()[1]
             integration_prog = 'SAINT'
             integration_prog += " " + saintversion
-            self.literature['integration'] = BrukerReference('SAINT', saintversion).richtext
+            self.literature['integration'] = SAINTReference('SAINT', saintversion).richtext
+        if 'CrysAlisPro'.lower() in integration.lower():
+            year = 'unknown version'
+            if len(integration.split()) > 3:
+                year = integration.split()[4][:-1]
+            version = 'unknown year'
+            if len(integration.split()) >= 1:
+                version = integration.split()[1][:-1]
+            integration_prog = 'Crysalispro'
+            self.literature['integration'] = CrysalisProReference(version=version, year=year).richtext
+            self.literature['absorption'] = CrysalisProReference(version=version, year=year).richtext
         return integration_prog
 
     def get_absortion_correction_program(self, cif: CifContainer) -> str:
@@ -380,7 +397,7 @@ class TemplatedReport():
             self.literature['absorption'] = SORTAVReference().richtext
         if 'crysalis' in absdetails.lower():
             scale_prog = 'SCALE3 ABSPACK'
-            self.literature['absorption'] = SCALE3_ABSPACK_Reference().richtext
+            # see above also
         scale_prog += " " + version
 
         return scale_prog

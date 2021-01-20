@@ -40,12 +40,9 @@ from appwindow import AppWindow, DEBUG
 
 r"""
 TODO:
+- Make help buttons in checkcif work
 - Try https://qpageview.org/usage.html
 - generate picture with local platon
-- While opening loops tab: Equipment editor should change to loop creator. the loop creator has the possibility 
-  to add a list oh headers in order to fill that table in the right pane.
-- Peters comments on equipment templates:
-    * save state and order of selected templates in order to be able to undo a selection with a second click. 
 - dist errors: Giacovazzo p.122
 - Read measurement time from SAINT 0m._ls file and its list of integrated files. Or even better from the .xml file.
 - Extract more data from .xml file

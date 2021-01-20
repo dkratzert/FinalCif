@@ -28,14 +28,21 @@ class ReportTemplates:
         self.app.ui.TemplatesListWidget.setCurrentItem(
             self.app.ui.TemplatesListWidget.item(self.app.options.current_template))
 
-    def add_new_template(self) -> None:
-        templ_path, _ = QFileDialog.getOpenFileName(filter="DOCX file (*.docx)", initialFilter="DOCX file (*.docx)",
-                                                    caption='Open a Report Template File')
+    def add_new_template(self, templ_path: str = '') -> None:
+        if not templ_path:
+            templ_path, _ = QFileDialog.getOpenFileName(filter="DOCX file (*.docx)", initialFilter="DOCX file (*.docx)",
+                                                        caption='Open a Report Template File')
         itemslist = self.get_templates_list_from_widget()
         self.app.status_bar.show_message('')
         if templ_path in itemslist:
             self.app.status_bar.show_message('This templates is already in the list.', 10)
+            print('This templates is already in the list.')
             return
+        if not Path(templ_path).exists() or not Path(templ_path).is_file() \
+                or not Path(templ_path).name.endswith('.docx'):
+            self.app.status_bar.show_message('This template does not exist or is unreadable.', 10)
+            print('This template does not exist or is unreadable.', Path(templ_path).absolute())
+            return 
         item = QListWidgetItem(templ_path)
         item.setCheckState(Qt.Unchecked)
         self.app.ui.TemplatesListWidget.addItem(item)

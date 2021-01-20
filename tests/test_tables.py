@@ -25,6 +25,8 @@ class TablesTestMixin():
         self.myapp.ui.HAtomsCheckBox.setChecked(False)
         self.myapp.ui.ReportTextCheckBox.setChecked(False)
         self.myapp.ui.PictureWidthDoubleSpinBox.setValue(0.0)
+        # make sure to use no template:
+        self.myapp.ui.TemplatesListWidget.setCurrentRow(0)
         self.myapp.running_inside_unit_test = True
         self.myapp.hide()
         self.reportdoc = Path('report_' + self.testcif.stem + '-finalcif.docx')
