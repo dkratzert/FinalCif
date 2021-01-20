@@ -67,34 +67,20 @@ class Reference():
         _citation.book_id_ISBN
         _citation.details
         """
-        self.citation_id = self.incr()
-
-    def id(self):
-        pass
-
-    def coordinate_linkage(self):
-        pass
-
-    def title(self):
-        pass
-
-    def country(self):
-        pass
-
-    def journal_abbrev(self):
-        pass
-
-    def journal_volume(self):
-        pass
-
-    def journal_issue(self):
-        pass
-
-    def page_first(self):
-        pass
-
-    def page_last(self):
-        pass
-
-    def authors(self) -> Authors:
-        pass
+        self.citation_id: int = self.incr()
+        self.coordinate_linkage: str = ''
+        self.title: str = ''
+        self.country: str = ''
+        self.journal_abbrev: str = ''
+        self.journal_volume: str = ''
+        self.journal_issue: str = ''
+        self.page_first: str = ''
+        self.page_last: str = ''
+        self.year: str = ''
+        self.journal_id_ASTM: str = ''
+        self.journal_id_ISSN: str = ''
+        self.journal_id_CSD: str = ''
+        self.book_title: str = ''
+        self.book_publisher: str = ''
+        self.book_id_ISBN: str = ''
+        self.details: str = ''
