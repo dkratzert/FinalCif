@@ -613,7 +613,8 @@ cif_to_header_label = {
     '_geom_hbond_atom_site_label_A'         : 'Hydrogen Bonds',
     '_exptl_crystal_face_index_h'           : 'Crystal Faces',
     '_exptl_oxdiff_crystal_face_indexfrac_h': 'Crystal Faces Fractional',
-    '_platon_squeeze_void_nr'               : 'Platon SQUEEZE loops',
+    '_platon_squeeze_void_nr'               : 'Platon SQUEEZE Voids',
+    '_smtbx_masks_void_nr'                  : 'smtbx Solvent Mask',
 }
 
 """
