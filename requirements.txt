@@ -9,12 +9,12 @@ lxml==4.6.3
 macholib==1.14
 pefile==2019.4.18
 pybind11==2.6.2
-pyinstaller==4.2
+pyinstaller==4.3
 pyinstaller-hooks-contrib==2021.1
-PyQt5==5.15.2
+PyQt5==5.15.4
 PyQt5-sip==12.8.1
 PyQt5-stubs==5.15.2.0
-PyQtWebEngine==5.15.2
+PyQtWebEngine==5.15.4
 python-docx==0.8.10
 pywin32-ctypes==0.2.0
 QtAwesome==1.0.2
