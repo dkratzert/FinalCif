@@ -29,6 +29,7 @@ from qtpy.QtGui import QDesktopServices
 
 import displaymol
 from cif.cif_file_io import CifContainer
+from cif.cod.deposit import COD_Deposit
 from cif.text import set_pair_delimited, utf8_to_str, retranslate_delimiter, quote
 from datafiles.bruker_data import BrukerData
 from datafiles.ccdc import CCDCMail
@@ -85,6 +86,7 @@ class AppWindow(QMainWindow):
         self.manufacturer = 'bruker'
         self.ui = Ui_FinalCifWindow()
         self.ui.setupUi(self)
+        self.deposit = COD_Deposit(self.ui)
         self.settings = FinalCifSettings()
         self.options = Options(self.ui, self.settings)
         self.equipment = Equipment(app=self, settings=self.settings)
@@ -229,8 +231,7 @@ class AppWindow(QMainWindow):
         #
         self.ui.cif_main_table.row_deleted.connect(self._deleted_row)
         #
-        self.ui.CODpushButton.clicked.connect(
-            (lambda: QDesktopServices.openUrl(QUrl('http://www.crystallography.net/cod/'))))
+        self.ui.CODpushButton.clicked.connect(self.open_cod_page)
         self.ui.CCDCpushButton.clicked.connect(self._ccdc_deposit)
         #
         save_shortcut = QShortcut(QKeySequence('Ctrl+S'), self)
@@ -257,6 +258,10 @@ class AppWindow(QMainWindow):
         # brings the html checkcif in from in order to avoid confusion of an "empty" checkcif report page:
         self.ui.CheckCIFResultsTabWidget.currentChanged.connect(lambda: self.ui.ResponsesTabWidget.setCurrentIndex(0))
         ##
+
+    def open_cod_page(self):
+        self.ui.MainStackedWidget.setCurrentIndex(7)
+        #return (lambda: QDesktopServices.openUrl(QUrl('http://www.crystallography.net/cod/')))
 
     def resizeEvent(self, a0: QResizeEvent) -> None:
         """It called when the main window resizes."""
@@ -296,9 +301,7 @@ class AppWindow(QMainWindow):
         """
         Opens the checkcif stackwidget page and therein the html report page
         """
-        self.ui.MainStackedWidget.go_to_checkcif_page()
-        # self.ui.CheckCIFResultsTabWidget.setCurrentIndex(1)  # Index 4 is empty, 1 is html
-        self.ui.ResponsesTabWidget.setCurrentIndex(0)  # the second is alters/responses list
+        self.ui.MainStackedWidget.got_to_cod_page()
 
     def _ccdc_deposit(self) -> None:
         """
@@ -1080,6 +1083,7 @@ class AppWindow(QMainWindow):
             self.authors = AuthorLoops(ui=self.ui, cif=self.cif, app=self)
             if not self.ui.MainStackedWidget.on_checkcif_page():
                 self.ui.MainStackedWidget.got_to_main_page()
+            self.deposit.cif = self.cif
 
     def go_into_cifs_directory(self, filepath):
         try:
