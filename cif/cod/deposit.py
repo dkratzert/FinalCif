@@ -5,11 +5,13 @@ import requests
 
 from cif.cif_file_io import CifContainer
 from gui.finalcif_gui import Ui_FinalCifWindow
+from tools.settings import FinalCifSettings
 
 
 class COD_Deposit():
     def __init__(self, ui: Ui_FinalCifWindow, cif: Union[CifContainer, None] = None):
         self.ui = ui
+        self.settings = FinalCifSettings()
         self._cif = cif
         if not self.cif:
             self.ui.depositCIFpushButton.setDisabled(True)
@@ -18,14 +20,19 @@ class COD_Deposit():
         self.ui.depositorPasswordLineEdit.textChanged.connect(self._set_password)
         self.ui.authorsFullNamePersonalLineEdit.textChanged.connect(self._set_author_name)
         self.ui.emailAddressToContactTheAuthorLineEdit.textChanged.connect(self._set_author_email)
-        #self.ui.user.textChanged.connect(self._set_user_email)
-        #self.ui.
+        # self.ui.user.textChanged.connect(self._set_user_email)
+        # self.ui.
         self.ui.depositCIFpushButton.clicked.connect(self._prepare_deposit)
         # production url:
         # url = 'https://www.crystallography.net/cod-test/cgi-bin/cif-deposit.pl'
         # test_url:
         self.url = 'https://www.crystallography.net/cod-test/cgi-bin/cif-deposit.pl'
-        self.username = ''
+        username = self.settings.load_template('cod_username')
+        if username:
+            # self.username = username
+            self.ui.depositorUsernameLineEdit.setText(username)
+        else:
+            self.username = ''
         self.password = ''
         self.author_name = ''
         self.author_email = ''
@@ -40,6 +47,10 @@ class COD_Deposit():
     def cif(self, obj):
         self.ui.depositCIFpushButton.setEnabled(True)
         self._cif = obj
+        self.author_name = self._cif['_audit_contact_author_name']
+        self.ui.authorsFullNamePersonalLineEdit.setText(self.author_name)
+        self.author_email = self._cif['_audit_contact_author_email']
+        self.ui.emailAddressToContactTheAuthorLineEdit.setText(self.author_email)
 
     def _set_checkbox_states(self):
         self.ui.prepublicationDepositCheckBox.clicked.connect(self._prepublication_was_toggled)
@@ -90,32 +101,33 @@ class COD_Deposit():
             print('No cif opened!')
             return
         self.ui.depositOutputTextBrowser.setText('starting deposition...')
-        print('starting deposition')
-        with open(self.cif.fileobj.absolute(), 'rb') as fileobj:
-            data = {'username'       : self.username,
-                    # Path('/Users/daniel/cod_username.txt').read_text(encoding='ascii'),
-                    'password'       : self.password,
-                    # Path('/Users/daniel/cod_password.txt').read_text(encoding='ascii'),
-                    'user_email'     : self.user_email,  # 'dkratzert@gmx.de',
-                    'deposition_type': self.deposition_type,  # published prepublication, personal
-                    'output_mode'    : 'html',
-                    #'progress'       : '1',  # must be 1 if supplied!
-                    'filename'       : self.cif.fileobj.name,
-                    }
-            if self.author_email:
-                data.update({'author_email': self.author_email})
-            if self.author_name:
-                data.update({'author_name': self.author_name})
+        print('starting deposition of ', self.cif.fileobj.name)
+        # with open(self.cif.fileobj.absolute(), 'rb') as fileobj:
+        fileobj = io.StringIO(self.cif.cif_as_string(without_hkl=True))
+        data = {'username'       : self.username,
+                # Path('/Users/daniel/cod_username.txt').read_text(encoding='ascii'),
+                'password'       : self.password,
+                # Path('/Users/daniel/cod_password.txt').read_text(encoding='ascii'),
+                'user_email'     : self.user_email,  # 'dkratzert@gmx.de',
+                'deposition_type': self.deposition_type,  # published prepublication, personal
+                'output_mode'    : 'html',
+                # 'progress'       : '1',  # must be 1 if supplied!
+                'filename'       : self.cif.fileobj.name,
+                }
+        if self.author_email:
+            data.update({'author_email': self.author_email})
+        if self.author_name:
+            data.update({'author_name': self.author_name})
 
-            if self.ui.depositHKLcheckBox.isChecked():
-                files = {'cif': fileobj, 'hkl': io.StringIO(self.cif.hkl_file)}
-            else:
-                files = {'cif': fileobj}
-            print('making request')
-            r = requests.post(self.url, files=files, data=data)
-            # hooks={'response': self.log_response_text})
-            print(r.text)
-            self.ui.depositOutputTextBrowser.setText(r.text)
+        if self.ui.depositHKLcheckBox.isChecked():
+            files = {'cif': fileobj, 'hkl': io.StringIO(self.cif.hkl_file)}
+        else:
+            files = {'cif': fileobj}
+        print('making request')
+        r = requests.post(self.url, files=files, data=data)
+        # hooks={'response': self.log_response_text})
+        print(r.text)
+        self.ui.depositOutputTextBrowser.setText(r.text)
         return r
 
     def switch_to_page(self, deposition_type: str):
@@ -124,6 +136,7 @@ class COD_Deposit():
 
     def reset_deposit_button_state_to_initial(self):
         self.ui.depositCIFpushButton.disconnect()
+        self.ui.depositOutputTextBrowser.clear()
         self.ui.depositCIFpushButton.setText("Deposit CIF")
         self.ui.depositCIFpushButton.clicked.connect(self._prepare_deposit)
 
@@ -132,7 +145,7 @@ class COD_Deposit():
         print(resp.text)
 
     def _set_username(self, text: str):
-        # TODO: save username in settings
+        self.settings.save_template('cod_username', text)
         self.username = text
 
     def _set_password(self, text: str):
@@ -165,7 +178,6 @@ class COD_Deposit():
         self.ui.depositCIFpushButton.setText("Try Again")
         self.ui.depositCIFpushButton.disconnect()
         self.ui.depositCIFpushButton.clicked.connect(lambda: self.switch_to_page(self.deposition_type))
-
 
 
 if __name__ == '__main__':
