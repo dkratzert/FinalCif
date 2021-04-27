@@ -16,6 +16,9 @@ class COD_Deposit():
         self._set_checkbox_states()
         self.ui.depositorUsernameLineEdit.textChanged.connect(self._set_username)
         self.ui.depositorPasswordLineEdit.textChanged.connect(self._set_password)
+        self.ui.authorsFullNamePersonalLineEdit.textChanged.connect(self._set_author_name)
+        self.ui.emailAddressToContactTheAuthorLineEdit.textChanged.connect(self._set_author_email)
+        #self.ui.user.textChanged.connect(self._set_user_email)
         #self.ui.
         self.ui.depositCIFpushButton.clicked.connect(self._prepare_deposit)
         # production url:
@@ -26,7 +29,7 @@ class COD_Deposit():
         self.password = ''
         self.author_name = ''
         self.author_email = ''
-        self.user_email = ''
+        # TODO: Make input field for this in personal page
         self.user_email = 'dkratzert@gmx.de'
 
     @property
@@ -52,6 +55,7 @@ class COD_Deposit():
         if state == True:
             self.ui.depositionOptionsStackedWidget.setCurrentIndex(0)
             self.deposition_type = 'personal'
+            self.reset_deposit_button_state_to_initial()
 
     def _prepublication_was_toggled(self, state: bool):
         self.ui.publishedDepositionCheckBox.setChecked(False)
@@ -59,6 +63,7 @@ class COD_Deposit():
         if state == True:
             self.ui.depositionOptionsStackedWidget.setCurrentIndex(1)
             self.deposition_type = 'prepublication'
+            self.reset_deposit_button_state_to_initial()
 
     def _published_was_toggled(self, state: bool):
         self.ui.prepublicationDepositCheckBox.setChecked(False)
@@ -66,11 +71,25 @@ class COD_Deposit():
         if state == True:
             self.ui.depositionOptionsStackedWidget.setCurrentIndex(2)
             self.deposition_type = 'published'
+            self.reset_deposit_button_state_to_initial()
+
+    def deposition_type_to_int(self, deposition_type: str):
+        if deposition_type == 'personal':
+            return 0
+        if deposition_type == 'prepublication':
+            return 1
+        if deposition_type == 'published':
+            return 2
+        # This is the output page:
+        if deposition_type == 'deposit':
+            return 3
 
     def cif_deposit(self):
+        self.switch_to_page('deposit')
         if not self.cif:
             print('No cif opened!')
             return
+        self.ui.depositOutputTextBrowser.setText('starting deposition...')
         print('starting deposition')
         with open(self.cif.fileobj.absolute(), 'rb') as fileobj:
             data = {'username'       : self.username,
@@ -79,7 +98,7 @@ class COD_Deposit():
                     # Path('/Users/daniel/cod_password.txt').read_text(encoding='ascii'),
                     'user_email'     : self.user_email,  # 'dkratzert@gmx.de',
                     'deposition_type': self.deposition_type,  # published prepublication, personal
-                    'output_mode'    : 'stdout',
+                    'output_mode'    : 'html',
                     #'progress'       : '1',  # must be 1 if supplied!
                     'filename'       : self.cif.fileobj.name,
                     }
@@ -96,7 +115,17 @@ class COD_Deposit():
             r = requests.post(self.url, files=files, data=data)
             # hooks={'response': self.log_response_text})
             print(r.text)
+            self.ui.depositOutputTextBrowser.setText(r.text)
         return r
+
+    def switch_to_page(self, deposition_type: str):
+        self.reset_deposit_button_state_to_initial()
+        self.ui.depositionOptionsStackedWidget.setCurrentIndex(self.deposition_type_to_int(deposition_type))
+
+    def reset_deposit_button_state_to_initial(self):
+        self.ui.depositCIFpushButton.disconnect()
+        self.ui.depositCIFpushButton.setText("Deposit CIF")
+        self.ui.depositCIFpushButton.clicked.connect(self._prepare_deposit)
 
     def log_response_text(self, resp: requests.Response, *args, **kwargs):
         # logger.warning('Got response %r from %s', resp.text, resp.url)
@@ -110,15 +139,33 @@ class COD_Deposit():
         # Do not store this anywhere!
         self.password = text
 
+    def _set_author_name(self, text: str):
+        # TODO: save username in settings
+        self.author_name = text
+
+    def _set_author_email(self, text: str):
+        # Do not store this anywhere!
+        self.author_email = text
+
     def _prepare_deposit(self):
+        self.ui.depositOutputTextBrowser.clear()
+        self.switch_to_page('deposit')
         if len(self.username) < 2:
-            print('no username given')
+            self.ui.depositOutputTextBrowser.setText('no username given')
+            self.set_deposit_button_to_try_again()
             return
         if len(self.password) < 4:
-            print('no password given')
+            self.ui.depositOutputTextBrowser.setText('no password given')
+            self.set_deposit_button_to_try_again()
             return
         r = self.cif_deposit()
         # print(r.text)
+
+    def set_deposit_button_to_try_again(self):
+        self.ui.depositCIFpushButton.setText("Try Again")
+        self.ui.depositCIFpushButton.disconnect()
+        self.ui.depositCIFpushButton.clicked.connect(lambda: self.switch_to_page(self.deposition_type))
+
 
 
 if __name__ == '__main__':

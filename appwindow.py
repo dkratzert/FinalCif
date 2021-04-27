@@ -107,7 +107,7 @@ class AppWindow(QMainWindow):
         self.connect_signals_and_slots()
         self.make_button_icons()
         if len(sys.argv) > 1:
-            self.load_cif_file(sys.argv[1] if sys.argv[1] != 'compile' else '')
+            self.load_cif_file(Path(sys.argv[1]) if sys.argv[1] != 'compile' else Path())
         elif file:
             self.load_cif_file(file)
         self.load_recent_cifs_list()
@@ -186,16 +186,14 @@ class AppWindow(QMainWindow):
         self.ui.SavePropertiesButton.setIcon(qta.icon('mdi.content-save-outline'))
         self.ui.CancelPropertiesButton.setIcon(qta.icon('mdi.cancel'))
         self.ui.ExportPropertyButton.setIcon(qta.icon('mdi.export'))
-        self.ui.BackPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
-        self.ui.BackpushButtonDetails.setIcon(qta.icon('mdi.keyboard-backspace'))
-        self.ui.BackFromPlatonPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
         self.ui.CCDCpushButton.setIcon(qta.icon('fa5s.upload'))
         self.ui.CODpushButton.setIcon(qta.icon('mdi.upload'))
         self.ui.SavePushButton.setIcon(qta.icon('mdi.content-save'))
         self.ui.revertLoopsPushButton.setIcon(qta.icon('mdi.backup-restore'))
         # Backbuttons:
-        self.ui.BackPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
         self.ui.BackpushButtonDetails.setIcon(qta.icon('mdi.keyboard-backspace'))
+        self.ui.BackFromDepositPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
+        self.ui.BackPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
         self.ui.BackSourcesPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
         self.ui.BackFromOptionspPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
         self.ui.BackFromLoopsPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
@@ -211,6 +209,7 @@ class AppWindow(QMainWindow):
         """
         ## main
         self.ui.BackPushButton.clicked.connect(self.back_to_main)
+        self.ui.BackFromDepositPushButton.clicked.connect(self.back_to_main)
         self.ui.ExploreDirButton.clicked.connect(self.explore_current_dir)
         self.ui.LoopsPushButton.clicked.connect(self.ui.MainStackedWidget.go_to_loops_page)
         self.ui.LoopsPushButton.clicked.connect(lambda: self.ui.TemplatesStackedWidget.setCurrentIndex(1))
@@ -260,6 +259,7 @@ class AppWindow(QMainWindow):
         ##
 
     def open_cod_page(self):
+        self.save_current_cif_file()
         self.ui.MainStackedWidget.setCurrentIndex(7)
         #return (lambda: QDesktopServices.openUrl(QUrl('http://www.crystallography.net/cod/')))
 
@@ -461,13 +461,13 @@ class AppWindow(QMainWindow):
         _, ending = os.path.splitext(final_path)
         # print(final_path, ending)
         if ending.lower() == '.cif':
-            self.load_cif_file(final_path)
+            self.load_cif_file(Path(final_path))
 
     def back_to_main(self):
         """
         Get back to the main table and load the new cif file.
         """
-        self.load_cif_file(str(self.final_cif_file_name.absolute()))
+        self.load_cif_file(self.final_cif_file_name.absolute())
         self.ui.MainStackedWidget.got_to_main_page()
         self.ui.cif_main_table.scrollToTop()
         self.ui.TemplatesStackedWidget.setCurrentIndex(0)
@@ -990,7 +990,7 @@ class AppWindow(QMainWindow):
             return True
         return False
 
-    def load_cif_file(self, fname: str) -> None:
+    def load_cif_file(self, filepath: Path) -> None:
         """
         Opens the cif file and fills information into the main table.
         """
@@ -1001,16 +1001,15 @@ class AppWindow(QMainWindow):
         self.missing_data = set()
         # clean table and vheader before loading:
         self.ui.cif_main_table.delete_content()
-        if not fname:
+        if not filepath:
             self.set_last_workdir()
-            fname = cif_file_open_dialog()
+            filepath = Path(cif_file_open_dialog())
             # The warning about inconsistent temperature:
             self.temperature_warning_displayed = False
-        if not fname:
+        if not filepath:
             return
-        self.set_path_display_in_file_selector(fname)
+        self.set_path_display_in_file_selector(str(filepath))
         try:
-            filepath = Path(fname)
             if not self.able_to_open(filepath):
                 return
         except (OSError, IndexError):
