@@ -749,7 +749,7 @@ class AppWindow(QMainWindow):
         combo = self.ui.RecentComboBox
         if file_index > 0:
             txt = combo.itemText(file_index)
-            self.load_cif_file(txt)
+            self.load_cif_file(Path(txt))
 
     def set_report_picture(self, file: Path) -> None:
         """Sets the picture of the report document."""
@@ -1003,11 +1003,12 @@ class AppWindow(QMainWindow):
         self.ui.cif_main_table.delete_content()
         if not filepath:
             self.set_last_workdir()
-            filepath = Path(cif_file_open_dialog())
+            fp = cif_file_open_dialog()
             # The warning about inconsistent temperature:
             self.temperature_warning_displayed = False
-        if not filepath:
-            return
+            if not fp:
+                return
+            filepath = Path(fp)
         self.set_path_display_in_file_selector(str(filepath))
         try:
             if not self.able_to_open(filepath):
