@@ -228,7 +228,7 @@ class TestWorkfolder(unittest.TestCase):
         cif = Path('testcif_file.cif')
         self.myapp.save_current_cif_file(cif.name)
         self.myapp.ui.cif_main_table.setRowCount(0)
-        self.myapp.load_cif_file(cif.name)
+        self.myapp.load_cif_file(cif)
         # test if data is still the same:
         # The character is quoted in the cif file:
         self.assertEqual(r'test 12 \%A', self.myapp.cif['_diffrn_measurement_method'])

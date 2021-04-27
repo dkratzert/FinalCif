@@ -7,7 +7,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1561</width>
+    <width>1590</width>
     <height>776</height>
    </rect>
   </property>
@@ -1584,6 +1584,7 @@
                   <widget class="QLabel" name="dataReflnsLabel">
                    <property name="font">
                     <font>
+                     <weight>50</weight>
                      <bold>false</bold>
                     </font>
                    </property>
@@ -1681,6 +1682,7 @@
                   <widget class="QLabel" name="wR2Label">
                    <property name="font">
                     <font>
+                     <weight>50</weight>
                      <italic>false</italic>
                      <bold>false</bold>
                     </font>
@@ -1704,6 +1706,7 @@
                   <widget class="QLabel" name="r1Label">
                    <property name="font">
                     <font>
+                     <weight>50</weight>
                      <italic>false</italic>
                      <bold>false</bold>
                     </font>
@@ -1761,6 +1764,7 @@
                   <widget class="QLabel" name="completeLabel">
                    <property name="font">
                     <font>
+                     <weight>50</weight>
                      <bold>false</bold>
                     </font>
                    </property>
@@ -1804,6 +1808,7 @@
                   <widget class="QLabel" name="rintLabel">
                    <property name="font">
                     <font>
+                     <weight>50</weight>
                      <bold>false</bold>
                     </font>
                    </property>
@@ -1826,6 +1831,7 @@
                   <widget class="QLabel" name="rsigmaLabel">
                    <property name="font">
                     <font>
+                     <weight>50</weight>
                      <bold>false</bold>
                     </font>
                    </property>
@@ -1899,6 +1905,7 @@
                   <widget class="QLabel" name="dLabel">
                    <property name="font">
                     <font>
+                     <weight>50</weight>
                      <bold>false</bold>
                     </font>
                    </property>
@@ -2301,6 +2308,7 @@ The data source will be ignored until next program restart.</string>
                       <property name="font">
                        <font>
                         <pointsize>10</pointsize>
+                        <weight>50</weight>
                         <bold>false</bold>
                        </font>
                       </property>
@@ -3012,6 +3020,330 @@ The data source will be ignored until next program restart.</string>
           </widget>
           <widget class="QWidget" name="page_cod">
            <layout class="QGridLayout" name="gridLayout_17">
+            <item row="0" column="1">
+             <layout class="QGridLayout" name="gridLayout_22">
+              <item row="0" column="1">
+               <widget class="QFrame" name="frame_2">
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+                <layout class="QVBoxLayout" name="verticalLayout_28">
+                 <property name="leftMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>0</number>
+                 </property>
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_9">
+                   <item>
+                    <widget class="QCheckBox" name="personalDepositCheckBox">
+                     <property name="text">
+                      <string>personal (private)</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QCheckBox" name="prepublicationDepositCheckBox">
+                     <property name="text">
+                      <string>prepublication</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QCheckBox" name="publishedDepositionCheckBox">
+                     <property name="text">
+                      <string>published</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <spacer name="horizontalSpacer_31">
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                     <property name="sizeType">
+                      <enum>QSizePolicy::Preferred</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>40</width>
+                       <height>20</height>
+                      </size>
+                     </property>
+                    </spacer>
+                   </item>
+                  </layout>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item row="4" column="1">
+               <widget class="QStackedWidget" name="depositionOptionsStackedWidget">
+                <property name="frameShape">
+                 <enum>QFrame::NoFrame</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+                <property name="lineWidth">
+                 <number>1</number>
+                </property>
+                <property name="currentIndex">
+                 <number>3</number>
+                </property>
+                <widget class="QWidget" name="page_personal">
+                 <layout class="QVBoxLayout" name="verticalLayout_30">
+                  <item>
+                   <layout class="QGridLayout" name="gridLayout_20">
+                    <item row="1" column="0">
+                     <widget class="QLabel" name="emailAddressToContactTheAuthorLabel">
+                      <property name="text">
+                       <string>Email address to contact the author</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="0" column="1">
+                     <widget class="QLineEdit" name="authorsFullNamePersonalLineEdit"/>
+                    </item>
+                    <item row="0" column="0">
+                     <widget class="QLabel" name="authorsFullNamePersonalLabel">
+                      <property name="text">
+                       <string>Authors Full Name (as in CIF)</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="1">
+                     <widget class="QLineEdit" name="emailAddressToContactTheAuthorLineEdit"/>
+                    </item>
+                    <item row="0" column="2">
+                     <spacer name="horizontalSpacer_30">
+                      <property name="orientation">
+                       <enum>Qt::Horizontal</enum>
+                      </property>
+                      <property name="sizeType">
+                       <enum>QSizePolicy::Preferred</enum>
+                      </property>
+                      <property name="sizeHint" stdset="0">
+                       <size>
+                        <width>80</width>
+                        <height>20</height>
+                       </size>
+                      </property>
+                     </spacer>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <spacer name="verticalSpacer_12">
+                    <property name="orientation">
+                     <enum>Qt::Vertical</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>20</width>
+                      <height>40</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="page_prepublication">
+                 <layout class="QVBoxLayout" name="verticalLayout_29">
+                  <item>
+                   <layout class="QGridLayout" name="gridLayout_21">
+                    <item row="1" column="1">
+                     <widget class="QLineEdit" name="depsoitorEMailAddressLineEdit"/>
+                    </item>
+                    <item row="1" column="0">
+                     <widget class="QLabel" name="depsoitorEMailAddressLabel">
+                      <property name="text">
+                       <string>depsoitor's e-mail address</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="0" column="1">
+                     <widget class="QLineEdit" name="depositorsFullNameLineEdit"/>
+                    </item>
+                    <item row="2" column="0">
+                     <widget class="QLabel" name="journalMameLabel">
+                      <property name="text">
+                       <string>journal name</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="3" column="0">
+                     <widget class="QLabel" name="embargoTimeInMonthsLabel">
+                      <property name="text">
+                       <string>embargo time in months</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="0" column="0">
+                     <widget class="QLabel" name="depositorsFullNameLabel">
+                      <property name="text">
+                       <string>depositors full name</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="2" column="1">
+                     <widget class="QLineEdit" name="journalMameLineEdit"/>
+                    </item>
+                    <item row="3" column="1">
+                     <widget class="QLineEdit" name="embargoTimeInMonthsLineEdit"/>
+                    </item>
+                    <item row="2" column="2">
+                     <spacer name="horizontalSpacer_29">
+                      <property name="orientation">
+                       <enum>Qt::Horizontal</enum>
+                      </property>
+                      <property name="sizeType">
+                       <enum>QSizePolicy::Preferred</enum>
+                      </property>
+                      <property name="sizeHint" stdset="0">
+                       <size>
+                        <width>80</width>
+                        <height>20</height>
+                       </size>
+                      </property>
+                     </spacer>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <spacer name="verticalSpacer_13">
+                    <property name="orientation">
+                     <enum>Qt::Vertical</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>20</width>
+                      <height>40</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="page_published">
+                 <layout class="QVBoxLayout" name="verticalLayout_27">
+                  <item>
+                   <widget class="QCheckBox" name="checkBox_4">
+                    <property name="text">
+                     <string>Replace existing structure in the database</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <layout class="QVBoxLayout" name="verticalLayout_26">
+                    <item>
+                     <widget class="QLabel" name="logMessageChangesLabel">
+                      <property name="text">
+                       <string>Log message describing the performed changes (mandatory):</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPlainTextEdit" name="plainTextEdit"/>
+                    </item>
+                   </layout>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="page_deposition_output">
+                 <layout class="QVBoxLayout" name="verticalLayout_31" stretch="0,0">
+                  <property name="leftMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>0</number>
+                  </property>
+                  <item>
+                   <widget class="QLabel" name="label_7">
+                    <property name="text">
+                     <string>Deposition Output:</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QTextBrowser" name="depositOutputTextBrowser"/>
+                  </item>
+                 </layout>
+                </widget>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <layout class="QGridLayout" name="gridLayout_19">
+                <property name="rightMargin">
+                 <number>9</number>
+                </property>
+                <item row="1" column="0">
+                 <widget class="QLabel" name="depositorPasswordLabel">
+                  <property name="text">
+                   <string>depositor's password</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="1">
+                 <widget class="QLineEdit" name="depositorPasswordLineEdit">
+                  <property name="echoMode">
+                   <enum>QLineEdit::PasswordEchoOnEdit</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="1">
+                 <widget class="QCheckBox" name="depositHKLcheckBox">
+                  <property name="text">
+                   <string>deposit hkl data</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="2" rowspan="3">
+                 <widget class="QLabel" name="label_2">
+                  <property name="text">
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;You need to have a COD account &lt;br/&gt;in order to deposit a cif file. &lt;/p&gt;&lt;p&gt;&lt;a href=&quot;http://crystallography.net/cod/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#094fd1;&quot;&gt;Signup here to do so&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  </property>
+                  <property name="textFormat">
+                   <enum>Qt::RichText</enum>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+                  </property>
+                  <property name="openExternalLinks">
+                   <bool>true</bool>
+                  </property>
+                  <property name="textInteractionFlags">
+                   <set>Qt::LinksAccessibleByKeyboard|Qt::LinksAccessibleByMouse</set>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="1">
+                 <widget class="QLineEdit" name="depositorUsernameLineEdit"/>
+                </item>
+                <item row="0" column="0">
+                 <widget class="QLabel" name="depositorUsername">
+                  <property name="text">
+                   <string>depositor's username</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </item>
             <item row="0" column="0">
              <widget class="QGroupBox" name="groupBox_10">
               <property name="sizePolicy">
@@ -3041,296 +3373,58 @@ The data source will be ignored until next program restart.</string>
               </layout>
              </widget>
             </item>
-            <item row="0" column="1">
-             <widget class="QGroupBox" name="groupBox_8">
-              <property name="title">
-               <string>Deposition type</string>
+            <item row="1" column="0" colspan="2">
+             <layout class="QHBoxLayout" name="horizontalLayout_10">
+              <property name="topMargin">
+               <number>0</number>
               </property>
-              <layout class="QGridLayout" name="gridLayout_18" columnstretch="0">
-               <item row="0" column="0">
-                <widget class="QFrame" name="frame_2">
-                 <property name="frameShape">
-                  <enum>QFrame::StyledPanel</enum>
-                 </property>
-                 <property name="frameShadow">
-                  <enum>QFrame::Raised</enum>
-                 </property>
-                 <layout class="QVBoxLayout" name="verticalLayout_28">
-                  <property name="leftMargin">
-                   <number>0</number>
-                  </property>
-                  <property name="topMargin">
-                   <number>0</number>
-                  </property>
-                  <property name="rightMargin">
-                   <number>0</number>
-                  </property>
-                  <property name="bottomMargin">
-                   <number>0</number>
-                  </property>
-                  <item>
-                   <layout class="QHBoxLayout" name="horizontalLayout_9">
-                    <item>
-                     <widget class="QCheckBox" name="personalDepositCheckBox">
-                      <property name="text">
-                       <string>personal (private)</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QCheckBox" name="prepublicationDepositCheckBox">
-                      <property name="text">
-                       <string>prepublication</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QCheckBox" name="publishedDepositionCheckBox">
-                      <property name="text">
-                       <string>published</string>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
-                  </item>
-                 </layout>
-                </widget>
-               </item>
-               <item row="1" column="0">
-                <layout class="QGridLayout" name="gridLayout_19">
-                 <item row="1" column="0">
-                  <widget class="QLabel" name="depositorPasswordLabel">
-                   <property name="text">
-                    <string>depositor's password</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="1">
-                  <widget class="QLineEdit" name="depositorPasswordLineEdit">
-                   <property name="echoMode">
-                    <enum>QLineEdit::PasswordEchoOnEdit</enum>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="2" column="1">
-                  <widget class="QCheckBox" name="depositHKLcheckBox">
-                   <property name="text">
-                    <string>deposit hkl data</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="2" rowspan="4">
-                  <widget class="QLabel" name="label_2">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="text">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;You need to have a COD account in order &lt;/p&gt;&lt;p&gt;to deposit a cif file here. &lt;/p&gt;&lt;p&gt;&lt;a href=&quot;http://crystallography.net/cod/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#094fd1;&quot;&gt;Signup here to do so&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                   </property>
-                   <property name="textFormat">
-                    <enum>Qt::RichText</enum>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-                   </property>
-                   <property name="wordWrap">
-                    <bool>true</bool>
-                   </property>
-                   <property name="openExternalLinks">
-                    <bool>true</bool>
-                   </property>
-                   <property name="textInteractionFlags">
-                    <set>Qt::LinksAccessibleByKeyboard|Qt::LinksAccessibleByMouse</set>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="1">
-                  <widget class="QLineEdit" name="depositorUsernameLineEdit"/>
-                 </item>
-                 <item row="0" column="0">
-                  <widget class="QLabel" name="depositorUsername">
-                   <property name="text">
-                    <string>depositor's username</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item row="2" column="0">
-                <widget class="QStackedWidget" name="depositionOptionsStackedWidget">
-                 <property name="frameShape">
-                  <enum>QFrame::Box</enum>
-                 </property>
-                 <property name="frameShadow">
-                  <enum>QFrame::Raised</enum>
-                 </property>
-                 <property name="lineWidth">
-                  <number>1</number>
-                 </property>
-                 <property name="currentIndex">
-                  <number>0</number>
-                 </property>
-                 <widget class="QWidget" name="page_personal">
-                  <layout class="QVBoxLayout" name="verticalLayout_30">
-                   <item>
-                    <layout class="QGridLayout" name="gridLayout_20">
-                     <item row="0" column="0">
-                      <widget class="QLabel" name="authorsFullNamePersonalLabel">
-                       <property name="text">
-                        <string>Authors Full Name (as in CIF)</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="0" column="1">
-                      <widget class="QLineEdit" name="authorsFullNamePersonalLineEdit"/>
-                     </item>
-                     <item row="1" column="0">
-                      <widget class="QLabel" name="emailAddressToContactTheAuthorLabel">
-                       <property name="text">
-                        <string>Email address to contact the author</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="1" column="1">
-                      <widget class="QLineEdit" name="emailAddressToContactTheAuthorLineEdit"/>
-                     </item>
-                    </layout>
-                   </item>
-                   <item>
-                    <spacer name="verticalSpacer_11">
-                     <property name="orientation">
-                      <enum>Qt::Vertical</enum>
-                     </property>
-                     <property name="sizeHint" stdset="0">
-                      <size>
-                       <width>20</width>
-                       <height>40</height>
-                      </size>
-                     </property>
-                    </spacer>
-                   </item>
-                  </layout>
-                 </widget>
-                 <widget class="QWidget" name="page_prepublication">
-                  <layout class="QVBoxLayout" name="verticalLayout_29">
-                   <item>
-                    <layout class="QFormLayout" name="formLayout_7">
-                     <property name="formAlignment">
-                      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-                     </property>
-                     <item row="0" column="0">
-                      <widget class="QLabel" name="depositorsFullNameLabel">
-                       <property name="text">
-                        <string>depositors full name</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="0" column="1">
-                      <widget class="QLineEdit" name="depositorsFullNameLineEdit"/>
-                     </item>
-                     <item row="1" column="0">
-                      <widget class="QLabel" name="depsoitorEMailAddressLabel">
-                       <property name="text">
-                        <string>depsoitor's e-mail address</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="1" column="1">
-                      <widget class="QLineEdit" name="depsoitorEMailAddressLineEdit"/>
-                     </item>
-                     <item row="2" column="0">
-                      <widget class="QLabel" name="journalMameLabel">
-                       <property name="text">
-                        <string>journal name</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="2" column="1">
-                      <widget class="QLineEdit" name="journalMameLineEdit"/>
-                     </item>
-                     <item row="3" column="0">
-                      <widget class="QLabel" name="embargoTimeInMonthsLabel">
-                       <property name="text">
-                        <string>embargo time in months</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="3" column="1">
-                      <widget class="QLineEdit" name="embargoTimeInMonthsLineEdit"/>
-                     </item>
-                    </layout>
-                   </item>
-                  </layout>
-                 </widget>
-                 <widget class="QWidget" name="page_published">
-                  <layout class="QVBoxLayout" name="verticalLayout_27">
-                   <item>
-                    <widget class="QCheckBox" name="checkBox_4">
-                     <property name="text">
-                      <string>Replace existing Structure</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <layout class="QVBoxLayout" name="verticalLayout_26">
-                     <item>
-                      <widget class="QLabel" name="logMessageChangesLabel">
-                       <property name="text">
-                        <string>log message describing the performed changes.</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QPlainTextEdit" name="plainTextEdit"/>
-                     </item>
-                    </layout>
-                   </item>
-                  </layout>
-                 </widget>
-                </widget>
-               </item>
-               <item row="3" column="0">
-                <layout class="QHBoxLayout" name="horizontalLayout_10">
-                 <item>
-                  <spacer name="horizontalSpacer_27">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="depositCIFpushButton">
-                   <property name="text">
-                    <string>Deposit CIF</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <spacer name="horizontalSpacer_28">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                </layout>
-               </item>
-              </layout>
-             </widget>
+              <item>
+               <widget class="QPushButton" name="BackFromDepositPushButton">
+                <property name="minimumSize">
+                 <size>
+                  <width>160</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Back to CIF Table</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_27">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QPushButton" name="depositCIFpushButton">
+                <property name="text">
+                 <string>Deposit CIF</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_28">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
             </item>
            </layout>
           </widget>
@@ -3504,7 +3598,6 @@ The data source will be ignored until next program restart.</string>
   <tabstop>depositHKLcheckBox</tabstop>
   <tabstop>checkBox_4</tabstop>
   <tabstop>plainTextEdit</tabstop>
-  <tabstop>depositCIFpushButton</tabstop>
   <tabstop>embargoTimeInMonthsLineEdit</tabstop>
   <tabstop>depositorsFullNameLineEdit</tabstop>
  </tabstops>
