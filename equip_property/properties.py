@@ -142,7 +142,7 @@ class Properties:
         selected_row_text = self.app.ui.PropertiesTemplatesListWidget.currentIndex().data()
         if not selected_row_text:
             return
-        prop_data = self.settings.load_template('property/' + selected_row_text)
+        prop_data = self.settings.load_value_of_key('property/' + selected_row_text)
         table_data = []
         cif_key = ''
         if prop_data:
@@ -237,7 +237,7 @@ class Properties:
             # self.app.ui.PropertiesEditTableWidget.blockSignals(False)
             return
         selected_row_text = listwidget.currentIndex().data()
-        table_data = self.settings.load_template('property/' + selected_row_text)
+        table_data = self.settings.load_value_of_key('property/' + selected_row_text)
         if table_data:
             cif_key = table_data[0]
             try:

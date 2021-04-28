@@ -6,8 +6,9 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QListWidgetItem
 from gemmi import cif
 
+from cif.cif_file_io import CifContainer
 from cif.core_dict import cif_all_dict
-from cif.text import retranslate_delimiter, set_pair_delimited
+from cif.text import retranslate_delimiter
 from gui.custom_classes import COL_CIF, COL_DATA, light_green, COL_EDIT
 from gui.dialogs import show_general_warning, cif_file_open_dialog, cif_file_save_dialog
 from tools import misc
@@ -235,17 +236,17 @@ class Equipment:
         selected_template, table_data = self.get_equipment_entry_data()
         if not selected_template:
             return
-        doc = cif.Document()
         blockname = '__'.join(selected_template.split())
-        block = doc.add_new_block(blockname)
-        for key, value in table_data:
-            set_pair_delimited(block, key, value.strip('\n\r '))
         if not filename:
             filename = cif_file_save_dialog(blockname.replace('__', '_') + '.cif')
         if not filename.strip():
             return
+        equipment_cif = CifContainer(filename)
+        block = equipment_cif.doc.add_new_block(blockname)
+        for key, value in table_data:
+            equipment_cif[key] = value.strip('\n\r ')
         try:
-            doc.write_file(filename, style=cif.Style.Indent35)
+            equipment_cif.save(filename)
             # Path(filename).write_text(doc.as_string(cif.Style.Indent35))
         except PermissionError:
             if Path(filename).is_dir():

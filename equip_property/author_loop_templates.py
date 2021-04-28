@@ -12,7 +12,7 @@ from PyQt5.QtWidgets import QListWidgetItem
 from gemmi import cif
 
 from cif.cif_file_io import CifContainer
-from cif.text import utf8_to_str, quote, retranslate_delimiter, set_pair_delimited
+from cif.text import utf8_to_str, quote, retranslate_delimiter
 from gui.dialogs import cif_file_save_dialog, show_general_warning, cif_file_open_dialog
 from gui.finalcif_gui import Ui_FinalCifWindow
 from tools.misc import grouper
@@ -143,9 +143,13 @@ class AuthorLoops():
         selected_template = self.ui.LoopTemplatesListWidget.currentIndex().data()
         if not selected_template:
             return
-        doc = cif.Document()
         blockname = '__'.join(selected_template.split())
-        block = doc.add_new_block(blockname)
+        if not filename:
+            filename = cif_file_save_dialog(blockname.replace('__', '_') + '.cif')
+        if not filename.strip():
+            return
+        author_cif = CifContainer(filename)
+        block = author_cif.doc.add_new_block(blockname)
         contact_author = table_data.get('contact')
         for key, value in zip(table_data.keys(), table_data.values()):
             if key == 'name':
@@ -164,13 +168,9 @@ class AuthorLoops():
                 key = '_publ_contact_author_id_orcid' if contact_author else '_publ_author_id_orcid'
             else:
                 continue
-            set_pair_delimited(block, key, cif.as_string(value.strip('\n\r ')))
-        if not filename:
-            filename = cif_file_save_dialog(blockname.replace('__', '_') + '.cif')
-        if not filename.strip():
-            return
+            author_cif[key], cif.as_string(value.strip('\n\r '))
         try:
-            doc.write_file(filename, style=cif.Style.Indent35)
+            author_cif.save(filename)
         except PermissionError:
             if Path(filename).is_dir():
                 return

@@ -52,7 +52,7 @@ class MyTestCase(unittest.TestCase):
     def test_export_selected_author(self):
         self._delete_test_author()
         self._import_testauthor()
-        self.app.authors.export_author_template('../other_templates/testexport_author.cif')
+        self.app.authors.export_author_template(str(Path('../other_templates/testexport_author.cif')))
         self.assertEqual(True, Path('../other_templates/testexport_author.cif').exists())
         self.assertEqual(Path('../other_templates/testexport_author.cif').read_text(),
                          Path('../other_templates/testexport_author.cif').read_text())

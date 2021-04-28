@@ -7,6 +7,26 @@ from cif.cif_file_io import CifContainer
 from gui.finalcif_gui import Ui_FinalCifWindow
 from tools.settings import FinalCifSettings
 
+"""
+TODO: These warnings contain too much unneeded words:
+
+Depositing structure 'cif' into TESTCOD:
+cif-deposit.pl: Connection to authentication database - OK
+cif-deposit.pl: User authentication - OK
+cif-deposit.pl: File upload - OK
+cif-deposit.pl: Connection to structure database - OK
+cif-deposit.pl: Check for duplicates - OK
+cif-deposit.pl: cod-tools/scripts/cif_cod_check: - data_cu_BruecknerJK_153F40_0m: WARNING, data item '_journal_name_full' was not found.
+cod-tools/scripts/cif_cod_check: - data_cu_BruecknerJK_153F40_0m: WARNING, data item '_publ_section_title' was not found.
+cod-tools/scripts/cif_cod_check: - data_cu_BruecknerJK_153F40_0m: WARNING, neither data item '_journal_year' nor data item '_journal_volume' was found.
+cod-tools/scripts/cif_cod_check: - data_cu_BruecknerJK_153F40_0m: WARNING, neither data item '_journal_page_first' nor data item '_journal_article_reference' was found.
+cod-tools/scripts/cif_cod_check: -: NOTE, 4 WARNING(s) encountered.
+
+What does that mean?:
+
+cif-deposit.pl: cifvalues: -(51793): ERROR, stray CIF values at the beginning of the input file
+
+"""
 
 class COD_Deposit():
     def __init__(self, ui: Ui_FinalCifWindow, cif: Union[CifContainer, None] = None):
@@ -18,16 +38,19 @@ class COD_Deposit():
         self._set_checkbox_states()
         self.ui.depositorUsernameLineEdit.textChanged.connect(self._set_username)
         self.ui.depositorPasswordLineEdit.textChanged.connect(self._set_password)
-        self.ui.authorsFullNamePersonalLineEdit.textChanged.connect(self._set_author_name)
-        self.ui.emailAddressToContactTheAuthorLineEdit.textChanged.connect(self._set_author_email)
-        # self.ui.user.textChanged.connect(self._set_user_email)
-        # self.ui.
+        self.ui.ContactAuthorsFullNamePersonalLineEdit.textChanged.connect(self._set_author_name)
+        self.ui.ContactAuthorsFullNamePersonalLineEdit_2.textChanged.connect(self._set_author_name)
+        self.ui.depositorsFullNameLineEdit.textChanged.connect(self._set_author_name)
+        self.ui.ContactAuthorEmailAddressLineEdit.textChanged.connect(self._set_author_email)
+        self.ui.ContactAuthorEmailAddressLineEdit_2.textChanged.connect(self._set_author_email)
+        self.ui.depsoitorEMailAddressLineEdit.textChanged.connect(self._set_author_email)
+        #
         self.ui.depositCIFpushButton.clicked.connect(self._prepare_deposit)
         # production url:
         # url = 'https://www.crystallography.net/cod-test/cgi-bin/cif-deposit.pl'
         # test_url:
         self.url = 'https://www.crystallography.net/cod-test/cgi-bin/cif-deposit.pl'
-        username = self.settings.load_template('cod_username')
+        username = self.settings.load_value_of_key('cod_username')
         if username:
             # self.username = username
             self.ui.depositorUsernameLineEdit.setText(username)
@@ -40,7 +63,7 @@ class COD_Deposit():
         self.user_email = 'dkratzert@gmx.de'
 
     @property
-    def cif(self):
+    def cif(self) -> CifContainer:
         return self._cif
 
     @cif.setter
@@ -48,9 +71,13 @@ class COD_Deposit():
         self.ui.depositCIFpushButton.setEnabled(True)
         self._cif = obj
         self.author_name = self._cif['_audit_contact_author_name']
-        self.ui.authorsFullNamePersonalLineEdit.setText(self.author_name)
+        self.ui.ContactAuthorsFullNamePersonalLineEdit.setText(self.author_name)
+        self.ui.ContactAuthorsFullNamePersonalLineEdit_2.setText(self.author_name)
+        self.ui.depositorsFullNameLineEdit.setText(self.author_name)
         self.author_email = self._cif['_audit_contact_author_email']
-        self.ui.emailAddressToContactTheAuthorLineEdit.setText(self.author_email)
+        self.ui.ContactAuthorEmailAddressLineEdit.setText(self.author_email)
+        self.ui.ContactAuthorEmailAddressLineEdit_2.setText(self.author_email)
+        self.ui.depsoitorEMailAddressLineEdit.setText(self.author_email)
 
     def _set_checkbox_states(self):
         self.ui.prepublicationDepositCheckBox.clicked.connect(self._prepublication_was_toggled)
@@ -63,7 +90,7 @@ class COD_Deposit():
     def _personal_was_toggled(self, state: bool):
         self.ui.prepublicationDepositCheckBox.setChecked(False)
         self.ui.publishedDepositionCheckBox.setChecked(False)
-        if state == True:
+        if state:
             self.ui.depositionOptionsStackedWidget.setCurrentIndex(0)
             self.deposition_type = 'personal'
             self.reset_deposit_button_state_to_initial()
@@ -71,7 +98,7 @@ class COD_Deposit():
     def _prepublication_was_toggled(self, state: bool):
         self.ui.publishedDepositionCheckBox.setChecked(False)
         self.ui.personalDepositCheckBox.setChecked(False)
-        if state == True:
+        if state:
             self.ui.depositionOptionsStackedWidget.setCurrentIndex(1)
             self.deposition_type = 'prepublication'
             self.reset_deposit_button_state_to_initial()
@@ -79,7 +106,7 @@ class COD_Deposit():
     def _published_was_toggled(self, state: bool):
         self.ui.prepublicationDepositCheckBox.setChecked(False)
         self.ui.personalDepositCheckBox.setChecked(False)
-        if state == True:
+        if state:
             self.ui.depositionOptionsStackedWidget.setCurrentIndex(2)
             self.deposition_type = 'published'
             self.reset_deposit_button_state_to_initial()
@@ -103,7 +130,6 @@ class COD_Deposit():
         self.ui.depositOutputTextBrowser.setText('starting deposition...')
         print('starting deposition of ', self.cif.fileobj.name)
         # with open(self.cif.fileobj.absolute(), 'rb') as fileobj:
-        fileobj = io.StringIO(self.cif.cif_as_string(without_hkl=True))
         data = {'username'       : self.username,
                 # Path('/Users/daniel/cod_username.txt').read_text(encoding='ascii'),
                 'password'       : self.password,
@@ -111,14 +137,23 @@ class COD_Deposit():
                 'user_email'     : self.user_email,  # 'dkratzert@gmx.de',
                 'deposition_type': self.deposition_type,  # published prepublication, personal
                 'output_mode'    : 'html',
-                # 'progress'       : '1',  # must be 1 if supplied!
+                'progress'       : '1',  # must be 1 if supplied!
                 'filename'       : self.cif.fileobj.name,
                 }
-        if self.author_email:
-            data.update({'author_email': self.author_email})
-        if self.author_name:
+        if self.deposition_type == 'published':
+            if self.ui.replaceDepositCheckBox.isChecked():
+                data.update({'replace': '1'})
+            data.update({'message': self.ui.publishedLogPlainTextEdit.toPlainText()})
+        if self.deposition_type == 'prepublication':
+            # TODO: prepublication and replace is possible with the REST API. Is this intended?
+            # data.update({'replace': '1'})
             data.update({'author_name': self.author_name})
-
+            data.update({'author_email': self.author_email})
+            data.update({'hold_period': self.ui.embargoTimeInMonthsLineEdit.text()})
+        if self.deposition_type == 'personal':
+            data.update({'author_name': self.author_name})
+            data.update({'author_email': self.author_email})
+        fileobj = io.StringIO(self.cif.cif_as_string(without_hkl=True))
         if self.ui.depositHKLcheckBox.isChecked():
             files = {'cif': fileobj, 'hkl': io.StringIO(self.cif.hkl_file)}
         else:
@@ -128,6 +163,7 @@ class COD_Deposit():
         # hooks={'response': self.log_response_text})
         print(r.text)
         self.ui.depositOutputTextBrowser.setText(r.text)
+        self.set_deposit_button_to_try_again()
         return r
 
     def switch_to_page(self, deposition_type: str):
@@ -140,12 +176,17 @@ class COD_Deposit():
         self.ui.depositCIFpushButton.setText("Deposit CIF")
         self.ui.depositCIFpushButton.clicked.connect(self._prepare_deposit)
 
+    def set_deposit_button_to_try_again(self):
+        self.ui.depositCIFpushButton.setText("Try Again")
+        self.ui.depositCIFpushButton.disconnect()
+        self.ui.depositCIFpushButton.clicked.connect(lambda: self.switch_to_page(self.deposition_type))
+
     def log_response_text(self, resp: requests.Response, *args, **kwargs):
         # logger.warning('Got response %r from %s', resp.text, resp.url)
         print(resp.text)
 
     def _set_username(self, text: str):
-        self.settings.save_template('cod_username', text)
+        self.settings.save_key_value('cod_username', text)
         self.username = text
 
     def _set_password(self, text: str):
@@ -153,14 +194,15 @@ class COD_Deposit():
         self.password = text
 
     def _set_author_name(self, text: str):
-        # TODO: save username in settings
+        self.cif['_audit_contact_author_name'] = text
         self.author_name = text
 
     def _set_author_email(self, text: str):
-        # Do not store this anywhere!
+        self.cif['_audit_contact_author_email'] = text
         self.author_email = text
 
     def _prepare_deposit(self):
+        print("#### Depositiong in '{}' mode...".format(self.deposition_type))
         self.ui.depositOutputTextBrowser.clear()
         self.switch_to_page('deposit')
         if len(self.username) < 2:
@@ -173,11 +215,6 @@ class COD_Deposit():
             return
         r = self.cif_deposit()
         # print(r.text)
-
-    def set_deposit_button_to_try_again(self):
-        self.ui.depositCIFpushButton.setText("Try Again")
-        self.ui.depositCIFpushButton.disconnect()
-        self.ui.depositCIFpushButton.clicked.connect(lambda: self.switch_to_page(self.deposition_type))
 
 
 if __name__ == '__main__':

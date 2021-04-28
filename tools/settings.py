@@ -95,11 +95,23 @@ class FinalCifSettings():
         """
         self.settings.setValue(name, items)
 
+    def save_key_value(self, name: str, item: str):
+        """
+        Saves Equipment templates into the settings as list.
+        """
+        self.settings.setValue(name, item)
+
     def load_template(self, name: str) -> Union[List[str], List[List]]:
         """
         Load templates and return them as list of lists.
         """
         return self.settings.value(name)
+
+    def load_value_of_key(self, key: str) -> str:
+        """
+        Load templates and return them as list of lists.
+        """
+        return self.settings.value(key)
 
     def load_loop_template(self, name: str) -> Dict:
         """
@@ -120,7 +132,7 @@ class FinalCifSettings():
         """
         """
         keydict = {}
-        plist = self.load_template('equipment/' + name) or []
+        plist = self.load_value_of_key('equipment/' + name) or []
         for p in plist:
             try:
                 keydict[p[0]] = p[1]
@@ -140,7 +152,7 @@ class FinalCifSettings():
         templ = None
         for (p, k) in zip(plist, keylist):
             if k.lower() == key.lower():
-                templ = self.load_template('property/' + p)
+                templ = self.load_value_of_key('property/' + p)
         if not templ:
             return [('', '')]
         return [(n, x) for n, x in enumerate(templ[1]) if templ and len(templ) > 0]
