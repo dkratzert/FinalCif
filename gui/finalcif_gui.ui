@@ -3099,7 +3099,7 @@ The data source will be ignored until next program restart.</string>
                  <number>1</number>
                 </property>
                 <property name="currentIndex">
-                 <number>3</number>
+                 <number>2</number>
                 </property>
                 <widget class="QWidget" name="page_personal">
                  <layout class="QVBoxLayout" name="verticalLayout_30">
@@ -3108,22 +3108,22 @@ The data source will be ignored until next program restart.</string>
                     <item row="1" column="0">
                      <widget class="QLabel" name="emailAddressToContactTheAuthorLabel">
                       <property name="text">
-                       <string>Email address to contact the author</string>
+                       <string>Email address to contact the depositor</string>
                       </property>
                      </widget>
                     </item>
                     <item row="0" column="1">
-                     <widget class="QLineEdit" name="authorsFullNamePersonalLineEdit"/>
+                     <widget class="QLineEdit" name="ContactAuthorsFullNamePersonalLineEdit"/>
                     </item>
                     <item row="0" column="0">
                      <widget class="QLabel" name="authorsFullNamePersonalLabel">
                       <property name="text">
-                       <string>Authors Full Name (as in CIF)</string>
+                       <string>Contact authors full name (as in CIF)</string>
                       </property>
                      </widget>
                     </item>
                     <item row="1" column="1">
-                     <widget class="QLineEdit" name="emailAddressToContactTheAuthorLineEdit"/>
+                     <widget class="QLineEdit" name="ContactAuthorEmailAddressLineEdit"/>
                     </item>
                     <item row="0" column="2">
                      <spacer name="horizontalSpacer_30">
@@ -3168,7 +3168,7 @@ The data source will be ignored until next program restart.</string>
                     <item row="1" column="0">
                      <widget class="QLabel" name="depsoitorEMailAddressLabel">
                       <property name="text">
-                       <string>depsoitor's e-mail address</string>
+                       <string>Email address to contact the depositor</string>
                       </property>
                      </widget>
                     </item>
@@ -3178,26 +3178,26 @@ The data source will be ignored until next program restart.</string>
                     <item row="2" column="0">
                      <widget class="QLabel" name="journalMameLabel">
                       <property name="text">
-                       <string>journal name</string>
+                       <string>Intended journal name</string>
                       </property>
                      </widget>
                     </item>
                     <item row="3" column="0">
                      <widget class="QLabel" name="embargoTimeInMonthsLabel">
                       <property name="text">
-                       <string>embargo time in months</string>
+                       <string>Hold period in months (embargo time)</string>
                       </property>
                      </widget>
                     </item>
                     <item row="0" column="0">
                      <widget class="QLabel" name="depositorsFullNameLabel">
                       <property name="text">
-                       <string>depositors full name</string>
+                       <string>Contact authors full name (as in CIF)</string>
                       </property>
                      </widget>
                     </item>
                     <item row="2" column="1">
-                     <widget class="QLineEdit" name="journalMameLineEdit"/>
+                     <widget class="QLineEdit" name="journalNameLineEdit"/>
                     </item>
                     <item row="3" column="1">
                      <widget class="QLineEdit" name="embargoTimeInMonthsLineEdit"/>
@@ -3217,6 +3217,13 @@ The data source will be ignored until next program restart.</string>
                        </size>
                       </property>
                      </spacer>
+                    </item>
+                    <item row="3" column="2">
+                     <widget class="QLabel" name="label_8">
+                      <property name="text">
+                       <string>default is 6 Months</string>
+                      </property>
+                     </widget>
                     </item>
                    </layout>
                   </item>
@@ -3238,11 +3245,51 @@ The data source will be ignored until next program restart.</string>
                 <widget class="QWidget" name="page_published">
                  <layout class="QVBoxLayout" name="verticalLayout_27">
                   <item>
-                   <widget class="QCheckBox" name="checkBox_4">
+                   <widget class="QCheckBox" name="replaceDepositCheckBox">
                     <property name="text">
-                     <string>Replace existing structure in the database</string>
+                     <string>Replace existing structure in the database (needs _cod_database_code)</string>
                     </property>
                    </widget>
+                  </item>
+                  <item>
+                   <layout class="QGridLayout" name="gridLayout_23">
+                    <item row="1" column="0">
+                     <widget class="QLabel" name="emailAddressToContactTheAuthorLabel_2">
+                      <property name="text">
+                       <string>Email address to contact the depositor</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="0" column="1">
+                     <widget class="QLineEdit" name="ContactAuthorsFullNamePersonalLineEdit_2"/>
+                    </item>
+                    <item row="0" column="0">
+                     <widget class="QLabel" name="authorsFullNamePersonalLabel_2">
+                      <property name="text">
+                       <string>Contact authors full name (as in CIF)</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="1">
+                     <widget class="QLineEdit" name="ContactAuthorEmailAddressLineEdit_2"/>
+                    </item>
+                    <item row="0" column="2">
+                     <spacer name="horizontalSpacer_32">
+                      <property name="orientation">
+                       <enum>Qt::Horizontal</enum>
+                      </property>
+                      <property name="sizeType">
+                       <enum>QSizePolicy::Preferred</enum>
+                      </property>
+                      <property name="sizeHint" stdset="0">
+                       <size>
+                        <width>80</width>
+                        <height>20</height>
+                       </size>
+                      </property>
+                     </spacer>
+                    </item>
+                   </layout>
                   </item>
                   <item>
                    <layout class="QVBoxLayout" name="verticalLayout_26">
@@ -3254,7 +3301,7 @@ The data source will be ignored until next program restart.</string>
                      </widget>
                     </item>
                     <item>
-                     <widget class="QPlainTextEdit" name="plainTextEdit"/>
+                     <widget class="QPlainTextEdit" name="publishedLogPlainTextEdit"/>
                     </item>
                    </layout>
                   </item>
@@ -3279,7 +3326,22 @@ The data source will be ignored until next program restart.</string>
                    </widget>
                   </item>
                   <item>
-                   <widget class="QTextBrowser" name="depositOutputTextBrowser"/>
+                   <widget class="QTextBrowser" name="depositOutputTextBrowser">
+                    <property name="font">
+                     <font>
+                      <pointsize>12</pointsize>
+                     </font>
+                    </property>
+                    <property name="horizontalScrollBarPolicy">
+                     <enum>Qt::ScrollBarAsNeeded</enum>
+                    </property>
+                    <property name="lineWrapMode">
+                     <enum>QTextEdit::NoWrap</enum>
+                    </property>
+                    <property name="openExternalLinks">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
                   </item>
                  </layout>
                 </widget>
@@ -3589,15 +3651,15 @@ The data source will be ignored until next program restart.</string>
   <tabstop>SaveAuthorLoopToTemplateButton</tabstop>
   <tabstop>tableWidget</tabstop>
   <tabstop>FullNameLineEdit</tabstop>
-  <tabstop>journalMameLineEdit</tabstop>
+  <tabstop>journalNameLineEdit</tabstop>
   <tabstop>personalDepositCheckBox</tabstop>
   <tabstop>prepublicationDepositCheckBox</tabstop>
   <tabstop>publishedDepositionCheckBox</tabstop>
   <tabstop>depositorUsernameLineEdit</tabstop>
   <tabstop>depositorPasswordLineEdit</tabstop>
   <tabstop>depositHKLcheckBox</tabstop>
-  <tabstop>checkBox_4</tabstop>
-  <tabstop>plainTextEdit</tabstop>
+  <tabstop>replaceDepositCheckBox</tabstop>
+  <tabstop>publishedLogPlainTextEdit</tabstop>
   <tabstop>embargoTimeInMonthsLineEdit</tabstop>
   <tabstop>depositorsFullNameLineEdit</tabstop>
  </tabstops>

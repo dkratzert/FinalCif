@@ -30,7 +30,7 @@ from qtpy.QtGui import QDesktopServices
 import displaymol
 from cif.cif_file_io import CifContainer
 from cif.cod.deposit import COD_Deposit
-from cif.text import set_pair_delimited, utf8_to_str, retranslate_delimiter, quote
+from cif.text import utf8_to_str, retranslate_delimiter, quote
 from datafiles.bruker_data import BrukerData
 from datafiles.ccdc import CCDCMail
 from displaymol import mol_file_writer, write_html
@@ -903,10 +903,10 @@ class AppWindow(QMainWindow):
                     # This is my row information
                     # print('col2:', vhead, col0, col1, col2, '#')
                     if col1 and not col2:
-                        set_pair_delimited(self.cif.block, vhead, col1)
+                        self.cif[vhead] = col1
                     if col2:
                         try:
-                            set_pair_delimited(self.cif.block, vhead, col2)
+                            self.cif[vhead] = col2
                         except RuntimeError as e:
                             print('Can not take cif info from table:', e)
                             pass
@@ -1477,7 +1477,7 @@ class AppWindow(QMainWindow):
         if key not in self.cif.order:
             self.cif.order.insert(row_num, key)
         if not self.cif.block.find_value(key):
-            set_pair_delimited(self.cif.block, key, utf8_to_str(value))
+            self.cif[key] = value
 
     def add_separation_line(self, row_num: int) -> None:
         """

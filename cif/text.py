@@ -113,22 +113,6 @@ charcters = {
 }
 
 
-def set_pair_delimited(block, key: str, txt: str):
-    """
-    Converts special characters to their markup counterparts.
-    """
-    txt = utf8_to_str(txt)
-    try:
-        # bad hack to get the numbered values correct
-        float(txt)
-        block.set_pair(key, txt)
-    except (TypeError, ValueError):
-        # prevent _key '?' in cif:
-        if txt == '?':
-            block.set_pair(key, txt)
-        else:
-            block.set_pair(key, quote(txt))
-
 
 def utf8_to_str(txt) -> str:
     """

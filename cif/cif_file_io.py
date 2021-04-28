@@ -14,6 +14,7 @@ from typing import Dict, List, Tuple, Union, NamedTuple
 import gemmi
 
 from cif.cif_order import order, special_keys
+from cif.text import utf8_to_str, quote
 from datafiles.utils import DSRFind
 from tools.dsrmath import mean
 from tools.misc import essential_keys, non_centrosymm_keys, get_error_from_value, isnumeric
@@ -76,15 +77,15 @@ class CifContainer():
         return doc
 
     def cif_as_string(self, without_hkl=False) -> str:
-        if not without_hkl:
-            return self.doc.as_string(style=gemmi.cif.Style.Indent35)
-        else:
+        if without_hkl:
             doc = gemmi.cif.Document()
             doc.parse_string(self.doc.as_string(style=gemmi.cif.Style.Indent35))
             block = doc.sole_block()
             if block.find_pair_item('_shelx_hkl_file'):
                 block.find_pair_item('_shelx_hkl_file').erase()
             return doc.as_string(style=gemmi.cif.Style.Indent35)
+        else:
+            return self.doc.as_string(style=gemmi.cif.Style.Indent35)
 
     def __str__(self):
         return str(self.fileobj.absolute())
@@ -101,11 +102,29 @@ class CifContainer():
             return ''
 
     def __setitem__(self, key: str, value: str) -> None:
-        """Set a key value pair of the current block"""
-        self.block.set_pair(key, value)
+        """Set a key value pair of the current block.
+        Values are automatically encoded from utf-8 and delimited.
+        """
+        self.set_pair_delimited(key, value)
 
     def __delitem__(self, key: str):
         self.block.find_pair_item(key).erase()
+
+    def set_pair_delimited(self, key: str, txt: str):
+        """
+        Converts special characters to their markup counterparts.
+        """
+        txt = utf8_to_str(txt)
+        try:
+            # bad hack to get the numbered values correct
+            float(txt)
+            self.block.set_pair(key, txt)
+        except (TypeError, ValueError):
+            # prevent _key '?' in cif:
+            if txt == '?':
+                self.block.set_pair(key, txt)
+            else:
+                self.block.set_pair(key, quote(txt))
 
     def save(self, filename: str = None) -> None:
         """
