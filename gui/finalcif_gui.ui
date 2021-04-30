@@ -3099,7 +3099,7 @@ The data source will be ignored until next program restart.</string>
                  <number>1</number>
                 </property>
                 <property name="currentIndex">
-                 <number>2</number>
+                 <number>1</number>
                 </property>
                 <widget class="QWidget" name="page_personal">
                  <layout class="QVBoxLayout" name="verticalLayout_30">
@@ -3162,33 +3162,6 @@ The data source will be ignored until next program restart.</string>
                  <layout class="QVBoxLayout" name="verticalLayout_29">
                   <item>
                    <layout class="QGridLayout" name="gridLayout_21">
-                    <item row="1" column="1">
-                     <widget class="QLineEdit" name="depsoitorEMailAddressLineEdit"/>
-                    </item>
-                    <item row="1" column="0">
-                     <widget class="QLabel" name="depsoitorEMailAddressLabel">
-                      <property name="text">
-                       <string>Email address to contact the depositor</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="0" column="1">
-                     <widget class="QLineEdit" name="depositorsFullNameLineEdit"/>
-                    </item>
-                    <item row="2" column="0">
-                     <widget class="QLabel" name="journalMameLabel">
-                      <property name="text">
-                       <string>Intended journal name</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="3" column="0">
-                     <widget class="QLabel" name="embargoTimeInMonthsLabel">
-                      <property name="text">
-                       <string>Hold period in months (embargo time)</string>
-                      </property>
-                     </widget>
-                    </item>
                     <item row="0" column="0">
                      <widget class="QLabel" name="depositorsFullNameLabel">
                       <property name="text">
@@ -3199,8 +3172,15 @@ The data source will be ignored until next program restart.</string>
                     <item row="2" column="1">
                      <widget class="QLineEdit" name="journalNameLineEdit"/>
                     </item>
-                    <item row="3" column="1">
-                     <widget class="QLineEdit" name="embargoTimeInMonthsLineEdit"/>
+                    <item row="1" column="1">
+                     <widget class="QLineEdit" name="depsoitorEMailAddressLineEdit"/>
+                    </item>
+                    <item row="1" column="0">
+                     <widget class="QLabel" name="depsoitorEMailAddressLabel">
+                      <property name="text">
+                       <string>Email address to contact the depositor</string>
+                      </property>
+                     </widget>
                     </item>
                     <item row="2" column="2">
                      <spacer name="horizontalSpacer_29">
@@ -3221,7 +3201,34 @@ The data source will be ignored until next program restart.</string>
                     <item row="3" column="2">
                      <widget class="QLabel" name="label_8">
                       <property name="text">
-                       <string>default is 6 Months</string>
+                       <string>(6-12 months)</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="0" column="1">
+                     <widget class="QLineEdit" name="depositorsFullNameLineEdit"/>
+                    </item>
+                    <item row="2" column="0">
+                     <widget class="QLabel" name="journalMameLabel">
+                      <property name="text">
+                       <string>Intended journal name</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="3" column="0">
+                     <widget class="QLabel" name="embargoTimeInMonthsLabel">
+                      <property name="text">
+                       <string>Hold period in months (embargo time)</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="3" column="1">
+                     <widget class="QSpinBox" name="embargoTimeInMonthsSpinBox">
+                      <property name="minimum">
+                       <number>6</number>
+                      </property>
+                      <property name="maximum">
+                       <number>12</number>
                       </property>
                      </widget>
                     </item>
@@ -3359,24 +3366,10 @@ The data source will be ignored until next program restart.</string>
                   </property>
                  </widget>
                 </item>
-                <item row="1" column="1">
-                 <widget class="QLineEdit" name="depositorPasswordLineEdit">
-                  <property name="echoMode">
-                   <enum>QLineEdit::PasswordEchoOnEdit</enum>
-                  </property>
-                 </widget>
-                </item>
-                <item row="2" column="1">
-                 <widget class="QCheckBox" name="depositHKLcheckBox">
-                  <property name="text">
-                   <string>deposit hkl data</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="0" column="2" rowspan="3">
+                <item row="0" column="2" rowspan="4">
                  <widget class="QLabel" name="label_2">
                   <property name="text">
-                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;You need to have a COD account &lt;br/&gt;in order to deposit a cif file. &lt;/p&gt;&lt;p&gt;&lt;a href=&quot;http://crystallography.net/cod/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#094fd1;&quot;&gt;Signup here to do so&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;You need to have a COD account &lt;br/&gt;in order to deposit a cif file. &lt;/p&gt;&lt;p&gt;&lt;a href=&quot;http://crystallography.net/cod/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#094fd1;&quot;&gt;Signup here for a new account&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                   </property>
                   <property name="textFormat">
                    <enum>Qt::RichText</enum>
@@ -3395,10 +3388,38 @@ The data source will be ignored until next program restart.</string>
                 <item row="0" column="1">
                  <widget class="QLineEdit" name="depositorUsernameLineEdit"/>
                 </item>
+                <item row="1" column="1">
+                 <widget class="QLineEdit" name="depositorPasswordLineEdit">
+                  <property name="echoMode">
+                   <enum>QLineEdit::Password</enum>
+                  </property>
+                 </widget>
+                </item>
                 <item row="0" column="0">
                  <widget class="QLabel" name="depositorUsername">
                   <property name="text">
                    <string>depositor's username</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="3" column="1">
+                 <widget class="QCheckBox" name="depositHKLcheckBox">
+                  <property name="text">
+                   <string>deposit hkl data</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="1">
+                 <widget class="QLineEdit" name="userEmailLineEdit">
+                  <property name="inputMethodHints">
+                   <set>Qt::ImhEmailCharactersOnly|Qt::ImhLowercaseOnly|Qt::ImhNoAutoUppercase</set>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="0">
+                 <widget class="QLabel" name="label_9">
+                  <property name="text">
+                   <string>depsoitor's e-mail</string>
                   </property>
                  </widget>
                 </item>
@@ -3660,7 +3681,6 @@ The data source will be ignored until next program restart.</string>
   <tabstop>depositHKLcheckBox</tabstop>
   <tabstop>replaceDepositCheckBox</tabstop>
   <tabstop>publishedLogPlainTextEdit</tabstop>
-  <tabstop>embargoTimeInMonthsLineEdit</tabstop>
   <tabstop>depositorsFullNameLineEdit</tabstop>
  </tabstops>
  <includes>
