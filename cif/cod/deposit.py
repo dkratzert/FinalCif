@@ -1,10 +1,13 @@
 import io
+from pathlib import Path
 from typing import Union
 
 import requests
+from PyQt5.QtGui import QIntValidator
 
 from cif.cif_file_io import CifContainer
 from gui.finalcif_gui import Ui_FinalCifWindow
+from tools.misc import isnumeric
 from tools.settings import FinalCifSettings
 
 """
@@ -26,6 +29,11 @@ What does that mean?:
 
 cif-deposit.pl: cifvalues: -(51793): ERROR, stray CIF values at the beginning of the input file
 
+------
+Test for missing fields:
+Probably add a page before upload and let the user input missing fields
+*  test for _publ_author_name
+
 """
 
 class COD_Deposit():
@@ -44,6 +52,7 @@ class COD_Deposit():
         self.ui.ContactAuthorEmailAddressLineEdit.textChanged.connect(self._set_author_email)
         self.ui.ContactAuthorEmailAddressLineEdit_2.textChanged.connect(self._set_author_email)
         self.ui.depsoitorEMailAddressLineEdit.textChanged.connect(self._set_author_email)
+        self.ui.userEmailLineEdit.textChanged.connect(self._set_user_email)
         #
         self.ui.depositCIFpushButton.clicked.connect(self._prepare_deposit)
         # production url:
@@ -52,15 +61,17 @@ class COD_Deposit():
         self.url = 'https://www.crystallography.net/cod-test/cgi-bin/cif-deposit.pl'
         username = self.settings.load_value_of_key('cod_username')
         if username:
-            # self.username = username
             self.ui.depositorUsernameLineEdit.setText(username)
         else:
             self.username = ''
         self.password = ''
         self.author_name = ''
         self.author_email = ''
-        # TODO: Make input field for this in personal page
-        self.user_email = 'dkratzert@gmx.de'
+        user_email = self.settings.load_value_of_key('cod_user_email')
+        if user_email:
+            self.ui.userEmailLineEdit.setText(user_email)
+        else:
+            self.user_email = ''
 
     @property
     def cif(self) -> CifContainer:
@@ -78,6 +89,7 @@ class COD_Deposit():
         self.ui.ContactAuthorEmailAddressLineEdit.setText(self.author_email)
         self.ui.ContactAuthorEmailAddressLineEdit_2.setText(self.author_email)
         self.ui.depsoitorEMailAddressLineEdit.setText(self.author_email)
+        self.ui.depositHKLcheckBox.setChecked(len(self._cif['_shelx_hkl_file']))
 
     def _set_checkbox_states(self):
         self.ui.prepublicationDepositCheckBox.clicked.connect(self._prepublication_was_toggled)
@@ -149,7 +161,7 @@ class COD_Deposit():
             # data.update({'replace': '1'})
             data.update({'author_name': self.author_name})
             data.update({'author_email': self.author_email})
-            data.update({'hold_period': self.ui.embargoTimeInMonthsLineEdit.text()})
+            data.update({'hold_period': str(self.ui.embargoTimeInMonthsSpinBox)})
         if self.deposition_type == 'personal':
             data.update({'author_name': self.author_name})
             data.update({'author_email': self.author_email})
@@ -164,6 +176,7 @@ class COD_Deposit():
         print(r.text)
         self.ui.depositOutputTextBrowser.setText(r.text)
         self.set_deposit_button_to_try_again()
+        Path('/Users/daniel/Documents/GitHub/FinalCif/tests/examples/1979688-finalcif2.cif').write_text(self.cif.cif_as_string(without_hkl=True))
         return r
 
     def switch_to_page(self, deposition_type: str):
@@ -200,6 +213,10 @@ class COD_Deposit():
     def _set_author_email(self, text: str):
         self.cif['_audit_contact_author_email'] = text
         self.author_email = text
+
+    def _set_user_email(self, text: str):
+        self.settings.save_key_value('cod_user_email', text)
+        self.user_email = text
 
     def _prepare_deposit(self):
         print("#### Depositiong in '{}' mode...".format(self.deposition_type))
