@@ -6,14 +6,17 @@ from cif.cod.deposit import COD_Deposit
 class TestCOD_Deposit(TestCase):
 
     def setUp(self) -> None:
-        self.cod = COD_Deposit('tests/examples/1979688.cif')
+        pass
+        # self.cod = COD_Deposit(None, CifContainer('tests/examples/1979688.cif'))
 
-    def test__personal_was_toggled(self):
-        self.cod._personal_was_toggled(True)
-        # TODO make this a test:
-        self.cod.ui.prepublicationDepositCheckBox.setChecked(False)
-        self.cod.ui.publishedDepositionCheckBox.setChecked(False)
+    def test__deposition_type_to_int_personal(self):
+        self.assertEqual(0, COD_Deposit.deposition_type_to_int('personal'))
 
-            self.cod.ui.depositionOptionsStackedWidget.setCurrentIndex(0)
-            self.cod.deposition_type = 'personal'
-            self.cod.reset_deposit_button_state_to_initial()
+    def test__deposition_type_to_int_prepublication(self):
+        self.assertEqual(1, COD_Deposit.deposition_type_to_int('prepublication'))
+
+    def test__deposition_type_to_int_published(self):
+        self.assertEqual(2, COD_Deposit.deposition_type_to_int('published'))
+
+    def test__deposition_type_to_int_deposit(self):
+        self.assertEqual(3, COD_Deposit.deposition_type_to_int('deposit'))

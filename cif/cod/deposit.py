@@ -3,14 +3,14 @@ from pathlib import Path
 from typing import Union
 
 import requests
-from PyQt5.QtGui import QIntValidator
 
 from cif.cif_file_io import CifContainer
 from gui.finalcif_gui import Ui_FinalCifWindow
-from tools.misc import isnumeric
 from tools.settings import FinalCifSettings
 
 """
+COD-number 7 digits
+
 TODO: These warnings contain too much unneeded words:
 
 Depositing structure 'cif' into TESTCOD:
@@ -36,6 +36,7 @@ Probably add a page before upload and let the user input missing fields
 
 """
 
+
 class COD_Deposit():
     def __init__(self, ui: Ui_FinalCifWindow, cif: Union[CifContainer, None] = None):
         self.ui = ui
@@ -53,6 +54,7 @@ class COD_Deposit():
         self.ui.ContactAuthorEmailAddressLineEdit_2.textChanged.connect(self._set_author_email)
         self.ui.depsoitorEMailAddressLineEdit.textChanged.connect(self._set_author_email)
         self.ui.userEmailLineEdit.textChanged.connect(self._set_user_email)
+        # self.ui.refreshDepositListPushButton.clicked.connect(self._refresh_cod_list)
         #
         self.ui.depositCIFpushButton.clicked.connect(self._prepare_deposit)
         # production url:
@@ -123,7 +125,8 @@ class COD_Deposit():
             self.deposition_type = 'published'
             self.reset_deposit_button_state_to_initial()
 
-    def deposition_type_to_int(self, deposition_type: str):
+    @staticmethod
+    def deposition_type_to_int(deposition_type: str):
         if deposition_type == 'personal':
             return 0
         if deposition_type == 'prepublication':
@@ -176,7 +179,8 @@ class COD_Deposit():
         print(r.text)
         self.ui.depositOutputTextBrowser.setText(r.text)
         self.set_deposit_button_to_try_again()
-        Path('/Users/daniel/Documents/GitHub/FinalCif/tests/examples/1979688-finalcif2.cif').write_text(self.cif.cif_as_string(without_hkl=True))
+        Path('/Users/daniel/Documents/GitHub/FinalCif/tests/examples/1979688-finalcif2.cif').write_text(
+            self.cif.cif_as_string(without_hkl=True))
         return r
 
     def switch_to_page(self, deposition_type: str):
@@ -204,6 +208,12 @@ class COD_Deposit():
 
     def _set_password(self, text: str):
         # Do not store this anywhere!
+        if len(text) > 4:
+            self.ui.refreshDepositListPushButton.setText('Refresh List')
+            self.ui.refreshDepositListPushButton.setEnabled(True)
+        else:
+            self.ui.refreshDepositListPushButton.setText('Enter username and password')
+            self.ui.refreshDepositListPushButton.setDisabled(True)
         self.password = text
 
     def _set_author_name(self, text: str):

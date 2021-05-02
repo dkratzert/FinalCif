@@ -18,6 +18,7 @@ from tempfile import TemporaryDirectory
 from typing import Union, Dict, Tuple
 
 import qtawesome as qta
+import requests
 from PyQt5.QtCore import QUrl, QEvent, QPoint, Qt
 from PyQt5.QtGui import QKeySequence, QResizeEvent, QMoveEvent, QTextCursor, QFont, QBrush
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply
@@ -30,7 +31,7 @@ from qtpy.QtGui import QDesktopServices
 import displaymol
 from cif.cif_file_io import CifContainer
 from cif.cod.deposit import COD_Deposit
-from cif.text import utf8_to_str, retranslate_delimiter, quote
+from cif.text import retranslate_delimiter, quote
 from datafiles.bruker_data import BrukerData
 from datafiles.ccdc import CCDCMail
 from displaymol import mol_file_writer, write_html
@@ -51,7 +52,7 @@ from template.templates import ReportTemplates
 from tools.checkcif import MyHTMLParser, AlertHelp, CheckCif
 from tools.dsrmath import my_isnumeric
 from tools.misc import strip_finalcif_of_name, next_path, do_not_import_keys, celltxt, to_float, combobox_fields, \
-    do_not_import_from_stoe_cfx, cif_to_header_label, grouper
+    do_not_import_from_stoe_cfx, cif_to_header_label, grouper, is_database_number
 from tools.options import Options
 from tools.platon import Platon
 from tools.settings import FinalCifSettings
@@ -257,11 +258,25 @@ class AppWindow(QMainWindow):
         # brings the html checkcif in from in order to avoid confusion of an "empty" checkcif report page:
         self.ui.CheckCIFResultsTabWidget.currentChanged.connect(lambda: self.ui.ResponsesTabWidget.setCurrentIndex(0))
         ##
+        self.ui.SelectCif_LineEdit.returnPressed.connect(self.check_if_filefield_contains_database_number)
+
+    def check_if_filefield_contains_database_number(self):
+        """
+        Downloads a CIF file from the COD with the corresponding deposition number entered into the file field.
+        """
+        input = self.ui.SelectCif_LineEdit.text().strip()
+        if is_database_number(input):
+            file = '{}.cif'.format(input)
+            r = requests.get('http://www.crystallography.net/cod/{}.cif'.format(input))
+            if r.status_code == 200:
+                Path(file).write_bytes(r.content)
+                r.close()
+                self.load_cif_file(Path(file))
 
     def open_cod_page(self):
         self.save_current_cif_file()
         self.ui.MainStackedWidget.setCurrentIndex(7)
-        #return (lambda: QDesktopServices.openUrl(QUrl('http://www.crystallography.net/cod/')))
+        # return (lambda: QDesktopServices.openUrl(QUrl('http://www.crystallography.net/cod/')))
 
     def resizeEvent(self, a0: QResizeEvent) -> None:
         """It called when the main window resizes."""
@@ -997,18 +1012,14 @@ class AppWindow(QMainWindow):
         self.status_bar.show_message('')
         with suppress(AttributeError):
             self.ui.moleculeLayout.removeWidget(self.view)
-        # Set to empty state bevore loading:
+        # Set to empty state before loading:
         self.missing_data = set()
         # clean table and vheader before loading:
         self.ui.cif_main_table.delete_content()
         if not filepath:
-            self.set_last_workdir()
-            fp = cif_file_open_dialog()
-            # The warning about inconsistent temperature:
-            self.temperature_warning_displayed = False
-            if not fp:
+            filepath = self.get_file_from_dialog()
+            if not filepath.is_file():
                 return
-            filepath = Path(fp)
         self.set_path_display_in_file_selector(str(filepath))
         try:
             if not self.able_to_open(filepath):
@@ -1084,6 +1095,14 @@ class AppWindow(QMainWindow):
             if not self.ui.MainStackedWidget.on_checkcif_page():
                 self.ui.MainStackedWidget.got_to_main_page()
             self.deposit.cif = self.cif
+
+    def get_file_from_dialog(self) -> Union[Path, None]:
+        self.set_last_workdir()
+        fp = cif_file_open_dialog()
+        # The warning about inconsistent temperature:
+        self.temperature_warning_displayed = False
+        filepath = Path(fp)
+        return filepath
 
     def go_into_cifs_directory(self, filepath):
         try:
