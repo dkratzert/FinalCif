@@ -3099,10 +3099,19 @@ The data source will be ignored until next program restart.</string>
                  <number>1</number>
                 </property>
                 <property name="currentIndex">
-                 <number>1</number>
+                 <number>2</number>
                 </property>
                 <widget class="QWidget" name="page_personal">
                  <layout class="QVBoxLayout" name="verticalLayout_30">
+                  <property name="leftMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>12</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>0</number>
+                  </property>
                   <item>
                    <layout class="QGridLayout" name="gridLayout_20">
                     <item row="1" column="0">
@@ -3160,6 +3169,12 @@ The data source will be ignored until next program restart.</string>
                 </widget>
                 <widget class="QWidget" name="page_prepublication">
                  <layout class="QVBoxLayout" name="verticalLayout_29">
+                  <property name="leftMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>0</number>
+                  </property>
                   <item>
                    <layout class="QGridLayout" name="gridLayout_21">
                     <item row="0" column="0">
@@ -3171,6 +3186,16 @@ The data source will be ignored until next program restart.</string>
                     </item>
                     <item row="2" column="1">
                      <widget class="QLineEdit" name="journalNameLineEdit"/>
+                    </item>
+                    <item row="3" column="1">
+                     <widget class="QSpinBox" name="embargoTimeInMonthsSpinBox">
+                      <property name="minimum">
+                       <number>6</number>
+                      </property>
+                      <property name="maximum">
+                       <number>12</number>
+                      </property>
+                     </widget>
                     </item>
                     <item row="1" column="1">
                      <widget class="QLineEdit" name="depsoitorEMailAddressLineEdit"/>
@@ -3222,16 +3247,6 @@ The data source will be ignored until next program restart.</string>
                       </property>
                      </widget>
                     </item>
-                    <item row="3" column="1">
-                     <widget class="QSpinBox" name="embargoTimeInMonthsSpinBox">
-                      <property name="minimum">
-                       <number>6</number>
-                      </property>
-                      <property name="maximum">
-                       <number>12</number>
-                      </property>
-                     </widget>
-                    </item>
                    </layout>
                   </item>
                   <item>
@@ -3251,6 +3266,12 @@ The data source will be ignored until next program restart.</string>
                 </widget>
                 <widget class="QWidget" name="page_published">
                  <layout class="QVBoxLayout" name="verticalLayout_27">
+                  <property name="leftMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>0</number>
+                  </property>
                   <item>
                    <widget class="QCheckBox" name="replaceDepositCheckBox">
                     <property name="text">
@@ -3356,6 +3377,9 @@ The data source will be ignored until next program restart.</string>
               </item>
               <item row="1" column="1">
                <layout class="QGridLayout" name="gridLayout_19">
+                <property name="leftMargin">
+                 <number>0</number>
+                </property>
                 <property name="rightMargin">
                  <number>9</number>
                 </property>
@@ -3427,7 +3451,7 @@ The data source will be ignored until next program restart.</string>
               </item>
              </layout>
             </item>
-            <item row="0" column="0">
+            <item row="0" column="0" alignment="Qt::AlignHCenter">
              <widget class="QGroupBox" name="groupBox_10">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -3438,8 +3462,53 @@ The data source will be ignored until next program restart.</string>
               <property name="title">
                <string>List of deposited structures</string>
               </property>
-              <layout class="QVBoxLayout" name="verticalLayout_25">
-               <item>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_18">
+               <item row="1" column="1">
+                <widget class="QPushButton" name="refreshDepositListPushButton">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                 <property name="text">
+                  <string>Enter username and password</string>
+                 </property>
+                 <property name="checkable">
+                  <bool>false</bool>
+                 </property>
+                 <property name="autoDefault">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <spacer name="horizontalSpacer_33">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>1</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="1" column="2">
+                <spacer name="horizontalSpacer_34">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>1</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="0" column="0" colspan="3">
                 <widget class="QTableWidget" name="tableWidget">
                  <column>
                   <property name="text">

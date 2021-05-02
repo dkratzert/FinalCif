@@ -832,3 +832,12 @@ celltxt = """
    </body>
    </html>
     """
+
+
+def is_database_number(input: Union[str, int]) -> bool:
+    if isinstance(input, int):
+        input = str(input)
+    state: bool = False
+    if len(input) == 7 and isnumeric(input):
+        state = True
+    return state
