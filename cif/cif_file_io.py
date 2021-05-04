@@ -110,6 +110,9 @@ class CifContainer():
     def __delitem__(self, key: str):
         self.block.find_pair_item(key).erase()
 
+    def __contains__(self, item):
+        return bool(self.__getitem__(item))
+
     def set_pair_delimited(self, key: str, txt: str):
         """
         Converts special characters to their markup counterparts.

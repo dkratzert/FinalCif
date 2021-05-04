@@ -13,21 +13,12 @@ COD-number 7 digits
 
 TODO: These warnings contain too much unneeded words:
 
-Depositing structure 'cif' into TESTCOD:
-cif-deposit.pl: Connection to authentication database - OK
-cif-deposit.pl: User authentication - OK
-cif-deposit.pl: File upload - OK
-cif-deposit.pl: Connection to structure database - OK
-cif-deposit.pl: Check for duplicates - OK
-cif-deposit.pl: cod-tools/scripts/cif_cod_check: - data_cu_BruecknerJK_153F40_0m: WARNING, data item '_journal_name_full' was not found.
-cod-tools/scripts/cif_cod_check: - data_cu_BruecknerJK_153F40_0m: WARNING, data item '_publ_section_title' was not found.
-cod-tools/scripts/cif_cod_check: - data_cu_BruecknerJK_153F40_0m: WARNING, neither data item '_journal_year' nor data item '_journal_volume' was found.
-cod-tools/scripts/cif_cod_check: - data_cu_BruecknerJK_153F40_0m: WARNING, neither data item '_journal_page_first' nor data item '_journal_article_reference' was found.
-cod-tools/scripts/cif_cod_check: -: NOTE, 4 WARNING(s) encountered.
+* In general, each option for replace should habe a textedit input for the changes and a lineEdit to give the
+  COD-ID
 
 What does that mean?:
-
 cif-deposit.pl: cifvalues: -(51793): ERROR, stray CIF values at the beginning of the input file
+possibly from hkl file?
 
 ------
 Test for missing fields:
@@ -47,9 +38,9 @@ class COD_Deposit():
         self._set_checkbox_states()
         self.ui.depositorUsernameLineEdit.textChanged.connect(self._set_username)
         self.ui.depositorPasswordLineEdit.textChanged.connect(self._set_password)
-        self.ui.ContactAuthorsFullNamePersonalLineEdit.textChanged.connect(self._set_author_name)
-        self.ui.ContactAuthorsFullNamePersonalLineEdit_2.textChanged.connect(self._set_author_name)
-        self.ui.depositorsFullNameLineEdit.textChanged.connect(self._set_author_name)
+        self.ui.ContactAuthorsFullNamePersonalLineEdit.textChanged.connect(self._set_author_name_personal)
+        self.ui.ContactAuthorsFullNamePersonalLineEdit_2.textChanged.connect(self._set_author_name_published)
+        self.ui.depositorsFullNameLineEdit.textChanged.connect(self._set_author_name_prepubl)
         self.ui.ContactAuthorEmailAddressLineEdit.textChanged.connect(self._set_author_email)
         self.ui.ContactAuthorEmailAddressLineEdit_2.textChanged.connect(self._set_author_email)
         self.ui.depsoitorEMailAddressLineEdit.textChanged.connect(self._set_author_email)
@@ -142,7 +133,7 @@ class COD_Deposit():
         if not self.cif:
             print('No cif opened!')
             return
-        self.ui.depositOutputTextBrowser.setText('starting deposition...')
+        self.ui.depositOutputTextBrowser.setText('starting deposition in "{}" mode ...'.format(self.deposition_type))
         print('starting deposition of ', self.cif.fileobj.name)
         # with open(self.cif.fileobj.absolute(), 'rb') as fileobj:
         data = {'username'       : self.username,
@@ -152,7 +143,7 @@ class COD_Deposit():
                 'user_email'     : self.user_email,  # 'dkratzert@gmx.de',
                 'deposition_type': self.deposition_type,  # published prepublication, personal
                 'output_mode'    : 'html',
-                'progress'       : '1',  # must be 1 if supplied!
+                #'progress'       : '1',  # must be 1 if supplied! Otherwise do not submit.
                 'filename'       : self.cif.fileobj.name,
                 }
         if self.deposition_type == 'published':
@@ -161,10 +152,13 @@ class COD_Deposit():
             data.update({'message': self.ui.publishedLogPlainTextEdit.toPlainText()})
         if self.deposition_type == 'prepublication':
             # TODO: prepublication and replace is possible with the REST API. Is this intended?
-            # data.update({'replace': '1'})
-            data.update({'author_name': self.author_name})
-            data.update({'author_email': self.author_email})
-            data.update({'hold_period': str(self.ui.embargoTimeInMonthsSpinBox)})
+            # And replace needs message
+            # plus _cod_database_code in the CIF
+            data.update({'replace': '1'})
+            data.update({'message': "test1"})
+            data.update({'author_name': self.author_name,
+                         'author_email': self.author_email,
+                         'hold_period': str(self.ui.embargoTimeInMonthsSpinBox.value())})
         if self.deposition_type == 'personal':
             data.update({'author_name': self.author_name})
             data.update({'author_email': self.author_email})
@@ -179,8 +173,6 @@ class COD_Deposit():
         print(r.text)
         self.ui.depositOutputTextBrowser.setText(r.text)
         self.set_deposit_button_to_try_again()
-        Path('/Users/daniel/Documents/GitHub/FinalCif/tests/examples/1979688-finalcif2.cif').write_text(
-            self.cif.cif_as_string(without_hkl=True))
         return r
 
     def switch_to_page(self, deposition_type: str):
@@ -216,8 +208,21 @@ class COD_Deposit():
             self.ui.refreshDepositListPushButton.setDisabled(True)
         self.password = text
 
-    def _set_author_name(self, text: str):
+    def _set_author_name_published(self, text: str):
         self.cif['_audit_contact_author_name'] = text
+        #self.cif['_publ_author_name'] = text
+        self.author_name = text
+
+    def _set_author_name_personal(self, text: str):
+        #self.cif['_audit_contact_author_name'] = text
+        self.cif['_publ_author_name'] = text
+        self.author_name = text
+
+    def _set_author_name_prepubl(self, text: str):
+        # TODO: in case of more than one name, make loop from semicolon-separated names:
+        # https://www.iucr.org/__data/iucr/cifdic_html/1/cif_core.dic/Ipubl_author_name.html
+        #self.cif['_audit_contact_author_name'] = text
+        self.cif['_publ_author_name'] = text
         self.author_name = text
 
     def _set_author_email(self, text: str):
@@ -240,6 +245,7 @@ class COD_Deposit():
             self.ui.depositOutputTextBrowser.setText('no password given')
             self.set_deposit_button_to_try_again()
             return
+        self.cif.save()
         r = self.cif_deposit()
         # print(r.text)
 
