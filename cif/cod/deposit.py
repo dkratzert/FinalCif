@@ -25,6 +25,15 @@ Test for missing fields:
 Probably add a page before upload and let the user input missing fields
 *  test for _publ_author_name
 
+Prepublication problems:
+- An already (pre)published CIF gives this error: 
+cif-deposit.pl: CIF data block 'cu_BruecknerJK_153F40_0m' does not have '_cod_database_code' indicating TESTCOD structure which is to be updated
+    -> I have to know which are already published be the user.
+
+Personal Problems:
+- Depositing structure 'cif' into TESTCOD:
+    -> should be named as _data value
+
 """
 
 
@@ -76,8 +85,8 @@ class COD_Deposit():
         self._cif = obj
         self.author_name = self._cif['_audit_contact_author_name']
         self.ui.ContactAuthorsFullNamePersonalLineEdit.setText(self.author_name)
-        self.ui.ContactAuthorsFullNamePersonalLineEdit_2.setText(self.author_name)
-        self.ui.depositorsFullNameLineEdit.setText(self.author_name)
+        self.ui.ContactAuthorsFullNamePersonalLineEdit_2.setText(self._cif['_publ_author_name'])
+        self.ui.depositorsFullNameLineEdit.setText(self._cif['_publ_author_name'])
         self.author_email = self._cif['_audit_contact_author_email']
         self.ui.ContactAuthorEmailAddressLineEdit.setText(self.author_email)
         self.ui.ContactAuthorEmailAddressLineEdit_2.setText(self.author_email)
@@ -209,8 +218,8 @@ class COD_Deposit():
         self.password = text
 
     def _set_author_name_published(self, text: str):
-        self.cif['_audit_contact_author_name'] = text
-        #self.cif['_publ_author_name'] = text
+        #self.cif['_audit_contact_author_name'] = text
+        self.cif['_publ_author_name'] = text
         self.author_name = text
 
     def _set_author_name_personal(self, text: str):
