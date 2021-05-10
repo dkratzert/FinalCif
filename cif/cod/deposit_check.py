@@ -27,7 +27,10 @@ Prepublication
        as in IUCr (i.e. PLATON). Checks are made using
        `cif_cod_check` as well;
     c) It SHOULD NOT contain bibliography entries;
-    d) It MUST contain author's names, affiliations and e-mails.
+    d) It MUST contain
+    author's names,
+    affiliations, e-mails
+    _publ_section_title
        Later is being kept private and communication with author
        is made possible using web-form, which uses CAPTCHA.
 
@@ -41,8 +44,37 @@ Personal (private communication)
        o) _publ_author_name     One or more author names
     c) It MUST contain name, affiliation and e-mail of at least
        one (here - depositing) author.
+
 """
-from typing import List
+
+"""
+'author_name' field is required to match at least one of the authors in '_publ_author_name'
+'author_email' field will not be recorded in CIF, but instead it will go to the private COD database
+    in order for us to contact the author if needed.
+'journal' field will be recorded in '_journal_name_full' CIF data item
+    for prepublication descriptions; it is not required to match anything.
+
+Most common deposition errors:
+
+1. Missing bibliography. Published and prepublication structures need
+full bibliography, and personal communications should at least have
+title and author.
+
+2. Author name mismatch for prepublication and personal communication
+structures. As said, 'author_name' API field must match at least one of
+the authors in '_publ_author_name' CIF loop.
+
+3. Missing atomic displacement parameters (ADPs) for structures
+published after 1969. This is mandatory quality criterion in the COD.
+ADPs have to be expressed in any form mandated by the core CIF dictionary.
+
+4. Missing or unparsable '_chemical_formula_sum'. It must be a
+space-separated list of atom types and their counts, like 'C18 H19 N7 O8 S'.
+
+5. Missing or non-integer '_cell_formula_units_Z'.
+"""
+
+from typing import List, Tuple
 
 from cif.cif_file_io import CifContainer
 
@@ -59,20 +91,39 @@ class DepositCheck():
                    '_journal_volume',
                    '_journal_page_first',
                    #'_journal_article_reference'
+                   '_publ_section_title'
                    )
         return tocheck
 
-    def list_missing_for_prepublication(self) -> List[int]:
+    @property
+    def published_needs(self):
+        tocheck = ('_journal_name_full',
+                   '_publ_section_title',
+                   '_journal_year',
+                   '_journal_volume',
+                   '_journal_page_first',
+                   #'_journal_article_reference'
+                   '_publ_section_title'
+                   )
+        return tocheck
+
+    def list_missing_for_deposit(self, needs: Tuple) -> List[int]:
         """
         Lists the index numbers of missing items from prepublication_needs.
         """
         missing = []
-        for num, item in enumerate(self.prepublication_needs):
+        for num, item in enumerate(needs):
             if item not in self.cif:
                 missing.append(num)
         return missing
 
-    def is_complete_for_prepublication(self):
-        if not self.list_missing_for_prepublication():
+    def is_complete_for_prepublication(self, needs: Tuple):
+        if not self.list_missing_for_deposit(needs):
             return True
         return False
+
+
+if __name__ == '__main__':
+    d = DepositCheck(CifContainer('tests/examples/1979688.cif'))
+    print(d.list_missing_for_deposit(d.prepublication_needs))
+    print(d.list_missing_for_deposit(d.published_needs))

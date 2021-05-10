@@ -3180,7 +3180,7 @@ The data source will be ignored until next program restart.</string>
                     <item row="0" column="0">
                      <widget class="QLabel" name="depositorsFullNameLabel">
                       <property name="text">
-                       <string>Contact authors full name (as in CIF)</string>
+                       <string>Contact authors full name (_publ_author_name)</string>
                       </property>
                      </widget>
                     </item>
@@ -3236,7 +3236,7 @@ The data source will be ignored until next program restart.</string>
                     <item row="2" column="0">
                      <widget class="QLabel" name="journalMameLabel">
                       <property name="text">
-                       <string>Intended journal name</string>
+                       <string>Intended journal name (not mandatory)</string>
                       </property>
                      </widget>
                     </item>
@@ -3281,27 +3281,7 @@ The data source will be ignored until next program restart.</string>
                   </item>
                   <item>
                    <layout class="QGridLayout" name="gridLayout_23">
-                    <item row="1" column="0">
-                     <widget class="QLabel" name="emailAddressToContactTheAuthorLabel_2">
-                      <property name="text">
-                       <string>Email address to contact the depositor</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="0" column="1">
-                     <widget class="QLineEdit" name="ContactAuthorsFullNamePersonalLineEdit_2"/>
-                    </item>
-                    <item row="0" column="0">
-                     <widget class="QLabel" name="authorsFullNamePersonalLabel_2">
-                      <property name="text">
-                       <string>Contact authors full name (as in CIF)</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="1" column="1">
-                     <widget class="QLineEdit" name="ContactAuthorEmailAddressLineEdit_2"/>
-                    </item>
-                    <item row="0" column="2">
+                    <item row="1" column="2">
                      <spacer name="horizontalSpacer_32">
                       <property name="orientation">
                        <enum>Qt::Horizontal</enum>
@@ -3316,6 +3296,36 @@ The data source will be ignored until next program restart.</string>
                        </size>
                       </property>
                      </spacer>
+                    </item>
+                    <item row="1" column="0">
+                     <widget class="QLabel" name="authorsFullNamePersonalLabel_2">
+                      <property name="text">
+                       <string>Contact authors full name (_publ_author_name)</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="1">
+                     <widget class="QLineEdit" name="ContactAuthorsFullNamePersonalLineEdit_2"/>
+                    </item>
+                    <item row="2" column="1">
+                     <widget class="QLineEdit" name="ContactAuthorEmailAddressLineEdit_2"/>
+                    </item>
+                    <item row="2" column="0">
+                     <widget class="QLabel" name="emailAddressToContactTheAuthorLabel_2">
+                      <property name="text">
+                       <string>Email address to contact the depositor</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="0" column="1">
+                     <widget class="QLineEdit" name="cod_database_code_LineEdit"/>
+                    </item>
+                    <item row="0" column="0">
+                     <widget class="QLabel" name="cod_database_code_Label">
+                      <property name="text">
+                       <string>_cod_database_code</string>
+                      </property>
+                     </widget>
                     </item>
                    </layout>
                   </item>
