@@ -1009,7 +1009,7 @@
         <item row="1" column="0" colspan="12">
          <widget class="MyMainStackedWidget" name="MainStackedWidget">
           <property name="currentIndex">
-           <number>7</number>
+           <number>5</number>
           </property>
           <widget class="QWidget" name="page_MainTable">
            <layout class="QVBoxLayout" name="verticalLayout">
@@ -3048,7 +3048,7 @@ The data source will be ignored until next program restart.</string>
                    <item>
                     <widget class="QCheckBox" name="personalDepositCheckBox">
                      <property name="text">
-                      <string>personal (private)</string>
+                      <string>personal (private) communication</string>
                      </property>
                     </widget>
                    </item>
@@ -3062,7 +3062,7 @@ The data source will be ignored until next program restart.</string>
                    <item>
                     <widget class="QCheckBox" name="publishedDepositionCheckBox">
                      <property name="text">
-                      <string>published</string>
+                      <string>already published</string>
                      </property>
                     </widget>
                    </item>
@@ -3099,7 +3099,7 @@ The data source will be ignored until next program restart.</string>
                  <number>1</number>
                 </property>
                 <property name="currentIndex">
-                 <number>2</number>
+                 <number>0</number>
                 </property>
                 <widget class="QWidget" name="page_personal">
                  <layout class="QVBoxLayout" name="verticalLayout_30">
@@ -3127,7 +3127,7 @@ The data source will be ignored until next program restart.</string>
                     <item row="0" column="0">
                      <widget class="QLabel" name="authorsFullNamePersonalLabel">
                       <property name="text">
-                       <string>Contact authors full name (as in CIF)</string>
+                       <string>Contact authors full name (_publ_author_name)</string>
                       </property>
                      </widget>
                     </item>

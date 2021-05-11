@@ -275,6 +275,7 @@ class AppWindow(QMainWindow):
 
     def open_cod_page(self):
         self.save_current_cif_file()
+        self.deposit.cif = self.cif
         self.ui.MainStackedWidget.setCurrentIndex(7)
         # return (lambda: QDesktopServices.openUrl(QUrl('http://www.crystallography.net/cod/')))
 

@@ -48,11 +48,12 @@ Personal (private communication)
 """
 
 """
-'author_name' field is required to match at least one of the authors in '_publ_author_name'
+'author_name' field is required to match at least one of the authors in '_publ_author_name' CIF loop 
+                for 'prepublication' and 'personal' communication depositions.
 'author_email' field will not be recorded in CIF, but instead it will go to the private COD database
-    in order for us to contact the author if needed.
+                in order for us to contact the author if needed.
 'journal' field will be recorded in '_journal_name_full' CIF data item
-    for prepublication descriptions; it is not required to match anything.
+                for prepublication descriptions; it is not required to match anything.
 
 Most common deposition errors:
 

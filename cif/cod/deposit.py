@@ -83,10 +83,10 @@ class COD_Deposit():
     def cif(self, obj):
         self.ui.depositCIFpushButton.setEnabled(True)
         self._cif = obj
-        self.author_name = self._cif['_audit_contact_author_name']
+        self.author_name = self._cif['_publ_author_name']
         self.ui.ContactAuthorsFullNamePersonalLineEdit.setText(self.author_name)
-        self.ui.ContactAuthorsFullNamePersonalLineEdit_2.setText(self._cif['_publ_author_name'])
-        self.ui.depositorsFullNameLineEdit.setText(self._cif['_publ_author_name'])
+        self.ui.ContactAuthorsFullNamePersonalLineEdit_2.setText(self.author_name)
+        self.ui.depositorsFullNameLineEdit.setText(self.author_name)
         self.author_email = self._cif['_audit_contact_author_email']
         self.ui.ContactAuthorEmailAddressLineEdit.setText(self.author_email)
         self.ui.ContactAuthorEmailAddressLineEdit_2.setText(self.author_email)
@@ -219,19 +219,19 @@ class COD_Deposit():
 
     def _set_author_name_published(self, text: str):
         #self.cif['_audit_contact_author_name'] = text
-        self.cif['_publ_author_name'] = text
+        #self.cif['_publ_author_name'] = text
         self.author_name = text
 
     def _set_author_name_personal(self, text: str):
         #self.cif['_audit_contact_author_name'] = text
-        self.cif['_publ_author_name'] = text
+        #self.cif['_publ_author_name'] = text
         self.author_name = text
 
     def _set_author_name_prepubl(self, text: str):
         # TODO: in case of more than one name, make loop from semicolon-separated names:
         # https://www.iucr.org/__data/iucr/cifdic_html/1/cif_core.dic/Ipubl_author_name.html
         #self.cif['_audit_contact_author_name'] = text
-        self.cif['_publ_author_name'] = text
+        #self.cif['_publ_author_name'] = text
         self.author_name = text
 
     def _set_author_email(self, text: str):
