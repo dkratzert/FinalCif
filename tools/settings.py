@@ -64,7 +64,8 @@ class FinalCifSettings():
         equipment_list = self.settings.value(templ_type)
         if not equipment_list:
             equipment_list = ['']
-        equipment_list.sort()
+        if isinstance(equipment_list, list):
+            equipment_list.sort()
         equipment_list.append(selected_template_text)
         newlist = [x for x in list(set(equipment_list)) if x]
         # this list keeps track of the equipment items:
