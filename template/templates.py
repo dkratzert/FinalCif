@@ -64,7 +64,7 @@ class ReportTemplates:
 
     def save_templates_list(self):
         itemslist = self.get_templates_list_from_widget()
-        self.settings.save_template('report_templates_list', itemslist)
+        self.settings.save_template_list('report_templates_list', itemslist)
 
     def get_templates_list_from_widget(self) -> List:
         itemslist = []

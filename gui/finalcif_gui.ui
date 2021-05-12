@@ -170,7 +170,7 @@
                <item>
                 <widget class="QStackedWidget" name="EquipmentTemplatesStackedWidget">
                  <property name="currentIndex">
-                  <number>1</number>
+                  <number>0</number>
                  </property>
                  <widget class="QWidget" name="EquipmentSelectPage">
                   <layout class="QVBoxLayout" name="verticalLayout_19">
