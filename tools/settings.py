@@ -35,10 +35,10 @@ class FinalCifSettings():
         size = self.settings.value("size", type=QSize)
         size = size if size.width() > 0 else QSize(900, 850)
         pos = pos if pos.x() > 0 else QSize(20, 20)
-        max = self.settings.value('maximized')
+        maximized = self.settings.value('maximized')
         maxim = False
-        if isinstance(max, str):
-            if bool(eval(max.capitalize())):
+        if isinstance(maximized, str):
+            if eval(maximized.capitalize()):
                 maxim = True
             else:
                 maxim = False
@@ -60,22 +60,20 @@ class FinalCifSettings():
         self.settings.endGroup()
         return lastdir
 
-    def save_to_equipment_list(self, selected_template_text: str, templ_type: str = 'equipment_list/') -> None:
-        equipment_list = self.settings.value(templ_type)
+    def save_to_equipment_list(self, selected_template_text: str, templ_type: str = 'equipment_list') -> None:
+        equipment_list = self.list_saved_items(templ_type)
         if not equipment_list:
             equipment_list = ['']
-        if isinstance(equipment_list, list):
-            equipment_list.sort()
+        if not isinstance(equipment_list, list):
+            return
+        equipment_list.sort()
         equipment_list.append(selected_template_text)
         newlist = [x for x in list(set(equipment_list)) if x]
         # this list keeps track of the equipment items:
-        self.save_template(templ_type, newlist)
+        self.save_template_list(templ_type, newlist)
 
-    def get_equipment_list(self, equipment='equipment_list') -> list:
-        equipment_list = self.settings.value(equipment)
-        if not equipment_list:
-            equipment_list = ['']
-        return sorted(equipment_list)
+    def get_equipment_list(self, equipment='equipment') -> list:
+        return sorted(self.list_saved_items(equipment))
 
     def load_property_keys(self) -> list:
         """
@@ -90,7 +88,7 @@ class FinalCifSettings():
                 pass
         return keylist
 
-    def save_template(self, name: str, items: list):
+    def save_template_list(self, name: str, items: list):
         """
         Saves Equipment templates into the settings as list.
         """
@@ -110,19 +108,19 @@ class FinalCifSettings():
 
     def load_value_of_key(self, key: str) -> str:
         """
-        Load templates and return them as list of lists.
+        Load templates and return them as string.
         """
         return self.settings.value(key)
 
     def load_loop_template(self, name: str) -> Dict:
         """
-        Load templates and return them as list of lists.
+        Load templates and return them as dict.
         """
         return self.settings.value('authors_list/' + name)
 
-    def save_loop_template(self, name: str, items: dict):
+    def save_authors_loop_template(self, name: str, items: dict):
         """
-        Saves Equipment templates into the settings as list.
+        Saves authors templates into the settings as list.
         """
         if not isinstance(name, str):
             print('name was no string')
@@ -180,8 +178,34 @@ class FinalCifSettings():
         self.settings.setValue('options', options)
         self.settings.endGroup()
 
+    #######
+    def load_settings_dict(self, property: str = 'authors_list/', item_name: str = '') -> Dict:
+        directory = self.settings.value(property)
+        if directory:
+            for item in directory:
+                if item == item_name:
+                    return self.settings.value(property + item)
+        return {}
+
+    def list_saved_items(self, property: str = '') -> list:
+        self.settings.beginGroup(property)
+        v =  self.settings.allKeys()
+        self.settings.endGroup()
+        return v
+
+    def save_settings_dict(self, property: str = 'authors_list/', name: str = '', items: dict = '') -> None:
+        if not property.endswith('/'):
+            property += '/'
+        self.settings.setValue(property + name, items)
+
 
 if __name__ == '__main__':
-    sett = QSettings('foo', 'bar')
-    sett.setValue('a property', {'key': 'value', 'another': 'yetmore'})
-    print(sett.value('a property'))
+    s = FinalCifSettings()
+    p = s.load_settings_dict(item_name='Daniel Kratzert')
+    print(p)
+    print(s.list_saved_items('equipment'))
+    s.settings.beginGroup("equipment")
+    print(s.settings.allKeys())
+    s.settings.endGroup()
+    print(s.get_equipment_list())
+

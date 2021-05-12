@@ -29,7 +29,6 @@ class Equipment:
 
     def signals_and_slots(self):
         ## equipment
-        self.app.ui.EquipmentTemplatesListWidget.doubleClicked.connect(self.edit_equipment_template)
         self.app.ui.EditEquipmentTemplateButton.clicked.connect(self.edit_equipment_template)
         self.app.ui.SaveEquipmentButton.clicked.connect(self.save_equipment_template)
         self.app.ui.CancelEquipmentButton.clicked.connect(self.cancel_equipment_template)
@@ -45,8 +44,7 @@ class Equipment:
         self.app.ui.EquipmentEditTableWidget.currentItemChanged.connect(
             self.app.ui.EquipmentEditTableWidget.add_row_if_needed)
         self.app.ui.NewEquipmentTemplateButton.clicked.connect(self.new_equipment)
-        self.app.ui.EquipmentTemplatesListWidget.currentRowChanged.connect(self.load_selected_equipment)
-        self.app.ui.EquipmentTemplatesListWidget.clicked.connect(self.load_selected_equipment)
+        self.app.ui.EquipmentTemplatesListWidget.doubleClicked.connect(self.load_selected_equipment)
 
     def show_equipment(self):
         self.app.ui.EquipmentTemplatesListWidget.clear()
@@ -96,7 +94,7 @@ class Equipment:
             equipment_list.remove(selected_template_text)
         except ValueError:
             pass
-        self.settings.save_template('equipment_list', equipment_list)
+        self.settings.save_template_list('equipment_list', equipment_list)
         # now make it invisible:
         self.app.ui.EquipmentTemplatesListWidget.takeItem(index.row())
         self.cancel_equipment_template()
@@ -114,8 +112,8 @@ class Equipment:
                 equipment_list.append(item['name'])
                 newlist = [x for x in list(set(equipment_list)) if x]
                 # this list keeps track of the equipment items:
-                self.settings.save_template('equipment_list', newlist)
-                self.settings.save_template('equipment/' + item['name'], item['items'])
+                self.settings.save_template_list('equipment_list', newlist)
+                self.settings.save_template_list('equipment/' + item['name'], item['items'])
 
     def edit_equipment_template(self) -> None:
         """Gets called when 'edit equipment' button was clicked."""
@@ -170,7 +168,7 @@ class Equipment:
                                          'Keys must start with an underscore.'.format(key))
                     return
                 show_general_warning('"{}" is not an official CIF keyword!'.format(key))
-        self.settings.save_template('equipment/' + selected_template_text, table_data)
+        self.settings.save_template_list('equipment/' + selected_template_text, table_data)
         self.settings.save_to_equipment_list(selected_template_text)
         self.app.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
         print('saved')
@@ -201,7 +199,7 @@ class Equipment:
             name = Path(filename).stem
         else:
             name = block.name.replace('__', ' ')
-        self.settings.save_template('equipment/' + name, table_data)
+        self.settings.save_template_list('equipment/' + name, table_data)
         self.settings.save_to_equipment_list(name)
         self.show_equipment()
 

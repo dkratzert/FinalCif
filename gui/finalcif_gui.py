@@ -1510,7 +1510,7 @@ class Ui_FinalCifWindow(object):
 
         self.retranslateUi(FinalCifWindow)
         self.TemplatesStackedWidget.setCurrentIndex(0)
-        self.EquipmentTemplatesStackedWidget.setCurrentIndex(1)
+        self.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
         self.PropertiesTemplatesStackedWidget.setCurrentIndex(1)
         self.MainStackedWidget.setCurrentIndex(5)
         self.LoopsTabWidget.setCurrentIndex(0)

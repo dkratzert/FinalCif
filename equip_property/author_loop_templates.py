@@ -115,7 +115,7 @@ class AuthorLoops():
 
     def save_author_to_loop_template(self):
         author = self.get_author_info()
-        if author.get('name') == '' or None:
+        if not author.get('name'):
             return
         self.general_author_save(author)
         self.clear_fields()
@@ -127,10 +127,11 @@ class AuthorLoops():
             itemtext = '{} (contact author)'.format(retranslate_delimiter(cif.as_string(author.get('name'))))
         else:
             itemtext = cif.as_string(author.get('name'))
-        authors = self.settings.get_equipment_list(equipment='authors_list')
+        authors = self.settings.list_saved_items(property='authors_list')
         if itemtext not in authors:
-            self.settings.save_loop_template(name=itemtext, items=author)
-            self.settings.save_to_equipment_list(itemtext, templ_type='authors_list')
+            self.settings.save_settings_dict(property='authors_list', name=itemtext, items=author)
+            #self.settings.save_authors_loop_template(name=itemtext, items=author)
+            #self.settings.save_to_equipment_list(itemtext, templ_type='authors_list')
         if not itemtext:
             return
         self.show_author_loops()
@@ -230,7 +231,7 @@ class AuthorLoops():
             authors_list.remove(selected_template_text)
         except ValueError:
             pass
-        self.settings.save_template('authors_list', authors_list)
+        self.settings.save_template_list('authors_list', authors_list)
         self.show_author_loops()
 
     def get_selected_loop_name(self) -> str:
@@ -246,8 +247,7 @@ class AuthorLoops():
 
     def show_author_loops(self):
         self.ui.LoopTemplatesListWidget.clear()
-        l = self.settings.get_equipment_list(equipment='authors_list')
-        for loop in sorted(l):
-            if loop:
-                item = QListWidgetItem(loop)
-                self.ui.LoopTemplatesListWidget.addItem(item)
+        authors = self.settings.list_saved_items(property='authors_list/')
+        for author in sorted(authors):
+            if author:
+                self.ui.LoopTemplatesListWidget.addItem(QListWidgetItem(author))

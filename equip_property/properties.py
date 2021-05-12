@@ -27,7 +27,6 @@ class Properties:
 
     def signals_and_slots(self):
         ## properties
-        self.app.ui.PropertiesTemplatesListWidget.doubleClicked.connect(self.edit_property_template)
         self.app.ui.EditPropertyTemplateButton.clicked.connect(self.edit_property_template)
         self.app.ui.SavePropertiesButton.clicked.connect(self.save_property_template)
         self.app.ui.CancelPropertiesButton.clicked.connect(self.cancel_property_template)
@@ -99,7 +98,7 @@ class Properties:
         self.settings.delete_template('property/' + selected_template_text)
         property_list = self.settings.settings.value('property_list')
         property_list.remove(selected_template_text)
-        self.settings.save_template('property_list', property_list)
+        self.settings.save_template_list('property_list', property_list)
         # now make it invisible:
         self.app.ui.PropertiesTemplatesListWidget.takeItem(index.row())
         self.cancel_property_template()
@@ -132,8 +131,8 @@ class Properties:
                 property_list.append(item['name'])
                 newlist = [x for x in list(set(property_list)) if x]
                 # this list keeps track of the property items:
-                self.settings.save_template('property_list', newlist)
-                self.settings.save_template('property/' + item['name'], item['values'])
+                self.settings.save_template_list('property_list', newlist)
+                self.settings.save_template_list('property/' + item['name'], item['values'])
 
     def export_property_template(self, filename: str = '') -> None:
         """
@@ -210,13 +209,13 @@ class Properties:
         newlist = [x for x in list(set(property_list)) if x]
         newlist.sort()
         # this list keeps track of the property items:
-        self.settings.save_template('property_list', newlist)
+        self.settings.save_template_list('property_list', newlist)
         template_list.insert(0, '')
         template_list = list(set(template_list))
         # save as dictionary for properties to have "_cif_key : itemlist"
         # for a table item as dropdown menu in the main table.
         table_data = [loop_column_name, template_list]
-        self.settings.save_template('property/' + block_name, table_data)
+        self.settings.save_template_list('property/' + block_name, table_data)
         self.show_properties()
 
     def load_property_from_settings(self) -> None:
@@ -257,7 +256,7 @@ class Properties:
         property_list.append(selected_row_text)
         newlist = [x for x in list(set(property_list)) if x]
         # this list keeps track of the property items:
-        self.settings.save_template('property_list', newlist)
+        self.settings.save_template_list('property_list', newlist)
         self.app.ui.PropertiesTemplatesStackedWidget.setCurrentIndex(1)
         table.blockSignals(False)
         # table.setWordWrap(False)
@@ -308,7 +307,7 @@ class Properties:
             # save as dictionary for properties to have "_cif_key : itemlist"
             # for a table item as dropdown menu in the main table.
             table_data = [keyword, table_data]
-        self.settings.save_template('property/' + selected_template_text, table_data)
+        self.settings.save_template_list('property/' + selected_template_text, table_data)
         stackwidget.setCurrentIndex(0)
         print('saved')
 
