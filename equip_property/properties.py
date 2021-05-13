@@ -50,13 +50,11 @@ class Properties:
         Display saved items in the properties lists.
         """
         self.app.ui.PropertiesTemplatesListWidget.clear()
-        property_list = self.settings.settings.value('property_list')
-        if property_list:
-            property_list.sort()
-            for pr in property_list:
-                if pr:
-                    item = QListWidgetItem(pr)
-                    self.app.ui.PropertiesTemplatesListWidget.addItem(item)
+        property_list = self.settings.get_properties_list()
+        for pr in property_list:
+            if pr:
+                item = QListWidgetItem(pr)
+                self.app.ui.PropertiesTemplatesListWidget.addItem(item)
 
     def new_property(self) -> None:
         item = QListWidgetItem('')
@@ -161,7 +159,7 @@ class Properties:
         except PermissionError:
             if Path(filename).is_dir():
                 return
-            show_general_warning('No permission to write file to {}'.format(Path(filename).absolute()))
+            show_general_warning('No permission to write file to {}'.format(Path(filename).resolve()))
 
     def import_property_from_file(self, filename: str = '') -> None:
         """

@@ -41,7 +41,7 @@ class ReportTemplates:
         if not Path(templ_path).exists() or not Path(templ_path).is_file() \
             or not Path(templ_path).name.endswith('.docx'):
             self.app.status_bar.show_message('This template does not exist or is unreadable.', 10)
-            print('This template does not exist or is unreadable.', Path(templ_path).absolute())
+            print('This template does not exist or is unreadable.', Path(templ_path).resolve())
             return
         item = QListWidgetItem(templ_path)
         item.setCheckState(Qt.Unchecked)
@@ -55,10 +55,12 @@ class ReportTemplates:
         for text in templates:
             if text.startswith('Use'):
                 continue
-            item = QListWidgetItem(text)
             with suppress(Exception):
                 if not Path(text).exists():
+                    item = QListWidgetItem(text)
                     item.setForeground(QColor(220, 12, 34))
+                else:
+                    item = QListWidgetItem(str(Path(text).resolve(strict=True)))
             self.app.ui.TemplatesListWidget.addItem(item)
             item.setCheckState(Qt.Unchecked)
 

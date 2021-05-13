@@ -20,16 +20,16 @@ class BrukerFrameHeader():
         frames = sorted(frames, key=os.path.getmtime, reverse=True)
         self._fileobj = None
         if not frames:
-            frames = Path(os.curdir).absolute().glob('*.sfrm')
+            frames = Path(os.curdir).resolve().glob('*.sfrm')
         for fr in frames:
             if fr:
                 self._fileobj = Path(fr)
         if not self._fileobj:
             raise FileNotFoundError
-        self.filename = self._fileobj.absolute()
+        self.filename = self._fileobj.resolve()
         self.header = {}
         if self._fileobj.is_file():
-            with open(str(self._fileobj.absolute()), encoding='ascii', errors='ignore', mode='r') as file:
+            with open(str(self._fileobj.resolve()), encoding='ascii', errors='ignore', mode='r') as file:
                 for n in range(96):
                     l = file.read(80).strip()
                     key = l[:7].strip()

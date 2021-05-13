@@ -227,8 +227,7 @@ class Equipment:
             filename = cif_file_save_dialog(blockname.replace('__', '_') + '.cif')
         if not filename.strip():
             return
-        equipment_cif = CifContainer(filename)
-        block = equipment_cif.doc.add_new_block(blockname)
+        equipment_cif = CifContainer(filename, new_block=blockname)
         for key, value in table_data:
             equipment_cif[key] = value.strip('\n\r ')
         try:
@@ -237,7 +236,7 @@ class Equipment:
         except PermissionError:
             if Path(filename).is_dir():
                 return
-            show_general_warning('No permission to write file to {}'.format(Path(filename).absolute()))
+            show_general_warning('No permission to write file to {}'.format(Path(filename).resolve()))
 
     def cancel_equipment_template(self) -> None:
         """

@@ -435,7 +435,7 @@ class TemplatedReport():
     def make_picture(self, options: Options, picfile: Path, tpl_doc: DocxTemplate):
         if options.report_text:
             if picfile and picfile.exists():
-                return InlineImage(tpl_doc, str(picfile.absolute()), width=Cm(options.picture_width))
+                return InlineImage(tpl_doc, str(picfile.resolve()), width=Cm(options.picture_width))
         return None
 
     def make_templated_report(self, options: Options, file_obj: Path, output_filename: str, picfile: Path,

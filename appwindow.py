@@ -445,7 +445,7 @@ class AppWindow(QMainWindow):
         Opens the file checkcif_browser for the current directory.
         """
         try:
-            curdir = self.cif.fileobj.absolute().parent
+            curdir = self.cif.fileobj.resolve().parent
         except AttributeError:
             return
         if sys.platform == "win" or sys.platform == "win32":
@@ -483,7 +483,7 @@ class AppWindow(QMainWindow):
         """
         Get back to the main table and load the new cif file.
         """
-        self.load_cif_file(self.final_cif_file_name.absolute())
+        self.load_cif_file(self.final_cif_file_name.resolve())
         self.ui.MainStackedWidget.got_to_main_page()
         self.ui.cif_main_table.scrollToTop()
         self.ui.TemplatesStackedWidget.setCurrentIndex(0)
@@ -521,7 +521,7 @@ class AppWindow(QMainWindow):
             return
         self.checkcif_browser = QWebEngineView(self.ui.htmlTabwidgetPage)
         self.ui.htmlCHeckCifGridLayout.addWidget(self.checkcif_browser)
-        url = QUrl.fromLocalFile(str(self.htmlfile.absolute()))
+        url = QUrl.fromLocalFile(str(self.htmlfile.resolve()))
         self.ui.MainStackedWidget.go_to_checkcif_page()
         self.ui.CheckCIFResultsTabWidget.setCurrentIndex(1)  # Index 1 is html page
         self.checkcif_browser.load(url)
@@ -842,11 +842,11 @@ class AppWindow(QMainWindow):
             arc.zip.write(pdfname)
 
     def open_report_document(self, report_filename: str):
-        if Path(report_filename).absolute().exists():
+        if Path(report_filename).resolve().exists():
             if os.name == 'nt':
-                os.startfile(Path(report_filename).absolute())
+                os.startfile(Path(report_filename).resolve())
             if sys.platform == 'darwin':
-                subprocess.call(['open', Path(report_filename).absolute()])
+                subprocess.call(['open', Path(report_filename).resolve()])
 
     def save_current_recent_files_list(self, file: Path) -> None:
         """
@@ -854,9 +854,9 @@ class AppWindow(QMainWindow):
         """
         if os.name == 'nt':
             # Used path with backslash for windows systems:
-            file: str = str(WindowsPath(file.absolute()).absolute())
+            file: str = str(WindowsPath(file.resolve()).absolute())
         else:
-            file: str = str(Path(file.absolute()).absolute())
+            file: str = str(Path(file.resolve()).absolute())
         recent = list(self.settings.settings.value('recent_files', type=list))
         # delete possible previous occurence of new file:
         while file in recent:
@@ -932,7 +932,7 @@ class AppWindow(QMainWindow):
         else:
             self.final_cif_file_name = Path(filename)
         try:
-            self.cif.save(str(self.final_cif_file_name.absolute()))
+            self.cif.save(str(self.final_cif_file_name.resolve()))
             self.status_bar.show_message('  File Saved:  {}'.format(self.final_cif_file_name.name), 10)
             print('File saved ...')
             return True
@@ -1070,7 +1070,7 @@ class AppWindow(QMainWindow):
                 self.ui.ShredCifButton.setEnabled(True)
             else:
                 self.ui.ShredCifButton.setDisabled(True)
-            curdir = str(self.cif.fileobj.absolute().parent)
+            curdir = str(self.cif.fileobj.resolve().parent)
             # saving current cif dir as last working directory:
             self.settings.save_current_dir(curdir)
             self.ui.DetailsPushButton.setEnabled(True)
@@ -1108,7 +1108,7 @@ class AppWindow(QMainWindow):
     def go_into_cifs_directory(self, filepath):
         try:
             # Change the current working Directory
-            os.chdir(filepath.absolute().parent)
+            os.chdir(filepath.resolve().parent)
         except OSError:
             print("Can't change the Current Working Directory")
 
@@ -1135,7 +1135,7 @@ class AppWindow(QMainWindow):
 
     def set_path_display_in_file_selector(self, fname: str) -> None:
         if os.name == 'nt':
-            self.ui.SelectCif_LineEdit.setText(str(WindowsPath(fname).absolute()))
+            self.ui.SelectCif_LineEdit.setText(str(WindowsPath(fname).resolve()))
         else:
             self.ui.SelectCif_LineEdit.setText(str(fname))
 

@@ -211,7 +211,7 @@ class BrukerData(WorkDataMixin):
     def sadabs(self):
         sad = Sadabs(basename='*.abs')
         # self.sad_fileLE, button = self.app.add_new_datafile(0, 'SADABS', 'add specific .abs file here, if needed...')
-        # self.sad_fileLE.setText(str(sad.filename.absolute()))
+        # self.sad_fileLE.setText(str(sad.filename.resolve()))
         # button.clicked.connect(self.app.get_cif_file_block)
         # I have to run self.app.get_cif_file_block but data sources for abs file should be updated
         return sad

@@ -178,7 +178,7 @@ class AuthorLoops():
         except PermissionError:
             if Path(filename).is_dir():
                 return
-            show_general_warning('No permission to write file to {}'.format(Path(filename).absolute()))
+            show_general_warning('No permission to write file to {}'.format(Path(filename).resolve()))
 
     def import_author(self, filename=''):
         """

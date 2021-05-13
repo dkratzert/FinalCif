@@ -114,7 +114,7 @@ def bug_found_warning(logfile) -> None:
            'FinalCif!<br>Please send the file <br>"{}" <br>to Daniel Kratzert:  ' \
            '<a href="mailto:dkratzert@gmx.de?subject=FinalCif version {} crash report">' \
            'dkratzert@gmx.de</a><br>' \
-           'If possible, the corresponding CIF file is also desired.'.format(logfile.absolute(), VERSION)
+           'If possible, the corresponding CIF file is also desired.'.format(logfile.resolve(), VERSION)
     QMessageBox.warning(window, 'Warning', text)
     window.show()
 

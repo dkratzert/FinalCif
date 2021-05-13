@@ -54,7 +54,7 @@ class P4PFile():
         self.filename = Path()
         p4p_files = searchpath.glob(basename + '*_0m.p4p')
         if not p4p_files:
-            p4p_files = Path(os.curdir).absolute().glob('*.p4p')
+            p4p_files = Path(os.curdir).resolve().glob('*.p4p')
         for p4p in p4p_files:
             if p4p:
                 self.filename = p4p

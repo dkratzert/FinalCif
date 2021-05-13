@@ -92,7 +92,7 @@ class CifContainer():
             return self.doc.as_string(style=gemmi.cif.Style.Indent35)
 
     def __str__(self):
-        return str(self.fileobj.absolute())
+        return str(self.fileobj.resolve())
 
     def __getitem__(self, item: str) -> str:
         result = self.block.find_value(item)
@@ -139,7 +139,7 @@ class CifContainer():
         :param filename:  Name to save cif file to.
         """
         if not filename:
-            filename = str(self.fileobj.absolute())
+            filename = str(self.fileobj.resolve())
         self.order_cif_keys()
         self.doc.write_file(filename, gemmi.cif.Style.Indent35)
         # Path(filename).write_text(self.doc.as_string(gemmi.cif.Style.Indent35))

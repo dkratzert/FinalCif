@@ -71,7 +71,7 @@ class Sadabs():
         else:
             self._fileobj = get_file_to_parse(fileobj=fileobj)
         if self._fileobj:
-            self.filename = self._fileobj.absolute()
+            self.filename = self._fileobj.resolve()
             self.parse_file()
 
     def parse_file(self):

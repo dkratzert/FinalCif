@@ -1,13 +1,13 @@
-import os
 import unittest
 from pathlib import Path
 
 from cif.cif_file_io import CifContainer
+from tests.test_utils import current_file_path
 
 
 class CifFileCRCTestCase(unittest.TestCase):
     def setUp(self) -> None:
-        os.chdir(Path(__file__).absolute().parent.parent)
+        current_file_path()
         self.cif = CifContainer(Path('tests/examples/1979688.cif'))
 
     def test_calc_crc(self):
@@ -16,7 +16,7 @@ class CifFileCRCTestCase(unittest.TestCase):
 
 class CifFileTestCase(unittest.TestCase):
     def setUp(self) -> None:
-        os.chdir(Path(__file__).absolute().parent.parent)
+        current_file_path()
         self.cif = CifContainer(Path('tests/examples/1979688.cif'))
 
     def test_calc_crc(self):
