@@ -75,14 +75,10 @@ class Properties:
         cont = 0
         for row in range(rowcount):
             key = ''
-            try:
+            with suppress(AttributeError, TypeError):
                 key = table.item(row, 0).text()
-            except (AttributeError, TypeError) as e:
-                pass
-            try:
+            with suppress(AttributeError, TypeError):
                 key = table.cellWidget(row, 0).getText()
-            except (AttributeError, TypeError) as e:
-                pass
             if key:  # don't count empty key rows
                 cont += 1
         diff = rowcount - cont
@@ -94,11 +90,8 @@ class Properties:
     def delete_property(self) -> None:
         # First delete the list entries
         index = self.app.ui.PropertiesTemplatesListWidget.currentIndex()
-        selected_template_text = index.data()
-        self.settings.delete_template('property/' + selected_template_text)
-        property_list = self.settings.settings.value('property_list')
-        property_list.remove(selected_template_text)
-        self.settings.save_template_list('property_list', property_list)
+        property_name = index.data()
+        self.settings.delete_template('property', property_name)
         # now make it invisible:
         self.app.ui.PropertiesTemplatesListWidget.takeItem(index.row())
         self.cancel_property_template()
@@ -125,14 +118,10 @@ class Properties:
         self.save_property(table, stackedwidget, listwidget, keyword)
 
     def store_predefined_templates(self) -> None:
-        property_list = self.settings.settings.value('property_list') or []
+        property_list = self.settings.get_properties_list() or []
         for item in predef_prop_templ:
             if not item['name'] in property_list:
-                property_list.append(item['name'])
-                newlist = [x for x in list(set(property_list)) if x]
-                # this list keeps track of the property items:
-                self.settings.save_template_list('property_list', newlist)
-                self.settings.save_template_list('property/' + item['name'], item['values'])
+                self.settings.save_settings_list('property', item['name'], item['values'])
 
     def export_property_template(self, filename: str = '') -> None:
         """
@@ -141,7 +130,7 @@ class Properties:
         selected_row_text = self.app.ui.PropertiesTemplatesListWidget.currentIndex().data()
         if not selected_row_text:
             return
-        prop_data = self.settings.load_value_of_key('property/' + selected_row_text)
+        prop_data = self.settings.load_settings_list('property', selected_row_text)
         table_data = []
         cif_key = ''
         if prop_data:
@@ -225,9 +214,6 @@ class Properties:
         table = self.app.ui.PropertiesEditTableWidget
         listwidget = self.app.ui.PropertiesTemplatesListWidget
         table.blockSignals(True)
-        property_list = self.settings.settings.value('property_list')
-        if not property_list:
-            property_list = ['']
         table.clearContents()
         table.setRowCount(0)
         index = listwidget.currentIndex()
@@ -236,13 +222,11 @@ class Properties:
             # self.app.ui.PropertiesEditTableWidget.blockSignals(False)
             return
         selected_row_text = listwidget.currentIndex().data()
-        table_data = self.settings.load_value_of_key('property/' + selected_row_text)
+        table_data = self.settings.load_settings_list('property', selected_row_text)
         if table_data:
             cif_key = table_data[0]
-            try:
+            with suppress(Exception):
                 table_data = table_data[1]
-            except:
-                pass
             self.app.ui.cifKeywordLineEdit.setText(cif_key)
         if not table_data:
             table_data = ['', '', '']
@@ -253,10 +237,6 @@ class Properties:
                 print('Bad value in property table')
                 continue
         self.add_propeties_row(table, '')
-        property_list.append(selected_row_text)
-        newlist = [x for x in list(set(property_list)) if x]
-        # this list keeps track of the property items:
-        self.settings.save_template_list('property_list', newlist)
         self.app.ui.PropertiesTemplatesStackedWidget.setCurrentIndex(1)
         table.blockSignals(False)
         # table.setWordWrap(False)

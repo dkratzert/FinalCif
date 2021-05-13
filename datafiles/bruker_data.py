@@ -95,12 +95,12 @@ class BrukerData(WorkDataMixin):
             abscorrtype = (self.cif.absorpt_correction_type, self.cif.fileobj.name)
         else:
             abscorrtype = (abstype, self.sadabs.filename.name)
-        if self.cif.absorpt_correction_T_max:
-            abs_tmax = (self.cif.absorpt_correction_T_max, self.cif.fileobj.name)
+        if self.cif.absorpt_correction_t_max:
+            abs_tmax = (self.cif.absorpt_correction_t_max, self.cif.fileobj.name)
         else:
             abs_tmax = (str(t_max), self.sadabs.filename.name)
-        if self.cif.absorpt_correction_T_min:
-            abs_tmin = (self.cif.absorpt_correction_T_min, self.cif.fileobj.name)
+        if self.cif.absorpt_correction_t_min:
+            abs_tmin = (self.cif.absorpt_correction_t_min, self.cif.fileobj.name)
         else:
             abs_tmin = (str(t_min), self.sadabs.filename.name)
 
