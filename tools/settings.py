@@ -133,8 +133,6 @@ class FinalCifSettings():
     def save_options(self, options: dict):
         self.save_settings_dict('Options', 'options', options)
 
-    ####### New code: ######
-
     def load_settings_dict(self, property: str = '', item_name: str = '') -> Dict:
         settings = self._load_settings(property, item_name)
         return settings or {}

@@ -1,5 +1,6 @@
 data_Crystallographer__Details
 _audit_contact_author_name        'Dr. Daniel Kratzert'
+_audit_contact_author_email       dkratzert@gmx.de
 _audit_contact_author_address
 ;
 Albert-Ludwigs-Universita\"t Freiburg
@@ -9,6 +10,5 @@ Freiburg i. Br.
 79104
 Germany
 ;
-_audit_contact_author_email       daniel.kratzert@ac.uni-freiburg.de
-_audit_contact_author_phone       +497612036156
+_audit_contact_author_phone       +4917665715733
 _publ_contact_author_id_orcid     https://orcid.org/0000-0003-0970-9780

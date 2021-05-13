@@ -23,8 +23,8 @@ app = QApplication(sys.argv)
 class TestLoops(unittest.TestCase):
 
     def setUp(self) -> None:
-        os.chdir(Path(__file__).absolute().parent.parent)
-        self.testcif = Path('tests/examples/1979688.cif').absolute()
+        os.chdir(Path(__file__).resolve().parent.parent)
+        self.testcif = Path('tests/examples/1979688.cif').resolve()
         self.myapp = AppWindow(self.testcif)
         self.myapp.running_inside_unit_test = True
         self.myapp.hide()  # For full screen view

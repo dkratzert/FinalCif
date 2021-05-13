@@ -17,7 +17,7 @@ class ParserMixin():
 
     def __init__(self, filename: str):
         self._fileobj = Path(filename)
-        self.filename = self._fileobj.absolute()
+        self.filename = self._fileobj.resolve()
 
 
 def get_file_to_parse(fileobj: Path = None, name_pattern: str = '', base_directory: str = '.'):

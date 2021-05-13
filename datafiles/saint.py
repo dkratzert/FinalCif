@@ -29,7 +29,7 @@ class SaintListFile():
         else:
             self._fileobj = get_file_to_parse(name_pattern=name_patt, base_directory='.')
         if self._fileobj:
-            self.filename = self._fileobj.absolute()
+            self.filename = self._fileobj.resolve()
             try:
                 self.parse_file()
             except Exception as e:
@@ -150,6 +150,6 @@ if __name__ == "__main__":
     l = Path(r'D:\refltest.txt')
     content = []
     for p in paths:
-        s = SaintListFile(name_patt='*_0*m._ls', direct_name=p.absolute())
+        s = SaintListFile(name_patt='*_0*m._ls', direct_name=p.resolve())
         content.append(s.cell_reflections)
     l.write_text('\n'.join(content))

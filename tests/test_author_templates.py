@@ -1,4 +1,3 @@
-import os
 import sys
 import unittest
 from pathlib import Path
@@ -6,14 +5,15 @@ from pathlib import Path
 from PyQt5.QtWidgets import QApplication
 
 from appwindow import AppWindow
+from tests.test_utils import current_file_path
 
 app = QApplication(sys.argv)
 
 
 class MyTestCase(unittest.TestCase):
     def setUp(self) -> None:
-        os.chdir(Path(__file__).absolute().parent.parent)
-        self.testcif = Path('tests/examples/1979688.cif').absolute()
+        current_file_path()
+        self.testcif = Path('tests/examples/1979688.cif').resolve()
         self.app = AppWindow(self.testcif)
         self.app.running_inside_unit_test = True
         self.app.hide()
@@ -21,7 +21,7 @@ class MyTestCase(unittest.TestCase):
                        'name'   : 'name', 'orcid': 'orcid', 'phone': 'phone', 'contact': True}
 
     def tearDown(self) -> None:
-        os.chdir(Path(__file__).absolute().parent.parent)
+        current_file_path()
         Path('tests/other_templates/testexport_author.cif').unlink(missing_ok=True)
 
     def _import_testauthor(self):

@@ -144,7 +144,7 @@ class COD_Deposit():
             return
         self.ui.depositOutputTextBrowser.setText('starting deposition in "{}" mode ...'.format(self.deposition_type))
         print('starting deposition of ', self.cif.fileobj.name)
-        # with open(self.cif.fileobj.absolute(), 'rb') as fileobj:
+        # with open(self.cif.fileobj.resolve(), 'rb') as fileobj:
         data = {'username'       : self.username,
                 # Path('/Users/daniel/cod_username.txt').read_text(encoding='ascii'),
                 'password'       : self.password,
