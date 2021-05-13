@@ -5,7 +5,7 @@
 #  and you think this stuff is worth it, you can buy me a beer in return.
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
-from typing import List, Dict, Union
+from typing import List, Dict, Union, Tuple
 
 from PyQt5.QtCore import QPoint, QSettings, QSize
 
@@ -15,7 +15,6 @@ class FinalCifSettings():
         self.software_name = 'FinalCif'
         self.organization = 'DK'
         self.settings = QSettings(self.organization, self.software_name)
-        # self.settings.setDefaultFormat(QSettings.IniFormat)
         # print(self.settings.fileName())
 
     @property
@@ -54,9 +53,7 @@ class FinalCifSettings():
         Saves the current work directory of the Program.
         :param dir: Directory as string
         """
-        self.settings.beginGroup("WorkDir")
-        self.settings.setValue('dir', dir)
-        self.settings.endGroup()
+        self._save_settings_value(dir, 'dir', "WorkDir")
 
     def load_last_workdir(self) -> str:
         self.settings.beginGroup('WorkDir')
@@ -64,23 +61,11 @@ class FinalCifSettings():
         self.settings.endGroup()
         return lastdir
 
-    def save_to_equipment_list(self, selected_template_text: str, templ_type: str = 'equipment_list') -> None:
-        """
-        TODO: refactor this
-        """
-        equipment_list = self.list_saved_items(templ_type)
-        if not equipment_list:
-            equipment_list = ['']
-        if not isinstance(equipment_list, list):
-            return
-        equipment_list.sort()
-        equipment_list.append(selected_template_text)
-        newlist = [x for x in list(set(equipment_list)) if x]
-        # this list keeps track of the equipment items:
-        self.save_template_list(templ_type, newlist)
+    def get_equipment_list(self) -> list:
+        return sorted(self.list_saved_items('equipment'))
 
-    def get_equipment_list(self, equipment='equipment') -> list:
-        return sorted(self.list_saved_items(equipment))
+    def get_properties_list(self) -> list:
+        return sorted(self.list_saved_items('property'))
 
     def load_property_keys_and_values(self) -> list:
         keylist = []
@@ -103,9 +88,9 @@ class FinalCifSettings():
         """
         self.settings.setValue(name, items)
 
-    def save_key_value(self, name: str, item: str):
+    def save_key_value(self, name: str, item: Union[str, List, Tuple, Dict]):
         """
-        Saves Equipment templates into the settings as list.
+        Saves a single key/value pair.
         """
         self.settings.setValue(name, item)
 
@@ -121,27 +106,13 @@ class FinalCifSettings():
         """
         return self.settings.value(key)
 
-    '''def save_authors_loop_template(self, name: str, items: dict):
-        """
-        Saves authors templates into the settings as list.
-        """
-        if not isinstance(name, str):
-            print('name was no string')
-            return
-        self.settings.beginGroup('authors_list')
-        self.settings.setValue(name, items)
-        self.settings.endGroup()
-'''
-    def load_equipment_template_as_dict(self, name: str) -> dict:
-        """
-        """
-        return self.load_settings_list_as_dict(property='equipment', item_name=name)
-
-    def delete_template(self, name: str):
+    def delete_template(self, property: str, name: str):
         """
         Deletes the currently seleted item.
         """
+        self.settings.beginGroup(property)
         self.settings.remove(name)
+        self.settings.endGroup()
 
     def load_options(self) -> dict:
         options = self.load_settings_dict('Options', "options")
@@ -151,7 +122,7 @@ class FinalCifSettings():
                        'without_h'    : False,
                        'checkcif_url' : 'https://checkcif.iucr.org/cgi-bin/checkcif_with_hkl',
                        }
-        #self.settings.endGroup()
+        # self.settings.endGroup()
         # These are default values for now:
         options.update({'atoms_table'   : True,
                         'bonds_table'   : True,
@@ -190,16 +161,22 @@ class FinalCifSettings():
             self.settings.endGroup()
             return v
 
-    def list_saved_items(self, property: str = '') -> list:
+    def list_saved_items(self, property: str) -> list:
         self.settings.beginGroup(property)
         v = self.settings.allKeys()
         self.settings.endGroup()
         return v
 
-    def save_settings_dict(self, property: str = '', name: str = '', items: dict = '') -> None:
+    def save_settings_dict(self, property: str, name: str, items: Dict) -> None:
+        self._save_settings_value(items, name, property)
+
+    def _save_settings_value(self, items, name, property):
         self.settings.beginGroup(property)
         self.settings.setValue(name, items)
         self.settings.endGroup()
+
+    def save_settings_list(self, property: str, name: str, items: List):
+        self._save_settings_value(items, name, property)
 
 
 if __name__ == '__main__':

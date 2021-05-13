@@ -39,14 +39,14 @@ class ReportTemplates:
             print('This templates is already in the list.')
             return
         if not Path(templ_path).exists() or not Path(templ_path).is_file() \
-                or not Path(templ_path).name.endswith('.docx'):
+            or not Path(templ_path).name.endswith('.docx'):
             self.app.status_bar.show_message('This template does not exist or is unreadable.', 10)
             print('This template does not exist or is unreadable.', Path(templ_path).absolute())
-            return 
+            return
         item = QListWidgetItem(templ_path)
         item.setCheckState(Qt.Unchecked)
         self.app.ui.TemplatesListWidget.addItem(item)
-        self.save_templates_list()
+        self.settings.save_template_list('report_templates_list', self.get_templates_list_from_widget())
 
     def load_templates_list(self):
         templates = self.settings.load_template('report_templates_list')
@@ -62,10 +62,6 @@ class ReportTemplates:
             self.app.ui.TemplatesListWidget.addItem(item)
             item.setCheckState(Qt.Unchecked)
 
-    def save_templates_list(self):
-        itemslist = self.get_templates_list_from_widget()
-        self.settings.save_template_list('report_templates_list', itemslist)
-
     def get_templates_list_from_widget(self) -> List:
         itemslist = []
         for num in range(self.lw.count()):
@@ -78,15 +74,15 @@ class ReportTemplates:
         if self.lw.currentRow() == 0:
             return
         self.lw.takeItem(self.lw.row(self.lw.currentItem()))
-        self.save_templates_list()
+        self.settings.save_template_list('report_templates_list', self.get_templates_list_from_widget())
 
-    def template_changed(self, currentItem: QListWidgetItem):
+    def template_changed(self, current_item: QListWidgetItem):
         # Blocking signal in order to avoid infinitive recursion:
         self.app.ui.TemplatesListWidget.blockSignals(True)
         options = self.settings.load_options()
-        options.update({'current_report_template': self.lw.row(currentItem)})
+        options.update({'current_report_template': self.lw.row(current_item)})
         self.uncheck_all_templates()
-        currentItem.setCheckState(Qt.Checked)
+        current_item.setCheckState(Qt.Checked)
         self.settings.save_options(options)
         self.app.ui.TemplatesListWidget.blockSignals(False)
 

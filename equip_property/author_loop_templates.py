@@ -6,10 +6,10 @@
 #   ----------------------------------------------------------------------------
 from contextlib import suppress
 from pathlib import Path
-from typing import Dict, Union
+from typing import Dict, Union, List
 
 from PyQt5.QtWidgets import QListWidgetItem
-from gemmi import cif
+from gemmi.cif import Loop, as_string, read_file
 
 from cif.cif_file_io import CifContainer
 from cif.text import utf8_to_str, quote, retranslate_delimiter
@@ -53,6 +53,23 @@ class AuthorLoops():
             self.ui.SaveAuthorLoopToTemplateButton.setDisabled(True)
             self.ui.AddThisAuthorToLoopPushButton.setDisabled(True)
 
+    def get_author_loop(self, contact_author: bool = False) -> List:
+        if contact_author:
+            author_loop = ['_publ_contact_author_name',
+                           '_publ_contact_author_address',
+                           '_publ_contact_author_email',
+                           '_publ_contact_author_phone',
+                           '_publ_contact_author_id_orcid', ]
+        else:
+            author_loop = ['_publ_author_name',
+                           '_publ_author_address',
+                           '_publ_author_email',
+                           '_publ_author_phone',
+                           '_publ_author_id_orcid',
+                           '_publ_author_footnote',
+                           ]
+        return author_loop
+
     def save_author_to_loop(self):
         author = self.get_author_info()
         row = [author.get('name'), author.get('address'), author.get('email'), author.get('phone'),
@@ -65,25 +82,25 @@ class AuthorLoops():
             author_type = '_publ_author_name'
             contact_author = False
         if self.cif.block.find_loop(author_type):
-            g_loop: cif.Loop = self.cif.block.find_loop(author_type).get_loop()
+            g_loop: Loop = self.cif.block.find_loop(author_type).get_loop()
             if tuple(row) in list(grouper(g_loop.values, len(row))):
                 self.app.status_bar.show_message('This author already exists.', 10)
                 print('author already there')
                 return  # Author already exists
         else:
-            g_loop = self.cif.init_author_loop(contact_author)
+            g_loop = self.cif.init_loop(self.get_author_loop(contact_author))
         g_loop.add_row(row)
         self.app.make_loops_tables()
         self.show_author_loops()
 
-    def get_author_info(self) -> Dict[str, Union[str, None]]:
+    def get_author_info(self) -> Dict[str, Union[str, bool, None]]:
         name = quote(utf8_to_str(self.ui.FullNameLineEdit.text()))
         address = quote(utf8_to_str(self.ui.AddressTextedit.toPlainText()))
         email = quote(utf8_to_str(self.ui.EMailLineEdit.text()))
         footnote = quote(utf8_to_str(self.ui.FootNoteLineEdit.text()))
         orcid = quote(utf8_to_str(self.ui.ORCIDLineEdit.text()))
         phone = quote(utf8_to_str(self.ui.PhoneLineEdit.text()))
-        contact = self.ui.ContactAuthorCheckBox.isChecked()
+        contact: bool = self.ui.ContactAuthorCheckBox.isChecked()
         return {'address': address, 'footnote': footnote, 'email': email,
                 'name'   : name, 'orcid': orcid, 'phone': phone, 'contact': contact}
 
@@ -91,17 +108,17 @@ class AuthorLoops():
         if not author:
             return
         if author.get('name'):
-            self.ui.FullNameLineEdit.setText(retranslate_delimiter(cif.as_string(author.get('name'))))
+            self.ui.FullNameLineEdit.setText(retranslate_delimiter(as_string(author.get('name'))))
         if author.get('address'):
-            self.ui.AddressTextedit.setText(retranslate_delimiter(cif.as_string(author.get('address'))))
+            self.ui.AddressTextedit.setText(retranslate_delimiter(as_string(author.get('address'))))
         if author.get('email'):
-            self.ui.EMailLineEdit.setText(retranslate_delimiter(cif.as_string(author.get('email'))))
+            self.ui.EMailLineEdit.setText(retranslate_delimiter(as_string(author.get('email'))))
         if author.get('footnote'):
-            self.ui.FootNoteLineEdit.setText(retranslate_delimiter(cif.as_string(author.get('footnote'))))
+            self.ui.FootNoteLineEdit.setText(retranslate_delimiter(as_string(author.get('footnote'))))
         if author.get('orcid'):
-            self.ui.ORCIDLineEdit.setText(retranslate_delimiter(cif.as_string(author.get('orcid'))))
+            self.ui.ORCIDLineEdit.setText(retranslate_delimiter(as_string(author.get('orcid'))))
         if author.get('phone'):
-            self.ui.PhoneLineEdit.setText(retranslate_delimiter(cif.as_string(author.get('phone'))))
+            self.ui.PhoneLineEdit.setText(retranslate_delimiter(as_string(author.get('phone'))))
         self.ui.ContactAuthorCheckBox.setChecked(author.get('contact') or False)
 
     def clear_fields(self):
@@ -124,14 +141,12 @@ class AuthorLoops():
         if not author.get('name'):
             return
         if author.get('contact'):
-            itemtext = '{} (contact author)'.format(retranslate_delimiter(cif.as_string(author.get('name'))))
+            itemtext = '{} (contact author)'.format(retranslate_delimiter(as_string(author.get('name'))))
         else:
-            itemtext = cif.as_string(author.get('name'))
+            itemtext = as_string(author.get('name'))
         authors = self.settings.list_saved_items(property='authors_list')
         if itemtext not in authors:
             self.settings.save_settings_dict(property='authors_list', name=itemtext, items=author)
-            #self.settings.save_authors_loop_template(name=itemtext, items=author)
-            #self.settings.save_to_equipment_list(itemtext, templ_type='authors_list')
         if not itemtext:
             return
         self.show_author_loops()
@@ -140,7 +155,7 @@ class AuthorLoops():
         """
         Exports the currently selected author to a file.
         """
-        table_data = self.get_author_info()
+        author = self.get_author_info()
         selected_template = self.ui.LoopTemplatesListWidget.currentIndex().data()
         if not selected_template:
             return
@@ -149,27 +164,15 @@ class AuthorLoops():
             filename = cif_file_save_dialog(blockname.replace('__', '_') + '.cif')
         if not filename.strip():
             return
-        author_cif = CifContainer(filename)
-        block = author_cif.doc.add_new_block(blockname)
-        contact_author = table_data.get('contact')
-        for key, value in zip(table_data.keys(), table_data.values()):
-            if key == 'name':
-                key = '_publ_contact_author_name' if contact_author else '_publ_author_name'
-            elif key == 'address':
-                key = '_publ_contact_author_address' if contact_author else '_publ_author_address'
-            elif key == 'email':
-                key = '_publ_contact_author_email' if contact_author else '_publ_author_email'
-            elif key == 'footnote':
-                if contact_author:
-                    continue
-                key = '_publ_author_footnote'
-            elif key == 'phone':
-                key = '_publ_contact_author_phone' if contact_author else '_publ_author_phone'
-            elif key == 'orcid':
-                key = '_publ_contact_author_id_orcid' if contact_author else '_publ_author_id_orcid'
-            else:
-                continue
-            author_cif[key], cif.as_string(value.strip('\n\r '))
+        author_cif = CifContainer(filename, new_block=blockname)
+        contact_author: bool = author.get('contact')
+        loop = self.get_author_loop(contact_author)
+        data = [author.get('name'), author.get('address'), author.get('email'), author.get('phone'),
+                author.get('orcid'), author.get('footnote')]
+        if contact_author:
+            del data[-1]
+        for key, value in zip(loop, data):
+            author_cif.set_pair_delimited(key, as_string(value))
         try:
             author_cif.save(filename)
         except PermissionError:
@@ -198,7 +201,7 @@ class AuthorLoops():
         if not filename:
             return
         try:
-            doc = cif.read_file(filename)
+            doc = read_file(filename)
         except RuntimeError as e:
             show_general_warning(str(e))
             return
@@ -207,10 +210,10 @@ class AuthorLoops():
         for item in block:
             if item.pair is not None:
                 key, value = item.pair
-                if not key in cif_auth_to_str:
+                if key not in cif_auth_to_str:
                     continue
                 key = cif_auth_to_str.get(key)
-                table_data.update({key: retranslate_delimiter(cif.as_string(value).strip('\n\r ;'))})
+                table_data.update({key: retranslate_delimiter(as_string(value).strip('\n\r ;'))})
         name = block.name.replace('__', ' ')
         if 'contact author' in name:
             table_data.update({'contact': True})
@@ -221,17 +224,11 @@ class AuthorLoops():
 
     def delete_current_author(self):
         index = self.ui.LoopTemplatesListWidget.currentIndex()
-        selected_template_text = index.data()
-        if not selected_template_text:
+        selected_author_name = index.data()
+        if not selected_author_name:
             return
         self.ui.LoopTemplatesListWidget.clear()
-        self.settings.delete_template('authors_list/' + selected_template_text)
-        authors_list = self.settings.settings.value('authors_list') or []
-        try:
-            authors_list.remove(selected_template_text)
-        except ValueError:
-            pass
-        self.settings.save_template_list('authors_list', authors_list)
+        self.settings.delete_template('authors_list', selected_author_name)
         self.show_author_loops()
 
     def get_selected_loop_name(self) -> str:
@@ -247,7 +244,7 @@ class AuthorLoops():
 
     def show_author_loops(self):
         self.ui.LoopTemplatesListWidget.clear()
-        authors = self.settings.list_saved_items(property='authors_list/')
+        authors = self.settings.list_saved_items(property='authors_list')
         for author in sorted(authors):
             if author:
                 self.ui.LoopTemplatesListWidget.addItem(QListWidgetItem(author))

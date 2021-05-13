@@ -9,7 +9,7 @@ import re
 from collections import namedtuple
 from math import sin, cos, sqrt
 from pathlib import Path
-from typing import Dict, List, Tuple, Union, NamedTuple
+from typing import Dict, List, Tuple, Union, NamedTuple, Generator
 
 import gemmi
 
@@ -25,7 +25,7 @@ class CifContainer():
     This class holds the content of a cif file, independent of the file parser used.
     """
 
-    def __init__(self, file: Union[Path, str]):
+    def __init__(self, file: Union[Path, str], new_block: str = ''):
         self.fileobj: Path
         if isinstance(file, str):
             self.fileobj = Path(file)
@@ -36,7 +36,11 @@ class CifContainer():
         # I do this in small steps instead of gemmi.cif.read_file() in order to
         # leave out the check_for_missing_values. This was gemmi reads cif files
         # with missing values.
-        self.doc = self.read_file(str(self.fileobj.resolve(strict=True)))
+        if new_block:
+            self.doc = gemmi.cif.Document()
+            self.doc.add_new_block(new_block)
+        else:
+            self.doc = self.read_file(str(self.fileobj.resolve(strict=True)))
         self.block = self.doc.sole_block()
         # will not ok with non-ascii characters in the res file:
         self.chars_ok = True
@@ -182,18 +186,18 @@ class CifContainer():
         This method tries to determine the information witten at the end of a cif hkl file by sadabs.
         """
         hkl = None
-        all = {'_exptl_absorpt_process_details' : '',
-               '_exptl_absorpt_correction_type' : '',
-               '_exptl_absorpt_correction_T_max': '',
-               '_exptl_absorpt_correction_T_min': '',
-               '_computing_structure_solution'  : '',
-               }
+        all_sadabs_items = {'_exptl_absorpt_process_details' : '',
+                            '_exptl_absorpt_correction_type' : '',
+                            '_exptl_absorpt_correction_T_max': '',
+                            '_exptl_absorpt_correction_T_min': '',
+                            '_computing_structure_solution'  : '',
+                            }
         try:
             hkl = self.hkl_file
         except Exception:
             pass
         if not hkl:
-            return all
+            return all_sadabs_items
         hkl = hkl[hkl.find('  0   0   0    0'):].splitlines(keepends=False)[1:-1]
         # html-embedded cif has ')' instead of ';':
         hkl = [';' if x[:1] == ')' else x for x in hkl]
@@ -206,12 +210,12 @@ class CifContainer():
         except Exception as e:
             print('Unable to get information from hkl foot.')
             print(e)
-            return all
-        for key in all:
+            return all_sadabs_items
+        for key in all_sadabs_items:
             val = hklblock.find_value(key)
             if val:
-                all[key] = gemmi.cif.as_string(val).strip()
-        return all
+                all_sadabs_items[key] = gemmi.cif.as_string(val).strip()
+        return all_sadabs_items
 
     @property
     def loops(self) -> List[gemmi.cif.Loop]:
@@ -238,7 +242,7 @@ class CifContainer():
                 new_loop.add_row(row)
 
     @property
-    def Z_value(self):
+    def z_value(self):
         return self.atomic_struct.cell.volume / self.atomic_struct.cell.volume_per_image()
 
     @property
@@ -254,11 +258,11 @@ class CifContainer():
         return self.hkl_extra_info['_exptl_absorpt_correction_type']
 
     @property
-    def absorpt_correction_T_max(self) -> str:
+    def absorpt_correction_t_max(self) -> str:
         return self.hkl_extra_info['_exptl_absorpt_correction_T_max']
 
     @property
-    def absorpt_correction_T_min(self) -> str:
+    def absorpt_correction_t_min(self) -> str:
         return self.hkl_extra_info['_exptl_absorpt_correction_T_min']
 
     @property
@@ -280,7 +284,7 @@ class CifContainer():
         # B3 = sin(gamma) * (cos(gamma) - cos(alpha) * cos(beta)) * siggamma
         name2coords = dict([(x[0], (x[2], x[3], x[4])) for x in self.atoms()])
         name2part = dict([(x[0], x[5]) for x in self.atoms()])
-        count = 0
+        # count = 0
         bonderrors = []
         bb = 0.0
         pair = ('C')
@@ -316,7 +320,7 @@ class CifContainer():
                 sigd = sqrt(sigd)
                 bb += sigd
                 if sigd > 0.0001:
-                    count += 1
+                    # count += 1
                     # print(atom1, atom2, dist, round(error, 5), round(sigd, 4), round(bb, 5), count)
                     # print('------ dist - sigma - calcsig - sum - num')
                     bonderrors.append(sigd)
@@ -409,7 +413,7 @@ class CifContainer():
         """
         Calculates the shelx checksum of a cif file.
         """
-        sum = 0
+        crc_sum = 0
         try:
             input_str = input_str.encode('cp1250', 'ignore')
         except Exception:
@@ -417,12 +421,12 @@ class CifContainer():
         for char in input_str:
             # print(char)
             if char > 32:  # ascii 32 is space character
-                sum += char
-        sum %= 714025
-        sum = sum * 1366 + 150889
-        sum %= 714025
-        sum %= 100000
-        return sum
+                crc_sum += char
+        crc_sum %= 714025
+        crc_sum = crc_sum * 1366 + 150889
+        crc_sum %= 714025
+        crc_sum %= 100000
+        return crc_sum
 
     def rename_data_name(self, newname: str = ''):
         """
@@ -462,7 +466,7 @@ class CifContainer():
         ops = gemmi.GroupOps([gemmi.Op(o) for o in self.symmops])
         return ops.is_centric()
 
-    def atoms(self, without_h: bool = False) -> NamedTuple:
+    def atoms(self, without_h: bool = False) -> Generator:
         labels = self.block.find_loop('_atom_site_label')
         types = self.block.find_loop('_atom_site_type_symbol')
         x = self.block.find_loop('_atom_site_fract_x')
@@ -471,21 +475,21 @@ class CifContainer():
         part = self.block.find_loop('_atom_site_disorder_group')
         occ = self.block.find_loop('_atom_site_occupancy')
         u_eq = self.block.find_loop('_atom_site_U_iso_or_equiv')
+        atom = namedtuple('Atom', ('label', 'type', 'x', 'y', 'z', 'part', 'occ', 'u_eq'))
         for label, type, x, y, z, part, occ, u_eq in zip(labels, types, x, y, z, part, occ, u_eq):
             if without_h and self.ishydrogen(label):
                 continue
             #         0    1   2  3  4   5   6     7
             # yield label, type, x, y, z, part, occ, ueq
-            atom = namedtuple('Atom', ('label', 'type', 'x', 'y', 'z', 'part', 'occ', 'u_eq'))
             yield atom(label=label, type=type, x=x, y=y, z=z, part=part, occ=occ, u_eq=u_eq)
 
     @property
-    def atoms_fract(self) -> List:
+    def atoms_fract(self) -> Generator:
         for at in self.atomic_struct.sites:
             yield [at.label, at.type_symbol, at.fract.x, at.fract.y, at.fract.z, at.disorder_group, at.occ, at.u_iso]
 
     @property
-    def atoms_orth(self):
+    def atoms_orth(self) -> Generator:
         cell = self.atomic_struct.cell
         for at in self.atomic_struct.sites:
             x, y, z = at.orth(cell)
@@ -496,16 +500,14 @@ class CifContainer():
         for at in self.atomic_struct.sites:
             if at.type_symbol in ('H', 'D'):
                 return True
-        else:
-            return False
+        return False
 
     @property
     def disorder_present(self) -> bool:
         for at in self.atomic_struct.sites:
             if at.disorder_group:
                 return True
-        else:
-            return False
+        return False
 
     @property
     def cell(self) -> tuple:
@@ -528,7 +530,7 @@ class CifContainer():
             symm = symm + '_555'
         return symm
 
-    def bonds(self, without_h: bool = False):
+    def bonds(self, without_h: bool = False) -> Generator:
         """
         Yields a list of bonds in the cif file.
         """
@@ -536,25 +538,25 @@ class CifContainer():
         label2 = self.block.find_loop('_geom_bond_atom_site_label_2')
         dist = self.block.find_loop('_geom_bond_distance')
         symm = self.block.find_loop('_geom_bond_site_symmetry_2')
+        bond = namedtuple('Bond', ('label1', 'label2', 'dist', 'symm'))
         for label1, label2, dist, symm in zip(label1, label2, dist, symm):
             if without_h and (self.ishydrogen(label1) or self.ishydrogen(label2)):
                 continue
             else:
-                bond = namedtuple('Bond', ('label1', 'label2', 'dist', 'symm'))
                 yield bond(label1=label1, label2=label2, dist=dist, symm=self.checksymm(symm))
 
-    def angles(self, without_H: bool = False) -> NamedTuple:
+    def angles(self, without_H: bool = False) -> Generator:
         label1 = self.block.find_loop('_geom_angle_atom_site_label_1')
         label2 = self.block.find_loop('_geom_angle_atom_site_label_2')
         label3 = self.block.find_loop('_geom_angle_atom_site_label_3')
         angle_val = self.block.find_loop('_geom_angle')
         symm1 = self.block.find_loop('_geom_angle_site_symmetry_1')
         symm2 = self.block.find_loop('_geom_angle_site_symmetry_3')
+        angle = namedtuple('Angle', ('label1', 'label2', 'label3', 'angle_val', 'symm1', 'symm2'))
         for label1, label2, label3, angle_val, symm1, symm2 in zip(label1, label2, label3, angle_val, symm1, symm2):
             if without_H and (self.ishydrogen(label1) or self.ishydrogen(label2) or self.ishydrogen(label3)):
                 continue
             else:
-                angle = namedtuple('Angle', ('label1', 'label2', 'label3', 'angle_val', 'symm1', 'symm2'))
                 yield angle(label1=label1, label2=label2, label3=label3, angle_val=angle_val,
                             symm1=self.checksymm(symm1), symm2=self.checksymm(symm2))
 
@@ -582,7 +584,7 @@ class CifContainer():
         """
         return len(tuple(self.torsion_angles(without_h)))
 
-    def torsion_angles(self, without_h: bool = False):
+    def torsion_angles(self, without_h: bool = False) -> Generator:
         label1 = self.block.find_loop('_geom_torsion_atom_site_label_1')
         label2 = self.block.find_loop('_geom_torsion_atom_site_label_2')
         label3 = self.block.find_loop('_geom_torsion_atom_site_label_3')
@@ -592,22 +594,21 @@ class CifContainer():
         symm2 = self.block.find_loop('_geom_torsion_site_symmetry_2')
         symm3 = self.block.find_loop('_geom_torsion_site_symmetry_3')
         symm4 = self.block.find_loop('_geom_torsion_site_symmetry_4')
-        # publ = self.block.find_loop('_geom_torsion_publ_flag')
+        tors = namedtuple('Torsion',
+                          ('label1', 'label2', 'label3', 'label4', 'torsang', 'symm1', 'symm2', 'symm3', 'symm4'))
         for label1, label2, label3, label4, torsang, symm1, symm2, symm3, symm4 in zip(label1, label2, label3, label4,
                                                                                        torsang, symm1, symm2, symm3,
                                                                                        symm4):
             if without_h and (self.ishydrogen(label1) or self.ishydrogen(label2)
                               or self.ishydrogen(label3) or self.ishydrogen(label3)):
                 continue
-            tors = namedtuple('Torsion',
-                              ('label1', 'label2', 'label3', 'label4', 'torsang', 'symm1', 'symm2', 'symm3', 'symm4'))
             yield tors(label1=label1, label2=label2, label3=label3, label4=label4, torsang=torsang,
                        symm1=self.checksymm(symm1),
                        symm2=self.checksymm(symm2),
                        symm3=self.checksymm(symm3),
                        symm4=self.checksymm(symm4))
 
-    def hydrogen_bonds(self):
+    def hydrogen_bonds(self) -> Generator:
         label_d = self.block.find_loop('_geom_hbond_atom_site_label_D')
         label_h = self.block.find_loop('_geom_hbond_atom_site_label_H')
         label_a = self.block.find_loop('_geom_hbond_atom_site_label_A')
@@ -616,11 +617,10 @@ class CifContainer():
         dist_da = self.block.find_loop('_geom_hbond_distance_DA')
         angle_dha = self.block.find_loop('_geom_hbond_angle_DHA')
         symm = self.block.find_loop('_geom_hbond_site_symmetry_A')
-        # publ = self.block.find_loop('_geom_hbond_publ_flag')
+        hydr = namedtuple('HydrogenBond', ('label_d', 'label_h', 'label_a', 'dist_dh', 'dist_ha', 'dist_da',
+                                           'angle_dha', 'symm'))
         for label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm in \
             zip(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm):
-            hydr = namedtuple('HydrogenBond', ('label_d', 'label_h', 'label_a', 'dist_dh', 'dist_ha', 'dist_da',
-                                               'angle_dha', 'symm'))
             yield hydr(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, self.checksymm(symm))
 
     def key_value_pairs(self) -> List[Tuple[str, str]]:
@@ -709,19 +709,11 @@ class CifContainer():
         else:
             return True
 
-    def init_author_loop(self, contact_author: bool = False) -> gemmi.cif.Loop:
-        if contact_author:
-            author_loop = ['_publ_contact_author_name',
-                           '_publ_contact_author_address',
-                           '_publ_contact_author_email',
-                           '_publ_contact_author_phone',
-                           '_publ_contact_author_id_orcid', ]
-        else:
-            author_loop = ['_publ_author_name',
-                           '_publ_author_address',
-                           '_publ_author_email',
-                           '_publ_author_phone',
-                           '_publ_author_id_orcid',
-                           '_publ_author_footnote',
-                           ]
-        return self.block.init_loop('', author_loop)
+    def init_loop(self, loop_keywords: List) -> gemmi.cif.Loop:
+        return self.block.init_loop('', loop_keywords)
+
+
+if __name__ == '__main__':
+    c = CifContainer('tests/examples/1979688.cif')
+    for at in c.atoms():
+        print(at)

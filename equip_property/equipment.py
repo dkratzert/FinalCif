@@ -59,15 +59,15 @@ class Equipment:
         Not for template edititng!
         """
         listwidget = self.app.ui.EquipmentTemplatesListWidget
-        selected_row_text = listwidget.currentIndex().data()
-        if not selected_row_text:
+        equipment_name = listwidget.currentIndex().data()
+        if not equipment_name:
             return None
-        equipment = self.settings.load_equipment_template_as_dict(selected_row_text)
+        equipment = self.settings.load_settings_list_as_dict(property='equipment', item_name=equipment_name)
         if self.app.ui.cif_main_table.vheaderitems:
             for key in equipment:
                 if key not in self.app.ui.cif_main_table.vheaderitems:
                     # Key is not in the main table:
-                    self.app.add_row(key, equipment[key])
+                    self.app.add_row(key, equipment[key], at_start=True)
                 else:
                     # Key is already there:
                     self.app.ui.cif_main_table.setText(key, COL_CIF,
@@ -88,13 +88,7 @@ class Equipment:
         # First delete the list entries
         index = self.app.ui.EquipmentTemplatesListWidget.currentIndex()
         selected_template_text = index.data()
-        self.settings.delete_template('equipment/' + selected_template_text)
-        equipment_list = self.settings.settings.value('equipment_list') or []
-        try:
-            equipment_list.remove(selected_template_text)
-        except ValueError:
-            pass
-        self.settings.save_template_list('equipment_list', equipment_list)
+        self.settings.delete_template('equipment', selected_template_text)
         # now make it invisible:
         self.app.ui.EquipmentTemplatesListWidget.takeItem(index.row())
         self.cancel_equipment_template()
@@ -106,14 +100,10 @@ class Equipment:
         self.show_equipment()
 
     def store_predefined_templates(self):
-        equipment_list = self.settings.settings.value('equipment_list') or []
+        equipment_list = self.settings.get_equipment_list() or []
         for item in misc.predef_equipment_templ:
             if not item['name'] in equipment_list:
-                equipment_list.append(item['name'])
-                newlist = [x for x in list(set(equipment_list)) if x]
-                # this list keeps track of the equipment items:
-                self.settings.save_template_list('equipment_list', newlist)
-                self.settings.save_template_list('equipment/' + item['name'], item['items'])
+                self.settings.save_settings_list('equipment', item['name'], item['items'])
 
     def edit_equipment_template(self) -> None:
         """Gets called when 'edit equipment' button was clicked."""
@@ -137,7 +127,7 @@ class Equipment:
             # nothing selected
             return
         selected_row_text = listwidget.currentIndex().data()
-        table_data = self.settings.load_template('equipment/' + selected_row_text)
+        table_data = self.settings.load_settings_list(property='equipment', item_name=selected_row_text)
         # first load the previous values:
         if table_data:
             for key, value in table_data:
@@ -168,8 +158,7 @@ class Equipment:
                                          'Keys must start with an underscore.'.format(key))
                     return
                 show_general_warning('"{}" is not an official CIF keyword!'.format(key))
-        self.settings.save_template_list('equipment/' + selected_template_text, table_data)
-        self.settings.save_to_equipment_list(selected_template_text)
+        self.settings.save_settings_list('equipment', selected_template_text, table_data)
         self.app.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
         print('saved')
 
@@ -199,8 +188,7 @@ class Equipment:
             name = Path(filename).stem
         else:
             name = block.name.replace('__', ' ')
-        self.settings.save_template_list('equipment/' + name, table_data)
-        self.settings.save_to_equipment_list(name)
+        self.settings.save_settings_list('equipment', name, table_data)
         self.show_equipment()
 
     def get_equipment_entry_data(self) -> Tuple[str, list]:
