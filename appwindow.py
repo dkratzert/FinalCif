@@ -15,7 +15,7 @@ from math import sin, radians
 from pathlib import Path, WindowsPath
 from shutil import copy2
 from tempfile import TemporaryDirectory
-from typing import Union, Dict, Tuple
+from typing import Union, Dict, Tuple, List
 
 import qtawesome as qta
 import requests
@@ -1325,8 +1325,8 @@ class AppWindow(QMainWindow):
                     self.sources['_database_code_depnum_ccdc_archive'] = (str(ccdc.depnum), str(ccdc.emlfile.name))
                     self.missing_data.add('_database_code_depnum_ccdc_archive')
         vheadlist = []
-        for num in range(self.ui.cif_main_table.model().rowCount()):
-            vheadlist.append(self.ui.cif_main_table.model().headerData(num, Qt.Vertical))
+        for row_number in range(self.ui.cif_main_table.model().rowCount()):
+            vheadlist.append(self.ui.cif_main_table.model().headerData(row_number, Qt.Vertical))
         for src in self.sources:
             if not self.sources[src]:
                 continue
@@ -1337,17 +1337,18 @@ class AppWindow(QMainWindow):
                 self.add_row(src, '?')
         # Build a dictionary of cif keys and row number values in order to fill the first column
         # of cif_main_table with cif values:
-        for num in range(self.ui.cif_main_table.model().rowCount()):
-            vhead_key = self.ui.cif_main_table.model().headerData(num, Qt.Vertical)
+        property_keys = self.settings.load_property_keys_and_values()
+        for row_number in range(self.ui.cif_main_table.model().rowCount()):
+            vhead_key = self.ui.cif_main_table.model().headerData(row_number, Qt.Vertical)
             if not vhead_key in self.ui.cif_main_table.vheaderitems:
                 self.ui.cif_main_table.vheaderitems.append(vhead_key)
             # adding comboboxes:
-            if vhead_key in self.settings.load_property_keys():
+            if vhead_key in property_keys:
                 # First add self-made properties:
-                self.add_property_combobox(self.settings.load_property_by_key(vhead_key), num)
+                self.add_combobox(row_number, vhead_key)
             elif vhead_key in combobox_fields:
                 # Then the pre-defined:
-                self.add_property_combobox(combobox_fields[vhead_key], num)
+                self.add_property_combobox(combobox_fields[vhead_key], row_number)
         # Get missing items from sources and put them into the corresponding rows:
         # missing items will even be used if under the blue separation line:
         for miss_key in self.missing_data:
@@ -1367,7 +1368,16 @@ class AppWindow(QMainWindow):
                 # print(e, '##', miss_key)
                 pass
 
-    def add_property_combobox(self, data: str, row_num: int) -> None:
+    def add_combobox(self, num: int, vhead_key: str):
+        """
+        :param num: row number
+        :param vhead_key: CIF keyword for combobox
+        """
+        properties_list = self.settings.load_property_values_by_key(vhead_key)
+        if properties_list:
+            self.add_property_combobox(properties_list, num)
+
+    def add_property_combobox(self, data: List, row_num: int) -> None:
         """
         Adds a QComboBox to the cif_main_table with the content of special_fields or property templates.
         """

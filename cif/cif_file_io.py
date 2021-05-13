@@ -36,7 +36,7 @@ class CifContainer():
         # I do this in small steps instead of gemmi.cif.read_file() in order to
         # leave out the check_for_missing_values. This was gemmi reads cif files
         # with missing values.
-        self.doc = self.read_file(str(self.fileobj.absolute()))
+        self.doc = self.read_file(str(self.fileobj.resolve(strict=True)))
         self.block = self.doc.sole_block()
         # will not ok with non-ascii characters in the res file:
         self.chars_ok = True
