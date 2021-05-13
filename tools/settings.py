@@ -15,8 +15,12 @@ class FinalCifSettings():
         self.software_name = 'FinalCif'
         self.organization = 'DK'
         self.settings = QSettings(self.organization, self.software_name)
-        self.settings.setDefaultFormat(QSettings.IniFormat)
+        # self.settings.setDefaultFormat(QSettings.IniFormat)
         # print(self.settings.fileName())
+
+    @property
+    def property_items(self):
+        return self.list_saved_items(property='property')
 
     def save_window_position(self, position: QPoint, size: QSize, maximized: bool) -> None:
         self.settings.beginGroup("MainWindow")
@@ -61,6 +65,9 @@ class FinalCifSettings():
         return lastdir
 
     def save_to_equipment_list(self, selected_template_text: str, templ_type: str = 'equipment_list') -> None:
+        """
+        TODO: refactor this
+        """
         equipment_list = self.list_saved_items(templ_type)
         if not equipment_list:
             equipment_list = ['']
@@ -75,18 +82,20 @@ class FinalCifSettings():
     def get_equipment_list(self, equipment='equipment') -> list:
         return sorted(self.list_saved_items(equipment))
 
-    def load_property_keys(self) -> list:
-        """
-        Returns a list of keys like _exptl_crystal_colour from all properties.
-        """
+    def load_property_keys_and_values(self) -> list:
         keylist = []
-        plist = self.settings.value('property_list')
-        for p in plist:
+        for p in self.property_items:
             try:
-                keylist.append(self.settings.value('property/' + p)[0])
+                keylist.append(self.load_settings_list(property='property', item_name=p))
             except TypeError:
                 pass
         return keylist
+
+    def load_property_values_by_key(self, cif_key: str):
+        property_keys = self.load_property_keys_and_values()
+        if property_keys:
+            return property_keys[property_keys.index(cif_key)]
+        return []
 
     def save_template_list(self, name: str, items: list):
         """
@@ -112,32 +121,21 @@ class FinalCifSettings():
         """
         return self.settings.value(key)
 
-    def load_loop_template(self, name: str) -> Dict:
-        """
-        Load templates and return them as dict.
-        """
-        return self.settings.value('authors_list/' + name)
-
-    def save_authors_loop_template(self, name: str, items: dict):
+    '''def save_authors_loop_template(self, name: str, items: dict):
         """
         Saves authors templates into the settings as list.
         """
         if not isinstance(name, str):
             print('name was no string')
             return
-        self.settings.setValue('authors_list/' + name, items)
-
+        self.settings.beginGroup('authors_list')
+        self.settings.setValue(name, items)
+        self.settings.endGroup()
+'''
     def load_equipment_template_as_dict(self, name: str) -> dict:
         """
         """
-        keydict = {}
-        plist = self.load_value_of_key('equipment/' + name) or []
-        for p in plist:
-            try:
-                keydict[p[0]] = p[1]
-            except IndexError:
-                continue
-        return keydict
+        return self.load_settings_list_as_dict(property='equipment', item_name=name)
 
     def delete_template(self, name: str):
         """
@@ -145,27 +143,15 @@ class FinalCifSettings():
         """
         self.settings.remove(name)
 
-    def load_property_by_key(self, key):
-        keylist = self.load_property_keys()
-        plist = self.settings.value('property_list')
-        templ = None
-        for (p, k) in zip(plist, keylist):
-            if k.lower() == key.lower():
-                templ = self.load_value_of_key('property/' + p)
-        if not templ:
-            return [('', '')]
-        return [(n, x) for n, x in enumerate(templ[1]) if templ and len(templ) > 0]
-
     def load_options(self) -> dict:
-        self.settings.beginGroup('Options')
-        options = self.settings.value("options", type=dict)
+        options = self.load_settings_dict('Options', "options")
         if not options:
             options = {'report_text'  : True,
                        'picture_width': 7.5,
                        'without_h'    : False,
                        'checkcif_url' : 'https://checkcif.iucr.org/cgi-bin/checkcif_with_hkl',
                        }
-        self.settings.endGroup()
+        #self.settings.endGroup()
         # These are default values for now:
         options.update({'atoms_table'   : True,
                         'bonds_table'   : True,
@@ -174,38 +160,50 @@ class FinalCifSettings():
         return options
 
     def save_options(self, options: dict):
-        self.settings.beginGroup('Options')
-        self.settings.setValue('options', options)
-        self.settings.endGroup()
+        self.save_settings_dict('Options', 'options', options)
 
-    #######
-    def load_settings_dict(self, property: str = 'authors_list/', item_name: str = '') -> Dict:
-        directory = self.settings.value(property)
-        if directory:
-            for item in directory:
-                if item == item_name:
-                    return self.settings.value(property + item)
-        return {}
+    ####### New code: ######
+
+    def load_settings_dict(self, property: str = '', item_name: str = '') -> Dict:
+        settings = self._load_settings(property, item_name)
+        return settings or {}
+
+    def load_settings_list(self, property: str = '', item_name: str = '') -> List:
+        settings = self._load_settings(property, item_name)
+        return settings or []
+
+    def load_settings_list_as_dict(self, property: str, item_name: str):
+        setting = self.load_settings_list(property, item_name)
+        keydict = {}
+        for p in setting:
+            try:
+                keydict[p[0]] = p[1]
+            except IndexError:
+                continue
+        return keydict
+
+    def _load_settings(self, property: str, item_name: str):
+        directory = self.list_saved_items(property)
+        if directory and item_name in directory:
+            self.settings.beginGroup(property)
+            v = self.settings.value(item_name)
+            self.settings.endGroup()
+            return v
 
     def list_saved_items(self, property: str = '') -> list:
         self.settings.beginGroup(property)
-        v =  self.settings.allKeys()
+        v = self.settings.allKeys()
         self.settings.endGroup()
         return v
 
-    def save_settings_dict(self, property: str = 'authors_list/', name: str = '', items: dict = '') -> None:
-        if not property.endswith('/'):
-            property += '/'
-        self.settings.setValue(property + name, items)
+    def save_settings_dict(self, property: str = '', name: str = '', items: dict = '') -> None:
+        self.settings.beginGroup(property)
+        self.settings.setValue(name, items)
+        self.settings.endGroup()
 
 
 if __name__ == '__main__':
     s = FinalCifSettings()
-    p = s.load_settings_dict(item_name='Daniel Kratzert')
-    print(p)
-    print(s.list_saved_items('equipment'))
-    s.settings.beginGroup("equipment")
-    print(s.settings.allKeys())
-    s.settings.endGroup()
-    print(s.get_equipment_list())
-
+    # p = s.load_settings_dict(item_name='Daniel Kratzert')
+    # print(p, '###ä###')
+    print('load_property_by_key:', s.load_property_values_by_key(cif_key='_cell_measurement_temperature'))

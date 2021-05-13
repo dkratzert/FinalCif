@@ -242,7 +242,7 @@ class AuthorLoops():
         return selected_row_text
 
     def load_selected_loop(self):
-        author_loopdata = self.settings.load_loop_template(self.get_selected_loop_name())
+        author_loopdata = self.settings.load_settings_dict('authors_list', self.get_selected_loop_name())
         self.set_author_info(author_loopdata)
 
     def show_author_loops(self):
