@@ -7,6 +7,7 @@ from pathlib import Path
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon, QColor
 from PyQt5.QtWidgets import QApplication
+from qtpy.QtTest import QTest
 
 from appwindow import AppWindow
 from gui.custom_classes import light_green, yellow, COL_DATA, COL_CIF, COL_EDIT
@@ -91,9 +92,14 @@ class TestWorkfolder(unittest.TestCase):
         return unify_line_endings(self.myapp.ui.cif_main_table.getTextFromKey(key, col))
 
     def equipment_click(self, field: str):
+        listw = self.myapp.ui.EquipmentTemplatesListWidget
         self.myapp.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
-        item = self.myapp.ui.EquipmentTemplatesListWidget.findItems(field, Qt.MatchStartsWith)[0]
-        self.myapp.ui.EquipmentTemplatesListWidget.setCurrentItem(item)
+        item = listw.findItems(field, Qt.MatchStartsWith)[0]
+        listw.setCurrentItem(item)
+        self.assertEqual(field, item.text())
+        rect = listw.visualItemRect(item)
+        QTest.mouseDClick(listw.viewport(), Qt.LeftButton, Qt.NoModifier, rect.center())
+        app.processEvents()
         # This is necessary:
         self.myapp.equipment.load_selected_equipment()
 
@@ -177,9 +183,9 @@ class TestWorkfolder(unittest.TestCase):
                                                                           1).background().color())
 
     def allrows_test_key(self, key: str = '', results: list = None):
+        # The results list is a list with three items for each data column in the main table.
         self.myapp.hide()
         for n, r in enumerate(results):
-            # print('##', key, n, r)
             # print(self.cell_text(key, n))
             self.assertEqual(r, self.cell_text(key, n))
 
@@ -187,6 +193,10 @@ class TestWorkfolder(unittest.TestCase):
         self.equipment_click('APEX2 QUAZAR')
         self.allrows_test_key('_diffrn_measurement_method', ['?', 'ω and ϕ scans', 'ω and ϕ scans'])
         self.allrows_test_key('_diffrn_measurement_specimen_support', ['?', 'MiTeGen micromount', 'MiTeGen micromount'])
+
+    unittest.SkipTest('')
+    def test_equipment_click_machine_oxford(self):
+        self.equipment_click('APEX2 QUAZAR')
         self.allrows_test_key('_olex2_diffrn_ambient_temperature_device',
                               ['Oxford Cryostream 800', 'Oxford Cryostream 800', 'Oxford Cryostream 800'])
 

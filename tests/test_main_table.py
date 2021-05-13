@@ -86,11 +86,11 @@ class TestMainTableFieldBehavior(unittest.TestCase):
         # make sure contact author is selected
         self.equipment_click('Crystallographer Details')
         # It is important here, that the first column has 'daniel.kratzert@ac.uni-freiburg.de' in it:
-        self.assertEqual('daniel.kratzert@ac.uni-freiburg.de',
+        self.assertEqual('dkratzert@gmx.de',
                          self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_email', COL_CIF))
-        self.assertEqual('daniel.kratzert@ac.uni-freiburg.de',
+        self.assertEqual('dkratzert@gmx.de',
                          self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_email', COL_DATA))
-        self.assertEqual('daniel.kratzert@ac.uni-freiburg.de',
+        self.assertEqual('dkratzert@gmx.de',
                          self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_email', COL_EDIT))
 
     def test_field_types(self):

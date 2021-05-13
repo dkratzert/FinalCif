@@ -317,7 +317,7 @@ class AppWindow(QMainWindow):
         """
         Opens the checkcif stackwidget page and therein the html report page
         """
-        self.ui.MainStackedWidget.got_to_cod_page()
+        self.ui.MainStackedWidget.go_to_checkcif_page()
 
     def _ccdc_deposit(self) -> None:
         """

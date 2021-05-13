@@ -56,6 +56,7 @@ class TemplateReportTestCase(unittest.TestCase):
         print('imported templates')
         self.myapp.ui.TemplatesListWidget.blockSignals(False)
 
+    @unittest.skip('')
     def test_with_report_text(self):
         self.myapp.ui.SaveFullReportButton.click()
         doc = Document(self.reportdoc.absolute())
@@ -65,8 +66,6 @@ class TemplateReportTestCase(unittest.TestCase):
     def test_citations(self):
         self.myapp.ui.SaveFullReportButton.click()
         doc = Document(self.reportdoc.absolute())
-        # for n, p in enumerate(doc.paragraphs):
-        #    print(p.text, n)
         self.assertEqual(
             '[6] 	D. Kratzert, FinalCif, V{}, https://www.xs3.uni-freiburg.de/research/finalcif.'.format(VERSION),
             doc.paragraphs[-1].text)
