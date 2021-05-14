@@ -1,5 +1,4 @@
 import io
-from pathlib import Path
 from typing import Union
 
 import requests
@@ -61,6 +60,7 @@ class COD_Deposit():
         # url = 'https://www.crystallography.net/cod-test/cgi-bin/cif-deposit.pl'
         # test_url:
         self.url = 'https://www.crystallography.net/cod-test/cgi-bin/cif-deposit.pl'
+        # self.url = 'http://127.0.0.1:8080/cod/cgi-bin/cif-deposit.pl'
         username = self.settings.load_value_of_key('cod_username')
         if username:
             self.ui.depositorUsernameLineEdit.setText(username)
@@ -83,7 +83,10 @@ class COD_Deposit():
     def cif(self, obj):
         self.ui.depositCIFpushButton.setEnabled(True)
         self._cif = obj
-        self.author_name = self._cif['_publ_author_name']
+        try:
+            self.author_name = self.cif.get_loop_column('_publ_author_name')[0]
+        except IndexError:
+            self.author_name = ''
         self.ui.ContactAuthorsFullNamePersonalLineEdit.setText(self.author_name)
         self.ui.ContactAuthorsFullNamePersonalLineEdit_2.setText(self.author_name)
         self.ui.depositorsFullNameLineEdit.setText(self.author_name)
@@ -152,7 +155,7 @@ class COD_Deposit():
                 'user_email'     : self.user_email,  # 'dkratzert@gmx.de',
                 'deposition_type': self.deposition_type,  # published prepublication, personal
                 'output_mode'    : 'html',
-                #'progress'       : '1',  # must be 1 if supplied! Otherwise do not submit.
+                # 'progress'       : '1',  # must be 1 if supplied! Otherwise do not submit.
                 'filename'       : self.cif.fileobj.name,
                 }
         if self.deposition_type == 'published':
@@ -165,9 +168,9 @@ class COD_Deposit():
             # plus _cod_database_code in the CIF
             data.update({'replace': '1'})
             data.update({'message': "test1"})
-            data.update({'author_name': self.author_name,
+            data.update({'author_name' : self.author_name,
                          'author_email': self.author_email,
-                         'hold_period': str(self.ui.embargoTimeInMonthsSpinBox.value())})
+                         'hold_period' : str(self.ui.embargoTimeInMonthsSpinBox.value())})
         if self.deposition_type == 'personal':
             data.update({'author_name': self.author_name})
             data.update({'author_email': self.author_email})
@@ -218,20 +221,16 @@ class COD_Deposit():
         self.password = text
 
     def _set_author_name_published(self, text: str):
-        #self.cif['_audit_contact_author_name'] = text
-        #self.cif['_publ_author_name'] = text
         self.author_name = text
 
     def _set_author_name_personal(self, text: str):
-        #self.cif['_audit_contact_author_name'] = text
-        #self.cif['_publ_author_name'] = text
         self.author_name = text
 
     def _set_author_name_prepubl(self, text: str):
         # TODO: in case of more than one name, make loop from semicolon-separated names:
         # https://www.iucr.org/__data/iucr/cifdic_html/1/cif_core.dic/Ipubl_author_name.html
-        #self.cif['_audit_contact_author_name'] = text
-        #self.cif['_publ_author_name'] = text
+        # self.cif['_audit_contact_author_name'] = text
+        # self.cif['_publ_author_name'] = text
         self.author_name = text
 
     def _set_author_email(self, text: str):
