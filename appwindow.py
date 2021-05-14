@@ -33,7 +33,7 @@ from cif.cif_file_io import CifContainer
 from cif.cod.deposit import COD_Deposit
 from cif.text import retranslate_delimiter, quote
 from datafiles.bruker_data import BrukerData
-from datafiles.ccdc import CCDCMail
+from datafiles.ccdc_mail import CCDCMail
 from displaymol import mol_file_writer, write_html
 from displaymol.sdm import SDM
 from equip_property.author_loop_templates import AuthorLoops

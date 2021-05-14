@@ -9,12 +9,13 @@ import re
 from collections import namedtuple
 from math import sin, cos, sqrt
 from pathlib import Path
-from typing import Dict, List, Tuple, Union, NamedTuple, Generator
+from typing import Dict, List, Tuple, Union, Generator
 
 import gemmi
+from gemmi.cif import as_string
 
 from cif.cif_order import order, special_keys
-from cif.text import utf8_to_str, quote
+from cif.text import utf8_to_str, quote, retranslate_delimiter
 from datafiles.utils import DSRFind
 from tools.dsrmath import mean
 from tools.misc import essential_keys, non_centrosymm_keys, get_error_from_value, isnumeric
@@ -240,6 +241,12 @@ class CifContainer():
             new_loop = self.block.init_loop('', loop.tags)
             for row in imp_cif.block.find(loop.tags):
                 new_loop.add_row(row)
+
+    def get_loop(self, key_in_loop: str) -> gemmi.cif.Loop:
+        return self.block.find_loop(key_in_loop).get_loop()
+
+    def get_loop_column(self, key_in_loop: str) -> List:
+        return [retranslate_delimiter(as_string(x)) for x in self.block.find_loop(key_in_loop)]
 
     @property
     def z_value(self):
@@ -714,6 +721,6 @@ class CifContainer():
 
 
 if __name__ == '__main__':
-    c = CifContainer('tests/examples/1979688.cif')
-    for at in c.atoms():
-        print(at)
+    c = CifContainer('tests/examples/1979688-finalcif.cif')
+    l = c.get_loop_column('_publ_author_name')
+    print(l)
