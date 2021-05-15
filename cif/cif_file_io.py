@@ -177,10 +177,20 @@ class CifContainer():
     @property
     def hkl_file(self) -> str:
         try:
-            return self.block.find_value('_shelx_hkl_file')
+            return as_string(self.block.find_value('_shelx_hkl_file'))
         except Exception as e:
             print('No hkl data found in CIF!, {}'.format(e))
             return ''
+
+    def hkl_file_without_foot(self):
+        """Returns a hkl file with no content after the 0 0 0 reflection"""
+        pattern = re.compile(r'\s+0\s+0\s+0\s+0')
+        found = pattern.search(self.hkl_file)
+        if found:
+            zero_reflection_position = found.start()
+            return '\n'.join(self.hkl_file[:zero_reflection_position+29].splitlines())
+        else:
+            return '\n'.join(self.hkl_file.splitlines())
 
     def _abs_hkl_details(self) -> Dict[str, str]:
         """
@@ -199,7 +209,13 @@ class CifContainer():
             pass
         if not hkl:
             return all_sadabs_items
-        hkl = hkl[hkl.find('  0   0   0    0'):].splitlines(keepends=False)[1:-1]
+        pattern = re.compile(r'\s+0\s+0\s+0\s+0')
+        found = pattern.search(hkl)
+        if found:
+            zero_reflection_position = found.start()
+        else:
+            return all_sadabs_items
+        hkl = hkl[zero_reflection_position:].splitlines(keepends=False)[2:]
         # html-embedded cif has ')' instead of ';':
         hkl = [';' if x[:1] == ')' else x for x in hkl]
         # the keys have a blank char in front:
@@ -402,7 +418,7 @@ class CifContainer():
         Calculates the shelx checksum for the hkl file content of a cif file.
         """
         if self.hkl_file:
-            return self.calc_checksum(self.hkl_file[1:-1])
+            return self.calc_checksum(self.hkl_file)
         else:
             return 0
 
@@ -721,6 +737,7 @@ class CifContainer():
 
 
 if __name__ == '__main__':
-    c = CifContainer('tests/examples/1979688-finalcif.cif')
-    l = c.get_loop_column('_publ_author_name')
-    print(l)
+    c = CifContainer('/Users/daniel/Documents/strukturen/BreitPZ_R_122/BreitPZ_R_122_0m_a-finalcif.cif')
+    #Path('testhkl.txt').write_text(c.hkl_file)
+    print(c.hkl_file_without_foot())
+    print(c.test_hkl_checksum())

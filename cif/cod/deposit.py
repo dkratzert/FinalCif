@@ -1,4 +1,6 @@
 import io
+import os.path
+from pathlib import Path
 from typing import Union
 
 import requests
@@ -33,6 +35,21 @@ Personal Problems:
 - Depositing structure 'cif' into TESTCOD:
     -> should be named as _data value
 
+
+
+<pre>_journal_name_full 'Xxxxxxxxxxxxxx Xxxxxxxxxxxx Xxxxxxxx'
+_journal_year&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; xxxx
+_journal_volume&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; xxx
+_journal_page_first&nbsp;&nbsp;&nbsp;&nbsp; xxx
+_journal_page_last&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; xxx
+loop_
+_publ_author_name
+&nbsp;'Xxxxxxxxxxx Xxxxxxxxxx'
+&nbsp;'Xxxxxxxxxxx Xxxxxxxxxx'
+&nbsp;'Xxxxxxxxxxx Xxxxxxxxxx'
+&nbsp;'Xxxxxxxxxxx Xxxxxxxxxx'</pre>
+
+
 """
 
 
@@ -60,7 +77,7 @@ class COD_Deposit():
         # url = 'https://www.crystallography.net/cod-test/cgi-bin/cif-deposit.pl'
         # test_url:
         self.url = 'https://www.crystallography.net/cod-test/cgi-bin/cif-deposit.pl'
-        # self.url = 'http://127.0.0.1:8080/cod/cgi-bin/cif-deposit.pl'
+        #self.url = 'http://127.0.0.1:8080/cod/cgi-bin/cif-deposit.pl'
         username = self.settings.load_value_of_key('cod_username')
         if username:
             self.ui.depositorUsernameLineEdit.setText(username)
@@ -166,7 +183,7 @@ class COD_Deposit():
             # TODO: prepublication and replace is possible with the REST API. Is this intended?
             # And replace needs message
             # plus _cod_database_code in the CIF
-            data.update({'replace': '1'})
+            #data.update({'replace': '1'})
             data.update({'message': "test1"})
             data.update({'author_name' : self.author_name,
                          'author_email': self.author_email,
@@ -175,10 +192,14 @@ class COD_Deposit():
             data.update({'author_name': self.author_name})
             data.update({'author_email': self.author_email})
         fileobj = io.StringIO(self.cif.cif_as_string(without_hkl=True))
+        hklf = io.StringIO(self.cif.hkl_file_without_foot())
         if self.ui.depositHKLcheckBox.isChecked():
-            files = {'cif': fileobj, 'hkl': io.StringIO(self.cif.hkl_file)}
+            files = {'cif': fileobj, 'hkl': hklf}
         else:
             files = {'cif': fileobj}
+        print(Path('.').resolve())
+        Path('testout_cif.txt').write_text(fileobj.getvalue())
+        Path('testout_hkl.txt').write_text(hklf.getvalue())
         print('making request')
         r = requests.post(self.url, files=files, data=data)
         # hooks={'response': self.log_response_text})

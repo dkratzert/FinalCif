@@ -52,7 +52,6 @@ class ShredCIF():
 
     @staticmethod
     def format_hkl_data(hkl_data: list) -> list:
-        hkl_data = hkl_data[1:-1]
         for num, line in enumerate(hkl_data):
             if line[:1] == ')':
                 hkl_data[num] = ';' + line[1:]
