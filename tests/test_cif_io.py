@@ -11,7 +11,7 @@ class CifFileCRCTestCase(unittest.TestCase):
         self.cif = CifContainer(Path('tests/examples/1979688.cif'))
 
     def test_calc_crc(self):
-        self.assertEqual(20714, self.cif.calc_checksum(self.cif['_shelx_hkl_file'][1:-1]))
+        self.assertEqual(20714, self.cif.calc_checksum(self.cif['_shelx_hkl_file']))
 
 
 class CifFileTestCase(unittest.TestCase):
