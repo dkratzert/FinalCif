@@ -28,6 +28,7 @@ class CifContainer():
 
     def __init__(self, file: Union[Path, str], new_block: str = ''):
         self.fileobj: Path
+        self.filename: str = self.fileobj.name
         if isinstance(file, str):
             self.fileobj = Path(file)
         elif isinstance(file, Path):
@@ -182,7 +183,8 @@ class CifContainer():
             print('No hkl data found in CIF!, {}'.format(e))
             return ''
 
-    def hkl_file_without_foot(self):
+    @property
+    def hkl_file_without_foot(self) -> str:
         """Returns a hkl file with no content after the 0 0 0 reflection"""
         zero_reflection_position = self._find_line_of_000(self.hkl_file)
         if zero_reflection_position:
@@ -745,5 +747,5 @@ class CifContainer():
 if __name__ == '__main__':
     c = CifContainer('/Users/daniel/Documents/strukturen/BreitPZ_R_122/BreitPZ_R_122_0m_a-finalcif.cif')
     # Path('testhkl.txt').write_text(c.hkl_file)
-    print(c.hkl_file_without_foot())
+    print(c.hkl_file_without_foot)
     print(c.test_hkl_checksum())
