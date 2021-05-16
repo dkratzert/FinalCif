@@ -1,5 +1,4 @@
 import io
-import os.path
 from pathlib import Path
 from typing import Union
 
@@ -8,6 +7,7 @@ import requests
 from cif.cif_file_io import CifContainer
 from gui.finalcif_gui import Ui_FinalCifWindow
 from tools.settings import FinalCifSettings
+from tools.version import VERSION
 
 """
 COD-number 7 digits
@@ -76,14 +76,14 @@ class COD_Deposit():
         # production url:
         # url = 'https://www.crystallography.net/cod-test/cgi-bin/cif-deposit.pl'
         # test_url:
-        self.url = 'https://www.crystallography.net/cod-test/cgi-bin/cif-deposit.pl'
-        #self.url = 'http://127.0.0.1:8080/cod/cgi-bin/cif-deposit.pl'
+        #self.url = 'https://www.crystallography.net/cod-test/cgi-bin/cif-deposit.pl'
+        self.url = 'http://127.0.0.1:8080/cod/cgi-bin/cif-deposit.pl'
         username = self.settings.load_value_of_key('cod_username')
         if username:
             self.ui.depositorUsernameLineEdit.setText(username)
         else:
             self.username = ''
-        self.password = ''
+        self.password = 'testing'
         self.author_name = ''
         self.author_email = ''
         user_email = self.settings.load_value_of_key('cod_user_email')
@@ -183,7 +183,7 @@ class COD_Deposit():
             # TODO: prepublication and replace is possible with the REST API. Is this intended?
             # And replace needs message
             # plus _cod_database_code in the CIF
-            #data.update({'replace': '1'})
+            # data.update({'replace': '1'})
             data.update({'message': "test1"})
             data.update({'author_name' : self.author_name,
                          'author_email': self.author_email,
@@ -193,17 +193,18 @@ class COD_Deposit():
             data.update({'author_email': self.author_email})
         fileobj = io.StringIO(self.cif.cif_as_string(without_hkl=True))
         if self.ui.depositHKLcheckBox.isChecked():
-            hklf = io.StringIO(self.cif.hkl_file_without_foot())
+            hklf = io.StringIO(self.cif.hkl_file_without_foot)
             # Path('testout_hkl.txt').write_text(hklf.getvalue())
-            files = {'cif': (self.cif.fileobj.name, fileobj), 'hkl': (self.cif.fileobj.stem+'.hkl', hklf)}
+            files = {'cif': (self.cif.filename, fileobj, 'multipart/form-data'),
+                     'hkl': (self.cif.fileobj.stem + '.hkl', hklf, 'multipart/form-data')}
         else:
             files = {'cif': (self.cif.fileobj.name, fileobj)}
         print(Path('.').resolve())
-        #Path('testout_cif.txt').write_text(fileobj.getvalue())
+        # Path('testout_cif.txt').write_text(fileobj.getvalue())
         print('making request')
-        r = requests.post(self.url, files=files, data=data)
+        r = requests.post(self.url, data=data, files=files, headers={'User-Agent': 'FinalCif/{}'.format(VERSION)})
         # hooks={'response': self.log_response_text})
-        print(r.text)
+        print(r.request.headers)
         self.ui.depositOutputTextBrowser.setText(r.text)
         self.set_deposit_button_to_try_again()
         return r
