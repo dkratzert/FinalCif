@@ -192,14 +192,14 @@ class COD_Deposit():
             data.update({'author_name': self.author_name})
             data.update({'author_email': self.author_email})
         fileobj = io.StringIO(self.cif.cif_as_string(without_hkl=True))
-        hklf = io.StringIO(self.cif.hkl_file_without_foot())
         if self.ui.depositHKLcheckBox.isChecked():
-            files = {'cif': fileobj, 'hkl': hklf}
+            hklf = io.StringIO(self.cif.hkl_file_without_foot())
+            # Path('testout_hkl.txt').write_text(hklf.getvalue())
+            files = {'cif': (self.cif.fileobj.name, fileobj), 'hkl': (self.cif.fileobj.stem+'.hkl', hklf)}
         else:
-            files = {'cif': fileobj}
+            files = {'cif': (self.cif.fileobj.name, fileobj)}
         print(Path('.').resolve())
-        Path('testout_cif.txt').write_text(fileobj.getvalue())
-        Path('testout_hkl.txt').write_text(hklf.getvalue())
+        #Path('testout_cif.txt').write_text(fileobj.getvalue())
         print('making request')
         r = requests.post(self.url, files=files, data=data)
         # hooks={'response': self.log_response_text})
