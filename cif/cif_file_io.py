@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Dict, List, Tuple, Union, Generator
 
 import gemmi
-from gemmi.cif import as_string
+from gemmi.cif import as_string, is_null
 
 from cif.cif_order import order, special_keys
 from cif.text import utf8_to_str, quote, retranslate_delimiter
@@ -98,7 +98,7 @@ class CifContainer():
     def __getitem__(self, item: str) -> str:
         result = self.block.find_value(item)
         if result:
-            if result == '?' or result == "'?'":
+            if is_null(result):
                 return ''
             # can I do this? No:
             # return retranslate_delimiter(result)
@@ -177,20 +177,27 @@ class CifContainer():
     @property
     def hkl_file(self) -> str:
         try:
-            return as_string(self.block.find_value('_shelx_hkl_file'))
+            return as_string(self.block.find_value('_shelx_hkl_file')).strip('\r\n')
         except Exception as e:
             print('No hkl data found in CIF!, {}'.format(e))
             return ''
 
     def hkl_file_without_foot(self):
         """Returns a hkl file with no content after the 0 0 0 reflection"""
-        pattern = re.compile(r'\s+0\s+0\s+0\s+0')
-        found = pattern.search(self.hkl_file)
-        if found:
-            zero_reflection_position = found.start()
-            return '\n'.join(self.hkl_file[:zero_reflection_position+29].splitlines())
+        zero_reflection_position = self._find_line_of_000(self.hkl_file)
+        if zero_reflection_position:
+            return '\n'.join(self.hkl_file.splitlines(keepends=False)[:zero_reflection_position + 1])
         else:
-            return '\n'.join(self.hkl_file.splitlines())
+            return self.hkl_file
+
+    @staticmethod
+    def _find_line_of_000(lines: str):
+        pattern = re.compile(r'^\s+0\s+0\s+0\s+0.*')
+        for num, line in enumerate(lines.splitlines(keepends=False)):
+            found = pattern.match(line)
+            if found and num > 0:
+                return num
+        return 0
 
     def _abs_hkl_details(self) -> Dict[str, str]:
         """
@@ -307,7 +314,6 @@ class CifContainer():
         # B3 = sin(gamma) * (cos(gamma) - cos(alpha) * cos(beta)) * siggamma
         name2coords = dict([(x[0], (x[2], x[3], x[4])) for x in self.atoms()])
         name2part = dict([(x[0], x[5]) for x in self.atoms()])
-        # count = 0
         bonderrors = []
         bb = 0.0
         pair = ('C')
@@ -738,6 +744,6 @@ class CifContainer():
 
 if __name__ == '__main__':
     c = CifContainer('/Users/daniel/Documents/strukturen/BreitPZ_R_122/BreitPZ_R_122_0m_a-finalcif.cif')
-    #Path('testhkl.txt').write_text(c.hkl_file)
+    # Path('testhkl.txt').write_text(c.hkl_file)
     print(c.hkl_file_without_foot())
     print(c.test_hkl_checksum())
