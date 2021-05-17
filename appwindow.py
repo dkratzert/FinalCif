@@ -30,7 +30,7 @@ from qtpy.QtGui import QDesktopServices
 
 import displaymol
 from cif.cif_file_io import CifContainer
-from cif.cod.deposit import COD_Deposit
+from cif.cod.deposit import CODdeposit
 from cif.text import retranslate_delimiter, quote
 from datafiles.bruker_data import BrukerData
 from datafiles.ccdc_mail import CCDCMail
@@ -87,7 +87,7 @@ class AppWindow(QMainWindow):
         self.manufacturer = 'bruker'
         self.ui = Ui_FinalCifWindow()
         self.ui.setupUi(self)
-        self.deposit = COD_Deposit(self.ui)
+        self.deposit = CODdeposit(self.ui)
         self.settings = FinalCifSettings()
         self.options = Options(self.ui, self.settings)
         self.equipment = Equipment(app=self, settings=self.settings)

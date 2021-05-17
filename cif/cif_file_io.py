@@ -12,9 +12,10 @@ from pathlib import Path
 from typing import Dict, List, Tuple, Union, Generator
 
 import gemmi
-from gemmi.cif import as_string, is_null
+from gemmi.cif import as_string, is_null, Block, Document
 
 from cif.cif_order import order, special_keys
+from cif.hkl import HKL
 from cif.text import utf8_to_str, quote, retranslate_delimiter
 from datafiles.utils import DSRFind
 from tools.dsrmath import mean
@@ -27,23 +28,22 @@ class CifContainer():
     """
 
     def __init__(self, file: Union[Path, str], new_block: str = ''):
-        self.fileobj: Path
-        self.filename: str = self.fileobj.name
         if isinstance(file, str):
             self.fileobj = Path(file)
         elif isinstance(file, Path):
             self.fileobj = file
         else:
             raise TypeError('The file parameter must be string or Path object.')
+        self.filename: str = self.fileobj.name
         # I do this in small steps instead of gemmi.cif.read_file() in order to
         # leave out the check_for_missing_values. This was gemmi reads cif files
         # with missing values.
         if new_block:
-            self.doc = gemmi.cif.Document()
+            self.doc: Document = gemmi.cif.Document()
             self.doc.add_new_block(new_block)
         else:
             self.doc = self.read_file(str(self.fileobj.resolve(strict=True)))
-        self.block = self.doc.sole_block()
+        self.block: Block = self.doc.sole_block()
         # will not ok with non-ascii characters in the res file:
         self.chars_ok = True
         d = DSRFind(self.res_file_data)
@@ -184,6 +184,11 @@ class CifContainer():
             return ''
 
     @property
+    def hkl_as_cif(self):
+        hkl = HKL(self.hkl_file, self.block.name)
+        return hkl.hkl_as_cif
+
+    @property
     def hkl_file_without_foot(self) -> str:
         """Returns a hkl file with no content after the 0 0 0 reflection"""
         zero_reflection_position = self._find_line_of_000(self.hkl_file)
@@ -272,6 +277,9 @@ class CifContainer():
 
     def get_loop_column(self, key_in_loop: str) -> List:
         return [retranslate_delimiter(as_string(x)) for x in self.block.find_loop(key_in_loop)]
+
+    def init_loop(self, loop_keywords: List) -> gemmi.cif.Loop:
+        return self.block.init_loop('', loop_keywords)
 
     @property
     def z_value(self):
@@ -740,12 +748,11 @@ class CifContainer():
         else:
             return True
 
-    def init_loop(self, loop_keywords: List) -> gemmi.cif.Loop:
-        return self.block.init_loop('', loop_keywords)
+
 
 
 if __name__ == '__main__':
     c = CifContainer('/Users/daniel/Documents/strukturen/BreitPZ_R_122/BreitPZ_R_122_0m_a-finalcif.cif')
     # Path('testhkl.txt').write_text(c.hkl_file)
-    print(c.hkl_file_without_foot)
+    print(c.hkl_as_cif)
     print(c.test_hkl_checksum())
