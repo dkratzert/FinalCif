@@ -93,9 +93,6 @@ class CifContainer():
         else:
             return self.doc.as_string(style=gemmi.cif.Style.Indent35)
 
-    def __str__(self):
-        return str(self.fileobj.resolve())
-
     def __getitem__(self, item: str) -> str:
         result = self.block.find_value(item)
         if result:
@@ -118,6 +115,17 @@ class CifContainer():
 
     def __contains__(self, item):
         return bool(self.__getitem__(item))
+
+    def __str__(self) -> str:
+        return "CIF file: {0}\n" \
+               "data name: {1}\n" \
+               "Contains SHELX res file: {2}\n" \
+               "Contains hkl data: {3}\n" \
+               "Has {4} atoms" \
+               ", {5} bonds" \
+               ", {6} angles" \
+               "".format(str(self.fileobj.resolve()), self.block.name, len(self.res_file_data)>1, len(self.hkl_file)>1,
+                         self.natoms(), self.nbonds(), self.nangles())
 
     def set_pair_delimited(self, key: str, txt: str):
         """
@@ -185,8 +193,7 @@ class CifContainer():
 
     @property
     def hkl_as_cif(self):
-        hkl = HKL(self.hkl_file, self.block.name)
-        return hkl.hkl_as_cif
+        return HKL(self.hkl_file, self.block.name).hkl_as_cif
 
     @property
     def hkl_file_without_foot(self) -> str:
@@ -753,6 +760,8 @@ class CifContainer():
 
 if __name__ == '__main__':
     c = CifContainer('/Users/daniel/Documents/strukturen/BreitPZ_R_122/BreitPZ_R_122_0m_a-finalcif.cif')
-    # Path('testhkl.txt').write_text(c.hkl_file)
-    print(c.hkl_as_cif)
-    print(c.test_hkl_checksum())
+    print(c)
+   # print(c.hkl_as_cif)
+    #print(c.test_hkl_checksum())
+
+    #print(CifContainer('tests/examples/1979688.cif').hkl_as_cif[-250:])
