@@ -53,7 +53,7 @@ _publ_author_name
 """
 
 
-class COD_Deposit():
+class CODdeposit():
     def __init__(self, ui: Ui_FinalCifWindow, cif: Union[CifContainer, None] = None):
         self.ui = ui
         self.settings = FinalCifSettings()
@@ -76,8 +76,8 @@ class COD_Deposit():
         # production url:
         # url = 'https://www.crystallography.net/cod-test/cgi-bin/cif-deposit.pl'
         # test_url:
-        #self.url = 'https://www.crystallography.net/cod-test/cgi-bin/cif-deposit.pl'
-        self.url = 'http://127.0.0.1:8080/cod/cgi-bin/cif-deposit.pl'
+        self.url = 'https://www.crystallography.net/cod-test/cgi-bin/cif-deposit.pl'
+        #self.url = 'http://127.0.0.1:8080/cod/cgi-bin/cif-deposit.pl'
         username = self.settings.load_value_of_key('cod_username')
         if username:
             self.ui.depositorUsernameLineEdit.setText(username)
@@ -164,7 +164,6 @@ class COD_Deposit():
             return
         self.ui.depositOutputTextBrowser.setText('starting deposition in "{}" mode ...'.format(self.deposition_type))
         print('starting deposition of ', self.cif.fileobj.name)
-        # with open(self.cif.fileobj.resolve(), 'rb') as fileobj:
         data = {'username'       : self.username,
                 # Path('/Users/daniel/cod_username.txt').read_text(encoding='ascii'),
                 'password'       : self.password,
@@ -191,20 +190,21 @@ class COD_Deposit():
         if self.deposition_type == 'personal':
             data.update({'author_name': self.author_name})
             data.update({'author_email': self.author_email})
-        fileobj = io.StringIO(self.cif.cif_as_string(without_hkl=True))
+        cif_fileobj = io.StringIO(self.cif.cif_as_string(without_hkl=True))
         if self.ui.depositHKLcheckBox.isChecked():
-            hklf = io.StringIO(self.cif.hkl_file_without_foot)
-            # Path('testout_hkl.txt').write_text(hklf.getvalue())
-            files = {'cif': (self.cif.filename, fileobj, 'multipart/form-data'),
-                     'hkl': (self.cif.fileobj.stem + '.hkl', hklf, 'multipart/form-data')}
+            hkl_fileobj = io.StringIO(self.cif.hkl_as_cif)
+            hklname = self.cif.fileobj.stem + '.hkl'
+            # Path('test.hkl').write_text(hklf.getvalue())
+            files = {'cif': (self.cif.filename, cif_fileobj, 'multipart/form-data'),
+                     'hkl': (hklname, hkl_fileobj, 'multipart/form-data')}
         else:
-            files = {'cif': (self.cif.fileobj.name, fileobj)}
+            files = {'cif': (self.cif.filename, cif_fileobj)}
         print(Path('.').resolve())
-        # Path('testout_cif.txt').write_text(fileobj.getvalue())
+        # Path('test.cif').write_text(cif_fileobj.getvalue())
         print('making request')
         r = requests.post(self.url, data=data, files=files, headers={'User-Agent': 'FinalCif/{}'.format(VERSION)})
         # hooks={'response': self.log_response_text})
-        print(r.request.headers)
+        #print(r.request.headers)
         self.ui.depositOutputTextBrowser.setText(r.text)
         self.set_deposit_button_to_try_again()
         return r
