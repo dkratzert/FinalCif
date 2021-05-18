@@ -37,15 +37,12 @@ Prepublication
 Personal (private communication)
     a) Quality checks must be more stringent
     b) Bibliography MUST define the following:
-       o) _journal_name_full    'Personal communications to COD'
-       o) _journal_year         2010 # year part of deposition timestamp
-       o) _journal_issue        06   # month part of deposition timestamp
-       o) _cod_publication_date 2010-06-11   # year-month-day of deposition
        o) _publ_author_name     One or more author names
     c) It MUST contain name, affiliation and e-mail of at least
        one (here - depositing) author.
 
 """
+from gemmi.cif import Loop
 
 """
 'author_name' field is required to match at least one of the authors in '_publ_author_name' CIF loop 
@@ -85,14 +82,19 @@ class DepositCheck():
         self.cif = cif
 
     @property
+    def personal_needs(self):
+        tocheck = ('_journal_name_full',
+                   '_publ_section_title',
+                   '_publ_author_name',
+                   '_publ_author_email',
+                   )
+        return tocheck
+
+    @property
     def prepublication_needs(self):
         tocheck = ('_journal_name_full',
                    '_publ_section_title',
-                   '_journal_year',
-                   '_journal_volume',
-                   '_journal_page_first',
-                   #'_journal_article_reference'
-                   '_publ_section_title'
+                   '_publ_author_name',
                    )
         return tocheck
 
@@ -103,7 +105,6 @@ class DepositCheck():
                    '_journal_year',
                    '_journal_volume',
                    '_journal_page_first',
-                   #'_journal_article_reference'
                    '_publ_section_title'
                    )
         return tocheck
@@ -113,10 +114,13 @@ class DepositCheck():
         Lists the index numbers of missing items from prepublication_needs.
         """
         missing = []
-        for num, item in enumerate(needs):
-            if item not in self.cif:
-                missing.append(num)
+        for item in needs:
+            if not any(self.needed_keywords_list(item)):
+                missing.append(item)
         return missing
+
+    def needed_keywords_list(self, item):
+        return [item in self.cif, hasattr(self.cif.get_loop(item), 'values')]
 
     def is_complete_for_prepublication(self, needs: Tuple):
         if not self.list_missing_for_deposit(needs):
@@ -125,6 +129,7 @@ class DepositCheck():
 
 
 if __name__ == '__main__':
-    d = DepositCheck(CifContainer('tests/examples/1979688.cif'))
+    d = DepositCheck(CifContainer('tests/examples/1979688-finalcif.cif'))
     print(d.list_missing_for_deposit(d.prepublication_needs))
     print(d.list_missing_for_deposit(d.published_needs))
+    print(d.list_missing_for_deposit(d.personal_needs))
