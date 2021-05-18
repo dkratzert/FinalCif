@@ -63,13 +63,16 @@ class CODdeposit():
         self._set_checkbox_states()
         self.ui.depositorUsernameLineEdit.textChanged.connect(self._set_username)
         self.ui.depositorPasswordLineEdit.textChanged.connect(self._set_password)
-        self.ui.ContactAuthorsFullNamePersonalLineEdit.textChanged.connect(self._set_author_name_personal)
         self.ui.ContactAuthorsFullNamePersonalLineEdit_2.textChanged.connect(self._set_author_name_published)
         self.ui.depositorsFullNameLineEdit.textChanged.connect(self._set_author_name_prepubl)
-        self.ui.ContactAuthorEmailAddressLineEdit.textChanged.connect(self._set_author_email)
         self.ui.ContactAuthorEmailAddressLineEdit_2.textChanged.connect(self._set_author_email)
         self.ui.depsoitorEMailAddressLineEdit.textChanged.connect(self._set_author_email)
         self.ui.userEmailLineEdit.textChanged.connect(self._set_user_email)
+        self.ui.authorEditorPushButton.clicked.connect(self.ui.MainStackedWidget.go_to_loops_page)
+        self.ui.authorEditorPushButton.clicked.connect(lambda: self.ui.TemplatesStackedWidget.setCurrentIndex(1))
+        self.ui.authorEditorPushButton.clicked.connect(lambda: self.ui.BackToCODPushButton.setVisible(True))
+        self.ui.BackToCODPushButton.clicked.connect(lambda: self.ui.BackToCODPushButton.setVisible(False))
+        self.ui.BackToCODPushButton.clicked.connect(self.ui.MainStackedWidget.got_to_cod_page)
         # self.ui.refreshDepositListPushButton.clicked.connect(self._refresh_cod_list)
         #
         self.ui.depositCIFpushButton.clicked.connect(self._prepare_deposit)
@@ -77,7 +80,7 @@ class CODdeposit():
         # url = 'https://www.crystallography.net/cod-test/cgi-bin/cif-deposit.pl'
         # test_url:
         self.url = 'https://www.crystallography.net/cod-test/cgi-bin/cif-deposit.pl'
-        #self.url = 'http://127.0.0.1:8080/cod/cgi-bin/cif-deposit.pl'
+        # self.url = 'http://127.0.0.1:8080/cod/cgi-bin/cif-deposit.pl'
         username = self.settings.load_value_of_key('cod_username')
         if username:
             self.ui.depositorUsernameLineEdit.setText(username)
@@ -101,45 +104,52 @@ class CODdeposit():
         self.ui.depositCIFpushButton.setEnabled(True)
         self._cif = obj
         try:
+            # TODO: use deposit_check:
             self.author_name = self.cif.get_loop_column('_publ_author_name')[0]
         except IndexError:
             self.author_name = ''
-        self.ui.ContactAuthorsFullNamePersonalLineEdit.setText(self.author_name)
+        if self.author_name:
+            self.ui.authorsFullNamePersonalLabel.setVisible(True)
+            self.ui.authorEditorPushButton.setVisible(True)
+            self.ui.depositCIFpushButton.setDisabled(True)
+        else:
+            self.ui.authorsFullNamePersonalLabel.setVisible(False)
+            self.ui.authorEditorPushButton.setVisible(False)
+            self.ui.depositCIFpushButton.setEnabled(True)
         self.ui.ContactAuthorsFullNamePersonalLineEdit_2.setText(self.author_name)
         self.ui.depositorsFullNameLineEdit.setText(self.author_name)
         self.author_email = self._cif['_audit_contact_author_email']
-        self.ui.ContactAuthorEmailAddressLineEdit.setText(self.author_email)
         self.ui.ContactAuthorEmailAddressLineEdit_2.setText(self.author_email)
         self.ui.depsoitorEMailAddressLineEdit.setText(self.author_email)
         self.ui.depositHKLcheckBox.setChecked(len(self._cif['_shelx_hkl_file']))
 
     def _set_checkbox_states(self):
-        self.ui.prepublicationDepositCheckBox.clicked.connect(self._prepublication_was_toggled)
-        self.ui.publishedDepositionCheckBox.clicked.connect(self._published_was_toggled)
-        self.ui.personalDepositCheckBox.clicked.connect(self._personal_was_toggled)
-        self.ui.personalDepositCheckBox.setChecked(True)
+        self.ui.prepublicationDepositRadioButton.clicked.connect(self._prepublication_was_toggled)
+        self.ui.publishedDepositionRadioButton.clicked.connect(self._published_was_toggled)
+        self.ui.personalDepositRadioButton.clicked.connect(self._personal_was_toggled)
+        self.ui.personalDepositRadioButton.setChecked(True)
         self.deposition_type = 'personal'
         self.ui.depositionOptionsStackedWidget.setCurrentIndex(0)
 
     def _personal_was_toggled(self, state: bool):
-        self.ui.prepublicationDepositCheckBox.setChecked(False)
-        self.ui.publishedDepositionCheckBox.setChecked(False)
+        self.ui.prepublicationDepositRadioButton.setChecked(False)
+        self.ui.publishedDepositionRadioButton.setChecked(False)
         if state:
             self.ui.depositionOptionsStackedWidget.setCurrentIndex(0)
             self.deposition_type = 'personal'
             self.reset_deposit_button_state_to_initial()
 
     def _prepublication_was_toggled(self, state: bool):
-        self.ui.publishedDepositionCheckBox.setChecked(False)
-        self.ui.personalDepositCheckBox.setChecked(False)
+        self.ui.publishedDepositionRadioButton.setChecked(False)
+        self.ui.personalDepositRadioButton.setChecked(False)
         if state:
             self.ui.depositionOptionsStackedWidget.setCurrentIndex(1)
             self.deposition_type = 'prepublication'
             self.reset_deposit_button_state_to_initial()
 
     def _published_was_toggled(self, state: bool):
-        self.ui.prepublicationDepositCheckBox.setChecked(False)
-        self.ui.personalDepositCheckBox.setChecked(False)
+        self.ui.prepublicationDepositRadioButton.setChecked(False)
+        self.ui.personalDepositRadioButton.setChecked(False)
         if state:
             self.ui.depositionOptionsStackedWidget.setCurrentIndex(2)
             self.deposition_type = 'published'
@@ -189,7 +199,7 @@ class CODdeposit():
                          'hold_period' : str(self.ui.embargoTimeInMonthsSpinBox.value())})
         if self.deposition_type == 'personal':
             data.update({'author_name': self.author_name})
-            data.update({'author_email': self.author_email})
+            data.update({'author_email': self.author_email or self.user_email})
         cif_fileobj = io.StringIO(self.cif.cif_as_string(without_hkl=True))
         if self.ui.depositHKLcheckBox.isChecked():
             hkl_fileobj = io.StringIO(self.cif.hkl_as_cif)
@@ -245,9 +255,6 @@ class CODdeposit():
     def _set_author_name_published(self, text: str):
         self.author_name = text
 
-    def _set_author_name_personal(self, text: str):
-        self.author_name = text
-
     def _set_author_name_prepubl(self, text: str):
         # TODO: in case of more than one name, make loop from semicolon-separated names:
         # https://www.iucr.org/__data/iucr/cifdic_html/1/cif_core.dic/Ipubl_author_name.html
@@ -256,7 +263,8 @@ class CODdeposit():
         self.author_name = text
 
     def _set_author_email(self, text: str):
-        self.cif['_audit_contact_author_email'] = text
+        #self.cif['_audit_contact_author_email'] = text
+        #self.cif['_publ_author_email'] = text
         self.author_email = text
 
     def _set_user_email(self, text: str):
