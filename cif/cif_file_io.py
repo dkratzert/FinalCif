@@ -12,14 +12,14 @@ from pathlib import Path
 from typing import Dict, List, Tuple, Union, Generator
 
 import gemmi
-from gemmi.cif import as_string, is_null, Block, Document
+from gemmi.cif import as_string, is_null, Block, Document, Loop
 
 from cif.cif_order import order, special_keys
 from cif.hkl import HKL
 from cif.text import utf8_to_str, quote, retranslate_delimiter
 from datafiles.utils import DSRFind
 from tools.dsrmath import mean
-from tools.misc import essential_keys, non_centrosymm_keys, get_error_from_value, isnumeric
+from tools.misc import essential_keys, non_centrosymm_keys, get_error_from_value, isnumeric, grouper
 
 
 class CifContainer():
@@ -100,7 +100,7 @@ class CifContainer():
                 return ''
             # can I do this? No:
             # return retranslate_delimiter(result)
-            return gemmi.cif.as_string(result)
+            return as_string(result)
         else:
             return ''
 
@@ -124,7 +124,8 @@ class CifContainer():
                "Has {4} atoms" \
                ", {5} bonds" \
                ", {6} angles" \
-               "".format(str(self.fileobj.resolve()), self.block.name, len(self.res_file_data)>1, len(self.hkl_file)>1,
+               "".format(str(self.fileobj.resolve()), self.block.name, len(self.res_file_data) > 1,
+                         len(self.hkl_file) > 1,
                          self.natoms(), self.nbonds(), self.nangles())
 
     def set_pair_delimited(self, key: str, txt: str):
@@ -185,6 +186,22 @@ class CifContainer():
 
     @property
     def hkl_file(self) -> str:
+        hkl_loop: Loop = self.get_loop('_diffrn_refln_index_h')
+        if hkl_loop and hkl_loop.width() > 4:
+            return self._hkl_from_cif_format(hkl_loop)
+        else:
+            return self._hkl_from_shelx()
+
+    def _hkl_from_cif_format(self, hkl_loop: Loop) -> str:
+        hkl_list = []
+        format_string = '{:>4}{:>4}{:>4}{:>8}{:>8}'
+        if hkl_loop.width() == 6:
+            format_string = '{:>4}{:>4}{:>4}{:>8}{:>8}{:>4}'
+        for line in grouper(hkl_loop.values, hkl_loop.width()):
+            hkl_list.append(format_string.format(*line[:6]))
+        return '\n'.join(hkl_list)
+
+    def _hkl_from_shelx(self) -> str:
         try:
             return as_string(self.block.find_value('_shelx_hkl_file')).strip('\r\n')
         except Exception as e:
@@ -756,12 +773,10 @@ class CifContainer():
             return True
 
 
-
-
 if __name__ == '__main__':
-    c = CifContainer('/Users/daniel/Documents/strukturen/BreitPZ_R_122/BreitPZ_R_122_0m_a-finalcif.cif')
-    print(c)
-   # print(c.hkl_as_cif)
-    #print(c.test_hkl_checksum())
+    c = CifContainer('/Users/daniel/Downloads/hklf5test/Keller_SG_53F41_0m_5.cif')
+    print(c.hkl_file)
+# print(c.hkl_as_cif)
+# print(c.test_hkl_checksum())
 
-    #print(CifContainer('tests/examples/1979688.cif').hkl_as_cif[-250:])
+# print(CifContainer('tests/examples/1979688.cif').hkl_as_cif[-250:])
