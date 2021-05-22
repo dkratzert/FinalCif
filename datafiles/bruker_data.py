@@ -16,7 +16,7 @@ from datafiles.data import WorkDataMixin
 from datafiles.p4p_reader import P4PFile
 from datafiles.sadabs import Sadabs
 from datafiles.saint import SaintListFile
-from datafiles.shelx import SolutionProgram
+from datafiles.shelx_lst import SolutionProgram
 from gui.dialogs import show_general_warning
 
 
