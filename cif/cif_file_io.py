@@ -175,6 +175,10 @@ class CifContainer():
     @property
     def res_file_data(self) -> str:
         try:
+            # Should i do this:
+            # if self['_iucr_refine_instructions_details']:
+            #    return self.block.find_value('_iucr_refine_instructions_details')
+            # else:
             return self.block.find_value('_shelx_res_file')
         except UnicodeDecodeError:
             # This is a fallback in case _shelx_res_file has non-ascii characters.
@@ -774,9 +778,14 @@ class CifContainer():
 
 
 if __name__ == '__main__':
-    c = CifContainer('/Users/daniel/Downloads/hklf5test/Keller_SG_53F41_0m_5.cif')
-    print(c.hkl_file)
-# print(c.hkl_as_cif)
-# print(c.test_hkl_checksum())
+    c = CifContainer('test-data/p21c.cif')
+    # print(c.hkl_file)
+    # print(c.hkl_as_cif)
+    # print(c.test_hkl_checksum())
+    from shelxfile.shelx.shelx import Shelxfile
+    s = Shelxfile()
+    #print(c.res_file_data)
+    s.read_string(c.res_file_data)
+    print(s.hklf.n)
 
 # print(CifContainer('tests/examples/1979688.cif').hkl_as_cif[-250:])
