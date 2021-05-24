@@ -16,16 +16,22 @@ class HKL():
       _diffrn_refln_scale_group_code
     """
 
-    def __init__(self, hkl_file: str, block_name: str):
+    def __init__(self, hkl_file: str, block_name: str, hklf_type: int = 4):
         self._hkl_file = hkl_file
+        self.hklf_type = hklf_type
         self._doc: Document = gemmi.cif.Document()
         self._doc.add_new_block(block_name)
         self.block = self._doc.sole_block()
 
     @property
     def hkl_as_cif(self) -> str:
-        loop_header = ['index_h', 'index_k', 'index_l', 'intensity_net', 'intensity_u', 'scale_group_code']
-        loop: Loop = self.block.init_loop('_diffrn_refln', self._trim_header_to_hkl_width(loop_header))
+        loop_header = ['index_h',
+                       'index_k',
+                       'index_l',
+                       'F_squared_meas' if self.hklf_type != 3 else 'F_meas',
+                       'F_squared_sigma' if self.hklf_type != 3 else 'F_sigma',
+                       'scale_group_code']
+        loop: Loop = self.block.init_loop('_diffrn_refln_', self._trim_header_to_hkl_width(loop_header))
         zero_reflection_pattern = re.compile(r'^\s+0\s+0\s+0\s+0.*')
         for line in self._hkl_file.splitlines(keepends=False):
             splitline = line.split()
@@ -35,7 +41,11 @@ class HKL():
             if zero_reflection_pattern.match(line):
                 loop.add_row(splitline)
                 break
-            loop.add_row(splitline[:len(loop_header)])
+            try:
+                loop.add_row(splitline[:len(loop_header)])
+            # RuntimeError ist from gemmi.cif.add_row:
+            except (IndexError, RuntimeError):
+                continue
         return self._doc.as_string(style=Style.Simple)
 
     def __repr__(self) -> str:

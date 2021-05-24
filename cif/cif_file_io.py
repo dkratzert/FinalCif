@@ -13,6 +13,7 @@ from typing import Dict, List, Tuple, Union, Generator
 
 import gemmi
 from gemmi.cif import as_string, is_null, Block, Document, Loop
+from shelxfile.shelx.shelx import Shelxfile
 
 from cif.cif_order import order, special_keys
 from cif.hkl import HKL
@@ -214,7 +215,15 @@ class CifContainer():
 
     @property
     def hkl_as_cif(self):
-        return HKL(self.hkl_file, self.block.name).hkl_as_cif
+        hklf = 4
+        if self.res_file_data:
+            hklf = self.hklf_from_shelxl_file()
+        return HKL(self.hkl_file, self.block.name, hklf_type=hklf).hkl_as_cif
+
+    def hklf_from_shelxl_file(self) -> Shelxfile:
+        shx = Shelxfile()
+        shx.read_string(self.res_file_data)
+        return shx.hklf.n
 
     @property
     def hkl_file_without_foot(self) -> str:
@@ -782,9 +791,8 @@ if __name__ == '__main__':
     # print(c.hkl_file)
     # print(c.hkl_as_cif)
     # print(c.test_hkl_checksum())
-    from shelxfile.shelx.shelx import Shelxfile
     s = Shelxfile()
-    #print(c.res_file_data)
+    # print(c.res_file_data)
     s.read_string(c.res_file_data)
     print(s.hklf.n)
 
