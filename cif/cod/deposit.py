@@ -1,59 +1,33 @@
 import io
 from pathlib import Path
-from typing import Union
+from typing import Union, List
 
 import requests
+from PyQt5.QtWidgets import QTableWidgetItem, QTextBrowser, QFrame
 
 from cif.cif_file_io import CifContainer
+from cif.cod.deposition_list import CODFetcher
+from cif.cod.parser import MyCODStructuresParser
 from gui.finalcif_gui import Ui_FinalCifWindow
 from tools.settings import FinalCifSettings
 from tools.version import VERSION
 
 """
-COD-number 7 digits
+COD-number has 7 digits
 
-TODO: These warnings contain too much unneeded words:
-
-* In general, each option for replace should habe a textedit input for the changes and a lineEdit to give the
-  COD-ID
-
-What does that mean?:
-cif-deposit.pl: cifvalues: -(51793): ERROR, stray CIF values at the beginning of the input file
-possibly from hkl file?
-
-------
-Test for missing fields:
-Probably add a page before upload and let the user input missing fields
-*  test for _publ_author_name
-
-Prepublication problems:
-- An already (pre)published CIF gives this error: 
-cif-deposit.pl: CIF data block 'cu_BruecknerJK_153F40_0m' does not have '_cod_database_code' indicating TESTCOD structure which is to be updated
-    -> I have to know which are already published be the user.
+* In general, each option for replace should habe a textedit input for the 
+ change log and a lineEdit to give the COD-ID
 
 Personal Problems:
 - Depositing structure 'cif' into TESTCOD:
     -> should be named as _data value
-
-
-
-<pre>_journal_name_full 'Xxxxxxxxxxxxxx Xxxxxxxxxxxx Xxxxxxxx'
-_journal_year&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; xxxx
-_journal_volume&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; xxx
-_journal_page_first&nbsp;&nbsp;&nbsp;&nbsp; xxx
-_journal_page_last&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; xxx
-loop_
-_publ_author_name
-&nbsp;'Xxxxxxxxxxx Xxxxxxxxxx'
-&nbsp;'Xxxxxxxxxxx Xxxxxxxxxx'
-&nbsp;'Xxxxxxxxxxx Xxxxxxxxxx'
-&nbsp;'Xxxxxxxxxxx Xxxxxxxxxx'</pre>
-
+    ----> Test this again
 
 """
 
 
 class CODdeposit():
+
     def __init__(self, ui: Ui_FinalCifWindow, cif: Union[CifContainer, None] = None):
         self.ui = ui
         self.settings = FinalCifSettings()
@@ -73,14 +47,12 @@ class CODdeposit():
         self.ui.authorEditorPushButton.clicked.connect(lambda: self.ui.BackToCODPushButton.setVisible(True))
         self.ui.BackToCODPushButton.clicked.connect(lambda: self.ui.BackToCODPushButton.setVisible(False))
         self.ui.BackToCODPushButton.clicked.connect(self.ui.MainStackedWidget.got_to_cod_page)
-        # self.ui.refreshDepositListPushButton.clicked.connect(self._refresh_cod_list)
+        self.ui.refreshDepositListPushButton.clicked.connect(self._refresh_cod_list)
         #
         self.ui.depositCIFpushButton.clicked.connect(self._prepare_deposit)
-        # production url:
-        # url = 'https://www.crystallography.net/cod-test/cgi-bin/cif-deposit.pl'
-        # test_url:
-        self.url = 'https://www.crystallography.net/cod-test/cgi-bin/cif-deposit.pl'
-        # self.url = 'http://127.0.0.1:8080/cod/cgi-bin/cif-deposit.pl'
+        self.main_url = 'https://www.crystallography.net/cod-test/'
+        self.deposit_url = self.main_url + 'cgi-bin/cif-deposit.pl'
+        # self.deposit_url = 'http://127.0.0.1:8080/cod/cgi-bin/cif-deposit.pl'
         username = self.settings.load_value_of_key('cod_username')
         if username:
             self.ui.depositorUsernameLineEdit.setText(username)
@@ -89,11 +61,14 @@ class CODdeposit():
         self.password = 'testing'
         self.author_name = ''
         self.author_email = ''
+        self._cod_token = ''
         user_email = self.settings.load_value_of_key('cod_user_email')
         if user_email:
             self.ui.userEmailLineEdit.setText(user_email)
         else:
             self.user_email = ''
+        if self.settings.load_settings_list('COD', self.username):
+            self.add_structures_to_table(self.settings.load_settings_list('COD', self.username))
 
     @property
     def cif(self) -> CifContainer:
@@ -167,6 +142,49 @@ class CODdeposit():
         if deposition_type == 'deposit':
             return 3
 
+    def _refresh_cod_list(self):
+        if self.settings.load_settings_list('COD', self.username) and self.ui.CODtableWidget.rowCount() == 0:
+            self.add_structures_to_table(self.settings.load_settings_list('COD', self.username))
+        else:
+            parser = self.get_structures_from_cod()
+            self.settings.save_settings_list('COD', self.username, parser.structures)
+            self.add_structures_to_table(parser.structures, parser.token)
+
+    def get_structures_from_cod(self):
+        f = CODFetcher(self.main_url)
+        if not self._cod_token:
+            self._cod_token = f.get_token(username=self.username, password=self.password)
+        f.get_table_data_by_token(self._cod_token)
+        parser = MyCODStructuresParser()
+        parser.feed(f.table_html)
+        return parser
+
+    def add_structures_to_table(self, structures: List[dict], token: str = ''):
+        self.ui.CODtableWidget.setRowCount(0)
+        for row, structure in enumerate(structures):
+            num = structure['number']
+            date = structure['date']
+            time = structure['time']
+            if token:
+                url = self.main_url + 'information_card.php?id={0}&CODSESSION={1}'.format(num, token)
+                num = num + '*'
+            else:
+                url = self.main_url + 'information_card.php?id={0}'.format(num)
+            self.ui.CODtableWidget.insertRow(row)
+            self.ui.CODtableWidget.setItem(row, 0, QTableWidgetItem(num))
+            self.ui.CODtableWidget.setItem(row, 1, QTableWidgetItem(date))
+            self.ui.CODtableWidget.setItem(row, 2, QTableWidgetItem(time))
+            link = '<a href="{}">{}</a>'.format(url, num)
+            self._set_link_to_cell(link, row)
+
+    def _set_link_to_cell(self, link, row):
+        text_browser = QTextBrowser(self.ui.CODtableWidget)
+        text_browser.setText(link)
+        text_browser.setFrameShape(QFrame.NoFrame)
+        text_browser.setOpenExternalLinks(True)
+        text_browser.setStyleSheet("QTextEdit { padding-left:13; padding-top:2; padding-bottom:5; padding-right:10}")
+        self.ui.CODtableWidget.setCellWidget(row, 0, text_browser)
+
     def cif_deposit(self):
         self.switch_to_page('deposit')
         if not self.cif:
@@ -212,9 +230,10 @@ class CODdeposit():
         print(Path('.').resolve())
         # Path('test.cif').write_text(cif_fileobj.getvalue())
         print('making request')
-        r = requests.post(self.url, data=data, files=files, headers={'User-Agent': 'FinalCif/{}'.format(VERSION)})
+        r = requests.post(self.deposit_url, data=data, files=files,
+                          headers={'User-Agent': 'FinalCif/{}'.format(VERSION)})
         # hooks={'response': self.log_response_text})
-        #print(r.request.headers)
+        # print(r.request.headers)
         self.ui.depositOutputTextBrowser.setText(r.text)
         self.set_deposit_button_to_try_again()
         return r
@@ -263,8 +282,8 @@ class CODdeposit():
         self.author_name = text
 
     def _set_author_email(self, text: str):
-        #self.cif['_audit_contact_author_email'] = text
-        #self.cif['_publ_author_email'] = text
+        # self.cif['_audit_contact_author_email'] = text
+        # self.cif['_publ_author_email'] = text
         self.author_email = text
 
     def _set_user_email(self, text: str):

@@ -170,7 +170,7 @@
                <item>
                 <widget class="QStackedWidget" name="EquipmentTemplatesStackedWidget">
                  <property name="currentIndex">
-                  <number>0</number>
+                  <number>1</number>
                  </property>
                  <widget class="QWidget" name="EquipmentSelectPage">
                   <layout class="QVBoxLayout" name="verticalLayout_19">
@@ -2421,7 +2421,8 @@ The data source will be ignored until next program restart.</string>
                      <item>
                       <widget class="QLabel" name="label_20">
                        <property name="text">
-                        <string>Details about the authors of a manuscript submitted for publication.</string>
+                        <string>Details about the authors of a manuscript submitted for publication.
+Contact authors should always also appear as regular authors.</string>
                        </property>
                       </widget>
                      </item>
@@ -3464,7 +3465,7 @@ please add a publication author:</string>
              </layout>
             </item>
             <item row="0" column="0" alignment="Qt::AlignHCenter">
-             <widget class="QGroupBox" name="groupBox_10">
+             <widget class="QGroupBox" name="StructuresListGroupBox">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -3521,7 +3522,31 @@ please add a publication author:</string>
                 </spacer>
                </item>
                <item row="0" column="0" colspan="3">
-                <widget class="QTableWidget" name="tableWidget">
+                <widget class="QTableWidget" name="CODtableWidget">
+                 <property name="horizontalScrollBarPolicy">
+                  <enum>Qt::ScrollBarAsNeeded</enum>
+                 </property>
+                 <property name="sizeAdjustPolicy">
+                  <enum>QAbstractScrollArea::AdjustToContents</enum>
+                 </property>
+                 <property name="selectionMode">
+                  <enum>QAbstractItemView::NoSelection</enum>
+                 </property>
+                 <property name="sortingEnabled">
+                  <bool>true</bool>
+                 </property>
+                 <attribute name="horizontalHeaderCascadingSectionResizes">
+                  <bool>false</bool>
+                 </attribute>
+                 <attribute name="horizontalHeaderDefaultSectionSize">
+                  <number>100</number>
+                 </attribute>
+                 <attribute name="horizontalHeaderStretchLastSection">
+                  <bool>false</bool>
+                 </attribute>
+                 <attribute name="verticalHeaderCascadingSectionResizes">
+                  <bool>false</bool>
+                 </attribute>
                  <column>
                   <property name="text">
                    <string>ID</string>
@@ -3529,7 +3554,12 @@ please add a publication author:</string>
                  </column>
                  <column>
                   <property name="text">
-                   <string>Name</string>
+                   <string>Date</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string>Time</string>
                   </property>
                  </column>
                 </widget>
@@ -3751,7 +3781,7 @@ please add a publication author:</string>
   <tabstop>ContactAuthorCheckBox</tabstop>
   <tabstop>AddThisAuthorToLoopPushButton</tabstop>
   <tabstop>SaveAuthorLoopToTemplateButton</tabstop>
-  <tabstop>tableWidget</tabstop>
+  <tabstop>CODtableWidget</tabstop>
   <tabstop>FullNameLineEdit</tabstop>
   <tabstop>journalNameLineEdit</tabstop>
   <tabstop>personalDepositRadioButton</tabstop>
