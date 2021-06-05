@@ -1009,7 +1009,7 @@
         <item row="1" column="0" colspan="12">
          <widget class="MyMainStackedWidget" name="MainStackedWidget">
           <property name="currentIndex">
-           <number>5</number>
+           <number>7</number>
           </property>
           <widget class="QWidget" name="page_MainTable">
            <layout class="QVBoxLayout" name="verticalLayout">
@@ -3106,7 +3106,7 @@ The data source will be ignored until next program restart.</string>
                  <number>1</number>
                 </property>
                 <property name="currentIndex">
-                 <number>2</number>
+                 <number>0</number>
                 </property>
                 <widget class="QWidget" name="page_personal">
                  <layout class="QVBoxLayout" name="verticalLayout_30">
@@ -3124,7 +3124,8 @@ The data source will be ignored until next program restart.</string>
                     <item row="0" column="0">
                      <widget class="QLabel" name="authorsFullNamePersonalLabel">
                       <property name="text">
-                       <string>The CIf does not contain author information please add a publication author here:</string>
+                       <string>The current CIF does not contain author information 
+please add a publication author:</string>
                       </property>
                      </widget>
                     </item>

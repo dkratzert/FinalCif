@@ -58,7 +58,9 @@ class CifFileTestCase(unittest.TestCase):
         self.assertEqual(False, self.cif.ishydrogen('c2'))
 
     def test_cell(self):
-        self.assertEqual((19.678, 37.02290000000001, 4.772, 90.0, 90.0, 90.0, 3476.576780226401), self.cif.cell)
+        expected = [round(x, 8) for x in (19.678, 37.02290000000001, 4.772, 90.0, 90.0, 90.0, 3476.576780226401)]
+        actual = [round(y, 8) for y in self.cif.cell]
+        self.assertEqual(expected, actual)
 
     def test_natoms(self):
         self.assertEqual(94, self.cif.natoms())
