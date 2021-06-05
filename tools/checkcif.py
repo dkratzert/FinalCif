@@ -149,13 +149,10 @@ class MyHTMLParser(HTMLParser):
         return requests.get(self.link).content
 
     def handle_starttag(self, tag: str, attrs: str) -> None:
-        if tag == "a":
-            if len(attrs) > 1 and attrs[0][1] == '_blank':
-                self.link = attrs[1][1]
-        if tag == "img":
-            if len(attrs) > 1:
-                if attrs[0][0] == 'width' and '.gif' in attrs[1][1]:
-                    self.imageurl = attrs[1][1]
+        if tag == "a" and len(attrs) > 1 and attrs[0][1] == '_blank':
+            self.link = attrs[1][1]
+        if tag == "img" and len(attrs) > 1 and attrs[0][0] == 'width' and '.gif' in attrs[1][1]:
+            self.imageurl = attrs[1][1]
 
     def handle_data(self, data: str) -> None:
         if 'Validation Reply Form' in data:
@@ -184,7 +181,6 @@ class MyHTMLParser(HTMLParser):
         """
         forms = []
         single_form = {}
-        n = 0
         for line in self.vrf.split('\n'):
             if line.startswith('_vrf'):
                 single_form = {'level': ''}
@@ -199,7 +195,6 @@ class MyHTMLParser(HTMLParser):
                     if single_form['alert_num'] == x[:7]:
                         single_form.update({'level': x})
                         break
-                n += 1
                 forms.append(single_form)
         return forms
 
@@ -211,22 +206,30 @@ class AlertHelp():
     def get_help(self, alert: str) -> str:
         if len(alert) > 4:
             alert = alert[4:]
-        help = self._parse_checkdef(alert)
-        if not help:
+        chelp = self._parse_checkdef(alert)
+        if not chelp:
             return 'No help available.'
-        return help
+        return chelp
 
     def _parse_checkdef(self, alert: str) -> str:
+        """
+        Parses check.def from PLATON in order to get help about an Alert from Checkcif.
+
+        :param alert: alert number of the respective checkcif alert as three digit string or 'PLAT' + three digits
+        """
         found = False
         helptext = []
+        if len(alert) > 4:
+            alert = alert[4:]
         for line in self.checkdef:
             if line.startswith('_' + alert):
                 found = True
                 continue
-            if found and line.startswith('#=='):
+            if found and line.startswith('#==='):
                 return '\n'.join(helptext[2:])
             if found:
                 helptext.append(line)
+        return ''
 
 
 class AlertHelpRemote():
