@@ -420,26 +420,6 @@ class AppWindow(QMainWindow):
         txt = bytes(reply.readAll()).decode('utf-8', 'ignore')
         self.checkdef = txt.splitlines(keepends=False)
 
-    def get_checkdef_help(self, alert: str) -> str:
-        """
-        Parses check.def from PLATON in order to get help about an Alert from Checkcif.
-
-        :param alert: alert number of the respective checkcif alert as three digit string or 'PLAT' + three digits
-        """
-        found = False
-        helptext = []
-        if len(alert) > 4:
-            alert = alert[4:]
-        for line in self.checkdef:
-            if line.startswith('_' + alert):
-                found = True
-                continue
-            if found and line.startswith('#==='):
-                return '\n'.join(helptext[2:])
-            if found:
-                helptext.append(line)
-        return ''
-
     def explore_current_dir(self):
         """
         Opens the file checkcif_browser for the current directory.
@@ -508,8 +488,6 @@ class AppWindow(QMainWindow):
         """
         Loads the html checkcif results and displays them in a checkcif_browser window.
         """
-        if not self.running_inside_unit_test:
-            self.get_checkdef_for_response_forms()
         self.ui.CheckcifHTMLOnlineButton.setEnabled(True)
         self.ui.CheckcifPDFOnlineButton.setEnabled(True)
         try:
@@ -556,6 +534,8 @@ class AppWindow(QMainWindow):
         """
         Performs an online checkcif via checkcif.iucr.org.
         """
+        if not self.running_inside_unit_test:
+            self.get_checkdef_for_response_forms()
         self.ui.CheckCifLogPlainTextEdit.clear()
         try:
             self.checkcif_browser.close()
