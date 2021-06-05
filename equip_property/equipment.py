@@ -14,8 +14,10 @@ from gui.dialogs import show_general_warning, cif_file_open_dialog, cif_file_sav
 from tools import misc
 from tools.misc import include_equipment_imports
 from tools.settings import FinalCifSettings
+
 with suppress(ImportError):
     from appwindow import AppWindow
+
 
 class Equipment:
 
@@ -70,8 +72,7 @@ class Equipment:
                     self.app.add_row(key, equipment[key], at_start=True)
                 else:
                     # Key is already there:
-                    self.app.ui.cif_main_table.setText(key, COL_CIF,
-                                                       txt=self.app.ui.cif_main_table.getTextFromKey(key, COL_CIF))
+                    self.app.ui.cif_main_table.setText(key, COL_CIF, txt='?')
                     self.app.ui.cif_main_table.setText(key, COL_DATA, txt=equipment[key], color=light_green)
                     self.app.ui.cif_main_table.setText(key, COL_EDIT, txt=equipment[key])
         else:

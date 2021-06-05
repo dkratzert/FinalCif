@@ -1,5 +1,5 @@
 from html.parser import HTMLParser
-from typing import List
+from typing import List, Dict, Union
 
 
 class MyCODStructuresParser(HTMLParser):
@@ -20,10 +20,10 @@ class MyCODStructuresParser(HTMLParser):
                 .format(st['number'], self.token)
         return txt
 
-    def init_structure(self):
+    def init_structure(self) -> Dict[str, Union[str, None]]:
         return {'number': None, 'date': None, 'time': None}
 
-    def handle_starttag(self, tag, attrs):
+    def handle_starttag(self, tag: str, attrs: str):
         # print("Encountered a start tag:", tag, '->', attrs)
         attr = ''
         if len(attrs) > 0 and len(attrs[0]) > 1:
@@ -38,7 +38,7 @@ class MyCODStructuresParser(HTMLParser):
         if tag == 'tbody':
             self._table_body = True
 
-    def handle_endtag(self, tag):
+    def handle_endtag(self, tag: str):
         # end of table row, reset parser:
         table_row_ends = (tag == 'tr' and self._table_row > 0 and self._table_body)
         if table_row_ends:
@@ -47,7 +47,7 @@ class MyCODStructuresParser(HTMLParser):
             self._column = 0
             self._structure = self.init_structure()
 
-    def handle_data(self, data):
+    def handle_data(self, data: str):
         data_is_from_table_row = (self._tag == 'td' and self._table_row > 0)
         if data_is_from_table_row:
             if self._column == 0:
