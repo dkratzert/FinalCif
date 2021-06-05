@@ -81,7 +81,7 @@ class CODdeposit():
         try:
             # TODO: use deposit_check:
             self.author_name = self.cif.get_loop_column('_publ_author_name')[0]
-        except IndexError:
+        except (IndexError, AttributeError):
             self.author_name = ''
         if self.author_name:
             self.ui.authorsFullNamePersonalLabel.setVisible(True)

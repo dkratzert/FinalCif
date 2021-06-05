@@ -104,7 +104,7 @@ class AppWindow(QMainWindow):
         self.ui.CheckCIFResultsTabWidget.setCurrentIndex(0)
         self.ui.TemplatesStackedWidget.setCurrentIndex(0)
         self.ui.MainStackedWidget.got_to_main_page()
-        self.set_button_states()
+        self.set_initial_button_states()
         self.connect_signals_and_slots()
         self.make_button_icons()
         if len(sys.argv) > 1:
@@ -136,7 +136,7 @@ class AppWindow(QMainWindow):
         # noinspection PyUnresolvedReferences
         self.netman_checkdef.finished.connect(self._save_checkdef)
 
-    def set_button_states(self):
+    def set_initial_button_states(self):
         self.ui.PictureWidthDoubleSpinBox.setRange(0.0, 25)
         self.ui.PictureWidthDoubleSpinBox.setSingleStep(0.5)
         self.ui.growCheckBox.setChecked(True)
@@ -149,6 +149,10 @@ class AppWindow(QMainWindow):
         self.ui.SourcesPushButton.setDisabled(True)
         self.ui.OptionsPushButton.setDisabled(True)
         self.ui.ImportCifPushButton.setDisabled(True)
+        self.ui.CODpushButton.setDisabled(True)
+        self.ui.CCDCpushButton.setDisabled(True)
+        self.ui.ShredCifButton.setDisabled(True)
+        self.ui.LoopsPushButton.setDisabled(True)
 
     def set_window_size_and_position(self):
         wsettings = self.settings.load_window_position()
@@ -1053,10 +1057,7 @@ class AppWindow(QMainWindow):
             curdir = str(self.cif.fileobj.resolve().parent)
             # saving current cif dir as last working directory:
             self.settings.save_current_dir(curdir)
-            self.ui.DetailsPushButton.setEnabled(True)
-            self.ui.SourcesPushButton.setEnabled(True)
-            self.ui.OptionsPushButton.setEnabled(True)
-            self.ui.ImportCifPushButton.setEnabled(True)
+            self.enable_buttons()
             self.ui.datnameLineEdit.setText(self.cif.block.name)
             try:
                 self.ui.Spacegroup_top_LineEdit.setText(
@@ -1076,6 +1077,16 @@ class AppWindow(QMainWindow):
             if not self.ui.MainStackedWidget.on_checkcif_page():
                 self.ui.MainStackedWidget.got_to_main_page()
             self.deposit.cif = self.cif
+
+    def enable_buttons(self):
+        self.ui.DetailsPushButton.setEnabled(True)
+        self.ui.SourcesPushButton.setEnabled(True)
+        self.ui.OptionsPushButton.setEnabled(True)
+        self.ui.ImportCifPushButton.setEnabled(True)
+        self.ui.CODpushButton.setEnabled(True)
+        self.ui.CCDCpushButton.setEnabled(True)
+        self.ui.ShredCifButton.setEnabled(True)
+        self.ui.LoopsPushButton.setEnabled(True)
 
     def get_file_from_dialog(self) -> Union[Path, None]:
         self.set_last_workdir()
