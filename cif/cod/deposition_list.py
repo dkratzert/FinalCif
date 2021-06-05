@@ -25,7 +25,7 @@ class CODFetcher():
         r = requests.post(url=self._url, data=post)
         self.table_html = r.text
 
-    def _extract_token(self, text: str, token=''):
+    def _extract_token(self, text: str, token: str = '') -> str:
         for line in text.splitlines():
             if 'CODSESSION' in line and '=' in line:
                 token = line.split('=')[-1].split('"')[0]

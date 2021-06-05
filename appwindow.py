@@ -962,10 +962,19 @@ class AppWindow(QMainWindow):
             show_general_warning('Could not import {}:\n'.format(filename) + str(e))
             return
         self.import_key_value_pairs(imp_cif)
-        self.cif.import_loops(imp_cif)
+        self.import_loops(imp_cif)
         # I think I leave the user possibilities to change the imported values:
         # self.save_current_cif_file()
         # self.load_cif_file(str(self.final_cif_file_name))
+
+    def import_loops(self, imp_cif: 'CifContainer'):
+        """
+        Import all loops from the CifContainer imp_cif to the current block.
+        """
+        for loop in imp_cif.loops:
+            new_loop = self.cif.block.init_loop('', loop.tags)
+            for row in imp_cif.block.find(loop.tags):
+                new_loop.add_row(row)
 
     def import_key_value_pairs(self, imp_cif: CifContainer) -> None:
         for item in imp_cif.block:

@@ -194,11 +194,19 @@ class TestWorkfolder(unittest.TestCase):
         self.allrows_test_key('_diffrn_measurement_method', ['?', 'ω and ϕ scans', 'ω and ϕ scans'])
         self.allrows_test_key('_diffrn_measurement_specimen_support', ['?', 'MiTeGen micromount', 'MiTeGen micromount'])
 
-    unittest.SkipTest('')
-    def test_equipment_click_machine_oxford(self):
+    #unittest.SkipTest('')
+    def test_equipment_click_machine_oxford_0(self):
         self.equipment_click('APEX2 QUAZAR')
-        self.allrows_test_key('_olex2_diffrn_ambient_temperature_device',
-                              ['Oxford Cryostream 800', 'Oxford Cryostream 800', 'Oxford Cryostream 800'])
+        # We have a value which is new. So a row at start is created and only the CIF column is populated
+        self.assertEqual('Oxford Cryostream 800', self.cell_text('_olex2_diffrn_ambient_temperature_device', COL_CIF))
+
+    def test_equipment_click_machine_oxford_1(self):
+        self.equipment_click('APEX2 QUAZAR')
+        self.assertEqual('', self.cell_text('_olex2_diffrn_ambient_temperature_device', COL_DATA))
+
+    def test_equipment_click_machine_oxford_2(self):
+        self.equipment_click('APEX2 QUAZAR')
+        self.assertEqual('', self.cell_text('_olex2_diffrn_ambient_temperature_device', COL_EDIT))
 
     def test_equipment_click_author_address(self):
         # Check if click on author adds the address to second and third column:

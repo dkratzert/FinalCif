@@ -8,12 +8,12 @@ from gemmi.cif import Loop, Document, Style
 class HKL():
     """
     loop_
-      _diffrn_refln_index_h
-      _diffrn_refln_index_k
-      _diffrn_refln_index_l
-      _diffrn_refln_intensity_net
-      _diffrn_refln_intensity_u
-      _diffrn_refln_scale_group_code
+      _refln_index_h
+      _refln_index_k
+      _refln_index_l
+      _refln_F_squared_meas
+      _refln_F_squared_sigma
+      _refln_scale_group_code
     """
 
     def __init__(self, hkl_file: str, block_name: str, hklf_type: int = 4):
@@ -31,7 +31,7 @@ class HKL():
                        'F_squared_meas' if self.hklf_type != 3 else 'F_meas',
                        'F_squared_sigma' if self.hklf_type != 3 else 'F_sigma',
                        'scale_group_code']
-        loop: Loop = self.block.init_loop('_diffrn_refln_', self._trim_header_to_hkl_width(loop_header))
+        loop: Loop = self.block.init_loop('_refln_', self._trim_header_to_hkl_width(loop_header))
         zero_reflection_pattern = re.compile(r'^\s+0\s+0\s+0\s+0.*')
         for line in self._hkl_file.splitlines(keepends=False):
             splitline = line.split()

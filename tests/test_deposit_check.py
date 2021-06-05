@@ -1,9 +1,10 @@
+import unittest
 from unittest import TestCase
 
 from cif.cif_file_io import CifContainer
 from cif.cod.deposit_check import DepositCheck
 
-
+@unittest.skip('')
 class TestDepositCheck(TestCase):
     def test_test_for_prepublication_one_missing_item(self):
         status = DepositCheck(CifContainer('test-data/1000007.cif')).list_missing_for_prepublication()

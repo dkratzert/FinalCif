@@ -1,6 +1,6 @@
 #  ----------------------------------------------------------------------------
 #  "THE BEER-WARE LICENSE" (Revision 42):
-#  daniel.kratzert@ac.uni-freiburg.de> wrote this file.  As long as you retain
+#  dkratzert@gmx.de> wrote this file.  As long as you retain
 #  this notice you can do whatever you want with this stuff. If we meet some day,
 #  and you think this stuff is worth it, you can buy me a beer in return.
 #  Dr. Daniel Kratzert
@@ -299,15 +299,6 @@ class CifContainer():
     @property
     def n_loops(self):
         return len(self.loops)
-
-    def import_loops(self, imp_cif: 'CifContainer'):
-        """
-        Import all loops from the CifContainer imp_cif to the current block.
-        """
-        for loop in imp_cif.loops:
-            new_loop = self.block.init_loop('', loop.tags)
-            for row in imp_cif.block.find(loop.tags):
-                new_loop.add_row(row)
 
     def get_loop(self, key_in_loop: str) -> gemmi.cif.Loop:
         return self.block.find_loop(key_in_loop).get_loop()
