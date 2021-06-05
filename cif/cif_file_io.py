@@ -13,7 +13,7 @@ from typing import Dict, List, Tuple, Union, Generator
 
 import gemmi
 from gemmi.cif import as_string, is_null, Block, Document, Loop
-from shelxfile.shelx.shelx import Shelxfile
+from shelxfile import Shelxfile
 
 from cif.cif_order import order, special_keys
 from cif.hkl import HKL
@@ -208,7 +208,7 @@ class CifContainer():
 
     def _hkl_from_shelx(self) -> str:
         try:
-            return as_string(self.block.find_value('_shelx_hkl_file')).strip('\r\n')
+            return self['_shelx_hkl_file'].strip('\r\n')
         except Exception as e:
             print('No hkl data found in CIF!, {}'.format(e))
             return ''
@@ -217,10 +217,10 @@ class CifContainer():
     def hkl_as_cif(self):
         hklf = 4
         if self.res_file_data:
-            hklf = self.hklf_from_shelxl_file()
+            hklf = self.hklf_number_from_shelxl_file()
         return HKL(self.hkl_file, self.block.name, hklf_type=hklf).hkl_as_cif
 
-    def hklf_from_shelxl_file(self) -> Shelxfile:
+    def hklf_number_from_shelxl_file(self) -> Shelxfile:
         shx = Shelxfile()
         shx.read_string(self.res_file_data)
         return shx.hklf.n
