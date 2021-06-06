@@ -85,6 +85,7 @@ class CifContainer():
 
     def cif_as_string(self, without_hkl=False) -> str:
         if without_hkl:
+            # return a copy, do not delete hkl from original:
             doc = gemmi.cif.Document()
             doc.parse_string(self.doc.as_string(style=gemmi.cif.Style.Indent35))
             block = doc.sole_block()

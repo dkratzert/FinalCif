@@ -1,6 +1,6 @@
 import requests
 
-from cif.cod.parser import MyCODStructuresParser
+from cif.cod.website_parser import MyCODStructuresParser
 
 """
 TODO: save table in settings and resfresh it during each COD login. Otherwise use token.
