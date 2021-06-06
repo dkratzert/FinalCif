@@ -194,11 +194,11 @@ class TestWorkfolder(unittest.TestCase):
         self.allrows_test_key('_diffrn_measurement_method', ['?', 'ω and ϕ scans', 'ω and ϕ scans'])
         self.allrows_test_key('_diffrn_measurement_specimen_support', ['?', 'MiTeGen micromount', 'MiTeGen micromount'])
 
-    #unittest.SkipTest('')
+    # unittest.SkipTest('')
     def test_equipment_click_machine_oxford_0(self):
         self.equipment_click('APEX2 QUAZAR')
         # We have a value which is new. So a row at start is created and only the CIF column is populated
-        self.assertEqual('Oxford Cryostream 800', self.cell_text('_olex2_diffrn_ambient_temperature_device', COL_CIF))
+        self.assertEqual('?', self.cell_text('_olex2_diffrn_ambient_temperature_device', COL_CIF))
 
     def test_equipment_click_machine_oxford_1(self):
         self.equipment_click('APEX2 QUAZAR')
@@ -206,25 +206,41 @@ class TestWorkfolder(unittest.TestCase):
 
     def test_equipment_click_machine_oxford_2(self):
         self.equipment_click('APEX2 QUAZAR')
-        self.assertEqual('', self.cell_text('_olex2_diffrn_ambient_temperature_device', COL_EDIT))
+        self.assertEqual('Oxford Cryostream 800', self.cell_text('_olex2_diffrn_ambient_temperature_device', COL_EDIT))
 
-    def test_equipment_click_author_address(self):
+    def test_equipment_click_author_address_0(self):
         # Check if click on author adds the address to second and third column:
         self.equipment_click('Crystallographer Details')
         self.assertEqual('?', self.cell_text('_audit_contact_author_address', COL_CIF))
+
+    def test_equipment_click_author_address_1(self):
+        self.equipment_click('Crystallographer Details')
         self.assertEqual(unify_line_endings(addr), self.cell_text('_audit_contact_author_address', COL_DATA))
+
+    def test_equipment_click_author_address_2(self):
+        self.equipment_click('Crystallographer Details')
         self.assertEqual(unify_line_endings(addr), self.cell_text('_audit_contact_author_address', COL_EDIT))
 
-    def test_contact_author_name(self):
+    def test_contact_author_name_0(self):
         self.equipment_click('Crystallographer Details')
         self.assertEqual('?', self.cell_text('_audit_contact_author_name', COL_CIF))
+
+    def test_contact_author_name_1(self):
+        self.equipment_click('Crystallographer Details')
         self.assertEqual('Dr. Daniel Kratzert', self.cell_text('_audit_contact_author_name', COL_DATA))
+
+    def test_contact_author_name_2(self):
+        self.equipment_click('Crystallographer Details')
         self.assertEqual('Dr. Daniel Kratzert', self.cell_text('_audit_contact_author_name', COL_EDIT))
 
-    def test_contact_author_cellwidget(self):
+    def test_contact_author_cellwidget_bevore_click(self):
+        self.assertEqual(self.myapp.ui.cif_main_table.vheaderitems[5], '_audit_contact_author_name')
+        self.assertEqual('', self.myapp.ui.cif_main_table.getText(5, COL_DATA))
+
+    def test_contact_author_cellwidget_after(self):
         self.equipment_click('Crystallographer Details')
         self.assertEqual(self.myapp.ui.cif_main_table.vheaderitems[5], '_audit_contact_author_name')
-        self.assertEqual('Dr. Daniel Kratzert', self.myapp.ui.cif_main_table.getText(5, 1))
+        self.assertEqual('Dr. Daniel Kratzert', self.myapp.ui.cif_main_table.getText(5, COL_DATA))
         self.assertEqual("<class 'NoneType'>", self.cell_widget(5, COL_CIF))
         self.assertEqual("<class 'NoneType'>", self.cell_widget(5, COL_DATA))
         self.assertEqual("<class 'NoneType'>", self.cell_widget(5, COL_EDIT))
