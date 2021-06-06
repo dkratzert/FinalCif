@@ -3123,7 +3123,7 @@ Contact authors should always also appear as regular authors.</string>
                   <item>
                    <widget class="QLabel" name="label_10">
                     <property name="text">
-                     <string>&lt;b&gt;A personal communication to the COD makes the uploaded CIF data public to everyone.&lt;/b&gt;</string>
+                     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;A personal communication to the COD makes the uploaded CIF publicly available.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                     </property>
                     <property name="textFormat">
                      <enum>Qt::RichText</enum>
@@ -3297,7 +3297,7 @@ please add a publication author:</string>
                   <item>
                    <layout class="QGridLayout" name="gridLayout_23">
                     <item row="1" column="1">
-                     <widget class="QLineEdit" name="cod_database_code_LineEdit"/>
+                     <widget class="QLineEdit" name="publication_doi_lineedit"/>
                     </item>
                     <item row="1" column="2">
                      <spacer name="horizontalSpacer_32">

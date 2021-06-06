@@ -1,5 +1,5 @@
 import io
-from pathlib import Path
+from pprint import pprint
 from typing import Union, List
 
 import requests
@@ -7,7 +7,8 @@ from PyQt5.QtWidgets import QTableWidgetItem, QTextBrowser, QFrame
 
 from cif.cif_file_io import CifContainer
 from cif.cod.deposition_list import CODFetcher
-from cif.cod.parser import MyCODStructuresParser
+from cif.cod.doi import resolve_doi
+from cif.cod.website_parser import MyCODStructuresParser
 from gui.finalcif_gui import Ui_FinalCifWindow
 from tools.settings import FinalCifSettings
 from tools.version import VERSION
@@ -79,7 +80,6 @@ class CODdeposit():
         self.ui.depositCIFpushButton.setEnabled(True)
         self._cif = obj
         self.check_for_publ_author()
-        self.author_email = self._cif['_audit_contact_author_email']
         self.ui.depositHKLcheckBox.setChecked(len(self._cif['_shelx_hkl_file']))
 
     def _back_to_cod_page(self):
@@ -93,6 +93,7 @@ class CODdeposit():
             # TODO: use deposit_check:
             self.author_name = self.cif.get_loop_column('_publ_author_name')[0]
             self.author_email = self.cif.get_loop_column('_publ_author_email')[0]
+            print(self.author_name, self.author_email)
         except (IndexError, AttributeError):
             self.author_name = ''
             self.author_email = ''
@@ -218,20 +219,26 @@ class CODdeposit():
                 'filename'       : self.cif.fileobj.name,
                 }
         if self.deposition_type == 'personal':
-            data.update({'author_name': self.author_name})
-            data.update({'author_email': self.author_email or self.user_email})
+            data.update({'author_name' : self.author_name,
+                         'author_email': self.author_email or self.user_email})
         if self.deposition_type == 'prepublication':
             # Prepublication and replace is possible with the REST API. I think I let users update
             # their deposited files on the website only.
             data.update({'author_name' : self.author_name,
-                         'author_email': self.author_email,
+                         'author_email': self.author_email or self.user_email,
                          'hold_period' : str(self.ui.embargoTimeInMonthsSpinBox.value())})
         if self.deposition_type == 'published':
-            pass
-            # TODO: add code to save publication information from doi to the cif prior to upload.
-        cif_fileobj = io.StringIO(self.cif.cif_as_string(without_hkl=False))
-        # TODO: Always upload hkl data if present, but let the option to choose another hkl if no hkl is in cif
+            citation = resolve_doi(self.ui.publication_doi_lineedit.text())
+            pprint(citation)
+            # TODO: Maybe fill data into linedits prior to upload
+            for key, value in citation.items():
+                if key == '_publ_author_name' and value:
+                    value = value[0]
+                self.cif.set_pair_delimited(key, value)
+        cif_fileobj = io.StringIO(self.cif.cif_as_string())
+        # Path('/Users/daniel/Documents/GitHub/FinalCif/testcif.txt').write_text(cif_fileobj.read())
         if self.ui.depositHKLcheckBox.isChecked():
+            # TODO: Always upload hkl data if present, but let the option to choose another hkl if no hkl is in cif
             hkl_fileobj = io.StringIO(self.cif.hkl_as_cif)
             hklname = self.cif.fileobj.stem + '.hkl'
             # Path('test.hkl').write_text(hklf.getvalue())
@@ -240,6 +247,7 @@ class CODdeposit():
         else:
             files = {'cif': (self.cif.filename, cif_fileobj)}
         print('making request')
+        # pprint(data)
         r = requests.post(self.deposit_url, data=data, files=files,
                           headers={'User-Agent': 'FinalCif/{}'.format(VERSION)})
         self.ui.depositOutputTextBrowser.setText(r.text)
@@ -279,15 +287,6 @@ class CODdeposit():
             self.ui.refreshDepositListPushButton.setDisabled(True)
         self.password = text
 
-    def _set_author_name_published(self, text: str):
-        self.author_name = text
-
-    def _set_author_name_prepubl(self, text: str):
-        self.author_name = text
-
-    def _set_author_email(self, text: str):
-        self.author_email = text
-
     def _set_user_email(self, text: str):
         self.settings.save_key_value('cod_user_email', text)
         self.user_email = text
@@ -306,6 +305,7 @@ class CODdeposit():
             return
         self.cif.save()
         print('Saved cif to:', self.cif.filename)
+        self.ui.statusBar.showMessage('  File Saved:  {}'.format(self.cif.filename), 10 * 1000)
         self.cif_deposit()
         # print(r.text)
 
