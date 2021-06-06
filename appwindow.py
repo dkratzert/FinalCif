@@ -236,6 +236,7 @@ class AppWindow(QMainWindow):
         self.ui.cif_main_table.row_deleted.connect(self._deleted_row)
         #
         self.ui.CODpushButton.clicked.connect(self.open_cod_page)
+        self.ui.BackToCODPushButton.clicked.connect(self.open_cod_page)
         self.ui.CCDCpushButton.clicked.connect(self._ccdc_deposit)
         #
         save_shortcut = QShortcut(QKeySequence('Ctrl+S'), self)
@@ -279,9 +280,9 @@ class AppWindow(QMainWindow):
 
     def open_cod_page(self):
         self.save_current_cif_file()
+        self.load_cif_file(self.final_cif_file_name)
         self.deposit.cif = self.cif
         self.ui.MainStackedWidget.setCurrentIndex(7)
-        # return (lambda: QDesktopServices.openUrl(QUrl('http://www.crystallography.net/cod/')))
 
     def resizeEvent(self, a0: QResizeEvent) -> None:
         """It called when the main window resizes."""
@@ -878,7 +879,6 @@ class AppWindow(QMainWindow):
         table.restore_vertical_header()
         table.setCurrentItem(None)  # makes sure also the currently edited item is saved
         for row in range(self.ui.cif_main_table.rows_count):
-            # col0 = None  # cif content
             col1 = None  # from datafiles
             col2 = None  # own text
             for col in range(self.ui.cif_main_table.columns_count):
