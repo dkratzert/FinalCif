@@ -1319,7 +1319,7 @@ class AppWindow(QMainWindow):
                 # The next line is necessary, otherwise reopening of a cif would not add the CCDC number:
                 if not '_database_code_depnum_ccdc_archive' in self.ui.cif_main_table.vheaderitems:
                     # self.ui.cif_main_table.vheaderitems.insert(0, '_database_code_depnum_ccdc_archive')
-                    self.add_row('_database_code_depnum_ccdc_archive', '?', at_start=True)
+                    self.add_row('_database_code_depnum_ccdc_archive', '', at_start=True)
                 txt = self.ui.cif_main_table.getTextFromKey('_database_code_depnum_ccdc_archive', COL_EDIT).strip()
                 if not txt or (txt == '?'):
                     self.sources['_database_code_depnum_ccdc_archive'] = (str(ccdc.depnum), str(ccdc.emlfile.name))
@@ -1493,10 +1493,12 @@ class AppWindow(QMainWindow):
             self.complete_data_row = row_num
         else:
             # Cif text is set here:
-            self.ui.cif_main_table.setText(row=row_num, key=key, column=COL_CIF, txt=retranslate_delimiter(strval))
+            self.ui.cif_main_table.setText(row=row_num, key=key, column=COL_CIF,
+                                           txt='?' if at_start else retranslate_delimiter(strval))
             # This is to have COL_DATA at a defined state:
             self.ui.cif_main_table.setText(row=row_num, key=key, column=COL_DATA, txt='')
-            self.ui.cif_main_table.setText(row=row_num, key=key, column=COL_EDIT, txt='')
+            self.ui.cif_main_table.setText(row=row_num, key=key, column=COL_EDIT,
+                                           txt=retranslate_delimiter(strval) if at_start else '')
         head_item_key = MyTableWidgetItem(key)
         if not key == "These below are already in:":
             self.ui.cif_main_table.setVerticalHeaderItem(row_num, head_item_key)
