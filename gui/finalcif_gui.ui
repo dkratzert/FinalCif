@@ -3107,7 +3107,7 @@ Contact authors should always also appear as regular authors.</string>
                  <number>1</number>
                 </property>
                 <property name="currentIndex">
-                 <number>1</number>
+                 <number>2</number>
                 </property>
                 <widget class="QWidget" name="page_personal">
                  <layout class="QVBoxLayout" name="verticalLayout_30">
@@ -3120,6 +3120,16 @@ Contact authors should always also appear as regular authors.</string>
                   <property name="rightMargin">
                    <number>0</number>
                   </property>
+                  <item>
+                   <widget class="QLabel" name="label_10">
+                    <property name="text">
+                     <string>&lt;b&gt;A personal communication to the COD makes the uploaded CIF data public to everyone.&lt;/b&gt;</string>
+                    </property>
+                    <property name="textFormat">
+                     <enum>Qt::RichText</enum>
+                    </property>
+                   </widget>
+                  </item>
                   <item>
                    <layout class="QGridLayout" name="gridLayout_20">
                     <item row="0" column="0">
@@ -3285,18 +3295,11 @@ please add a publication author:</string>
                    <number>0</number>
                   </property>
                   <item>
-                   <widget class="QCheckBox" name="replaceDepositCheckBox">
-                    <property name="text">
-                     <string>Replace existing structure in the database (needs _cod_database_code)</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
                    <layout class="QGridLayout" name="gridLayout_23">
-                    <item row="0" column="1">
+                    <item row="1" column="1">
                      <widget class="QLineEdit" name="cod_database_code_LineEdit"/>
                     </item>
-                    <item row="0" column="2">
+                    <item row="1" column="2">
                      <spacer name="horizontalSpacer_32">
                       <property name="orientation">
                        <enum>Qt::Horizontal</enum>
@@ -3312,10 +3315,17 @@ please add a publication author:</string>
                       </property>
                      </spacer>
                     </item>
-                    <item row="0" column="0">
+                    <item row="1" column="0">
                      <widget class="QLabel" name="cod_database_code_Label">
                       <property name="text">
-                       <string>_cod_database_code</string>
+                       <string>Publication DOI:</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="0" column="0" colspan="2">
+                     <widget class="QLabel" name="label_11">
+                      <property name="text">
+                       <string>Insert the DOI of the publication to which the uploaded CIF belongs.</string>
                       </property>
                      </widget>
                     </item>
@@ -3324,14 +3334,27 @@ please add a publication author:</string>
                   <item>
                    <layout class="QVBoxLayout" name="verticalLayout_26">
                     <item>
-                     <widget class="QLabel" name="logMessageChangesLabel">
+                     <widget class="QLabel" name="label_14">
                       <property name="text">
-                       <string>Log message describing the performed changes (mandatory):</string>
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; color:#a50000;&quot;&gt;Files from commercial databases should not be uploaded without permission!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                      <property name="textFormat">
+                       <enum>Qt::RichText</enum>
                       </property>
                      </widget>
                     </item>
                     <item>
-                     <widget class="QPlainTextEdit" name="publishedLogPlainTextEdit"/>
+                     <spacer name="verticalSpacer_11">
+                      <property name="orientation">
+                       <enum>Qt::Vertical</enum>
+                      </property>
+                      <property name="sizeHint" stdset="0">
+                       <size>
+                        <width>20</width>
+                        <height>40</height>
+                       </size>
+                      </property>
+                     </spacer>
                     </item>
                    </layout>
                   </item>
@@ -3385,14 +3408,31 @@ please add a publication author:</string>
                 <property name="rightMargin">
                  <number>9</number>
                 </property>
-                <item row="1" column="0">
-                 <widget class="QLabel" name="depositorPasswordLabel">
-                  <property name="text">
-                   <string>depositor's password</string>
+                <item row="3" column="1">
+                 <widget class="QLineEdit" name="userEmailLineEdit">
+                  <property name="inputMethodHints">
+                   <set>Qt::ImhEmailCharactersOnly|Qt::ImhLowercaseOnly|Qt::ImhNoAutoUppercase</set>
                   </property>
                  </widget>
                 </item>
-                <item row="0" column="2" rowspan="4">
+                <item row="3" column="0">
+                 <widget class="QLabel" name="label_9">
+                  <property name="text">
+                   <string>depsoitor's e-mail</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="1">
+                 <widget class="QLineEdit" name="depositorUsernameLineEdit"/>
+                </item>
+                <item row="2" column="1">
+                 <widget class="QLineEdit" name="depositorPasswordLineEdit">
+                  <property name="echoMode">
+                   <enum>QLineEdit::Password</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="2" rowspan="4">
                  <widget class="QLabel" name="label_2">
                   <property name="text">
                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;You need to have a COD account &lt;br/&gt;in order to deposit a cif file. &lt;/p&gt;&lt;p&gt;&lt;a href=&quot;http://crystallography.net/cod/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#094fd1;&quot;&gt;Signup here for a new account&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -3411,41 +3451,24 @@ please add a publication author:</string>
                   </property>
                  </widget>
                 </item>
-                <item row="0" column="1">
-                 <widget class="QLineEdit" name="depositorUsernameLineEdit"/>
-                </item>
-                <item row="1" column="1">
-                 <widget class="QLineEdit" name="depositorPasswordLineEdit">
-                  <property name="echoMode">
-                   <enum>QLineEdit::Password</enum>
-                  </property>
-                 </widget>
-                </item>
-                <item row="0" column="0">
-                 <widget class="QLabel" name="depositorUsername">
-                  <property name="text">
-                   <string>depositor's username</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="3" column="1">
+                <item row="4" column="1">
                  <widget class="QCheckBox" name="depositHKLcheckBox">
                   <property name="text">
                    <string>deposit hkl data</string>
                   </property>
                  </widget>
                 </item>
-                <item row="2" column="1">
-                 <widget class="QLineEdit" name="userEmailLineEdit">
-                  <property name="inputMethodHints">
-                   <set>Qt::ImhEmailCharactersOnly|Qt::ImhLowercaseOnly|Qt::ImhNoAutoUppercase</set>
+                <item row="1" column="0">
+                 <widget class="QLabel" name="depositorUsername">
+                  <property name="text">
+                   <string>depositor's username</string>
                   </property>
                  </widget>
                 </item>
                 <item row="2" column="0">
-                 <widget class="QLabel" name="label_9">
+                 <widget class="QLabel" name="depositorPasswordLabel">
                   <property name="text">
-                   <string>depsoitor's e-mail</string>
+                   <string>depositor's password</string>
                   </property>
                  </widget>
                 </item>
@@ -3778,8 +3801,6 @@ please add a publication author:</string>
   <tabstop>depositorUsernameLineEdit</tabstop>
   <tabstop>depositorPasswordLineEdit</tabstop>
   <tabstop>depositHKLcheckBox</tabstop>
-  <tabstop>replaceDepositCheckBox</tabstop>
-  <tabstop>publishedLogPlainTextEdit</tabstop>
  </tabstops>
  <includes>
   <include location="local">gui.custom_classes.h</include>

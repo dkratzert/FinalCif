@@ -38,9 +38,8 @@ class CODdeposit():
         self.ui.depositorUsernameLineEdit.textChanged.connect(self._set_username)
         self.ui.depositorPasswordLineEdit.textChanged.connect(self._set_password)
         self.ui.userEmailLineEdit.textChanged.connect(self._set_user_email)
-        self.ui.authorEditorPushButton.clicked.connect(self.ui.MainStackedWidget.go_to_loops_page)
-        self.ui.authorEditorPushButton.clicked.connect(lambda: self.ui.TemplatesStackedWidget.setCurrentIndex(1))
-        self.ui.authorEditorPushButton.clicked.connect(lambda: self.ui.BackToCODPushButton.setVisible(True))
+        self.ui.authorEditorPushButton.clicked.connect(self.author_editor_clicked)
+        self.ui.authorEditorPushButton_2.clicked.connect(self.author_editor_clicked)
         self.ui.refreshDepositListPushButton.clicked.connect(self._refresh_cod_list)
         #
         self.ui.BackToCODPushButton.clicked.connect(self._back_to_cod_page)
@@ -65,6 +64,11 @@ class CODdeposit():
             self.user_email = ''
         if self.settings.load_settings_list('COD', self.username):
             self.add_structures_to_table(self.settings.load_settings_list('COD', self.username))
+
+    def author_editor_clicked(self):
+        self.ui.MainStackedWidget.go_to_loops_page()
+        self.ui.TemplatesStackedWidget.setCurrentIndex(1)
+        self.ui.BackToCODPushButton.setVisible(True)
 
     @property
     def cif(self) -> CifContainer:
@@ -99,12 +103,16 @@ class CODdeposit():
 
     def hide_author_edit_button(self):
         self.ui.authorsFullNamePersonalLabel.setVisible(False)
+        self.ui.authorsFullNamePersonalLabel_2.setVisible(False)
         self.ui.authorEditorPushButton.setVisible(False)
+        self.ui.authorEditorPushButton_2.setVisible(False)
         self.ui.depositCIFpushButton.setEnabled(True)
 
     def show_author_edit_button(self):
         self.ui.authorsFullNamePersonalLabel.setVisible(True)
+        self.ui.authorsFullNamePersonalLabel_2.setVisible(True)
         self.ui.authorEditorPushButton.setVisible(True)
+        self.ui.authorEditorPushButton_2.setVisible(True)
         self.ui.depositCIFpushButton.setDisabled(True)
 
     def _set_checkbox_states(self):
@@ -219,10 +227,10 @@ class CODdeposit():
                          'author_email': self.author_email,
                          'hold_period' : str(self.ui.embargoTimeInMonthsSpinBox.value())})
         if self.deposition_type == 'published':
-            if self.ui.replaceDepositCheckBox.isChecked():
-                data.update({'replace': '1'})
-            data.update({'message': self.ui.publishedLogPlainTextEdit.toPlainText()})
-        cif_fileobj = io.StringIO(self.cif.cif_as_string(without_hkl=True))
+            pass
+            # TODO: add code to save publication information from doi to the cif prior to upload.
+        cif_fileobj = io.StringIO(self.cif.cif_as_string(without_hkl=False))
+        # TODO: Always upload hkl data if present, but let the option to choose another hkl if no hkl is in cif
         if self.ui.depositHKLcheckBox.isChecked():
             hkl_fileobj = io.StringIO(self.cif.hkl_as_cif)
             hklname = self.cif.fileobj.stem + '.hkl'
@@ -231,13 +239,9 @@ class CODdeposit():
                      'hkl': (hklname, hkl_fileobj, 'multipart/form-data')}
         else:
             files = {'cif': (self.cif.filename, cif_fileobj)}
-        print(Path('.').resolve())
-        # Path('test.cif').write_text(cif_fileobj.getvalue())
         print('making request')
         r = requests.post(self.deposit_url, data=data, files=files,
                           headers={'User-Agent': 'FinalCif/{}'.format(VERSION)})
-        # hooks={'response': self.log_response_text})
-        # print(r.request.headers)
         self.ui.depositOutputTextBrowser.setText(r.text)
         self.set_deposit_button_to_try_again()
         return r
@@ -279,15 +283,9 @@ class CODdeposit():
         self.author_name = text
 
     def _set_author_name_prepubl(self, text: str):
-        # TODO: in case of more than one name, make loop from semicolon-separated names:
-        # https://www.iucr.org/__data/iucr/cifdic_html/1/cif_core.dic/Ipubl_author_name.html
-        # self.cif['_audit_contact_author_name'] = text
-        # self.cif['_publ_author_name'] = text
         self.author_name = text
 
     def _set_author_email(self, text: str):
-        # self.cif['_audit_contact_author_email'] = text
-        # self.cif['_publ_author_email'] = text
         self.author_email = text
 
     def _set_user_email(self, text: str):
@@ -295,7 +293,7 @@ class CODdeposit():
         self.user_email = text
 
     def _prepare_deposit(self):
-        print("#### Depositiong in '{}' mode...".format(self.deposition_type))
+        print("#### Deposition in '{}' mode...".format(self.deposition_type))
         self.ui.depositOutputTextBrowser.clear()
         self.switch_to_page('deposit')
         if len(self.username) < 2:
