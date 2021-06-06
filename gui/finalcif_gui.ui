@@ -3107,7 +3107,7 @@ Contact authors should always also appear as regular authors.</string>
                  <number>1</number>
                 </property>
                 <property name="currentIndex">
-                 <number>0</number>
+                 <number>1</number>
                 </property>
                 <widget class="QWidget" name="page_personal">
                  <layout class="QVBoxLayout" name="verticalLayout_30">
@@ -3171,46 +3171,10 @@ please add a publication author:</string>
                  </layout>
                 </widget>
                 <widget class="QWidget" name="page_prepublication">
-                 <layout class="QVBoxLayout" name="verticalLayout_29">
-                  <property name="leftMargin">
-                   <number>0</number>
-                  </property>
-                  <property name="rightMargin">
-                   <number>0</number>
-                  </property>
+                 <layout class="QVBoxLayout" name="verticalLayout_25">
                   <item>
                    <layout class="QGridLayout" name="gridLayout_21">
-                    <item row="0" column="0">
-                     <widget class="QLabel" name="depositorsFullNameLabel">
-                      <property name="text">
-                       <string>Contact authors full name (_publ_author_name)</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="2" column="1">
-                     <widget class="QLineEdit" name="journalNameLineEdit"/>
-                    </item>
-                    <item row="3" column="1">
-                     <widget class="QSpinBox" name="embargoTimeInMonthsSpinBox">
-                      <property name="minimum">
-                       <number>6</number>
-                      </property>
-                      <property name="maximum">
-                       <number>12</number>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="1" column="1">
-                     <widget class="QLineEdit" name="depsoitorEMailAddressLineEdit"/>
-                    </item>
-                    <item row="1" column="0">
-                     <widget class="QLabel" name="depsoitorEMailAddressLabel">
-                      <property name="text">
-                       <string>Email address to contact the depositor</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="2" column="2">
+                    <item row="0" column="2">
                      <spacer name="horizontalSpacer_29">
                       <property name="orientation">
                        <enum>Qt::Horizontal</enum>
@@ -3226,7 +3190,17 @@ please add a publication author:</string>
                       </property>
                      </spacer>
                     </item>
-                    <item row="3" column="2">
+                    <item row="1" column="1">
+                     <widget class="QSpinBox" name="embargoTimeInMonthsSpinBox">
+                      <property name="minimum">
+                       <number>6</number>
+                      </property>
+                      <property name="maximum">
+                       <number>12</number>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="2">
                      <widget class="QLabel" name="label_8">
                       <property name="text">
                        <string>(6-12 months)</string>
@@ -3234,19 +3208,54 @@ please add a publication author:</string>
                      </widget>
                     </item>
                     <item row="0" column="1">
-                     <widget class="QLineEdit" name="depositorsFullNameLineEdit"/>
+                     <widget class="QLineEdit" name="journalNameLineEdit"/>
                     </item>
-                    <item row="2" column="0">
+                    <item row="1" column="0">
+                     <widget class="QLabel" name="embargoTimeInMonthsLabel">
+                      <property name="text">
+                       <string>Hold period in months (embargo time)</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="0" column="0">
                      <widget class="QLabel" name="journalMameLabel">
                       <property name="text">
                        <string>Intended journal name (not mandatory)</string>
                       </property>
                      </widget>
                     </item>
-                    <item row="3" column="0">
-                     <widget class="QLabel" name="embargoTimeInMonthsLabel">
+                   </layout>
+                  </item>
+                  <item>
+                   <layout class="QGridLayout" name="gridLayout_24">
+                    <item row="0" column="2">
+                     <widget class="QPushButton" name="authorEditorPushButton_2">
                       <property name="text">
-                       <string>Hold period in months (embargo time)</string>
+                       <string>Author Editor</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="0" column="3">
+                     <spacer name="horizontalSpacer_35">
+                      <property name="orientation">
+                       <enum>Qt::Horizontal</enum>
+                      </property>
+                      <property name="sizeType">
+                       <enum>QSizePolicy::Preferred</enum>
+                      </property>
+                      <property name="sizeHint" stdset="0">
+                       <size>
+                        <width>80</width>
+                        <height>20</height>
+                       </size>
+                      </property>
+                     </spacer>
+                    </item>
+                    <item row="0" column="1">
+                     <widget class="QLabel" name="authorsFullNamePersonalLabel_2">
+                      <property name="text">
+                       <string>The current CIF does not contain all author information 
+please add a publication author:</string>
                       </property>
                      </widget>
                     </item>
@@ -3284,7 +3293,10 @@ please add a publication author:</string>
                   </item>
                   <item>
                    <layout class="QGridLayout" name="gridLayout_23">
-                    <item row="1" column="2">
+                    <item row="0" column="1">
+                     <widget class="QLineEdit" name="cod_database_code_LineEdit"/>
+                    </item>
+                    <item row="0" column="2">
                      <spacer name="horizontalSpacer_32">
                       <property name="orientation">
                        <enum>Qt::Horizontal</enum>
@@ -3299,29 +3311,6 @@ please add a publication author:</string>
                        </size>
                       </property>
                      </spacer>
-                    </item>
-                    <item row="1" column="0">
-                     <widget class="QLabel" name="authorsFullNamePersonalLabel_2">
-                      <property name="text">
-                       <string>Contact authors full name (_publ_author_name)</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="1" column="1">
-                     <widget class="QLineEdit" name="ContactAuthorsFullNamePersonalLineEdit_2"/>
-                    </item>
-                    <item row="2" column="1">
-                     <widget class="QLineEdit" name="ContactAuthorEmailAddressLineEdit_2"/>
-                    </item>
-                    <item row="2" column="0">
-                     <widget class="QLabel" name="emailAddressToContactTheAuthorLabel_2">
-                      <property name="text">
-                       <string>Email address to contact the depositor</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="0" column="1">
-                     <widget class="QLineEdit" name="cod_database_code_LineEdit"/>
                     </item>
                     <item row="0" column="0">
                      <widget class="QLabel" name="cod_database_code_Label">
@@ -3680,7 +3669,6 @@ please add a publication author:</string>
  <tabstops>
   <tabstop>EMailLineEdit</tabstop>
   <tabstop>AddressTextedit</tabstop>
-  <tabstop>depsoitorEMailAddressLineEdit</tabstop>
   <tabstop>FootNoteLineEdit</tabstop>
   <tabstop>ORCIDLineEdit</tabstop>
   <tabstop>PhoneLineEdit</tabstop>
@@ -3792,7 +3780,6 @@ please add a publication author:</string>
   <tabstop>depositHKLcheckBox</tabstop>
   <tabstop>replaceDepositCheckBox</tabstop>
   <tabstop>publishedLogPlainTextEdit</tabstop>
-  <tabstop>depositorsFullNameLineEdit</tabstop>
  </tabstops>
  <includes>
   <include location="local">gui.custom_classes.h</include>
