@@ -20,15 +20,15 @@ def quote(string: str, wrapping=80) -> str:
     return quoted
 
 
-charcters = { 
+charcters = {
     '±'      : r'+-',
     '×'      : r'\\times',
     '≠'      : r'\\neq',
     '→'      : '\\rightarrow',
     '←'      : '\\leftarrow',
     '∞'      : '\\infty',
-    '≈'      : '\\sim',
     '≃'      : '\\simeq',
+    '≈'      : '\\sim',
     'ß'      : r'\&s',
     'ü'      : r'u\"',
     'Ü'      : r'U\"',
@@ -113,8 +113,7 @@ charcters = {
 }
 
 
-
-def utf8_to_str(txt) -> str:
+def utf8_to_str(txt: str) -> str:
     """
     Translates an utf-8 text to a CIF ascii string.
     """
@@ -122,6 +121,10 @@ def utf8_to_str(txt) -> str:
         if char in charcters:
             txt = txt.replace(char, charcters[char])
     return txt
+
+
+def delimit_string(txt: str) -> str:
+    return utf8_to_str(txt)
 
 
 def retranslate_delimiter(txt: str) -> str:

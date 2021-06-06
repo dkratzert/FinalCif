@@ -8,10 +8,14 @@ import unittest
 
 import gemmi
 
-from cif.text import quote, utf8_to_str, retranslate_delimiter
+from cif.text import quote, utf8_to_str, retranslate_delimiter, delimit_string, charcters
 
 
 class TestText(unittest.TestCase):
+
+    def setUp(self) -> None:
+        d = gemmi.cif.Document()
+        self.block: gemmi.cif.Block = d.add_new_block('new-block')
 
     def test_quote_short(self):
         q = quote('Hello this is a test for a quoted text')
@@ -27,33 +31,21 @@ class TestText(unittest.TestCase):
                   ";")
         self.assertEqual(quoted, q)
 
-    @unittest.SkipTest
     def test_set_pair_delimited_empty(self):
-        d = gemmi.cif.Document()
-        block = d.add_new_block('new-block')
-        #set_pair_delimited(block=block, key='_foobar', txt='')
-        self.assertEqual(['_foobar', "''"], block.find_pair('_foobar'))
+        self.block.set_pair('_foobar', delimit_string(''))
+        self.assertEqual(['_foobar', ''], self.block.find_pair('_foobar'))
 
-    @unittest.SkipTest
     def test_set_pair_delimited_question(self):
-        d = gemmi.cif.Document()
-        block = d.add_new_block('new-block')
-        #set_pair_delimited(block=block, key='_foobar', txt='?')
-        self.assertEqual(['_foobar', '?'], block.find_pair('_foobar'))
+        self.block.set_pair('_foobar', delimit_string('?'))
+        self.assertEqual(['_foobar', '?'], self.block.find_pair('_foobar'))
 
-    @unittest.SkipTest
     def test_set_pair_delimited_number(self):
-        d = gemmi.cif.Document()
-        block = d.add_new_block('new-block')
-        #set_pair_delimited(block=block, key='_foobar', txt='1.123')
-        self.assertEqual(['_foobar', '1.123'], block.find_pair('_foobar'))
+        self.block.set_pair('_foobar', delimit_string('1.123'))
+        self.assertEqual(['_foobar', '1.123'], self.block.find_pair('_foobar'))
 
-    @unittest.SkipTest
     def test_set_pair_delimited_with_newline(self):
-        d = gemmi.cif.Document()
-        block = d.add_new_block('new-block')
-        #set_pair_delimited(block=block, key='_foobar', txt='abc\ndef foo')
-        self.assertEqual(['_foobar', ';abc\ndef foo\n;'], block.find_pair('_foobar'))
+        self.block.set_pair('_foobar', delimit_string('abc\ndef foo'))
+        self.assertEqual(['_foobar', 'abc\ndef foo'], self.block.find_pair('_foobar'))
 
     def test_delimit_ut8_to_cif_str(self):
         s = utf8_to_str('100 °C')
@@ -66,3 +58,15 @@ class TestText(unittest.TestCase):
     def test_retranslate_sentence(self):
         r = retranslate_delimiter("Crystals were grown from thf at -20 \%C.")
         self.assertEqual('Crystals were grown from thf at -20 °C.', r)
+
+    def test_delimit_umlaut(self):
+        self.assertEqual('a\"o\"u\"\,c', delimit_string('äöüç'))
+
+    def test__backwards_delimit_umlaut(self):
+        self.assertEqual('äöüç', retranslate_delimiter(r'a\"o\"u\"\,c'))
+
+    def test_retranslate_all(self):
+        for char in charcters:
+            if char in ('Å', 'Å'):
+                continue
+            self.assertEqual(char, retranslate_delimiter(delimit_string(char)))
