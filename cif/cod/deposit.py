@@ -33,8 +33,6 @@ class CODdeposit():
         self.ui = ui
         self.settings = FinalCifSettings()
         self._cif = cif
-        if not self.cif:
-            self.ui.depositCIFpushButton.setDisabled(True)
         self._set_checkbox_states()
         self.ui.depositorUsernameLineEdit.textChanged.connect(self._set_username)
         self.ui.depositorPasswordLineEdit.textChanged.connect(self._set_password)
@@ -42,6 +40,7 @@ class CODdeposit():
         self.ui.authorEditorPushButton.clicked.connect(self.author_editor_clicked)
         self.ui.authorEditorPushButton_2.clicked.connect(self.author_editor_clicked)
         self.ui.refreshDepositListPushButton.clicked.connect(self._refresh_cod_list)
+        self.ui.GetDOIPushButton.clicked.connect(self.get_doi_data)
         #
         self.ui.BackToCODPushButton.clicked.connect(self._back_to_cod_page)
         #
@@ -90,9 +89,12 @@ class CODdeposit():
 
     def check_for_publ_author(self):
         try:
-            # TODO: use deposit_check:
             self.author_name = self.cif.get_loop_column('_publ_author_name')[0]
             self.author_email = self.cif.get_loop_column('_publ_author_email')[0]
+            self.ui.ContactAuthorLineEdit.setText(self.author_name)
+            self.ui.ContactEmailLineEdit.setText(self.author_email)
+            self.ui.ContactAuthorLineEdit_2.setText(self.author_name)
+            self.ui.ContactEmailLineEdit_2.setText(self.author_email)
             print(self.author_name, self.author_email)
         except (IndexError, AttributeError):
             self.author_name = ''
@@ -114,7 +116,7 @@ class CODdeposit():
         self.ui.authorsFullNamePersonalLabel_2.setVisible(True)
         self.ui.authorEditorPushButton.setVisible(True)
         self.ui.authorEditorPushButton_2.setVisible(True)
-        self.ui.depositCIFpushButton.setDisabled(True)
+        #self.ui.depositCIFpushButton.setDisabled(True)
 
     def _set_checkbox_states(self):
         self.ui.prepublicationDepositRadioButton.clicked.connect(self._prepublication_was_toggled)
@@ -203,6 +205,16 @@ class CODdeposit():
         text_browser.setStyleSheet("QTextEdit { padding-left:13; padding-top:2; padding-bottom:5; padding-right:10}")
         self.ui.CODtableWidget.setCellWidget(row, 0, text_browser)
 
+    def get_doi_data(self):
+        citation = resolve_doi(self.ui.publication_doi_lineedit.text())
+        self.ui.DOIResolveTextLabel.clear()
+        for key, value in citation.items():
+            if key == '_publ_author_name' and value:
+                value = value[0]
+            self.ui.DOIResolveTextLabel.setText(self.ui.DOIResolveTextLabel.text() + "{}: {}\n\n".format(key, value))
+            self.cif.set_pair_delimited(key, value)
+        #self.ui.depositCIFpushButton.setEnabled(True)
+
     def cif_deposit(self):
         self.switch_to_page('deposit')
         if not self.cif:
@@ -228,13 +240,7 @@ class CODdeposit():
                          'author_email': self.author_email or self.user_email,
                          'hold_period' : str(self.ui.embargoTimeInMonthsSpinBox.value())})
         if self.deposition_type == 'published':
-            citation = resolve_doi(self.ui.publication_doi_lineedit.text())
-            pprint(citation)
-            # TODO: Maybe fill data into linedits prior to upload
-            for key, value in citation.items():
-                if key == '_publ_author_name' and value:
-                    value = value[0]
-                self.cif.set_pair_delimited(key, value)
+            pass
         cif_fileobj = io.StringIO(self.cif.cif_as_string())
         # Path('/Users/daniel/Documents/GitHub/FinalCif/testcif.txt').write_text(cif_fileobj.read())
         if self.ui.depositHKLcheckBox.isChecked():
