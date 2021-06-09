@@ -3132,14 +3132,6 @@ Contact authors should always also appear as regular authors.</string>
                   </item>
                   <item>
                    <layout class="QGridLayout" name="gridLayout_20">
-                    <item row="0" column="0">
-                     <widget class="QLabel" name="authorsFullNamePersonalLabel">
-                      <property name="text">
-                       <string>The current CIF does not contain author information 
-please add a publication author:</string>
-                      </property>
-                     </widget>
-                    </item>
                     <item row="0" column="2">
                      <spacer name="horizontalSpacer_30">
                       <property name="orientation">
@@ -3156,10 +3148,52 @@ please add a publication author:</string>
                       </property>
                      </spacer>
                     </item>
+                    <item row="1" column="0">
+                     <widget class="QLabel" name="ContactAuthorLabel">
+                      <property name="text">
+                       <string>Publication author for contact by the COD:</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="0" column="0">
+                     <widget class="QLabel" name="authorsFullNamePersonalLabel">
+                      <property name="text">
+                       <string>The current CIF does not contain author information 
+please add a publication author:</string>
+                      </property>
+                     </widget>
+                    </item>
                     <item row="0" column="1">
                      <widget class="QPushButton" name="authorEditorPushButton">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
                       <property name="text">
                        <string>Author Editor</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="1">
+                     <widget class="QLineEdit" name="ContactAuthorLineEdit">
+                      <property name="readOnly">
+                       <bool>true</bool>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="2" column="1">
+                     <widget class="QLineEdit" name="ContactEmailLineEdit">
+                      <property name="readOnly">
+                       <bool>true</bool>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="2" column="0">
+                     <widget class="QLabel" name="label_12">
+                      <property name="text">
+                       <string>Email address for contact by the COD:</string>
                       </property>
                      </widget>
                     </item>
@@ -3238,13 +3272,6 @@ please add a publication author:</string>
                   </item>
                   <item>
                    <layout class="QGridLayout" name="gridLayout_24">
-                    <item row="0" column="2">
-                     <widget class="QPushButton" name="authorEditorPushButton_2">
-                      <property name="text">
-                       <string>Author Editor</string>
-                      </property>
-                     </widget>
-                    </item>
                     <item row="0" column="3">
                      <spacer name="horizontalSpacer_35">
                       <property name="orientation">
@@ -3266,6 +3293,47 @@ please add a publication author:</string>
                       <property name="text">
                        <string>The current CIF does not contain all author information 
 please add a publication author:</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="2">
+                     <widget class="QLineEdit" name="ContactAuthorLineEdit_2">
+                      <property name="readOnly">
+                       <bool>true</bool>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="0" column="2">
+                     <widget class="QPushButton" name="authorEditorPushButton_2">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="text">
+                       <string>Author Editor</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="1">
+                     <widget class="QLabel" name="ContactAuthorLabel_2">
+                      <property name="text">
+                       <string>Publication author for contact by the COD:</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="2" column="1">
+                     <widget class="QLabel" name="label_15">
+                      <property name="text">
+                       <string>Email address for contact by the COD:</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="2" column="2">
+                     <widget class="QLineEdit" name="ContactEmailLineEdit_2">
+                      <property name="readOnly">
+                       <bool>true</bool>
                       </property>
                      </widget>
                     </item>
@@ -3299,7 +3367,14 @@ please add a publication author:</string>
                     <item row="1" column="1">
                      <widget class="QLineEdit" name="publication_doi_lineedit"/>
                     </item>
-                    <item row="1" column="2">
+                    <item row="1" column="0">
+                     <widget class="QLabel" name="cod_database_code_Label">
+                      <property name="text">
+                       <string>Publication DOI:</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="3">
                      <spacer name="horizontalSpacer_32">
                       <property name="orientation">
                        <enum>Qt::Horizontal</enum>
@@ -3315,13 +3390,6 @@ please add a publication author:</string>
                       </property>
                      </spacer>
                     </item>
-                    <item row="1" column="0">
-                     <widget class="QLabel" name="cod_database_code_Label">
-                      <property name="text">
-                       <string>Publication DOI:</string>
-                      </property>
-                     </widget>
-                    </item>
                     <item row="0" column="0" colspan="2">
                      <widget class="QLabel" name="label_11">
                       <property name="text">
@@ -3329,7 +3397,27 @@ please add a publication author:</string>
                       </property>
                      </widget>
                     </item>
+                    <item row="1" column="2">
+                     <widget class="QPushButton" name="GetDOIPushButton">
+                      <property name="text">
+                       <string>Get Citation</string>
+                      </property>
+                     </widget>
+                    </item>
                    </layout>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="DOIResolveTextLabel">
+                    <property name="text">
+                     <string/>
+                    </property>
+                    <property name="textFormat">
+                     <enum>Qt::PlainText</enum>
+                    </property>
+                    <property name="wordWrap">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
                   </item>
                   <item>
                    <layout class="QVBoxLayout" name="verticalLayout_26">
