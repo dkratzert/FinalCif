@@ -60,7 +60,7 @@ class TestText(unittest.TestCase):
         self.assertEqual('Crystals were grown from thf at -20 °C.', r)
 
     def test_delimit_umlaut(self):
-        self.assertEqual('a\"o\"u\"\,c', delimit_string('äöüç'))
+        self.assertEqual(r'a\"o\"u\"\,c', delimit_string('äöüç'))
 
     def test__backwards_delimit_umlaut(self):
         self.assertEqual('äöüç', retranslate_delimiter(r'a\"o\"u\"\,c'))

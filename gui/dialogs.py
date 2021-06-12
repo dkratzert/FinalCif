@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import QMessageBox, QMainWindow, QSplashScreen, QFileDialog
 from tools.version import VERSION
 
 
-def do_update_program(version):
+def do_update_program(version) -> None:
     os.chdir(str(Path(__file__).parent.parent))  # parent path of gui -> main dir
     args = ['-v', version,
             '-p', 'finalcif']
@@ -40,7 +40,6 @@ def unable_to_open_message(filepath: Path, not_ok: Exception) -> None:
         info.setText('This cif file is not readable! "{}"\n{}'.format(filepath.name, not_ok))
     info.show()
     info.exec()
-    return
 
 
 def show_res_checksum_warning() -> None:
@@ -99,11 +98,11 @@ def show_update_warning(remote_version: int = 0) -> None:
     box.exec()
 
 
-def bad_z_message(Z) -> None:
+def bad_z_message(z) -> None:
     zinfo = QMessageBox()
     zinfo.setIcon(QMessageBox.Information)
     zinfo.setText('The number of formula units Z={:.0f} is probably wrong.'
-                  '\nYou may restart refinement with a correct value.'.format(Z))
+                  '\nYou may restart refinement with a correct value.'.format(z))
     zinfo.show()
     zinfo.exec()
 
@@ -121,16 +120,16 @@ def bug_found_warning(logfile) -> None:
 
 def show_splash(text: str) -> QSplashScreen:
     splash = QSplashScreen()
-    splashFont = QFont()
+    splash_font = QFont()
     # splashFont.setFamily("Arial")
-    splashFont.setBold(True)
-    splashFont.setPixelSize(16)
-    splashFont.setStretch(120)
+    splash_font.setBold(True)
+    splash_font.setPixelSize(16)
+    splash_font.setStretch(120)
     splash.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.SplashScreen)
     splash = QSplashScreen()
     splash.show()
     splash.setStyleSheet("background-color:#fcc77c;")
-    splash.setFont(splashFont)
+    splash.setFont(splash_font)
     splash.setMinimumWidth(400)
     splash.setMaximumHeight(100)
     splash.showMessage(text, alignment=Qt.AlignCenter, )

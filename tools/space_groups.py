@@ -21,7 +21,7 @@ class SpaceGroups():
 
     def to_mathml(self, space_group: str) -> str:
         """
-        Uses the genral format dictionary to format a space group as mathml:
+        Uses the general format dictionary to format a space group as mathml:
 
         '<math xmlns="http://www.w3.org/1998/Math/MathML">'
                     '<mi>P</mi>'
@@ -40,7 +40,7 @@ class SpaceGroups():
         overline = False
         sub = False
         for n, word in enumerate(sp):
-            char, format = word
+            char, spgr_format = word
             if len(sp) >= n + 1:
                 with suppress(Exception):
                     if sp[n][1] == 'overline':
@@ -51,13 +51,13 @@ class SpaceGroups():
             if overline:
                 overline = False
                 xml = xml + '<mover>\n<mn>{}</mn>\n<mo stretchy="false">&#x0305;</mo>'.format(char)
-            if not overline and format == 'overline':
+            if not overline and spgr_format == 'overline':
                 xml = xml + '\n</mover>\n'
-            if format == 'regular':
+            if spgr_format == 'regular':
                 xml = xml + '<mn>{}</mn>\n'.format(char)
-            if format == 'italic':
+            if spgr_format == 'italic':
                 xml = xml + '<mi>{}</mi>\n'.format(char)
-            if sub and format == 'sub':
+            if sub and spgr_format == 'sub':
                 xml = xml + '<mn>{}</mn>\n</msub>\n'.format(char)
         xml = xml + '</math>\n'
         return xml
@@ -84,14 +84,14 @@ class SpaceGroups():
         if not space_group:
             return ''
         for word in self.spgrps[space_group][0]:
-            char, format = word
-            if format == 'italic':
+            char, space_group_format = word
+            if space_group_format == 'italic':
                 html = html + '<i>{}</i>'.format(char)
-            elif format == 'regular':
+            elif space_group_format == 'regular':
                 html = html + char
-            elif format == 'sub':
+            elif space_group_format == 'sub':
                 html = html + '<sub>{}</sub>'.format(char)
-            elif format == 'overline':
+            elif space_group_format == 'overline':
                 html = html + '<span style=" text-decoration: overline;">{}</span>'.format(char)
             else:
                 print('##############', char)
@@ -103,57 +103,62 @@ class SpaceGroups():
         """
         Path('testing2.py').unlink(missing_ok=True)
         htxt = 'spgrps = {\n'
-        for s in gemmi.spacegroup_table():
-            s: gemmi.SpaceGroup
+        for space_group_obj in gemmi.spacegroup_table():
+            space_group_obj: gemmi.SpaceGroup
             html = []
-            splitted_s = s.xhm().split(' ')
-            if s.short_name() == self._myshort(s):
-                splitted_s = [x for x in s.xhm().split(':')[0].split(' ') if x != '1']
+            splitted_spgr = space_group_obj.xhm().split(' ')
+            if space_group_obj.short_name() == self._myshort(space_group_obj):
+                splitted_spgr = self.remove_setting(space_group_obj)
+            html.append("    '{}'         : (\n        (('{}', 'italic'),\n".format(space_group_obj.xhm(),
+                                                                                    splitted_spgr.pop(0)))
+            if space_group_obj.short_name() == 'P21212(a)':
+                self.handle_p21212a_specially(html)
             else:
-                pass
-            html.append("    '{}'         : (\n        (('{}', 'italic'),\n".format(s.xhm(), splitted_s.pop(0)))
-            if s.short_name() == 'P21212(a)':
-                # This one is differently formated as the others in gemmi:
-                html.append("('2', 'regular'),\n ('1' ,'sub'),\n ('2', 'regular'),\n ('1', 'sub'),\n ('2', 'regular'),"
-                            "\n ('1', 'sub'),\n ('2(a)', 'regular'),\n")
-            else:
-                for num, c in enumerate(splitted_s):
-                    if ':' in c:
-                        c, append = c.split(':')
-                        if c.startswith('-'):
-                            html.append("            ({}, 'overline'),\n".format(c[-1]))
+                for num, chars in enumerate(splitted_spgr):
+                    if ':' in chars:
+                        chars, append = chars.split(':')
+                        if chars.startswith('-'):
+                            html.append("            ({}, 'overline'),\n".format(chars[-1]))
                         else:
-                            self._italize_chars_format(c, html)
+                            self._italize_chars_format(chars, html)
                         self._italize_chars_format(':' + append, html)
                         continue
-                    if len(c) == 1:
-                        if isnumeric(c):
-                            html.append("         ('{}', 'regular'),\n".format(c))
+                    if len(chars) == 1:
+                        if isnumeric(chars):
+                            html.append("         ('{}', 'regular'),\n".format(chars))
                         else:
-                            html.append("         ('{}', 'italic'),\n".format(c))
-                    if len(c) == 2 and self._get_screw(c):
-                        html.append(self._get_screw_format(c))
-                    if len(c) == 2 and not self._get_screw(c):
-                        if c.startswith('-'):
-                            html.append("         ('{}', 'overline'),\n".format(c[-1]))
+                            html.append("         ('{}', 'italic'),\n".format(chars))
+                    if len(chars) == 2 and self._get_screw(chars):
+                        html.append(self._get_screw_format(chars))
+                    if len(chars) == 2 and not self._get_screw(chars):
+                        if chars.startswith('-'):
+                            html.append("         ('{}', 'overline'),\n".format(chars[-1]))
                         else:
-                            self._italize_chars_format(c, html)
-                    if len(c) > 2:
+                            self._italize_chars_format(chars, html)
+                    if len(chars) > 2:
                         txt = []
-                        if self._get_screw(c[:2]):
-                            html.append(self._get_screw_format(c[:2]))
-                            c = c[:]
-                        for char in c:
-                            self._make_italic_format(char, txt)
+                        if self._get_screw(chars[:2]):
+                            html.append(self._get_screw_format(chars[:2]))
+                            chars = chars[:]
+                        for chars in chars:
+                            self._make_italic_format(chars, txt)
                         html.append("{}".format(''.join(txt)))
             htxt = htxt + ''.join(html) \
                    + "         ), {{'itnumber': {}, 'crystal_system': '{}', " \
-                     "'short-hm': '{}', 'is_reference': {}}},\n    ),\n".format(s.number,
-                                                                                s.crystal_system_str(),
-                                                                                s.short_name(),
-                                                                                s.is_reference_setting(),
+                     "'short-hm': '{}', 'is_reference': {}}},\n    ),\n".format(space_group_obj.number,
+                                                                                space_group_obj.crystal_system_str(),
+                                                                                space_group_obj.short_name(),
+                                                                                space_group_obj.is_reference_setting(),
                                                                                 )
         Path('testing2.py').write_text(htxt + '\n}')
+
+    def remove_setting(self, space_group_obj):
+        return [x for x in space_group_obj.xhm().split(':')[0].split(' ') if x != '1']
+
+    def handle_p21212a_specially(self, html):
+        # This one is differently formated as the others in gemmi:
+        html.append("('2', 'regular'),\n ('1' ,'sub'),\n ('2', 'regular'),\n ('1', 'sub'),\n ('2', 'regular'),"
+                    "\n ('1', 'sub'),\n ('2(a)', 'regular'),\n")
 
     def _screw(self, sub_format, symbol):
         return {'21': sub_format, '31': sub_format, '32': sub_format, '41': sub_format, '42': sub_format,

@@ -1,5 +1,5 @@
 import io
-from pprint import pprint
+from pathlib import Path
 from typing import Union, List
 
 import requests
@@ -9,6 +9,8 @@ from cif.cif_file_io import CifContainer
 from cif.cod.deposition_list import CODFetcher
 from cif.cod.doi import resolve_doi
 from cif.cod.website_parser import MyCODStructuresParser
+from cif.hkl import HKL
+from gui.dialogs import cif_file_open_dialog, show_general_warning
 from gui.finalcif_gui import Ui_FinalCifWindow
 from tools.settings import FinalCifSettings
 from tools.version import VERSION
@@ -30,6 +32,7 @@ Personal Problems:
 class CODdeposit():
 
     def __init__(self, ui: Ui_FinalCifWindow, cif: Union[CifContainer, None] = None):
+        self.hkl_file: Union[Path, None] = None
         self.ui = ui
         self.settings = FinalCifSettings()
         self._cif = cif
@@ -41,6 +44,7 @@ class CODdeposit():
         self.ui.authorEditorPushButton_2.clicked.connect(self.author_editor_clicked)
         self.ui.refreshDepositListPushButton.clicked.connect(self._refresh_cod_list)
         self.ui.GetDOIPushButton.clicked.connect(self.get_doi_data)
+        self.ui.Upload_hkl_pushButton.clicked.connect(self._set_external_hkl_file)
         #
         self.ui.BackToCODPushButton.clicked.connect(self._back_to_cod_page)
         #
@@ -116,7 +120,7 @@ class CODdeposit():
         self.ui.authorsFullNamePersonalLabel_2.setVisible(True)
         self.ui.authorEditorPushButton.setVisible(True)
         self.ui.authorEditorPushButton_2.setVisible(True)
-        #self.ui.depositCIFpushButton.setDisabled(True)
+        # self.ui.depositCIFpushButton.setDisabled(True)
 
     def _set_checkbox_states(self):
         self.ui.prepublicationDepositRadioButton.clicked.connect(self._prepublication_was_toggled)
@@ -213,7 +217,7 @@ class CODdeposit():
                 value = value[0]
             self.ui.DOIResolveTextLabel.setText(self.ui.DOIResolveTextLabel.text() + "{}: {}\n\n".format(key, value))
             self.cif.set_pair_delimited(key, value)
-        #self.ui.depositCIFpushButton.setEnabled(True)
+        # self.ui.depositCIFpushButton.setEnabled(True)
 
     def cif_deposit(self):
         self.switch_to_page('deposit')
@@ -240,6 +244,7 @@ class CODdeposit():
                          'author_email': self.author_email or self.user_email,
                          'hold_period' : str(self.ui.embargoTimeInMonthsSpinBox.value())})
         if self.deposition_type == 'published':
+            # Nothing to define extra:
             pass
         cif_fileobj = io.StringIO(self.cif.cif_as_string())
         # Path('/Users/daniel/Documents/GitHub/FinalCif/testcif.txt').write_text(cif_fileobj.read())
@@ -250,6 +255,9 @@ class CODdeposit():
             # Path('test.hkl').write_text(hklf.getvalue())
             files = {'cif': (self.cif.filename, cif_fileobj, 'multipart/form-data'),
                      'hkl': (hklname, hkl_fileobj, 'multipart/form-data')}
+        elif self.hkl_file and self.ui.depositHKLcheckBox.isChecked():
+            files = {'cif': (self.cif.filename, cif_fileobj, 'multipart/form-data'),
+                     'hkl': (self.hkl_file.name, self.hkl_file, 'multipart/form-data')}
         else:
             files = {'cif': (self.cif.filename, cif_fileobj)}
         print('making request')
@@ -314,6 +322,20 @@ class CODdeposit():
         self.ui.statusBar.showMessage('  File Saved:  {}'.format(self.cif.filename), 10 * 1000)
         self.cif_deposit()
         # print(r.text)
+
+    def _set_external_hkl_file(self) -> None:
+        file = cif_file_open_dialog(filter="HKL file (*.hkl *.fcf)")
+        if file.endswith('.hkl'):
+            self.hkl_file = io.StringIO(HKL(file, self.cif.block.name, hklf_type=4).hkl_as_cif)
+        elif file.endswith('.fcf'):
+            cif = CifContainer(file)
+            list_code = cif['_shelx_refln_list_code']
+            if list_code != '4':
+                show_general_warning('Only plain hkl or fcf (LIST 4 style) files should be uploaded.')
+                return
+            self.hkl_file = Path(file).read_bytes()
+        else:
+            show_general_warning('Only plain hkl or fcf (LIST 4 style) files should be uploaded.')
 
 
 if __name__ == '__main__':

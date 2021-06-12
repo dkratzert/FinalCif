@@ -3431,20 +3431,20 @@ please add a publication author:</string>
                       </property>
                      </widget>
                     </item>
-                    <item>
-                     <spacer name="verticalSpacer_11">
-                      <property name="orientation">
-                       <enum>Qt::Vertical</enum>
-                      </property>
-                      <property name="sizeHint" stdset="0">
-                       <size>
-                        <width>20</width>
-                        <height>40</height>
-                       </size>
-                      </property>
-                     </spacer>
-                    </item>
                    </layout>
+                  </item>
+                  <item>
+                   <spacer name="verticalSpacer_11">
+                    <property name="orientation">
+                     <enum>Qt::Vertical</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>20</width>
+                      <height>40</height>
+                     </size>
+                    </property>
+                   </spacer>
                   </item>
                  </layout>
                 </widget>
@@ -3496,14 +3496,14 @@ please add a publication author:</string>
                 <property name="rightMargin">
                  <number>9</number>
                 </property>
-                <item row="3" column="1">
-                 <widget class="QLineEdit" name="userEmailLineEdit">
-                  <property name="inputMethodHints">
-                   <set>Qt::ImhEmailCharactersOnly|Qt::ImhLowercaseOnly|Qt::ImhNoAutoUppercase</set>
+                <item row="0" column="0">
+                 <widget class="QLabel" name="depositorUsername">
+                  <property name="text">
+                   <string>depositor's username</string>
                   </property>
                  </widget>
                 </item>
-                <item row="3" column="0">
+                <item row="2" column="0">
                  <widget class="QLabel" name="label_9">
                   <property name="text">
                    <string>depsoitor's e-mail</string>
@@ -3511,16 +3511,47 @@ please add a publication author:</string>
                  </widget>
                 </item>
                 <item row="1" column="1">
-                 <widget class="QLineEdit" name="depositorUsernameLineEdit"/>
-                </item>
-                <item row="2" column="1">
                  <widget class="QLineEdit" name="depositorPasswordLineEdit">
                   <property name="echoMode">
                    <enum>QLineEdit::Password</enum>
                   </property>
                  </widget>
                 </item>
-                <item row="1" column="2" rowspan="4">
+                <item row="3" column="1">
+                 <layout class="QHBoxLayout" name="horizontalLayout_11">
+                  <property name="leftMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>0</number>
+                  </property>
+                  <item>
+                   <widget class="QCheckBox" name="depositHKLcheckBox">
+                    <property name="text">
+                     <string>deposit included hkl data</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="Upload_hkl_pushButton">
+                    <property name="text">
+                     <string>upload structure factors</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+                <item row="2" column="1">
+                 <widget class="QLineEdit" name="userEmailLineEdit">
+                  <property name="inputMethodHints">
+                   <set>Qt::ImhEmailCharactersOnly|Qt::ImhLowercaseOnly|Qt::ImhNoAutoUppercase</set>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="1">
+                 <widget class="QLineEdit" name="depositorUsernameLineEdit"/>
+                </item>
+                <item row="0" column="2" rowspan="4">
                  <widget class="QLabel" name="label_2">
                   <property name="text">
                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;You need to have a COD account &lt;br/&gt;in order to deposit a cif file. &lt;/p&gt;&lt;p&gt;&lt;a href=&quot;http://crystallography.net/cod/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#094fd1;&quot;&gt;Signup here for a new account&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -3539,21 +3570,7 @@ please add a publication author:</string>
                   </property>
                  </widget>
                 </item>
-                <item row="4" column="1">
-                 <widget class="QCheckBox" name="depositHKLcheckBox">
-                  <property name="text">
-                   <string>deposit hkl data</string>
-                  </property>
-                 </widget>
-                </item>
                 <item row="1" column="0">
-                 <widget class="QLabel" name="depositorUsername">
-                  <property name="text">
-                   <string>depositor's username</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="2" column="0">
                  <widget class="QLabel" name="depositorPasswordLabel">
                   <property name="text">
                    <string>depositor's password</string>
@@ -3888,7 +3905,6 @@ please add a publication author:</string>
   <tabstop>publishedDepositionRadioButton</tabstop>
   <tabstop>depositorUsernameLineEdit</tabstop>
   <tabstop>depositorPasswordLineEdit</tabstop>
-  <tabstop>depositHKLcheckBox</tabstop>
  </tabstops>
  <includes>
   <include location="local">gui.custom_classes.h</include>

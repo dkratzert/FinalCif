@@ -164,14 +164,14 @@ class CifContainer():
         for key in reversed(self.order):
             try:
                 self.block.move_item(self.block.get_index(key), 0)
-            except RuntimeError:
+            except (RuntimeError, ValueError):
                 pass
                 # print('Not in list:', key)
         # make sure hkl file and res file are at the end if the cif file:
         for key in special_keys:
             try:
                 self.block.move_item(self.block.get_index(key), -1)
-            except RuntimeError:
+            except (RuntimeError, ValueError):
                 continue
 
     @property
@@ -412,7 +412,7 @@ class CifContainer():
         """
         try:
             return self._spgr().xhm()
-        except (AttributeError, RuntimeError):
+        except (AttributeError, RuntimeError, ValueError):
             if self['_space_group_name_H-M_alt']:
                 return gemmi.cif.as_string(self['_space_group_name_H-M_alt'])
             elif self['_symmetry_space_group_name_H-M']:

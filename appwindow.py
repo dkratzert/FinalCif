@@ -783,11 +783,9 @@ class AppWindow(QMainWindow):
         else:
             picfile = Path(self.final_cif_file_name.stem + '.gif')
         try:
-            # Hard-wired report:
             if self.ui.TemplatesListWidget.currentRow() == 0:
                 make_report_from(options=self.options, file_obj=self.final_cif_file_name,
                                  output_filename=report_filename, picfile=picfile)
-            # Templated report:
             else:
                 t = TemplatedReport()
                 t.make_templated_report(options=self.options, file_obj=self.final_cif_file_name,
@@ -907,9 +905,8 @@ class AppWindow(QMainWindow):
                     if col2:
                         try:
                             self.cif[vhead] = col2
-                        except RuntimeError as e:
+                        except (RuntimeError, ValueError, IOError) as e:
                             print('Can not take cif info from table:', e)
-                            pass
         if not filename:
             self.final_cif_file_name = self.cif.fileobj.parent.joinpath(
                 strip_finalcif_of_name(self.cif.fileobj.stem) + '-finalcif.cif')
@@ -952,6 +949,7 @@ class AppWindow(QMainWindow):
         """
         Import an additional cif file to the main table.
         """
+        imp_cif: Union[CifContainer, None] = None
         if not filename:
             filename = cif_file_open_dialog(filter="CIF file (*.cif *.pcf *.cif_od *.cfx *.sqf)")
         if not filename:
@@ -960,6 +958,12 @@ class AppWindow(QMainWindow):
             imp_cif = CifContainer(Path(filename))
         except RuntimeError as e:
             show_general_warning('Could not import {}:\n'.format(filename) + str(e))
+            return
+        except ValueError as e:
+            show_general_warning('Problems parsing file: {}:\n'.format(filename) + str(e))
+            return
+        except IOError as e:
+            show_general_warning('Unable to open file {}:\n'.format(filename) + str(e))
             return
         self.import_key_value_pairs(imp_cif)
         self.import_loops(imp_cif)
@@ -1027,7 +1031,7 @@ class AppWindow(QMainWindow):
         try:
             e = None
             self.cif = CifContainer(filepath)
-        except (RuntimeError, IndexError) as e:
+        except (RuntimeError, IndexError, ValueError) as e:
             print('Unable to open cif file...')
             if DEBUG:
                 raise
@@ -1097,12 +1101,14 @@ class AppWindow(QMainWindow):
         self.ui.ShredCifButton.setEnabled(True)
         self.ui.LoopsPushButton.setEnabled(True)
 
-    def get_file_from_dialog(self) -> Union[Path, None]:
-        self.set_last_workdir()
+    def get_file_from_dialog(self, change_into_workdir=True) -> Union[Path, None]:
+        if change_into_workdir:
+            self.set_last_workdir()
         fp = cif_file_open_dialog()
-        # The warning about inconsistent temperature:
-        self.temperature_warning_displayed = False
         filepath = Path(fp)
+        if change_into_workdir:
+            # The warning about inconsistent temperature:
+            self.temperature_warning_displayed = False
         return filepath
 
     def go_into_cifs_directory(self, filepath):
@@ -1116,7 +1122,7 @@ class AppWindow(QMainWindow):
         try:
             # Will not stop reading if only the value is missing and ends with newline:
             self.cif.doc.check_for_missing_values()
-        except RuntimeError as e:
+        except (RuntimeError, ValueError) as e:
             print('Missing value:')
             print(str(e))
             errlist = str(e).split(':')
@@ -1219,7 +1225,6 @@ class AppWindow(QMainWindow):
     def view_molecule(self) -> None:
         if self.ui.growCheckBox.isChecked():
             self.ui.molGroupBox.setTitle('Completed Molecule')
-            # atoms = self.structures.get_atoms_table(structure_id, cartesian=False, as_list=True)
             atoms = list(self.cif.atoms_fract)
             if atoms:
                 sdm = SDM(atoms, self.cif.symmops, self.cif.cell[:6], centric=self.cif.is_centrosymm)
