@@ -31,6 +31,7 @@ class TestMainTableFieldBehavior(unittest.TestCase):
 
     def tearDown(self) -> None:
         self.myapp.final_cif_file_name.unlink(missing_ok=True)
+        self.myapp.close()
 
     def key_row(self, key: str) -> int:
         return self.myapp.ui.cif_main_table.row_from_key(key)

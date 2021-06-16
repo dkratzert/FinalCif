@@ -32,6 +32,7 @@ class TestLoops(unittest.TestCase):
 
     def tearDown(self) -> None:
         self.myapp.final_cif_file_name.unlink(missing_ok=True)
+        self.myapp.close()
 
     def get_index_of(self, loopkey: str = ''):
         tabw: QTabWidget = self.myapp.ui.LoopsTabWidget

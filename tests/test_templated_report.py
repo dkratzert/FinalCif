@@ -56,7 +56,7 @@ class TemplateReportTestCase(unittest.TestCase):
         print('imported templates')
         self.myapp.ui.TemplatesListWidget.blockSignals(False)
 
-    @unittest.skip('')
+    #@unittest.skip('')
     def test_with_report_text(self):
         self.myapp.ui.SaveFullReportButton.click()
         doc = Document(self.reportdoc.absolute())

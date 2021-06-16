@@ -221,10 +221,10 @@ class CifContainer():
             hklf = self.hklf_number_from_shelxl_file()
         return HKL(self.hkl_file, self.block.name, hklf_type=hklf).hkl_as_cif
 
-    def hklf_number_from_shelxl_file(self) -> Shelxfile:
+    def hklf_number_from_shelxl_file(self) -> int:
         shx = Shelxfile()
         shx.read_string(self.res_file_data)
-        return shx.hklf.n
+        return shx.hklf.n if shx.hklf.n != 0 else 4
 
     @property
     def hkl_file_without_foot(self) -> str:

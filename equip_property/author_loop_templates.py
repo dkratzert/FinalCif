@@ -82,16 +82,22 @@ class AuthorLoops():
             author_type = '_publ_author_name'
             contact_author = False
         if self.cif.block.find_loop(author_type):
-            g_loop: Loop = self.cif.block.find_loop(author_type).get_loop()
-            if tuple(row) in list(grouper(g_loop.values, len(row))):
+            gemmi_loop: Loop = self.cif.block.find_loop(author_type).get_loop()
+            if tuple(row) in list(grouper(gemmi_loop.values, len(row))):
                 self.app.status_bar.show_message('This author already exists.', 10)
                 print('author already there')
                 return  # Author already exists
         else:
-            g_loop = self.cif.init_loop(self.get_author_loop(contact_author))
-        g_loop.add_row(row)
+            gemmi_loop = self.cif.init_loop(self.get_author_loop(contact_author))
+        self.check_if_loop_and_row_size_fit_together(gemmi_loop, row)
         self.app.make_loops_tables()
         self.show_author_loops()
+
+    def check_if_loop_and_row_size_fit_together(self, gemmi_loop, row):
+        if gemmi_loop.width() == len(row):
+            gemmi_loop.add_row(row)
+        else:
+            show_general_warning('An author loop with different size is already in the CIF. Can not proceed.')
 
     def get_author_info(self) -> Dict[str, Union[str, bool, None]]:
         name = quote(utf8_to_str(self.ui.FullNameLineEdit.text()))

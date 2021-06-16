@@ -3031,7 +3031,7 @@ Contact authors should always also appear as regular authors.</string>
             <item row="0" column="1">
              <layout class="QGridLayout" name="gridLayout_22">
               <item row="0" column="1">
-               <widget class="QFrame" name="frame_2">
+               <widget class="QFrame" name="frame_for_radiobuttons">
                 <property name="frameShape">
                  <enum>QFrame::StyledPanel</enum>
                 </property>
@@ -3052,7 +3052,7 @@ Contact authors should always also appear as regular authors.</string>
                   <number>0</number>
                  </property>
                  <item>
-                  <layout class="QHBoxLayout" name="horizontalLayout_9">
+                  <layout class="QHBoxLayout" name="horizontalLayout_radiobuttons">
                    <item>
                     <widget class="QRadioButton" name="personalDepositRadioButton">
                      <property name="text">
@@ -3095,6 +3095,110 @@ Contact authors should always also appear as regular authors.</string>
                 </layout>
                </widget>
               </item>
+              <item row="1" column="1">
+               <layout class="QGridLayout" name="gridLayout_19">
+                <property name="leftMargin">
+                 <number>0</number>
+                </property>
+                <property name="rightMargin">
+                 <number>9</number>
+                </property>
+                <item row="0" column="0">
+                 <widget class="QLabel" name="depositorUsername">
+                  <property name="text">
+                   <string>depositor's username</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="0">
+                 <widget class="QLabel" name="label_9">
+                  <property name="text">
+                   <string>depsoitor's e-mail</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="1">
+                 <widget class="QLineEdit" name="depositorPasswordLineEdit">
+                  <property name="echoMode">
+                   <enum>QLineEdit::Password</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item row="3" column="1">
+                 <layout class="QHBoxLayout" name="horizontalLayout_11">
+                  <property name="leftMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>0</number>
+                  </property>
+                  <item>
+                   <widget class="QCheckBox" name="depositHKLcheckBox">
+                    <property name="text">
+                     <string>deposit included hkl data or</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="Upload_hkl_pushButton">
+                    <property name="text">
+                     <string>choose different hkl file</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <spacer name="horizontalSpacer_36">
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>40</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                 </layout>
+                </item>
+                <item row="2" column="1">
+                 <widget class="QLineEdit" name="userEmailLineEdit">
+                  <property name="inputMethodHints">
+                   <set>Qt::ImhEmailCharactersOnly|Qt::ImhLowercaseOnly|Qt::ImhNoAutoUppercase</set>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="1">
+                 <widget class="QLineEdit" name="depositorUsernameLineEdit"/>
+                </item>
+                <item row="0" column="2" rowspan="4">
+                 <widget class="QLabel" name="label_2">
+                  <property name="text">
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;You need to have a COD account &lt;br/&gt;in order to deposit a cif file. &lt;/p&gt;&lt;p&gt;&lt;a href=&quot;http://crystallography.net/cod/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#094fd1;&quot;&gt;Signup here for a new account&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  </property>
+                  <property name="textFormat">
+                   <enum>Qt::RichText</enum>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+                  </property>
+                  <property name="openExternalLinks">
+                   <bool>true</bool>
+                  </property>
+                  <property name="textInteractionFlags">
+                   <set>Qt::LinksAccessibleByKeyboard|Qt::LinksAccessibleByMouse</set>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="0">
+                 <widget class="QLabel" name="depositorPasswordLabel">
+                  <property name="text">
+                   <string>depositor's password</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
               <item row="4" column="1">
                <widget class="QStackedWidget" name="depositionOptionsStackedWidget">
                 <property name="frameShape">
@@ -3107,7 +3211,7 @@ Contact authors should always also appear as regular authors.</string>
                  <number>1</number>
                 </property>
                 <property name="currentIndex">
-                 <number>2</number>
+                 <number>0</number>
                 </property>
                 <widget class="QWidget" name="page_personal">
                  <layout class="QVBoxLayout" name="verticalLayout_30">
@@ -3158,8 +3262,8 @@ Contact authors should always also appear as regular authors.</string>
                     <item row="0" column="0">
                      <widget class="QLabel" name="authorsFullNamePersonalLabel">
                       <property name="text">
-                       <string>The current CIF does not contain author information 
-please add a publication author:</string>
+                       <string>The current CIF does not contain enough author 
+information please add a publication author:</string>
                       </property>
                      </widget>
                     </item>
@@ -3271,7 +3375,7 @@ please add a publication author:</string>
                    </layout>
                   </item>
                   <item>
-                   <layout class="QGridLayout" name="gridLayout_24">
+                   <layout class="QGridLayout" name="gridLayout_author_prepubl">
                     <item row="0" column="3">
                      <spacer name="horizontalSpacer_35">
                       <property name="orientation">
@@ -3460,7 +3564,7 @@ please add a publication author:</string>
                    <number>0</number>
                   </property>
                   <item>
-                   <widget class="QLabel" name="label_7">
+                   <widget class="QLabel" name="label_deposition_output">
                     <property name="text">
                      <string>Deposition Output:</string>
                     </property>
@@ -3487,97 +3591,6 @@ please add a publication author:</string>
                  </layout>
                 </widget>
                </widget>
-              </item>
-              <item row="1" column="1">
-               <layout class="QGridLayout" name="gridLayout_19">
-                <property name="leftMargin">
-                 <number>0</number>
-                </property>
-                <property name="rightMargin">
-                 <number>9</number>
-                </property>
-                <item row="0" column="0">
-                 <widget class="QLabel" name="depositorUsername">
-                  <property name="text">
-                   <string>depositor's username</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="2" column="0">
-                 <widget class="QLabel" name="label_9">
-                  <property name="text">
-                   <string>depsoitor's e-mail</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="1" column="1">
-                 <widget class="QLineEdit" name="depositorPasswordLineEdit">
-                  <property name="echoMode">
-                   <enum>QLineEdit::Password</enum>
-                  </property>
-                 </widget>
-                </item>
-                <item row="3" column="1">
-                 <layout class="QHBoxLayout" name="horizontalLayout_11">
-                  <property name="leftMargin">
-                   <number>0</number>
-                  </property>
-                  <property name="topMargin">
-                   <number>0</number>
-                  </property>
-                  <item>
-                   <widget class="QCheckBox" name="depositHKLcheckBox">
-                    <property name="text">
-                     <string>deposit included hkl data</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QPushButton" name="Upload_hkl_pushButton">
-                    <property name="text">
-                     <string>upload structure factors</string>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </item>
-                <item row="2" column="1">
-                 <widget class="QLineEdit" name="userEmailLineEdit">
-                  <property name="inputMethodHints">
-                   <set>Qt::ImhEmailCharactersOnly|Qt::ImhLowercaseOnly|Qt::ImhNoAutoUppercase</set>
-                  </property>
-                 </widget>
-                </item>
-                <item row="0" column="1">
-                 <widget class="QLineEdit" name="depositorUsernameLineEdit"/>
-                </item>
-                <item row="0" column="2" rowspan="4">
-                 <widget class="QLabel" name="label_2">
-                  <property name="text">
-                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;You need to have a COD account &lt;br/&gt;in order to deposit a cif file. &lt;/p&gt;&lt;p&gt;&lt;a href=&quot;http://crystallography.net/cod/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#094fd1;&quot;&gt;Signup here for a new account&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                  </property>
-                  <property name="textFormat">
-                   <enum>Qt::RichText</enum>
-                  </property>
-                  <property name="alignment">
-                   <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-                  </property>
-                  <property name="openExternalLinks">
-                   <bool>true</bool>
-                  </property>
-                  <property name="textInteractionFlags">
-                   <set>Qt::LinksAccessibleByKeyboard|Qt::LinksAccessibleByMouse</set>
-                  </property>
-                 </widget>
-                </item>
-                <item row="1" column="0">
-                 <widget class="QLabel" name="depositorPasswordLabel">
-                  <property name="text">
-                   <string>depositor's password</string>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
               </item>
              </layout>
             </item>
