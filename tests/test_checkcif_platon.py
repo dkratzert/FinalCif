@@ -38,6 +38,7 @@ class TestPlatonCheckCIF(unittest.TestCase):
         os.chdir(Path(__file__).resolve().parent.parent)
         for file in filenames:
             Path(file).unlink(missing_ok=True)
+        self.myapp.close()
 
     def setUp(self) -> None:
         os.chdir(Path(__file__).resolve().parent.parent)
@@ -70,6 +71,7 @@ class TestPlatonCheckCIF_with_CIF_without_hkl_data(unittest.TestCase):
         os.chdir(Path(__file__).resolve().parent.parent)
         for file in filenames:
             Path(file).unlink(missing_ok=True)
+        self.myapp.close()
 
     def setUp(self) -> None:
         os.chdir(Path(__file__).resolve().parent.parent)
