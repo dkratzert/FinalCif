@@ -27,8 +27,6 @@ class Dataset():
         self.filetype = 4
         self.domain = 1
         self.numerical = False
-        # TODO: implement this:
-        self.raw_filetype = 'raw'  # or mul
 
     def __repr__(self):
         out = ''
