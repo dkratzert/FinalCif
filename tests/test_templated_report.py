@@ -30,7 +30,6 @@ class TemplateReportTestCase(unittest.TestCase):
         self.myapp.ui.PictureWidthDoubleSpinBox.setValue(7.43)
         self.import_templates()
         self.myapp.ui.TemplatesListWidget.setCurrentRow(2)
-        self.myapp.hide()
         self.reportdoc = Path('report_' + self.testcif.stem + '-finalcif.docx')
         self.report_zip = Path(self.testcif.stem + '-finalcif.zip')
         self.myapp.set_report_picture(Path('../../icon/finalcif.png'))

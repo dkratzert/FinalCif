@@ -58,6 +58,7 @@ class TestFileIsOpened(unittest.TestCase):
     def tearDown(self) -> None:
         Path('foo.cif').unlink(missing_ok=True)
         Path('cu_BruecknerJK_153F40_0m-finalcif.cif').unlink(missing_ok=True)
+        self.myapp.close()
 
     def test_save_action(self):
         self.myapp.save_current_cif_file()
@@ -84,6 +85,7 @@ class TestWorkfolder(unittest.TestCase):
         Path(self.testcif.stem + '.lst').unlink(missing_ok=True)
         Path(self.testcif.stem + '.2fcf').unlink(missing_ok=True)
         Path('testcif_file.cif').unlink(missing_ok=True)
+        self.myapp.close()
 
     def key_row(self, key: str) -> int:
         return self.myapp.ui.cif_main_table.row_from_key(key)
@@ -205,7 +207,7 @@ class TestWorkfolder(unittest.TestCase):
 
     def test_equipment_click_machine_oxford_1(self):
         self.equipment_click('APEX2 QUAZAR')
-        self.assertEqual('', self.cell_text('_olex2_diffrn_ambient_temperature_device', COL_DATA))
+        self.assertEqual('Oxford Cryostream 800', self.cell_text('_olex2_diffrn_ambient_temperature_device', COL_DATA))
 
     def test_equipment_click_machine_oxford_2(self):
         self.equipment_click('APEX2 QUAZAR')
