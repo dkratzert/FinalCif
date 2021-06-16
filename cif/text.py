@@ -1,4 +1,5 @@
 import textwrap
+from html import escape, unescape
 
 import gemmi
 
@@ -121,7 +122,7 @@ def utf8_to_str(txt: str) -> str:
     for char in txt:
         if char in charcters:
             txt = txt.replace(char, charcters[char])
-    return txt
+    return utf8_to_html_ascii(txt)
 
 
 def delimit_string(txt: str) -> str:
@@ -135,4 +136,12 @@ def retranslate_delimiter(txt: str) -> str:
     inverted_characters_map = {v: k for k, v in charcters.items()}
     for char in inverted_characters_map.keys():
         txt = txt.replace(char, inverted_characters_map[char])
-    return txt
+    return html_ascii_to_utf8(txt)
+
+
+def utf8_to_html_ascii(text: str) -> str:
+    return text.encode('ascii', 'xmlcharrefreplace').decode()
+
+
+def html_ascii_to_utf8(text: str) -> str:
+    return unescape(text)
