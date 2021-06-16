@@ -109,6 +109,7 @@ charcters = {
     u"\u03A9": r'\W',
     u"\u03D5": r'\f',
     u"\u00B0": r"\%",
+    '·'      : r"{middle dot}",
     # "1̄": r'\=1',  # Does not work in QT?
 }
 
@@ -131,7 +132,7 @@ def retranslate_delimiter(txt: str) -> str:
     """
     Translates delimited cif characters back to unicode characters.
     """
-    inv_map = {v: k for k, v in charcters.items()}
-    for char in inv_map.keys():
-        txt = txt.replace(char, inv_map[char])
+    inverted_characters_map = {v: k for k, v in charcters.items()}
+    for char in inverted_characters_map.keys():
+        txt = txt.replace(char, inverted_characters_map[char])
     return txt

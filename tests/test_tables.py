@@ -41,6 +41,7 @@ class TablesTestMixin():
         self.myapp.ui.ReportTextCheckBox.setChecked(False)
         self.myapp.ui.HAtomsCheckBox.setChecked(False)
         self.myapp.ui.PictureWidthDoubleSpinBox.setValue(7.5)
+        self.myapp.close()
 
 
 class TablesTestCase(TablesTestMixin, unittest.TestCase):

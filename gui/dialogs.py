@@ -78,6 +78,16 @@ def show_general_warning(warn_text: str = '') -> None:
     box.setText(warn_text)
     box.exec()
 
+def show_ok_cancel_warning(warn_text: str = '') -> bool:
+    box = QMessageBox()
+    box.setTextFormat(Qt.AutoText)
+    box.setWindowTitle(" ")
+    box.setTextInteractionFlags(Qt.TextBrowserInteraction)
+    box.setText(warn_text)
+    box.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+    box.setDefaultButton(QMessageBox.Ok)
+    box.exec()
+    return box.result() == QMessageBox.Ok
 
 def show_update_warning(remote_version: int = 0) -> None:
     """

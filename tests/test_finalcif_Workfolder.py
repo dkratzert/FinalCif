@@ -30,6 +30,9 @@ class TestNothingOpened(unittest.TestCase):
         Path('foo.cif').unlink(missing_ok=True)
         Path('cu_BruecknerJK_153F40_0m-finalcif.cif').unlink(missing_ok=True)
 
+    def tearDown(self) -> None:
+        self.myapp.close()
+
     def test_save_noting(self):
         self.myapp.save_current_cif_file()
         self.assertEqual(False, Path('cu_BruecknerJK_153F40_0m-finalcif.cif').exists())

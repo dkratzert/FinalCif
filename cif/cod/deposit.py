@@ -10,7 +10,8 @@ from cif.cod.deposition_list import CODFetcher
 from cif.cod.doi import resolve_doi
 from cif.cod.website_parser import MyCODStructuresParser
 from cif.hkl import HKL
-from gui.dialogs import cif_file_open_dialog, show_general_warning
+from cif.text import delimit_string
+from gui.dialogs import cif_file_open_dialog, show_general_warning, show_ok_cancel_warning
 from gui.finalcif_gui import Ui_FinalCifWindow
 from tools.settings import FinalCifSettings
 from tools.version import VERSION
@@ -32,7 +33,7 @@ Personal Problems:
 class CODdeposit():
 
     def __init__(self, ui: Ui_FinalCifWindow, cif: Union[CifContainer, None] = None):
-        self.hkl_file: Union[Path, None] = None
+        self.hkl_file: Union[io.StringIO, None] = None
         self.ui = ui
         self.settings = FinalCifSettings()
         self._cif = cif
@@ -83,7 +84,9 @@ class CODdeposit():
         self.ui.depositCIFpushButton.setEnabled(True)
         self._cif = obj
         self.check_for_publ_author()
+        self.hkl_file = None
         self.ui.depositHKLcheckBox.setChecked(len(self._cif['_shelx_hkl_file']))
+        self.ui.depositHKLcheckBox.setDisabled(not len(self._cif['_shelx_hkl_file']))
 
     def _back_to_cod_page(self):
         self.ui.BackToCODPushButton.clicked.connect(lambda: self.ui.BackToCODPushButton.setVisible(False))
@@ -95,11 +98,12 @@ class CODdeposit():
         try:
             self.author_name = self.cif.get_loop_column('_publ_author_name')[0]
             self.author_email = self.cif.get_loop_column('_publ_author_email')[0]
+            # page personal:
             self.ui.ContactAuthorLineEdit.setText(self.author_name)
             self.ui.ContactEmailLineEdit.setText(self.author_email)
+            # page pre-publication:
             self.ui.ContactAuthorLineEdit_2.setText(self.author_name)
             self.ui.ContactEmailLineEdit_2.setText(self.author_email)
-            print(self.author_name, self.author_email)
         except (IndexError, AttributeError):
             self.author_name = ''
             self.author_email = ''
@@ -214,17 +218,17 @@ class CODdeposit():
         self.ui.DOIResolveTextLabel.clear()
         for key, value in citation.items():
             if key == '_publ_author_name' and value:
-                value = value[0]
+                value = delimit_string(value[0])
             self.ui.DOIResolveTextLabel.setText(self.ui.DOIResolveTextLabel.text() + "{}: {}\n\n".format(key, value))
             self.cif.set_pair_delimited(key, value)
         # self.ui.depositCIFpushButton.setEnabled(True)
 
     def cif_deposit(self):
+        self.ui.depositOutputTextBrowser.setText('')
         self.switch_to_page('deposit')
         if not self.cif:
             print('No cif opened!')
             return
-        self.ui.depositOutputTextBrowser.setText('starting deposition in "{}" mode ...'.format(self.deposition_type))
         print('starting deposition of ', self.cif.fileobj.name)
         data = {'username'       : self.username,
                 'password'       : self.password,
@@ -247,21 +251,27 @@ class CODdeposit():
             # Nothing to define extra:
             pass
         cif_fileobj = io.StringIO(self.cif.cif_as_string())
-        # Path('/Users/daniel/Documents/GitHub/FinalCif/testcif.txt').write_text(cif_fileobj.read())
         if self.ui.depositHKLcheckBox.isChecked():
-            # TODO: Always upload hkl data if present, but let the option to choose another hkl if no hkl is in cif
             hkl_fileobj = io.StringIO(self.cif.hkl_as_cif)
             hklname = self.cif.fileobj.stem + '.hkl'
             # Path('test.hkl').write_text(hklf.getvalue())
             files = {'cif': (self.cif.filename, cif_fileobj, 'multipart/form-data'),
                      'hkl': (hklname, hkl_fileobj, 'multipart/form-data')}
-        elif self.hkl_file and self.ui.depositHKLcheckBox.isChecked():
+        elif self.hkl_file:
+            # TODO: check if hkl is fcf file, warn if not hkl is uploaded at all
+            hkl_fileobj = self.hkl_file
             files = {'cif': (self.cif.filename, cif_fileobj, 'multipart/form-data'),
-                     'hkl': (self.hkl_file.name, self.hkl_file, 'multipart/form-data')}
+                     'hkl': (self.hkl_file.name, hkl_fileobj, 'multipart/form-data')}
         else:
-            files = {'cif': (self.cif.filename, cif_fileobj)}
+            files = {'cif': (self.cif.filename, cif_fileobj, 'multipart/form-data')}
+        if 'hkl' not in files and not show_ok_cancel_warning('You are attempting to upload a CIF without hkl data.\n'
+                                                             'Do you really want to proceed?'):
+            self.ui.depositOutputTextBrowser.setText('Deposition aborted.')
+            return
+        self.ui.depositOutputTextBrowser.setText('starting deposition in "{}" mode ...'.format(self.deposition_type))
         print('making request')
         # pprint(data)
+        # pprint(files)
         r = requests.post(self.deposit_url, data=data, files=files,
                           headers={'User-Agent': 'FinalCif/{}'.format(VERSION)})
         self.ui.depositOutputTextBrowser.setText(r.text)
@@ -326,14 +336,20 @@ class CODdeposit():
     def _set_external_hkl_file(self) -> None:
         file = cif_file_open_dialog(filter="HKL file (*.hkl *.fcf)")
         if file.endswith('.hkl'):
-            self.hkl_file = io.StringIO(HKL(file, self.cif.block.name, hklf_type=4).hkl_as_cif)
+            if self.cif.res_file_data:
+                hklf = self.cif.hklf_number_from_shelxl_file()
+            else:
+                hklf = 4
+            self.hkl_file = io.StringIO(HKL(file, self.cif.block.name, hklf_type=hklf).hkl_as_cif)
+            self.hkl_file.name = Path(file).name
         elif file.endswith('.fcf'):
             cif = CifContainer(file)
             list_code = cif['_shelx_refln_list_code']
             if list_code != '4':
                 show_general_warning('Only plain hkl or fcf (LIST 4 style) files should be uploaded.')
                 return
-            self.hkl_file = Path(file).read_bytes()
+            self.hkl_file = io.StringIO(Path(file).read_text())
+            self.hkl_file.name = Path(file).name
         else:
             show_general_warning('Only plain hkl or fcf (LIST 4 style) files should be uploaded.')
 
