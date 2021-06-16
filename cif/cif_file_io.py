@@ -52,7 +52,7 @@ class CifContainer():
         self.hkl_extra_info = self._abs_hkl_details()
         self.order = order
         self.dsr_used = d.dsr_used
-        self.atomic_struct = gemmi.make_small_structure_from_block(self.block)
+        self.atomic_struct: gemmi.SmallStructure = gemmi.make_small_structure_from_block(self.block)
         # A dictionary to convert Atom names like 'C1_2' or 'Ga3' into Element names like 'C' or 'Ga'
         self._name2elements = dict(
             zip([x.upper() for x in self.block.find_loop('_atom_site_label')],
@@ -333,69 +333,6 @@ class CifContainer():
     @property
     def absorpt_correction_t_min(self) -> str:
         return self.hkl_extra_info['_exptl_absorpt_correction_T_min']
-
-    @property
-    def bond_precision(self):
-        """
-        This method is unfinished and might result in wrong numbers!
-        """
-        a, aerror = get_error_from_value(self['_cell_length_a'])
-        b, berror = get_error_from_value(self['_cell_length_b'])
-        c, cerror = get_error_from_value(self['_cell_length_c'])
-        alpha, sigalpha = get_error_from_value(self['_cell_angle_alpha'])
-        beta, sigbeta = get_error_from_value(self['_cell_angle_beta'])
-        gamma, siggamma = get_error_from_value(self['_cell_angle_gamma'])
-        A1 = aerror / a
-        A2 = berror / b
-        A3 = cerror / c
-        # B1 = sin(alpha) * (cos(alpha) - cos(beta) * cos(gamma)) * sigalpha
-        # B2 = sin(beta) * (cos(beta) - cos(alpha) * cos(gamma)) * sigbeta
-        # B3 = sin(gamma) * (cos(gamma) - cos(alpha) * cos(beta)) * siggamma
-        name2coords = dict([(x[0], (x[2], x[3], x[4])) for x in self.atoms()])
-        name2part = dict([(x[0], x[5]) for x in self.atoms()])
-        bonderrors = []
-        bb = 0.0
-        pair = ('C')
-        for bond in self.bonds(without_h=True):
-            atom1 = bond[0]
-            atom2 = bond[1]
-            if 'B' in atom1 or 'B' in atom2:
-                continue
-            if name2part[atom1] != '.' or name2part[atom2] != '.':
-                continue
-            if self._iselement(atom1) in pair and self._iselement(atom2) in pair:
-                dist, error = get_error_from_value(bond[2])
-                x1, sig_x1 = get_error_from_value(name2coords[atom1][0])
-                y1, sig_y1 = get_error_from_value(name2coords[atom1][1])
-                z1, sig_z1 = get_error_from_value(name2coords[atom1][2])
-                x2, sig_x2 = get_error_from_value(name2coords[atom2][0])
-                y2, sig_y2 = get_error_from_value(name2coords[atom2][1])
-                z2, sig_z2 = get_error_from_value(name2coords[atom2][2])
-                delta1 = a * (x1 - x2)
-                delta2 = b * (y1 - y2)
-                delta3 = c * (z1 - z2)
-                sigd = (
-                           (delta1 + delta2 * cos(gamma) + delta3 * cos(beta)) ** 2 * (
-                           delta1 ** 2 * A1 ** 2 + a ** 2 * (sig_x1 ** 2 + sig_x2 ** 2))
-                           + (delta1 * cos(gamma) + delta2 + delta3 * cos(alpha)) ** 2 * (
-                               delta2 ** 2 * A2 ** 2 + b ** 2 * (sig_y1 ** 2 + sig_y2 ** 2))
-                           + (delta1 * cos(beta) + delta2 * cos(alpha) + delta3) ** 2 * (
-                               delta3 ** 2 * A3 ** 2 + c ** 2 * (sig_z1 ** 2 + sig_z2 ** 2))
-                           + ((delta1 * delta2 * siggamma * sin(gamma)) ** 2 +
-                              (delta1 * delta3 * sigbeta * sin(beta)) ** 2 +
-                              (delta2 * delta3 * sigalpha * sin(alpha)) ** 2)) / dist ** 2
-                # The error is too large:
-                sigd = sqrt(sigd)
-                bb += sigd
-                if sigd > 0.0001:
-                    # count += 1
-                    # print(atom1, atom2, dist, round(error, 5), round(sigd, 4), round(bb, 5), count)
-                    # print('------ dist - sigma - calcsig - sum - num')
-                    bonderrors.append(sigd)
-        if len(bonderrors) > 2:
-            return round(mean(bonderrors), 5)
-        else:
-            return 0.0
 
     def _spgr(self) -> gemmi.SpaceGroup:
         if self.symmops:

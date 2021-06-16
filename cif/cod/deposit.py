@@ -252,18 +252,15 @@ class CODdeposit():
             pass
         cif_fileobj = io.StringIO(self.cif.cif_as_string())
         if self.ui.depositHKLcheckBox.isChecked():
-            hkl_fileobj = io.StringIO(self.cif.hkl_as_cif)
-            hklname = self.cif.fileobj.stem + '.hkl'
-            # Path('test.hkl').write_text(hklf.getvalue())
             files = {'cif': (self.cif.filename, cif_fileobj, 'multipart/form-data'),
-                     'hkl': (hklname, hkl_fileobj, 'multipart/form-data')}
+                     'hkl': (self.cif.fileobj.stem + '.hkl', io.StringIO(self.cif.hkl_as_cif), 'multipart/form-data')}
         elif self.hkl_file:
-            # TODO: check if hkl is fcf file, warn if not hkl is uploaded at all
-            hkl_fileobj = self.hkl_file
             files = {'cif': (self.cif.filename, cif_fileobj, 'multipart/form-data'),
-                     'hkl': (self.hkl_file.name, hkl_fileobj, 'multipart/form-data')}
+                     'hkl': (self.hkl_file.name, self.hkl_file, 'multipart/form-data')}
         else:
-            files = {'cif': (self.cif.filename, cif_fileobj, 'multipart/form-data')}
+            files = {'cif': (self.cif.filename, cif_fileobj, 'multipart/form-data')
+                     # no hkl file here
+                     }
         if 'hkl' not in files and not show_ok_cancel_warning('You are attempting to upload a CIF without hkl data.\n'
                                                              'Do you really want to proceed?'):
             self.ui.depositOutputTextBrowser.setText('Deposition aborted.')

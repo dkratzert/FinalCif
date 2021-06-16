@@ -1,5 +1,6 @@
 import os
 from builtins import str
+from typing import Union
 
 import gemmi
 from docx.text.paragraph import Paragraph
@@ -11,7 +12,7 @@ from cif.cif_file_io import CifContainer
 from cif.text import retranslate_delimiter
 from report.references import DummyReference, SAINTReference, SORTAVReference, ReferenceList, CCDCReference, \
     SHELXLReference, SHELXTReference, SHELXSReference, FinalCifReference, ShelXleReference, Olex2Reference, \
-    SHELXDReference, SADABS_TWINABS_Reference, SCALE3_ABSPACK_Reference, CrysalisProReference
+    SHELXDReference, SADABS_TWINABS_Reference, CrysalisProReference
 from tests.helpers import remove_line_endings
 from tools.misc import protected_space, angstrom, zero_width_space
 
@@ -258,6 +259,19 @@ class Hydrogens():
         paragraph.add_run(sentence3)
         paragraph.add_run('3').font.superscript = True
         paragraph.add_run(sentence4)
+
+    def fraction_of_isotropic_displacement_parameters(self) -> Union[float, int]:
+        isotropic_count = 0
+        for site in self.cif.atomic_struct.sites:
+            if site.aniso.nonzero() or site.element.is_hydrogen:
+                # Anisotropic or hydrogen atom
+                continue
+            else:
+                isotropic_count += 1
+        if isotropic_count > 0:
+            return self.cif.natoms(without_h=True) / float(isotropic_count)
+        else:
+            return 1.0
 
 
 class Disorder():
