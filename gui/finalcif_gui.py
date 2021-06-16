@@ -1836,8 +1836,8 @@ class Ui_FinalCifWindow(object):
         self.depositorPasswordLabel.setText(_translate("FinalCifWindow", "depositor\'s password"))
         self.label_10.setText(_translate("FinalCifWindow", "<html><head/><body><p><span style=\" font-weight:600;\">A personal communication to the COD makes the uploaded CIF publicly available.</span></p></body></html>"))
         self.ContactAuthorLabel.setText(_translate("FinalCifWindow", "Publication author for contact by the COD:"))
-        self.authorsFullNamePersonalLabel.setText(_translate("FinalCifWindow", "The current CIF does not contain author information \n"
-"please add a publication author:"))
+        self.authorsFullNamePersonalLabel.setText(_translate("FinalCifWindow", "The current CIF does not contain enough author \n"
+"information please add a publication author:"))
         self.authorEditorPushButton.setText(_translate("FinalCifWindow", "Author Editor"))
         self.label_12.setText(_translate("FinalCifWindow", "Email address for contact by the COD:"))
         self.label_8.setText(_translate("FinalCifWindow", "(6-12 months)"))

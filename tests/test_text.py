@@ -70,3 +70,27 @@ class TestText(unittest.TestCase):
             if char in ('Å', 'Å'):
                 continue
             self.assertEqual(char, retranslate_delimiter(delimit_string(char)))
+
+
+class TestHeavyUtf8(unittest.TestCase):
+    def setUp(self) -> None:
+        # We have an utf-8 string with characters that CIF does not know:
+        self.txt = "∮ E⋅da = Q,  n → ∞, ∑ f(i) = ∏ g(i), ∀x∈ℝ: ⌈x⌉ = −⌊−x⌋, α ∧ ¬β = ¬(¬α ∨ β), " \
+                   "ℕ ⊆ ℕ₀ ⊂ ℤ ⊂ ℚ ⊂ ℝ ⊂ ℂ, ⊥ < a ≠ b ≡ c ≤ d ≪ ⊤ ⇒ (A ⇔ B), " \
+                   "2H₂ + O₂ ⇌ 2H₂O, R = 4.7 kΩ, ⌀ 200 mm"
+        # The expected result is a mix of CIF and html entities:
+        self.quoted = r"&#8750; E&#8901;da = Q,  n \rightarrow \infty, &#8721; f(i) = &#8719; g(i), " \
+                      r"&#8704;x&#8712;&#8477;: &#8968;x&#8969; = &#8722;&#8970;&#8722;x&#8971;, \a " \
+                      r"&#8743; &#172;\b = &#172;(&#172;\a &#8744; \b), " \
+                      r"&#8469; &#8838; &#8469;&#8320; &#8834; &#8484; &#8834; &#8474; &#8834; &#8477; " \
+                      r"&#8834; &#8450;, &#8869; < a \\neq b &#8801; c &#8804; d &#8810; &#8868; &#8658; " \
+                      r"(A &#8660; B), " \
+                      r"2H~2~ + O~2~ &#8652; 2H~2~O, R = 4.7 k\W, &#8960; 200 mm"
+
+    def test_encode_heavy_utf8(self):
+        # Test for the quoted string
+        self.assertEqual(self.quoted, utf8_to_str(self.txt))
+
+    def test_encode_and_decode_utf8(self):
+        # Test for quote and immediate decode to utf-8 again:
+        self.assertEqual(self.txt, retranslate_delimiter(utf8_to_str(self.txt)))
