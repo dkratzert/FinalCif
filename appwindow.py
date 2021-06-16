@@ -9,6 +9,7 @@ import os
 import subprocess
 import sys
 import time
+from bisect import bisect
 from contextlib import suppress
 from datetime import datetime
 from math import sin, radians
@@ -1476,7 +1477,7 @@ class AppWindow(QMainWindow):
         textedit.setLineWrapMode(QPlainTextEdit.NoWrap)
         textedit.setReadOnly(True)
 
-    def add_row(self, key: str, value: str, at_start=False) -> None:
+    def add_row(self, key: str, value: str, at_start=False, position: Union[int, None]=None) -> None:
         """
         Create a empty row at bottom of cif_main_table. This method only fills cif data in the
         first column. Not the data from external sources!
@@ -1484,7 +1485,10 @@ class AppWindow(QMainWindow):
         if at_start:
             row_num = 0
         else:
-            row_num = self.ui.cif_main_table.rowCount()
+            if position and position > 0:
+                row_num = position
+            else:
+                row_num = self.ui.cif_main_table.rowCount()
         self.ui.cif_main_table.insertRow(row_num)
         if value is None:
             strval = '?'

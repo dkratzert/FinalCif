@@ -1,3 +1,4 @@
+from bisect import bisect
 from contextlib import suppress
 from pathlib import Path
 from typing import Tuple
@@ -69,12 +70,11 @@ class Equipment:
             for key in equipment:
                 if key not in self.app.ui.cif_main_table.vheaderitems:
                     # Key is not in the main table:
-                    self.app.add_row(key, equipment[key], at_start=True)
-                else:
-                    # Key is already there:
-                    self.app.ui.cif_main_table.setText(key, COL_CIF, txt='?')
-                    self.app.ui.cif_main_table.setText(key, COL_DATA, txt=equipment[key], color=light_green)
-                    self.app.ui.cif_main_table.setText(key, COL_EDIT, txt=equipment[key])
+                    self.app.add_row(key, equipment[key], at_start=False, position=bisect(self.app.ui.cif_main_table.vheaderitems, key))
+                # Key is already there:
+                self.app.ui.cif_main_table.setText(key, COL_CIF, txt='?')
+                self.app.ui.cif_main_table.setText(key, COL_DATA, txt=equipment[key], color=light_green)
+                self.app.ui.cif_main_table.setText(key, COL_EDIT, txt=equipment[key])
         else:
             print('Empty main table!')
 
