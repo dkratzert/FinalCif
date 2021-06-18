@@ -8,13 +8,13 @@ from PyQt5.QtWidgets import QTableWidgetItem, QTextBrowser, QFrame
 from cif.cif_file_io import CifContainer
 from cif.cod.deposition_list import CODFetcher
 from cif.cod.doi import resolve_doi
+from cif.cod.upload import upload_cif
 from cif.cod.website_parser import MyCODStructuresParser
 from cif.hkl import HKL
 from cif.text import delimit_string
 from gui.dialogs import cif_file_open_dialog, show_general_warning, show_ok_cancel_warning
 from gui.finalcif_gui import Ui_FinalCifWindow
 from tools.settings import FinalCifSettings
-from tools.version import VERSION
 
 """
 COD-number has 7 digits
@@ -49,7 +49,7 @@ class CODdeposit():
         #
         self.ui.BackToCODPushButton.clicked.connect(self._back_to_cod_page)
         #
-        self.ui.depositCIFpushButton.clicked.connect(self._prepare_deposit)
+        self.ui.depositCIFpushButton.clicked.connect(self._init_deposit)
         # The full deposit url: self.deposit_url = 'http://127.0.0.1:8080/cod/cgi-bin/cif-deposit.pl'
         self.main_url = 'https://www.crystallography.net/cod-test/'
         self.deposit_url = self.main_url + 'cgi-bin/cif-deposit.pl'
@@ -223,7 +223,27 @@ class CODdeposit():
             self.cif.set_pair_delimited(key, value)
         # self.ui.depositCIFpushButton.setEnabled(True)
 
-    def cif_deposit(self):
+    def _init_deposit(self):
+        print("#### Deposition in '{}' mode...".format(self.deposition_type))
+        self.ui.depositOutputTextBrowser.clear()
+        self.switch_to_page('deposit')
+        if len(self.username) < 2:
+            self.ui.depositOutputTextBrowser.setText('no username given')
+            self.set_deposit_button_to_try_again()
+            return
+        if len(self.password) < 4:
+            self.ui.depositOutputTextBrowser.setText('no password given')
+            self.set_deposit_button_to_try_again()
+            return
+        self.cif.save()
+        print('Saved cif to:', self.cif.filename)
+        self.ui.statusBar.showMessage('  File Saved:  {}'.format(self.cif.filename), 10 * 1000)
+        data, files = self.prepare_upload()
+        r = upload_cif(self.deposit_url, data, files)
+        self.ui.depositOutputTextBrowser.setText(r.text)
+        self.set_deposit_button_to_try_again()
+
+    def prepare_upload(self):
         self.ui.depositOutputTextBrowser.setText('')
         self.switch_to_page('deposit')
         if not self.cif:
@@ -265,15 +285,12 @@ class CODdeposit():
                                                              'Do you really want to proceed?'):
             self.ui.depositOutputTextBrowser.setText('Deposition aborted.')
             return
-        self.ui.depositOutputTextBrowser.setText('starting deposition in "{}" mode ...'.format(self.deposition_type))
+        self.ui.depositOutputTextBrowser.setText('Starting deposition of {} in "{}" mode ...'
+                                                 .format(self.cif.fileobj.name, self.deposition_type))
         print('making request')
         # pprint(data)
         # pprint(files)
-        r = requests.post(self.deposit_url, data=data, files=files,
-                          headers={'User-Agent': 'FinalCif/{}'.format(VERSION)})
-        self.ui.depositOutputTextBrowser.setText(r.text)
-        self.set_deposit_button_to_try_again()
-        return r
+        return data, files
 
     def switch_to_page(self, deposition_type: str):
         self.reset_deposit_button_state_to_initial()
@@ -283,7 +300,7 @@ class CODdeposit():
         self.ui.depositCIFpushButton.disconnect()
         self.ui.depositOutputTextBrowser.clear()
         self.ui.depositCIFpushButton.setText("Deposit CIF")
-        self.ui.depositCIFpushButton.clicked.connect(self._prepare_deposit)
+        self.ui.depositCIFpushButton.clicked.connect(self._init_deposit)
 
     def set_deposit_button_to_try_again(self):
         self.ui.depositCIFpushButton.setText("Try Again")
@@ -312,24 +329,6 @@ class CODdeposit():
         self.settings.save_key_value('cod_user_email', text)
         self.user_email = text
 
-    def _prepare_deposit(self):
-        print("#### Deposition in '{}' mode...".format(self.deposition_type))
-        self.ui.depositOutputTextBrowser.clear()
-        self.switch_to_page('deposit')
-        if len(self.username) < 2:
-            self.ui.depositOutputTextBrowser.setText('no username given')
-            self.set_deposit_button_to_try_again()
-            return
-        if len(self.password) < 4:
-            self.ui.depositOutputTextBrowser.setText('no password given')
-            self.set_deposit_button_to_try_again()
-            return
-        self.cif.save()
-        print('Saved cif to:', self.cif.filename)
-        self.ui.statusBar.showMessage('  File Saved:  {}'.format(self.cif.filename), 10 * 1000)
-        self.cif_deposit()
-        # print(r.text)
-
     def _set_external_hkl_file(self) -> None:
         file = cif_file_open_dialog(filter="HKL file (*.hkl *.fcf)")
         if file.endswith('.hkl'):
@@ -347,6 +346,8 @@ class CODdeposit():
                 return
             self.hkl_file = io.StringIO(Path(file).read_text())
             self.hkl_file.name = Path(file).name
+        elif file == '':
+            self.hkl_file = None
         else:
             show_general_warning('Only plain hkl or fcf (LIST 4 style) files should be uploaded.')
 
