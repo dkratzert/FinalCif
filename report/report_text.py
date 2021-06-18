@@ -12,7 +12,7 @@ from cif.cif_file_io import CifContainer
 from cif.text import retranslate_delimiter
 from report.references import DummyReference, SAINTReference, SORTAVReference, ReferenceList, CCDCReference, \
     SHELXLReference, SHELXTReference, SHELXSReference, FinalCifReference, ShelXleReference, Olex2Reference, \
-    SHELXDReference, SADABS_TWINABS_Reference, CrysalisProReference
+    SHELXDReference, SadabsTwinabsReference, CrysalisProReference
 from tests.helpers import remove_line_endings
 from tools.misc import protected_space, angstrom, zero_width_space
 
@@ -168,7 +168,7 @@ class DataReduct():
             else:
                 scale_prog = 'TWINABS'
             # absorpt_ref = SAINTReference(scale_prog, version)
-            absorpt_ref = SADABS_TWINABS_Reference()
+            absorpt_ref = SadabsTwinabsReference()
         if 'SORTAV' in absdetails.upper():
             scale_prog = 'SORTAV'
             absorpt_ref = SORTAVReference()
@@ -244,9 +244,21 @@ class Hydrogens():
         TODO: check if the proposed things are really there.
         """
         self.cif = cif
-        sentence1 = "All non-hydrogen atoms were refined with anisotropic displacement parameters. " \
+        n_isotropic = self.number_of_isotropic_atoms()
+        number = 'All'
+        parameter_type = 'anisotropic'
+        if 0 < n_isotropic < self.cif.natoms(without_h=True):
+            number = 'Some atoms ({}) were refined using isotropic displacement parameters.' \
+                     ' All other'.format(n_isotropic)
+        if n_isotropic > 0 and n_isotropic > self.cif.natoms(without_h=True):
+            number = 'Most atoms ({}) were refined using isotropic displacement parameters.' \
+                     ' All other'.format(n_isotropic)
+        if n_isotropic == self.cif.natoms(without_h=True):
+            number = 'All'
+            parameter_type = 'isotropic'
+        sentence1 = "{} non-hydrogen atoms were refined with {} displacement parameters. " \
                     "The hydrogen atoms were refined isotropically on calculated positions using a riding model " \
-                    "with their "
+                    "with their ".format(number, parameter_type)
         sentence2 = " values constrained to 1.5 times the "
         sentence3 = " of their pivot atoms for terminal sp"
         sentence4 = " carbon atoms and 1.2 times for all other carbon atoms."
@@ -260,18 +272,15 @@ class Hydrogens():
         paragraph.add_run('3').font.superscript = True
         paragraph.add_run(sentence4)
 
-    def fraction_of_isotropic_displacement_parameters(self) -> Union[float, int]:
+    def number_of_isotropic_atoms(self) -> Union[float, int]:
         isotropic_count = 0
         for site in self.cif.atomic_struct.sites:
-            if site.aniso.nonzero() or site.element.is_hydrogen:
-                # Anisotropic or hydrogen atom
-                continue
-            else:
+            if self.atom_is_isotropic_and_not_hydrogen(site):
                 isotropic_count += 1
-        if isotropic_count > 0:
-            return self.cif.natoms(without_h=True) / float(isotropic_count)
-        else:
-            return 1.0
+        return isotropic_count
+
+    def atom_is_isotropic_and_not_hydrogen(self, site):
+        return not site.aniso.nonzero() and not site.element.is_hydrogen
 
 
 class Disorder():

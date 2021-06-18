@@ -11,8 +11,8 @@ from docxtpl import DocxTemplate, RichText, InlineImage, Subdoc
 
 from cif.cif_file_io import CifContainer
 from cif.text import retranslate_delimiter
-from report.references import SAINTReference, SHELXLReference, SADABS_TWINABS_Reference, SHELXTReference, \
-    SHELXSReference, SHELXDReference, SORTAVReference, SCALE3_ABSPACK_Reference, FinalCifReference, CCDCReference, \
+from report.references import SAINTReference, SHELXLReference, SadabsTwinabsReference, SHELXTReference, \
+    SHELXSReference, SHELXDReference, SORTAVReference, Scale3AbspackReference, FinalCifReference, CCDCReference, \
     CrysalisProReference
 from report.report_text import math_to_word, gstr, format_radiation, get_inf_article
 from report.symm import SymmetryElement
@@ -391,7 +391,7 @@ class TemplatedReport():
                 scale_prog = 'SADABS'
             else:
                 scale_prog = 'TWINABS'
-            self.literature['absorption'] = SADABS_TWINABS_Reference().richtext
+            self.literature['absorption'] = SadabsTwinabsReference().richtext
         if 'SORTAV' in absdetails.upper():
             scale_prog = 'SORTAV'
             self.literature['absorption'] = SORTAVReference().richtext
