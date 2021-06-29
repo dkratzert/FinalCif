@@ -17,15 +17,8 @@ from gui.finalcif_gui import Ui_FinalCifWindow
 from tools.settings import FinalCifSettings
 
 """
-COD-number has 7 digits
-
-* In general, each option for replace should habe a textedit input for the 
- change log and a lineEdit to give the COD-ID
-
-Personal Problems:
-- Depositing structure 'cif' into TESTCOD:
-    -> should be named as _data value
-    ----> Test this again
+_shelx_fab_file
+_shelx_fab_checksum
 
 """
 
@@ -68,7 +61,7 @@ class CODdeposit():
         else:
             self.user_email = ''
         if self.settings.load_settings_list('COD', self.username):
-            self.add_structures_to_table(self.settings.load_settings_list('COD', self.username))
+            self.add_deposited_structures_to_table(self.settings.load_settings_list('COD', self.username))
 
     def author_editor_clicked(self):
         self.ui.MainStackedWidget.go_to_loops_page()
@@ -172,11 +165,11 @@ class CODdeposit():
 
     def _refresh_cod_list(self):
         if self.settings.load_settings_list('COD', self.username) and self.ui.CODtableWidget.rowCount() == 0:
-            self.add_structures_to_table(self.settings.load_settings_list('COD', self.username))
+            self.add_deposited_structures_to_table(self.settings.load_settings_list('COD', self.username))
         else:
             parser = self.get_structures_from_cod()
             self.settings.save_settings_list('COD', self.username, parser.structures)
-            self.add_structures_to_table(parser.structures, parser.token)
+            self.add_deposited_structures_to_table(parser.structures, parser.token)
 
     def get_structures_from_cod(self):
         f = CODFetcher(self.main_url)
@@ -187,14 +180,14 @@ class CODdeposit():
         parser.feed(f.table_html)
         return parser
 
-    def add_structures_to_table(self, structures: List[dict], token: str = ''):
+    def add_deposited_structures_to_table(self, structures: List[dict], login_token: str = ''):
         self.ui.CODtableWidget.setRowCount(0)
         for row, structure in enumerate(structures):
             num = structure['number']
             date = structure['date']
             time = structure['time']
-            if token:
-                url = self.main_url + 'information_card.php?id={0}&CODSESSION={1}'.format(num, token)
+            if login_token:
+                url = self.main_url + 'information_card.php?id={0}&CODSESSION={1}'.format(num, login_token)
                 num = num + '*'
             else:
                 url = self.main_url + 'information_card.php?id={0}'.format(num)
