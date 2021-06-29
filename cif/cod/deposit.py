@@ -1,4 +1,5 @@
 import io
+from collections import namedtuple
 from pathlib import Path
 from typing import Union, List
 
@@ -231,36 +232,44 @@ class CODdeposit():
         self.cif.save()
         print('Saved cif to:', self.cif.filename)
         self.ui.statusBar.showMessage('  File Saved:  {}'.format(self.cif.filename), 10 * 1000)
-        data, files = self.prepare_upload()
+        data, files = self.prepare_upload(username=self.username,
+                                          password=self.password,
+                                          author_name=self.author_name,
+                                          author_email=self.author_email,
+                                          embargo_time=str(self.ui.embargoTimeInMonthsSpinBox.value()),
+                                          user_email=self.user_email,
+                                          deposition_type=self.deposition_type,
+                                          )
         r = upload_cif(self.deposit_url, data, files)
         self.ui.depositOutputTextBrowser.setText(r.text)
         self.set_deposit_button_to_try_again()
 
-    def prepare_upload(self):
+    def prepare_upload(self, username, password, author_name, author_email, embargo_time, user_email,
+                       deposition_type):
         self.ui.depositOutputTextBrowser.setText('')
         self.switch_to_page('deposit')
         if not self.cif:
             print('No cif opened!')
             return
         print('starting deposition of ', self.cif.fileobj.name)
-        data = {'username'       : self.username,
-                'password'       : self.password,
-                'user_email'     : self.user_email,  # 'dkratzert@gmx.de',
-                'deposition_type': self.deposition_type,  # published prepublication, personal
+        data = {'username'       : username,
+                'password'       : password,
+                'user_email'     : user_email,  # 'dkratzert@gmx.de',
+                'deposition_type': deposition_type,  # published prepublication, personal
                 'output_mode'    : 'html',
                 # 'progress'       : '1',  # must be 1 if supplied! Otherwise do not submit.
                 'filename'       : self.cif.fileobj.name,
                 }
-        if self.deposition_type == 'personal':
-            data.update({'author_name' : self.author_name,
-                         'author_email': self.author_email or self.user_email})
-        if self.deposition_type == 'prepublication':
+        if deposition_type == 'personal':
+            data.update({'author_name' : author_name,
+                         'author_email': author_email})
+        if deposition_type == 'prepublication':
             # Prepublication and replace is possible with the REST API. I think I let users update
             # their deposited files on the website only.
-            data.update({'author_name' : self.author_name,
-                         'author_email': self.author_email or self.user_email,
-                         'hold_period' : str(self.ui.embargoTimeInMonthsSpinBox.value())})
-        if self.deposition_type == 'published':
+            data.update({'author_name' : author_name,
+                         'author_email': author_email,
+                         'hold_period' : embargo_time})
+        if deposition_type == 'published':
             # Nothing to define extra:
             pass
         cif_fileobj = io.StringIO(self.cif.cif_as_string())
@@ -279,7 +288,7 @@ class CODdeposit():
             self.ui.depositOutputTextBrowser.setText('Deposition aborted.')
             return
         self.ui.depositOutputTextBrowser.setText('Starting deposition of {} in "{}" mode ...'
-                                                 .format(self.cif.fileobj.name, self.deposition_type))
+                                                 .format(self.cif.fileobj.name, deposition_type))
         print('making request')
         # pprint(data)
         # pprint(files)
