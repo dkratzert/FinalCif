@@ -1,4 +1,11 @@
 """
+#   ----------------------------------------------------------------------------
+#   "THE BEER-WARE LICENSE" (Revision 42):
+#   Daniel Kratzert <dkratzert@gmx.de> wrote this file.  As long as you retain
+#   this notice you can do whatever you want with this stuff. If we meet some day,
+#   and you think this stuff is worth it, you can buy me a beer in return.
+#   ----------------------------------------------------------------------------
+
 Needed for 'published' deposition:
 _publ_author_name
 _journal_name_full
@@ -30,26 +37,28 @@ def resolve_doi(doi: str) -> dict:
             }
 
 
-def get_first_page(data: Dict[str, 'str']) -> str:
-    if not data or not 'page' in data:
+def get_first_page(data: Dict[str, str]) -> str:
+    if not data or 'page' not in data:
         return ''
     return data['page'].split('-')[0]
 
 
 def get_journal_name(data: Dict[str, List]) -> str:
-    if not data or not 'container-title' in data:
+    if not data or 'container-title' not in data:
         return ''
-    return data['container-title'][0]
+    if data['container-title']:
+        return data['container-title'][0]
+    return ''
 
 
 def get_publication_year(data: Dict[str, Dict]) -> str:
-    if not data or not 'issued' in data:
+    if not data or 'issued' not in data or 'date-parts' not in data['issued']:
         return ''
     return str(data['issued']['date-parts'][0][0])
 
 
 def get_paper_title(data: Dict[str, List]) -> str:
-    if not data or not 'title' in data:
+    if not data or 'title' not in data:
         return ''
     return data['title'][0]
 
@@ -59,10 +68,11 @@ def get_names_from_doi(data: Dict[str, List]) -> List:
     if not data or not 'author' in data:
         return []
     for person in data['author']:
-        name = '{}, {}'.format(person['family'], person['given'])
-        if 'sequence' in person and person['sequence'] == 'first':
+        name = '{}, {}'.format(person['family'] if 'family' in person else '',
+                               person['given'] if 'given' in person else '')
+        if 'sequence' in person and person['sequence'] == 'first' and name != ', ':
             authors.insert(0, name)
-        else:
+        elif name != ', ':
             authors.append(name)
     return authors
 
