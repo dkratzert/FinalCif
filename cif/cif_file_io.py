@@ -196,6 +196,7 @@ class CifContainer():
         if hkl_loop and hkl_loop.width() > 4:
             return self._hkl_from_cif_format(hkl_loop)
         else:
+            # returns an empty string if no cif hkl was found:
             return self._hkl_from_shelx()
 
     def _hkl_from_cif_format(self, hkl_loop: Loop) -> str:

@@ -9,7 +9,6 @@ import os
 import subprocess
 import sys
 import time
-from bisect import bisect
 from contextlib import suppress
 from datetime import datetime
 from math import sin, radians

@@ -1,7 +1,13 @@
+#   ----------------------------------------------------------------------------
+#   "THE BEER-WARE LICENSE" (Revision 42):
+#   Daniel Kratzert <dkratzert@gmx.de> wrote this file.  As long as you retain
+#   this notice you can do whatever you want with this stuff. If we meet some day,
+#   and you think this stuff is worth it, you can buy me a beer in return.
+#   ----------------------------------------------------------------------------
+
 import io
-from collections import namedtuple
 from pathlib import Path
-from typing import Union, List
+from typing import Union, List, Dict
 
 import requests
 from PyQt5.QtWidgets import QTableWidgetItem, QTextBrowser, QFrame
@@ -210,12 +216,17 @@ class CODdeposit():
     def get_doi_data(self):
         citation = resolve_doi(self.ui.publication_doi_lineedit.text())
         self.ui.DOIResolveTextLabel.clear()
+        status = False
         for key, value in citation.items():
-            if key == '_publ_author_name' and value:
+            if not value:
+                continue
+            if key == '_publ_author_name':
                 value = delimit_string(value[0])
-            self.ui.DOIResolveTextLabel.setText(self.ui.DOIResolveTextLabel.text() + "{}: {}\n\n".format(key, value))
+            self.ui.DOIResolveTextLabel.setText(self.ui.DOIResolveTextLabel.text() + "{}:\t {}\n".format(key, value))
             self.cif.set_pair_delimited(key, value)
-        # self.ui.depositCIFpushButton.setEnabled(True)
+            status = True
+        if not status:
+            self.ui.DOIResolveTextLabel.setText("Failed to get DOI information!")
 
     def _init_deposit(self):
         print("#### Deposition in '{}' mode...".format(self.deposition_type))
@@ -244,27 +255,52 @@ class CODdeposit():
         self.ui.depositOutputTextBrowser.setText(r.text)
         self.set_deposit_button_to_try_again()
 
-    def prepare_upload(self, username, password, author_name, author_email, embargo_time, user_email,
-                       deposition_type):
+    def prepare_upload(self, username, password, author_name, author_email,
+                       embargo_time, user_email, deposition_type):
         self.ui.depositOutputTextBrowser.setText('')
         self.switch_to_page('deposit')
         if not self.cif:
-            print('No cif opened!')
             return
         print('starting deposition of ', self.cif.fileobj.name)
         data = {'username'       : username,
                 'password'       : password,
-                'user_email'     : user_email,  # 'dkratzert@gmx.de',
-                'deposition_type': deposition_type,  # published prepublication, personal
+                'user_email'     : user_email,
+                'deposition_type': deposition_type,  # 'published', 'prepublication' or 'personal'
                 'output_mode'    : 'html',
-                # 'progress'       : '1',  # must be 1 if supplied! Otherwise do not submit.
                 'filename'       : self.cif.fileobj.name,
+                # 'progress'       : '1',  # must be 1 if supplied! Otherwise do not submit.
                 }
+        data = self._enrich_upload_data(author_email, author_name, data, deposition_type, embargo_time)
+        files = self._get_files_data_for_upload()
+        if 'hkl' not in files and not self.cif.hkl_file \
+            and not show_ok_cancel_warning('You are attempting to upload a CIF without hkl data.\n'
+                                           'Do you really want to proceed?'):
+            self.ui.depositOutputTextBrowser.setText('Deposition aborted.')
+            return
+        self.ui.depositOutputTextBrowser.setText('Starting deposition of {} in "{}" mode ...'
+                                                 .format(self.cif.fileobj.name, deposition_type))
+        return data, files
+
+    def _get_files_data_for_upload(self) -> Dict:
+        if self.ui.depositHKLcheckBox.isChecked():
+            files = {'cif': (self.cif.filename, io.StringIO(self.cif.cif_as_string()), 'multipart/form-data'),
+                     'hkl': (self.cif.fileobj.stem + '.hkl', io.StringIO(self.cif.hkl_as_cif), 'multipart/form-data')}
+        elif self.hkl_file:
+            files = {'cif': (self.cif.filename, io.StringIO(self.cif.cif_as_string()), 'multipart/form-data'),
+                     'hkl': (self.hkl_file.name, self.hkl_file, 'multipart/form-data')}
+        else:
+            files = {'cif': (self.cif.filename, io.StringIO(self.cif.cif_as_string()), 'multipart/form-data')
+                     # no hkl file here
+                     }
+        return files
+
+    def _enrich_upload_data(self, author_email: str, author_name: str, data: Dict,
+                            deposition_type: str, embargo_time: str) -> Dict:
         if deposition_type == 'personal':
             data.update({'author_name' : author_name,
                          'author_email': author_email})
         if deposition_type == 'prepublication':
-            # Prepublication and replace is possible with the REST API. I think I let users update
+            # Prepublication and replace option is possible with the REST API, but I think I let users update
             # their deposited files on the website only.
             data.update({'author_name' : author_name,
                          'author_email': author_email,
@@ -272,27 +308,7 @@ class CODdeposit():
         if deposition_type == 'published':
             # Nothing to define extra:
             pass
-        cif_fileobj = io.StringIO(self.cif.cif_as_string())
-        if self.ui.depositHKLcheckBox.isChecked():
-            files = {'cif': (self.cif.filename, cif_fileobj, 'multipart/form-data'),
-                     'hkl': (self.cif.fileobj.stem + '.hkl', io.StringIO(self.cif.hkl_as_cif), 'multipart/form-data')}
-        elif self.hkl_file:
-            files = {'cif': (self.cif.filename, cif_fileobj, 'multipart/form-data'),
-                     'hkl': (self.hkl_file.name, self.hkl_file, 'multipart/form-data')}
-        else:
-            files = {'cif': (self.cif.filename, cif_fileobj, 'multipart/form-data')
-                     # no hkl file here
-                     }
-        if 'hkl' not in files and not show_ok_cancel_warning('You are attempting to upload a CIF without hkl data.\n'
-                                                             'Do you really want to proceed?'):
-            self.ui.depositOutputTextBrowser.setText('Deposition aborted.')
-            return
-        self.ui.depositOutputTextBrowser.setText('Starting deposition of {} in "{}" mode ...'
-                                                 .format(self.cif.fileobj.name, deposition_type))
-        print('making request')
-        # pprint(data)
-        # pprint(files)
-        return data, files
+        return data
 
     def switch_to_page(self, deposition_type: str):
         self.reset_deposit_button_state_to_initial()
