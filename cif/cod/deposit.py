@@ -54,7 +54,7 @@ class CODdeposit():
         #
         self.ui.depositCIFpushButton.clicked.connect(self._init_deposit)
         # The full deposit url: self.deposit_url = 'http://127.0.0.1:8080/cod/cgi-bin/cif-deposit.pl'
-        self.main_url = 'https://www.crystallography.net/cod-test/'
+        self.main_url = 'https://www.crystallography.net/cod/'
         self.deposit_url = self.main_url + 'cgi-bin/cif-deposit.pl'
         self.username = self.settings.load_value_of_key('cod_username')
         if self.username:
