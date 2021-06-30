@@ -23,8 +23,8 @@ app = QApplication(sys.argv)
 class TestLoops(unittest.TestCase):
 
     def setUp(self) -> None:
-        os.chdir(Path(__file__).absolute().parent.parent)
-        self.testcif = Path('tests/examples/1979688.cif').absolute()
+        os.chdir(Path(__file__).resolve().parent.parent)
+        self.testcif = Path('tests/examples/1979688.cif').resolve()
         self.myapp = AppWindow(self.testcif)
         self.myapp.running_inside_unit_test = True
         self.myapp.hide()  # For full screen view
@@ -32,6 +32,7 @@ class TestLoops(unittest.TestCase):
 
     def tearDown(self) -> None:
         self.myapp.final_cif_file_name.unlink(missing_ok=True)
+        self.myapp.close()
 
     def get_index_of(self, loopkey: str = ''):
         tabw: QTabWidget = self.myapp.ui.LoopsTabWidget

@@ -1,6 +1,6 @@
 #  ----------------------------------------------------------------------------
 #  "THE BEER-WARE LICENSE" (Revision 42):
-#  daniel.kratzert@ac.uni-freiburg.de> wrote this file.  As long as you retain
+#  dkratzert@gmx.de> wrote this file.  As long as you retain
 #  this notice you can do whatever you want with this stuff. If we meet some day,
 #  and you think this stuff is worth it, you can buy me a beer in return.
 #  Dr. Daniel Kratzert
@@ -11,7 +11,7 @@ from typing import Union, List, Any
 from PyQt5.QtCore import QAbstractTableModel, QModelIndex, Qt, QSize, QVariant, pyqtSignal, QEvent
 from PyQt5.QtGui import QColor, QCursor
 from PyQt5.QtWidgets import QTableView, QHeaderView, QMenu, QAction
-from gemmi.cif import as_string
+from gemmi.cif import as_string, is_null
 
 from cif.text import retranslate_delimiter, utf8_to_str
 
@@ -85,7 +85,7 @@ class Loop():
         data = []
         for v in values:
             # as_string() would make . and ? to empty strings otherwise: 
-            data.append([x if x in ('.', '?') else as_string(x) for x in v])
+            data.append([x if is_null(x) else as_string(x) for x in v])
         return data
 
 

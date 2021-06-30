@@ -22,6 +22,7 @@ class TestOptions(unittest.TestCase):
         self.myapp.ui.HAtomsCheckBox.setChecked(False)
         self.myapp.ui.ReportTextCheckBox.setChecked(False)
         self.myapp.ui.PictureWidthDoubleSpinBox.setValue(0.0)
+        self.myapp.close()
 
     def test_save_picture_with(self):
         self.assertEqual(self.myapp.ui.PictureWidthDoubleSpinBox.value(), 0.0)

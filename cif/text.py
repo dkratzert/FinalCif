@@ -1,4 +1,12 @@
+#   ----------------------------------------------------------------------------
+#   "THE BEER-WARE LICENSE" (Revision 42):
+#   Daniel Kratzert <dkratzert@gmx.de> wrote this file.  As long as you retain
+#   this notice you can do whatever you want with this stuff. If we meet some day,
+#   and you think this stuff is worth it, you can buy me a beer in return.
+#   ----------------------------------------------------------------------------
+
 import textwrap
+from html import unescape
 
 import gemmi
 
@@ -20,15 +28,15 @@ def quote(string: str, wrapping=80) -> str:
     return quoted
 
 
-charcters = { 
+charcters = {
     '±'      : r'+-',
     '×'      : r'\\times',
     '≠'      : r'\\neq',
     '→'      : '\\rightarrow',
     '←'      : '\\leftarrow',
     '∞'      : '\\infty',
-    '≈'      : '\\sim',
     '≃'      : '\\simeq',
+    '≈'      : '\\sim',
     'ß'      : r'\&s',
     'ü'      : r'u\"',
     'Ü'      : r'U\"',
@@ -109,42 +117,38 @@ charcters = {
     u"\u03A9": r'\W',
     u"\u03D5": r'\f',
     u"\u00B0": r"\%",
+    '·'      : r"{middle dot}",
     # "1̄": r'\=1',  # Does not work in QT?
 }
 
 
-def set_pair_delimited(block, key: str, txt: str):
-    """
-    Converts special characters to their markup counterparts.
-    """
-    txt = utf8_to_str(txt)
-    try:
-        # bad hack to get the numbered values correct
-        float(txt)
-        block.set_pair(key, txt)
-    except (TypeError, ValueError):
-        # prevent _key '?' in cif:
-        if txt == '?':
-            block.set_pair(key, txt)
-        else:
-            block.set_pair(key, quote(txt))
-
-
-def utf8_to_str(txt) -> str:
+def utf8_to_str(txt: str) -> str:
     """
     Translates an utf-8 text to a CIF ascii string.
     """
     for char in txt:
         if char in charcters:
             txt = txt.replace(char, charcters[char])
-    return txt
+    return utf8_to_html_ascii(txt)
+
+
+def delimit_string(txt: str) -> str:
+    return utf8_to_str(txt)
 
 
 def retranslate_delimiter(txt: str) -> str:
     """
     Translates delimited cif characters back to unicode characters.
     """
-    inv_map = {v: k for k, v in charcters.items()}
-    for char in inv_map.keys():
-        txt = txt.replace(char, inv_map[char])
-    return txt
+    inverted_characters_map = {v: k for k, v in charcters.items()}
+    for char in inverted_characters_map.keys():
+        txt = txt.replace(char, inverted_characters_map[char])
+    return html_ascii_to_utf8(txt)
+
+
+def utf8_to_html_ascii(text: str) -> str:
+    return text.encode('ascii', 'xmlcharrefreplace').decode()
+
+
+def html_ascii_to_utf8(text: str) -> str:
+    return unescape(text)

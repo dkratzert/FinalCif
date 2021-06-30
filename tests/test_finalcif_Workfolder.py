@@ -7,6 +7,7 @@ from pathlib import Path
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon, QColor
 from PyQt5.QtWidgets import QApplication
+from qtpy.QtTest import QTest
 
 from appwindow import AppWindow
 from gui.custom_classes import light_green, yellow, COL_DATA, COL_CIF, COL_EDIT
@@ -28,6 +29,9 @@ class TestNothingOpened(unittest.TestCase):
         self.myapp.setWindowTitle('FinalCif v{}'.format(VERSION))
         Path('foo.cif').unlink(missing_ok=True)
         Path('cu_BruecknerJK_153F40_0m-finalcif.cif').unlink(missing_ok=True)
+
+    def tearDown(self) -> None:
+        self.myapp.close()
 
     def test_save_noting(self):
         self.myapp.save_current_cif_file()
@@ -54,6 +58,7 @@ class TestFileIsOpened(unittest.TestCase):
     def tearDown(self) -> None:
         Path('foo.cif').unlink(missing_ok=True)
         Path('cu_BruecknerJK_153F40_0m-finalcif.cif').unlink(missing_ok=True)
+        self.myapp.close()
 
     def test_save_action(self):
         self.myapp.save_current_cif_file()
@@ -80,6 +85,7 @@ class TestWorkfolder(unittest.TestCase):
         Path(self.testcif.stem + '.lst').unlink(missing_ok=True)
         Path(self.testcif.stem + '.2fcf').unlink(missing_ok=True)
         Path('testcif_file.cif').unlink(missing_ok=True)
+        self.myapp.close()
 
     def key_row(self, key: str) -> int:
         return self.myapp.ui.cif_main_table.row_from_key(key)
@@ -91,9 +97,14 @@ class TestWorkfolder(unittest.TestCase):
         return unify_line_endings(self.myapp.ui.cif_main_table.getTextFromKey(key, col))
 
     def equipment_click(self, field: str):
+        listw = self.myapp.ui.EquipmentTemplatesListWidget
         self.myapp.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
-        item = self.myapp.ui.EquipmentTemplatesListWidget.findItems(field, Qt.MatchStartsWith)[0]
-        self.myapp.ui.EquipmentTemplatesListWidget.setCurrentItem(item)
+        item = listw.findItems(field, Qt.MatchStartsWith)[0]
+        listw.setCurrentItem(item)
+        self.assertEqual(field, item.text())
+        rect = listw.visualItemRect(item)
+        QTest.mouseDClick(listw.viewport(), Qt.LeftButton, Qt.NoModifier, rect.center())
+        app.processEvents()
         # This is necessary:
         self.myapp.equipment.load_selected_equipment()
 
@@ -177,9 +188,9 @@ class TestWorkfolder(unittest.TestCase):
                                                                           1).background().color())
 
     def allrows_test_key(self, key: str = '', results: list = None):
+        # The results list is a list with three items for each data column in the main table.
         self.myapp.hide()
         for n, r in enumerate(results):
-            # print('##', key, n, r)
             # print(self.cell_text(key, n))
             self.assertEqual(r, self.cell_text(key, n))
 
@@ -187,26 +198,54 @@ class TestWorkfolder(unittest.TestCase):
         self.equipment_click('APEX2 QUAZAR')
         self.allrows_test_key('_diffrn_measurement_method', ['?', 'ω and ϕ scans', 'ω and ϕ scans'])
         self.allrows_test_key('_diffrn_measurement_specimen_support', ['?', 'MiTeGen micromount', 'MiTeGen micromount'])
-        self.allrows_test_key('_olex2_diffrn_ambient_temperature_device',
-                              ['Oxford Cryostream 800', 'Oxford Cryostream 800', 'Oxford Cryostream 800'])
 
-    def test_equipment_click_author_address(self):
+    # unittest.SkipTest('')
+    def test_equipment_click_machine_oxford_0(self):
+        self.equipment_click('APEX2 QUAZAR')
+        # We have a value which is new. So a row at start is created and only the CIF column is populated
+        self.assertEqual('?', self.cell_text('_olex2_diffrn_ambient_temperature_device', COL_CIF))
+
+    def test_equipment_click_machine_oxford_1(self):
+        self.equipment_click('APEX2 QUAZAR')
+        self.assertEqual('Oxford Cryostream 800', self.cell_text('_olex2_diffrn_ambient_temperature_device', COL_DATA))
+
+    def test_equipment_click_machine_oxford_2(self):
+        self.equipment_click('APEX2 QUAZAR')
+        self.assertEqual('Oxford Cryostream 800', self.cell_text('_olex2_diffrn_ambient_temperature_device', COL_EDIT))
+
+    def test_equipment_click_author_address_0(self):
         # Check if click on author adds the address to second and third column:
         self.equipment_click('Crystallographer Details')
         self.assertEqual('?', self.cell_text('_audit_contact_author_address', COL_CIF))
+
+    def test_equipment_click_author_address_1(self):
+        self.equipment_click('Crystallographer Details')
         self.assertEqual(unify_line_endings(addr), self.cell_text('_audit_contact_author_address', COL_DATA))
+
+    def test_equipment_click_author_address_2(self):
+        self.equipment_click('Crystallographer Details')
         self.assertEqual(unify_line_endings(addr), self.cell_text('_audit_contact_author_address', COL_EDIT))
 
-    def test_contact_author_name(self):
+    def test_contact_author_name_0(self):
         self.equipment_click('Crystallographer Details')
         self.assertEqual('?', self.cell_text('_audit_contact_author_name', COL_CIF))
+
+    def test_contact_author_name_1(self):
+        self.equipment_click('Crystallographer Details')
         self.assertEqual('Dr. Daniel Kratzert', self.cell_text('_audit_contact_author_name', COL_DATA))
+
+    def test_contact_author_name_2(self):
+        self.equipment_click('Crystallographer Details')
         self.assertEqual('Dr. Daniel Kratzert', self.cell_text('_audit_contact_author_name', COL_EDIT))
 
-    def test_contact_author_cellwidget(self):
+    def test_contact_author_cellwidget_bevore_click(self):
+        self.assertEqual(self.myapp.ui.cif_main_table.vheaderitems[5], '_audit_contact_author_name')
+        self.assertEqual('', self.myapp.ui.cif_main_table.getText(5, COL_DATA))
+
+    def test_contact_author_cellwidget_after(self):
         self.equipment_click('Crystallographer Details')
         self.assertEqual(self.myapp.ui.cif_main_table.vheaderitems[5], '_audit_contact_author_name')
-        self.assertEqual('Dr. Daniel Kratzert', self.myapp.ui.cif_main_table.getText(5, 1))
+        self.assertEqual('Dr. Daniel Kratzert', self.myapp.ui.cif_main_table.getText(5, COL_DATA))
         self.assertEqual("<class 'NoneType'>", self.cell_widget(5, COL_CIF))
         self.assertEqual("<class 'NoneType'>", self.cell_widget(5, COL_DATA))
         self.assertEqual("<class 'NoneType'>", self.cell_widget(5, COL_EDIT))
@@ -228,7 +267,7 @@ class TestWorkfolder(unittest.TestCase):
         cif = Path('testcif_file.cif')
         self.myapp.save_current_cif_file(cif.name)
         self.myapp.ui.cif_main_table.setRowCount(0)
-        self.myapp.load_cif_file(cif.name)
+        self.myapp.load_cif_file(cif)
         # test if data is still the same:
         # The character is quoted in the cif file:
         self.assertEqual(r'test 12 \%A', self.myapp.cif['_diffrn_measurement_method'])

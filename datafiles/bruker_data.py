@@ -1,6 +1,6 @@
 #  ----------------------------------------------------------------------------
 #  "THE BEER-WARE LICENSE" (Revision 42):
-#  daniel.kratzert@ac.uni-freiburg.de> wrote this file.  As long as you retain
+#  dkratzert@gmx.de> wrote this file.  As long as you retain
 #  this notice you can do whatever you want with this stuff. If we meet some day,
 #  and you think this stuff is worth it, you can buy me a beer in return.
 #  Dr. Daniel Kratzert
@@ -16,7 +16,7 @@ from datafiles.data import WorkDataMixin
 from datafiles.p4p_reader import P4PFile
 from datafiles.sadabs import Sadabs
 from datafiles.saint import SaintListFile
-from datafiles.shelx import SolutionProgram
+from datafiles.shelx_lst import SolutionProgram
 from gui.dialogs import show_general_warning
 
 
@@ -95,12 +95,12 @@ class BrukerData(WorkDataMixin):
             abscorrtype = (self.cif.absorpt_correction_type, self.cif.fileobj.name)
         else:
             abscorrtype = (abstype, self.sadabs.filename.name)
-        if self.cif.absorpt_correction_T_max:
-            abs_tmax = (self.cif.absorpt_correction_T_max, self.cif.fileobj.name)
+        if self.cif.absorpt_correction_t_max:
+            abs_tmax = (self.cif.absorpt_correction_t_max, self.cif.fileobj.name)
         else:
             abs_tmax = (str(t_max), self.sadabs.filename.name)
-        if self.cif.absorpt_correction_T_min:
-            abs_tmin = (self.cif.absorpt_correction_T_min, self.cif.fileobj.name)
+        if self.cif.absorpt_correction_t_min:
+            abs_tmin = (self.cif.absorpt_correction_t_min, self.cif.fileobj.name)
         else:
             abs_tmin = (str(t_min), self.sadabs.filename.name)
 
@@ -211,7 +211,7 @@ class BrukerData(WorkDataMixin):
     def sadabs(self):
         sad = Sadabs(basename='*.abs')
         # self.sad_fileLE, button = self.app.add_new_datafile(0, 'SADABS', 'add specific .abs file here, if needed...')
-        # self.sad_fileLE.setText(str(sad.filename.absolute()))
+        # self.sad_fileLE.setText(str(sad.filename.resolve()))
         # button.clicked.connect(self.app.get_cif_file_block)
         # I have to run self.app.get_cif_file_block but data sources for abs file should be updated
         return sad

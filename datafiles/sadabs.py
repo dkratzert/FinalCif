@@ -2,7 +2,7 @@
 
 #  ----------------------------------------------------------------------------
 #  "THE BEER-WARE LICENSE" (Revision 42):
-#  daniel.kratzert@ac.uni-freiburg.de> wrote this file.  As long as you retain
+#  dkratzert@gmx.de> wrote this file.  As long as you retain
 #  this notice you can do whatever you want with this stuff. If we meet some day,
 #  and you think this stuff is worth it, you can buy me a beer in return. 
 #  Dr. Daniel Kratzert
@@ -27,8 +27,6 @@ class Dataset():
         self.filetype = 4
         self.domain = 1
         self.numerical = False
-        # TODO: implement this:
-        self.raw_filetype = 'raw'  # or mul
 
     def __repr__(self):
         out = ''
@@ -71,7 +69,7 @@ class Sadabs():
         else:
             self._fileobj = get_file_to_parse(fileobj=fileobj)
         if self._fileobj:
-            self.filename = self._fileobj.absolute()
+            self.filename = self._fileobj.resolve()
             self.parse_file()
 
     def parse_file(self):
