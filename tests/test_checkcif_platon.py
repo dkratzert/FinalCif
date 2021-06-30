@@ -35,13 +35,14 @@ filenames = (
 class TestPlatonCheckCIF(unittest.TestCase):
     def tearDown(self) -> None:
         print('running teardown')
-        os.chdir(Path(__file__).absolute().parent.parent)
+        os.chdir(Path(__file__).resolve().parent.parent)
         for file in filenames:
             Path(file).unlink(missing_ok=True)
+        self.myapp.close()
 
     def setUp(self) -> None:
-        os.chdir(Path(__file__).absolute().parent.parent)
-        self.myapp = AppWindow(Path('tests/examples/1979688.cif').absolute())
+        os.chdir(Path(__file__).resolve().parent.parent)
+        self.myapp = AppWindow(Path('tests/examples/1979688.cif').resolve())
         self.myapp.hide()
         self.myapp.running_inside_unit_test = True
 
@@ -67,13 +68,14 @@ class TestPlatonCheckCIF(unittest.TestCase):
 class TestPlatonCheckCIF_with_CIF_without_hkl_data(unittest.TestCase):
     def tearDown(self) -> None:
         print('running teardown')
-        os.chdir(Path(__file__).absolute().parent.parent)
+        os.chdir(Path(__file__).resolve().parent.parent)
         for file in filenames:
             Path(file).unlink(missing_ok=True)
+        self.myapp.close()
 
     def setUp(self) -> None:
-        os.chdir(Path(__file__).absolute().parent.parent)
-        self.myapp = AppWindow(Path('./test-data/1000007.cif').absolute())
+        os.chdir(Path(__file__).resolve().parent.parent)
+        self.myapp = AppWindow(Path('./test-data/1000007.cif').resolve())
         self.myapp.hide()
         self.myapp.ui.structfactCheckBox.setChecked(True)
         self.myapp.running_inside_unit_test = True

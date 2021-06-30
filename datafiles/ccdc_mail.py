@@ -27,7 +27,7 @@ class CCDCMail():
             with suppress(Exception):
                 eml = self.parse_emlfile(emlfile)
             if eml:
-                self.emlfile = emlfile.absolute()
+                self.emlfile = emlfile.resolve()
                 if not self.mail_cell:
                     continue
                 if not self.is_same_cell(cif, self.mail_cell):

@@ -1,6 +1,6 @@
 #  ----------------------------------------------------------------------------
 #  "THE BEER-WARE LICENSE" (Revision 42):
-#  daniel.kratzert@ac.uni-freiburg.de> wrote this file.  As long as you retain
+#  dkratzert@gmx.de> wrote this file.  As long as you retain
 #  this notice you can do whatever you want with this stuff. If we meet some day,
 #  and you think this stuff is worth it, you can buy me a beer in return.
 #  Dr. Daniel Kratzert
@@ -33,8 +33,6 @@ class SHELXTlistfile(ParserMixin):
                     if not self._text[num + 1 + n]:
                         break
                     if self._text[num + 1]:
-                        # TODO: is this fixed-char format?
-                        # {'solution_name': 'space_group'}
                         self.solutions[self._text[num + 1 + n][58:76].strip()] = self._text[num + 1 + n][37:51].strip()
 
 
@@ -52,7 +50,6 @@ class SolutionProgram(object):
     def get_solution_program(self):
         """
         Tries to figure out which program was used for structure solution.
-        TODO: figure out more solution programs.
         """
         p = self.cif.fileobj.parent
         xt_files = p.glob(self.basename + '*.lxt')

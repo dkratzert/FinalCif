@@ -30,7 +30,6 @@ class TemplateReportTestCase(unittest.TestCase):
         self.myapp.ui.PictureWidthDoubleSpinBox.setValue(7.43)
         self.import_templates()
         self.myapp.ui.TemplatesListWidget.setCurrentRow(2)
-        self.myapp.hide()
         self.reportdoc = Path('report_' + self.testcif.stem + '-finalcif.docx')
         self.report_zip = Path(self.testcif.stem + '-finalcif.zip')
         self.myapp.set_report_picture(Path('../../icon/finalcif.png'))
@@ -56,6 +55,7 @@ class TemplateReportTestCase(unittest.TestCase):
         print('imported templates')
         self.myapp.ui.TemplatesListWidget.blockSignals(False)
 
+    #@unittest.skip('')
     def test_with_report_text(self):
         self.myapp.ui.SaveFullReportButton.click()
         doc = Document(self.reportdoc.absolute())
@@ -65,8 +65,6 @@ class TemplateReportTestCase(unittest.TestCase):
     def test_citations(self):
         self.myapp.ui.SaveFullReportButton.click()
         doc = Document(self.reportdoc.absolute())
-        # for n, p in enumerate(doc.paragraphs):
-        #    print(p.text, n)
         self.assertEqual(
             '[6] 	D. Kratzert, FinalCif, V{}, https://www.xs3.uni-freiburg.de/research/finalcif.'.format(VERSION),
             doc.paragraphs[-1].text)

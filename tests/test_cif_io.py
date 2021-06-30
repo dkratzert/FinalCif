@@ -1,22 +1,22 @@
-import os
 import unittest
 from pathlib import Path
 
 from cif.cif_file_io import CifContainer
+from tests.test_utils import current_file_path
 
 
 class CifFileCRCTestCase(unittest.TestCase):
     def setUp(self) -> None:
-        os.chdir(Path(__file__).absolute().parent.parent)
+        current_file_path()
         self.cif = CifContainer(Path('tests/examples/1979688.cif'))
 
     def test_calc_crc(self):
-        self.assertEqual(20714, self.cif.calc_checksum(self.cif['_shelx_hkl_file'][1:-1]))
+        self.assertEqual(20714, self.cif.calc_checksum(self.cif['_shelx_hkl_file']))
 
 
 class CifFileTestCase(unittest.TestCase):
     def setUp(self) -> None:
-        os.chdir(Path(__file__).absolute().parent.parent)
+        current_file_path()
         self.cif = CifContainer(Path('tests/examples/1979688.cif'))
 
     def test_calc_crc(self):
@@ -58,7 +58,9 @@ class CifFileTestCase(unittest.TestCase):
         self.assertEqual(False, self.cif.ishydrogen('c2'))
 
     def test_cell(self):
-        self.assertEqual((19.678, 37.02290000000001, 4.772, 90.0, 90.0, 90.0, 3476.576780226401), self.cif.cell)
+        expected = [round(x, 8) for x in (19.678, 37.02290000000001, 4.772, 90.0, 90.0, 90.0, 3476.576780226401)]
+        actual = [round(y, 8) for y in self.cif.cell]
+        self.assertEqual(expected, actual)
 
     def test_natoms(self):
         self.assertEqual(94, self.cif.natoms())

@@ -3,7 +3,7 @@
 #
 # ----------------------------------------------------------------------------
 # "THE BEER-WARE LICENSE" (Revision 42):
-# <daniel.kratzert@ac.uni-freiburg.de> wrote this file. As long as you retain
+# <dkratzert@gmx.de> wrote this file. As long as you retain
 # this notice you can do whatever you want with this stuff. If we meet some day,
 # and you think this stuff is worth it, you can buy me a beer in return.
 # Daniel Kratzert
@@ -322,8 +322,8 @@ def display_cif(cif: 'CifContainer'):
     Path(jsmoldir.name).joinpath("./jsmol.htm").write_text(data=content, encoding="utf-8", errors='ignore')
     copy2(Path(__file__).parent.joinpath('jquery.min.js'), jsmoldir.name)
     copy2(Path(__file__).parent.joinpath('JSmol_dk.nojq.lite.js'), jsmoldir.name)
-    print(Path(jsmoldir.name).joinpath("./jsmol.htm").absolute())
-    w.load(QUrl.fromLocalFile(str(Path(jsmoldir.name).joinpath("./jsmol.htm").absolute())))
+    print(Path(jsmoldir.name).joinpath("./jsmol.htm").resolve())
+    w.load(QUrl.fromLocalFile(str(Path(jsmoldir.name).joinpath("./jsmol.htm").resolve())))
     w.show()
     w.reload()
     sys.exit(app.exec_())

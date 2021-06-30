@@ -1,6 +1,6 @@
 #  ----------------------------------------------------------------------------
 #  "THE BEER-WARE LICENSE" (Revision 42):
-#  daniel.kratzert@ac.uni-freiburg.de> wrote this file.  As long as you retain
+#  dkratzert@gmx.de> wrote this file.  As long as you retain
 #  this notice you can do whatever you want with this stuff. If we meet some day,
 #  and you think this stuff is worth it, you can buy me a beer in return. 
 #  Dr. Daniel Kratzert
@@ -710,7 +710,7 @@ predef_equipment_templ = [{'name' : 'D8 VENTURE',
     "Freiburg i. Br.\n"
     "79104\n"
     "Germany"],
-   ['_audit_contact_author_email', 'daniel.kratzert@ac.uni-freiburg.de'],
+   ['_audit_contact_author_email', 'dkratzert@gmx.de'],
    ['_audit_contact_author_phone', '+497612036156'],
    ['_publ_contact_author_id_orcid', 'https://orcid.org/0000-0003-0970-9780'],
 ]
@@ -832,3 +832,12 @@ celltxt = """
    </body>
    </html>
     """
+
+
+def is_database_number(input: Union[str, int]) -> bool:
+    if isinstance(input, int):
+        input = str(input)
+    state: bool = False
+    if len(input) == 7 and isnumeric(input):
+        state = True
+    return state

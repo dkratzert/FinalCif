@@ -1,28 +1,29 @@
 altgraph==0.17
-certifi==2020.12.5
+certifi==2021.5.30
 chardet==4.0.0
 future==0.18.2
-gemmi==0.4.5
+gemmi==0.4.7
 html2text==2020.1.16
-idna==3.1
+idna==3.2
 lxml==4.6.3
 macholib==1.14
-pefile==2019.4.18
+pefile
 pybind11==2.6.2
-pyinstaller==4.2
-pyinstaller-hooks-contrib==2021.1
-PyQt5==5.15.2
-PyQt5-sip==12.8.1
+pyinstaller
+pyinstaller-hooks-contrib==2021.2
+PyQt5==5.15.4
+PyQt5-sip==12.9.0
 PyQt5-stubs==5.15.2.0
-PyQtWebEngine==5.15.2
-python-docx==0.8.10
+PyQtWebEngine==5.15.4
+python-docx==0.8.11
 pywin32-ctypes==0.2.0
-QtAwesome==1.0.2
+QtAwesome==1.0.3
 QtPy==1.9.0
 requests==2.25.1
-urllib3==1.26.5
-docxtpl==0.11.3
+urllib3==1.26.6
+docxtpl==0.11.5
 wheel
+shelxfile
 
 # Upgrade gemmi to Git master:
 # pip install https://github.com/project-gemmi/gemmi/archive/master.zip --upgrade

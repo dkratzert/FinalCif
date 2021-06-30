@@ -41,6 +41,7 @@ class TestCheckCifHTML(unittest.TestCase):
         Path('checkcif-cu_BruecknerJK_153F40_0m-finalcif.html').unlink(missing_ok=True)
         Path('checkcif-cu_BruecknerJK_153F40_0m-finalcif.pdf').unlink(missing_ok=True)
         Path('checkpdf-cu_BruecknerJK_153F40_0m-finalcif.html').unlink(missing_ok=True)
+        self.myapp.close()
 
     def equipment_click(self, field: str):
         self.myapp.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
@@ -48,7 +49,7 @@ class TestCheckCifHTML(unittest.TestCase):
         self.myapp.ui.EquipmentTemplatesListWidget.setCurrentItem(item)
         self.myapp.equipment.load_selected_equipment()
 
-    #@unittest.skip('temporary skip')
+    @unittest.skip('temporary skip')
     def test_checkcif_html(self):
         """Runs a html checkcif without hkl and compares the result with the html file."""
         self.maxDiff = None
