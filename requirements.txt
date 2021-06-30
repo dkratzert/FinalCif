@@ -4,7 +4,6 @@ chardet==4.0.0
 future==0.18.2
 gemmi==0.4.7
 html2text==2020.1.16
-idna==3.2
 lxml
 macholib
 pefile

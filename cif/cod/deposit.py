@@ -24,6 +24,9 @@ from gui.finalcif_gui import Ui_FinalCifWindow
 from tools.settings import FinalCifSettings
 
 """
+Ideas:
+* Show cif before upload as text with 'upload' and 'abort' button.
+
 _shelx_fab_file
 _shelx_fab_checksum
 
