@@ -22,5 +22,6 @@ no software is perfect!
    loops
    checkcif
    report
+   deposition
    sources
    homepage

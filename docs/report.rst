@@ -7,6 +7,7 @@ It is also advisable to deposit the file before the report generation in order t
 listed in the report text.
 
 .. image:: pics/finalcif_report.png
+A report document example.
 
 CCDC Number
 -----------
@@ -28,6 +29,7 @@ Customizing the Report
 
 .. image:: pics/report_options.png
     :width: 600
+Report options with two templates.
 
 Do you have specific expectations regarding the appearance of the structure report?
 With self-defined templates this is possible in FinalCif. You can find example templates
