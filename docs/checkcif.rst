@@ -16,6 +16,8 @@ advantage of beeing fast, but the resulting ckecks are far less deeply.
 
 .. image:: pics/finalcif_checkcif.png 
     :width: 700
+Results from a checkcif run.
+
 
 Validation Response Forms
 -------------------------
@@ -25,11 +27,15 @@ After an Online CheckCif with structure factors you have the option to click on 
 Ther you have the possibility to reply to A and B level alerts and save them to the CIF:
 
 .. image:: pics/finalcif_responses.png
+Validation response form editor.
 
 ----
 
 A resulting response form:
 
 .. image:: pics/response_cell.png
+A single response form in the FinalCif main table.
+
+
 
 

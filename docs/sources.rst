@@ -32,6 +32,5 @@ After activation, install all necessary packages using pip:
 
 I am always open for suggestions by users. Please tell me if something does not work as expected!
 
-FinalCif uses the great `gemmi cif parser <https://gemmi.readthedocs.io/en/latest/index.html>`_.
-It needs `MSVC++ 14 <https://visualstudio.microsoft.com/de/vs/features/cplusplus>`_ in order to compile in Windows.
-For Linux and MacOS, a regular installatin of the GCC compiler is sufficient.
+FinalCif uses the great `gemmi cif parser <https://gemmi.readthedocs.io/en/latest/index.html>`_ for all CIF reading
+and writing operations.
