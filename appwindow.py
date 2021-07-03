@@ -87,9 +87,9 @@ class AppWindow(QMainWindow):
         self.manufacturer = 'bruker'
         self.ui = Ui_FinalCifWindow()
         self.ui.setupUi(self)
-        self.deposit = CODdeposit(self.ui)
         self.settings = FinalCifSettings()
         self.options = Options(self.ui, self.settings)
+        self.deposit = CODdeposit(self.ui, self.cif, self.options)
         self.equipment = Equipment(app=self, settings=self.settings)
         self.properties = Properties(app=self, settings=self.settings)
         self.status_bar = StatusBar(ui=self.ui)

@@ -8,9 +8,13 @@ TODO: save table in settings and resfresh it during each COD login. Otherwise us
 
 
 class CODFetcher():
-    def __init__(self, main_url: str = 'https://www.crystallography.net/cod-test/'):
-        self._url = main_url + 'my_depositions.php'
+    def __init__(self, main_url: str):
         self.table_html = ''
+        self.main_url = main_url
+
+    @property
+    def _url(self):
+        return self.main_url + 'my_depositions.php'
 
     def get_token(self, username: str, password: str):
         post_data = {'username': username,
@@ -34,7 +38,7 @@ class CODFetcher():
 
 
 if __name__ == '__main__':
-    f = CODFetcher()
+    f = CODFetcher(main_url='https://www.crystallography.net/cod/')
     token = f.get_token(username='', password='')
     # print(token)
     f.get_table_data_by_token(token)
