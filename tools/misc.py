@@ -834,10 +834,10 @@ celltxt = """
     """
 
 
-def is_database_number(input: Union[str, int]) -> bool:
-    if isinstance(input, int):
-        input = str(input)
+def is_database_number(input_num: Union[str, int]) -> bool:
+    if isinstance(input_num, int):
+        input_num = str(input_num)
     state: bool = False
-    if len(input) == 7 and isnumeric(input):
+    if len(input_num) == 7 and isnumeric(input_num):
         state = True
     return state

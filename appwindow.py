@@ -263,20 +263,22 @@ class AppWindow(QMainWindow):
         # brings the html checkcif in from in order to avoid confusion of an "empty" checkcif report page:
         self.ui.CheckCIFResultsTabWidget.currentChanged.connect(lambda: self.ui.ResponsesTabWidget.setCurrentIndex(0))
         ##
-        self.ui.SelectCif_LineEdit.returnPressed.connect(self.check_if_filefield_contains_database_number)
+        self.ui.SelectCif_LineEdit.returnPressed.connect(self.check_if_file_field_contains_database_number)
 
-    def check_if_filefield_contains_database_number(self):
+    def check_if_file_field_contains_database_number(self):
         """
         Downloads a CIF file from the COD with the corresponding deposition number entered into the file field.
         """
-        input = self.ui.SelectCif_LineEdit.text().strip()
-        if is_database_number(input):
-            file = '{}.cif'.format(input)
-            r = requests.get('http://www.crystallography.net/cod/{}.cif'.format(input))
+        input_txt = self.ui.SelectCif_LineEdit.text().strip()
+        if is_database_number(input_txt):
+            file = '{}.cif'.format(input_txt)
+            r = requests.get(self.deposit.main_url + '{}.cif'.format(input_txt))
             if r.status_code == 200:
                 Path(file).write_bytes(r.content)
                 r.close()
                 self.load_cif_file(Path(file))
+            else:
+                self.ui.SelectCif_LineEdit.setText('')
 
     def open_cod_page(self):
         self.save_current_cif_file()
