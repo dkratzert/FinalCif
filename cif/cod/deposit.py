@@ -8,6 +8,7 @@
 import io
 from pathlib import Path
 from typing import Union, List, Dict
+from urllib.parse import urlparse
 
 import requests
 from PyQt5.QtWidgets import QTableWidgetItem, QTextBrowser, QFrame
@@ -21,6 +22,7 @@ from cif.hkl import HKL
 from cif.text import delimit_string
 from gui.dialogs import cif_file_open_dialog, show_general_warning, show_ok_cancel_warning
 from gui.finalcif_gui import Ui_FinalCifWindow
+from tools.options import Options
 from tools.settings import FinalCifSettings
 
 """
@@ -35,11 +37,12 @@ _shelx_fab_checksum
 
 class CODdeposit():
 
-    def __init__(self, ui: Ui_FinalCifWindow, cif: Union[CifContainer, None] = None):
+    def __init__(self, ui: Ui_FinalCifWindow, cif: Union[CifContainer, None], options: Options):
         self.hkl_file: Union[io.StringIO, None] = None
         self.ui = ui
         self.settings = FinalCifSettings()
         self._cif = cif
+        self.options = options
         self._set_checkbox_states()
         self.ui.depositorUsernameLineEdit.textChanged.connect(self._set_username)
         self.ui.depositorPasswordLineEdit.textChanged.connect(self._set_password)
@@ -53,10 +56,9 @@ class CODdeposit():
         self.ui.BackToCODPushButton.clicked.connect(self._back_to_cod_page)
         #
         self.ui.depositCIFpushButton.clicked.connect(self._init_deposit)
-        # The full deposit url: self.deposit_url = 'http://127.0.0.1:8080/cod/cgi-bin/cif-deposit.pl'
-        self.main_url = 'https://www.crystallography.net/cod/'
-        self.deposit_url = self.main_url + 'cgi-bin/cif-deposit.pl'
+        # The full deposit url: self.deposit_url = 'https://www.crystallography.net/cod/cgi-bin/cif-deposit.pl'
         self.username = self.settings.load_value_of_key('cod_username')
+        self.ui.CODURLTextedit.textChanged.connect(self.erase_cod_token)
         if self.username:
             self.ui.depositorUsernameLineEdit.setText(self.username)
         else:
@@ -73,10 +75,35 @@ class CODdeposit():
         if self.settings.load_settings_list('COD', self.username):
             self.add_deposited_structures_to_table(self.settings.load_settings_list('COD', self.username))
 
+    @property
+    def deposit_url(self) -> str:
+        return self.options.cod_url
+
+    @property
+    def main_url(self) -> str:
+        return self.get_cod_hostname() + ('/cod-test/' if self.cod_test_version() else '/cod/')
+
+    def erase_cod_token(self):
+        self._cod_token = ''
+
     def author_editor_clicked(self):
         self.ui.MainStackedWidget.go_to_loops_page()
         self.ui.TemplatesStackedWidget.setCurrentIndex(1)
         self.ui.BackToCODPushButton.setVisible(True)
+
+    def get_cod_hostname(self) -> str:
+        parsed_url = urlparse(self.ui.CODURLTextedit.text())
+        return parsed_url.scheme + "://" + parsed_url.netloc
+
+    @property
+    def cod_path(self) -> str:
+        return urlparse(self.ui.CODURLTextedit.text()).path
+
+    def cod_test_version(self) -> bool:
+        if 'cod-test' in self.cod_path:
+            return True
+        else:
+            return False
 
     @property
     def cif(self) -> CifContainer:
@@ -182,7 +209,7 @@ class CODdeposit():
             self.add_deposited_structures_to_table(parser.structures, parser.token)
 
     def get_structures_from_cod(self):
-        f = CODFetcher(self.main_url)
+        f = CODFetcher(main_url=self.main_url)
         if not self._cod_token:
             self._cod_token = f.get_token(username=self.username, password=self.password)
         f.get_table_data_by_token(self._cod_token)
