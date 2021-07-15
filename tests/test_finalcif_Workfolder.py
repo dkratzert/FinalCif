@@ -6,7 +6,7 @@ from pathlib import Path
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon, QColor
-from PyQt5.QtWidgets import QApplication
+from PyQt5.QtWidgets import QApplication, QWidget
 from qtpy.QtTest import QTest
 
 from appwindow import AppWindow
@@ -90,8 +90,15 @@ class TestWorkfolder(unittest.TestCase):
     def key_row(self, key: str) -> int:
         return self.myapp.ui.cif_main_table.row_from_key(key)
 
-    def cell_widget(self, row: int, col: int) -> str:
+    def cell_widget(self, row: int, col: int) -> QWidget:
+        return self.myapp.ui.cif_main_table.cellWidget(row, col)
+
+    def cell_widget_class(self, row: int, col: int) -> str:
         return str(self.myapp.ui.cif_main_table.cellWidget(row, col).__class__)
+
+    def get_combobox_items(self, row: int, col: int):
+        widget = self.cell_widget(row, col)
+        return [widget.itemText(i) for i in range(widget.count())]
 
     def cell_text(self, key: str, col: int) -> str:
         return unify_line_endings(self.myapp.ui.cif_main_table.getTextFromKey(key, col))
@@ -146,9 +153,48 @@ class TestWorkfolder(unittest.TestCase):
 
     def test_abs_configuration_combo(self):
         self.assertEqual(10, self.key_row('_chemical_absolute_configuration'))
-        self.assertEqual("<class 'NoneType'>", self.cell_widget(10, COL_CIF))
-        self.assertEqual("<class 'NoneType'>", self.cell_widget(10, COL_DATA))
-        self.assertEqual("<class 'gui.custom_classes.MyComboBox'>", self.cell_widget(10, COL_EDIT))
+        self.assertEqual("<class 'NoneType'>", self.cell_widget_class(10, COL_CIF))
+        self.assertEqual("<class 'NoneType'>", self.cell_widget_class(10, COL_DATA))
+        self.assertEqual("<class 'gui.custom_classes.MyComboBox'>", self.cell_widget_class(10, COL_EDIT))
+
+    def test_diffrn_radiation_type_combo(self):
+        row = self.key_row('_diffrn_radiation_type')
+        self.assertEqual("<class 'NoneType'>", self.cell_widget_class(row, COL_CIF))
+        self.assertEqual("<class 'NoneType'>", self.cell_widget_class(row, COL_DATA))
+        self.assertEqual("<class 'gui.custom_classes.MyComboBox'>", self.cell_widget_class(row, COL_EDIT))
+
+    def test_diffrn_ambient_temperature_combo(self):
+        row = self.key_row('_diffrn_ambient_temperature')
+        self.assertEqual("<class 'NoneType'>", self.cell_widget_class(row, COL_CIF))
+        self.assertEqual("<class 'NoneType'>", self.cell_widget_class(row, COL_DATA))
+        self.assertEqual("<class 'gui.custom_classes.MyComboBox'>", self.cell_widget_class(row, COL_EDIT))
+
+    def test_combo_items_ambient_temp(self):
+        row = self.key_row('_diffrn_ambient_temperature')
+        self.assertEqual(
+            ['', '15(1)', '80(2)', '100(2)', '110(2)', '120(2)', '130(2)', '150(2)', '200(2)', '293.15(2)', '298(2)'],
+            self.get_combobox_items(row, COL_EDIT))
+
+    def test_combo_items_radiation(self):
+        row = self.key_row('_diffrn_radiation_type')
+        self.assertEqual(['', 'Mo K\\a', 'Cu K\\a', 'Ag K\\a'], self.get_combobox_items(row, COL_EDIT))
+
+    def test_combo_items_exptl_crystal_description(self):
+        row = self.key_row('_exptl_crystal_description')
+        self.assertEqual(['', 'block', 'needle', 'plate', 'prism', 'sphere'], self.get_combobox_items(row, COL_EDIT))
+
+    def test_combo_items_atom_sites_solution_primary(self):
+        row = self.key_row('_atom_sites_solution_primary')
+        self.assertEqual(
+            ['', 'direct', 'vecmap', 'heavy', 'difmap', 'geom', 'disper', 'isomor', 'notdet', 'dual', 'iterative',
+             'other'], self.get_combobox_items(row, COL_EDIT))
+
+    def test_combo_items_exptl_crystal_colour(self):
+        row = self.key_row('_exptl_crystal_colour')
+        self.assertEqual(
+            ['', 'colourless', 'white', 'black', 'yellow', 'red', 'blue', 'green', 'gray', 'pink', 'orange',
+             'violet',
+             'brown'], self.get_combobox_items(row, COL_EDIT))
 
     def test_background_color_data(self):
         self.assertEqual(light_green, self.get_background_color('_computing_cell_refinement', COL_DATA))
@@ -167,7 +213,8 @@ class TestWorkfolder(unittest.TestCase):
     def test_background_color_theta_max(self):
         self.assertEqual((0, 0, 0, 255), self.get_background_color('_cell_measurement_theta_max', COL_CIF).getRgb())
         self.assertEqual(light_green, self.get_background_color('_cell_measurement_theta_max', COL_DATA))
-        self.assertEqual((0, 0, 0, 255), self.get_background_color('_cell_measurement_theta_max', COL_EDIT).getRgb())
+        self.assertEqual((0, 0, 0, 255),
+                         self.get_background_color('_cell_measurement_theta_max', COL_EDIT).getRgb())
 
     def test_exptl_crystal_size(self):
         self.assertEqual('0.220', self.cell_text('_exptl_crystal_size_max', COL_DATA))
@@ -197,7 +244,8 @@ class TestWorkfolder(unittest.TestCase):
     def test_equipment_click_machine(self):
         self.equipment_click('APEX2 QUAZAR')
         self.allrows_test_key('_diffrn_measurement_method', ['?', 'ω and ϕ scans', 'ω and ϕ scans'])
-        self.allrows_test_key('_diffrn_measurement_specimen_support', ['?', 'MiTeGen micromount', 'MiTeGen micromount'])
+        self.allrows_test_key('_diffrn_measurement_specimen_support',
+                              ['?', 'MiTeGen micromount', 'MiTeGen micromount'])
 
     # unittest.SkipTest('')
     def test_equipment_click_machine_oxford_0(self):
@@ -207,11 +255,13 @@ class TestWorkfolder(unittest.TestCase):
 
     def test_equipment_click_machine_oxford_1(self):
         self.equipment_click('APEX2 QUAZAR')
-        self.assertEqual('Oxford Cryostream 800', self.cell_text('_olex2_diffrn_ambient_temperature_device', COL_DATA))
+        self.assertEqual('Oxford Cryostream 800',
+                         self.cell_text('_olex2_diffrn_ambient_temperature_device', COL_DATA))
 
     def test_equipment_click_machine_oxford_2(self):
         self.equipment_click('APEX2 QUAZAR')
-        self.assertEqual('Oxford Cryostream 800', self.cell_text('_olex2_diffrn_ambient_temperature_device', COL_EDIT))
+        self.assertEqual('Oxford Cryostream 800',
+                         self.cell_text('_olex2_diffrn_ambient_temperature_device', COL_EDIT))
 
     def test_equipment_click_author_address_0(self):
         # Check if click on author adds the address to second and third column:
@@ -246,9 +296,9 @@ class TestWorkfolder(unittest.TestCase):
         self.equipment_click('Crystallographer Details')
         self.assertEqual(self.myapp.ui.cif_main_table.vheaderitems[5], '_audit_contact_author_name')
         self.assertEqual('Dr. Daniel Kratzert', self.myapp.ui.cif_main_table.getText(5, COL_DATA))
-        self.assertEqual("<class 'NoneType'>", self.cell_widget(5, COL_CIF))
-        self.assertEqual("<class 'NoneType'>", self.cell_widget(5, COL_DATA))
-        self.assertEqual("<class 'NoneType'>", self.cell_widget(5, COL_EDIT))
+        self.assertEqual("<class 'NoneType'>", self.cell_widget_class(5, COL_CIF))
+        self.assertEqual("<class 'NoneType'>", self.cell_widget_class(5, COL_DATA))
+        self.assertEqual("<class 'NoneType'>", self.cell_widget_class(5, COL_EDIT))
 
     def test_addr_after_author_click(self):
         self.assertNotEqual(unify_line_endings(addr), self.cell_text('_audit_contact_author_address', COL_EDIT))
@@ -291,7 +341,6 @@ class TestWorkfolder(unittest.TestCase):
         pair = [x.replace("\n", "").replace("\r", "") for x in pair]
         self.assertEqual(erg, pair)
         self.myapp.final_cif_file_name.unlink()
-
 
 if __name__ == '__main__':
     unittest.main()

@@ -114,6 +114,7 @@ class Properties:
         listwidget = self.app.ui.PropertiesTemplatesListWidget
         keyword = self.app.ui.cifKeywordLineEdit.text()
         self.save_property(table, stackedwidget, listwidget, keyword)
+        self.app.refresh_combo_boxes()
 
     def store_predefined_templates(self) -> None:
         property_list = self.settings.get_properties_list() or []
