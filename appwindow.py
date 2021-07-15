@@ -1342,20 +1342,7 @@ class AppWindow(QMainWindow):
                 continue
             if src and src not in self.missing_data:
                 self.add_row(src, '?')
-        # Build a dictionary of cif keys and row number values in order to fill the first column
-        # of cif_main_table with cif values:
-        property_keys = self.settings.load_property_keys_and_values()
-        for row_number in range(self.ui.cif_main_table.model().rowCount()):
-            vhead_key = self.ui.cif_main_table.model().headerData(row_number, Qt.Vertical)
-            if not vhead_key in self.ui.cif_main_table.vheaderitems:
-                self.ui.cif_main_table.vheaderitems.append(vhead_key)
-            # adding comboboxes:
-            if vhead_key in property_keys:
-                # First add self-made properties:
-                self.add_combobox(row_number, vhead_key)
-            elif vhead_key in combobox_fields:
-                # Then the pre-defined:
-                self.add_property_combobox(combobox_fields[vhead_key], row_number)
+        self.refresh_combo_boxes()
         # Get missing items from sources and put them into the corresponding rows:
         # missing items will even be used if under the blue separation line:
         for miss_key in self.missing_data:
@@ -1374,6 +1361,19 @@ class AppWindow(QMainWindow):
                 # TypeError my originate from incomplete self.missing_data list!
                 # print(e, '##', miss_key)
                 pass
+
+    def refresh_combo_boxes(self):
+        for row_number in range(self.ui.cif_main_table.model().rowCount()):
+            vhead_key = self.ui.cif_main_table.model().headerData(row_number, Qt.Vertical)
+            if not vhead_key in self.ui.cif_main_table.vheaderitems:
+                self.ui.cif_main_table.vheaderitems.append(vhead_key)
+            # adding comboboxes:
+            if vhead_key in self.settings.load_cif_keys_of_properties():
+                # First add self-made properties:
+                self.add_combobox(row_number, vhead_key)
+            elif vhead_key in combobox_fields:
+                # Then the pre-defined:
+                self.add_property_combobox(combobox_fields[vhead_key], row_number)
 
     def add_combobox(self, num: int, vhead_key: str):
         """

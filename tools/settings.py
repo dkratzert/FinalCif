@@ -15,6 +15,8 @@ class FinalCifSettings():
         self.software_name = 'FinalCif'
         self.organization = 'DK'
         self.settings = QSettings(self.organization, self.software_name)
+        self.property_keys_and_values = self.load_property_keys_and_values()
+        self.property_keys = self.load_cif_keys_of_properties()
         # print(self.settings.fileName())
 
     @property
@@ -76,17 +78,30 @@ class FinalCifSettings():
                 pass
         return keylist
 
+    def load_cif_keys_of_properties(self):
+        property_keys = [x[0] for x in self.property_keys_and_values]
+        return property_keys
+
     def load_property_values_by_key(self, cif_key: str):
-        property_keys = self.load_property_keys_and_values()
-        if property_keys:
-            return property_keys[property_keys.index(cif_key)]
-        return []
+        num_value_pairs = []
+        if self.property_keys and cif_key in self.property_keys:
+            keys_and_values = self.property_keys_and_values[self.property_keys.index(cif_key)]
+            if len(keys_and_values) >= 1:
+                property_values = keys_and_values[1]
+            else:
+                property_values = ['']
+            for n, val in enumerate(property_values):
+                num_value_pairs.append((n, val))
+            return num_value_pairs
+        return [(0, '')]
 
     def save_template_list(self, name: str, items: list):
         """
         Saves Equipment templates into the settings as list.
         """
         self.settings.setValue(name, items)
+        self.property_keys_and_values = self.load_property_keys_and_values()
+        self.property_keys = self.load_cif_keys_of_properties()
 
     def save_key_value(self, name: str, item: Union[str, List, Tuple, Dict]):
         """
@@ -181,4 +196,5 @@ if __name__ == '__main__':
     s = FinalCifSettings()
     # p = s.load_settings_dict(item_name='Daniel Kratzert')
     # print(p, '###ä###')
-    print('load_property_by_key:', s.load_property_values_by_key(cif_key='_cell_measurement_temperature'))
+    print('load_property_by_key:', s.load_property_values_by_key(cif_key='_diffrn_ambient_environment'))
+    print(s.load_cif_keys_of_properties())
