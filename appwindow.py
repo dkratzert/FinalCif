@@ -1290,20 +1290,13 @@ class AppWindow(QMainWindow):
 
     def check_Z(self) -> None:
         """
-        Crude check if Z is much too high e.h. a SEHLXT solution with "C H N O" sum formula.
+        A crude check if Z is much too high e.g. a SEHLXT solution with "C H N O" sum formula.
         """
         Z = to_float(self.cif['_cell_formula_units_Z'])
         if not Z:
             Z = 1
-        density = to_float(self.cif['_exptl_crystal_density_diffrn'])
         csystem = self.cif.crystal_system
         bad = False
-        # Z_calc = round((self.cif.atomic_struct.cell.volume / self.cif.natoms(without_h=True))/17.7, 1)
-        # self.ui.EstZLinedit.setText(str(self.cif.Z_value))
-        # print(Z_calc, self.cif.Z_value)
-        ntypes = len(self.cif['_chemical_formula_sum'].split())
-        # if abs(Z - self.cif.Z_value) > 1:
-        #    bad = True
         if Z and Z > 20.0 and (csystem == 'tricilinic' or csystem == 'monoclinic'):
             bad = True
         if Z and Z > 32.0 and (csystem == 'orthorhombic' or csystem == 'tetragonal' or csystem == 'trigonal'
