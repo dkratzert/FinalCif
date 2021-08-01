@@ -14,6 +14,7 @@ import random
 import string
 from math import sqrt, radians, cos, sin, acos, degrees, floor
 from operator import sub, add
+from typing import Union
 
 
 class Array(object):
@@ -54,7 +55,7 @@ class Array(object):
     """
     __slots__ = ['values']
 
-    def __init__(self, values: list):
+    def __init__(self, values: Union[list, tuple]):
         self.values = values
 
     def __iter__(self) -> iter:
@@ -281,7 +282,7 @@ class Matrix(object):
     """
     __slots__ = ['values', 'shape']
 
-    def __init__(self, values):
+    def __init__(self, values: Union[list, tuple]):
         self.shape = (len(values[0]), len(values))
         self.values = values
 
