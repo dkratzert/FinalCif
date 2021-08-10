@@ -52,7 +52,7 @@ from template.templates import ReportTemplates
 from tools.checkcif import MyHTMLParser, AlertHelp, CheckCif
 from tools.dsrmath import my_isnumeric
 from tools.misc import strip_finalcif_of_name, next_path, do_not_import_keys, celltxt, to_float, combobox_fields, \
-    do_not_import_from_stoe_cfx, cif_to_header_label, grouper, is_database_number
+    do_not_import_from_stoe_cfx, cif_to_header_label, grouper, is_database_number, file_age_in_days
 from tools.options import Options
 from tools.platon import Platon
 from tools.settings import FinalCifSettings
@@ -79,6 +79,7 @@ class AppWindow(QMainWindow):
         self.view: Union[QWebEngineView, None] = None
         self.report_picture_path: Union[Path, None] = None
         self.checkdef = []
+        self.checkdef_file: Path = Path.home().joinpath('check.def')
         self.final_cif_file_name = Path()
         self.missing_data: set = set()
         self.temperature_warning_displayed = False
@@ -416,7 +417,7 @@ class AppWindow(QMainWindow):
         """
         Sends a get request to the platon server in order to get the current check.def file.
         """
-        url = QUrl('https://www.platonsoft.nl/spek/xraysoft/unix/platon/check.def')
+        url = QUrl('http://www.platonsoft.nl/xraysoft/unix/platon/check.def')
         req = QNetworkRequest(url)
         self.netman_checkdef.get(req)
 
@@ -425,6 +426,8 @@ class AppWindow(QMainWindow):
         Is called by the finished signal from the network manager.
         """
         txt = bytes(reply.readAll()).decode('utf-8', 'ignore')
+        with suppress(Exception):
+            self.checkdef_file.write_text(txt)
         self.checkdef = txt.splitlines(keepends=False)
 
     def explore_current_dir(self):
@@ -541,8 +544,7 @@ class AppWindow(QMainWindow):
         """
         Performs an online checkcif via checkcif.iucr.org.
         """
-        if not self.running_inside_unit_test:
-            self.get_checkdef_for_response_forms()
+        self._get_check_def()
         self.ui.CheckCifLogPlainTextEdit.clear()
         try:
             self.checkcif_browser.close()
@@ -574,6 +576,12 @@ class AppWindow(QMainWindow):
         self.ui.CheckcifHTMLOnlineButton.setDisabled(True)
         self.ui.CheckcifPDFOnlineButton.setDisabled(True)
         self.ckf.start()
+
+    def _get_check_def(self):
+        if self.checkdef_file.exists() and file_age_in_days(self.checkdef_file) < 30:
+            self.checkdef = self.checkdef_file.read_text().splitlines(keepends=False)
+        else:
+            self.get_checkdef_for_response_forms()
 
     def save_responses(self) -> None:
         """
@@ -1471,7 +1479,7 @@ class AppWindow(QMainWindow):
         textedit.setLineWrapMode(QPlainTextEdit.NoWrap)
         textedit.setReadOnly(True)
 
-    def add_row(self, key: str, value: str, at_start=False, position: Union[int, None]=None) -> None:
+    def add_row(self, key: str, value: str, at_start=False, position: Union[int, None] = None) -> None:
         """
         Create a empty row at bottom of cif_main_table. This method only fills cif data in the
         first column. Not the data from external sources!
