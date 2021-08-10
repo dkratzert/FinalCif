@@ -20,8 +20,8 @@ from html.parser import HTMLParser
 from pathlib import Path
 from urllib import request
 
-changes_url = 'http://www.platonsoft.nl/spek/xraysoft/update_history_platon.html'
-platon_url = 'http://www.platonsoft.nl/spek/xraysoft/mswindows/platon/platon.zip'
+changes_url = 'http://www.platonsoft.nl/xraysoft/update_history_platon.html'
+platon_url = 'http://www.platonsoft.nl/xraysoft/mswindows/platon/platon.zip'
 
 
 def get_changes():
