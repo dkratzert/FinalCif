@@ -30,9 +30,6 @@ class TestMyHTMLParser(TestCase):
         # This html has no pdf link!
         self.assertEqual('', self.parser.pdf_link)
 
-    def test_get_image(self):
-        self.assertEqual(b'GIF89a0\x06\xc8\x04\xf6\x00\x00\x00\x00\x00\x11\x00\x00\x17', self.parser.get_image()[:20])
-
     def test_image_url(self):
         self.assertEqual('https://checkcif.iucr.org/tpLFd4ecNpOHF/081921084958927101865/platon_cu_BruecknerJK_153F40_0mte.gif', self.parser.imageurl)
 
