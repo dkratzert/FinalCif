@@ -5,6 +5,7 @@
 #  and you think this stuff is worth it, you can buy me a beer in return.
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
+import re
 import subprocess
 import sys
 import time
@@ -62,11 +63,11 @@ class CheckCif(QThread):
             hkl = 'checkcif_with_hkl'
         vrf = self.get_vrf()
         headers = {
-            "runtype"   : "symmonly",
-            "referer"   : "checkcif_server",
+            "runtype": "symmonly",
+            "referer": "checkcif_server",
             "outputtype": 'PDF' if self.pdf else 'HTML',
-            "validtype" : hkl,
-            "valout"    : vrf,
+            "validtype": hkl,
+            "valout": vrf,
         }
         t1 = time.perf_counter()
         self.progress.emit('Report request sent. Please wait...')
@@ -80,8 +81,9 @@ class CheckCif(QThread):
                 time.sleep(0.1)
                 self.progress.emit('Report took {}s.'.format(str(round(t2 - t1, 2))))
                 try:
-                    self.html_out_file.write_bytes(req.content)
+                    self.html_out_file.write_bytes(fix_iucr_urls(req.content.decode()).encode())
                 except PermissionError:
+                    print('html checkcif result could not be written.')
                     return
         with suppress(Exception):
             # parameter missing_ok=True is only available after 3.8
@@ -135,24 +137,33 @@ class CheckCif(QThread):
         self._open_pdf_result()
 
 
+def fix_iucr_urls(content: str):
+    """
+    The IuCr checkcif page suddenly contains urls where the protocol is missing.
+    """
+    href = re.sub(r'\s+href\s{0,}=\s{0,}"//', ' href="https://', content)
+    return re.sub(r'\s+src\s{0,}=\s{0,}"//', ' src="https://', href)
+
+
 class MyHTMLParser(HTMLParser):
     def __init__(self, data):
-        self.link = ''
+        self.pdf_link = ''
         self.imageurl = ''
         super(MyHTMLParser, self).__init__()
-        self.pdf = ''
         self.vrf = ''
         self.alert_levels = []
         self.feed(data)
 
     def get_pdf(self) -> Optional[bytes]:
-        return requests.get(self.link).content
+        return requests.get(self.pdf_link).content
 
     def handle_starttag(self, tag: str, attrs: str) -> None:
-        if tag == "a" and len(attrs) > 1 and attrs[0][1] == '_blank':
-            self.link = attrs[1][1]
+        if tag == "a" and len(attrs) > 1 and attrs[0][1] == '_blank' and attrs[1][1].endswith('.pdf'):
+            url = attrs[1][1]
+            self.pdf_link = url
         if tag == "img" and len(attrs) > 1 and attrs[0][0] == 'width' and '.gif' in attrs[1][1]:
-            self.imageurl = attrs[1][1]
+            url = attrs[1][1]
+            self.imageurl = url
 
     def handle_data(self, data: str) -> None:
         if 'Validation Reply Form' in data:
@@ -260,7 +271,7 @@ class AlertHelpRemote():
 
 if __name__ == "__main__":
     cif = Path('test-data/1000007-finalcif.cif')
-    html = Path(r'./test-data/checkcif-DK_zucker2_0m-finalcif.html')
+    html = Path(r'test-data/checkcif_pdf_result.html')
     # ckf = CheckCif(None, cif, outfile=html)
     # ckf.show_html_report()
     # sys.exit()
@@ -268,10 +279,10 @@ if __name__ == "__main__":
     # html = Path(r'D:\frames\guest\BreitPZ_R_122\BreitPZ_R_122\checkcif-BreitPZ_R_122_0m_a.html')
     parser = MyHTMLParser(html.read_text())
     # print(parser.imageurl)
-    pprint(parser.response_forms)
+    # pprint(parser.response_forms)
     # print(parser.alert_levels)
     # print(parser.vrf)
-    # print(parser.pdf)
+    print(parser.pdf)
     # print(parser.link)
 
     # a = AlertHelp()
