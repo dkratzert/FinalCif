@@ -300,11 +300,19 @@ class TestWorkfolder(unittest.TestCase):
         self.assertEqual("<class 'NoneType'>", self.cell_widget_class(5, COL_DATA))
         self.assertEqual("<class 'NoneType'>", self.cell_widget_class(5, COL_EDIT))
 
-    def test_addr_after_author_click(self):
+    def test_addr(self):
         self.assertNotEqual(unify_line_endings(addr), self.cell_text('_audit_contact_author_address', COL_EDIT))
+
+    def test_addr_after_author_click_0(self):
         self.equipment_click('Crystallographer Details')
         self.assertEqual(unify_line_endings(addr), self.cell_text('_audit_contact_author_address', COL_EDIT))
+
+    def test_addr_after_author_click_1(self):
+        self.equipment_click('Crystallographer Details')
         self.assertEqual(unify_line_endings(addr), self.cell_text('_audit_contact_author_address', COL_DATA))
+
+    def test_addr_after_author_click_2(self):
+        self.equipment_click('Crystallographer Details')
         self.assertEqual('?', self.cell_text('_audit_contact_author_address', COL_CIF))
 
     def test_edit_values_and_save(self):
