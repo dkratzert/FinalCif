@@ -2179,7 +2179,7 @@ The data source will be ignored until next program restart.</string>
                   </size>
                  </property>
                  <property name="text">
-                  <string>https://checkcif.iucr.org/cgi-bin/checkcif_with_hkl</string>
+                  <string>https://checkcif.iucr.org/cgi-bin/checkcif_hkl.pl</string>
                  </property>
                 </widget>
                </item>

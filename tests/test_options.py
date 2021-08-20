@@ -47,7 +47,7 @@ class TestOptions(unittest.TestCase):
 
     def test_checkcif_url(self):
         self.assertEqual(self.myapp.ui.CheckCIFServerURLTextedit.text(),
-                         'https://checkcif.iucr.org/cgi-bin/checkcif_with_hkl')
+                         'https://checkcif.iucr.org/cgi-bin/checkcif_hkl.pl')
         self.myapp.ui.CheckCIFServerURLTextedit.setText('foobar')
         self.assertEqual(self.myapp.options.checkcif_url, 'foobar')
 

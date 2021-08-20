@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file './gui/finalcif_gui.ui'
+# Form implementation generated from reading ui file 'D:\Github\FinalCif\gui\finalcif_gui.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.2
 #
@@ -1799,7 +1799,7 @@ class Ui_FinalCifWindow(object):
         self.CODURLTextedit.setText(_translate("FinalCifWindow", "https://www.crystallography.net/cod/cgi-bin/cif-deposit.pl"))
         self.groupBox_7.setTitle(_translate("FinalCifWindow", "CheckCIF Server"))
         self.label_4.setText(_translate("FinalCifWindow", "Change this URL if the CheckCIF server URL changes:"))
-        self.CheckCIFServerURLTextedit.setText(_translate("FinalCifWindow", "https://checkcif.iucr.org/cgi-bin/checkcif_with_hkl"))
+        self.CheckCIFServerURLTextedit.setText(_translate("FinalCifWindow", "https://checkcif.iucr.org/cgi-bin/checkcif_hkl.pl"))
         self.groupBox_5.setTitle(_translate("FinalCifWindow", "Report Options"))
         self.ReportTextCheckBox.setText(_translate("FinalCifWindow", "No report text in structure report"))
         self.HAtomsCheckBox.setText(_translate("FinalCifWindow", "No bonds and angles to hydrogen atoms"))
