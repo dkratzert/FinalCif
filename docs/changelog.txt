@@ -1,6 +1,7 @@
 FinalCif recent changes
 -----------------------
 
+-v87 Fixed problems with Checkcif.
 -v86 Added upload interface for the crystallographic open database (COD).
      Improved special character quotation in CIF.
      Help button in validation response form editor works again.
