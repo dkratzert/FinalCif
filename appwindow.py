@@ -569,10 +569,10 @@ class AppWindow(QMainWindow):
         self.ckf = CheckCif(cif=self.cif, outfile=self.htmlfile,
                             hkl_upload=(not self.ui.structfactCheckBox.isChecked()), pdf=False,
                             url=self.options.checkcif_url)
+        self.ckf.progress.connect(self._ckf_progress)
         self.ckf.failed.connect(self._checkcif_failed)
         # noinspection PyUnresolvedReferences
         self.ckf.finished.connect(self._checkcif_finished)
-        self.ckf.progress.connect(self._ckf_progress)
         self.ui.CheckcifHTMLOnlineButton.setDisabled(True)
         self.ui.CheckcifPDFOnlineButton.setDisabled(True)
         self.ckf.start()

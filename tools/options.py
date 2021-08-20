@@ -99,7 +99,7 @@ class Options:
             return self.set_default_checkcif_url()
 
     def set_default_checkcif_url(self):
-        url = 'https://checkcif.iucr.org/cgi-bin/checkcif_with_hkl'
+        url = 'https://checkcif.iucr.org/cgi-bin/checkcif_hkl.pl'
         self.ui.CheckCIFServerURLTextedit.setText(url)
         return url
 
