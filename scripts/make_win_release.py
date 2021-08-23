@@ -20,7 +20,7 @@ from pathlib import Path
 application_path = Path(os.path.abspath(__file__)).parent.parent
 
 sys.path.append(str(Path(__file__).parent.parent))
-sys.path.append(application_path)
+sys.path.append(str(application_path))
 
 from PyQt5 import uic
 
@@ -44,7 +44,6 @@ def disable_debug(filepath: str):
             print("DEBUG/PROFILE.. {}, {}".format(l[2], filepath))
             l[2] = '{}'.format("False")
             file[num] = " ".join(l)
-            continue
     iss_file = "\n".join(file)
     pth.write_text(iss_file, encoding="UTF-8")
 
