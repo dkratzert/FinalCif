@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'D:\Github\FinalCif\gui\finalcif_gui.ui'
+# Form implementation generated from reading ui file '/Users/daniel/Documents/GitHub/FinalCif/gui/finalcif_gui.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.2
 #
@@ -425,7 +425,7 @@ class Ui_FinalCifWindow(object):
         self.CCDCNumLineEdit.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
         self.CCDCNumLineEdit.setTabChangesFocus(True)
         self.CCDCNumLineEdit.setLineWrapMode(QtWidgets.QTextEdit.NoWrap)
-        self.CCDCNumLineEdit.setReadOnly(True)
+        self.CCDCNumLineEdit.setReadOnly(False)
         self.CCDCNumLineEdit.setAcceptRichText(False)
         self.CCDCNumLineEdit.setObjectName("CCDCNumLineEdit")
         self.gridLayout_6.addWidget(self.CCDCNumLineEdit, 0, 7, 1, 1)

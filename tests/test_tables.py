@@ -107,7 +107,7 @@ class TablesTestCase(TablesTestMixin, unittest.TestCase):
         self.myapp.ui.SaveFullReportButton.click()
         doc = Document(self.reportdoc.absolute())
         table: Table = doc.tables[0]
-        self.assertEqual('CCDC 1979688', table.cell(row_idx=0, col_idx=1).text)
+        self.assertEqual('1979688', table.cell(row_idx=0, col_idx=1).text)
 
 
 class TablesNoPictureTestCase(TablesTestMixin, unittest.TestCase):
