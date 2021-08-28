@@ -39,7 +39,8 @@ from displaymol.sdm import SDM
 from equip_property.author_loop_templates import AuthorLoops
 from equip_property.equipment import Equipment
 from equip_property.properties import Properties
-from gui.custom_classes import COL_CIF, COL_DATA, COL_EDIT, MyTableWidgetItem, light_green, yellow, MyComboBox, blue
+from gui.custom_classes import COL_CIF, COL_DATA, COL_EDIT, MyTableWidgetItem, light_green, yellow, MyComboBox, blue, \
+    MyCifTable
 from gui.dialogs import show_update_warning, unable_to_open_message, show_general_warning, cif_file_open_dialog, \
     bad_z_message, show_res_checksum_warning, show_hkl_checksum_warning
 from gui.finalcif_gui import Ui_FinalCifWindow
@@ -880,43 +881,13 @@ class AppWindow(QMainWindow):
         if not self.cif:
             # No file is opened
             return None
-        datatxt = ''.join(self.ui.datnameLineEdit.text().split(' '))
-        self.cif.rename_data_name(datatxt)
+        self.cif.rename_data_name(''.join(self.ui.datnameLineEdit.text().split(' ')))
         # restore header, otherwise item is not saved:
         table = self.ui.cif_main_table
         table.restore_vertical_header()
         table.setCurrentItem(None)  # makes sure also the currently edited item is saved
-        for row in range(self.ui.cif_main_table.rows_count):
-            col1 = None  # from datafiles
-            col2 = None  # own text
-            for col in range(self.ui.cif_main_table.columns_count):
-                txt = table.text(row, col)
-                if txt:
-                    # if col == COL_CIF and txt != (None or '' or '?'):
-                    #    col0 = txt
-                    # removed: not col0 and
-                    if col == COL_DATA and txt != (None or '' or '?'):
-                        col1 = txt
-                    try:
-                        if col == COL_EDIT and txt != (None or ''):
-                            col2 = txt
-                    except AttributeError as e:
-                        # print(e)
-                        pass
-                if col == COL_EDIT:
-                    vhead = self.ui.cif_main_table.vheader_text(row)
-                    # vertical header item is surely not a cif keyword:
-                    if not vhead.startswith('_'):
-                        continue
-                    # This is my row information
-                    # print('col2:', vhead, col0, col1, col2, '#')
-                    if col1 and not col2:
-                        self.cif[vhead] = col1
-                    if col2:
-                        try:
-                            self.cif[vhead] = col2
-                        except (RuntimeError, ValueError, IOError) as e:
-                            print('Can not take cif info from table:', e)
+        self.store_data_from_table_rows(table)
+        self.save_ccdc_number()
         if not filename:
             self.final_cif_file_name = self.cif.fileobj.parent.joinpath(
                 strip_finalcif_of_name(self.cif.fileobj.stem) + '-finalcif.cif')
@@ -933,10 +904,40 @@ class AppWindow(QMainWindow):
             show_general_warning('Can not save file: ' + str(e))
             return False
 
-    def delete_fcf_data(self):
-        """Removes the attched fcf file data from the current cif file."""
-        if self.cif.block.find_pair('_shelx_fcf_file'):
-            self.cif.block.find(['_shelx_fcf_file']).erase()
+    def store_data_from_table_rows(self, table: MyCifTable) -> None:
+        """
+        Stores the data from the main table in the cif object.
+        """
+        for row in range(self.ui.cif_main_table.rows_count):
+            vhead = self.ui.cif_main_table.vheader_text(row)
+            is_cif = self.is_row_a_cif_item(vhead)
+            if not is_cif:
+                continue
+            col_data = table.text(row, COL_DATA)
+            col_edit = table.text(row, COL_EDIT)
+            if col_data and not col_edit and col_data != '?':
+                self.cif[vhead] = col_data
+            if col_edit:
+                try:
+                    self.cif[vhead] = col_edit
+                except (RuntimeError, ValueError, IOError) as e:
+                    print('Can not take cif info from table:', e)
+
+    def is_row_a_cif_item(self, vhead):
+        is_cif = False
+        # vertical header item is a cif keyword:
+        if vhead.startswith('_'):
+            is_cif = True
+        return is_cif
+
+    def save_ccdc_number(self) -> None:
+        ccdc_number = self.ui.CCDCNumLineEdit.toPlainText().split(' ')
+        if len(ccdc_number) > 1 and my_isnumeric(ccdc_number[1]):
+            ccdc_number = ccdc_number[1]
+        else:
+            ccdc_number = ccdc_number[0]
+        if ccdc_number:
+            self.cif.set_pair_delimited('_database_code_depnum_ccdc_archive', ccdc_number)
 
     def display_cif_text(self) -> None:
         """
