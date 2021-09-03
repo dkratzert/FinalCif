@@ -1513,7 +1513,7 @@ class AppWindow(QMainWindow):
             strval = ''
         # All regular linedit fields:
         if key == "These below are already in:":
-            self.add_separation_line(row_num)
+            self.ui.cif_main_table.add_separation_line(row_num)
             self.complete_data_row = row_num
         else:
             # Cif text is set here:
@@ -1535,26 +1535,3 @@ class AppWindow(QMainWindow):
         if not self.cif.block.find_value(key):
             self.cif[key] = value
 
-    def add_separation_line(self, row_num: int) -> None:
-        """
-        Adds a blue separation line between cif content and empty cif keywords.
-        """
-        # The blue line in the table:
-        item_vhead = MyTableWidgetItem('These below are already in:')
-        item1 = MyTableWidgetItem('')
-        item2 = MyTableWidgetItem('')
-        item3 = MyTableWidgetItem('')
-        diag = QBrush(blue)
-        diag.setStyle(Qt.DiagCrossPattern)
-        item_vhead.setBackground(diag)
-        item1.setBackground(diag)
-        item1.setUneditable()
-        item2.setBackground(diag)
-        item2.setUneditable()
-        item3.setBackground(diag)
-        item3.setUneditable()
-        self.ui.cif_main_table.setVerticalHeaderItem(row_num, item_vhead)
-        self.ui.cif_main_table.setItem(row_num, COL_CIF, item1)
-        self.ui.cif_main_table.setItem(row_num, COL_DATA, item2)
-        self.ui.cif_main_table.setItem(row_num, COL_EDIT, item3)
-        self.ui.cif_main_table.resizeRowToContents(row_num)
