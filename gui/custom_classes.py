@@ -3,7 +3,7 @@ from textwrap import wrap
 
 from PyQt5 import QtCore
 from PyQt5.QtCore import QEvent, QObject, Qt, QSize
-from PyQt5.QtGui import QColor, QTextOption, QKeySequence, QContextMenuEvent
+from PyQt5.QtGui import QColor, QTextOption, QKeySequence, QContextMenuEvent, QBrush
 from PyQt5.QtWidgets import QAbstractScrollArea, QAction, QComboBox, QFrame, QPlainTextEdit, QSizePolicy, QTableWidget, \
     QTableWidgetItem, QWidget, QApplication, QShortcut, QStackedWidget
 
@@ -141,6 +141,30 @@ class MyCifTable(QTableWidget, ItemTextMixin):
             return
         except KeyError:
             pass
+
+    def add_separation_line(self, row_num: int) -> None:
+        """
+        Adds a blue separation line between cif content and empty cif keywords.
+        """
+        # The blue line in the table:
+        item_vhead = MyTableWidgetItem('These below are already in:')
+        item1 = MyTableWidgetItem('')
+        item2 = MyTableWidgetItem('')
+        item3 = MyTableWidgetItem('')
+        diag = QBrush(blue)
+        diag.setStyle(Qt.DiagCrossPattern)
+        item_vhead.setBackground(diag)
+        item1.setBackground(diag)
+        item1.setUneditable()
+        item2.setBackground(diag)
+        item2.setUneditable()
+        item3.setBackground(diag)
+        item3.setUneditable()
+        self.setVerticalHeaderItem(row_num, item_vhead)
+        self.setItem(row_num, COL_CIF, item1)
+        self.setItem(row_num, COL_DATA, item2)
+        self.setItem(row_num, COL_EDIT, item3)
+        self.resizeRowToContents(row_num)
 
     def restore_vertical_header(self):
         for row_num, key in enumerate(self.vheaderitems):
