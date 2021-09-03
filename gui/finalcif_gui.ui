@@ -1009,7 +1009,7 @@
         <item row="1" column="0" colspan="12">
          <widget class="MyMainStackedWidget" name="MainStackedWidget">
           <property name="currentIndex">
-           <number>4</number>
+           <number>6</number>
           </property>
           <widget class="QWidget" name="page_MainTable">
            <layout class="QVBoxLayout" name="verticalLayout">
@@ -2800,11 +2800,22 @@ Contact authors should always also appear as regular authors.</string>
                 </widget>
                </item>
                <item row="1" column="0" colspan="3">
-                <widget class="QCheckBox" name="structfactCheckBox">
-                 <property name="text">
-                  <string>without structure factors (faster but not complete)</string>
-                 </property>
-                </widget>
+                <layout class="QHBoxLayout" name="horizontalLayout_9">
+                 <item>
+                  <widget class="QCheckBox" name="structfactCheckBox">
+                   <property name="text">
+                    <string>without structure factors (faster but not complete)</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QCheckBox" name="fullIucrCheckBox">
+                   <property name="text">
+                    <string>Full IUCr publication validation</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
                </item>
               </layout>
              </widget>
@@ -3906,7 +3917,6 @@ please add a publication author:</string>
   <tabstop>CheckcifButton</tabstop>
   <tabstop>CheckcifPDFOnlineButton</tabstop>
   <tabstop>CheckcifHTMLOnlineButton</tabstop>
-  <tabstop>structfactCheckBox</tabstop>
   <tabstop>CheckCIFResultsTabWidget</tabstop>
   <tabstop>CheckcifPlaintextEdit</tabstop>
   <tabstop>ResponsesTabWidget</tabstop>

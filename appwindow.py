@@ -266,6 +266,16 @@ class AppWindow(QMainWindow):
         self.ui.CheckCIFResultsTabWidget.currentChanged.connect(lambda: self.ui.ResponsesTabWidget.setCurrentIndex(0))
         ##
         self.ui.SelectCif_LineEdit.returnPressed.connect(self.check_if_file_field_contains_database_number)
+        self.ui.fullIucrCheckBox.clicked.connect(self.toggle_hkl_option)
+        self.ui.structfactCheckBox.clicked.connect(self.toggle_iucr_option)
+
+    def toggle_hkl_option(self, iucr_is_checked: bool):
+        if iucr_is_checked:
+            self.ui.structfactCheckBox.setChecked(False)
+
+    def toggle_iucr_option(self, hkl_is_checked: bool):
+        if hkl_is_checked:
+            self.ui.fullIucrCheckBox.setChecked(False)
 
     def check_if_file_field_contains_database_number(self):
         """
@@ -569,7 +579,8 @@ class AppWindow(QMainWindow):
             pass
         self.ckf = CheckCif(cif=self.cif, outfile=self.htmlfile,
                             hkl_upload=(not self.ui.structfactCheckBox.isChecked()), pdf=False,
-                            url=self.options.checkcif_url)
+                            url=self.options.checkcif_url,
+                            full_iucr=self.ui.fullIucrCheckBox.isChecked())
         self.ckf.progress.connect(self._ckf_progress)
         self.ckf.failed.connect(self._checkcif_failed)
         # noinspection PyUnresolvedReferences
@@ -635,7 +646,8 @@ class AppWindow(QMainWindow):
         self.ui.CheckCifLogPlainTextEdit.appendPlainText(
             'Sending pdf report request to {} ...'.format(self.options.checkcif_url))
         self.ckf = CheckCif(cif=self.cif, outfile=htmlfile, hkl_upload=(not self.ui.structfactCheckBox.isChecked()),
-                            pdf=True, url=self.options.checkcif_url)
+                            pdf=True, url=self.options.checkcif_url,
+                            full_iucr=self.ui.fullIucrCheckBox.isChecked())
         self.ckf.failed.connect(self._checkcif_failed)
         # noinspection PyUnresolvedReferences
         self.ckf.finished.connect(self._pdf_checkcif_finished)
@@ -672,7 +684,7 @@ class AppWindow(QMainWindow):
         self.load_cif_file(self.final_cif_file_name)
         self.ui.MainStackedWidget.go_to_checkcif_page()
         QApplication.processEvents()
-        timeout = 300
+        timeout = 350
         try:
             p = Platon(self.final_cif_file_name, timeout, '-u')
         except Exception as e:

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/Users/daniel/Documents/GitHub/FinalCif/gui/finalcif_gui.ui'
+# Form implementation generated from reading ui file 'D:\Github\FinalCif\gui\finalcif_gui.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.2
 #
@@ -1173,9 +1173,15 @@ class Ui_FinalCifWindow(object):
         self.CheckcifHTMLOnlineButton = QtWidgets.QPushButton(self.groupBox_checkcif_2)
         self.CheckcifHTMLOnlineButton.setObjectName("CheckcifHTMLOnlineButton")
         self.gridLayout_14.addWidget(self.CheckcifHTMLOnlineButton, 0, 1, 1, 1)
+        self.horizontalLayout_9 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_9.setObjectName("horizontalLayout_9")
         self.structfactCheckBox = QtWidgets.QCheckBox(self.groupBox_checkcif_2)
         self.structfactCheckBox.setObjectName("structfactCheckBox")
-        self.gridLayout_14.addWidget(self.structfactCheckBox, 1, 0, 1, 3)
+        self.horizontalLayout_9.addWidget(self.structfactCheckBox)
+        self.fullIucrCheckBox = QtWidgets.QCheckBox(self.groupBox_checkcif_2)
+        self.fullIucrCheckBox.setObjectName("fullIucrCheckBox")
+        self.horizontalLayout_9.addWidget(self.fullIucrCheckBox)
+        self.gridLayout_14.addLayout(self.horizontalLayout_9, 1, 0, 1, 3)
         self.gridLayout_8.addWidget(self.groupBox_checkcif_2, 4, 4, 4, 1)
         spacerItem32 = QtWidgets.QSpacerItem(225, 47, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.gridLayout_8.addItem(spacerItem32, 4, 5, 2, 1)
@@ -1579,7 +1585,7 @@ class Ui_FinalCifWindow(object):
         self.TemplatesStackedWidget.setCurrentIndex(0)
         self.EquipmentTemplatesStackedWidget.setCurrentIndex(1)
         self.PropertiesTemplatesStackedWidget.setCurrentIndex(1)
-        self.MainStackedWidget.setCurrentIndex(4)
+        self.MainStackedWidget.setCurrentIndex(6)
         self.LoopsTabWidget.setCurrentIndex(0)
         self.CheckCIFResultsTabWidget.setCurrentIndex(2)
         self.ResponsesTabWidget.setCurrentIndex(0)
@@ -1660,8 +1666,7 @@ class Ui_FinalCifWindow(object):
         FinalCifWindow.setTabOrder(self.BackFromPlatonPushButton, self.CheckcifButton)
         FinalCifWindow.setTabOrder(self.CheckcifButton, self.CheckcifPDFOnlineButton)
         FinalCifWindow.setTabOrder(self.CheckcifPDFOnlineButton, self.CheckcifHTMLOnlineButton)
-        FinalCifWindow.setTabOrder(self.CheckcifHTMLOnlineButton, self.structfactCheckBox)
-        FinalCifWindow.setTabOrder(self.structfactCheckBox, self.CheckCIFResultsTabWidget)
+        FinalCifWindow.setTabOrder(self.CheckcifHTMLOnlineButton, self.CheckCIFResultsTabWidget)
         FinalCifWindow.setTabOrder(self.CheckCIFResultsTabWidget, self.CheckcifPlaintextEdit)
         FinalCifWindow.setTabOrder(self.CheckcifPlaintextEdit, self.ResponsesTabWidget)
         FinalCifWindow.setTabOrder(self.ResponsesTabWidget, self.responseFormsListWidget)
@@ -1835,6 +1840,7 @@ class Ui_FinalCifWindow(object):
         self.CheckcifPDFOnlineButton.setText(_translate("FinalCifWindow", "Checkcif Online PDF"))
         self.CheckcifHTMLOnlineButton.setText(_translate("FinalCifWindow", "Checkcif Online HTML"))
         self.structfactCheckBox.setText(_translate("FinalCifWindow", "without structure factors (faster but not complete)"))
+        self.fullIucrCheckBox.setText(_translate("FinalCifWindow", "Full IUCr publication validation"))
         self.CheckCIFResultsTabWidget.setTabText(self.CheckCIFResultsTabWidget.indexOf(self.platon_page), _translate("FinalCifWindow", "PLATON CheckCIF result"))
         self.ResponsesTabWidget.setTabText(self.ResponsesTabWidget.indexOf(self.htmlTabwidgetPage), _translate("FinalCifWindow", "html report"))
         self.label_6.setText(_translate("FinalCifWindow", "Every form you fill out will be written to the cif file."))
