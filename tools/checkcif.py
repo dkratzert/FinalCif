@@ -28,7 +28,8 @@ class CheckCif(QThread):
     progress = pyqtSignal(str)
     failed = pyqtSignal(str)
 
-    def __init__(self, cif: CifContainer, outfile: Path, hkl_upload: bool = True, pdf: bool = False, url: str = ''):
+    def __init__(self, cif: CifContainer, outfile: Path, hkl_upload: bool = True,
+                 pdf: bool = False, url: str = '', full_iucr: bool = False):
         # hkl == False means no hkl upload
         super().__init__()
         self.hkl_upload = hkl_upload
@@ -36,12 +37,13 @@ class CheckCif(QThread):
         self.cif = cif
         self.pdf = pdf
         self.checkcif_url = url
+        self.full_iucr = full_iucr
 
     def _html_check(self):
-        if not self.hkl_upload:
-            self.progress.emit('Running Checkcif with no hkl data')
-        else:
+        if self.hkl_upload:
             self.progress.emit('Running Checkcif with hkl data')
+        else:
+            self.progress.emit('Running Checkcif with no hkl data')
 
     def get_vrf(self):
         if self.pdf:
@@ -56,17 +58,19 @@ class CheckCif(QThread):
         """
         self._html_check()
         temp_cif = bytes(self.cif.cif_as_string(), encoding='ascii')
-        hkl = 'checkcif_only'
+        validation_type = 'checkcif_only'
         if not self.hkl_upload:
             temp_cif = bytes(self.cif.cif_as_string(without_hkl=True), encoding='ascii')
-        elif self.cif.hkl_file:
-            hkl = 'checkcif_with_hkl'
+        elif len(self.cif.hkl_file) > 0 and self.hkl_upload and self.full_iucr:
+            validation_type = 'iucr_checkcif_with_hkl'
+        elif len(self.cif.hkl_file) > 0:
+            validation_type = 'checkcif_with_hkl'
         vrf = self.get_vrf()
         headers = {
             "runtype": "symmonly",
             "referer": "checkcif_server",
             "outputtype": 'PDF' if self.pdf else 'HTML',
-            "validtype": hkl,
+            "validtype": validation_type,
             "valout": vrf,
         }
         t1 = time.perf_counter()
@@ -92,7 +96,7 @@ class CheckCif(QThread):
     def _do_the_server_request(self, headers: dict, temp_cif: bytes):
         req = None
         try:
-            req = requests.post(self.checkcif_url, files={'file': temp_cif}, data=headers, timeout=400)
+            req = requests.post(self.checkcif_url, files={'file': temp_cif}, data=headers, timeout=900)
         except requests.exceptions.ReadTimeout:
             message = r"Checkcif server took too long. Try it at 'https://checkcif.iucr.org' directly."
             self.failed.emit(message)
