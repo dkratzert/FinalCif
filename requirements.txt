@@ -16,7 +16,7 @@ PyQtWebEngine==5.15.2  # Do not use 5.15.4, qwebengine will not work!
 python-docx==0.8.11
 pywin32-ctypes==0.2.0
 QtAwesome==1.0.3
-QtPy==1.10.0
+QtPy==1.11.0
 requests==2.26.0
 urllib3==1.26.6
 docxtpl==0.12.0
