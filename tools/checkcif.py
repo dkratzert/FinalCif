@@ -219,12 +219,10 @@ class AlertHelp():
         self.checkdef = checkdef  # Path('../check.def').read_text().splitlines(keepends=False)
 
     def get_help(self, alert: str) -> str:
-        if len(alert) > 4:
-            alert = alert[4:]
-        chelp = self._parse_checkdef(alert)
-        if not chelp:
+        checkdef_help = self._parse_checkdef(alert)
+        if not checkdef_help or 'PLAT' not in alert:
             return 'No help available.'
-        return chelp
+        return checkdef_help
 
     def _parse_checkdef(self, alert: str) -> str:
         """

@@ -2663,177 +2663,7 @@ Contact authors should always also appear as regular authors.</string>
           </widget>
           <widget class="QWidget" name="page_checkcif">
            <layout class="QGridLayout" name="gridLayout_8">
-            <item row="2" column="0" colspan="6">
-             <widget class="QFrame" name="ButtonFrame">
-              <property name="frameShape">
-               <enum>QFrame::NoFrame</enum>
-              </property>
-              <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
-              </property>
-              <property name="lineWidth">
-               <number>0</number>
-              </property>
-              <layout class="QHBoxLayout" name="horizontalLayout_3">
-               <property name="leftMargin">
-                <number>0</number>
-               </property>
-               <property name="topMargin">
-                <number>0</number>
-               </property>
-               <property name="rightMargin">
-                <number>0</number>
-               </property>
-               <property name="bottomMargin">
-                <number>0</number>
-               </property>
-              </layout>
-             </widget>
-            </item>
-            <item row="4" column="1" rowspan="3" colspan="2">
-             <spacer name="horizontalSpacer_2">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeType">
-               <enum>QSizePolicy::Fixed</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>13</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item row="0" column="0" colspan="7">
-             <widget class="QGroupBox" name="groupBox_7">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>1</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="title">
-               <string>CheckCIF log messages</string>
-              </property>
-              <layout class="QVBoxLayout" name="verticalLayout_10">
-               <property name="spacing">
-                <number>6</number>
-               </property>
-               <property name="leftMargin">
-                <number>0</number>
-               </property>
-               <property name="topMargin">
-                <number>6</number>
-               </property>
-               <property name="rightMargin">
-                <number>0</number>
-               </property>
-               <property name="bottomMargin">
-                <number>0</number>
-               </property>
-               <item>
-                <widget class="QPlainTextEdit" name="CheckCifLogPlainTextEdit">
-                 <property name="tabChangesFocus">
-                  <bool>true</bool>
-                 </property>
-                 <property name="readOnly">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="4" column="3" rowspan="4">
-             <spacer name="horizontalSpacer_17">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>13</width>
-                <height>47</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item row="5" column="2" rowspan="3">
-             <widget class="QPushButton" name="BackFromPlatonPushButton">
-              <property name="minimumSize">
-               <size>
-                <width>160</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>Back to CIF Table</string>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="4" rowspan="4">
-             <widget class="QGroupBox" name="groupBox_checkcif_2">
-              <property name="title">
-               <string/>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_14">
-               <item row="0" column="0">
-                <widget class="QPushButton" name="CheckcifButton">
-                 <property name="text">
-                  <string>CheckCif Offline</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="2">
-                <widget class="QPushButton" name="CheckcifPDFOnlineButton">
-                 <property name="text">
-                  <string>Checkcif Online PDF</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="1">
-                <widget class="QPushButton" name="CheckcifHTMLOnlineButton">
-                 <property name="text">
-                  <string>Checkcif Online HTML</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0" colspan="3">
-                <layout class="QHBoxLayout" name="horizontalLayout_9">
-                 <item>
-                  <widget class="QCheckBox" name="structfactCheckBox">
-                   <property name="text">
-                    <string>without structure factors (faster but not complete)</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QCheckBox" name="fullIucrCheckBox">
-                   <property name="text">
-                    <string>Full IUCr publication validation</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="4" column="5" rowspan="2">
-             <spacer name="horizontalSpacer">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>225</width>
-                <height>47</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item row="1" column="0" colspan="7">
+            <item row="1" column="0" colspan="8">
              <widget class="QTabWidget" name="CheckCIFResultsTabWidget">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -3056,6 +2886,182 @@ Contact authors should always also appear as regular authors.</string>
                </layout>
               </widget>
              </widget>
+            </item>
+            <item row="0" column="0" colspan="8">
+             <widget class="QGroupBox" name="groupBox_7">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>1</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="title">
+               <string>CheckCIF log messages</string>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_10">
+               <property name="spacing">
+                <number>6</number>
+               </property>
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>6</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item>
+                <widget class="QPlainTextEdit" name="CheckCifLogPlainTextEdit">
+                 <property name="tabChangesFocus">
+                  <bool>true</bool>
+                 </property>
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="4" column="5" rowspan="4">
+             <widget class="QGroupBox" name="groupBox_checkcif_2">
+              <property name="title">
+               <string/>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_14">
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item row="1" column="2">
+                <widget class="QPushButton" name="CheckcifPDFOnlineButton">
+                 <property name="text">
+                  <string>Checkcif Online PDF</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0" colspan="3">
+                <layout class="QHBoxLayout" name="horizontalLayout_9">
+                 <item>
+                  <widget class="QCheckBox" name="structfactCheckBox">
+                   <property name="text">
+                    <string>without structure factors (faster but not complete)</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QCheckBox" name="fullIucrCheckBox">
+                   <property name="text">
+                    <string>Full IUCr publication validation</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item row="1" column="0">
+                <widget class="QPushButton" name="CheckcifButton">
+                 <property name="text">
+                  <string>CheckCif Offline</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="QPushButton" name="CheckcifHTMLOnlineButton">
+                 <property name="text">
+                  <string>Checkcif Online HTML</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="2" column="0" colspan="7">
+             <widget class="QFrame" name="ButtonFrame">
+              <property name="frameShape">
+               <enum>QFrame::NoFrame</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Raised</enum>
+              </property>
+              <property name="lineWidth">
+               <number>0</number>
+              </property>
+              <layout class="QHBoxLayout" name="horizontalLayout_3">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+              </layout>
+             </widget>
+            </item>
+            <item row="4" column="6" rowspan="3">
+             <spacer name="horizontalSpacer">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>225</width>
+                <height>47</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="5" column="3">
+             <widget class="QPushButton" name="BackFromPlatonPushButton">
+              <property name="minimumSize">
+               <size>
+                <width>160</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Back to CIF Table</string>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="1" colspan="2">
+             <spacer name="horizontalSpacer_2">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Fixed</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>13</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="4" column="4" rowspan="3">
+             <spacer name="horizontalSpacer_17">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>13</width>
+                <height>47</height>
+               </size>
+              </property>
+             </spacer>
             </item>
            </layout>
           </widget>
@@ -3913,7 +3919,6 @@ please add a publication author:</string>
   <tabstop>revertLoopsPushButton</tabstop>
   <tabstop>BackFromLoopsPushButton</tabstop>
   <tabstop>CheckCifLogPlainTextEdit</tabstop>
-  <tabstop>BackFromPlatonPushButton</tabstop>
   <tabstop>CheckcifButton</tabstop>
   <tabstop>CheckcifPDFOnlineButton</tabstop>
   <tabstop>CheckcifHTMLOnlineButton</tabstop>
