@@ -24,7 +24,7 @@ from PyQt5.QtGui import QKeySequence, QResizeEvent, QMoveEvent, QTextCursor, QFo
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtWidgets import QMainWindow, QHeaderView, QShortcut, QCheckBox, QListWidgetItem, QApplication, \
-    QPlainTextEdit, QFileDialog
+    QPlainTextEdit, QFileDialog, QLabel
 from gemmi import cif
 from qtpy.QtGui import QDesktopServices
 
@@ -1238,6 +1238,11 @@ class AppWindow(QMainWindow):
         peak = self.cif['_refine_diff_density_max']
         if peak:
             self.ui.peakLineEdit.setText("{} / {}".format(peak, self.cif['_refine_diff_density_min']))
+        if 'darwin' in sys.platform:
+            self.ui.moleculeLayout.addWidget(QLabel('FinalCif is currently unable to draw molecules in MACOS'))
+            print('Do not draw molecule on MACOS')
+            # Currently, the QWebEngineView doesn't work  on macos due to pyinstaller issues.
+            return None
         try:
             self.init_webview()
         except Exception as e:
@@ -1300,6 +1305,10 @@ class AppWindow(QMainWindow):
         self.view.show()
 
     def redraw_molecule(self) -> None:
+        if 'darwin' in sys.platform:
+            print('Do not draw molecule on MACOS')
+            # Currently, the QWebEngineView doesn't work  on macos due to pyinstaller issues.
+            return None
         try:
             self.view_molecule()
         except Exception as e:
