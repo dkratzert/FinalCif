@@ -7,9 +7,8 @@
 #  ----------------------------------------------------------------------------
 import re
 from collections import namedtuple
-from math import sin, cos, sqrt
 from pathlib import Path
-from typing import Dict, List, Tuple, Union, Generator
+from typing import Dict, List, Tuple, Union, Generator, Type
 
 import gemmi
 from gemmi.cif import as_string, is_null, Block, Document, Loop
@@ -19,8 +18,7 @@ from cif.cif_order import order, special_keys
 from cif.hkl import HKL
 from cif.text import utf8_to_str, quote, retranslate_delimiter
 from datafiles.utils import DSRFind
-from tools.dsrmath import mean
-from tools.misc import essential_keys, non_centrosymm_keys, get_error_from_value, isnumeric, grouper
+from tools.misc import essential_keys, non_centrosymm_keys, isnumeric, grouper
 
 
 class CifContainer():
@@ -516,9 +514,10 @@ class CifContainer():
         return False
 
     @property
-    def cell(self) -> tuple:
+    def cell(self) -> Type['cell']:
         c = self.atomic_struct.cell
-        return c.a, c.b, c.c, c.alpha, c.beta, c.gamma, c.volume
+        nt = namedtuple('cell', 'a, b, c, alpha, beta, gamma, volume')
+        return nt(c.a, c.b, c.c, c.alpha, c.beta, c.gamma, c.volume)
 
     def ishydrogen(self, label: str) -> bool:
         """
@@ -726,4 +725,22 @@ if __name__ == '__main__':
     s.read_string(c.res_file_data)
     print(s.hklf.n)
 
-# print(CifContainer('tests/examples/1979688.cif').hkl_as_cif[-250:])
+    # print(CifContainer('tests/examples/1979688.cif').hkl_as_cif[-250:])
+
+    """
+    import numpy as np
+    mtz = gemmi.Mtz(with_base=True)
+    data = [x.split() for x in c.hkl_file.splitlines()]
+    mtz.add_column('I', 'I')
+    mtz.add_column('SIGI', 'Q')
+    mtz.set_data(data)
+    mtz.set_cell_for_all(gemmi.UnitCell(c.cell.a, c.cell.b, c.cell.c, c.cell.alpha, c.cell.beta, c.cell.gamma))
+    mtz.spacegroup = gemmi.find_spacegroup_by_name(c.space_group)
+    mtz.update_reso()
+    size = mtz.get_size_for_hkl()
+    np.seterr(divide='ignore', invalid='ignore')
+    ios =  intensity.array / sigma.array
+    
+    doc = gemmi.cif.read('tests/examples/1979688-finalcif.fcf')
+    rblock = gemmi.hkl_cif_as_refln_block(doc[0])
+    """
