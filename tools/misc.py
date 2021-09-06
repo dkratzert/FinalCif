@@ -711,11 +711,6 @@ predef_equipment_templ = [{'name': 'D8 VENTURE',
                                ['_publ_contact_author_id_orcid', '?'],
                            ]
                            },
-                          {'name': 'CCDC number',
-                           'items': [
-                               ['_database_code_depnum_ccdc_archive', '?'],
-                           ]
-                           },
                           ]
 
 """
