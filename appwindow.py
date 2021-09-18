@@ -20,7 +20,7 @@ from typing import Union, Dict, Tuple, List
 import qtawesome as qta
 import requests
 from PyQt5.QtCore import QUrl, QEvent, QPoint, Qt
-from PyQt5.QtGui import QKeySequence, QResizeEvent, QMoveEvent, QTextCursor, QFont, QBrush
+from PyQt5.QtGui import QKeySequence, QResizeEvent, QMoveEvent, QTextCursor, QFont
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtWidgets import QMainWindow, QHeaderView, QShortcut, QCheckBox, QListWidgetItem, QApplication, \
@@ -39,7 +39,7 @@ from displaymol.sdm import SDM
 from equip_property.author_loop_templates import AuthorLoops
 from equip_property.equipment import Equipment
 from equip_property.properties import Properties
-from gui.custom_classes import COL_CIF, COL_DATA, COL_EDIT, MyTableWidgetItem, light_green, yellow, MyComboBox, blue, \
+from gui.custom_classes import COL_CIF, COL_DATA, COL_EDIT, MyTableWidgetItem, light_green, yellow, MyComboBox, \
     MyCifTable
 from gui.dialogs import show_update_warning, unable_to_open_message, show_general_warning, cif_file_open_dialog, \
     bad_z_message, show_res_checksum_warning, show_hkl_checksum_warning
@@ -50,7 +50,7 @@ from report.archive_report import ArchiveReport
 from report.tables import make_report_from
 from report.templated_report import TemplatedReport
 from template.templates import ReportTemplates
-from tools.checkcif import MyHTMLParser, AlertHelp, CheckCif
+from cif.checkcif.checkcif import MyHTMLParser, AlertHelp, CheckCif
 from tools.dsrmath import my_isnumeric
 from tools.misc import strip_finalcif_of_name, next_path, do_not_import_keys, celltxt, to_float, combobox_fields, \
     do_not_import_from_stoe_cfx, cif_to_header_label, grouper, is_database_number, file_age_in_days
