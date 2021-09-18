@@ -12,7 +12,6 @@ import time
 from contextlib import suppress
 from html.parser import HTMLParser
 from pathlib import Path
-from pprint import pprint
 from typing import List, Optional, Dict
 
 import requests
@@ -67,11 +66,11 @@ class CheckCif(QThread):
             validation_type = 'checkcif_with_hkl'
         vrf = self.get_vrf()
         headers = {
-            "runtype": "symmonly",
-            "referer": "checkcif_server",
+            "runtype"   : "symmonly",
+            "referer"   : "checkcif_server",
             "outputtype": 'PDF' if self.pdf else 'HTML',
-            "validtype": validation_type,
-            "valout": vrf,
+            "validtype" : validation_type,
+            "valout"    : vrf,
         }
         t1 = time.perf_counter()
         self.progress.emit('Report request sent. Please wait...')
@@ -267,7 +266,6 @@ class AlertHelpRemote():
             text = bytes(reply.readAll()).decode('ascii', 'ignore')
         except Exception as e:
             print(e)
-            pass
         return text
 
 
