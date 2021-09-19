@@ -54,26 +54,22 @@ class TestMainTableFieldBehavior(unittest.TestCase):
     ######
 
     def test_rowcounts(self):
-        self.assertEqual(130, self.myapp.ui.cif_main_table.rowCount())
+        self.assertEqual(131, self.myapp.ui.cif_main_table.rowCount())
 
     def test_delete_row(self):
         self.myapp.ui.cif_main_table.delete_row(self.key_row('_audit_update_record'))
-        self.assertEqual(129, self.myapp.ui.cif_main_table.rowCount())
+        self.assertEqual(130, self.myapp.ui.cif_main_table.rowCount())
 
     def test_delete_and_reappear(self):
-        self.myapp.ui.cif_main_table.delete_row(16)
+        self.myapp.ui.cif_main_table.delete_row(
+            self.myapp.ui.cif_main_table.row_from_key('_atom_sites_solution_primary'))
         # cline count stays the same:
-        self.assertEqual(130, self.myapp.ui.cif_main_table.rowCount())
+        self.assertEqual(131, self.myapp.ui.cif_main_table.rowCount())
         self.assertEqual('?', self.cell_text('_atom_sites_solution_primary', COL_CIF))
         # method comes from solution program now:
         self.assertEqual('direct', self.cell_text('_atom_sites_solution_primary', COL_DATA))
         # This is an essential key, it reappears after reload:
         self.assertEqual(0, self.key_row('_atom_sites_solution_primary'))
-
-    def test_get_text_from_item(self):
-        self.assertEqual('geom', self.myapp.ui.cif_main_table.item(15, COL_CIF).text())
-        self.assertEqual('', self.myapp.ui.cif_main_table.item(15, COL_DATA).text())
-        self.assertEqual('', self.myapp.ui.cif_main_table.item(15, COL_EDIT).text())
 
     def test_get_text_by_key(self):
         self.assertEqual('geom', self.cell_text('_atom_sites_solution_hydrogens', COL_CIF))

@@ -2,6 +2,7 @@
 
 cif_core = {
     '_olex2_diffrn_ambient_temperature_device'         : 'Not an official cif keyword. Device to cool the crystal during measurement',
+    '_diffrn_measurement_ambient_temperature_device_make'         : 'Not an official cif keyword. Device to cool the crystal during measurement',
     '_atom_site_B_equiv_geom_mean'                     : 'Equivalent isotropic atomic displacement '
                                                          'parameter, B(equiv), in angstroms squared, '
                                                          'calculated as the geometric mean of the '

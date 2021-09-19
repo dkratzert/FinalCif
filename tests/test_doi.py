@@ -22,7 +22,6 @@ doi_data = {
 class TestDOI(TestCase):
     def setUp(self) -> None:
         self.doi = resolve_doi('10.1107/S1600576718004508')
-        pprint(self.doi)
 
     def test_resolve_doi_doi(self):
         self.assertEqual('2018', self.doi['_journal_year'])

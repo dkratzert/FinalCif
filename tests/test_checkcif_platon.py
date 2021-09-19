@@ -34,7 +34,6 @@ filenames = (
 
 class TestPlatonCheckCIF(unittest.TestCase):
     def tearDown(self) -> None:
-        print('running teardown')
         os.chdir(Path(__file__).resolve().parent.parent)
         for file in filenames:
             Path(file).unlink(missing_ok=True)
@@ -67,7 +66,6 @@ class TestPlatonCheckCIF(unittest.TestCase):
 
 class TestPlatonCheckCIF_with_CIF_without_hkl_data(unittest.TestCase):
     def tearDown(self) -> None:
-        print('running teardown')
         os.chdir(Path(__file__).resolve().parent.parent)
         for file in filenames:
             Path(file).unlink(missing_ok=True)

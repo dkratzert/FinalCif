@@ -67,6 +67,7 @@ class MyCifTable(QTableWidget, ItemTextMixin):
     def __init__(self, parent: QWidget = None, *args, **kwargs):
         self.parent = parent
         super().__init__(*args, **kwargs)
+        self.setParent(parent)
         self.installEventFilter(self)
         self.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
@@ -304,6 +305,7 @@ class MyQPlainTextEdit(QPlainTextEdit):
         :param minheight: minimum height of the widget.
         """
         super().__init__(parent, *args, **kwargs)
+        self.setParent(parent)
         self.row: int = -1
         self.minheight = minheight
         self.parent: MyCifTable = parent
@@ -396,6 +398,7 @@ class MyComboBox(QComboBox):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.parent: MyCifTable = parent
+        self.setParent(parent)
         self.row: int = -1
         self.setFocusPolicy(Qt.StrongFocus)
         self.setSizeAdjustPolicy(QComboBox.AdjustToMinimumContentsLength)
@@ -455,6 +458,7 @@ class MyEQTableWidget(QTableWidget, ItemTextMixin):
     def __init__(self, parent: QTableWidget = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.parent = parent
+        self.setParent(parent)
         self.setWordWrap(QTextOption.WrapAtWordBoundaryOrAnywhere)
 
     def eventFilter(self, widget: QObject, event: QEvent):
@@ -528,6 +532,7 @@ class MyPropTableWidget(QTableWidget):
     def __init__(self, parent: MyQPlainTextEdit, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
         self.parent = parent
+        self.setParent(parent)
 
     def delete_row(self, row: int = None):
         if not row:
@@ -550,6 +555,7 @@ class MyMainStackedWidget(QStackedWidget):
     def __init__(self, parent):
         super().__init__(parent)
         self.parent = parent
+        self.setParent(parent)
 
     def got_to_main_page(self):
         self.setCurrentIndex(0)
