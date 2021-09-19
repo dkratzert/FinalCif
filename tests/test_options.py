@@ -5,8 +5,6 @@ from PyQt5.QtWidgets import QApplication
 
 from appwindow import AppWindow
 
-app = QApplication(sys.argv)
-
 
 class TestOptions(unittest.TestCase):
 

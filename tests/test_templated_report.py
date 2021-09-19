@@ -14,8 +14,6 @@ from docx.table import Table
 from appwindow import AppWindow
 from tools.version import VERSION
 
-app = QApplication(sys.argv)
-
 
 # @unittest.skip('foo')
 class TemplateReportTestCase(unittest.TestCase):
@@ -51,7 +49,6 @@ class TemplateReportTestCase(unittest.TestCase):
             self.myapp.templates.remove_current_template()
         self.myapp.templates.add_new_template(str(Path('../../template/template_text.docx').absolute()))
         self.myapp.templates.add_new_template(str(Path('../../template/template_without_text.docx').absolute()))
-        app.processEvents()
         print('imported templates')
         self.myapp.ui.TemplatesListWidget.blockSignals(False)
 

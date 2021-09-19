@@ -9,7 +9,6 @@ from PyQt5.QtWidgets import QApplication
 from appwindow import AppWindow
 from tools.version import VERSION
 
-app = QApplication(sys.argv)
 
 filenames = (
     'tests/examples/checkcif-1979688-finalcif.html',
@@ -32,6 +31,7 @@ filenames = (
 )
 
 
+#@unittest.skip('time')
 class TestPlatonCheckCIF(unittest.TestCase):
     def tearDown(self) -> None:
         os.chdir(Path(__file__).resolve().parent.parent)
@@ -63,7 +63,7 @@ class TestPlatonCheckCIF(unittest.TestCase):
         self.myapp.ui.CheckcifButton.click()
         self.assertFalse(Path('1979688-finalcif.gif').exists())
 
-
+#@unittest.skip('time')
 class TestPlatonCheckCIF_with_CIF_without_hkl_data(unittest.TestCase):
     def tearDown(self) -> None:
         os.chdir(Path(__file__).resolve().parent.parent)

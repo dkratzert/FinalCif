@@ -65,6 +65,7 @@ from tools.sumformula import formula_str_to_dict, sum_formula_to_html
 from tools.version import VERSION
 
 DEBUG = False
+app = QApplication(sys.argv)
 
 
 class AppWindow(QMainWindow):

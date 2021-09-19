@@ -18,8 +18,6 @@ from appwindow import AppWindow
 from gui.custom_classes import COL_EDIT
 from tools.misc import strip_finalcif_of_name
 
-app = QApplication(sys.argv)
-
 
 class TestCheckCifHTML(unittest.TestCase):
 

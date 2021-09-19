@@ -17,8 +17,6 @@ from appwindow import AppWindow
 from cif.cif_file_io import CifContainer
 from tests.helpers import unify_line_endings
 
-app = QApplication(sys.argv)
-
 
 class TestLoops(unittest.TestCase):
 

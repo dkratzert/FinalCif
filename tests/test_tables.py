@@ -13,8 +13,6 @@ from docx.table import Table
 from appwindow import AppWindow
 from tools.version import VERSION
 
-app = QApplication(sys.argv)
-
 
 class TablesTestMixin():
 
@@ -32,7 +30,6 @@ class TablesTestMixin():
         self.reportdoc = Path('report_' + self.testcif.stem + '-finalcif.docx')
         self.report_zip = Path(self.testcif.stem + '-finalcif.zip')
         self.myapp.hide()
-        app.processEvents()
 
     def tearDown(self) -> None:
         self.myapp.final_cif_file_name.unlink(missing_ok=True)
