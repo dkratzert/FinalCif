@@ -183,6 +183,19 @@ class ReferenceFormatter():
             r.add('.')
         return r
 
+    @property
+    def short_ref(self):
+        """
+        Adds a reference with (name year) instead of a number.
+        TODO: get real last name from autors list
+        """
+        r = RichText('(', superscript=True)
+        r.add(self.authors.split()[0], superscript=True)
+        r.add(', ', superscript=True)
+        r.add(self.year, superscript=True)
+        r.add(')', superscript=True)
+        return r
+
     def __repr__(self):
         txt = ''
         if self.authors:

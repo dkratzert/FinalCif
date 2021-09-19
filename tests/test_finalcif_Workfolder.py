@@ -251,17 +251,17 @@ class TestWorkfolder(unittest.TestCase):
     def test_equipment_click_machine_oxford_0(self):
         self.equipment_click('APEX2 QUAZAR')
         # We have a value which is new. So a row at start is created and only the CIF column is populated
-        self.assertEqual('?', self.cell_text('_olex2_diffrn_ambient_temperature_device', COL_CIF))
+        self.assertEqual('?', self.cell_text('_diffrn_measurement_ambient_temperature_device_make', COL_CIF))
 
     def test_equipment_click_machine_oxford_1(self):
         self.equipment_click('APEX2 QUAZAR')
         self.assertEqual('Oxford Cryostream 800',
-                         self.cell_text('_olex2_diffrn_ambient_temperature_device', COL_DATA))
+                         self.cell_text('_diffrn_measurement_ambient_temperature_device_make', COL_DATA))
 
     def test_equipment_click_machine_oxford_2(self):
         self.equipment_click('APEX2 QUAZAR')
         self.assertEqual('Oxford Cryostream 800',
-                         self.cell_text('_olex2_diffrn_ambient_temperature_device', COL_EDIT))
+                         self.cell_text('_diffrn_measurement_ambient_temperature_device_make', COL_EDIT))
 
     def test_equipment_click_author_address_0(self):
         # Check if click on author adds the address to second and third column:

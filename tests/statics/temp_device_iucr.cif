@@ -1,0 +1,13 @@
+data_olx1
+
+_cell_length_a                   19.678(3)
+_cell_length_b                   37.0229(9)
+_cell_length_c                   4.7720(4)
+_cell_angle_alpha                90
+_cell_angle_beta                 90
+_cell_angle_gamma                90
+_cell_volume                     3476.6(7)
+_cell_formula_units_Z            4
+
+
+_diffrn_measurement_ambient_temperature_device_make 'Oxford Cryostream 850'

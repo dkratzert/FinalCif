@@ -112,8 +112,7 @@ class MachineType():
                          or '[No monochromator type given]'
         if not self.monochrom:
             self.monochrom = '?'
-        self.cooling = gstr(self.cif['_olex2_diffrn_ambient_temperature_device']) \
-                       or ''
+        self.cooling = self._get_cooling_device(self.cif)
         self.rad_type = gstr(self.cif['_diffrn_radiation_type']) \
                         or '[No radiation type given]'
         radtype = format_radiation(self.rad_type)
@@ -141,6 +140,19 @@ class MachineType():
         alpha.font.subscript = True
         txt2 = sentence2.format(self.wavelen)
         paragraph.add_run(txt2)
+
+    @staticmethod
+    def _get_cooling_device(cif):
+        olx = gstr(cif['_olex2_diffrn_ambient_temperature_device'])
+        iucr = gstr(cif['_diffrn_measurement_ambient_temperature_device_make'])
+        if olx and iucr:
+            return iucr
+        if olx:
+            return olx
+        elif iucr:
+            return iucr
+        else:
+            return ''
 
 
 class DataReduct():

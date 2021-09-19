@@ -19,6 +19,7 @@ from typing import Union, Dict, Tuple, List
 
 import qtawesome as qta
 import requests
+from PyQt5 import QtCore
 from PyQt5.QtCore import QUrl, QEvent, QPoint, Qt
 from PyQt5.QtGui import QKeySequence, QResizeEvent, QMoveEvent, QTextCursor, QFont
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply
@@ -29,6 +30,7 @@ from gemmi import cif
 from qtpy.QtGui import QDesktopServices
 
 import displaymol
+from cif.checkcif.checkcif import MyHTMLParser, AlertHelp, CheckCif
 from cif.cif_file_io import CifContainer
 from cif.cod.deposit import CODdeposit
 from cif.text import retranslate_delimiter, quote
@@ -50,7 +52,6 @@ from report.archive_report import ArchiveReport
 from report.tables import make_report_from
 from report.templated_report import TemplatedReport
 from template.templates import ReportTemplates
-from cif.checkcif.checkcif import MyHTMLParser, AlertHelp, CheckCif
 from tools.dsrmath import my_isnumeric
 from tools.misc import strip_finalcif_of_name, next_path, do_not_import_keys, celltxt, to_float, combobox_fields, \
     do_not_import_from_stoe_cfx, cif_to_header_label, grouper, is_database_number, file_age_in_days
@@ -70,6 +71,7 @@ class AppWindow(QMainWindow):
 
     def __init__(self, file=None):
         super().__init__()
+        self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
         # This prevents some things to happen during unit tests:
         # Open of target dir of shred cif,
         # open report doc,
@@ -536,7 +538,7 @@ class AppWindow(QMainWindow):
         self.validation_response_forms_list = []
         self.ui.responseFormsListWidget.clear()
         for form in forms:
-            vrf = MyVRFContainer(form, a.get_help(form['alert_num']))
+            vrf = MyVRFContainer(form, a.get_help(form['alert_num']), parent=self)
             vrf.setAutoFillBackground(False)
             self.validation_response_forms_list.append(vrf)
             item = QListWidgetItem()
@@ -922,8 +924,7 @@ class AppWindow(QMainWindow):
         """
         for row in range(self.ui.cif_main_table.rows_count):
             vhead = self.ui.cif_main_table.vheader_text(row)
-            is_cif = self.is_row_a_cif_item(vhead)
-            if not is_cif:
+            if not self.is_row_a_cif_item(vhead):
                 continue
             col_data = table.text(row, COL_DATA)
             col_edit = table.text(row, COL_EDIT)
@@ -1288,9 +1289,9 @@ class AppWindow(QMainWindow):
         try:
             # Otherwise, the views accumulate:
             self.view.close()
-            self.view = QWebEngineView()
+            self.view = QWebEngineView(parent=self)
         except AttributeError:
-            self.view = QWebEngineView()
+            self.view = QWebEngineView(parent=self)
         self.jsmoldir = TemporaryDirectory()
         self.view.load(QUrl.fromLocalFile(os.path.join(self.jsmoldir.name, "./jsmol.htm")))
         # This is a bit hacky, but it works fast:
@@ -1480,7 +1481,7 @@ class AppWindow(QMainWindow):
                 table.remove_row(row)
 
     def make_loops_tables(self) -> None:
-        for tab in range(self.ui.LoopsTabWidget.count()):
+        for _ in range(self.ui.LoopsTabWidget.count()):
             # I use this, so that always the first tab stays.
             self.ui.LoopsTabWidget.removeTab(1)
         if self.cif and self.cif.loops:
@@ -1543,4 +1544,3 @@ class AppWindow(QMainWindow):
             self.cif.order.insert(row_num, key)
         if not self.cif.block.find_value(key):
             self.cif[key] = value
-
