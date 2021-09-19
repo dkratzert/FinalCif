@@ -35,8 +35,7 @@ from gui.dialogs import bug_found_warning
 from tools.version import VERSION
 
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QApplication
-from appwindow import AppWindow, DEBUG
+from appwindow import AppWindow, DEBUG, app
 
 r"""
 TODO:
@@ -94,7 +93,6 @@ if __name__ == '__main__':
     if not DEBUG:
         sys.excepthook = my_exception_hook
 
-    app = QApplication(sys.argv)
     # windows_style = QStyleFactory.create('Fusion')
     # app.setStyle(windows_style)
     w = AppWindow()

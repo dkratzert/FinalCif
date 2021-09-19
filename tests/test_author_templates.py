@@ -7,8 +7,6 @@ from PyQt5.QtWidgets import QApplication
 from appwindow import AppWindow
 from tests.test_utils import current_file_path
 
-app = QApplication(sys.argv)
-
 
 class MyTestCase(unittest.TestCase):
     def setUp(self) -> None:

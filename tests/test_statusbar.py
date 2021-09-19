@@ -8,8 +8,6 @@ from appwindow import AppWindow
 from tools.statusbar import StatusBar
 from tools.version import VERSION
 
-app = QApplication(sys.argv)
-
 
 class TestStausBarWithGraphics(unittest.TestCase):
 

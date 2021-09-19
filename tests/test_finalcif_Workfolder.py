@@ -14,8 +14,6 @@ from gui.custom_classes import light_green, yellow, COL_DATA, COL_CIF, COL_EDIT
 from tests.helpers import unify_line_endings, addr
 from tools.version import VERSION
 
-app = QApplication(sys.argv)
-
 
 class TestNothingOpened(unittest.TestCase):
     """A CIF fle in a complete work folder"""
@@ -111,7 +109,6 @@ class TestWorkfolder(unittest.TestCase):
         self.assertEqual(field, item.text())
         rect = listw.visualItemRect(item)
         QTest.mouseDClick(listw.viewport(), Qt.LeftButton, Qt.NoModifier, rect.center())
-        app.processEvents()
         # This is necessary:
         self.myapp.equipment.load_selected_equipment()
 

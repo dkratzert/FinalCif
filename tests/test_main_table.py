@@ -17,8 +17,6 @@ from appwindow import AppWindow
 from gui.custom_classes import COL_CIF, COL_DATA, COL_EDIT
 from tests.helpers import unify_line_endings
 
-app = QApplication(sys.argv)
-
 
 class TestMainTableFieldBehavior(unittest.TestCase):
 
