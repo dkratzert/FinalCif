@@ -1,3 +1,4 @@
+import unittest
 from pathlib import Path
 from unittest import TestCase
 
@@ -42,6 +43,9 @@ class TestCheckCifInterface(TestCase):
             formdict[key] = choices
         return formdict
 
+    def test_form_action_url(self):
+        self.assertEqual('//checkcif.iucr.org/cgi-bin/checkcif_hkl.pl', self.form.action)
+
     def test_form_choices_filecif(self):
         self.assertEqual([], self.form_items['filecif'])
 
@@ -74,7 +78,7 @@ class TestCheckCifInterface(TestCase):
             fields
         )
 
-
+@unittest.skip('not necessary')
 class TestCheckCIfServerURL(TestCase):
     def test_url(self):
         url = 'https://checkcif.iucr.org/cgi-bin/checkcif_hkl.pl'
