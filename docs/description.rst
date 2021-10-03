@@ -38,7 +38,7 @@ The FinalCif main window.
 * Do a html checkcif (it also saves an image for the report). Probaly correct last items like the moiety formula and  explain alerts with the validation response form editor in the same window.
 * Do a pdf checkcif
 * Submit the CIF to the CCDC
-* Drag&drop the CCDC deposit reply email into the work folder
+* Drag&drop the CCDC deposit reply email into the work folder, or edit the CCDC number manually
 * Click on „Make Tables“
 
 
