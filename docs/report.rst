@@ -13,15 +13,15 @@ CCDC Number
 -----------
 There are two ways of introducing the CCDC number into the .cif file:
 
-* Click on the template 'CCDC Number' and insert the number into the '_database_code_depnum_ccdc_archive' field manually.
-* Drag&Drop the deposition response email from the CCDC into the work folder and reload the .cif file.
+* Edit the 'CCDC Number' field in the top of FinalCif. The number will be saved in the key '_database_code_depnum_ccdc_archive'.
+* Drag&Drop the deposition response email from the CCDC (`in EML format <https://www.loc.gov/preservation/digital/formats/fdd/fdd000388.shtml>`_) into the work folder and reload the .cif file.
 
 
 Picture
 -------
-FinalCif can add an picture of your structure to the report document. 
+FinalCif can add a picture of your structure to the report document.
 
-* Either by previously performing an html check cif. Then it automatically adds a picture from the checkcif report, as in the example above.
+* Either by previously performing an html or local checkcif. Then it automatically adds a picture from the checkcif report, as in the example above.
 * Or you can add any other picture with the "Picture for Tables" button.
 
 Customizing the Report
