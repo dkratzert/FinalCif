@@ -1,8 +1,8 @@
-altgraph==0.17
+altgraph>=0.17
 certifi
 chardet==4.0.0
 future==0.18.2
-gemmi==0.4.8
+gemmi==0.4.9
 html2text==2020.1.16
 lxml
 pefile
@@ -18,8 +18,8 @@ pywin32-ctypes==0.2.0
 QtAwesome==1.0.3
 QtPy==1.11.0
 requests==2.26.0
-urllib3==1.26.6
-docxtpl==0.12.0
+urllib3==1.26.7
+docxtpl>=0.12.0
 wheel==0.37.0
 shelxfile
 crossrefapi
