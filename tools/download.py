@@ -2,7 +2,6 @@ import sys
 
 import requests
 from PyQt5.QtCore import QThread, pyqtSignal
-from PyQt5.QtWidgets import QApplication
 
 from tools.version import VERSION
 
@@ -47,7 +46,7 @@ class MyDownloader(QThread):
 
 if __name__ == "__main__":
     from PyQt5.QtWidgets import QWidget
-
+    from PyQt5.QtWidgets import QApplication
     app = QApplication(sys.argv)
     w = QWidget()
     w.show()
