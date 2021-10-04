@@ -94,8 +94,8 @@ def show_update_warning(remote_version: int = 0) -> None:
     A message box to display if the checksums do not agree.
     """
     warn_text = "A newer version {} of FinalCif is available under: <br>" \
-                "<a href='https://www.xs3.uni-freiburg.de/research/finalcif'>" \
-                "https://www.xs3.uni-freiburg.de/research/finalcif</a>"
+                "<a href='https://dkratzert.de/finalcif.html'>" \
+                "https://dkratzert.de/finalcif.html</a>"
     box = QMessageBox()
     box.setTextFormat(Qt.AutoText)
     box.setWindowTitle(" ")

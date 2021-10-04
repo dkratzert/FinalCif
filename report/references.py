@@ -477,7 +477,7 @@ class SORTAVReference(ReferenceFormatter):
 class FinalCifReference(ReferenceFormatter):
     """
     >>> FinalCifReference()
-    D. Kratzert, FinalCif, V51, https://www.xs3.uni-freiburg.de/research/finalcif.
+    D. Kratzert, FinalCif, V51, https://dkratzert.de/finalcif.html.
     """
 
     def __init__(self):
@@ -485,7 +485,7 @@ class FinalCifReference(ReferenceFormatter):
         self.authors = 'D. Kratzert'
         self.journal = 'FinalCif'
         self.volume = 'V' + str(VERSION)
-        self.pages = 'https://www.xs3.uni-freiburg.de/research/finalcif'
+        self.pages = 'https://dkratzert.de/finalcif.html'
 
 
 class CrysalisProReference(ReferenceFormatter):
