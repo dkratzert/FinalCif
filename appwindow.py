@@ -4,7 +4,6 @@
 #   this notice you can do whatever you want with this stuff. If we meet some day,
 #   and you think this stuff is worth it, you can buy me a beer in return.
 #   ----------------------------------------------------------------------------
-
 import os
 import subprocess
 import sys
@@ -22,7 +21,6 @@ import requests
 from PyQt5 import QtCore
 from PyQt5.QtCore import QUrl, QEvent, QPoint, Qt
 from PyQt5.QtGui import QKeySequence, QResizeEvent, QMoveEvent, QTextCursor, QFont
-from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtWidgets import QMainWindow, QHeaderView, QShortcut, QCheckBox, QListWidgetItem, QApplication, \
     QPlainTextEdit, QFileDialog, QLabel
@@ -52,6 +50,7 @@ from report.archive_report import ArchiveReport
 from report.tables import make_report_from
 from report.templated_report import TemplatedReport
 from template.templates import ReportTemplates
+from tools.download import MyDownloader
 from tools.dsrmath import my_isnumeric
 from tools.misc import strip_finalcif_of_name, next_path, do_not_import_keys, celltxt, to_float, combobox_fields, \
     do_not_import_from_stoe_cfx, cif_to_header_label, grouper, is_database_number, file_age_in_days
@@ -89,7 +88,6 @@ class AppWindow(QMainWindow):
         self.temperature_warning_displayed = False
         # True if line with "these are already in" reached:
         self.complete_data_row = -1
-        self.manufacturer = 'bruker'
         self.ui = Ui_FinalCifWindow()
         self.ui.setupUi(self)
         self.settings = FinalCifSettings()
@@ -102,7 +100,7 @@ class AppWindow(QMainWindow):
         self.authors: Union[AuthorLoops, None] = None
         self.set_window_size_and_position()
         self.ui.cif_main_table.installEventFilter(self)
-        # Sorting desyncronizes header and columns:
+        # Sorting desynchronized header and columns:
         self.ui.cif_main_table.setSortingEnabled(False)
         self.distribute_cif_main_table_columns_evenly()
         # Make sure the start page is shown and not the edit page:
@@ -117,7 +115,6 @@ class AppWindow(QMainWindow):
         elif file:
             self.load_cif_file(file)
         self.load_recent_cifs_list()
-        self.initialize_network_manager()
         self.check_for_update_version()
         self.set_checkcif_output_font(self.ui.CheckcifPlaintextEdit)
         # To make file drag&drop working:
@@ -132,14 +129,6 @@ class AppWindow(QMainWindow):
         hheader.setSectionResizeMode(COL_EDIT, QHeaderView.Stretch)
         hheader.setAlternatingRowColors(True)
         self.ui.cif_main_table.verticalHeader().setAlternatingRowColors(True)
-
-    def initialize_network_manager(self):
-        self.netman = QNetworkAccessManager()
-        # noinspection PyUnresolvedReferences
-        self.netman.finished.connect(self.show_update_warning)
-        self.netman_checkdef = QNetworkAccessManager()
-        # noinspection PyUnresolvedReferences
-        self.netman_checkdef.finished.connect(self._save_checkdef)
 
     def set_initial_button_states(self):
         self.ui.PictureWidthDoubleSpinBox.setRange(0.0, 25)
@@ -361,23 +350,25 @@ class AppWindow(QMainWindow):
             self.load_cif_file(self.final_cif_file_name)
 
     def check_for_update_version(self) -> None:
-        mainurl = "https://dkratzert.de/files/finalcif/"
-        url = QUrl(mainurl + 'version.txt')
-        req = QNetworkRequest(url)
-        self.netman.get(req)
+        mainurl = "https://dkratzert.de/files/finalcif/version.txt"
+        upd = MyDownloader(self, mainurl)
+        upd.finished.connect(self.is_update_necessary)
+        upd.failed.connect(upd.failed_to_download)
+        upd.progress.connect(upd.print_status)
+        upd.start()
 
-    def show_update_warning(self, reply: QNetworkReply) -> None:
+    def is_update_necessary(self, content: bytes) -> None:
         """
         Reads the reply from the server and displays a warning in case of an old version.
         """
         remote_version = 0
-        try:
-            remote_version = int(bytes(reply.readAll()).decode('ascii', 'ignore'))
-        except Exception:
-            pass
+        with suppress(Exception):
+            remote_version = int(content.decode('ascii', errors='ignore'))
         if remote_version > VERSION:
             print('Version {} is outdated (actual is {}).'.format(VERSION, remote_version))
             show_update_warning(remote_version)
+        else:
+            print('Version {} is up-to-date.'.format(VERSION))
 
     def erase_disabled_items(self) -> None:
         """
@@ -431,18 +422,20 @@ class AppWindow(QMainWindow):
         """
         Sends a get request to the platon server in order to get the current check.def file.
         """
-        url = QUrl('http://www.platonsoft.nl/xraysoft/unix/platon/check.def')
-        req = QNetworkRequest(url)
-        self.netman_checkdef.get(req)
+        url = 'http://www.platonsoft.nl/xraysoft/unix/platon/check.def'
+        checkdef_download = MyDownloader(self, url)
+        checkdef_download.finished.connect(self._save_checkdef)
+        checkdef_download.failed.connect(checkdef_download.failed_to_download)
+        checkdef_download.progress.connect(checkdef_download.print_status)
+        checkdef_download.start()
 
-    def _save_checkdef(self, reply: QNetworkReply) -> None:
+    def _save_checkdef(self, reply: bytes) -> None:
         """
-        Is called by the finished signal from the network manager.
+        Is called by the finished signal from the downloader.
         """
-        txt = bytes(reply.readAll()).decode('utf-8', 'ignore')
         with suppress(Exception):
-            self.checkdef_file.write_text(txt)
-        self.checkdef = txt.splitlines(keepends=False)
+            self.checkdef_file.write_bytes(reply)
+        self.checkdef = reply.decode('ascii', errors='ignore').splitlines(keepends=False)
 
     def explore_current_dir(self):
         """
@@ -1342,8 +1335,7 @@ class AppWindow(QMainWindow):
         Tries to determine the sources of missing data in the cif file, e.g. Tmin/Tmax from SADABS.
         """
         self.check_Z()
-        if self.manufacturer == 'bruker':
-            self.sources = BrukerData(self, self.cif).sources
+        self.sources = BrukerData(self, self.cif).sources
         if self.sources:
             # Add the CCDC number in case we have a deposition mail lying around:
             ccdc = CCDCMail(self.cif)
