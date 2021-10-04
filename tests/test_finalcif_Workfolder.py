@@ -144,7 +144,7 @@ class TestWorkfolder(unittest.TestCase):
         self.assertEqual('geom', self.cell_text('_atom_sites_solution_hydrogens', 0))
         self.assertEqual('', self.cell_text('_atom_sites_solution_hydrogens', COL_DATA))
         self.assertEqual(
-            """FinalCif V{} by Daniel Kratzert, Freiburg {}, https://github.com/dkratzert/FinalCif""".format(VERSION,
+            """FinalCif V{} by Daniel Kratzert, Freiburg {}, https://dkratzert.de/finalcif.html""".format(VERSION,
                                                                                                              datetime.now().year),
             self.cell_text('_audit_creation_method', COL_DATA))
 

@@ -63,7 +63,7 @@ class TemplateReportTestCase(unittest.TestCase):
         self.myapp.ui.SaveFullReportButton.click()
         doc = Document(self.reportdoc.absolute())
         self.assertEqual(
-            '[6] 	D. Kratzert, FinalCif, V{}, https://www.xs3.uni-freiburg.de/research/finalcif.'.format(VERSION),
+            '[6] 	D. Kratzert, FinalCif, V{}, https://dkratzert.de/finalcif.html.'.format(VERSION),
             doc.paragraphs[-1].text)
 
     def test_ccdc_num_in_table(self):

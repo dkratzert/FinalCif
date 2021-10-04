@@ -327,7 +327,7 @@ class AppWindow(QMainWindow):
         self.settings.save_window_position(QPoint(x, y), self.size(), self.isMaximized())
 
     def show_help(self):
-        QDesktopServices.openUrl(QUrl('https://xs3-data.uni-freiburg.de/finalcif/help/'))
+        QDesktopServices.openUrl(QUrl('https://dkratzert.de/files/finalcif/docs/'))
 
     def do_shred_cif(self):
         shred = ShredCIF(cif=self.cif, ui=self.ui)
@@ -361,7 +361,7 @@ class AppWindow(QMainWindow):
             self.load_cif_file(self.final_cif_file_name)
 
     def check_for_update_version(self) -> None:
-        mainurl = "https://xs3-data.uni-freiburg.de/finalcif/"
+        mainurl = "https://dkratzert.de/files/finalcif/"
         url = QUrl(mainurl + 'version.txt')
         req = QNetworkRequest(url)
         self.netman.get(req)
@@ -1437,7 +1437,7 @@ class AppWindow(QMainWindow):
                 value = '?'
             self.add_row(key, value)
             if key == '_audit_creation_method':
-                txt = 'FinalCif V{} by Daniel Kratzert, Freiburg {}, https://github.com/dkratzert/FinalCif'
+                txt = 'FinalCif V{} by Daniel Kratzert, Freiburg {}, https://dkratzert.de/finalcif.html'
                 strval = txt.format(VERSION, datetime.now().year)
                 self.ui.cif_main_table.setText(key=key, column=COL_DATA, txt=strval)
             # print(key, value)
