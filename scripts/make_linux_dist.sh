@@ -16,7 +16,7 @@ fi
 
 pip install pip -U
 
-pip3 install -r requirements.txt
+pip3 install -r requirements.txt -U
 
 pyinstaller Finalcif_onefile.spec --clean -y
 
