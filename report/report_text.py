@@ -124,7 +124,7 @@ class MachineType():
         if detector_type:
             self.detector_type = " and a {} detector".format(detector_type)
         sentence1 = "on {0} {1} {2} with {3} {4} using {5} as monochromator{6}. " \
-                    "The diffractometer was equipped with {7} {8} low temperature device and used "
+                    "The diffractometer was equipped with {7} {8}low temperature device and used "
         sentence2 = " radiation (λ = {}" + protected_space + "{}). ".format(angstrom)
         txt = sentence1.format(get_inf_article(self.difftype), self.difftype, self.device,
                                get_inf_article(self.source), self.source, self.monochrom,
@@ -146,11 +146,11 @@ class MachineType():
         olx = gstr(cif['_olex2_diffrn_ambient_temperature_device'])
         iucr = gstr(cif['_diffrn_measurement_ambient_temperature_device_make'])
         if olx and iucr:
-            return iucr
+            return iucr + ' '
         if olx:
-            return olx
+            return olx + ' '
         elif iucr:
-            return iucr
+            return iucr + ' '
         else:
             return ''
 
