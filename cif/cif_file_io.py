@@ -15,7 +15,7 @@ from gemmi.cif import as_string, is_null, Block, Document, Loop
 from shelxfile import Shelxfile
 
 from cif.cif_order import order, special_keys
-from cif.hkl import HKL
+from cif.hkl import HKL, Limit
 from cif.text import utf8_to_str, quote, retranslate_delimiter
 from datafiles.utils import DSRFind
 from tools.misc import essential_keys, non_centrosymm_keys, isnumeric, grouper
@@ -215,12 +215,19 @@ class CifContainer():
 
     @property
     def hkl_as_cif(self):
+        return HKL(self.hkl_file, self.block.name, hklf_type=self.hklf_number).hkl_as_cif
+
+    @property
+    def hklf_number(self) -> int:
         hklf = 4
         if self.res_file_data:
-            hklf = self.hklf_number_from_shelxl_file()
-        return HKL(self.hkl_file, self.block.name, hklf_type=hklf).hkl_as_cif
+            hklf = self._hklf_number_from_shelxl_file()
+        return hklf
 
-    def hklf_number_from_shelxl_file(self) -> int:
+    def min_max_diffrn_reflns_limit(self) -> Limit:
+        HKL(self.hkl_file, self.block.name, hklf_type=self.hklf_number).get_hkl_min_max()
+
+    def _hklf_number_from_shelxl_file(self) -> int:
         shx = Shelxfile()
         shx.read_string(self.res_file_data)
         return shx.hklf.n if shx.hklf.n != 0 else 4
@@ -248,11 +255,11 @@ class CifContainer():
         This method tries to determine the information witten at the end of a cif hkl file by sadabs.
         """
         hkl = None
-        all_sadabs_items = {'_exptl_absorpt_process_details' : '',
-                            '_exptl_absorpt_correction_type' : '',
+        all_sadabs_items = {'_exptl_absorpt_process_details': '',
+                            '_exptl_absorpt_correction_type': '',
                             '_exptl_absorpt_correction_T_max': '',
                             '_exptl_absorpt_correction_T_min': '',
-                            '_computing_structure_solution'  : '',
+                            '_computing_structure_solution': '',
                             }
         try:
             hkl = self.hkl_file
@@ -625,7 +632,7 @@ class CifContainer():
         hydr = namedtuple('HydrogenBond', ('label_d', 'label_h', 'label_a', 'dist_dh', 'dist_ha', 'dist_da',
                                            'angle_dha', 'symm'))
         for label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm in \
-            zip(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm):
+                zip(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm):
             yield hydr(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, self.checksymm(symm))
 
     def key_value_pairs(self) -> List[Tuple[str, str]]:
@@ -728,7 +735,7 @@ if __name__ == '__main__':
     # print(CifContainer('tests/examples/1979688.cif').hkl_as_cif[-250:])
 
     """
-    import numpy as np
+    import n#umpy as np
     mtz = gemmi.Mtz(with_base=True)
     data = [x.split() for x in c.hkl_file.splitlines()]
     mtz.add_column('I', 'I')
