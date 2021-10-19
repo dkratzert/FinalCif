@@ -1,7 +1,6 @@
 import re
 from collections import namedtuple
 from pathlib import Path
-from typing import List
 
 import gemmi
 import numpy as numpy
@@ -76,7 +75,6 @@ class HKL():
         h_max, k_max, l_max = numpy.max(miller, axis=0)
         h_min, k_min, l_min = numpy.min(miller, axis=0)
         return Limit(h_max=h_max, h_min=h_min, k_max=k_max, k_min=k_min, l_max=l_max, l_min=l_min)
-
 
 
 if __name__ == '__main__':
