@@ -381,7 +381,7 @@ class CODdeposit():
         file = cif_file_open_dialog(filter="HKL file (*.hkl *.fcf)")
         if file.endswith('.hkl'):
             if self.cif.res_file_data:
-                hklf = self.cif.hklf_number_from_shelxl_file()
+                hklf = self.cif._hklf_number_from_shelxl_file()
             else:
                 hklf = 4
             self.hkl_file = io.StringIO(HKL(file, self.cif.block.name, hklf_type=hklf).hkl_as_cif)
