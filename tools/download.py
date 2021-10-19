@@ -31,7 +31,7 @@ class MyDownloader(QThread):
             'User-Agent': user_agent,
         }
         # noinspection PyUnresolvedReferences
-        self.progress.emit('Starting download: {}'.format(full_url))
+        # self.progress.emit('Starting download: {}'.format(full_url))
         response = requests.get(full_url, stream=True, headers=headers)
         if response.status_code != 200:
             # noinspection PyUnresolvedReferences
@@ -47,6 +47,7 @@ class MyDownloader(QThread):
 if __name__ == "__main__":
     from PyQt5.QtWidgets import QWidget
     from PyQt5.QtWidgets import QApplication
+
     app = QApplication(sys.argv)
     w = QWidget()
     w.show()

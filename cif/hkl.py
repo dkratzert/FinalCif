@@ -1,8 +1,13 @@
 import re
+from collections import namedtuple
 from pathlib import Path
+from typing import List
 
 import gemmi
+import numpy as numpy
 from gemmi.cif import Loop, Document, Style
+
+Limit = namedtuple('HKLLimit', 'h_max, h_min, k_max, k_min, l_max, l_min')
 
 
 class HKL():
@@ -22,13 +27,13 @@ class HKL():
         self._doc: Document = gemmi.cif.Document()
         self._doc.add_new_block(block_name)
         self.block = self._doc.sole_block()
-        self.get_hkl_as_block()
+        self._get_hkl_as_block()
 
     @property
     def hkl_as_cif(self) -> str:
         return self._doc.as_string(style=Style.Simple)
 
-    def get_hkl_as_block(self):
+    def _get_hkl_as_block(self):
         loop_header = ['index_h',
                        'index_k',
                        'index_l',
@@ -65,27 +70,16 @@ class HKL():
             return len(first_lines[1].split())
         return len(first_lines[0].split())
 
-    def get_hkl_min_max(self):
+    def get_hkl_min_max(self) -> Limit:
         hkl: gemmi.ReflnBlock = gemmi.hkl_cif_as_refln_block(self.block)
-        h_max = (self._max_hkl(hkl, index=0))
-        h_min = (self._min_hkl(hkl, index=0))
-        k_max = (self._max_hkl(hkl, index=1))
-        k_min = (self._min_hkl(hkl, index=1))
-        l_max = (self._max_hkl(hkl, index=2))
-        l_min = (self._min_hkl(hkl, index=2))
-        return {'h_max': h_max, 'h_min': h_min,
-                'k_max': k_max, 'k_min': k_min,
-                'l_max': l_max, 'l_min': l_min, }
-
-    def _min_hkl(self, hkl: gemmi.ReflnBlock, index: int = 0):
-        return min([x[index] for x in hkl.make_miller_array()])
-
-    def _max_hkl(self, hkl: gemmi.ReflnBlock, index: int = 0):
-        return max([x[index] for x in hkl.make_miller_array()])
+        miller = hkl.make_miller_array()
+        h_max, k_max, l_max = numpy.max(miller, axis=0)
+        h_min, k_min, l_min = numpy.min(miller, axis=0)
+        return Limit(h_max=h_max, h_min=h_min, k_max=k_max, k_min=k_min, l_max=l_max, l_min=l_min)
 
 
 if __name__ == '__main__':
-    h = HKL(Path('tests/examples/test.hkl').read_text(), '123234')
-    print(h.hkl_as_cif[:250])
+    h = HKL(Path('tests/examples/work/test_hkl_file.txt').read_text(), '123234')
+    # print(h.hkl_as_cif[:250])
     m = h.get_hkl_min_max()
     print(m)
