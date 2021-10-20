@@ -37,7 +37,7 @@ class TestPlatonCheckCIF(unittest.TestCase):
 
     def setUp(self) -> None:
         os.chdir(Path(__file__).resolve().parent.parent)
-        self.myapp = AppWindow(Path('tests/examples/1979688.cif').resolve())
+        self.myapp = AppWindow(Path('tests/examples/1979688.cif').resolve(), unit_test=True)
         self.myapp.hide()
         self.myapp.running_inside_unit_test = True
 
@@ -70,7 +70,7 @@ class TestPlatonCheckCIF_with_CIF_without_hkl_data(unittest.TestCase):
 
     def setUp(self) -> None:
         os.chdir(Path(__file__).resolve().parent.parent)
-        self.myapp = AppWindow(Path('./test-data/1000007.cif').resolve())
+        self.myapp = AppWindow(Path('./test-data/1000007.cif').resolve(), unit_test=True)
         self.myapp.hide()
         self.myapp.ui.structfactCheckBox.setChecked(True)
         self.myapp.running_inside_unit_test = True

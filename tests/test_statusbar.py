@@ -10,7 +10,7 @@ from tools.version import VERSION
 class TestStausBarWithGraphics(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.myapp = AppWindow()
+        self.myapp = AppWindow(unit_test=True)
         self.myapp.running_inside_unit_test = True
         self.myapp.setWindowIcon(QIcon('./icon/multitable.png'))
         self.myapp.setWindowTitle('FinalCif v{}'.format(VERSION))

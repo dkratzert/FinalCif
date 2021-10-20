@@ -9,7 +9,7 @@ class MyTestCase(unittest.TestCase):
     def setUp(self) -> None:
         current_file_path()
         self.testcif = Path('tests/examples/1979688.cif').resolve()
-        self.app = AppWindow(self.testcif)
+        self.app = AppWindow(self.testcif, unit_test=True)
         self.app.running_inside_unit_test = True
         self.app.hide()
         self.author = {'address': 'address', 'footnote': 'footnote', 'email': 'email',
