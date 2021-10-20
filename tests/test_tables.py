@@ -1,9 +1,7 @@
 import os
-import sys
 import unittest
 from pathlib import Path
 
-from PyQt5.QtWidgets import QApplication
 from docx import Document
 from docx.enum.shape import WD_INLINE_SHAPE
 from docx.shape import InlineShapes

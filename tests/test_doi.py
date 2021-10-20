@@ -1,4 +1,3 @@
-from pprint import pprint
 from unittest import TestCase
 
 from cif.cod.doi import resolve_doi, get_names_from_doi

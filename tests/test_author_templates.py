@@ -1,8 +1,5 @@
-import sys
 import unittest
 from pathlib import Path
-
-from PyQt5.QtWidgets import QApplication
 
 from appwindow import AppWindow
 from tests.test_utils import current_file_path

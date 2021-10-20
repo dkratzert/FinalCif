@@ -5,12 +5,11 @@
 #   and you think this stuff is worth it, you can buy me a beer in return.
 #   ----------------------------------------------------------------------------
 import os
-import sys
 import unittest
 from pathlib import Path
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QApplication, QTabWidget
+from PyQt5.QtWidgets import QTabWidget
 from gemmi.cif import as_string
 
 from appwindow import AppWindow

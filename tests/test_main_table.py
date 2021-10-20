@@ -5,13 +5,11 @@
 #   and you think this stuff is worth it, you can buy me a beer in return.
 #   ----------------------------------------------------------------------------
 import os
-import sys
 import unittest
 from pathlib import Path
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor
-from PyQt5.QtWidgets import QApplication
 
 from appwindow import AppWindow
 from gui.custom_classes import COL_CIF, COL_DATA, COL_EDIT

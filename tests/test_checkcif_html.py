@@ -5,14 +5,12 @@
 #   and you think this stuff is worth it, you can buy me a beer in return.
 #   ----------------------------------------------------------------------------
 import os
-import sys
 import time
 import unittest
 from pathlib import Path
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtTest import QTest
-from PyQt5.QtWidgets import QApplication
 
 from appwindow import AppWindow
 from gui.custom_classes import COL_EDIT
@@ -24,6 +22,7 @@ class TestCheckCifHTML(unittest.TestCase):
     def setUp(self) -> None:
         os.chdir(Path(__file__).absolute().parent.parent)
         self.myapp = AppWindow(Path('tests/examples/work/cu_BruecknerJK_153F40_0m.cif').absolute())
+        self.myapp.running_inside_unit_test = True
         self.myapp.hide()  # For full screen view
         self.resobj = Path('checkcif-' + strip_finalcif_of_name(self.myapp.cif.fileobj.stem) + '-finalcif.html')
 

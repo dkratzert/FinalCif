@@ -115,8 +115,7 @@ class AppWindow(QMainWindow):
         elif file:
             self.load_cif_file(file)
         self.load_recent_cifs_list()
-        if not self.running_inside_unit_test:
-            self.check_for_update_version()
+        self.check_for_update_version()
         self.set_checkcif_output_font(self.ui.CheckcifPlaintextEdit)
         # To make file drag&drop working:
         self.setAcceptDrops(True)
