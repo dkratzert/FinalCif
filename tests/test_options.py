@@ -6,7 +6,7 @@ from appwindow import AppWindow
 class TestOptions(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.myapp = AppWindow()
+        self.myapp = AppWindow(unit_test=True)
         self.myapp.running_inside_unit_test = True
         self.myapp.ui.HAtomsCheckBox.setChecked(False)
         self.myapp.ui.ReportTextCheckBox.setChecked(False)

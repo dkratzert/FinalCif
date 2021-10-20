@@ -69,14 +69,14 @@ app = QApplication(sys.argv)
 
 class AppWindow(QMainWindow):
 
-    def __init__(self, file=None):
+    def __init__(self, file=None, unit_test: bool = False):
         super().__init__()
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
         # This prevents some things to happen during unit tests:
         # Open of target dir of shred cif,
         # open report doc,
         # get check.def from platon server
-        self.running_inside_unit_test = False
+        self.running_inside_unit_test = unit_test
         self.sources: Union[None, Dict[str, Tuple[Union[str, None]]]] = None
         self.cif: Union[CifContainer, None] = None
         self.view: Union[QWebEngineView, None] = None
@@ -115,12 +115,13 @@ class AppWindow(QMainWindow):
         elif file:
             self.load_cif_file(file)
         self.load_recent_cifs_list()
-        self.check_for_update_version()
         self.set_checkcif_output_font(self.ui.CheckcifPlaintextEdit)
         # To make file drag&drop working:
         self.setAcceptDrops(True)
         self.show()
         self.templates = ReportTemplates(self, self.settings)
+        if not self.running_inside_unit_test:
+            self.check_for_update_version()
 
     def distribute_cif_main_table_columns_evenly(self):
         hheader = self.ui.cif_main_table.horizontalHeader()

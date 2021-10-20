@@ -17,7 +17,7 @@ class TablesTestMixin():
     def setUp(self) -> None:
         os.chdir(Path(__file__).absolute().parent.parent)
         self.testcif = Path('tests/examples/1979688.cif').absolute()
-        self.myapp = AppWindow(self.testcif)
+        self.myapp = AppWindow(self.testcif, unit_test=True)
         self.myapp.ui.HAtomsCheckBox.setChecked(False)
         self.myapp.ui.ReportTextCheckBox.setChecked(False)
         self.myapp.ui.PictureWidthDoubleSpinBox.setValue(0.0)

@@ -15,7 +15,7 @@ from tools.version import VERSION
 # @unittest.skip('foo')
 class TemplateReportTestCase(unittest.TestCase):
     def setUp(self) -> None:
-        self.myapp = AppWindow()
+        self.myapp = AppWindow(unit_test=True)
         os.chdir(Path(__file__).absolute().parent.parent)
         self.testcif = Path('tests/examples/1979688.cif').absolute()
         self.myapp.load_cif_file(self.testcif.absolute())

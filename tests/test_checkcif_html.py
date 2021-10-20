@@ -21,7 +21,7 @@ class TestCheckCifHTML(unittest.TestCase):
 
     def setUp(self) -> None:
         os.chdir(Path(__file__).absolute().parent.parent)
-        self.myapp = AppWindow(Path('tests/examples/work/cu_BruecknerJK_153F40_0m.cif').absolute())
+        self.myapp = AppWindow(Path('tests/examples/work/cu_BruecknerJK_153F40_0m.cif').absolute(), unit_test=True)
         self.myapp.running_inside_unit_test = True
         self.myapp.hide()  # For full screen view
         self.resobj = Path('checkcif-' + strip_finalcif_of_name(self.myapp.cif.fileobj.stem) + '-finalcif.html')
