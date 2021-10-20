@@ -1,8 +1,6 @@
-import sys
 import unittest
 
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QApplication
 
 from appwindow import AppWindow
 from tools.statusbar import StatusBar

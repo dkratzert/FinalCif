@@ -1,7 +1,4 @@
-import sys
 import unittest
-
-from PyQt5.QtWidgets import QApplication
 
 from appwindow import AppWindow
 

@@ -13,6 +13,7 @@ class CifFileCRCTestCase(unittest.TestCase):
     def test_calc_crc(self):
         self.assertEqual(20714, self.cif.calc_checksum(self.cif['_shelx_hkl_file']))
 
+
 class CifFileCRClargerTestCase(unittest.TestCase):
     def setUp(self) -> None:
         current_file_path()
@@ -20,6 +21,7 @@ class CifFileCRClargerTestCase(unittest.TestCase):
 
     def test_calc_crc(self):
         self.assertEqual(26780, self.cif.calc_checksum(self.cif['_shelx_hkl_file']))
+
 
 class CifFileTestCase(unittest.TestCase):
     def setUp(self) -> None:

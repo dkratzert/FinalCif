@@ -1,10 +1,7 @@
 import os
-import sys
-import time
 import unittest
 from pathlib import Path
 
-from PyQt5.QtWidgets import QApplication
 from docx import Document
 from docx.enum.shape import WD_INLINE_SHAPE
 from docx.shape import InlineShapes
@@ -52,7 +49,7 @@ class TemplateReportTestCase(unittest.TestCase):
         print('imported templates')
         self.myapp.ui.TemplatesListWidget.blockSignals(False)
 
-    #@unittest.skip('')
+    # @unittest.skip('')
     def test_with_report_text(self):
         self.myapp.ui.SaveFullReportButton.click()
         doc = Document(self.reportdoc.absolute())

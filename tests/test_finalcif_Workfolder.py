@@ -1,12 +1,11 @@
 import os
-import sys
 import unittest
 from datetime import datetime
 from pathlib import Path
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon, QColor
-from PyQt5.QtWidgets import QApplication, QWidget
+from PyQt5.QtWidgets import QWidget
 from qtpy.QtTest import QTest
 
 from appwindow import AppWindow
@@ -47,6 +46,7 @@ class TestFileIsOpened(unittest.TestCase):
         os.chdir(Path(__file__).absolute().parent.parent)
         self.testcif = Path('tests/examples/work/cu_BruecknerJK_153F40_0m.cif').absolute()
         self.myapp = AppWindow(self.testcif)
+        self.myapp.running_inside_unit_test = True
         self.myapp.hide()
         self.myapp.setWindowIcon(QIcon('./icon/multitable.png'))
         self.myapp.setWindowTitle('FinalCif v{}'.format(VERSION))
@@ -74,6 +74,7 @@ class TestWorkfolder(unittest.TestCase):
         os.chdir(Path(__file__).absolute().parent.parent)
         self.testcif = Path('tests/examples/work/cu_BruecknerJK_153F40_0m.cif').absolute()
         self.myapp = AppWindow(self.testcif)
+        self.myapp.running_inside_unit_test = True
         self.myapp.hide()
         self.myapp.setWindowIcon(QIcon('./icon/multitable.png'))
         self.myapp.setWindowTitle('FinalCif v{}'.format(VERSION))
@@ -145,7 +146,7 @@ class TestWorkfolder(unittest.TestCase):
         self.assertEqual('', self.cell_text('_atom_sites_solution_hydrogens', COL_DATA))
         self.assertEqual(
             """FinalCif V{} by Daniel Kratzert, Freiburg {}, https://dkratzert.de/finalcif.html""".format(VERSION,
-                                                                                                             datetime.now().year),
+                                                                                                          datetime.now().year),
             self.cell_text('_audit_creation_method', COL_DATA))
 
     def test_abs_configuration_combo(self):
@@ -346,6 +347,7 @@ class TestWorkfolder(unittest.TestCase):
         pair = [x.replace("\n", "").replace("\r", "") for x in pair]
         self.assertEqual(erg, pair)
         self.myapp.final_cif_file_name.unlink()
+
 
 if __name__ == '__main__':
     unittest.main()
