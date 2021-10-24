@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import QListWidgetItem, QTableWidget, QListWidget, QStacked
 from gemmi import cif
 
 from cif.text import retranslate_delimiter, utf8_to_str
+from equip_property.tools import read_document_from_cif_file
 from gui.custom_classes import MyQPlainTextEdit
 from gui.dialogs import cif_file_open_dialog, show_general_warning, cif_file_save_dialog
 from tools.misc import predef_prop_templ
@@ -170,10 +171,8 @@ class Properties:
             filename = cif_file_open_dialog(filter="CIF file (*.cif)")
         if not filename:
             return
-        try:
-            doc = cif.read_file(filename)
-        except RuntimeError as e:
-            show_general_warning(str(e))
+        doc = read_document_from_cif_file(filename)
+        if not doc:
             return
         property_list = self.settings.settings.value('property_list')
         if not property_list:

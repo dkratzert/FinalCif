@@ -13,6 +13,7 @@ from gemmi.cif import Loop, as_string, read_file
 
 from cif.cif_file_io import CifContainer
 from cif.text import utf8_to_str, quote, retranslate_delimiter
+from equip_property.tools import read_document_from_cif_file
 from gui.dialogs import cif_file_save_dialog, show_general_warning, cif_file_open_dialog
 from gui.finalcif_gui import Ui_FinalCifWindow
 from tools.misc import grouper
@@ -206,10 +207,8 @@ class AuthorLoops():
             filename = cif_file_open_dialog(filter="CIF file (*.cif)")
         if not filename:
             return
-        try:
-            doc = read_file(filename)
-        except RuntimeError as e:
-            show_general_warning(str(e))
+        doc = read_document_from_cif_file(filename)
+        if not doc:
             return
         block = doc.sole_block()
         table_data = {}

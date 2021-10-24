@@ -175,7 +175,12 @@ class TestWorkfolder(unittest.TestCase):
 
     def test_combo_items_radiation(self):
         row = self.key_row('_diffrn_radiation_type')
-        self.assertEqual(['', 'Mo K\\a', 'Cu K\\a', 'Ag K\\a'], self.get_combobox_items(row, COL_EDIT))
+        self.assertEqual(['', 'Mo Kα', 'Cu Kα', 'Ag Kα'], self.get_combobox_items(row, COL_EDIT))
+
+    def test_ambient_conditions_combo(self):
+        # Test if N~~2~ is correctly translated to N_2
+        row = self.key_row('_diffrn_ambient_environment')
+        self.assertEqual('N₂', self.get_combobox_items(row, COL_EDIT)[1])
 
     def test_combo_items_exptl_crystal_description(self):
         row = self.key_row('_exptl_crystal_description')

@@ -197,7 +197,6 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         if row is None:
             row = self.vheaderitems.index(key)
         if isinstance(self.cellWidget(row, column), MyComboBox):
-            # noinspection PyUnresolvedReferences
             self.cellWidget(row, column).setText(txt)
             return
         item = MyTableWidgetItem(txt)

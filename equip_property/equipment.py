@@ -10,6 +10,7 @@ from gemmi import cif
 from cif.cif_file_io import CifContainer
 from cif.core_dict import cif_all_dict
 from cif.text import retranslate_delimiter
+from equip_property.tools import read_document_from_cif_file
 from gui.custom_classes import COL_CIF, COL_DATA, light_green, COL_EDIT
 from gui.dialogs import show_general_warning, cif_file_open_dialog, cif_file_save_dialog
 from tools import misc
@@ -173,10 +174,8 @@ class Equipment:
         if not filename:
             print('No file given')
             return
-        try:
-            doc = cif.read_file(filename)
-        except RuntimeError as e:
-            show_general_warning(str(e))
+        doc = read_document_from_cif_file(filename)
+        if not doc:
             return
         block = doc.sole_block()
         table_data = []
