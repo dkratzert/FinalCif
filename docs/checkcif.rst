@@ -16,6 +16,7 @@ advantage of beeing fast, but the resulting ckecks are far less deeply.
 
 .. image:: pics/finalcif_checkcif.png 
     :width: 700
+
 Results from a checkcif run.
 
 
