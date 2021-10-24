@@ -979,7 +979,10 @@ class AppWindow(QMainWindow):
             show_general_warning('Could not import {}:\n'.format(filename) + str(e))
             return
         except ValueError as e:
-            show_general_warning('Problems parsing file: {}:\n'.format(filename) + str(e))
+            warning = 'Problems parsing file: {}:\n'.format(filename) + str(e)
+            if 'data_' in str(e):
+                warning = warning + "\n\nA CIF needs to start with 'data_[some_name]'."
+            show_general_warning(warning)
             return
         except IOError as e:
             show_general_warning('Unable to open file {}:\n'.format(filename) + str(e))
@@ -1412,7 +1415,7 @@ class AppWindow(QMainWindow):
         self.ui.cif_main_table.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         for num, value in data:
             try:
-                combobox.addItem(value, num)
+                combobox.addItem(retranslate_delimiter(value), num)
             except TypeError:
                 print('Bad value in property:', value)
                 if DEBUG:
