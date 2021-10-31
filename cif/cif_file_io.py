@@ -341,7 +341,7 @@ class CifContainer():
         return self.hkl_extra_info['_exptl_absorpt_correction_T_min']
 
     def _spgr(self) -> gemmi.SpaceGroup:
-        if self.symmops:
+        if self.symmops and self.symmops != ['']:
             symm_ops = self.symmops
         else:
             symm_ops = self.symmops_from_spgr
@@ -474,6 +474,9 @@ class CifContainer():
         """
         Whether a structuere is centro symmetric or not.
         """
+        if not self.symmops or self.symmops == ['']:
+            # Do not crash without symmops
+            return False
         ops = gemmi.GroupOps([gemmi.Op(o) for o in self.symmops])
         return ops.is_centric()
 
