@@ -423,6 +423,7 @@ class CifContainer():
     def calc_checksum(input_str: str) -> int:
         """
         Calculates the shelx checksum of a cif file.
+        The original algorithm was posted by Berthold Stöger on the Bruker Users Mailing list.
         """
         crc_sum = 0
         try:
