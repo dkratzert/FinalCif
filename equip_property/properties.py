@@ -174,10 +174,14 @@ class Properties:
         doc = read_document_from_cif_file(filename)
         if not doc:
             return
+        for block in doc:
+            self._import_block(block)
+        self.show_properties()
+
+    def _import_block(self, block: cif.Block) -> None:
         property_list = self.settings.settings.value('property_list')
         if not property_list:
             property_list = ['']
-        block = doc.sole_block()
         template_list = []
         loop_column_name = ''
         for i in block:
@@ -203,7 +207,6 @@ class Properties:
         # for a table item as dropdown menu in the main table.
         table_data = [loop_column_name, template_list]
         self.settings.save_template_list('property/' + block_name, table_data)
-        self.show_properties()
 
     def load_property_from_settings(self) -> None:
         """

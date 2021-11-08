@@ -177,7 +177,11 @@ class Equipment:
         doc = read_document_from_cif_file(filename)
         if not doc:
             return
-        block = doc.sole_block()
+        for block in doc:
+            self._import_block(block, filename)
+        self.show_equipment()
+
+    def _import_block(self, block: cif.Block, filename: str) -> None:
         table_data = []
         for item in block:
             if item.pair is not None:
@@ -190,7 +194,6 @@ class Equipment:
         else:
             name = block.name.replace('__', ' ')
         self.settings.save_settings_list('equipment', name, table_data)
-        self.show_equipment()
 
     def get_equipment_entry_data(self) -> Tuple[str, list]:
         """
