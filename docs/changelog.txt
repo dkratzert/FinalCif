@@ -1,6 +1,7 @@
 FinalCif recent changes
 -----------------------
 
+-v91 Added ability to import multi CIFs for equipment and properties (A CIF with multiple data_ blocks)
 -v90 Show proper warning id data_ is missing in a template CIF. Find out min/max hkl for CIF from twins. Small fixes.
 -v89 Fixed wR2 in report templates. Other minor corrections.
 -v88 Added full IUCr publication checkcif option. Made CCDC number field direcly editable (No need to use a template anymore).
