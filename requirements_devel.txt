@@ -34,7 +34,7 @@ numpy>=1.19
 
 # For development
 
-sphinx==3.4.0
-sphinx-rtd-theme==0.5.0
+sphinx
+sphinx-rtd-theme
 py
 pluggy
