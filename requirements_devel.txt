@@ -9,10 +9,10 @@ pefile
 pybind11>=2.7.1
 pyinstaller>=4.5.1
 pyinstaller-hooks-contrib==2021.3
-PyQt5==5.15.6   # Do not use 5.15.4, qwebengine will not work!
+PyQt5==5.15.2   # Do not use 5.15.4 and above, qwebengine will not work!
 PyQt5-sip==12.9.0
 PyQt5-stubs==5.15.2.0
-PyQtWebEngine==5.15.5  # Do not use 5.15.4, qwebengine will not work!
+PyQtWebEngine==5.15.2  # Do not use 5.15.4 and above, qwebengine will not work!
 python-docx==0.8.11
 pywin32-ctypes==0.2.0
 QtAwesome==1.1.0
