@@ -10,9 +10,10 @@ FinalCif has two buttons for depositing in the respective database, but they beh
 The button for the CSD ("CCDC Deposit") only points to the CSD website, while the button for the COD ("COD Deposit") opens
 an upload interface in FinalCif.
 
-.. image:: pics/deposit_v86.png
-    :width: 700
-The COD deposition interface
+.. figure:: pics/deposit_v86.png
+   :width: 700
+
+   The COD deposition interface
 
 The COD interface has three major options: "personal communication", "prepublication" and "already published"
 Before the first upload attempt, you have to signup for an account at http://crystallography.net/cod/. With that username,

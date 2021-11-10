@@ -26,8 +26,9 @@ The FinalCif executable accepts a file name as first argument in order to open .
 other programs like ShelXle.
 
 .. image:: pics/finalcif_main.png
-    :width: 700
-The FinalCif main window.
+   :width: 700
+
+   The FinalCif main window.
 
 
 **A workflow example**
