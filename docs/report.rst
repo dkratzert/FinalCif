@@ -47,16 +47,17 @@ values from the CIF file and other precalculated information.
 
 In the templates, you have two different types of information to add:
 
-A variable, starting with {{ and ending with }}, for example: {{ a_variable }}
-This would insert the content of the variable at this point in the document during the report generation.
+1. A variable, starting with {{ and ending with }}, for example: :code:`{{ a_variable }}`
+   This would insert the content of the variable at this point in the document during the report generation.
 
-A block, starting with {% and ending with %}, for example:
+
+2. A block, starting with {% and ending with %}, for example:
 
 .. code-block:: jinja
 
-   Foo bar {% if a_variable %}} Put this text here {% endif %} Some other text.
+   Foo bar {% if a_variable %} Put this text here {% endif %} Some other text.
 
-This would put the text enclosed in the block into the document depending if either *a_variable* has a value or not.
+This would put the text enclosed in the block into the document depending if either :code:`a_variable` has a value or not.
 The second possibility for blocks is to iterate over the values of a Python dictionary:
 
 .. code-block:: jinja
@@ -66,7 +67,7 @@ The second possibility for blocks is to iterate over the values of a Python dict
    {% enfor %}
 
 Produces a list of all atom names in a CIF.
-If you need a table, {%tr is used to generate table rows.
+If you need a table, :code:`{%tr foo %}` is used to generate table rows.
 
 Data Available for the Report
 -----------------------------
@@ -136,23 +137,23 @@ Data Available for the Report
 
 .. code-block:: text
 
-   res_file_data             : The SHELX res file text
-   is_centrosymm             : It true if the space group of the structure is centrosymmetric
-   atoms                     : The list of atoms with 'label', 'type', 'x', 'y', 'z', 'part',
-                               'occ', 'u_eq'
-   hydrogen_atoms_present    : Is true if hydrogen atoms are present in the structure
-   disorder_present          : Is true if atoms in parts are present in the structure
-   cell                      : The unit cell
-   bonds                     : The list of bonds as 'label1', 'label2', 'dist', 'symm'
-   angles                    : The list of angles as 'label1', 'label2', 'label3', 'angle_val',
-                               'symm1', 'symm2'
-   torsion_angles            : The list of torsion angles as 'label1', 'label2', 'label3', 'label4',
-                               'torsang', 'symm1', 'symm2', 'symm3', 'symm4'
-   hydrogen_bonds            : The list of hydrogen atoms involved in HTAB listings as 'label_d',
-                               'label_h', 'label_a', 'dist_dh', 'dist_ha', 'dist_da', 'angle_dha',
-                                'symm'
-   test_res_checksum         : True if the checksum of the SHELX .res file fits to the file content.
-   test_hkl_checksum         : True if the checksum of the SHELX .hkl file fits to the file content.
+   'res_file_data'          : The SHELX res file text
+   'is_centrosymm'          : It true if the space group of the structure is centrosymmetric
+   'atoms'                  : The list of atoms with 'label', 'type', 'x', 'y', 'z', 'part',
+                              'occ', 'u_eq'
+   'hydrogen_atoms_present' : Is true if hydrogen atoms are present in the structure
+   'disorder_present'       : Is true if atoms in parts are present in the structure
+   'cell'                   : The unit cell
+   'bonds'                  : The list of bonds as 'label1', 'label2', 'dist', 'symm'
+   'angles'                 : The list of angles as 'label1', 'label2', 'label3', 'angle_val',
+                              'symm1', 'symm2'
+   'torsion_angles'         : The list of torsion angles as 'label1', 'label2', 'label3', 'label4',
+                              'torsang', 'symm1', 'symm2', 'symm3', 'symm4'
+   'hydrogen_bonds'         : The list of hydrogen atoms involved in HTAB listings as 'label_d',
+                              'label_h', 'label_a', 'dist_dh', 'dist_ha', 'dist_da', 'angle_dha',
+                               'symm'
+   'test_res_checksum'      : True if the checksum of the SHELX .res file fits to the file content.
+   'test_hkl_checksum'      : True if the checksum of the SHELX .hkl file fits to the file content.
 
 
 The above is not limited to the templates of FinalCif. It is also possible to insert template tags
