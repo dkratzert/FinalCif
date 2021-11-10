@@ -1,4 +1,4 @@
-
+===========
 Source code
 ===========
 
@@ -11,22 +11,21 @@ https://www.python.org/
 
 Then clone the repository from GitHub:
 
-.. code-block::
+.. code-block:: bat
 
    git clone https://github.com/dkratzert/FinalCif.git
    cd FinalCif
 
 Create a virtual environment and activate it:
 
-.. code-block::
+.. code-block:: bat
 
     C:\Python38\python3.exe -m venv venv
-    
     venv\Scripts\activate.bat    
 
 After activation, install all necessary packages using pip:
 
-.. code-block::
+.. code-block:: bat
 
     pip install -r requirements.txt
 
