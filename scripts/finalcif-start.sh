@@ -35,7 +35,7 @@ if [ "$1" == "-install" ]; then
 fi
 
 # Create a virtual environment and activate it:
-cd FinalCif || echo "Directory not found"; exit
+cd FinalCif || echo "Directory not found" exit
 python3.9 -m venv venv
 source venv/bin/activate
 
@@ -49,6 +49,7 @@ if [ "$1" == "-install" ]; then
 fi
 
 # Finally, run FinalCif
+echo Running FinalCif ...
 python3 finalcif.py
 
 
