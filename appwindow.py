@@ -111,7 +111,7 @@ class AppWindow(QMainWindow):
         self.connect_signals_and_slots()
         self.make_button_icons()
         if len(sys.argv) > 1:
-            self.load_cif_file(Path(sys.argv[1]) if sys.argv[1] != 'compile' else Path())
+            self.load_cif_file(Path(sys.argv[1]) if sys.argv[1] != 'compile_ui' else Path())
         elif file:
             self.load_cif_file(file)
         self.load_recent_cifs_list()
