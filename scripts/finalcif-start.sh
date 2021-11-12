@@ -20,7 +20,6 @@
 if [ "$1" == "-pyinst" ]; then
     # Add python repository and install new Python3.9
     sudo add-apt-repository ppa:deadsnakes/ppa
-    sudo apt-get update
     sudo apt install python3.9
     sudo apt install python3.9-venv
     exit
@@ -35,7 +34,7 @@ if [ "$1" == "-install" ]; then
 fi
 
 # Create a virtual environment and activate it:
-cd FinalCif
+cd FinalCif || echo "Directory not found"; exit
 python3.9 -m venv venv
 source venv/bin/activate
 
