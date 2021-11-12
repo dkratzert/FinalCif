@@ -134,7 +134,8 @@ class AppWindow(QMainWindow):
     def set_initial_button_states(self):
         self.ui.PictureWidthDoubleSpinBox.setRange(0.0, 25)
         self.ui.PictureWidthDoubleSpinBox.setSingleStep(0.5)
-        self.ui.growCheckBox.setChecked(True)
+        # Just too slow for large structures:
+        self.ui.growCheckBox.setChecked(False)
         self.ui.CheckcifButton.setDisabled(True)
         self.ui.CheckcifHTMLOnlineButton.setDisabled(True)
         self.ui.CheckcifPDFOnlineButton.setDisabled(True)
