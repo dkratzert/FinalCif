@@ -4,6 +4,7 @@
 #
 # This script either installs FinalCif vom the source repository or simply runs FinalCif.
 # Prior to installation, a recent Python version is needed.
+# Everything (except Python3) is installed below the ./FinalCif directory and nowhere else.
 #
 # Commandline Options:
 #
