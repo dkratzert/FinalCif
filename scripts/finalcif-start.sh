@@ -18,6 +18,10 @@
 # without any option: Run FinalCif
 #
 
+if [ ! "$(which python3.9)" ]; then
+  echo You need to install Python3.9 first: ./finalcif-start.sh -pyinst
+fi
+
 if [ "$1" == "-pyinst" ]; then
   # Add python repository and install new Python3.9
   sudo add-apt-repository ppa:deadsnakes/ppa
