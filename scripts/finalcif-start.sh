@@ -36,7 +36,7 @@ fi
 
 if [ "$1" == "-install" ]; then
   echo
-  echo Which version number of FinalCif should be installed?
+  echo Which version number of FinalCif should be installed? Use a number like 91 or 'trunk' for the latest unstable source.
   read version
   # Get the FinalCif code:
   if [ "$version" == "trunk" ]; then
