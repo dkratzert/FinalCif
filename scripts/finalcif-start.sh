@@ -12,33 +12,37 @@
 # ./finalcif-start.sh [-option]
 #
 # -pyinst  :  Adds a Python repository (deadsnakes) and installs Python3.9
-# -install :  Install FinalCif from GitHub
+# -install :  Install FinalCif from GitHub. The installer asks about the version number to install.
+#             Use 'trunk' as version to get the most recent unstable source code.
 #
 # without any option: Run FinalCif
 #
 
-
 if [ "$1" == "-pyinst" ]; then
-    # Add python repository and install new Python3.9
-    sudo add-apt-repository ppa:deadsnakes/ppa
-    sudo apt install python3.9
-    sudo apt install python3.9-venv
-    exit
+  # Add python repository and install new Python3.9
+  sudo add-apt-repository ppa:deadsnakes/ppa
+  sudo apt install python3.9
+  sudo apt install python3.9-venv
+  exit
 fi
 
 if [ "$1" == "-install" ]; then
-    echo 
-    echo Which version number of FinalCif should be installed? 
-    read version
-    # Get the FinalCif code. Update the version number when needed:
+  echo
+  echo Which version number of FinalCif should be installed?
+  read version
+  # Get the FinalCif code:
+  if [ "$version" == "trunk" ]; then
+    git clone --depth 1 https://github.com/dkratzert/FinalCif.git
+  else
     git clone --depth 1 --branch Version-$version https://github.com/dkratzert/FinalCif.git
+  fi
 fi
 
 # Create a virtual environment and activate it:
 if [ ! -d "./FinalCif" ]; then
-    echo FinalCif is not installed here.
-    echo Install it with \"./finalcif-start.sh -install\"
-    exit
+  echo FinalCif is not installed here.
+  echo Install it with \"./finalcif-start.sh -install\"
+  exit
 fi
 
 cd FinalCif || echo FinalCif not found
@@ -46,16 +50,14 @@ python3.9 -m venv venv
 source venv/bin/activate
 
 if [ "$1" == "-install" ]; then
-    # Install required Python packages:
-    pip3 install pip -U
-    pip3 install -r requirements.txt -U
-    echo ""
-    echo Installation finished! Run FinalCif with './finalcif-start.sh'
-    exit
+  # Install required Python packages:
+  pip3 install pip -U
+  pip3 install -r requirements.txt -U
+  echo ""
+  echo Installation finished! Run FinalCif with './finalcif-start.sh'
+  exit
 fi
 
 # Finally, run FinalCif
 echo Running FinalCif ...
 python3 finalcif.py
-
-
