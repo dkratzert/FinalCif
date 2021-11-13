@@ -19,7 +19,10 @@
 #
 
 if [ ! "$(which python3.9)" ]; then
-  echo You need to install Python3.9 first: ./finalcif-start.sh -pyinst
+  echo You need to install Python3.9 first:
+  echo ./finalcif-start.sh -pyinst
+  echo
+  exit
 fi
 
 if [ "$1" == "-pyinst" ]; then
