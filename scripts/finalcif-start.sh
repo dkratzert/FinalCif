@@ -18,7 +18,7 @@
 # without any option: Run FinalCif
 #
 
-if [ ! "$(which python3.9)" ]; then
+if [ ! "$(which python3.9)" ] && [ ! "$1" == "-pyinst" ]; then
   echo You need to install Python3.9 first:
   echo
   echo ./finalcif-start.sh -pyinst
