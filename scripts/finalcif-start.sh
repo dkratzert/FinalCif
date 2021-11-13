@@ -20,8 +20,9 @@
 
 if [ ! "$(which python3.9)" ]; then
   echo You need to install Python3.9 first:
-  echo ./finalcif-start.sh -pyinst
   echo
+  echo ./finalcif-start.sh -pyinst
+  echo "This will add the deadsnakes repository to your installation: https://launchpad.net/~deadsnakes/+archive/ubuntu/ppa"
   exit
 fi
 
