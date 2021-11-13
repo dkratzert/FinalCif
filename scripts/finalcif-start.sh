@@ -51,8 +51,7 @@ source venv/bin/activate
 
 if [ "$1" == "-install" ]; then
   # Install required Python packages:
-  pip3 install pip -U
-  pip3 install -r requirements.txt -U
+  venv/bin/pip install -r requirements.txt -U
   echo ""
   echo Installation finished! Run FinalCif with './finalcif-start.sh'
   exit
