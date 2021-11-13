@@ -7,7 +7,7 @@ html2text==2020.1.16
 lxml
 pefile
 pybind11>=2.7.1
-pyinstaller>=4.5.1
+pyinstaller>=4.7
 pyinstaller-hooks-contrib==2021.3
 PyQt5==5.15.2   # Do not use 5.15.4 and above, qwebengine will not work!
 PyQt5-sip==12.9.0
