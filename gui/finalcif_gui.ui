@@ -16,6 +16,18 @@
   </property>
   <widget class="QWidget" name="Mainwidget">
    <layout class="QHBoxLayout" name="horizontalLayout_4">
+    <property name="leftMargin">
+     <number>3</number>
+    </property>
+    <property name="topMargin">
+     <number>3</number>
+    </property>
+    <property name="rightMargin">
+     <number>3</number>
+    </property>
+    <property name="bottomMargin">
+     <number>3</number>
+    </property>
     <item>
      <widget class="QSplitter" name="splitter">
       <property name="sizePolicy">
@@ -66,13 +78,13 @@
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_5">
         <property name="leftMargin">
-         <number>0</number>
+         <number>3</number>
         </property>
         <property name="topMargin">
          <number>0</number>
         </property>
         <property name="rightMargin">
-         <number>4</number>
+         <number>3</number>
         </property>
         <property name="bottomMargin">
          <number>0</number>
@@ -82,46 +94,74 @@
           <property name="title">
            <string>CIF File</string>
           </property>
-          <layout class="QGridLayout" name="CifFileGridLayout">
+          <property name="flat">
+           <bool>false</bool>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_29">
+           <property name="spacing">
+            <number>6</number>
+           </property>
            <property name="leftMargin">
-            <number>9</number>
+            <number>3</number>
            </property>
            <property name="topMargin">
-            <number>4</number>
+            <number>3</number>
            </property>
            <property name="rightMargin">
-            <number>9</number>
+            <number>3</number>
            </property>
-           <property name="horizontalSpacing">
-            <number>4</number>
+           <property name="bottomMargin">
+            <number>0</number>
            </property>
-           <property name="verticalSpacing">
-            <number>5</number>
-           </property>
-           <item row="1" column="0" colspan="2">
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_12">
+             <property name="spacing">
+              <number>3</number>
+             </property>
+             <property name="leftMargin">
+              <number>3</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QLineEdit" name="SelectCif_LineEdit">
+               <property name="placeholderText">
+                <string>Select a .cif file first.</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="SelectCif_PushButton">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>Select File</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
             <widget class="QComboBox" name="RecentComboBox">
              <property name="currentText">
               <string>Recent Files</string>
+             </property>
+             <property name="maxVisibleItems">
+              <number>15</number>
              </property>
              <item>
               <property name="text">
                <string>Recent Files</string>
               </property>
              </item>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="QPushButton" name="SelectCif_PushButton">
-             <property name="text">
-              <string>Select File</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="0">
-            <widget class="QLineEdit" name="SelectCif_LineEdit">
-             <property name="placeholderText">
-              <string>Select a .cif file first.</string>
-             </property>
             </widget>
            </item>
           </layout>
@@ -137,6 +177,9 @@
           </property>
           <widget class="QWidget" name="page_equipment">
            <layout class="QVBoxLayout" name="verticalLayout_16">
+            <property name="spacing">
+             <number>-1</number>
+            </property>
             <property name="leftMargin">
              <number>0</number>
             </property>
@@ -155,6 +198,9 @@
                <string>Equipment and Author Templates</string>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_7">
+               <property name="spacing">
+                <number>-1</number>
+               </property>
                <property name="leftMargin">
                 <number>0</number>
                </property>
@@ -170,7 +216,7 @@
                <item>
                 <widget class="QStackedWidget" name="EquipmentTemplatesStackedWidget">
                  <property name="currentIndex">
-                  <number>1</number>
+                  <number>0</number>
                  </property>
                  <widget class="QWidget" name="EquipmentSelectPage">
                   <layout class="QVBoxLayout" name="verticalLayout_19">
@@ -734,11 +780,17 @@
         <property name="leftMargin">
          <number>6</number>
         </property>
+        <property name="topMargin">
+         <number>12</number>
+        </property>
         <property name="rightMargin">
          <number>6</number>
         </property>
         <property name="bottomMargin">
          <number>0</number>
+        </property>
+        <property name="spacing">
+         <number>6</number>
         </property>
         <item row="0" column="10">
          <widget class="QTextEdit" name="SumFormMainLineEdit">
@@ -1009,7 +1061,7 @@
         <item row="1" column="0" colspan="12">
          <widget class="MyMainStackedWidget" name="MainStackedWidget">
           <property name="currentIndex">
-           <number>6</number>
+           <number>0</number>
           </property>
           <widget class="QWidget" name="page_MainTable">
            <layout class="QVBoxLayout" name="verticalLayout">
@@ -1103,12 +1155,33 @@
             </item>
             <item>
              <layout class="QHBoxLayout" name="ButtonsHorizontalLayout">
+              <property name="spacing">
+               <number>6</number>
+              </property>
               <item>
                <widget class="QGroupBox" name="groupBox">
                 <property name="title">
                  <string/>
                 </property>
                 <layout class="QGridLayout" name="gridLayout_7">
+                 <property name="leftMargin">
+                  <number>6</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>6</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>6</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>6</number>
+                 </property>
+                 <property name="horizontalSpacing">
+                  <number>9</number>
+                 </property>
+                 <property name="verticalSpacing">
+                  <number>6</number>
+                 </property>
                  <item row="0" column="0">
                   <widget class="QPushButton" name="SaveCifButton">
                    <property name="toolTip">
@@ -1152,6 +1225,24 @@
                  <string/>
                 </property>
                 <layout class="QGridLayout" name="gridLayout_15">
+                 <property name="leftMargin">
+                  <number>6</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>6</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>6</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>6</number>
+                 </property>
+                 <property name="horizontalSpacing">
+                  <number>9</number>
+                 </property>
+                 <property name="verticalSpacing">
+                  <number>6</number>
+                 </property>
                  <item row="1" column="0">
                   <widget class="QPushButton" name="LoopsPushButton">
                    <property name="text">
@@ -1189,6 +1280,24 @@
                  <string/>
                 </property>
                 <layout class="QGridLayout" name="gridLayout">
+                 <property name="leftMargin">
+                  <number>6</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>6</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>6</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>6</number>
+                 </property>
+                 <property name="horizontalSpacing">
+                  <number>9</number>
+                 </property>
+                 <property name="verticalSpacing">
+                  <number>6</number>
+                 </property>
                  <item row="0" column="0">
                   <widget class="QPushButton" name="CODpushButton">
                    <property name="text">
@@ -3928,11 +4037,9 @@ please add a publication author:</string>
   <tabstop>responseFormsListWidget</tabstop>
   <tabstop>SavePushButton</tabstop>
   <tabstop>EquipmentEditTableWidget</tabstop>
-  <tabstop>SelectCif_PushButton</tabstop>
   <tabstop>PropertiesTemplatesListWidget</tabstop>
   <tabstop>EquipmentTemplatesListWidget</tabstop>
   <tabstop>RecentComboBox</tabstop>
-  <tabstop>SelectCif_LineEdit</tabstop>
   <tabstop>PropertiesEditTableWidget</tabstop>
   <tabstop>NewEquipmentTemplateButton</tabstop>
   <tabstop>ExportAuthorPushButton</tabstop>
