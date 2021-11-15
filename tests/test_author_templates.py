@@ -2,7 +2,7 @@ import unittest
 from pathlib import Path
 
 from finalcif.appwindow import AppWindow
-from finalcif.tests.test_utils import current_file_path
+from tests.test_utils import current_file_path
 
 
 class MyTestCase(unittest.TestCase):

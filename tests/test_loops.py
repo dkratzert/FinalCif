@@ -14,7 +14,7 @@ from gemmi.cif import as_string
 
 from finalcif.appwindow import AppWindow
 from finalcif.cif.cif_file_io import CifContainer
-from finalcif.tests.helpers import unify_line_endings
+from tests.helpers import unify_line_endings
 
 
 class TestLoops(unittest.TestCase):

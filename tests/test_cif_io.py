@@ -2,7 +2,7 @@ import unittest
 from pathlib import Path
 
 from finalcif.cif.cif_file_io import CifContainer
-from finalcif.tests.test_utils import current_file_path
+from tests.test_utils import current_file_path
 
 
 class CifFileCRCTestCase(unittest.TestCase):

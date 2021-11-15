@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <comment>Python: from gui.custom_classes import MyPropTableWidget</comment>
+ <comment>Python: from finalcif.gui.custom_classes import MyPropTableWidget</comment>
  <class>FinalCifWindow</class>
  <widget class="QMainWindow" name="FinalCifWindow">
   <property name="geometry">
@@ -3936,22 +3936,22 @@ please add a publication author:</string>
   <customwidget>
    <class>MyCifTable</class>
    <extends>QTableWidget</extends>
-   <header>gui.custom_classes.h</header>
+   <header>finalcif.gui.custom_classes.h</header>
   </customwidget>
   <customwidget>
    <class>MyEQTableWidget</class>
    <extends>QTableWidget</extends>
-   <header>gui.custom_classes.h</header>
+   <header>finalcif.gui.custom_classes.h</header>
   </customwidget>
   <customwidget>
    <class>MyPropTableWidget</class>
    <extends>QTableWidget</extends>
-   <header>gui.custom_classes.h</header>
+   <header>finalcif.gui.custom_classes.h</header>
   </customwidget>
   <customwidget>
    <class>MyMainStackedWidget</class>
    <extends>QStackedWidget</extends>
-   <header>gui.custom_classes.h</header>
+   <header>finalcif.gui.custom_classes.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
@@ -4064,7 +4064,7 @@ please add a publication author:</string>
   <tabstop>depositorPasswordLineEdit</tabstop>
  </tabstops>
  <includes>
-  <include location="local">gui.custom_classes.h</include>
+  <include location="local">finalcif.gui.custom_classes.h</include>
  </includes>
  <resources/>
  <connections/>

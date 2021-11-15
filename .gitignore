@@ -192,7 +192,7 @@ generated_doc.docx
 1979688.bin
 .DS_Store
 tests/examples/work/cu_BruecknerJK_153F40_0m-finalcif.gif
-finalcif/tests/examples/work/cu_BruecknerJK_153F40_0m-finalcif.cif
+tests/examples/work/cu_BruecknerJK_153F40_0m-finalcif.cif
 tests/examples/work/checkcif-cu_BruecknerJK_153F40_0m-finalcif.html
 tests/examples/work/checkcif-cu_BruecknerJK_153F40_0m-finalcif.pdf
 tests/examples/work/checkpdf-cu_BruecknerJK_153F40_0m-finalcif.html

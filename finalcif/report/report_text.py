@@ -13,7 +13,7 @@ from finalcif.cif.text import retranslate_delimiter
 from finalcif.report.references import DummyReference, SAINTReference, SORTAVReference, ReferenceList, CCDCReference, \
     SHELXLReference, SHELXTReference, SHELXSReference, FinalCifReference, ShelXleReference, Olex2Reference, \
     SHELXDReference, SadabsTwinabsReference, CrysalisProReference
-from finalcif.tests.helpers import remove_line_endings
+from tests.helpers import remove_line_endings
 from finalcif.tools.misc import protected_space, angstrom, zero_width_space
 
 

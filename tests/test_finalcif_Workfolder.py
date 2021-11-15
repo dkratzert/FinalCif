@@ -10,7 +10,7 @@ from qtpy.QtTest import QTest
 
 from finalcif.appwindow import AppWindow
 from finalcif.gui.custom_classes import light_green, yellow, COL_DATA, COL_CIF, COL_EDIT
-from finalcif.tests.helpers import unify_line_endings, addr
+from tests.helpers import unify_line_endings, addr
 from finalcif.tools.version import VERSION
 
 
@@ -153,19 +153,19 @@ class TestWorkfolder(unittest.TestCase):
         self.assertEqual(10, self.key_row('_chemical_absolute_configuration'))
         self.assertEqual("<class 'NoneType'>", self.cell_widget_class(10, COL_CIF))
         self.assertEqual("<class 'NoneType'>", self.cell_widget_class(10, COL_DATA))
-        self.assertEqual("<class 'gui.custom_classes.MyComboBox'>", self.cell_widget_class(10, COL_EDIT))
+        self.assertEqual("<class 'finalcif.gui.custom_classes.MyComboBox'>", self.cell_widget_class(10, COL_EDIT))
 
     def test_diffrn_radiation_type_combo(self):
         row = self.key_row('_diffrn_radiation_type')
         self.assertEqual("<class 'NoneType'>", self.cell_widget_class(row, COL_CIF))
         self.assertEqual("<class 'NoneType'>", self.cell_widget_class(row, COL_DATA))
-        self.assertEqual("<class 'gui.custom_classes.MyComboBox'>", self.cell_widget_class(row, COL_EDIT))
+        self.assertEqual("<class 'finalcif.gui.custom_classes.MyComboBox'>", self.cell_widget_class(row, COL_EDIT))
 
     def test_diffrn_ambient_temperature_combo(self):
         row = self.key_row('_diffrn_ambient_temperature')
         self.assertEqual("<class 'NoneType'>", self.cell_widget_class(row, COL_CIF))
         self.assertEqual("<class 'NoneType'>", self.cell_widget_class(row, COL_DATA))
-        self.assertEqual("<class 'gui.custom_classes.MyComboBox'>", self.cell_widget_class(row, COL_EDIT))
+        self.assertEqual("<class 'finalcif.gui.custom_classes.MyComboBox'>", self.cell_widget_class(row, COL_EDIT))
 
     def test_combo_items_ambient_temp(self):
         row = self.key_row('_diffrn_ambient_temperature')

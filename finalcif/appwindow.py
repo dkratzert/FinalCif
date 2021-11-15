@@ -27,41 +27,44 @@ from PyQt5.QtWidgets import QMainWindow, QHeaderView, QShortcut, QCheckBox, QLis
 from gemmi import cif
 from qtpy.QtGui import QDesktopServices
 
-import displaymol
-from cif.checkcif.checkcif import MyHTMLParser, AlertHelp, CheckCif
-from cif.cif_file_io import CifContainer
-from cif.cod.deposit import CODdeposit
-from cif.text import retranslate_delimiter, quote
-from datafiles.bruker_data import BrukerData
-from datafiles.ccdc_mail import CCDCMail
-from displaymol import mol_file_writer, write_html
-from displaymol.sdm import SDM
-from equip_property.author_loop_templates import AuthorLoops
-from equip_property.equipment import Equipment
-from equip_property.properties import Properties
-from gui.custom_classes import COL_CIF, COL_DATA, COL_EDIT, MyTableWidgetItem, light_green, yellow, MyComboBox, \
+import finalcif
+from finalcif.cif.checkcif.checkcif import MyHTMLParser, AlertHelp, CheckCif
+from finalcif.cif.cif_file_io import CifContainer
+from finalcif.cif.cod.deposit import CODdeposit
+from finalcif.cif.text import retranslate_delimiter, quote
+from finalcif.datafiles.bruker_data import BrukerData
+from finalcif.datafiles.ccdc_mail import CCDCMail
+from finalcif.displaymol import mol_file_writer
+from finalcif.displaymol.sdm import SDM
+from finalcif.displaymol.write_html import write
+from finalcif.equip_property.author_loop_templates import AuthorLoops
+from finalcif.equip_property.equipment import Equipment
+from finalcif.equip_property.properties import Properties
+from finalcif.gui.custom_classes import COL_CIF, COL_DATA, COL_EDIT, MyTableWidgetItem, light_green, yellow, MyComboBox, \
     MyCifTable
-from gui.dialogs import show_update_warning, unable_to_open_message, show_general_warning, cif_file_open_dialog, \
+from finalcif.gui.dialogs import show_update_warning, unable_to_open_message, show_general_warning, \
+    cif_file_open_dialog, \
     bad_z_message, show_res_checksum_warning, show_hkl_checksum_warning
-from gui.finalcif_gui import Ui_FinalCifWindow
-from gui.loops import Loop
-from gui.vrf_classes import MyVRFContainer, VREF
-from report.archive_report import ArchiveReport
-from report.tables import make_report_from
-from report.templated_report import TemplatedReport
-from template.templates import ReportTemplates
-from tools.download import MyDownloader
-from tools.dsrmath import my_isnumeric
-from tools.misc import strip_finalcif_of_name, next_path, do_not_import_keys, celltxt, to_float, combobox_fields, \
+from finalcif.gui.finalcif_gui import Ui_FinalCifWindow
+from finalcif.gui.loops import Loop
+from finalcif.gui.vrf_classes import MyVRFContainer, VREF
+from finalcif.report.archive_report import ArchiveReport
+from finalcif.report.tables import make_report_from
+from finalcif.report.templated_report import TemplatedReport
+from finalcif.template.templates import ReportTemplates
+from finalcif.tools.download import MyDownloader
+from finalcif.tools.dsrmath import my_isnumeric
+from finalcif.tools.misc import strip_finalcif_of_name, next_path, do_not_import_keys, celltxt, to_float, \
+    combobox_fields, \
     do_not_import_from_stoe_cfx, cif_to_header_label, grouper, is_database_number, file_age_in_days
-from tools.options import Options
-from tools.platon import Platon
-from tools.settings import FinalCifSettings
-from tools.shred import ShredCIF
-from tools.space_groups import SpaceGroups
-from tools.statusbar import StatusBar
-from tools.sumformula import formula_str_to_dict, sum_formula_to_html
-from tools.version import VERSION
+from finalcif.tools.options import Options
+from finalcif.tools.platon import Platon
+from finalcif.tools.settings import FinalCifSettings
+from finalcif.tools.shred import ShredCIF
+from finalcif.tools.space_groups import SpaceGroups, write_html
+from finalcif.tools.statusbar import StatusBar
+from finalcif.tools.sumformula import formula_str_to_dict, sum_formula_to_html
+from finalcif.tools.version import VERSION
 
 DEBUG = False
 app = QApplication(sys.argv)
@@ -1276,7 +1279,8 @@ class AppWindow(QMainWindow):
             mol = ' '
             if DEBUG:
                 raise
-        content = write_html.write(mol, self.ui.molGroupBox.width() - 250, self.ui.molGroupBox.height() - 250)
+        content = write(mol, self.ui.molGroupBox.width() - 250,
+                                   self.ui.molGroupBox.height() - 250)
         Path(os.path.join(self.jsmoldir.name, "./jsmol.htm")).write_text(data=content, encoding="utf-8",
                                                                          errors='ignore')
         self.view.reload()
@@ -1294,8 +1298,8 @@ class AppWindow(QMainWindow):
         self.jsmoldir = TemporaryDirectory()
         self.view.load(QUrl.fromLocalFile(os.path.join(self.jsmoldir.name, "./jsmol.htm")))
         # This is a bit hacky, but it works fast:
-        copy2(Path(displaymol.__file__).parent.joinpath('jquery.min.js'), self.jsmoldir.name)
-        copy2(Path(displaymol.__file__).parent.joinpath('JSmol_dk.nojq.lite.js'), self.jsmoldir.name)
+        copy2(Path(finalcif.displaymol.__file__).parent.joinpath('jquery.min.js'), self.jsmoldir.name)
+        copy2(Path(finalcif.displaymol.__file__).parent.joinpath('JSmol_dk.nojq.lite.js'), self.jsmoldir.name)
         self.ui.moleculeLayout.addWidget(self.view)
         self.view.heightForWidth(1)
         # noinspection PyUnresolvedReferences
