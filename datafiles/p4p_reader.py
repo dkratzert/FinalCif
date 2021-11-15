@@ -2,7 +2,7 @@
 
 #  ----------------------------------------------------------------------------
 #  "THE BEER-WARE LICENSE" (Revision 42):
-#  daniel.kratzert@ac.uni-freiburg.de> wrote this file.  As long as you retain
+#  dkratzert@gmx.de> wrote this file.  As long as you retain
 #  this notice you can do whatever you want with this stuff. If we meet some day,
 #  and you think this stuff is worth it, you can buy me a beer in return. 
 #  Dr. Daniel Kratzert
@@ -54,7 +54,7 @@ class P4PFile():
         self.filename = Path()
         p4p_files = searchpath.glob(basename + '*_0m.p4p')
         if not p4p_files:
-            p4p_files = Path(os.curdir).absolute().glob('*.p4p')
+            p4p_files = Path(os.curdir).resolve().glob('*.p4p')
         for p4p in p4p_files:
             if p4p:
                 self.filename = p4p

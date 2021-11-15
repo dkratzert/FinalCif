@@ -3,7 +3,7 @@ from textwrap import wrap
 
 from PyQt5 import QtCore
 from PyQt5.QtCore import QEvent, QObject, Qt, QSize
-from PyQt5.QtGui import QColor, QTextOption, QKeySequence, QContextMenuEvent
+from PyQt5.QtGui import QColor, QTextOption, QKeySequence, QContextMenuEvent, QBrush
 from PyQt5.QtWidgets import QAbstractScrollArea, QAction, QComboBox, QFrame, QPlainTextEdit, QSizePolicy, QTableWidget, \
     QTableWidgetItem, QWidget, QApplication, QShortcut, QStackedWidget
 
@@ -67,6 +67,7 @@ class MyCifTable(QTableWidget, ItemTextMixin):
     def __init__(self, parent: QWidget = None, *args, **kwargs):
         self.parent = parent
         super().__init__(*args, **kwargs)
+        self.setParent(parent)
         self.installEventFilter(self)
         self.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
@@ -142,6 +143,30 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         except KeyError:
             pass
 
+    def add_separation_line(self, row_num: int) -> None:
+        """
+        Adds a blue separation line between cif content and empty cif keywords.
+        """
+        # The blue line in the table:
+        item_vhead = MyTableWidgetItem('These below are already in:')
+        item1 = MyTableWidgetItem('')
+        item2 = MyTableWidgetItem('')
+        item3 = MyTableWidgetItem('')
+        diag = QBrush(blue)
+        diag.setStyle(Qt.DiagCrossPattern)
+        item_vhead.setBackground(diag)
+        item1.setBackground(diag)
+        item1.setUneditable()
+        item2.setBackground(diag)
+        item2.setUneditable()
+        item3.setBackground(diag)
+        item3.setUneditable()
+        self.setVerticalHeaderItem(row_num, item_vhead)
+        self.setItem(row_num, COL_CIF, item1)
+        self.setItem(row_num, COL_DATA, item2)
+        self.setItem(row_num, COL_EDIT, item3)
+        self.resizeRowToContents(row_num)
+
     def restore_vertical_header(self):
         for row_num, key in enumerate(self.vheaderitems):
             item_key = MyTableWidgetItem(key)
@@ -172,7 +197,6 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         if row is None:
             row = self.vheaderitems.index(key)
         if isinstance(self.cellWidget(row, column), MyComboBox):
-            # noinspection PyUnresolvedReferences
             self.cellWidget(row, column).setText(txt)
             return
         item = MyTableWidgetItem(txt)
@@ -280,6 +304,7 @@ class MyQPlainTextEdit(QPlainTextEdit):
         :param minheight: minimum height of the widget.
         """
         super().__init__(parent, *args, **kwargs)
+        self.setParent(parent)
         self.row: int = -1
         self.minheight = minheight
         self.parent: MyCifTable = parent
@@ -372,6 +397,7 @@ class MyComboBox(QComboBox):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.parent: MyCifTable = parent
+        self.setParent(parent)
         self.row: int = -1
         self.setFocusPolicy(Qt.StrongFocus)
         self.setSizeAdjustPolicy(QComboBox.AdjustToMinimumContentsLength)
@@ -431,6 +457,7 @@ class MyEQTableWidget(QTableWidget, ItemTextMixin):
     def __init__(self, parent: QTableWidget = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.parent = parent
+        self.setParent(parent)
         self.setWordWrap(QTextOption.WrapAtWordBoundaryOrAnywhere)
 
     def eventFilter(self, widget: QObject, event: QEvent):
@@ -504,6 +531,7 @@ class MyPropTableWidget(QTableWidget):
     def __init__(self, parent: MyQPlainTextEdit, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
         self.parent = parent
+        self.setParent(parent)
 
     def delete_row(self, row: int = None):
         if not row:
@@ -526,6 +554,7 @@ class MyMainStackedWidget(QStackedWidget):
     def __init__(self, parent):
         super().__init__(parent)
         self.parent = parent
+        self.setParent(parent)
 
     def got_to_main_page(self):
         self.setCurrentIndex(0)
@@ -550,6 +579,9 @@ class MyMainStackedWidget(QStackedWidget):
 
     def go_to_checkcif_page(self):
         self.setCurrentIndex(6)
+
+    def got_to_cod_page(self):
+        self.setCurrentIndex(7)
 
     @property
     def current_page(self):

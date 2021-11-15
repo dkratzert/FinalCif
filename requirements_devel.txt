@@ -1,27 +1,29 @@
-altgraph==0.17
-certifi==2020.12.5
-chardet==3.0.4
+altgraph>=0.17
+certifi
+chardet==4.0.0
 future==0.18.2
-gemmi==0.4.3
+gemmi>=0.4.9
 html2text==2020.1.16
-idna==2.10
-lxml==4.6.2
-macholib==1.14
-pefile==2019.4.18
-pybind11==2.6.1
-pyinstaller==4.1
-pyinstaller-hooks-contrib==2020.11
-PyQt5==5.15.2
-PyQt5-sip==12.8.1
-PyQt5-stubs==5.14.2.2
-PyQtWebEngine==5.15.2
-python-docx==0.8.10
+lxml
+pefile
+pybind11>=2.7.1
+pyinstaller>=4.7
+pyinstaller-hooks-contrib==2021.3
+PyQt5==5.15.2   # Do not use 5.15.4 and above, qwebengine will not work!
+PyQt5-sip==12.9.0
+PyQt5-stubs==5.15.2.0
+PyQtWebEngine==5.15.2  # Do not use 5.15.4 and above, qwebengine will not work!
+python-docx==0.8.11
 pywin32-ctypes==0.2.0
-QtAwesome==1.0.2
-QtPy==1.9.0
-requests==2.25.1
-urllib3==1.26.2
-docxtpl==0.11.2
+QtAwesome==1.1.0
+QtPy==1.11.2
+requests==2.26.0
+urllib3==1.26.7
+docxtpl>=0.12.0
+wheel==0.37.0
+shelxfile
+crossrefapi
+numpy>=1.19
 
 # Upgrade gemmi to Git master:
 # pip install https://github.com/project-gemmi/gemmi/archive/master.zip --upgrade
@@ -32,7 +34,7 @@ docxtpl==0.11.2
 
 # For development
 
-sphinx==3.4.0
-sphinx-rtd-theme==0.5.0
+sphinx
+sphinx-rtd-theme
 py
 pluggy

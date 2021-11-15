@@ -1,28 +1,24 @@
-import os
-import sys
 import unittest
 from pathlib import Path
 
-from PyQt5.QtWidgets import QApplication
-
 from appwindow import AppWindow
-
-app = QApplication(sys.argv)
+from tests.test_utils import current_file_path
 
 
 class MyTestCase(unittest.TestCase):
     def setUp(self) -> None:
-        os.chdir(Path(__file__).absolute().parent.parent)
-        self.testcif = Path('tests/examples/1979688.cif').absolute()
-        self.app = AppWindow(self.testcif)
+        current_file_path()
+        self.testcif = Path('tests/examples/1979688.cif').resolve()
+        self.app = AppWindow(self.testcif, unit_test=True)
         self.app.running_inside_unit_test = True
         self.app.hide()
         self.author = {'address': 'address', 'footnote': 'footnote', 'email': 'email',
                        'name'   : 'name', 'orcid': 'orcid', 'phone': 'phone', 'contact': True}
 
     def tearDown(self) -> None:
-        os.chdir(Path(__file__).absolute().parent.parent)
+        current_file_path()
         Path('tests/other_templates/testexport_author.cif').unlink(missing_ok=True)
+        self.app.close()
 
     def _import_testauthor(self):
         # To be used in other tests
@@ -52,10 +48,10 @@ class MyTestCase(unittest.TestCase):
     def test_export_selected_author(self):
         self._delete_test_author()
         self._import_testauthor()
-        self.app.authors.export_author_template('../other_templates/testexport_author.cif')
-        self.assertEqual(True, Path('../other_templates/testexport_author.cif').exists())
-        self.assertEqual(Path('../other_templates/testexport_author.cif').read_text(),
-                         Path('../other_templates/testexport_author.cif').read_text())
+        self.app.authors.export_author_template('testexport_author.cif')
+        self.assertEqual(True, Path('testexport_author.cif').exists())
+        self.assertEqual(Path('testexport_author.cif').read_text(),
+                         Path('testexport_author.cif').read_text())
 
     def test_set_name(self):
         self.app.ui.FullNameLineEdit.setText('test')
@@ -109,9 +105,6 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual('', self.app.ui.FootNoteLineEdit.text())
         self.assertEqual('', self.app.ui.PhoneLineEdit.text())
         self.assertEqual(False, self.app.ui.ContactAuthorCheckBox.isChecked())
-
-    def test_save_author(self):
-        pass
 
 
 if __name__ == '__main__':

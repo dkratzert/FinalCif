@@ -1,17 +1,17 @@
 #  ----------------------------------------------------------------------------
 #  "THE BEER-WARE LICENSE" (Revision 42):
-#  daniel.kratzert@ac.uni-freiburg.de> wrote this file.  As long as you retain
+#  dkratzert@gmx.de> wrote this file.  As long as you retain
 #  this notice you can do whatever you want with this stuff. If we meet some day,
 #  and you think this stuff is worth it, you can buy me a beer in return.
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
+import re
 import subprocess
 import sys
 import time
 from contextlib import suppress
 from html.parser import HTMLParser
 from pathlib import Path
-from pprint import pprint
 from typing import List, Optional, Dict
 
 import requests
@@ -27,7 +27,8 @@ class CheckCif(QThread):
     progress = pyqtSignal(str)
     failed = pyqtSignal(str)
 
-    def __init__(self, cif: CifContainer, outfile: Path, hkl_upload: bool = True, pdf: bool = False, url: str = ''):
+    def __init__(self, cif: CifContainer, outfile: Path, hkl_upload: bool = True,
+                 pdf: bool = False, url: str = '', full_iucr: bool = False):
         # hkl == False means no hkl upload
         super().__init__()
         self.hkl_upload = hkl_upload
@@ -35,12 +36,13 @@ class CheckCif(QThread):
         self.cif = cif
         self.pdf = pdf
         self.checkcif_url = url
+        self.full_iucr = full_iucr
 
     def _html_check(self):
-        if not self.hkl_upload:
-            self.progress.emit('Running Checkcif with no hkl data')
-        else:
+        if self.hkl_upload:
             self.progress.emit('Running Checkcif with hkl data')
+        else:
+            self.progress.emit('Running Checkcif with no hkl data')
 
     def get_vrf(self):
         if self.pdf:
@@ -55,17 +57,19 @@ class CheckCif(QThread):
         """
         self._html_check()
         temp_cif = bytes(self.cif.cif_as_string(), encoding='ascii')
-        hkl = 'checkcif_only'
+        validation_type = 'checkcif_only'
         if not self.hkl_upload:
             temp_cif = bytes(self.cif.cif_as_string(without_hkl=True), encoding='ascii')
-        elif self.cif.hkl_file:
-            hkl = 'checkcif_with_hkl'
+        elif len(self.cif.hkl_file) > 0 and self.hkl_upload and self.full_iucr:
+            validation_type = 'iucr_checkcif_with_hkl'
+        elif len(self.cif.hkl_file) > 0:
+            validation_type = 'checkcif_with_hkl'
         vrf = self.get_vrf()
         headers = {
             "runtype"   : "symmonly",
             "referer"   : "checkcif_server",
             "outputtype": 'PDF' if self.pdf else 'HTML',
-            "validtype" : hkl,
+            "validtype" : validation_type,
             "valout"    : vrf,
         }
         t1 = time.perf_counter()
@@ -80,8 +84,9 @@ class CheckCif(QThread):
                 time.sleep(0.1)
                 self.progress.emit('Report took {}s.'.format(str(round(t2 - t1, 2))))
                 try:
-                    self.html_out_file.write_bytes(req.content)
+                    self.html_out_file.write_bytes(fix_iucr_urls(req.content.decode()).encode())
                 except PermissionError:
+                    print('html checkcif result could not be written.')
                     return
         with suppress(Exception):
             # parameter missing_ok=True is only available after 3.8
@@ -90,7 +95,7 @@ class CheckCif(QThread):
     def _do_the_server_request(self, headers: dict, temp_cif: bytes):
         req = None
         try:
-            req = requests.post(self.checkcif_url, files={'file': temp_cif}, data=headers, timeout=400)
+            req = requests.post(self.checkcif_url, files={'file': temp_cif}, data=headers, timeout=900)
         except requests.exceptions.ReadTimeout:
             message = r"Checkcif server took too long. Try it at 'https://checkcif.iucr.org' directly."
             self.failed.emit(message)
@@ -135,27 +140,33 @@ class CheckCif(QThread):
         self._open_pdf_result()
 
 
+def fix_iucr_urls(content: str):
+    """
+    The IuCr checkcif page suddenly contains urls where the protocol is missing.
+    """
+    href = re.sub(r'\s+href\s{0,}=\s{0,}"//', ' href="https://', content)
+    return re.sub(r'\s+src\s{0,}=\s{0,}"//', ' src="https://', href)
+
+
 class MyHTMLParser(HTMLParser):
     def __init__(self, data):
-        self.link = ''
+        self.pdf_link = ''
         self.imageurl = ''
         super(MyHTMLParser, self).__init__()
-        self.pdf = ''
         self.vrf = ''
         self.alert_levels = []
         self.feed(data)
 
     def get_pdf(self) -> Optional[bytes]:
-        return requests.get(self.link).content
+        return requests.get(self.pdf_link).content
 
     def handle_starttag(self, tag: str, attrs: str) -> None:
-        if tag == "a":
-            if len(attrs) > 1 and attrs[0][1] == '_blank':
-                self.link = attrs[1][1]
-        if tag == "img":
-            if len(attrs) > 1:
-                if attrs[0][0] == 'width' and '.gif' in attrs[1][1]:
-                    self.imageurl = attrs[1][1]
+        if tag == "a" and len(attrs) > 1 and attrs[0][1] == '_blank' and attrs[1][1].endswith('.pdf'):
+            url = attrs[1][1]
+            self.pdf_link = url
+        if tag == "img" and len(attrs) > 1 and attrs[0][0] == 'width' and '.gif' in attrs[1][1]:
+            url = attrs[1][1]
+            self.imageurl = url
 
     def handle_data(self, data: str) -> None:
         if 'Validation Reply Form' in data:
@@ -184,7 +195,6 @@ class MyHTMLParser(HTMLParser):
         """
         forms = []
         single_form = {}
-        n = 0
         for line in self.vrf.split('\n'):
             if line.startswith('_vrf'):
                 single_form = {'level': ''}
@@ -199,7 +209,6 @@ class MyHTMLParser(HTMLParser):
                     if single_form['alert_num'] == x[:7]:
                         single_form.update({'level': x})
                         break
-                n += 1
                 forms.append(single_form)
         return forms
 
@@ -209,24 +218,30 @@ class AlertHelp():
         self.checkdef = checkdef  # Path('../check.def').read_text().splitlines(keepends=False)
 
     def get_help(self, alert: str) -> str:
-        if len(alert) > 4:
-            alert = alert[4:]
-        help = self._parse_checkdef(alert)
-        if not help:
+        checkdef_help = self._parse_checkdef(alert)
+        if not checkdef_help or 'PLAT' not in alert:
             return 'No help available.'
-        return help
+        return checkdef_help
 
     def _parse_checkdef(self, alert: str) -> str:
+        """
+        Parses check.def from PLATON in order to get help about an Alert from Checkcif.
+
+        :param alert: alert number of the respective checkcif alert as three digit string or 'PLAT' + three digits
+        """
         found = False
         helptext = []
+        if len(alert) > 4:
+            alert = alert[4:]
         for line in self.checkdef:
             if line.startswith('_' + alert):
                 found = True
                 continue
-            if found and line.startswith('#=='):
+            if found and line.startswith('#==='):
                 return '\n'.join(helptext[2:])
             if found:
                 helptext.append(line)
+        return ''
 
 
 class AlertHelpRemote():
@@ -251,13 +266,12 @@ class AlertHelpRemote():
             text = bytes(reply.readAll()).decode('ascii', 'ignore')
         except Exception as e:
             print(e)
-            pass
         return text
 
 
 if __name__ == "__main__":
     cif = Path('test-data/1000007-finalcif.cif')
-    html = Path(r'./test-data/checkcif-DK_zucker2_0m-finalcif.html')
+    html = Path(r'test-data/checkcif_pdf_result.html')
     # ckf = CheckCif(None, cif, outfile=html)
     # ckf.show_html_report()
     # sys.exit()
@@ -265,10 +279,10 @@ if __name__ == "__main__":
     # html = Path(r'D:\frames\guest\BreitPZ_R_122\BreitPZ_R_122\checkcif-BreitPZ_R_122_0m_a.html')
     parser = MyHTMLParser(html.read_text())
     # print(parser.imageurl)
-    pprint(parser.response_forms)
+    # pprint(parser.response_forms)
     # print(parser.alert_levels)
     # print(parser.vrf)
-    # print(parser.pdf)
+    print(parser.pdf)
     # print(parser.link)
 
     # a = AlertHelp()

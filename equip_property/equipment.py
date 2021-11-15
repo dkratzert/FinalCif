@@ -1,3 +1,4 @@
+from bisect import bisect
 from contextlib import suppress
 from pathlib import Path
 from typing import Tuple
@@ -6,15 +7,19 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QListWidgetItem
 from gemmi import cif
 
+from cif.cif_file_io import CifContainer
 from cif.core_dict import cif_all_dict
-from cif.text import retranslate_delimiter, set_pair_delimited
+from cif.text import retranslate_delimiter
+from equip_property.tools import read_document_from_cif_file
 from gui.custom_classes import COL_CIF, COL_DATA, light_green, COL_EDIT
 from gui.dialogs import show_general_warning, cif_file_open_dialog, cif_file_save_dialog
 from tools import misc
 from tools.misc import include_equipment_imports
 from tools.settings import FinalCifSettings
+
 with suppress(ImportError):
     from appwindow import AppWindow
+
 
 class Equipment:
 
@@ -28,7 +33,6 @@ class Equipment:
 
     def signals_and_slots(self):
         ## equipment
-        self.app.ui.EquipmentTemplatesListWidget.doubleClicked.connect(self.edit_equipment_template)
         self.app.ui.EditEquipmentTemplateButton.clicked.connect(self.edit_equipment_template)
         self.app.ui.SaveEquipmentButton.clicked.connect(self.save_equipment_template)
         self.app.ui.CancelEquipmentButton.clicked.connect(self.cancel_equipment_template)
@@ -44,8 +48,7 @@ class Equipment:
         self.app.ui.EquipmentEditTableWidget.currentItemChanged.connect(
             self.app.ui.EquipmentEditTableWidget.add_row_if_needed)
         self.app.ui.NewEquipmentTemplateButton.clicked.connect(self.new_equipment)
-        self.app.ui.EquipmentTemplatesListWidget.currentRowChanged.connect(self.load_selected_equipment)
-        self.app.ui.EquipmentTemplatesListWidget.clicked.connect(self.load_selected_equipment)
+        self.app.ui.EquipmentTemplatesListWidget.doubleClicked.connect(self.load_selected_equipment)
 
     def show_equipment(self):
         self.app.ui.EquipmentTemplatesListWidget.clear()
@@ -60,21 +63,20 @@ class Equipment:
         Not for template edititng!
         """
         listwidget = self.app.ui.EquipmentTemplatesListWidget
-        selected_row_text = listwidget.currentIndex().data()
-        if not selected_row_text:
+        equipment_name = listwidget.currentIndex().data()
+        if not equipment_name:
             return None
-        equipment = self.settings.load_equipment_template_as_dict(selected_row_text)
+        equipment = self.settings.load_settings_list_as_dict(property='equipment', item_name=equipment_name)
         if self.app.ui.cif_main_table.vheaderitems:
             for key in equipment:
                 if key not in self.app.ui.cif_main_table.vheaderitems:
                     # Key is not in the main table:
-                    self.app.add_row(key, equipment[key])
-                else:
-                    # Key is already there:
-                    self.app.ui.cif_main_table.setText(key, COL_CIF,
-                                                       txt=self.app.ui.cif_main_table.getTextFromKey(key, COL_CIF))
-                    self.app.ui.cif_main_table.setText(key, COL_DATA, txt=equipment[key], color=light_green)
-                    self.app.ui.cif_main_table.setText(key, COL_EDIT, txt=equipment[key])
+                    self.app.add_row(key, equipment[key], at_start=False,
+                                     position=bisect(self.app.ui.cif_main_table.vheaderitems, key))
+                # Key is already there:
+                self.app.ui.cif_main_table.setText(key, COL_CIF, txt='?')
+                self.app.ui.cif_main_table.setText(key, COL_DATA, txt=equipment[key], color=light_green)
+                self.app.ui.cif_main_table.setText(key, COL_EDIT, txt=equipment[key])
         else:
             print('Empty main table!')
 
@@ -89,13 +91,7 @@ class Equipment:
         # First delete the list entries
         index = self.app.ui.EquipmentTemplatesListWidget.currentIndex()
         selected_template_text = index.data()
-        self.settings.delete_template('equipment/' + selected_template_text)
-        equipment_list = self.settings.settings.value('equipment_list') or []
-        try:
-            equipment_list.remove(selected_template_text)
-        except ValueError:
-            pass
-        self.settings.save_template('equipment_list', equipment_list)
+        self.settings.delete_template('equipment', selected_template_text)
         # now make it invisible:
         self.app.ui.EquipmentTemplatesListWidget.takeItem(index.row())
         self.cancel_equipment_template()
@@ -107,14 +103,10 @@ class Equipment:
         self.show_equipment()
 
     def store_predefined_templates(self):
-        equipment_list = self.settings.settings.value('equipment_list') or []
+        equipment_list = self.settings.get_equipment_list() or []
         for item in misc.predef_equipment_templ:
             if not item['name'] in equipment_list:
-                equipment_list.append(item['name'])
-                newlist = [x for x in list(set(equipment_list)) if x]
-                # this list keeps track of the equipment items:
-                self.settings.save_template('equipment_list', newlist)
-                self.settings.save_template('equipment/' + item['name'], item['items'])
+                self.settings.save_settings_list('equipment', item['name'], item['items'])
 
     def edit_equipment_template(self) -> None:
         """Gets called when 'edit equipment' button was clicked."""
@@ -138,7 +130,7 @@ class Equipment:
             # nothing selected
             return
         selected_row_text = listwidget.currentIndex().data()
-        table_data = self.settings.load_template('equipment/' + selected_row_text)
+        table_data = self.settings.load_settings_list(property='equipment', item_name=selected_row_text)
         # first load the previous values:
         if table_data:
             for key, value in table_data:
@@ -169,8 +161,7 @@ class Equipment:
                                          'Keys must start with an underscore.'.format(key))
                     return
                 show_general_warning('"{}" is not an official CIF keyword!'.format(key))
-        self.settings.save_template('equipment/' + selected_template_text, table_data)
-        self.settings.save_to_equipment_list(selected_template_text)
+        self.settings.save_settings_list('equipment', selected_template_text, table_data)
         self.app.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
         print('saved')
 
@@ -183,12 +174,14 @@ class Equipment:
         if not filename:
             print('No file given')
             return
-        try:
-            doc = cif.read_file(filename)
-        except RuntimeError as e:
-            show_general_warning(str(e))
+        doc = read_document_from_cif_file(filename)
+        if not doc:
             return
-        block = doc.sole_block()
+        for block in doc:
+            self._import_block(block, filename)
+        self.show_equipment()
+
+    def _import_block(self, block: cif.Block, filename: str) -> None:
         table_data = []
         for item in block:
             if item.pair is not None:
@@ -200,9 +193,7 @@ class Equipment:
             name = Path(filename).stem
         else:
             name = block.name.replace('__', ' ')
-        self.settings.save_template('equipment/' + name, table_data)
-        self.settings.save_to_equipment_list(name)
-        self.show_equipment()
+        self.settings.save_settings_list('equipment', name, table_data)
 
     def get_equipment_entry_data(self) -> Tuple[str, list]:
         """
@@ -235,22 +226,21 @@ class Equipment:
         selected_template, table_data = self.get_equipment_entry_data()
         if not selected_template:
             return
-        doc = cif.Document()
         blockname = '__'.join(selected_template.split())
-        block = doc.add_new_block(blockname)
-        for key, value in table_data:
-            set_pair_delimited(block, key, value.strip('\n\r '))
         if not filename:
             filename = cif_file_save_dialog(blockname.replace('__', '_') + '.cif')
         if not filename.strip():
             return
+        equipment_cif = CifContainer(filename, new_block=blockname)
+        for key, value in table_data:
+            equipment_cif[key] = value.strip('\n\r ')
         try:
-            doc.write_file(filename, style=cif.Style.Indent35)
+            equipment_cif.save(filename)
             # Path(filename).write_text(doc.as_string(cif.Style.Indent35))
         except PermissionError:
             if Path(filename).is_dir():
                 return
-            show_general_warning('No permission to write file to {}'.format(Path(filename).absolute()))
+            show_general_warning('No permission to write file to {}'.format(Path(filename).resolve()))
 
     def cancel_equipment_template(self) -> None:
         """

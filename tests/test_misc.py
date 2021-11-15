@@ -1,8 +1,10 @@
 import unittest
 from pathlib import Path
+from unittest import TestCase
 
 from tools.misc import to_int, to_float, this_or_quest, flatten, strip_finalcif_of_name, next_path, \
-    get_error_from_value, get_file_with_new_ending, grouper, distance, sha512_checksum_of_file, isnumeric
+    get_error_from_value, get_file_with_new_ending, grouper, distance, sha512_checksum_of_file, isnumeric, \
+    is_database_number
 
 
 class TestMisc(unittest.TestCase):
@@ -129,3 +131,20 @@ class TestNextpath(unittest.TestCase):
 
     def test_nextpath(self):
         self.assertEqual('./foobar-2.txt', next_path('./foobar-%s.txt'))
+
+
+class TestDatabaseNumber(TestCase):
+    def test_is_database_number_str_true(self):
+        self.assertEqual(True, is_database_number('1234567'))
+
+    def test_is_database_number_str_false(self):
+        self.assertEqual(False, is_database_number('123456'))
+
+    def test_is_database_number_str_false_long(self):
+        self.assertEqual(False, is_database_number('12345678'))
+
+    def test_is_database_number_int_true(self):
+        self.assertEqual(True, is_database_number(1234567))
+
+    def test_is_database_number_int_false(self):
+        self.assertEqual(False, is_database_number(123456))

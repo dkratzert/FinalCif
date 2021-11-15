@@ -1,6 +1,6 @@
 #  ----------------------------------------------------------------------------
 #  "THE BEER-WARE LICENSE" (Revision 42):
-#  daniel.kratzert@ac.uni-freiburg.de> wrote this file.  As long as you retain
+#  dkratzert@gmx.de> wrote this file.  As long as you retain
 #  this notice you can do whatever you want with this stuff. If we meet some day,
 #  and you think this stuff is worth it, you can buy me a beer in return.
 #  Dr. Daniel Kratzert
@@ -120,7 +120,7 @@ class ReferenceList():
             # paragraph_reflist.add_run('\n')
 
 
-class ReferenceFormater():
+class ReferenceFormatter():
     def __init__(self):
         self.authors = ''
         self.journal = ''
@@ -130,7 +130,7 @@ class ReferenceFormater():
         self.doi = ''
         self.program = ''
 
-    def add_reference(self, p):
+    def add_reference(self, p: Paragraph):
         if self.authors:
             p.add_run(self.authors)
             p.add_run(', ')
@@ -183,6 +183,19 @@ class ReferenceFormater():
             r.add('.')
         return r
 
+    @property
+    def short_ref(self):
+        """
+        Adds a reference with (name year) instead of a number.
+        TODO: get real last name from autors list
+        """
+        r = RichText('(', superscript=True)
+        r.add(self.authors.split()[0], superscript=True)
+        r.add(', ', superscript=True)
+        r.add(self.year, superscript=True)
+        r.add(')', superscript=True)
+        return r
+
     def __repr__(self):
         txt = ''
         if self.authors:
@@ -211,7 +224,7 @@ class ReferenceFormater():
         return txt
 
 
-class DummyReference(ReferenceFormater):
+class DummyReference(ReferenceFormatter):
     """
     >>> DummyReference()
     Unknown Reference, please add.
@@ -222,7 +235,7 @@ class DummyReference(ReferenceFormater):
         self.doi = 'Unknown Reference, please add'
 
 
-class DSRReference2015(ReferenceFormater):
+class DSRReference2015(ReferenceFormatter):
     """
     >>> DSRReference2015()
     D. Kratzert, J.J. Holstein, I. Krossing, J. Appl. Cryst. 2015, 48, 933–938, doi:10.1107/S1600576715005580.
@@ -239,7 +252,7 @@ class DSRReference2015(ReferenceFormater):
         self.doi = 'doi:10.1107/S1600576715005580'
 
 
-class DSRReference2018(ReferenceFormater):
+class DSRReference2018(ReferenceFormatter):
     """
     >>> DSRReference2018()
     D. Kratzert, I. Krossing, J. Appl. Cryst. 2018, 51, 928–934, doi:10.1107/S1600576718004508.
@@ -255,7 +268,7 @@ class DSRReference2018(ReferenceFormater):
         self.pages = '928–934'
 
 
-class SAINTReference(ReferenceFormater):
+class SAINTReference(ReferenceFormatter):
     def __init__(self, name: str, version: str):
         """
         >>> SAINTReference('SAINT', 'V7.68a')
@@ -271,13 +284,13 @@ class SAINTReference(ReferenceFormater):
         self.pages = 'Bruker AXS Inc., Madison, Wisconsin, USA'
 
 
-class SADABS_TWINABS_Reference(ReferenceFormater):
+class SadabsTwinabsReference(ReferenceFormatter):
     def __init__(self):
         """
         L. Krause, R. Herbst-Irmer, G. M. Sheldrick, D. Stalke, J. Appl. Cryst. 2015, 48, 3–10,
             doi:10.1107/S1600576714022985
 
-        >>> SADABS_TWINABS_Reference()
+        >>> SadabsTwinabsReference()
         L. Krause, R. Herbst-Irmer, G. M. Sheldrick, D. Stalke, J. Appl. Cryst. 2015, 48, 3–10, doi:10.1107/S1600576714022985.
         """
         super().__init__()
@@ -289,12 +302,12 @@ class SADABS_TWINABS_Reference(ReferenceFormater):
         self.doi = 'doi:10.1107/S1600576714022985'
 
 
-class SCALE3_ABSPACK_Reference(ReferenceFormater):
+class Scale3AbspackReference(ReferenceFormatter):
     def __init__(self):
         """
         Oxford Diffraction Ltd., scale3abspack (version 1.04), An Oxford Diffraction program, Abingdon, Oxford (U.K.) 2005
 
-        >>> SCALE3_ABSPACK_Reference()
+        >>> Scale3AbspackReference()
         Oxford Diffraction Ltd., scale3abspack, (version 1.04), Abingdon, Oxford (U.K.) 2005.
         """
         super().__init__()
@@ -304,7 +317,7 @@ class SCALE3_ABSPACK_Reference(ReferenceFormater):
         self.pages = 'Abingdon, Oxford (U.K.) 2005'
 
 
-class SHELXTReference(ReferenceFormater):
+class SHELXTReference(ReferenceFormatter):
     def __init__(self):
         """
         >>> SHELXTReference()
@@ -319,7 +332,7 @@ class SHELXTReference(ReferenceFormater):
         self.doi = 'doi:10.1107/S2053273314026370'
 
 
-class SHELXSReference(ReferenceFormater):
+class SHELXSReference(ReferenceFormatter):
     def __init__(self):
         """
         >>> SHELXSReference()
@@ -334,7 +347,7 @@ class SHELXSReference(ReferenceFormater):
         self.doi = 'doi:10.1107/S0108767307043930'
 
 
-class SHELXDReference(ReferenceFormater):
+class SHELXDReference(ReferenceFormatter):
     def __init__(self):
         """
         >>> SHELXDReference()
@@ -349,7 +362,7 @@ class SHELXDReference(ReferenceFormater):
         self.doi = 'doi:10.1107/S2059798317015121'
 
 
-class SHELXLReference(ReferenceFormater):
+class SHELXLReference(ReferenceFormatter):
     """
     >>> SHELXLReference()
     G. M. Sheldrick, Acta Cryst. 2015, C71, 3–8, doi:10.1107/S2053229614024218.
@@ -365,7 +378,7 @@ class SHELXLReference(ReferenceFormater):
         self.doi = 'doi:10.1107/S2053229614024218'
 
 
-class ShelXleReference(ReferenceFormater):
+class ShelXleReference(ReferenceFormatter):
     """
     >>> ShelXleReference()
     C. B. Hübschle, G. M. Sheldrick, B. Dittrich, J. Appl. Cryst. 2011, 44, 1281–1284, doi:10.1107/S0021889811043202.
@@ -381,7 +394,7 @@ class ShelXleReference(ReferenceFormater):
         self.doi = 'doi:10.1107/S0021889811043202'
 
 
-class Olex2Reference(ReferenceFormater):
+class Olex2Reference(ReferenceFormatter):
     """
     >>> Olex2Reference()
     O. V. Dolomanov, L. J. Bourhis, R. J. Gildea, J. A. K. Howard, H. Puschmann, J. Appl. Cryst. 2009, 42, 339-341, doi:10.1107/S0021889808042726.
@@ -397,7 +410,7 @@ class Olex2Reference(ReferenceFormater):
         self.doi = 'doi:10.1107/S0021889808042726'
 
 
-class Olex2Reference2(ReferenceFormater):
+class Olex2Reference2(ReferenceFormatter):
     """
     >>> Olex2Reference2()
     L. J. Bourhis, O. V. Dolomanov, R. J. Gildea, J. A. K. Howard, H. Puschmann, Acta Cryst. 2015, A71, 59–75, doi:10.1107/S2053273314022207.
@@ -413,7 +426,7 @@ class Olex2Reference2(ReferenceFormater):
         self.doi = 'doi:10.1107/S2053273314022207'
 
 
-class ParsonFlackReference(ReferenceFormater):
+class ParsonFlackReference(ReferenceFormatter):
     """
     >>> ParsonFlackReference()
     S. Parsons, H. D. Flack, T. Wagner, Acta Cryst. 2013, B69, 249–259, doi:10.1107/S2052519213010014.
@@ -429,7 +442,7 @@ class ParsonFlackReference(ReferenceFormater):
         self.doi = 'doi:10.1107/S2052519213010014'
 
 
-class CCDCReference(ReferenceFormater):
+class CCDCReference(ReferenceFormatter):
     """
     >>> CCDCReference()
     C. R. Groom, I. J. Bruno, M. P. Lightfoot, S. C. Ward, Acta Cryst. 2016, B72, 171–179, doi:10.1107/S2052520616003954.
@@ -445,7 +458,7 @@ class CCDCReference(ReferenceFormater):
         self.doi = 'doi:10.1107/S2052520616003954'
 
 
-class SORTAVReference(ReferenceFormater):
+class SORTAVReference(ReferenceFormatter):
     """
     >>> SORTAVReference()
     Robert H. Blessing, Cryst. Rev. 1987, 1, 3-58, doi:10.1080/08893118708081678.
@@ -461,10 +474,10 @@ class SORTAVReference(ReferenceFormater):
         self.doi = 'doi:10.1080/08893118708081678'
 
 
-class FinalCifReference(ReferenceFormater):
+class FinalCifReference(ReferenceFormatter):
     """
     >>> FinalCifReference()
-    D. Kratzert, FinalCif, V51, https://www.xs3.uni-freiburg.de/research/finalcif.
+    D. Kratzert, FinalCif, V51, https://dkratzert.de/finalcif.html.
     """
 
     def __init__(self):
@@ -472,10 +485,10 @@ class FinalCifReference(ReferenceFormater):
         self.authors = 'D. Kratzert'
         self.journal = 'FinalCif'
         self.volume = 'V' + str(VERSION)
-        self.pages = 'https://www.xs3.uni-freiburg.de/research/finalcif'
+        self.pages = 'https://dkratzert.de/finalcif.html'
 
 
-class CrysalisProReference(ReferenceFormater):
+class CrysalisProReference(ReferenceFormatter):
     """
     >>> CrysalisProReference(version='1.171.40.68a', year='2019')
     Crysalispro, 1.171.40.68a, 2019, Rigaku OD.

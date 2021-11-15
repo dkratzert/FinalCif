@@ -1,17 +1,12 @@
-import sys
 import unittest
 
-from PyQt5.QtWidgets import QApplication
-
 from appwindow import AppWindow
-
-app = QApplication(sys.argv)
 
 
 class TestOptions(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.myapp = AppWindow()
+        self.myapp = AppWindow(unit_test=True)
         self.myapp.running_inside_unit_test = True
         self.myapp.ui.HAtomsCheckBox.setChecked(False)
         self.myapp.ui.ReportTextCheckBox.setChecked(False)
@@ -22,6 +17,7 @@ class TestOptions(unittest.TestCase):
         self.myapp.ui.HAtomsCheckBox.setChecked(False)
         self.myapp.ui.ReportTextCheckBox.setChecked(False)
         self.myapp.ui.PictureWidthDoubleSpinBox.setValue(0.0)
+        self.myapp.close()
 
     def test_save_picture_with(self):
         self.assertEqual(self.myapp.ui.PictureWidthDoubleSpinBox.value(), 0.0)
@@ -46,7 +42,7 @@ class TestOptions(unittest.TestCase):
 
     def test_checkcif_url(self):
         self.assertEqual(self.myapp.ui.CheckCIFServerURLTextedit.text(),
-                         'https://checkcif.iucr.org/cgi-bin/checkcif_with_hkl')
+                         'https://checkcif.iucr.org/cgi-bin/checkcif_hkl.pl')
         self.myapp.ui.CheckCIFServerURLTextedit.setText('foobar')
         self.assertEqual(self.myapp.options.checkcif_url, 'foobar')
 

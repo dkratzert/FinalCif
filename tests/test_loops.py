@@ -5,33 +5,31 @@
 #   and you think this stuff is worth it, you can buy me a beer in return.
 #   ----------------------------------------------------------------------------
 import os
-import sys
 import unittest
 from pathlib import Path
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QApplication, QTabWidget
+from PyQt5.QtWidgets import QTabWidget
 from gemmi.cif import as_string
 
 from appwindow import AppWindow
 from cif.cif_file_io import CifContainer
 from tests.helpers import unify_line_endings
 
-app = QApplication(sys.argv)
-
 
 class TestLoops(unittest.TestCase):
 
     def setUp(self) -> None:
-        os.chdir(Path(__file__).absolute().parent.parent)
-        self.testcif = Path('tests/examples/1979688.cif').absolute()
-        self.myapp = AppWindow(self.testcif)
+        os.chdir(Path(__file__).resolve().parent.parent)
+        self.testcif = Path('tests/examples/1979688.cif').resolve()
+        self.myapp = AppWindow(self.testcif, unit_test=True)
         self.myapp.running_inside_unit_test = True
         self.myapp.hide()  # For full screen view
         self.myapp.ui.LoopsPushButton.click()
 
     def tearDown(self) -> None:
         self.myapp.final_cif_file_name.unlink(missing_ok=True)
+        self.myapp.close()
 
     def get_index_of(self, loopkey: str = ''):
         tabw: QTabWidget = self.myapp.ui.LoopsTabWidget

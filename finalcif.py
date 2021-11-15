@@ -1,17 +1,16 @@
 #  ----------------------------------------------------------------------------
 #  "THE BEER-WARE LICENSE" (Revision 42):
-#  daniel.kratzert@ac.uni-freiburg.de> wrote this file.  As long as you retain
+#  dkratzert@gmx.de> wrote this file.  As long as you retain
 #  this notice you can do whatever you want with this stuff. If we meet some day,
 #  and you think this stuff is worth it, you can buy me a beer in return.
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
-
 import sys
 from typing import Type
 
-if 'compile' in sys.argv:
+if 'compile_ui' in sys.argv:
     COMPILE = True
-    del sys.argv[sys.argv.index('compile')]
+    del sys.argv[sys.argv.index('compile_ui')]
 else:
     COMPILE = False
 import os
@@ -35,8 +34,7 @@ from gui.dialogs import bug_found_warning
 from tools.version import VERSION
 
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QApplication
-from appwindow import AppWindow, DEBUG
+from appwindow import AppWindow, DEBUG, app
 
 r"""
 TODO:
@@ -80,7 +78,7 @@ if __name__ == '__main__':
         errortext += str(exctype.__name__) + ': '
         errortext += str(value) + '\n'
         errortext += '-' * 80 + '\n'
-        logfile = Path(r'./finalcif-crash.txt')
+        logfile = Path.home().joinpath(Path(r'finalcif-crash.txt'))
         try:
             logfile.write_text(errortext)
         except PermissionError:
@@ -94,7 +92,6 @@ if __name__ == '__main__':
     if not DEBUG:
         sys.excepthook = my_exception_hook
 
-    app = QApplication(sys.argv)
     # windows_style = QStyleFactory.create('Fusion')
     # app.setStyle(windows_style)
     w = AppWindow()

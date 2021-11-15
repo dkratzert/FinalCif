@@ -1,5 +1,6 @@
 import os
 from builtins import str
+from typing import Union
 
 import gemmi
 from docx.text.paragraph import Paragraph
@@ -11,7 +12,7 @@ from cif.cif_file_io import CifContainer
 from cif.text import retranslate_delimiter
 from report.references import DummyReference, SAINTReference, SORTAVReference, ReferenceList, CCDCReference, \
     SHELXLReference, SHELXTReference, SHELXSReference, FinalCifReference, ShelXleReference, Olex2Reference, \
-    SHELXDReference, SADABS_TWINABS_Reference, SCALE3_ABSPACK_Reference, CrysalisProReference
+    SHELXDReference, SadabsTwinabsReference, CrysalisProReference
 from tests.helpers import remove_line_endings
 from tools.misc import protected_space, angstrom, zero_width_space
 
@@ -111,8 +112,7 @@ class MachineType():
                          or '[No monochromator type given]'
         if not self.monochrom:
             self.monochrom = '?'
-        self.cooling = gstr(self.cif['_olex2_diffrn_ambient_temperature_device']) \
-                       or ''
+        self.cooling = self._get_cooling_device(self.cif)
         self.rad_type = gstr(self.cif['_diffrn_radiation_type']) \
                         or '[No radiation type given]'
         radtype = format_radiation(self.rad_type)
@@ -124,7 +124,7 @@ class MachineType():
         if detector_type:
             self.detector_type = " and a {} detector".format(detector_type)
         sentence1 = "on {0} {1} {2} with {3} {4} using {5} as monochromator{6}. " \
-                    "The diffractometer was equipped with {7} {8} low temperature device and used "
+                    "The diffractometer was equipped with {7} {8}low temperature device and used "
         sentence2 = " radiation (λ = {}" + protected_space + "{}). ".format(angstrom)
         txt = sentence1.format(get_inf_article(self.difftype), self.difftype, self.device,
                                get_inf_article(self.source), self.source, self.monochrom,
@@ -140,6 +140,19 @@ class MachineType():
         alpha.font.subscript = True
         txt2 = sentence2.format(self.wavelen)
         paragraph.add_run(txt2)
+
+    @staticmethod
+    def _get_cooling_device(cif):
+        olx = gstr(cif['_olex2_diffrn_ambient_temperature_device'])
+        iucr = gstr(cif['_diffrn_measurement_ambient_temperature_device_make'])
+        if olx and iucr:
+            return iucr + ' '
+        if olx:
+            return olx + ' '
+        elif iucr:
+            return iucr + ' '
+        else:
+            return ''
 
 
 class DataReduct():
@@ -167,7 +180,7 @@ class DataReduct():
             else:
                 scale_prog = 'TWINABS'
             # absorpt_ref = SAINTReference(scale_prog, version)
-            absorpt_ref = SADABS_TWINABS_Reference()
+            absorpt_ref = SadabsTwinabsReference()
         if 'SORTAV' in absdetails.upper():
             scale_prog = 'SORTAV'
             absorpt_ref = SORTAVReference()
@@ -243,9 +256,21 @@ class Hydrogens():
         TODO: check if the proposed things are really there.
         """
         self.cif = cif
-        sentence1 = "All non-hydrogen atoms were refined with anisotropic displacement parameters. " \
+        n_isotropic = self.number_of_isotropic_atoms()
+        number = 'All'
+        parameter_type = 'anisotropic'
+        if 0 < n_isotropic < self.cif.natoms(without_h=True):
+            number = 'Some atoms ({}) were refined using isotropic displacement parameters.' \
+                     ' All other'.format(n_isotropic)
+        if n_isotropic > 0 and n_isotropic > self.cif.natoms(without_h=True):
+            number = 'Most atoms ({}) were refined using isotropic displacement parameters.' \
+                     ' All other'.format(n_isotropic)
+        if n_isotropic == self.cif.natoms(without_h=True):
+            number = 'All'
+            parameter_type = 'isotropic'
+        sentence1 = "{} non-hydrogen atoms were refined with {} displacement parameters. " \
                     "The hydrogen atoms were refined isotropically on calculated positions using a riding model " \
-                    "with their "
+                    "with their ".format(number, parameter_type)
         sentence2 = " values constrained to 1.5 times the "
         sentence3 = " of their pivot atoms for terminal sp"
         sentence4 = " carbon atoms and 1.2 times for all other carbon atoms."
@@ -258,6 +283,16 @@ class Hydrogens():
         paragraph.add_run(sentence3)
         paragraph.add_run('3').font.superscript = True
         paragraph.add_run(sentence4)
+
+    def number_of_isotropic_atoms(self) -> Union[float, int]:
+        isotropic_count = 0
+        for site in self.cif.atomic_struct.sites:
+            if self.atom_is_isotropic_and_not_hydrogen(site):
+                isotropic_count += 1
+        return isotropic_count
+
+    def atom_is_isotropic_and_not_hydrogen(self, site):
+        return not site.aniso.nonzero() and not site.element.is_hydrogen
 
 
 class Disorder():

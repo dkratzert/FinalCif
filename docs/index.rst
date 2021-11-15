@@ -3,8 +3,9 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
+========
 FinalCif
-=========
+========
 
 Finalcif is mainly intended for Bruker users, but works for other CIF files too. It collects all the information from a
 work folder needed in order to finalize a CIF file for publication.
@@ -14,7 +15,6 @@ no software is perfect!
 
 
 .. toctree::
-   :maxdepth: 2
    
    install
    description
@@ -22,5 +22,6 @@ no software is perfect!
    loops
    checkcif
    report
+   deposition
    sources
    homepage

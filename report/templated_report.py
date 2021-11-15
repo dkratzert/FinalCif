@@ -11,10 +11,10 @@ from docxtpl import DocxTemplate, RichText, InlineImage, Subdoc
 
 from cif.cif_file_io import CifContainer
 from cif.text import retranslate_delimiter
-from report.references import SAINTReference, SHELXLReference, SADABS_TWINABS_Reference, SHELXTReference, \
-    SHELXSReference, SHELXDReference, SORTAVReference, SCALE3_ABSPACK_Reference, FinalCifReference, CCDCReference, \
+from report.references import SAINTReference, SHELXLReference, SadabsTwinabsReference, SHELXTReference, \
+    SHELXSReference, SHELXDReference, SORTAVReference, Scale3AbspackReference, FinalCifReference, CCDCReference, \
     CrysalisProReference
-from report.report_text import math_to_word, gstr, format_radiation, get_inf_article
+from report.report_text import math_to_word, gstr, format_radiation, get_inf_article, MachineType
 from report.symm import SymmetryElement
 from tests.helpers import remove_line_endings
 from tools.misc import isnumeric, this_or_quest, timessym, angstrom, protected_space, less_or_equal, halbgeviert, \
@@ -246,7 +246,7 @@ def symmsearch(cif: CifContainer, newsymms, num, symm, symms_list) -> int:
 class TemplatedReport():
 
     def __init__(self):
-        self.literature = {'finalcif': FinalCifReference().richtext, 'ccdc': CCDCReference().richtext}
+        self.literature = {'finalcif': FinalCifReference(), 'ccdc': CCDCReference()}
 
     def format_sum_formula(self, sum_formula: str) -> RichText:
         sum_formula_group = [''.join(x[1]) for x in itertools.groupby(sum_formula, lambda x: x.isalpha())]
@@ -365,7 +365,7 @@ class TemplatedReport():
                 saintversion = integration.split()[1]
             integration_prog = 'SAINT'
             integration_prog += " " + saintversion
-            self.literature['integration'] = SAINTReference('SAINT', saintversion).richtext
+            self.literature['integration'] = SAINTReference('SAINT', saintversion)
         if 'CrysAlisPro'.lower() in integration.lower():
             year = 'unknown version'
             if len(integration.split()) > 3:
@@ -374,8 +374,8 @@ class TemplatedReport():
             if len(integration.split()) >= 1:
                 version = integration.split()[1][:-1]
             integration_prog = 'Crysalispro'
-            self.literature['integration'] = CrysalisProReference(version=version, year=year).richtext
-            self.literature['absorption'] = CrysalisProReference(version=version, year=year).richtext
+            self.literature['integration'] = CrysalisProReference(version=version, year=year)
+            self.literature['absorption'] = CrysalisProReference(version=version, year=year)
         return integration_prog
 
     def get_absortion_correction_program(self, cif: CifContainer) -> str:
@@ -391,10 +391,10 @@ class TemplatedReport():
                 scale_prog = 'SADABS'
             else:
                 scale_prog = 'TWINABS'
-            self.literature['absorption'] = SADABS_TWINABS_Reference().richtext
+            self.literature['absorption'] = SadabsTwinabsReference()
         if 'SORTAV' in absdetails.upper():
             scale_prog = 'SORTAV'
-            self.literature['absorption'] = SORTAVReference().richtext
+            self.literature['absorption'] = SORTAVReference()
         if 'crysalis' in absdetails.lower():
             scale_prog = 'SCALE3 ABSPACK'
             # see above also
@@ -409,16 +409,16 @@ class TemplatedReport():
     def solution_program(self, cif: CifContainer) -> str:
         solution_prog = gstr(cif['_computing_structure_solution']) or '??'
         if solution_prog.upper().startswith(('SHELXT', 'XT')):
-            self.literature['solution'] = SHELXTReference().richtext
+            self.literature['solution'] = SHELXTReference()
         if 'SHELXS' in solution_prog.upper():
-            self.literature['solution'] = SHELXSReference().richtext
+            self.literature['solution'] = SHELXSReference()
         if 'SHELXD' in solution_prog.upper():
-            self.literature['solution'] = SHELXDReference().richtext
+            self.literature['solution'] = SHELXDReference()
         return solution_prog.split()[0]
 
     def refinement_prog(self, cif: CifContainer) -> str:
         refined = gstr(cif['_computing_structure_refinement']) or '??'
-        self.literature['refinement'] = SHELXLReference().richtext
+        self.literature['refinement'] = SHELXLReference()
         return refined.split()[0]
 
     def get_atomic_coordinates(self, cif: CifContainer):
@@ -435,7 +435,7 @@ class TemplatedReport():
     def make_picture(self, options: Options, picfile: Path, tpl_doc: DocxTemplate):
         if options.report_text:
             if picfile and picfile.exists():
-                return InlineImage(tpl_doc, str(picfile.absolute()), width=Cm(options.picture_width))
+                return InlineImage(tpl_doc, str(picfile.resolve()), width=Cm(options.picture_width))
         return None
 
     def make_templated_report(self, options: Options, file_obj: Path, output_filename: str, picfile: Path,
@@ -472,8 +472,7 @@ class TemplatedReport():
                                              or '[No monochromator type given]',
                    'detector'              : gstr(cif['_diffrn_detector_type']) \
                                              or '[No detector type given]',
-                   'lowtemp_dev'           : gstr(cif['_olex2_diffrn_ambient_temperature_device']) \
-                                             or '',
+                   'lowtemp_dev'           : MachineType._get_cooling_device(cif),
                    'index_ranges'          : self.hkl_index_limits(cif),
                    'indepentent_refl'      : this_or_quest(cif['_reflns_number_total']),
                    'r_int'                 : this_or_quest(cif['_diffrn_reflns_av_R_equivalents']),

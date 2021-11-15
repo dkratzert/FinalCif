@@ -11,8 +11,6 @@ from cif.atoms import get_radius, get_radius_from_element, get_atomic_number, ge
 
 
 class TestAtoms(unittest.TestCase):
-    def setUp(self) -> None:
-        pass
 
     def test_get_radius(self):
         r = get_radius(6)

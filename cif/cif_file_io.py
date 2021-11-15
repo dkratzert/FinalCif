@@ -1,22 +1,24 @@
 #  ----------------------------------------------------------------------------
 #  "THE BEER-WARE LICENSE" (Revision 42):
-#  daniel.kratzert@ac.uni-freiburg.de> wrote this file.  As long as you retain
+#  dkratzert@gmx.de> wrote this file.  As long as you retain
 #  this notice you can do whatever you want with this stuff. If we meet some day,
 #  and you think this stuff is worth it, you can buy me a beer in return.
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
 import re
 from collections import namedtuple
-from math import sin, cos, sqrt
 from pathlib import Path
-from typing import Dict, List, Tuple, Union, NamedTuple
+from typing import Dict, List, Tuple, Union, Generator, Type
 
 import gemmi
+from gemmi.cif import as_string, is_null, Block, Document, Loop
+from shelxfile import Shelxfile
 
 from cif.cif_order import order, special_keys
+from cif.hkl import HKL, Limit
+from cif.text import utf8_to_str, quote, retranslate_delimiter
 from datafiles.utils import DSRFind
-from tools.dsrmath import mean
-from tools.misc import essential_keys, non_centrosymm_keys, get_error_from_value, isnumeric
+from tools.misc import essential_keys, non_centrosymm_keys, isnumeric, grouper
 
 
 class CifContainer():
@@ -24,19 +26,23 @@ class CifContainer():
     This class holds the content of a cif file, independent of the file parser used.
     """
 
-    def __init__(self, file: Union[Path, str]):
-        self.fileobj: Path
+    def __init__(self, file: Union[Path, str], new_block: str = ''):
         if isinstance(file, str):
             self.fileobj = Path(file)
         elif isinstance(file, Path):
             self.fileobj = file
         else:
             raise TypeError('The file parameter must be string or Path object.')
+        self.filename: str = self.fileobj.name
         # I do this in small steps instead of gemmi.cif.read_file() in order to
         # leave out the check_for_missing_values. This was gemmi reads cif files
         # with missing values.
-        self.doc = self.read_file(str(self.fileobj.absolute()))
-        self.block = self.doc.sole_block()
+        if new_block:
+            self.doc: Document = gemmi.cif.Document()
+            self.doc.add_new_block(new_block)
+        else:
+            self.doc = self.read_file(str(self.fileobj.resolve(strict=True)))
+        self.block: Block = self.doc.sole_block()
         # will not ok with non-ascii characters in the res file:
         self.chars_ok = True
         d = DSRFind(self.res_file_data)
@@ -44,7 +50,7 @@ class CifContainer():
         self.hkl_extra_info = self._abs_hkl_details()
         self.order = order
         self.dsr_used = d.dsr_used
-        self.atomic_struct = gemmi.make_small_structure_from_block(self.block)
+        self.atomic_struct: gemmi.SmallStructure = gemmi.make_small_structure_from_block(self.block)
         # A dictionary to convert Atom names like 'C1_2' or 'Ga3' into Element names like 'C' or 'Ga'
         self._name2elements = dict(
             zip([x.upper() for x in self.block.find_loop('_atom_site_label')],
@@ -76,36 +82,67 @@ class CifContainer():
         return doc
 
     def cif_as_string(self, without_hkl=False) -> str:
-        if not without_hkl:
-            return self.doc.as_string(style=gemmi.cif.Style.Indent35)
-        else:
+        if without_hkl:
+            # return a copy, do not delete hkl from original:
             doc = gemmi.cif.Document()
             doc.parse_string(self.doc.as_string(style=gemmi.cif.Style.Indent35))
             block = doc.sole_block()
             if block.find_pair_item('_shelx_hkl_file'):
                 block.find_pair_item('_shelx_hkl_file').erase()
             return doc.as_string(style=gemmi.cif.Style.Indent35)
-
-    def __str__(self):
-        return str(self.fileobj.absolute())
+        else:
+            return self.doc.as_string(style=gemmi.cif.Style.Indent35)
 
     def __getitem__(self, item: str) -> str:
         result = self.block.find_value(item)
         if result:
-            if result == '?' or result == "'?'":
+            if is_null(result):
                 return ''
             # can I do this? No:
             # return retranslate_delimiter(result)
-            return gemmi.cif.as_string(result)
+            return as_string(result)
         else:
             return ''
 
     def __setitem__(self, key: str, value: str) -> None:
-        """Set a key value pair of the current block"""
-        self.block.set_pair(key, value)
+        """Set a key value pair of the current block.
+        Values are automatically encoded from utf-8 and delimited.
+        """
+        self.set_pair_delimited(key, value)
 
     def __delitem__(self, key: str):
         self.block.find_pair_item(key).erase()
+
+    def __contains__(self, item):
+        return bool(self.__getitem__(item))
+
+    def __str__(self) -> str:
+        return "CIF file: {0}\n" \
+               "data name: {1}\n" \
+               "Contains SHELX res file: {2}\n" \
+               "Contains hkl data: {3}\n" \
+               "Has {4} atoms" \
+               ", {5} bonds" \
+               ", {6} angles" \
+               "".format(str(self.fileobj.resolve()), self.block.name, len(self.res_file_data) > 1,
+                         len(self.hkl_file) > 1,
+                         self.natoms(), self.nbonds(), self.nangles())
+
+    def set_pair_delimited(self, key: str, txt: str):
+        """
+        Converts special characters to their markup counterparts.
+        """
+        txt = utf8_to_str(txt)
+        try:
+            # bad hack to get the numbered values correct
+            float(txt)
+            self.block.set_pair(key, txt)
+        except (TypeError, ValueError):
+            # prevent _key '?' in cif:
+            if txt == '?':
+                self.block.set_pair(key, txt)
+            else:
+                self.block.set_pair(key, quote(txt))
 
     def save(self, filename: str = None) -> None:
         """
@@ -113,7 +150,7 @@ class CifContainer():
         :param filename:  Name to save cif file to.
         """
         if not filename:
-            filename = str(self.fileobj.absolute())
+            filename = str(self.fileobj.resolve())
         self.order_cif_keys()
         self.doc.write_file(filename, gemmi.cif.Style.Indent35)
         # Path(filename).write_text(self.doc.as_string(gemmi.cif.Style.Indent35))
@@ -125,19 +162,23 @@ class CifContainer():
         for key in reversed(self.order):
             try:
                 self.block.move_item(self.block.get_index(key), 0)
-            except RuntimeError:
+            except (RuntimeError, ValueError):
                 pass
                 # print('Not in list:', key)
         # make sure hkl file and res file are at the end if the cif file:
         for key in special_keys:
             try:
                 self.block.move_item(self.block.get_index(key), -1)
-            except RuntimeError:
+            except (RuntimeError, ValueError):
                 continue
 
     @property
     def res_file_data(self) -> str:
         try:
+            # Should i do this:
+            # if self['_iucr_refine_instructions_details']:
+            #    return self.block.find_value('_iucr_refine_instructions_details')
+            # else:
             return self.block.find_value('_shelx_res_file')
         except UnicodeDecodeError:
             # This is a fallback in case _shelx_res_file has non-ascii characters.
@@ -149,30 +190,90 @@ class CifContainer():
 
     @property
     def hkl_file(self) -> str:
+        hkl_loop: Loop = self.get_loop('_diffrn_refln_index_h')
+        if hkl_loop and hkl_loop.width() > 4:
+            return self._hkl_from_cif_format(hkl_loop)
+        else:
+            # returns an empty string if no cif hkl was found:
+            return self._hkl_from_shelx()
+
+    def _hkl_from_cif_format(self, hkl_loop: Loop) -> str:
+        hkl_list = []
+        format_string = '{:>4}{:>4}{:>4}{:>8}{:>8}'
+        if hkl_loop.width() == 6:
+            format_string = '{:>4}{:>4}{:>4}{:>8}{:>8}{:>4}'
+        for line in grouper(hkl_loop.values, hkl_loop.width()):
+            hkl_list.append(format_string.format(*line[:6]))
+        return '\n'.join(hkl_list)
+
+    def _hkl_from_shelx(self) -> str:
         try:
-            return self.block.find_value('_shelx_hkl_file')
+            return self['_shelx_hkl_file'].strip('\r\n')
         except Exception as e:
             print('No hkl data found in CIF!, {}'.format(e))
             return ''
+
+    @property
+    def hkl_as_cif(self):
+        return HKL(self.hkl_file, self.block.name, hklf_type=self.hklf_number).hkl_as_cif
+
+    @property
+    def hklf_number(self) -> int:
+        hklf = 4
+        if self.res_file_data:
+            hklf = self._hklf_number_from_shelxl_file()
+        return hklf
+
+    def min_max_diffrn_reflns_limit(self) -> Limit:
+        return HKL(self.hkl_file, self.block.name, hklf_type=self.hklf_number).get_hkl_min_max()
+
+    def _hklf_number_from_shelxl_file(self) -> int:
+        shx = Shelxfile()
+        shx.read_string(self.res_file_data)
+        return shx.hklf.n if shx.hklf.n != 0 else 4
+
+    @property
+    def hkl_file_without_foot(self) -> str:
+        """Returns a hkl file with no content after the 0 0 0 reflection"""
+        zero_reflection_position = self._find_line_of_000(self.hkl_file)
+        if zero_reflection_position:
+            return '\n'.join(self.hkl_file.splitlines(keepends=False)[:zero_reflection_position + 1])
+        else:
+            return self.hkl_file
+
+    @staticmethod
+    def _find_line_of_000(lines: str):
+        pattern = re.compile(r'^\s+0\s+0\s+0\s+0.*')
+        for num, line in enumerate(lines.splitlines(keepends=False)):
+            found = pattern.match(line)
+            if found and num > 0:
+                return num
+        return 0
 
     def _abs_hkl_details(self) -> Dict[str, str]:
         """
         This method tries to determine the information witten at the end of a cif hkl file by sadabs.
         """
         hkl = None
-        all = {'_exptl_absorpt_process_details' : '',
-               '_exptl_absorpt_correction_type' : '',
-               '_exptl_absorpt_correction_T_max': '',
-               '_exptl_absorpt_correction_T_min': '',
-               '_computing_structure_solution'  : '',
-               }
+        all_sadabs_items = {'_exptl_absorpt_process_details': '',
+                            '_exptl_absorpt_correction_type': '',
+                            '_exptl_absorpt_correction_T_max': '',
+                            '_exptl_absorpt_correction_T_min': '',
+                            '_computing_structure_solution': '',
+                            }
         try:
             hkl = self.hkl_file
         except Exception:
             pass
         if not hkl:
-            return all
-        hkl = hkl[hkl.find('  0   0   0    0'):].splitlines(keepends=False)[1:-1]
+            return all_sadabs_items
+        pattern = re.compile(r'\s+0\s+0\s+0\s+0')
+        found = pattern.search(hkl)
+        if found:
+            zero_reflection_position = found.start()
+        else:
+            return all_sadabs_items
+        hkl = hkl[zero_reflection_position:].splitlines(keepends=False)[2:]
         # html-embedded cif has ')' instead of ';':
         hkl = [';' if x[:1] == ')' else x for x in hkl]
         # the keys have a blank char in front:
@@ -184,12 +285,12 @@ class CifContainer():
         except Exception as e:
             print('Unable to get information from hkl foot.')
             print(e)
-            return all
-        for key in all:
+            return all_sadabs_items
+        for key in all_sadabs_items:
             val = hklblock.find_value(key)
             if val:
-                all[key] = gemmi.cif.as_string(val).strip()
-        return all
+                all_sadabs_items[key] = gemmi.cif.as_string(val).strip()
+        return all_sadabs_items
 
     @property
     def loops(self) -> List[gemmi.cif.Loop]:
@@ -206,17 +307,17 @@ class CifContainer():
     def n_loops(self):
         return len(self.loops)
 
-    def import_loops(self, imp_cif: 'CifContainer'):
-        """
-        Import all loops from the CifContainer imp_cif to the current block.
-        """
-        for loop in imp_cif.loops:
-            new_loop = self.block.init_loop('', loop.tags)
-            for row in imp_cif.block.find(loop.tags):
-                new_loop.add_row(row)
+    def get_loop(self, key_in_loop: str) -> gemmi.cif.Loop:
+        return self.block.find_loop(key_in_loop).get_loop()
+
+    def get_loop_column(self, key_in_loop: str) -> List:
+        return [retranslate_delimiter(as_string(x)) for x in self.block.find_loop(key_in_loop)]
+
+    def init_loop(self, loop_keywords: List) -> gemmi.cif.Loop:
+        return self.block.init_loop('', loop_keywords)
 
     @property
-    def Z_value(self):
+    def z_value(self):
         return self.atomic_struct.cell.volume / self.atomic_struct.cell.volume_per_image()
 
     @property
@@ -232,79 +333,15 @@ class CifContainer():
         return self.hkl_extra_info['_exptl_absorpt_correction_type']
 
     @property
-    def absorpt_correction_T_max(self) -> str:
+    def absorpt_correction_t_max(self) -> str:
         return self.hkl_extra_info['_exptl_absorpt_correction_T_max']
 
     @property
-    def absorpt_correction_T_min(self) -> str:
+    def absorpt_correction_t_min(self) -> str:
         return self.hkl_extra_info['_exptl_absorpt_correction_T_min']
 
-    @property
-    def bond_precision(self):
-        """
-        This method is unfinished and might result in wrong numbers!
-        """
-        a, aerror = get_error_from_value(self['_cell_length_a'])
-        b, berror = get_error_from_value(self['_cell_length_b'])
-        c, cerror = get_error_from_value(self['_cell_length_c'])
-        alpha, sigalpha = get_error_from_value(self['_cell_angle_alpha'])
-        beta, sigbeta = get_error_from_value(self['_cell_angle_beta'])
-        gamma, siggamma = get_error_from_value(self['_cell_angle_gamma'])
-        A1 = aerror / a
-        A2 = berror / b
-        A3 = cerror / c
-        # B1 = sin(alpha) * (cos(alpha) - cos(beta) * cos(gamma)) * sigalpha
-        # B2 = sin(beta) * (cos(beta) - cos(alpha) * cos(gamma)) * sigbeta
-        # B3 = sin(gamma) * (cos(gamma) - cos(alpha) * cos(beta)) * siggamma
-        name2coords = dict([(x[0], (x[2], x[3], x[4])) for x in self.atoms()])
-        name2part = dict([(x[0], x[5]) for x in self.atoms()])
-        count = 0
-        bonderrors = []
-        bb = 0.0
-        pair = ('C')
-        for bond in self.bonds(without_h=True):
-            atom1 = bond[0]
-            atom2 = bond[1]
-            if 'B' in atom1 or 'B' in atom2:
-                continue
-            if name2part[atom1] != '.' or name2part[atom2] != '.':
-                continue
-            if self._iselement(atom1) in pair and self._iselement(atom2) in pair:
-                dist, error = get_error_from_value(bond[2])
-                x1, sig_x1 = get_error_from_value(name2coords[atom1][0])
-                y1, sig_y1 = get_error_from_value(name2coords[atom1][1])
-                z1, sig_z1 = get_error_from_value(name2coords[atom1][2])
-                x2, sig_x2 = get_error_from_value(name2coords[atom2][0])
-                y2, sig_y2 = get_error_from_value(name2coords[atom2][1])
-                z2, sig_z2 = get_error_from_value(name2coords[atom2][2])
-                delta1 = a * (x1 - x2)
-                delta2 = b * (y1 - y2)
-                delta3 = c * (z1 - z2)
-                sigd = (
-                           (delta1 + delta2 * cos(gamma) + delta3 * cos(beta)) ** 2 * (
-                           delta1 ** 2 * A1 ** 2 + a ** 2 * (sig_x1 ** 2 + sig_x2 ** 2))
-                           + (delta1 * cos(gamma) + delta2 + delta3 * cos(alpha)) ** 2 * (
-                               delta2 ** 2 * A2 ** 2 + b ** 2 * (sig_y1 ** 2 + sig_y2 ** 2))
-                           + (delta1 * cos(beta) + delta2 * cos(alpha) + delta3) ** 2 * (
-                               delta3 ** 2 * A3 ** 2 + c ** 2 * (sig_z1 ** 2 + sig_z2 ** 2))
-                           + ((delta1 * delta2 * siggamma * sin(gamma)) ** 2 +
-                              (delta1 * delta3 * sigbeta * sin(beta)) ** 2 +
-                              (delta2 * delta3 * sigalpha * sin(alpha)) ** 2)) / dist ** 2
-                # The error is too large:
-                sigd = sqrt(sigd)
-                bb += sigd
-                if sigd > 0.0001:
-                    count += 1
-                    # print(atom1, atom2, dist, round(error, 5), round(sigd, 4), round(bb, 5), count)
-                    # print('------ dist - sigma - calcsig - sum - num')
-                    bonderrors.append(sigd)
-        if len(bonderrors) > 2:
-            return round(mean(bonderrors), 5)
-        else:
-            return 0.0
-
     def _spgr(self) -> gemmi.SpaceGroup:
-        if self.symmops:
+        if self.symmops and self.symmops != ['']:
             symm_ops = self.symmops
         else:
             symm_ops = self.symmops_from_spgr
@@ -318,7 +355,7 @@ class CifContainer():
         """
         try:
             return self._spgr().xhm()
-        except (AttributeError, RuntimeError):
+        except (AttributeError, RuntimeError, ValueError):
             if self['_space_group_name_H-M_alt']:
                 return gemmi.cif.as_string(self['_space_group_name_H-M_alt'])
             elif self['_symmetry_space_group_name_H-M']:
@@ -369,7 +406,7 @@ class CifContainer():
         Calculates the shelx checksum for the hkl file content of a cif file.
         """
         if self.hkl_file:
-            return self.calc_checksum(self.hkl_file[1:-1])
+            return self.calc_checksum(self.hkl_file)
         else:
             return 0
 
@@ -386,8 +423,9 @@ class CifContainer():
     def calc_checksum(input_str: str) -> int:
         """
         Calculates the shelx checksum of a cif file.
+        The original algorithm was posted by Berthold Stöger on the Bruker Users Mailing list.
         """
-        sum = 0
+        crc_sum = 0
         try:
             input_str = input_str.encode('cp1250', 'ignore')
         except Exception:
@@ -395,12 +433,12 @@ class CifContainer():
         for char in input_str:
             # print(char)
             if char > 32:  # ascii 32 is space character
-                sum += char
-        sum %= 714025
-        sum = sum * 1366 + 150889
-        sum %= 714025
-        sum %= 100000
-        return sum
+                crc_sum += char
+        crc_sum %= 714025
+        crc_sum = crc_sum * 1366 + 150889
+        crc_sum %= 714025
+        crc_sum %= 100000
+        return crc_sum
 
     def rename_data_name(self, newname: str = ''):
         """
@@ -437,10 +475,13 @@ class CifContainer():
         """
         Whether a structuere is centro symmetric or not.
         """
+        if not self.symmops or self.symmops == ['']:
+            # Do not crash without symmops
+            return False
         ops = gemmi.GroupOps([gemmi.Op(o) for o in self.symmops])
         return ops.is_centric()
 
-    def atoms(self, without_h: bool = False) -> NamedTuple:
+    def atoms(self, without_h: bool = False) -> Generator:
         labels = self.block.find_loop('_atom_site_label')
         types = self.block.find_loop('_atom_site_type_symbol')
         x = self.block.find_loop('_atom_site_fract_x')
@@ -449,21 +490,21 @@ class CifContainer():
         part = self.block.find_loop('_atom_site_disorder_group')
         occ = self.block.find_loop('_atom_site_occupancy')
         u_eq = self.block.find_loop('_atom_site_U_iso_or_equiv')
+        atom = namedtuple('Atom', ('label', 'type', 'x', 'y', 'z', 'part', 'occ', 'u_eq'))
         for label, type, x, y, z, part, occ, u_eq in zip(labels, types, x, y, z, part, occ, u_eq):
             if without_h and self.ishydrogen(label):
                 continue
             #         0    1   2  3  4   5   6     7
             # yield label, type, x, y, z, part, occ, ueq
-            atom = namedtuple('Atom', ('label', 'type', 'x', 'y', 'z', 'part', 'occ', 'u_eq'))
             yield atom(label=label, type=type, x=x, y=y, z=z, part=part, occ=occ, u_eq=u_eq)
 
     @property
-    def atoms_fract(self) -> List:
+    def atoms_fract(self) -> Generator:
         for at in self.atomic_struct.sites:
             yield [at.label, at.type_symbol, at.fract.x, at.fract.y, at.fract.z, at.disorder_group, at.occ, at.u_iso]
 
     @property
-    def atoms_orth(self):
+    def atoms_orth(self) -> Generator:
         cell = self.atomic_struct.cell
         for at in self.atomic_struct.sites:
             x, y, z = at.orth(cell)
@@ -474,21 +515,20 @@ class CifContainer():
         for at in self.atomic_struct.sites:
             if at.type_symbol in ('H', 'D'):
                 return True
-        else:
-            return False
+        return False
 
     @property
     def disorder_present(self) -> bool:
         for at in self.atomic_struct.sites:
             if at.disorder_group:
                 return True
-        else:
-            return False
+        return False
 
     @property
-    def cell(self) -> tuple:
+    def cell(self) -> Type['cell']:
         c = self.atomic_struct.cell
-        return c.a, c.b, c.c, c.alpha, c.beta, c.gamma, c.volume
+        nt = namedtuple('cell', 'a, b, c, alpha, beta, gamma, volume')
+        return nt(c.a, c.b, c.c, c.alpha, c.beta, c.gamma, c.volume)
 
     def ishydrogen(self, label: str) -> bool:
         """
@@ -506,7 +546,7 @@ class CifContainer():
             symm = symm + '_555'
         return symm
 
-    def bonds(self, without_h: bool = False):
+    def bonds(self, without_h: bool = False) -> Generator:
         """
         Yields a list of bonds in the cif file.
         """
@@ -514,26 +554,25 @@ class CifContainer():
         label2 = self.block.find_loop('_geom_bond_atom_site_label_2')
         dist = self.block.find_loop('_geom_bond_distance')
         symm = self.block.find_loop('_geom_bond_site_symmetry_2')
+        bond = namedtuple('Bond', ('label1', 'label2', 'dist', 'symm'))
         for label1, label2, dist, symm in zip(label1, label2, dist, symm):
-            symm = self.checksymm(symm)
             if without_h and (self.ishydrogen(label1) or self.ishydrogen(label2)):
                 continue
             else:
-                bond = namedtuple('Bond', ('label1', 'label2', 'dist', 'symm'))
                 yield bond(label1=label1, label2=label2, dist=dist, symm=self.checksymm(symm))
 
-    def angles(self, without_H: bool = False) -> NamedTuple:
+    def angles(self, without_H: bool = False) -> Generator:
         label1 = self.block.find_loop('_geom_angle_atom_site_label_1')
         label2 = self.block.find_loop('_geom_angle_atom_site_label_2')
         label3 = self.block.find_loop('_geom_angle_atom_site_label_3')
         angle_val = self.block.find_loop('_geom_angle')
         symm1 = self.block.find_loop('_geom_angle_site_symmetry_1')
         symm2 = self.block.find_loop('_geom_angle_site_symmetry_3')
+        angle = namedtuple('Angle', ('label1', 'label2', 'label3', 'angle_val', 'symm1', 'symm2'))
         for label1, label2, label3, angle_val, symm1, symm2 in zip(label1, label2, label3, angle_val, symm1, symm2):
             if without_H and (self.ishydrogen(label1) or self.ishydrogen(label2) or self.ishydrogen(label3)):
                 continue
             else:
-                angle = namedtuple('Angle', ('label1', 'label2', 'label3', 'angle_val', 'symm1', 'symm2'))
                 yield angle(label1=label1, label2=label2, label3=label3, angle_val=angle_val,
                             symm1=self.checksymm(symm1), symm2=self.checksymm(symm2))
 
@@ -561,7 +600,7 @@ class CifContainer():
         """
         return len(tuple(self.torsion_angles(without_h)))
 
-    def torsion_angles(self, without_h: bool = False):
+    def torsion_angles(self, without_h: bool = False) -> Generator:
         label1 = self.block.find_loop('_geom_torsion_atom_site_label_1')
         label2 = self.block.find_loop('_geom_torsion_atom_site_label_2')
         label3 = self.block.find_loop('_geom_torsion_atom_site_label_3')
@@ -571,22 +610,21 @@ class CifContainer():
         symm2 = self.block.find_loop('_geom_torsion_site_symmetry_2')
         symm3 = self.block.find_loop('_geom_torsion_site_symmetry_3')
         symm4 = self.block.find_loop('_geom_torsion_site_symmetry_4')
-        # publ = self.block.find_loop('_geom_torsion_publ_flag')
+        tors = namedtuple('Torsion',
+                          ('label1', 'label2', 'label3', 'label4', 'torsang', 'symm1', 'symm2', 'symm3', 'symm4'))
         for label1, label2, label3, label4, torsang, symm1, symm2, symm3, symm4 in zip(label1, label2, label3, label4,
                                                                                        torsang, symm1, symm2, symm3,
                                                                                        symm4):
             if without_h and (self.ishydrogen(label1) or self.ishydrogen(label2)
                               or self.ishydrogen(label3) or self.ishydrogen(label3)):
                 continue
-            tors = namedtuple('Torsion',
-                              ('label1', 'label2', 'label3', 'label4', 'torsang', 'symm1', 'symm2', 'symm3', 'symm4'))
             yield tors(label1=label1, label2=label2, label3=label3, label4=label4, torsang=torsang,
                        symm1=self.checksymm(symm1),
                        symm2=self.checksymm(symm2),
                        symm3=self.checksymm(symm3),
                        symm4=self.checksymm(symm4))
 
-    def hydrogen_bonds(self):
+    def hydrogen_bonds(self) -> Generator:
         label_d = self.block.find_loop('_geom_hbond_atom_site_label_D')
         label_h = self.block.find_loop('_geom_hbond_atom_site_label_H')
         label_a = self.block.find_loop('_geom_hbond_atom_site_label_A')
@@ -595,12 +633,11 @@ class CifContainer():
         dist_da = self.block.find_loop('_geom_hbond_distance_DA')
         angle_dha = self.block.find_loop('_geom_hbond_angle_DHA')
         symm = self.block.find_loop('_geom_hbond_site_symmetry_A')
-        # publ = self.block.find_loop('_geom_hbond_publ_flag')
+        hydr = namedtuple('HydrogenBond', ('label_d', 'label_h', 'label_a', 'dist_dh', 'dist_ha', 'dist_da',
+                                           'angle_dha', 'symm'))
         for label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm in \
-            zip(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, self.checksymm(symm)):
-            hydr = namedtuple('HydrogenBond', ('label_d', 'label_h', 'label_a', 'dist_dh', 'dist_ha', 'dist_da',
-                                               'angle_dha', 'symm'))
-            yield hydr(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm)
+                zip(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm):
+            yield hydr(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, self.checksymm(symm))
 
     def key_value_pairs(self) -> List[Tuple[str, str]]:
         """
@@ -688,19 +725,33 @@ class CifContainer():
         else:
             return True
 
-    def init_author_loop(self, contact_author: bool = False) -> gemmi.cif.Loop:
-        if contact_author:
-            author_loop = ['_publ_contact_author_name',
-                           '_publ_contact_author_address',
-                           '_publ_contact_author_email',
-                           '_publ_contact_author_phone',
-                           '_publ_contact_author_id_orcid', ]
-        else:
-            author_loop = ['_publ_author_name',
-                           '_publ_author_address',
-                           '_publ_author_email',
-                           '_publ_author_phone',
-                           '_publ_author_id_orcid',
-                           '_publ_author_footnote',
-                           ]
-        return self.block.init_loop('', author_loop)
+
+if __name__ == '__main__':
+    c = CifContainer('test-data/p21c.cif')
+    # print(c.hkl_file)
+    # print(c.hkl_as_cif)
+    # print(c.test_hkl_checksum())
+    s = Shelxfile()
+    # print(c.res_file_data)
+    s.read_string(c.res_file_data)
+    print(s.hklf.n)
+
+    # print(CifContainer('tests/examples/1979688.cif').hkl_as_cif[-250:])
+
+    """
+    import n#umpy as np
+    mtz = gemmi.Mtz(with_base=True)
+    data = [x.split() for x in c.hkl_file.splitlines()]
+    mtz.add_column('I', 'I')
+    mtz.add_column('SIGI', 'Q')
+    mtz.set_data(data)
+    mtz.set_cell_for_all(gemmi.UnitCell(c.cell.a, c.cell.b, c.cell.c, c.cell.alpha, c.cell.beta, c.cell.gamma))
+    mtz.spacegroup = gemmi.find_spacegroup_by_name(c.space_group)
+    mtz.update_reso()
+    size = mtz.get_size_for_hkl()
+    np.seterr(divide='ignore', invalid='ignore')
+    ios =  intensity.array / sigma.array
+    
+    doc = gemmi.cif.read('tests/examples/1979688-finalcif.fcf')
+    rblock = gemmi.hkl_cif_as_refln_block(doc[0])
+    """

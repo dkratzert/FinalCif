@@ -154,7 +154,7 @@ def create_document() -> Document:
     :return: The document instance.
     """
     try:
-        document = Document(Path(application_path).joinpath('template/template1.docx').absolute())
+        document = Document(Path(application_path).joinpath('template/template1.docx').resolve())
     except FileNotFoundError as e:
         print(e)
         document = Document()
@@ -273,12 +273,25 @@ def populate_main_table_values(main_table: Table, cif: CifContainer):
     crystal_size_max = cif['_exptl_crystal_size_max']
     theta_min = cif['_diffrn_reflns_theta_min']
     theta_max = cif['_diffrn_reflns_theta_max']
-    limit_h_min = cif['_diffrn_reflns_limit_h_min']
-    limit_h_max = cif['_diffrn_reflns_limit_h_max']
-    limit_k_min = cif['_diffrn_reflns_limit_k_min']
-    limit_k_max = cif['_diffrn_reflns_limit_k_max']
-    limit_l_min = cif['_diffrn_reflns_limit_l_min']
-    limit_l_max = cif['_diffrn_reflns_limit_l_max']
+
+    if all([cif['_diffrn_reflns_limit_h_min'], cif['_diffrn_reflns_limit_h_max'],
+            cif['_diffrn_reflns_limit_k_min'], cif['_diffrn_reflns_limit_k_max'],
+            cif['_diffrn_reflns_limit_l_min'], cif['_diffrn_reflns_limit_l_max']
+            ]):
+        limit_h_min = cif['_diffrn_reflns_limit_h_min']
+        limit_h_max = cif['_diffrn_reflns_limit_h_max']
+        limit_k_min = cif['_diffrn_reflns_limit_k_min']
+        limit_k_max = cif['_diffrn_reflns_limit_k_max']
+        limit_l_min = cif['_diffrn_reflns_limit_l_min']
+        limit_l_max = cif['_diffrn_reflns_limit_l_max']
+    else:
+        limits = cif.min_max_diffrn_reflns_limit()
+        limit_h_min = limits.h_min
+        limit_h_max = limits.h_max
+        limit_k_min = limits.k_min
+        limit_k_max = limits.k_max
+        limit_l_min = limits.l_min
+        limit_l_max = limits.l_max
     ls_number_reflns = cif['_refine_ls_number_reflns']
     ls_number_restraints = cif['_refine_ls_number_restraints']
     ls_number_parameters = cif['_refine_ls_number_parameters']
@@ -323,9 +336,9 @@ def populate_main_table_values(main_table: Table, cif: CifContainer):
         main_table.cell(21, 1).text = "{:.2f} to {:.2f}{}".format(2 * float(theta_min), 2 * float(theta_max), d_max)
     except ValueError:
         main_table.cell(21, 1).text = '? to ?'
-    main_table.cell(22, 1).text = limit_h_min + ' {} h {} '.format(less_or_equal, less_or_equal) + limit_h_max + '\n' \
-                                  + limit_k_min + ' {} k {} '.format(less_or_equal, less_or_equal) + limit_k_max + '\n' \
-                                  + limit_l_min + ' {} l {} '.format(less_or_equal, less_or_equal) + limit_l_max
+    main_table.cell(22, 1).text = '{} {} h {} {}\n'.format(limit_h_min, less_or_equal, less_or_equal, limit_h_max) \
+                                  + '{} {} k {} {}\n'.format(limit_k_min, less_or_equal, less_or_equal, limit_k_max) \
+                                  + '{} {} l {} {}'.format(limit_l_min, less_or_equal, less_or_equal, limit_l_max)
     rint_p = main_table.cell(24, 1).paragraphs[0]
     add_r_int_value(cif, rint_p)
     main_table.cell(25, 1).paragraphs[0].add_run(completeness)

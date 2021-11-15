@@ -16,6 +16,7 @@ class Options:
         self.ui.ReportTextCheckBox.stateChanged.connect(self._state_changed)
         self.ui.PictureWidthDoubleSpinBox.valueChanged.connect(self._state_changed)
         self.ui.CheckCIFServerURLTextedit.textChanged.connect(self._state_changed)
+        self.ui.CODURLTextedit.textChanged.connect(self._state_changed)
 
     def show_options(self):
         """
@@ -26,6 +27,7 @@ class Options:
         self.ui.ReportTextCheckBox.setChecked(not self.report_text)
         self.ui.PictureWidthDoubleSpinBox.setValue(self.picture_width)
         self.ui.CheckCIFServerURLTextedit.setText(self.checkcif_url)
+        self.ui.CODURLTextedit.setText(self.cod_url)
         self.ui.MainStackedWidget.go_to_options_page()
 
     def _state_changed(self):
@@ -38,7 +40,8 @@ class Options:
             'atoms_table'            : True,
             'bonds_table'            : True,
             'hydrogen_bonds'         : True,
-            'current_report_template': lw.row(lw.currentItem())
+            'current_report_template': lw.row(lw.currentItem()),
+            'cod_url'                : self.ui.CODURLTextedit.text(),
         }
         # print('saving:', self._options)
         self.settings.save_options(self._options)
@@ -52,28 +55,28 @@ class Options:
         return self.settings.load_options()[item]
 
     @property
-    def report_text(self):
+    def report_text(self) -> bool:
         try:
             return self.settings.load_options()['report_text']
         except KeyError:
             return True
 
     @property
-    def without_h(self):
+    def without_h(self) -> bool:
         try:
             return self.settings.load_options()['without_h']
         except KeyError:
             return False
 
     @property
-    def current_template(self):
+    def current_template(self) -> int:
         try:
             return self.settings.load_options()['current_report_template']
         except KeyError:
             return 0
 
     @property
-    def picture_width(self):
+    def picture_width(self) -> float:
         try:
             width = self.settings.load_options()['picture_width']
         except KeyError:
@@ -85,8 +88,33 @@ class Options:
             return width
 
     @property
-    def checkcif_url(self):
+    def checkcif_url(self) -> str:
         try:
-            return self.settings.load_options()['checkcif_url']
+            opt = self.settings.load_options()['checkcif_url']
+            if opt:
+                return opt
+            else:
+                return self.set_default_checkcif_url()
         except KeyError:
-            return ''
+            return self.set_default_checkcif_url()
+
+    def set_default_checkcif_url(self):
+        url = 'https://checkcif.iucr.org/cgi-bin/checkcif_hkl.pl'
+        self.ui.CheckCIFServerURLTextedit.setText(url)
+        return url
+
+    @property
+    def cod_url(self) -> str:
+        try:
+            opt = self.settings.load_options()['cod_url']
+            if opt:
+                return opt
+            else:
+                return self.set_default_cod_url()
+        except KeyError:
+            return self.set_default_cod_url()
+
+    def set_default_cod_url(self):
+        url = 'https://www.crystallography.net/cod/cgi-bin/cif-deposit.pl'
+        self.ui.CODURLTextedit.setText(url)
+        return url

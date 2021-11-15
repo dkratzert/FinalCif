@@ -35,6 +35,10 @@ class TestSpaceGroups(unittest.TestCase):
         self.assertEqual('''<math xmlns="http://www.w3.org/1998/Math/MathML">\n<mi>P</mi>\n<mn>1</mn>\n</math>\n''',
                          self.s.to_mathml('P 1'))
 
+    def test_to_mathml_21(self):
+        self.assertEqual('''<math xmlns="http://www.w3.org/1998/Math/MathML">\n<mi>P</mi>\n<msub>\n<mn>2</mn>\n<mn>1</mn>\n</msub>\n</math>\n''',
+                         self.s.to_mathml('P 1 21 1'))
+
     def test_to_mathml_overline(self):
         self.assertEqual('<math xmlns="http://www.w3.org/1998/Math/MathML">\n<mi>R</mi>\n<mover>\n<mn>3</mn>\n'
                          '<mo stretchy="false">&#x0305;</mo>\n</mover>\n<mi>c</mi>\n<mn>:</mn>\n<mi>H</mi>\n</math>\n',

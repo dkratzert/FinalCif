@@ -1,19 +1,17 @@
 import os
-import sys
 import unittest
 from datetime import datetime
 from pathlib import Path
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon, QColor
-from PyQt5.QtWidgets import QApplication
+from PyQt5.QtWidgets import QWidget
+from qtpy.QtTest import QTest
 
 from appwindow import AppWindow
 from gui.custom_classes import light_green, yellow, COL_DATA, COL_CIF, COL_EDIT
 from tests.helpers import unify_line_endings, addr
 from tools.version import VERSION
-
-app = QApplication(sys.argv)
 
 
 class TestNothingOpened(unittest.TestCase):
@@ -21,13 +19,16 @@ class TestNothingOpened(unittest.TestCase):
 
     def setUp(self) -> None:
         os.chdir(Path(__file__).absolute().parent.parent)
-        self.myapp = AppWindow()
+        self.myapp = AppWindow(unit_test=True)
         self.myapp.running_inside_unit_test = True
         self.myapp.hide()
         self.myapp.setWindowIcon(QIcon('./icon/multitable.png'))
         self.myapp.setWindowTitle('FinalCif v{}'.format(VERSION))
         Path('foo.cif').unlink(missing_ok=True)
         Path('cu_BruecknerJK_153F40_0m-finalcif.cif').unlink(missing_ok=True)
+
+    def tearDown(self) -> None:
+        self.myapp.close()
 
     def test_save_noting(self):
         self.myapp.save_current_cif_file()
@@ -44,7 +45,8 @@ class TestFileIsOpened(unittest.TestCase):
     def setUp(self) -> None:
         os.chdir(Path(__file__).absolute().parent.parent)
         self.testcif = Path('tests/examples/work/cu_BruecknerJK_153F40_0m.cif').absolute()
-        self.myapp = AppWindow(self.testcif)
+        self.myapp = AppWindow(self.testcif, unit_test=True)
+        self.myapp.running_inside_unit_test = True
         self.myapp.hide()
         self.myapp.setWindowIcon(QIcon('./icon/multitable.png'))
         self.myapp.setWindowTitle('FinalCif v{}'.format(VERSION))
@@ -54,6 +56,7 @@ class TestFileIsOpened(unittest.TestCase):
     def tearDown(self) -> None:
         Path('foo.cif').unlink(missing_ok=True)
         Path('cu_BruecknerJK_153F40_0m-finalcif.cif').unlink(missing_ok=True)
+        self.myapp.close()
 
     def test_save_action(self):
         self.myapp.save_current_cif_file()
@@ -70,7 +73,8 @@ class TestWorkfolder(unittest.TestCase):
     def setUp(self) -> None:
         os.chdir(Path(__file__).absolute().parent.parent)
         self.testcif = Path('tests/examples/work/cu_BruecknerJK_153F40_0m.cif').absolute()
-        self.myapp = AppWindow(self.testcif)
+        self.myapp = AppWindow(self.testcif, unit_test=True)
+        self.myapp.running_inside_unit_test = True
         self.myapp.hide()
         self.myapp.setWindowIcon(QIcon('./icon/multitable.png'))
         self.myapp.setWindowTitle('FinalCif v{}'.format(VERSION))
@@ -80,20 +84,32 @@ class TestWorkfolder(unittest.TestCase):
         Path(self.testcif.stem + '.lst').unlink(missing_ok=True)
         Path(self.testcif.stem + '.2fcf').unlink(missing_ok=True)
         Path('testcif_file.cif').unlink(missing_ok=True)
+        self.myapp.close()
 
     def key_row(self, key: str) -> int:
         return self.myapp.ui.cif_main_table.row_from_key(key)
 
-    def cell_widget(self, row: int, col: int) -> str:
+    def cell_widget(self, row: int, col: int) -> QWidget:
+        return self.myapp.ui.cif_main_table.cellWidget(row, col)
+
+    def cell_widget_class(self, row: int, col: int) -> str:
         return str(self.myapp.ui.cif_main_table.cellWidget(row, col).__class__)
+
+    def get_combobox_items(self, row: int, col: int):
+        widget = self.cell_widget(row, col)
+        return [widget.itemText(i) for i in range(widget.count())]
 
     def cell_text(self, key: str, col: int) -> str:
         return unify_line_endings(self.myapp.ui.cif_main_table.getTextFromKey(key, col))
 
     def equipment_click(self, field: str):
+        listw = self.myapp.ui.EquipmentTemplatesListWidget
         self.myapp.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
-        item = self.myapp.ui.EquipmentTemplatesListWidget.findItems(field, Qt.MatchStartsWith)[0]
-        self.myapp.ui.EquipmentTemplatesListWidget.setCurrentItem(item)
+        item = listw.findItems(field, Qt.MatchStartsWith)[0]
+        listw.setCurrentItem(item)
+        self.assertEqual(field, item.text())
+        rect = listw.visualItemRect(item)
+        QTest.mouseDClick(listw.viewport(), Qt.LeftButton, Qt.NoModifier, rect.center())
         # This is necessary:
         self.myapp.equipment.load_selected_equipment()
 
@@ -129,15 +145,59 @@ class TestWorkfolder(unittest.TestCase):
         self.assertEqual('geom', self.cell_text('_atom_sites_solution_hydrogens', 0))
         self.assertEqual('', self.cell_text('_atom_sites_solution_hydrogens', COL_DATA))
         self.assertEqual(
-            """FinalCif V{} by Daniel Kratzert, Freiburg {}, https://github.com/dkratzert/FinalCif""".format(VERSION,
-                                                                                                             datetime.now().year),
+            """FinalCif V{} by Daniel Kratzert, Freiburg {}, https://dkratzert.de/finalcif.html""".format(VERSION,
+                                                                                                          datetime.now().year),
             self.cell_text('_audit_creation_method', COL_DATA))
 
     def test_abs_configuration_combo(self):
         self.assertEqual(10, self.key_row('_chemical_absolute_configuration'))
-        self.assertEqual("<class 'NoneType'>", self.cell_widget(10, COL_CIF))
-        self.assertEqual("<class 'NoneType'>", self.cell_widget(10, COL_DATA))
-        self.assertEqual("<class 'gui.custom_classes.MyComboBox'>", self.cell_widget(10, COL_EDIT))
+        self.assertEqual("<class 'NoneType'>", self.cell_widget_class(10, COL_CIF))
+        self.assertEqual("<class 'NoneType'>", self.cell_widget_class(10, COL_DATA))
+        self.assertEqual("<class 'gui.custom_classes.MyComboBox'>", self.cell_widget_class(10, COL_EDIT))
+
+    def test_diffrn_radiation_type_combo(self):
+        row = self.key_row('_diffrn_radiation_type')
+        self.assertEqual("<class 'NoneType'>", self.cell_widget_class(row, COL_CIF))
+        self.assertEqual("<class 'NoneType'>", self.cell_widget_class(row, COL_DATA))
+        self.assertEqual("<class 'gui.custom_classes.MyComboBox'>", self.cell_widget_class(row, COL_EDIT))
+
+    def test_diffrn_ambient_temperature_combo(self):
+        row = self.key_row('_diffrn_ambient_temperature')
+        self.assertEqual("<class 'NoneType'>", self.cell_widget_class(row, COL_CIF))
+        self.assertEqual("<class 'NoneType'>", self.cell_widget_class(row, COL_DATA))
+        self.assertEqual("<class 'gui.custom_classes.MyComboBox'>", self.cell_widget_class(row, COL_EDIT))
+
+    def test_combo_items_ambient_temp(self):
+        row = self.key_row('_diffrn_ambient_temperature')
+        self.assertEqual(
+            ['', '15(1)', '80(2)', '100(2)', '110(2)', '120(2)', '130(2)', '150(2)', '200(2)', '293.15(2)', '298(2)'],
+            self.get_combobox_items(row, COL_EDIT))
+
+    def test_combo_items_radiation(self):
+        row = self.key_row('_diffrn_radiation_type')
+        self.assertEqual(['', 'Mo Kα', 'Cu Kα', 'Ag Kα'], self.get_combobox_items(row, COL_EDIT))
+
+    def test_ambient_conditions_combo(self):
+        # Test if N~~2~ is correctly translated to N_2
+        row = self.key_row('_diffrn_ambient_environment')
+        self.assertEqual('N₂', self.get_combobox_items(row, COL_EDIT)[1])
+
+    def test_combo_items_exptl_crystal_description(self):
+        row = self.key_row('_exptl_crystal_description')
+        self.assertEqual(['', 'block', 'needle', 'plate', 'prism', 'sphere'], self.get_combobox_items(row, COL_EDIT))
+
+    def test_combo_items_atom_sites_solution_primary(self):
+        row = self.key_row('_atom_sites_solution_primary')
+        self.assertEqual(
+            ['', 'direct', 'vecmap', 'heavy', 'difmap', 'geom', 'disper', 'isomor', 'notdet', 'dual', 'iterative',
+             'other'], self.get_combobox_items(row, COL_EDIT))
+
+    def test_combo_items_exptl_crystal_colour(self):
+        row = self.key_row('_exptl_crystal_colour')
+        self.assertEqual(
+            ['', 'colourless', 'white', 'black', 'yellow', 'red', 'blue', 'green', 'gray', 'pink', 'orange',
+             'violet',
+             'brown'], self.get_combobox_items(row, COL_EDIT))
 
     def test_background_color_data(self):
         self.assertEqual(light_green, self.get_background_color('_computing_cell_refinement', COL_DATA))
@@ -156,7 +216,8 @@ class TestWorkfolder(unittest.TestCase):
     def test_background_color_theta_max(self):
         self.assertEqual((0, 0, 0, 255), self.get_background_color('_cell_measurement_theta_max', COL_CIF).getRgb())
         self.assertEqual(light_green, self.get_background_color('_cell_measurement_theta_max', COL_DATA))
-        self.assertEqual((0, 0, 0, 255), self.get_background_color('_cell_measurement_theta_max', COL_EDIT).getRgb())
+        self.assertEqual((0, 0, 0, 255),
+                         self.get_background_color('_cell_measurement_theta_max', COL_EDIT).getRgb())
 
     def test_exptl_crystal_size(self):
         self.assertEqual('0.220', self.cell_text('_exptl_crystal_size_max', COL_DATA))
@@ -177,45 +238,84 @@ class TestWorkfolder(unittest.TestCase):
                                                                           1).background().color())
 
     def allrows_test_key(self, key: str = '', results: list = None):
+        # The results list is a list with three items for each data column in the main table.
         self.myapp.hide()
         for n, r in enumerate(results):
-            # print('##', key, n, r)
             # print(self.cell_text(key, n))
             self.assertEqual(r, self.cell_text(key, n))
 
     def test_equipment_click_machine(self):
         self.equipment_click('APEX2 QUAZAR')
         self.allrows_test_key('_diffrn_measurement_method', ['?', 'ω and ϕ scans', 'ω and ϕ scans'])
-        self.allrows_test_key('_diffrn_measurement_specimen_support', ['?', 'MiTeGen micromount', 'MiTeGen micromount'])
-        self.allrows_test_key('_olex2_diffrn_ambient_temperature_device',
-                              ['Oxford Cryostream 800', 'Oxford Cryostream 800', 'Oxford Cryostream 800'])
+        self.allrows_test_key('_diffrn_measurement_specimen_support',
+                              ['?', 'MiTeGen micromount', 'MiTeGen micromount'])
 
-    def test_equipment_click_author_address(self):
+    # unittest.SkipTest('')
+    def test_equipment_click_machine_oxford_0(self):
+        self.equipment_click('APEX2 QUAZAR')
+        # We have a value which is new. So a row at start is created and only the CIF column is populated
+        self.assertEqual('?', self.cell_text('_diffrn_measurement_ambient_temperature_device_make', COL_CIF))
+
+    def test_equipment_click_machine_oxford_1(self):
+        self.equipment_click('APEX2 QUAZAR')
+        self.assertEqual('Oxford Cryostream 800',
+                         self.cell_text('_diffrn_measurement_ambient_temperature_device_make', COL_DATA))
+
+    def test_equipment_click_machine_oxford_2(self):
+        self.equipment_click('APEX2 QUAZAR')
+        self.assertEqual('Oxford Cryostream 800',
+                         self.cell_text('_diffrn_measurement_ambient_temperature_device_make', COL_EDIT))
+
+    def test_equipment_click_author_address_0(self):
         # Check if click on author adds the address to second and third column:
         self.equipment_click('Crystallographer Details')
         self.assertEqual('?', self.cell_text('_audit_contact_author_address', COL_CIF))
+
+    def test_equipment_click_author_address_1(self):
+        self.equipment_click('Crystallographer Details')
         self.assertEqual(unify_line_endings(addr), self.cell_text('_audit_contact_author_address', COL_DATA))
+
+    def test_equipment_click_author_address_2(self):
+        self.equipment_click('Crystallographer Details')
         self.assertEqual(unify_line_endings(addr), self.cell_text('_audit_contact_author_address', COL_EDIT))
 
-    def test_contact_author_name(self):
+    def test_contact_author_name_0(self):
         self.equipment_click('Crystallographer Details')
         self.assertEqual('?', self.cell_text('_audit_contact_author_name', COL_CIF))
+
+    def test_contact_author_name_1(self):
+        self.equipment_click('Crystallographer Details')
         self.assertEqual('Dr. Daniel Kratzert', self.cell_text('_audit_contact_author_name', COL_DATA))
+
+    def test_contact_author_name_2(self):
+        self.equipment_click('Crystallographer Details')
         self.assertEqual('Dr. Daniel Kratzert', self.cell_text('_audit_contact_author_name', COL_EDIT))
 
-    def test_contact_author_cellwidget(self):
+    def test_contact_author_cellwidget_bevore_click(self):
+        self.assertEqual(self.myapp.ui.cif_main_table.vheaderitems[5], '_audit_contact_author_name')
+        self.assertEqual('', self.myapp.ui.cif_main_table.getText(5, COL_DATA))
+
+    def test_contact_author_cellwidget_after(self):
         self.equipment_click('Crystallographer Details')
         self.assertEqual(self.myapp.ui.cif_main_table.vheaderitems[5], '_audit_contact_author_name')
-        self.assertEqual('Dr. Daniel Kratzert', self.myapp.ui.cif_main_table.getText(5, 1))
-        self.assertEqual("<class 'NoneType'>", self.cell_widget(5, COL_CIF))
-        self.assertEqual("<class 'NoneType'>", self.cell_widget(5, COL_DATA))
-        self.assertEqual("<class 'NoneType'>", self.cell_widget(5, COL_EDIT))
+        self.assertEqual('Dr. Daniel Kratzert', self.myapp.ui.cif_main_table.getText(5, COL_DATA))
+        self.assertEqual("<class 'NoneType'>", self.cell_widget_class(5, COL_CIF))
+        self.assertEqual("<class 'NoneType'>", self.cell_widget_class(5, COL_DATA))
+        self.assertEqual("<class 'NoneType'>", self.cell_widget_class(5, COL_EDIT))
 
-    def test_addr_after_author_click(self):
+    def test_addr(self):
         self.assertNotEqual(unify_line_endings(addr), self.cell_text('_audit_contact_author_address', COL_EDIT))
+
+    def test_addr_after_author_click_0(self):
         self.equipment_click('Crystallographer Details')
         self.assertEqual(unify_line_endings(addr), self.cell_text('_audit_contact_author_address', COL_EDIT))
+
+    def test_addr_after_author_click_1(self):
+        self.equipment_click('Crystallographer Details')
         self.assertEqual(unify_line_endings(addr), self.cell_text('_audit_contact_author_address', COL_DATA))
+
+    def test_addr_after_author_click_2(self):
+        self.equipment_click('Crystallographer Details')
         self.assertEqual('?', self.cell_text('_audit_contact_author_address', COL_CIF))
 
     def test_edit_values_and_save(self):
@@ -228,7 +328,7 @@ class TestWorkfolder(unittest.TestCase):
         cif = Path('testcif_file.cif')
         self.myapp.save_current_cif_file(cif.name)
         self.myapp.ui.cif_main_table.setRowCount(0)
-        self.myapp.load_cif_file(cif.name)
+        self.myapp.load_cif_file(cif)
         # test if data is still the same:
         # The character is quoted in the cif file:
         self.assertEqual(r'test 12 \%A', self.myapp.cif['_diffrn_measurement_method'])

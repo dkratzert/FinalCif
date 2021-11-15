@@ -1,6 +1,6 @@
 #  ----------------------------------------------------------------------------
 #  "THE BEER-WARE LICENSE" (Revision 42):
-#  daniel.kratzert@ac.uni-freiburg.de> wrote this file.  As long as you retain
+#  dkratzert@gmx.de> wrote this file.  As long as you retain
 #  this notice you can do whatever you want with this stuff. If we meet some day,
 #  and you think this stuff is worth it, you can buy me a beer in return.
 #  Dr. Daniel Kratzert
@@ -20,8 +20,8 @@ from html.parser import HTMLParser
 from pathlib import Path
 from urllib import request
 
-changes_url = 'http://www.platonsoft.nl/spek/xraysoft/update_history_platon.html'
-platon_url = 'http://www.platonsoft.nl/spek/xraysoft/mswindows/platon/platon.zip'
+changes_url = 'http://www.platonsoft.nl/xraysoft/update_history_platon.html'
+platon_url = 'http://www.platonsoft.nl/xraysoft/mswindows/platon/platon.zip'
 
 
 def get_changes():

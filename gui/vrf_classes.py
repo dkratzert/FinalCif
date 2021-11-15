@@ -64,6 +64,7 @@ class MyVRFContainer(QWidget):
         :param parent: Parent widget
         """
         super().__init__(parent)
+        self.setParent(parent)
         self.form = form
         # self.setMinimumWidth(400)
         self.mainVLayout = QVBoxLayout(self)
@@ -84,9 +85,9 @@ class MyVRFContainer(QWidget):
         self.show()
 
     def show_help(self):
-        dialog = QDialog(self)
+        dialog = QDialog(parent=self)
         layout = QVBoxLayout()
-        label = QLabel(self.help)
+        label = QLabel(self.help, parent=dialog)
         layout.addWidget(label)
         label.adjustSize()
         dialog.setLayout(layout)

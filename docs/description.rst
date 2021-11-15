@@ -12,7 +12,8 @@ can be used to fill in author information or machine models (top) as well as to 
 CIF keywords (bottom). Any keyword not already in the CIF file will be added by the template. In the dropdown menus,
 you can be creative to specify the crystallization conditions with a template.
 
-The CIF keywords with a question mark as value are at the beginning of the man table in FinalCif and the keywords with values are below.
+The CIF keywords with a question mark as value are at the beginning of the man table in FinalCif and the keywords with
+values are below.
 
 Each input field accepts Unicode characters like "ω". They are automatically translated into the CIF ascii format. 
 Please let me know if a character does not work.
@@ -25,7 +26,9 @@ The FinalCif executable accepts a file name as first argument in order to open .
 other programs like ShelXle.
 
 .. image:: pics/finalcif_main.png
-    :width: 700
+   :width: 700
+
+   The FinalCif main window.
 
 
 **A workflow example**
@@ -36,7 +39,7 @@ other programs like ShelXle.
 * Do a html checkcif (it also saves an image for the report). Probaly correct last items like the moiety formula and  explain alerts with the validation response form editor in the same window.
 * Do a pdf checkcif
 * Submit the CIF to the CCDC
-* Drag&drop the CCDC deposit reply email into the work folder
+* Drag&drop the CCDC deposit reply email into the work folder, or edit the CCDC number manually
 * Click on „Make Tables“
 
 
