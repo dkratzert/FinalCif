@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/Users/daniel/Documents/GitHub/FinalCif/gui/finalcif_gui.ui'
+# Form implementation generated from reading ui file './finalcif/gui\finalcif_gui.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.2
 #
@@ -1913,4 +1913,4 @@ class Ui_FinalCifWindow(object):
         self.actionSave_Report.setText(_translate("FinalCifWindow", "Save Report"))
         self.actionSave_CIF_File.setText(_translate("FinalCifWindow", "Save CIF File"))
         self.actionedit_templates.setText(_translate("FinalCifWindow", "edit templates"))
-from finalcif.gui.custom_classes import MyCifTable, MyEQTableWidget, MyMainStackedWidget, MyPropTableWidget
+from gui.custom_classes import MyCifTable, MyEQTableWidget, MyMainStackedWidget, MyPropTableWidget

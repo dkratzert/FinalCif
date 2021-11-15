@@ -50,8 +50,8 @@ def disable_debug(filepath: str):
 
 def recompile_ui():
     try:
-        print(os.path.abspath('./gui'))
-        uic.compileUiDir('./gui')
+        print(os.path.abspath('./finalcif/gui'))
+        uic.compileUiDir('./finalcif/gui')
         print('recompiled ui')
     except:
         print("Unable to compile UI!")
@@ -87,7 +87,7 @@ def process_iss(filepath):
 
 recompile_ui()
 
-disable_debug('appwindow.py')
+disable_debug('finalcif/appwindow.py')
 
 os.chdir(application_path)
 
