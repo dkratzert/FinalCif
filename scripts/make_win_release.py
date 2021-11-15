@@ -24,8 +24,8 @@ sys.path.append(str(application_path))
 
 from PyQt5 import uic
 
-from tools.misc import sha512_checksum_of_file
-from tools.version import VERSION
+from finalcif.tools.misc import sha512_checksum_of_file
+from finalcif.tools.version import VERSION
 
 iss_file = 'scripts/finalcif-install_win64.iss'
 
