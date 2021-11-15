@@ -48,10 +48,10 @@ class MyTestCase(unittest.TestCase):
     def test_export_selected_author(self):
         self._delete_test_author()
         self._import_testauthor()
-        self.app.authors.export_author_template('../other_templates/testexport_author.cif')
-        self.assertEqual(True, Path('../other_templates/testexport_author.cif').exists())
-        self.assertEqual(Path('../other_templates/testexport_author.cif').read_text(),
-                         Path('../other_templates/testexport_author.cif').read_text())
+        self.app.authors.export_author_template('testexport_author.cif')
+        self.assertEqual(True, Path('testexport_author.cif').exists())
+        self.assertEqual(Path('testexport_author.cif').read_text(),
+                         Path('testexport_author.cif').read_text())
 
     def test_set_name(self):
         self.app.ui.FullNameLineEdit.setText('test')
@@ -105,9 +105,6 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual('', self.app.ui.FootNoteLineEdit.text())
         self.assertEqual('', self.app.ui.PhoneLineEdit.text())
         self.assertEqual(False, self.app.ui.ContactAuthorCheckBox.isChecked())
-
-    def test_save_author(self):
-        pass
 
 
 if __name__ == '__main__':
