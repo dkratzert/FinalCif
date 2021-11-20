@@ -84,6 +84,9 @@ class ReportTemplates:
         options = self.settings.load_options()
         options.update({'current_report_template': self.lw.row(current_item)})
         self.uncheck_all_templates()
+        if not current_item:
+            self.app.ui.TemplatesListWidget.blockSignals(False)
+            return
         current_item.setCheckState(Qt.Checked)
         self.settings.save_options(options)
         self.app.ui.TemplatesListWidget.blockSignals(False)
