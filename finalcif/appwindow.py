@@ -355,6 +355,9 @@ class AppWindow(QMainWindow):
             self.load_cif_file(self.final_cif_file_name)
 
     def check_for_update_version(self) -> None:
+        if os.environ.get('NO_NETWORK'):
+            print('Skipping version.txt download because NO_NETWORK variable is set.')
+            return
         mainurl = "https://dkratzert.de/files/finalcif/version.txt"
         upd = MyDownloader(self, mainurl)
         upd.finished.connect(self.is_update_necessary)
@@ -427,6 +430,9 @@ class AppWindow(QMainWindow):
         """
         Sends a get request to the platon server in order to get the current check.def file.
         """
+        if os.environ.get('NO_NETWORK'):
+            print('Skipping check.def download because NO_NETWORK variable is set.')
+            return
         url = 'http://www.platonsoft.nl/xraysoft/unix/platon/check.def'
         checkdef_download = MyDownloader(self, url)
         checkdef_download.finished.connect(self._save_checkdef)
