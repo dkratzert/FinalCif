@@ -1,5 +1,6 @@
 from contextlib import suppress
 from textwrap import wrap
+from typing import List
 
 from PyQt5 import QtCore
 from PyQt5.QtCore import QEvent, QObject, Qt, QSize
@@ -19,6 +20,7 @@ yellow = QColor(250, 247, 150)  # #faf796
  COL_EDIT
  ] = range(3)
 
+DEBUG = False
 
 class QHLine(QFrame):
     def __init__(self):
@@ -109,6 +111,24 @@ class MyCifTable(QTableWidget, ItemTextMixin):
     @property
     def columns_count(self):
         return self.model().columnCount()
+
+    def add_property_combobox(self, data: List, row_num: int) -> None:
+        """
+        Adds a QComboBox to the cif_main_table with the content of special_fields or property templates.
+        """
+        combobox = MyComboBox(self)
+        # print('special:', row_num, miss_data)
+        self.setCellWidget(row_num, COL_EDIT, combobox)
+        self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        for num, value in data:
+            try:
+                combobox.addItem(retranslate_delimiter(value), num)
+            except TypeError:
+                print('Bad value in property:', value)
+                if DEBUG:
+                    raise
+                continue
+        combobox.setCurrentIndex(0)
 
     def delete_content(self):
         """

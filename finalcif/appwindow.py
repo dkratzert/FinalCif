@@ -14,14 +14,11 @@ from math import sin, radians
 from pathlib import Path, WindowsPath
 from shutil import copy2
 from tempfile import TemporaryDirectory
-from typing import Union, Dict, Tuple, List
+from typing import Union, Dict, Tuple
 
 import qtawesome as qta
 import requests
-from PyQt5 import QtCore
-from PyQt5.QtCore import QUrl, QEvent, QPoint, Qt
-from PyQt5.QtGui import QKeySequence, QResizeEvent, QMoveEvent, QTextCursor, QFont
-from PyQt5.QtWebEngineWidgets import QWebEngineView
+from PyQt5 import QtCore, QtGui, QtWebEngineWidgets
 from PyQt5.QtWidgets import QMainWindow, QHeaderView, QShortcut, QCheckBox, QListWidgetItem, QApplication, \
     QPlainTextEdit, QFileDialog, QLabel
 from gemmi import cif
@@ -40,8 +37,7 @@ from finalcif.displaymol.write_html import write
 from finalcif.equip_property.author_loop_templates import AuthorLoops
 from finalcif.equip_property.equipment import Equipment
 from finalcif.equip_property.properties import Properties
-from finalcif.gui.custom_classes import COL_CIF, COL_DATA, COL_EDIT, MyTableWidgetItem, light_green, yellow, MyComboBox, \
-    MyCifTable
+from finalcif.gui.custom_classes import COL_CIF, COL_DATA, COL_EDIT, MyTableWidgetItem, light_green, yellow, MyCifTable
 from finalcif.gui.dialogs import show_update_warning, unable_to_open_message, show_general_warning, \
     cif_file_open_dialog, \
     bad_z_message, show_res_checksum_warning, show_hkl_checksum_warning
@@ -61,7 +57,7 @@ from finalcif.tools.options import Options
 from finalcif.tools.platon import Platon
 from finalcif.tools.settings import FinalCifSettings
 from finalcif.tools.shred import ShredCIF
-from finalcif.tools.space_groups import SpaceGroups, write_html
+from finalcif.tools.space_groups import SpaceGroups
 from finalcif.tools.statusbar import StatusBar
 from finalcif.tools.sumformula import formula_str_to_dict, sum_formula_to_html
 from finalcif.tools.version import VERSION
@@ -82,7 +78,7 @@ class AppWindow(QMainWindow):
         self.running_inside_unit_test = unit_test
         self.sources: Union[None, Dict[str, Tuple[Union[str, None]]]] = None
         self.cif: Union[CifContainer, None] = None
-        self.view: Union[QWebEngineView, None] = None
+        self.view: Union[QtWebEngineWidgets.QWebEngineView, None] = None
         self.report_picture_path: Union[Path, None] = None
         self.checkdef = []
         self.checkdef_file: Path = Path.home().joinpath('check.def')
@@ -238,11 +234,11 @@ class AppWindow(QMainWindow):
         self.ui.BackToCODPushButton.clicked.connect(self.open_cod_page)
         self.ui.CCDCpushButton.clicked.connect(self._ccdc_deposit)
         #
-        save_shortcut = QShortcut(QKeySequence('Ctrl+S'), self)
+        save_shortcut = QShortcut(QtGui.QKeySequence('Ctrl+S'), self)
         save_shortcut.activated.connect(self.save_current_cif_file)
-        save_shortcut = QShortcut(QKeySequence('Ctrl+H'), self)
+        save_shortcut = QShortcut(QtGui.QKeySequence('Ctrl+H'), self)
         save_shortcut.activated.connect(self.do_html_checkcif)
-        save_shortcut = QShortcut(QKeySequence('Ctrl+P'), self)
+        save_shortcut = QShortcut(QtGui.QKeySequence('Ctrl+P'), self)
         save_shortcut.activated.connect(self.do_pdf_checkcif)
         #
         self.ui.DetailsPushButton.clicked.connect(self.show_residuals)
@@ -295,7 +291,7 @@ class AppWindow(QMainWindow):
         self.deposit.cif = self.cif
         self.ui.MainStackedWidget.setCurrentIndex(7)
 
-    def resizeEvent(self, a0: QResizeEvent) -> None:
+    def resizeEvent(self, a0: QtGui.QResizeEvent) -> None:
         """It called when the main window resizes."""
         super(AppWindow, self).resizeEvent(a0)
         with suppress(AttributeError):
@@ -303,7 +299,7 @@ class AppWindow(QMainWindow):
         with suppress(AttributeError):
             self._savesize()
 
-    def moveEvent(self, a0: QMoveEvent) -> None:
+    def moveEvent(self, a0: QtGui.QMoveEvent) -> None:
         """Is called when the main window moves."""
         super(AppWindow, self).moveEvent(a0)
         with suppress(AttributeError):
@@ -311,17 +307,17 @@ class AppWindow(QMainWindow):
 
     def changeEvent(self, event):
         """Is called when the main window changes its state."""
-        if event.type() == QEvent.WindowStateChange:
+        if event.type() == QtCore.QEvent.WindowStateChange:
             with suppress(AttributeError):
                 self._savesize()
 
     def _savesize(self):
         """Saves the main window size nd position."""
         x, y = self.pos().x(), self.pos().y()
-        self.settings.save_window_position(QPoint(x, y), self.size(), self.isMaximized())
+        self.settings.save_window_position(QtCore.QPoint(x, y), self.size(), self.isMaximized())
 
     def show_help(self):
-        QDesktopServices.openUrl(QUrl('https://dkratzert.de/files/finalcif/docs/'))
+        QDesktopServices.openUrl(QtCore.QUrl('https://dkratzert.de/files/finalcif/docs/'))
 
     def do_shred_cif(self):
         shred = ShredCIF(cif=self.cif, ui=self.ui)
@@ -339,7 +335,7 @@ class AppWindow(QMainWindow):
         """
         Open the CCDC deposit web page.
         """
-        QDesktopServices.openUrl(QUrl('https://www.ccdc.cam.ac.uk/deposit'))
+        QDesktopServices.openUrl(QtCore.QUrl('https://www.ccdc.cam.ac.uk/deposit'))
         self.explore_current_dir()
 
     def _deleted_row(self, key: str) -> None:
@@ -463,7 +459,7 @@ class AppWindow(QMainWindow):
         if sys.platform == 'linux':
             subprocess.call(['xdg-open', curdir])
 
-    def dragEnterEvent(self, e: QEvent):
+    def dragEnterEvent(self, e: QtCore.QEvent):
         """
         Allow drag of files to the main window
         """
@@ -472,7 +468,7 @@ class AppWindow(QMainWindow):
         else:
             e.ignore()
 
-    def dropEvent(self, e: QEvent):
+    def dropEvent(self, e: QtCore.QEvent):
         """
         Handles drop events.
         """
@@ -525,9 +521,9 @@ class AppWindow(QMainWindow):
             self.ui.CheckCifLogPlainTextEdit.appendHtml('<b>CheckCIF failed to finish. '
                                                         'Please try it at https://checkcif.iucr.org/ instead.</b>')
             return
-        self.checkcif_browser = QWebEngineView(self.ui.htmlTabwidgetPage)
+        self.checkcif_browser = QtWebEngineWidgets.QWebEngineView(self.ui.htmlTabwidgetPage)
         self.ui.htmlCHeckCifGridLayout.addWidget(self.checkcif_browser)
-        url = QUrl.fromLocalFile(str(self.htmlfile.resolve()))
+        url = QtCore.QUrl.fromLocalFile(str(self.htmlfile.resolve()))
         self.ui.MainStackedWidget.go_to_checkcif_page()
         self.ui.CheckCIFResultsTabWidget.setCurrentIndex(1)  # Index 1 is html page
         self.checkcif_browser.load(url)
@@ -669,9 +665,9 @@ class AppWindow(QMainWindow):
             pass
 
     def append_to_ciflog_without_newline(self, text: str = '') -> None:
-        self.ui.CheckCifLogPlainTextEdit.moveCursor(QTextCursor.End)
+        self.ui.CheckCifLogPlainTextEdit.moveCursor(QtGui.QTextCursor.End)
         self.ui.CheckCifLogPlainTextEdit.insertPlainText(text)
-        self.ui.CheckCifLogPlainTextEdit.moveCursor(QTextCursor.End)
+        self.ui.CheckCifLogPlainTextEdit.moveCursor(QtGui.QTextCursor.End)
 
     def do_offline_checkcif(self) -> None:
         """
@@ -766,7 +762,7 @@ class AppWindow(QMainWindow):
         doc = ccpe.document()
         font = doc.defaultFont()
         font.setFamily("Courier New")
-        font.setStyleHint(QFont.Monospace)
+        font.setStyleHint(QtGui.QFont.Monospace)
         QApplication.processEvents()
         font.setPointSize(14)
         doc.setDefaultFont(font)
@@ -966,7 +962,7 @@ class AppWindow(QMainWindow):
         doc = final_textedit.document()
         font = doc.defaultFont()
         font.setFamily("Courier New")
-        font.setStyleHint(QFont.Monospace)
+        font.setStyleHint(QtGui.QFont.Monospace)
         # increases the pont size every time a bit more :)
         # size = font.pointSize()
         font.setPointSize(14)
@@ -1025,8 +1021,7 @@ class AppWindow(QMainWindow):
                 else:
                     self.add_row(key, value)  # , column=COL_EDIT
 
-    @staticmethod
-    def do_not_import_this_key(key: str, value: str, cif: CifContainer) -> bool:
+    def do_not_import_this_key(self, key: str, value: str, cif: CifContainer) -> bool:
         if value == '?' or value.strip() == '':
             return True
         if key in do_not_import_keys:
@@ -1286,7 +1281,7 @@ class AppWindow(QMainWindow):
             if DEBUG:
                 raise
         content = write(mol, self.ui.molGroupBox.width() - 250,
-                                   self.ui.molGroupBox.height() - 250)
+                        self.ui.molGroupBox.height() - 250)
         Path(os.path.join(self.jsmoldir.name, "./jsmol.htm")).write_text(data=content, encoding="utf-8",
                                                                          errors='ignore')
         self.view.reload()
@@ -1298,11 +1293,11 @@ class AppWindow(QMainWindow):
         try:
             # Otherwise, the views accumulate:
             self.view.close()
-            self.view = QWebEngineView(parent=self)
+            self.view = QtWebEngineWidgets.QWebEngineView(parent=self)
         except AttributeError:
-            self.view = QWebEngineView(parent=self)
+            self.view = QtWebEngineWidgets.QWebEngineView(parent=self)
         self.jsmoldir = TemporaryDirectory()
-        self.view.load(QUrl.fromLocalFile(os.path.join(self.jsmoldir.name, "./jsmol.htm")))
+        self.view.load(QtCore.QUrl.fromLocalFile(os.path.join(self.jsmoldir.name, "./jsmol.htm")))
         # This is a bit hacky, but it works fast:
         copy2(Path(finalcif.displaymol.__file__).parent.joinpath('jquery.min.js'), self.jsmoldir.name)
         copy2(Path(finalcif.displaymol.__file__).parent.joinpath('JSmol_dk.nojq.lite.js'), self.jsmoldir.name)
@@ -1365,7 +1360,7 @@ class AppWindow(QMainWindow):
                     self.missing_data.add('_database_code_depnum_ccdc_archive')
         vheadlist = []
         for row_number in range(self.ui.cif_main_table.model().rowCount()):
-            vheadlist.append(self.ui.cif_main_table.model().headerData(row_number, Qt.Vertical))
+            vheadlist.append(self.ui.cif_main_table.model().headerData(row_number, QtCore.Qt.Vertical))
         for src in self.sources:
             if not self.sources[src]:
                 continue
@@ -1396,7 +1391,7 @@ class AppWindow(QMainWindow):
 
     def refresh_combo_boxes(self):
         for row_number in range(self.ui.cif_main_table.model().rowCount()):
-            vhead_key = self.ui.cif_main_table.model().headerData(row_number, Qt.Vertical)
+            vhead_key = self.ui.cif_main_table.model().headerData(row_number, QtCore.Qt.Vertical)
             if not vhead_key in self.ui.cif_main_table.vheaderitems:
                 self.ui.cif_main_table.vheaderitems.append(vhead_key)
             # adding comboboxes:
@@ -1405,7 +1400,7 @@ class AppWindow(QMainWindow):
                 self.add_combobox(row_number, vhead_key)
             elif vhead_key in combobox_fields:
                 # Then the pre-defined:
-                self.add_property_combobox(combobox_fields[vhead_key], row_number)
+                self.ui.cif_main_table.add_property_combobox(combobox_fields[vhead_key], row_number)
 
     def add_combobox(self, num: int, vhead_key: str):
         """
@@ -1414,25 +1409,7 @@ class AppWindow(QMainWindow):
         """
         properties_list = self.settings.load_property_values_by_key(vhead_key)
         if properties_list:
-            self.add_property_combobox(properties_list, num)
-
-    def add_property_combobox(self, data: List, row_num: int) -> None:
-        """
-        Adds a QComboBox to the cif_main_table with the content of special_fields or property templates.
-        """
-        combobox = MyComboBox(self.ui.cif_main_table)
-        # print('special:', row_num, miss_data)
-        self.ui.cif_main_table.setCellWidget(row_num, COL_EDIT, combobox)
-        self.ui.cif_main_table.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        for num, value in data:
-            try:
-                combobox.addItem(retranslate_delimiter(value), num)
-            except TypeError:
-                print('Bad value in property:', value)
-                if DEBUG:
-                    raise
-                continue
-        combobox.setCurrentIndex(0)
+            self.ui.cif_main_table.add_property_combobox(properties_list, num)
 
     def fill_cif_table(self) -> None:
         """
@@ -1504,7 +1481,7 @@ class AppWindow(QMainWindow):
         doc = textedit.document()
         font = doc.defaultFont()
         font.setFamily("Courier")
-        font.setStyleHint(QFont.Monospace)
+        font.setStyleHint(QtGui.QFont.Monospace)
         font.setPointSize(14)
         doc.setDefaultFont(font)
         textedit.setLineWrapMode(QPlainTextEdit.NoWrap)
