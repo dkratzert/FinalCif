@@ -68,4 +68,4 @@ fi
 
 # Finally, run FinalCif
 echo Running FinalCif ...
-python3 finalcif.py
+python3 finalcif/finalcif_start.py
