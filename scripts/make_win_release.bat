@@ -1,7 +1,7 @@
 
 REM execute me from the main directory
 
-rmdir /S dist
+rmdir /S dist /Q
 
 CALL venv\Scripts\activate.bat
 
