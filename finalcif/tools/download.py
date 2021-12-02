@@ -16,7 +16,11 @@ class MyDownloader(QThread):
         self.url = url
 
     def run(self):
-        self.download(self.url)
+        try:
+            self.download(self.url)
+        except requests.RequestException as e:
+            print('Could not connect to download server')
+            print(e)
 
     def print_status(self, status: str) -> None:
         print(status)
