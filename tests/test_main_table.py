@@ -73,7 +73,7 @@ class TestMainTableFieldBehavior(unittest.TestCase):
         self.assertEqual('', self.cell_text('_atom_sites_solution_hydrogens', COL_EDIT))
 
     def test_CCDC_in_equipment_list(self):
-        self.assertEqual('CCDC number', self.myapp.ui.EquipmentTemplatesListWidget.item(1).text())
+        self.assertEqual('Crystallographer Details', self.myapp.ui.EquipmentTemplatesListWidget.item(1).text())
 
     def test_load_equipment(self):
         # make sure contact author is selected
