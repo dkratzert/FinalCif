@@ -36,8 +36,9 @@ fi
 
 if [ "$1" == "-install" ]; then
   echo
-  echo Which version number of FinalCif should be installed? Use a number like 91 or 'trunk' for the latest unstable source.
-  read version
+  echo "Which version number of FinalCif should be installed? Use a number like 91 or 'trunk' for the latest unstable source."
+  echo "current version is:" "$(curl -s https://dkratzert.de/files/finalcif/version.txt || echo "No network available!")  "
+  echo -n "Version to install: "; read version
   # Get the FinalCif code:
   if [ "$version" == "trunk" ]; then
     git clone --depth 1 https://github.com/dkratzert/FinalCif.git
@@ -60,6 +61,7 @@ source venv/bin/activate
 if [ "$1" == "-install" ]; then
   # Install required Python packages:
   venv/bin/pip install pip -U
+  venv/bin/pip inatall wheel
   venv/bin/pip install -r requirements.txt -U
   echo ""
   echo Installation finished! Run FinalCif with './finalcif-start.sh'
