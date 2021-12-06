@@ -154,7 +154,7 @@ class Equipment:
         selected_template_text, table_data = self.get_equipment_entry_data()
         # warn if key is not official:
         for key, _ in table_data:
-            if key not in cif_all_dict:
+            if key not in cif_all_dict.keys():
                 if not key.startswith('_'):
                     show_general_warning('"{}" is not a valid keyword! '
                                          '\nChange the name in order to save.\n'

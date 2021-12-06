@@ -7,8 +7,10 @@ from PyQt5.QtGui import QColor, QTextOption, QKeySequence, QContextMenuEvent, QB
 from PyQt5.QtWidgets import QAbstractScrollArea, QAction, QComboBox, QFrame, QPlainTextEdit, QSizePolicy, QTableWidget, \
     QTableWidgetItem, QWidget, QApplication, QShortcut, QStackedWidget
 
+from cif.core_dict import cif_core
 from cif.text import retranslate_delimiter
-from tools.misc import essential_keys, text_field_keys
+from gui.dialogs import show_general_warning
+from tools.misc import text_field_keys
 
 light_green = QColor(217, 255, 201)
 blue = QColor(102, 150, 179)
@@ -123,25 +125,9 @@ class MyCifTable(QTableWidget, ItemTextMixin):
     def vheader_section_click(self, section):
         item = self.verticalHeaderItem(section)
         itemtext = item.text()
-        # be sure not to get vheader with name of last click:
-        if section != self.vheader_clicked and self.vheader_clicked > -1:
-            self.restore_vertical_header()
-            self.vheader_clicked = -1
-            return
-            # get back previous name
-        if self.vheader_clicked > -1:
-            item.setText(self.vheaderitems[self.vheader_clicked])
-            self.vheader_clicked = -1
-            return
-        try:
-            txt = essential_keys[itemtext]
-            if txt:
-                # item.setText('\n'.join(wrap(txt, 20)))
-                item.setText(txt)
-            self.vheader_clicked = section
-            return
-        except KeyError:
-            pass
+        keyword = cif_core.get(itemtext, None)
+        if keyword:
+            show_general_warning(warn_text='IUCr definition:', info_text=retranslate_delimiter(keyword))
 
     def add_separation_line(self, row_num: int) -> None:
         """
@@ -166,11 +152,6 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         self.setItem(row_num, COL_DATA, item2)
         self.setItem(row_num, COL_EDIT, item3)
         self.resizeRowToContents(row_num)
-
-    def restore_vertical_header(self):
-        for row_num, key in enumerate(self.vheaderitems):
-            item_key = MyTableWidgetItem(key)
-            self.setVerticalHeaderItem(row_num, item_key)
 
     def eventFilter(self, widget: QObject, event: QEvent):
         """
@@ -439,7 +420,7 @@ class MyComboBox(QComboBox):
 class MyTableWidgetItem(QTableWidgetItem):
 
     def __init__(self, *args, **kwargs):
-        # args and kwargs are essentiel here. Otherwise, the horizontal header text is missing!
+        # args and kwargs are essential here. Otherwise, the horizontal header text is missing!
         super().__init__(*args, **kwargs)
 
     def setUneditable(self):

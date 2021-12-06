@@ -65,9 +65,11 @@ def show_hkl_checksum_warning() -> None:
     info.exec()
 
 
-def show_general_warning(warn_text: str = '') -> None:
+def show_general_warning(warn_text: str = '', info_text: str = '') -> None:
     """
     A message box to display if the checksums do not agree.
+    warn_text is displayed bold.
+    info_text is displayed regular.
     """
     if not warn_text:
         return None
@@ -76,6 +78,7 @@ def show_general_warning(warn_text: str = '') -> None:
     box.setWindowTitle(" ")
     box.setTextInteractionFlags(Qt.TextBrowserInteraction)
     box.setText(warn_text)
+    box.setInformativeText(info_text)
     box.exec()
 
 def show_ok_cancel_warning(warn_text: str = '') -> bool:
