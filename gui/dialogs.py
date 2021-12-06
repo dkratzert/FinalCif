@@ -79,6 +79,7 @@ def show_general_warning(warn_text: str = '', info_text: str = '') -> None:
     box.setTextInteractionFlags(Qt.TextBrowserInteraction)
     box.setText(warn_text)
     box.setInformativeText(info_text)
+    box.setStyleSheet("font-size: 14px")
     box.exec()
 
 def show_ok_cancel_warning(warn_text: str = '') -> bool:
