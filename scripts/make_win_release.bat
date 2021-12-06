@@ -8,6 +8,8 @@ CALL venv\Scripts\activate.bat
 git pull
 
 venv\Scripts\python -m pip install -U pip
+venv\Scripts\python -m pip install wheel
+venv\Scripts\python -m pip install -U pyinstaller
 
 venv\Scripts\pip3.exe install -r requirements.txt -U
 
