@@ -403,7 +403,7 @@ class AppWindow(QMainWindow):
             if not self.sources[s]:
                 continue
             table.insertRow(rownum)
-            box = QCheckBox()
+            box = QCheckBox(self)
             box.clicked.connect(self.erase_disabled_items)
             table.setCellWidget(rownum, 0, box)
             box.setChecked(True)
@@ -894,7 +894,6 @@ class AppWindow(QMainWindow):
         self.cif.rename_data_name(''.join(self.ui.datnameLineEdit.text().split(' ')))
         # restore header, otherwise item is not saved:
         table = self.ui.cif_main_table
-        table.restore_vertical_header()
         table.setCurrentItem(None)  # makes sure also the currently edited item is saved
         self.store_data_from_table_rows(table)
         self.save_ccdc_number()
