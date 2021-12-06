@@ -164,14 +164,17 @@ def delimit_string(txt: str) -> str:
     return utf8_to_str(txt)
 
 
-def retranslate_delimiter(txt: str) -> str:
+def retranslate_delimiter(txt: str, no_html_unescape: bool = False) -> str:
     """
     Translates delimited cif characters back to unicode characters.
     """
     inverted_characters_map = {v: k for k, v in charcters.items()}
     for char in inverted_characters_map.keys():
         txt = txt.replace(char, inverted_characters_map[char])
-    return html_ascii_to_utf8(txt)
+    if no_html_unescape:
+        return txt
+    else:
+        return html_ascii_to_utf8(txt)
 
 
 def utf8_to_html_ascii(text: str) -> str:
