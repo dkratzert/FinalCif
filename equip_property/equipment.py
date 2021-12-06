@@ -8,7 +8,6 @@ from PyQt5.QtWidgets import QListWidgetItem
 from gemmi import cif
 
 from cif.cif_file_io import CifContainer
-from cif.core_dict import cif_all_dict
 from cif.text import retranslate_delimiter
 from equip_property.tools import read_document_from_cif_file
 from gui.custom_classes import COL_CIF, COL_DATA, light_green, COL_EDIT
@@ -151,6 +150,8 @@ class Equipment:
         """
         Saves the currently selected equipment template to the config file.
         """
+        # Local import for faster startup
+        from cif.all_cif_dicts import cif_all_dict
         selected_template_text, table_data = self.get_equipment_entry_data()
         # warn if key is not official:
         for key, _ in table_data:

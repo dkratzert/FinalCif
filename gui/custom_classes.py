@@ -125,9 +125,10 @@ class MyCifTable(QTableWidget, ItemTextMixin):
     def vheader_section_click(self, section):
         item = self.verticalHeaderItem(section)
         itemtext = item.text()
-        keyword = cif_core.get(itemtext, None)
-        if keyword:
-            show_general_warning(warn_text='IUCr definition:', info_text=retranslate_delimiter(keyword))
+        keyword_help = cif_core.get(itemtext, None)
+        if keyword_help:
+            show_general_warning(warn_text='IUCr definition:',
+                                 info_text=retranslate_delimiter(keyword_help, no_html_unescape=True))
 
     def add_separation_line(self, row_num: int) -> None:
         """
