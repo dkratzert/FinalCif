@@ -59,3 +59,14 @@ Instead, it is sufficient to import a certain CIF created during the experiment.
 and STOE a '.cfx' file for example. Also the Bruker '.pcf' file is importable. You can import any additional CIF 
 formated file with the 'Import' button on the left center.
 This will import all key/values and loops from the file except for unit cell and space group information.
+
+
+**CIF format specification**
+
+FinalCif uses the `IUCr CIF specification 1.1 <https://www.iucr.org/resources/cif/spec/version1.1/>`_.
+Among other minor restrictions, this means that the "global\_" keyword `is not allowed in CIF 1.1
+<https://www.iucr.org/resources/cif/spec/version1.1/cifsyntax#global>`_.
+Some CIF writing programs still use the "global\_" keyword. You may circumvent this by exchanging the
+"global\_" key with a "data\_" keyword and delete the previous "data\_".
+
+Also, there is only *one* "data\_" per file allowed for FinalCif! FinalCif does not support multi-CIFs.

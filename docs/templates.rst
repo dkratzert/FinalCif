@@ -41,3 +41,5 @@ Sidenotes
 
 * As any other CIF, in order to import a template, it needs a \data_ keyword at the start.
 
+* Templates may be multi-CIFs with multiple data\_ kewords for e.g. multiple machine definitions in one file.
+
