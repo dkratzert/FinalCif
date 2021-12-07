@@ -10,8 +10,11 @@ from cif.restraints_dict import restraints_dict
 from cif.twin_dict import twinning_dict
 
 additional_keywords = {
-    '_olex2_diffrn_ambient_temperature_device'           : 'Not an official cif keyword.\nDevice to cool the crystal during measurement',
-    '_diffrn_measurement_ambient_temperature_device_make': 'Will become an official cif keyword.\nDevice to cool the crystal during measurement',
+    '_olex2_diffrn_ambient_temperature_device'           : '<pre>Device to cool the '
+                                                           'crystal during measurement</pre>',
+    '_diffrn_measurement_ambient_temperature_device_make': '<pre>Not an official CIF keyword, but eventually will '
+                                                           'become one.\nDevice to '
+                                                           'cool the crystal during measurement</pre>',
 }
 
 cif_all_dict = {}

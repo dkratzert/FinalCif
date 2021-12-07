@@ -7,7 +7,6 @@ from PyQt5.QtGui import QColor, QTextOption, QKeySequence, QContextMenuEvent, QB
 from PyQt5.QtWidgets import QAbstractScrollArea, QAction, QComboBox, QFrame, QPlainTextEdit, QSizePolicy, QTableWidget, \
     QTableWidgetItem, QWidget, QApplication, QShortcut, QStackedWidget
 
-from cif.core_dict import cif_core
 from cif.text import retranslate_delimiter
 from gui.dialogs import show_general_warning
 from tools.misc import text_field_keys
@@ -123,9 +122,10 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         self.vheaderitems.clear()
 
     def vheader_section_click(self, section):
+        from cif.all_cif_dicts import cif_all_dict
         item = self.verticalHeaderItem(section)
         itemtext = item.text()
-        keyword_help = cif_core.get(itemtext, None)
+        keyword_help = cif_all_dict.get(itemtext, None)
         if keyword_help:
             show_general_warning(warn_text='IUCr definition:',
                                  info_text=retranslate_delimiter(keyword_help, no_html_unescape=True))
