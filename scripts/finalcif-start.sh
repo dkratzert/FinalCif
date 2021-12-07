@@ -68,4 +68,5 @@ fi
 
 # Finally, run FinalCif
 echo Running FinalCif ...
+export PYTHONPATH=$PYTHONPATH:"$(pwd)"
 python3 finalcif.py
