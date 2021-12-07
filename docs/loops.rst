@@ -19,7 +19,7 @@ The "Manuscript Related" tab contains an input mask to add author information fo
 This is not to be confused with the "Crystallographer Details" in the "Equipment and Author Templates" section.
 New authors can be saved as templates for future use.
 
-.. image:: pics/finalcif_loops.png
+.. figure:: pics/finalcif_loops.png
    :width: 700
 
    Author editor.

@@ -25,7 +25,7 @@ original CIF file.
 The FinalCif executable accepts a file name as first argument in order to open .cif files from
 other programs like ShelXle.
 
-.. image:: pics/finalcif_main.png
+.. figure:: pics/finalcif_main.png
    :width: 700
 
    The FinalCif main window.
@@ -64,9 +64,8 @@ This will import all key/values and loops from the file except for unit cell and
 **CIF format specification**
 
 FinalCif uses the `IUCr CIF specification 1.1 <https://www.iucr.org/resources/cif/spec/version1.1/>`_.
-Among other minor restrictions, this means that the "global\_" keyword `is not allowed in CIF 1.1
-<https://www.iucr.org/resources/cif/spec/version1.1/cifsyntax#global>`_.
-Some CIF writing programs still use the "global\_" keyword. You may circumvent this by exchanging the
-"global\_" key with a "data\_" keyword and delete the previous "data\_".
+Among other minor restrictions, this means that the global\_ keyword `is not allowed in CIF 1.1 <https://www.iucr.org/resources/cif/spec/version1.1/cifsyntax#global>`_.
+Some CIF writing programs still use the global\_ keyword. You may circumvent this by exchanging the
+global\_ key with a data\_ keyword and delete the previous data\_.
 
-Also, there is only *one* "data\_" per file allowed for FinalCif! FinalCif does not support multi-CIFs.
+Also, there is only *one* data\_ per file allowed for FinalCif! FinalCif does not support multi-CIFs.
