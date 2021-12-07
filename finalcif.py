@@ -28,8 +28,6 @@ import time
 import traceback
 from pathlib import Path
 
-# noinspection PyUnresolvedReferences
-from gemmi import cif
 from gui.dialogs import bug_found_warning
 from tools.version import VERSION
 
