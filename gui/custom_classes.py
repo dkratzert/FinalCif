@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import QAbstractScrollArea, QAction, QComboBox, QFrame, QPl
     QTableWidgetItem, QWidget, QApplication, QShortcut, QStackedWidget
 
 from cif.text import retranslate_delimiter
-from gui.dialogs import show_general_warning
+from gui.dialogs import show_keyword_help
 from tools.misc import text_field_keys
 
 light_green = QColor(217, 255, 201)
@@ -127,8 +127,8 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         itemtext = item.text()
         keyword_help = cif_all_dict.get(itemtext, None)
         if keyword_help:
-            show_general_warning(warn_text='IUCr definition:',
-                                 info_text=retranslate_delimiter(keyword_help, no_html_unescape=True))
+            keyword_help = retranslate_delimiter(keyword_help, no_html_unescape=True)
+            show_keyword_help(self.parent, keyword_help, itemtext)
 
     def add_separation_line(self, row_num: int) -> None:
         """
