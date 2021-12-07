@@ -107,7 +107,7 @@ def show_keyword_help(parent, helptext: str, title: str = ''):
     width = textedit.fontMetrics().width('X' * 70)
     height = textedit.fontMetrics().width('X' * nlines)
     textedit.setMinimumWidth(max([600, width]))
-    textedit.setMinimumHeight(max([600, height]))
+    textedit.setMinimumHeight(max([400, height]))
     window.move(300, 100)
     window.show()
     window.raise_()
