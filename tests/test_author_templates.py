@@ -18,6 +18,7 @@ class MyTestCase(unittest.TestCase):
     def tearDown(self) -> None:
         current_file_path()
         Path('tests/other_templates/testexport_author.cif').unlink(missing_ok=True)
+        Path('tests/examples/testexport_author.cif').unlink(missing_ok=True)
         self.app.close()
 
     def _import_testauthor(self):
