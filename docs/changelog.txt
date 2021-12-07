@@ -1,6 +1,7 @@
 FinalCif recent changes
 -----------------------
 
+-v93 Click on verical table header opens help window instead of help text inside the header section.
 -v92 Fixed crash when running offline.
 -v91 Added ability to import multi CIFs for equipment and properties (A CIF with multiple data_ blocks)
 -v90 Show proper warning id data_ is missing in a template CIF. Find out min/max hkl for CIF from twins. Small fixes.
