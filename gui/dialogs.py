@@ -5,7 +5,8 @@ from pathlib import Path
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QMessageBox, QMainWindow, QSplashScreen, QFileDialog
+from PyQt5.QtWidgets import QMessageBox, QMainWindow, QSplashScreen, QFileDialog, QVBoxLayout, QTextEdit, \
+    QPushButton, QFrame
 
 from tools.version import VERSION
 
@@ -83,6 +84,36 @@ def show_general_warning(warn_text: str = '', info_text: str = '') -> None:
         box.setStyleSheet("QLabel{min-width:600 px; font-size: 14px;}")
     box.exec()
 
+
+def show_keyword_help(parent, helptext: str, title: str = ''):
+    """
+    A window to display help texts from the CIF dictionaries.
+    """
+    nlines = len(helptext.splitlines())
+    window = QMainWindow(parent=parent)
+    window.setWindowFlags(Qt.Tool)
+    window.setWindowTitle(title)
+    widget = QFrame()
+    layout = QVBoxLayout()
+    button = QPushButton('close')
+    textedit = QTextEdit()
+    textedit.setReadOnly(True)
+    textedit.setFontFamily('monospace')
+    textedit.setText(helptext)
+    layout.addWidget(textedit)
+    layout.addWidget(button)
+    widget.setLayout(layout)
+    window.setCentralWidget(widget)
+    width = textedit.fontMetrics().width('X' * 70)
+    height = textedit.fontMetrics().width('X' * nlines)
+    textedit.setMinimumWidth(width)
+    textedit.setMinimumHeight(height * 2)
+    window.move(300, 200)
+    window.show()
+    window.raise_()
+    button.clicked.connect(window.close)
+
+
 def show_ok_cancel_warning(warn_text: str = '') -> bool:
     box = QMessageBox()
     box.setTextFormat(Qt.AutoText)
@@ -93,6 +124,7 @@ def show_ok_cancel_warning(warn_text: str = '') -> bool:
     box.setDefaultButton(QMessageBox.Ok)
     box.exec()
     return box.result() == QMessageBox.Ok
+
 
 def show_update_warning(remote_version: int = 0) -> None:
     """

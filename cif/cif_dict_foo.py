@@ -9,15 +9,25 @@ import gemmi
 def format_definition(definition: str):
     # Removes space characters in front of each line.
     newdef = ''
+    padding = 14
     for n, line in enumerate(definition.splitlines(keepends=True)):
         # Remove the spaces at start:
-        if len(line) > 14 and not line[:14].strip():
+        if len(line) > (padding - 1) and not line[:padding].strip():
             if n:
-                line = line[15:]
+                line = line[padding + 1:]
             else:
-                line = line[14:]
+                line = line[padding:]
         newdef += line
     return newdef
+
+
+def get_left_padding(definition: str) -> int:
+    padding = []
+    for line in definition.splitlines(keepends=False):
+        before = len(line)
+        after = len(line.lstrip())
+        padding.append(before - after)
+    return max(padding)
 
 
 def process_cif_dict(cdic):
