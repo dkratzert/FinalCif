@@ -1,69 +1,72 @@
 import sys
 
 import requests
-from PyQt5.QtCore import QThread, pyqtSignal
+from PyQt5.QtCore import pyqtSignal, QObject
 
 from finalcif import VERSION
 
 
-class MyDownloader(QThread):
+# noinspection PyUnresolvedReferences
+class MyDownloader(QObject):
     progress = pyqtSignal(str)
     failed = pyqtSignal(int)
-    finished = pyqtSignal(bytes)
+    finished = pyqtSignal()
+    loaded = pyqtSignal(bytes)
 
-    def __init__(self, parent, url: str):
-        super().__init__(parent)
+    def __init__(self, url):
+        super().__init__()
         self.url = url
 
-    def run(self):
-        try:
-            self.download(self.url)
-        except requests.RequestException as e:
-            print('Could not connect to download server')
-            print(e)
+    def failed_to_load(self, txt: str) -> None:
+        print('Failed to load {}', self.url)
 
-    def print_status(self, status: str) -> None:
-        print(status)
-
-    def failed_to_download(self, status_code: int):
-        print('Failed to download: {}'.format(self.url))
-        print('HTTP status was {}'.format(status_code))
-
-    def download(self, full_url: str, user_agent=None) -> bytes:
-        user_agent = user_agent if user_agent else 'FinalCif v{}'.format(VERSION)
+    def download(self) -> None:
+        # print('Downloading:', self.url)
+        user_agent = 'FinalCif v{}'.format(VERSION)
         headers = {
             'User-Agent': user_agent,
         }
-        # noinspection PyUnresolvedReferences
-        # self.progress.emit('Starting download: {}'.format(full_url))
-        response = requests.get(full_url, stream=True, headers=headers)
+        try:
+            response = requests.get(self.url, stream=True, headers=headers)
+        except requests.RequestException as e:
+            print('Could not connect to download server', e)
+            self.loaded.emit(b'')
+            self.failed.emit(0)
+            return
         if response.status_code != 200:
             # noinspection PyUnresolvedReferences
             self.failed.emit(response.status_code)
             # noinspection PyUnresolvedReferences
-            self.finished.emit(b'')
-            return b''
-        # noinspection PyUnresolvedReferences
-        self.finished.emit(response.content)
-        return response.content
+            self.finished.emit()
+            return
+        self.loaded.emit(response.content)
+        self.finished.emit()
 
 
 if __name__ == "__main__":
-    from PyQt5.QtWidgets import QWidget
+    from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLabel
     from PyQt5.QtWidgets import QApplication
+    from PyQt5.QtCore import QThread
 
     app = QApplication(sys.argv)
     w = QWidget()
+    l = QHBoxLayout()
+    label = QLabel()
+    l.addWidget(label)
+    w.setLayout(l)
+    w.setMinimumWidth(100)
+    w.setMinimumHeight(100)
     w.show()
 
 
     def foo(bar: bytes):
-        print(bar.decode('ascii'))
+        label.setText(bar.decode('ascii'))
 
 
-    upd = MyDownloader(None, "https://dkratzert.de/files/finalcif/version.txt")
-    upd.finished.connect(foo)
-    upd.failed.connect(upd.failed_to_download)
-    upd.progress.connect(upd.print_status)
-    upd.start()
+    upd = MyDownloader("https://dkratzert.de/files/finalcif/version.txt")
+    thread = QThread()
+    upd.moveToThread(thread)
+    upd.loaded.connect(foo)
+    thread.start()
+    upd.download()
     sys.exit(app.exec_())

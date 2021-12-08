@@ -19,6 +19,7 @@ from typing import Union, Dict, Tuple
 import qtawesome as qta
 import requests
 from PyQt5 import QtCore, QtGui, QtWebEngineWidgets
+from PyQt5.QtCore import QThread
 from PyQt5.QtWidgets import QMainWindow, QHeaderView, QShortcut, QCheckBox, QListWidgetItem, QApplication, \
     QPlainTextEdit, QFileDialog, QLabel
 from gemmi import cif
@@ -355,11 +356,15 @@ class AppWindow(QMainWindow):
             print('Skipping version.txt download because NO_NETWORK variable is set.')
             return
         mainurl = "https://dkratzert.de/files/finalcif/version.txt"
-        upd = MyDownloader(self, mainurl)
-        upd.finished.connect(self.is_update_necessary)
-        upd.failed.connect(upd.failed_to_download)
-        upd.progress.connect(upd.print_status)
-        upd.start()
+        self.upd = MyDownloader(mainurl)
+        self.version_thread = QThread()
+        self.upd.moveToThread(self.version_thread)
+        self.upd.loaded.connect(self.is_update_necessary)
+        self.version_thread.started.connect(self.upd.download)
+        self.upd.finished.connect(self.version_thread.quit)
+        self.upd.finished.connect(self.upd.deleteLater)
+        self.version_thread.finished.connect(self.version_thread.deleteLater)
+        self.version_thread.start()
 
     def is_update_necessary(self, content: bytes) -> None:
         """
@@ -430,11 +435,15 @@ class AppWindow(QMainWindow):
             print('Skipping check.def download because NO_NETWORK variable is set.')
             return
         url = 'http://www.platonsoft.nl/xraysoft/unix/platon/check.def'
-        checkdef_download = MyDownloader(self, url)
-        checkdef_download.finished.connect(self._save_checkdef)
-        checkdef_download.failed.connect(checkdef_download.failed_to_download)
-        checkdef_download.progress.connect(checkdef_download.print_status)
-        checkdef_download.start()
+        self.updc = MyDownloader(url)
+        self.checkdef_thread = QThread()
+        self.updc.moveToThread(self.checkdef_thread)
+        self.updc.loaded.connect(self._save_checkdef)
+        self.checkdef_thread.started.connect(self.updc.download)
+        self.updc.finished.connect(self.checkdef_thread.quit)
+        self.updc.finished.connect(self.updc.deleteLater)
+        self.checkdef_thread.finished.connect(self.checkdef_thread.deleteLater)
+        self.checkdef_thread.start()
 
     def _save_checkdef(self, reply: bytes) -> None:
         """
@@ -593,7 +602,7 @@ class AppWindow(QMainWindow):
         self.ckf.start()
 
     def _get_check_def(self):
-        if self.checkdef_file.exists() and file_age_in_days(self.checkdef_file) < 30:
+        if self.checkdef_file.exists() and file_age_in_days(self.checkdef_file) < 60:
             self.checkdef = self.checkdef_file.read_text().splitlines(keepends=False)
         else:
             self.get_checkdef_for_response_forms()
