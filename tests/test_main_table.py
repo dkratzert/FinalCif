@@ -11,8 +11,8 @@ from pathlib import Path
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor
 
-from appwindow import AppWindow
-from gui.custom_classes import COL_CIF, COL_DATA, COL_EDIT
+from finalcif.appwindow import AppWindow
+from finalcif.gui.custom_classes import COL_CIF, COL_DATA, COL_EDIT
 from tests.helpers import unify_line_endings
 
 
@@ -87,7 +87,7 @@ class TestMainTableFieldBehavior(unittest.TestCase):
                          self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_email', COL_EDIT))
 
     def test_field_types(self):
-        self.assertEqual("<class 'gui.custom_classes.MyTableWidgetItem'>",
+        self.assertEqual("<class 'finalcif.gui.custom_classes.MyTableWidgetItem'>",
                          str(self.myapp.ui.cif_main_table.itemFromKey('_atom_sites_solution_hydrogens',
                                                                       COL_CIF).__class__))
         self.assertEqual("<class 'NoneType'>",
@@ -95,17 +95,17 @@ class TestMainTableFieldBehavior(unittest.TestCase):
                                                                           COL_CIF).__class__))
 
     def test_combobox_field(self):
-        self.assertEqual("<class 'gui.custom_classes.MyComboBox'>",
+        self.assertEqual("<class 'finalcif.gui.custom_classes.MyComboBox'>",
                          str(self.myapp.ui.cif_main_table.widget_from_key('_atom_sites_solution_hydrogens',
                                                                           COL_EDIT).__class__))
 
     def test_plaintextedit_field(self):
-        self.assertEqual("<class 'gui.custom_classes.MyQPlainTextEdit'>",
+        self.assertEqual("<class 'finalcif.gui.custom_classes.MyQPlainTextEdit'>",
                          str(self.myapp.ui.cif_main_table.widget_from_key('_audit_contact_author_address',
                                                                           COL_CIF).__class__))
-        self.assertEqual("<class 'gui.custom_classes.MyQPlainTextEdit'>",
+        self.assertEqual("<class 'finalcif.gui.custom_classes.MyQPlainTextEdit'>",
                          str(self.myapp.ui.cif_main_table.widget_from_key('_audit_contact_author_address',
                                                                           COL_DATA).__class__))
-        self.assertEqual("<class 'gui.custom_classes.MyQPlainTextEdit'>",
+        self.assertEqual("<class 'finalcif.gui.custom_classes.MyQPlainTextEdit'>",
                          str(self.myapp.ui.cif_main_table.widget_from_key('_audit_contact_author_address',
                                                                           COL_EDIT).__class__))

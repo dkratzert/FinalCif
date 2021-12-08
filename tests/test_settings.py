@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from tools.settings import FinalCifSettings
+from finalcif.tools.settings import FinalCifSettings
 
 
 class TestFinalCifSettings(TestCase):

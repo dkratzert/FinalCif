@@ -8,7 +8,7 @@ import os
 import unittest
 from pathlib import Path
 
-from datafiles.saint import SaintListFile
+from finalcif.datafiles.saint import SaintListFile
 from tests.helpers import unify_line_endings
 
 

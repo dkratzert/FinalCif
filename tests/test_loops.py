@@ -12,8 +12,8 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QTabWidget
 from gemmi.cif import as_string
 
-from appwindow import AppWindow
-from cif.cif_file_io import CifContainer
+from finalcif.appwindow import AppWindow
+from finalcif.cif.cif_file_io import CifContainer
 from tests.helpers import unify_line_endings
 
 

@@ -8,7 +8,7 @@ import os
 import unittest
 from pathlib import Path
 
-from datafiles.p4p_reader import P4PFile
+from finalcif.datafiles.p4p_reader import P4PFile
 
 
 class TestBrukerFrame(unittest.TestCase):

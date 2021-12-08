@@ -16,12 +16,11 @@
 
 from setuptools import setup, find_packages
 
-from tools.version import VERSION
+from finalcif import VERSION
 
 setup(
     name='FinalCif',
     version=str(VERSION),
-    #packages=['cif', 'gui', 'tools', 'report', 'report.gui', 'datafiles', 'displaymol', 'icon', 'template'],
     packages=find_packages(),
     url='https://dkratzert.de/finalcif.html',
     license='Beerware',

@@ -8,11 +8,10 @@ from docx.shape import InlineShapes
 from docx.shared import Cm
 from docx.table import Table
 
-from appwindow import AppWindow
-from tools.version import VERSION
+from finalcif.appwindow import AppWindow
+from finalcif import VERSION
 
 
-# @unittest.skip('foo')
 class TemplateReportTestCase(unittest.TestCase):
     def setUp(self) -> None:
         self.myapp = AppWindow(unit_test=True)
@@ -27,7 +26,7 @@ class TemplateReportTestCase(unittest.TestCase):
         self.myapp.ui.TemplatesListWidget.setCurrentRow(2)
         self.reportdoc = Path('report_' + self.testcif.stem + '-finalcif.docx')
         self.report_zip = Path(self.testcif.stem + '-finalcif.zip')
-        self.myapp.set_report_picture(Path('../../icon/finalcif.png'))
+        self.myapp.set_report_picture(Path('../../finalcif/icon/finalcif.png'))
         self.myapp.hide()
 
     def tearDown(self) -> None:
@@ -44,12 +43,12 @@ class TemplateReportTestCase(unittest.TestCase):
         for num in range(1, self.myapp.ui.TemplatesListWidget.count()):
             self.myapp.ui.TemplatesListWidget.setCurrentRow(num)
             self.myapp.templates.remove_current_template()
-        self.myapp.templates.add_new_template(str(Path('../../template/template_text.docx').absolute()))
-        self.myapp.templates.add_new_template(str(Path('../../template/template_without_text.docx').absolute()))
+        self.myapp.templates.add_new_template(str(Path('../../finalcif/template/template_text.docx').absolute()))
+        self.myapp.templates.add_new_template(
+            str(Path('../../finalcif/template/template_without_text.docx').absolute()))
         print('imported templates')
         self.myapp.ui.TemplatesListWidget.blockSignals(False)
 
-    # @unittest.skip('')
     def test_with_report_text(self):
         self.myapp.ui.SaveFullReportButton.click()
         doc = Document(self.reportdoc.absolute())
@@ -70,6 +69,10 @@ class TemplateReportTestCase(unittest.TestCase):
         self.assertEqual('1979688', table.cell(row_idx=0, col_idx=1).text)
 
     def test_picture_has_correct_size(self):
+        """
+        For this test, self.myapp.set_report_picture(Path('../../finalcif/icon/finalcif.png'))
+        has to be set correctly.
+        """
         self.myapp.ui.SaveFullReportButton.click()
         doc = Document(self.reportdoc.absolute())
         shapes: InlineShapes = doc.inline_shapes

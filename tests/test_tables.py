@@ -8,8 +8,8 @@ from docx.shape import InlineShapes
 from docx.shared import Cm
 from docx.table import Table
 
-from appwindow import AppWindow
-from tools.version import VERSION
+from finalcif import VERSION
+from finalcif.appwindow import AppWindow
 
 
 class TablesTestMixin():
@@ -44,7 +44,7 @@ class TablesTestCase(TablesTestMixin, unittest.TestCase):
     def setUp(self) -> None:
         super().setUp()
         self.myapp.ui.PictureWidthDoubleSpinBox.setValue(7.43)
-        self.myapp.set_report_picture(Path('../../icon/finalcif.png'))
+        self.myapp.set_report_picture(Path('../../finalcif/icon/finalcif.png'))
 
     def test_save_report_works(self):
         self.myapp.ui.SaveFullReportButton.click()

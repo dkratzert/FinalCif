@@ -1,6 +1,6 @@
 import unittest
 
-from tools.sumformula import formula_str_to_dict, sum_formula_to_html
+from finalcif.tools.sumformula import formula_str_to_dict, sum_formula_to_html
 
 
 class MyTestCase(unittest.TestCase):

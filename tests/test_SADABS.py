@@ -8,7 +8,7 @@ import os
 import unittest
 from pathlib import Path
 
-from datafiles.sadabs import Sadabs
+from finalcif.datafiles.sadabs import Sadabs
 
 
 class TestSADABSWU19(unittest.TestCase):

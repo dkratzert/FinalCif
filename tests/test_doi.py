@@ -1,6 +1,7 @@
+import os
 from unittest import TestCase
 
-from cif.cod.doi import resolve_doi, get_names_from_doi
+from finalcif.cif.cod.doi import resolve_doi, get_names_from_doi
 
 doi_data = {
     'author': [{'ORCID'              : 'http://orcid.org/0000-0003-0970-9780',
@@ -20,6 +21,8 @@ doi_data = {
 
 class TestDOI(TestCase):
     def setUp(self) -> None:
+        if os.environ.get('NO_NETWORK'):
+            self.skipTest('No network available.')
         self.doi = resolve_doi('10.1107/S1600576718004508')
 
     def test_resolve_doi_doi(self):
@@ -33,6 +36,10 @@ class TestDOI(TestCase):
 
 
 class TestDOIOld(TestCase):
+    def setUp(self) -> None:
+        if os.environ.get('NO_NETWORK'):
+            self.skipTest('No network available.')
+
     def test_resolve_doi_online(self):
         result = {'_journal_name_full' : 'Inorganic Chemistry',
                   '_publ_author_name'  : ['Le Bail, A.', 'Marcos, M. D.', 'Amoros, P.'],

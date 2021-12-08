@@ -8,7 +8,7 @@ import os
 import unittest
 from pathlib import Path
 
-from datafiles.bruker_frame import BrukerFrameHeader
+from finalcif.datafiles.bruker_frame import BrukerFrameHeader
 
 
 class TestBrukerFrame(unittest.TestCase):

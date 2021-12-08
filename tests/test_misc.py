@@ -2,7 +2,7 @@ import unittest
 from pathlib import Path
 from unittest import TestCase
 
-from tools.misc import to_int, to_float, this_or_quest, flatten, strip_finalcif_of_name, next_path, \
+from finalcif.tools.misc import to_int, to_float, this_or_quest, flatten, strip_finalcif_of_name, next_path, \
     get_error_from_value, get_file_with_new_ending, grouper, distance, sha512_checksum_of_file, isnumeric, \
     is_database_number
 

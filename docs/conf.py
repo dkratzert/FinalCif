@@ -16,7 +16,7 @@ sys.path.insert(0, os.path.abspath('..'))
 
 
 # -- Project information -----------------------------------------------------
-from tools.version import VERSION
+from finalcif import VERSION
 
 project = 'FinalCif'
 copyright = '2021, Daniel Kratzert'
@@ -24,7 +24,6 @@ author = 'Daniel Kratzert'
 
 # The full version, including alpha/beta/rc tags
 release = str(VERSION)
-import sphinx_rtd_theme
 
 # -- General configuration ---------------------------------------------------
 

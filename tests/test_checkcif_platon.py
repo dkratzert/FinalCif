@@ -3,8 +3,9 @@ import time
 import unittest
 from pathlib import Path
 
-from appwindow import AppWindow
-from tools.version import VERSION
+from finalcif import VERSION
+from finalcif.appwindow import AppWindow
+from tests.test_utils import get_platon_exe
 
 filenames = (
     'tests/examples/checkcif-1979688-finalcif.html',
@@ -29,17 +30,20 @@ filenames = (
 
 # @unittest.skip('time')
 class TestPlatonCheckCIF(unittest.TestCase):
+
+    def setUp(self) -> None:
+        if not get_platon_exe() or os.environ.get('NO_NETWORK'):
+            self.skipTest('No PLATON executable found or no network. Skipping test!')
+        os.chdir(Path(__file__).resolve().parent.parent)
+        self.myapp = AppWindow(Path('tests/examples/1979688.cif').resolve(), unit_test=True)
+        self.myapp.hide()
+        self.myapp.running_inside_unit_test = True
+
     def tearDown(self) -> None:
         os.chdir(Path(__file__).resolve().parent.parent)
         for file in filenames:
             Path(file).unlink(missing_ok=True)
         self.myapp.close()
-
-    def setUp(self) -> None:
-        os.chdir(Path(__file__).resolve().parent.parent)
-        self.myapp = AppWindow(Path('tests/examples/1979688.cif').resolve(), unit_test=True)
-        self.myapp.hide()
-        self.myapp.running_inside_unit_test = True
 
     def test_checkcif_offline(self):
         self.myapp.hide()
@@ -61,19 +65,22 @@ class TestPlatonCheckCIF(unittest.TestCase):
 
 
 # @unittest.skip('time')
-class TestPlatonCheckCIF_with_CIF_without_hkl_data(unittest.TestCase):
-    def tearDown(self) -> None:
-        os.chdir(Path(__file__).resolve().parent.parent)
-        for file in filenames:
-            Path(file).unlink(missing_ok=True)
-        self.myapp.close()
+class TestPlatonCheckCIFwithCIFwithoutHKLdata(unittest.TestCase):
 
     def setUp(self) -> None:
+        if not get_platon_exe() or os.environ.get('NO_NETWORK'):
+            self.skipTest('No PLATON executable found or NO_NETWORK is set. Skipping test!')
         os.chdir(Path(__file__).resolve().parent.parent)
         self.myapp = AppWindow(Path('./test-data/1000007.cif').resolve(), unit_test=True)
         self.myapp.hide()
         self.myapp.ui.structfactCheckBox.setChecked(True)
         self.myapp.running_inside_unit_test = True
+
+    def tearDown(self) -> None:
+        os.chdir(Path(__file__).resolve().parent.parent)
+        for file in filenames:
+            Path(file).unlink(missing_ok=True)
+        self.myapp.close()
 
     def test_checkcif_offline(self):
         self.myapp.hide()

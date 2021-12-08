@@ -6,13 +6,16 @@ from os import path
 block_cipher = None
 site_packages = next(p for p in sys.path if 'site-packages' in p)
 
-a = Analysis(['finalcif.py'],
-             pathex=['.'],
+a = Analysis(['finalcif/finalcif_start.py'],
+             pathex=['finalcif'],
              binaries=[('update.exe', '.')],
-             datas=[('./gui', 'gui'), (path.join(site_packages,"docx","templates"), 'docx/templates'), 
-                    ('./template', 'template'), ('icon', 'icon'), ('displaymol', 'displaymol'), ('tools', 'tools'),
+             datas=[('finalcif/gui', 'gui'),
+                    (path.join(site_packages, "docx", "templates"), 'finalcif/docx/templates'),
+                    ('finalcif/template', 'template'), ('finalcif/icon', 'icon'),
+                    ('finalcif/displaymol', 'displaymol'), ('finalcif/tools', 'tools'),
                     ],
-             hiddenimports=['tools', 'tools.misc', 'tools.settings', 'datafiles', 'gemmi', 'qtawesome', 'finalcif', 'numpy'],
+             hiddenimports=['tools', 'tools.misc', 'tools.settings', 'datafiles', 'gemmi', 'qtawesome', 'finalcif',
+                            'finalcif.app_path', 'numpy'],
              hookspath=[],
              runtime_hooks=[],
              excludes=[],
@@ -21,7 +24,7 @@ a = Analysis(['finalcif.py'],
              cipher=block_cipher,
              noarchive=False)
 pyz = PYZ(a.pure, a.zipped_data,
-             cipher=block_cipher)
+          cipher=block_cipher)
 exe = EXE(pyz,
           a.scripts,
           [],
@@ -31,7 +34,7 @@ exe = EXE(pyz,
           bootloader_ignore_signals=False,
           strip=False,
           upx=True,
-          icon='icon/finalcif2.ico',
+          icon='finalcif/icon/finalcif2.ico',
           console=False)
 coll = COLLECT(exe,
                a.binaries,

@@ -2,8 +2,8 @@ from unittest import TestCase
 
 from docx import Document
 
-from cif.cif_file_io import CifContainer
-from report.report_text import Hydrogens, MachineType
+from finalcif.cif.cif_file_io import CifContainer
+from finalcif.report.report_text import Hydrogens, MachineType
 
 
 class TestHydrogens(TestCase):

@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 from unittest import TestCase
 
-from cif.cif_file_io import CifContainer
+from finalcif.cif.cif_file_io import CifContainer
 
 
 class TestHKL(TestCase):

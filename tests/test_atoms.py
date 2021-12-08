@@ -6,7 +6,7 @@
 #   ----------------------------------------------------------------------------
 import unittest
 
-from cif.atoms import get_radius, get_radius_from_element, get_atomic_number, get_element, get_atomlabel, \
+from finalcif.cif.atoms import get_radius, get_radius_from_element, get_atomic_number, get_element, get_atomlabel, \
     get_element_color
 
 
