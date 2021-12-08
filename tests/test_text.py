@@ -8,7 +8,7 @@ import unittest
 
 import gemmi
 
-from cif.text import quote, utf8_to_str, retranslate_delimiter, delimit_string, charcters
+from finalcif.cif.text import quote, utf8_to_str, retranslate_delimiter, delimit_string, charcters
 
 
 class TestText(unittest.TestCase):

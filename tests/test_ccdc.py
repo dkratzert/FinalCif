@@ -8,8 +8,8 @@ import os
 import unittest
 from pathlib import Path
 
-from cif.cif_file_io import CifContainer
-from datafiles.ccdc_mail import CCDCMail
+from finalcif.cif.cif_file_io import CifContainer
+from finalcif.datafiles.ccdc_mail import CCDCMail
 
 
 class TestCCDC(unittest.TestCase):

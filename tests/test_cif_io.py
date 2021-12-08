@@ -1,7 +1,7 @@
 import unittest
 from pathlib import Path
 
-from cif.cif_file_io import CifContainer
+from finalcif.cif.cif_file_io import CifContainer
 from tests.test_utils import current_file_path
 
 

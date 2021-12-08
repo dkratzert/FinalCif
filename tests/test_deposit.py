@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from cif.cod.deposit import CODdeposit
+from finalcif.cif.cod.deposit import CODdeposit
 
 
 class TestCOD_Deposit(TestCase):

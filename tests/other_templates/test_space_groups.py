@@ -7,7 +7,7 @@
 
 import unittest
 
-from tools.space_groups import SpaceGroups
+from finalcif.tools.space_groups import SpaceGroups
 
 
 class TestSpaceGroups(unittest.TestCase):

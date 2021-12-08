@@ -1,3 +1,4 @@
+import os
 import unittest
 from pathlib import Path
 from unittest import TestCase
@@ -5,7 +6,7 @@ from unittest import TestCase
 import requests
 from lxml.html import fromstring
 
-from cif.checkcif.checkcif import MyHTMLParser, fix_iucr_urls
+from finalcif.cif.checkcif.checkcif import MyHTMLParser, fix_iucr_urls
 
 form_choices = {'filecif'      : [],
                 'runtype'      : [],
@@ -17,13 +18,20 @@ form_choices = {'filecif'      : [],
                 'UPLOAD'       : []
                 }
 
-url = 'https://checkcif.iucr.org/'
-# Do not do this request for each test:
-request = requests.get(url)
+if os.environ.get('NO_NETWORK'):
+    print('Skipping network based tests.')
+    url = ''
+    request = None
+else:
+    url = 'https://checkcif.iucr.org/'
+    # Do not do this request for each test:
+    request = requests.get(url)
 
 
 class TestCheckCifInterface(TestCase):
     def setUp(self) -> None:
+        if os.environ.get('NO_NETWORK'):
+            self.skipTest('No network available.')
         page = fromstring(request.text)
         self.form = page.forms[0]
         self.form_items = self._get_form_items()
@@ -78,9 +86,12 @@ class TestCheckCifInterface(TestCase):
             fields
         )
 
+
 @unittest.skip('not necessary')
 class TestCheckCIfServerURL(TestCase):
     def test_url(self):
+        if os.environ.get('NO_NETWORK'):
+            self.skipTest('No network available.')
         url = 'https://checkcif.iucr.org/cgi-bin/checkcif_hkl.pl'
         req = requests.post(url, files={'file': None}, data={"runtype": "symmonly",
                                                              "referer": "checkcif_server"}, timeout=1)

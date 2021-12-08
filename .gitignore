@@ -70,7 +70,7 @@ instance/
 .scrapy
 
 # Sphinx documentation
-docs/_build/
+../docs/_build/
 
 # PyBuilder
 target/
@@ -205,3 +205,4 @@ testing2.py
 finalcif-setup.exe
 tests/examples/1979688-finalcif.cif
 myfile.pdf
+docs

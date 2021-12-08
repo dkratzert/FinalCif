@@ -1,6 +1,6 @@
 import unittest
 
-from appwindow import AppWindow
+from finalcif.appwindow import AppWindow
 
 
 class TestOptions(unittest.TestCase):

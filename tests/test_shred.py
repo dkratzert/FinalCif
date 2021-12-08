@@ -2,8 +2,8 @@ import os
 import unittest
 from pathlib import Path
 
-from cif.cif_file_io import CifContainer
-from tools.shred import ShredCIF
+from finalcif.cif.cif_file_io import CifContainer
+from finalcif.tools.shred import ShredCIF
 
 
 class TestShedCifWithData(unittest.TestCase):

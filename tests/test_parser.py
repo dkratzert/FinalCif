@@ -1,7 +1,7 @@
 from pathlib import Path
 from unittest import TestCase
 
-from cif.cod.website_parser import MyCODStructuresParser
+from finalcif.cif.cod.website_parser import MyCODStructuresParser
 
 
 class TestMyCODStructuresParser(TestCase):

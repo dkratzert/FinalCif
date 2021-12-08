@@ -2,9 +2,9 @@ import unittest
 
 from PyQt5.QtGui import QIcon
 
-from appwindow import AppWindow
-from tools.statusbar import StatusBar
-from tools.version import VERSION
+from finalcif.appwindow import AppWindow
+from finalcif.tools.statusbar import StatusBar
+from finalcif import VERSION
 
 
 class TestStausBarWithGraphics(unittest.TestCase):

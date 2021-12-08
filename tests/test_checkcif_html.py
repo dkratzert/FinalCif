@@ -12,14 +12,16 @@ from pathlib import Path
 from PyQt5.QtCore import Qt
 from PyQt5.QtTest import QTest
 
-from appwindow import AppWindow
-from gui.custom_classes import COL_EDIT
-from tools.misc import strip_finalcif_of_name
+from finalcif.appwindow import AppWindow
+from finalcif.gui.custom_classes import COL_EDIT
+from finalcif.tools.misc import strip_finalcif_of_name
 
 
 class TestCheckCifHTML(unittest.TestCase):
 
     def setUp(self) -> None:
+        if os.environ.get('NO_NETWORK'):
+            self.skipTest('No network available.')
         os.chdir(Path(__file__).absolute().parent.parent)
         self.myapp = AppWindow(Path('tests/examples/work/cu_BruecknerJK_153F40_0m.cif').absolute(), unit_test=True)
         self.myapp.running_inside_unit_test = True
