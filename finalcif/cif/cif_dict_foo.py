@@ -9,7 +9,7 @@ import gemmi
 def format_definition(definition: str):
     # Removes space characters in front of each line.
     newdef = ''
-    padding = 14
+    padding = 13
     for n, line in enumerate(definition.splitlines(keepends=True)):
         # Remove the spaces at start:
         if len(line) > (padding - 1) and not line[:padding].strip():
@@ -104,8 +104,8 @@ if __name__ == '__main__':
 
     # pprint.pprint(core_results)
 
-    Path('cif/core_dict.py').write_text(r"cif_core = " + pprint.pformat(core_results))
-    Path('cif/twin_dict.py').write_text(r"twinning_dict = " + pprint.pformat(twin_results))
-    Path('cif/modulation_dict.py').write_text(r"modulation_dict = " + pprint.pformat(mod_results))
-    Path('cif/powder_dict.py').write_text(r"powder_dict = " + pprint.pformat(powder_results))
-    Path('cif/restraints_dict.py').write_text(r"restraints_dict = " + pprint.pformat(restraints_results))
+    Path('finalcif/cif/core_dict.py').write_text(r"cif_core = " + pprint.pformat(core_results, width=100))
+    Path('finalcif/cif/twin_dict.py').write_text(r"twinning_dict = " + pprint.pformat(twin_results, width=100))
+    Path('finalcif/cif/modulation_dict.py').write_text(r"modulation_dict = " + pprint.pformat(mod_results, width=100))
+    Path('finalcif/cif/powder_dict.py').write_text(r"powder_dict = " + pprint.pformat(powder_results, width=100))
+    Path('finalcif/cif/restraints_dict.py').write_text(r"restraints_dict = " + pprint.pformat(restraints_results, width=100))
