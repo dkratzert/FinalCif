@@ -1,9 +1,23 @@
 import sys
 
 import requests
-from PyQt5.QtCore import pyqtSignal, QObject
+from PyQt5 import QtCore
+from PyQt5.QtCore import pyqtSignal, QObject, QThread, pyqtSlot
 
 from finalcif import VERSION
+
+
+def start_worker(runnable: QtCore.QObject, thread: QThread, onload: object):
+    """
+    Starts the worker class in a separate thread.
+    """
+    runnable.moveToThread(thread)
+    runnable.loaded.connect(onload)
+    thread.started.connect(runnable.download)
+    runnable.finished.connect(thread.quit)
+    runnable.finished.connect(runnable.deleteLater)
+    thread.finished.connect(thread.deleteLater)
+    thread.start()
 
 
 # noinspection PyUnresolvedReferences
@@ -20,6 +34,7 @@ class MyDownloader(QObject):
     def failed_to_load(self, txt: str) -> None:
         print('Failed to load {}', self.url)
 
+    @pyqtSlot()
     def download(self) -> None:
         # print('Downloading:', self.url)
         user_agent = 'FinalCif v{}'.format(VERSION)
