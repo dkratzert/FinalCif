@@ -50,7 +50,7 @@ from finalcif.report.archive_report import ArchiveReport
 from finalcif.report.tables import make_report_from
 from finalcif.report.templated_report import TemplatedReport
 from finalcif.template.templates import ReportTemplates
-from finalcif.tools.download import MyDownloader
+from finalcif.tools.download import MyDownloader, start_worker
 from finalcif.tools.dsrmath import my_isnumeric
 from finalcif.tools.misc import strip_finalcif_of_name, next_path, do_not_import_keys, celltxt, to_float, \
     combobox_fields, \
@@ -86,6 +86,7 @@ class AppWindow(QMainWindow):
         self.final_cif_file_name = Path()
         self.missing_data: set = set()
         self.temperature_warning_displayed = False
+        self.threadpool = []
         # True if line with "these are already in" reached:
         self.complete_data_row = -1
         self.ui = Ui_FinalCifWindow()
@@ -357,14 +358,9 @@ class AppWindow(QMainWindow):
             return
         mainurl = "https://dkratzert.de/files/finalcif/version.txt"
         self.upd = MyDownloader(mainurl)
-        self.version_thread = QThread()
-        self.upd.moveToThread(self.version_thread)
-        self.upd.loaded.connect(self.is_update_necessary)
-        self.version_thread.started.connect(self.upd.download)
-        self.upd.finished.connect(self.version_thread.quit)
-        self.upd.finished.connect(self.upd.deleteLater)
-        self.version_thread.finished.connect(self.version_thread.deleteLater)
-        self.version_thread.start()
+        version_thread = QThread()
+        self.threadpool.append(version_thread)
+        start_worker(self.upd, version_thread, onload=self.is_update_necessary)
 
     def is_update_necessary(self, content: bytes) -> None:
         """
@@ -436,14 +432,9 @@ class AppWindow(QMainWindow):
             return
         url = 'http://www.platonsoft.nl/xraysoft/unix/platon/check.def'
         self.updc = MyDownloader(url)
-        self.checkdef_thread = QThread()
-        self.updc.moveToThread(self.checkdef_thread)
-        self.updc.loaded.connect(self._save_checkdef)
-        self.checkdef_thread.started.connect(self.updc.download)
-        self.updc.finished.connect(self.checkdef_thread.quit)
-        self.updc.finished.connect(self.updc.deleteLater)
-        self.checkdef_thread.finished.connect(self.checkdef_thread.deleteLater)
-        self.checkdef_thread.start()
+        checkdef_thread = QThread()
+        self.threadpool.append(checkdef_thread)
+        start_worker(self.updc, checkdef_thread, onload=self._save_checkdef)
 
     def _save_checkdef(self, reply: bytes) -> None:
         """
