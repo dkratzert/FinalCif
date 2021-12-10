@@ -169,7 +169,16 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre> A descri
                                    'of a\n'
                                    ' given atom or rigid group whose modulation is being '
                                    'parameterized\n'
-                                   ' by Fourier series.</pre>',
+                                   ' by Fourier series.\n'
+                                   '\n'
+                                   'Example:\n'
+                                   'U11   modulation of U11\n'
+                                   'U12   modulation of U12\n'
+                                   'U13   modulation of U13\n'
+                                   'U22   modulation of U22\n'
+                                   'U23   modulation of U23\n'
+                                   'U33   modulation of U33\n'
+                                   'Uiso   modulation of U~isotropic~</pre>',
  '_atom_site_U_Fourier_wave_vector_seq_id': '<pre> A numeric code identifying the wave vectors of '
                                             'the Fourier terms\n'
                                             ' used to describe the modulation functions '
@@ -180,7 +189,13 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre> A descri
  '_atom_site_U_modulation_flag': '<pre> A code that signals whether the structural model includes '
                                  'the\n'
                                  ' modulation of the thermal parameters of a given atom\n'
-                                 ' site.</pre>',
+                                 ' site.\n'
+                                 '\n'
+                                 'Example:\n'
+                                 'yes   modulation of thermal parameters\n'
+                                 'y   abbreviation for "yes"\n'
+                                 'no   no modulation of thermal parameters\n'
+                                 'n   abbreviation for "no"</pre>',
  '_atom_site_[ms]': '<pre> Data items in the ATOM_SITE category record details about\n'
                     ' the atom sites in a crystal structure, such as the positional\n'
                     ' coordinates, atomic displacement parameters, and magnetic moments\n'
@@ -227,7 +242,15 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre> A descri
                                      ' For composites they refer to the reference structure of '
                                      'each\n'
                                      ' subsystem. a1, a2 and a3 are defined by\n'
-                                     ' _atom_sites_displace_Fourier_axes_description.</pre>',
+                                     ' _atom_sites_displace_Fourier_axes_description.\n'
+                                     '\n'
+                                     'Example:\n'
+                                     'x   displacement along the a axis\n'
+                                     'y   displacement along the b axis\n'
+                                     'z   displacement along the c axis\n'
+                                     'a1   displacement along an arbitrary a1 axis\n'
+                                     'a2   displacement along an arbitrary a2 axis\n'
+                                     'a3   displacement along an arbitrary a3 axis</pre>',
  '_atom_site_displace_Fourier_id': '<pre> A code identifying each component of the displacive '
                                    'modulation of\n'
                                    ' a given atom or rigid group when the modulation is expressed '
@@ -361,7 +384,13 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre> A descri
                                         'includes the\n'
                                         ' modulation of the positional coordinates of a given '
                                         'atom\n'
-                                        ' site.</pre>',
+                                        ' site.\n'
+                                        '\n'
+                                        'Example:\n'
+                                        'yes   displacive modulation\n'
+                                        'y   abbreviation for "yes"\n'
+                                        'no   no displacive modulation\n'
+                                        'n   abbreviation for "no"</pre>',
  '_atom_site_displace_special_func_atom_site_label': '<pre> The code that identifies an atom in a '
                                                      'loop in which the special\n'
                                                      ' function that describes its displacive '
@@ -663,7 +692,13 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre> A descri
                                               '_atom_site_Fourier_wave_vector_seq_id.</pre>',
  '_atom_site_occ_modulation_flag': '<pre> A code that signals whether the structural model '
                                    'includes the\n'
-                                   ' modulation of the occupation of a given atom site.</pre>',
+                                   ' modulation of the occupation of a given atom site.\n'
+                                   '\n'
+                                   'Example:\n'
+                                   'yes   occupational modulation\n'
+                                   'y   abbreviation for "yes"\n'
+                                   'no   no occupational modulation\n'
+                                   'n   abbreviation for "no"</pre>',
  '_atom_site_occ_special_func_atom_site_label': '<pre> The code that identifies an atom or rigid '
                                                 'group in a loop in\n'
                                                 ' which the parameters of the special function '
@@ -757,7 +792,11 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre> A descri
                               ' programs (for example, JANA2000) allow an independent phason\n'
                               ' correction for each atom or rigid group. In this case,\n'
                               ' _atom_site_phason_formula and _atom_site_phason_coeff should\n'
-                              ' be used (see also _refine_ls_mod_overall_phason_).</pre>',
+                              ' be used (see also _refine_ls_mod_overall_phason_).\n'
+                              '\n'
+                              'Example:\n'
+                              'Axe   Axe, J. D. (1980). Phys. Rev. B, 21, 4181-4190.\n'
+                              'Ovr   Overhauser, A. W. (1971). Phys. Rev. B, 3, 3173-3182.</pre>',
  '_atom_site_rot_Fourier_atom_site_label': '<pre> Modulation parameters are usually looped in '
                                            'separate lists.\n'
                                            ' Modulated parameters are the atom positions '
@@ -792,7 +831,15 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre> A descri
                                 ' Fourier series. a, b and c are the basic lattice vectors of the\n'
                                 ' reference structure. For composites they refer to the reference\n'
                                 ' structure of each subsystem. a~1~, a~2~ and a~3~ are defined by\n'
-                                ' _atom_sites_rot_Fourier_axes_description.</pre>',
+                                ' _atom_sites_rot_Fourier_axes_description.\n'
+                                '\n'
+                                'Example:\n'
+                                'x   rotation around the a axis\n'
+                                'y   rotation around the b axis\n'
+                                'z   rotation around the c axis\n'
+                                'a1   rotation around an arbitrary a1 axis\n'
+                                'a2   rotation around an arbitrary a2 axis\n'
+                                'a3   rotation around an arbitrary a3 axis</pre>',
  '_atom_site_rot_Fourier_id': '<pre> A code identifying each component of the rotational '
                               'modulation of\n'
                               ' a given rigid group when the modulation is expressed in terms of\n'
@@ -12190,7 +12237,12 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre> A descri
                                      '        parameters depend on whether the material is '
                                      'classified as crystalline\n'
                                      '        (periodic in three dimensions), modulated or '
-                                     'composite.</pre>',
+                                     'composite.\n'
+                                     '\n'
+                                     'Example:\n'
+                                     'cryst   crystalline structure\n'
+                                     'mod   modulated structure\n'
+                                     'comp   composite (misfit) structure</pre>',
  '_geom_angle_[ms]': '<pre> Data items in the GEOM_ANGLE category record\n'
                      ' details about the bond angles, as calculated from the\n'
                      ' ATOM, CELL and SYMMETRY data. These extensions\n'
@@ -12623,12 +12675,28 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre> A descri
                                     ' linear sawtooth function</pre>',
  '_refine_ls_mod_hydrogen_treatment': '<pre> Treatment of hydrogen-atom modulation parameters in '
                                       'the\n'
-                                      ' refinement.</pre>',
+                                      ' refinement.\n'
+                                      '\n'
+                                      'Example:\n'
+                                      'refA   refined H-atom displacive modulation parameters '
+                                      'only\n'
+                                      'refxyzA   refined H-atom coordinates and displacive '
+                                      'modulation parameters only\n'
+                                      'refP   refined H-atom occupational modulation parameters '
+                                      'only\n'
+                                      'refUP   refined H-atom U and occupational modulation '
+                                      'parameters only\n'
+                                      'nomod   no modulation of H-atom parameters</pre>',
  '_refine_ls_mod_overall_phason_coeff': '<pre> The phason coefficient used to calculate the '
                                         'overall phason\n'
                                         ' correction.</pre>',
  '_refine_ls_mod_overall_phason_formula': '<pre> The expression for the overall phason correction, '
-                                          'if used.</pre>',
+                                          'if used.\n'
+                                          '\n'
+                                          'Example:\n'
+                                          'Axe   Axe, J. D. (1980). Phys. Rev. B, 21, 4181-4190.\n'
+                                          'Ovr   Overhauser, A. W. (1971). Phys. Rev. B, 3, '
+                                          '3173-3182.</pre>',
  '_refln_[ms]': '<pre> Data items in the REFLN category record details about the\n'
                 ' reflections used to determine the ATOM_SITE data items.\n'
                 ' The REFLN data items refer to individual reflections and\n'

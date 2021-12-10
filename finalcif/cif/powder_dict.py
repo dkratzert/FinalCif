@@ -488,7 +488,11 @@ powder_dict = {'_pd_block_[pd]': '<pre> _pd_block_id is used to assign a unique 
                               ' For other flat-plate instruments, where the illumination\n'
                               " length changes with 2\\q, specify 'no'. Note that\n"
                               ' if the length is known, it may be specified using\n'
-                              ' _pd_instr_var_illum_len.</pre>',
+                              ' _pd_instr_var_illum_len.\n'
+                              '\n'
+                              'Example:\n'
+                              'yes\n'
+                              'no</pre>',
  '_pd_instr_cons_illum_len': '<pre> Length of the specimen that is illuminated by the radiation\n'
                              ' source (in millimetres).\n'
                              '\n'
@@ -1871,12 +1875,24 @@ powder_dict = {'_pd_block_[pd]': '<pre> _pd_block_id is used to assign a unique 
                            ' (see _pd_meas_rocking_axis).</pre>',
  '_pd_meas_rocking_axis': '<pre> Description of the axis (or axes) used to rotate or rock the\n'
                           ' specimen for better randomization of crystallites\n'
-                          ' (see _pd_meas_rocking_angle).</pre>',
+                          ' (see _pd_meas_rocking_angle).\n'
+                          '\n'
+                          'Example:\n'
+                          'chi\n'
+                          'omega\n'
+                          'phi</pre>',
  '_pd_meas_scan_method': '<pre> Code identifying the method for scanning reciprocal space.\n'
                          " The designation `fixed' should be used for measurements where\n"
                          ' film, a stationary position-sensitive or area detector\n'
                          ' or other non-moving detection mechanism is used to\n'
-                         ' measure diffraction intensities.</pre>',
+                         ' measure diffraction intensities.\n'
+                         '\n'
+                         'Example:\n'
+                         'step   step scan\n'
+                         'cont   continuous scan\n'
+                         'tof   time of flight\n'
+                         'disp   energy dispersive\n'
+                         'fixed   stationary detector</pre>',
  '_pd_meas_special_details': '<pre> Special details of the diffraction measurement process.\n'
                              ' Include information about source instability, degradation etc.\n'
                              ' However, this item should not be used to record information\n'
@@ -2651,7 +2667,11 @@ powder_dict = {'_pd_block_[pd]': '<pre> _pd_block_id is used to assign a unique 
                   '    _pd_spec_preparation            ?</pre>',
  '_pd_spec_description': '<pre>  A description of the specimen, such as the source of the\n'
                          '  specimen, identification of standards, mixtures etc.</pre>',
- '_pd_spec_mount_mode': '<pre> A code describing the beam path through the specimen.</pre>',
+ '_pd_spec_mount_mode': '<pre> A code describing the beam path through the specimen.\n'
+                        '\n'
+                        'Example:\n'
+                        'reflection\n'
+                        'transmission</pre>',
  '_pd_spec_mounting': '<pre> A description of how the specimen is mounted.\n'
                       '\n'
                       'Example:\n'
@@ -2672,7 +2692,12 @@ powder_dict = {'_pd_block_[pd]': '<pre> _pd_block_id is used to assign a unique 
                          ' made in a plane parallel with the ground (the 2\\q axis\n'
                          " is perpendicular to the ground). `Both' is appropriate for\n"
                          ' experiments where measurements are made in both planes,\n'
-                         ' for example using two-dimensional detectors.</pre>',
+                         ' for example using two-dimensional detectors.\n'
+                         '\n'
+                         'Example:\n'
+                         'horizontal\n'
+                         'vertical\n'
+                         'both</pre>',
  '_pd_spec_preparation': '<pre> A description of the preparation steps for producing the\n'
                          ' diffraction specimen from the sample. Include any procedures\n'
                          ' related to grinding, sieving, spray drying etc. For\n'
@@ -2683,7 +2708,12 @@ powder_dict = {'_pd_block_[pd]': '<pre> _pd_block_id is used to assign a unique 
                          'wet grinding in acetone\n'
                          'sieved through a 44 micron (325 mesh/inch) sieve\n'
                          'spray dried in water with 1% clay</pre>',
- '_pd_spec_shape': '<pre> A code describing the specimen shape.</pre>',
+ '_pd_spec_shape': '<pre> A code describing the specimen shape.\n'
+                   '\n'
+                   'Example:\n'
+                   'cylinder\n'
+                   'flat_sheet\n'
+                   'irregular</pre>',
  '_pd_spec_size_axial': '<pre> The size of the specimen in three mutually perpendicular\n'
                         ' directions in millimetres.\n'
                         ' The perpendicular to the plane containing the incident\n'

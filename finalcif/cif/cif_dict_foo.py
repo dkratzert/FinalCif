@@ -42,11 +42,23 @@ def process_cif_dict(cdic):
             if isinstance(item, dict) and not '[]' in name:
                 definition = escape(item['_definition'])
                 example = item.get('_example', '')
+                example_detail = item.get('_example_detail', '')
+                enumeration = item.get('_enumeration', '')
+                enumeration_detail = item.get('_enumeration_detail', '')
                 if example:
-                    if isinstance(example, list):
+                    if isinstance(example, list) and not enumeration_detail:
                         example = '\n'.join([str(x) for x in example])
+                    if isinstance(example, list) and enumeration_detail:
+                        example = '\n'.join(["{}   {}".format(str(x), str(y)) for x, y in zip(example, example_detail)])
                     example = format_definition(escape(str(example)))
                     definition = '{}\n\nExample:\n{}'.format(definition, example)
+                if enumeration:
+                    if isinstance(enumeration, list) and not enumeration_detail:
+                        enumeration = '\n'.join([str(x) for x in enumeration])
+                    if isinstance(enumeration, list) and enumeration_detail:
+                        enumeration = '\n'.join(["{}   {}".format(str(x), str(y)) for x, y in zip(enumeration, enumeration_detail)])
+                    enumeration = format_definition(escape(str(enumeration)))
+                    definition = '{}\n\nExample:\n{}'.format(definition, enumeration)
                 if isinstance(name, list):
                     for n in name:
                         # For keys like 'atom_site_aniso_b_[]' where the name has several subnames:
