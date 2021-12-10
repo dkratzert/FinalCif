@@ -21,15 +21,6 @@ def format_definition(definition: str):
     return newdef
 
 
-def get_left_padding(definition: str) -> int:
-    padding = []
-    for line in definition.splitlines(keepends=False):
-        before = len(line)
-        after = len(line.lstrip())
-        padding.append(before - after)
-    return max(padding)
-
-
 def process_cif_dict(cdic):
     """
     Creates a dictionary with cif keywords as key and help text as value.
@@ -49,14 +40,16 @@ def process_cif_dict(cdic):
                     if isinstance(example, list) and not enumeration_detail:
                         example = '\n'.join([str(x) for x in example])
                     if isinstance(example, list) and enumeration_detail:
-                        example = '\n'.join(["{}   {}".format(str(x), str(y)) for x, y in zip(example, example_detail)])
+                        example = '\n'.join(
+                            ["{}\t\t{}".format(str(x), str(y)) for x, y in zip(example, example_detail)])
                     example = format_definition(escape(str(example)))
                     definition = '{}\n\nExample:\n{}'.format(definition, example)
                 if enumeration:
                     if isinstance(enumeration, list) and not enumeration_detail:
                         enumeration = '\n'.join([str(x) for x in enumeration])
                     if isinstance(enumeration, list) and enumeration_detail:
-                        enumeration = '\n'.join(["{}   {}".format(str(x), str(y)) for x, y in zip(enumeration, enumeration_detail)])
+                        enumeration = '\n'.join(
+                            ["{}\n\t{}".format(str(x), str(y)) for x, y in zip(enumeration, enumeration_detail)])
                     enumeration = format_definition(escape(str(enumeration)))
                     definition = '{}\n\nExample:\n{}'.format(definition, enumeration)
                 if isinstance(name, list):
@@ -120,4 +113,5 @@ if __name__ == '__main__':
     Path('finalcif/cif/twin_dict.py').write_text(r"twinning_dict = " + pprint.pformat(twin_results, width=100))
     Path('finalcif/cif/modulation_dict.py').write_text(r"modulation_dict = " + pprint.pformat(mod_results, width=100))
     Path('finalcif/cif/powder_dict.py').write_text(r"powder_dict = " + pprint.pformat(powder_results, width=100))
-    Path('finalcif/cif/restraints_dict.py').write_text(r"restraints_dict = " + pprint.pformat(restraints_results, width=100))
+    Path('finalcif/cif/restraints_dict.py').write_text(
+        r"restraints_dict = " + pprint.pformat(restraints_results, width=100))
