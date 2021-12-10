@@ -548,7 +548,7 @@ class AppWindow(QMainWindow):
             self.ui.responseFormsListWidget.setItemWidget(item, vrf)
         if not forms:
             iteme = QListWidgetItem(' ')
-            item = QListWidgetItem(' No level A or B alerts to explain.')
+            item = QListWidgetItem(' No level A, B or C alerts to explain.')
             self.ui.responseFormsListWidget.addItem(iteme)
             self.ui.responseFormsListWidget.addItem(item)
         if gif:
