@@ -21,7 +21,7 @@ pip3 install -r requirements.txt -U
 
 pyinstaller Finalcif_onefile.spec --clean -y
 
-VER=$(cat tools/version.py | grep VERSION | cut -d ' ' -f 3)
+VER=$(cat finalcif/__init__.py | grep VERSION | cut -d ' ' -f 3)
 
 mv dist/FinalCif "dist/FinalCif-v${VER}_${DISTR}"
 
