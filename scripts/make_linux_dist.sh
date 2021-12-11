@@ -19,7 +19,7 @@ pip install pip -U
 
 pip3 install -r requirements.txt -U
 
-pyinstaller Finalcif_onefile.spec --clean -y
+pyinstaller Finalcif_linux_onefile.spec --clean -y
 
 VER=$(cat finalcif/__init__.py | grep VERSION | cut -d ' ' -f 3)
 
