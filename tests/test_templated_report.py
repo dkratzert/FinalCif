@@ -36,6 +36,11 @@ class TemplateReportTestCase(unittest.TestCase):
         self.myapp.ui.ReportTextCheckBox.setChecked(False)
         self.myapp.ui.HAtomsCheckBox.setChecked(False)
         self.myapp.ui.PictureWidthDoubleSpinBox.setValue(7.5)
+        self.myapp.ui.TemplatesListWidget.blockSignals(True)
+        for num in range(1, self.myapp.ui.TemplatesListWidget.count()):
+            self.myapp.ui.TemplatesListWidget.setCurrentRow(num)
+            self.myapp.templates.remove_current_template()
+        self.myapp.ui.TemplatesListWidget.blockSignals(False)
 
     def import_templates(self):
         # blocking signals, because signal gets fired after delete and crashes: 
@@ -50,6 +55,8 @@ class TemplateReportTestCase(unittest.TestCase):
         self.myapp.ui.TemplatesListWidget.blockSignals(False)
 
     def test_with_report_text(self):
+        self.import_templates()
+        self.myapp.ui.TemplatesListWidget.setCurrentRow(2)
         self.myapp.ui.SaveFullReportButton.click()
         doc = Document(self.reportdoc.absolute())
         self.assertEqual('The following text is only', doc.paragraphs[2].text[:26])
