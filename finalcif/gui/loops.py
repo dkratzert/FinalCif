@@ -108,13 +108,13 @@ class LoopTableModel(QAbstractTableModel):
         value = self._data[row][col]
         if role == Qt.SizeHintRole:
             return QSize(120, 50)
-        if role == Qt.TextAlignmentRole:
-            pass
+        #if role == Qt.TextAlignmentRole:
+        #    pass
             # if isnumeric(value):
             #    return Qt.AlignVCenter + Qt.AlignVertical_Mask
-        if role == Qt.BackgroundColorRole:
-            if (row, col) in [(x['row'], x['column']) for x in self.modified]:
-                return QVariant(QColor("#facaca"))
+        if role == Qt.BackgroundColorRole and \
+            (row, col) in [(x['row'], x['column']) for x in self.modified]:
+            return QVariant(QColor("#facaca"))
         if role == Qt.EditRole:
             return retranslate_delimiter(value)
         if role == Qt.DisplayRole:
@@ -122,12 +122,11 @@ class LoopTableModel(QAbstractTableModel):
 
     def headerData(self, section, orientation, role=None):
         # section is the index of the column/row.
-        if role == Qt.DisplayRole:
-            if orientation == Qt.Horizontal:
-                try:
-                    return str(self._header[section])
-                except IndexError:
-                    return ''
+        if role == Qt.DisplayRole and orientation == Qt.Horizontal:
+            try:
+                return str(self._header[section])
+            except IndexError:
+                return ''
         if role == Qt.TextAlignmentRole:
             return Qt.AlignVCenter + Qt.AlignLeft
 
