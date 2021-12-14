@@ -1440,7 +1440,7 @@ class AppWindow(QMainWindow):
             tags = loop.tags
             if not tags or len(tags) < 1:
                 continue
-            loop = Loop(tags, values=grouper(loop.values, loop.width()))
+            loop = Loop(tags, values=grouper(loop.values, loop.width()), parent=self.ui.LoopsTabWidget)
             self.ui.LoopsTabWidget.addTab(loop.tableview, cif_to_header_label.get(tags[0]) or tags[0])
             loop.model.modelChanged.connect(self.save_new_value_to_cif_block)
             self.ui.revertLoopsPushButton.clicked.connect(loop.model.revert)
