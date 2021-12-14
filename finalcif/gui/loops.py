@@ -8,26 +8,28 @@
 import copy
 from typing import Union, List, Any
 
+from PyQt5 import QtCore
 from PyQt5.QtCore import QAbstractTableModel, QModelIndex, Qt, QSize, QVariant, pyqtSignal, QEvent
 from PyQt5.QtGui import QColor, QCursor
 from PyQt5.QtWidgets import QTableView, QHeaderView, QMenu, QAction
 from gemmi.cif import as_string, is_null
 
 from finalcif.cif.text import retranslate_delimiter, utf8_to_str
+from finalcif.gui.dialogs import show_keyword_help
 
 
 class MyQTableView(QTableView):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent):
+        super().__init__(parent=parent)
 
     def contextMenuEvent(self, event):
         self.menu = QMenu(self)
-        delAction = QAction('Delete Row', self)
-        delAction.triggered.connect(lambda: self._delete_row(event))
-        addAction = QAction('Add Row', self)
-        addAction.triggered.connect(lambda: self._add_row(event))
-        self.menu.addAction(addAction)
-        self.menu.addAction(delAction)
+        del_action = QAction('Delete Row', self)
+        del_action.triggered.connect(lambda: self._delete_row(event))
+        add_action = QAction('Add Row', self)
+        add_action.triggered.connect(lambda: self._add_row(event))
+        self.menu.addAction(add_action)
+        self.menu.addAction(del_action)
         # add other required actions
         self.menu.popup(QCursor.pos())
 
@@ -43,14 +45,25 @@ class MyQTableView(QTableView):
             self.model().modelReset.emit()
 
 
-class Loop():
-    def __init__(self, tags: List[str], values: List[List[str]]):
-        self.tableview = MyQTableView()
+class Loop(QtCore.QObject):
+    def __init__(self, tags: List[str], values: List[List[str]], parent):
+        super(Loop, self).__init__(parent=parent)
+        self.parent = parent
+        self.tableview = MyQTableView(parent)
         self._values: List[List[str]] = self.get_string_values(values)
-        # print(self._values, '#_values')
         self.tags = tags
         self.model: Union[LoopTableModel, None] = None
         self.make_model()
+        self.tableview.horizontalHeader().sectionClicked.connect(self.display_help)
+
+    @QtCore.pyqtSlot(int)
+    def display_help(self, header_section: int):
+        from finalcif.cif.all_cif_dicts import cif_all_dict
+        tag = self.tags[header_section]
+        keyword_help = cif_all_dict.get(tag, None)
+        if keyword_help:
+            keyword_help = retranslate_delimiter(keyword_help, no_html_unescape=True)
+            show_keyword_help(self.parent, keyword_help, tag)
 
     def set_or_update_model(self, values: List[List[str]]):
         self.values = values
@@ -108,10 +121,10 @@ class LoopTableModel(QAbstractTableModel):
         value = self._data[row][col]
         if role == Qt.SizeHintRole:
             return QSize(120, 50)
-        #if role == Qt.TextAlignmentRole:
+        # if role == Qt.TextAlignmentRole:
         #    pass
-            # if isnumeric(value):
-            #    return Qt.AlignVCenter + Qt.AlignVertical_Mask
+        # if isnumeric(value):
+        #    return Qt.AlignVCenter + Qt.AlignVertical_Mask
         if role == Qt.BackgroundColorRole and \
             (row, col) in [(x['row'], x['column']) for x in self.modified]:
             return QVariant(QColor("#facaca"))

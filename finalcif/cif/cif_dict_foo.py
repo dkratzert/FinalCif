@@ -41,7 +41,7 @@ def process_cif_dict(cdic):
                         example = '\n'.join([str(x) for x in example])
                     if isinstance(example, list) and enumeration_detail:
                         example = '\n'.join(
-                            ["{}\t\t{}".format(str(x), str(y)) for x, y in zip(example, example_detail)])
+                            ["{}\t\t{}\n".format(str(x), str(y)) for x, y in zip(example, example_detail)])
                     example = format_definition(escape(str(example)))
                     definition = '{}\n\nExample:\n{}'.format(definition, example)
                 if enumeration:
@@ -49,7 +49,7 @@ def process_cif_dict(cdic):
                         enumeration = '\n'.join([str(x) for x in enumeration])
                     if isinstance(enumeration, list) and enumeration_detail:
                         enumeration = '\n'.join(
-                            ["{}\n\t{}".format(str(x), str(y)) for x, y in zip(enumeration, enumeration_detail)])
+                            ["{}\n\t{}\n".format(str(x), str(y)) for x, y in zip(enumeration, enumeration_detail)])
                     enumeration = format_definition(escape(str(enumeration)))
                     definition = '{}\n\nExample:\n{}'.format(definition, enumeration)
                 if isinstance(name, list):

@@ -1017,12 +1017,16 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre> Label of the atom whos
                                           'Example:\n'
                                           'occupancy\n'
                                           '\t_atom_site_occupancy\n'
+                                          '\n'
                                           'position_x\n'
                                           '\t_atom_site_fract_x\n'
+                                          '\n'
                                           'position_y\n'
                                           '\t_atom_site_fract_y\n'
+                                          '\n'
                                           'position_z\n'
-                                          '\t_atom_site_fract_z</pre>',
+                                          '\t_atom_site_fract_z\n'
+                                          '</pre>',
  '_restr_parameter_class_target': '<pre> The target value for the sum of values of the '
                                   'appropriate\n'
                                   ' parameter type multiplied by the _*_target_weight_param.</pre>',
