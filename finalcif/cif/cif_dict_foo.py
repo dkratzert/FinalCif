@@ -55,9 +55,9 @@ def process_cif_dict(cdic):
                 if isinstance(name, list):
                     for n in name:
                         # For keys like 'atom_site_aniso_b_[]' where the name has several subnames:
-                        alldic[n] = '<pre>' + format_definition(definition) + '</pre>'
+                        alldic[n] = '<pre><h2>{}</h2>{}</pre>'.format(n, format_definition(definition))
                 else:
-                    alldic[name] = '<pre>' + format_definition(definition) + '</pre>'
+                    alldic[name] = '<pre><h2>{}</h2>{}</pre>'.format(name, format_definition(definition))
     return alldic
 
 
