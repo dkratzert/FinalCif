@@ -43,7 +43,7 @@ def process_cif_dict(cdic):
                         example = '\n'.join(
                             ["{}\t\t{}\n".format(str(x), str(y)) for x, y in zip(example, example_detail)])
                     example = format_definition(escape(str(example)))
-                    definition = '{}\n\nExample:\n{}'.format(definition, example)
+                    definition = '{}\n\n<h3>Example:</h3>\n{}'.format(definition, example)
                 if enumeration:
                     if isinstance(enumeration, list) and not enumeration_detail:
                         enumeration = '\n'.join([str(x) for x in enumeration])
@@ -51,7 +51,7 @@ def process_cif_dict(cdic):
                         enumeration = '\n'.join(
                             ["{}\n\t{}\n".format(str(x), str(y)) for x, y in zip(enumeration, enumeration_detail)])
                     enumeration = format_definition(escape(str(enumeration)))
-                    definition = '{}\n\nExample:\n{}'.format(definition, enumeration)
+                    definition = '{}\n\n<h3>Example:</h3>\n{}'.format(definition, enumeration)
                 if isinstance(name, list):
                     for n in name:
                         # For keys like 'atom_site_aniso_b_[]' where the name has several subnames:
