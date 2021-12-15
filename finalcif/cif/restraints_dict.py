@@ -46,7 +46,7 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                    ' By adding 5 to the translations, the use of negative numbers\n'
                                    ' is avoided.\n'
                                    '\n'
-                                   'Example:\n'
+                                   '<h3>Example:</h3>\n'
                                    'None\n'
                                    '4\n'
                                    '7_645</pre>',
@@ -77,7 +77,7 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                    ' By adding 5 to the translations, the use of negative numbers\n'
                                    ' is avoided.\n'
                                    '\n'
-                                   'Example:\n'
+                                   '<h3>Example:</h3>\n'
                                    'None\n'
                                    '4\n'
                                    '7_645</pre>',
@@ -156,7 +156,7 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                  ' By adding 5 to the translations, the use of negative numbers\n'
                                  ' is avoided.\n'
                                  '\n'
-                                 'Example:\n'
+                                 '<h3>Example:</h3>\n'
                                  'None\n'
                                  '4\n'
                                  '7_645</pre>',
@@ -185,7 +185,7 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                  ' By adding 5 to the translations, the use of negative numbers\n'
                                  ' is avoided.\n'
                                  '\n'
-                                 'Example:\n'
+                                 '<h3>Example:</h3>\n'
                                  'None\n'
                                  '4\n'
                                  '7_645</pre>',
@@ -214,7 +214,7 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                  ' By adding 5 to the translations, the use of negative numbers\n'
                                  ' is avoided.\n'
                                  '\n'
-                                 'Example:\n'
+                                 '<h3>Example:</h3>\n'
                                  'None\n'
                                  '4\n'
                                  '7_645</pre>',
@@ -460,7 +460,7 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                     'numbers\n'
                                     ' is avoided.\n'
                                     '\n'
-                                    'Example:\n'
+                                    '<h3>Example:</h3>\n'
                                     'None\n'
                                     '4\n'
                                     '7_645</pre>',
@@ -496,7 +496,7 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                     'numbers\n'
                                     ' is avoided.\n'
                                     '\n'
-                                    'Example:\n'
+                                    '<h3>Example:</h3>\n'
                                     'None\n'
                                     '4\n'
                                     '7_645</pre>',
@@ -593,7 +593,7 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                        'numbers\n'
                                        ' is avoided.\n'
                                        '\n'
-                                       'Example:\n'
+                                       '<h3>Example:</h3>\n'
                                        'None\n'
                                        '4\n'
                                        '7_645</pre>',
@@ -633,7 +633,7 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                        'numbers\n'
                                        ' is avoided.\n'
                                        '\n'
-                                       'Example:\n'
+                                       '<h3>Example:</h3>\n'
                                        'None\n'
                                        '4\n'
                                        '7_645</pre>',
@@ -673,7 +673,7 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                        'numbers\n'
                                        ' is avoided.\n'
                                        '\n'
-                                       'Example:\n'
+                                       '<h3>Example:</h3>\n'
                                        'None\n'
                                        '4\n'
                                        '7_645</pre>',
@@ -762,7 +762,7 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                           'numbers\n'
                                           ' is avoided.\n'
                                           '\n'
-                                          'Example:\n'
+                                          '<h3>Example:</h3>\n'
                                           'None\n'
                                           '4\n'
                                           '7_645</pre>',
@@ -804,7 +804,7 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                           'numbers\n'
                                           ' is avoided.\n'
                                           '\n'
-                                          'Example:\n'
+                                          '<h3>Example:</h3>\n'
                                           'None\n'
                                           '4\n'
                                           '7_645</pre>',
@@ -924,7 +924,7 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                          'numbers\n'
                                          ' is avoided.\n'
                                          '\n'
-                                         'Example:\n'
+                                         '<h3>Example:</h3>\n'
                                          'None\n'
                                          '4\n'
                                          '7_645</pre>',
@@ -966,7 +966,7 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                          'numbers\n'
                                          ' is avoided.\n'
                                          '\n'
-                                         'Example:\n'
+                                         '<h3>Example:</h3>\n'
                                          'None\n'
                                          '4\n'
                                          '7_645</pre>',
@@ -1008,7 +1008,7 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                          'numbers\n'
                                          ' is avoided.\n'
                                          '\n'
-                                         'Example:\n'
+                                         '<h3>Example:</h3>\n'
                                          'None\n'
                                          '4\n'
                                          '7_645</pre>',
@@ -1050,7 +1050,7 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                          'numbers\n'
                                          ' is avoided.\n'
                                          '\n'
-                                         'Example:\n'
+                                         '<h3>Example:</h3>\n'
                                          'None\n'
                                          '4\n'
                                          '7_645</pre>',
@@ -1070,7 +1070,7 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                           'flag that indicates the nature of the value\n'
                                           ' that is being restrained.\n'
                                           '\n'
-                                          'Example:\n'
+                                          '<h3>Example:</h3>\n'
                                           'occupancy\n'
                                           '\t_atom_site_occupancy\n'
                                           '\n'
@@ -1158,7 +1158,7 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                                       'of negative numbers\n'
                                                       ' is avoided.\n'
                                                       '\n'
-                                                      'Example:\n'
+                                                      '<h3>Example:</h3>\n'
                                                       'None\n'
                                                       '4\n'
                                                       '7_645</pre>',
@@ -1197,7 +1197,7 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                ' By adding 5 to the translations, the use of negative numbers\n'
                                ' is avoided.\n'
                                '\n'
-                               'Example:\n'
+                               '<h3>Example:</h3>\n'
                                'None\n'
                                '4\n'
                                '7_645</pre>',
@@ -1253,7 +1253,7 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                     'numbers\n'
                                     ' is avoided.\n'
                                     '\n'
-                                    'Example:\n'
+                                    '<h3>Example:</h3>\n'
                                     'None\n'
                                     '4\n'
                                     '7_645</pre>',
@@ -1314,7 +1314,7 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                    ' By adding 5 to the translations, the use of negative numbers\n'
                                    ' is avoided.\n'
                                    '\n'
-                                   'Example:\n'
+                                   '<h3>Example:</h3>\n'
                                    'None\n'
                                    '4\n'
                                    '7_645</pre>',
@@ -1345,7 +1345,7 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                    ' By adding 5 to the translations, the use of negative numbers\n'
                                    ' is avoided.\n'
                                    '\n'
-                                   'Example:\n'
+                                   '<h3>Example:</h3>\n'
                                    'None\n'
                                    '4\n'
                                    '7_645</pre>',
@@ -1376,7 +1376,7 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                    ' By adding 5 to the translations, the use of negative numbers\n'
                                    ' is avoided.\n'
                                    '\n'
-                                   'Example:\n'
+                                   '<h3>Example:</h3>\n'
                                    'None\n'
                                    '4\n'
                                    '7_645</pre>',
@@ -1407,7 +1407,7 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                    ' By adding 5 to the translations, the use of negative numbers\n'
                                    ' is avoided.\n'
                                    '\n'
-                                   'Example:\n'
+                                   '<h3>Example:</h3>\n'
                                    'None\n'
                                    '4\n'
                                    '7_645</pre>',

@@ -5,7 +5,7 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                                'modulation\n'
                                                ' functions.\n'
                                                '\n'
-                                               'Example:\n'
+                                               '<h3>Example:</h3>\n'
                                                'q(4)=q(1)+q(2)</pre>',
  '_atom_site_Fourier_wave_vector_seq_id': '<pre><h2>_atom_site_Fourier_wave_vector_seq_id</h2> A '
                                           'numeric code identifying the wave vectors defined in\n'
@@ -174,7 +174,7 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                    'parameterized\n'
                                    ' by Fourier series.\n'
                                    '\n'
-                                   'Example:\n'
+                                   '<h3>Example:</h3>\n'
                                    'U11\n'
                                    '\tmodulation of U11\n'
                                    '\n'
@@ -209,7 +209,7 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' modulation of the thermal parameters of a given atom\n'
                                  ' site.\n'
                                  '\n'
-                                 'Example:\n'
+                                 '<h3>Example:</h3>\n'
                                  'yes\n'
                                  '\tmodulation of thermal parameters\n'
                                  '\n'
@@ -272,7 +272,7 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                      ' subsystem. a1, a2 and a3 are defined by\n'
                                      ' _atom_sites_displace_Fourier_axes_description.\n'
                                      '\n'
-                                     'Example:\n'
+                                     '<h3>Example:</h3>\n'
                                      'x\n'
                                      '\tdisplacement along the a axis\n'
                                      '\n'
@@ -432,7 +432,7 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                         'atom\n'
                                         ' site.\n'
                                         '\n'
-                                        'Example:\n'
+                                        '<h3>Example:</h3>\n'
                                         'yes\n'
                                         '\tdisplacive modulation\n'
                                         '\n'
@@ -754,7 +754,7 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                    'signals whether the structural model includes the\n'
                                    ' modulation of the occupation of a given atom site.\n'
                                    '\n'
-                                   'Example:\n'
+                                   '<h3>Example:</h3>\n'
                                    'yes\n'
                                    '\toccupational modulation\n'
                                    '\n'
@@ -866,7 +866,7 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                               ' _atom_site_phason_formula and _atom_site_phason_coeff should\n'
                               ' be used (see also _refine_ls_mod_overall_phason_).\n'
                               '\n'
-                              'Example:\n'
+                              '<h3>Example:</h3>\n'
                               'Axe\n'
                               '\tAxe, J. D. (1980). Phys. Rev. B, 21, 4181-4190.\n'
                               '\n'
@@ -910,7 +910,7 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                 ' structure of each subsystem. a~1~, a~2~ and a~3~ are defined by\n'
                                 ' _atom_sites_rot_Fourier_axes_description.\n'
                                 '\n'
-                                'Example:\n'
+                                '<h3>Example:</h3>\n'
                                 'x\n'
                                 '\trotation around the a axis\n'
                                 '\n'
@@ -1060,7 +1060,7 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                                   'when they are other\n'
                                                   ' than the crystallographic axes.\n'
                                                   '\n'
-                                                  'Example:\n'
+                                                  '<h3>Example:</h3>\n'
                                                   ' a1 and a2 are respectively the long molecular '
                                                   'axis\n'
                                                   ' and the axis normal to the mean molecular '
@@ -1298,7 +1298,7 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                              'other than the\n'
                                              ' crystallographic axes.\n'
                                              '\n'
-                                             'Example:\n'
+                                             '<h3>Example:</h3>\n'
                                              ' a1 and a2 are respectively the long molecular axis\n'
                                              ' and the axis normal to the mean molecular '
                                              'plane.</pre>',
@@ -1348,7 +1348,7 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                      ' _pd_block_id in the dictionary extension cif_pd.dic\n'
                      ' (http://www.iucr.org/cif/pd/index.html).\n'
                      '\n'
-                     'Example:\n'
+                     '<h3>Example:</h3>\n'
                      '\n'
                      '    loop_\n'
                      '    _audit_link_block_code\n'
@@ -1375,7 +1375,7 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                        ' to index the additional wave vectors should be clearly '
                                        'indicated.\n'
                                        '\n'
-                                       'Example:\n'
+                                       '<h3>Example:</h3>\n'
                                        ' a*,b*,c* (reciprocal basis spanning the lattice of main\n'
                                        ' reflections) and q (incommensurate with respect to '
                                        'a*,b*,c*)\n'
@@ -1391,7 +1391,7 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                          ' the crystallographic cell parameters of each subsystem present in\n'
                          ' a composite.\n'
                          '\n'
-                         'Example:\n'
+                         '<h3>Example:</h3>\n'
                          '\n'
                          '     _cell_subsystems_number                  2\n'
                          '     loop_\n'
@@ -1410,14 +1410,14 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                          ' This code is used to identify the data blocks that contain\n'
                          ' the structural information associated with the subsystem.\n'
                          '\n'
-                         'Example:\n'
+                         '<h3>Example:</h3>\n'
                          'NbS2</pre>',
  '_cell_subsystem_description': '<pre><h2>_cell_subsystem_description</h2> Description of each '
                                 'subsystem defining a composite structurally.\n'
                                 ' The number of definitions must match the number given in\n'
                                 ' _cell_subsystems_number.\n'
                                 '\n'
-                                'Example:\n'
+                                '<h3>Example:</h3>\n'
                                 'NbS2 part of the layer compound (LaS)~1.14~NbS~2~</pre>',
  '_cell_subsystem_matrix_W_10_1': '<pre><h2>_cell_subsystem_matrix_W_10_1</h2> In the case of '
                                   'composites, for each subsystem the matrix W as\n'
@@ -11766,7 +11766,7 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                           'category describe the gross\n'
                           ' structure of the subsystems present in a composite.\n'
                           '\n'
-                          'Example:\n'
+                          '<h3>Example:</h3>\n'
                           '\n'
                           '     _cell_subsystems_number                  2</pre>',
  '_cell_subsystems_number': '<pre><h2>_cell_subsystems_number</h2> The number of subsystems used '
@@ -11780,7 +11780,7 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                            ' over all wave vectors. In this version of the dictionary, the\n'
                            ' index i has been restricted to be less than 9.\n'
                            '\n'
-                           'Example:\n'
+                           '<h3>Example:</h3>\n'
                            '\n'
                            '     loop_\n'
                            '         _cell_wave_vector_seq_id\n'
@@ -11853,7 +11853,7 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                             ' over all wave vectors. In this version of the dictionary, the\n'
                             ' index i has been restricted to be less than 9.\n'
                             '\n'
-                            'Example:\n'
+                            '<h3>Example:</h3>\n'
                             '\n'
                             "     _cell_wave_vectors_meas_details          'Determined from "
                             "profiles along q'</pre>",
@@ -12358,7 +12358,7 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                      '        (periodic in three dimensions), modulated or '
                                      'composite.\n'
                                      '\n'
-                                     'Example:\n'
+                                     '<h3>Example:</h3>\n'
                                      'cryst\n'
                                      '\tcrystalline structure\n'
                                      '\n'
@@ -12413,7 +12413,7 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                     'single\n'
                                     " full stop '.' is used.\n"
                                     '\n'
-                                    'Example:\n'
+                                    '<h3>Example:</h3>\n'
                                     'None\n'
                                     '4\n'
                                     '7_6455</pre>',
@@ -12443,7 +12443,7 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                     'single\n'
                                     " full stop '.' is used.\n"
                                     '\n'
-                                    'Example:\n'
+                                    '<h3>Example:</h3>\n'
                                     'None\n'
                                     '4\n'
                                     '7_6455</pre>',
@@ -12473,7 +12473,7 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                     'single\n'
                                     " full stop '.' is used.\n"
                                     '\n'
-                                    'Example:\n'
+                                    '<h3>Example:</h3>\n'
                                     'None\n'
                                     '4\n'
                                     '7_6455</pre>',
@@ -12518,7 +12518,7 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                    'single\n'
                                    " full stop '.' is used.\n"
                                    '\n'
-                                   'Example:\n'
+                                   '<h3>Example:</h3>\n'
                                    'None\n'
                                    '4\n'
                                    '7_6455</pre>',
@@ -12547,7 +12547,7 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                    'single\n'
                                    " full stop '.' is used.\n"
                                    '\n'
-                                   'Example:\n'
+                                   '<h3>Example:</h3>\n'
                                    'None\n'
                                    '4\n'
                                    '7_6455</pre>',
@@ -12598,7 +12598,7 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                       'single\n'
                                       " full stop '.' is used.\n"
                                       '\n'
-                                      'Example:\n'
+                                      '<h3>Example:</h3>\n'
                                       'None\n'
                                       '4\n'
                                       '7_6455</pre>',
@@ -12632,7 +12632,7 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                       'single\n'
                                       " full stop '.' is used.\n"
                                       '\n'
-                                      'Example:\n'
+                                      '<h3>Example:</h3>\n'
                                       'None\n'
                                       '4\n'
                                       '7_6455</pre>',
@@ -12696,7 +12696,7 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                       ' If no symmetry operations or translations are applicable,\n'
                                       " then a single full stop '.' is used.\n"
                                       '\n'
-                                      'Example:\n'
+                                      '<h3>Example:</h3>\n'
                                       'None\n'
                                       '4\n'
                                       '7_6455</pre>',
@@ -12728,7 +12728,7 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                       ' If no symmetry operations or translations are applicable,\n'
                                       " then a single full stop '.' is used.\n"
                                       '\n'
-                                      'Example:\n'
+                                      '<h3>Example:</h3>\n'
                                       'None\n'
                                       '4\n'
                                       '7_6455</pre>',
@@ -12760,7 +12760,7 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                       ' If no symmetry operations or translations are applicable,\n'
                                       " then a single full stop '.' is used.\n"
                                       '\n'
-                                      'Example:\n'
+                                      '<h3>Example:</h3>\n'
                                       'None\n'
                                       '4\n'
                                       '7_6455</pre>',
@@ -12792,7 +12792,7 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                       ' If no symmetry operations or translations are applicable,\n'
                                       " then a single full stop '.' is used.\n"
                                       '\n'
-                                      'Example:\n'
+                                      '<h3>Example:</h3>\n'
                                       'None\n'
                                       '4\n'
                                       '7_6455</pre>',
@@ -12805,7 +12805,7 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                     'modulation present in the structural model and their\n'
                                     ' parameterization.\n'
                                     '\n'
-                                    'Example:\n'
+                                    '<h3>Example:</h3>\n'
                                     'Only displacive modulation. Fourier series.\n'
                                     'Modulation of atom S(1) described by a non-standard\n'
                                     ' linear sawtooth function</pre>',
@@ -12813,7 +12813,7 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                       'of hydrogen-atom modulation parameters in the\n'
                                       ' refinement.\n'
                                       '\n'
-                                      'Example:\n'
+                                      '<h3>Example:</h3>\n'
                                       'refA\n'
                                       '\trefined H-atom displacive modulation parameters only\n'
                                       '\n'
@@ -12837,7 +12837,7 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
  '_refine_ls_mod_overall_phason_formula': '<pre><h2>_refine_ls_mod_overall_phason_formula</h2> The '
                                           'expression for the overall phason correction, if used.\n'
                                           '\n'
-                                          'Example:\n'
+                                          '<h3>Example:</h3>\n'
                                           'Axe\n'
                                           '\tAxe, J. D. (1980). Phys. Rev. B, 21, 4181-4190.\n'
                                           '\n'
@@ -13045,7 +13045,7 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                               ' Ref: Wolff, P. M. de, Janssen, T. &amp; Janner, A. (1981).\n'
                               '      Acta Cryst. A37, 625-636.\n'
                               '\n'
-                              'Example:\n'
+                              '<h3>Example:</h3>\n'
                               '28a.10.1/2</pre>',
  '_space_group_ssg_name': '<pre><h2>_space_group_ssg_name</h2> Superspace-group symbol conforming '
                           'to an alternative definition\n'
@@ -13064,7 +13064,7 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                           ' symmetry of each subsystem can be derived using the\n'
                           ' appropriate W matrices.\n'
                           '\n'
-                          'Example:\n'
+                          '<h3>Example:</h3>\n'
                           "Hall's notation W:-P -2xb -2ya:q q</pre>",
  '_space_group_ssg_name_IT': '<pre><h2>_space_group_ssg_name_IT</h2> Superspace-group symbol as '
                              'given in International Tables for\n'
@@ -13086,7 +13086,7 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                              ' Ref: International Tables for Crystallography (2004). Vol. C,\n'
                              '      Chapter 9.8. Dordrecht: Kluwer Academic Publishers.\n'
                              '\n'
-                             'Example:\n'
+                             '<h3>Example:</h3>\n'
                              'P n m a (0 0 \\g) 0 s 0</pre>',
  '_space_group_ssg_name_WJJ': '<pre><h2>_space_group_ssg_name_WJJ</h2> Superspace-group symbol as '
                               'given by de Wolff, Janssen &amp; Janner\n'
@@ -13106,7 +13106,7 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                               ' Ref: Wolff, P. M. de, Janssen, T. &amp; Janner, A. (1981).\n'
                               '      Acta Cryst. A37, 625-636.\n'
                               '\n'
-                              'Example:\n'
+                              '<h3>Example:</h3>\n'
                               'P:P c m n:s s -1</pre>',
  '_space_group_symop_[ms]': '<pre><h2>_space_group_symop_[ms]</h2> The SPACE_GROUP_SYMOP category '
                             'introduced in the symmetry CIF\n'
@@ -13117,7 +13117,7 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                             ' category, but include the _ssg_ flag to indicate their\n'
                             ' dimensionality of &gt; 3.\n'
                             '\n'
-                            'Example:\n'
+                            '<h3>Example:</h3>\n'
                             '\n'
                             '    loop_\n'
                             '        _space_group_symop_ssg_id\n'
@@ -13155,5 +13155,5 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                                'always be present\n'
                                                ' in a CIF corresponding to a modulated structure.\n'
                                                '\n'
-                                               'Example:\n'
+                                               '<h3>Example:</h3>\n'
                                                'x1,-x2,x3,1/2+x4</pre>'}
