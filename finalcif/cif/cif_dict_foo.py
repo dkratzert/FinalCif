@@ -76,7 +76,6 @@ def get_dictionary_cif(link, path_to_cif):
 
 
 if __name__ == '__main__':
-    main_path = Path('/Users/daniel/Downloads/')
     main_path = Path.home()
 
     core_path = main_path.joinpath('cif_core.dic.txt')
