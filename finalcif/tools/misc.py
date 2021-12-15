@@ -250,6 +250,11 @@ def to_int(st: Union[str, List[Union[str, int]]]) -> Union[int, List[int], None]
             return None
 
 
+def make_numbered(items):
+    items.insert(0, '')
+    return [(x, y) for x, y in enumerate(items)]
+
+
 # '_space_group_centring_type',  # seems to be used nowere
 # '_exptl_absorpt_special_details',   # This is not official?!?
 essential_keys = (
@@ -374,22 +379,6 @@ essential_keys = (
     '_space_group_name_Hall',
     # '_space_group_symop_operation_xyz'     
 )
-
-twin_keys = {
-    '_twin_individual_id'                   : 'The unique identifier for this twin individual',
-    '_twin_individual_twin_lattice_type'    : 'Identification of the symmetry relationships between the twin lattices',
-    '_twin_special_details'                 : 'Information about twinning in the sample not described elsewhere',
-    '_twin_individual_mass_fraction_refined': 'The refined mass fraction of this twin individual',
-    '_twin_individual_twin_matrix_11'       : 'Elements of the matrix',
-    '_twin_individual_twin_matrix_12'       : 'Elements of the matrix',
-    '_twin_individual_twin_matrix_13'       : 'Elements of the matrix',
-    '_twin_individual_twin_matrix_21'       : 'Elements of the matrix',
-    '_twin_individual_twin_matrix_22'       : 'Elements of the matrix',
-    '_twin_individual_twin_matrix_23'       : 'Elements of the matrix',
-    '_twin_individual_twin_matrix_31'       : 'Elements of the matrix',
-    '_twin_individual_twin_matrix_32'       : 'Elements of the matrix',
-    '_twin_individual_twin_matrix_33'       : 'Elements of the matrix',
-}
 
 non_centrosymm_keys = ('_chemical_absolute_configuration', '_refine_ls_abs_structure_Flack',
                        '_refine_ls_abs_structure_details')
@@ -583,7 +572,36 @@ SOLUTION_SECONDARY = (
     (11, 'other'),
 )
 
+CRYSTAL_TYPE = (
+    (0, 'cryst'),
+    (1, 'mod'),
+    (2, 'comp')
+)
+
+TWIN_DIMENSIONALITY = make_numbered(['triperiodic', 'diperiodic', 'monoperiodic'])
+
+CRYSTAL_SYSTEM = make_numbered(['triclinic', 'monoclinic', 'orthorhombic',
+                                'tetragonal', 'trigonal', 'hexagonal', 'cubic'])
+
+CELL_SETTING = make_numbered(['triclinic', 'monoclinic', 'orthorhombic', 'tetragonal',
+                              'rhombohedral', 'trigonal', 'hexagonal', 'cubic'])
+
+PUBL_REQUESTED_CATEGORY = make_numbered(['AD', 'CI', 'CM', 'CO', 'EI', 'EM', 'EO', 'FA', 'FI', 'FM', 'FO', 'GI',
+                                         'GM', 'GO', 'HI', 'HM', 'HO', 'QI', 'QM', 'QO', 'SC'])
+
+PUBL_BODY_ELEMENT = make_numbered(['section', 'subsection', 'subsubsection', 'appendix', 'footnote'])
+
+PUBL_BODY_FORMAT = make_numbered(['ascii', 'cif', 'latex', 'rtf', 'sgml', 'tex', 'troff'])
+
+PUBL_MANUSCRIPT_INCL_EXTRA_DEFN = make_numbered(['no', 'n', 'yes', 'y'])
+
+EXPTL_CRYSTAL_COLOUR_LUSTRE = make_numbered(['metallic', 'dull', 'clear'])
+
+EXPTL_CRYSTAL_COLOUR_MODIFIER = make_numbered(['light', 'dark', 'whitish', 'blackish', 'grayish', 'brownish',
+                                               'reddish', 'pinkish', 'orangish', 'yellowish', 'greenish', 'bluish'])
+
 combobox_fields = {'_exptl_crystal_colour'                : COLOUR_CHOICES,
+                   '_exptl_crystal_colour_primary'        : COLOUR_CHOICES,
                    '_chemical_absolute_configuration'     : ABSOLUTE_CONFIGURATION_CHOICES,
                    '_exptl_absorpt_correction_type'       : ABSORPTION_CORRECTION_TYPES,
                    '_refine_ls_hydrogen_treatment'        : REFINE_LS_HYDROGEN_TREATMENT,
@@ -593,6 +611,16 @@ combobox_fields = {'_exptl_crystal_colour'                : COLOUR_CHOICES,
                    '_diffrn_measurement_specimen_support' : SPECIMEN_SUPPORT,
                    '_atom_sites_solution_hydrogens'       : SOLUTION_PRIMARY,
                    '_diffrn_measurement_specimen_adhesive': ADHESIVE,
+                   '_exptl_crystal_type_of_structure'     : CRYSTAL_TYPE,
+                   '_twin_dimensionality'                 : TWIN_DIMENSIONALITY,
+                   '_space_group_crystal_system'          : CRYSTAL_SYSTEM,
+                   '_symmetry_cell_setting'               : CELL_SETTING,
+                   '_publ_requested_category'             : PUBL_REQUESTED_CATEGORY,
+                   '_publ_body_element'                   : PUBL_BODY_ELEMENT,
+                   '_publ_body_format'                    : PUBL_BODY_FORMAT,
+                   '_publ_manuscript_incl_extra_defn'     : PUBL_MANUSCRIPT_INCL_EXTRA_DEFN,
+                   '_exptl_crystal_colour_lustre'         : EXPTL_CRYSTAL_COLOUR_LUSTRE,
+                   '_exptl_crystal_colour_modifier'       : EXPTL_CRYSTAL_COLOUR_MODIFIER,
                    }
 
 include_equipment_imports = (
