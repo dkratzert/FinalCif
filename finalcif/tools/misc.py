@@ -600,6 +600,10 @@ EXPTL_CRYSTAL_COLOUR_LUSTRE = make_numbered(['metallic', 'dull', 'clear'])
 EXPTL_CRYSTAL_COLOUR_MODIFIER = make_numbered(['light', 'dark', 'whitish', 'blackish', 'grayish', 'brownish',
                                                'reddish', 'pinkish', 'orangish', 'yellowish', 'greenish', 'bluish'])
 
+REFINE_LS_STRUCTURE_FACTOR_COEF = make_numbered(['F', 'Fsqd', 'Inet'])
+
+REFINE_LS_MATRIX_TYPE = make_numbered(['full', 'fullcycle', 'atomblock', 'userblock', 'diagonal', 'sparse'])
+
 combobox_fields = {'_exptl_crystal_colour'                : COLOUR_CHOICES,
                    '_exptl_crystal_colour_primary'        : COLOUR_CHOICES,
                    '_chemical_absolute_configuration'     : ABSOLUTE_CONFIGURATION_CHOICES,
@@ -621,6 +625,8 @@ combobox_fields = {'_exptl_crystal_colour'                : COLOUR_CHOICES,
                    '_publ_manuscript_incl_extra_defn'     : PUBL_MANUSCRIPT_INCL_EXTRA_DEFN,
                    '_exptl_crystal_colour_lustre'         : EXPTL_CRYSTAL_COLOUR_LUSTRE,
                    '_exptl_crystal_colour_modifier'       : EXPTL_CRYSTAL_COLOUR_MODIFIER,
+                   '_refine_ls_structure_factor_coef'     : REFINE_LS_STRUCTURE_FACTOR_COEF,
+                   '_refine_ls_matrix_type'               : REFINE_LS_MATRIX_TYPE,
                    }
 
 include_equipment_imports = (
