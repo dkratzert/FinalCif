@@ -69,3 +69,9 @@ Some CIF writing programs still use the global\_ keyword. You may circumvent thi
 global\_ key with a data\_ keyword and delete the previous data\_.
 
 Also, there is only *one* data\_ per file allowed for FinalCif! FinalCif does not support multi-CIFs.
+
+
+**Help for CIF keywords**
+
+A click on one of the CIF keywords in the vertical header of the main table pops up a window
+with explanations about the specific keyword.
