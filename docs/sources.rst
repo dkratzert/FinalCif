@@ -54,6 +54,8 @@ Run FinalCif:
 
     ./finalcif-start.sh
 
+Next time, just run ./finalcif-start.sh.
+
 
 Manual install from source
 --------------------------
