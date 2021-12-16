@@ -1,2 +1,2 @@
 
-VERSION = 94
+VERSION = 95
