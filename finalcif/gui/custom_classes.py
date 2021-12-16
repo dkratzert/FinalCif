@@ -12,7 +12,6 @@ from finalcif.cif.text import retranslate_delimiter
 from finalcif.gui.dialogs import show_keyword_help
 from finalcif.tools.misc import text_field_keys
 
-
 light_green = QColor(217, 255, 201)
 blue = QColor(102, 150, 179)
 yellow = QColor(250, 247, 150)  # #faf796
@@ -151,6 +150,16 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         if keyword_help:
             keyword_help = retranslate_delimiter(keyword_help, no_html_unescape=True)
             show_keyword_help(self.parent, keyword_help, itemtext)
+        elif itemtext.startswith('_vrf_'):
+            helptxt = '<pre><h2>Validation Response Form (VRF)</h2>\n' \
+                   'The Validation Response Form is supplied in the checkCIF report for ' \
+                   'problems that have triggered Alerts. It ' \
+                   'provides a field for the author to respond to the alert. ' \
+                   'The response is clearly visible to the review process. \n' \
+                   'Usually, only level A or B alerts need a VRF.'
+            show_keyword_help(self.parent, helptxt, itemtext)
+        else:
+            show_keyword_help(self.parent, 'No help available for this key.', '')
 
     def add_separation_line(self, row_num: int) -> None:
         """
