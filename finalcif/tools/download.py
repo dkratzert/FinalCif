@@ -37,7 +37,8 @@ class MyDownloader(QObject):
     @pyqtSlot()
     def download(self) -> None:
         # print('Downloading:', self.url)
-        user_agent = 'FinalCif v{}'.format(VERSION)
+        OS = sys.platform
+        user_agent = 'FinalCif v{} ({})'.format(VERSION, OS)
         headers = {
             'User-Agent': user_agent,
         }
