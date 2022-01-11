@@ -273,25 +273,6 @@ def populate_main_table_values(main_table: Table, cif: CifContainer):
     crystal_size_max = cif['_exptl_crystal_size_max']
     theta_min = cif['_diffrn_reflns_theta_min']
     theta_max = cif['_diffrn_reflns_theta_max']
-
-    if all([cif['_diffrn_reflns_limit_h_min'], cif['_diffrn_reflns_limit_h_max'],
-            cif['_diffrn_reflns_limit_k_min'], cif['_diffrn_reflns_limit_k_max'],
-            cif['_diffrn_reflns_limit_l_min'], cif['_diffrn_reflns_limit_l_max']
-            ]):
-        limit_h_min = cif['_diffrn_reflns_limit_h_min']
-        limit_h_max = cif['_diffrn_reflns_limit_h_max']
-        limit_k_min = cif['_diffrn_reflns_limit_k_min']
-        limit_k_max = cif['_diffrn_reflns_limit_k_max']
-        limit_l_min = cif['_diffrn_reflns_limit_l_min']
-        limit_l_max = cif['_diffrn_reflns_limit_l_max']
-    else:
-        limits = cif.min_max_diffrn_reflns_limit()
-        limit_h_min = limits.h_min
-        limit_h_max = limits.h_max
-        limit_k_min = limits.k_min
-        limit_k_max = limits.k_max
-        limit_l_min = limits.l_min
-        limit_l_max = limits.l_max
     ls_number_reflns = cif['_refine_ls_number_reflns']
     ls_number_restraints = cif['_refine_ls_number_restraints']
     ls_number_parameters = cif['_refine_ls_number_parameters']
