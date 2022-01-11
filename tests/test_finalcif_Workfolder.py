@@ -335,7 +335,7 @@ class TestWorkfolder(unittest.TestCase):
         # And unquoted in the application:
         self.assertEqual(r'test 12 Å', self.cell_text(key='_diffrn_measurement_method', col=0))
         self.assertEqual('test1ä', self.cell_text(key='_atom_sites_solution_primary', col=0))
-        self.assertEqual(r'test1a\"', self.myapp.cif['_atom_sites_solution_primary'])
+        self.assertEqual(r'test1\"a', self.myapp.cif['_atom_sites_solution_primary'])
         self.assertEqual('test2ö', self.cell_text(key='_atom_sites_solution_secondary', col=0))
         self.assertEqual('test3ü', self.cell_text(key='_audit_contact_author_address', col=0))
         self.assertEqual('test4ß', self.cell_text(key='_audit_contact_author_email', col=0))
