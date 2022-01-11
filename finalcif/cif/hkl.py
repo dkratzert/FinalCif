@@ -33,6 +33,7 @@ class HKL():
         return self._doc.as_string(style=Style.Simple)
 
     def _get_hkl_as_block(self):
+        hkl_width = self._get_hkl_with()
         loop_header = ['index_h',
                        'index_k',
                        'index_l',
@@ -47,7 +48,9 @@ class HKL():
                 continue
             # Do not use data after the 0 0 0 reflection
             if zero_reflection_pattern.match(line):
-                loop.add_row(splitline)
+                # Need to truncate, because some programs add the scale group even if
+                # there is no scale group in other reflections
+                loop.add_row(splitline[:hkl_width])
                 break
             try:
                 loop.add_row(splitline[:len(loop_header)])
