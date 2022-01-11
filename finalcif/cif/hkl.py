@@ -33,6 +33,7 @@ class HKL():
         return self._doc.as_string(style=Style.Simple)
 
     def _get_hkl_as_block(self):
+        hkl_with = self._get_hkl_with()
         loop_header = ['index_h',
                        'index_k',
                        'index_l',
@@ -47,7 +48,7 @@ class HKL():
                 continue
             # Do not use data after the 0 0 0 reflection
             if zero_reflection_pattern.match(line):
-                loop.add_row(splitline)
+                loop.add_row(splitline[:hkl_with])
                 break
             try:
                 loop.add_row(splitline[:len(loop_header)])
