@@ -809,7 +809,7 @@ class AppWindow(QMainWindow):
         else:
             picfile = Path(self.final_cif_file_name.stem + '.gif')
         try:
-            if self.ui.TemplatesListWidget.currentRow() == 0:
+            if self.ui.TemplatesListWidget.currentRow() == 0 or not self.ui.TemplatesListWidget.currentItem():
                 make_report_from(options=self.options, file_obj=self.final_cif_file_name,
                                  output_filename=report_filename, picfile=picfile)
             else:
