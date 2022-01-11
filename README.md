@@ -1,6 +1,6 @@
 # FinalCif
 
-FinalCif helps you to get a complete cif file from a single-xrystal X-ray diffraction experiment. See here [https://dkratzert.de/finalcif.html](https://dkratzert.de/finalcif.html) for details.
+FinalCif helps you to get a complete CIF file from a single-xrystal X-ray diffraction experiment. See here [https://dkratzert.de/finalcif.html](https://dkratzert.de/finalcif.html) for details.
 
 **Report templates**
 - [A template with everything in](https://github.com/dkratzert/FinalCif/raw/master/template/template_text.docx)
