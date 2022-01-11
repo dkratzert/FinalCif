@@ -60,10 +60,10 @@ class TestText(unittest.TestCase):
         self.assertEqual('Crystals were grown from thf at -20 °C.', r)
 
     def test_delimit_umlaut(self):
-        self.assertEqual(r'a\"o\"u\"\,c', delimit_string('äöüç'))
+        self.assertEqual(r'\"a\"o\"u\,c', delimit_string('äöüç'))
 
     def test__backwards_delimit_umlaut(self):
-        self.assertEqual('äöüç', retranslate_delimiter(r'a\"o\"u\"\,c'))
+        self.assertEqual('äöüç', retranslate_delimiter(r'\"a\"o\"u\,c'))
 
     def test_retranslate_all(self):
         for char in charcters:
@@ -79,7 +79,7 @@ class TestHeavyUtf8(unittest.TestCase):
                    "ℕ ⊆ ℕ₀ ⊂ ℤ ⊂ ℚ ⊂ ℝ ⊂ ℂ, ⊥ < a ≠ b ≡ c ≤ d ≪ ⊤ ⇒ (A ⇔ B), " \
                    "2H₂ + O₂ ⇌ 2H₂O, R = 4.7 kΩ, ⌀ 200 mm"
         # The expected result is a mix of CIF and html entities:
-        self.quoted = r"&#8750; E&#8901;da = Q,  n \rightarrow \infty, &#8721; f(i) = &#8719; g(i), " \
+        self.quoted = r"&#8750; E&#8901;da = Q,  n \\rightarrow \\infty, &#8721; f(i) = &#8719; g(i), " \
                       r"&#8704;x&#8712;&#8477;: &#8968;x&#8969; = &#8722;&#8970;&#8722;x&#8971;, \a " \
                       r"&#8743; &#172;\b = &#172;(&#172;\a &#8744; \b), " \
                       r"&#8469; &#8838; &#8469;&#8320; &#8834; &#8484; &#8834; &#8474; &#8834; &#8477; " \
