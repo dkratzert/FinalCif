@@ -150,6 +150,24 @@ charcters = {
     # "1̄": r'\=1',  # Does not work in QT?
 }
 
+false_characters_map = {
+    # Fix for wrong characters in FinalCif prior to version 96:
+    'ü': r'u\"',
+    'Ü': r'U\"',
+    'ö': r'o\"',
+    'Ö': r'O\"',
+    'ä': r'a\"',
+    'Ä': r'A\"',
+}
+
+
+def invert_dict(input: dict) -> dict:
+    return {v: k for k, v in input.items()}
+
+
+inverted_characters_map = invert_dict(charcters)
+inverted_characters_map.update(invert_dict(false_characters_map))
+
 
 def utf8_to_str(txt: str) -> str:
     """
@@ -173,7 +191,6 @@ def retranslate_delimiter(txt: str, no_html_unescape: bool = False) -> str:
     """
     Translates delimited cif characters back to unicode characters.
     """
-    inverted_characters_map = {v: k for k, v in charcters.items()}
     for char in inverted_characters_map.keys():
         txt = txt.replace(char, inverted_characters_map[char])
     if no_html_unescape:
