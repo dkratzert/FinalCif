@@ -1,7 +1,8 @@
 FinalCif recent changes
 -----------------------
 
--v95 Fixes wrong translation from german umlauts to CIF syntax e.g. u\" instead of \"u
+-v95 Fixes wrong translation from german umlauts to CIF syntax e.g. u\" instead of \"u.
+     Fixes crash with hkl files where the 0 0 0 reflection has a different row size than the others.
 -v95 Added help texts for CIF keywords in loops.
 -v94 Improved help texts for CIF keywords. Internal refactorings.
 -v93 Click on vertical table header opens help window instead of help text inside the header section.
