@@ -33,7 +33,7 @@ class HKL():
         return self._doc.as_string(style=Style.Simple)
 
     def _get_hkl_as_block(self):
-        hkl_width = self._get_hkl_with()
+        hkl_width = self._get_hkl_width()
         loop_header = ['index_h',
                        'index_k',
                        'index_l',
@@ -62,11 +62,11 @@ class HKL():
         return self.hkl_as_cif[:250]
 
     def _trim_header_to_hkl_width(self, loop_header):
-        hkl_with = self._get_hkl_with()
+        hkl_with = self._get_hkl_width()
         trimmed_header = loop_header[:hkl_with]
         return trimmed_header
 
-    def _get_hkl_with(self) -> int:
+    def _get_hkl_width(self) -> int:
         first_lines = self._hkl_file[:150].strip().splitlines(keepends=False)
         if len(first_lines) > 1:
             return len(first_lines[1].split())
