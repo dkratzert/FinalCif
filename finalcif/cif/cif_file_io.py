@@ -55,6 +55,19 @@ class CifContainer():
         self._name2elements = dict(
             zip([x.upper() for x in self.block.find_loop('_atom_site_label')],
                 [x.upper() for x in self.block.find_loop('_atom_site_type_symbol')]))
+        self.check_hkl_min_max()
+
+    def check_hkl_min_max(self):
+        if not all([self['_diffrn_reflns_limit_h_min'], self['_diffrn_reflns_limit_h_max'],
+                    self['_diffrn_reflns_limit_k_min'], self['_diffrn_reflns_limit_k_max'],
+                    self['_diffrn_reflns_limit_l_min'], self['_diffrn_reflns_limit_l_max']]) and self.hkl_file:
+            limits = self.min_max_diffrn_reflns_limit()
+            self['_diffrn_reflns_limit_h_min'] = str(limits.h_min)
+            self['_diffrn_reflns_limit_h_max'] = str(limits.h_max)
+            self['_diffrn_reflns_limit_k_min'] = str(limits.k_min)
+            self['_diffrn_reflns_limit_k_max'] = str(limits.k_max)
+            self['_diffrn_reflns_limit_l_min'] = str(limits.l_min)
+            self['_diffrn_reflns_limit_l_max'] = str(limits.l_max)
 
     def read_file(self, path: str) -> gemmi.cif.Document:
         """
@@ -96,8 +109,6 @@ class CifContainer():
     def __getitem__(self, item: str) -> str:
         result = self.block.find_value(item)
         if result:
-            if is_null(result):
-                return ''
             # can I do this? No:
             # return retranslate_delimiter(result)
             return as_string(result)
@@ -255,11 +266,11 @@ class CifContainer():
         This method tries to determine the information witten at the end of a cif hkl file by sadabs.
         """
         hkl = None
-        all_sadabs_items = {'_exptl_absorpt_process_details': '',
-                            '_exptl_absorpt_correction_type': '',
+        all_sadabs_items = {'_exptl_absorpt_process_details' : '',
+                            '_exptl_absorpt_correction_type' : '',
                             '_exptl_absorpt_correction_T_max': '',
                             '_exptl_absorpt_correction_T_min': '',
-                            '_computing_structure_solution': '',
+                            '_computing_structure_solution'  : '',
                             }
         try:
             hkl = self.hkl_file
@@ -636,7 +647,7 @@ class CifContainer():
         hydr = namedtuple('HydrogenBond', ('label_d', 'label_h', 'label_a', 'dist_dh', 'dist_ha', 'dist_da',
                                            'angle_dha', 'symm'))
         for label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm in \
-                zip(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm):
+            zip(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm):
             yield hydr(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, self.checksymm(symm))
 
     def key_value_pairs(self) -> List[Tuple[str, str]]:

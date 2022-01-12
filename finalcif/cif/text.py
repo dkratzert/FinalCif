@@ -29,21 +29,22 @@ def quote(string: str, wrapping=80) -> str:
 
 
 charcters = {
+    '—'      : r'--',
     '±'      : r'+-',
     '×'      : r'\\times',
     '≠'      : r'\\neq',
-    '→'      : '\\rightarrow',
-    '←'      : '\\leftarrow',
-    '∞'      : '\\infty',
-    '≃'      : '\\simeq',
-    '≈'      : '\\sim',
+    '→'      : r'\\rightarrow',
+    '←'      : r'\\leftarrow',
+    '∞'      : r'\\infty',
+    '≃'      : r'\\simeq',
+    '≈'      : r'\\sim',
     'ß'      : r'\&s',
-    'ü'      : r'u\"',
-    'Ü'      : r'U\"',
-    'ö'      : r'o\"',  # 'LATIN SMALL LETTER O WITH DIAERESIS'
-    'Ö'      : r'O\"',
-    'ä'      : r'a\"',
-    'Ä'      : r'A\"',
+    'ü'      : r'\"u',
+    'Ü'      : r'\"U',
+    'ö'      : r'\"o',  # 'LATIN SMALL LETTER O WITH DIAERESIS'
+    'Ö'      : r'\"O',
+    'ä'      : r'\"a',
+    'Ä'      : r'\"A',
     'é'      : r"\'e",
     'É'      : r"\'E",
     'è'      : r'\`e',
@@ -162,6 +163,10 @@ def utf8_to_str(txt: str) -> str:
 
 def delimit_string(txt: str) -> str:
     return utf8_to_str(txt)
+
+
+def string_to_utf8(txt: str) -> str:
+    return retranslate_delimiter(txt)
 
 
 def retranslate_delimiter(txt: str, no_html_unescape: bool = False) -> str:

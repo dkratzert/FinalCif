@@ -20,7 +20,8 @@ from finalcif.app_path import application_path
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.report.mtools import cif_keywords_list, format_space_group
 from finalcif.report.references import ReferenceList, DSRReference2018, DSRReference2015
-from finalcif.report.report_text import CCDC, CrstalSelection, Crystallization, DataReduct, Disorder, Hydrogens, MachineType, \
+from finalcif.report.report_text import CCDC, CrstalSelection, Crystallization, DataReduct, Disorder, Hydrogens, \
+    MachineType, \
     SolveRefine, format_radiation, FinalCifreport, SpaceChar
 from finalcif.report.templated_report import BondsAndAngles, TorsionAngles, HydrogenBonds
 from finalcif.tools.misc import protected_space, angstrom, bequal, sigma_sm, halbgeviert, degree_sign, ellipsis_mid, \
@@ -273,7 +274,10 @@ def populate_main_table_values(main_table: Table, cif: CifContainer):
     crystal_size_max = cif['_exptl_crystal_size_max']
     theta_min = cif['_diffrn_reflns_theta_min']
     theta_max = cif['_diffrn_reflns_theta_max']
-
+    ls_number_reflns = cif['_refine_ls_number_reflns']
+    ls_number_restraints = cif['_refine_ls_number_restraints']
+    ls_number_parameters = cif['_refine_ls_number_parameters']
+    goof = cif['_refine_ls_goodness_of_fit_ref']
     if all([cif['_diffrn_reflns_limit_h_min'], cif['_diffrn_reflns_limit_h_max'],
             cif['_diffrn_reflns_limit_k_min'], cif['_diffrn_reflns_limit_k_max'],
             cif['_diffrn_reflns_limit_l_min'], cif['_diffrn_reflns_limit_l_max']
@@ -285,17 +289,12 @@ def populate_main_table_values(main_table: Table, cif: CifContainer):
         limit_l_min = cif['_diffrn_reflns_limit_l_min']
         limit_l_max = cif['_diffrn_reflns_limit_l_max']
     else:
-        limits = cif.min_max_diffrn_reflns_limit()
-        limit_h_min = limits.h_min
-        limit_h_max = limits.h_max
-        limit_k_min = limits.k_min
-        limit_k_max = limits.k_max
-        limit_l_min = limits.l_min
-        limit_l_max = limits.l_max
-    ls_number_reflns = cif['_refine_ls_number_reflns']
-    ls_number_restraints = cif['_refine_ls_number_restraints']
-    ls_number_parameters = cif['_refine_ls_number_parameters']
-    goof = cif['_refine_ls_goodness_of_fit_ref']
+        limit_h_min = '?'
+        limit_h_max = '?'
+        limit_k_min = '?'
+        limit_k_max = '?'
+        limit_l_min = '?'
+        limit_l_max = '?'
     try:
         completeness = "{0:.1f} %".format(round(float(cif['_diffrn_measured_fraction_theta_full']) * 100, 1))
     except ValueError:
