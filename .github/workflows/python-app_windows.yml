@@ -3,8 +3,6 @@
 
 name: Python Windows application
 
-env: 
-  PYTHONPATH: /home/runner/work/FinalCif
 
 on:
   push:
