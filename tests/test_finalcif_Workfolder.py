@@ -8,10 +8,10 @@ from PyQt5.QtGui import QIcon, QColor
 from PyQt5.QtWidgets import QWidget
 from qtpy.QtTest import QTest
 
+from finalcif import VERSION
 from finalcif.appwindow import AppWindow
 from finalcif.gui.custom_classes import light_green, yellow, COL_DATA, COL_CIF, COL_EDIT
 from tests.helpers import unify_line_endings, addr
-from finalcif import VERSION
 
 
 class TestNothingOpened(unittest.TestCase):
@@ -74,6 +74,7 @@ class TestWorkfolder(unittest.TestCase):
         os.chdir(Path(__file__).absolute().parent.parent)
         self.testcif = Path('tests/examples/work/cu_BruecknerJK_153F40_0m.cif').absolute()
         self.myapp = AppWindow(self.testcif, unit_test=True)
+        self.myapp.equipment.import_equipment_from_file('../../../test-data/Crystallographer_Details.cif')
         self.myapp.running_inside_unit_test = True
         self.myapp.hide()
         self.myapp.setWindowIcon(QIcon('./icon/multitable.png'))
