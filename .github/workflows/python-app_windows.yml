@@ -34,5 +34,5 @@ jobs:
           
       - name: Test with pytest
         run: |
-          pytest tests/
+          cd finalcif && pytest -k tests
 
