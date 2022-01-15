@@ -27,6 +27,7 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
+          architecture: x64
 
       - name: Print workspace path
         run: echo $GITHUB_WORKSPACE && pwd #&& echo ${{github.ref}}
