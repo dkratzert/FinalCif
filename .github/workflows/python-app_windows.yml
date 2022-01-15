@@ -16,12 +16,17 @@ jobs:
 
     runs-on: windows-latest
 
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [ "3.8" ] #[ "3.8", "3.9", "3.10" ]
+
     steps:
       - uses: actions/checkout@v2
-      - name: Set up Python 3.9
+      - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
         with:
-          python-version: 3.9
+          python-version: ${{ matrix.python-version }}
 
       - name: Print workspace path
         run: echo $GITHUB_WORKSPACE && pwd #&& echo ${{github.ref}}
