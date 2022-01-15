@@ -1,3 +1,4 @@
+[![Python Windows application](https://github.com/dkratzert/FinalCif/actions/workflows/python-app_windows.yml/badge.svg)](https://github.com/dkratzert/FinalCif/actions/workflows/python-app_windows.yml)
 # FinalCif
 
 FinalCif helps you to get a complete CIF file from a single-xrystal X-ray diffraction experiment. See here [https://dkratzert.de/finalcif.html](https://dkratzert.de/finalcif.html) for details.
