@@ -16,6 +16,9 @@ jobs:
 
     runs-on: ${{ matrix.os }}
 
+    env:
+      QT_QPA_PLATFORM: minimal
+
     strategy:
       fail-fast: false
       matrix:
