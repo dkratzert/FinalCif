@@ -23,6 +23,9 @@ jobs:
         with:
           python-version: 3.9
 
+      - name: Print workspace path
+        run: echo $GITHUB_WORKSPACE && pwd && echo ${{github.ref}}
+
       - name: Install dependencies
         run: |
           pip install pytest
@@ -31,5 +34,5 @@ jobs:
           
       - name: Test with pytest #
         run: |
-          pytest tests
+          pytest tests/
 
