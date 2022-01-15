@@ -33,7 +33,6 @@ jobs:
           pip install -e .
           
       - name: Test with pytest
-        working-directory: D:\a\FinalCif
         run: |
-          pytest tests
+          pytest tests/
 
