@@ -28,7 +28,7 @@ filenames = (
 )
 
 
-# @unittest.skip('time')
+@unittest.skip('time')
 class TestPlatonCheckCIF(unittest.TestCase):
 
     def setUp(self) -> None:
