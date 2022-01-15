@@ -24,14 +24,14 @@ jobs:
           python-version: 3.9
 
       - name: Print workspace path
-        run: echo $GITHUB_WORKSPACE && pwd && echo ${{github.ref}}
+        run: echo $GITHUB_WORKSPACE && pwd #&& echo ${{github.ref}}
 
       - name: Install dependencies
         run: |
-          pip install pytest
+          # pip install pytest
           pip install -r requirements.txt
           pip install -e .
-          
+
       - name: Test with unittest
         run: |
           python -m unittest
