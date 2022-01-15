@@ -37,16 +37,6 @@ jobs:
           python-version: ${{ matrix.python-version }}
           architecture: x64
 
-      # Does not work
-      #- name: "Install Linux VirtualDisplay"
-      #  if: runner.os == 'Linux'
-      #  run: |
-      #    sudo apt-get update -y
-      #    sudo apt-get install -y libxkbcommon-x11-0 x11-utils
-      #    sudo apt-get install --no-install-recommends -y libyaml-dev libegl1-mesa libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xinerama0
-      #    #sudo apt-get install -y libopengl0
-      #    python -m pip install pytest-xvfb
-
       - name: Get pip cache dir
         id: pip-cache
         run: |
@@ -63,7 +53,6 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          # pip install pytest
           pip install -r requirements.txt
 
       - name: Test with unittest
