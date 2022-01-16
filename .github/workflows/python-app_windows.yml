@@ -65,5 +65,6 @@ jobs:
 
       - name: Test with unittest
         run: |
-          python -m unittest
+          pytest
+          # python -m unittest
 
