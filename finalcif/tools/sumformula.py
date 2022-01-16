@@ -52,7 +52,7 @@ def sum_formula_to_html(sumform: Dict[str, str], break_after: int = 99) -> str:
     l = ['<html><body>']
     num = 0
     for el in sumform:
-        if sumform[el] == 0 or sumform[el] == None:
+        if sumform[el] == 0 or sumform[el] is None:
             continue
         try:
             times = round(float(sumform[el]), 1)
