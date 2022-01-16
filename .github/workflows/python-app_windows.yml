@@ -20,10 +20,10 @@ jobs:
       fail-fast: false
       matrix:
         python-version: [ "3.9"]# Pyqt5.15.2 does not install on python3.10 "3.10" ] #[ "3.8", "3.9", "3.10" ]
-        os: [ windows-latest, macos-latest ] # ubuntu-latest # <- Testing Ubuntu does not work currently
+        os: [ windows-latest, macos-latest, ubuntu-latest] # <- Testing Ubuntu does not work currently
         include:
-          #- os: ubuntu-latest
-          #  path: ~/.cache/pip
+          - os: ubuntu-latest
+            path: ~/.cache/pip
           - os: macos-latest
             path: ~/Library/Caches/pip
           - os: windows-latest
@@ -64,6 +64,9 @@ jobs:
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics  --ignore=E203
 
       - name: Test with pytest
+        - os: ubuntu-latest
+          sudo apt install libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xinerama0 libxcb-xfixes0
+          /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -screen 0 1920x1200x24 -ac +extension GLX
         run: |
           pytest
 
