@@ -56,7 +56,7 @@ class TestText(unittest.TestCase):
         self.assertEqual('100 °C', r)
 
     def test_retranslate_sentence(self):
-        r = retranslate_delimiter("Crystals were grown from thf at -20 \%C.")
+        r = retranslate_delimiter(r"Crystals were grown from thf at -20 \%C.")
         self.assertEqual('Crystals were grown from thf at -20 °C.', r)
 
     def test_delimit_umlaut(self):
