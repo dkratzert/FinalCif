@@ -26,7 +26,7 @@ class TestCCDC(unittest.TestCase):
 class TestCCDCnoMail(unittest.TestCase):
     def setUp(self) -> None:
         os.chdir(Path(__file__).absolute().parent.parent)
-        self.cif = CifContainer(Path('test-data/DK_zucker2_0m.cif'))
+        self.cif = CifContainer(Path('test-data/DK_Zucker2_0m.cif'))
 
     def test_ccdc_num(self):
         ccdc = CCDCMail(self.cif)
