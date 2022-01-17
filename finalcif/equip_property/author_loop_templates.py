@@ -29,8 +29,9 @@ class AuthorLoops():
         self.cif = cif
         self.app = app
         self.settings = FinalCifSettings()
+        self.contact_author_checked(False)
         self.ui.AddThisAuthorToLoopPushButton.clicked.connect(self.save_author_to_loop)
-        self.ui.ContactAuthorCheckBox.stateChanged.connect(lambda: self.ui.FootNoteLineEdit.setDisabled(
+        self.ui.ContactAuthorCheckBox.stateChanged.connect(lambda: self.contact_author_checked(
             self.ui.ContactAuthorCheckBox.isChecked()))
         self.ui.LoopsTabWidget.currentChanged.connect(
             lambda: self.ui.AddThisAuthorToLoopPushButton.setDisabled(not self.ui.LoopsTabWidget.count()))
@@ -253,3 +254,25 @@ class AuthorLoops():
         for author in sorted(authors):
             if author:
                 self.ui.LoopTemplatesListWidget.addItem(QListWidgetItem(author))
+
+    def contact_author_checked(self, checked: bool):
+        """
+        :parameter checked: state of the ContactAuthorCheckBox
+        """
+        if checked:
+            self.ui.FullNameLineEdit.setToolTip('_publ_contact_author_name')
+            self.ui.AddressTextedit.setToolTip('_publ_contact_author_address')
+            self.ui.EMailLineEdit.setToolTip('_publ_contact_author_email')
+            self.ui.PhoneLineEdit.setToolTip('_publ_contact_author_phone')
+            self.ui.ORCIDLineEdit.setToolTip('_publ_contact_author_id_orcid')
+            self.ui.FootNoteLineEdit.setDisabled(True)
+            self.ui.footnote_label.setDisabled(True)
+        else:
+            self.ui.FullNameLineEdit.setToolTip('_publ_author_name')
+            self.ui.AddressTextedit.setToolTip('_publ_author_address')
+            self.ui.EMailLineEdit.setToolTip('_publ_author_email')
+            self.ui.PhoneLineEdit.setToolTip('_publ_author_phone')
+            self.ui.ORCIDLineEdit.setToolTip('_publ_author_id_orcid')
+            self.ui.FootNoteLineEdit.setToolTip('_publ_author_footnote')
+            self.ui.FootNoteLineEdit.setEnabled(True)
+            self.ui.footnote_label.setEnabled(True)

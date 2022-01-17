@@ -173,7 +173,7 @@
            <number>1</number>
           </property>
           <property name="currentIndex">
-           <number>0</number>
+           <number>1</number>
           </property>
           <widget class="QWidget" name="page_equipment">
            <layout class="QVBoxLayout" name="verticalLayout_16">
@@ -695,34 +695,44 @@
                 </widget>
                </item>
                <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_7">
-                 <property name="spacing">
-                  <number>9</number>
-                 </property>
+                <layout class="QGridLayout" name="gridLayout_24">
                  <property name="topMargin">
                   <number>6</number>
                  </property>
                  <property name="bottomMargin">
                   <number>6</number>
                  </property>
-                 <item>
+                 <item row="0" column="1">
                   <widget class="QPushButton" name="ExportAuthorPushButton">
                    <property name="text">
-                    <string>Export Author</string>
+                    <string>Export Author as File</string>
                    </property>
                   </widget>
                  </item>
-                 <item>
+                 <item row="0" column="2">
                   <widget class="QPushButton" name="ImportAuthorPushButton">
                    <property name="text">
                     <string>Import Author</string>
                    </property>
                   </widget>
                  </item>
-                 <item>
+                 <item row="0" column="3">
                   <widget class="QPushButton" name="DeleteLoopAuthorTemplateButton">
                    <property name="text">
                     <string>Delete Author</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="1">
+                  <widget class="QPushButton" name="AddThisAuthorToLoopPushButton">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="text">
+                    <string>Add Author to CIF Loop</string>
                    </property>
                   </widget>
                  </item>
@@ -1061,7 +1071,7 @@
         <item row="1" column="0" colspan="12">
          <widget class="MyMainStackedWidget" name="MainStackedWidget">
           <property name="currentIndex">
-           <number>0</number>
+           <number>5</number>
           </property>
           <widget class="QWidget" name="page_MainTable">
            <layout class="QVBoxLayout" name="verticalLayout">
@@ -2572,18 +2582,11 @@ Contact authors should always also appear as regular authors.</string>
                          </property>
                         </widget>
                        </item>
-                       <item row="3" column="1">
-                        <widget class="QLineEdit" name="EMailLineEdit"/>
+                       <item row="4" column="2">
+                        <widget class="QLineEdit" name="PhoneLineEdit"/>
                        </item>
-                       <item row="2" column="0">
-                        <widget class="QLabel" name="label_21">
-                         <property name="text">
-                          <string>Adresss</string>
-                         </property>
-                         <property name="alignment">
-                          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                         </property>
-                        </widget>
+                       <item row="0" column="2">
+                        <widget class="QLineEdit" name="FullNameLineEdit"/>
                        </item>
                        <item row="5" column="0">
                         <widget class="QLabel" name="label_34">
@@ -2595,17 +2598,18 @@ Contact authors should always also appear as regular authors.</string>
                          </property>
                         </widget>
                        </item>
-                       <item row="6" column="1">
-                        <widget class="QLineEdit" name="PhoneLineEdit"/>
+                       <item row="1" column="2">
+                        <widget class="QCheckBox" name="ContactAuthorCheckBox">
+                         <property name="text">
+                          <string>This is a contact author</string>
+                         </property>
+                        </widget>
                        </item>
-                       <item row="0" column="1">
-                        <widget class="QLineEdit" name="FullNameLineEdit"/>
+                       <item row="3" column="2">
+                        <widget class="QLineEdit" name="EMailLineEdit"/>
                        </item>
-                       <item row="2" column="1">
-                        <widget class="QTextEdit" name="AddressTextedit"/>
-                       </item>
-                       <item row="4" column="0">
-                        <widget class="QLabel" name="label_18">
+                       <item row="6" column="0">
+                        <widget class="QLabel" name="footnote_label">
                          <property name="text">
                           <string>footnote</string>
                          </property>
@@ -2614,13 +2618,13 @@ Contact authors should always also appear as regular authors.</string>
                          </property>
                         </widget>
                        </item>
-                       <item row="5" column="1">
-                        <widget class="QLineEdit" name="ORCIDLineEdit"/>
-                       </item>
-                       <item row="1" column="1">
-                        <widget class="QCheckBox" name="ContactAuthorCheckBox">
+                       <item row="2" column="0">
+                        <widget class="QLabel" name="label_21">
                          <property name="text">
-                          <string>This is a contact author</string>
+                          <string>Adresss</string>
+                         </property>
+                         <property name="alignment">
+                          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                          </property>
                         </widget>
                        </item>
@@ -2634,10 +2638,10 @@ Contact authors should always also appear as regular authors.</string>
                          </property>
                         </widget>
                        </item>
-                       <item row="4" column="1">
+                       <item row="6" column="2">
                         <widget class="QLineEdit" name="FootNoteLineEdit"/>
                        </item>
-                       <item row="6" column="0">
+                       <item row="4" column="0">
                         <widget class="QLabel" name="label_13">
                          <property name="text">
                           <string>phone number</string>
@@ -2647,21 +2651,26 @@ Contact authors should always also appear as regular authors.</string>
                          </property>
                         </widget>
                        </item>
+                       <item row="2" column="2">
+                        <widget class="QTextEdit" name="AddressTextedit"/>
+                       </item>
+                       <item row="5" column="2">
+                        <widget class="QLineEdit" name="ORCIDLineEdit"/>
+                       </item>
                       </layout>
                      </item>
                     </layout>
                    </item>
                    <item>
-                    <layout class="QHBoxLayout" name="horizontalLayout_8">
-                     <item>
-                      <widget class="QPushButton" name="AddThisAuthorToLoopPushButton">
-                       <property name="text">
-                        <string>Add Author to CIF Loop</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
+                    <layout class="QVBoxLayout" name="verticalLayout_32">
+                     <item alignment="Qt::AlignRight">
                       <widget class="QPushButton" name="SaveAuthorLoopToTemplateButton">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
                        <property name="text">
                         <string>Save Author as Template</string>
                        </property>
@@ -3959,8 +3968,6 @@ please add a publication author:</string>
   <tabstop>EMailLineEdit</tabstop>
   <tabstop>AddressTextedit</tabstop>
   <tabstop>FootNoteLineEdit</tabstop>
-  <tabstop>ORCIDLineEdit</tabstop>
-  <tabstop>PhoneLineEdit</tabstop>
   <tabstop>EditEquipmentTemplateButton</tabstop>
   <tabstop>ImportEquipmentTemplateButton</tabstop>
   <tabstop>DeleteEquipmentButton</tabstop>
@@ -4052,7 +4059,6 @@ please add a publication author:</string>
   <tabstop>BackpushButtonDetails</tabstop>
   <tabstop>completeLineEdit</tabstop>
   <tabstop>ContactAuthorCheckBox</tabstop>
-  <tabstop>AddThisAuthorToLoopPushButton</tabstop>
   <tabstop>SaveAuthorLoopToTemplateButton</tabstop>
   <tabstop>CODtableWidget</tabstop>
   <tabstop>FullNameLineEdit</tabstop>
