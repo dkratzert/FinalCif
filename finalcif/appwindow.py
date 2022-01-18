@@ -1464,6 +1464,14 @@ class AppWindow(QMainWindow):
             with suppress(IndexError):
                 table.remove_row(row)
 
+    def save_new_row_to_cif_block(self, header: list, data: list):
+        """
+        Save values of new table rows into cif loops.
+        """
+        table: cif.Table = self.cif.block.find(header)
+        print(table)
+
+
     def make_loops_tables(self) -> None:
         for _ in range(self.ui.LoopsTabWidget.count()):
             # I use this, so that always the first tab stays.
