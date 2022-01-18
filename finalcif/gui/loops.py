@@ -8,6 +8,7 @@
 import copy
 from typing import Union, List, Any
 
+import qtawesome
 from PyQt5 import QtCore
 from PyQt5.QtCore import QAbstractTableModel, QModelIndex, Qt, QSize, QVariant, pyqtSignal, QEvent
 from PyQt5.QtGui import QColor, QCursor
@@ -28,8 +29,19 @@ class MyQTableView(QTableView):
         del_action.triggered.connect(lambda: self._delete_row(event))
         add_action = QAction('Add Row', self)
         add_action.triggered.connect(lambda: self._add_row(event))
+        down_action = QAction('Move down', self)
+        down_action.triggered.connect(lambda: self._row_down(event))
+        up_action = QAction('Move up', self)
+        up_action.triggered.connect(lambda: self._row_up(event))
+        up_action.setIcon(qtawesome.icon('mdi.arrow-up'))
+        down_action.setIcon(qtawesome.icon('mdi.arrow-down'))
+        del_action.setIcon(qtawesome.icon('mdi.trash-can-outline'))
+        add_action.setIcon(qtawesome.icon('mdi.table-row-plus-after'))
         self.menu.addAction(add_action)
         self.menu.addAction(del_action)
+        self.menu.addSeparator()
+        self.menu.addAction(up_action)
+        self.menu.addAction(down_action)
         # add other required actions
         self.menu.popup(QCursor.pos())
 
@@ -44,6 +56,33 @@ class MyQTableView(QTableView):
             self.model()._original.append(['', ] * rowlen)
             self.model().modelReset.emit()
 
+    def get_index_of_row(self, row_id):
+        return self.model().index(row_id, 0)
+
+    def _row_down(self, event: QEvent):
+        """Moves the current row down a row
+        0 0
+        1 2
+        2 1
+        """
+        if len(self.model()._data) > 1:
+            row_id = self.currentIndex().row()
+            rowdata = self.model()._data.pop(row_id)
+            rowdata_plus = self.model()._data.pop(row_id)
+            self.model()._data.insert(row_id + 1, rowdata)
+            self.setCurrentIndex(self.get_index_of_row(row_id + 1))
+            for col, (value, value_plus) in enumerate(zip(rowdata, rowdata_plus)):
+                self.model().modelChanged.emit(row_id, col, utf8_to_str(value), self.model()._header)
+                self.model().modelChanged.emit(row_id + 1, col, utf8_to_str(value_plus), self.model()._header)
+
+    def _row_up(self, event: QEvent):
+        """Moves the current row up a row"""
+        if len(self.model()._data) > 1:
+            row_id = self.currentIndex().row()
+            rowdata = self.model()._data.pop(row_id)
+            self.model()._data.insert(row_id - 1, rowdata)
+            self.setCurrentIndex(self.get_index_of_row(row_id - 1))
+            self.model().rowChanged.emit(self.model()._header, self.model()._data)
 
 class Loop(QtCore.QObject):
     def __init__(self, tags: List[str], values: List[List[str]], parent):
