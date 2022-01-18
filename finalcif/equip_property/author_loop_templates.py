@@ -41,7 +41,7 @@ class AuthorLoops():
         self.ui.ExportAuthorPushButton.clicked.connect(self.export_author_template)
         self.ui.ImportAuthorPushButton.clicked.connect(self.import_author)
         self.ui.FullNameLineEdit.textChanged.connect(self.make_sure_to_save_only_when_name_field_has_text)
-        self.show_author_loops()
+        self.show_authors_list()
         self.make_sure_to_save_only_when_name_field_has_text()
 
     def make_sure_to_save_only_when_name_field_has_text(self):
@@ -93,7 +93,7 @@ class AuthorLoops():
             gemmi_loop = self.cif.init_loop(self.get_author_loop(contact_author))
         self.check_if_loop_and_row_size_fit_together(gemmi_loop, row)
         self.app.make_loops_tables()
-        self.show_author_loops()
+        self.show_authors_list()
 
     def check_if_loop_and_row_size_fit_together(self, gemmi_loop, row):
         if gemmi_loop.width() == len(row):
@@ -157,7 +157,7 @@ class AuthorLoops():
             self.settings.save_settings_dict(property='authors_list', name=itemtext, items=author)
         if not itemtext:
             return
-        self.show_author_loops()
+        self.show_authors_list()
 
     def export_author_template(self, filename: str = None) -> None:
         """
@@ -226,7 +226,7 @@ class AuthorLoops():
         if not table_data.get('name'):
             return None
         self.general_author_save(table_data)
-        self.show_author_loops()
+        self.show_authors_list()
 
     def delete_current_author(self):
         index = self.ui.LoopTemplatesListWidget.currentIndex()
@@ -235,7 +235,7 @@ class AuthorLoops():
             return
         self.ui.LoopTemplatesListWidget.clear()
         self.settings.delete_template('authors_list', selected_author_name)
-        self.show_author_loops()
+        self.show_authors_list()
 
     def get_selected_loop_name(self) -> str:
         listwidget = self.ui.LoopTemplatesListWidget
@@ -248,7 +248,7 @@ class AuthorLoops():
         author_loopdata = self.settings.load_settings_dict('authors_list', self.get_selected_loop_name())
         self.set_author_info(author_loopdata)
 
-    def show_author_loops(self):
+    def show_authors_list(self):
         self.ui.LoopTemplatesListWidget.clear()
         authors = self.settings.list_saved_items(property='authors_list')
         for author in sorted(authors):

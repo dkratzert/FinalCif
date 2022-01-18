@@ -6,6 +6,7 @@
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
 import copy
+from contextlib import suppress
 from typing import Union, List, Any
 
 import qtawesome
@@ -13,10 +14,12 @@ from PyQt5 import QtCore
 from PyQt5.QtCore import QAbstractTableModel, QModelIndex, Qt, QSize, QVariant, pyqtSignal, QEvent
 from PyQt5.QtGui import QColor, QCursor
 from PyQt5.QtWidgets import QTableView, QHeaderView, QMenu, QAction
+from gemmi import cif
 from gemmi.cif import as_string, is_null
 
-from finalcif.cif.text import retranslate_delimiter, utf8_to_str
+from finalcif.cif.text import retranslate_delimiter, utf8_to_str, quote
 from finalcif.gui.dialogs import show_keyword_help
+from finalcif.tools.dsrmath import my_isnumeric
 
 
 class MyQTableView(QTableView):
@@ -68,12 +71,12 @@ class MyQTableView(QTableView):
         if len(self.model()._data) > 1:
             row_id = self.currentIndex().row()
             rowdata = self.model()._data.pop(row_id)
-            rowdata_plus = self.model()._data.pop(row_id)
+            #rowdata_plus = self.model()._data.pop(row_id)
             self.model()._data.insert(row_id + 1, rowdata)
             self.setCurrentIndex(self.get_index_of_row(row_id + 1))
-            for col, (value, value_plus) in enumerate(zip(rowdata, rowdata_plus)):
-                self.model().modelChanged.emit(row_id, col, utf8_to_str(value), self.model()._header)
-                self.model().modelChanged.emit(row_id + 1, col, utf8_to_str(value_plus), self.model()._header)
+            #for col, (value, value_plus) in enumerate(zip(rowdata, rowdata_plus)):
+            #    self.model().modelChanged.emit(row_id, col, utf8_to_str(value), self.model()._header)
+             #   self.model().modelChanged.emit(row_id + 1, col, utf8_to_str(value_plus), self.model()._header)
 
     def _row_up(self, event: QEvent):
         """Moves the current row up a row"""
@@ -82,18 +85,21 @@ class MyQTableView(QTableView):
             rowdata = self.model()._data.pop(row_id)
             self.model()._data.insert(row_id - 1, rowdata)
             self.setCurrentIndex(self.get_index_of_row(row_id - 1))
-            self.model().rowChanged.emit(self.model()._header, self.model()._data)
+            #self.model().rowChanged.emit(self.model()._header, self.model()._data)
+
 
 class Loop(QtCore.QObject):
-    def __init__(self, tags: List[str], values: List[List[str]], parent):
+    def __init__(self, tags: List[str], values: List[List[str]], parent, block):
         super(Loop, self).__init__(parent=parent)
         self.parent = parent
+        self.block = block
         self.tableview = MyQTableView(parent)
         self._values: List[List[str]] = self.get_string_values(values)
         self.tags = tags
         self.model: Union[LoopTableModel, None] = None
         self.make_model()
         self.tableview.horizontalHeader().sectionClicked.connect(self.display_help)
+        self.model.modelChanged.connect(self.save_new_value_to_cif_block)
 
     @QtCore.pyqtSlot(int)
     def display_help(self, header_section: int):
@@ -108,6 +114,30 @@ class Loop(QtCore.QObject):
         self.values = values
         self.model = LoopTableModel(self.tags, self.values)
         self.tableview.setModel(self.model)
+
+    def save_new_value_to_cif_block(self, row: int, col: int, value: Union[str, int, float], header: list):
+        """
+        Save values of new table rows into cif loops.
+        """
+        if col >= 0:
+            column = self.block.find_values(header[col])
+            while len(column) < row + 1:
+                # fill table fields with values until last new row reached
+                loop = self.block.find_loop(header[col]).get_loop()
+                loop.add_row(['.'] * len(header))
+                column = self.block.find_values(header[col])
+            column[row] = value if my_isnumeric(value) else quote(value)
+        else:
+            table: cif.Table = self.block.find(header)
+            with suppress(IndexError):
+                table.remove_row(row)
+
+    def save_new_row_to_cif_block(self, header: list, data: list):
+        """
+        Save values of new table rows into cif loops.
+        """
+        table: cif.Table = self.block.find(header)
+        print(table)
 
     @property
     def values(self):

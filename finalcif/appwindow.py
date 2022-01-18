@@ -30,7 +30,7 @@ from finalcif import VERSION
 from finalcif.cif.checkcif.checkcif import MyHTMLParser, AlertHelp, CheckCif
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.cif.cod.deposit import CODdeposit
-from finalcif.cif.text import retranslate_delimiter, quote
+from finalcif.cif.text import retranslate_delimiter
 from finalcif.datafiles.bruker_data import BrukerData
 from finalcif.datafiles.ccdc_mail import CCDCMail
 from finalcif.displaymol import mol_file_writer
@@ -1075,9 +1075,9 @@ class AppWindow(QMainWindow):
             self.fill_cif_table()
         except Exception as e:
             not_ok = e
+            # raise
+            unable_to_open_message(filepath, not_ok)
             raise
-            # This is not good:
-            # unable_to_open_message(filepath, not_ok)
         # Do this only when sure we can load the file:
         self.save_current_recent_files_list(filepath)
         self.load_recent_cifs_list()
@@ -1432,6 +1432,13 @@ class AppWindow(QMainWindow):
         self.erase_disabled_items()
         self.ui.cif_main_table.setCurrentItem(None)
 
+    def make_loops_tables(self) -> None:
+        for _ in range(self.ui.LoopsTabWidget.count()):
+            # I use this, so that always the first tab stays.
+            self.ui.LoopsTabWidget.removeTab(1)
+        if self.cif and self.cif.loops:
+            self.add_loops_tables()
+
     def add_loops_tables(self) -> None:
         """
         Generates a list of tables containing the cif loops.
@@ -1440,46 +1447,12 @@ class AppWindow(QMainWindow):
             tags = loop.tags
             if not tags or len(tags) < 1:
                 continue
-            loop = Loop(tags, values=grouper(loop.values, loop.width()), parent=self.ui.LoopsTabWidget)
+            loop = Loop(tags, values=grouper(loop.values, loop.width()),
+                        parent=self.ui.LoopsTabWidget, block=self.cif.block)
             self.ui.LoopsTabWidget.addTab(loop.tableview, cif_to_header_label.get(tags[0]) or tags[0])
-            loop.model.modelChanged.connect(self.save_new_value_to_cif_block)
             self.ui.revertLoopsPushButton.clicked.connect(loop.model.revert)
         if self.cif.res_file_data:
             self.add_res_file_to_loops()
-
-    def save_new_value_to_cif_block(self, row: int, col: int, value: Union[str, int, float], header: list):
-        """
-        Save values of new table rows into cif loops.
-        """
-        if col >= 0:
-            column = self.cif.block.find_values(header[col])
-            while len(column) < row + 1:
-                # fill table fields with values until last new row reached
-                loop = self.cif.block.find_loop(header[col]).get_loop()
-                loop.add_row(['.'] * len(header))
-                column = self.cif.block.find_values(header[col])
-            column[row] = value if my_isnumeric(value) else quote(value)
-        else:
-            table: cif.Table = self.cif.block.find(header)
-            with suppress(IndexError):
-                table.remove_row(row)
-
-    def save_new_row_to_cif_block(self, header: list, data: list):
-        """
-        Save values of new table rows into cif loops.
-        """
-        table: cif.Table = self.cif.block.find(header)
-        print(table)
-
-
-    def make_loops_tables(self) -> None:
-        for _ in range(self.ui.LoopsTabWidget.count()):
-            # I use this, so that always the first tab stays.
-            self.ui.LoopsTabWidget.removeTab(1)
-        if self.cif and self.cif.loops:
-            self.add_loops_tables()
-        else:
-            return
 
     def add_res_file_to_loops(self):
         textedit = QPlainTextEdit()
