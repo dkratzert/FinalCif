@@ -63,20 +63,13 @@ class MyQTableView(QTableView):
         return self.model().index(row_id, 0)
 
     def _row_down(self, event: QEvent):
-        """Moves the current row down a row
-        0 0
-        1 2
-        2 1
-        """
+        """Moves the current row down a row"""
         if len(self.model()._data) > 1:
             row_id = self.currentIndex().row()
             rowdata = self.model()._data.pop(row_id)
-            #rowdata_plus = self.model()._data.pop(row_id)
             self.model()._data.insert(row_id + 1, rowdata)
             self.setCurrentIndex(self.get_index_of_row(row_id + 1))
-            #for col, (value, value_plus) in enumerate(zip(rowdata, rowdata_plus)):
-            #    self.model().modelChanged.emit(row_id, col, utf8_to_str(value), self.model()._header)
-             #   self.model().modelChanged.emit(row_id + 1, col, utf8_to_str(value_plus), self.model()._header)
+            self.model().rowChanged.emit(self.model()._header, self.model()._data)
 
     def _row_up(self, event: QEvent):
         """Moves the current row up a row"""
@@ -85,7 +78,7 @@ class MyQTableView(QTableView):
             rowdata = self.model()._data.pop(row_id)
             self.model()._data.insert(row_id - 1, rowdata)
             self.setCurrentIndex(self.get_index_of_row(row_id - 1))
-            #self.model().rowChanged.emit(self.model()._header, self.model()._data)
+            self.model().rowChanged.emit(self.model()._header, self.model()._data)
 
 
 class Loop(QtCore.QObject):
@@ -100,6 +93,7 @@ class Loop(QtCore.QObject):
         self.make_model()
         self.tableview.horizontalHeader().sectionClicked.connect(self.display_help)
         self.model.modelChanged.connect(self.save_new_value_to_cif_block)
+        self.model.rowChanged.connect(self.save_new_row_to_cif_block)
 
     @QtCore.pyqtSlot(int)
     def display_help(self, header_section: int):
@@ -137,7 +131,11 @@ class Loop(QtCore.QObject):
         Save values of new table rows into cif loops.
         """
         table: cif.Table = self.block.find(header)
-        print(table)
+        # There is no reordering currently, so I have to delete and subsequently append the new rows:
+        while len(table) > 0:
+            table.remove_row(0)
+        for row in data:
+            table.append_row([x if my_isnumeric(x) else quote(x) for x in row])
 
     @property
     def values(self):
@@ -173,6 +171,7 @@ class Loop(QtCore.QObject):
 
 class LoopTableModel(QAbstractTableModel):
     modelChanged = pyqtSignal(int, int, 'PyQt_PyObject', list)
+    rowChanged = pyqtSignal(list, list)
 
     def __init__(self, header, data):
         super(LoopTableModel, self).__init__()
