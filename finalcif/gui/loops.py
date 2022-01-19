@@ -22,6 +22,96 @@ from finalcif.gui.dialogs import show_keyword_help
 from finalcif.tools.dsrmath import my_isnumeric
 
 
+class Loop(QtCore.QObject):
+    def __init__(self, tags: List[str], values: List[List[str]], parent, block):
+        super(Loop, self).__init__(parent=parent)
+        self.parent = parent
+        self.block = block
+        self.tableview = MyQTableView(parent)
+        self._values: List[List[str]] = self.get_string_values(values)
+        self.tags = tags
+        self.model: Union[LoopTableModel, None] = None
+        self.make_model()
+        self.tableview.horizontalHeader().sectionClicked.connect(self.display_help)
+        self.model.modelChanged.connect(self.save_new_cell_value_to_cif_block)
+        self.model.rowChanged.connect(self.save_new_row_to_cif_block)
+        self.model.rowDeleted.connect(self.delete_row)
+
+    @QtCore.pyqtSlot(int)
+    def display_help(self, header_section: int):
+        from finalcif.cif.all_cif_dicts import cif_all_dict
+        tag = self.tags[header_section]
+        keyword_help = cif_all_dict.get(tag, None)
+        if keyword_help:
+            keyword_help = retranslate_delimiter(keyword_help, no_html_unescape=True)
+            show_keyword_help(self.parent, keyword_help, tag)
+
+    def set_or_update_model(self, values: List[List[str]]):
+        self.values = values
+        self.model = LoopTableModel(self.tags, self.values)
+        self.tableview.setModel(self.model)
+
+    def save_new_cell_value_to_cif_block(self, row: int, col: int, value: Union[str, int, float], header: list):
+        """
+        Save values of new table rows into cif loops.
+        """
+        if col >= 0:
+            column = self.block.find_values(header[col])
+            while len(column) < row + 1:
+                # fill table fields with values until last new row reached
+                loop = self.block.find_loop(header[col]).get_loop()
+                loop.add_row(['.'] * len(header))
+                column = self.block.find_values(header[col])
+            column[row] = value if my_isnumeric(value) else quote(value)
+
+    def delete_row(self, header: list, row: int):
+        table: cif.Table = self.block.find(header)
+        with suppress(IndexError):
+            table.remove_row(row)
+
+    def save_new_row_to_cif_block(self, header: list, data: list):
+        """
+        Save values of new table rows into cif loops.
+        """
+        table: cif.Table = self.block.find(header)
+        # There is no reordering currently, so I have to delete and subsequently append the new rows:
+        while len(table) > 0:
+            table.remove_row(0)
+        for row in data:
+            table.append_row([x if my_isnumeric(x) else quote(x) for x in row])
+
+    @property
+    def values(self):
+        return self._values
+
+    @values.setter
+    def values(self, values):
+        self._values = self.get_string_values(values)
+
+    def make_model(self) -> None:
+        """
+        Creates the model and applies data to it
+        """
+        self.set_or_update_model(self.values)
+        header = self.tableview.horizontalHeader()
+        # Format the header sizes:
+        for column in range(header.count()):
+            header.setSectionResizeMode(column, QHeaderView.ResizeToContents)
+            width = header.sectionSize(column) + 15
+            header.setSectionResizeMode(column, QHeaderView.Interactive)
+            header.resizeSection(column, width)
+
+    def get_string_values(self, values: List[List[str]]) -> List[List[str]]:
+        """
+        Get data for a loop by tags
+        """
+        data = []
+        for v in values:
+            # as_string() would make . and ? to empty strings otherwise: 
+            data.append([x if is_null(x) else as_string(x) for x in v])
+        return data
+
+
 class MyQTableView(QTableView):
     def __init__(self, parent):
         super().__init__(parent=parent)
@@ -81,97 +171,10 @@ class MyQTableView(QTableView):
             self.model().rowChanged.emit(self.model()._header, self.model()._data)
 
 
-class Loop(QtCore.QObject):
-    def __init__(self, tags: List[str], values: List[List[str]], parent, block):
-        super(Loop, self).__init__(parent=parent)
-        self.parent = parent
-        self.block = block
-        self.tableview = MyQTableView(parent)
-        self._values: List[List[str]] = self.get_string_values(values)
-        self.tags = tags
-        self.model: Union[LoopTableModel, None] = None
-        self.make_model()
-        self.tableview.horizontalHeader().sectionClicked.connect(self.display_help)
-        self.model.modelChanged.connect(self.save_new_value_to_cif_block)
-        self.model.rowChanged.connect(self.save_new_row_to_cif_block)
-
-    @QtCore.pyqtSlot(int)
-    def display_help(self, header_section: int):
-        from finalcif.cif.all_cif_dicts import cif_all_dict
-        tag = self.tags[header_section]
-        keyword_help = cif_all_dict.get(tag, None)
-        if keyword_help:
-            keyword_help = retranslate_delimiter(keyword_help, no_html_unescape=True)
-            show_keyword_help(self.parent, keyword_help, tag)
-
-    def set_or_update_model(self, values: List[List[str]]):
-        self.values = values
-        self.model = LoopTableModel(self.tags, self.values)
-        self.tableview.setModel(self.model)
-
-    def save_new_value_to_cif_block(self, row: int, col: int, value: Union[str, int, float], header: list):
-        """
-        Save values of new table rows into cif loops.
-        """
-        if col >= 0:
-            column = self.block.find_values(header[col])
-            while len(column) < row + 1:
-                # fill table fields with values until last new row reached
-                loop = self.block.find_loop(header[col]).get_loop()
-                loop.add_row(['.'] * len(header))
-                column = self.block.find_values(header[col])
-            column[row] = value if my_isnumeric(value) else quote(value)
-        else:
-            table: cif.Table = self.block.find(header)
-            with suppress(IndexError):
-                table.remove_row(row)
-
-    def save_new_row_to_cif_block(self, header: list, data: list):
-        """
-        Save values of new table rows into cif loops.
-        """
-        table: cif.Table = self.block.find(header)
-        # There is no reordering currently, so I have to delete and subsequently append the new rows:
-        while len(table) > 0:
-            table.remove_row(0)
-        for row in data:
-            table.append_row([x if my_isnumeric(x) else quote(x) for x in row])
-
-    @property
-    def values(self):
-        return self._values
-
-    @values.setter
-    def values(self, values):
-        self._values = self.get_string_values(values)
-
-    def make_model(self) -> None:
-        """
-        Creates the model and applies data to it
-        """
-        self.set_or_update_model(self.values)
-        header = self.tableview.horizontalHeader()
-        # Format the header sizes:
-        for column in range(header.count()):
-            header.setSectionResizeMode(column, QHeaderView.ResizeToContents)
-            width = header.sectionSize(column) + 15
-            header.setSectionResizeMode(column, QHeaderView.Interactive)
-            header.resizeSection(column, width)
-
-    def get_string_values(self, values: List[List[str]]) -> List[List[str]]:
-        """
-        Get data for a loop by tags
-        """
-        data = []
-        for v in values:
-            # as_string() would make . and ? to empty strings otherwise: 
-            data.append([x if is_null(x) else as_string(x) for x in v])
-        return data
-
-
 class LoopTableModel(QAbstractTableModel):
     modelChanged = pyqtSignal(int, int, 'PyQt_PyObject', list)
     rowChanged = pyqtSignal(list, list)
+    rowDeleted = pyqtSignal(list, int)
 
     def __init__(self, header, data):
         super(LoopTableModel, self).__init__()
@@ -248,7 +251,7 @@ class LoopTableModel(QAbstractTableModel):
             del self._data[row]
         else:
             return False
-        self.modelChanged.emit(row, -1, '', self._header)
+        self.rowDeleted.emit(self._header, row)
         return True
 
     def revert(self) -> None:
