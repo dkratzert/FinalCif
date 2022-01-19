@@ -1450,6 +1450,7 @@ class AppWindow(QMainWindow):
             loop = Loop(tags, values=grouper(loop.values, loop.width()),
                         parent=self.ui.LoopsTabWidget, block=self.cif.block)
             self.ui.LoopsTabWidget.addTab(loop.tableview, cif_to_header_label.get(tags[0]) or tags[0])
+            self.ui.LoopsTabWidget.setTabToolTip(num + 1, tags[0])
             self.ui.revertLoopsPushButton.clicked.connect(loop.model.revert)
         if self.cif.res_file_data:
             self.add_res_file_to_loops()
