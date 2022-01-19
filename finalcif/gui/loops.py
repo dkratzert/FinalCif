@@ -118,13 +118,13 @@ class MyQTableView(QTableView):
 
     def contextMenuEvent(self, event):
         self.menu = QMenu(self)
-        del_action = QAction('Delete Row', self)
-        del_action.triggered.connect(lambda: self._delete_row(event))
         add_action = QAction('Add Row', self)
-        add_action.triggered.connect(lambda: self._add_row(event))
-        down_action = QAction('Move down', self)
+        del_action = QAction('Delete Row', self)
+        down_action = QAction('Move row down', self)
+        up_action = QAction('Move row up', self)
         down_action.triggered.connect(lambda: self._row_down(event))
-        up_action = QAction('Move up', self)
+        add_action.triggered.connect(lambda: self._add_row(event))
+        del_action.triggered.connect(lambda: self._delete_row(event))
         up_action.triggered.connect(lambda: self._row_up(event))
         up_action.setIcon(qtawesome.icon('mdi.arrow-up'))
         down_action.setIcon(qtawesome.icon('mdi.arrow-down'))
