@@ -6,55 +6,36 @@
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
 import copy
+from contextlib import suppress
 from typing import Union, List, Any
 
+import qtawesome
 from PyQt5 import QtCore
 from PyQt5.QtCore import QAbstractTableModel, QModelIndex, Qt, QSize, QVariant, pyqtSignal, QEvent
 from PyQt5.QtGui import QColor, QCursor
 from PyQt5.QtWidgets import QTableView, QHeaderView, QMenu, QAction
+from gemmi import cif
 from gemmi.cif import as_string, is_null
 
-from finalcif.cif.text import retranslate_delimiter, utf8_to_str
+from finalcif.cif.text import retranslate_delimiter, utf8_to_str, quote
 from finalcif.gui.dialogs import show_keyword_help
-
-
-class MyQTableView(QTableView):
-    def __init__(self, parent):
-        super().__init__(parent=parent)
-
-    def contextMenuEvent(self, event):
-        self.menu = QMenu(self)
-        del_action = QAction('Delete Row', self)
-        del_action.triggered.connect(lambda: self._delete_row(event))
-        add_action = QAction('Add Row', self)
-        add_action.triggered.connect(lambda: self._add_row(event))
-        self.menu.addAction(add_action)
-        self.menu.addAction(del_action)
-        # add other required actions
-        self.menu.popup(QCursor.pos())
-
-    def _delete_row(self, event: QEvent):
-        self.model().removeRow(self.currentIndex().row())
-        self.model().modelReset.emit()
-
-    def _add_row(self, event: QEvent):
-        if len(self.model()._data) > 0:
-            rowlen = len(self.model()._data[0])
-            self.model()._data.append(['', ] * rowlen)
-            self.model()._original.append(['', ] * rowlen)
-            self.model().modelReset.emit()
+from finalcif.tools.dsrmath import my_isnumeric
 
 
 class Loop(QtCore.QObject):
-    def __init__(self, tags: List[str], values: List[List[str]], parent):
+    def __init__(self, tags: List[str], values: List[List[str]], parent, block):
         super(Loop, self).__init__(parent=parent)
         self.parent = parent
+        self.block = block
         self.tableview = MyQTableView(parent)
         self._values: List[List[str]] = self.get_string_values(values)
         self.tags = tags
         self.model: Union[LoopTableModel, None] = None
         self.make_model()
         self.tableview.horizontalHeader().sectionClicked.connect(self.display_help)
+        self.model.modelChanged.connect(self.save_new_cell_value_to_cif_block)
+        self.model.rowChanged.connect(self.save_new_row_to_cif_block)
+        self.model.rowDeleted.connect(self.delete_row)
 
     @QtCore.pyqtSlot(int)
     def display_help(self, header_section: int):
@@ -69,6 +50,35 @@ class Loop(QtCore.QObject):
         self.values = values
         self.model = LoopTableModel(self.tags, self.values)
         self.tableview.setModel(self.model)
+
+    def save_new_cell_value_to_cif_block(self, row: int, col: int, value: Union[str, int, float], header: list):
+        """
+        Save values of new table rows into cif loops.
+        """
+        if col >= 0:
+            column = self.block.find_values(header[col])
+            while len(column) < row + 1:
+                # fill table fields with values until last new row reached
+                loop = self.block.find_loop(header[col]).get_loop()
+                loop.add_row(['.'] * len(header))
+                column = self.block.find_values(header[col])
+            column[row] = value if my_isnumeric(value) else quote(value)
+
+    def delete_row(self, header: list, row: int):
+        table: cif.Table = self.block.find(header)
+        with suppress(IndexError):
+            table.remove_row(row)
+
+    def save_new_row_to_cif_block(self, header: list, data: list):
+        """
+        Save values of new table rows into cif loops.
+        """
+        table: cif.Table = self.block.find(header)
+        # There is no reordering currently, so I have to delete and subsequently append the new rows:
+        while len(table) > 0:
+            table.remove_row(0)
+        for row in data:
+            table.append_row([x if my_isnumeric(x) else quote(x) for x in row])
 
     @property
     def values(self):
@@ -102,8 +112,69 @@ class Loop(QtCore.QObject):
         return data
 
 
+class MyQTableView(QTableView):
+    def __init__(self, parent):
+        super().__init__(parent=parent)
+
+    def contextMenuEvent(self, event):
+        self.menu = QMenu(self)
+        del_action = QAction('Delete Row', self)
+        del_action.triggered.connect(lambda: self._delete_row(event))
+        add_action = QAction('Add Row', self)
+        add_action.triggered.connect(lambda: self._add_row(event))
+        down_action = QAction('Move down', self)
+        down_action.triggered.connect(lambda: self._row_down(event))
+        up_action = QAction('Move up', self)
+        up_action.triggered.connect(lambda: self._row_up(event))
+        up_action.setIcon(qtawesome.icon('mdi.arrow-up'))
+        down_action.setIcon(qtawesome.icon('mdi.arrow-down'))
+        del_action.setIcon(qtawesome.icon('mdi.trash-can-outline'))
+        add_action.setIcon(qtawesome.icon('mdi.table-row-plus-after'))
+        self.menu.addAction(add_action)
+        self.menu.addAction(del_action)
+        self.menu.addSeparator()
+        self.menu.addAction(up_action)
+        self.menu.addAction(down_action)
+        # add other required actions
+        self.menu.popup(QCursor.pos())
+
+    def _delete_row(self, event: QEvent):
+        self.model().removeRow(self.currentIndex().row())
+        self.model().modelReset.emit()
+
+    def _add_row(self, event: QEvent):
+        if len(self.model()._data) > 0:
+            rowlen = len(self.model()._data[0])
+            self.model()._data.append(['', ] * rowlen)
+            self.model()._original.append(['', ] * rowlen)
+            self.model().modelReset.emit()
+
+    def get_index_of_row(self, row_id):
+        return self.model().index(row_id, 0)
+
+    def _row_down(self, event: QEvent):
+        """Moves the current row down a row"""
+        if len(self.model()._data) > 1:
+            row_id = self.currentIndex().row()
+            rowdata = self.model()._data.pop(row_id)
+            self.model()._data.insert(row_id + 1, rowdata)
+            self.setCurrentIndex(self.get_index_of_row(row_id + 1))
+            self.model().rowChanged.emit(self.model()._header, self.model()._data)
+
+    def _row_up(self, event: QEvent):
+        """Moves the current row up a row"""
+        if len(self.model()._data) > 1:
+            row_id = self.currentIndex().row()
+            rowdata = self.model()._data.pop(row_id)
+            self.model()._data.insert(row_id - 1, rowdata)
+            self.setCurrentIndex(self.get_index_of_row(row_id - 1))
+            self.model().rowChanged.emit(self.model()._header, self.model()._data)
+
+
 class LoopTableModel(QAbstractTableModel):
     modelChanged = pyqtSignal(int, int, 'PyQt_PyObject', list)
+    rowChanged = pyqtSignal(list, list)
+    rowDeleted = pyqtSignal(list, int)
 
     def __init__(self, header, data):
         super(LoopTableModel, self).__init__()
@@ -180,7 +251,7 @@ class LoopTableModel(QAbstractTableModel):
             del self._data[row]
         else:
             return False
-        self.modelChanged.emit(row, -1, '', self._header)
+        self.rowDeleted.emit(self._header, row)
         return True
 
     def revert(self) -> None:
