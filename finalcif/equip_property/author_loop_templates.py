@@ -247,6 +247,7 @@ class AuthorLoops():
     def load_selected_loop(self):
         author_loopdata = self.settings.load_settings_dict('authors_list', self.get_selected_loop_name())
         self.set_author_info(author_loopdata)
+        self.ui.LoopsTabWidget.setCurrentIndex(0)
 
     def show_authors_list(self):
         self.ui.LoopTemplatesListWidget.clear()
