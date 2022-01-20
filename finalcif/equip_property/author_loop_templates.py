@@ -37,6 +37,7 @@ class AuthorLoops():
             lambda: self.ui.AddThisAuthorToLoopPushButton.setDisabled(not self.ui.LoopsTabWidget.count()))
         self.ui.SaveAuthorLoopToTemplateButton.clicked.connect(self.save_author_to_loop_template)
         self.ui.LoopTemplatesListWidget.clicked.connect(self.load_selected_loop)
+        self.ui.LoopTemplatesListWidget.doubleClicked.connect(self.save_author_to_loop)
         self.ui.DeleteLoopAuthorTemplateButton.clicked.connect(self.delete_current_author)
         self.ui.ExportAuthorPushButton.clicked.connect(self.export_author_template)
         self.ui.ImportAuthorPushButton.clicked.connect(self.import_author)
@@ -247,6 +248,7 @@ class AuthorLoops():
     def load_selected_loop(self):
         author_loopdata = self.settings.load_settings_dict('authors_list', self.get_selected_loop_name())
         self.set_author_info(author_loopdata)
+        self.ui.LoopsTabWidget.setCurrentIndex(0)
 
     def show_authors_list(self):
         self.ui.LoopTemplatesListWidget.clear()
