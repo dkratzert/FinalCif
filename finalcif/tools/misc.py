@@ -660,7 +660,7 @@ cif_to_header_label = {
     '_space_group_symop_operation_xyz'      : 'Symmetry',
     '_symmetry_equiv_pos_site_id'           : 'Symmetry',
     '_symmetry_equiv_pos_as_xyz'            : 'Symmetry',
-    '_publ_contact_author_name'             : 'Publication Contact Author',
+    '_publ_contact_author_name'             : 'Publication Contact Authors',
     '_publ_author_name'                     : 'Publication Authors',
     '_geom_hbond_atom_site_label_D'         : 'Hydrogen Bonds',
     '_geom_hbond_atom_site_label_H'         : 'Hydrogen Bonds',
