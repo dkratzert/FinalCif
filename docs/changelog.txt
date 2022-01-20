@@ -1,7 +1,7 @@
 FinalCif recent changes
 -----------------------
 
--v96 Made any loop rearrangeable by row-wise move up/down. Small other changes.
+-v96 Made any loop rearrangeable by row-wise move up/down. Adds author to loop by double click. Small other changes.
 -v95 Fixes wrong translation from german umlauts to CIF syntax e.g. u\" instead of \"u.
      Fixes crash with hkl files where the 0 0 0 reflection has a different row size than the others.
 -v95 Added help texts for CIF keywords in loops.
