@@ -37,6 +37,7 @@ class AuthorLoops():
             lambda: self.ui.AddThisAuthorToLoopPushButton.setDisabled(not self.ui.LoopsTabWidget.count()))
         self.ui.SaveAuthorLoopToTemplateButton.clicked.connect(self.save_author_to_loop_template)
         self.ui.LoopTemplatesListWidget.clicked.connect(self.load_selected_loop)
+        self.ui.LoopTemplatesListWidget.doubleClicked.connect(self.save_author_to_loop)
         self.ui.DeleteLoopAuthorTemplateButton.clicked.connect(self.delete_current_author)
         self.ui.ExportAuthorPushButton.clicked.connect(self.export_author_template)
         self.ui.ImportAuthorPushButton.clicked.connect(self.import_author)
