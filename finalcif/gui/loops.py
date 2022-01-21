@@ -9,6 +9,7 @@ import copy
 from contextlib import suppress
 from typing import Union, List, Any
 
+import gemmi
 import qtawesome
 from PyQt5 import QtCore
 from PyQt5.QtCore import QAbstractTableModel, QModelIndex, Qt, QSize, QVariant, pyqtSignal, QEvent
@@ -34,7 +35,8 @@ class Loop(QtCore.QObject):
         self.make_model()
         self.tableview.horizontalHeader().sectionClicked.connect(self.display_help)
         self.model.modelChanged.connect(self.save_new_cell_value_to_cif_block)
-        self.model.rowChanged.connect(self.save_new_row_to_cif_block)
+        self.tableview.rowChanged.connect(self.save_new_row_to_cif_block)
+        self.tableview.row_moved.connect(self.move_row)
         self.model.rowDeleted.connect(self.delete_row)
 
     @QtCore.pyqtSlot(int)
@@ -64,12 +66,17 @@ class Loop(QtCore.QObject):
                 column = self.block.find_values(header[col])
             column[row] = value if my_isnumeric(value) else quote(value)
 
-    def delete_row(self, header: list, row: int):
+    def delete_row(self, header: List[str], row: int):
         table: cif.Table = self.block.find(header)
         with suppress(IndexError):
             table.remove_row(row)
 
-    def save_new_row_to_cif_block(self, header: list, data: list):
+    def move_row(self, header: List[str], pos1: int, pos2: int):
+        """Moves table row from pos1 to pos2"""
+        table: cif.Table = self.block.find(header)
+        table.move_row(pos1, pos2)
+
+    def save_new_row_to_cif_block(self, header: List[str], data: list):
         """
         Save values of new table rows into cif loops.
         """
@@ -113,6 +120,9 @@ class Loop(QtCore.QObject):
 
 
 class MyQTableView(QTableView):
+    rowChanged = pyqtSignal(list, list)
+    row_moved = pyqtSignal(list, int, int)
+
     def __init__(self, parent):
         super().__init__(parent=parent)
 
@@ -154,26 +164,33 @@ class MyQTableView(QTableView):
 
     def _row_down(self, event: QEvent):
         """Moves the current row down a row"""
+        gemmi_version = int(''.join(gemmi.__version__.split('.')))
         if len(self.model()._data) > 1:
             row_id = self.currentIndex().row()
             rowdata = self.model()._data.pop(row_id)
             self.model()._data.insert(row_id + 1, rowdata)
             self.setCurrentIndex(self.get_index_of_row(row_id + 1))
-            self.model().rowChanged.emit(self.model()._header, self.model()._data)
+            if gemmi_version > 51:
+                self.row_moved.emit(self.model()._header, row_id, row_id + 1)
+            else:
+                self.rowChanged.emit(self.model()._header, self.model()._data)
 
     def _row_up(self, event: QEvent):
         """Moves the current row up a row"""
+        gemmi_version = int(''.join(gemmi.__version__.split('.')))
         if len(self.model()._data) > 1:
             row_id = self.currentIndex().row()
             rowdata = self.model()._data.pop(row_id)
             self.model()._data.insert(row_id - 1, rowdata)
             self.setCurrentIndex(self.get_index_of_row(row_id - 1))
-            self.model().rowChanged.emit(self.model()._header, self.model()._data)
+            if gemmi_version > 51:
+                self.row_moved.emit(self.model()._header, row_id, row_id - 1)
+            else:
+                self.rowChanged.emit(self.model()._header, self.model()._data)
 
 
 class LoopTableModel(QAbstractTableModel):
     modelChanged = pyqtSignal(int, int, 'PyQt_PyObject', list)
-    rowChanged = pyqtSignal(list, list)
     rowDeleted = pyqtSignal(list, int)
 
     def __init__(self, header, data):
