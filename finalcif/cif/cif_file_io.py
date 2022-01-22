@@ -502,7 +502,10 @@ class CifContainer():
         occ = self.block.find_loop('_atom_site_occupancy')
         u_eq = self.block.find_loop('_atom_site_U_iso_or_equiv')
         atom = namedtuple('Atom', ('label', 'type', 'x', 'y', 'z', 'part', 'occ', 'u_eq'))
-        for label, type, x, y, z, part, occ, u_eq in zip(labels, types, x, y, z, part, occ, u_eq):
+        for label, type, x, y, z, part, occ, u_eq in zip(labels, types, x, y, z,
+                                                         part if part else ('0',)*len(labels),
+                                                         occ if occ else ('1.000000',)*len(labels),
+                                                         u_eq):
             if without_h and self.ishydrogen(label):
                 continue
             #         0    1   2  3  4   5   6     7
