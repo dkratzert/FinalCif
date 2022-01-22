@@ -493,6 +493,9 @@ class CifContainer():
         return ops.is_centric()
 
     def atoms(self, without_h: bool = False) -> Generator:
+        """
+        Atoms from the CIF where values are returned as string like in the CIF with esds.
+        """
         labels = self.block.find_loop('_atom_site_label')
         types = self.block.find_loop('_atom_site_type_symbol')
         x = self.block.find_loop('_atom_site_fract_x')
@@ -514,6 +517,7 @@ class CifContainer():
 
     @property
     def atoms_fract(self) -> Generator:
+        """Atoms with numbers as float values without esd."""
         for at in self.atomic_struct.sites:
             yield [at.label, at.type_symbol, at.fract.x, at.fract.y, at.fract.z, at.disorder_group, at.occ, at.u_iso]
 
