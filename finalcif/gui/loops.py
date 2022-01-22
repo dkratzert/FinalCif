@@ -133,10 +133,10 @@ class MyQTableView(QTableView):
         del_action = QAction('Delete Row', self)
         down_action = QAction('Move row down', self)
         up_action = QAction('Move row up', self)
-        down_action.triggered.connect(lambda: self._row_down(event))
         add_action.triggered.connect(lambda: self._add_row(event))
         del_action.triggered.connect(lambda: self._delete_row(event))
         up_action.triggered.connect(lambda: self._row_up(event))
+        down_action.triggered.connect(lambda: self._row_down(event))
         up_action.setIcon(qtawesome.icon('mdi.arrow-up'))
         down_action.setIcon(qtawesome.icon('mdi.arrow-down'))
         del_action.setIcon(qtawesome.icon('mdi.trash-can-outline'))
@@ -165,8 +165,9 @@ class MyQTableView(QTableView):
 
     def _row_down(self, event: QEvent) -> None:
         """Moves the current row down a row"""
-        if len(self.model()._data) > 1:
-            row_id = self.currentIndex().row()
+        row_id = self.currentIndex().row()
+        # Should have data and not be the last row:
+        if len(self.model()._data) > 1 and self.is_last_row(row_id):
             rowdata = self.model()._data.pop(row_id)
             self.model()._data.insert(row_id + 1, rowdata)
             self.setCurrentIndex(self.get_index_of_row(row_id + 1))
@@ -175,10 +176,13 @@ class MyQTableView(QTableView):
             else:
                 self.rowChanged.emit(self.model()._header, self.model()._data)
 
+    def is_last_row(self, row_id):
+        return row_id < (len(self.model()._data) - 1)
+
     def _row_up(self, event: QEvent) -> None:
         """Moves the current row up a row"""
-        if len(self.model()._data) > 1:
-            row_id = self.currentIndex().row()
+        row_id = self.currentIndex().row()
+        if len(self.model()._data) > 1 and row_id > 0:
             rowdata = self.model()._data.pop(row_id)
             self.model()._data.insert(row_id - 1, rowdata)
             self.setCurrentIndex(self.get_index_of_row(row_id - 1))

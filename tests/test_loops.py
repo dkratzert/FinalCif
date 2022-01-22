@@ -75,8 +75,118 @@ class TestLoops(unittest.TestCase):
 
     def test_loop_edit_one_single_field(self):
         model = self.myapp.ui.LoopsTabWidget.widget(self.get_index_of('Scattering')).model()
-        print(self.myapp.ui.LoopsTabWidget.tabText(4))
         model.setData(model.index(0, 2), 'foo bar', role=Qt.EditRole)
         self.myapp.ui.SaveCifButton.click()
         c = CifContainer(self.myapp.final_cif_file_name)
         self.assertEqual('foo bar', as_string(c.loops[3].val(0, 2)))
+
+class TestLoopsMove(unittest.TestCase):
+    def tearDown(self) -> None:
+        self.myapp.final_cif_file_name.unlink(missing_ok=True)
+        self.myapp.close()
+
+    def get_index_of(self, loopkey: str = ''):
+        tabw: QTabWidget = self.myapp.ui.LoopsTabWidget
+        tab = -1
+        for tab in range(tabw.count()):
+            if tabw.tabText(tab).startswith(loopkey):
+                break
+            else:
+                tab = -1
+        return tab
+
+    def setUp(self) -> None:
+        os.chdir(Path(__file__).resolve().parent.parent)
+        self.testcif = Path('tests/examples/1979688.cif').resolve()
+        self.myapp = AppWindow(self.testcif, unit_test=True)
+        self.myapp.running_inside_unit_test = True
+        self.myapp.hide()  # For full screen view
+        self.myapp.ui.LoopsPushButton.click()
+
+    def set_current_index_to_row_col(self, row, col):
+        view = self.myapp.ui.LoopsTabWidget.widget(self.get_index_of('Scattering'))
+        index = view.model().index(row, col)
+        view.setCurrentIndex(index)
+        return view
+
+    def test_order_of_scattering_factors_table(self):
+        """
+        The original order of the loo is C, H, O from top to bottom.
+        """
+        view = self.myapp.ui.LoopsTabWidget.widget(self.get_index_of('Scattering'))
+        self.assertEqual('C', view.model().index(0, 0).data())
+        self.assertEqual('H', view.model().index(1, 0).data())
+        self.assertEqual('O', view.model().index(2, 0).data())
+
+    def test_row_col_selection(self):
+        """
+        Now move the second row down:
+        """
+        view = self.set_current_index_to_row_col(1, 0)
+        self.assertEqual(1, view.currentIndex().row())
+        self.assertEqual(0, view.currentIndex().column())
+
+    def test_move_row_down_from_middle(self):
+        view = self.set_current_index_to_row_col(1, 0)
+        view._row_down(None)
+        self.assertEqual('C', view.model().index(0, 0).data())
+        self.assertEqual('O', view.model().index(1, 0).data())
+        self.assertEqual('H', view.model().index(2, 0).data())
+
+    def test_move_row_down_from_middle_save_and_load_again(self):
+        view = self.set_current_index_to_row_col(1, 0)
+        view._row_down(None)
+        self.myapp.ui.SaveCifButton.click()
+        c = CifContainer(self.myapp.final_cif_file_name)
+        self.assertEqual('C', as_string(c.loops[3].val(0, 0)))
+        self.assertEqual('O', as_string(c.loops[3].val(1, 0)))
+        self.assertEqual('H', as_string(c.loops[3].val(2, 0)))
+
+    def test_move_row_down_from_end(self):
+        view = self.set_current_index_to_row_col(2, 0)
+        view._row_down(None)
+        self.assertEqual('C', view.model().index(0, 0).data())
+        self.assertEqual('H', view.model().index(1, 0).data())
+        self.assertEqual('O', view.model().index(2, 0).data())
+
+    def test_move_row_down_from_end_save_and_load_again(self):
+        view = self.set_current_index_to_row_col(2, 0)
+        view._row_down(None)
+        self.myapp.ui.SaveCifButton.click()
+        c = CifContainer(self.myapp.final_cif_file_name)
+        self.assertEqual('C', as_string(c.loops[3].val(0, 0)))
+        self.assertEqual('H', as_string(c.loops[3].val(1, 0)))
+        self.assertEqual('O', as_string(c.loops[3].val(2, 0)))
+
+
+    def test_move_row_up_from_middle(self):
+        view = self.set_current_index_to_row_col(1, 0)
+        view._row_up(None)
+        self.assertEqual('H', view.model().index(0, 0).data())
+        self.assertEqual('C', view.model().index(1, 0).data())
+        self.assertEqual('O', view.model().index(2, 0).data())
+
+    def test_move_row_up_from_middle_save_and_load_again(self):
+        view = self.set_current_index_to_row_col(1, 0)
+        view._row_up(None)
+        self.myapp.ui.SaveCifButton.click()
+        c = CifContainer(self.myapp.final_cif_file_name)
+        self.assertEqual('H', as_string(c.loops[3].val(0, 0)))
+        self.assertEqual('C', as_string(c.loops[3].val(1, 0)))
+        self.assertEqual('O', as_string(c.loops[3].val(2, 0)))
+
+    def test_move_row_up_from_start(self):
+        view = self.set_current_index_to_row_col(0, 0)
+        view._row_up(None)
+        self.assertEqual('C', view.model().index(0, 0).data())
+        self.assertEqual('H', view.model().index(1, 0).data())
+        self.assertEqual('O', view.model().index(2, 0).data())
+
+    def test_move_row_up_from_start_save_and_load_again(self):
+        view = self.set_current_index_to_row_col(0, 0)
+        view._row_up(None)
+        self.myapp.ui.SaveCifButton.click()
+        c = CifContainer(self.myapp.final_cif_file_name)
+        self.assertEqual('C', as_string(c.loops[3].val(0, 0)))
+        self.assertEqual('H', as_string(c.loops[3].val(1, 0)))
+        self.assertEqual('O', as_string(c.loops[3].val(2, 0)))
