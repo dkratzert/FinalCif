@@ -17,6 +17,7 @@ from PyQt5.QtGui import QColor, QCursor
 from PyQt5.QtWidgets import QTableView, QHeaderView, QMenu, QAction
 from gemmi import cif
 from gemmi.cif import as_string, is_null
+from packaging import version
 
 from finalcif.cif.text import retranslate_delimiter, utf8_to_str, quote
 from finalcif.gui.dialogs import show_keyword_help
@@ -162,28 +163,26 @@ class MyQTableView(QTableView):
     def get_index_of_row(self, row_id):
         return self.model().index(row_id, 0)
 
-    def _row_down(self, event: QEvent):
+    def _row_down(self, event: QEvent) -> None:
         """Moves the current row down a row"""
-        gemmi_version = int(''.join(gemmi.__version__.split('.')))
         if len(self.model()._data) > 1:
             row_id = self.currentIndex().row()
             rowdata = self.model()._data.pop(row_id)
             self.model()._data.insert(row_id + 1, rowdata)
             self.setCurrentIndex(self.get_index_of_row(row_id + 1))
-            if gemmi_version > 51:
+            if version.parse(gemmi.__version__) > version.parse('0.5.1'):
                 self.row_moved.emit(self.model()._header, row_id, row_id + 1)
             else:
                 self.rowChanged.emit(self.model()._header, self.model()._data)
 
-    def _row_up(self, event: QEvent):
+    def _row_up(self, event: QEvent) -> None:
         """Moves the current row up a row"""
-        gemmi_version = int(''.join(gemmi.__version__.split('.')))
         if len(self.model()._data) > 1:
             row_id = self.currentIndex().row()
             rowdata = self.model()._data.pop(row_id)
             self.model()._data.insert(row_id - 1, rowdata)
             self.setCurrentIndex(self.get_index_of_row(row_id - 1))
-            if gemmi_version > 51:
+            if version.parse(gemmi.__version__) > version.parse('0.5.1'):
                 self.row_moved.emit(self.model()._header, row_id, row_id - 1)
             else:
                 self.rowChanged.emit(self.model()._header, self.model()._data)
