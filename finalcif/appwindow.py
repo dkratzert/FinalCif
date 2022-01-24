@@ -540,7 +540,6 @@ class AppWindow(QMainWindow):
         self.ui.responseFormsListWidget.clear()
         for form in forms:
             vrf = MyVRFContainer(form, a.get_help(form['alert_num']), parent=self)
-            vrf.setAutoFillBackground(False)
             self.validation_response_forms_list.append(vrf)
             item = QListWidgetItem()
             item.setSizeHint(vrf.sizeHint())
