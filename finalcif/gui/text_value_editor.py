@@ -1,28 +1,48 @@
+import os
 import sys
+from pathlib import Path
 
-import qtawesome
-from PyQt5 import QtWidgets
-from PyQt5.QtCore import Qt, QSize
-from PyQt5.QtWidgets import QWidget, QHBoxLayout, QCheckBox, QApplication, QVBoxLayout, QScrollArea, QPlainTextEdit, \
-    QTextEdit, QListWidgetItem, QAbstractItemView, QLineEdit, QFormLayout
+from PyQt5 import uic
+from PyQt5.QtCore import QSize, Qt, pyqtSignal
+from PyQt5.QtWidgets import QWidget, QHBoxLayout, QCheckBox, QApplication, QPlainTextEdit, \
+    QListWidgetItem, QVBoxLayout, QLabel
 
-from finalcif.gui.custom_classes import MyQPlainTextEdit
+print('Compiling ui ...')
+application_path = Path(os.path.abspath(__file__)).parent.parent
+uic.compileUiDir(os.path.join(application_path, 'gui'))
+from finalcif.gui import text_templates
 
 
 class TextEditItem(QWidget):
     """
-    Text editor for large text instedc of dropdown widgets.
+    Text editor for large text inside of dropdown widgets.
     """
+    _num = 1
+    checkbox_cl = pyqtSignal(str)
+
     def __init__(self, parent: QWidget):
         super().__init__(parent)
         layout = QHBoxLayout(self)
+        self.vlayout = QVBoxLayout()
+        self.vlayout.setAlignment(Qt.AlignVCenter)
         self.checkbox = QCheckBox()
+        self.number_label = QLabel()
+        self.vlayout.addWidget(self.number_label)
         self.textfield = QPlainTextEdit(self)
-        layout.addWidget(self.checkbox)
+        self.vlayout.addWidget(self.checkbox)
+        layout.addLayout(self.vlayout)
         layout.addWidget(self.textfield)
         layout.setContentsMargins(4, 8, 4, 4)
-        self.setLayout(layout)
         self.setAutoFillBackground(False)
+        self.checkbox.clicked.connect(self.checkbox_clicked)
+
+    def checkbox_clicked(self, checked):
+        if checked:
+            self.checkbox_cl.emit(self.textfield.toPlainText())
+            self.number_label.setText(str(self._num))
+            TextEditItem._num += 1
+        else:
+            self.number_label.setText('')
 
     def setText(self, text: str):
         self.textfield.setPlainText(text)
@@ -31,7 +51,14 @@ class TextEditItem(QWidget):
         self.checkbox.setObjectName(name)
 
     def sizeHint(self) -> QSize:
-        return QSize(400, 150)
+        return QSize(400, 190)
+
+
+class MyTextTemplateEdit(QWidget):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.ui = text_templates.Ui_text_templates_window()
+        self.ui.setupUi(self)
 
 
 if __name__ == "__main__":
@@ -43,7 +70,7 @@ if __name__ == "__main__":
     The data were first detwinned (using the LIST 8 function of 
     Shelxl2018) and then the cif and fcf files were subjected to the 
     SQUEEZE routine as implemented in the program Platon. The resultant files were used in the further refinement. (Both the hklf 5 type HKL file and the detwinned FAB file are appended to this cif file). A volume of ??? cubic Angstrom per unit cell containing ??? electrons was corrected for.
-    """, 'bar dftzh hkjft', 'baz rtzhj dtju', """In addition to the twinning, the structure also exhibits large 
+    """, 'bar dftzh hkjft Hällö Daniel Daß is ein T!"§$%&/()=?', 'baz rtzhj dtju', """In addition to the twinning, the structure also exhibits large 
     volume sections consisting of highly disordered solvate or other 
     small molecules. No satisfactory model for the solvate molecules 
     could be developed, and the contribution of the solvate molecules 
@@ -51,31 +78,18 @@ if __name__ == "__main__":
     The data were first detwinned (using the LIST 8 function of 
     Shelxl2018) and then the cif and fcf files were subjected to the 
     SQUEEZE routine as implemented in the program Platon. The resultant files were used in the further refinement. (Both the hklf 5 type HKL file and the detwinned FAB file are appended to this cif file). A volume of ??? cubic Angstrom per unit cell containing ??? electrons was corrected for.
-    """, 'fghfh', 'ffg')
+    """, 'fghfh', 'ffg') * 20
     app = QApplication(sys.argv)
+    window = MyTextTemplateEdit()
 
-    window = QWidget()
-    vlayout = QVBoxLayout(window)
-    ciflayout = QFormLayout(window)
-    cifedit = QLineEdit()
-    sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Preferred)
-    cifedit.setSizePolicy(sizePolicy)
-    ciflayout.addRow("CIF key:", cifedit)
-    vlayout.addLayout(ciflayout)
-    vlayout.setContentsMargins(6, 6, 6, 6)
-    textEditListWidget = QtWidgets.QListWidget(window)
-    textEditListWidget.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
-    textEditListWidget.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)
-    window.setMinimumSize(600, 500)
-    window.setLayout(vlayout)
-    vlayout.addWidget(textEditListWidget)
     for text in txts:
-        editItem = TextEditItem(window)
+        editItem = TextEditItem(window.ui.listWidget)
         editItem.setText(text)
-        item = QListWidgetItem(parent=textEditListWidget)
+        editItem.checkbox_cl.connect(lambda x: window.ui.plainTextEdit.appendPlainText(x))
+        item = QListWidgetItem(parent=window.ui.listWidget)
         item.setSizeHint(editItem.sizeHint())
-        #item.setIcon(qtawesome.icon('fa5.image'))
-        textEditListWidget.addItem(item)
-        textEditListWidget.setItemWidget(item, editItem)
+        # item.setIcon(qtawesome.icon('fa5.image'))
+        window.ui.listWidget.addItem(item)
+        window.ui.listWidget.setItemWidget(item, editItem)
     window.show()
     sys.exit(app.exec_())
