@@ -45,6 +45,7 @@ from finalcif.gui.dialogs import show_update_warning, unable_to_open_message, sh
     bad_z_message, show_res_checksum_warning, show_hkl_checksum_warning
 from finalcif.gui.finalcif_gui import Ui_FinalCifWindow
 from finalcif.gui.loops import Loop
+from finalcif.gui.text_value_editor import MyTextTemplateEdit, txts
 from finalcif.gui.vrf_classes import MyVRFContainer, VREF
 from finalcif.report.archive_report import ArchiveReport
 from finalcif.report.tables import make_report_from
@@ -109,8 +110,6 @@ class AppWindow(QMainWindow):
         self.ui.TemplatesStackedWidget.setCurrentIndex(0)
         self.ui.MainStackedWidget.got_to_main_page()
         self.set_initial_button_states()
-        self.connect_signals_and_slots()
-        self.make_button_icons()
         if len(sys.argv) > 1:
             self.load_cif_file(Path(sys.argv[1]) if sys.argv[1] != 'compile_ui' else Path())
         elif file:
@@ -123,6 +122,13 @@ class AppWindow(QMainWindow):
         self.templates = ReportTemplates(self, self.settings)
         if not self.running_inside_unit_test:
             self.check_for_update_version()
+        #self.ui.MainStackedWidget.go_to_text_template_page()
+        self.txtedit = MyTextTemplateEdit(parent=self)
+        self.txtedit.add_textfields(txts)
+        self.ui.page_textTemplate.layout().addWidget(self.txtedit)
+        #
+        self.connect_signals_and_slots()
+        self.make_button_icons()
 
     def distribute_cif_main_table_columns_evenly(self):
         hheader = self.ui.cif_main_table.horizontalHeader()
@@ -200,6 +206,7 @@ class AppWindow(QMainWindow):
         self.ui.BackFromOptionspPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
         self.ui.BackFromLoopsPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
         self.ui.BackFromPlatonPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
+        self.txtedit.ui.backToCIFfromTextButton.setIcon(qta.icon('mdi.keyboard-backspace'))
         #
         self.ui.SaveAuthorLoopToTemplateButton.setIcon(qta.icon('mdi.badge-account-outline'))
         self.ui.AddThisAuthorToLoopPushButton.setIcon(qta.icon('mdi.folder-table-outline'))
@@ -263,6 +270,8 @@ class AppWindow(QMainWindow):
         self.ui.SelectCif_LineEdit.returnPressed.connect(self.check_if_file_field_contains_database_number)
         self.ui.fullIucrCheckBox.clicked.connect(self.toggle_hkl_option)
         self.ui.structfactCheckBox.clicked.connect(self.toggle_iucr_option)
+        # text templates
+        self.txtedit.ui.backToCIFfromTextButton.clicked.connect(self.back_to_main_noload)
 
     def toggle_hkl_option(self, iucr_is_checked: bool):
         if iucr_is_checked:

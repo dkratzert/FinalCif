@@ -7,7 +7,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1590</width>
+    <width>1604</width>
     <height>776</height>
    </rect>
   </property>
@@ -1071,7 +1071,7 @@
         <item row="1" column="0" colspan="12">
          <widget class="MyMainStackedWidget" name="MainStackedWidget">
           <property name="currentIndex">
-           <number>5</number>
+           <number>8</number>
           </property>
           <widget class="QWidget" name="page_MainTable">
            <layout class="QVBoxLayout" name="verticalLayout">
@@ -3908,6 +3908,9 @@ please add a publication author:</string>
              </layout>
             </item>
            </layout>
+          </widget>
+          <widget class="QWidget" name="page_textTemplate">
+           <layout class="QVBoxLayout" name="verticalLayout_33"/>
           </widget>
          </widget>
         </item>
