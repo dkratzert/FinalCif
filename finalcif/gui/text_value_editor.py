@@ -1,16 +1,35 @@
 import os
 import sys
 from pathlib import Path
+from typing import Tuple, List, Union
 
 from PyQt5 import uic
 from PyQt5.QtCore import QSize, Qt, pyqtSignal
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QCheckBox, QApplication, QPlainTextEdit, \
     QListWidgetItem, QVBoxLayout, QLabel
 
-print('Compiling ui ...')
+print('Compiling textedit ui ...')
 application_path = Path(os.path.abspath(__file__)).parent.parent
 uic.compileUiDir(os.path.join(application_path, 'gui'))
 from finalcif.gui import text_templates
+
+txts = ("""In addition to the twinning, the structure also exhibits large 
+volume sections consisting of highly disordered solvate or other 
+small molecules. No satisfactory model for the solvate molecules 
+could be developed, and the contribution of the solvate molecules 
+was instead taken into account by reverse Fourier transform methods. 
+The data were first detwinned (using the LIST 8 function of 
+Shelxl2018) and then the cif and fcf files were subjected to the 
+SQUEEZE routine as implemented in the program Platon. The resultant files were used in the further refinement. (Both the hklf 5 type HKL file and the detwinned FAB file are appended to this cif file). A volume of ??? cubic Angstrom per unit cell containing ??? electrons was corrected for.
+""", 'bar dftzh hkjft Hällö Daniel Daß is ein T!"§$%&/()=?', 'baz rtzhj dtju', """In addition to the twinning, the structure also exhibits large 
+volume sections consisting of highly disordered solvate or other 
+small molecules. No satisfactory model for the solvate molecules 
+could be developed, and the contribution of the solvate molecules 
+was instead taken into account by reverse Fourier transform methods. 
+The data were first detwinned (using the LIST 8 function of 
+Shelxl2018) and then the cif and fcf files were subjected to the 
+SQUEEZE routine as implemented in the program Platon. The resultant files were used in the further refinement. (Both the hklf 5 type HKL file and the detwinned FAB file are appended to this cif file). A volume of ??? cubic Angstrom per unit cell containing ??? electrons was corrected for.
+""", 'fghfh', 'ffg') + ('',) * 20
 
 
 class TextEditItem(QWidget):
@@ -57,39 +76,24 @@ class TextEditItem(QWidget):
 class MyTextTemplateEdit(QWidget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.ui = text_templates.Ui_text_templates_window()
+        self.ui = text_templates.Ui_TextTemplatesWidget()
         self.ui.setupUi(self)
+
+    def add_textfields(self, text_list: Union[List, Tuple]) -> None:
+        for text in text_list:
+            edit_item = TextEditItem(self.ui.listWidget)
+            edit_item.setText(text)
+            edit_item.checkbox_cl.connect(lambda x: self.ui.plainTextEdit.appendPlainText(x))
+            item = QListWidgetItem(parent=self.ui.listWidget)
+            item.setSizeHint(edit_item.sizeHint())
+            # item.setIcon(qtawesome.icon('fa5.image'))
+            self.ui.listWidget.addItem(item)
+            self.ui.listWidget.setItemWidget(item, edit_item)
 
 
 if __name__ == "__main__":
-    txts = ("""In addition to the twinning, the structure also exhibits large 
-    volume sections consisting of highly disordered solvate or other 
-    small molecules. No satisfactory model for the solvate molecules 
-    could be developed, and the contribution of the solvate molecules 
-    was instead taken into account by reverse Fourier transform methods. 
-    The data were first detwinned (using the LIST 8 function of 
-    Shelxl2018) and then the cif and fcf files were subjected to the 
-    SQUEEZE routine as implemented in the program Platon. The resultant files were used in the further refinement. (Both the hklf 5 type HKL file and the detwinned FAB file are appended to this cif file). A volume of ??? cubic Angstrom per unit cell containing ??? electrons was corrected for.
-    """, 'bar dftzh hkjft Hällö Daniel Daß is ein T!"§$%&/()=?', 'baz rtzhj dtju', """In addition to the twinning, the structure also exhibits large 
-    volume sections consisting of highly disordered solvate or other 
-    small molecules. No satisfactory model for the solvate molecules 
-    could be developed, and the contribution of the solvate molecules 
-    was instead taken into account by reverse Fourier transform methods. 
-    The data were first detwinned (using the LIST 8 function of 
-    Shelxl2018) and then the cif and fcf files were subjected to the 
-    SQUEEZE routine as implemented in the program Platon. The resultant files were used in the further refinement. (Both the hklf 5 type HKL file and the detwinned FAB file are appended to this cif file). A volume of ??? cubic Angstrom per unit cell containing ??? electrons was corrected for.
-    """, 'fghfh', 'ffg') * 20
     app = QApplication(sys.argv)
     window = MyTextTemplateEdit()
-
-    for text in txts:
-        editItem = TextEditItem(window.ui.listWidget)
-        editItem.setText(text)
-        editItem.checkbox_cl.connect(lambda x: window.ui.plainTextEdit.appendPlainText(x))
-        item = QListWidgetItem(parent=window.ui.listWidget)
-        item.setSizeHint(editItem.sizeHint())
-        # item.setIcon(qtawesome.icon('fa5.image'))
-        window.ui.listWidget.addItem(item)
-        window.ui.listWidget.setItemWidget(item, editItem)
+    window.add_textfields(txts)
     window.show()
     sys.exit(app.exec_())

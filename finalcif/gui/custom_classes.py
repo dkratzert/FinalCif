@@ -596,6 +596,9 @@ class MyMainStackedWidget(QStackedWidget):
     def got_to_cod_page(self):
         self.setCurrentIndex(7)
 
+    def go_to_text_template_page(self):
+        self.setCurrentIndex(8)
+
     @property
     def current_page(self):
         return self.currentIndex()

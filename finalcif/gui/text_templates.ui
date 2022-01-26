@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>text_templates_window</class>
- <widget class="QWidget" name="text_templates_window">
+ <class>TextTemplatesWidget</class>
+ <widget class="QWidget" name="TextTemplatesWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>753</width>
+    <width>765</width>
     <height>658</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>text_templates_window</string>
+   <string>TextTemplatesWidget</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_3">
    <property name="leftMargin">
@@ -28,6 +28,12 @@
    </property>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
+     <property name="leftMargin">
+      <number>6</number>
+     </property>
+     <property name="bottomMargin">
+      <number>6</number>
+     </property>
      <item>
       <widget class="QLabel" name="label">
        <property name="text">
@@ -59,6 +65,9 @@
       <string>Combined text</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_4">
+      <property name="spacing">
+       <number>-1</number>
+      </property>
       <property name="leftMargin">
        <number>3</number>
       </property>
@@ -69,7 +78,7 @@
        <number>3</number>
       </property>
       <property name="bottomMargin">
-       <number>3</number>
+       <number>6</number>
       </property>
       <item>
        <widget class="QPlainTextEdit" name="plainTextEdit">
@@ -112,19 +121,26 @@
        <widget class="QListWidget" name="listWidget"/>
       </item>
       <item>
-       <layout class="QVBoxLayout" name="moreTemplatesVLayout">
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
         <item>
-         <widget class="QPushButton" name="moreTemplatesPushButton">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
+         <widget class="QPushButton" name="exportTextPushButton">
           <property name="text">
-           <string>More Templates</string>
+           <string>Export Templates</string>
           </property>
          </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_3">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
         </item>
        </layout>
       </item>
@@ -134,25 +150,44 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
-      <widget class="QPushButton" name="exportPushButton">
+      <widget class="QPushButton" name="backToCIFfromTextButton">
        <property name="text">
-        <string>Export Templates</string>
+        <string>Back to CIF Table</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="applyPushButton">
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="applyTextPushButton">
        <property name="text">
-        <string>Apply</string>
+        <string>Apply Text</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="closePushButton">
-       <property name="text">
-        <string>Close</string>
+      <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
        </property>
-      </widget>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
      </item>
     </layout>
    </item>
