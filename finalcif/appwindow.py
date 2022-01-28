@@ -123,9 +123,9 @@ class AppWindow(QMainWindow):
         if not self.running_inside_unit_test:
             self.check_for_update_version()
         #self.ui.MainStackedWidget.go_to_text_template_page()
-        self.txtedit = MyTextTemplateEdit(parent=self)
-        self.txtedit.add_textfields(txts)
-        self.ui.page_textTemplate.layout().addWidget(self.txtedit)
+        self.textedit = MyTextTemplateEdit(parent=self)
+        self.textedit.add_textfields(txts)
+        self.ui.page_textTemplate.layout().addWidget(self.textedit)
         #
         self.connect_signals_and_slots()
         self.make_button_icons()
@@ -206,7 +206,7 @@ class AppWindow(QMainWindow):
         self.ui.BackFromOptionspPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
         self.ui.BackFromLoopsPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
         self.ui.BackFromPlatonPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
-        self.txtedit.ui.backToCIFfromTextButton.setIcon(qta.icon('mdi.keyboard-backspace'))
+        self.textedit.ui.backToCIFfromTextButton.setIcon(qta.icon('mdi.keyboard-backspace'))
         #
         self.ui.SaveAuthorLoopToTemplateButton.setIcon(qta.icon('mdi.badge-account-outline'))
         self.ui.AddThisAuthorToLoopPushButton.setIcon(qta.icon('mdi.folder-table-outline'))
@@ -271,7 +271,36 @@ class AppWindow(QMainWindow):
         self.ui.fullIucrCheckBox.clicked.connect(self.toggle_hkl_option)
         self.ui.structfactCheckBox.clicked.connect(self.toggle_iucr_option)
         # text templates
-        self.txtedit.ui.backToCIFfromTextButton.clicked.connect(self.back_to_main_noload)
+        self.textedit.ui.backToCIFfromTextButton.clicked.connect(self.back_to_main_noload)
+        self.textedit.ui.applyTextPushButton.clicked.connect(self.apply_text_template)
+        self.textedit.ui.exportTextPushButton.clicked.connect(self.export_text_template)
+        self.textedit.ui.savePushButton.clicked.connect(self.save_text_template)
+        self.textedit.ui.deletePushButton.clicked.connect(self.delete_text_template)
+
+    def export_text_template(self):
+        """
+        Use texts from self.textedit.ui.listWidget and save in a CIF as loop.
+        """
+        pass
+
+    def delete_text_template(self):
+        """
+        Delete template from settings.
+        """
+        pass
+
+    def save_text_template(self):
+        """
+        Save template in settings.
+        """
+        pass
+
+    def apply_text_template(self):
+        """
+        Use text from self.textedit.ui.plainTextEdit and fill it into current cell. Then go back to
+        main table. And scroll to changed row.
+        """
+        pass
 
     def toggle_hkl_option(self, iucr_is_checked: bool):
         if iucr_is_checked:

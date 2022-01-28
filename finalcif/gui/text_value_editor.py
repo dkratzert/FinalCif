@@ -81,14 +81,14 @@ class MyTextTemplateEdit(QWidget):
 
     def add_textfields(self, text_list: Union[List, Tuple]) -> None:
         for text in text_list:
-            edit_item = TextEditItem(self.ui.listWidget)
+            edit_item = TextEditItem(self.ui.templatesListWidget)
             edit_item.setText(text)
             edit_item.checkbox_cl.connect(lambda x: self.ui.plainTextEdit.appendPlainText(x))
-            item = QListWidgetItem(parent=self.ui.listWidget)
+            item = QListWidgetItem(parent=self.ui.templatesListWidget)
             item.setSizeHint(edit_item.sizeHint())
             # item.setIcon(qtawesome.icon('fa5.image'))
-            self.ui.listWidget.addItem(item)
-            self.ui.listWidget.setItemWidget(item, edit_item)
+            self.ui.templatesListWidget.addItem(item)
+            self.ui.templatesListWidget.setItemWidget(item, edit_item)
 
 
 if __name__ == "__main__":

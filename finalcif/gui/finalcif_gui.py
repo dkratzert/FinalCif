@@ -1624,7 +1624,7 @@ class Ui_FinalCifWindow(object):
         self.TemplatesStackedWidget.setCurrentIndex(1)
         self.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
         self.PropertiesTemplatesStackedWidget.setCurrentIndex(1)
-        self.MainStackedWidget.setCurrentIndex(8)
+        self.MainStackedWidget.setCurrentIndex(6)
         self.LoopsTabWidget.setCurrentIndex(0)
         self.CheckCIFResultsTabWidget.setCurrentIndex(2)
         self.ResponsesTabWidget.setCurrentIndex(0)
