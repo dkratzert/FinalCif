@@ -122,7 +122,8 @@ class AppWindow(QMainWindow):
         self.templates = ReportTemplates(self, self.settings)
         if not self.running_inside_unit_test:
             self.check_for_update_version()
-        #self.ui.MainStackedWidget.go_to_text_template_page()
+        # For testing only:
+        self.ui.MainStackedWidget.go_to_text_template_page()
         self.textedit = MyTextTemplateEdit(parent=self)
         self.textedit.add_textfields(txts)
         self.ui.page_textTemplate.layout().addWidget(self.textedit)
@@ -281,7 +282,7 @@ class AppWindow(QMainWindow):
         """
         Use texts from self.textedit.ui.listWidget and save in a CIF as loop.
         """
-        pass
+        self.textedit.get_template_texts()
 
     def delete_text_template(self):
         """
