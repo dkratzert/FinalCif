@@ -49,7 +49,7 @@ class ReportTemplates:
         self.settings.save_template_list('report_templates_list', self.get_templates_list_from_widget())
 
     def load_templates_list(self):
-        templates = self.settings.load_template('report_templates_list')
+        templates = self.settings.load_value_of_key('report_templates_list')
         if not templates:
             return
         for text in templates:

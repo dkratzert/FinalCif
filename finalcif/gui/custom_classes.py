@@ -97,7 +97,6 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         del_shortcut.activated.connect(self.delete_row)
         self.vheaderitems: list = []
         # This is the index number of the vheader that got clicked last:
-        self.vheader_clicked = -1
         # vertical header click:
         vheader = self.verticalHeader()
         vheader.setSectionsClickable(True)
@@ -223,24 +222,25 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         self.setItem(row, column, item)
         lentext = max([len(txt), len(self.getText(0, row)), len(self.getText(1, row))])
         # This is a regular table cell:
-        if not (key in text_field_keys) and (lentext < 35):
-            item.setText(txt)
-            if (column == COL_CIF) or (column == COL_DATA):
-                # noinspection PyUnresolvedReferences
-                item.setUneditable()
-            if color:
-                item.setBackground(color)
-        else:
-            # This is a text field:
-            textedit = MyQPlainTextEdit(self)
-            textedit.templateRequested.connect(self.goto_template_page)
-            self.setCellWidget(row, column, textedit)
-            textedit.setText(txt, color=color)
-            if (column == COL_CIF) or (column == COL_DATA):
-                textedit.setUneditable()
-            self.resizeRowToContents(row)
-            if color:
-                textedit.setBackground(color)
+        #if not (key in text_field_keys) and (lentext < 35):
+        #    item.setText(txt)
+        #    if (column == COL_CIF) or (column == COL_DATA):
+        #        # noinspection PyUnresolvedReferences
+        #        item.setUneditable()
+        #    if color:
+        #        item.setBackground(color)
+        #else:
+        # This is a text field:
+        textedit = MyQPlainTextEdit(self, minheight=lentext)
+        textedit.row = row
+        textedit.templateRequested.connect(self.goto_template_page)
+        self.setCellWidget(row, column, textedit)
+        textedit.setText(txt, color=color)
+        if (column == COL_CIF) or (column == COL_DATA):
+            textedit.setUneditable()
+        self.resizeRowToContents(row)
+        if color:
+            textedit.setBackground(color)
 
     def goto_template_page(self, row):
         self.setCurrentCell(row, COL_EDIT)

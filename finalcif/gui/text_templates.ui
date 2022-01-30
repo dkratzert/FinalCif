@@ -130,23 +130,16 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_3">
         <item>
-         <widget class="QPushButton" name="exportTextPushButton">
-          <property name="text">
-           <string>Export Template</string>
-          </property>
-         </widget>
-        </item>
-        <item>
          <widget class="QPushButton" name="savePushButton">
           <property name="text">
-           <string>Save Template</string>
+           <string>Save as Template</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="applyTextPushButton">
+         <widget class="QPushButton" name="exportTextPushButton">
           <property name="text">
-           <string>Apply Text</string>
+           <string>Export to CIF</string>
           </property>
          </widget>
         </item>
@@ -178,9 +171,9 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
-      <widget class="QPushButton" name="backToCIFfromTextButton">
+      <widget class="QPushButton" name="applyTextPushButton">
        <property name="text">
-        <string>Back to CIF Table</string>
+        <string>Apply Text</string>
        </property>
       </widget>
      </item>

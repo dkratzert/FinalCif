@@ -205,7 +205,7 @@ class AppWindow(QMainWindow):
         self.ui.BackFromOptionspPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
         self.ui.BackFromLoopsPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
         self.ui.BackFromPlatonPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
-        self.textedit.ui.backToCIFfromTextButton.setIcon(qta.icon('mdi.keyboard-backspace'))
+        #self.textedit.ui.backToCIFfromTextButton.setIcon(qta.icon('mdi.keyboard-backspace'))
         #
         self.ui.SaveAuthorLoopToTemplateButton.setIcon(qta.icon('mdi.badge-account-outline'))
         self.ui.AddThisAuthorToLoopPushButton.setIcon(qta.icon('mdi.folder-table-outline'))
@@ -271,21 +271,23 @@ class AppWindow(QMainWindow):
         self.ui.fullIucrCheckBox.clicked.connect(self.toggle_hkl_option)
         self.ui.structfactCheckBox.clicked.connect(self.toggle_iucr_option)
         # text templates
-        self.textedit.ui.backToCIFfromTextButton.clicked.connect(self.back_to_main_noload)
+        #self.textedit.ui.backToCIFfromTextButton.clicked.connect(self.back_to_main_noload)
         self.textedit.ui.applyTextPushButton.clicked.connect(self.apply_text_template)
         self.textedit.ui.exportTextPushButton.clicked.connect(self.export_text_template)
         self.textedit.ui.savePushButton.clicked.connect(self.save_text_template)
         self.textedit.ui.deletePushButton.clicked.connect(self.delete_text_template)
 
     def _on_text_template(self, row: int):
-        self.textedit.ui.cifKeyLineEdit.setText(self.ui.cif_main_table.vheaderitems[row])
-        self.textedit.add_textfields(['foo', 'bar'])
+        cif_key = self.ui.cif_main_table.vheaderitems[row]
+        self.textedit.ui.cifKeyLineEdit.setText(cif_key)
+        self.textedit.add_textfields(self.settings.load_settings_list('text_templates', cif_key))
+        self.textedit.ui.plainTextEdit.setPlainText(self.ui.cif_main_table.getText(row, COL_EDIT))
 
     def export_text_template(self) -> None:
         """
         Use texts from self.textedit.ui.listWidget and save in a CIF as loop.
         """
-        self.textedit.get_template_texts()
+        textlist = self.textedit.get_template_texts()
 
     def delete_text_template(self) -> None:
         """
@@ -297,14 +299,20 @@ class AppWindow(QMainWindow):
         """
         Save template in settings.
         """
-        pass
+        cif_key = self.textedit.ui.cifKeyLineEdit.text()
+        table_data = self.textedit.get_template_texts()
+        self.settings.save_template_list('text_templates/' + cif_key, table_data)
 
     def apply_text_template(self) -> None:
         """
         Use text from self.textedit.ui.plainTextEdit and fill it into current cell. Then go back to
         main table. And scroll to changed row.
         """
-        pass
+        cif_key = self.textedit.ui.cifKeyLineEdit.text()
+        text = self.textedit.ui.plainTextEdit.toPlainText()
+        self.ui.cif_main_table.setText(key=cif_key, column=COL_EDIT, txt=text)
+        self.ui.MainStackedWidget.got_to_main_page()
+        self.textedit.ui.templatesListWidget.clear()
 
     def toggle_hkl_option(self, iucr_is_checked: bool) -> None:
         if iucr_is_checked:
