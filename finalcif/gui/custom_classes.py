@@ -3,7 +3,7 @@ from textwrap import wrap
 from typing import List
 
 from PyQt5 import QtCore
-from PyQt5.QtCore import QEvent, QObject, Qt, QSize
+from PyQt5.QtCore import QEvent, QObject, Qt, QSize, pyqtSignal
 from PyQt5.QtGui import QColor, QTextOption, QKeySequence, QContextMenuEvent, QBrush
 from PyQt5.QtWidgets import QAbstractScrollArea, QAction, QComboBox, QFrame, QPlainTextEdit, QSizePolicy, QTableWidget, \
     QTableWidgetItem, QWidget, QApplication, QShortcut, QStackedWidget
@@ -67,6 +67,7 @@ class ItemTextMixin:
 
 class MyCifTable(QTableWidget, ItemTextMixin):
     row_deleted = QtCore.pyqtSignal(str)
+    textTemplate = QtCore.pyqtSignal(int)
 
     def __init__(self, parent: QWidget = None, *args, **kwargs):
         self.parent = parent
@@ -81,10 +82,14 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         self.actionDeletePair = QAction("Delete Row", self)
         self.actionCopy = QAction("Copy", self)
         self.actionCopyVhead = QAction("Copy CIF Keyword", self)
+        self.templateAction = QAction("Create Text Template", self)
         self.setContextMenuPolicy(Qt.ActionsContextMenu)
         self.addAction(self.actionDeletePair)
         self.addAction(self.actionCopy)
         self.addAction(self.actionCopyVhead)
+        self.addAction(QAction('-----', self))
+        self.addAction(self.templateAction)
+        self.templateAction.triggered.connect(self.goto_template_page)
         self.actionDeletePair.triggered.connect(self.delete_row)
         self.actionCopy.triggered.connect(self.copy_item)
         self.actionCopyVhead.triggered.connect(self.copy_vhead_item)
@@ -119,6 +124,8 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         Adds a QComboBox to the cif_main_table with the content of special_fields or property templates.
         """
         combobox = MyComboBox(self)
+        combobox.row = row_num
+        combobox.textTemplate.connect(self.goto_template_page)
         # print('special:', row_num, miss_data)
         self.setCellWidget(row_num, COL_EDIT, combobox)
         self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
@@ -226,6 +233,7 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         else:
             # This is a text field:
             textedit = MyQPlainTextEdit(self)
+            textedit.templateRequested.connect(self.goto_template_page)
             self.setCellWidget(row, column, textedit)
             textedit.setText(txt, color=color)
             if (column == COL_CIF) or (column == COL_DATA):
@@ -233,6 +241,11 @@ class MyCifTable(QTableWidget, ItemTextMixin):
             self.resizeRowToContents(row)
             if color:
                 textedit.setBackground(color)
+
+    def goto_template_page(self, row):
+        self.setCurrentCell(row, COL_EDIT)
+        self.parent.parent().go_to_text_template_page()
+        self.textTemplate.emit(self.currentRow())
 
     def getText(self, row: int, col: int):
         return self.text(row, col)
@@ -309,6 +322,7 @@ class MyQPlainTextEdit(QPlainTextEdit):
     """
     A special plaintextedit with convenient methods to set the background color and other things.
     """
+    templateRequested = pyqtSignal(int)
 
     def __init__(self, parent=None, minheight: int = 80, *args, **kwargs):
         """
@@ -336,9 +350,15 @@ class MyQPlainTextEdit(QPlainTextEdit):
         menu = self.createStandardContextMenu(event.pos())
         actionCopyVhead = menu.addAction("Copy CIF Keyword")
         deleterow = menu.addAction("Delete Row")
+        menu.addSeparator()
+        actionTemplate = menu.addAction("Create Text Template")
         actionCopyVhead.triggered.connect(self.copy_vhead_item)
+        actionTemplate.triggered.connect(self._on_create_template)
         deleterow.triggered.connect(self._delete_row)
         choosedAction = menu.exec(event.globalPos())
+
+    def _on_create_template(self):
+        self.templateRequested.emit(self.row)
 
     def _delete_row(self):
         self.parent.delete_row(self.row)
@@ -406,6 +426,7 @@ class MyComboBox(QComboBox):
     """
     A special QComboBox with convenient methods to set the background color and other things.
     """
+    textTemplate = QtCore.pyqtSignal(int)
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -421,12 +442,18 @@ class MyComboBox(QComboBox):
         self.setContextMenuPolicy(Qt.ActionsContextMenu)
         self.addAction(self.actionDelete)
         self.actionDelete.triggered.connect(self._delete_row)
+        actionTemplate = QAction("Create Text Template", self)
+        self.addAction(actionTemplate)
+        actionTemplate.triggered.connect(self._on_create_template)
 
     def __str__(self):
         return self.currentText()
 
     def _delete_row(self):
         self.parent.delete_row(self.row)
+
+    def _on_create_template(self):
+        self.textTemplate.emit(self.row)
 
     def eventFilter(self, widget: QObject, event: QEvent):
         """
