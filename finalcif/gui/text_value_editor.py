@@ -85,14 +85,19 @@ class MyTextTemplateEdit(QWidget):
 
     def add_textfields(self, text_list: Union[List, Tuple]) -> None:
         for text in text_list:
-            edit_item = TextEditItem(self.ui.templatesListWidget)
-            edit_item.setText(text)
-            edit_item.checkbox_clicked.connect(lambda x: self.ui.plainTextEdit.appendPlainText(x))
-            item = QListWidgetItem(parent=self.ui.templatesListWidget)
-            item.setSizeHint(edit_item.sizeHint())
-            # item.setIcon(qtawesome.icon('fa5.image'))
-            self.ui.templatesListWidget.addItem(item)
-            self.ui.templatesListWidget.setItemWidget(item, edit_item)
+            self.add_one_textfield(text)
+        for empty in ('',) * 20:
+            self.add_one_textfield(empty)
+
+    def add_one_textfield(self, text):
+        edit_item = TextEditItem(self.ui.templatesListWidget)
+        edit_item.setText(text)
+        edit_item.checkbox_clicked.connect(lambda x: self.ui.plainTextEdit.appendPlainText(x))
+        item = QListWidgetItem(parent=self.ui.templatesListWidget)
+        item.setSizeHint(edit_item.sizeHint())
+        # item.setIcon(qtawesome.icon('fa5.image'))
+        self.ui.templatesListWidget.addItem(item)
+        self.ui.templatesListWidget.setItemWidget(item, edit_item)
 
     def get_template_texts(self) -> List[str]:
         texts = []

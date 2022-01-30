@@ -92,6 +92,7 @@ class AppWindow(QMainWindow):
         self.complete_data_row = -1
         self.ui = Ui_FinalCifWindow()
         self.ui.setupUi(self)
+        self.ui.page_MainTable.setParent(self.ui.MainStackedWidget)
         self.settings = FinalCifSettings()
         self.options = Options(self.ui, self.settings)
         self.deposit = CODdeposit(self.ui, self.cif, self.options)
@@ -122,10 +123,7 @@ class AppWindow(QMainWindow):
         self.templates = ReportTemplates(self, self.settings)
         if not self.running_inside_unit_test:
             self.check_for_update_version()
-        # For testing only:
-        self.ui.MainStackedWidget.go_to_text_template_page()
         self.textedit = MyTextTemplateEdit(parent=self)
-        self.textedit.add_textfields(txts)
         self.ui.page_textTemplate.layout().addWidget(self.textedit)
         #
         self.connect_signals_and_slots()
@@ -239,6 +237,7 @@ class AppWindow(QMainWindow):
         self.ui.RecentComboBox.currentIndexChanged.connect(self.load_recent_file)
         #
         self.ui.cif_main_table.row_deleted.connect(self._deleted_row)
+        self.ui.cif_main_table.textTemplate.connect(self._on_text_template)
         #
         self.ui.CODpushButton.clicked.connect(self.open_cod_page)
         self.ui.BackToCODPushButton.clicked.connect(self.open_cod_page)
@@ -277,6 +276,10 @@ class AppWindow(QMainWindow):
         self.textedit.ui.exportTextPushButton.clicked.connect(self.export_text_template)
         self.textedit.ui.savePushButton.clicked.connect(self.save_text_template)
         self.textedit.ui.deletePushButton.clicked.connect(self.delete_text_template)
+
+    def _on_text_template(self, row: int):
+        self.textedit.ui.cifKeyLineEdit.setText(self.ui.cif_main_table.vheaderitems[row])
+        self.textedit.add_textfields(['foo', 'bar'])
 
     def export_text_template(self) -> None:
         """
