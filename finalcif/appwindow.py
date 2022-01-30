@@ -131,7 +131,7 @@ class AppWindow(QMainWindow):
         self.connect_signals_and_slots()
         self.make_button_icons()
 
-    def distribute_cif_main_table_columns_evenly(self):
+    def distribute_cif_main_table_columns_evenly(self) -> None:
         hheader = self.ui.cif_main_table.horizontalHeader()
         hheader.setSectionResizeMode(COL_CIF, QHeaderView.Stretch)
         hheader.setSectionResizeMode(COL_DATA, QHeaderView.Stretch)
@@ -139,7 +139,7 @@ class AppWindow(QMainWindow):
         hheader.setAlternatingRowColors(True)
         self.ui.cif_main_table.verticalHeader().setAlternatingRowColors(True)
 
-    def set_initial_button_states(self):
+    def set_initial_button_states(self) -> None:
         self.ui.PictureWidthDoubleSpinBox.setRange(0.0, 25)
         self.ui.PictureWidthDoubleSpinBox.setSingleStep(0.5)
         # Just too slow for large structures:
@@ -158,7 +158,7 @@ class AppWindow(QMainWindow):
         self.ui.ShredCifButton.setDisabled(True)
         self.ui.LoopsPushButton.setDisabled(True)
 
-    def set_window_size_and_position(self):
+    def set_window_size_and_position(self) -> None:
         wsettings = self.settings.load_window_position()
         with suppress(TypeError):
             self.resize(wsettings['size'])
@@ -167,7 +167,7 @@ class AppWindow(QMainWindow):
         if wsettings['maximized']:
             self.showMaximized()
 
-    def make_button_icons(self):
+    def make_button_icons(self) -> None:
         self.ui.CheckcifButton.setIcon(qta.icon('mdi.file-document-outline'))
         self.ui.CheckcifStartButton.setIcon(qta.icon('mdi.file-document-outline'))
         self.ui.LoopsPushButton.setIcon(qta.icon('mdi.table'))
@@ -213,7 +213,7 @@ class AppWindow(QMainWindow):
         self.ui.AddThisAuthorToLoopPushButton.setIcon(qta.icon('mdi.folder-table-outline'))
         self.ui.DeleteLoopAuthorTemplateButton.setIcon(qta.icon('mdi.delete-forever-outline'))
 
-    def connect_signals_and_slots(self):
+    def connect_signals_and_slots(self) -> None:
         """
         this method connects all signals to slots. Only a few mighjt be defined elsewere.
         """
@@ -278,32 +278,32 @@ class AppWindow(QMainWindow):
         self.textedit.ui.savePushButton.clicked.connect(self.save_text_template)
         self.textedit.ui.deletePushButton.clicked.connect(self.delete_text_template)
 
-    def export_text_template(self):
+    def export_text_template(self) -> None:
         """
         Use texts from self.textedit.ui.listWidget and save in a CIF as loop.
         """
         self.textedit.get_template_texts()
 
-    def delete_text_template(self):
+    def delete_text_template(self) -> None:
         """
         Delete template from settings.
         """
         pass
 
-    def save_text_template(self):
+    def save_text_template(self) -> None:
         """
         Save template in settings.
         """
         pass
 
-    def apply_text_template(self):
+    def apply_text_template(self) -> None:
         """
         Use text from self.textedit.ui.plainTextEdit and fill it into current cell. Then go back to
         main table. And scroll to changed row.
         """
         pass
 
-    def toggle_hkl_option(self, iucr_is_checked: bool):
+    def toggle_hkl_option(self, iucr_is_checked: bool) -> None:
         if iucr_is_checked:
             self.ui.structfactCheckBox.setChecked(False)
 

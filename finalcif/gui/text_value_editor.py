@@ -56,10 +56,10 @@ class TextEditItem(QWidget):
         self.checkbox.clicked.connect(self.on_checkbox_clicked)
 
     @property
-    def text(self):
+    def text(self) -> str:
         return self.textfield.toPlainText()
 
-    def on_checkbox_clicked(self, checked):
+    def on_checkbox_clicked(self, checked: bool) -> None:
         if checked:
             self.checkbox_clicked.emit(self.textfield.toPlainText())
             self.number_label.setText(str(self._num))
@@ -67,10 +67,10 @@ class TextEditItem(QWidget):
         else:
             self.number_label.setText('')
 
-    def setText(self, text: str):
+    def setText(self, text: str) -> None:
         self.textfield.setPlainText(text)
 
-    def setCheckboxName(self, name: str):
+    def setCheckboxName(self, name: str) -> None:
         self.checkbox.setObjectName(name)
 
     def sizeHint(self) -> QSize:
