@@ -82,10 +82,10 @@ class MyTextTemplateEdit(QWidget):
         super().__init__(*args, **kwargs)
         self.ui = text_templates.Ui_TextTemplatesWidget()
         self.ui.setupUi(self)
-        #self.ui.backToCIFfromTextButton.clicked.connect(self._on_backbutton_clicked)
+        self.ui.cancelTextPushButton.clicked.connect(self._on_backbutton_clicked)
 
-    #def _on_backbutton_clicked(self):
-    #    self.ui.templatesListWidget.clear()
+    def _on_backbutton_clicked(self):
+        self.ui.templatesListWidget.clear()
 
     def add_textfields(self, text_list: Union[List, Tuple]) -> None:
         if text_list:

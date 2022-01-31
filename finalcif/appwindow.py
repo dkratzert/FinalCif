@@ -16,6 +16,7 @@ from shutil import copy2
 from tempfile import TemporaryDirectory
 from typing import Union, Dict, Tuple
 
+import gemmi.cif
 import qtawesome as qta
 import requests
 from PyQt5 import QtCore, QtGui, QtWebEngineWidgets
@@ -30,7 +31,7 @@ from finalcif import VERSION
 from finalcif.cif.checkcif.checkcif import MyHTMLParser, AlertHelp, CheckCif
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.cif.cod.deposit import CODdeposit
-from finalcif.cif.text import retranslate_delimiter
+from finalcif.cif.text import retranslate_delimiter, utf8_to_str
 from finalcif.datafiles.bruker_data import BrukerData
 from finalcif.datafiles.ccdc_mail import CCDCMail
 from finalcif.displaymol import mol_file_writer
@@ -39,10 +40,11 @@ from finalcif.displaymol.write_html import write
 from finalcif.equip_property.author_loop_templates import AuthorLoops
 from finalcif.equip_property.equipment import Equipment
 from finalcif.equip_property.properties import Properties
+from finalcif.equip_property.tools import read_document_from_cif_file
 from finalcif.gui.custom_classes import COL_CIF, COL_DATA, COL_EDIT, MyTableWidgetItem, light_green, yellow, MyCifTable
 from finalcif.gui.dialogs import show_update_warning, unable_to_open_message, show_general_warning, \
     cif_file_open_dialog, \
-    bad_z_message, show_res_checksum_warning, show_hkl_checksum_warning
+    bad_z_message, show_res_checksum_warning, show_hkl_checksum_warning, cif_file_save_dialog
 from finalcif.gui.finalcif_gui import Ui_FinalCifWindow
 from finalcif.gui.loops import Loop
 from finalcif.gui.text_value_editor import MyTextTemplateEdit
@@ -205,7 +207,12 @@ class AppWindow(QMainWindow):
         self.ui.BackFromOptionspPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
         self.ui.BackFromLoopsPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
         self.ui.BackFromPlatonPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
-        # self.textedit.ui.backToCIFfromTextButton.setIcon(qta.icon('mdi.keyboard-backspace'))
+        self.textedit.ui.cancelTextPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
+        self.textedit.ui.applyTextPushButton.setIcon(qta.icon('fa5s.check'))
+        self.textedit.ui.exportTextPushButton.setIcon(qta.icon('mdi.export'))
+        self.textedit.ui.savePushButton.setIcon(qta.icon('mdi.content-save'))
+        self.textedit.ui.deletePushButton.setIcon(qta.icon('mdi.playlist-minus'))
+        self.textedit.ui.importPushButton.setIcon(qta.icon('mdi.import'))
         #
         self.ui.SaveAuthorLoopToTemplateButton.setIcon(qta.icon('mdi.badge-account-outline'))
         self.ui.AddThisAuthorToLoopPushButton.setIcon(qta.icon('mdi.folder-table-outline'))
@@ -237,7 +244,6 @@ class AppWindow(QMainWindow):
         self.ui.RecentComboBox.currentIndexChanged.connect(self.load_recent_file)
         #
         self.ui.cif_main_table.row_deleted.connect(self._deleted_row)
-        self.ui.cif_main_table.textTemplate.connect(self._on_text_template)
         #
         self.ui.CODpushButton.clicked.connect(self.open_cod_page)
         self.ui.BackToCODPushButton.clicked.connect(self.open_cod_page)
@@ -271,11 +277,14 @@ class AppWindow(QMainWindow):
         self.ui.fullIucrCheckBox.clicked.connect(self.toggle_hkl_option)
         self.ui.structfactCheckBox.clicked.connect(self.toggle_iucr_option)
         # text templates
-        # self.textedit.ui.backToCIFfromTextButton.clicked.connect(self.back_to_main_noload)
+        # TODO: Delete fields on cancel click:
+        self.textedit.ui.cancelTextPushButton.clicked.connect(self.back_to_main_noload)
         self.textedit.ui.applyTextPushButton.clicked.connect(self.apply_text_template)
         self.textedit.ui.exportTextPushButton.clicked.connect(self.export_text_template)
         self.textedit.ui.savePushButton.clicked.connect(self.save_text_template)
         self.textedit.ui.deletePushButton.clicked.connect(self.delete_text_template)
+        self.textedit.ui.importPushButton.clicked.connect(self.import_text_template)
+        self.ui.cif_main_table.textTemplate.connect(self._on_text_template)
 
     def _on_text_template(self, row: int):
         cif_key = self.ui.cif_main_table.vheaderitems[row]
@@ -283,11 +292,48 @@ class AppWindow(QMainWindow):
         self.textedit.add_textfields(self.settings.load_settings_list('text_templates', cif_key))
         self.textedit.ui.plainTextEdit.setPlainText(self.ui.cif_main_table.getText(row, COL_EDIT))
 
+    def import_text_template(self):
+        filename = cif_file_open_dialog()
+        doc = read_document_from_cif_file(filename)
+        block: gemmi.cif.Block = doc.sole_block()
+        text_list = []
+        for i in block:
+            if i.loop is not None:
+                if len(i.loop.tags) > 0:
+                    loop_column_name = i.loop.tags[0]
+                    self.textedit.ui.cifKeyLineEdit.setText(loop_column_name)
+                for n in range(i.loop.length()):
+                    value = i.loop.val(n, 0)
+                    text_list.append(value)
+        self.textedit.add_textfields(text_list)
+
     def export_text_template(self) -> None:
         """
         Use texts from self.textedit.ui.listWidget and save in a CIF as loop.
         """
         textlist = self.textedit.get_template_texts()
+        doc = cif.Document()
+        blockname = self.textedit.ui.cifKeyLineEdit.text()
+        block = doc.add_new_block(blockname)
+        try:
+            loop = block.init_loop(blockname, [''])
+        except RuntimeError:
+            # Not a valid loop key
+            show_general_warning('"{}" is not a valid cif keyword.'.format(blockname))
+            return
+        for value in textlist:
+            if value:
+                loop.add_row([cif.quote(utf8_to_str(value))])
+        filename = cif_file_save_dialog(blockname + '_template.cif')
+        if not filename.strip():
+            return
+        try:
+            doc.write_file(filename, style=cif.Style.Indent35)
+            # Path(filename).write_text(doc.as_string(cif.Style.Indent35))
+        except PermissionError:
+            if Path(filename).is_dir():
+                return
+            show_general_warning('No permission to write file to {}'.format(Path(filename).resolve()))
 
     def delete_text_template(self) -> None:
         """
