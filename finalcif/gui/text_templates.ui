@@ -93,7 +93,7 @@
          <bool>false</bool>
         </property>
         <property name="placeholderText">
-         <string>The text of the selected templates is added her in selection order</string>
+         <string>The text of the selected templates is added here in selection order</string>
         </property>
        </widget>
       </item>
@@ -137,6 +137,13 @@
          </widget>
         </item>
         <item>
+         <widget class="QPushButton" name="importPushButton">
+          <property name="text">
+           <string>Import Template</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QPushButton" name="exportTextPushButton">
           <property name="text">
            <string>Export to CIF</string>
@@ -174,6 +181,13 @@
       <widget class="QPushButton" name="applyTextPushButton">
        <property name="text">
         <string>Apply Text</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="cancelTextPushButton">
+       <property name="text">
+        <string>Cancel</string>
        </property>
       </widget>
      </item>
