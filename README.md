@@ -4,6 +4,8 @@
 
 FinalCif helps you to get a complete CIF file from a single-xrystal X-ray diffraction experiment. See here [https://dkratzert.de/finalcif.html](https://dkratzert.de/finalcif.html) for details.
 
+For tables from multiple CIF files, you may want to use the program [multitable](https://github.com/dkratzert/multitable).
+
 **Report templates**
 
 You only need them if you want to make report tables that differ from the default ones.
