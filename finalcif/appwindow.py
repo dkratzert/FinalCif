@@ -45,7 +45,7 @@ from finalcif.gui.dialogs import show_update_warning, unable_to_open_message, sh
     bad_z_message, show_res_checksum_warning, show_hkl_checksum_warning
 from finalcif.gui.finalcif_gui import Ui_FinalCifWindow
 from finalcif.gui.loops import Loop
-from finalcif.gui.text_value_editor import MyTextTemplateEdit, txts
+from finalcif.gui.text_value_editor import MyTextTemplateEdit
 from finalcif.gui.vrf_classes import MyVRFContainer, VREF
 from finalcif.report.archive_report import ArchiveReport
 from finalcif.report.tables import make_report_from
@@ -205,7 +205,7 @@ class AppWindow(QMainWindow):
         self.ui.BackFromOptionspPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
         self.ui.BackFromLoopsPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
         self.ui.BackFromPlatonPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
-        #self.textedit.ui.backToCIFfromTextButton.setIcon(qta.icon('mdi.keyboard-backspace'))
+        # self.textedit.ui.backToCIFfromTextButton.setIcon(qta.icon('mdi.keyboard-backspace'))
         #
         self.ui.SaveAuthorLoopToTemplateButton.setIcon(qta.icon('mdi.badge-account-outline'))
         self.ui.AddThisAuthorToLoopPushButton.setIcon(qta.icon('mdi.folder-table-outline'))
@@ -271,7 +271,7 @@ class AppWindow(QMainWindow):
         self.ui.fullIucrCheckBox.clicked.connect(self.toggle_hkl_option)
         self.ui.structfactCheckBox.clicked.connect(self.toggle_iucr_option)
         # text templates
-        #self.textedit.ui.backToCIFfromTextButton.clicked.connect(self.back_to_main_noload)
+        # self.textedit.ui.backToCIFfromTextButton.clicked.connect(self.back_to_main_noload)
         self.textedit.ui.applyTextPushButton.clicked.connect(self.apply_text_template)
         self.textedit.ui.exportTextPushButton.clicked.connect(self.export_text_template)
         self.textedit.ui.savePushButton.clicked.connect(self.save_text_template)
@@ -438,8 +438,8 @@ class AppWindow(QMainWindow):
                 except ValueError:
                     continue
                 self.cif.block.set_pair(cifkey, '?')
-                self.ui.cif_main_table.item(row_num, COL_CIF).setText('?')
-                self.ui.cif_main_table.item(row_num, COL_DATA).setText('')
+                self.ui.cif_main_table.setText(key=cifkey, column=COL_CIF, txt='?')
+                self.ui.cif_main_table.setText(key=cifkey, column=COL_DATA, txt='?')
 
     def show_sources(self) -> None:
         """
@@ -1448,7 +1448,8 @@ class AppWindow(QMainWindow):
                 self.add_combobox(row_number, vhead_key)
             elif vhead_key in combobox_fields:
                 # Then the pre-defined:
-                self.ui.cif_main_table.add_property_combobox(combobox_fields[vhead_key], row_number)
+                self.ui.cif_main_table.add_property_combobox(data=combobox_fields[vhead_key], row_num=row_number,
+                                                             key=vhead_key)
 
     def add_combobox(self, num: int, vhead_key: str):
         """
@@ -1457,7 +1458,7 @@ class AppWindow(QMainWindow):
         """
         properties_list = self.settings.load_property_values_by_key(vhead_key)
         if properties_list:
-            self.ui.cif_main_table.add_property_combobox(properties_list, num)
+            self.ui.cif_main_table.add_property_combobox(properties_list, num, vhead_key)
 
     def fill_cif_table(self) -> None:
         """
@@ -1530,6 +1531,8 @@ class AppWindow(QMainWindow):
             else:
                 row_num = self.ui.cif_main_table.rowCount()
         self.ui.cif_main_table.insertRow(row_num)
+        if not key in self.ui.cif_main_table.vheaderitems:
+            self.ui.cif_main_table.vheaderitems.insert(row_num, key)
         if value is None:
             strval = '?'
         else:
@@ -1551,8 +1554,6 @@ class AppWindow(QMainWindow):
         head_item_key = MyTableWidgetItem(key)
         if not key == "These below are already in:":
             self.ui.cif_main_table.setVerticalHeaderItem(row_num, head_item_key)
-        if not key in self.ui.cif_main_table.vheaderitems:
-            self.ui.cif_main_table.vheaderitems.insert(row_num, key)
         if not key.startswith('_'):
             return
         if key not in self.cif.order:

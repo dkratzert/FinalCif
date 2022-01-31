@@ -10,7 +10,6 @@ from PyQt5.QtWidgets import QAbstractScrollArea, QAction, QComboBox, QFrame, QPl
 
 from finalcif.cif.text import retranslate_delimiter
 from finalcif.gui.dialogs import show_keyword_help
-from finalcif.tools.misc import text_field_keys
 
 light_green = QColor(217, 255, 201)
 blue = QColor(102, 150, 179)
@@ -104,7 +103,7 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         vheader.sectionClicked.connect(self.vheader_section_click)
 
     def setCellWidget(self, row: int, column: int, widget) -> None:
-        widget.row = row
+        widget.cif_key = self.vheaderitems[row]
         if (column == COL_CIF) or (column == COL_DATA):
             # noinspection PyUnresolvedReferences
             widget.setUneditable()
@@ -118,12 +117,12 @@ class MyCifTable(QTableWidget, ItemTextMixin):
     def columns_count(self):
         return self.model().columnCount()
 
-    def add_property_combobox(self, data: List, row_num: int) -> None:
+    def add_property_combobox(self, data: List, row_num: int, key: str) -> None:
         """
         Adds a QComboBox to the cif_main_table with the content of special_fields or property templates.
         """
         combobox = MyComboBox(self)
-        combobox.row = row_num
+        combobox.cif_key = key
         combobox.textTemplate.connect(self.goto_template_page)
         # print('special:', row_num, miss_data)
         self.setCellWidget(row_num, COL_EDIT, combobox)
@@ -158,11 +157,11 @@ class MyCifTable(QTableWidget, ItemTextMixin):
             show_keyword_help(self.parent, keyword_help, itemtext)
         elif itemtext.startswith('_vrf_'):
             helptxt = '<pre><h2>Validation Response Form (VRF)</h2>\n' \
-                   'The Validation Response Form is supplied in the checkCIF report for ' \
-                   'problems that have triggered Alerts. It ' \
-                   'provides a field for the author to respond to the alert. ' \
-                   'The response is clearly visible to the review process. \n' \
-                   'Usually, only level A or B alerts need a VRF.'
+                      'The Validation Response Form is supplied in the checkCIF report for ' \
+                      'problems that have triggered Alerts. It ' \
+                      'provides a field for the author to respond to the alert. ' \
+                      'The response is clearly visible to the review process. \n' \
+                      'Usually, only level A or B alerts need a VRF.'
             show_keyword_help(self.parent, helptxt, itemtext)
         else:
             show_keyword_help(self.parent, 'No help available for this key.', '')
@@ -222,17 +221,17 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         self.setItem(row, column, item)
         lentext = max([len(txt), len(self.getText(0, row)), len(self.getText(1, row))])
         # This is a regular table cell:
-        #if not (key in text_field_keys) and (lentext < 35):
+        # if not (key in text_field_keys) and (lentext < 35):
         #    item.setText(txt)
         #    if (column == COL_CIF) or (column == COL_DATA):
         #        # noinspection PyUnresolvedReferences
         #        item.setUneditable()
         #    if color:
         #        item.setBackground(color)
-        #else:
+        # else:
         # This is a text field:
         textedit = MyQPlainTextEdit(self, minheight=lentext)
-        textedit.row = row
+        textedit.cif_key = key
         textedit.templateRequested.connect(self.goto_template_page)
         self.setCellWidget(row, column, textedit)
         textedit.setText(txt, color=color)
@@ -306,8 +305,6 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         """
         Deletes the current row, but gemmi can not delete items from the block at the moment!
         """
-        if not row:
-            row = self.currentRow()
         key = self.vheaderitems[row]
         del self.vheaderitems[row]
         self.removeRow(row)
@@ -332,7 +329,7 @@ class MyQPlainTextEdit(QPlainTextEdit):
         """
         super().__init__(parent, *args, **kwargs)
         self.setParent(parent)
-        self.row: int = -1
+        self.cif_key = ''
         self.minheight = minheight
         self.parent: MyCifTable = parent
         self.setFocusPolicy(Qt.StrongFocus)
@@ -348,14 +345,14 @@ class MyQPlainTextEdit(QPlainTextEdit):
 
     def contextMenuEvent(self, event: QContextMenuEvent):
         menu = self.createStandardContextMenu(event.pos())
-        actionCopyVhead = menu.addAction("Copy CIF Keyword")
+        action_copy_vhead = menu.addAction("Copy CIF Keyword")
         deleterow = menu.addAction("Delete Row")
         menu.addSeparator()
-        actionTemplate = menu.addAction("Create Text Template")
-        actionCopyVhead.triggered.connect(self.copy_vhead_item)
-        actionTemplate.triggered.connect(self._on_create_template)
+        action_template = menu.addAction("Create Text Template")
+        action_copy_vhead.triggered.connect(self.copy_vhead_item)
+        action_template.triggered.connect(self._on_create_template)
         deleterow.triggered.connect(self._delete_row)
-        choosedAction = menu.exec(event.globalPos())
+        choosed_action = menu.exec(event.globalPos())
 
     def _on_create_template(self):
         self.templateRequested.emit(self.row)
@@ -371,6 +368,10 @@ class MyQPlainTextEdit(QPlainTextEdit):
             row = self.parent.currentRow()
             clipboard = QApplication.clipboard()
             clipboard.setText(self.parent.vheaderitems[row])
+
+    @property
+    def row(self) -> int:
+        return self.parent.vheaderitems.index(self.cif_key)
 
     def setBackground(self, color):
         """
@@ -432,7 +433,7 @@ class MyComboBox(QComboBox):
         super().__init__(parent)
         self.parent: MyCifTable = parent
         self.setParent(parent)
-        self.row: int = -1
+        self.cif_key = ''
         self.setFocusPolicy(Qt.StrongFocus)
         self.setSizeAdjustPolicy(QComboBox.AdjustToMinimumContentsLength)
         self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
@@ -448,6 +449,10 @@ class MyComboBox(QComboBox):
 
     def __str__(self):
         return self.currentText()
+
+    @property
+    def row(self) -> int:
+        return self.parent.vheaderitems.index(self.cif_key)
 
     def _delete_row(self):
         self.parent.delete_row(self.row)
@@ -533,7 +538,6 @@ class MyEQTableWidget(QTableWidget, ItemTextMixin):
         row_num = self.rowCount()
         self.insertRow(row_num)
         key_item = MyQPlainTextEdit(parent=self)
-        key_item.row = row_num
         key_item.setPlainText(key_text)
         # This is critical, because otherwise the add_row_if_needed does not work as expected:
         key_item.textChanged.connect(self.add_row_if_needed)
