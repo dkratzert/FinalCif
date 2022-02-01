@@ -97,6 +97,7 @@ class Properties:
         # I do these both to clear the list:
         self.store_predefined_templates()
         self.show_properties()
+        self.app.refresh_combo_boxes()
 
     def edit_property_template(self) -> None:
         """

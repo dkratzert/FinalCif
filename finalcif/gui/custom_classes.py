@@ -10,8 +10,10 @@ from PyQt5.QtWidgets import QAbstractScrollArea, QAction, QComboBox, QFrame, QPl
 
 from finalcif.cif.text import retranslate_delimiter
 from finalcif.gui.dialogs import show_keyword_help
+from finalcif.tools.misc import text_field_keys
 
 light_green = QColor(217, 255, 201)
+light_blue = QColor(173, 216, 230)
 blue = QColor(102, 150, 179)
 yellow = QColor(250, 247, 150)  # #faf796
 
@@ -81,7 +83,7 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         self.actionDeletePair = QAction("Delete Row", self)
         self.actionCopy = QAction("Copy", self)
         self.actionCopyVhead = QAction("Copy CIF Keyword", self)
-        self.templateAction = QAction("Create Text Template", self)
+        self.templateAction = QAction("Text Template", self)
         self.setContextMenuPolicy(Qt.ActionsContextMenu)
         self.addAction(self.actionDeletePair)
         self.addAction(self.actionCopy)
@@ -348,7 +350,7 @@ class MyQPlainTextEdit(QPlainTextEdit):
         action_copy_vhead = menu.addAction("Copy CIF Keyword")
         deleterow = menu.addAction("Delete Row")
         menu.addSeparator()
-        action_template = menu.addAction("Create Text Template")
+        action_template = menu.addAction("Text Template")
         action_copy_vhead.triggered.connect(self.copy_vhead_item)
         action_template.triggered.connect(self._on_create_template)
         deleterow.triggered.connect(self._delete_row)
@@ -443,9 +445,9 @@ class MyComboBox(QComboBox):
         self.setContextMenuPolicy(Qt.ActionsContextMenu)
         self.addAction(self.actionDelete)
         self.actionDelete.triggered.connect(self._delete_row)
-        actionTemplate = QAction("Create Text Template", self)
-        self.addAction(actionTemplate)
-        actionTemplate.triggered.connect(self._on_create_template)
+        action_template = QAction("Text Template", self)
+        self.addAction(action_template)
+        action_template.triggered.connect(self._on_create_template)
 
     def __str__(self):
         return self.currentText()
