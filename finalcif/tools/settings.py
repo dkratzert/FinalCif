@@ -80,7 +80,7 @@ class FinalCifSettings():
         return keylist
 
     def load_cif_keys_of_properties(self):
-        property_keys = [x[0] for x in self.property_keys_and_values]
+        property_keys = [x[0] for x in self.load_property_keys_and_values()]
         return property_keys
 
     def load_property_values_by_key(self, cif_key: str):

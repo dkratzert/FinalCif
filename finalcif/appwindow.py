@@ -41,7 +41,8 @@ from finalcif.equip_property.author_loop_templates import AuthorLoops
 from finalcif.equip_property.equipment import Equipment
 from finalcif.equip_property.properties import Properties
 from finalcif.equip_property.tools import read_document_from_cif_file
-from finalcif.gui.custom_classes import COL_CIF, COL_DATA, COL_EDIT, MyTableWidgetItem, light_green, yellow, MyCifTable
+from finalcif.gui.custom_classes import COL_CIF, COL_DATA, COL_EDIT, MyTableWidgetItem, light_green, yellow, MyCifTable, \
+    light_blue
 from finalcif.gui.dialogs import show_update_warning, unable_to_open_message, show_general_warning, \
     cif_file_open_dialog, \
     bad_z_message, show_res_checksum_warning, show_hkl_checksum_warning, cif_file_save_dialog
@@ -277,22 +278,35 @@ class AppWindow(QMainWindow):
         self.ui.fullIucrCheckBox.clicked.connect(self.toggle_hkl_option)
         self.ui.structfactCheckBox.clicked.connect(self.toggle_iucr_option)
         # text templates
-        # TODO: Delete fields on cancel click:
         self.textedit.ui.cancelTextPushButton.clicked.connect(self.back_to_main_noload)
         self.textedit.ui.applyTextPushButton.clicked.connect(self.apply_text_template)
         self.textedit.ui.exportTextPushButton.clicked.connect(self.export_text_template)
         self.textedit.ui.savePushButton.clicked.connect(self.save_text_template)
         self.textedit.ui.deletePushButton.clicked.connect(self.delete_text_template)
         self.textedit.ui.importPushButton.clicked.connect(self.import_text_template)
-        self.ui.cif_main_table.textTemplate.connect(self._on_text_template)
+        self.ui.cif_main_table.textTemplate.connect(self.on_text_template_open)
 
-    def _on_text_template(self, row: int):
+    def on_text_template_open(self, row: int):
         cif_key = self.ui.cif_main_table.vheaderitems[row]
         self.textedit.ui.cifKeyLineEdit.setText(cif_key)
         self.textedit.add_textfields(self.settings.load_settings_list('text_templates', cif_key))
-        self.textedit.ui.plainTextEdit.setPlainText(self.ui.cif_main_table.getText(row, COL_EDIT))
+        edit_text = self.ui.cif_main_table.getText(row, COL_EDIT)
+        # data_text = self.ui.cif_main_table.getText(row, COL_DATA)
+        # cif_text = self.ui.cif_main_table.getText(row, COL_CIF)
+        # if edit_text:
+        #    text = edit_text
+        # elif data_text:
+        #    text = data_text
+        # elif cif_text:
+        #    text = cif_text
+        # else:
+        #    text = ''
+        self.textedit.ui.plainTextEdit.setPlainText(edit_text)
 
     def import_text_template(self):
+        """
+        Imports a text template from a CIF file.
+        """
         filename = cif_file_open_dialog()
         doc = read_document_from_cif_file(filename)
         block: gemmi.cif.Block = doc.sole_block()
@@ -334,12 +348,17 @@ class AppWindow(QMainWindow):
             if Path(filename).is_dir():
                 return
             show_general_warning('No permission to write file to {}'.format(Path(filename).resolve()))
+        self.status_bar.show_message(f'Template exported to {filename}.', timeout=10)
 
     def delete_text_template(self) -> None:
         """
         Delete template from settings.
         """
-        pass
+        cif_key = self.textedit.ui.cifKeyLineEdit.text()
+        self.settings.delete_template('text_templates/', cif_key)
+        self.back_to_main_noload()
+        self.status_bar.show_message(f'Template for {cif_key} deleted.', timeout=10)
+        self.textedit.clear_fields()
 
     def save_text_template(self) -> None:
         """
@@ -348,6 +367,7 @@ class AppWindow(QMainWindow):
         cif_key = self.textedit.ui.cifKeyLineEdit.text()
         table_data = self.textedit.get_template_texts()
         self.settings.save_template_list('text_templates/' + cif_key, table_data)
+        self.status_bar.show_message(f'Template for {cif_key} saved.', timeout=10)
 
     def apply_text_template(self) -> None:
         """
@@ -358,7 +378,7 @@ class AppWindow(QMainWindow):
         text = self.textedit.ui.plainTextEdit.toPlainText()
         self.ui.cif_main_table.setText(key=cif_key, column=COL_EDIT, txt=text)
         self.ui.MainStackedWidget.got_to_main_page()
-        self.textedit.ui.templatesListWidget.clear()
+        self.textedit.clear_fields()
 
     def toggle_hkl_option(self, iucr_is_checked: bool) -> None:
         if iucr_is_checked:
@@ -1171,7 +1191,7 @@ class AppWindow(QMainWindow):
         except Exception as e:
             not_ok = e
             # raise
-            unable_to_open_message(filepath, not_ok)
+            #unable_to_open_message(filepath, not_ok)
             raise
         # Do this only when sure we can load the file:
         self.save_current_recent_files_list(filepath)
@@ -1484,12 +1504,13 @@ class AppWindow(QMainWindow):
                 pass
 
     def refresh_combo_boxes(self):
+        combos_from_settings = self.settings.load_cif_keys_of_properties()
         for row_number in range(self.ui.cif_main_table.model().rowCount()):
             vhead_key = self.ui.cif_main_table.model().headerData(row_number, QtCore.Qt.Vertical)
             if not vhead_key in self.ui.cif_main_table.vheaderitems:
                 self.ui.cif_main_table.vheaderitems.append(vhead_key)
             # adding comboboxes:
-            if vhead_key in self.settings.load_cif_keys_of_properties():
+            if vhead_key in combos_from_settings:
                 # First add self-made properties:
                 self.add_combobox(row_number, vhead_key)
             elif vhead_key in combobox_fields:
@@ -1582,7 +1603,7 @@ class AppWindow(QMainWindow):
         if value is None:
             strval = '?'
         else:
-            strval = str(value).strip(" ").strip("'").strip(';\n').strip('\r\n')  # or '?')
+            strval = str(value).strip("'").strip(';\n').strip('\r\n').strip(" ")
         if not key:
             strval = ''
         # All regular linedit fields:

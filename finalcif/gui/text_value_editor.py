@@ -113,6 +113,11 @@ class MyTextTemplateEdit(QWidget):
                 texts.append(txt)
         return texts
 
+    def clear_fields(self):
+        self.ui.templatesListWidget.clear()
+        self.ui.cifKeyLineEdit.clear()
+        self.ui.plainTextEdit.clear()
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
