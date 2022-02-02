@@ -1,35 +1,14 @@
-import os
 import sys
-from pathlib import Path
 from typing import Tuple, List, Union
 
-from PyQt5 import uic
 from PyQt5.QtCore import QSize, Qt, pyqtSignal
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QCheckBox, QApplication, QPlainTextEdit, \
     QListWidgetItem, QVBoxLayout, QLabel
 
-print('Compiling textedit ui ...')
-application_path = Path(os.path.abspath(__file__)).parent.parent
-uic.compileUiDir(os.path.join(application_path, 'gui'))
+# print('Compiling textedit ui ...')
+# application_path = Path(os.path.abspath(__file__)).parent.parent
+# uic.compileUiDir(os.path.join(application_path, 'gui'))
 from finalcif.gui import text_templates
-
-txts = ("""In addition to the twinning, the structure also exhibits large 
-volume sections consisting of highly disordered solvate or other 
-small molecules. No satisfactory model for the solvate molecules 
-could be developed, and the contribution of the solvate molecules 
-was instead taken into account by reverse Fourier transform methods. 
-The data were first detwinned (using the LIST 8 function of 
-Shelxl2018) and then the cif and fcf files were subjected to the 
-SQUEEZE routine as implemented in the program Platon. The resultant files were used in the further refinement. (Both the hklf 5 type HKL file and the detwinned FAB file are appended to this cif file). A volume of ??? cubic Angstrom per unit cell containing ??? electrons was corrected for.
-""", 'bar dftzh hkjft Hällö Daniel Daß is ein T!"§$%&/()=?', 'baz rtzhj dtju', """In addition to the twinning, the structure also exhibits large 
-volume sections consisting of highly disordered solvate or other 
-small molecules. No satisfactory model for the solvate molecules 
-could be developed, and the contribution of the solvate molecules 
-was instead taken into account by reverse Fourier transform methods. 
-The data were first detwinned (using the LIST 8 function of 
-Shelxl2018) and then the cif and fcf files were subjected to the 
-SQUEEZE routine as implemented in the program Platon. The resultant files were used in the further refinement. (Both the hklf 5 type HKL file and the detwinned FAB file are appended to this cif file). A volume of ??? cubic Angstrom per unit cell containing ??? electrons was corrected for.
-""", 'fghfh', 'ffg') + ('',) * 20
 
 
 class TextEditItem(QWidget):
