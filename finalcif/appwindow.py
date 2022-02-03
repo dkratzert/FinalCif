@@ -1618,6 +1618,7 @@ class AppWindow(QMainWindow):
             self.ui.cif_main_table.setText(row=row_num, key=key, column=COL_DATA, txt='')
             self.ui.cif_main_table.setText(row=row_num, key=key, column=COL_EDIT,
                                            txt=retranslate_delimiter(strval) if at_start else '')
+        #self.ui.cif_main_table.resizeRowToContents(row_num)
         head_item_key = MyTableWidgetItem(key)
         if not key == "These below are already in:":
             self.ui.cif_main_table.setVerticalHeaderItem(row_num, head_item_key)

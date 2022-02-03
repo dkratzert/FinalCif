@@ -4,13 +4,12 @@ from typing import List
 
 from PyQt5 import QtCore
 from PyQt5.QtCore import QEvent, QObject, Qt, QSize, pyqtSignal
-from PyQt5.QtGui import QColor, QTextOption, QKeySequence, QContextMenuEvent, QBrush
+from PyQt5.QtGui import QColor, QTextOption, QKeySequence, QContextMenuEvent, QBrush, QFontMetrics
 from PyQt5.QtWidgets import QAbstractScrollArea, QAction, QComboBox, QFrame, QPlainTextEdit, QSizePolicy, QTableWidget, \
     QTableWidgetItem, QWidget, QApplication, QShortcut, QStackedWidget
 
 from finalcif.cif.text import retranslate_delimiter
 from finalcif.gui.dialogs import show_keyword_help
-from finalcif.tools.misc import text_field_keys
 
 light_green = QColor(217, 255, 201)
 light_blue = QColor(173, 216, 230)
@@ -103,6 +102,10 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         vheader.setSectionsClickable(True)
         # noinspection PyUnresolvedReferences
         vheader.sectionClicked.connect(self.vheader_section_click)
+
+    # @cache
+    # def _vheaderitems(self, row: int) -> str:
+    #    return self.vheaderitems[row]
 
     def setCellWidget(self, row: int, column: int, widget) -> None:
         widget.cif_key = self.vheaderitems[row]
@@ -219,8 +222,8 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         if isinstance(self.cellWidget(row, column), MyComboBox):
             self.cellWidget(row, column).setText(txt)
             return
-        item = MyTableWidgetItem(txt)
-        self.setItem(row, column, item)
+        # item = MyTableWidgetItem(txt)
+        # self.setItem(row, column, item)
         lentext = max([len(txt), len(self.getText(0, row)), len(self.getText(1, row))])
         # This is a regular table cell:
         # if not (key in text_field_keys) and (lentext < 35):
@@ -239,7 +242,7 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         textedit.setText(txt, color=color)
         if (column == COL_CIF) or (column == COL_DATA):
             textedit.setUneditable()
-        self.resizeRowToContents(row)
+        # self.resizeRowToContents(row)
         if color:
             textedit.setBackground(color)
 
@@ -341,6 +344,7 @@ class MyQPlainTextEdit(QPlainTextEdit):
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setWordWrapMode(QTextOption.WrapAtWordBoundaryOrAnywhere)
+        self.textChanged.connect(lambda: self.parent.resizeRowsToContents())
 
     def __str__(self):
         return self.toPlainText()
@@ -415,14 +419,25 @@ class MyQPlainTextEdit(QPlainTextEdit):
 
     def sizeHint(self) -> QSize:
         """Text field sizes are scaled to text length"""
-        if not self.getText():
-            return QSize(self.width(), self.minheight)
-        else:
-            size = QSize(100, int(0.33 * len(self.getText()) + 30))
-            if size.height() > 500:
-                # Prevent extreme height for long text:
-                return QSize(100, 500)
-            return size
+        # if not self.getText().strip():
+        #    return QSize(self.width(), self.minheight)
+        # else:
+        font = self.document().defaultFont()
+        fm = QFontMetrics(font)
+        rect = fm.boundingRect(self.contentsRect(), Qt.TextWordWrap, self.toPlainText())
+        return QSize(self.width(), rect.height() + 10)
+        # if len(self.getText().splitlines()) < 4:
+        #    size = QSize(100, int(0.5 * len(self.getText()) + 26))
+        # else:
+        #    size = QSize(self.width(), int(fm.height() * len(self.getText().splitlines()) + 3) + 16)
+        # size = QSize(self.width(), int(15 * (len(self.getText().splitlines()) +
+        #                                     (len(self.getText()) / 30)
+        #                                     ) + 15))
+        #
+        # if size.height() > 500:
+        #    # Prevent extreme height for long text:
+        #    return QSize(self.width(), 500)
+        # return size
 
 
 class MyComboBox(QComboBox):
