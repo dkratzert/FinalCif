@@ -15,8 +15,11 @@ you can be creative to specify the crystallization conditions with a template.
 The CIF keywords with a question mark as value are at the beginning of the man table in FinalCif and the keywords with
 values are below.
 
-Each input field accepts Unicode characters like "ω". They are automatically translated into the CIF ascii format. 
-Please let me know if a character does not work.
+Each input field in FinalCif accepts Unicode characters like "ω" or "ä". They are automatically
+translated into the CIF ascii format.
+Please let me know if a character does not work. Also the length of text lines are nor concern,
+finalCif handles the maximum line lenght
+according to the CIF format definition automatically.
 
 Various possibilities of Checkcif are available, online with html or pdf result and offline.
 The button "save cif file" saves the current file under 'name'-finalcif.cif. FinalCif will never make Changes to the
@@ -36,7 +39,9 @@ other programs like ShelXle.
 
 * Open a cif file in a work folder.
 * Check and edit the remaining items.
-* Do a html checkcif (it also saves an image for the report). Probaly correct last items like the moiety formula and  explain alerts with the validation response form editor in the same window.
+* Do a html checkcif (it also saves an image for the report). Probaly correct last items
+like the moiety formula and  explain alerts with the validation response form editor in the
+same window.
 * Do a pdf checkcif
 * Submit the CIF to the CCDC
 * Drag&drop the CCDC deposit reply email into the work folder, or edit the CCDC number manually
@@ -64,7 +69,8 @@ This will import all key/values and loops from the file except for unit cell and
 **CIF format specification**
 
 FinalCif uses the `IUCr CIF specification 1.1 <https://www.iucr.org/resources/cif/spec/version1.1/>`_.
-Among other minor restrictions, this means that the global\_ keyword `is not allowed in CIF 1.1 <https://www.iucr.org/resources/cif/spec/version1.1/cifsyntax#global>`_.
+Among other minor restrictions, this means that the global\_ keyword `is not allowed in CIF 1.1
+<https://www.iucr.org/resources/cif/spec/version1.1/cifsyntax#global>`_.
 Some CIF writing programs still use the global\_ keyword. You may circumvent this by exchanging the
 global\_ key with a data\_ keyword and delete the previous data\_.
 
