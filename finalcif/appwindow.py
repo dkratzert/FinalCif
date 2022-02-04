@@ -131,6 +131,7 @@ class AppWindow(QMainWindow):
         #
         self.connect_signals_and_slots()
         self.make_button_icons()
+        self.ui.cif_main_table.resizeRowsToContents()
 
     def distribute_cif_main_table_columns_evenly(self) -> None:
         hheader = self.ui.cif_main_table.horizontalHeader()
@@ -1231,6 +1232,7 @@ class AppWindow(QMainWindow):
             if not self.ui.MainStackedWidget.on_checkcif_page():
                 self.ui.MainStackedWidget.got_to_main_page()
             self.deposit.cif = self.cif
+            #self.ui.cif_main_table.itemChanged.connect(lambda: self.ui.cif_main_table.resizeRowsToContents())
 
     def enable_buttons(self):
         self.ui.DetailsPushButton.setEnabled(True)
