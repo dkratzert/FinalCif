@@ -6,7 +6,7 @@
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
 import collections
-from typing import List, Dict, Union, Tuple
+from typing import List, Dict, Union, Tuple, Iterable
 
 from PyQt5.QtCore import QPoint, QSettings, QSize
 
@@ -110,7 +110,7 @@ class FinalCifSettings():
         """
         self.settings.setValue(name, item)
 
-    def load_value_of_key(self, key: str) -> Union[object, collections.Iterable]:
+    def load_value_of_key(self, key: str) -> Union[object, Iterable]:
         """
         Load templates and return them as string.
         """
