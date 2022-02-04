@@ -1,97 +1,97 @@
 FinalCif recent changes
 -----------------------
 
--v96 Made any loop rearrangeable by row-wise move up/down. Adds author to loop by double click. Small other changes.
--v95 Fixes wrong translation from german umlauts to CIF syntax e.g. u\" instead of \"u.
+* v96 Made any loop rearrangeable by row-wise move up/down. Adds author to loop by double click. Small other changes.
+* v95 Fixes wrong translation from german umlauts to CIF syntax e.g. u\" instead of \"u.
      Fixes crash with hkl files where the 0 0 0 reflection has a different row size than the others.
--v95 Added help texts for CIF keywords in loops.
--v94 Improved help texts for CIF keywords. Internal refactorings.
--v93 Click on vertical table header opens help window instead of help text inside the header section.
--v92 Fixed crash when running offline.
--v91 Added ability to import multi CIFs for equipment and properties (A CIF with multiple data_ blocks)
--v90 Show proper warning id data_ is missing in a template CIF. Find out min/max hkl for CIF from twins. Small fixes.
--v89 Fixed wR2 in report templates. Other minor corrections.
--v88 Added full IUCr publication checkcif option. Made CCDC number field direcly editable (No need to use a template anymore).
+* v95 Added help texts for CIF keywords in loops.
+* v94 Improved help texts for CIF keywords. Internal refactorings.
+* v93 Click on vertical table header opens help window instead of help text inside the header section.
+* v92 Fixed crash when running offline.
+* v91 Added ability to import multi CIFs for equipment and properties (A CIF with multiple data_ blocks)
+* v90 Show proper warning id data_ is missing in a template CIF. Find out min/max hkl for CIF from twins. Small fixes.
+* v89 Fixed wR2 in report templates. Other minor corrections.
+* v88 Added full IUCr publication checkcif option. Made CCDC number field direcly editable (No need to use a template anymore).
      Fixed _vref help buttons showing invalid help text for non-PLATON validations.
--v87 Fixed problems with Checkcif.
--v86 Added upload interface for the crystallographic open database (COD).
+* v87 Fixed problems with Checkcif.
+* v86 Added upload interface for the crystallographic open database (COD).
      Improved special character quotation in CIF.
      Help button in validation response form editor works again.
      Applying Equipment templates now works with double click instead of single click!!!
      After editing "Property Templates" for combo boxes, the new values are applied immediately.
--v85 Fixed crash during report generation
--v84 Fixed several minor issues in report tables.
--v83 Improved CrysalisPro reference in report.
--v82 Space group types and sum formula are now properly formatted.
--v81 Renamed Template "Contact author name and address" to "Crystallographer details". To bring your data to the new template:
+* v85 Fixed crash during report generation
+* v84 Fixed several minor issues in report tables.
+* v83 Improved CrysalisPro reference in report.
+* v82 Space group types and sum formula are now properly formatted.
+* v81 Renamed Template "Contact author name and address" to "Crystallographer details". To bring your data to the new template:
      export the old template to a cif file, replace the first line of "data_Contact__author__name__and__address" in this CIF with
      "data_Crystallographer__Details" and import it back. Added author information edit tab in loops edit page. Fixed some bugs.
--v80 Added possibility to use customized templates for report documents. See details in the user manual.  Also some bugs fixed.
--v79 Improved STOE .cfx file import.
--v78 Correctly showing A, B and C alert response forms in html CheckCIF tab now.
--v77 Minor bugs fixed.
--v76 Added Ability to edit loops. Added ability to import sqf files from SQUEEZE
--v75 Improved Offline Checkcif a lot (faster, more robust). Fixed missing structure picture in report.
--v74 Displays sum formula on top, shows also level C alerts in response forms list, gives proper warnings on write
+* v80 Added possibility to use customized templates for report documents. See details in the user manual.  Also some bugs fixed.
+* v79 Improved STOE .cfx file import.
+* v78 Correctly showing A, B and C alert response forms in html CheckCIF tab now.
+* v77 Minor bugs fixed.
+* v76 Added Ability to edit loops. Added ability to import sqf files from SQUEEZE
+* v75 Improved Offline Checkcif a lot (faster, more robust). Fixed missing structure picture in report.
+* v74 Displays sum formula on top, shows also level C alerts in response forms list, gives proper warnings on write
      protected cif files, enables access to all previous checkcif types. Added "update now" button for automatic
      update of the windows version to a new version (kill all running FinalCif instances).
--v73 Restructured CheckCIF dialogs: No pop-up windows and clearer diagnostic output. Rearranged buttons. Bug fixes.
--v72 Fixed crash on "STRG+s" and when going back from options.
--v71 made "delete row" in equipment and property lists working.
--v70 Added possibility to import machine CIF files from all manufacturers (.cif, .pcf, .cif_od, .cfx files).
+* v73 Restructured CheckCIF dialogs: No pop-up windows and clearer diagnostic output. Rearranged buttons. Bug fixes.
+* v72 Fixed crash on "STRG+s" and when going back from options.
+* v71 made "delete row" in equipment and property lists working.
+* v70 Added possibility to import machine CIF files from all manufacturers (.cif, .pcf, .cif_od, .cfx files).
      The automatic import of Rigaku and STOE files is gone.
--v69 Bugfixes.
--v68 Fixed CheckCIF server url (it was changed) and made it configurable.
--v67 Small improvements
--v66 Fixed crash when SADABS version is missing
--v65 No crash without loaded cif file anymore. Correctly translate angstrom and degree signs.
--v64 Minor improvements.
--v63 Added "options" tab to configure report options and extract .res/.hkl files from cif.
--v62 Changed report headlines to single-column format. Removed '_olex2_diffrn_ambient_temperature_device'
+* v69 Bugfixes.
+* v68 Fixed CheckCIF server url (it was changed) and made it configurable.
+* v67 Small improvements
+* v66 Fixed crash when SADABS version is missing
+* v65 No crash without loaded cif file anymore. Correctly translate angstrom and degree signs.
+* v64 Minor improvements.
+* v63 Added "options" tab to configure report options and extract .res/.hkl files from cif.
+* v62 Changed report headlines to single-column format. Removed '_olex2_diffrn_ambient_temperature_device'
      and '_diffrn_measurement_specimen_adhesive' from essential keywords.
--v61 Minor fixes.
--v60 Added display of cif loops and internal SHLEX file.
--v59 Bugfixes
--v58 Internal restructuring and many small bugs fixed. Deleting rows should now work in every row. Improved size of 
+* v61 Minor fixes.
+* v60 Added display of cif loops and internal SHLEX file.
+* v59 Bugfixes
+* v58 Internal restructuring and many small bugs fixed. Deleting rows should now work in every row. Improved size of 
      larger text fields.
--v58 Fixed text field behavior.
--v57 Added possibility for a custom picture in the report.
--v56 Also rename validation response forms while renaming data_ tag.
--v55 Online Checkcif now runs in the background. Longer timeouts for online checkcif before it gives up.
--v54 Fixed missing "finalcif.exe" in windows installer.
--v53 Fixed missing combo boxes (dropdown menus). Added possibility to change the "data_" name.
--v52 Fixes some potential crashes. Added possibility to open CIF files with missing values.
--v51 Added references to the programs used in data processing. Please tell me about still missing references.
+* v58 Fixed text field behavior.
+* v57 Added possibility for a custom picture in the report.
+* v56 Also rename validation response forms while renaming data_ tag.
+* v55 Online Checkcif now runs in the background. Longer timeouts for online checkcif before it gives up.
+* v54 Fixed missing "finalcif.exe" in windows installer.
+* v53 Fixed missing combo boxes (dropdown menus). Added possibility to change the "data_" name.
+* v52 Fixes some potential crashes. Added possibility to open CIF files with missing values.
+* v51 Added references to the programs used in data processing. Please tell me about still missing references.
      Added deposition mail files from the CCDC (.eml files) as data source for the CSD number. Just drag&drop the
      respective mail to the work directory and reload the cif file.
--v50 Added list of data sources for automatically generated data ("Data Sources" button). Offline Checkcif adds the moiety formula now. Many small bugfixes.
--v49 Deleting a row really deletes this key/value now. Some small bug fixes.
--v48 Improved import/export of templates. Improved special CIF character translation.
--v47 Added a details page with 3D representation of the Structure ('Show Details' button). Fixed template 
+* v50 Added list of data sources for automatically generated data ("Data Sources" button). Offline Checkcif adds the moiety formula now. Many small bugfixes.
+* v49 Deleting a row really deletes this key/value now. Some small bug fixes.
+* v48 Improved import/export of templates. Improved special CIF character translation.
+* v47 Added a details page with 3D representation of the Structure ('Show Details' button). Fixed template 
        export/import.
--v46 Fixed problems with non-ascii characters in SHELX res file included in the CIF (thanks to Frank Rominger).
--v45 Fixed crash with write protected files.
--v44 Fixed crash during report generation with strange connectivities.
--v43 Added Key shortcuts for save (CTRL+S), html checkcif (CTRL+H), pdf checkcif (CTRL+P), delete row (Ctrl+DEL)
+* v46 Fixed problems with non-ascii characters in SHELX res file included in the CIF (thanks to Frank Rominger).
+* v45 Fixed crash with write protected files.
+* v44 Fixed crash during report generation with strange connectivities.
+* v43 Added Key shortcuts for save (CTRL+S), html checkcif (CTRL+H), pdf checkcif (CTRL+P), delete row (Ctrl+DEL)
      During report text generation, a zip file containing cif file, report text and checkcif document will be written now.
      FinalCif now warns about inconsistent temperatures. Added buttons for CCDC and COD deposition
      (I would like to have an API for that!).
--v42 Improved report. Fixed minor bugs.
--v41 Fixed minor bugs and better handling of saint list file names.
--v40 Fixed potential crashes with windows line endings and also with long checkcif runs.
--v39 New Icon theme. Fixed crash after failed checkcif. Fixed wrong number from saint list file.
--v38 Fixed crash with missing SAINT list file. Fixed wrong file extension definition in file open dialog (esp. Linux).
--v37 Fixed wrong alert type for validation responses. Improved cif order and saint file parser.
--v36 Early support for stoe .cfx file. small fixes. The Windows version has an installer now. The installed version has 
+* v42 Improved report. Fixed minor bugs.
+* v41 Fixed minor bugs and better handling of saint list file names.
+* v40 Fixed potential crashes with windows line endings and also with long checkcif runs.
+* v39 New Icon theme. Fixed crash after failed checkcif. Fixed wrong number from saint list file.
+* v38 Fixed crash with missing SAINT list file. Fixed wrong file extension definition in file open dialog (esp. Linux).
+* v37 Fixed wrong alert type for validation responses. Improved cif order and saint file parser.
+* v36 Early support for stoe .cfx file. small fixes. The Windows version has an installer now. The installed version has 
      much quicker startup.
--v35 The written cif file is in specific order now. Please tell me if you disagree with the order.
--v34 Improved report text.
--v33 Minor report improvements.
--v32 Added a validation response form editor in order to reply to CheckCif alerts: Do a "html checkcif" and 
+* v35 The written cif file is in specific order now. Please tell me if you disagree with the order.
+* v34 Improved report text.
+* v33 Minor report improvements.
+* v32 Added a validation response form editor in order to reply to CheckCif alerts: Do a "html checkcif" and 
      click on "Edit Response Forms" to use it. Only A and B alert responses are supported. Fixed many smaller bugs.
--v31 Added vertical splitter between table and templates. Lots of internal refractoring. Improved coloring of
+* v31 Added vertical splitter between table and templates. Lots of internal refractoring. Improved coloring of
      the main table. FC calculates the space group information from symmetry operators if present. FC now
      shows all key/value pairs, exept for .res and .hkl file. New splash screen for checkcif.
--v30 Fixed problems in template export. Improved handling of text fields.
--v29 Fixed some crashes.
--v28 Improved template behavior. Faster checkcif without structure factors. 
+* v30 Fixed problems in template export. Improved handling of text fields.
+* v29 Fixed some crashes.
+* v28 Improved template behavior. Faster checkcif without structure factors. 

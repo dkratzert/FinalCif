@@ -152,21 +152,21 @@ class TestWorkfolder(unittest.TestCase):
 
     def test_abs_configuration_combo(self):
         self.assertEqual(10, self.key_row('_chemical_absolute_configuration'))
-        self.assertEqual("<class 'NoneType'>", self.cell_widget_class(10, COL_CIF))
-        self.assertEqual("<class 'NoneType'>", self.cell_widget_class(10, COL_DATA))
-        self.assertEqual("<class 'finalcif.gui.custom_classes.MyComboBox'>", self.cell_widget_class(10, COL_EDIT))
+        self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>", self.cell_widget_class(10, COL_CIF))
+        self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>", self.cell_widget_class(10, COL_DATA))
+        self.assertEqual("<class 'finalcif.gui.combobox.MyComboBox'>", self.cell_widget_class(10, COL_EDIT))
 
     def test_diffrn_radiation_type_combo(self):
         row = self.key_row('_diffrn_radiation_type')
-        self.assertEqual("<class 'NoneType'>", self.cell_widget_class(row, COL_CIF))
-        self.assertEqual("<class 'NoneType'>", self.cell_widget_class(row, COL_DATA))
-        self.assertEqual("<class 'finalcif.gui.custom_classes.MyComboBox'>", self.cell_widget_class(row, COL_EDIT))
+        self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>", self.cell_widget_class(row, COL_CIF))
+        self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>", self.cell_widget_class(row, COL_DATA))
+        self.assertEqual("<class 'finalcif.gui.combobox.MyComboBox'>", self.cell_widget_class(row, COL_EDIT))
 
     def test_diffrn_ambient_temperature_combo(self):
         row = self.key_row('_diffrn_ambient_temperature')
-        self.assertEqual("<class 'NoneType'>", self.cell_widget_class(row, COL_CIF))
-        self.assertEqual("<class 'NoneType'>", self.cell_widget_class(row, COL_DATA))
-        self.assertEqual("<class 'finalcif.gui.custom_classes.MyComboBox'>", self.cell_widget_class(row, COL_EDIT))
+        self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>", self.cell_widget_class(row, COL_CIF))
+        self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>", self.cell_widget_class(row, COL_DATA))
+        self.assertEqual("<class 'finalcif.gui.combobox.MyComboBox'>", self.cell_widget_class(row, COL_EDIT))
 
     def test_combo_items_ambient_temp(self):
         row = self.key_row('_diffrn_ambient_temperature')
@@ -201,10 +201,12 @@ class TestWorkfolder(unittest.TestCase):
              'brown'], self.get_combobox_items(row, COL_EDIT))
 
     def test_background_color_data(self):
-        self.assertEqual(light_green, self.get_background_color('_computing_cell_refinement', COL_DATA))
-        self.assertEqual(light_green, self.get_background_color('_computing_data_collection', COL_DATA))
-        self.assertEqual(light_green, self.get_background_color('_computing_data_reduction', COL_DATA))
-        self.assertEqual(QColor(0, 0, 0, 255), self.get_background_color('_computing_molecular_graphics', COL_DATA))
+        self.assertIn('{background-color: #d9ffc9;}', self.myapp.ui.cif_main_table.widget_from_key('_computing_cell_refinement', COL_DATA).styleSheet())
+        self.assertIn('{background-color: #d9ffc9;}', self.myapp.ui.cif_main_table.widget_from_key('_computing_data_collection', COL_DATA).styleSheet())
+        self.assertIn('{background-color: #d9ffc9;}', self.myapp.ui.cif_main_table.widget_from_key('_computing_data_reduction', COL_DATA).styleSheet())
+
+    def test_color(self):
+        self.assertEqual('', self.myapp.ui.cif_main_table.widget_from_key('_computing_molecular_graphics', COL_DATA).styleSheet())
 
     def test_chemical_formula_moiety(self):
         self.assertEqual('?',
@@ -215,10 +217,9 @@ class TestWorkfolder(unittest.TestCase):
                          self.cell_text('_chemical_formula_moiety', COL_EDIT))
 
     def test_background_color_theta_max(self):
-        self.assertEqual((0, 0, 0, 255), self.get_background_color('_cell_measurement_theta_max', COL_CIF).getRgb())
-        self.assertEqual(light_green, self.get_background_color('_cell_measurement_theta_max', COL_DATA))
-        self.assertEqual((0, 0, 0, 255),
-                         self.get_background_color('_cell_measurement_theta_max', COL_EDIT).getRgb())
+        self.assertEqual('', self.myapp.ui.cif_main_table.widget_from_key('_cell_measurement_theta_max', COL_CIF).styleSheet())
+        self.assertIn('{background-color: #d9ffc9;}', self.myapp.ui.cif_main_table.widget_from_key('_cell_measurement_theta_max', COL_DATA).styleSheet())
+        self.assertEqual('', self.myapp.ui.cif_main_table.widget_from_key('_cell_measurement_theta_max', COL_EDIT).styleSheet())
 
     def test_exptl_crystal_size(self):
         self.assertEqual('0.220', self.cell_text('_exptl_crystal_size_max', COL_DATA))
@@ -235,8 +236,8 @@ class TestWorkfolder(unittest.TestCase):
         self.assertEqual('?', self.cell_text('_chemical_absolute_configuration', COL_CIF))
         self.assertEqual('', self.cell_text('_chemical_absolute_configuration', COL_DATA))
         self.assertEqual('', self.cell_text('_chemical_absolute_configuration', COL_EDIT))
-        self.assertEqual(yellow, self.myapp.ui.cif_main_table.itemFromKey('_chemical_absolute_configuration',
-                                                                          1).background().color())
+        self.assertIn('background-color: #faf796;', self.myapp.ui.cif_main_table.widget_from_key('_chemical_absolute_configuration',
+                                                                          1).styleSheet())
 
     def allrows_test_key(self, key: str = '', results: list = None):
         # The results list is a list with three items for each data column in the main table.
@@ -300,9 +301,9 @@ class TestWorkfolder(unittest.TestCase):
         self.equipment_click('Crystallographer Details')
         self.assertEqual(self.myapp.ui.cif_main_table.vheaderitems[5], '_audit_contact_author_name')
         self.assertEqual('Dr. Daniel Kratzert', self.myapp.ui.cif_main_table.getText(5, COL_DATA))
-        self.assertEqual("<class 'NoneType'>", self.cell_widget_class(5, COL_CIF))
-        self.assertEqual("<class 'NoneType'>", self.cell_widget_class(5, COL_DATA))
-        self.assertEqual("<class 'NoneType'>", self.cell_widget_class(5, COL_EDIT))
+        self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>", self.cell_widget_class(5, COL_CIF))
+        self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>", self.cell_widget_class(5, COL_DATA))
+        self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>", self.cell_widget_class(5, COL_EDIT))
 
     def test_addr(self):
         self.assertNotEqual(unify_line_endings(addr), self.cell_text('_audit_contact_author_address', COL_EDIT))

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/Users/daniel/Documents/GitHub/FinalCif/finalcif/gui/finalcif_gui.ui'
+# Form implementation generated from reading ui file 'C:\_DEV\GitHub\FinalCif\finalcif\gui\finalcif_gui.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.6
 #
@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_FinalCifWindow(object):
     def setupUi(self, FinalCifWindow):
         FinalCifWindow.setObjectName("FinalCifWindow")
-        FinalCifWindow.resize(1590, 776)
+        FinalCifWindow.resize(1604, 776)
         self.Mainwidget = QtWidgets.QWidget(FinalCifWindow)
         self.Mainwidget.setObjectName("Mainwidget")
         self.horizontalLayout_4 = QtWidgets.QHBoxLayout(self.Mainwidget)
@@ -1598,6 +1598,12 @@ class Ui_FinalCifWindow(object):
         self.horizontalLayout_10.addItem(spacerItem47)
         self.gridLayout_17.addLayout(self.horizontalLayout_10, 1, 0, 1, 2)
         self.MainStackedWidget.addWidget(self.page_cod)
+        self.page_textTemplate = QtWidgets.QWidget()
+        self.page_textTemplate.setObjectName("page_textTemplate")
+        self.verticalLayout_33 = QtWidgets.QVBoxLayout(self.page_textTemplate)
+        self.verticalLayout_33.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout_33.setObjectName("verticalLayout_33")
+        self.MainStackedWidget.addWidget(self.page_textTemplate)
         self.gridLayout_6.addWidget(self.MainStackedWidget, 1, 0, 1, 12)
         self.SumFormMainLabel = QtWidgets.QLabel(self.CifDataItemsFrame)
         self.SumFormMainLabel.setObjectName("SumFormMainLabel")
@@ -1618,7 +1624,7 @@ class Ui_FinalCifWindow(object):
         self.TemplatesStackedWidget.setCurrentIndex(1)
         self.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
         self.PropertiesTemplatesStackedWidget.setCurrentIndex(1)
-        self.MainStackedWidget.setCurrentIndex(5)
+        self.MainStackedWidget.setCurrentIndex(6)
         self.LoopsTabWidget.setCurrentIndex(0)
         self.CheckCIFResultsTabWidget.setCurrentIndex(2)
         self.ResponsesTabWidget.setCurrentIndex(0)
@@ -1919,4 +1925,7 @@ class Ui_FinalCifWindow(object):
         self.actionSave_Report.setText(_translate("FinalCifWindow", "Save Report"))
         self.actionSave_CIF_File.setText(_translate("FinalCifWindow", "Save CIF File"))
         self.actionedit_templates.setText(_translate("FinalCifWindow", "edit templates"))
-from finalcif.gui.custom_classes import MyCifTable, MyEQTableWidget, MyMainStackedWidget, MyPropTableWidget
+from finalcif.gui.custom_classes import MyCifTable
+from finalcif.gui.equipmenttable import MyEQTableWidget
+from finalcif.gui.mainstackwidget import MyMainStackedWidget
+from finalcif.gui.propertytable import MyPropTableWidget
