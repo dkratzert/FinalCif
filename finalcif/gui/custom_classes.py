@@ -224,7 +224,7 @@ class MyCifTable(QTableWidget, ItemTextMixin):
             return
         # item = MyTableWidgetItem(txt)
         # self.setItem(row, column, item)
-        lentext = max([len(txt), len(self.getText(0, row)), len(self.getText(1, row))])
+        #lentext = max([len(txt), len(self.getText(0, row)), len(self.getText(1, row))])
         # This is a regular table cell:
         # if not (key in text_field_keys) and (lentext < 35):
         #    item.setText(txt)
@@ -235,16 +235,18 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         #        item.setBackground(color)
         # else:
         # This is a text field:
-        textedit = MyQPlainTextEdit(self, minheight=lentext)
-        textedit.cif_key = key
-        textedit.templateRequested.connect(self.goto_template_page)
-        self.setCellWidget(row, column, textedit)
-        textedit.setText(txt, color=color)
-        if (column == COL_CIF) or (column == COL_DATA):
-            textedit.setUneditable()
-        # self.resizeRowToContents(row)
+        if isinstance(self.cellWidget(row, column), MyQPlainTextEdit):
+            self.cellWidget(row, column).setText(txt, color=color)
+        else:
+            textedit = MyQPlainTextEdit(self)
+            textedit.cif_key = key
+            textedit.templateRequested.connect(self.goto_template_page)
+            self.setCellWidget(row, column, textedit)
+            textedit.setText(txt, color=color)
+            if (column == COL_CIF) or (column == COL_DATA):
+                textedit.setUneditable()
         if color:
-            textedit.setBackground(color)
+            self.cellWidget(row, column).setBackground(color)
 
     def goto_template_page(self, row):
         self.setCurrentCell(row, COL_EDIT)
@@ -276,6 +278,7 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         row = self.vheaderitems.index(key)
         return self.cellWidget(row, column)
 
+    """    
     def setBackground(self, key: str, column: int, color: QColor):
         row = self.vheaderitems.index(key)
         self.setCurrentCell(row, column)
@@ -288,7 +291,7 @@ class MyCifTable(QTableWidget, ItemTextMixin):
             widget = self.cellWidget(row, column)
             if widget:
                 with suppress(Exception):
-                    widget.setBackground(color)
+                    widget.setBackground(color)"""
 
     def copy_vhead_item(self):
         """
@@ -335,16 +338,17 @@ class MyQPlainTextEdit(QPlainTextEdit):
         super().__init__(parent, *args, **kwargs)
         self.setParent(parent)
         self.cif_key = ''
-        self.minheight = minheight
+        #self.minheight = minheight
         self.parent: MyCifTable = parent
         self.setFocusPolicy(Qt.StrongFocus)
         self.setFrameShape(QFrame.NoFrame)
         self.setTabChangesFocus(True)
-        # self.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setWordWrapMode(QTextOption.WrapAtWordBoundaryOrAnywhere)
-        self.textChanged.connect(lambda: self.parent.resizeRowsToContents())
+        #self.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
+        self.fontmetric = QFontMetrics(self.document().defaultFont())
+        #self.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
 
     def __str__(self):
         return self.toPlainText()
@@ -402,6 +406,7 @@ class MyQPlainTextEdit(QPlainTextEdit):
         # special treatment for text fields in order to get line breaks:
         for txt in txtlst:
             self.setPlainText(txt)
+        self.textChanged.connect(lambda: self.parent.resizeRowsToContents())
 
     def eventFilter(self, widget: QObject, event: QEvent):
         """
@@ -422,10 +427,8 @@ class MyQPlainTextEdit(QPlainTextEdit):
         # if not self.getText().strip():
         #    return QSize(self.width(), self.minheight)
         # else:
-        font = self.document().defaultFont()
-        fm = QFontMetrics(font)
-        rect = fm.boundingRect(self.contentsRect(), Qt.TextWordWrap, self.toPlainText())
-        return QSize(self.width(), rect.height() + 10)
+        rect = self.fontmetric.boundingRect(self.contentsRect(), Qt.TextWordWrap, self.toPlainText())
+        size =  QSize(100, rect.height() + 14)
         # if len(self.getText().splitlines()) < 4:
         #    size = QSize(100, int(0.5 * len(self.getText()) + 26))
         # else:
@@ -434,10 +437,10 @@ class MyQPlainTextEdit(QPlainTextEdit):
         #                                     (len(self.getText()) / 30)
         #                                     ) + 15))
         #
-        # if size.height() > 500:
-        #    # Prevent extreme height for long text:
-        #    return QSize(self.width(), 500)
-        # return size
+        if size.height() > 300:
+            # Prevent extreme height for long text:
+            size = QSize(100, 300)
+        return size
 
 
 class MyComboBox(QComboBox):
