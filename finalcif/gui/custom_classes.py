@@ -49,33 +49,12 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         item = MyTableWidgetItem()
         self.setItemPrototype(item)
-        #self.actionDeletePair = QAction("Delete Row", self)
-        #self.actionCopy = QAction("Copy", self)
-        #self.actionCopyVhead = QAction("Copy CIF Keyword", self)
-        #self.templateAction = QAction("Text Template", self)
-        #self.setContextMenuPolicy(Qt.ActionsContextMenu)
-        #self.addAction(self.actionDeletePair)
-        #self.addAction(self.actionCopy)
-        #self.addAction(self.actionCopyVhead)
-        #self.addAction(QAction('-----', self))
-        #self.addAction(self.templateAction)
-        #self.templateAction.triggered.connect(self.goto_template_page)
-        #self.actionDeletePair.triggered.connect(self.delete_row)
-        #self.actionCopy.triggered.connect(self.copy_item)
-        #self.actionCopyVhead.triggered.connect(self.copy_vhead_item)
         del_shortcut = QShortcut(QKeySequence('Ctrl+Del'), self)
         del_shortcut.activated.connect(self.delete_row)
         self.vheaderitems: list = []
-        # This is the index number of the vheader that got clicked last:
-        # vertical header click:
         vheader = self.verticalHeader()
         vheader.setSectionsClickable(True)
-        # noinspection PyUnresolvedReferences
         vheader.sectionClicked.connect(self.vheader_section_click)
-
-    # @cache
-    # def _vheaderitems(self, row: int) -> str:
-    #    return self.vheaderitems[row]
 
     def setCellWidget(self, row: int, column: int, widget) -> None:
         widget.cif_key = self.vheaderitems[row]
@@ -192,22 +171,10 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         if isinstance(self.cellWidget(row, column), MyComboBox):
             self.cellWidget(row, column).setText(txt)
             return
-        # item = MyTableWidgetItem(txt)
-        # self.setItem(row, column, item)
-        #lentext = max([len(txt), len(self.getText(0, row)), len(self.getText(1, row))])
-        # This is a regular table cell:
-        # if not (key in text_field_keys) and (lentext < 35):
-        #    item.setText(txt)
-        #    if (column == COL_CIF) or (column == COL_DATA):
-        #        # noinspection PyUnresolvedReferences
-        #        item.setUneditable()
-        #    if color:
-        #        item.setBackground(color)
-        # else:
-        # This is a text field:
         if isinstance(self.cellWidget(row, column), MyQPlainTextEdit):
             widget = self.cellWidget(row, column)
             widget.setText(txt, color=color)
+            # setting the CIF key here is important for the finding of row e.g. for clipboard copy
             widget.cif_key = key
         else:
             textedit = MyQPlainTextEdit(self)
@@ -249,21 +216,6 @@ class MyCifTable(QTableWidget, ItemTextMixin):
     def widget_from_key(self, key: str, column: int) -> QWidget:
         row = self.vheaderitems.index(key)
         return self.cellWidget(row, column)
-
-    """    
-    def setBackground(self, key: str, column: int, color: QColor):
-        row = self.vheaderitems.index(key)
-        self.setCurrentCell(row, column)
-        item = self.currentItem()
-        if item:
-            item.setBackground(color)
-            if column == COL_DATA:
-                item.setUneditable()
-        else:
-            widget = self.cellWidget(row, column)
-            if widget:
-                with suppress(Exception):
-                    widget.setBackground(color)"""
 
     def copy_vhead_item(self):
         """
@@ -307,5 +259,3 @@ class MyTableWidgetItem(QTableWidgetItem):
         self.setFlags(self.flags() ^ Qt.ItemIsEditable)
         # noinspection PyTypeChecker
         self.setFlags(self.flags() | Qt.ItemIsSelectable)
-
-

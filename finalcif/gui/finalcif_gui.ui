@@ -3953,17 +3953,17 @@ please add a publication author:</string>
   <customwidget>
    <class>MyEQTableWidget</class>
    <extends>QTableWidget</extends>
-   <header>finalcif.gui.custom_classes.h</header>
+   <header>finalcif.gui.equipmenttable.h</header>
   </customwidget>
   <customwidget>
    <class>MyPropTableWidget</class>
    <extends>QTableWidget</extends>
-   <header>finalcif.gui.custom_classes.h</header>
+   <header>finalcif.gui.propertytable.h</header>
   </customwidget>
   <customwidget>
    <class>MyMainStackedWidget</class>
    <extends>QStackedWidget</extends>
-   <header>finalcif.gui.custom_classes.h</header>
+   <header>finalcif.gui.mainstackwidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
