@@ -292,13 +292,10 @@ class AppWindow(QMainWindow):
         self.textedit.ui.cifKeyLineEdit.setText(cif_key)
         self.textedit.add_textfields(self.settings.load_settings_list('text_templates', cif_key))
         edit_text = self.ui.cif_main_table.getText(row, COL_EDIT)
+        # Probably use also the text from the COL_CIF?
         # data_text = self.ui.cif_main_table.getText(row, COL_DATA)
         # cif_text = self.ui.cif_main_table.getText(row, COL_CIF)
-        # if edit_text:
-        #    text = edit_text
-        # elif data_text:
-        #    text = data_text
-        # elif cif_text:
+        # if cif_text:
         #    text = cif_text
         # else:
         #    text = ''

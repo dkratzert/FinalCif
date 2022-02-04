@@ -1,6 +1,7 @@
 import sys
 from typing import Tuple, List, Union
 
+from PyQt5 import QtGui
 from PyQt5.QtCore import QSize, Qt, pyqtSignal
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QCheckBox, QApplication, QPlainTextEdit, \
     QListWidgetItem, QVBoxLayout, QLabel
@@ -27,6 +28,9 @@ class TextEditItem(QWidget):
         self.number_label = QLabel()
         self.vlayout.addWidget(self.number_label)
         self.textfield = QPlainTextEdit(self)
+        font = self.textfield.font()
+        font.setPixelSize(12)
+        self.textfield.setFont(font)
         self.vlayout.addWidget(self.checkbox)
         layout.addLayout(self.vlayout)
         layout.addWidget(self.textfield)

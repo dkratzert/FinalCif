@@ -23,7 +23,6 @@ class MyQPlainTextEdit(QPlainTextEdit):
         super().__init__(parent, *args, **kwargs)
         self.setParent(parent)
         self.cif_key = ''
-        #self.minheight = minheight
         self.parent: 'MyCifTable' = parent
         self.setFocusPolicy(Qt.StrongFocus)
         self.setFrameShape(QFrame.NoFrame)
@@ -31,10 +30,8 @@ class MyQPlainTextEdit(QPlainTextEdit):
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setWordWrapMode(QTextOption.WrapAtWordBoundaryOrAnywhere)
-        #self.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
         self.fontmetric = QFontMetrics(self.document().defaultFont())
         self.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
-        #self.textChanged.connect(lambda: self.parent.resizeRowsToContents())
 
     def __str__(self):
         return self.toPlainText()
@@ -61,7 +58,6 @@ class MyQPlainTextEdit(QPlainTextEdit):
         Copies the content of a field.
         """
         if hasattr(self.parent, 'vheaderitems'):
-            #row = self.parent.currentRow()
             clipboard = QApplication.clipboard()
             clipboard.setText(self.cif_key)
 
@@ -101,8 +97,6 @@ class MyQPlainTextEdit(QPlainTextEdit):
         if event.type() == QEvent.Wheel and widget and not widget.hasFocus():
             event.ignore()
             return True
-        # if event.type() == QEvent.MouseButtonPress:
-        #    self.cell_clicked.emit(event.)
         return QObject.eventFilter(self, widget, event)
 
     def getText(self):
@@ -110,19 +104,8 @@ class MyQPlainTextEdit(QPlainTextEdit):
 
     def sizeHint(self) -> QSize:
         """Text field sizes are scaled to text length"""
-        # if not self.getText().strip():
-        #    return QSize(self.width(), self.minheight)
-        # else:
         rect = self.fontmetric.boundingRect(self.contentsRect(), Qt.TextWordWrap, self.toPlainText())
-        size =  QSize(100, rect.height() + 14)
-        # if len(self.getText().splitlines()) < 4:
-        #    size = QSize(100, int(0.5 * len(self.getText()) + 26))
-        # else:
-        #    size = QSize(self.width(), int(fm.height() * len(self.getText().splitlines()) + 3) + 16)
-        # size = QSize(self.width(), int(15 * (len(self.getText().splitlines()) +
-        #                                     (len(self.getText()) / 30)
-        #                                     ) + 15))
-        #
+        size = QSize(100, rect.height() + 14)
         if size.height() > 300:
             # Prevent extreme height for long text:
             size = QSize(100, 300)
