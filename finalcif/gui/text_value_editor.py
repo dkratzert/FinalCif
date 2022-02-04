@@ -101,6 +101,6 @@ class MyTextTemplateEdit(QWidget):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = MyTextTemplateEdit()
-    window.add_textfields(txts)
+    #window.add_textfields(txts)
     window.show()
     sys.exit(app.exec_())
