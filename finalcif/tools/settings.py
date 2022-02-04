@@ -5,7 +5,8 @@
 #  and you think this stuff is worth it, you can buy me a beer in return.
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
-from typing import List, Dict, Union, Tuple
+import collections
+from typing import List, Dict, Union, Tuple, Iterable
 
 from PyQt5.QtCore import QPoint, QSettings, QSize
 
@@ -79,7 +80,7 @@ class FinalCifSettings():
         return keylist
 
     def load_cif_keys_of_properties(self):
-        property_keys = [x[0] for x in self.property_keys_and_values]
+        property_keys = [x[0] for x in self.load_property_keys_and_values()]
         return property_keys
 
     def load_property_values_by_key(self, cif_key: str):
@@ -109,13 +110,7 @@ class FinalCifSettings():
         """
         self.settings.setValue(name, item)
 
-    def load_template(self, name: str) -> Union[List[str], List[List]]:
-        """
-        Load templates and return them as list of lists.
-        """
-        return self.settings.value(name)
-
-    def load_value_of_key(self, key: str) -> str:
+    def load_value_of_key(self, key: str) -> Union[object, Iterable]:
         """
         Load templates and return them as string.
         """

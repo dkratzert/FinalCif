@@ -7,7 +7,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1590</width>
+    <width>1604</width>
     <height>776</height>
    </rect>
   </property>
@@ -1071,7 +1071,7 @@
         <item row="1" column="0" colspan="12">
          <widget class="MyMainStackedWidget" name="MainStackedWidget">
           <property name="currentIndex">
-           <number>5</number>
+           <number>6</number>
           </property>
           <widget class="QWidget" name="page_MainTable">
            <layout class="QVBoxLayout" name="verticalLayout">
@@ -3909,6 +3909,9 @@ please add a publication author:</string>
             </item>
            </layout>
           </widget>
+          <widget class="QWidget" name="page_textTemplate">
+           <layout class="QVBoxLayout" name="verticalLayout_33"/>
+          </widget>
          </widget>
         </item>
         <item row="0" column="9">
@@ -3950,17 +3953,17 @@ please add a publication author:</string>
   <customwidget>
    <class>MyEQTableWidget</class>
    <extends>QTableWidget</extends>
-   <header>finalcif.gui.custom_classes.h</header>
+   <header>finalcif.gui.equipmenttable.h</header>
   </customwidget>
   <customwidget>
    <class>MyPropTableWidget</class>
    <extends>QTableWidget</extends>
-   <header>finalcif.gui.custom_classes.h</header>
+   <header>finalcif.gui.propertytable.h</header>
   </customwidget>
   <customwidget>
    <class>MyMainStackedWidget</class>
    <extends>QStackedWidget</extends>
-   <header>finalcif.gui.custom_classes.h</header>
+   <header>finalcif.gui.mainstackwidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
