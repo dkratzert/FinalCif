@@ -539,7 +539,11 @@ RADIATION_TYPE = (
     (0, r''),
     (1, r'Mo K\a'),
     (2, r'Cu K\a'),
-    (3, r'Ag K\a')
+    (3, r'Ag K\a'),
+    (4, r'In K\a'),
+    (5, r'Ga K\a'),
+    (6, r'Fe K\a'),
+    (7, r'W K\a'),
 )
 
 SOLUTION_PRIMARY = (
