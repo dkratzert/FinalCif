@@ -31,7 +31,7 @@ from finalcif import VERSION
 from finalcif.cif.checkcif.checkcif import MyHTMLParser, AlertHelp, CheckCif
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.cif.cod.deposit import CODdeposit
-from finalcif.cif.text import retranslate_delimiter, utf8_to_str
+from finalcif.cif.text import utf8_to_str
 from finalcif.datafiles.bruker_data import BrukerData
 from finalcif.datafiles.ccdc_mail import CCDCMail
 from finalcif.displaymol import mol_file_writer
@@ -1195,7 +1195,7 @@ class AppWindow(QMainWindow):
         except Exception as e:
             not_ok = e
             # raise
-            #unable_to_open_message(filepath, not_ok)
+            # unable_to_open_message(filepath, not_ok)
             raise
         # Do this only when sure we can load the file:
         self.save_current_recent_files_list(filepath)
@@ -1235,7 +1235,7 @@ class AppWindow(QMainWindow):
             if not self.ui.MainStackedWidget.on_checkcif_page():
                 self.ui.MainStackedWidget.got_to_main_page()
             self.deposit.cif = self.cif
-            #self.ui.cif_main_table.itemChanged.connect(lambda: self.ui.cif_main_table.resizeRowsToContents())
+            # self.ui.cif_main_table.itemChanged.connect(lambda: self.ui.cif_main_table.resizeRowsToContents())
 
     def enable_buttons(self):
         self.ui.DetailsPushButton.setEnabled(True)
@@ -1605,10 +1605,10 @@ class AppWindow(QMainWindow):
         self.ui.cif_main_table.insertRow(row_num)
         if not key in self.ui.cif_main_table.vheaderitems:
             self.ui.cif_main_table.vheaderitems.insert(row_num, key)
-        if value is None:
+        if value is None or value == '?':
             strval = '?'
         else:
-            strval = str(value).strip("'").strip(';\n').strip('\r\n').strip(" ")
+            strval = gemmi.cif.as_string(value).strip()
         if not key:
             strval = ''
         # All regular linedit fields:
@@ -1618,12 +1618,14 @@ class AppWindow(QMainWindow):
         else:
             # Cif text is set here:
             self.ui.cif_main_table.setText(row=row_num, key=key, column=COL_CIF,
-                                           txt='?' if at_start else retranslate_delimiter(strval))
+                                           txt='?' if at_start else strval)
             # This is to have COL_DATA at a defined state:
             self.ui.cif_main_table.setText(row=row_num, key=key, column=COL_DATA, txt='')
-            self.ui.cif_main_table.setText(row=row_num, key=key, column=COL_EDIT,
-                                           txt=retranslate_delimiter(strval) if at_start else '')
-        #self.ui.cif_main_table.resizeRowToContents(row_num)
+            color = None
+            if key in self.settings.list_saved_items('text_templates'):
+                color = light_blue
+            self.ui.cif_main_table.setText(row=row_num, key=key, column=COL_EDIT, color=color,
+                                           txt=strval if at_start else '')
         head_item_key = MyTableWidgetItem(key)
         if not key == "These below are already in:":
             self.ui.cif_main_table.setVerticalHeaderItem(row_num, head_item_key)

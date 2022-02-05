@@ -13,7 +13,7 @@ from finalcif.gui.mixins import ItemTextMixin
 from finalcif.gui.plaintextedit import MyQPlainTextEdit
 
 light_green = QColor(217, 255, 201)
-light_blue = QColor(173, 216, 230)
+light_blue = QColor(193, 217, 247)
 blue = QColor(102, 150, 179)
 yellow = QColor(250, 247, 150)  # #faf796
 
