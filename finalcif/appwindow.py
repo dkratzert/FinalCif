@@ -306,8 +306,14 @@ class AppWindow(QMainWindow):
         Imports a text template from a CIF file.
         """
         filename = cif_file_open_dialog()
-        doc = read_document_from_cif_file(filename)
-        block: gemmi.cif.Block = doc.sole_block()
+        if not filename:
+            return
+        try:
+            doc = read_document_from_cif_file(filename)
+            block: gemmi.cif.Block = doc.sole_block()
+        except Exception:
+            show_general_warning('This file is not readable.')
+            return
         text_list = []
         for i in block:
             if i.loop is not None:
