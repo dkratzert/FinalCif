@@ -12,6 +12,7 @@ from finalcif.gui.dialogs import show_keyword_help
 from finalcif.gui.mixins import ItemTextMixin
 from finalcif.gui.plaintextedit import MyQPlainTextEdit
 
+white = QColor(255, 255, 255)
 light_green = QColor(217, 255, 201)
 light_blue = QColor(193, 217, 247)
 blue = QColor(102, 150, 179)
