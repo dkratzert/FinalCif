@@ -42,12 +42,13 @@ from finalcif.equip_property.equipment import Equipment
 from finalcif.equip_property.properties import Properties
 from finalcif.equip_property.tools import read_document_from_cif_file
 from finalcif.gui.custom_classes import COL_CIF, COL_DATA, COL_EDIT, MyTableWidgetItem, light_green, yellow, MyCifTable, \
-    light_blue
+    light_blue, white
 from finalcif.gui.dialogs import show_update_warning, unable_to_open_message, show_general_warning, \
     cif_file_open_dialog, \
     bad_z_message, show_res_checksum_warning, show_hkl_checksum_warning, cif_file_save_dialog
 from finalcif.gui.finalcif_gui import Ui_FinalCifWindow
 from finalcif.gui.loops import Loop
+from finalcif.gui.plaintextedit import MyQPlainTextEdit
 from finalcif.gui.text_value_editor import MyTextTemplateEdit
 from finalcif.gui.vrf_classes import MyVRFContainer, VREF
 from finalcif.report.archive_report import ArchiveReport
@@ -363,6 +364,7 @@ class AppWindow(QMainWindow):
         self.back_to_main_noload()
         self.status_bar.show_message(f'Template for {cif_key} deleted.', timeout=10)
         self.textedit.clear_fields()
+        self.refresh_color_background_from_templates()
 
     def save_text_template(self) -> None:
         """
@@ -372,6 +374,7 @@ class AppWindow(QMainWindow):
         table_data = self.textedit.get_template_texts()
         self.settings.save_template_list('text_templates/' + cif_key, table_data)
         self.status_bar.show_message(f'Template for {cif_key} saved.', timeout=10)
+        self.refresh_color_background_from_templates()
 
     def apply_text_template(self) -> None:
         """
@@ -1511,7 +1514,7 @@ class AppWindow(QMainWindow):
     def refresh_combo_boxes(self):
         combos_from_settings = self.settings.load_cif_keys_of_properties()
         for row_number in range(self.ui.cif_main_table.model().rowCount()):
-            vhead_key = self.ui.cif_main_table.model().headerData(row_number, QtCore.Qt.Vertical)
+            vhead_key = self.get_key_by_row_number(row_number)
             if not vhead_key in self.ui.cif_main_table.vheaderitems:
                 self.ui.cif_main_table.vheaderitems.append(vhead_key)
             # adding comboboxes:
@@ -1522,6 +1525,20 @@ class AppWindow(QMainWindow):
                 # Then the pre-defined:
                 self.ui.cif_main_table.add_property_combobox(data=combobox_fields[vhead_key], row_num=row_number,
                                                              key=vhead_key)
+
+    def refresh_color_background_from_templates(self):
+        for row_number in range(self.ui.cif_main_table.model().rowCount()):
+            vhead_key = self.get_key_by_row_number(row_number)
+            widget = self.ui.cif_main_table.cellWidget(row_number, COL_EDIT)
+            if isinstance(widget, MyQPlainTextEdit):
+                if self.settings.load_settings_list('text_templates', vhead_key):
+                    widget.setBackground(light_blue)
+                else:
+                    widget.setBackground(white)
+
+    def get_key_by_row_number(self, row_number):
+        vhead_key = self.ui.cif_main_table.model().headerData(row_number, QtCore.Qt.Vertical)
+        return vhead_key
 
     def add_combobox(self, num: int, vhead_key: str):
         """
