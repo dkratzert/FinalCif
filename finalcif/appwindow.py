@@ -316,7 +316,7 @@ class AppWindow(QMainWindow):
                     self.textedit.ui.cifKeyLineEdit.setText(loop_column_name)
                 for n in range(i.loop.length()):
                     value = i.loop.val(n, 0)
-                    text_list.append(value)
+                    text_list.append(gemmi.cif.as_string(value))
         self.textedit.add_textfields(text_list)
 
     def export_text_template(self) -> None:
