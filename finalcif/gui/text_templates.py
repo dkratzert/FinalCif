@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'C:\_DEV\GitHub\FinalCif\finalcif\gui\text_templates.ui'
+# Form implementation generated from reading ui file '/Users/daniel/Documents/GitHub/FinalCif/finalcif/gui/text_templates.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.6
 #
@@ -81,26 +81,26 @@ class Ui_TextTemplatesWidget(object):
         self.templatesListWidget = QtWidgets.QListWidget(self.TemplatesListGroupBox)
         self.templatesListWidget.setObjectName("templatesListWidget")
         self.verticalLayout.addWidget(self.templatesListWidget)
-        self.horizontalLayout_3 = QtWidgets.QHBoxLayout()
-        self.horizontalLayout_3.setSpacing(9)
-        self.horizontalLayout_3.setObjectName("horizontalLayout_3")
+        self.snippetsLayout = QtWidgets.QHBoxLayout()
+        self.snippetsLayout.setSpacing(9)
+        self.snippetsLayout.setObjectName("snippetsLayout")
         self.savePushButton = QtWidgets.QPushButton(self.TemplatesListGroupBox)
         self.savePushButton.setObjectName("savePushButton")
-        self.horizontalLayout_3.addWidget(self.savePushButton)
+        self.snippetsLayout.addWidget(self.savePushButton)
         self.importPushButton = QtWidgets.QPushButton(self.TemplatesListGroupBox)
         self.importPushButton.setObjectName("importPushButton")
-        self.horizontalLayout_3.addWidget(self.importPushButton)
+        self.snippetsLayout.addWidget(self.importPushButton)
         self.exportTextPushButton = QtWidgets.QPushButton(self.TemplatesListGroupBox)
         self.exportTextPushButton.setObjectName("exportTextPushButton")
-        self.horizontalLayout_3.addWidget(self.exportTextPushButton)
+        self.snippetsLayout.addWidget(self.exportTextPushButton)
         spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
-        self.horizontalLayout_3.addItem(spacerItem2)
+        self.snippetsLayout.addItem(spacerItem2)
         self.deletePushButton = QtWidgets.QPushButton(self.TemplatesListGroupBox)
         self.deletePushButton.setObjectName("deletePushButton")
-        self.horizontalLayout_3.addWidget(self.deletePushButton)
+        self.snippetsLayout.addWidget(self.deletePushButton)
         spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.horizontalLayout_3.addItem(spacerItem3)
-        self.verticalLayout.addLayout(self.horizontalLayout_3)
+        self.snippetsLayout.addItem(spacerItem3)
+        self.verticalLayout.addLayout(self.snippetsLayout)
         self.verticalLayout_3.addWidget(self.TemplatesListGroupBox)
 
         self.retranslateUi(TextTemplatesWidget)
@@ -111,7 +111,7 @@ class Ui_TextTemplatesWidget(object):
         TextTemplatesWidget.setWindowTitle(_translate("TextTemplatesWidget", "TextTemplatesWidget"))
         self.cifKeyLabel.setText(_translate("TextTemplatesWidget", "CIF key:"))
         self.combinedTestGroupBox.setTitle(_translate("TextTemplatesWidget", "Combined text"))
-        self.plainTextEdit.setProperty("placeholderText", _translate("TextTemplatesWidget", "The text of the selected templates is added here in selection order"))
+        self.plainTextEdit.setPlaceholderText(_translate("TextTemplatesWidget", "The text of the selected templates is added here in selection order"))
         self.applyTextPushButton.setText(_translate("TextTemplatesWidget", "Apply Text"))
         self.cancelTextPushButton.setText(_translate("TextTemplatesWidget", "Cancel"))
         self.TemplatesListGroupBox.setTitle(_translate("TextTemplatesWidget", "Select one or more templates"))

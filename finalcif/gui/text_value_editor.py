@@ -1,7 +1,6 @@
 import sys
 from typing import Tuple, List, Union
 
-from PyQt5 import QtGui
 from PyQt5.QtCore import QSize, Qt, pyqtSignal
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QCheckBox, QApplication, QPlainTextEdit, \
     QListWidgetItem, QVBoxLayout, QLabel
@@ -66,14 +65,20 @@ class MyTextTemplateEdit(QWidget):
         self.ui = text_templates.Ui_TextTemplatesWidget()
         self.ui.setupUi(self)
         self.ui.cancelTextPushButton.clicked.connect(self._on_backbutton_clicked)
+        if not self.ui.templatesListWidget.count():
+            self.add_more_fiels()
 
-    def _on_backbutton_clicked(self):
+    def _on_backbutton_clicked(self) -> None:
         self.ui.templatesListWidget.clear()
 
     def add_textfields(self, text_list: Union[List, Tuple]) -> None:
+        self.ui.templatesListWidget.clear()
         if text_list:
             for text in text_list:
                 self.add_one_textfield(text)
+        self.add_more_fiels()
+
+    def add_more_fiels(self):
         for empty in ('',) * 20:
             self.add_one_textfield(empty)
 
@@ -96,7 +101,7 @@ class MyTextTemplateEdit(QWidget):
                 texts.append(txt)
         return texts
 
-    def clear_fields(self):
+    def clear_fields(self) -> None:
         self.ui.templatesListWidget.clear()
         self.ui.cifKeyLineEdit.clear()
         self.ui.plainTextEdit.clear()
@@ -105,6 +110,6 @@ class MyTextTemplateEdit(QWidget):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = MyTextTemplateEdit()
-    #window.add_textfields(txts)
+    # window.add_textfields(txts)
     window.show()
     sys.exit(app.exec_())
