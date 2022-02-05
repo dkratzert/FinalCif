@@ -1,0 +1,313 @@
+data_mo_1558
+_space_group_crystal_system        'monoclinic'
+_space_group_IT_number             14
+_space_group_name_H-M_alt          'P 1 21/n 1'
+_space_group_name_Hall             '-P 2ybc (x-z,y,z)'
+loop_
+  _space_group_symop_id
+  _space_group_symop_operation_xyz
+ 1 x,y,z
+ 2 -x+1/2,y+1/2,-z+1/2
+ 3 -x,-y,-z
+ 4 x-1/2,-y-1/2,z-1/2
+
+_symmetry_Int_Tables_number        14
+_cell_length_a                     10.3975(13)
+_cell_length_b                     7.4202(5)
+_cell_length_c                     34.484(4)
+_cell_angle_alpha                  90
+_cell_angle_beta                   94.290(3)
+_cell_angle_gamma                  90
+_cell_volume                       2653.1(5)
+_cell_formula_units_Z              4
+_cell_measurement_reflns_used      9490
+_cell_measurement_temperature      100.00
+_cell_measurement_theta_max        32.136
+_cell_measurement_theta_min        2.369
+_exptl_absorpt_coefficient_mu      0.078
+_exptl_absorpt_correction_T_max    0.8880
+_exptl_absorpt_correction_T_min    0.8667
+_exptl_absorpt_correction_type     multi-scan
+_exptl_absorpt_process_details
+;
+SADABS-2016/2 (Bruker,2016/2) was used for absorption correction.
+wR2(int) was 0.1028 before and 0.0402 after correction.
+The Ratio of minimum to maximum transmission is 0.9760.
+The \l/2 correction factor is Not present.
+;
+_refine_special_details
+;
+Refinement using NoSpherA2, an implementation of
+NOn-SPHERical Atom-form-factors in Olex2.
+Please cite:
+F. Kleemiss et al. Chem. Sci. DOI 10.1039/D0SC05526C - 2021
+NoSpherA2 implementation of HAR makes use of
+tailor-made aspherical atomic form factors calculated
+on-the-fly from a Hirshfeld-partitioned electron density (ED) - not from
+spherical-atom form factors.
+
+The ED is calculated from a gaussian basis set single determinant SCF
+wavefunction - either Hartree-Fock or DFT using selected funtionals
+ - for a fragment of the crystal.
+This fragment can be embedded in an electrostatic crystal field by employing cluster charges
+or modelled using implicit solvation models, depending on the software used.
+The following options were used:
+   SOFTWARE:       ORCA
+   PARTITIONING:   NoSpherA2
+   INT ACCURACY:   Normal
+   METHOD:         B3LYP
+   BASIS SET:      def2-TZVP
+   CHARGE:         0
+   MULTIPLICITY:   1
+   DATE:           2099-99-99_99-99-99
+;
+_olex2_refinement_description
+;
+1. Fixed Uiso
+ At 1.2 times of:
+  All C(H) groups, All C(H,H) groups
+ At 1.5 times of:
+  All C(H,H,H) groups
+;
+loop_
+  _atom_site_label
+  _atom_site_type_symbol
+  _atom_site_fract_x
+  _atom_site_fract_y
+  _atom_site_fract_z
+  _atom_site_U_iso_or_equiv
+  _atom_site_adp_type
+  _atom_site_occupancy
+  _atom_site_refinement_flags_posn
+ O1 O 0.282284(16) 0.56940(2) 0.869432(5) 0.02037(4) Uani 1.000000 .
+ O2 O 0.062112(15) 0.30603(2) 0.530738(4) 0.01785(3) Uani 1.000000 .
+ C1 C 0.40066(2) 0.50730(3) 0.883191(6) 0.01875(5) Uani 1.000000 .
+ C2 C 0.49495(2) 0.53787(3) 0.857264(6) 0.01634(4) Uani 1.000000 .
+ C3 C 0.62657(2) 0.50191(3) 0.870807(6) 0.01664(4) Uani 1.000000 .
+ C4 C 0.73551(2) 0.56137(3) 0.851994(7) 0.01843(5) Uani 1.000000 .
+ H4 H 0.7217(3) 0.6427(4) 0.82624(8) 0.0343(8) Uani 1.000000 .
+ C5 C 0.85910(3) 0.52549(3) 0.867305(7) 0.02213(5) Uani 1.000000 .
+ H5 H 0.9393(3) 0.5754(4) 0.85279(9) 0.0420(9) Uani 1.000000 .
+
+loop_
+  _atom_site_aniso_label
+  _atom_site_aniso_U_11
+  _atom_site_aniso_U_22
+  _atom_site_aniso_U_33
+  _atom_site_aniso_U_12
+  _atom_site_aniso_U_13
+  _atom_site_aniso_U_23
+ O1 0.02156(8) 0.02039(8) 0.01941(8) -0.00135(7) 0.00329(6) -0.00172(6)
+ O2 0.01485(8) 0.02357(9) 0.01497(7) -0.00013(6) 0.00002(6) -0.00204(6)
+ C1 0.02403(12) 0.01634(11) 0.01600(10) -0.00117(9) 0.00239(9) -0.00039(9)
+ C2 0.02087(11) 0.01409(10) 0.01383(10) 0.00030(8) -0.00013(8) -0.00053(8)
+ C3 0.02205(12) 0.01371(10) 0.01373(10) 0.00151(9) -0.00138(8) -0.00065(8)
+ C4 0.02055(12) 0.01880(11) 0.01548(10) 0.00206(9) -0.00161(9) -0.00045(9)
+ H4 0.032(2) 0.043(2) 0.0275(18) 0.0003(16) -0.0012(15) 0.0138(16)
+ C5 0.02137(13) 0.02417(13) 0.02020(11) 0.00379(10) -0.00264(10) -0.00147(10)
+ H5 0.034(2) 0.052(2) 0.040(2) 0.0046(18) 0.0050(17) 0.0040(18)
+
+loop_
+  _geom_bond_atom_site_label_1
+  _geom_bond_atom_site_label_2
+  _geom_bond_distance
+  _geom_bond_site_symmetry_2
+  _geom_bond_publ_flag
+ O1 C1 1.3656(3) . ?
+ O1 C20 1.3652(3) . ?
+ O2 C32 1.3583(3) . ?
+ O2 C35 1.4318(3) . ?
+ C1 C2 1.3939(3) . ?
+ C1 C10 1.4011(3) . ?
+ C2 C3 1.4376(3) . ?
+ C2 C11 1.4617(3) . ?
+ C3 C4 1.4172(3) . ?
+ C3 C8 1.4331(3) . ?
+ C4 H4 1.074(3) . ?
+ C4 C5 1.3782(4) . ?
+ C5 H5 1.070(3) . ?
+ C5 C6 1.4098(4) . ?
+
+loop_
+  _geom_angle_atom_site_label_1
+  _geom_angle_atom_site_label_2
+  _geom_angle_atom_site_label_3
+  _geom_angle
+  _geom_angle_site_symmetry_1
+  _geom_angle_site_symmetry_3
+  _geom_angle_publ_flag
+ C20 O1 C1 105.526(18) . . ?
+ C35 O2 C32 117.539(17) . . ?
+ C2 C1 O1 112.401(19) . . ?
+ C10 C1 O1 122.03(2) . . ?
+ C10 C1 C2 125.57(2) . . ?
+ C3 C2 C1 117.36(2) . . ?
+ C11 C2 C1 104.74(2) . . ?
+ C11 C2 C3 137.66(2) . . ?
+ C4 C3 C2 124.58(2) . . ?
+
+loop_
+  _geom_torsion_atom_site_label_1
+  _geom_torsion_atom_site_label_2
+  _geom_torsion_atom_site_label_3
+  _geom_torsion_atom_site_label_4
+  _geom_torsion
+  _geom_torsion_site_symmetry_1
+  _geom_torsion_site_symmetry_2
+  _geom_torsion_site_symmetry_3
+  _geom_torsion_site_symmetry_4
+  _geom_torsion_publ_flag
+ O1 C1 C2 C3 171.320(17) . . . . ?
+ O1 C1 C2 C11 -3.96(2) . . . . ?
+ O1 C1 C10 C9 -177.46(2) . . . . ?
+ O1 C20 C11 C2 -5.96(2) . . . . ?
+ O1 C20 C11 C12 170.974(17) . . . . ?
+ O1 C20 C19 C18 -177.86(2) . . . . ?
+ O2 C32 C31 C30 -178.76(2) . . . . ?
+ O2 C32 C33 C34 179.69(2) . . . . ?
+
+loop_
+  _diffrn_refln_index_h
+  _diffrn_refln_index_k
+  _diffrn_refln_index_l
+  _diffrn_refln_intensity_net
+  _diffrn_refln_intensity_u
+  _diffrn_refln_scale_group_code
+ -1 0 0 0.00669 0.01776 9
+ 1 0 0 0.04354 0.02881 8
+ -1 0 0 0.15057 0.04458 9
+ 1 0 0 0.00904 0.02042 4
+ -1 0 0 -0.0084 0.01487 3
+ -1 0 0 0.00344 0.01955 2
+ 1 0 0 0.0049 0.01558 5
+ 1 0 0 0.00944 0.02145 6
+ 1 0 0 0.03597 0.03155 7
+ 1 0 0 -0.011 0.02414 2
+ 1 0 0 0.04757 0.02802 9
+ -2 0 0 135.641 1.84483 9
+ 2 0 0 138.692 2.04788 7
+ -2 0 0 139.258 1.85432 4
+ 2 0 0 137.498 1.81194 6
+ 2 0 0 132.049 1.796 9
+ 2 0 0 139.186 1.84897 9
+ -2 0 0 133.819 1.80378 6
+
+_iucr_refine_fcf_details
+;
+data_mo_1558
+_computing_structure_refinement   'olex2.refine 1.5 (Bourhis et al., 2015)'
+_shelx_refln_list_code            4
+loop_
+  _space_group_symop_id
+  _space_group_symop_operation_xyz
+  1  x,y,z
+  2  -x+1/2,y+1/2,-z+1/2
+  3  -x,-y,-z
+  4  x-1/2,-y-1/2,z-1/2
+
+_space_group_crystal_system       monoclinic
+_space_group_IT_number            14
+_space_group_name_H-M_alt         'P 1 21/n 1'
+_space_group_name_Hall            '-P 2ybc (x-z,y,z)'
+_symmetry_space_group_name_H-M    'P 1 21/n 1'
+_symmetry_space_group_name_Hall   '-P 2ybc (x-z,y,z)'
+_symmetry_Int_Tables_number       14
+_cell_length_a                    10.3975(13)
+_cell_length_b                    7.4202(5)
+_cell_length_c                    34.484(4)
+_cell_angle_alpha                 90
+_cell_angle_beta                  94.290(3)
+_cell_angle_gamma                 90
+_cell_volume                      2653.1(5)
+loop_
+  _refln_index_h
+  _refln_index_k
+  _refln_index_l
+  _refln_F_squared_calc
+  _refln_F_squared_meas
+  _refln_F_squared_sigma
+  _refln_F_squared_weight
+  _refln_observed_status
+-15 0 -9 18.735 15.993 6.847 4.802 o
+-15 0 -7 3.518 7.088 7.173 4.404 o
+-15 0 -5 2.884 11.915 6.400 5.525 o
+-15 0 -3 4.704 6.101 6.405 5.519 o
+-15 0 -1 41.380 41.873 9.379 2.553 o
+-15 0 1 117.321 77.532 11.954 1.561 o
+-15 0 3 5.921 3.205 5.516 7.436 o
+-15 0 5 0.127 -4.648 4.746 10.080 o
+-15 0 7 8.948 0.281 5.621 7.154 o
+-15 0 9 1.815 5.214 6.036 6.221 o
+-15 0 11 57.791 46.037 9.316 2.579 o
+-15 1 -6 98.744 84.155 12.736 1.380 o
+-15 1 -5 15.805 14.160 5.977 6.294 o
+-15 1 -4 9.060 9.869 5.250 8.174 o
+-15 1 -3 32.414 15.114 5.802 6.622 o
+-15 1 -2 87.936 80.161 10.457 2.038 o
+-15 1 -1 59.286 58.139 7.597 3.840 o
+-15 1 0 5.655 29.235 12.570 1.434 o
+-15 1 1 49.988 37.353 7.661 3.799 o
+-15 1 2 8.482 -0.171 4.415 11.572 o
+-15 1 3 13.848 1.618 4.291 12.181 o
+-15 1 4 2.909 0.053 4.282 12.357 o
+-15 1 5 28.859 34.741 6.981 4.592 o
+-15 1 6 9.888 13.650 5.155 8.462 o
+-15 1 7 11.488 8.524 6.877 4.777 o
+-15 1 8 0.408 2.622 5.439 7.670 o
+-15 1 9 16.021 18.155 3.946 14.227 o
+-15 1 10 1.835 7.279 3.011 24.824 o
+-15 1 11 0.007 5.944 3.493 18.546 o
+-15 1 12 59.695 62.555 9.253 2.608 o
+-15 1 13 13.260 29.863 7.630 3.871 o
+-15 1 14 1.628 16.750 6.808 4.883 o
+-15 1 15 19.125 20.608 7.218 4.321 o
+-15 1 16 8.747 15.579 6.554 5.256 o
+-15 2 -8 25.784 25.271 11.841 1.613 o
+-15 2 -3 44.955 20.614 8.561 3.062 o
+-15 2 -2 0.031 -10.215 4.697 10.294 o
+;
+
+_iucr_refine_instructions_details
+;
+TITL mo_1558 in P2(1)/n
+CELL 0.71073 10.3975 7.4202 34.4844 90 94.29 90
+ZERR 4 0.0013 0.0005 0.0039 0 0.003 0
+LATT 1
+SYMM 0.5-X,0.5+Y,0.5-Z
+SFAC C H O
+UNIT 1 2 8
+
+L.S. 12
+PLAN  5
+SIZE 0.196 0.215 0.398
+TEMP -173.15
+CONF
+BOND 
+list 4
+MORE -1
+BOND $H
+fmap 2
+acta 
+OMIT -1 0 1
+WGHT 0.003771 0.023145
+FVAR 0.30419
+REM <olex2.extras>
+REM <HklSrc "%.\\mo_1558.hkl">
+REM </olex2.extras>
+
+O1    3     0.28228  0.56940  0.86943  11.00000  0.02156  0.02039  0.01941 =
+ -0.00172  0.00329 -0.00135 
+O2    3     0.06211  0.30603  0.53074  11.00000  0.01485  0.02357  0.01497 =
+ -0.00204  0.00002 -0.00013 
+C1    1     0.40066  0.50730  0.88319  11.00000  0.02403  0.01634  0.01600 =
+ -0.00039  0.00239 -0.00117 
+C2    1     0.49495  0.53787  0.85726  11.00000  0.02087  0.01409  0.01383 =
+ -0.00053 -0.00013  0.00030 
+C3    1     0.62657  0.50191  0.87081  11.00000  0.02205  0.01371  0.01373 =
+ -0.00065 -0.00138  0.00151 
+C4    1     0.73551  0.56137  0.85199  11.00000  0.02055  0.01880  0.01548 =
+ -0.00045 -0.00161  0.00206 
+H4    2     0.72172  0.64266  0.82624  11.00000  0.03174  0.04298  0.02751 =
+ 0.01378 -0.00121  0.00030   
+;
+_olex2_submission_special_instructions  'No special instructions were received'
