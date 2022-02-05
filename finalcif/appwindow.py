@@ -614,6 +614,7 @@ class AppWindow(QMainWindow):
         self.ui.MainStackedWidget.got_to_main_page()
         self.ui.cif_main_table.scrollToTop()
         self.ui.TemplatesStackedWidget.setCurrentIndex(0)
+        self.ui.cif_main_table.resizeRowsToContents()
 
     def back_to_main_noload(self):
         """
