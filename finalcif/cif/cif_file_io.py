@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Dict, List, Tuple, Union, Generator, Type
 
 import gemmi
-from gemmi.cif import as_string, is_null, Block, Document, Loop
+from gemmi.cif import as_string, Document, Loop
 from shelxfile import Shelxfile
 
 from finalcif.cif.cif_order import order, special_keys
@@ -42,7 +42,29 @@ class CifContainer():
             self.doc.add_new_block(new_block)
         else:
             self.doc = self.read_file(str(self.fileobj.resolve(strict=True)))
-        self.block: Block = self.doc.sole_block()
+        self.last_block = 0
+        self.blocks = []
+        for block in self.doc:
+            self.blocks.append(block)
+        self.block = self.blocks[0]
+        # self.block: Block = self.doc.sole_block()
+        # add next_block(), previous_block() to cycle through blocks with arrows beside the _data field
+        # From here on, extract method for each block change:
+        self._on_load()
+
+    def next_block(self):
+        if len(self.blocks) > 1 and len(self.blocks) > (self.last_block + 1):
+            self.block = self.blocks[self.last_block + 1]
+            self.last_block += 1
+            self._on_load()
+
+    def previous_block(self):
+        if len(self.blocks) > 1 and self.last_block > 0:
+            self.block = self.blocks[self.last_block - 1]
+            self.last_block -= 1
+            self._on_load()
+
+    def _on_load(self):
         # will not ok with non-ascii characters in the res file:
         self.chars_ok = True
         d = DSRFind(self.res_file_data)
@@ -506,8 +528,8 @@ class CifContainer():
         u_eq = self.block.find_loop('_atom_site_U_iso_or_equiv')
         atom = namedtuple('Atom', ('label', 'type', 'x', 'y', 'z', 'part', 'occ', 'u_eq'))
         for label, type, x, y, z, part, occ, u_eq in zip(labels, types, x, y, z,
-                                                         part if part else ('0',)*len(labels),
-                                                         occ if occ else ('1.000000',)*len(labels),
+                                                         part if part else ('0',) * len(labels),
+                                                         occ if occ else ('1.000000',) * len(labels),
                                                          u_eq):
             if without_h and self.ishydrogen(label):
                 continue

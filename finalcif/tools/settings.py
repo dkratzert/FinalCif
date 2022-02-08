@@ -56,6 +56,7 @@ class FinalCifSettings():
         Saves the current work directory of the Program.
         :param dir: Directory as string
         """
+        print('current', dir)
         self._save_settings_value(dir, 'dir', "WorkDir")
 
     def load_last_workdir(self) -> str:

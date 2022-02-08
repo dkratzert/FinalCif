@@ -164,6 +164,20 @@
              </item>
             </widget>
            </item>
+           <item>
+            <widget class="QPushButton" name="previousPB">
+             <property name="text">
+              <string>prev</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="nextPB">
+             <property name="text">
+              <string>next</string>
+             </property>
+            </widget>
+           </item>
           </layout>
          </widget>
         </item>

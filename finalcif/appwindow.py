@@ -1156,15 +1156,11 @@ class AppWindow(QMainWindow):
         """
         Opens the cif file and fills information into the main table.
         """
-        self.status_bar.show_message('')
-        with suppress(AttributeError):
-            self.ui.moleculeLayout.removeWidget(self.view)
-        # Set to empty state before loading:
-        self.missing_data = set()
-        # clean table and vheader before loading:
-        self.ui.cif_main_table.delete_content()
+        self.ui.nextPB.clicked.connect(self._on_next)
+        self.ui.previousPB.clicked.connect(self._on_previous)
+        self._clear_state_before_block_load()
         if not filepath:
-            filepath = self.get_file_from_dialog()
+            filepath = Path(cif_file_open_dialog())
             if not filepath.is_file():
                 return
         self.set_path_display_in_file_selector(str(filepath))
@@ -1191,8 +1187,33 @@ class AppWindow(QMainWindow):
             return
         if not self.cif.chars_ok:
             self.warn_about_bad_cif()
+        # Do this only when sure we can load the file:
+        self.save_current_recent_files_list(filepath)
+        self._load_block()
+        self.cif.last_block = 0
+
+    def _clear_state_before_block_load(self):
+        self.status_bar.show_message('')
+        with suppress(AttributeError):
+            self.ui.moleculeLayout.removeWidget(self.view)
+        # Set to empty state before loading:
+        self.missing_data = set()
+        # clean table and vheader before loading:
+        self.ui.cif_main_table.delete_content()
+
+    def _on_next(self):
+        self._clear_state_before_block_load()
+        self.cif.next_block()
+        self._load_block()
+
+    def _on_previous(self):
+        self._clear_state_before_block_load()
+        self.cif.previous_block()
+        self._load_block()
+
+    def _load_block(self):
         self.check_cif_for_missing_values_before_really_open_it()
-        self.go_into_cifs_directory(filepath)
+        # self.go_into_cifs_directory(filepath)
         self.final_cif_file_name = Path(strip_finalcif_of_name(str(self.cif.fileobj.stem)) + '-finalcif.cif')
         try:
             self.fill_cif_table()
@@ -1201,8 +1222,6 @@ class AppWindow(QMainWindow):
             # raise
             # unable_to_open_message(filepath, not_ok)
             raise
-        # Do this only when sure we can load the file:
-        self.save_current_recent_files_list(filepath)
         self.load_recent_cifs_list()
         self.make_loops_tables()
         # Initial button states:
@@ -1252,13 +1271,13 @@ class AppWindow(QMainWindow):
         self.ui.LoopsPushButton.setEnabled(True)
 
     def get_file_from_dialog(self, change_into_workdir=True) -> Union[Path, None]:
-        if change_into_workdir:
-            self.set_last_workdir()
-        fp = cif_file_open_dialog()
+        # if change_into_workdir:
+        #    self.set_last_workdir()
+        fp = Path(cif_file_open_dialog(last_dir=self.get_last_workdir()))
         filepath = Path(fp)
-        if change_into_workdir:
-            # The warning about inconsistent temperature:
-            self.temperature_warning_displayed = False
+        # if change_into_workdir:
+        # The warning about inconsistent temperature:
+        self.temperature_warning_displayed = False
         return filepath
 
     def go_into_cifs_directory(self, filepath):
@@ -1280,14 +1299,15 @@ class AppWindow(QMainWindow):
                 show_general_warning(
                     "Attention CIF line {}: '{}' has no value.".format(errlist[1], errlist[2].split()[0]))
 
-    def set_last_workdir(self):
+    def get_last_workdir(self):
         try:
             # loading last working directory:
             last = self.settings.load_last_workdir()
         except TypeError:
             last = ''
         if last and Path(last).exists():
-            os.chdir(last)
+            return last
+        return ''
 
     def set_path_display_in_file_selector(self, fname: str) -> None:
         if os.name == 'nt':
@@ -1642,8 +1662,8 @@ class AppWindow(QMainWindow):
             color = None
             if key in self.settings.list_saved_items('text_templates'):
                 color = light_blue
-            self.ui.cif_main_table.setText(row=row_num, key=key, column=COL_EDIT, color=color,
-                                           txt=strval if at_start else '')
+            if at_start:
+                self.ui.cif_main_table.setText(row=row_num, key=key, column=COL_EDIT, color=color, txt=strval)
         head_item_key = MyTableWidgetItem(key)
         if not key == "These below are already in:":
             self.ui.cif_main_table.setVerticalHeaderItem(row_num, head_item_key)
