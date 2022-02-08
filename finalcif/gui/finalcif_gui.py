@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file './finalcif/gui/finalcif_gui.ui'
+# Form implementation generated from reading ui file '/Users/daniel/Documents/GitHub/FinalCif/finalcif/gui/finalcif_gui.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.6
 #
@@ -77,6 +77,12 @@ class Ui_FinalCifWindow(object):
         self.RecentComboBox.setObjectName("RecentComboBox")
         self.RecentComboBox.addItem("")
         self.verticalLayout_29.addWidget(self.RecentComboBox)
+        self.previousPB = QtWidgets.QPushButton(self.SelectCifFileGroupBox)
+        self.previousPB.setObjectName("previousPB")
+        self.verticalLayout_29.addWidget(self.previousPB)
+        self.nextPB = QtWidgets.QPushButton(self.SelectCifFileGroupBox)
+        self.nextPB.setObjectName("nextPB")
+        self.verticalLayout_29.addWidget(self.nextPB)
         self.verticalLayout_5.addWidget(self.SelectCifFileGroupBox)
         self.TemplatesStackedWidget = QtWidgets.QStackedWidget(self.LeftFrame)
         self.TemplatesStackedWidget.setLineWidth(1)
@@ -1741,6 +1747,8 @@ class Ui_FinalCifWindow(object):
         self.SelectCif_PushButton.setText(_translate("FinalCifWindow", "Select File"))
         self.RecentComboBox.setCurrentText(_translate("FinalCifWindow", "Recent Files"))
         self.RecentComboBox.setItemText(0, _translate("FinalCifWindow", "Recent Files"))
+        self.previousPB.setText(_translate("FinalCifWindow", "prev"))
+        self.nextPB.setText(_translate("FinalCifWindow", "next"))
         self.EquipmentGroupBox.setTitle(_translate("FinalCifWindow", "Equipment and Author Templates"))
         self.EquipmentTemplatesListWidget.setToolTip(_translate("FinalCifWindow", "<html><head/><body><p>Each entry can have a list of key/value pairs. For example a Diffractometer model can have a list of features.</p></body></html>"))
         self.NewEquipmentTemplateButton.setText(_translate("FinalCifWindow", "New Template"))
