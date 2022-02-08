@@ -3923,7 +3923,7 @@ please add a publication author:</string>
            <number>20</number>
           </property>
           <property name="frame">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
          </widget>
         </item>

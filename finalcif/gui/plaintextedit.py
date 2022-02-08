@@ -69,7 +69,7 @@ class MyQPlainTextEdit(QPlainTextEdit):
         """
         Set background color of the text field.
         """
-        self.setStyleSheet("QPlainTextEdit {{background-color: {};}}".format(str(color.name())))
+        self.setStyleSheet("background-color: {};".format(str(color.name())))
         # No idea why tis does not work
         # pal = self.palette()
         # pal.setColor(QPalette.Base, color)
