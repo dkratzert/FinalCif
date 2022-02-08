@@ -42,40 +42,24 @@ class CifContainer():
             self.doc.add_new_block(new_block)
         else:
             self.doc = self.read_file(str(self.fileobj.resolve(strict=True)))
-        self.last_block = 0
         self.blocks: List[gemmi.cif.Block] = []
         for block in self.doc:
             self.blocks.append(block)
+        # Starting with first block, but can use others with subsequent self._onload():
         self.block = self.blocks[0]
-        # self.block: Block = self.doc.sole_block()
-        # add next_block(), previous_block() to cycle through blocks with arrows beside the _data field
-        # From here on, extract method for each block change:
         self._on_load()
 
     def load_this_block(self, index: int) -> None:
         self.block = self.blocks[index]
         self._on_load()
 
-    def next_block(self) -> None:
-        if len(self.blocks) > 1 and len(self.blocks) > (self.last_block + 1):
-            self.block = self.blocks[self.last_block + 1]
-            self.last_block += 1
-            self._on_load()
-
-    def previous_block(self) -> None:
-        if len(self.blocks) > 1 and self.last_block > 0:
-            self.block = self.blocks[self.last_block - 1]
-            self.last_block -= 1
-            self._on_load()
-
     def _on_load(self) -> None:
         # will not ok with non-ascii characters in the res file:
         self.chars_ok = True
-        d = DSRFind(self.res_file_data)
         self.doc.check_for_duplicates()
         self.hkl_extra_info = self._abs_hkl_details()
         self.order = order
-        self.dsr_used = d.dsr_used
+        self.dsr_used = DSRFind(self.res_file_data).dsr_used
         self.atomic_struct: gemmi.SmallStructure = gemmi.make_small_structure_from_block(self.block)
         # A dictionary to convert Atom names like 'C1_2' or 'Ga3' into Element names like 'C' or 'Ga'
         self._name2elements = dict(

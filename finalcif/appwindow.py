@@ -1192,7 +1192,6 @@ class AppWindow(QMainWindow):
         self.save_current_recent_files_list(filepath)
         self._load_block(0)
         self.add_data_names_to_combobox()
-        self.cif.last_block = 0
         self.ui.cif_main_table.resizeRowsToContents()
 
     def add_data_names_to_combobox(self):
@@ -1223,32 +1222,13 @@ class AppWindow(QMainWindow):
             raise
         self.load_recent_cifs_list()
         self.make_loops_tables()
-        # Initial button states:
-        self.ui.CheckcifButton.setEnabled(True)
-        self.ui.CheckcifHTMLOnlineButton.setEnabled(True)
-        self.ui.CheckcifPDFOnlineButton.setEnabled(True)
-        self.ui.SaveCifButton.setEnabled(True)
-        self.ui.ExploreDirButton.setEnabled(True)
         if self.cif:
-            if ShredCIF(cif=self.cif, ui=self.ui).cif_has_hkl_or_res_file():
-                self.ui.ShredCifButton.setEnabled(True)
-            else:
-                self.ui.ShredCifButton.setDisabled(True)
-            curdir = str(self.cif.fileobj.resolve().parent)
+            self.set_shredcif_state()
             # saving current cif dir as last working directory:
-            self.settings.save_current_dir(curdir)
+            self.settings.save_current_dir(str(self.cif.fileobj.resolve().parent))
             self.enable_buttons()
-            try:
-                self.ui.Spacegroup_top_LineEdit.setText(
-                    SpaceGroups().to_html(self.cif.space_group))
-            except Exception as e:
-                print('Space group error:', str(e))
-                self.ui.Spacegroup_top_LineEdit.setText(self.cif.space_group)
-            try:
-                self.ui.SumFormMainLineEdit.setText(sum_formula_to_html(formula_str_to_dict(
-                    self.cif['_chemical_formula_sum'].strip(" '"))))
-            except Exception:
-                self.ui.SumFormMainLineEdit.setText(self.cif['_chemical_formula_sum'].strip(" '"))
+            self.fill_space_group_lineedit()
+            self.fill_sum_formula_lineedit()
             self.ui.CCDCNumLineEdit.setText(self.cif['_database_code_depnum_ccdc_archive'])
             self.ui.CheckcifPlaintextEdit.clear()
             self.ui.TemplatesStackedWidget.setCurrentIndex(0)
@@ -1256,16 +1236,40 @@ class AppWindow(QMainWindow):
             if not self.ui.MainStackedWidget.on_checkcif_page():
                 self.ui.MainStackedWidget.got_to_main_page()
             self.deposit.cif = self.cif
-            # self.ui.cif_main_table.itemChanged.connect(lambda: self.ui.cif_main_table.resizeRowsToContents())
+
+    def fill_sum_formula_lineedit(self):
+        try:
+            self.ui.SumFormMainLineEdit.setText(sum_formula_to_html(formula_str_to_dict(
+                self.cif['_chemical_formula_sum'].strip(" '"))))
+        except Exception:
+            self.ui.SumFormMainLineEdit.setText(self.cif['_chemical_formula_sum'].strip(" '"))
+
+    def fill_space_group_lineedit(self):
+        try:
+            self.ui.Spacegroup_top_LineEdit.setText(
+                SpaceGroups().to_html(self.cif.space_group))
+        except Exception as e:
+            print('Space group error:', str(e))
+            self.ui.Spacegroup_top_LineEdit.setText(self.cif.space_group)
+
+    def set_shredcif_state(self):
+        if ShredCIF(cif=self.cif, ui=self.ui).cif_has_hkl_or_res_file():
+            self.ui.ShredCifButton.setEnabled(True)
+        else:
+            self.ui.ShredCifButton.setDisabled(True)
 
     def enable_buttons(self):
+        self.ui.CheckcifButton.setEnabled(True)
+        self.ui.CheckcifHTMLOnlineButton.setEnabled(True)
+        self.ui.CheckcifPDFOnlineButton.setEnabled(True)
+        self.ui.SaveCifButton.setEnabled(True)
+        self.ui.ExploreDirButton.setEnabled(True)
         self.ui.DetailsPushButton.setEnabled(True)
         self.ui.SourcesPushButton.setEnabled(True)
         self.ui.OptionsPushButton.setEnabled(True)
         self.ui.ImportCifPushButton.setEnabled(True)
         self.ui.CODpushButton.setEnabled(True)
         self.ui.CCDCpushButton.setEnabled(True)
-        self.ui.ShredCifButton.setEnabled(True)
         self.ui.LoopsPushButton.setEnabled(True)
 
     def get_file_from_dialog(self, change_into_workdir=True) -> Union[Path, None]:
@@ -1383,7 +1387,7 @@ class AppWindow(QMainWindow):
         peak = self.cif['_refine_diff_density_max']
         if peak:
             self.ui.peakLineEdit.setText("{} / {}".format(peak, self.cif['_refine_diff_density_min']))
-        if 'darwin' in sys.platform:
+        if 'darwin' in sys.platform and getattr(sys, 'frozen', False):
             self.ui.moleculeLayout.addWidget(QLabel('FinalCif is currently unable to draw molecules in MACOS'))
             print('Do not draw molecule on MACOS')
             # Currently, the QWebEngineView doesn't work  on macos due to pyinstaller issues.
@@ -1586,7 +1590,10 @@ class AppWindow(QMainWindow):
             show_res_checksum_warning()
         if not self.cif.test_hkl_checksum():
             show_hkl_checksum_warning()
-        self.get_data_sources()
+        if not len(self.cif.blocks) > 0:
+            self.get_data_sources()
+        else:
+            self.refresh_combo_boxes()
         self.erase_disabled_items()
         self.ui.cif_main_table.setCurrentItem(None)
 
