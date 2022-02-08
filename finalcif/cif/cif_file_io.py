@@ -43,7 +43,7 @@ class CifContainer():
         else:
             self.doc = self.read_file(str(self.fileobj.resolve(strict=True)))
         self.last_block = 0
-        self.blocks = []
+        self.blocks: List[gemmi.cif.Block] = []
         for block in self.doc:
             self.blocks.append(block)
         self.block = self.blocks[0]
@@ -52,19 +52,23 @@ class CifContainer():
         # From here on, extract method for each block change:
         self._on_load()
 
-    def next_block(self):
+    def load_this_block(self, index: int) -> None:
+        self.block = self.blocks[index]
+        self._on_load()
+
+    def next_block(self) -> None:
         if len(self.blocks) > 1 and len(self.blocks) > (self.last_block + 1):
             self.block = self.blocks[self.last_block + 1]
             self.last_block += 1
             self._on_load()
 
-    def previous_block(self):
+    def previous_block(self) -> None:
         if len(self.blocks) > 1 and self.last_block > 0:
             self.block = self.blocks[self.last_block - 1]
             self.last_block -= 1
             self._on_load()
 
-    def _on_load(self):
+    def _on_load(self) -> None:
         # will not ok with non-ascii characters in the res file:
         self.chars_ok = True
         d = DSRFind(self.res_file_data)
@@ -79,7 +83,7 @@ class CifContainer():
                 [x.upper() for x in self.block.find_loop('_atom_site_type_symbol')]))
         self.check_hkl_min_max()
 
-    def check_hkl_min_max(self):
+    def check_hkl_min_max(self) -> None:
         if not all([self['_diffrn_reflns_limit_h_min'], self['_diffrn_reflns_limit_h_max'],
                     self['_diffrn_reflns_limit_k_min'], self['_diffrn_reflns_limit_k_max'],
                     self['_diffrn_reflns_limit_l_min'], self['_diffrn_reflns_limit_l_max']]) and self.hkl_file:

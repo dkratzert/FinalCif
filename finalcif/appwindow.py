@@ -225,6 +225,7 @@ class AppWindow(QMainWindow):
         """
         this method connects all signals to slots. Only a few mighjt be defined elsewere.
         """
+        self.ui.datanameComboBox.currentIndexChanged.connect(self._load_block)
         ## main
         self.ui.BackPushButton.clicked.connect(self.back_to_main)
         self.ui.BackFromDepositPushButton.clicked.connect(self.back_to_main)
@@ -1019,7 +1020,7 @@ class AppWindow(QMainWindow):
         if not self.cif:
             # No file is opened
             return None
-        self.cif.rename_data_name(''.join(self.ui.datnameLineEdit.text().split(' ')))
+        self.cif.rename_data_name(''.join(self.ui.datanameComboBox.currentText().split(' ')))
         # restore header, otherwise item is not saved:
         table = self.ui.cif_main_table
         table.setCurrentItem(None)  # makes sure also the currently edited item is saved
@@ -1156,8 +1157,6 @@ class AppWindow(QMainWindow):
         """
         Opens the cif file and fills information into the main table.
         """
-        self.ui.nextPB.clicked.connect(self._on_next)
-        self.ui.previousPB.clicked.connect(self._on_previous)
         self._clear_state_before_block_load()
         if not filepath:
             filepath = Path(cif_file_open_dialog())
@@ -1189,8 +1188,14 @@ class AppWindow(QMainWindow):
             self.warn_about_bad_cif()
         # Do this only when sure we can load the file:
         self.save_current_recent_files_list(filepath)
-        self._load_block()
+        self._load_block(0)
+        self.add_data_names_to_combobox()
         self.cif.last_block = 0
+        self.ui.cif_main_table.resizeRowsToContents()
+
+    def add_data_names_to_combobox(self):
+        for block in self.cif.blocks:
+            self.ui.datanameComboBox.addItem(block.name)
 
     def _clear_state_before_block_load(self):
         self.status_bar.show_message('')
@@ -1201,17 +1206,9 @@ class AppWindow(QMainWindow):
         # clean table and vheader before loading:
         self.ui.cif_main_table.delete_content()
 
-    def _on_next(self):
+    def _load_block(self, index: int):
         self._clear_state_before_block_load()
-        self.cif.next_block()
-        self._load_block()
-
-    def _on_previous(self):
-        self._clear_state_before_block_load()
-        self.cif.previous_block()
-        self._load_block()
-
-    def _load_block(self):
+        self.cif.load_this_block(index)
         self.check_cif_for_missing_values_before_really_open_it()
         # self.go_into_cifs_directory(filepath)
         self.final_cif_file_name = Path(strip_finalcif_of_name(str(self.cif.fileobj.stem)) + '-finalcif.cif')
@@ -1239,7 +1236,6 @@ class AppWindow(QMainWindow):
             # saving current cif dir as last working directory:
             self.settings.save_current_dir(curdir)
             self.enable_buttons()
-            self.ui.datnameLineEdit.setText(self.cif.block.name)
             try:
                 self.ui.Spacegroup_top_LineEdit.setText(
                     SpaceGroups().to_html(self.cif.space_group))
@@ -1662,8 +1658,8 @@ class AppWindow(QMainWindow):
             color = None
             if key in self.settings.list_saved_items('text_templates'):
                 color = light_blue
-            if at_start:
-                self.ui.cif_main_table.setText(row=row_num, key=key, column=COL_EDIT, color=color, txt=strval)
+            self.ui.cif_main_table.setText(row=row_num, key=key, column=COL_EDIT, color=color,
+                                           txt=strval if at_start else '')
         head_item_key = MyTableWidgetItem(key)
         if not key == "These below are already in:":
             self.ui.cif_main_table.setVerticalHeaderItem(row_num, head_item_key)
