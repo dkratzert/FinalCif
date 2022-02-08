@@ -180,18 +180,19 @@ class CifContainer():
         """
         Brings the current CIF in the specific order of the order list.
         """
-        for key in reversed(self.order):
-            try:
-                self.block.move_item(self.block.get_index(key), 0)
-            except (RuntimeError, ValueError):
-                pass
-                # print('Not in list:', key)
-        # make sure hkl file and res file are at the end if the cif file:
-        for key in special_keys:
-            try:
-                self.block.move_item(self.block.get_index(key), -1)
-            except (RuntimeError, ValueError):
-                continue
+        for block in self.blocks:
+            for key in reversed(self.order):
+                try:
+                    block.move_item(self.block.get_index(key), 0)
+                except (RuntimeError, ValueError):
+                    pass
+                    # print('Not in list:', key)
+            # make sure hkl file and res file are at the end if the cif file:
+            for key in special_keys:
+                try:
+                    block.move_item(self.block.get_index(key), -1)
+                except (RuntimeError, ValueError):
+                    continue
 
     @property
     def res_file_data(self) -> str:
