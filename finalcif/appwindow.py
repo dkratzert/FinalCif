@@ -290,6 +290,7 @@ class AppWindow(QMainWindow):
         self.ui.cif_main_table.textTemplate.connect(self.on_text_template_open)
 
     def on_text_template_open(self, row: int):
+        self.ui.cif_main_table.setCurrentCell(row, COL_EDIT)
         cif_key = self.ui.cif_main_table.vheaderitems[row]
         self.textedit.ui.cifKeyLineEdit.setText(cif_key)
         self.textedit.add_textfields(self.settings.load_settings_list('text_templates', cif_key))
@@ -424,6 +425,7 @@ class AppWindow(QMainWindow):
             self.view.reload()
         with suppress(AttributeError):
             self._savesize()
+        self.ui.cif_main_table.resizeRowsToContents()
 
     def moveEvent(self, a0: QtGui.QMoveEvent) -> None:
         """Is called when the main window moves."""

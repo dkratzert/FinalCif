@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/Users/daniel/Documents/GitHub/FinalCif/finalcif/gui/finalcif_gui.ui'
+# Form implementation generated from reading ui file 'C:\_DEV\GitHub\FinalCif\finalcif\gui\finalcif_gui.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.6
 #
@@ -1606,7 +1606,7 @@ class Ui_FinalCifWindow(object):
         self.datanameComboBox.setInsertPolicy(QtWidgets.QComboBox.InsertAtCurrent)
         self.datanameComboBox.setSizeAdjustPolicy(QtWidgets.QComboBox.AdjustToContents)
         self.datanameComboBox.setMinimumContentsLength(20)
-        self.datanameComboBox.setFrame(False)
+        self.datanameComboBox.setFrame(True)
         self.datanameComboBox.setObjectName("datanameComboBox")
         self.gridLayout_6.addWidget(self.datanameComboBox, 0, 1, 1, 1)
         self.horizontalLayout_4.addWidget(self.splitter)
