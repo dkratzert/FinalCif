@@ -13,7 +13,7 @@ from finalcif.datafiles.utils import get_file_to_parse
 
 
 class SaintListFile():
-    def __init__(self, name_patt: str, direct_name=None):
+    def __init__(self, name_patt: str, directory: Path = None):
         self.cell_reflections = ''
         self.cell_res_min_2t = 0.0
         self.cell_res_max_2t = 0.0
@@ -24,10 +24,10 @@ class SaintListFile():
         self.nsamples = 1
         self.components_firstsample = 1
         self.filename = Path('')
-        if direct_name:
-            self._fileobj = get_file_to_parse(name_pattern=name_patt, fileobj=Path(direct_name))
+        if directory:
+            self._fileobj = get_file_to_parse(name_pattern=name_patt, base_directory=directory)
         else:
-            self._fileobj = get_file_to_parse(name_pattern=name_patt, base_directory='.')
+            self._fileobj = get_file_to_parse(name_pattern=name_patt, base_directory=Path('.'))
         if self._fileobj:
             self.filename = self._fileobj.resolve()
             try:
@@ -131,25 +131,25 @@ class SaintListFile():
 
 
 if __name__ == "__main__":
-    saint = SaintListFile(name_patt='*._ls', direct_name='test-data/TB_fs20_v1_0m._ls')
+    saint = SaintListFile(name_patt='*._ls', directory='test-data/TB_fs20_v1_0m._ls')
     print(saint)
 
     print('#####')
-    s = SaintListFile('*._ls', direct_name='test-data/Esser_JW316_01._ls')
+    s = SaintListFile('*._ls', directory='test-data/Esser_JW316_01._ls')
     print(s)
 
     print('#####')
-    s = SaintListFile('*._ls', direct_name='test-data/test766_0m._ls')
+    s = SaintListFile('*._ls', directory='test-data/test766_0m._ls')
     print(s)
 
     print('#####')
-    s = SaintListFile('*_0[?]m._ls', direct_name=r'D:\GitHub\FinalCif\test-data\DK_Zucker2_0m._ls')
+    s = SaintListFile('*_0[?]m._ls', directory=r'D:\GitHub\FinalCif\test-data\DK_Zucker2_0m._ls')
     print(s)
 
     paths = Path(r'D:\frames').rglob('*_0*m._ls')
     l = Path(r'D:\refltest.txt')
     content = []
     for p in paths:
-        s = SaintListFile(name_patt='*_0*m._ls', direct_name=p.resolve())
+        s = SaintListFile(name_patt='*_0*m._ls', directory=p.resolve())
         content.append(s.cell_reflections)
     l.write_text('\n'.join(content))
