@@ -71,6 +71,11 @@ from finalcif.tools.sumformula import formula_str_to_dict, sum_formula_to_html
 DEBUG = False
 app = QApplication(sys.argv)
 
+"""
+TODO: 
+- show data name in the response forms list
+- use data name in response forms list to save it to the correct block
+"""
 
 class AppWindow(QMainWindow):
 
@@ -1195,7 +1200,8 @@ class AppWindow(QMainWindow):
         self.ui.cif_main_table.resizeRowsToContents()
 
     def add_data_names_to_combobox(self):
-        for block in self.cif.blocks:
+        self.ui.datanameComboBox.clear()
+        for block in self.cif.doc:
             self.ui.datanameComboBox.addItem(block.name)
 
     def _clear_state_before_block_load(self):
@@ -1217,6 +1223,7 @@ class AppWindow(QMainWindow):
             self.fill_cif_table()
         except Exception as e:
             not_ok = e
+            print(not_ok)
             # raise
             # unable_to_open_message(filepath, not_ok)
             raise
@@ -1236,6 +1243,7 @@ class AppWindow(QMainWindow):
             if not self.ui.MainStackedWidget.on_checkcif_page():
                 self.ui.MainStackedWidget.got_to_main_page()
             self.deposit.cif = self.cif
+            self.ui.cif_main_table.resizeRowsToContents()
 
     def fill_sum_formula_lineedit(self):
         try:
@@ -1590,7 +1598,7 @@ class AppWindow(QMainWindow):
             show_res_checksum_warning()
         if not self.cif.test_hkl_checksum():
             show_hkl_checksum_warning()
-        if not len(self.cif.blocks) > 0:
+        if not self.cif.is_multi_cif:
             self.get_data_sources()
         else:
             self.refresh_combo_boxes()

@@ -34,6 +34,7 @@ class CifContainer():
         else:
             raise TypeError('The file parameter must be string or Path object.')
         self.filename: str = self.fileobj.name
+        self.current_block = ''
         # I do this in small steps instead of gemmi.cif.read_file() in order to
         # leave out the check_for_missing_values. This was gemmi reads cif files
         # with missing values.
@@ -42,15 +43,17 @@ class CifContainer():
             self.doc.add_new_block(new_block)
         else:
             self.doc = self.read_file(str(self.fileobj.resolve(strict=True)))
-        self.blocks: List[gemmi.cif.Block] = []
-        for block in self.doc:
-            self.blocks.append(block)
         # Starting with first block, but can use others with subsequent self._onload():
-        self.block = self.blocks[0]
+        self.block = self.doc[0]
         self._on_load()
 
+    @property
+    def is_multi_cif(self):
+        return True if len(self.doc) > 0 else False
+
     def load_this_block(self, index: int) -> None:
-        self.block = self.blocks[index]
+        self.block = self.doc[index]
+        self.current_block = self.block.name
         self._on_load()
 
     def _on_load(self) -> None:
@@ -180,17 +183,17 @@ class CifContainer():
         """
         Brings the current CIF in the specific order of the order list.
         """
-        for block in self.blocks:
+        for block in self.doc:
             for key in reversed(self.order):
                 try:
-                    block.move_item(self.block.get_index(key), 0)
+                    block.move_item(block.get_index(key), 0)
                 except (RuntimeError, ValueError):
                     pass
                     # print('Not in list:', key)
             # make sure hkl file and res file are at the end if the cif file:
             for key in special_keys:
                 try:
-                    block.move_item(self.block.get_index(key), -1)
+                    block.move_item(block.get_index(key), -1)
                 except (RuntimeError, ValueError):
                     continue
 
