@@ -201,9 +201,14 @@ class TestWorkfolder(unittest.TestCase):
              'brown'], self.get_combobox_items(row, COL_EDIT))
 
     def test_background_color_data(self):
-        self.assertIn('{background-color: #d9ffc9;}', self.myapp.ui.cif_main_table.widget_from_key('_computing_cell_refinement', COL_DATA).styleSheet())
-        self.assertIn('{background-color: #d9ffc9;}', self.myapp.ui.cif_main_table.widget_from_key('_computing_data_collection', COL_DATA).styleSheet())
-        self.assertIn('{background-color: #d9ffc9;}', self.myapp.ui.cif_main_table.widget_from_key('_computing_data_reduction', COL_DATA).styleSheet())
+        self.assertEqual('background-color: #d9ffc9;', self.myapp.ui.cif_main_table.widget_from_key('_computing_cell_refinement', COL_DATA).styleSheet())
+        self.assertEqual('background-color: #d9ffc9;', self.myapp.ui.cif_main_table.widget_from_key('_computing_data_collection', COL_DATA).styleSheet())
+        self.assertEqual('background-color: #d9ffc9;', self.myapp.ui.cif_main_table.widget_from_key('_computing_data_reduction', COL_DATA).styleSheet())
+
+    def test_background_color_theta_max(self):
+        self.assertEqual('', self.myapp.ui.cif_main_table.widget_from_key('_cell_measurement_theta_max', COL_CIF).styleSheet())
+        self.assertEqual('background-color: #d9ffc9;', self.myapp.ui.cif_main_table.widget_from_key('_cell_measurement_theta_max', COL_DATA).styleSheet())
+        self.assertEqual('', self.myapp.ui.cif_main_table.widget_from_key('_cell_measurement_theta_max', COL_EDIT).styleSheet())
 
     def test_color(self):
         self.assertEqual('', self.myapp.ui.cif_main_table.widget_from_key('_computing_molecular_graphics', COL_DATA).styleSheet())
@@ -215,11 +220,6 @@ class TestWorkfolder(unittest.TestCase):
                          self.cell_text('_chemical_formula_moiety', COL_DATA))
         self.assertEqual('',
                          self.cell_text('_chemical_formula_moiety', COL_EDIT))
-
-    def test_background_color_theta_max(self):
-        self.assertEqual('', self.myapp.ui.cif_main_table.widget_from_key('_cell_measurement_theta_max', COL_CIF).styleSheet())
-        self.assertIn('{background-color: #d9ffc9;}', self.myapp.ui.cif_main_table.widget_from_key('_cell_measurement_theta_max', COL_DATA).styleSheet())
-        self.assertEqual('', self.myapp.ui.cif_main_table.widget_from_key('_cell_measurement_theta_max', COL_EDIT).styleSheet())
 
     def test_exptl_crystal_size(self):
         self.assertEqual('0.220', self.cell_text('_exptl_crystal_size_max', COL_DATA))

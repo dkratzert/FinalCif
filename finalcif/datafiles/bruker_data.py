@@ -35,9 +35,9 @@ class BrukerData(WorkDataMixin):
         self.cif = cif
         self.app = app
         self.basename = cif.fileobj.stem.split('_0m')[0]
-        self.saint_data = SaintListFile(name_patt='*_0*m._ls')
+        self.saint_data = SaintListFile(name_patt='*_0*m._ls', directory=self.cif.fileobj.parent.resolve())
         # This is only in this list file, not in the global:
-        saint_first_ls = SaintListFile(name_patt='*_01._ls')
+        saint_first_ls = SaintListFile(name_patt='*_01._ls', directory=self.cif.fileobj.parent.resolve())
         sol = SolutionProgram(cif)
         solution_program = None
         if 'shelx' in self.cif.block.find_value('_audit_creation_method').lower():

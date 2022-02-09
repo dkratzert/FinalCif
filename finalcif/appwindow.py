@@ -77,6 +77,7 @@ TODO:
 - use data name in response forms list to save it to the correct block
 """
 
+
 class AppWindow(QMainWindow):
 
     def __init__(self, file=None, unit_test: bool = False):
@@ -934,19 +935,22 @@ class AppWindow(QMainWindow):
         if not self.save_current_cif_file():
             return None
         self.load_cif_file(self.final_cif_file_name)
-        report_filename = strip_finalcif_of_name('report_{}'.format(self.cif.fileobj.stem)) + '-finalcif.docx'
+        report_filename = self.cif.fileobj.parent.resolve().joinpath(
+            Path('report_' + strip_finalcif_of_name(self.cif.fileobj.stem) + '-finalcif.docx'))
         # The picture after the header:
         if self.report_picture_path:
             picfile = self.report_picture_path
         else:
-            picfile = Path(self.final_cif_file_name.stem + '.gif')
+            picfile = Path(self.cif.fileobj.resolve().stem + '.gif')
         try:
             if self.ui.TemplatesListWidget.currentRow() == 0 or not self.ui.TemplatesListWidget.currentItem():
-                make_report_from(options=self.options, file_obj=self.final_cif_file_name,
+                print('Report without templates')
+                make_report_from(options=self.options, file_obj=self.cif.fileobj.resolve(),
                                  output_filename=report_filename, picfile=picfile)
             else:
+                print('Report with templates')
                 t = TemplatedReport()
-                t.make_templated_report(options=self.options, file_obj=self.final_cif_file_name,
+                t.make_templated_report(options=self.options, file_obj=self.cif.fileobj.resolve(),
                                         output_filename=report_filename, picfile=picfile,
                                         template_path=Path(self.ui.TemplatesListWidget.currentItem().text()))
         except FileNotFoundError as e:

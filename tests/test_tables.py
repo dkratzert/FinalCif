@@ -15,7 +15,6 @@ from finalcif.appwindow import AppWindow
 class TablesTestMixin():
 
     def setUp(self) -> None:
-        os.chdir(Path(__file__).absolute().parent.parent)
         self.testcif = Path('tests/examples/1979688.cif').absolute()
         self.myapp = AppWindow(self.testcif, unit_test=True)
         self.myapp.ui.HAtomsCheckBox.setChecked(False)
@@ -25,13 +24,14 @@ class TablesTestMixin():
         self.myapp.ui.TemplatesListWidget.setCurrentRow(0)
         self.myapp.running_inside_unit_test = True
         self.myapp.hide()
-        self.reportdoc = Path('report_' + self.testcif.stem + '-finalcif.docx')
+        self.reportdoc = Path(str(self.testcif.parent.joinpath('report_' + self.testcif.stem + '-finalcif.docx')))
+        print(self.reportdoc)
         self.report_zip = Path(self.testcif.stem + '-finalcif.zip')
         self.myapp.hide()
 
     def tearDown(self) -> None:
         self.myapp.final_cif_file_name.unlink(missing_ok=True)
-        self.reportdoc.unlink(missing_ok=True)
+        #self.reportdoc.unlink(missing_ok=True)
         self.report_zip.unlink(missing_ok=True)
         self.myapp.ui.ReportTextCheckBox.setChecked(False)
         self.myapp.ui.HAtomsCheckBox.setChecked(False)
@@ -60,7 +60,7 @@ class TablesTestCase(TablesTestMixin, unittest.TestCase):
     def test_default_picture_width(self):
         self.myapp.ui.PictureWidthDoubleSpinBox.setValue(0.0)
         self.myapp.ui.SaveFullReportButton.click()
-        doc = Document(self.reportdoc.absolute())
+        doc = Document(self.reportdoc.resolve())
         shapes: InlineShapes = doc.inline_shapes
         self.assertEqual(WD_INLINE_SHAPE.PICTURE, shapes[0].type)
         self.assertEqual(Cm(7.5).emu, shapes[0].width)
@@ -116,7 +116,7 @@ class TablesNoPictureTestCase(TablesTestMixin, unittest.TestCase):
 
     def test_picture_has_correct_size(self):
         self.myapp.ui.SaveFullReportButton.click()
-        doc = Document(self.reportdoc.absolute())
+        doc = Document(self.reportdoc.resolve())
         shapes: InlineShapes = doc.inline_shapes
         self.assertEqual(0, len(shapes))
 
