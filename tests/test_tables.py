@@ -44,7 +44,7 @@ class TablesTestCase(TablesTestMixin, unittest.TestCase):
     def setUp(self) -> None:
         super().setUp()
         self.myapp.ui.PictureWidthDoubleSpinBox.setValue(7.43)
-        self.myapp.set_report_picture(Path('../../finalcif/icon/finalcif.png'))
+        self.myapp.set_report_picture(Path('finalcif/icon/finalcif.png'))
 
     def test_save_report_works(self):
         self.myapp.ui.SaveFullReportButton.click()
