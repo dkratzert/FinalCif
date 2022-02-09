@@ -620,7 +620,7 @@ class AppWindow(QMainWindow):
         """
         Get back to the main table and load the new cif file.
         """
-        self.load_cif_file(self.final_cif_file_name.resolve())
+        self.load_cif_file(self.final_cif_file_name)
         self.ui.MainStackedWidget.got_to_main_page()
         self.ui.cif_main_table.scrollToTop()
         self.ui.TemplatesStackedWidget.setCurrentIndex(0)
@@ -822,7 +822,7 @@ class AppWindow(QMainWindow):
         QApplication.processEvents()
         timeout = 350
         try:
-            p = Platon(self.final_cif_file_name, timeout, '-u')
+            p = Platon(self.cif.fileobj.resolve(), timeout, '-u')
         except Exception as e:
             print(e)
             # self.ui.CheckcifButton.setDisabled(True)
@@ -973,9 +973,11 @@ class AppWindow(QMainWindow):
         self.zip_report(report_filename)
 
     def zip_report(self, report_filename):
-        zipfile = Path(strip_finalcif_of_name(self.cif.fileobj.stem) + '-finalcif.zip')
+        zipfile = self.cif.fileobj.parent.resolve().joinpath(
+            Path(strip_finalcif_of_name(self.cif.fileobj.stem) + '-finalcif.zip'))
         if zipfile.exists():
-            zipfile = next_path(zipfile.stem + '-%s.zip')
+            zipname = next_path(zipfile.stem + '-%s.zip')
+            zipfile = zipfile.parent.joinpath(zipname)
         with suppress(Exception):
             arc = ArchiveReport(zipfile)
         with suppress(Exception):
@@ -1039,10 +1041,10 @@ class AppWindow(QMainWindow):
         self.store_data_from_table_rows(table)
         self.save_ccdc_number()
         if not filename:
-            self.final_cif_file_name = self.cif.fileobj.parent.joinpath(
+            self.final_cif_file_name = self.cif.fileobj.resolve().parent.joinpath(
                 strip_finalcif_of_name(self.cif.fileobj.stem) + '-finalcif.cif')
         else:
-            self.final_cif_file_name = Path(filename)
+            self.final_cif_file_name = Path(filename).resolve()
         try:
             self.cif.save(str(self.final_cif_file_name.resolve()))
             self.status_bar.show_message('  File Saved:  {}'.format(self.final_cif_file_name.name), 10)
@@ -1223,7 +1225,7 @@ class AppWindow(QMainWindow):
         self.cif.load_this_block(index)
         self.check_cif_for_missing_values_before_really_open_it()
         # self.go_into_cifs_directory(filepath)
-        self.final_cif_file_name = Path(strip_finalcif_of_name(str(self.cif.fileobj.stem)) + '-finalcif.cif')
+        self.final_cif_file_name = Path(strip_finalcif_of_name(str(self.cif.fileobj.resolve().stem)) + '-finalcif.cif')
         try:
             self.fill_cif_table()
         except Exception as e:
