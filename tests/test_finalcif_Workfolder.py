@@ -72,7 +72,7 @@ class TestWorkfolder(unittest.TestCase):
 
     def setUp(self) -> None:
         #os.chdir(Path(__file__).absolute().parent.parent)
-        self.testcif = Path('tests/examples/work/cu_BruecknerJK_153F40_0m.cif').absolute()
+        self.testcif = Path('tests/examples/work/cu_BruecknerJK_153F40_0m.cif').resolve()
         self.myapp = AppWindow(self.testcif, unit_test=True)
         self.myapp.equipment.import_equipment_from_file('test-data/Crystallographer_Details.cif')
         self.myapp.running_inside_unit_test = True

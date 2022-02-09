@@ -1598,10 +1598,10 @@ class AppWindow(QMainWindow):
             show_res_checksum_warning()
         if not self.cif.test_hkl_checksum():
             show_hkl_checksum_warning()
-        if not self.cif.is_multi_cif:
-            self.get_data_sources()
-        else:
+        if self.cif.is_multi_cif:
             self.refresh_combo_boxes()
+        else:
+            self.get_data_sources()
         self.erase_disabled_items()
         self.ui.cif_main_table.setCurrentItem(None)
 

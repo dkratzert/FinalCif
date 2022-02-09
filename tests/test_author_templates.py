@@ -7,7 +7,7 @@ from tests.test_utils import current_file_path
 
 class MyTestCase(unittest.TestCase):
     def setUp(self) -> None:
-        current_file_path()
+        #current_file_path()
         self.testcif = Path('tests/examples/1979688.cif').resolve()
         self.app = AppWindow(self.testcif, unit_test=True)
         self.app.running_inside_unit_test = True
@@ -16,14 +16,14 @@ class MyTestCase(unittest.TestCase):
                        'name'   : 'name', 'orcid': 'orcid', 'phone': 'phone', 'contact': True}
 
     def tearDown(self) -> None:
-        current_file_path()
+        #current_file_path()
         Path('tests/other_templates/testexport_author.cif').unlink(missing_ok=True)
         Path('tests/examples/testexport_author.cif').unlink(missing_ok=True)
         self.app.close()
 
     def _import_testauthor(self):
         # To be used in other tests
-        self.app.authors.import_author('../other_templates/AATest_Author.cif')
+        self.app.authors.import_author('tests/other_templates/AATest_Author.cif')
         self.app.ui.LoopTemplatesListWidget.setCurrentRow(0)
 
     def test_selected_loop_without_selection(self):
