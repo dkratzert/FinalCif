@@ -516,6 +516,7 @@ class AppWindow(QMainWindow):
                 cifkey = table.item(row, 1).data(2)
                 try:
                     row_num = self.ui.cif_main_table.vheaderitems.index(cifkey)
+                    del self.ui.cif_main_table.vheaderitems[row_num]
                 except ValueError:
                     continue
                 self.cif.block.set_pair(cifkey, '?')
@@ -1244,6 +1245,10 @@ class AppWindow(QMainWindow):
                 self.ui.MainStackedWidget.got_to_main_page()
             self.deposit.cif = self.cif
             self.ui.cif_main_table.resizeRowsToContents()
+            self.ui.cif_main_table.vheaderitems.clear()
+            for row_number in range(self.ui.cif_main_table.model().rowCount()):
+                vhead_key = self.get_key_by_row_number(row_number)
+                self.ui.cif_main_table.vheaderitems.insert(row_number, vhead_key)
 
     def fill_sum_formula_lineedit(self):
         try:
@@ -1547,7 +1552,7 @@ class AppWindow(QMainWindow):
         for row_number in range(self.ui.cif_main_table.model().rowCount()):
             vhead_key = self.get_key_by_row_number(row_number)
             if not vhead_key in self.ui.cif_main_table.vheaderitems:
-                self.ui.cif_main_table.vheaderitems.append(vhead_key)
+                self.ui.cif_main_table.vheaderitems.insert(row_number, vhead_key)
             # adding comboboxes:
             if vhead_key in combos_from_settings:
                 # First add self-made properties:
