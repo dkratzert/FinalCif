@@ -49,7 +49,7 @@ class CifContainer():
 
     @property
     def is_multi_cif(self):
-        return True if len(self.doc) > 0 else False
+        return True if len(self.doc) > 1 else False
 
     def load_this_block(self, index: int) -> None:
         self.block = self.doc[index]
