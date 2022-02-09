@@ -158,7 +158,6 @@ def create_document() -> Document:
         document = Document(Path(application_path).joinpath('template/template1.docx').resolve())
     except FileNotFoundError as e:
         print(e)
-        print('foo')
         document = Document()
     # Deleting first (empty) paragraph, otherwise first line would be an empty one:
     delete_first_paragraph(document)

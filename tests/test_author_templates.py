@@ -6,9 +6,11 @@ from tests.test_utils import current_file_path
 
 
 class MyTestCase(unittest.TestCase):
+
     def setUp(self) -> None:
         #current_file_path()
         self.testcif = Path('tests/examples/1979688.cif').resolve()
+        self.authorexport_file = Path('tests/examples/testexport_author.cif')
         self.app = AppWindow(self.testcif, unit_test=True)
         self.app.running_inside_unit_test = True
         self.app.hide()
@@ -48,11 +50,12 @@ class MyTestCase(unittest.TestCase):
 
     def test_export_selected_author(self):
         self._delete_test_author()
+        self.authorexport_file.unlink(missing_ok=True)
         self._import_testauthor()
-        self.app.authors.export_author_template('testexport_author.cif')
-        self.assertEqual(True, Path('testexport_author.cif').exists())
-        self.assertEqual(Path('testexport_author.cif').read_text(),
-                         Path('testexport_author.cif').read_text())
+        self.app.authors.export_author_template(str(self.authorexport_file))
+        self.assertEqual(True, self.authorexport_file.exists())
+        self.assertEqual(Path('tests/other_templates/AATest_Author.cif').read_text(),
+                         self.authorexport_file.read_text())
 
     def test_set_name(self):
         self.app.ui.FullNameLineEdit.setText('test')

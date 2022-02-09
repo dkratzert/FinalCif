@@ -24,9 +24,9 @@ class TemplateReportTestCase(unittest.TestCase):
         self.myapp.ui.PictureWidthDoubleSpinBox.setValue(7.43)
         self.import_templates()
         self.myapp.ui.TemplatesListWidget.setCurrentRow(2)
-        self.reportdoc = Path('report_' + self.testcif.stem + '-finalcif.docx')
-        self.report_zip = Path(self.testcif.stem + '-finalcif.zip')
-        self.myapp.set_report_picture(Path('../../finalcif/icon/finalcif.png'))
+        self.reportdoc = Path('tests/examples/report_' + self.testcif.stem + '-finalcif.docx')
+        self.report_zip = Path('tests/examples/').joinpath(Path(self.testcif.stem + '-finalcif.zip'))
+        self.myapp.set_report_picture(Path('finalcif/icon/finalcif.png'))
         self.myapp.hide()
 
     def tearDown(self) -> None:
@@ -48,9 +48,9 @@ class TemplateReportTestCase(unittest.TestCase):
         for num in range(1, self.myapp.ui.TemplatesListWidget.count()):
             self.myapp.ui.TemplatesListWidget.setCurrentRow(num)
             self.myapp.templates.remove_current_template()
-        self.myapp.templates.add_new_template(str(Path('../../finalcif/template/template_text.docx').absolute()))
+        self.myapp.templates.add_new_template(str(Path('finalcif/template/template_text.docx').absolute()))
         self.myapp.templates.add_new_template(
-            str(Path('../../finalcif/template/template_without_text.docx').absolute()))
+            str(Path('finalcif/template/template_without_text.docx').absolute()))
         print('imported templates')
         self.myapp.ui.TemplatesListWidget.blockSignals(False)
 
@@ -77,7 +77,7 @@ class TemplateReportTestCase(unittest.TestCase):
 
     def test_picture_has_correct_size(self):
         """
-        For this test, self.myapp.set_report_picture(Path('../../finalcif/icon/finalcif.png'))
+        For this test, self.myapp.set_report_picture(Path('finalcif/icon/finalcif.png'))
         has to be set correctly.
         """
         self.myapp.ui.SaveFullReportButton.click()
