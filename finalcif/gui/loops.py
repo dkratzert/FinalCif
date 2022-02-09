@@ -86,7 +86,7 @@ class Loop(QtCore.QObject):
         while len(table) > 0:
             table.remove_row(0)
         for row in data:
-            table.append_row([x if my_isnumeric(x) else quote(x) for x in row])
+            table.append_row([x if is_null(x) else quote(x) for x in row])
 
     @property
     def values(self):
