@@ -25,13 +25,12 @@ class TablesTestMixin():
         self.myapp.running_inside_unit_test = True
         self.myapp.hide()
         self.reportdoc = Path(str(self.testcif.parent.joinpath('report_' + self.testcif.stem + '-finalcif.docx')))
-        print(self.reportdoc)
-        self.report_zip = Path(self.testcif.stem + '-finalcif.zip')
+        self.report_zip = self.testcif.parent.joinpath(Path(self.testcif.stem + '-finalcif.zip'))
         self.myapp.hide()
 
     def tearDown(self) -> None:
         self.myapp.final_cif_file_name.unlink(missing_ok=True)
-        #self.reportdoc.unlink(missing_ok=True)
+        self.reportdoc.unlink(missing_ok=True)
         self.report_zip.unlink(missing_ok=True)
         self.myapp.ui.ReportTextCheckBox.setChecked(False)
         self.myapp.ui.HAtomsCheckBox.setChecked(False)
