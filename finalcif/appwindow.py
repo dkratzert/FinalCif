@@ -1407,15 +1407,19 @@ class AppWindow(QMainWindow):
         if peak:
             self.ui.peakLineEdit.setText("{} / {}".format(peak, self.cif['_refine_diff_density_min']))
         if 'darwin' in sys.platform and getattr(sys, 'frozen', False):
-            self.ui.moleculeLayout.addWidget(QLabel('FinalCif is currently unable to draw molecules in MACOS'))
-            print('Do not draw molecule on MACOS')
-            # Currently, the QWebEngineView doesn't work  on macos due to pyinstaller issues.
+            self.ui.moleculeLayout.addWidget(QLabel('                     '
+                                                    'FinalCif is currently unable to draw molecules in Mac OS'))
+            # Currently, the QWebEngineView doesn't work on macOS due to pyinstaller issues.
+            return None
+        elif 'linux' in sys.platform:
+            self.ui.moleculeLayout.addWidget(QLabel('                     '
+                                                    'FinalCif is currently unable to draw molecules in Linux.'))
+            # The license of JSmol-Lite is unclear, and I need to make an own molecule viewer anyway.
             return None
         try:
             self.init_webview()
         except Exception as e:
             print(e, '###')
-        # because this is fast with small structures and slow with large:
         self.view_molecule()
 
     def view_molecule(self) -> None:
