@@ -1597,7 +1597,7 @@ class Ui_FinalCifWindow(object):
         self.gridLayout_6.addItem(spacerItem47, 0, 5, 1, 1)
         self.datanameComboBox = QtWidgets.QComboBox(self.CifDataItemsFrame)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setHorizontalStretch(1)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.datanameComboBox.sizePolicy().hasHeightForWidth())
         self.datanameComboBox.setSizePolicy(sizePolicy)
