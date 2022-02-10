@@ -18,7 +18,6 @@ class TestNothingOpened(unittest.TestCase):
     """A CIF fle in a complete work folder"""
 
     def setUp(self) -> None:
-        os.chdir(Path(__file__).absolute().parent.parent)
         self.myapp = AppWindow(unit_test=True)
         self.myapp.running_inside_unit_test = True
         self.myapp.hide()
@@ -43,7 +42,6 @@ class TestFileIsOpened(unittest.TestCase):
     """A CIF fle in a complete work folder"""
 
     def setUp(self) -> None:
-        #os.chdir(Path(__file__).absolute().parent.parent)
         self.testcif = Path('tests/examples/work/cu_BruecknerJK_153F40_0m.cif').absolute()
         self.myapp = AppWindow(self.testcif, unit_test=True)
         self.myapp.running_inside_unit_test = True
@@ -71,7 +69,6 @@ class TestWorkfolder(unittest.TestCase):
     """A CIF fle in a complete work folder"""
 
     def setUp(self) -> None:
-        #os.chdir(Path(__file__).absolute().parent.parent)
         self.testcif = Path('tests/examples/work/cu_BruecknerJK_153F40_0m.cif').resolve()
         self.myapp = AppWindow(self.testcif, unit_test=True)
         self.myapp.equipment.import_equipment_from_file('test-data/Crystallographer_Details.cif')

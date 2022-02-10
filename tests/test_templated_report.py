@@ -15,7 +15,6 @@ from finalcif import VERSION
 class TemplateReportTestCase(unittest.TestCase):
     def setUp(self) -> None:
         self.myapp = AppWindow(unit_test=True)
-        os.chdir(Path(__file__).absolute().parent.parent)
         self.testcif = Path('tests/examples/1979688.cif').absolute()
         self.myapp.load_cif_file(self.testcif.absolute())
         self.myapp.running_inside_unit_test = True

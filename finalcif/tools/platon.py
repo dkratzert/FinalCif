@@ -90,7 +90,7 @@ class Platon(QThread):
         """
         Runs the platon thread.
         """
-        curdir = Path(os.curdir).absolute()
+        curdir = Path(os.curdir).resolve()
         with suppress(FileNotFoundError):
             Path(self.cif_fileobj.stem + '.vrf').unlink()
         with suppress(FileNotFoundError):
@@ -115,7 +115,7 @@ class Platon(QThread):
         if self.plat and hasattr(self.plat, 'stdout'):
             self.platon_output = self.plat.stdout.decode('ascii')
         # self.delete_orphaned_files()
-        os.chdir(curdir.absolute())
+        os.chdir(curdir)
 
     @staticmethod
     def hide_status_window():
