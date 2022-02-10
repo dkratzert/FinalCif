@@ -16,6 +16,7 @@ class VREF():
 
     def __init__(self):
         self.key = ''
+        self.data_name = ''
         self._problem = 'PROBLEM: '
         self._response = 'RESPONSE: '
 
@@ -58,6 +59,7 @@ class MyVRFContainer(QWidget):
 
         :param form: a dictionary with:
                     {'level':   'PLAT035_ALERT_1_B',
+                     'data_name': 'DK_zucker2_0m',
                      'name':    '_vrf_PLAT035_DK_zucker2_0m',
                      'problem': '_chemical_absolute_configuration ...',
                      'alert_num': 'PLAT035'}
@@ -123,7 +125,7 @@ class MyVRFContainer(QWidget):
         if len(type) == 1:
             type = type + '  Alert'
         num = self.form['alert_num'] if 'alert_num' in self.form else ''
-        label.setText("{} {}".format(type, num))
+        label.setText("{} {}  --> {}".format(type, num, self.form['data_name']))
         style = 'QLabel {{ font-size: 12px; background-color: {:s}; ' \
                 'font-weight: bold;' \
                 'border: 1px solid gray;' \
@@ -170,17 +172,20 @@ class MyVRFContainer(QWidget):
 
 
 if __name__ == '__main__':
-    """
+    from PyQt5.QtWidgets import QApplication
+    import sys
+
     app = QApplication(sys.argv)
     form = {'level'    : 'PLAT035_ALERT_1_B',
             'name'     : '_vrf_PLAT035_DK_zucker2_0m',
+            'data_name': 'DK_zucker2_0m',
             'problem'  : '_chemical_absolute_configuration Info  Not Given     Please Do '
                          '!  ',
             'alert_num': 'PLAT035'}
-    web = MyVRFContainer(form, parent=None)
+    web = MyVRFContainer(form, help='helptext', parent=None)
     app.exec_()
     web.raise_()
-    """
+
     v = VREF()
     v.key = '_vrf_PLAT035_DK_zucker2_0m'
     v.problem = '_chemical_absolute_configuration Info  Not Given     Please Do '

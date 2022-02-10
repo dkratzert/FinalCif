@@ -112,9 +112,11 @@ class CifContainer():
             # return a copy, do not delete hkl from original:
             doc = gemmi.cif.Document()
             doc.parse_string(self.doc.as_string(style=gemmi.cif.Style.Indent35))
-            block = doc.sole_block()
-            if block.find_pair_item('_shelx_hkl_file'):
-                block.find_pair_item('_shelx_hkl_file').erase()
+            for block in doc:
+                if block.find_pair_item('_shelx_hkl_file'):
+                    block.find_pair_item('_shelx_hkl_file').erase()
+                if block.find_pair_item('_shelx_fcf_file'):
+                    block.find_pair_item('_shelx_fcf_file').erase()
             return doc.as_string(style=gemmi.cif.Style.Indent35)
         else:
             return self.doc.as_string(style=gemmi.cif.Style.Indent35)

@@ -31,7 +31,7 @@ from finalcif import VERSION
 from finalcif.cif.checkcif.checkcif import MyHTMLParser, AlertHelp, CheckCif
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.cif.cod.deposit import CODdeposit
-from finalcif.cif.text import utf8_to_str
+from finalcif.cif.text import utf8_to_str, quote
 from finalcif.datafiles.bruker_data import BrukerData
 from finalcif.datafiles.ccdc_mail import CCDCMail
 from finalcif.displaymol import mol_file_writer
@@ -71,12 +71,6 @@ from finalcif.tools.sumformula import formula_str_to_dict, sum_formula_to_html
 DEBUG = False
 app = QApplication(sys.argv)
 
-"""
-TODO: 
-- show data name in the response forms list
-- use data name in response forms list to save it to the correct block
-"""
-
 
 class AppWindow(QMainWindow):
 
@@ -93,6 +87,7 @@ class AppWindow(QMainWindow):
         self.view: Union[QtWebEngineWidgets.QWebEngineView, None] = None
         self.report_picture_path: Union[Path, None] = None
         self.checkdef = []
+        self.validation_response_forms_list = []
         self.checkdef_file: Path = Path.home().joinpath('check.def')
         self.final_cif_file_name = Path()
         self.missing_data: set = set()
@@ -749,8 +744,12 @@ class AppWindow(QMainWindow):
             v.key = response_row.form['name']
             v.problem = response_row.form['problem']
             v.response = response_txt
-            self.add_row(v.key, v.value, at_start=True)
+            v.data_name = response_row.form['data_name']
+            for block in self.cif.doc:
+                if block.name == v.data_name:
+                    block.set_pair(v.key, quote(utf8_to_str(v.value)))
         self.save_current_cif_file()
+        self.load_cif_file(self.final_cif_file_name)
         if n:
             self.ui.CheckCifLogPlainTextEdit.appendPlainText('Forms saved')
         else:
