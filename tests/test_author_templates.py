@@ -18,8 +18,7 @@ class MyTestCase(unittest.TestCase):
                        'name'   : 'name', 'orcid': 'orcid', 'phone': 'phone', 'contact': True}
 
     def tearDown(self) -> None:
-        Path('tests/other_templates/testexport_author.cif').unlink(missing_ok=True)
-        Path('tests/examples/testexport_author.cif').unlink(missing_ok=True)
+        self.authorexport_file.unlink(missing_ok=True)
         self.app.close()
 
     def _import_testauthor(self):
@@ -45,9 +44,9 @@ class MyTestCase(unittest.TestCase):
         for row in range(listw.count()):
             listw.setCurrentRow(row)
             if listw.currentItem().text().startswith(name):
+                listw.clicked.emit(listw.model().index(row, 0))
                 break
 
-    @unittest.skip('Does not work, why?')
     def test_export_selected_author(self):
         self._delete_test_author()
         self.authorexport_file.unlink(missing_ok=True)
