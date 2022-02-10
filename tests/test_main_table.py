@@ -19,7 +19,6 @@ from tests.helpers import unify_line_endings
 class TestMainTableFieldBehavior(unittest.TestCase):
 
     def setUp(self) -> None:
-        os.chdir(Path(__file__).absolute().parent.parent)
         self.testcif = Path('tests/examples/1979688.cif').absolute()
         self.myapp = AppWindow(self.testcif, unit_test=True)
         self.myapp.running_inside_unit_test = True

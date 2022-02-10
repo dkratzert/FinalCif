@@ -20,7 +20,6 @@ from tests.helpers import unify_line_endings
 class TestLoops(unittest.TestCase):
 
     def setUp(self) -> None:
-        os.chdir(Path(__file__).resolve().parent.parent)
         self.testcif = Path('tests/examples/1979688.cif').resolve()
         self.myapp = AppWindow(self.testcif, unit_test=True)
         self.myapp.running_inside_unit_test = True
@@ -96,7 +95,6 @@ class TestLoopsMove(unittest.TestCase):
         return tab
 
     def setUp(self) -> None:
-        os.chdir(Path(__file__).resolve().parent.parent)
         self.testcif = Path('tests/examples/1979688.cif').resolve()
         self.myapp = AppWindow(self.testcif, unit_test=True)
         self.myapp.running_inside_unit_test = True

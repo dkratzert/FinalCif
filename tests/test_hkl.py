@@ -8,7 +8,6 @@ from finalcif.cif.cif_file_io import CifContainer
 class TestHKL(TestCase):
 
     def setUp(self) -> None:
-        os.chdir(Path(__file__).absolute().parent.parent)
         self.cif1 = CifContainer('tests/examples/1979688.cif')
         self.cif2 = CifContainer('tests/examples/work/cu_BruecknerJK_153F40_0m.cif')
         self.first_result = """data_cu_BruecknerJK_153F40_0m

@@ -13,13 +13,13 @@ from finalcif.datafiles.sadabs import Sadabs
 
 class TestSADABSWU19(unittest.TestCase):
     def setUp(self) -> None:
-        os.chdir(Path(__file__).resolve().parent.parent)
         self.s = Sadabs(r'test-data/IK_WU19.abs')  # this is a sadabs file
 
     def test_twincomp(self):
         self.assertEqual(1, self.s.twin_components)
 
     def test_hkl_file(self):
+        print('###', Path('.').resolve())
         self.assertEqual('IK_WU19_0m.hkl', self.s.dataset(0).hklfile)
 
     def test_rint(self):
@@ -40,7 +40,6 @@ class TestSADABSWU19(unittest.TestCase):
 
 class TestTWINABS(unittest.TestCase):
     def setUp(self) -> None:
-        os.chdir(Path(__file__).resolve().parent.parent)
         self.s = Sadabs(r'test-data/twin-4-5.abs')  # this is a twinabs file
 
     def test_transmission(self):
