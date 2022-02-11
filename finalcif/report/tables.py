@@ -26,9 +26,45 @@ from finalcif.report.report_text import CCDC, CrstalSelection, Crystallization, 
 from finalcif.report.templated_report import BondsAndAngles, TorsionAngles, HydrogenBonds
 from finalcif.tools.misc import protected_space, angstrom, bequal, sigma_sm, halbgeviert, degree_sign, ellipsis_mid, \
     less_or_equal, \
-    timessym, lambdasym, this_or_quest, isnumeric, minus_sign, Theta_symbol
+    timessym, lambdasym, this_or_quest, isnumeric, minus_sign, Theta_symbol, grouper
 from finalcif.tools.options import Options
 
+def open_cif_file(cif_fileobj) -> Union[None, CifContainer]:
+    try:
+        cif = CifContainer(cif_fileobj)
+    except Exception as e:
+        print('Unable to open file', cif_fileobj.name)
+        print(e)
+        return None
+    return cif
+
+def make_multi_tables(files: List[Path], output_filename: str = 'multitable.docx', path: str = '') -> str:
+    """
+    The main loop for doing the report pages with tables.
+    """
+    group_of_files = list(grouper(files, 3))
+    table_index = len(group_of_files) - 1
+    document = create_document()
+    document.add_heading('Structure Tables', 1)
+    for file_group in enumerate(group_of_files):
+        #page_number = file_group[0]
+        cif_triple = file_group[1]
+        main_table = document.add_table(rows=34, cols=4)
+        populate_description_columns(main_table, cif)
+        for table_column in range(1, 4):  # the three columns
+            if cif_triple[table_column - 1]:
+                cif_fileobj = file_group[1][table_column - 1]
+                cif = open_cif_file(cif_fileobj)
+                if not cif:
+                    continue
+                print(cif)
+                populate_main_table_values(main_table, cif, column=table_column)
+        if file_group[0] < table_index:
+            document.add_page_break()
+
+    print('\nScript finished - output file: multitable.docx')
+    document.save(output_filename)
+    return output_filename
 
 def make_report_from(options: Options, file_obj: Path, output_filename: str = None, picfile: Path = None) -> str:
     """
