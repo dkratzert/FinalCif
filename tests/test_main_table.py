@@ -75,6 +75,7 @@ class TestMainTableFieldBehavior(unittest.TestCase):
         self.assertEqual('Crystallographer Details', self.myapp.ui.EquipmentTemplatesListWidget.item(1).text())
 
     def test_load_equipment(self):
+        self.myapp.equipment.import_equipment_from_file('test-data/Crystallographer_Details.cif')
         # make sure contact author is selected
         self.equipment_click('Crystallographer Details')
         # It is important here, that the first column has 'dkratzert@gmx.de' in it:
