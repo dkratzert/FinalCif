@@ -61,10 +61,6 @@ class MyEQTableWidget(QTableWidget, ItemTextMixin):
         tab_item.setPlainText(retranslate_delimiter(value_text))
         self.setCellWidget(row_num, 1, tab_item)
 
-    def adjustToContents(self):
-        # print('adjust')
-        self.resizeRowsToContents()
-
     def delete_row(self, row: int = None):
         if not row:
             row = self.currentRow()

@@ -133,7 +133,6 @@ class AppWindow(QMainWindow):
         #
         self.connect_signals_and_slots()
         self.make_button_icons()
-        self.ui.cif_main_table.resizeRowsToContents()
 
     def distribute_cif_main_table_columns_evenly(self) -> None:
         hheader = self.ui.cif_main_table.horizontalHeader()
@@ -1249,7 +1248,7 @@ class AppWindow(QMainWindow):
             if not self.ui.MainStackedWidget.on_checkcif_page():
                 self.ui.MainStackedWidget.got_to_main_page()
             self.deposit.cif = self.cif
-            self.ui.cif_main_table.resizeRowsToContents()
+            #self.ui.cif_main_table.resizeRowsToContents()
             self.ui.cif_main_table.vheaderitems.clear()
             for row_number in range(self.ui.cif_main_table.model().rowCount()):
                 vhead_key = self.get_key_by_row_number(row_number)
@@ -1681,14 +1680,12 @@ class AppWindow(QMainWindow):
             self.ui.cif_main_table.add_separation_line(row_num)
             self.complete_data_row = row_num
         else:
-            # Cif text is set here:
-            self.ui.cif_main_table.setText(row=row_num, key=key, column=COL_CIF,
-                                           txt='?' if at_start else strval)
-            # This is to have COL_DATA at a defined state:
-            self.ui.cif_main_table.setText(row=row_num, key=key, column=COL_DATA, txt='')
             color = None
             if key in self.settings.list_saved_items('text_templates'):
                 color = light_blue
+            self.ui.cif_main_table.setText(row=row_num, key=key, column=COL_CIF,
+                                           txt='?' if at_start else strval)
+            self.ui.cif_main_table.setText(row=row_num, key=key, column=COL_DATA, txt='')
             self.ui.cif_main_table.setText(row=row_num, key=key, column=COL_EDIT, color=color,
                                            txt=strval if at_start else '')
         head_item_key = MyTableWidgetItem(key)
