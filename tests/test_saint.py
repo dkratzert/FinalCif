@@ -14,9 +14,6 @@ from tests.helpers import unify_line_endings
 
 class MyTestCase(unittest.TestCase):
 
-    def setUp(self) -> None:
-        os.chdir(Path(__file__).absolute().parent.parent)
-
     def test_saint_repr(self):
         output = 'Version: SAINT V8.38A, file: TB_fs20_v1_0m._ls\n' \
                  'Number of samples: 1 with 1 components.\n' \
@@ -26,7 +23,7 @@ class MyTestCase(unittest.TestCase):
                  'min 2 theta: 4.660\n' \
                  'max 2 theta: 54.727\n' \
                  'Twin integration False\n'
-        saint = SaintListFile(name_patt='*._ls', direct_name='test-data/TB_fs20_v1_0m._ls')
+        saint = SaintListFile(name_patt='TB_fs20_v1_0m._ls', directory=Path('test-data'))
         self.assertEqual(unify_line_endings(output), unify_line_endings(str(saint)))
 
 

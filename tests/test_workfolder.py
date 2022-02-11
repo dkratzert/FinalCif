@@ -18,7 +18,6 @@ class TestNothingOpened(unittest.TestCase):
     """A CIF fle in a complete work folder"""
 
     def setUp(self) -> None:
-        os.chdir(Path(__file__).absolute().parent.parent)
         self.myapp = AppWindow(unit_test=True)
         self.myapp.running_inside_unit_test = True
         self.myapp.hide()
@@ -43,7 +42,6 @@ class TestFileIsOpened(unittest.TestCase):
     """A CIF fle in a complete work folder"""
 
     def setUp(self) -> None:
-        os.chdir(Path(__file__).absolute().parent.parent)
         self.testcif = Path('tests/examples/work/cu_BruecknerJK_153F40_0m.cif').absolute()
         self.myapp = AppWindow(self.testcif, unit_test=True)
         self.myapp.running_inside_unit_test = True
@@ -55,12 +53,12 @@ class TestFileIsOpened(unittest.TestCase):
 
     def tearDown(self) -> None:
         Path('foo.cif').unlink(missing_ok=True)
-        Path('cu_BruecknerJK_153F40_0m-finalcif.cif').unlink(missing_ok=True)
+        Path('tests/examples/work/cu_BruecknerJK_153F40_0m-finalcif.cif').unlink(missing_ok=True)
         self.myapp.close()
 
     def test_save_action(self):
         self.myapp.save_current_cif_file()
-        self.assertEqual(True, Path('cu_BruecknerJK_153F40_0m-finalcif.cif').exists())
+        self.assertEqual(True, Path('tests/examples/work/cu_BruecknerJK_153F40_0m-finalcif.cif').exists())
 
     def test_save_file(self):
         self.myapp.save_current_cif_file('foo.cif')
@@ -71,10 +69,9 @@ class TestWorkfolder(unittest.TestCase):
     """A CIF fle in a complete work folder"""
 
     def setUp(self) -> None:
-        os.chdir(Path(__file__).absolute().parent.parent)
-        self.testcif = Path('tests/examples/work/cu_BruecknerJK_153F40_0m.cif').absolute()
+        self.testcif = Path('tests/examples/work/cu_BruecknerJK_153F40_0m.cif').resolve()
         self.myapp = AppWindow(self.testcif, unit_test=True)
-        self.myapp.equipment.import_equipment_from_file('../../../test-data/Crystallographer_Details.cif')
+        self.myapp.equipment.import_equipment_from_file('test-data/Crystallographer_Details.cif')
         self.myapp.running_inside_unit_test = True
         self.myapp.hide()
         self.myapp.setWindowIcon(QIcon('./icon/multitable.png'))
@@ -201,9 +198,14 @@ class TestWorkfolder(unittest.TestCase):
              'brown'], self.get_combobox_items(row, COL_EDIT))
 
     def test_background_color_data(self):
-        self.assertIn('{background-color: #d9ffc9;}', self.myapp.ui.cif_main_table.widget_from_key('_computing_cell_refinement', COL_DATA).styleSheet())
-        self.assertIn('{background-color: #d9ffc9;}', self.myapp.ui.cif_main_table.widget_from_key('_computing_data_collection', COL_DATA).styleSheet())
-        self.assertIn('{background-color: #d9ffc9;}', self.myapp.ui.cif_main_table.widget_from_key('_computing_data_reduction', COL_DATA).styleSheet())
+        self.assertEqual('background-color: #d9ffc9;', self.myapp.ui.cif_main_table.widget_from_key('_computing_cell_refinement', COL_DATA).styleSheet())
+        self.assertEqual('background-color: #d9ffc9;', self.myapp.ui.cif_main_table.widget_from_key('_computing_data_collection', COL_DATA).styleSheet())
+        self.assertEqual('background-color: #d9ffc9;', self.myapp.ui.cif_main_table.widget_from_key('_computing_data_reduction', COL_DATA).styleSheet())
+
+    def test_background_color_theta_max(self):
+        self.assertEqual('', self.myapp.ui.cif_main_table.widget_from_key('_cell_measurement_theta_max', COL_CIF).styleSheet())
+        self.assertEqual('background-color: #d9ffc9;', self.myapp.ui.cif_main_table.widget_from_key('_cell_measurement_theta_max', COL_DATA).styleSheet())
+        self.assertEqual('', self.myapp.ui.cif_main_table.widget_from_key('_cell_measurement_theta_max', COL_EDIT).styleSheet())
 
     def test_color(self):
         self.assertEqual('', self.myapp.ui.cif_main_table.widget_from_key('_computing_molecular_graphics', COL_DATA).styleSheet())
@@ -215,11 +217,6 @@ class TestWorkfolder(unittest.TestCase):
                          self.cell_text('_chemical_formula_moiety', COL_DATA))
         self.assertEqual('',
                          self.cell_text('_chemical_formula_moiety', COL_EDIT))
-
-    def test_background_color_theta_max(self):
-        self.assertEqual('', self.myapp.ui.cif_main_table.widget_from_key('_cell_measurement_theta_max', COL_CIF).styleSheet())
-        self.assertIn('{background-color: #d9ffc9;}', self.myapp.ui.cif_main_table.widget_from_key('_cell_measurement_theta_max', COL_DATA).styleSheet())
-        self.assertEqual('', self.myapp.ui.cif_main_table.widget_from_key('_cell_measurement_theta_max', COL_EDIT).styleSheet())
 
     def test_exptl_crystal_size(self):
         self.assertEqual('0.220', self.cell_text('_exptl_crystal_size_max', COL_DATA))
@@ -344,7 +341,7 @@ class TestWorkfolder(unittest.TestCase):
 
     def test_rename_data_tag(self):
         self.myapp.hide()
-        self.myapp.ui.datnameLineEdit.setText('foo_bar_yes')
+        self.myapp.ui.datanameComboBox.setEditText('foo_bar_yes')
         self.myapp.ui.SaveCifButton.click()
         self.myapp.ui.BackPushButton.click()
         pair = self.myapp.cif.block.find_pair('_vrf_PLAT307_foo_bar_yes')
@@ -353,7 +350,7 @@ class TestWorkfolder(unittest.TestCase):
         erg = [x.replace("\n", "").replace("\r", "") for x in erg]
         pair = [x.replace("\n", "").replace("\r", "") for x in pair]
         self.assertEqual(erg, pair)
-        self.myapp.final_cif_file_name.unlink()
+        self.myapp.final_cif_file_name.unlink(missing_ok=True)
 
 
 if __name__ == '__main__':

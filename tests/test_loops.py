@@ -20,7 +20,6 @@ from tests.helpers import unify_line_endings
 class TestLoops(unittest.TestCase):
 
     def setUp(self) -> None:
-        os.chdir(Path(__file__).resolve().parent.parent)
         self.testcif = Path('tests/examples/1979688.cif').resolve()
         self.myapp = AppWindow(self.testcif, unit_test=True)
         self.myapp.running_inside_unit_test = True
@@ -96,15 +95,14 @@ class TestLoopsMove(unittest.TestCase):
         return tab
 
     def setUp(self) -> None:
-        os.chdir(Path(__file__).resolve().parent.parent)
         self.testcif = Path('tests/examples/1979688.cif').resolve()
         self.myapp = AppWindow(self.testcif, unit_test=True)
         self.myapp.running_inside_unit_test = True
         self.myapp.hide()  # For full screen view
         self.myapp.ui.LoopsPushButton.click()
 
-    def set_current_index_to_row_col(self, row, col):
-        view = self.myapp.ui.LoopsTabWidget.widget(self.get_index_of('Scattering'))
+    def set_current_index_to_row_col(self, row, col, tab='Scattering'):
+        view = self.myapp.ui.LoopsTabWidget.widget(self.get_index_of(tab))
         index = view.model().index(row, col)
         view.setCurrentIndex(index)
         return view
@@ -141,6 +139,15 @@ class TestLoopsMove(unittest.TestCase):
         self.assertEqual('C', as_string(c.loops[3].val(0, 0)))
         self.assertEqual('O', as_string(c.loops[3].val(1, 0)))
         self.assertEqual('H', as_string(c.loops[3].val(2, 0)))
+
+    def test_move_row_down_from_middle_save_and_load_again_for_angles(self):
+        view = self.set_current_index_to_row_col(1, 0, tab='Angles')
+        view._row_down(None)
+        self.myapp.ui.SaveCifButton.click()
+        c = CifContainer(self.myapp.final_cif_file_name)
+        # Check weather the dots and numbers are quoted correctly and *not* like
+        # ['O1', 'C1', 'C14', '105.9(2)', "''", "''", "''"]
+        self.assertEqual("['O1', 'C1', 'C14', '105.9(2)', '.', '.', '?']", str(c.loops[7].values[:7]))
 
     def test_move_row_down_from_end(self):
         view = self.set_current_index_to_row_col(2, 0)

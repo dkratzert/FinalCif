@@ -32,6 +32,7 @@ class MyQPlainTextEdit(QPlainTextEdit):
         self.setWordWrapMode(QTextOption.WordWrap)
         self.fontmetric = QFontMetrics(self.document().defaultFont())
         self.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
+        self.textChanged.connect(lambda: self.parent.resizeRowsToContents())
 
     def __str__(self):
         return self.toPlainText()
@@ -69,7 +70,7 @@ class MyQPlainTextEdit(QPlainTextEdit):
         """
         Set background color of the text field.
         """
-        self.setStyleSheet("QPlainTextEdit {{background-color: {};}}".format(str(color.name())))
+        self.setStyleSheet("background-color: {};".format(str(color.name())))
         # No idea why tis does not work
         # pal = self.palette()
         # pal.setColor(QPalette.Base, color)
@@ -88,7 +89,6 @@ class MyQPlainTextEdit(QPlainTextEdit):
         # special treatment for text fields in order to get line breaks:
         for txt in txtlst:
             self.setPlainText(txt)
-        self.textChanged.connect(lambda: self.parent.resizeRowsToContents())
 
     def eventFilter(self, widget: QObject, event: QEvent):
         """

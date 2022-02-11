@@ -183,11 +183,13 @@ def show_splash(text: str) -> QSplashScreen:
     return splash
 
 
-def cif_file_open_dialog(filter: str = "CIF file (*.cif)") -> str:
+def cif_file_open_dialog(filter: str = "CIF file (*.cif)", last_dir='') -> str:
     """
     Returns a cif file name from a file dialog.
     """
+    print(last_dir, '#')
     filename, _ = QFileDialog.getOpenFileName(filter=filter,
+                                              directory=last_dir,
                                               initialFilter=filter,
                                               caption='Open a .cif File')
     return filename

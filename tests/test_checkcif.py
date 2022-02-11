@@ -130,6 +130,7 @@ class TestMyHTMLParser(TestCase):
 
     def test_response_forms(self):
         form = {'alert_num': 'PLAT413',
+                'data_name': 'cu_BruecknerJK_153F40_0m',
                 'level'    : 'PLAT413_ALERT_2_C',
                 'name'     : '_vrf_PLAT413_cu_BruecknerJK_153F40_0m',
                 'problem'  : 'Short Inter XH3 .. XHn     H13      ..H19B     .       2.14 '

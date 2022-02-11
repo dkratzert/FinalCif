@@ -13,7 +13,7 @@ from finalcif.datafiles.bruker_frame import BrukerFrameHeader
 
 class TestBrukerFrame(unittest.TestCase):
     def setUp(self) -> None:
-        os.chdir(Path(__file__).absolute().parent.parent)
+        pass
 
     def test_str(self):
         sfrm = BrukerFrameHeader(basename='apex_frame', searchpath=Path('./test-data'))
