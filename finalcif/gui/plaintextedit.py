@@ -14,7 +14,7 @@ class MyQPlainTextEdit(QPlainTextEdit):
     """
     templateRequested = pyqtSignal(int)
 
-    def __init__(self, parent=None, minheight: int = 80, *args, **kwargs):
+    def __init__(self, parent=None, *args, **kwargs):
         """
         Plaintext edit field for most of the table cells.
         :param parent:
