@@ -20,7 +20,7 @@ class ParserMixin():
         self.filename = self._fileobj.resolve()
 
 
-def get_file_to_parse(fileobj: Path = None, name_pattern: str = '', base_directory: str = '.'):
+def get_file_to_parse(fileobj: Path = None, name_pattern: str = '', base_directory: Path = '.'):
     """
     Either fileobjs is given, then the parser uses this file, or a name pattern is given, then
     a file is searched in base_directory in order to parse this file.
@@ -29,7 +29,7 @@ def get_file_to_parse(fileobj: Path = None, name_pattern: str = '', base_directo
     :param base_directory: The directory where to find files.
     :return: a Path object
 
-    >>> get_file_to_parse(base_directory='test-data', name_pattern='*_0*m._ls')
+    >>> get_file_to_parse(base_directory=Path('test-data'), name_pattern='*_0*m._ls')
     PosixPath('test-data/DK_Zucker2_0m._ls')
     >>> get_file_to_parse(fileobj=Path('test-data/TB_fs20_v1_0m._ls'))
     PosixPath('test-data/TB_fs20_v1_0m._ls')

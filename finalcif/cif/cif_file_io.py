@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Dict, List, Tuple, Union, Generator, Type
 
 import gemmi
-from gemmi.cif import as_string, is_null, Block, Document, Loop
+from gemmi.cif import as_string, Document, Loop
 from shelxfile import Shelxfile
 
 from finalcif.cif.cif_order import order, special_keys
@@ -34,6 +34,7 @@ class CifContainer():
         else:
             raise TypeError('The file parameter must be string or Path object.')
         self.filename: str = self.fileobj.name
+        self.current_block = ''
         # I do this in small steps instead of gemmi.cif.read_file() in order to
         # leave out the check_for_missing_values. This was gemmi reads cif files
         # with missing values.
@@ -42,14 +43,26 @@ class CifContainer():
             self.doc.add_new_block(new_block)
         else:
             self.doc = self.read_file(str(self.fileobj.resolve(strict=True)))
-        self.block: Block = self.doc.sole_block()
+        # Starting with first block, but can use others with subsequent self._onload():
+        self.block = self.doc[0]
+        self._on_load()
+
+    @property
+    def is_multi_cif(self):
+        return True if len(self.doc) > 1 else False
+
+    def load_this_block(self, index: int) -> None:
+        self.block = self.doc[index]
+        self.current_block = self.block.name
+        self._on_load()
+
+    def _on_load(self) -> None:
         # will not ok with non-ascii characters in the res file:
         self.chars_ok = True
-        d = DSRFind(self.res_file_data)
         self.doc.check_for_duplicates()
         self.hkl_extra_info = self._abs_hkl_details()
         self.order = order
-        self.dsr_used = d.dsr_used
+        self.dsr_used = DSRFind(self.res_file_data).dsr_used
         self.atomic_struct: gemmi.SmallStructure = gemmi.make_small_structure_from_block(self.block)
         # A dictionary to convert Atom names like 'C1_2' or 'Ga3' into Element names like 'C' or 'Ga'
         self._name2elements = dict(
@@ -57,7 +70,7 @@ class CifContainer():
                 [x.upper() for x in self.block.find_loop('_atom_site_type_symbol')]))
         self.check_hkl_min_max()
 
-    def check_hkl_min_max(self):
+    def check_hkl_min_max(self) -> None:
         if not all([self['_diffrn_reflns_limit_h_min'], self['_diffrn_reflns_limit_h_max'],
                     self['_diffrn_reflns_limit_k_min'], self['_diffrn_reflns_limit_k_max'],
                     self['_diffrn_reflns_limit_l_min'], self['_diffrn_reflns_limit_l_max']]) and self.hkl_file:
@@ -99,9 +112,11 @@ class CifContainer():
             # return a copy, do not delete hkl from original:
             doc = gemmi.cif.Document()
             doc.parse_string(self.doc.as_string(style=gemmi.cif.Style.Indent35))
-            block = doc.sole_block()
-            if block.find_pair_item('_shelx_hkl_file'):
-                block.find_pair_item('_shelx_hkl_file').erase()
+            for block in doc:
+                if block.find_pair_item('_shelx_hkl_file'):
+                    block.find_pair_item('_shelx_hkl_file').erase()
+                if block.find_pair_item('_shelx_fcf_file'):
+                    block.find_pair_item('_shelx_fcf_file').erase()
             return doc.as_string(style=gemmi.cif.Style.Indent35)
         else:
             return self.doc.as_string(style=gemmi.cif.Style.Indent35)
@@ -170,18 +185,19 @@ class CifContainer():
         """
         Brings the current CIF in the specific order of the order list.
         """
-        for key in reversed(self.order):
-            try:
-                self.block.move_item(self.block.get_index(key), 0)
-            except (RuntimeError, ValueError):
-                pass
-                # print('Not in list:', key)
-        # make sure hkl file and res file are at the end if the cif file:
-        for key in special_keys:
-            try:
-                self.block.move_item(self.block.get_index(key), -1)
-            except (RuntimeError, ValueError):
-                continue
+        for block in self.doc:
+            for key in reversed(self.order):
+                try:
+                    block.move_item(block.get_index(key), 0)
+                except (RuntimeError, ValueError):
+                    pass
+                    # print('Not in list:', key)
+            # make sure hkl file and res file are at the end if the cif file:
+            for key in special_keys:
+                try:
+                    block.move_item(block.get_index(key), -1)
+                except (RuntimeError, ValueError):
+                    continue
 
     @property
     def res_file_data(self) -> str:
@@ -506,8 +522,8 @@ class CifContainer():
         u_eq = self.block.find_loop('_atom_site_U_iso_or_equiv')
         atom = namedtuple('Atom', ('label', 'type', 'x', 'y', 'z', 'part', 'occ', 'u_eq'))
         for label, type, x, y, z, part, occ, u_eq in zip(labels, types, x, y, z,
-                                                         part if part else ('0',)*len(labels),
-                                                         occ if occ else ('1.000000',)*len(labels),
+                                                         part if part else ('0',) * len(labels),
+                                                         occ if occ else ('1.000000',) * len(labels),
                                                          u_eq):
             if without_h and self.ishydrogen(label):
                 continue

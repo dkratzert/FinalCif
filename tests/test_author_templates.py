@@ -1,14 +1,16 @@
+import time
 import unittest
 from pathlib import Path
 
 from finalcif.appwindow import AppWindow
-from tests.test_utils import current_file_path
 
 
 class MyTestCase(unittest.TestCase):
+
     def setUp(self) -> None:
-        current_file_path()
         self.testcif = Path('tests/examples/1979688.cif').resolve()
+        self.authorexport_file = Path('tests/examples/testexport_author.cif').resolve()
+        self.testimport_author = Path('tests/other_templates/AATest_Author.cif').resolve()
         self.app = AppWindow(self.testcif, unit_test=True)
         self.app.running_inside_unit_test = True
         self.app.hide()
@@ -16,14 +18,12 @@ class MyTestCase(unittest.TestCase):
                        'name'   : 'name', 'orcid': 'orcid', 'phone': 'phone', 'contact': True}
 
     def tearDown(self) -> None:
-        current_file_path()
-        Path('tests/other_templates/testexport_author.cif').unlink(missing_ok=True)
-        Path('tests/examples/testexport_author.cif').unlink(missing_ok=True)
+        self.authorexport_file.unlink(missing_ok=True)
         self.app.close()
 
     def _import_testauthor(self):
         # To be used in other tests
-        self.app.authors.import_author('../other_templates/AATest_Author.cif')
+        self.app.authors.import_author(str(self.testimport_author))
         self.app.ui.LoopTemplatesListWidget.setCurrentRow(0)
 
     def test_selected_loop_without_selection(self):
@@ -44,15 +44,17 @@ class MyTestCase(unittest.TestCase):
         for row in range(listw.count()):
             listw.setCurrentRow(row)
             if listw.currentItem().text().startswith(name):
+                listw.clicked.emit(listw.model().index(row, 0))
                 break
 
     def test_export_selected_author(self):
         self._delete_test_author()
+        self.authorexport_file.unlink(missing_ok=True)
         self._import_testauthor()
-        self.app.authors.export_author_template('testexport_author.cif')
-        self.assertEqual(True, Path('testexport_author.cif').exists())
-        self.assertEqual(Path('testexport_author.cif').read_text(),
-                         Path('testexport_author.cif').read_text())
+        self._select_row_of_author('AATest Author')
+        self.app.authors.export_author_template(str(self.authorexport_file))
+        self.assertEqual(True, self.authorexport_file.exists())
+        self.assertEqual(self.testimport_author.read_text(), self.authorexport_file.read_text())
 
     def test_set_name(self):
         self.app.ui.FullNameLineEdit.setText('test')

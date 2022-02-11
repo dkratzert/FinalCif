@@ -199,7 +199,8 @@ class MyHTMLParser(HTMLParser):
             if line.startswith('_vrf'):
                 single_form = {'level': ''}
                 plat = line.split('_')[2]
-                single_form.update({'name': line, 'alert_num': plat})
+                data = line.split('_', 3)[3]
+                single_form.update({'name': line, 'alert_num': plat, 'data_name': data})
             if line.startswith(';'):
                 continue
             if line.startswith('PROBLEM'):
@@ -271,7 +272,7 @@ class AlertHelpRemote():
 
 if __name__ == "__main__":
     cif = Path('test-data/1000007-finalcif.cif')
-    html = Path(r'test-data/checkcif_pdf_result.html')
+    html = Path(r'tests/examples/work/checkcif-cu_BruecknerJK_153F40_0m-finalcif.html')
     # ckf = CheckCif(None, cif, outfile=html)
     # ckf.show_html_report()
     # sys.exit()
@@ -279,10 +280,11 @@ if __name__ == "__main__":
     # html = Path(r'D:\frames\guest\BreitPZ_R_122\BreitPZ_R_122\checkcif-BreitPZ_R_122_0m_a.html')
     parser = MyHTMLParser(html.read_text())
     # print(parser.imageurl)
-    # pprint(parser.response_forms)
+    from pprint import pprint
+    pprint(parser.response_forms)
     # print(parser.alert_levels)
     # print(parser.vrf)
-    print(parser.pdf)
+    # print(parser.pdf)
     # print(parser.link)
 
     # a = AlertHelp()

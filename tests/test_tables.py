@@ -15,7 +15,6 @@ from finalcif.appwindow import AppWindow
 class TablesTestMixin():
 
     def setUp(self) -> None:
-        os.chdir(Path(__file__).absolute().parent.parent)
         self.testcif = Path('tests/examples/1979688.cif').absolute()
         self.myapp = AppWindow(self.testcif, unit_test=True)
         self.myapp.ui.HAtomsCheckBox.setChecked(False)
@@ -25,8 +24,8 @@ class TablesTestMixin():
         self.myapp.ui.TemplatesListWidget.setCurrentRow(0)
         self.myapp.running_inside_unit_test = True
         self.myapp.hide()
-        self.reportdoc = Path('report_' + self.testcif.stem + '-finalcif.docx')
-        self.report_zip = Path(self.testcif.stem + '-finalcif.zip')
+        self.reportdoc = Path(str(self.testcif.parent.joinpath('report_' + self.testcif.stem + '-finalcif.docx')))
+        self.report_zip = self.testcif.parent.joinpath(Path(self.testcif.stem + '-finalcif.zip'))
         self.myapp.hide()
 
     def tearDown(self) -> None:
@@ -44,7 +43,7 @@ class TablesTestCase(TablesTestMixin, unittest.TestCase):
     def setUp(self) -> None:
         super().setUp()
         self.myapp.ui.PictureWidthDoubleSpinBox.setValue(7.43)
-        self.myapp.set_report_picture(Path('../../finalcif/icon/finalcif.png'))
+        self.myapp.set_report_picture(Path('finalcif/icon/finalcif.png'))
 
     def test_save_report_works(self):
         self.myapp.ui.SaveFullReportButton.click()
@@ -60,7 +59,7 @@ class TablesTestCase(TablesTestMixin, unittest.TestCase):
     def test_default_picture_width(self):
         self.myapp.ui.PictureWidthDoubleSpinBox.setValue(0.0)
         self.myapp.ui.SaveFullReportButton.click()
-        doc = Document(self.reportdoc.absolute())
+        doc = Document(self.reportdoc.resolve())
         shapes: InlineShapes = doc.inline_shapes
         self.assertEqual(WD_INLINE_SHAPE.PICTURE, shapes[0].type)
         self.assertEqual(Cm(7.5).emu, shapes[0].width)
@@ -116,7 +115,7 @@ class TablesNoPictureTestCase(TablesTestMixin, unittest.TestCase):
 
     def test_picture_has_correct_size(self):
         self.myapp.ui.SaveFullReportButton.click()
-        doc = Document(self.reportdoc.absolute())
+        doc = Document(self.reportdoc.resolve())
         shapes: InlineShapes = doc.inline_shapes
         self.assertEqual(0, len(shapes))
 

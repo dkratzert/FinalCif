@@ -33,7 +33,6 @@ class TestShedCifWithData(unittest.TestCase):
 class TestShedCifNoData(unittest.TestCase):
 
     def setUp(self) -> None:
-        os.chdir(Path(__file__).absolute().parent.parent)
         self.cif = CifContainer(Path('test-data/1000007.cif'))
         self.shred = ShredCIF(self.cif, ui=None)
 
