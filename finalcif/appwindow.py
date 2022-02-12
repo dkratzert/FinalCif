@@ -933,7 +933,7 @@ class AppWindow(QMainWindow):
             return None
         if not self.save_current_cif_file():
             return None
-        #self.load_cif_file(self.final_cif_file_name)
+        self.load_cif_file(self.final_cif_file_name)
         self.ui.datanameComboBox.setCurrentIndex(current_block)
         report_filename = self.cif.fileobj.parent.resolve().joinpath(
             Path('report_' + strip_finalcif_of_name(self.cif.fileobj.stem) + '-finalcif.docx'))
