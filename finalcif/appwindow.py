@@ -470,13 +470,14 @@ class AppWindow(QMainWindow):
         """
         Deletes a row of the main table and reloads the cif file.
         """
+        current_block = self.ui.datanameComboBox.currentIndex()
         if self.cif.block.find_pair(key):
             self.cif.block.find([key]).erase()
             if key in self.missing_data:
                 self.missing_data.discard(key)
                 # del self.missing_data[self.missing_data.index(key)]
             self.save_current_cif_file()
-            self.load_cif_file(self.final_cif_file_name)
+            self.load_cif_file(self.final_cif_file_name, block=current_block)
 
     def check_for_update_version(self) -> None:
         if os.environ.get('NO_NETWORK'):
@@ -685,6 +686,7 @@ class AppWindow(QMainWindow):
         """
         Performs an online checkcif via checkcif.iucr.org.
         """
+        current_block = self.ui.datanameComboBox.currentIndex()
         self._get_check_def()
         self.ui.CheckCifLogPlainTextEdit.clear()
         try:
@@ -701,7 +703,7 @@ class AppWindow(QMainWindow):
         if not self.save_current_cif_file():
             self.ui.CheckCifLogPlainTextEdit.appendHtml('<b>Unable to save CIF file. Aborting action...</b>')
             return None
-        self.load_cif_file(self.final_cif_file_name)
+        self.load_cif_file(self.final_cif_file_name, block=current_block)
         self.htmlfile = Path(strip_finalcif_of_name('checkcif-' + self.cif.fileobj.stem) + '-finalcif.html')
         try:
             self.htmlfile.unlink()
@@ -730,6 +732,7 @@ class AppWindow(QMainWindow):
         Saves the validation response form text to _vrf_ CIF entries.
         :return: None
         """
+        current_block = self.ui.datanameComboBox.currentIndex()
         if not self.validation_response_forms_list:
             return
         n = 0
@@ -748,7 +751,7 @@ class AppWindow(QMainWindow):
                 if block.name == v.data_name:
                     block.set_pair(v.key, quote(utf8_to_str(v.value)))
         self.save_current_cif_file()
-        self.load_cif_file(self.final_cif_file_name)
+        self.load_cif_file(self.final_cif_file_name, current_block)
         if n:
             self.ui.CheckCifLogPlainTextEdit.appendPlainText('Forms saved')
         else:
@@ -766,12 +769,13 @@ class AppWindow(QMainWindow):
         """
         Performs an online checkcif and shows the result as pdf.
         """
+        current_block = self.ui.datanameComboBox.currentIndex()
         self.ui.CheckCifLogPlainTextEdit.clear()
         self.ui.CheckCIFResultsTabWidget.setCurrentIndex(2)
         if not self.save_current_cif_file():
             self.ui.CheckCifLogPlainTextEdit.appendHtml('<b>Unable to save CIF file. Aborting action...</b>')
             return None
-        self.load_cif_file(self.final_cif_file_name)
+        self.load_cif_file(self.final_cif_file_name, current_block)
         htmlfile = Path('checkpdf-' + self.cif.fileobj.stem + '.html')
         try:
             htmlfile.unlink()
@@ -804,6 +808,7 @@ class AppWindow(QMainWindow):
         """
         Performs a checkcif with platon and displays it in the text editor of the MainStackedWidget.
         """
+        current_block = self.ui.datanameComboBox.currentIndex()
         self.ui.CheckCifLogPlainTextEdit.clear()
         self.ui.MainStackedWidget.go_to_checkcif_page()
         self.ui.CheckCIFResultsTabWidget.setCurrentIndex(0)
@@ -815,7 +820,7 @@ class AppWindow(QMainWindow):
         if not self.save_current_cif_file():
             self.ui.CheckCifLogPlainTextEdit.appendPlainText('Unable to save CIF file. Aborting action...')
             return None
-        self.load_cif_file(self.final_cif_file_name)
+        self.load_cif_file(self.final_cif_file_name, block=current_block)
         self.ui.MainStackedWidget.go_to_checkcif_page()
         QApplication.processEvents()
         timeout = 350
@@ -933,8 +938,7 @@ class AppWindow(QMainWindow):
             return None
         if not self.save_current_cif_file():
             return None
-        self.load_cif_file(self.final_cif_file_name)
-        self.ui.datanameComboBox.setCurrentIndex(current_block)
+        self.load_cif_file(self.final_cif_file_name, block=current_block)
         report_filename = self.cif.fileobj.parent.resolve().joinpath(
             Path('report_' + strip_finalcif_of_name(self.cif.fileobj.stem) + '-finalcif.docx'))
         # The picture after the header:
@@ -1167,10 +1171,11 @@ class AppWindow(QMainWindow):
             return True
         return False
 
-    def load_cif_file(self, filepath: Path) -> None:
+    def load_cif_file(self, filepath: Path, block=0) -> None:
         """
         Opens the cif file and fills information into the main table.
         """
+        self.ui.datanameComboBox.blockSignals(True)
         self._clear_state_before_block_load()
         if not filepath:
             filepath = Path(cif_file_open_dialog())
@@ -1202,9 +1207,11 @@ class AppWindow(QMainWindow):
             self.warn_about_bad_cif()
         # Do this only when sure we can load the file:
         self.save_current_recent_files_list(filepath)
-        self._load_block(0)
+        self._load_block(block)
         self.add_data_names_to_combobox()
+        self.ui.datanameComboBox.setCurrentIndex(block)
         self.ui.cif_main_table.resizeRowsToContents()
+        self.ui.datanameComboBox.blockSignals(False)
 
     def add_data_names_to_combobox(self):
         self.ui.datanameComboBox.clear()
