@@ -288,6 +288,8 @@ class AppWindow(QMainWindow):
         self.textedit.ui.deletePushButton.clicked.connect(self.delete_text_template)
         self.textedit.ui.importPushButton.clicked.connect(self.import_text_template)
         self.ui.cif_main_table.textTemplate.connect(self.on_text_template_open)
+        #
+        self.ui.appendCifPushButton.clicked.connect(self.append_cif)
 
     def on_text_template_open(self, row: int):
         self.ui.cif_main_table.setCurrentCell(row, COL_EDIT)
@@ -295,13 +297,6 @@ class AppWindow(QMainWindow):
         self.textedit.ui.cifKeyLineEdit.setText(cif_key)
         self.textedit.add_textfields(self.settings.load_settings_list('text_templates', cif_key))
         edit_text = self.ui.cif_main_table.getText(row, COL_EDIT)
-        # Probably use also the text from the COL_CIF?
-        # data_text = self.ui.cif_main_table.getText(row, COL_DATA)
-        # cif_text = self.ui.cif_main_table.getText(row, COL_CIF)
-        # if cif_text:
-        #    text = cif_text
-        # else:
-        #    text = ''
         self.textedit.ui.plainTextEdit.setPlainText(edit_text)
 
     def import_text_template(self):
@@ -1178,6 +1173,7 @@ class AppWindow(QMainWindow):
         Opens the cif file and fills information into the main table.
         """
         self.ui.datanameComboBox.blockSignals(True)
+        # Is also done in block load method
         self._clear_state_before_block_load()
         if not filepath:
             filepath = Path(cif_file_open_dialog())
@@ -1259,7 +1255,7 @@ class AppWindow(QMainWindow):
             if not self.ui.MainStackedWidget.on_checkcif_page():
                 self.ui.MainStackedWidget.got_to_main_page()
             self.deposit.cif = self.cif
-            #self.ui.cif_main_table.resizeRowsToContents()
+            # self.ui.cif_main_table.resizeRowsToContents()
             self.ui.cif_main_table.vheaderitems.clear()
             for row_number in range(self.ui.cif_main_table.model().rowCount()):
                 vhead_key = self.get_key_by_row_number(row_number)
@@ -1299,10 +1295,25 @@ class AppWindow(QMainWindow):
         self.ui.CODpushButton.setEnabled(True)
         self.ui.CCDCpushButton.setEnabled(True)
         self.ui.LoopsPushButton.setEnabled(True)
+        if self.cif.is_multi_cif:
+            self.ui.CODpushButton.setDisabled(True)
+        else:
+            self.ui.CODpushButton.setEnabled(True)
+
+    def append_cif(self):
+        file = self.get_file_from_dialog()
+        cif2 = CifContainer(file)
+        if cif2.is_multi_cif:
+            show_general_warning('Can add single data CIFs only!')
+        if cif2.block.name in [x.name for x in self.cif.doc]:
+            show_general_warning(warn_text='Duplicate block', info_text='Data block name "<b>{}</b>" already present '
+                                                         'in current CIF!'.format(self.cif.block.name))
+            return
+        self.cif.doc.add_copied_block(block=cif2.block, pos=-1)
+        self.cif.save()
+        self.load_cif_file(filepath=self.cif.fileobj)
 
     def get_file_from_dialog(self, change_into_workdir=True) -> Union[Path, None]:
-        # if change_into_workdir:
-        #    self.set_last_workdir()
         fp = Path(cif_file_open_dialog(last_dir=self.get_last_workdir()))
         filepath = Path(fp)
         # if change_into_workdir:
