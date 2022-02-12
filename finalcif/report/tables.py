@@ -277,7 +277,8 @@ def populate_main_table_values(main_table: Table, cif: CifContainer, column=1, c
     """
     Fills the main table with residuals. Column, by column.
     """
-    main_table.cell(0, column).paragraphs[0].add_run(cif.block.name).bold = True
+    if cell_fact > 0:
+        main_table.cell(0, column).paragraphs[0].add_run(cif.block.name).bold = True
     main_table.cell(0 + cell_fact, column).paragraphs[0].add_run(cif['_database_code_depnum_ccdc_archive'])
     # Set text for all usual cif keywords by a lookup table:
     add_regular_key_value_pairs(cif, main_table, column, cell_fact)
@@ -383,7 +384,7 @@ def populate_main_table_values(main_table: Table, cif: CifContainer, column=1, c
     else:
         if cell_fact > 0:
             main_table.cell(31 + cell_fact, column).text = '---'
-    exti = cif['_refine_ls_extinction_coef'] or '---'
+    exti = cif['_refine_ls_extinction_coef']
     if exti not in ['.', "'.'", '?', '']:
         num = len(main_table.columns[0].cells)
         main_table.columns[column].cells[num - 1].text = exti
