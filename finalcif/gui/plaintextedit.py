@@ -30,8 +30,7 @@ class MyQPlainTextEdit(QPlainTextEdit):
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setWordWrapMode(QTextOption.WordWrap)
-        font = self.document().defaultFont()
-        self.fontmetric = QFontMetrics(font)
+        self.fontmetric = QFontMetrics(self.document().defaultFont())
         self.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
         self.textChanged.connect(lambda: self.parent.resizeRowToContents(self.row))
 
