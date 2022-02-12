@@ -927,12 +927,14 @@ class AppWindow(QMainWindow):
         """
         Generates a report document.
         """
+        current_block = self.ui.datanameComboBox.currentIndex()
         not_ok = None
         if not self.cif:
             return None
         if not self.save_current_cif_file():
             return None
-        self.load_cif_file(self.final_cif_file_name)
+        #self.load_cif_file(self.final_cif_file_name)
+        self.ui.datanameComboBox.setCurrentIndex(current_block)
         report_filename = self.cif.fileobj.parent.resolve().joinpath(
             Path('report_' + strip_finalcif_of_name(self.cif.fileobj.stem) + '-finalcif.docx'))
         # The picture after the header:
@@ -943,7 +945,7 @@ class AppWindow(QMainWindow):
         try:
             if self.ui.TemplatesListWidget.currentRow() == 0 or not self.ui.TemplatesListWidget.currentItem():
                 print('Report without templates')
-                make_report_from(options=self.options, file_obj=self.cif.fileobj.resolve(),
+                make_report_from(options=self.options, cif=self.cif,
                                  output_filename=report_filename, picfile=picfile)
             else:
                 print('Report with templates')
