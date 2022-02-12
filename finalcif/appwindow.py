@@ -406,6 +406,7 @@ class AppWindow(QMainWindow):
             file = '{}.cif'.format(input_txt)
             r = requests.get(self.deposit.main_url + '{}.cif'.format(input_txt))
             if r.status_code == 200:
+                file = cif_file_save_dialog(file)
                 Path(file).write_bytes(r.content)
                 r.close()
                 self.load_cif_file(Path(file))
@@ -413,8 +414,9 @@ class AppWindow(QMainWindow):
                 self.ui.SelectCif_LineEdit.setText('')
 
     def open_cod_page(self):
+        current_block = self.ui.datanameComboBox.currentIndex()
         self.save_current_cif_file()
-        self.load_cif_file(self.final_cif_file_name)
+        self.load_cif_file(self.final_cif_file_name, current_block)
         self.deposit.cif = self.cif
         self.ui.MainStackedWidget.setCurrentIndex(7)
 
@@ -615,7 +617,7 @@ class AppWindow(QMainWindow):
         """
         Get back to the main table and load the new cif file.
         """
-        self.load_cif_file(self.final_cif_file_name)
+        self.load_cif_file(filepath=self.cif.fileobj)
         self.ui.MainStackedWidget.got_to_main_page()
         self.ui.cif_main_table.scrollToTop()
         self.ui.TemplatesStackedWidget.setCurrentIndex(0)
