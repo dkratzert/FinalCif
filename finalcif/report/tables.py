@@ -29,6 +29,7 @@ from finalcif.tools.misc import protected_space, angstrom, bequal, sigma_sm, hal
     timessym, lambdasym, this_or_quest, isnumeric, minus_sign, Theta_symbol, grouper
 from finalcif.tools.options import Options
 
+
 def open_cif_file(cif_fileobj) -> Union[None, CifContainer]:
     try:
         cif = CifContainer(cif_fileobj)
@@ -38,27 +39,25 @@ def open_cif_file(cif_fileobj) -> Union[None, CifContainer]:
         return None
     return cif
 
-def make_multi_tables(files: List[Path], output_filename: str = 'multitable.docx', path: str = '') -> str:
+
+def make_multi_tables(cif: CifContainer, output_filename: str = 'multitable.docx') -> str:
     """
     The main loop for doing the report pages with tables.
     """
-    group_of_files = list(grouper(files, 3))
+    group_of_files = list(grouper(cif.doc, 3))
     table_index = len(group_of_files) - 1
     document = create_document()
     document.add_heading('Structure Tables', 1)
     for file_group in enumerate(group_of_files):
-        #page_number = file_group[0]
+        # page_number = file_group[0]
         cif_triple = file_group[1]
         main_table = document.add_table(rows=34, cols=4)
-        populate_description_columns(main_table, cif)
+        populate_description_columns(main_table, cif, cell_fact=1)
         for table_column in range(1, 4):  # the three columns
             if cif_triple[table_column - 1]:
-                cif_fileobj = file_group[1][table_column - 1]
-                cif = open_cif_file(cif_fileobj)
-                if not cif:
-                    continue
-                print(cif)
-                populate_main_table_values(main_table, cif, column=table_column)
+                cif_block = file_group[1][table_column - 1]
+                cif.block = cif_block
+                populate_main_table_values(main_table, cif, column=table_column, cell_fact=1)
         if file_group[0] < table_index:
             document.add_page_break()
 
@@ -66,7 +65,8 @@ def make_multi_tables(files: List[Path], output_filename: str = 'multitable.docx
     document.save(output_filename)
     return output_filename
 
-def make_report_from(options: Options, file_obj: Path, output_filename: str = None, picfile: Path = None) -> str:
+
+def make_report_from(options: Options, cif: CifContainer, output_filename: str = None, picfile: Path = None) -> str:
     """
     Creates a tabular cif report.
     :param file_obj: Input cif file.
@@ -74,18 +74,6 @@ def make_report_from(options: Options, file_obj: Path, output_filename: str = No
     """
     document = create_document()
     ref: Union[ReferenceList, None] = None
-    if file_obj.exists():
-        try:
-            cif = CifContainer(file_obj)
-        except Exception as e:
-            print('Unable to open cif file:')
-            print(e)
-            raise
-    else:
-        raise FileNotFoundError
-    if not cif:
-        print('Something failed during cif file saving.')
-        return ''
 
     if not options.report_text:
         document.add_heading('Structure Tables for {}'.format(cif.block.name), 1)
@@ -145,7 +133,7 @@ def make_report_from(options: Options, file_obj: Path, output_filename: str = No
 
     document.save(output_filename)
     print('\nTables finished - output file: {}'.format(output_filename))
-    return file_obj.name
+    return cif.block.name
 
 
 def add_picture(document: Document, options: Options, picfile: Path) -> None:
@@ -285,18 +273,19 @@ def add_residuals_table(document: Document(), cif: CifContainer, table_num: int)
     return table_num
 
 
-def populate_main_table_values(main_table: Table, cif: CifContainer):
+def populate_main_table_values(main_table: Table, cif: CifContainer, column=1, cell_fact=0):
     """
     Fills the main table with residuals. Column, by column.
     """
-    main_table.cell(0, 1).paragraphs[0].add_run(cif['_database_code_depnum_ccdc_archive'])
+    main_table.cell(0, column).paragraphs[0].add_run(cif.block.name).bold = True
+    main_table.cell(0 + cell_fact, column).paragraphs[0].add_run(cif['_database_code_depnum_ccdc_archive'])
     # Set text for all usual cif keywords by a lookup table:
-    add_regular_key_value_pairs(cif, main_table)
+    add_regular_key_value_pairs(cif, main_table, column, cell_fact)
     # Now the special handling:
-    formula_paragraph = main_table.cell(1, 1).paragraphs[0]
+    formula_paragraph = main_table.cell(1 + cell_fact, column).paragraphs[0]
     sum_formula = cif['_chemical_formula_sum'].replace(" ", "")
     add_sum_formula(formula_paragraph, sum_formula)
-    spgr_paragraph = main_table.cell(5, 1).paragraphs[0]
+    spgr_paragraph = main_table.cell(5 + cell_fact, column).paragraphs[0]
     space_group = cif.space_group
     try:
         it_number = str(cif.spgr_number)
@@ -345,14 +334,14 @@ def populate_main_table_values(main_table: Table, cif: CifContainer):
         diff_density_max = '?'
 
     # now prepare & write all the concatenated & derived cell contents:
-    main_table.cell(17, 1).text = this_or_quest(crystal_size_max) + timessym + \
-                                  this_or_quest(crystal_size_mid) + timessym + \
-                                  this_or_quest(crystal_size_min)
+    main_table.cell(17 + cell_fact, column).text = this_or_quest(crystal_size_max) + timessym + \
+                                                   this_or_quest(crystal_size_mid) + timessym + \
+                                                   this_or_quest(crystal_size_min)
     wavelength = str(' ({} ='.format(lambdasym) + this_or_quest(radiation_wavelength) +
                      '{}{})'.format(protected_space, angstrom)).replace(' ', '')
     # radtype: ('Mo', 'K', '\\a')
     radtype = format_radiation(radiation_type)
-    radrun = main_table.cell(20, 1).paragraphs[0]
+    radrun = main_table.cell(20 + cell_fact, column).paragraphs[0]
     # radiation type e.g. Mo:
     radrun.add_run(radtype[0])
     # K line:
@@ -368,29 +357,36 @@ def populate_main_table_values(main_table: Table, cif: CifContainer):
                                        protected_space,
                                        angstrom)
         # 2theta range:
-        main_table.cell(21, 1).text = "{:.2f} to {:.2f}{}".format(2 * float(theta_min), 2 * float(theta_max), d_max)
+        main_table.cell(21 + cell_fact, column).text = "{:.2f} to {:.2f}{}".format(2 * float(theta_min),
+                                                                                   2 * float(theta_max), d_max)
     except ValueError:
-        main_table.cell(21, 1).text = '? to ?'
-    main_table.cell(22, 1).text = '{} {} h {} {}\n'.format(limit_h_min, less_or_equal, less_or_equal, limit_h_max) \
-                                  + '{} {} k {} {}\n'.format(limit_k_min, less_or_equal, less_or_equal, limit_k_max) \
-                                  + '{} {} l {} {}'.format(limit_l_min, less_or_equal, less_or_equal, limit_l_max)
-    rint_p = main_table.cell(24, 1).paragraphs[0]
+        main_table.cell(21 + cell_fact, column).text = '? to ?'
+    main_table.cell(22 + cell_fact, column).text = '{} {} h {} {}\n'.format(limit_h_min, less_or_equal, less_or_equal,
+                                                                            limit_h_max) \
+                                                   + '{} {} k {} {}\n'.format(limit_k_min, less_or_equal, less_or_equal,
+                                                                              limit_k_max) \
+                                                   + '{} {} l {} {}'.format(limit_l_min, less_or_equal, less_or_equal,
+                                                                            limit_l_max)
+    rint_p = main_table.cell(24 + cell_fact, column).paragraphs[0]
     add_r_int_value(cif, rint_p)
-    main_table.cell(25, 1).paragraphs[0].add_run(completeness)
-    main_table.cell(26, 1).text = this_or_quest(ls_number_reflns) + '/' \
-                                  + this_or_quest(ls_number_restraints) + '/' \
-                                  + this_or_quest(ls_number_parameters)
-    main_table.cell(27, 1).paragraphs[0].add_run(goof)
-    r1sig_p = main_table.cell(28, 1).paragraphs[0]
-    rfull_p = main_table.cell(29, 1).paragraphs[0]
+    main_table.cell(25 + cell_fact, column).paragraphs[0].add_run(completeness)
+    main_table.cell(26 + cell_fact, column).text = this_or_quest(ls_number_reflns) + '/' \
+                                                   + this_or_quest(ls_number_restraints) + '/' \
+                                                   + this_or_quest(ls_number_parameters)
+    main_table.cell(27 + cell_fact, column).paragraphs[0].add_run(goof)
+    r1sig_p = main_table.cell(28 + cell_fact, column).paragraphs[0]
+    rfull_p = main_table.cell(29 + cell_fact, column).paragraphs[0]
     add_r1sig_and_wr2full(cif, r1sig_p, rfull_p)
-    main_table.cell(30, 1).text = diff_density_max + '/' + diff_density_min
+    main_table.cell(30 + cell_fact, column).text = diff_density_max + '/' + diff_density_min
     if not cif.is_centrosymm:
-        main_table.cell(31, 1).text = cif['_refine_ls_abs_structure_Flack'] or '?'
-    exti = cif['_refine_ls_extinction_coef']
+        main_table.cell(31 + cell_fact, column).text = cif['_refine_ls_abs_structure_Flack'] or '?'
+    else:
+        if cell_fact > 0:
+            main_table.cell(31 + cell_fact, column).text = '---'
+    exti = cif['_refine_ls_extinction_coef'] or '---'
     if exti not in ['.', "'.'", '?', '']:
         num = len(main_table.columns[0].cells)
-        main_table.columns[1].cells[num - 1].text = exti
+        main_table.columns[column].cells[num - 1].text = exti
 
 
 def add_r1sig_and_wr2full(cif, r2sig_p, rfull_p):
@@ -427,15 +423,14 @@ def add_r_int_value(cif: CifContainer, rint_p: Paragraph):
     rint_p.add_run(' = ' + this_or_quest(reflns_av_unetI))
 
 
-def add_regular_key_value_pairs(cif: CifContainer, main_table: Table) -> None:
+def add_regular_key_value_pairs(cif: CifContainer, main_table: Table, column=1, cell_fact=0) -> None:
     for _, key in enumerate(cif_keywords_list):
         # key[1] contains the row number:
-        cell = main_table.cell(key[1] + 1, 1)
+        cell = main_table.cell(key[1] + 1 + cell_fact, column)
         if cif[key[0]]:
             cell.text = cif[key[0]]
         else:
             cell.text = '?'
-            continue
 
 
 def add_sum_formula(formula_paragraph, sum_formula):
@@ -651,70 +646,73 @@ def add_hydrogen_bonds(document: Document, table_num: int, data: HydrogenBonds =
     return table_num
 
 
-def populate_description_columns(main_table: Table, cif: CifContainer) -> None:
+def populate_description_columns(main_table: Table, cif: CifContainer, cell_fact=0) -> None:
     """
     This Method adds the descriptions to the fist property table column.
+    cell_fact: Moves alle cells down by this factor to allow an empty first row for the data block name.
     """
-    main_table.cell(0, 0).paragraphs[0].add_run('CCDC number')
-    main_table.cell(1, 0).paragraphs[0].add_run('Empirical formula')
-    main_table.cell(2, 0).paragraphs[0].add_run('Formula weight')
-    main_table.cell(3, 0).paragraphs[0].add_run('Temperature [K]')
-    main_table.cell(4, 0).paragraphs[0].add_run('Crystal system')
-    main_table.cell(5, 0).paragraphs[0].add_run('Space group (number)')
-    lgnd6 = main_table.cell(6, 0).paragraphs[0]
+    main_table.cell(0, 0).paragraphs[0].add_run('')
+    main_table.cell(0 + cell_fact, 0).paragraphs[0].add_run('CCDC number')
+    main_table.cell(1 + cell_fact, 0).paragraphs[0].add_run('Empirical formula')
+    main_table.cell(2 + cell_fact, 0).paragraphs[0].add_run('Formula weight')
+    main_table.cell(3 + cell_fact, 0).paragraphs[0].add_run('Temperature [K]')
+    main_table.cell(4 + cell_fact, 0).paragraphs[0].add_run('Crystal system')
+    main_table.cell(5 + cell_fact, 0).paragraphs[0].add_run('Space group (number)')
+    lgnd6 = main_table.cell(6 + cell_fact, 0).paragraphs[0]
     lgnd6.add_run('a').font.italic = True
     lgnd6.add_run(' [{}]'.format(angstrom))
-    lgnd7 = main_table.cell(7, 0).paragraphs[0]
+    lgnd7 = main_table.cell(7 + cell_fact, 0).paragraphs[0]
     lgnd7.add_run('b').font.italic = True
     lgnd7.add_run(' [{}]'.format(angstrom))
-    lgnd8 = main_table.cell(8, 0).paragraphs[0]
+    lgnd8 = main_table.cell(8 + cell_fact, 0).paragraphs[0]
     lgnd8.add_run('c').font.italic = True
     lgnd8.add_run(' [{}]'.format(angstrom))
-    lgnd9 = main_table.cell(9, 0).paragraphs[0].add_run('\u03B1 [{}]'.format(degree_sign))
-    lgnd10 = main_table.cell(10, 0).paragraphs[0].add_run('\u03B2 [{}]'.format(degree_sign))
-    lgnd11 = main_table.cell(11, 0).paragraphs[0].add_run('\u03B3 [{}]'.format(degree_sign))
-    lgnd12 = main_table.cell(12, 0).paragraphs[0]
+    lgnd9 = main_table.cell(9 + cell_fact, 0).paragraphs[0].add_run('\u03B1 [{}]'.format(degree_sign))
+    lgnd10 = main_table.cell(10 + cell_fact, 0).paragraphs[0].add_run('\u03B2 [{}]'.format(degree_sign))
+    lgnd11 = main_table.cell(11 + cell_fact, 0).paragraphs[0].add_run('\u03B3 [{}]'.format(degree_sign))
+    lgnd12 = main_table.cell(12 + cell_fact, 0).paragraphs[0]
     lgnd12.add_run('Volume [{}'.format(angstrom))
     lgnd12.add_run('3').font.superscript = True
     lgnd12.add_run(']')
-    lgnd13 = main_table.cell(13, 0).paragraphs[0].add_run('Z').font.italic = True
-    lgnd14 = main_table.cell(14, 0).paragraphs[0]
+    lgnd13 = main_table.cell(13 + cell_fact, 0).paragraphs[0].add_run('Z').font.italic = True
+    lgnd14 = main_table.cell(14 + cell_fact, 0).paragraphs[0]
     lgnd14.add_run('\u03C1').font.italic = True
     lgnd14.add_run('calc').font.subscript = True
     lgnd14.add_run(' [gcm')
     lgnd14.add_run(minus_sign + '3').font.superscript = True
     lgnd14.add_run(']')
-    lgnd15 = main_table.cell(15, 0).paragraphs[0]
+    lgnd15 = main_table.cell(15 + cell_fact, 0).paragraphs[0]
     lgnd15.add_run('\u03BC').font.italic = True
     lgnd15.add_run(' [mm')
     lgnd15.add_run(minus_sign + '1').font.superscript = True
     lgnd15.add_run(']')
-    lgnd16 = main_table.cell(16, 0).paragraphs[0]
+    lgnd16 = main_table.cell(16 + cell_fact, 0).paragraphs[0]
     lgnd16.add_run('F').font.italic = True
     lgnd16.add_run('(000)')
-    lgnd17 = main_table.cell(17, 0).paragraphs[0]
+    lgnd17 = main_table.cell(17 + cell_fact, 0).paragraphs[0]
     lgnd17.add_run('Crystal size [mm')
     lgnd17.add_run('3').font.superscript = True
     lgnd17.add_run(']')
-    lgnd18 = main_table.cell(18, 0).paragraphs[0].add_run('Crystal colour')
-    lgnd19 = main_table.cell(19, 0).paragraphs[0].add_run('Crystal shape')
-    lgnd20 = main_table.cell(20, 0).paragraphs[0].add_run('Radiation')
-    lgnd21 = main_table.cell(21, 0).paragraphs[0].add_run('2{} range [{}]'.format(Theta_symbol, degree_sign))
-    lgnd22 = main_table.cell(22, 0).paragraphs[0].add_run('Index ranges')
-    lgnd23 = main_table.cell(23, 0).paragraphs[0].add_run('Reflections collected')
-    lgnd24 = main_table.cell(24, 0).paragraphs[0].add_run('Independent reflections')
-    lgnd25 = main_table.cell(25, 0).paragraphs[0]
+    lgnd18 = main_table.cell(18 + cell_fact, 0).paragraphs[0].add_run('Crystal colour')
+    lgnd19 = main_table.cell(19 + cell_fact, 0).paragraphs[0].add_run('Crystal shape')
+    lgnd20 = main_table.cell(20 + cell_fact, 0).paragraphs[0].add_run('Radiation')
+    lgnd21 = main_table.cell(21 + cell_fact, 0).paragraphs[0].add_run(
+        '2{} range [{}]'.format(Theta_symbol, degree_sign))
+    lgnd22 = main_table.cell(22 + cell_fact, 0).paragraphs[0].add_run('Index ranges')
+    lgnd23 = main_table.cell(23 + cell_fact, 0).paragraphs[0].add_run('Reflections collected')
+    lgnd24 = main_table.cell(24 + cell_fact, 0).paragraphs[0].add_run('Independent reflections')
+    lgnd25 = main_table.cell(25 + cell_fact, 0).paragraphs[0]
     theta_full = cif['_diffrn_reflns_theta_full']
     if theta_full:
         lgnd25.add_run('Completeness to \n{} = {}°'.format(Theta_symbol, theta_full))
     else:
         lgnd25.add_run('Completeness')
-    main_table.cell(26, 0).paragraphs[0].add_run('Data / Restraints / Parameters')
-    lgnd27 = main_table.cell(27, 0).paragraphs[0]
+    main_table.cell(26 + cell_fact, 0).paragraphs[0].add_run('Data / Restraints / Parameters')
+    lgnd27 = main_table.cell(27 + cell_fact, 0).paragraphs[0]
     lgnd27.add_run('Goodness-of-fit on ')
     lgnd27.add_run('F').font.italic = True
     lgnd27.add_run('2').font.superscript = True
-    lgnd28 = main_table.cell(28, 0).paragraphs[0]
+    lgnd28 = main_table.cell(28 + cell_fact, 0).paragraphs[0]
     lgnd28.add_run('Final ')
     lgnd28.add_run('R').font.italic = True
     lgnd28.add_run(' indexes \n[')
@@ -722,16 +720,16 @@ def populate_description_columns(main_table: Table, cif: CifContainer) -> None:
     lgnd28.add_run('{}2{}('.format(bequal, sigma_sm))
     lgnd28.add_run('I').font.italic = True
     lgnd28.add_run(')]')
-    lgnd29 = main_table.cell(29, 0).paragraphs[0]
+    lgnd29 = main_table.cell(29 + cell_fact, 0).paragraphs[0]
     lgnd29.add_run('Final ')
     lgnd29.add_run('R').font.italic = True
     lgnd29.add_run(' indexes \n[all data]')
-    lgnd30 = main_table.cell(30, 0).paragraphs[0]
+    lgnd30 = main_table.cell(30 + cell_fact, 0).paragraphs[0]
     lgnd30.add_run('Largest peak/hole [e{}'.format(angstrom))
     lgnd30.add_run(minus_sign + '3').font.superscript = True
     lgnd30.add_run(']')
     if not cif.is_centrosymm:
-        lgnd31 = main_table.cell(31, 0).paragraphs[0]
+        lgnd31 = main_table.cell(31 + cell_fact, 0).paragraphs[0]
         lgnd31.add_run('Flack X parameter')
     exti = cif['_refine_ls_extinction_coef']
     if exti not in ['.', "'.'", '?', '']:
@@ -789,4 +787,5 @@ if __name__ == '__main__':
     import time
 
     # make_report_from(Path('./test-data').rglob('*.cif')[1])
+    make_multi_tables(CifContainer('test-data/1000007-multi-finalcif.cif'))
     t1 = time.perf_counter()
