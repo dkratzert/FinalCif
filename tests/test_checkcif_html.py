@@ -22,14 +22,14 @@ class TestCheckCifHTML(unittest.TestCase):
     def setUp(self) -> None:
         if os.environ.get('NO_NETWORK'):
             self.skipTest('No network available.')
-        self.myapp = AppWindow(Path('tests/examples/work/cu_BruecknerJK_153F40_0m.cif').absolute(), unit_test=True)
+        self.myapp = AppWindow(Path('tests/examples/work/cu_BruecknerJK_153F40_0m.cif').resolve(), unit_test=True)
         self.myapp.running_inside_unit_test = True
         self.myapp.hide()  # For full screen view
-        self.resobj = Path('checkcif-' + strip_finalcif_of_name(self.myapp.cif.fileobj.stem) + '-finalcif.html')
+        self.resobj = self.myapp.cif.finalcif_file_prefixed(prefix='checkcif-', suffix='.html')
 
     def tearDown(self) -> None:
         self.resobj.unlink(missing_ok=True)
-        self.myapp.final_cif_file_name.unlink(missing_ok=True)
+        self.myapp.cif.finalcif_file.unlink(missing_ok=True)
         Path('platon.out').unlink(missing_ok=True)
         Path('check.def').unlink(missing_ok=True)
         Path('cu_BruecknerJK_153F40_0m-finalcif.chk').unlink(missing_ok=True)
@@ -59,7 +59,7 @@ class TestCheckCifHTML(unittest.TestCase):
         QTest.mouseClick(self.myapp.ui.CheckcifHTMLOnlineButton, Qt.LeftButton, Qt.NoModifier)
         time.sleep(5)
         # this is the file on github:
-        html_as_it_is_expected = Path('checkcif-' + strip_finalcif_of_name(self.myapp.cif.fileobj.stem) + '-test.html')
+        html_as_it_is_expected = self.myapp.cif.finalcif_file_prefixed(prefix='checkcif-', suffix='-test.html')
         htmlfile = html_as_it_is_expected.read_text().splitlines()[28:-13]
         # this is the new downloadad file
         result = self.resobj.read_text().splitlines()[28:-13]

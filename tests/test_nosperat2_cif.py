@@ -1,7 +1,6 @@
 import unittest
 
 from finalcif.cif.cif_file_io import CifContainer
-from tests.test_utils import current_file_path
 
 
 class TestNosphera2(unittest.TestCase):
@@ -9,8 +8,8 @@ class TestNosphera2(unittest.TestCase):
     CIF files from Nosphera2 have no _atom_site_disorder_group. This test checks if the CIF is
     nevertheless readable.
     """
+
     def setUp(self) -> None:
-        current_file_path()
         self.cif = CifContainer('test-data/nospera2.cif')
 
     def test_atoms(self):
