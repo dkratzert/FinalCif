@@ -56,7 +56,7 @@ class TextEditItem(QWidget):
         self.checkbox.setObjectName(name)
 
     def sizeHint(self) -> QSize:
-        return QSize(400, 190)
+        return QSize(400, 120)
 
 
 class MyTextTemplateEdit(QWidget):
