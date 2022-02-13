@@ -350,7 +350,7 @@ class TestWorkfolder(unittest.TestCase):
         erg = [x.replace("\n", "").replace("\r", "") for x in erg]
         pair = [x.replace("\n", "").replace("\r", "") for x in pair]
         self.assertEqual(erg, pair)
-        self.myapp.final_cif_file_name.unlink(missing_ok=True)
+        self.myapp.cif.finalcif_file.unlink(missing_ok=True)
 
 
 if __name__ == '__main__':

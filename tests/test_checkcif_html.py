@@ -29,7 +29,7 @@ class TestCheckCifHTML(unittest.TestCase):
 
     def tearDown(self) -> None:
         self.resobj.unlink(missing_ok=True)
-        self.myapp.final_cif_file_name.unlink(missing_ok=True)
+        self.myapp.cif.finalcif_file.unlink(missing_ok=True)
         Path('platon.out').unlink(missing_ok=True)
         Path('check.def').unlink(missing_ok=True)
         Path('cu_BruecknerJK_153F40_0m-finalcif.chk').unlink(missing_ok=True)

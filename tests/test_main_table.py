@@ -25,7 +25,7 @@ class TestMainTableFieldBehavior(unittest.TestCase):
         self.myapp.hide()  # For full screen view
 
     def tearDown(self) -> None:
-        self.myapp.final_cif_file_name.unlink(missing_ok=True)
+        self.myapp.cif.finalcif_file.unlink(missing_ok=True)
         self.myapp.close()
 
     def key_row(self, key: str) -> int:

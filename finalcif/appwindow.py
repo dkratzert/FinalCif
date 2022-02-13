@@ -89,7 +89,6 @@ class AppWindow(QMainWindow):
         self.checkdef = []
         self.validation_response_forms_list = []
         self.checkdef_file: Path = Path.home().joinpath('check.def')
-        self.final_cif_file_name = Path()
         self.missing_data: set = set()
         self.temperature_warning_displayed = False
         self.threadpool = []
@@ -411,7 +410,7 @@ class AppWindow(QMainWindow):
     def open_cod_page(self):
         current_block = self.ui.datanameComboBox.currentIndex()
         self.save_current_cif_file()
-        self.load_cif_file(self.final_cif_file_name, current_block)
+        self.load_cif_file(self.cif.finalcif_file, current_block)
         self.deposit.cif = self.cif
         self.ui.MainStackedWidget.setCurrentIndex(7)
 
@@ -474,7 +473,7 @@ class AppWindow(QMainWindow):
                 self.missing_data.discard(key)
                 # del self.missing_data[self.missing_data.index(key)]
             self.save_current_cif_file()
-            self.load_cif_file(self.final_cif_file_name, block=current_block)
+            self.load_cif_file(self.cif.finalcif_file, block=current_block)
 
     def check_for_update_version(self) -> None:
         if os.environ.get('NO_NETWORK'):
@@ -655,7 +654,7 @@ class AppWindow(QMainWindow):
         self.checkcif_browser.load(url)
         self.ui.ResponsesTabWidget.setCurrentIndex(0)
         # The picture file linked in the html file:
-        imageobj = Path(strip_finalcif_of_name(str(self.cif.fileobj.stem)) + '-finalcif.gif')
+        imageobj = self.cif.finalcif_file.with_suffix('.gif')
         gif = parser.get_image()
         self.ui.CheckCifLogPlainTextEdit.appendPlainText('CheckCIF Report finished.')
         forms = parser.response_forms
@@ -700,7 +699,7 @@ class AppWindow(QMainWindow):
         if not self.save_current_cif_file():
             self.ui.CheckCifLogPlainTextEdit.appendHtml('<b>Unable to save CIF file. Aborting action...</b>')
             return None
-        self.load_cif_file(self.final_cif_file_name, block=current_block)
+        self.load_cif_file(self.cif.finalcif_file, block=current_block)
         self.htmlfile = Path(strip_finalcif_of_name('checkcif-' + self.cif.fileobj.stem) + '-finalcif.html')
         try:
             self.htmlfile.unlink()
@@ -748,7 +747,7 @@ class AppWindow(QMainWindow):
                 if block.name == v.data_name:
                     block.set_pair(v.key, quote(utf8_to_str(v.value)))
         self.save_current_cif_file()
-        self.load_cif_file(self.final_cif_file_name, current_block)
+        self.load_cif_file(self.cif.finalcif_file, current_block)
         if n:
             self.ui.CheckCifLogPlainTextEdit.appendPlainText('Forms saved')
         else:
@@ -772,7 +771,7 @@ class AppWindow(QMainWindow):
         if not self.save_current_cif_file():
             self.ui.CheckCifLogPlainTextEdit.appendHtml('<b>Unable to save CIF file. Aborting action...</b>')
             return None
-        self.load_cif_file(self.final_cif_file_name, current_block)
+        self.load_cif_file(self.cif.finalcif_file, current_block)
         htmlfile = Path('checkpdf-' + self.cif.fileobj.stem + '.html')
         try:
             htmlfile.unlink()
@@ -817,7 +816,7 @@ class AppWindow(QMainWindow):
         if not self.save_current_cif_file():
             self.ui.CheckCifLogPlainTextEdit.appendPlainText('Unable to save CIF file. Aborting action...')
             return None
-        self.load_cif_file(self.final_cif_file_name, block=current_block)
+        self.load_cif_file(self.cif.finalcif_file, block=current_block)
         self.ui.MainStackedWidget.go_to_checkcif_page()
         QApplication.processEvents()
         timeout = 350
@@ -935,7 +934,7 @@ class AppWindow(QMainWindow):
             return None
         if not self.save_current_cif_file():
             return None
-        self.load_cif_file(self.final_cif_file_name, block=current_block)
+        self.load_cif_file(self.cif.finalcif_file, block=current_block)
         report_filename = self.cif.fileobj.parent.resolve().joinpath(
             Path('report_' + strip_finalcif_of_name(self.cif.fileobj.stem) + '-finalcif.docx'))
         # The picture after the header:
@@ -974,8 +973,7 @@ class AppWindow(QMainWindow):
         self.zip_report(report_filename)
 
     def zip_report(self, report_filename):
-        zipfile = self.cif.fileobj.parent.resolve().joinpath(
-            Path(strip_finalcif_of_name(self.cif.fileobj.stem) + '-finalcif.zip'))
+        zipfile = self.cif.finalcif_file.with_suffix('.zip')
         if zipfile.exists():
             zipname = next_path(zipfile.stem + '-%s.zip')
             zipfile = zipfile.parent.joinpath(zipname)
@@ -984,9 +982,9 @@ class AppWindow(QMainWindow):
         with suppress(Exception):
             arc.zip.write(report_filename)
         with suppress(Exception):
-            arc.zip.write(self.final_cif_file_name)
+            arc.zip.write(self.cif.finalcif_file)
         with suppress(Exception):
-            pdfname = Path(strip_finalcif_of_name('checkcif-' + self.cif.fileobj.stem) + '-finalcif.pdf').name
+            pdfname = self.cif.finalcif_file.with_suffix('.pdf')
             arc.zip.write(pdfname)
 
     def open_report_document(self, report_filename: str):
@@ -1041,14 +1039,9 @@ class AppWindow(QMainWindow):
         table.setCurrentItem(None)  # makes sure also the currently edited item is saved
         self.store_data_from_table_rows(table)
         self.save_ccdc_number()
-        if not filename:
-            self.final_cif_file_name = self.cif.fileobj.resolve().parent.joinpath(
-                strip_finalcif_of_name(self.cif.fileobj.stem) + '-finalcif.cif')
-        else:
-            self.final_cif_file_name = Path(filename).resolve()
         try:
-            self.cif.save(str(self.final_cif_file_name.resolve()))
-            self.status_bar.show_message('  File Saved:  {}'.format(self.final_cif_file_name.name), 10)
+            self.cif.save()
+            self.status_bar.show_message('  File Saved:  {}'.format(self.cif.finalcif_file), 10)
             print('File saved ...')
             return True
         except Exception as e:
@@ -1106,7 +1099,7 @@ class AppWindow(QMainWindow):
         font.setPointSize(14)
         doc.setDefaultFont(font)
         final_textedit.setLineWrapMode(QPlainTextEdit.NoWrap)
-        final_textedit.setPlainText(self.final_cif_file_name.read_text(encoding='utf-8', errors='ignore'))
+        final_textedit.setPlainText(self.cif.finalcif_file.read_text(encoding='utf-8', errors='ignore'))
 
     def import_additional_cif(self, filename: str):
         """
@@ -1135,7 +1128,7 @@ class AppWindow(QMainWindow):
         self.import_loops(imp_cif)
         # I think I leave the user possibilities to change the imported values:
         # self.save_current_cif_file()
-        # self.load_cif_file(str(self.final_cif_file_name))
+        # self.load_cif_file(str(self.cif.finalcif_file))
 
     def import_loops(self, imp_cif: 'CifContainer'):
         """
@@ -1230,7 +1223,6 @@ class AppWindow(QMainWindow):
         self.cif.load_this_block(index)
         self.check_cif_for_missing_values_before_really_open_it()
         # self.go_into_cifs_directory(filepath)
-        self.final_cif_file_name = Path(strip_finalcif_of_name(str(self.cif.fileobj.resolve().stem)) + '-finalcif.cif')
         try:
             self.fill_cif_table()
         except Exception as e:

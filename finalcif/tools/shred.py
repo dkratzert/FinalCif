@@ -16,15 +16,14 @@ class ShredCIF():
     def __init__(self, cif: CifContainer, ui: Union[Ui_FinalCifWindow, None]):
         self._cif = cif
         self._statusbar = StatusBar(ui)
-        self._final_cif_file_name = Path(strip_finalcif_of_name(str(self._cif.fileobj.stem)) + '-finalcif.cif')
 
     def shred_cif(self) -> None:
         """
         Saves res and hkl file from the cif.
         """
         self._statusbar.show_message('')
-        resfile_path = Path(self._final_cif_file_name.stem + '.res')
-        hklfile_path = Path(self._final_cif_file_name.stem + '.hkl')
+        resfile_path = self._cif.finalcif_file.with_suffix('.res')
+        hklfile_path = self._cif.finalcif_file.with_suffix('.hkl')
         res_data = None
         hkl_data = None
         if not self._cif:
