@@ -967,14 +967,14 @@ class AppWindow(QMainWindow):
                 raise
             print('Unable to open cif file')
             show_general_warning('The report document {} could not be opened.\n'
-                                 'Is the file already opened?'.format(report_filename))
+                                 'Is the file already opened?'.format(report_filename.name))
             return
         if not self.running_inside_unit_test:
             self.open_report_document(report_filename)
         # Save report and other files to a zip file:
         self.zip_report(report_filename)
 
-    def zip_report(self, report_filename):
+    def zip_report(self, report_filename: Path):
         zipfile = self.cif.finalcif_file.with_suffix('.zip')
         if zipfile.exists():
             zipname = next_path(zipfile.stem + '-%s.zip')
@@ -982,19 +982,20 @@ class AppWindow(QMainWindow):
         with suppress(Exception):
             arc = ArchiveReport(zipfile)
         with suppress(Exception):
-            arc.zip.write(report_filename)
+            arc.zip.write(filename=report_filename, arcname=report_filename.name)
         with suppress(Exception):
-            arc.zip.write(self.cif.finalcif_file)
+            arc.zip.write(filename=self.cif.finalcif_file, arcname=self.cif.finalcif_file.name)
         with suppress(Exception):
-            pdfname = self.cif.finalcif_file.with_suffix('.pdf')
-            arc.zip.write(pdfname)
+            # e.g. checkcif-cu_BruecknerJK_153F40_0m-finalcif.pdf
+            pdfname = self.cif.finalcif_file_prefixed(prefix='checkcif-', suffix='-finalcif.pdf')
+            arc.zip.write(filename=pdfname, arcname=pdfname.name)
 
-    def open_report_document(self, report_filename: str):
-        if Path(report_filename).resolve().exists():
+    def open_report_document(self, report_filename: Path):
+        if report_filename.exists():
             if os.name == 'nt':
-                os.startfile(Path(report_filename).resolve())
+                os.startfile(report_filename)
             if sys.platform == 'darwin':
-                subprocess.call(['open', Path(report_filename).resolve()])
+                subprocess.call(['open', report_filename])
 
     def save_current_recent_files_list(self, file: Path) -> None:
         """
