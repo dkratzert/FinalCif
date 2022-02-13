@@ -18,7 +18,7 @@ from finalcif.cif.cif_order import order, special_keys
 from finalcif.cif.hkl import HKL, Limit
 from finalcif.cif.text import utf8_to_str, quote, retranslate_delimiter
 from finalcif.datafiles.utils import DSRFind
-from finalcif.tools.misc import essential_keys, non_centrosymm_keys, isnumeric, grouper
+from finalcif.tools.misc import essential_keys, non_centrosymm_keys, isnumeric, grouper, strip_finalcif_of_name
 
 
 class CifContainer():
@@ -33,7 +33,6 @@ class CifContainer():
             self.fileobj = file
         else:
             raise TypeError('The file parameter must be string or Path object.')
-        self.filename: str = self.fileobj.name
         self.current_block = ''
         # I do this in small steps instead of gemmi.cif.read_file() in order to
         # leave out the check_for_missing_values. This was gemmi reads cif files
@@ -46,6 +45,32 @@ class CifContainer():
         # Starting with first block, but can use others with subsequent self._onload():
         self.block = self.doc[0]
         self._on_load()
+
+    @property
+    def path_base(self) -> Path:
+        """
+        The absolute path of the current file withut file name
+        /foo/bar/baz
+        """
+        return Path(self.doc.source).resolve().parent
+
+    @property
+    def filename(self) -> str:
+        """
+        The name of the current file without path.
+        foo.cif
+        """
+        return Path(self.doc.source).name
+
+    @property
+    def finalcif_file(self):
+        """
+        The full path of the file with -finalcif attached to the end.
+        foo/bar/baz-finalcif.cif
+        """
+        file_witout_finalcif = strip_finalcif_of_name(Path(self.filename).stem)
+        filename = self.path_base.joinpath(Path(file_witout_finalcif + '-finalcif.cif'))
+        return filename
 
     @property
     def is_multi_cif(self):
@@ -170,16 +195,16 @@ class CifContainer():
             else:
                 self.block.set_pair(key, quote(txt))
 
-    def save(self, filename: str = None) -> None:
+    def save(self, filename: Path = None) -> None:
         """
         Saves the current cif file.
         :param filename:  Name to save cif file to.
         """
         if not filename:
-            filename = str(self.fileobj.resolve())
+            filename = self.finalcif_file
         self.order_cif_keys()
-        self.doc.write_file(filename, gemmi.cif.Style.Indent35)
-        # Path(filename).write_text(self.doc.as_string(gemmi.cif.Style.Indent35))
+        print('Saving to', Path(filename).resolve())
+        self.doc.write_file(str(filename), gemmi.cif.Style.Indent35)
 
     def order_cif_keys(self):
         """

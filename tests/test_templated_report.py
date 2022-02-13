@@ -29,7 +29,7 @@ class TemplateReportTestCase(unittest.TestCase):
         self.myapp.hide()
 
     def tearDown(self) -> None:
-        self.myapp.final_cif_file_name.unlink(missing_ok=True)
+        self.myapp.cif.finalcif_file.unlink(missing_ok=True)
         self.reportdoc.unlink(missing_ok=True)
         self.report_zip.unlink(missing_ok=True)
         self.myapp.ui.ReportTextCheckBox.setChecked(False)

@@ -27,7 +27,7 @@ class TestLoops(unittest.TestCase):
         self.myapp.ui.LoopsPushButton.click()
 
     def tearDown(self) -> None:
-        self.myapp.final_cif_file_name.unlink(missing_ok=True)
+        self.myapp.cif.finalcif_file.unlink(missing_ok=True)
         self.myapp.close()
 
     def get_index_of(self, loopkey: str = ''):
@@ -69,19 +69,19 @@ class TestLoops(unittest.TestCase):
 
     def test_loop_no_edit(self):
         self.myapp.ui.SaveCifButton.click()
-        c = CifContainer(self.myapp.final_cif_file_name)
+        c = CifContainer(self.myapp.cif.finalcif_file)
         self.assertEqual('0.0181', c.loops[3].val(0, 2))
 
     def test_loop_edit_one_single_field(self):
         model = self.myapp.ui.LoopsTabWidget.widget(self.get_index_of('Scattering')).model()
         model.setData(model.index(0, 2), 'foo bar', role=Qt.EditRole)
         self.myapp.ui.SaveCifButton.click()
-        c = CifContainer(self.myapp.final_cif_file_name)
+        c = CifContainer(self.myapp.cif.finalcif_file)
         self.assertEqual('foo bar', as_string(c.loops[3].val(0, 2)))
 
 class TestLoopsMove(unittest.TestCase):
     def tearDown(self) -> None:
-        self.myapp.final_cif_file_name.unlink(missing_ok=True)
+        self.myapp.cif.finalcif_file.unlink(missing_ok=True)
         self.myapp.close()
 
     def get_index_of(self, loopkey: str = ''):
@@ -135,7 +135,7 @@ class TestLoopsMove(unittest.TestCase):
         view = self.set_current_index_to_row_col(1, 0)
         view._row_down(None)
         self.myapp.ui.SaveCifButton.click()
-        c = CifContainer(self.myapp.final_cif_file_name)
+        c = CifContainer(self.myapp.cif.finalcif_file)
         self.assertEqual('C', as_string(c.loops[3].val(0, 0)))
         self.assertEqual('O', as_string(c.loops[3].val(1, 0)))
         self.assertEqual('H', as_string(c.loops[3].val(2, 0)))
@@ -144,7 +144,7 @@ class TestLoopsMove(unittest.TestCase):
         view = self.set_current_index_to_row_col(1, 0, tab='Angles')
         view._row_down(None)
         self.myapp.ui.SaveCifButton.click()
-        c = CifContainer(self.myapp.final_cif_file_name)
+        c = CifContainer(self.myapp.cif.finalcif_file)
         # Check weather the dots and numbers are quoted correctly and *not* like
         # ['O1', 'C1', 'C14', '105.9(2)', "''", "''", "''"]
         self.assertEqual("['O1', 'C1', 'C14', '105.9(2)', '.', '.', '?']", str(c.loops[7].values[:7]))
@@ -160,7 +160,7 @@ class TestLoopsMove(unittest.TestCase):
         view = self.set_current_index_to_row_col(2, 0)
         view._row_down(None)
         self.myapp.ui.SaveCifButton.click()
-        c = CifContainer(self.myapp.final_cif_file_name)
+        c = CifContainer(self.myapp.cif.finalcif_file)
         self.assertEqual('C', as_string(c.loops[3].val(0, 0)))
         self.assertEqual('H', as_string(c.loops[3].val(1, 0)))
         self.assertEqual('O', as_string(c.loops[3].val(2, 0)))
@@ -177,7 +177,7 @@ class TestLoopsMove(unittest.TestCase):
         view = self.set_current_index_to_row_col(1, 0)
         view._row_up(None)
         self.myapp.ui.SaveCifButton.click()
-        c = CifContainer(self.myapp.final_cif_file_name)
+        c = CifContainer(self.myapp.cif.finalcif_file)
         self.assertEqual('H', as_string(c.loops[3].val(0, 0)))
         self.assertEqual('C', as_string(c.loops[3].val(1, 0)))
         self.assertEqual('O', as_string(c.loops[3].val(2, 0)))
@@ -193,7 +193,7 @@ class TestLoopsMove(unittest.TestCase):
         view = self.set_current_index_to_row_col(0, 0)
         view._row_up(None)
         self.myapp.ui.SaveCifButton.click()
-        c = CifContainer(self.myapp.final_cif_file_name)
+        c = CifContainer(self.myapp.cif.finalcif_file)
         self.assertEqual('C', as_string(c.loops[3].val(0, 0)))
         self.assertEqual('H', as_string(c.loops[3].val(1, 0)))
         self.assertEqual('O', as_string(c.loops[3].val(2, 0)))
