@@ -729,11 +729,11 @@ def populate_description_columns(main_table: Table, cif: CifContainer, cell_fact
     lgnd30.add_run('Largest peak/hole [e{}'.format(angstrom))
     lgnd30.add_run(minus_sign + '3').font.superscript = True
     lgnd30.add_run(']')
-    if not cif.is_centrosymm:
+    if not cif.is_centrosymm or cell_fact > 0:
         lgnd31 = main_table.cell(31 + cell_fact, 0).paragraphs[0]
         lgnd31.add_run('Flack X parameter')
     exti = cif['_refine_ls_extinction_coef']
-    if exti not in ['.', "'.'", '?', '']:
+    if exti not in ['.', "'.'", '?', ''] or cell_fact > 0:
         # always the last cell
         num = len(main_table.columns[0].cells)
         main_table.columns[0].cells[num - 1].paragraphs[0].add_run('Extinction coefficient')
