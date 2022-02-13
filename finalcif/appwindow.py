@@ -1291,6 +1291,8 @@ class AppWindow(QMainWindow):
             self.ui.CODpushButton.setEnabled(True)
 
     def append_cif(self):
+        self.cif.save()
+        self.load_cif_file(filepath=self.cif.finalcif_file)
         file = self.get_file_from_dialog()
         cif2 = CifContainer(file)
         if cif2.is_multi_cif:
