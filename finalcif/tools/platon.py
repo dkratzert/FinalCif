@@ -49,12 +49,12 @@ class Platon(QThread):
     def delete_orphaned_files(self):
         # delete orphaned files:
         for ext in ['.ckf', '.fcf', '.def', '.lis', '.sar', '.ckf',
-                    '.sum', '.hkp', '.pjn', '.bin', '_pl.res', '_pl.spf']:
+                    '.sum', '.hkp', '.pjn', '.bin', '.spf']:
             try:
-                file = Path(self.cif_path.stem + ext)
+                file = self.cif_path.resolve().with_suffix(ext)
                 if file.stat().st_size < 100:
                     file.unlink()
-                if file.suffix in ['.sar', '_pl.res', '_pl.spf', '.ckf']:
+                if file.suffix in ['.sar', '.spf', '.ckf']:
                     file.unlink()
             except FileNotFoundError:
                 # print('##')
@@ -91,7 +91,7 @@ class Platon(QThread):
         """
         curdir = Path(os.curdir).resolve()
         with suppress(FileNotFoundError):
-            Path(self.cif_path.stem + '.vrf').unlink()
+            self.cif_path.with_suffix('.vrf').unlink()
         with suppress(FileNotFoundError):
             self.chkfile.unlink()
         os.chdir(str(self.cif_path.absolute().parent))

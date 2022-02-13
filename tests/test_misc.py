@@ -3,7 +3,7 @@ from pathlib import Path
 from unittest import TestCase
 
 from finalcif.tools.misc import to_int, to_float, this_or_quest, flatten, strip_finalcif_of_name, next_path, \
-    get_error_from_value, get_file_with_new_ending, grouper, distance, sha512_checksum_of_file, isnumeric, \
+    get_error_from_value, grouper, distance, sha512_checksum_of_file, isnumeric, \
     is_database_number
 
 
@@ -53,10 +53,6 @@ class TestMisc(unittest.TestCase):
         stripped = strip_finalcif_of_name(Path('406-0308-finalcif.cif').stem)
         self.assertEqual('406-0308', stripped)
         self.assertEqual('foobar', strip_finalcif_of_name('foobar'))
-
-    def test_get_file_with_new_ending(self):
-        new = get_file_with_new_ending(file=Path('foobar.txt'), new_ending='.exe', strip_from_name='bar')
-        self.assertEqual('foo.exe', str(new))
 
     def test_isnumeric_true(self):
         self.assertEqual(True, isnumeric('1.234'))
