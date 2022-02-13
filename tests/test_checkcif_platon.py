@@ -28,7 +28,7 @@ filenames = (
 )
 
 
-#@unittest.skip('time')
+@unittest.skip('time')
 class TestPlatonCheckCIF(unittest.TestCase):
 
     def setUp(self) -> None:
@@ -62,7 +62,7 @@ class TestPlatonCheckCIF(unittest.TestCase):
         self.assertFalse(Path('1979688-finalcif.gif').exists())
 
 
-#@unittest.skip('time')
+@unittest.skip('time')
 class TestPlatonCheckCIFwithCIFwithoutHKLdata(unittest.TestCase):
 
     def setUp(self) -> None:
