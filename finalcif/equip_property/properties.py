@@ -7,8 +7,8 @@ from gemmi import cif
 
 from finalcif.cif.text import retranslate_delimiter, utf8_to_str
 from finalcif.equip_property.tools import read_document_from_cif_file
-from finalcif.gui.plaintextedit import MyQPlainTextEdit
 from finalcif.gui.dialogs import cif_file_open_dialog, show_general_warning, cif_file_save_dialog
+from finalcif.gui.plaintextedit import PlainTextEditTemplate
 from finalcif.tools.misc import predef_prop_templ
 from finalcif.tools.settings import FinalCifSettings
 
@@ -255,7 +255,7 @@ class Properties:
         # Add cif key and value to the row:
         # item_val = MyTableWidgetItem(value)
         # table.setItem(row_num, 0, item_val)
-        key_item = MyQPlainTextEdit(parent=table, minheight=50)
+        key_item = PlainTextEditTemplate(parent=table)
         key_item.textChanged.connect(lambda: table.resizeRowsToContents())
         key_item.setPlainText(value)
         ## This is critical, because otherwise the add_row_if_needed does not work as expected:

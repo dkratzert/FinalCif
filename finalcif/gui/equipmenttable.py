@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import QTableWidget
 
 from finalcif.cif.text import retranslate_delimiter
 from finalcif.gui.mixins import ItemTextMixin
-from finalcif.gui.plaintextedit import MyQPlainTextEdit
+from finalcif.gui.plaintextedit import PlainTextEditTemplate
 
 
 class MyEQTableWidget(QTableWidget, ItemTextMixin):
@@ -50,13 +50,13 @@ class MyEQTableWidget(QTableWidget, ItemTextMixin):
         # Create a empty row at bottom of table
         row_num = self.rowCount()
         self.insertRow(row_num)
-        key_item = MyQPlainTextEdit(parent=self)
+        key_item = PlainTextEditTemplate(parent=self)
         key_item.setPlainText(key_text)
         # This is critical, because otherwise the add_row_if_needed does not work as expected:
         key_item.textChanged.connect(self.add_row_if_needed)
         self.setCellWidget(row_num, 0, key_item)
         # if len(value) > 38:
-        tab_item = MyQPlainTextEdit(self)
+        tab_item = PlainTextEditTemplate(self)
         tab_item.textChanged.connect(lambda: self.resizeRowsToContents())
         tab_item.setPlainText(retranslate_delimiter(value_text))
         self.setCellWidget(row_num, 1, tab_item)
