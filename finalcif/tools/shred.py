@@ -59,13 +59,13 @@ class ShredCIF():
     def _show_info(self, resname: Path, hklname: Path, resdata: list, hkldata: list) -> None:
         if resdata and not hkldata:
             self._statusbar.show_message(
-                self._statusbar.current_message + '\nFinished writing data to {}.'.format(resname))
+                self._statusbar.current_message + '\nFinished writing data to {}.'.format(resname.name))
         if hkldata and not resdata:
             self._statusbar.show_message(
-                self._statusbar.current_message + '\nFinished writing data to {}.'.format(hklname))
+                self._statusbar.current_message + '\nFinished writing data to {}.'.format(hklname.name))
         if hkldata and resdata:
             self._statusbar.show_message(
-                self._statusbar.current_message + '\nFinished writing data to {} \nand {}.'.format(resname, hklname))
+                self._statusbar.current_message + '\nFinished writing data to {} \nand {}.'.format(resname.name, hklname.name))
 
     @staticmethod
     def _data_is_valid(data: list) -> bool:

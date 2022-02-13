@@ -29,8 +29,8 @@ class Platon(QThread):
         super().__init__()
         self.cmdoption = cmdoption
         self.timeout = timeout
-        self.cif_fileobj = cif
-        self.chkfile = Path(self.cif_fileobj.with_suffix('.chk'))
+        self.cif_path = cif
+        self.chkfile = Path(self.cif_path.with_suffix('.chk'))
         self.platon_output = ''
         self.chk_file_text = ''
         self.formula_moiety = ''
@@ -51,7 +51,7 @@ class Platon(QThread):
         for ext in ['.ckf', '.fcf', '.def', '.lis', '.sar', '.ckf',
                     '.sum', '.hkp', '.pjn', '.bin', '_pl.res', '_pl.spf']:
             try:
-                file = Path(self.cif_fileobj.stem + ext)
+                file = Path(self.cif_path.stem + ext)
                 if file.stat().st_size < 100:
                     file.unlink()
                 if file.suffix in ['.sar', '_pl.res', '_pl.spf', '.ckf']:
@@ -63,9 +63,8 @@ class Platon(QThread):
     def parse_chk_file(self):
         """
         """
-        chkfile = Path(self.cif_fileobj.stem + '.chk')
         try:
-            self.chk_file_text = chkfile.read_text(encoding='ascii', errors='ignore')
+            self.chk_file_text = self.chkfile.read_text(encoding='ascii', errors='ignore')
         except FileNotFoundError as e:
             print('CHK file not found:', e)
             self.chk_file_text = ''
@@ -92,13 +91,13 @@ class Platon(QThread):
         """
         curdir = Path(os.curdir).resolve()
         with suppress(FileNotFoundError):
-            Path(self.cif_fileobj.stem + '.vrf').unlink()
+            Path(self.cif_path.stem + '.vrf').unlink()
         with suppress(FileNotFoundError):
             self.chkfile.unlink()
-        os.chdir(str(self.cif_fileobj.absolute().parent))
+        os.chdir(str(self.cif_path.absolute().parent))
         try:
-            print('running local platon on', self.cif_fileobj.name)
-            self.plat = subprocess.run([self.platon_exe, self.cmdoption, self.cif_fileobj.name],
+            print('running local platon on', self.cif_path.name)
+            self.plat = subprocess.run([self.platon_exe, self.cmdoption, self.cif_path.name],
                                        startupinfo=self.hide_status_window(),
                                        stdout=subprocess.PIPE,
                                        stderr=subprocess.PIPE,

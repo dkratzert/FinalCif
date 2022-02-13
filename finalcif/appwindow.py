@@ -611,7 +611,7 @@ class AppWindow(QMainWindow):
         """
         Get back to the main table and load the new cif file.
         """
-        self.load_cif_file(filepath=self.cif.fileobj)
+        self.load_cif_file(filepath=self.cif.finalcif_file)
         self.ui.MainStackedWidget.got_to_main_page()
         self.ui.cif_main_table.scrollToTop()
         self.ui.TemplatesStackedWidget.setCurrentIndex(0)
@@ -700,7 +700,7 @@ class AppWindow(QMainWindow):
             self.ui.CheckCifLogPlainTextEdit.appendHtml('<b>Unable to save CIF file. Aborting action...</b>')
             return None
         self.load_cif_file(self.cif.finalcif_file, block=current_block)
-        self.htmlfile = Path(strip_finalcif_of_name('checkcif-' + self.cif.fileobj.stem) + '-finalcif.html')
+        self.htmlfile = self.cif.finalcif_file_prefixed(prefix='checkcif-', suffix='-finalcif.html')
         try:
             self.htmlfile.unlink()
         except (FileNotFoundError, PermissionError):
@@ -772,7 +772,7 @@ class AppWindow(QMainWindow):
             self.ui.CheckCifLogPlainTextEdit.appendHtml('<b>Unable to save CIF file. Aborting action...</b>')
             return None
         self.load_cif_file(self.cif.finalcif_file, current_block)
-        htmlfile = Path('checkpdf-' + self.cif.fileobj.stem + '.html')
+        htmlfile = self.cif.finalcif_file_prefixed(prefix='checkpdf-', suffix='.html')
         try:
             htmlfile.unlink()
         except (FileNotFoundError, PermissionError):
@@ -843,7 +843,7 @@ class AppWindow(QMainWindow):
         p.parse_chk_file()
         vrf_txt = ''
         with suppress(FileNotFoundError):
-            vrf_txt = Path(self.cif.fileobj.stem + '.vrf').read_text()
+            vrf_txt = self.cif.finalcif_file.with_suffix('.vrf').read_text()
         if p.chk_file_text:
             with suppress(AttributeError):
                 checkcif_out.appendPlainText(p.chk_file_text)
@@ -860,7 +860,7 @@ class AppWindow(QMainWindow):
     def wait_for_chk_file(self, p) -> bool:
         time.sleep(2)
         stop = 0
-        while not Path(self.cif.fileobj.stem + '.chk').exists():
+        while not p.chkfile.exists():
             self.append_to_ciflog_without_newline('.')
             QApplication.processEvents()
             time.sleep(2)
@@ -875,12 +875,12 @@ class AppWindow(QMainWindow):
 
     def wait_until_platon_finished(self, timeout: int = 300):
         stop = 0
-        if not Path(self.cif.fileobj.stem + '.chk').exists():
+        if not self.cif.finalcif_file.with_suffix('.chk').exists():
             self.ui.CheckCifLogPlainTextEdit.appendPlainText('Platon returned no output.')
             QApplication.processEvents()
             return
         with suppress(FileNotFoundError):
-            while Path(self.cif.fileobj.stem + '.chk').stat().st_size < 200:
+            while self.cif.finalcif_file.with_suffix('.chk').stat().st_size < 200:
                 self.append_to_ciflog_without_newline('*')
                 QApplication.processEvents()
                 if stop == timeout:
@@ -1026,7 +1026,7 @@ class AppWindow(QMainWindow):
         if saved:
             self.display_cif_text()
 
-    def save_current_cif_file(self, filename: Union[str, None] = None) -> Union[bool, None]:
+    def save_current_cif_file(self) -> Union[bool, None]:
         """
         Saves the current cif file and stores the information of the third column.
         """
