@@ -5,7 +5,7 @@ from pathlib import Path
 
 from finalcif import VERSION
 from finalcif.appwindow import AppWindow
-from tests.test_utils import get_platon_exe
+from tests.helpers import get_platon_exe
 
 filenames = (
     'tests/examples/checkcif-1979688-finalcif.html',
@@ -28,7 +28,7 @@ filenames = (
 )
 
 
-@unittest.skip('time')
+#@unittest.skip('time')
 class TestPlatonCheckCIF(unittest.TestCase):
 
     def setUp(self) -> None:
@@ -62,7 +62,7 @@ class TestPlatonCheckCIF(unittest.TestCase):
         self.assertFalse(Path('1979688-finalcif.gif').exists())
 
 
-@unittest.skip('time')
+#@unittest.skip('time')
 class TestPlatonCheckCIFwithCIFwithoutHKLdata(unittest.TestCase):
 
     def setUp(self) -> None:
@@ -83,3 +83,4 @@ class TestPlatonCheckCIFwithCIFwithoutHKLdata(unittest.TestCase):
         self.myapp.ui.CheckcifButton.click()
         timediff = int(Path('./test-data/1000007-finalcif.chk').resolve().stat().st_mtime) - int(time.time())
         self.assertLess(timediff, 5)  # .chk file was modified less than 5 seconds ago
+

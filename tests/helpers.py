@@ -4,6 +4,8 @@
 #   this notice you can do whatever you want with this stuff. If we meet some day,
 #   and you think this stuff is worth it, you can buy me a beer in return.
 #   ----------------------------------------------------------------------------
+import sys
+from shutil import which
 
 
 def unify_line_endings(text: str):
@@ -20,3 +22,10 @@ Freiburg i. Br.
 79104
 Germany"""
 
+
+def get_platon_exe() -> str:
+    if sys.platform.startswith('win'):
+        platon_exe = r'C:\pwt\platon.exe'
+    else:
+        platon_exe = which('platon')
+    return platon_exe

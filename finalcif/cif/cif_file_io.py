@@ -63,17 +63,26 @@ class CifContainer():
         return Path(self.doc.source).name
 
     @property
-    def finalcif_file(self):
+    def finalcif_file(self) -> Path:
         """
         The full path of the file with -finalcif attached to the end.
         foo/bar/baz-finalcif.cif
         """
+        filename = self.finalcif_file_prefixed(prefix='', suffix='-finalcif.cif')
+        return filename
+
+    def finalcif_file_prefixed(self, prefix: str, suffix: str = '-finalcif.cif') -> Path:
+        """
+        The full path of the file with a prefix and '-finalcif.cif' attached to the end.
+        The suffix needs '-finalcif' in order to contain the finalcif ending.
+        "foo/bar/baz-finalcif.cif"
+        """
         file_witout_finalcif = strip_finalcif_of_name(Path(self.filename).stem)
-        filename = self.path_base.joinpath(Path(file_witout_finalcif + '-finalcif.cif'))
+        filename = self.path_base.joinpath(Path(prefix + file_witout_finalcif + suffix))
         return filename
 
     @property
-    def is_multi_cif(self):
+    def is_multi_cif(self) -> bool:
         return True if len(self.doc) > 1 else False
 
     def load_this_block(self, index: int) -> None:
