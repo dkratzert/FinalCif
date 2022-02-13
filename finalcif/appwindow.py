@@ -52,7 +52,7 @@ from finalcif.gui.plaintextedit import MyQPlainTextEdit
 from finalcif.gui.text_value_editor import MyTextTemplateEdit
 from finalcif.gui.vrf_classes import MyVRFContainer, VREF
 from finalcif.report.archive_report import ArchiveReport
-from finalcif.report.tables import make_report_from
+from finalcif.report.tables import make_report_from, make_multi_tables
 from finalcif.report.templated_report import TemplatedReport
 from finalcif.template.templates import ReportTemplates
 from finalcif.tools.download import MyDownloader, start_worker
@@ -945,6 +945,10 @@ class AppWindow(QMainWindow):
                 print('Report without templates')
                 make_report_from(options=self.options, cif=self.cif,
                                  output_filename=str(report_filename), picfile=picfile)
+                if self.cif.is_multi_cif:
+                    make_multi_tables(cif=self.cif,
+                                      output_filename=str(
+                                          self.cif.finalcif_file_prefixed(prefix='', suffix='-multitable.docx')))
             else:
                 print('Report with templates')
                 t = TemplatedReport()
