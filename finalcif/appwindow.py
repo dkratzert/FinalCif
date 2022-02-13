@@ -57,7 +57,7 @@ from finalcif.report.templated_report import TemplatedReport
 from finalcif.template.templates import ReportTemplates
 from finalcif.tools.download import MyDownloader, start_worker
 from finalcif.tools.dsrmath import my_isnumeric
-from finalcif.tools.misc import strip_finalcif_of_name, next_path, do_not_import_keys, celltxt, to_float, \
+from finalcif.tools.misc import next_path, do_not_import_keys, celltxt, to_float, \
     combobox_fields, \
     do_not_import_from_stoe_cfx, cif_to_header_label, grouper, is_database_number, file_age_in_days
 from finalcif.tools.options import Options
@@ -603,7 +603,6 @@ class AppWindow(QMainWindow):
         else:
             final_path = p.path
         _, ending = os.path.splitext(final_path)
-        # print(final_path, ending)
         if ending.lower() == '.cif':
             self.load_cif_file(Path(final_path))
 
@@ -935,23 +934,22 @@ class AppWindow(QMainWindow):
         if not self.save_current_cif_file():
             return None
         self.load_cif_file(self.cif.finalcif_file, block=current_block)
-        report_filename = self.cif.fileobj.parent.resolve().joinpath(
-            Path('report_' + strip_finalcif_of_name(self.cif.fileobj.stem) + '-finalcif.docx'))
+        report_filename = self.cif.finalcif_file_prefixed(prefix='report_', suffix='-finalcif.docx')
         # The picture after the header:
         if self.report_picture_path:
             picfile = self.report_picture_path
         else:
-            picfile = Path(self.cif.fileobj.resolve().stem + '.gif')
+            picfile = self.cif.finalcif_file.with_suffix('.gif')
         try:
             if self.ui.TemplatesListWidget.currentRow() == 0 or not self.ui.TemplatesListWidget.currentItem():
                 print('Report without templates')
                 make_report_from(options=self.options, cif=self.cif,
-                                 output_filename=report_filename, picfile=picfile)
+                                 output_filename=str(report_filename), picfile=picfile)
             else:
                 print('Report with templates')
                 t = TemplatedReport()
                 t.make_templated_report(options=self.options, file_obj=self.cif.fileobj.resolve(),
-                                        output_filename=report_filename, picfile=picfile,
+                                        output_filename=str(report_filename), picfile=picfile,
                                         template_path=Path(self.ui.TemplatesListWidget.currentItem().text()))
         except FileNotFoundError as e:
             if DEBUG:
@@ -1299,7 +1297,7 @@ class AppWindow(QMainWindow):
             show_general_warning('Can add single data CIFs only!')
         if cif2.block.name in [x.name for x in self.cif.doc]:
             show_general_warning(warn_text='Duplicate block', info_text='Data block name "<b>{}</b>" already present '
-                                                         'in current CIF!'.format(self.cif.block.name))
+                                                                        'in current CIF!'.format(self.cif.block.name))
             return
         self.cif.doc.add_copied_block(block=cif2.block, pos=-1)
         self.cif.save()
@@ -1490,9 +1488,14 @@ class AppWindow(QMainWindow):
         self.view.show()
 
     def redraw_molecule(self) -> None:
-        if 'darwin' in sys.platform:
+        if 'darwin' in sys.platform and getattr(sys, 'frozen', False):
             print('Do not draw molecule on MACOS')
             # Currently, the QWebEngineView doesn't work  on macos due to pyinstaller issues.
+            return None
+        elif 'linux' in sys.platform:
+            self.ui.moleculeLayout.addWidget(QLabel('                     '
+                                                    'FinalCif is currently unable to draw molecules in Linux.'))
+            # The license of JSmol-Lite is unclear, and I need to make an own molecule viewer anyway.
             return None
         try:
             self.view_molecule()
@@ -1500,7 +1503,6 @@ class AppWindow(QMainWindow):
             print(e, ", unable to display molecule")
             if DEBUG:
                 raise
-            # self.write_empty_molfile()
             self.view.reload()
 
     def check_Z(self) -> None:

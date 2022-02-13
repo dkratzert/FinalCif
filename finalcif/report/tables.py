@@ -175,7 +175,7 @@ def make_report_text(cif, document: Document) -> ReferenceList:
 def create_document() -> Document:
     """
     Creates the report docx document.
-    :param report_docx_path: Path to the report file.
+
     :return: The document instance.
     """
     try:

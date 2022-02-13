@@ -1,4 +1,3 @@
-import os
 import unittest
 from pathlib import Path
 
@@ -8,23 +7,23 @@ from docx.shape import InlineShapes
 from docx.shared import Cm
 from docx.table import Table
 
-from finalcif.appwindow import AppWindow
 from finalcif import VERSION
+from finalcif.appwindow import AppWindow
 
 
 class TemplateReportTestCase(unittest.TestCase):
     def setUp(self) -> None:
         self.myapp = AppWindow(unit_test=True)
         self.testcif = Path('tests/examples/1979688.cif').absolute()
-        self.myapp.load_cif_file(self.testcif.absolute())
+        self.myapp.load_cif_file(self.testcif.resolve())
         self.myapp.running_inside_unit_test = True
         self.myapp.ui.HAtomsCheckBox.setChecked(False)
         self.myapp.ui.ReportTextCheckBox.setChecked(False)
         self.myapp.ui.PictureWidthDoubleSpinBox.setValue(7.43)
         self.import_templates()
         self.myapp.ui.TemplatesListWidget.setCurrentRow(2)
-        self.reportdoc = Path('tests/examples/report_' + self.testcif.stem + '-finalcif.docx')
-        self.report_zip = Path('tests/examples/').joinpath(Path(self.testcif.stem + '-finalcif.zip'))
+        self.reportdoc = self.myapp.cif.finalcif_file_prefixed(prefix='report_', suffix='-finalcif.docx')
+        self.report_zip = self.myapp.cif.finalcif_file_prefixed(prefix='', suffix='-finalcif.zip')
         self.myapp.set_report_picture(Path('finalcif/icon/finalcif.png'))
         self.myapp.hide()
 

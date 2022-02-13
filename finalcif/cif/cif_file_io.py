@@ -49,7 +49,7 @@ class CifContainer():
     @property
     def path_base(self) -> Path:
         """
-        The absolute path of the current file withut file name
+        The absolute path of the current file without file name:
         /foo/bar/baz
         """
         return Path(self.doc.source).resolve().parent
@@ -57,7 +57,7 @@ class CifContainer():
     @property
     def filename(self) -> str:
         """
-        The name of the current file without path.
+        The name of the current file without path:
         foo.cif
         """
         return Path(self.doc.source).name
@@ -65,7 +65,7 @@ class CifContainer():
     @property
     def finalcif_file(self) -> Path:
         """
-        The full path of the file with -finalcif attached to the end.
+        The full path of the file with '-finalcif' attached to the end:
         foo/bar/baz-finalcif.cif
         """
         filename = self.finalcif_file_prefixed(prefix='', suffix='-finalcif.cif')

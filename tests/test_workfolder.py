@@ -70,9 +70,9 @@ class TestWorkfolder(unittest.TestCase):
         self.myapp.setWindowTitle('FinalCif v{}'.format(VERSION))
 
     def tearDown(self) -> None:
-        Path(self.testcif.stem + '.ins').unlink(missing_ok=True)
-        Path(self.testcif.stem + '.lst').unlink(missing_ok=True)
-        Path(self.testcif.stem + '.2fcf').unlink(missing_ok=True)
+        self.testcif.with_suffix('.ins').unlink(missing_ok=True)
+        self.testcif.with_suffix('.lst').unlink(missing_ok=True)
+        self.testcif.with_suffix('.2fcf').unlink(missing_ok=True)
         Path('tests/testcif_file.cif').unlink(missing_ok=True)
         self.myapp.close()
 
