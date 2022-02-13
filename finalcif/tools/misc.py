@@ -83,17 +83,6 @@ def grouper(inputs, n, fillvalue=None):
     return it.zip_longest(*iters, fillvalue=fillvalue)
 
 
-def get_file_with_new_ending(file: Path, new_ending: str, strip_from_name: str = '') -> Path:
-    """
-    Retruns a file path with a new ending. If strip_strip_from_name is given, this string is also
-    removed from the file name before the suffix.
-    """
-    basename = file.stem
-    if strip_from_name:
-        basename = re.sub('{}$'.format(strip_from_name), '', basename)
-    return file.parent.joinpath(Path(basename + new_ending))
-
-
 def get_error_from_value(value: str) -> Tuple[float, float]:
     """
     Returns the error value from a number string.

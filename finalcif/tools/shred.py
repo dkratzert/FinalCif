@@ -16,15 +16,14 @@ class ShredCIF():
     def __init__(self, cif: CifContainer, ui: Union[Ui_FinalCifWindow, None]):
         self._cif = cif
         self._statusbar = StatusBar(ui)
-        self._final_cif_file_name = Path(strip_finalcif_of_name(str(self._cif.fileobj.stem)) + '-finalcif.cif')
 
     def shred_cif(self) -> None:
         """
         Saves res and hkl file from the cif.
         """
         self._statusbar.show_message('')
-        resfile_path = Path(self._final_cif_file_name.stem + '.res')
-        hklfile_path = Path(self._final_cif_file_name.stem + '.hkl')
+        resfile_path = self._cif.finalcif_file.with_suffix('.res')
+        hklfile_path = self._cif.finalcif_file.with_suffix('.hkl')
         res_data = None
         hkl_data = None
         if not self._cif:
@@ -60,13 +59,13 @@ class ShredCIF():
     def _show_info(self, resname: Path, hklname: Path, resdata: list, hkldata: list) -> None:
         if resdata and not hkldata:
             self._statusbar.show_message(
-                self._statusbar.current_message + '\nFinished writing data to {}.'.format(resname))
+                self._statusbar.current_message + '\nFinished writing data to {}.'.format(resname.name))
         if hkldata and not resdata:
             self._statusbar.show_message(
-                self._statusbar.current_message + '\nFinished writing data to {}.'.format(hklname))
+                self._statusbar.current_message + '\nFinished writing data to {}.'.format(hklname.name))
         if hkldata and resdata:
             self._statusbar.show_message(
-                self._statusbar.current_message + '\nFinished writing data to {} \nand {}.'.format(resname, hklname))
+                self._statusbar.current_message + '\nFinished writing data to {} \nand {}.'.format(resname.name, hklname.name))
 
     @staticmethod
     def _data_is_valid(data: list) -> bool:

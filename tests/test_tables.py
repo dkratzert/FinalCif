@@ -1,4 +1,3 @@
-import os
 import unittest
 from pathlib import Path
 
@@ -24,12 +23,12 @@ class TablesTestMixin():
         self.myapp.ui.TemplatesListWidget.setCurrentRow(0)
         self.myapp.running_inside_unit_test = True
         self.myapp.hide()
-        self.reportdoc = Path(str(self.testcif.parent.joinpath('report_' + self.testcif.stem + '-finalcif.docx')))
-        self.report_zip = self.testcif.parent.joinpath(Path(self.testcif.stem + '-finalcif.zip'))
+        self.reportdoc = self.myapp.cif.finalcif_file_prefixed(prefix='report_', suffix='-finalcif.docx')
+        self.report_zip = self.myapp.cif.finalcif_file_prefixed(prefix='', suffix='-finalcif.zip')
         self.myapp.hide()
 
     def tearDown(self) -> None:
-        self.myapp.final_cif_file_name.unlink(missing_ok=True)
+        self.myapp.cif.finalcif_file.unlink(missing_ok=True)
         self.reportdoc.unlink(missing_ok=True)
         self.report_zip.unlink(missing_ok=True)
         self.myapp.ui.ReportTextCheckBox.setChecked(False)

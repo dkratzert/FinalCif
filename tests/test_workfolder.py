@@ -33,10 +33,6 @@ class TestNothingOpened(unittest.TestCase):
         self.myapp.save_current_cif_file()
         self.assertEqual(False, Path('cu_BruecknerJK_153F40_0m-finalcif.cif').exists())
 
-    def test_save_file(self):
-        self.myapp.save_current_cif_file('foo.cif')
-        self.assertEqual(False, Path('foo.cif').exists())
-
 
 class TestFileIsOpened(unittest.TestCase):
     """A CIF fle in a complete work folder"""
@@ -60,10 +56,6 @@ class TestFileIsOpened(unittest.TestCase):
         self.myapp.save_current_cif_file()
         self.assertEqual(True, Path('tests/examples/work/cu_BruecknerJK_153F40_0m-finalcif.cif').exists())
 
-    def test_save_file(self):
-        self.myapp.save_current_cif_file('foo.cif')
-        self.assertEqual(True, Path('foo.cif').exists())
-
 
 class TestWorkfolder(unittest.TestCase):
     """A CIF fle in a complete work folder"""
@@ -78,10 +70,10 @@ class TestWorkfolder(unittest.TestCase):
         self.myapp.setWindowTitle('FinalCif v{}'.format(VERSION))
 
     def tearDown(self) -> None:
-        Path(self.testcif.stem + '.ins').unlink(missing_ok=True)
-        Path(self.testcif.stem + '.lst').unlink(missing_ok=True)
-        Path(self.testcif.stem + '.2fcf').unlink(missing_ok=True)
-        Path('testcif_file.cif').unlink(missing_ok=True)
+        self.testcif.with_suffix('.ins').unlink(missing_ok=True)
+        self.testcif.with_suffix('.lst').unlink(missing_ok=True)
+        self.testcif.with_suffix('.2fcf').unlink(missing_ok=True)
+        Path('tests/testcif_file.cif').unlink(missing_ok=True)
         self.myapp.close()
 
     def key_row(self, key: str) -> int:
@@ -324,10 +316,9 @@ class TestWorkfolder(unittest.TestCase):
         self.myapp.ui.cif_main_table.setText(key='_audit_contact_author_address', column=2, txt='test3ü')
         self.myapp.ui.cif_main_table.setText(key='_audit_contact_author_email', column=2, txt='test4ß')
         self.myapp.ui.cif_main_table.setText(key='_diffrn_measurement_method', column=2, txt='test 12 Å')
-        cif = Path('testcif_file.cif')
-        self.myapp.save_current_cif_file(cif.name)
+        self.myapp.save_current_cif_file()
         self.myapp.ui.cif_main_table.setRowCount(0)
-        self.myapp.load_cif_file(cif)
+        self.myapp.load_cif_file(self.myapp.cif.finalcif_file)
         # test if data is still the same:
         # The character is quoted in the cif file:
         self.assertEqual(r'test 12 \%A', self.myapp.cif['_diffrn_measurement_method'])
@@ -350,7 +341,7 @@ class TestWorkfolder(unittest.TestCase):
         erg = [x.replace("\n", "").replace("\r", "") for x in erg]
         pair = [x.replace("\n", "").replace("\r", "") for x in pair]
         self.assertEqual(erg, pair)
-        self.myapp.final_cif_file_name.unlink(missing_ok=True)
+        self.myapp.cif.finalcif_file.unlink(missing_ok=True)
 
 
 if __name__ == '__main__':

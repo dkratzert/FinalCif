@@ -19,8 +19,9 @@ class BrukerFrameHeader():
         frames = searchpath.glob(basename + '*.sfrm')
         frames = sorted(frames, key=os.path.getmtime, reverse=True)
         self._fileobj = None
-        if not frames:
-            frames = Path(os.curdir).resolve().glob('*.sfrm')
+        # This may take too long:
+        # if not frames:
+        #    frames = Path(os.curdir).resolve().glob('*.sfrm')
         for fr in frames:
             if fr:
                 self._fileobj = Path(fr)

@@ -125,7 +125,7 @@ class CheckCif(QThread):
             self.failed.emit('PDF link is not valid anymore...')
             pdf = None
         if pdf:
-            pdfobj = Path(strip_finalcif_of_name('checkcif-' + self.cif.fileobj.stem) + '-finalcif.pdf')
+            pdfobj = self.cif.finalcif_file_prefixed(prefix='checkcif-', suffix='-finalcif.pdf')
             try:
                 pdfobj.write_bytes(pdf)
             except PermissionError:
