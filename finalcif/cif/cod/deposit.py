@@ -297,7 +297,7 @@ class CODdeposit():
                 'user_email'     : user_email,
                 'deposition_type': deposition_type,  # 'published', 'prepublication' or 'personal'
                 'output_mode'    : 'html',
-                'filename'       : self.cif.fileobj.name,
+                'filename'       : str(self.cif.finalcif_file),
                 # 'progress'       : '1',  # must be 1 if supplied! Otherwise do not submit.
                 }
         data = self._enrich_upload_data(author_email, author_name, data, deposition_type, embargo_time)
@@ -314,7 +314,7 @@ class CODdeposit():
     def _get_files_data_for_upload(self) -> Dict:
         if self.ui.depositHKLcheckBox.isChecked():
             files = {'cif': (self.cif.filename, io.StringIO(self.cif.cif_as_string()), 'multipart/form-data'),
-                     'hkl': (self.cif.finalcif_file.with_suffix('.hkl'), io.StringIO(self.cif.hkl_as_cif), 'multipart/form-data')}
+                     'hkl': (str(self.cif.finalcif_file.with_suffix('.hkl')), io.StringIO(self.cif.hkl_as_cif), 'multipart/form-data')}
         elif self.hkl_file:
             files = {'cif': (self.cif.filename, io.StringIO(self.cif.cif_as_string()), 'multipart/form-data'),
                      'hkl': (self.hkl_file.name, self.hkl_file, 'multipart/form-data')}

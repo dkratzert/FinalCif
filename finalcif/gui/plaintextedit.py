@@ -110,3 +110,62 @@ class MyQPlainTextEdit(QPlainTextEdit):
             # Prevent extreme height for long text:
             size = QSize(100, 300)
         return size
+
+
+class PlainTextEditTemplate(QPlainTextEdit):
+    """
+    A special plaintextedit for equipment and properties.
+    """
+    templateRequested = pyqtSignal(int)
+
+    def __init__(self, parent=None, *args, **kwargs):
+        """
+        Plaintext edit field for most of the table cells.
+        :param parent:
+        :param minheight: minimum height of the widget.
+        """
+        super().__init__(parent, *args, **kwargs)
+        self.setParent(parent)
+        self.cif_key = ''
+        self.parent = parent
+        self.setFocusPolicy(Qt.StrongFocus)
+        self.setFrameShape(QFrame.NoFrame)
+        self.setTabChangesFocus(True)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.setWordWrapMode(QTextOption.WordWrap)
+        self.fontmetric = QFontMetrics(self.document().defaultFont())
+        self.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
+        self.textChanged.connect(lambda: self.parent.resizeRowsToContents())
+
+    def setText(self, text: str, color=None):
+        """
+        Set text of a Plaintextfield with lines wrapped at newline characters.
+        """
+        if color:
+            self.setBackground(color)
+        txtlst = text.split(r'\n')
+        # special treatment for text fields in order to get line breaks:
+        for txt in txtlst:
+            self.setPlainText(txt)
+
+    def eventFilter(self, widget: QObject, event: QEvent):
+        """
+        Event filter to ignore wheel events in comboboxes to prevent accidental changes to them.
+        """
+        if event.type() == QEvent.Wheel and widget and not widget.hasFocus():
+            event.ignore()
+            return True
+        return QObject.eventFilter(self, widget, event)
+
+    def getText(self):
+        return self.toPlainText()
+
+    def sizeHint(self) -> QSize:
+        """Text field sizes are scaled to text length"""
+        rect = self.fontmetric.boundingRect(self.contentsRect(), Qt.TextWordWrap, self.toPlainText())
+        size = QSize(100, rect.height() + 14)
+        if size.height() > 300:
+            # Prevent extreme height for long text:
+            size = QSize(100, 300)
+        return size
