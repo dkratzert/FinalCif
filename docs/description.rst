@@ -36,12 +36,11 @@ other programs like ShelXle.
 
 **A workflow example**
 
-
 * Open a cif file in a work folder.
 * Check and edit the remaining items.
 * Do a html checkcif (it also saves an image for the report). Probably correct last items
-like the moiety formula and  explain alerts with the validation response form editor in the
-same window.
+  like the moiety formula and  explain alerts with the validation response form editor in the
+  same window.
 * Do a pdf checkcif
 * Submit the CIF to the CCDC
 * Drag&drop the CCDC deposit reply email into the work folder, or edit the CCDC number manually
@@ -76,6 +75,12 @@ global\_ key with a data\_ keyword and delete the previous data\_.
 
 Since version 99, FinalCif supports multi-CIFs, so CIF files with multiple data\_ blocks can be
 opened and edited. Please note that auto-filling of missing values is disabled in multi-CIF mode.
+
+
+.. figure:: pics/multi_cif.png
+   :width: 500
+
+   Selector for data blocks in a multi-CIF.
 
 
 **Help for CIF keywords**
