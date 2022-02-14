@@ -61,7 +61,7 @@ class VREF():
 
 class MyVRFContainer(QWidget):
 
-    def __init__(self, form: dict, help: str, parent=None):
+    def __init__(self, form: dict, help: str, parent=None, is_multi_cif=False):
         """
         A Widget to display each validation response form.
 
@@ -74,6 +74,7 @@ class MyVRFContainer(QWidget):
         :param parent: Parent widget
         """
         super().__init__(parent)
+        self.is_multi_cif = is_multi_cif
         self.setParent(parent)
         self.form = form
         # self.setMinimumWidth(400)
@@ -133,7 +134,11 @@ class MyVRFContainer(QWidget):
         if len(type) == 1:
             type = type + '  Alert'
         num = self.form['alert_num'] if 'alert_num' in self.form else ''
-        label.setText("{} {}  --> {}".format(type, num, self.form['data_name']))
+        if self.is_multi_cif:
+            name = "  --> {}".format(self.form['data_name'])
+        else:
+            name = ''
+        label.setText("{} {} {}".format(type, num, name))
         style = 'QLabel {{ font-size: 12px; background-color: {:s}; ' \
                 'font-weight: bold;' \
                 'border: 1px solid gray;' \
@@ -190,7 +195,7 @@ if __name__ == '__main__':
             'problem'  : '_chemical_absolute_configuration Info  Not Given     Please Do '
                          '!  ',
             'alert_num': 'PLAT035'}
-    web = MyVRFContainer(form, help='helptext', parent=None)
+    web = MyVRFContainer(form, help='helptext', parent=None, is_multi_cif=True)
     app.exec_()
     web.raise_()
 
