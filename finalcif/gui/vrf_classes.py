@@ -2,7 +2,15 @@ from PyQt5.QtCore import QSize, Qt
 from PyQt5.QtWidgets import QDialog, QFrame, QHBoxLayout, QLabel, QPushButton, QSizePolicy, QSpacerItem, QTextEdit, \
     QVBoxLayout, QWidget
 
-from finalcif.gui.custom_classes import QHLine
+
+class QHLine(QFrame):
+    def __init__(self):
+        super(QHLine, self).__init__()
+        self.setFrameShape(QFrame.HLine)
+        # self.setFrameShadow(QFrame.Sunken)
+        # gives a black line:
+        # self.setFrameShadow(QFrame.Plain)
+        self.setFrameShadow(QFrame.Raised)
 
 
 class VREF():

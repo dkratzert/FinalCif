@@ -26,16 +26,6 @@ yellow = QColor(250, 247, 150)  # #faf796
 DEBUG = False
 
 
-class QHLine(QFrame):
-    def __init__(self):
-        super(QHLine, self).__init__()
-        self.setFrameShape(QFrame.HLine)
-        # self.setFrameShadow(QFrame.Sunken)
-        # gives a black line:
-        # self.setFrameShadow(QFrame.Plain)
-        self.setFrameShadow(QFrame.Raised)
-
-
 class MyCifTable(QTableWidget, ItemTextMixin):
     row_deleted = QtCore.pyqtSignal(str)
     textTemplate = QtCore.pyqtSignal(int)
