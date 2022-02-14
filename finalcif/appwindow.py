@@ -850,7 +850,7 @@ class AppWindow(QMainWindow):
                 checkcif_out.appendPlainText(vrf_txt)
         checkcif_out.verticalScrollBar().setValue(0)
         moiety = self.ui.cif_main_table.getTextFromKey(key='_chemical_formula_moiety', col=0)
-        if p.formula_moiety and moiety in ['', '?']:
+        if p.formula_moiety and moiety in ['', '?'] and not self.cif.is_multi_cif:
             self.ui.cif_main_table.setText(key='_chemical_formula_moiety', txt=p.formula_moiety, column=COL_EDIT)
         print('Killing platon!')
         p.kill()
