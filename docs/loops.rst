@@ -5,7 +5,7 @@ Loops
 General Loop Editor
 -------------------
 
-FinalCif is also able to edit loop data from a CIf file by clicking the "Edit Loops" button. 
+FinalCif is also able to edit loop data from a CIF file by clicking the "Edit Loops" button.
 Each loop has its own tab where the loop data is represented as a table. All fields changed by the user
 will turn pale red to indicate modifications and these are saved during the next file save.
 

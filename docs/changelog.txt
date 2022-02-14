@@ -1,5 +1,6 @@
 FinalCif recent changes
 -----------------------
+* v99 Support for multi-CIFs: Read, create and check multi-CIFS. Create multi-tables with multi CIFs.
 * v98 Adds large text templates by right-click on main table. Fixes missing atom table in reports
       with CIFs from NospherA2 (Olex2). Better handling of the height of table rows in relation to the height of the contained text.
 * v97 Made any loop rearrangeable by row-wise move up/down. Adds author to loop by double click. Small other changes.

@@ -20,6 +20,8 @@ Before the first upload attempt, you have to signup for an account at http://cry
 password and email adress, you can use the FinalCif interface.
 On the left hand side, you see a list of already deposited structures, unless you entered username/password and refreshed the list.
 
+COD deposition is not available in multi-CIF mode.
+
 personal communication (private communication)
 ----------------------------------------------
 

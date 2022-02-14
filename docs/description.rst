@@ -39,7 +39,7 @@ other programs like ShelXle.
 
 * Open a cif file in a work folder.
 * Check and edit the remaining items.
-* Do a html checkcif (it also saves an image for the report). Probaly correct last items
+* Do a html checkcif (it also saves an image for the report). Probably correct last items
 like the moiety formula and  explain alerts with the validation response form editor in the
 same window.
 * Do a pdf checkcif
@@ -74,7 +74,8 @@ Among other minor restrictions, this means that the global\_ keyword `is not all
 Some CIF writing programs still use the global\_ keyword. You may circumvent this by exchanging the
 global\_ key with a data\_ keyword and delete the previous data\_.
 
-Also, there is only *one* data\_ per file allowed for FinalCif! FinalCif does not support multi-CIFs.
+Since version 99, FinalCif supports multi-CIFs, so CIF files with multiple data\_ blocks can be
+opened and edited. Please note that auto-filling of missing values is disabled in multi-CIF mode.
 
 
 **Help for CIF keywords**
