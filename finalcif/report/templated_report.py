@@ -246,7 +246,13 @@ def symmsearch(cif: CifContainer, newsymms, num, symm, symms_list) -> int:
 class TemplatedReport():
 
     def __init__(self):
-        self.literature = {'finalcif': FinalCifReference(), 'ccdc': CCDCReference()}
+        self.literature = {'finalcif': FinalCifReference(),
+                           'ccdc': CCDCReference(),
+                           'absorption': '[no reference found]',
+                           'solution': '[no reference found]',
+                           'refinement': '[no reference found]',
+                           'integration': '[no reference found]',
+                           }
 
     def format_sum_formula(self, sum_formula: str) -> RichText:
         sum_formula_group = [''.join(x[1]) for x in itertools.groupby(sum_formula, lambda x: x.isalpha())]
@@ -433,9 +439,8 @@ class TemplatedReport():
                    'u_eq' : at.u_eq.replace('-', minus_sign)}
 
     def make_picture(self, options: Options, picfile: Path, tpl_doc: DocxTemplate):
-        if options.report_text:
-            if picfile and picfile.exists():
-                return InlineImage(tpl_doc, str(picfile.resolve()), width=Cm(options.picture_width))
+        if options.report_text and picfile and picfile.exists():
+            return InlineImage(tpl_doc, str(picfile.resolve()), width=Cm(options.picture_width))
         return None
 
     def make_templated_report(self, options: Options, file_obj: Path, output_filename: str, picfile: Path,
