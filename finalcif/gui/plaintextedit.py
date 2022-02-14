@@ -24,8 +24,8 @@ class MyQPlainTextEdit(QPlainTextEdit):
         self.setParent(parent)
         self.cif_key = ''
         font = QFont()
-        font.setPointSize(10)
         # font.setFamily("Arial")
+        font.setPointSize(self.document().defaultFont().pointSize()+1)
         self.setFont(font)
         self.parent: 'MyCifTable' = parent
         self.setFocusPolicy(Qt.StrongFocus)
