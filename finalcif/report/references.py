@@ -130,7 +130,7 @@ class ReferenceFormatter():
         self.doi = ''
         self.program = ''
 
-    def add_reference(self, p: Paragraph):
+    def add_reference(self, p: Paragraph) -> None:
         if self.authors:
             p.add_run(self.authors)
             p.add_run(', ')
@@ -156,7 +156,7 @@ class ReferenceFormatter():
             p.add_run('.')
 
     @property
-    def richtext(self):
+    def richtext(self) -> RichText:
         r = RichText('')
         if self.authors:
             r.add(self.authors)
@@ -184,7 +184,7 @@ class ReferenceFormatter():
         return r
 
     @property
-    def short_ref(self):
+    def short_ref(self) -> RichText:
         """
         Adds a reference with (name year) instead of a number.
         TODO: get real last name from autors list
@@ -196,7 +196,7 @@ class ReferenceFormatter():
         r.add(')', superscript=True)
         return r
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         txt = ''
         if self.authors:
             txt += self.authors
