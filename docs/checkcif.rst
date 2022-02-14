@@ -23,8 +23,10 @@ Validation Response Forms
 -------------------------
 Sometimes you have to explain certain alerts from CheckCif. For example regarding the experiment resolution.
 This is done via validation response forms. FinalCif has a convenient method to do so.
-After an "Online CheckCif" with structure factors you have the option to click on "Edit Response Forms".
-There you have the possibility to reply to A, B or C level alerts and save them to the CIF:
+After a "CheckCif Online HTML" with structure factors you have the option to click on "Edit Response Forms".
+There you have the possibility to reply to A, B or C level alerts and save them to the CIF.
+This works also with multi-CIFs. The respective data block name after the alert numbers indicates
+the respective CIF file.
 
 
 .. figure:: pics/finalcif_responses.png

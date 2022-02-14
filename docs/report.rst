@@ -6,6 +6,9 @@ FinalCif is able to render a nice looking report document as MS Word format from
 For a complete report, you have to finish the CIF first.
 It is also advisable to deposit the file before the report generation in order to have the CCDC number
 listed in the report text.
+With a multi-CIF opened, also a report document where the values of all data\_ block are together in one table
+is written to [filename]-multitable.docx.
+
 
 .. figure:: pics/finalcif_report.png
 
