@@ -1,7 +1,7 @@
 from contextlib import suppress
 
 from PyQt5.QtCore import pyqtSignal, Qt, QObject, QEvent, QSize
-from PyQt5.QtGui import QTextOption, QFontMetrics, QContextMenuEvent
+from PyQt5.QtGui import QTextOption, QFontMetrics, QContextMenuEvent, QFont
 from PyQt5.QtWidgets import QPlainTextEdit, QFrame, QApplication, QAbstractScrollArea
 
 with suppress(ImportError):
@@ -23,6 +23,10 @@ class MyQPlainTextEdit(QPlainTextEdit):
         super().__init__(parent, *args, **kwargs)
         self.setParent(parent)
         self.cif_key = ''
+        font = QFont()
+        font.setPointSize(10)
+        # font.setFamily("Arial")
+        self.setFont(font)
         self.parent: 'MyCifTable' = parent
         self.setFocusPolicy(Qt.StrongFocus)
         self.setFrameShape(QFrame.NoFrame)
