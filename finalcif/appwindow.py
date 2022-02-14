@@ -945,16 +945,16 @@ class AppWindow(QMainWindow):
                 print('Report without templates')
                 make_report_from(options=self.options, cif=self.cif,
                                  output_filename=str(report_filename), picfile=picfile)
-                if self.cif.is_multi_cif:
-                    make_multi_tables(cif=self.cif,
-                                      output_filename=str(
-                                          self.cif.finalcif_file_prefixed(prefix='', suffix='-multitable.docx')))
             else:
                 print('Report with templates')
                 t = TemplatedReport()
                 t.make_templated_report(options=self.options, file_obj=self.cif.fileobj.resolve(),
                                         output_filename=str(report_filename), picfile=picfile,
                                         template_path=Path(self.ui.TemplatesListWidget.currentItem().text()))
+            if self.cif.is_multi_cif:
+                make_multi_tables(cif=self.cif,
+                                  output_filename=str(
+                                      self.cif.finalcif_file_prefixed(prefix='', suffix='-multitable.docx')))
         except FileNotFoundError as e:
             if DEBUG:
                 raise
@@ -989,6 +989,9 @@ class AppWindow(QMainWindow):
             # e.g. checkcif-cu_BruecknerJK_153F40_0m-finalcif.pdf
             pdfname = self.cif.finalcif_file_prefixed(prefix='checkcif-', suffix='-finalcif.pdf')
             arc.zip.write(filename=pdfname, arcname=pdfname.name)
+        with suppress(Exception):
+            multitable = self.cif.finalcif_file_prefixed(prefix='', suffix='-multitable.docx')
+            arc.zip.write(filename=multitable, arcname=multitable.name)
 
     def open_report_document(self, report_filename: Path):
         if report_filename.exists():
