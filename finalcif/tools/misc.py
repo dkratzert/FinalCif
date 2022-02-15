@@ -886,3 +886,11 @@ def is_database_number(input_num: Union[str, int]) -> bool:
     if len(input_num) == 7 and isnumeric(input_num):
         state = True
     return state
+
+
+def unify_line_endings(text: str):
+    return '\n'.join(text.splitlines())
+
+
+def remove_line_endings(text: str):
+    return ' '.join(text.splitlines())

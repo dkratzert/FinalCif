@@ -9,7 +9,7 @@ import unittest
 from pathlib import Path
 
 from finalcif.datafiles.saint import SaintListFile
-from tests.helpers import unify_line_endings
+from finalcif.tools.misc import unify_line_endings
 
 
 class MyTestCase(unittest.TestCase):
