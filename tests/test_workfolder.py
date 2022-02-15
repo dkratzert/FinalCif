@@ -11,7 +11,8 @@ from qtpy.QtTest import QTest
 from finalcif import VERSION
 from finalcif.appwindow import AppWindow
 from finalcif.gui.custom_classes import light_green, yellow, COL_DATA, COL_CIF, COL_EDIT
-from tests.helpers import unify_line_endings, addr
+from tests.helpers import addr
+from finalcif.tools.misc import unify_line_endings
 
 
 class TestNothingOpened(unittest.TestCase):

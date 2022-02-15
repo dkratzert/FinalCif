@@ -7,14 +7,6 @@
 import sys
 from shutil import which
 
-
-def unify_line_endings(text: str):
-    return '\n'.join(text.splitlines())
-
-def remove_line_endings(text: str):
-    return ' '.join(text.splitlines())
-
-
 addr = """Albert-Ludwigs-Universität Freiburg
 Institut für Anorganische und Analytische Chemie
 Albertstraße 21

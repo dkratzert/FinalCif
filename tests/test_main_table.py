@@ -13,7 +13,7 @@ from PyQt5.QtGui import QColor
 
 from finalcif.appwindow import AppWindow
 from finalcif.gui.custom_classes import COL_CIF, COL_DATA, COL_EDIT
-from tests.helpers import unify_line_endings
+from finalcif.tools.misc import unify_line_endings
 
 
 class TestMainTableFieldBehavior(unittest.TestCase):
