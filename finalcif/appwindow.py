@@ -936,6 +936,7 @@ class AppWindow(QMainWindow):
             return None
         self.load_cif_file(self.cif.finalcif_file, block=current_block)
         report_filename = self.cif.finalcif_file_prefixed(prefix='report_', suffix='-finalcif.docx')
+        multi_table_document = self.cif.finalcif_file_prefixed(prefix='', suffix='-multitable.docx')
         # The picture after the header:
         if self.report_picture_path:
             picfile = self.report_picture_path
@@ -953,9 +954,7 @@ class AppWindow(QMainWindow):
                                         output_filename=str(report_filename), picfile=picfile,
                                         template_path=Path(self.ui.TemplatesListWidget.currentItem().text()))
             if self.cif.is_multi_cif:
-                make_multi_tables(cif=self.cif,
-                                  output_filename=str(
-                                      self.cif.finalcif_file_prefixed(prefix='', suffix='-multitable.docx')))
+                make_multi_tables(cif=self.cif, output_filename=str(multi_table_document))
         except FileNotFoundError as e:
             if DEBUG:
                 raise
@@ -971,7 +970,7 @@ class AppWindow(QMainWindow):
                                  'Is the file already opened?'.format(report_filename.name))
             return
         if not self.running_inside_unit_test:
-            self.open_report_document(report_filename)
+            self.open_report_document(report_filename, multi_table_document)
         # Save report and other files to a zip file:
         self.zip_report(report_filename)
 
@@ -987,14 +986,18 @@ class AppWindow(QMainWindow):
         with suppress(Exception):
             arc.zip.write(filename=self.cif.finalcif_file, arcname=self.cif.finalcif_file.name)
         with suppress(Exception):
-            # e.g. checkcif-cu_BruecknerJK_153F40_0m-finalcif.pdf
             pdfname = self.cif.finalcif_file_prefixed(prefix='checkcif-', suffix='-finalcif.pdf')
             arc.zip.write(filename=pdfname, arcname=pdfname.name)
         with suppress(Exception):
             multitable = self.cif.finalcif_file_prefixed(prefix='', suffix='-multitable.docx')
             arc.zip.write(filename=multitable, arcname=multitable.name)
 
-    def open_report_document(self, report_filename: Path):
+    def open_report_document(self, report_filename: Path, multi_table_document: Path):
+        if self.cif.is_multi_cif:
+            self.open_file(multi_table_document)
+        self.open_file(report_filename)
+
+    def open_file(self, report_filename: Path):
         if report_filename.exists():
             if os.name == 'nt':
                 os.startfile(report_filename)
