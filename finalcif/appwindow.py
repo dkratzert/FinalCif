@@ -142,6 +142,7 @@ class AppWindow(QMainWindow):
         self.ui.cif_main_table.verticalHeader().setAlternatingRowColors(True)
 
     def set_initial_button_states(self) -> None:
+        self.ui.appendCifPushButton.setDisabled(True)
         self.ui.PictureWidthDoubleSpinBox.setRange(0.0, 25)
         self.ui.PictureWidthDoubleSpinBox.setSingleStep(0.5)
         # Just too slow for large structures:
@@ -1225,6 +1226,8 @@ class AppWindow(QMainWindow):
         self.ui.cif_main_table.delete_content()
 
     def _load_block(self, index: int):
+        if not self.cif:
+            return
         self._clear_state_before_block_load()
         self.cif.load_this_block(index)
         self.check_cif_for_missing_values_before_really_open_it()
@@ -1281,6 +1284,7 @@ class AppWindow(QMainWindow):
             self.ui.ShredCifButton.setDisabled(True)
 
     def enable_buttons(self):
+        self.ui.appendCifPushButton.setEnabled(True)
         self.ui.CheckcifButton.setEnabled(True)
         self.ui.CheckcifHTMLOnlineButton.setEnabled(True)
         self.ui.CheckcifPDFOnlineButton.setEnabled(True)
@@ -1302,6 +1306,8 @@ class AppWindow(QMainWindow):
         self.cif.save()
         self.load_cif_file(filepath=self.cif.finalcif_file)
         file = self.get_file_from_dialog()
+        if not file:
+            return
         cif2 = CifContainer(file)
         if cif2.is_multi_cif:
             show_general_warning('Can add single data CIFs only!')
@@ -1313,8 +1319,10 @@ class AppWindow(QMainWindow):
         self.cif.save()
         self.load_cif_file(filepath=self.cif.fileobj)
 
-    def get_file_from_dialog(self, change_into_workdir=True) -> Union[Path, None]:
-        fp = Path(cif_file_open_dialog(last_dir=self.get_last_workdir()))
+    def get_file_from_dialog(self) -> Union[Path, None]:
+        fp = cif_file_open_dialog(last_dir=self.get_last_workdir())
+        if not fp:
+            return None
         filepath = Path(fp)
         # if change_into_workdir:
         # The warning about inconsistent temperature:
