@@ -3891,6 +3891,12 @@ please add a publication author:</string>
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
+          <property name="font">
+           <font>
+            <family>Arial</family>
+            <pointsize>11</pointsize>
+           </font>
+          </property>
           <property name="editable">
            <bool>true</bool>
           </property>
