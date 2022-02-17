@@ -4,7 +4,6 @@ from typing import Union
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.gui.dialogs import show_general_warning
 from finalcif.gui.finalcif_gui import Ui_FinalCifWindow
-from finalcif.tools.misc import strip_finalcif_of_name
 from finalcif.tools.statusbar import StatusBar
 
 
@@ -22,8 +21,14 @@ class ShredCIF():
         Saves res and hkl file from the cif.
         """
         self._statusbar.show_message('')
-        resfile_path = self._cif.finalcif_file.with_suffix('.res')
-        hklfile_path = self._cif.finalcif_file.with_suffix('.hkl')
+        if self._cif.is_multi_cif:
+            resfile_path = self._cif.finalcif_file_prefixed(prefix='',
+                                                            suffix='_' + self._cif.block.name + '-finalcif.res')
+            hklfile_path = self._cif.finalcif_file_prefixed(prefix='',
+                                                            suffix='_' + self._cif.block.name + '-finalcif.hkl')
+        else:
+            resfile_path = self._cif.finalcif_file.with_suffix('.res')
+            hklfile_path = self._cif.finalcif_file.with_suffix('.hkl')
         res_data = None
         hkl_data = None
         if not self._cif:
@@ -65,7 +70,8 @@ class ShredCIF():
                 self._statusbar.current_message + '\nFinished writing data to {}.'.format(hklname.name))
         if hkldata and resdata:
             self._statusbar.show_message(
-                self._statusbar.current_message + '\nFinished writing data to {} \nand {}.'.format(resname.name, hklname.name))
+                self._statusbar.current_message + '\nFinished writing data to {} \nand {}.'.format(resname.name,
+                                                                                                   hklname.name))
 
     @staticmethod
     def _data_is_valid(data: list) -> bool:

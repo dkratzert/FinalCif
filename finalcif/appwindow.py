@@ -20,7 +20,7 @@ import gemmi.cif
 import qtawesome as qta
 import requests
 from PyQt5 import QtCore, QtGui, QtWebEngineWidgets
-from PyQt5.QtCore import QThread
+from PyQt5.QtCore import QThread, QTimer
 from PyQt5.QtWidgets import QMainWindow, QHeaderView, QShortcut, QCheckBox, QListWidgetItem, QApplication, \
     QPlainTextEdit, QFileDialog, QLabel
 from gemmi import cif
@@ -1213,6 +1213,9 @@ class AppWindow(QMainWindow):
         self.ui.datanameComboBox.setCurrentIndex(block)
         self.ui.cif_main_table.resizeRowsToContents()
         self.ui.datanameComboBox.blockSignals(False)
+        if self.cif.is_multi_cif:
+            # short after start, because window size is not finished
+            QTimer.singleShot(1000, self.ui.datanameComboBox.showPopup)
 
     def add_data_names_to_combobox(self):
         self.ui.datanameComboBox.clear()
@@ -1643,6 +1646,7 @@ class AppWindow(QMainWindow):
                 txt = 'FinalCif V{} by Daniel Kratzert, Freiburg {}, https://dkratzert.de/finalcif.html'
                 strval = txt.format(VERSION, datetime.now().year)
                 self.ui.cif_main_table.setText(key=key, column=COL_DATA, txt=strval)
+                QTimer.singleShot(200, self.ui.cif_main_table.resizeRowsToContents)
             # print(key, value)
         if not self.cif.test_res_checksum():
             show_res_checksum_warning()
