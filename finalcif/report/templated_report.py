@@ -246,11 +246,11 @@ def symmsearch(cif: CifContainer, newsymms, num, symm, symms_list) -> int:
 class TemplatedReport():
 
     def __init__(self):
-        self.literature = {'finalcif': FinalCifReference(),
-                           'ccdc': CCDCReference(),
-                           'absorption': '[no reference found]',
-                           'solution': '[no reference found]',
-                           'refinement': '[no reference found]',
+        self.literature = {'finalcif'   : FinalCifReference(),
+                           'ccdc'       : CCDCReference(),
+                           'absorption' : '[no reference found]',
+                           'solution'   : '[no reference found]',
+                           'refinement' : '[no reference found]',
                            'integration': '[no reference found]',
                            }
 
@@ -438,6 +438,10 @@ class TemplatedReport():
                    'occ'  : at.occ.replace('-', minus_sign),
                    'u_eq' : at.u_eq.replace('-', minus_sign)}
 
+    def get_crystallization_method(self, cif):
+        return remove_line_endings(retranslate_delimiter(
+            cif['_exptl_crystal_recrystallization_method'])) or '[No crystallization method given!]'
+
     def make_picture(self, options: Options, picfile: Path, tpl_doc: DocxTemplate):
         if options.report_text and picfile and picfile.exists():
             return InlineImage(tpl_doc, str(picfile.resolve()), width=Cm(options.picture_width))
@@ -455,8 +459,7 @@ class TemplatedReport():
                    'cif'                   : cif,
                    'space_group'           : self.space_group_subdoc(tpl_doc, cif),
                    'structure_figure'      : self.make_picture(options, picfile, tpl_doc),
-                   'crystallization_method': remove_line_endings(retranslate_delimiter(
-                       cif['_exptl_crystal_recrystallization_method'])) or '[No crystallization method given!]',
+                   'crystallization_method': self.get_crystallization_method(cif),
                    'sum_formula'           : self.format_sum_formula(cif['_chemical_formula_sum'].replace(" ", "")),
                    'itnum'                 : cif['_space_group_IT_number'],
                    'crystal_size'          : this_or_quest(cif['_exptl_crystal_size_min']) + timessym +
