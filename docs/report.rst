@@ -6,13 +6,18 @@ FinalCif is able to render a nice looking report document as MS Word format from
 For a complete report, you have to finish the CIF first.
 It is also advisable to deposit the file before the report generation in order to have the CCDC number
 listed in the report text.
-With a multi-CIF opened, also a report document where the values of all data\_ block are together in one table
-is written to [filename]-multitable.docx.
 
 
 .. figure:: pics/finalcif_report.png
 
    A report document example.
+
+With a multi-CIF opened, also a report document where the values of all data\_ blocks are together in one table
+is written to [filename]-multitable.docx.
+
+.. figure:: pics/multitable.png
+
+   A report document from a multi-CIF.
 
 
 CCDC Number
@@ -29,6 +34,7 @@ FinalCif can add a picture of your structure to the report document.
 
 * Either by previously performing an html or local checkcif. Then it automatically adds a picture from the checkcif report, as in the example above.
 * Or you can add any other picture with the "Picture for Tables" button.
+
 
 Customizing the Report
 ----------------------
