@@ -135,6 +135,7 @@ atom = namedtuple('Atom', ('label', 'type', 'x', 'y', 'z', 'part', 'occ', 'u_eq'
 class MoleculeWidget(QtWidgets.QWidget):
     def __init__(self, shx_atoms: Generator[Any, Any, atom]):
         super().__init__()
+        self.painter = None
         self.layout = QtWidgets.QVBoxLayout(self)
         self.layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(self.layout)
@@ -144,38 +145,38 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.connections = self.get_conntable_from_atoms()
 
     def paintEvent(self, event):
+        self.painter = QPainter(self)
         self.draw()
 
     # dimensions is 2-tuple of the number of characters on x and y axis
     def draw(self):
+        self.painter.setPen(QPen(Qt.darkGray, 2, Qt.SolidLine))
         plane = [Coordinate(1, 0, 0), Coordinate(0, 1, 0)]
-        # screen = Screen()
         max_extreme, min_extreme = self.molecule_dimensions(plane)
         span = max_extreme - min_extreme
         # make everything fit in our dimensions while maintaining proportions
         scale_factor = min((self.width() - 1) / span.x, (self.height() - 1) / span.y)
         extra_space = Coordinate2D(self.width() - 1, self.height() - 1) - span * scale_factor
         offset = extra_space / 2
-        painter = QPainter(self)
-        painter.setPen(QPen(Qt.black, 2, Qt.SolidLine))
-        painter.setBrush(QBrush(Qt.red, Qt.SolidPattern))
-        for num, atom in enumerate(self.atoms):
+        for atom in self.atoms:
             # shift to be in the 1st quadrant (positive coordinates) close to (0,0)
             screen_index = (atom.flatten(plane) - min_extreme) * scale_factor
             screen_index = screen_index + offset
-            # screen_index = (int(round(screen_index.x)), int(round(screen_index.y)))
-            # screen.set(screen_index, atom.coloured_symbol())
-            # print(int(screen_index.x), int(screen_index.y))
-            x = int(screen_index.x)
-            y = int(screen_index.y)
-            painter.drawEllipse(x, y, 8, 8)
-            atom.screenx = x
-            atom.screeny = y
-        painter_bond = QPainter(self)
-        painter_bond.setPen(QPen(Qt.black, 2, Qt.SolidLine))
-        for at1, at2 in self.connections:
-            painter_bond.drawLine(at1.screenx+4, at1.screeny+4, at2.screenx+4, at2.screeny+4)
+            atom.screenx = int(screen_index.x)
+            atom.screeny = int(screen_index.y)
+        self.draw_bonds()
+        self.draw_atoms()
+        self.painter.end()
 
+    def draw_bonds(self):
+        for at1, at2 in self.connections:
+            self.painter.drawLine(at1.screenx + 4, at1.screeny + 4, at2.screenx + 4, at2.screeny + 4)
+
+    def draw_atoms(self):
+        self.painter.setPen(QPen(Qt.black, 2, Qt.SolidLine))
+        self.painter.setBrush(QBrush(Qt.red, Qt.SolidPattern))
+        for atom in self.atoms:
+            self.painter.drawEllipse(atom.screenx, atom.screeny, 8, 8)
 
     def molecule_dimensions(self, plane):
         flattened = [a.flatten(plane) for a in self.atoms]
