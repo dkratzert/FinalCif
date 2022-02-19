@@ -573,10 +573,12 @@ class CifContainer():
 
     @property
     def atoms_orth(self) -> Generator:
+        atom = namedtuple('Atom', ('label', 'type', 'x', 'y', 'z', 'part', 'occ', 'u_eq'))
         cell = self.atomic_struct.cell
         for at in self.atomic_struct.sites:
             x, y, z = at.orth(cell)
-            yield [at.label, at.type_symbol, x, y, z, at.disorder_group, at.occ, at.u_iso]
+            yield atom(label=at.label, type=at.type_symbol, x=x, y=y, z=z,
+                       part=at.disorder_group, occ=at.occ, u_eq=at.u_iso)
 
     @property
     def hydrogen_atoms_present(self) -> bool:
