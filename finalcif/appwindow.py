@@ -35,6 +35,7 @@ from finalcif.cif.text import utf8_to_str, quote
 from finalcif.datafiles.bruker_data import BrukerData
 from finalcif.datafiles.ccdc_mail import CCDCMail
 from finalcif.displaymol import mol_file_writer
+from finalcif.displaymol.molecule3 import MoleculeWidget
 from finalcif.displaymol.sdm import SDM
 from finalcif.displaymol.write_html import write
 from finalcif.equip_property.author_loop_templates import AuthorLoops
@@ -1454,7 +1455,7 @@ class AppWindow(QMainWindow):
             self.init_webview()
         except Exception as e:
             print(e, '###')
-        self.view_molecule()
+        #self.view_molecule()
 
     def view_molecule(self) -> None:
         if self.ui.growCheckBox.isChecked():
@@ -1486,12 +1487,14 @@ class AppWindow(QMainWindow):
                         self.ui.molGroupBox.height() - 250)
         Path(os.path.join(self.jsmoldir.name, "./jsmol.htm")).write_text(data=content, encoding="utf-8",
                                                                          errors='ignore')
-        self.view.reload()
+        #self.view.reload()
 
     def init_webview(self) -> None:
         """
         Initializes a QWebengine to view the molecule.
         """
+        self.ui.moleculeLayout.addWidget(MoleculeWidget())
+        return
         try:
             # Otherwise, the views accumulate:
             self.view.close()

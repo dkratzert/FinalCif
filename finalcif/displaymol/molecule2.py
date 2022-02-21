@@ -132,7 +132,7 @@ class Coordinate(object):
 atom = namedtuple('Atom', ('label', 'type', 'x', 'y', 'z', 'part', 'occ', 'u_eq'))
 
 
-class MoleculeWidget(QtWidgets.QWidget):
+class MoleculeWidgetOld(QtWidgets.QWidget):
     def __init__(self, shx_atoms: Generator[Any, Any, atom]):
         super().__init__()
         self.painter = None
