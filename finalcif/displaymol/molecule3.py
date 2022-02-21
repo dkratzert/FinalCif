@@ -20,6 +20,7 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.vlayout = QtWidgets.QVBoxLayout(self)
         self.vlayout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(self.vlayout)
+        self.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
 
         istyle = vtk.vtkInteractorStyleSwitch()
         istyle.SetCurrentStyleToTrackballCamera()
@@ -51,7 +52,7 @@ class MoleculeWidget(QtWidgets.QWidget):
         renderer.SetBackground(255, 255, 255)
         renderer.SetLayer(0)
         renderer.ResetCamera()
-        renderer.GetActiveCamera().Zoom(1.5)
+        renderer.GetActiveCamera().Zoom(1.6)
         self.vtkWidget.GetRenderWindow().AddRenderer(renderer)
         interactor.Initialize()
 
