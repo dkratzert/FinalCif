@@ -1,15 +1,10 @@
-"""To be used with PDB files from NMR. The script reads a PDB file containing
-several models and calculates standard deviation of the positions of heavy
-atoms (C, N, O). The standard deviations are visualised as semi-transparent
-ellipsoids (vtkTensorGlyphs) plotted against the average structure (in tube
-representation."""
 import sys
 
 import vtk
 from PyQt5 import QtWidgets, QtCore
 from vtkmodules.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 
-from finalcif.cif.atoms import element2num, get_radius_from_element
+from finalcif.cif.atoms import element2num, get_radius_from_element, num2rgb
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.tools.misc import distance
 
@@ -65,6 +60,10 @@ class MoleculeWidget(QtWidgets.QWidget):
 
         mol_actor = vtk.vtkActor()
         mol_actor.SetMapper(mol_mapper)
+        # mol_actor.GetProperty().SetAmbient(0.0)
+        # mol_actor.GetProperty().SetDiffuse(1.0)
+        # mol_actor.GetProperty().SetSpecular(0.0)
+        # mol_actor.GetProperty().SetSpecularPower(40.0)
 
         renderer = vtk.vtkRenderer()
         renderer.AddActor(mol_actor)
@@ -104,7 +103,8 @@ class MoleculeWidget(QtWidgets.QWidget):
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     window = QtWidgets.QMainWindow()
-    cif = CifContainer('tests/examples/1979688.cif')
+    # cif = CifContainer('tests/examples/1979688.cif')
+    cif = CifContainer('test-data/p21c.cif')
 
     render_widget = MoleculeWidget(None, cif)
 
