@@ -35,7 +35,7 @@ from finalcif.cif.text import utf8_to_str, quote
 from finalcif.datafiles.bruker_data import BrukerData
 from finalcif.datafiles.ccdc_mail import CCDCMail
 from finalcif.displaymol import mol_file_writer
-from finalcif.displaymol.molecule3 import MoleculeWidget
+from finalcif.displaymol.vtk_molecule import MoleculeWidget
 from finalcif.displaymol.sdm import SDM
 from finalcif.displaymol.write_html import write
 from finalcif.equip_property.author_loop_templates import AuthorLoops
@@ -1473,21 +1473,8 @@ class AppWindow(QMainWindow):
         else:
             self.ui.molGroupBox.setTitle('Asymmetric Unit')
             atoms = self.cif.atoms_orth
-        try:
-            mol = ' '
-            if atoms:
-                mol = mol_file_writer.MolFile(atoms)
-                mol = mol.make_mol()
-        except (TypeError, KeyError):
-            print("Error while writing mol file.")
-            mol = ' '
-            if DEBUG:
-                raise
-        content = write(mol, self.ui.molGroupBox.width() - 250,
-                        self.ui.molGroupBox.height() - 250)
-        Path(os.path.join(self.jsmoldir.name, "./jsmol.htm")).write_text(data=content, encoding="utf-8",
-                                                                         errors='ignore')
-        #self.view.reload()
+        render_widget = MoleculeWidget(None, cif)
+
 
     def init_webview(self) -> None:
         """

@@ -4,7 +4,7 @@ import vtk
 from PyQt5 import QtWidgets, QtCore
 from vtkmodules.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 
-from finalcif.cif.atoms import element2num, get_radius_from_element, num2rgb
+from finalcif.cif.atoms import element2num, get_radius_from_element
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.tools.misc import distance
 
@@ -12,8 +12,6 @@ from finalcif.tools.misc import distance
 class MoleculeWidget(QtWidgets.QWidget):
     def __init__(self, parent, cif: CifContainer):
         super().__init__(parent=parent)
-
-        self.cif = cif
 
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
         self.vlayout = QtWidgets.QVBoxLayout(self)
@@ -30,7 +28,7 @@ class MoleculeWidget(QtWidgets.QWidget):
         interactor.SetInteractorStyle(istyle)
 
         # molecule = self.get_molecule()
-        molecule = self.add_atoms()
+        #molecule = self.add_atoms()
 
         # Does not work, why?
         """colors = vtk.vtkDoubleArray()
@@ -45,47 +43,57 @@ class MoleculeWidget(QtWidgets.QWidget):
             # print(element2rgb[num2element[num]])
         molecule.GetAtomData().AddArray(colors)"""
 
-        mol_mapper = vtk.vtkMoleculeMapper()
+        self.mol_mapper = vtk.vtkMoleculeMapper()
         # Belongs to the non-working code above:
         # mol_mapper.SetInputArrayToProcess(0, 0, 0, vtkDataObject.FIELD_ASSOCIATION_VERTICES, "Colors")
         # mol_mapper.SetInputArrayToProcess(0, 0, 0, 4, "Colors")
-        mol_mapper.SetInputData(molecule)
-        mol_mapper.SetRenderAtoms(True)
-        mol_mapper.UseBallAndStickSettings()
-        mol_mapper.SetUseMultiCylindersForBonds(False)
-        mol_mapper.SetBondRadius(0.07)
-        mol_mapper.SetAtomicRadiusScaleFactor(0.2)
-        mol_mapper.SetBondColorMode(0)
-        mol_mapper.SetBondColor(80, 80, 80)
+        #self.mol_mapper.SetInputData(molecule)
+        self.mol_mapper.SetRenderAtoms(True)
+        # self.mol_mapper.UseBallAndStickSettings()
+        self.mol_mapper.UseLiquoriceStickSettings()
+        self.mol_mapper.SetUseMultiCylindersForBonds(False)
+        self.mol_mapper.SetBondRadius(0.07)
+        self.mol_mapper.SetAtomicRadiusScaleFactor(0.25)
+        self.mol_mapper.SetBondColorMode(1)
+        self.mol_mapper.SetBondColor(80, 80, 80)
 
         mol_actor = vtk.vtkActor()
-        mol_actor.SetMapper(mol_mapper)
+        mol_actor.SetMapper(self.mol_mapper)
         # mol_actor.GetProperty().SetAmbient(0.0)
         # mol_actor.GetProperty().SetDiffuse(1.0)
         # mol_actor.GetProperty().SetSpecular(0.0)
         # mol_actor.GetProperty().SetSpecularPower(40.0)
 
-        renderer = vtk.vtkRenderer()
-        renderer.AddActor(mol_actor)
-        renderer.SetBackground(255, 255, 255)
-        renderer.SetLayer(0)
-        renderer.ResetCamera()
-        renderer.GetActiveCamera().Zoom(1.6)
-        self.vtkWidget.GetRenderWindow().AddRenderer(renderer)
+        self.renderer = vtk.vtkRenderer()
+        self.renderer.AddActor(mol_actor)
+        self.renderer.SetBackground(255, 255, 255)
+        self.renderer.SetLayer(0)
+        self.renderer.ResetCamera()
+        self.renderer.GetActiveCamera().Zoom(1.6)
+        self.vtkWidget.GetRenderWindow().AddRenderer(self.renderer)
         interactor.Initialize()
 
-    def add_atoms(self):
+    def add_atoms(self, cif):
         molecule = vtk.vtkMolecule()
-        for atom in self.cif.atoms_orth:
-            vatom = molecule.AppendAtom(element2num[atom.type], atom.x, atom.y, atom.z)
-        self.make_bonds(molecule)
+        for atom in cif.atoms_orth:
+            molecule.AppendAtom(element2num[atom.type], atom.x, atom.y, atom.z)
+        self.make_bonds(molecule, cif)
         return molecule
 
-    def make_bonds(self, molecule, extra_param: float = 0.48) -> None:
+    def redraw(self, cif: CifContainer):
+        """
+        Loads a different molecule.
+        """
+        molecule = render_widget.add_atoms(cif)
+        self.mol_mapper.SetInputData(molecule)
+        self.renderer.ResetCamera()
+        self.renderer.GetActiveCamera().Zoom(1.5)
+
+    def make_bonds(self, molecule, cif: CifContainer, extra_param: float = 0.48) -> None:
         h_atoms = ('H', 'D')
-        for num1, at1 in enumerate(self.cif.atoms_orth, 0):
+        for num1, at1 in enumerate(cif.atoms_orth, 0):
             rad1 = get_radius_from_element(at1.type)
-            for num2, at2 in enumerate(self.cif.atoms_orth, 0):
+            for num2, at2 in enumerate(cif.atoms_orth, 0):
                 if at1.part * at2.part != 0 and at1.part != at2.part:
                     continue
                 if at1.label == at2.label:
@@ -107,9 +115,11 @@ if __name__ == "__main__":
     cif = CifContainer('test-data/p21c.cif')
 
     render_widget = MoleculeWidget(None, cif)
+    render_widget.redraw(cif)
 
     window.setCentralWidget(render_widget)
     window.setMinimumSize(500, 500)
     window.show()
     window.raise_()
+    # render_widget.redraw(CifContainer('tests/examples/1979688.cif'))
     sys.exit(app.exec_())
