@@ -37,37 +37,37 @@ class MoleculeWidget(QtWidgets.QWidget):
         # molecule = self.get_molecule()
         molecule = self.add_atoms()
 
-        """ Does not work, why?
-        colors = vtk.vtkDoubleArray()
+        # Does not work, why?
+        """colors = vtk.vtkDoubleArray()
         colors.SetNumberOfComponents(3)
         colors.SetName("Colors")
-        colors.Allocate(3 * molecule.GetNumberOfAtoms()+1)
+        colors.Allocate(3 * molecule.GetNumberOfAtoms() + 1)
         for i in range(molecule.GetNumberOfAtoms()):
             num = molecule.GetAtomAtomicNumber(i)
-            #print(i, element2rgb[num2element[num]])
-            colors.InsertNextTypedTuple(element2rgb[num2element[num]])
-            #colors.InsertNextTypedTuple((1, 1, 1))
-            #print(element2rgb[num2element[num]])
-        molecule.GetAtomData().AddArray(colors)
-        # molMapper.SetInputArrayToProcess(0, 0, 0, vtkDataObject.FIELD_ASSOCIATION_VERTICES, "Colors")
-        # molMapper.SetInputArrayToProcess(0, 0, 0, 4, "Colors")
-        """
+            # print(i, element2rgb[num2element[num]])
+            colors.InsertNextTypedTuple(num2rgb[num])
+            # colors.InsertNextTypedTuple((1, 1, 1))
+            # print(element2rgb[num2element[num]])
+        molecule.GetAtomData().AddArray(colors)"""
 
-        molMapper = vtk.vtkMoleculeMapper()
-        molMapper.SetInputData(molecule)
-        molMapper.SetRenderAtoms(True)
-        molMapper.UseBallAndStickSettings()
-        molMapper.SetUseMultiCylindersForBonds(False)
-        molMapper.SetBondRadius(0.07)
-        molMapper.SetAtomicRadiusScaleFactor(0.2)
-        molMapper.SetBondColorMode(0)
-        molMapper.SetBondColor(80, 80, 80)
+        mol_mapper = vtk.vtkMoleculeMapper()
+        # Belongs to the non-working code above:
+        # mol_mapper.SetInputArrayToProcess(0, 0, 0, vtkDataObject.FIELD_ASSOCIATION_VERTICES, "Colors")
+        # mol_mapper.SetInputArrayToProcess(0, 0, 0, 4, "Colors")
+        mol_mapper.SetInputData(molecule)
+        mol_mapper.SetRenderAtoms(True)
+        mol_mapper.UseBallAndStickSettings()
+        mol_mapper.SetUseMultiCylindersForBonds(False)
+        mol_mapper.SetBondRadius(0.07)
+        mol_mapper.SetAtomicRadiusScaleFactor(0.2)
+        mol_mapper.SetBondColorMode(0)
+        mol_mapper.SetBondColor(80, 80, 80)
 
-        molActor = vtk.vtkActor()
-        molActor.SetMapper(molMapper)
+        mol_actor = vtk.vtkActor()
+        mol_actor.SetMapper(mol_mapper)
 
         renderer = vtk.vtkRenderer()
-        renderer.AddActor(molActor)
+        renderer.AddActor(mol_actor)
         renderer.SetBackground(255, 255, 255)
         renderer.SetLayer(0)
         renderer.ResetCamera()
@@ -102,20 +102,14 @@ class MoleculeWidget(QtWidgets.QWidget):
 
 
 if __name__ == "__main__":
-    # Molecule(atoms).draw()
     app = QtWidgets.QApplication(sys.argv)
-    # create our new Qt MainWindow
     window = QtWidgets.QMainWindow()
-    # create our new custom VTK Qt widget
-    # shx = Shelxfile()
-    # shx.read_file('tests/examples/1979688-finalcif.res')
-    # atoms = [x.cart_coords for x in shx.atoms]
     cif = CifContainer('tests/examples/1979688.cif')
-    render_widget = MoleculeWidget(None, cif)  # cif.atoms_orth)
-    # add and show
+
+    render_widget = MoleculeWidget(None, cif)
+
     window.setCentralWidget(render_widget)
     window.setMinimumSize(500, 500)
     window.show()
     window.raise_()
-    # start the event loop
     sys.exit(app.exec_())
