@@ -84,7 +84,7 @@ class MoleculeWidget(QtWidgets.QWidget):
         """
         Loads a different molecule.
         """
-        molecule = render_widget.add_atoms(cif)
+        molecule = self.add_atoms(cif)
         self.mol_mapper.SetInputData(molecule)
         self.renderer.ResetCamera()
         self.renderer.GetActiveCamera().Zoom(1.5)
