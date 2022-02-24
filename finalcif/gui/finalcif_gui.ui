@@ -2002,7 +2002,7 @@
                 <number>8</number>
                </property>
                <item>
-                <layout class="QVBoxLayout" name="moleculeLayout"/>
+                <widget class="MoleculeWidget" name="render_widget" native="true"/>
                </item>
                <item>
                 <widget class="QCheckBox" name="growCheckBox">
@@ -3941,6 +3941,12 @@ please add a publication author:</string>
    <class>MyMainStackedWidget</class>
    <extends>QStackedWidget</extends>
    <header>finalcif.gui.mainstackwidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>MoleculeWidget</class>
+   <extends>QWidget</extends>
+   <header>finalcif.displaymol.vtk_molecule.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
