@@ -22,6 +22,7 @@ docxtpl==0.15.2
 shelxfile
 crossrefapi
 numpy==1.22.2
+vtk>=9.1.0
 
 pyinstaller>=4.7
 pyinstaller-hooks-contrib==2021.5
