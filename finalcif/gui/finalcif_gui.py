@@ -834,9 +834,9 @@ class Ui_FinalCifWindow(object):
         self.verticalLayout_8 = QtWidgets.QVBoxLayout(self.molGroupBox)
         self.verticalLayout_8.setContentsMargins(6, 3, 6, 8)
         self.verticalLayout_8.setObjectName("verticalLayout_8")
-        self.moleculeLayout = QtWidgets.QVBoxLayout()
-        self.moleculeLayout.setObjectName("moleculeLayout")
-        self.verticalLayout_8.addLayout(self.moleculeLayout)
+        self.render_widget = MoleculeWidget(self.molGroupBox)
+        self.render_widget.setObjectName("render_widget")
+        self.verticalLayout_8.addWidget(self.render_widget)
         self.growCheckBox = QtWidgets.QCheckBox(self.molGroupBox)
         self.growCheckBox.setMinimumSize(QtCore.QSize(0, 20))
         self.growCheckBox.setObjectName("growCheckBox")
@@ -1927,6 +1927,7 @@ class Ui_FinalCifWindow(object):
         self.actionSave_Report.setText(_translate("FinalCifWindow", "Save Report"))
         self.actionSave_CIF_File.setText(_translate("FinalCifWindow", "Save CIF File"))
         self.actionedit_templates.setText(_translate("FinalCifWindow", "edit templates"))
+from finalcif.displaymol.vtk_molecule import MoleculeWidget
 from finalcif.gui.custom_classes import MyCifTable
 from finalcif.gui.equipmenttable import MyEQTableWidget
 from finalcif.gui.mainstackwidget import MyMainStackedWidget

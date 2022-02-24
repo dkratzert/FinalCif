@@ -12,8 +12,6 @@ from contextlib import suppress
 from datetime import datetime
 from math import sin, radians
 from pathlib import Path, WindowsPath
-from shutil import copy2
-from tempfile import TemporaryDirectory
 from typing import Union, Dict, Tuple
 
 import gemmi.cif
@@ -22,11 +20,10 @@ import requests
 from PyQt5 import QtCore, QtGui, QtWebEngineWidgets
 from PyQt5.QtCore import QThread, QTimer
 from PyQt5.QtWidgets import QMainWindow, QHeaderView, QShortcut, QCheckBox, QListWidgetItem, QApplication, \
-    QPlainTextEdit, QFileDialog, QLabel
+    QPlainTextEdit, QFileDialog
 from gemmi import cif
 from qtpy.QtGui import QDesktopServices
 
-import finalcif
 from finalcif import VERSION
 from finalcif.cif.checkcif.checkcif import MyHTMLParser, AlertHelp, CheckCif
 from finalcif.cif.cif_file_io import CifContainer
@@ -34,10 +31,7 @@ from finalcif.cif.cod.deposit import CODdeposit
 from finalcif.cif.text import utf8_to_str, quote
 from finalcif.datafiles.bruker_data import BrukerData
 from finalcif.datafiles.ccdc_mail import CCDCMail
-from finalcif.displaymol import mol_file_writer
-from finalcif.displaymol.vtk_molecule import MoleculeWidget
 from finalcif.displaymol.sdm import SDM
-from finalcif.displaymol.write_html import write
 from finalcif.equip_property.author_loop_templates import AuthorLoops
 from finalcif.equip_property.equipment import Equipment
 from finalcif.equip_property.properties import Properties
@@ -69,7 +63,7 @@ from finalcif.tools.space_groups import SpaceGroups
 from finalcif.tools.statusbar import StatusBar
 from finalcif.tools.sumformula import formula_str_to_dict, sum_formula_to_html
 
-DEBUG = False
+DEBUG = True
 app = QApplication(sys.argv)
 
 
@@ -85,7 +79,6 @@ class AppWindow(QMainWindow):
         self.running_inside_unit_test = unit_test
         self.sources: Union[None, Dict[str, Tuple[Union[str, None]]]] = None
         self.cif: Union[CifContainer, None] = None
-        self.view: Union[QtWebEngineWidgets.QWebEngineView, None] = None
         self.report_picture_path: Union[Path, None] = None
         self.checkdef = []
         self.validation_response_forms_list = []
@@ -420,8 +413,6 @@ class AppWindow(QMainWindow):
         """It called when the main window resizes."""
         super(AppWindow, self).resizeEvent(a0)
         with suppress(AttributeError):
-            self.view.reload()
-        with suppress(AttributeError):
             self._savesize()
         self.ui.cif_main_table.resizeRowsToContents()
 
@@ -625,8 +616,6 @@ class AppWindow(QMainWindow):
         self.status_bar.show_message('')
         self.ui.TemplatesStackedWidget.setCurrentIndex(0)
         self.ui.MainStackedWidget.got_to_main_page()
-        if self.view:
-            self.ui.moleculeLayout.removeWidget(self.view)
 
     def _checkcif_failed(self, txt: str):
         self.ui.CheckCifLogPlainTextEdit.appendHtml('<b>{}</b>'.format(txt))
@@ -1225,8 +1214,6 @@ class AppWindow(QMainWindow):
 
     def _clear_state_before_block_load(self):
         self.status_bar.show_message('')
-        with suppress(AttributeError):
-            self.ui.moleculeLayout.removeWidget(self.view)
         # Set to empty state before loading:
         self.missing_data = set()
         # clean table and vheader before loading:
@@ -1446,64 +1433,21 @@ class AppWindow(QMainWindow):
     def view_molecule(self) -> None:
         if self.ui.growCheckBox.isChecked():
             self.ui.molGroupBox.setTitle('Completed Molecule')
-            atoms = list(self.cif.atoms_fract)
+            atoms = tuple(self.cif.atoms_fract)
             if atoms:
                 sdm = SDM(atoms, self.cif.symmops, self.cif.cell[:6], centric=self.cif.is_centrosymm)
-                try:
+                with suppress(Exception):
                     needsymm = sdm.calc_sdm()
                     atoms = sdm.packer(sdm, needsymm)
-                except Exception:
-                    if DEBUG:
-                        raise
-                    atoms = []
+                    self.ui.render_widget.draw(atoms)
         else:
             self.ui.molGroupBox.setTitle('Asymmetric Unit')
-            #atoms = self.cif.atoms_orth
-        render_widget = MoleculeWidget(None, cif)
-
-
-    def init_webview(self) -> None:
-        """
-        Initializes a QWebengine to view the molecule.
-        """
-        self.ui.moleculeLayout.addWidget(MoleculeWidget())
-        return
-        try:
-            # Otherwise, the views accumulate:
-            self.view.close()
-            self.view = QtWebEngineWidgets.QWebEngineView(parent=self)
-        except AttributeError:
-            self.view = QtWebEngineWidgets.QWebEngineView(parent=self)
-        self.jsmoldir = TemporaryDirectory()
-        self.view.load(QtCore.QUrl.fromLocalFile(os.path.join(self.jsmoldir.name, "./jsmol.htm")))
-        # This is a bit hacky, but it works fast:
-        copy2(Path(finalcif.displaymol.__file__).parent.joinpath('jquery.min.js'), self.jsmoldir.name)
-        copy2(Path(finalcif.displaymol.__file__).parent.joinpath('JSmol_dk.nojq.lite.js'), self.jsmoldir.name)
-        self.ui.moleculeLayout.addWidget(self.view)
-        self.view.heightForWidth(1)
-        # noinspection PyUnresolvedReferences
-        self.view.loadFinished.connect(self.on_webview_load_finished)
-
-    def on_webview_load_finished(self) -> None:
-        self.view.show()
+            with suppress(Exception):
+                atoms = [x for x in self.cif.atoms_orth]
+                self.ui.render_widget.draw(atoms)
 
     def redraw_molecule(self) -> None:
-        if 'darwin' in sys.platform and getattr(sys, 'frozen', False):
-            print('Do not draw molecule on MACOS')
-            # Currently, the QWebEngineView doesn't work  on macos due to pyinstaller issues.
-            return None
-        elif 'linux' in sys.platform:
-            self.ui.moleculeLayout.addWidget(QLabel('                     '
-                                                    'FinalCif is currently unable to draw molecules in Linux.'))
-            # The license of JSmol-Lite is unclear, and I need to make an own molecule viewer anyway.
-            return None
-        try:
-            self.view_molecule()
-        except Exception as e:
-            print(e, ", unable to display molecule")
-            if DEBUG:
-                raise
-            self.view.reload()
+        self.view_molecule()
 
     def check_Z(self) -> None:
         """
