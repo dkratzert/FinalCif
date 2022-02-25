@@ -15,7 +15,7 @@ PyQtWebEngine==5.15.5
 python-docx==0.8.11
 pywin32-ctypes==0.2.0
 QtAwesome==1.1.1
-QtPy==2.0.0
+QtPy==2.0.1
 requests==2.27.1
 urllib3==1.26.8
 docxtpl==0.15.2
@@ -25,7 +25,7 @@ numpy==1.22.2
 vtk>=9.1.0
 
 pyinstaller>=4.7
-pyinstaller-hooks-contrib==2021.5
+pyinstaller-hooks-contrib>=2022.2
 
 # Upgrade gemmi to Git master:
 # pip install https://github.com/project-gemmi/gemmi/archive/master.zip --upgrade
