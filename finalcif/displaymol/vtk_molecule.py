@@ -1,4 +1,6 @@
+import os
 import sys
+os.environ.update({'VTK_RENDERING_BACKEND': 'OpenGL'})
 
 import vtk
 from PyQt5 import QtWidgets, QtCore
