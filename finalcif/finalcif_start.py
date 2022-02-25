@@ -22,7 +22,7 @@ if COMPILE:
     from PyQt5 import uic
 
     print('Compiling ui ...')
-    #uic.compileUiDir(os.path.join(application_path, 'gui'))
+    uic.compileUiDir(os.path.join(application_path, 'gui'))
 
 import time
 import traceback

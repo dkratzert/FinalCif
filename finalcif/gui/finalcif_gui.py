@@ -834,13 +834,9 @@ class Ui_FinalCifWindow(object):
         self.verticalLayout_8 = QtWidgets.QVBoxLayout(self.molGroupBox)
         self.verticalLayout_8.setContentsMargins(6, 3, 6, 8)
         self.verticalLayout_8.setObjectName("verticalLayout_8")
-        try:
-            self.render_widget = MoleculeWidget(self.molGroupBox)
-            self.render_widget.setObjectName("render_widget")
-            self.verticalLayout_8.addWidget(self.render_widget)
-        except Exception:
-            self.render_widget = None
-            pass
+        self.render_widget = MoleculeWidget(self.molGroupBox)
+        self.render_widget.setObjectName("render_widget")
+        self.verticalLayout_8.addWidget(self.render_widget)
         self.growCheckBox = QtWidgets.QCheckBox(self.molGroupBox)
         self.growCheckBox.setMinimumSize(QtCore.QSize(0, 20))
         self.growCheckBox.setObjectName("growCheckBox")

@@ -1431,8 +1431,6 @@ class AppWindow(QMainWindow):
         self.view_molecule()
 
     def view_molecule(self) -> None:
-        if not self.ui.render_widget:
-            return
         if self.ui.growCheckBox.isChecked():
             self.ui.molGroupBox.setTitle('Completed Molecule')
             atoms = tuple(self.cif.atoms_fract)
@@ -1449,8 +1447,6 @@ class AppWindow(QMainWindow):
                 self.ui.render_widget.draw(atoms)
 
     def redraw_molecule(self) -> None:
-        if not self.ui.render_widget:
-            return
         self.view_molecule()
 
     def check_Z(self) -> None:
