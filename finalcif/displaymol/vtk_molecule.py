@@ -1,7 +1,4 @@
-import os
 import sys
-
-os.environ['VTK_RENDERING_BACKEND'] = 'None'
 
 import vtk
 from PyQt5 import QtWidgets, QtCore
