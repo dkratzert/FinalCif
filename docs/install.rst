@@ -18,6 +18,12 @@ Unzip the app (Finalcif-vXX_macos.app.zip) and copy it to the Applications direc
 The app might not work in any MacOS versions. Please use the :ref:`source code installation
 if necessary <document-sources>`.
 
+Problems with 3D View
+---------------------
+In case you have an old operating system or run FinalCif inside a virtual machine, the 3D
+view of the structure can lead to a crash. You can circumvent it by setting the environment
+variable FINALCIF_NO_3D=True.
+
 
 Developers
 ----------
