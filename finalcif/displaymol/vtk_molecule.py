@@ -5,8 +5,9 @@ import vtk
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtWidgets import QLabel
 from vtkmodules.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
+from vtkmodules.vtkDomainsChemistry import vtkPeriodicTable
 
-from finalcif.cif.atoms import element2num, get_radius_from_element
+from finalcif.cif.atoms import element2num, get_radius_from_element, num2rgb
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.tools.misc import distance
 
@@ -20,7 +21,6 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.vlayout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(self.vlayout)
         self.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
-
         istyle = vtk.vtkInteractorStyleSwitch()
         istyle.SetCurrentStyleToTrackballCamera()
 
@@ -28,24 +28,9 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.interactor = self.vtkWidget.GetRenderWindow().GetInteractor()
         self.interactor.SetInteractorStyle(istyle)
 
-        # Does not work, why?
-        """colors = vtk.vtkDoubleArray()
-        colors.SetNumberOfComponents(3)
-        colors.SetName("Colors")
-        colors.Allocate(3 * molecule.GetNumberOfAtoms() + 1)
-        for i in range(molecule.GetNumberOfAtoms()):
-            num = molecule.GetAtomAtomicNumber(i)
-            # print(i, element2rgb[num2element[num]])
-            colors.InsertNextTypedTuple(num2rgb[num])
-            # colors.InsertNextTypedTuple((1, 1, 1))
-            # print(element2rgb[num2element[num]])
-        molecule.GetAtomData().AddArray(colors)"""
-
         self.mol_mapper = vtk.vtkMoleculeMapper()
-        # Belongs to the non-working code above:
-        # mol_mapper.SetInputArrayToProcess(0, 0, 0, vtkDataObject.FIELD_ASSOCIATION_VERTICES, "Colors")
-        # mol_mapper.SetInputArrayToProcess(0, 0, 0, 4, "Colors")
-        # self.mol_mapper.SetInputData(molecule)
+        lut = self.modify_color_lookup_table()
+        self.mol_mapper.SetLookupTable(lut)
         self.mol_mapper.SetRenderAtoms(True)
         # self.mol_mapper.UseBallAndStickSettings()
         self.mol_mapper.UseLiquoriceStickSettings()
@@ -57,10 +42,6 @@ class MoleculeWidget(QtWidgets.QWidget):
 
         mol_actor = vtk.vtkActor()
         mol_actor.SetMapper(self.mol_mapper)
-        # mol_actor.GetProperty().SetAmbient(0.0)
-        # mol_actor.GetProperty().SetDiffuse(1.0)
-        # mol_actor.GetProperty().SetSpecular(0.0)
-        # mol_actor.GetProperty().SetSpecularPower(40.0)
 
         self.renderer = vtk.vtkRenderer()
         self.renderer.AddActor(mol_actor)
@@ -76,9 +57,18 @@ class MoleculeWidget(QtWidgets.QWidget):
         else:
             self.vlayout.addWidget(QLabel('Molecule viewer is turned off.'))
 
+    def modify_color_lookup_table(self):
+        lut = vtk.vtkLookupTable()
+        vtkPeriodicTable().GetDefaultLUT(lut)
+        # Replace existing lut with own table:
+        for num, color in num2rgb.items():
+            lut.SetTableValue(num, *color)
+        return lut
+
     def _add_atoms(self, atoms):
         molecule = vtk.vtkMolecule()
         for atom in atoms:
+            # print(element2num[atom.type])
             molecule.AppendAtom(element2num[atom.type], atom.x, atom.y, atom.z)
         self._make_bonds(molecule, list(atoms))
         return molecule
