@@ -1,3 +1,4 @@
+import os
 import sys
 
 import vtk
@@ -68,7 +69,9 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.renderer.ResetCamera()
         self.renderer.GetActiveCamera().Zoom(1.7)
         self.vtkWidget.GetRenderWindow().AddRenderer(self.renderer)
-        self.interactor.Initialize()
+        # Turn off for systems without GLES
+        if not os.environ.get('FINALCIF_NO_3D'):
+            self.interactor.Initialize()
 
     def _add_atoms(self, atoms):
         molecule = vtk.vtkMolecule()
