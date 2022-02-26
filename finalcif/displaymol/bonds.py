@@ -8,12 +8,12 @@
 from pathlib import Path
 import gemmi
 
-from FinalCif.cif.cif_file_io import CifContainer
+from finalcif.cif.cif_file_io import CifContainer
 
-cif = CifContainer(Path(r'D:/GitHub/StructureFinder/test-data/p-1_a.cif'))
-st = gemmi.read_structure('D:/GitHub/StructureFinder/test-data/p-1_a.cif')
-st.setup_entities()
-ns = gemmi.NeighborSearch(st, st.cell, 5).populate()
+cif = CifContainer(Path(r'test-data/p31c.cif'))
+st = gemmi.read_small_structure('test-data/p31c.cif')
+#st.setup_entities()
+ns = gemmi.NeighborSearch(st, 5).populate()
 #ns = gemmi.NeighborSearch(st, 3)#.populate()
 #print(cif.atoms())
 #st = gemmi.make_structure_from_block(cif.block)
@@ -22,6 +22,6 @@ ns = gemmi.NeighborSearch(st, st.cell, 5).populate()
 #ns = gemmi.NeighborSearch(st, st.cell).populate()
 for n_atom, atom in enumerate(st.sites):
     print(atom)
-    if ns.find_site_neighbors(atom, 1.1, 3):
+    if ns.find_site_neighbors(atom, 1.1, 2.0):
         ns.add_atom(atom, 0, 0, n_atom)
 
