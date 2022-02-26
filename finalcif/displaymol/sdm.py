@@ -13,6 +13,9 @@
 
 import time
 from math import sqrt, cos, radians, sin
+from typing import Union
+
+from numpy.random._common import namedtuple
 
 from finalcif.cif.atoms import get_radius_from_element
 from finalcif.tools.dsrmath import Array, SymmetryElement, Matrix, frac_to_cart
@@ -104,7 +107,7 @@ class SDMItem(object):
 
 
 class SDM():
-    def __init__(self, atoms: list, symmlist: list, cell: list, centric=False):
+    def __init__(self, atoms: Union[list, tuple], symmlist: list, cell: list, centric=False):
         """
         Calculates the shortest distance matrix
                         0      1      2  3  4   5     6          7
@@ -177,7 +180,7 @@ class SDM():
                     # Do not grow grown atoms:
                     continue
                 if (not sdmItem.atom1[1] in h and not sdmItem.atom2[1] in h) and \
-                        sdmItem.atom1[5] * sdmItem.atom2[5] == 0 or sdmItem.atom1[5] == sdmItem.atom2[5]:
+                    sdmItem.atom1[5] * sdmItem.atom2[5] == 0 or sdmItem.atom1[5] == sdmItem.atom2[5]:
                     dddd = (get_radius_from_element(at1[1]) + get_radius_from_element(at2[1])) * 1.2
                     sdmItem.dddd = dddd
                 else:
@@ -211,7 +214,7 @@ class SDM():
                     continue
                 for n, symop in enumerate(self.symmcards):
                     if sdmItem.atom1[5] * sdmItem.atom2[5] != 0 and \
-                            sdmItem.atom1[5] != sdmItem.atom2[5]:
+                        sdmItem.atom1[5] != sdmItem.atom2[5]:
                         continue
                     # Both the same atomic number and number 0 (hydrogen)
                     if sdmItem.atom1[1] == sdmItem.atom2[1] and sdmItem.atom1[1] in h:
@@ -271,7 +274,7 @@ class SDM():
         """
         Packs atoms of the asymmetric unit to real molecules.
         """
-        showatoms = self.atoms[:]
+        showatoms = list(self.atoms)
         new_atoms = []
         for symm in need_symm:
             s, h, k, l, symmgroup = symm
@@ -299,15 +302,13 @@ class SDM():
                                 isthere = True
                     if not isthere:
                         showatoms.append(new)
-                # elif grow_qpeaks:
-                #    add q-peaks here
         cart_atoms = []
-        for a in showatoms:
-            cart_atoms.append(self.to_cartesian(a))
+        Atom = namedtuple('Atom', 'label, type, x, y, z, part')
+        cell = self.cell[:6]
+        for at in showatoms:
+            x, y, z = frac_to_cart([at[2], at[3], at[4]], cell)
+            cart_atoms.append(Atom(label=at[0], type=at[1], x=x, y=y, z=z, part=at[5]))
         return cart_atoms
-
-    def to_cartesian(self, at):
-        return list(at[:2]) + frac_to_cart([at[2], at[3], at[4]], self.cell[:6]) + list(at[5:])
 
 
 def display_cif(cif: 'CifContainer'):
@@ -357,5 +358,4 @@ if __name__ == "__main__":
     cif = CifContainer(Path('test-data/p21c.cif'))
 
     display_cif(cif)
-    #make_molecule(cif)
-
+    # make_molecule(cif)
