@@ -3,6 +3,7 @@ import sys
 
 import vtk
 from PyQt5 import QtWidgets, QtCore
+from PyQt5.QtWidgets import QLabel
 from vtkmodules.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 
 from finalcif.cif.atoms import element2num, get_radius_from_element
@@ -24,7 +25,6 @@ class MoleculeWidget(QtWidgets.QWidget):
         istyle.SetCurrentStyleToTrackballCamera()
 
         self.vtkWidget = QVTKRenderWindowInteractor(self)
-        self.vlayout.addWidget(self.vtkWidget)
         self.interactor = self.vtkWidget.GetRenderWindow().GetInteractor()
         self.interactor.SetInteractorStyle(istyle)
 
@@ -71,7 +71,10 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.vtkWidget.GetRenderWindow().AddRenderer(self.renderer)
         # Turn off for systems without GLES
         if not os.environ.get('FINALCIF_NO_3D'):
+            self.vlayout.addWidget(self.vtkWidget)
             self.interactor.Initialize()
+        else:
+            self.vlayout.addWidget(QLabel('Molecule viewer is turned off.'))
 
     def _add_atoms(self, atoms):
         molecule = vtk.vtkMolecule()
