@@ -21,6 +21,7 @@ jobs:
     env:
       DISPLAY: ':99.0'
       #NO_NETWORK: 'True'
+      FINALCIF_NO_3D: 'True'
 
     strategy:
       fail-fast: false
