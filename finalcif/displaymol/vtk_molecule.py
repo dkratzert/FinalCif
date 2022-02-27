@@ -15,7 +15,6 @@ from finalcif.tools.misc import distance
 class MoleculeWidget(QtWidgets.QWidget):
     def __init__(self, parent):
         super().__init__(parent=parent)
-
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
         self.vlayout = QtWidgets.QVBoxLayout(self)
         self.vlayout.setContentsMargins(0, 0, 0, 0)
@@ -23,32 +22,26 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         istyle = vtk.vtkInteractorStyleSwitch()
         istyle.SetCurrentStyleToTrackballCamera()
-
         self.vtkWidget = QVTKRenderWindowInteractor(self)
         self.interactor = self.vtkWidget.GetRenderWindow().GetInteractor()
         self.interactor.SetInteractorStyle(istyle)
-
         self.mol_mapper = vtk.vtkMoleculeMapper()
-        lut = self.modify_color_lookup_table()
+        lut = self._modify_color_lookup_table()
         self.mol_mapper.SetLookupTable(lut)
         self.mol_mapper.SetRenderAtoms(True)
         # self.mol_mapper.UseBallAndStickSettings()
         self.mol_mapper.UseLiquoriceStickSettings()
         self.mol_mapper.SetUseMultiCylindersForBonds(False)
-        self.mol_mapper.SetBondRadius(0.07)
-        self.mol_mapper.SetAtomicRadiusScaleFactor(0.25)
-        self.mol_mapper.SetBondColorMode(1)
+        self.mol_mapper.SetBondRadius(0.065)
+        self.mol_mapper.SetAtomicRadiusScaleFactor(0.27)
+        self.mol_mapper.SetBondColorMode(0)
         self.mol_mapper.SetBondColor(80, 80, 80)
-
         mol_actor = vtk.vtkActor()
         mol_actor.SetMapper(self.mol_mapper)
-
         self.renderer = vtk.vtkRenderer()
         self.renderer.AddActor(mol_actor)
         self.renderer.SetBackground(255, 255, 255)
         self.renderer.SetLayer(0)
-        self.renderer.ResetCamera()
-        self.renderer.GetActiveCamera().Zoom(1.7)
         self.vtkWidget.GetRenderWindow().AddRenderer(self.renderer)
         # Turn off for systems without GLES
         if not os.environ.get('FINALCIF_NO_3D'):
@@ -57,7 +50,7 @@ class MoleculeWidget(QtWidgets.QWidget):
         else:
             self.vlayout.addWidget(QLabel('Molecule viewer is turned off.'))
 
-    def modify_color_lookup_table(self):
+    def _modify_color_lookup_table(self):
         lut = vtk.vtkLookupTable()
         vtkPeriodicTable().GetDefaultLUT(lut)
         # Replace existing lut with own table:
@@ -68,7 +61,6 @@ class MoleculeWidget(QtWidgets.QWidget):
     def _add_atoms(self, atoms):
         molecule = vtk.vtkMolecule()
         for atom in atoms:
-            # print(element2num[atom.type])
             molecule.AppendAtom(element2num[atom.type], atom.x, atom.y, atom.z)
         self._make_bonds(molecule, list(atoms))
         return molecule
@@ -80,7 +72,7 @@ class MoleculeWidget(QtWidgets.QWidget):
         molecule = self._add_atoms(atoms)
         self.mol_mapper.SetInputData(molecule)
         self.renderer.ResetCamera()
-        self.renderer.GetActiveCamera().Zoom(1.5)
+        self.renderer.GetActiveCamera().Zoom(1.7)
         self.interactor.Render()
 
     def _make_bonds(self, molecule, atoms, extra_param: float = 0.48) -> None:
