@@ -13,6 +13,7 @@ git pull
 venv\Scripts\python -m pip install -U pip
 venv\Scripts\python -m pip install wheel
 venv\Scripts\python -m pip install -U pyinstaller
+venv\Scripts\python -m pip install -U pyinstaller-hooks-contrib
 
 CALL C:\Users\daniel\Documents\sign_bootloader.bat
 
