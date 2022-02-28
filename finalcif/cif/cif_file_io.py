@@ -290,8 +290,11 @@ class CifContainer():
 
     def _hklf_number_from_shelxl_file(self) -> int:
         shx = Shelxfile()
-        shx.read_string(self.res_file_data)
-        return shx.hklf.n if shx.hklf.n != 0 else 4
+        shx.read_string(self.res_file_data[1:-1])
+        if shx.hklf:
+            return shx.hklf.n if shx.hklf.n != 0 else 4
+        else:
+            return 4
 
     @property
     def hkl_file_without_foot(self) -> str:
