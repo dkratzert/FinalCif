@@ -1,5 +1,7 @@
 FinalCif recent changes
 -----------------------
+* v100 New 3D molecule view in "Show Details". Added possibility to delete predefined equipment templates.
+       Fix crash from unclosed residues in shelx file. 
 * v99 Support for multi-CIFs: Read, create and check multi-CIFS. Create multi-tables with multi CIFs.
 * v98 Adds large text templates by right-click on main table. Fixes missing atom table in reports
       with CIFs from NospherA2 (Olex2). Better handling of the height of table rows in relation to the height of the contained text.
