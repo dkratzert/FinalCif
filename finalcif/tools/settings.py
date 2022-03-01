@@ -123,7 +123,7 @@ class FinalCifSettings():
         self.settings.remove(name)
         self.settings.endGroup()
         if property == 'equipment':
-            deleted = self.load_value_of_key(key='deleted_templates')
+            deleted = self.load_value_of_key(key='deleted_templates') or []
             deleted.append(name)
             deleted = list(set(deleted))
             self.save_key_value(name='deleted_templates', item=deleted)
