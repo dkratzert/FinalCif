@@ -51,8 +51,9 @@ class Equipment:
 
     def show_equipment(self):
         self.app.ui.EquipmentTemplatesListWidget.clear()
+        deleted = self.settings.load_value_of_key(key='deleted_templates') or []
         for eq in self.settings.get_equipment_list():
-            if eq:
+            if eq and eq not in deleted:
                 item = QListWidgetItem(eq)
                 self.app.ui.EquipmentTemplatesListWidget.addItem(item)
 
@@ -129,9 +130,10 @@ class Equipment:
             # nothing selected
             return
         selected_row_text = listwidget.currentIndex().data()
+        self.check_if_current_item_is_in_deleted_list(selected_row_text)
         table_data = self.settings.load_settings_list(property='equipment', item_name=selected_row_text)
         # first load the previous values:
-        if table_data:
+        if table_data and len(table_data) == 2:
             for key, value in table_data:
                 if not key or not value:
                     continue
@@ -145,6 +147,12 @@ class Equipment:
         self.app.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(1)
         table.resizeRowsToContents()
         table.blockSignals(False)
+
+    def check_if_current_item_is_in_deleted_list(self, selected_row_text):
+        deleted = self.settings.deleted_equipment or []
+        if selected_row_text in deleted:
+            del deleted[deleted.index(selected_row_text)]
+            self.settings.save_key_value(name='deleted_templates', item=deleted)
 
     def save_equipment_template(self) -> None:
         """
