@@ -5,7 +5,6 @@
 #  and you think this stuff is worth it, you can buy me a beer in return.
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
-import collections
 from typing import List, Dict, Union, Tuple, Iterable
 
 from PyQt5.QtCore import QPoint, QSettings, QSize
@@ -110,7 +109,7 @@ class FinalCifSettings():
         """
         self.settings.setValue(name, item)
 
-    def load_value_of_key(self, key: str) -> Union[object, Iterable]:
+    def load_value_of_key(self, key: str) -> Union[object, Iterable, List]:
         """
         Load templates and return them as string.
         """
@@ -123,6 +122,18 @@ class FinalCifSettings():
         self.settings.beginGroup(property)
         self.settings.remove(name)
         self.settings.endGroup()
+        deleted = self.load_value_of_key(key='deleted_templates')
+        deleted.append(name)
+        deleted = list(set(deleted))
+        self.save_key_value(name='deleted_templates', item=deleted)
+
+    @property
+    def deleted_equipment(self):
+        deleted = self.load_value_of_key(key='deleted_templates')
+        return deleted or []
+
+    def empty_deleted_list(self):
+        self.save_key_value(name='deleted_templates', item=[])
 
     def load_options(self) -> dict:
         options = self.load_settings_dict('Options', "options")

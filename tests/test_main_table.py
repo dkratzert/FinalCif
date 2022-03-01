@@ -23,6 +23,7 @@ class TestMainTableFieldBehavior(unittest.TestCase):
         self.myapp = AppWindow(self.testcif, unit_test=True)
         self.myapp.running_inside_unit_test = True
         self.myapp.hide()  # For full screen view
+        self.myapp.settings.empty_deleted_list()
 
     def tearDown(self) -> None:
         self.myapp.cif.finalcif_file.unlink(missing_ok=True)
@@ -71,7 +72,7 @@ class TestMainTableFieldBehavior(unittest.TestCase):
         self.assertEqual('', self.cell_text('_atom_sites_solution_hydrogens', COL_DATA))
         self.assertEqual('', self.cell_text('_atom_sites_solution_hydrogens', COL_EDIT))
 
-    def test_CCDC_in_equipment_list(self):
+    def test_Crystallographer_in_equipment_list(self):
         self.assertEqual('Crystallographer Details', self.myapp.ui.EquipmentTemplatesListWidget.item(1).text())
 
     def test_load_equipment(self):
