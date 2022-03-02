@@ -20,7 +20,7 @@ import requests
 from PyQt5 import QtCore, QtGui, QtWebEngineWidgets
 from PyQt5.QtCore import QThread, QTimer
 from PyQt5.QtWidgets import QMainWindow, QHeaderView, QShortcut, QCheckBox, QListWidgetItem, QApplication, \
-    QPlainTextEdit, QFileDialog
+    QPlainTextEdit, QFileDialog, QLabel
 from gemmi import cif
 from qtpy.QtGui import QDesktopServices
 
@@ -1431,8 +1431,7 @@ class AppWindow(QMainWindow):
         self.view_molecule()
 
     def view_molecule(self) -> None:
-        #if not hasattr(self, 'render_widget'):
-        #    self.init_render_widget()
+        self.init_render_widget()
         if self.ui.growCheckBox.isChecked():
             self.ui.molGroupBox.setTitle('Completed Molecule')
             atoms = tuple(self.cif.atoms_fract)
@@ -1449,10 +1448,13 @@ class AppWindow(QMainWindow):
                 self.ui.render_widget.draw(atoms)
 
     def init_render_widget(self):
-        from finalcif.displaymol.vtk_molecule import MoleculeWidget
-        self.render_widget = MoleculeWidget(self.ui.molGroupBox)
-        self.ui.moleculeVLayout.addWidget(self.render_widget)
-        self.render_widget.setObjectName("render_widget")
+        # Turn off for systems without GLES
+        if not os.environ.get('FINALCIF_NO_3D'):
+            if not self.ui.render_widget.initialized:
+                self.ui.render_widget.vlayout.addWidget(self.ui.render_widget.vtkWidget)
+                self.ui.render_widget.interactor.Initialize()
+        else:
+            self.vlayout.addWidget(QLabel('Molecule viewer is turned off.'))
 
     def redraw_molecule(self) -> None:
         self.view_molecule()
