@@ -1,25 +1,25 @@
-import os
 import sys
 
 import vtk
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtGui import QSurfaceFormat
-from PyQt5.QtWidgets import QLabel
 from vtkmodules.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 from vtkmodules.vtkDomainsChemistry import vtkPeriodicTable
 
 from finalcif.cif.atoms import element2num, get_radius_from_element, num2rgb
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.tools.misc import distance
-import vtkmodules.qt
-vtkmodules.qt.QVTKRWIBase = 'QGLWidget'
+
+
+# Some say this makes it more compatible to old hardware, but I am not sure:
+# vtkmodules.qt.QVTKRWIBase = 'QGLWidget'
 
 
 class MoleculeWidget(QtWidgets.QWidget):
     def __init__(self, parent):
         super().__init__(parent=parent)
-        #vtk.vtkObject.GlobalWarningDisplayOff()
-        #vtk.QVTKRWIBase = "QGLWidget"
+        vtk.vtkObject.GlobalWarningDisplayOff()
+        self.initialized = False
         QSurfaceFormat.defaultFormat().setProfile(QSurfaceFormat.CompatibilityProfile)
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
         self.vlayout = QtWidgets.QVBoxLayout(self)
@@ -49,12 +49,6 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.renderer.SetBackground(255, 255, 255)
         self.renderer.SetLayer(0)
         self.vtkWidget.GetRenderWindow().AddRenderer(self.renderer)
-        # Turn off for systems without GLES
-        if not os.environ.get('FINALCIF_NO_3D'):
-            self.vlayout.addWidget(self.vtkWidget)
-            self.interactor.Initialize()
-        else:
-            self.vlayout.addWidget(QLabel('Molecule viewer is turned off.'))
 
     def _modify_color_lookup_table(self):
         lut = vtk.vtkLookupTable()
