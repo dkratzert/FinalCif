@@ -3,6 +3,7 @@ import sys
 
 import vtk
 from PyQt5 import QtWidgets, QtCore
+from PyQt5.QtGui import QSurfaceFormat
 from PyQt5.QtWidgets import QLabel
 from vtkmodules.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 from vtkmodules.vtkDomainsChemistry import vtkPeriodicTable
@@ -10,12 +11,16 @@ from vtkmodules.vtkDomainsChemistry import vtkPeriodicTable
 from finalcif.cif.atoms import element2num, get_radius_from_element, num2rgb
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.tools.misc import distance
+import vtkmodules.qt
+vtkmodules.qt.QVTKRWIBase = 'QGLWidget'
 
 
 class MoleculeWidget(QtWidgets.QWidget):
     def __init__(self, parent):
         super().__init__(parent=parent)
-        vtk.vtkObject.GlobalWarningDisplayOff()
+        #vtk.vtkObject.GlobalWarningDisplayOff()
+        #vtk.QVTKRWIBase = "QGLWidget"
+        QSurfaceFormat.defaultFormat().setProfile(QSurfaceFormat.CompatibilityProfile)
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
         self.vlayout = QtWidgets.QVBoxLayout(self)
         self.vlayout.setContentsMargins(0, 0, 0, 0)

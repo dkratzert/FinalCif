@@ -1431,6 +1431,8 @@ class AppWindow(QMainWindow):
         self.view_molecule()
 
     def view_molecule(self) -> None:
+        #if not hasattr(self, 'render_widget'):
+        #    self.init_render_widget()
         if self.ui.growCheckBox.isChecked():
             self.ui.molGroupBox.setTitle('Completed Molecule')
             atoms = tuple(self.cif.atoms_fract)
@@ -1445,6 +1447,12 @@ class AppWindow(QMainWindow):
             with suppress(Exception):
                 atoms = [x for x in self.cif.atoms_orth]
                 self.ui.render_widget.draw(atoms)
+
+    def init_render_widget(self):
+        from finalcif.displaymol.vtk_molecule import MoleculeWidget
+        self.render_widget = MoleculeWidget(self.ui.molGroupBox)
+        self.ui.moleculeVLayout.addWidget(self.render_widget)
+        self.render_widget.setObjectName("render_widget")
 
     def redraw_molecule(self) -> None:
         self.view_molecule()
