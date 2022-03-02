@@ -15,6 +15,7 @@ from finalcif.tools.misc import distance
 class MoleculeWidget(QtWidgets.QWidget):
     def __init__(self, parent):
         super().__init__(parent=parent)
+        vtk.vtkObject.GlobalWarningDisplayOff()
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
         self.vlayout = QtWidgets.QVBoxLayout(self)
         self.vlayout.setContentsMargins(0, 0, 0, 0)
