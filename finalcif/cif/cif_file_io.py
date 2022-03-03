@@ -736,9 +736,6 @@ class CifContainer():
         for item in self.block:
             if item.pair is not None:
                 key, value = item.pair
-                if len(value) > 1000:
-                    # do not include res and hkl file:
-                    continue
                 if key.startswith('_shelx'):
                     # No-one should edit shelx values:
                     continue
