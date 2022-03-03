@@ -58,8 +58,6 @@ Absolute configuration template.
 Sidenotes
 ---------
 
-* The predefined templates may change from time to time. To see the current version you can delete the predefined template (edit template-->delete).
-
 * As any other CIF, in order to import a template, it needs a \data_ keyword at the start.
 
 * Templates may be multi-CIFs with multiple data\_ kewords for e.g. multiple machine definitions in one file.
