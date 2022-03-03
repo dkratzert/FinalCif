@@ -1040,7 +1040,7 @@
         <item row="1" column="0" colspan="13">
          <widget class="MyMainStackedWidget" name="MainStackedWidget">
           <property name="currentIndex">
-           <number>2</number>
+           <number>6</number>
           </property>
           <widget class="QWidget" name="page_MainTable">
            <layout class="QVBoxLayout" name="verticalLayout">
@@ -2717,7 +2717,7 @@ Contact authors should always also appear as regular authors.</string>
                </sizepolicy>
               </property>
               <property name="currentIndex">
-               <number>2</number>
+               <number>1</number>
               </property>
               <property name="documentMode">
                <bool>false</bool>
@@ -2796,6 +2796,18 @@ Contact authors should always also appear as regular authors.</string>
                     <string>html report</string>
                    </attribute>
                    <layout class="QVBoxLayout" name="verticalLayout_14">
+                    <property name="leftMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="bottomMargin">
+                     <number>0</number>
+                    </property>
                     <item>
                      <layout class="QGridLayout" name="htmlCHeckCifGridLayout"/>
                     </item>
