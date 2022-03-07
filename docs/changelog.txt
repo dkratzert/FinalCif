@@ -1,5 +1,6 @@
 FinalCif recent changes
 -----------------------
+* v101 Fixes empty equipment templates.
 * v100 New 3D molecule view in "Show Details". Added possibility to delete predefined equipment templates.
        Fix crash from unclosed residues in shelx file.
 * v99 Support for multi-CIFs: Read, create and check multi-CIFS. Create multi-tables with multi CIFs.
