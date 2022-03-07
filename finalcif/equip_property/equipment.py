@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import QListWidgetItem
 from gemmi import cif
 
 from finalcif.cif.cif_file_io import CifContainer
-from finalcif.cif.text import retranslate_delimiter
+from finalcif.cif.text import retranslate_delimiter, string_to_utf8
 from finalcif.equip_property.tools import read_document_from_cif_file
 from finalcif.gui.custom_classes import COL_CIF, COL_DATA, light_green, COL_EDIT
 from finalcif.gui.dialogs import show_general_warning, cif_file_open_dialog, cif_file_save_dialog
@@ -133,11 +133,12 @@ class Equipment:
         self.check_if_current_item_is_in_deleted_list(selected_row_text)
         table_data = self.settings.load_settings_list(property='equipment', item_name=selected_row_text)
         # first load the previous values:
-        if table_data and len(table_data) == 2:
-            for key, value in table_data:
-                if not key or not value:
+        if table_data:
+            for data in table_data:
+                if not len(data) == 2:
                     continue
-                table.add_equipment_row(key, retranslate_delimiter(value))
+                key, value = data
+                table.add_equipment_row(key, string_to_utf8(value))
         else:
             # new empty equipment:
             for _ in range(8):
