@@ -6,7 +6,7 @@ from PyQt5.QtTest import QTest
 from finalcif.appwindow import AppWindow
 
 
-class MyTestCase(unittest.TestCase):
+class EquipmentTestCase(unittest.TestCase):
     def setUp(self) -> None:
         self.app = AppWindow(unit_test=True)
         self.app.running_inside_unit_test = True
@@ -37,5 +37,37 @@ class MyTestCase(unittest.TestCase):
         # and so on...
 
 
-if __name__ == '__main__':
-    unittest.main()
+class PropertiesTestCase(unittest.TestCase):
+    def setUp(self) -> None:
+        self.app = AppWindow(unit_test=True)
+        self.app.running_inside_unit_test = True
+        self.app.hide()
+
+    def property_edit_click(self, field: str):
+        listw = self.app.ui.PropertiesTemplatesListWidget
+        self.app.ui.PropertiesTemplatesListWidget.setCurrentRow(0)
+        item = listw.findItems(field, Qt.MatchStartsWith)[0]
+        listw.setCurrentItem(item)
+        self.assertEqual(field, item.text())
+        rect = listw.visualItemRect(item)
+        QTest.mouseClick(listw.viewport(), Qt.LeftButton, Qt.NoModifier, rect.center())
+        # self.app.properties.edit_property_template()
+        self.app.ui.EditPropertyTemplateButton.click()
+
+    def test_property_crystal_color(self):
+        # The user clicks on the Crystal Color list item in the properties list
+        self.property_edit_click('Crystal Color')
+        # First we delete the contents to be sure that there is nothing saved different to the default:
+        self.app.ui.DeletePropertiesButton.click()
+        self.property_edit_click('Crystal Color')
+        # This loads the contents of the saved values to the PropertiesEditTableWidget
+        table = self.app.ui.PropertiesEditTableWidget
+        colors = ['', 'colourless', 'white', 'black', 'yellow', 'red', 'blue', 'green', 'gray', 'pink',
+                  'orange', 'violet', 'brown', '']
+        totest = [table.cellWidget(row, 0).toPlainText() for row in range(table.rowCount())]
+        self.assertListEqual(colors, totest)
+        # Also cifKeywordLineEdit is filled with the respective cif key:
+        self.assertEqual('_exptl_crystal_colour', self.app.ui.cifKeywordLineEdit.text())
+
+        if __name__ == '__main__':
+            unittest.main()
