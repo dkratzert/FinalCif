@@ -79,7 +79,6 @@ class CrstalSelection(FormatMixin):
     def __init__(self, cif: CifContainer, paragraph: Paragraph):
         self.cif = cif
         self.temperature = gstr(self.cif['_diffrn_ambient_temperature'])
-        self._name = cif.fileobj.name
         method = 'shock-cooled '
         sentence = "The data for {} were collected from a {}single crystal at {}{}K "
         try:
@@ -89,13 +88,6 @@ class CrstalSelection(FormatMixin):
             method = ''
         self.txt = sentence.format(self.cif.block.name, method, self.temperature, protected_space)
         paragraph.add_run(retranslate_delimiter(self.txt))
-
-    @property
-    def name(self) -> str:
-        if self._name:
-            return self._name
-        else:
-            return '?'
 
 
 class MachineType():
