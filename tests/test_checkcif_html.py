@@ -25,7 +25,7 @@ class TestCheckCifHTML(unittest.TestCase):
         self.myapp = AppWindow(Path('tests/examples/work/cu_BruecknerJK_153F40_0m.cif').resolve(), unit_test=True)
         self.myapp.running_inside_unit_test = True
         self.myapp.hide()  # For full screen view
-        self.resobj = self.myapp.cif.finalcif_file_prefixed(prefix='checkcif-', suffix='.html')
+        self.resobj = self.myapp.cif.finalcif_file_prefixed(prefix='checkcif-', suffix='-finalcif.html')
 
     def tearDown(self) -> None:
         self.resobj.unlink(missing_ok=True)
