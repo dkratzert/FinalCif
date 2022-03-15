@@ -51,7 +51,7 @@ class BondsAndAngles():
         symms = {}
         for at1, at2, dist, symm2 in self.cif.bonds(without_h):
             dist = dist.replace('-', minus_sign)
-            if symm2 == '.':
+            if symm2 in ('.', '?'):
                 symm2 = None
             num = symmsearch(self.cif, newsymms, num, symm2, symms)
             # Atom1 - Atom2:
@@ -72,9 +72,9 @@ class BondsAndAngles():
         for ang in self.cif.angles(without_h):
             symm1 = ang.symm1
             symm2 = ang.symm2
-            if ang.symm1 == '.':
+            if symm1 in ('.', '?'):
                 symm1 = None
-            if ang.symm2 == '.':
+            if symm2 in ('.', '?'):
                 symm2 = None
             num = symmsearch(self.cif, newsymms, num, symm1, symms)
             num = symmsearch(self.cif, newsymms, num, symm2, symms)
@@ -124,13 +124,13 @@ class TorsionAngles():
         torsion_angles = []
         for tors in self.cif.torsion_angles(without_h):
             symm1, symm2, symm3, symm4 = tors.symm1, tors.symm2, tors.symm3, tors.symm4
-            if tors.symm1 == '.':
+            if symm1 in ('.', '?'):
                 symm1 = None
-            if tors.symm2 == '.':
+            if symm2 in ('.', '?'):
                 symm2 = None
-            if tors.symm3 == '.':
+            if symm3 in ('.', '?'):
                 symm3 = None
-            if tors.symm4 == '.':
+            if symm4 in ('.', '?'):
                 symm4 = None
             num = symmsearch(self.cif, newsymms, num, symm1, symms)
             num = symmsearch(self.cif, newsymms, num, symm2, symms)
@@ -188,7 +188,7 @@ class HydrogenBonds():
         atoms_list = []
         for h in self.cif.hydrogen_bonds():
             symm = h.symm
-            if symm == '.':
+            if symm in ('.', '?'):
                 symm = None
             num = symmsearch(self.cif, newsymms, num, symm, symms)
             symmval = ('#' + str(symms[symm])) if symm else ''
