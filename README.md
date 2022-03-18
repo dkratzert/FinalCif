@@ -1,5 +1,10 @@
 ![Lates Release](https://img.shields.io/github/v/tag/dkratzert/FinalCif?label=Latest%20Release)
 [![Unit Tests](https://github.com/dkratzert/FinalCif/actions/workflows/python-app_windows.yml/badge.svg?branch=master)](https://github.com/dkratzert/FinalCif/actions/workflows/python-app_windows.yml)
+<a href="https://repology.org/project/finalcif/versions">
+    <img src="https://repology.org/badge/vertical-allrepos/finalcif.svg" alt="Packaging status" align="right">
+</a>
+
+
 # FinalCif
 
 FinalCif helps you to get a complete CIF file from a single-xrystal X-ray diffraction experiment. See here [https://dkratzert.de/finalcif.html](https://dkratzert.de/finalcif.html) for details.
