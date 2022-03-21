@@ -1,5 +1,6 @@
 ![Lates Release](https://img.shields.io/github/v/tag/dkratzert/FinalCif?label=Latest%20Release)
 [![Unit Tests](https://github.com/dkratzert/FinalCif/actions/workflows/python-app_windows.yml/badge.svg?branch=master)](https://github.com/dkratzert/FinalCif/actions/workflows/python-app_windows.yml)
+![Contributions](https://img.shields.io/badge/contributions-welcome-blue)
 <a href="https://repology.org/project/finalcif/versions">
     <img src="https://repology.org/badge/vertical-allrepos/finalcif.svg" alt="Packaging status" align="right">
 </a>
