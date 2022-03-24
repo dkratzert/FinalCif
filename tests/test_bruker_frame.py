@@ -4,7 +4,6 @@
 #   this notice you can do whatever you want with this stuff. If we meet some day,
 #   and you think this stuff is worth it, you can buy me a beer in return.
 #   ----------------------------------------------------------------------------
-import os
 import unittest
 from pathlib import Path
 
@@ -12,8 +11,10 @@ from finalcif.datafiles.bruker_frame import BrukerFrameHeader
 
 
 class TestBrukerFrame(unittest.TestCase):
-    def setUp(self) -> None:
-        pass
+    """
+    BrukerFrameHeader searches for *basename*.sfrm files in searchpath.
+    Then, the newest found file is used to gather the machine information.
+    """
 
     def test_str(self):
         sfrm = BrukerFrameHeader(basename='apex_frame', searchpath=Path('./test-data'))
@@ -22,6 +23,17 @@ class TestBrukerFrame(unittest.TestCase):
     def test_radiation_type(self):
         sfrm = BrukerFrameHeader(basename='mo_DK_Zucker2', searchpath=Path('./test-data'))
         self.assertEqual('Mo', sfrm.radiation_type)
+
+    def test_radiation_type_in_work_folder(self):
+        # check if a basename without cu_ prefix leads to a found .sfrm file:
+        sfrm = BrukerFrameHeader(basename='BruecknerJK_153F40', searchpath=Path('tests/examples/work'))
+        self.assertEqual('Cu', sfrm.radiation_type)
+        sfrm = BrukerFrameHeader(basename='cu_BruecknerJK_153F40', searchpath=Path('tests/examples/work'))
+        self.assertEqual('Cu', sfrm.radiation_type)
+
+    def test_radiation_type_in_work_folder_and_wrong_prefix(self):
+        with self.assertRaises(FileNotFoundError):
+            BrukerFrameHeader(basename='mo_BruecknerJK_153F40', searchpath=Path('tests/examples/work'))
 
     def test_measure_date(self):
         sfrm = BrukerFrameHeader(basename='mo_DK_Zucker2', searchpath=Path('./test-data'))
@@ -35,6 +47,11 @@ class TestBrukerFrame(unittest.TestCase):
         sfrm = BrukerFrameHeader(basename='mo_DK_Zucker2', searchpath=Path('./test-data'))
         self.assertEqual(50.0, sfrm.kilovolts)
         self.assertEqual(1.4, sfrm.milliamps)
+
+    def test_kilovolts_milliamps_work_folder(self):
+        sfrm = BrukerFrameHeader(basename='BruecknerJK_153F40', searchpath=Path('tests/examples/work'))
+        self.assertEqual(50.0, sfrm.kilovolts)
+        self.assertEqual(1.1, sfrm.milliamps)
 
     def test_radiation_type_temperature(self):
         sfrm = BrukerFrameHeader(basename='mo_DK_Zucker2', searchpath=Path('./test-data'))
