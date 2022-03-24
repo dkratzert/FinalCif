@@ -16,7 +16,7 @@ from finalcif.tools.misc import isnumeric
 
 class BrukerFrameHeader():
     def __init__(self, basename: str, searchpath: Path = Path(__file__).parent.parent):
-        frames = searchpath.glob(basename + '*.sfrm')
+        frames = searchpath.glob('*{}*.sfrm'.format(basename))
         frames = sorted(frames, key=os.path.getmtime, reverse=True)
         self._fileobj = None
         # This may take too long:
