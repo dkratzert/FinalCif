@@ -1,4 +1,5 @@
 import os
+import unittest
 from unittest import TestCase
 
 from finalcif.cif.cod.doi import resolve_doi, get_names_from_doi
@@ -19,6 +20,7 @@ doi_data = {
 }
 
 
+@unittest.skip('Fails because of network errors')
 class TestDOI(TestCase):
     def setUp(self) -> None:
         if os.environ.get('NO_NETWORK'):
@@ -35,6 +37,7 @@ class TestDOI(TestCase):
         self.assertEqual(['Kratzert, Daniel', 'Krossing, Ingo'], get_names_from_doi(doi_data))
 
 
+@unittest.skip('Fails because of network errors')
 class TestDOIOld(TestCase):
     def setUp(self) -> None:
         if os.environ.get('NO_NETWORK'):
