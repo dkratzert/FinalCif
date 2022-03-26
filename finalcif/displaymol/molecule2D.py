@@ -1,3 +1,4 @@
+import math
 import sys
 from collections import namedtuple
 from math import sqrt
@@ -10,6 +11,152 @@ from PyQt5.QtGui import QPainter, QPen, QBrush, QColor, QMouseEvent
 from finalcif.cif.atoms import get_radius_from_element, element2color
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.tools.misc import distance
+
+"""
+A 2D molecule drawing widget. The idea was taken from this molecule viewer for ascii drawing of molecules:
+https://github.com/des4maisons/molecule-viewer
+Additionally the rotation method from https://github.com/TheAlgorithms/Python was added.
+"""
+atom = namedtuple('Atom', ('label', 'type', 'x', 'y', 'z', 'part', 'occ', 'u_eq'))
+
+
+class MoleculeWidget(QtWidgets.QWidget):
+    def __init__(self, shx_atoms: Generator[Any, Any, atom]):
+        super().__init__()
+        self.atoms_size = 10
+        self.bond_width = 3
+        #
+        self.lastPos = None
+        self.painter = None
+        self.x_rot = 0
+        self.y_rot = 0
+
+        self.layout = QtWidgets.QVBoxLayout(self)
+        self.layout.setContentsMargins(0, 0, 0, 0)
+        self.setLayout(self.layout)
+        self.atoms: List[Atom] = []
+        for at in shx_atoms:
+            self.atoms.append(Atom(at.x, at.y, at.z, at.label, at.type, at.part))
+        self.connections = self.get_conntable_from_atoms()
+
+    def paintEvent(self, event):
+        self.painter = QPainter(self)
+        self.draw()
+
+    def mousePressEvent(self, event: QMouseEvent) -> None:
+        self.lastPos = event.pos()
+
+    def mouseMoveEvent(self, event: QMouseEvent) -> None:
+        dx = (event.x() - self.lastPos.x()) / 50
+        dy = (event.y() - self.lastPos.y()) / 50
+        if (event.buttons() == Qt.LeftButton):
+            for num, at in enumerate(self.atoms):
+                x, y, z = self.rotate(at.coordinate.x, at.coordinate.y, at.coordinate.z, 'y', -dx)
+                x, y, z = self.rotate(x, y, z, 'x', dy)
+                self.atoms[num] = Atom(x, y, z, at.name, at.type_, at.part)
+            self.connections = self.get_conntable_from_atoms()
+            self.update()
+        self.lastPos = event.pos()
+
+    def draw(self):
+        self.painter.setPen(QPen(Qt.gray, self.bond_width, Qt.SolidLine))
+        plane = [Coordinate(1, 0, 0), Coordinate(0, 1, 0)]
+        max_extreme, min_extreme = self.molecule_dimensions(plane)
+        span = max_extreme - min_extreme
+        # make everything fit in our dimensions while maintaining proportions
+        scale_factor = min((self.width() - 50) / span.x, (self.height() - 50) / span.y)
+        # scale_factor = 30
+        extra_space = Coordinate2D(self.width() - 1, self.height() - 1) - span * scale_factor
+        offset = extra_space / 2
+        for atom in self.atoms:
+            # shift to be in the 1st quadrant (positive coordinates) close to (0,0)
+            screen_index = (atom.flatten(plane) - min_extreme) * scale_factor
+            screen_index = screen_index + offset
+            atom.screenx = int(screen_index.x)
+            atom.screeny = int(screen_index.y)
+        self.draw_bonds()
+        self.draw_atoms()
+        self.painter.end()
+
+    def draw_bonds(self):
+        offset = int(self.atoms_size / 2)
+        for at1, at2 in self.connections:
+            self.painter.drawLine(at1.screenx + offset, at1.screeny + offset,
+                                  at2.screenx + offset, at2.screeny + offset)
+
+    def draw_atoms(self):
+        self.painter.setPen(QPen(Qt.black, 2, Qt.SolidLine))
+        for atom in self.atoms:
+            color = element2color.get(atom.type_)
+            self.painter.setBrush(QBrush(QColor(color), Qt.SolidPattern))
+            self.painter.drawEllipse(atom.screenx, atom.screeny, self.atoms_size, self.atoms_size)
+
+    def molecule_dimensions(self, plane):
+        flattened = [a.flatten(plane) for a in self.atoms]
+        max_extreme = Coordinate2D(max([coor.x for coor in flattened]),
+                                   max([coor.y for coor in flattened]))
+        min_extreme = Coordinate2D(min([coor.x for coor in flattened]),
+                                   min([coor.y for coor in flattened]))
+        return max_extreme, min_extreme
+
+    def get_conntable_from_atoms(self, extra_param: float = 0.48) -> tuple:
+        """
+        Returns a connectivity table from the atomic coordinates and the covalence
+        radii of the atoms.
+        a bond is defined with less than the sum of the covalence radii plus the extra_param:
+        """
+        connections = []
+        h = ('H', 'D')
+        for num1, at1 in enumerate(self.atoms, 1):
+            rad1 = get_radius_from_element(at1.type_)
+            for num2, at2 in enumerate(self.atoms, 1):
+                if at1.part * at2.part != 0 and at1.part != at2.part:
+                    continue
+                if at1.name == at2.name:  # name1 = name2
+                    continue
+                d = distance(at1.coordinate.x, at1.coordinate.y, at1.coordinate.z,
+                             at2.coordinate.x, at2.coordinate.y, at2.coordinate.z)
+                if d > 4.0:  # makes bonding faster (longer bonds do not exist)
+                    continue
+                rad2 = get_radius_from_element(at2.type_)
+                if (rad1 + rad2) + extra_param > d:
+                    if at1.type_ in h and at2.type_ in h:
+                        continue
+                    # The extra time for this is not too much:
+                    if (num2, num1) in connections:
+                        continue
+                    connections.append([at1, at2])
+        return tuple(connections)
+
+    def rotate(self, x: float, y: float, z: float, axis: str, angle: float) -> tuple[float, float, float]:
+        """
+        rotate a point around a certain axis with a certain angle
+        angle can be any integer between 1, 360 and axis can be any one of
+        'x', 'y', 'z'
+
+        Method taken from https://github.com/TheAlgorithms/Python
+        __version__ = "2020.9.26"
+        __author__ = "xcodz-dot, cclaus, dhruvmanila"
+        # License: MIT
+        """
+        if not isinstance(axis, str):
+            raise TypeError("Axis must be a str")
+        # angle = (angle % 360) / 450 * 180 / math.pi
+        if axis == "z":
+            new_x = x * math.cos(angle) - y * math.sin(angle)
+            new_y = y * math.cos(angle) + x * math.sin(angle)
+            new_z = z
+        elif axis == "x":
+            new_y = y * math.cos(angle) - z * math.sin(angle)
+            new_z = z * math.cos(angle) + y * math.sin(angle)
+            new_x = x
+        elif axis == "y":
+            new_x = x * math.cos(angle) - z * math.sin(angle)
+            new_z = z * math.cos(angle) + x * math.sin(angle)
+            new_y = y
+        else:
+            raise ValueError("not a valid axis, choose one of 'x', 'y', 'z'")
+        return new_x, new_y, new_z
 
 
 class Coordinate2D(object):
@@ -96,9 +243,11 @@ class Coordinate(object):
                           a3 * b1 - a1 * b3,
                           a1 * b2 - a2 * b1)
 
-    # flatten takes a 2-element list of coordinates. When interpreted as vectors,
-    # these define a plane in 3-dim'l space
     def flatten(self, plane: List['Coordinate'] = None) -> Coordinate2D:
+        """
+        flatten takes a 2-element list of coordinates. When interpreted as vectors,
+        these define a plane in 3-dim'l space
+        """
         if plane is None:  # defaults to x-y plane
             plane = [Coordinate(1, 0, 0), Coordinate(0, 1, 0)]
         # copy the list
@@ -109,7 +258,6 @@ class Coordinate(object):
         # make them unit vectors
         plane[0] = plane[0] / (plane[0].length())
         plane[1] = plane[1] / (plane[1].length())
-
         proj0 = self.project(plane[0])
         proj1 = self.project(plane[1])
         ratio0 = None
@@ -129,112 +277,6 @@ class Coordinate(object):
         return Coordinate2D(ratio0, ratio1)
 
 
-atom = namedtuple('Atom', ('label', 'type', 'x', 'y', 'z', 'part', 'occ', 'u_eq'))
-
-
-class MoleculeWidget(QtWidgets.QWidget):
-    def __init__(self, shx_atoms: Generator[Any, Any, atom]):
-        super().__init__()
-        self.lastPos = None
-        self.painter = None
-        self.layout = QtWidgets.QVBoxLayout(self)
-        self.layout.setContentsMargins(0, 0, 0, 0)
-        self.setLayout(self.layout)
-        self.atoms: List[Atom] = []
-        for at in shx_atoms:
-            self.atoms.append(Atom(at.x, at.y, at.z, at.label, at.type, at.part))
-        self.connections = self.get_conntable_from_atoms()
-
-    def paintEvent(self, event):
-        self.painter = QPainter(self)
-        self.draw()
-
-    def mousePressEvent(self, event: QMouseEvent) -> None:
-        self.lastPos = event.pos()
-
-    def mouseMoveEvent(self, event: QMouseEvent) -> None:
-        dx = event.x() - self.lastPos.x()
-        dy = event.y() - self.lastPos.y()
-
-        if (event.buttons() == Qt.LeftButton):
-            setXRotation(xRot + 8 * dy)
-            setYRotation(yRot + 8 * dx)
-        self.lastPos = event.pos()
-
-    # dimensions is 2-tuple of the number of characters on x and y axis
-    def draw(self):
-        self.painter.setPen(QPen(Qt.darkGray, 2, Qt.SolidLine))
-        plane = [Coordinate(1, 0, 0), Coordinate(0, 1, 0)]
-        max_extreme, min_extreme = self.molecule_dimensions(plane)
-        span = max_extreme - min_extreme
-        # make everything fit in our dimensions while maintaining proportions
-        scale_factor = min((self.width() - 1) / span.x, (self.height() - 1) / span.y)
-        extra_space = Coordinate2D(self.width() - 1, self.height() - 1) - span * scale_factor
-        offset = extra_space / 2
-        for atom in self.atoms:
-            # shift to be in the 1st quadrant (positive coordinates) close to (0,0)
-            screen_index = (atom.flatten(plane) - min_extreme) * scale_factor
-            screen_index = screen_index + offset
-            atom.screenx = int(screen_index.x)
-            atom.screeny = int(screen_index.y)
-        self.draw_bonds()
-        self.draw_atoms()
-        self.painter.end()
-
-    def draw_bonds(self):
-        for at1, at2 in self.connections:
-            self.painter.drawLine(at1.screenx + 4, at1.screeny + 4, at2.screenx + 4, at2.screeny + 4)
-
-    def draw_atoms(self):
-        self.painter.setPen(QPen(Qt.black, 2, Qt.SolidLine))
-        for atom in self.atoms:
-            color = element2color.get(atom.type_)
-            self.painter.setBrush(QBrush(QColor(color), Qt.SolidPattern))
-            self.painter.drawEllipse(atom.screenx, atom.screeny, 9, 9)
-
-    def molecule_dimensions(self, plane):
-        flattened = [a.flatten(plane) for a in self.atoms]
-        max_extreme = Coordinate2D(max([coor.x for coor in flattened]),
-                                   max([coor.y for coor in flattened]))
-        min_extreme = Coordinate2D(min([coor.x for coor in flattened]),
-                                   min([coor.y for coor in flattened]))
-        return max_extreme, min_extreme
-
-    def get_conntable_from_atoms(self, extra_param: float = 0.48) -> list:
-        """
-        Returns a connectivity table from the atomic coordinates and the covalence
-        radii of the atoms.
-        a bond is defined with less than the sum of the covalence radii plus the extra_param:
-        """
-        connections = []
-        # t1 = perf_counter()
-        h = ('H', 'D')
-        for num1, at1 in enumerate(self.atoms, 1):
-            rad1 = get_radius_from_element(at1.type_)
-            for num2, at2 in enumerate(self.atoms, 1):
-                if at1.part * at2.part != 0 and at1.part != at2.part:
-                    continue
-                if at1.name == at2.name:  # name1 = name2
-                    continue
-                d = distance(at1.coordinate.x, at1.coordinate.y, at1.coordinate.z,
-                             at2.coordinate.x, at2.coordinate.y, at2.coordinate.z)
-                if d > 4.0:  # makes bonding faster (longer bonds do not exist)
-                    continue
-                rad2 = get_radius_from_element(at2.type_)
-                if (rad1 + rad2) + extra_param > d:
-                    if at1.type_ in h and at2.type_ in h:
-                        continue
-                    # print(num1, num2, d)
-                    # The extra time for this is not too much:
-                    if [num2, num1] in connections:
-                        continue
-                    connections.append([at1, at2])
-        # t2 = perf_counter()
-        # print('Bondzeit:', round(t2-t1, 3), 's')
-        # print('len:', len(conlist))
-        return connections
-
-
 if __name__ == "__main__":
     # Molecule(atoms).draw()
     app = QtWidgets.QApplication(sys.argv)
@@ -244,7 +286,9 @@ if __name__ == "__main__":
     # shx = Shelxfile()
     # shx.read_file('tests/examples/1979688-finalcif.res')
     # atoms = [x.cart_coords for x in shx.atoms]
-    cif = CifContainer('tests/examples/1979688.cif')
+    cif = CifContainer('test-data/p21c.cif')
+    cif = CifContainer('/Users/daniel/Downloads/Strukturen/p21n_neu-final-finalcif.cif')
+    # cif = CifContainer('tests/examples/1979688.cif')
     render_widget = MoleculeWidget(cif.atoms_orth)
     # add and show
     window.setCentralWidget(render_widget)
