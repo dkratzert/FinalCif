@@ -5,9 +5,9 @@ from typing import List, Union, Generator, Any
 
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPainter, QPen, QBrush
+from PyQt5.QtGui import QPainter, QPen, QBrush, QColor, QMouseEvent
 
-from finalcif.cif.atoms import get_radius_from_element
+from finalcif.cif.atoms import get_radius_from_element, element2color
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.tools.misc import distance
 
@@ -132,9 +132,10 @@ class Coordinate(object):
 atom = namedtuple('Atom', ('label', 'type', 'x', 'y', 'z', 'part', 'occ', 'u_eq'))
 
 
-class MoleculeWidgetOld(QtWidgets.QWidget):
+class MoleculeWidget(QtWidgets.QWidget):
     def __init__(self, shx_atoms: Generator[Any, Any, atom]):
         super().__init__()
+        self.lastPos = None
         self.painter = None
         self.layout = QtWidgets.QVBoxLayout(self)
         self.layout.setContentsMargins(0, 0, 0, 0)
@@ -147,6 +148,18 @@ class MoleculeWidgetOld(QtWidgets.QWidget):
     def paintEvent(self, event):
         self.painter = QPainter(self)
         self.draw()
+
+    def mousePressEvent(self, event: QMouseEvent) -> None:
+        self.lastPos = event.pos()
+
+    def mouseMoveEvent(self, event: QMouseEvent) -> None:
+        dx = event.x() - self.lastPos.x()
+        dy = event.y() - self.lastPos.y()
+
+        if (event.buttons() == Qt.LeftButton):
+            setXRotation(xRot + 8 * dy)
+            setYRotation(yRot + 8 * dx)
+        self.lastPos = event.pos()
 
     # dimensions is 2-tuple of the number of characters on x and y axis
     def draw(self):
@@ -174,9 +187,10 @@ class MoleculeWidgetOld(QtWidgets.QWidget):
 
     def draw_atoms(self):
         self.painter.setPen(QPen(Qt.black, 2, Qt.SolidLine))
-        self.painter.setBrush(QBrush(Qt.red, Qt.SolidPattern))
         for atom in self.atoms:
-            self.painter.drawEllipse(atom.screenx, atom.screeny, 8, 8)
+            color = element2color.get(atom.type_)
+            self.painter.setBrush(QBrush(QColor(color), Qt.SolidPattern))
+            self.painter.drawEllipse(atom.screenx, atom.screeny, 9, 9)
 
     def molecule_dimensions(self, plane):
         flattened = [a.flatten(plane) for a in self.atoms]
