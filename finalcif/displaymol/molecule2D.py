@@ -287,7 +287,7 @@ if __name__ == "__main__":
     # shx.read_file('tests/examples/1979688-finalcif.res')
     # atoms = [x.cart_coords for x in shx.atoms]
     cif = CifContainer('test-data/p21c.cif')
-    cif = CifContainer('/Users/daniel/Downloads/Strukturen/p21n_neu-final-finalcif.cif')
+    #cif = CifContainer('/Users/daniel/Downloads/Strukturen/p21n_neu-final-finalcif.cif')
     # cif = CifContainer('tests/examples/1979688.cif')
     render_widget = MoleculeWidget(cif.atoms_orth)
     # add and show
