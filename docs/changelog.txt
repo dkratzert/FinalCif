@@ -1,5 +1,8 @@
 FinalCif recent changes
 -----------------------
+* v102 Fixes crash with '?' as symmetry information in bond angles. Fixes translation of 'i' character with accent.
+       Improved detection of frames in work folder. Replaced 3D molecule viewer with faster and more compatible
+       2D viewer.
 * v101 Fixes empty equipment templates.
 * v100 New 3D molecule view in "Show Details". Added possibility to delete predefined equipment templates.
        Fix crash from unclosed residues in shelx file.
