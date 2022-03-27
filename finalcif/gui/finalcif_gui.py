@@ -827,7 +827,7 @@ class Ui_FinalCifWindow(object):
         self.molGroupBox = QtWidgets.QGroupBox(self.page_molinfo)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(1)
-        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setVerticalStretch(1)
         sizePolicy.setHeightForWidth(self.molGroupBox.sizePolicy().hasHeightForWidth())
         self.molGroupBox.setSizePolicy(sizePolicy)
         self.molGroupBox.setObjectName("molGroupBox")
