@@ -21,8 +21,8 @@ atom = namedtuple('Atom', ('label', 'type', 'x', 'y', 'z', 'part', 'occ', 'u_eq'
 
 
 class MoleculeWidget(QtWidgets.QWidget):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent):
+        super().__init__(parent=parent)
         self.atoms_size = 10
         self.bond_width = 3
         self.labels = False
@@ -40,9 +40,11 @@ class MoleculeWidget(QtWidgets.QWidget):
 
     def open_molecule(self, atoms: Generator[Any, Any, atom], labels=False):
         self.labels = labels
+        self.atoms.clear()
         for at in atoms:
             self.atoms.append(Atom(at.x, at.y, at.z, at.label, at.type, at.part))
         self.connections = self.get_conntable_from_atoms()
+        self.update()
 
     def paintEvent(self, event):
         self.painter = QPainter(self)
@@ -68,8 +70,9 @@ class MoleculeWidget(QtWidgets.QWidget):
         max_extreme, min_extreme = self.molecule_dimensions(plane)
         span = max_extreme - min_extreme
         # make everything fit in our dimensions while maintaining proportions
-        scale_factor = min((self.width() - 50) / span.x, (self.height() - 50) / span.y)
-        # scale_factor = 30
+        scale_factor = min((self.width() - 30) / span.x, (self.height() - 30) / span.y)
+        # Makes sure the atom size dooes not vary too much:
+        self.atoms_size = 12 * (scale_factor / 25)
         extra_space = Coordinate2D(self.width() - 1, self.height() - 1) - span * scale_factor
         offset = extra_space / 2
         for atom in self.atoms:
@@ -297,7 +300,7 @@ if __name__ == "__main__":
     # atoms = [x.cart_coords for x in shx.atoms]
     cif = CifContainer('test-data/p21c.cif')
     # cif = CifContainer('tests/examples/1979688.cif')
-    render_widget = MoleculeWidget()
+    render_widget = MoleculeWidget(None)
     render_widget.open_molecule(cif.atoms_orth, labels=True)
     # add and show
     window.setCentralWidget(render_widget)

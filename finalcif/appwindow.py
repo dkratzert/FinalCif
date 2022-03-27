@@ -257,6 +257,7 @@ class AppWindow(QMainWindow):
         self.ui.DetailsPushButton.clicked.connect(self.show_residuals)
         self.ui.BackpushButtonDetails.clicked.connect(self.back_to_main_noload)
         self.ui.growCheckBox.toggled.connect(self.redraw_molecule)
+        self.ui.labelsCheckBox.toggled.connect(self.redraw_molecule)
         #
         self.ui.SourcesPushButton.clicked.connect(self.show_sources)
         self.ui.BackSourcesPushButton.clicked.connect(self.back_to_main_noload)
@@ -1428,10 +1429,11 @@ class AppWindow(QMainWindow):
         peak = self.cif['_refine_diff_density_max']
         if peak:
             self.ui.peakLineEdit.setText("{} / {}".format(peak, self.cif['_refine_diff_density_min']))
-        self.view_molecule()
+        with suppress(Exception):
+            self.view_molecule()
+            print('Molecule view crashed!')
 
     def view_molecule(self) -> None:
-        self.init_render_widget()
         if self.ui.growCheckBox.isChecked():
             self.ui.molGroupBox.setTitle('Completed Molecule')
             atoms = tuple(self.cif.atoms_fract)
@@ -1440,24 +1442,17 @@ class AppWindow(QMainWindow):
                 with suppress(Exception):
                     needsymm = sdm.calc_sdm()
                     atoms = sdm.packer(sdm, needsymm)
-                    self.ui.render_widget.draw(atoms)
+                    self.ui.render_widget.open_molecule(atoms, labels=self.ui.labelsCheckBox.isChecked())
         else:
             self.ui.molGroupBox.setTitle('Asymmetric Unit')
             with suppress(Exception):
                 atoms = [x for x in self.cif.atoms_orth]
-                self.ui.render_widget.draw(atoms)
-
-    def init_render_widget(self):
-        # Turn off for systems without GLES
-        if not os.environ.get('FINALCIF_NO_3D'):
-            if not self.ui.render_widget.initialized:
-                self.ui.render_widget.vlayout.addWidget(self.ui.render_widget.vtkWidget)
-                self.ui.render_widget.interactor.Initialize()
-        else:
-            self.vlayout.addWidget(QLabel('Molecule viewer is turned off.'))
+                self.ui.render_widget.open_molecule(atoms, labels=self.ui.labelsCheckBox.isChecked())
 
     def redraw_molecule(self) -> None:
-        self.view_molecule()
+        with suppress(Exception):
+            self.view_molecule()
+            print('Molecule view crashed!!')
 
     def check_Z(self) -> None:
         """
