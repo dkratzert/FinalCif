@@ -47,8 +47,9 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.update()
 
     def paintEvent(self, event):
-        self.painter = QPainter(self)
-        self.draw()
+        if self.atoms:
+            self.painter = QPainter(self)
+            self.draw()
 
     def mousePressEvent(self, event: QMouseEvent) -> None:
         self.lastPos = event.pos()
@@ -298,8 +299,9 @@ if __name__ == "__main__":
     # shx = Shelxfile()
     # shx.read_file('tests/examples/1979688-finalcif.res')
     # atoms = [x.cart_coords for x in shx.atoms]
-    cif = CifContainer('test-data/p21c.cif')
+    # cif = CifContainer('test-data/p21c.cif')
     # cif = CifContainer('tests/examples/1979688.cif')
+    cif = CifContainer('/Users/daniel/Documents/GitHub/StructureFinder/test-data/668839.cif')
     render_widget = MoleculeWidget(None)
     render_widget.open_molecule(cif.atoms_orth, labels=True)
     # add and show
