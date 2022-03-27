@@ -22,7 +22,6 @@ docxtpl==0.15.2
 shelxfile
 crossrefapi
 numpy==1.22.2
-vtk>=9.1.0
 
 # Upgrade gemmi to Git master:
 # pip install https://github.com/project-gemmi/gemmi/archive/master.zip --upgrade
