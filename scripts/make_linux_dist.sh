@@ -15,11 +15,11 @@ if echo $OS_RELEASE | grep -q "suse"; then
 fi
 
 
-/venv/bin/pip install pip -U
+venv/bin/pip install pip -U
 
-/venv/bin/pip install -r requirements.txt -U
+venv/bin/pip install -r requirements.txt -U
 
-/venv/bin/pyinstaller Finalcif_linux_onefile.spec --clean -y
+venv/bin/pyinstaller Finalcif_linux_onefile.spec --clean -y
 
 VER=$(cat finalcif/__init__.py | grep VERSION | cut -d ' ' -f 3)
 
