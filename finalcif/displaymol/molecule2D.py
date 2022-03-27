@@ -21,11 +21,11 @@ atom = namedtuple('Atom', ('label', 'type', 'x', 'y', 'z', 'part', 'occ', 'u_eq'
 
 
 class MoleculeWidget(QtWidgets.QWidget):
-    def __init__(self, shx_atoms: Generator[Any, Any, atom], labels=False):
+    def __init__(self):
         super().__init__()
         self.atoms_size = 10
         self.bond_width = 3
-        self.labels = labels
+        self.labels = False
         #
         self.lastPos = None
         self.painter = None
@@ -36,7 +36,11 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(self.layout)
         self.atoms: List[Atom] = []
-        for at in shx_atoms:
+        self.connections = ()
+
+    def open_molecule(self, atoms: Generator[Any, Any, atom], labels=False):
+        self.labels = labels
+        for at in atoms:
             self.atoms.append(Atom(at.x, at.y, at.z, at.label, at.type, at.part))
         self.connections = self.get_conntable_from_atoms()
 
@@ -87,10 +91,11 @@ class MoleculeWidget(QtWidgets.QWidget):
                                   at2.screenx + offset, at2.screeny + offset)
 
     def draw_atoms(self):
-        self.painter.setPen(QPen(Qt.black, 2, Qt.SolidLine))
         for atom in self.atoms:
-            if self.labels:
+            if self.labels and atom.type_ not in ('H', 'D'):
+                self.painter.setPen(QPen(QColor(150, 50, 5), 2, Qt.SolidLine))
                 self.painter.drawText(atom.screenx + 9, atom.screeny - 1, atom.name)
+            self.painter.setPen(QPen(Qt.black, 2, Qt.SolidLine))
             color = element2color.get(atom.type_)
             self.painter.setBrush(QBrush(QColor(color), Qt.SolidPattern))
             self.painter.drawEllipse(atom.screenx, atom.screeny, self.atoms_size, self.atoms_size)
@@ -292,7 +297,8 @@ if __name__ == "__main__":
     # atoms = [x.cart_coords for x in shx.atoms]
     cif = CifContainer('test-data/p21c.cif')
     # cif = CifContainer('tests/examples/1979688.cif')
-    render_widget = MoleculeWidget(cif.atoms_orth)
+    render_widget = MoleculeWidget()
+    render_widget.open_molecule(cif.atoms_orth, labels=True)
     # add and show
     window.setCentralWidget(render_widget)
     window.setMinimumSize(500, 500)
