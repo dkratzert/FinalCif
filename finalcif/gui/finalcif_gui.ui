@@ -1040,7 +1040,7 @@
         <item row="1" column="0" colspan="13">
          <widget class="MyMainStackedWidget" name="MainStackedWidget">
           <property name="currentIndex">
-           <number>6</number>
+           <number>2</number>
           </property>
           <widget class="QWidget" name="page_MainTable">
            <layout class="QVBoxLayout" name="verticalLayout">
@@ -2002,20 +2002,60 @@
                 <number>8</number>
                </property>
                <item>
-                <widget class="MoleculeWidget" name="render_widget" native="true"/>
-               </item>
-               <item>
-                <widget class="QCheckBox" name="growCheckBox">
-                 <property name="minimumSize">
-                  <size>
-                   <width>0</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                 <property name="text">
-                  <string>Grow Structure</string>
+                <widget class="MoleculeWidget" name="render_widget" native="true">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
                  </property>
                 </widget>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_7">
+                 <property name="sizeConstraint">
+                  <enum>QLayout::SetDefaultConstraint</enum>
+                 </property>
+                 <item>
+                  <widget class="QCheckBox" name="growCheckBox">
+                   <property name="minimumSize">
+                    <size>
+                     <width>0</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>Grow Structure</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QCheckBox" name="labelsCheckBox">
+                   <property name="minimumSize">
+                    <size>
+                     <width>0</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>Show Labels</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <spacer name="horizontalSpacer_23">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                </layout>
                </item>
               </layout>
              </widget>
@@ -3958,7 +3998,7 @@ please add a publication author:</string>
   <customwidget>
    <class>MoleculeWidget</class>
    <extends>QWidget</extends>
-   <header>finalcif.displaymol.vtk_molecule.h</header>
+   <header>finalcif.displaymol.molecule2D.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
@@ -3998,7 +4038,6 @@ please add a publication author:</string>
   <tabstop>OptionsPushButton</tabstop>
   <tabstop>FinalCifFilePlainTextEdit</tabstop>
   <tabstop>BackPushButton</tabstop>
-  <tabstop>growCheckBox</tabstop>
   <tabstop>reflTotalLineEdit</tabstop>
   <tabstop>refl2sigmaLineEdit</tabstop>
   <tabstop>uniqReflLineEdit</tabstop>
