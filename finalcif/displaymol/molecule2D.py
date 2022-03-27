@@ -106,7 +106,7 @@ class MoleculeWidget(QtWidgets.QWidget):
             self.painter.setPen(QPen(Qt.black, 2, Qt.SolidLine))
             color = element2color.get(atom.type_)
             self.painter.setBrush(QBrush(QColor(color), Qt.SolidPattern))
-            self.painter.drawEllipse(atom.screenx, atom.screeny, self.atoms_size, self.atoms_size)
+            self.painter.drawEllipse(int(atom.screenx), int(atom.screeny), int(self.atoms_size), int(self.atoms_size))
 
     def molecule_dimensions(self, plane):
         flattened = [a.flatten(plane) for a in self.atoms]
