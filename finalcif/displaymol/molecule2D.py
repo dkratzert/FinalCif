@@ -21,10 +21,11 @@ atom = namedtuple('Atom', ('label', 'type', 'x', 'y', 'z', 'part', 'occ', 'u_eq'
 
 
 class MoleculeWidget(QtWidgets.QWidget):
-    def __init__(self, shx_atoms: Generator[Any, Any, atom]):
+    def __init__(self, shx_atoms: Generator[Any, Any, atom], labels=False):
         super().__init__()
         self.atoms_size = 10
         self.bond_width = 3
+        self.labels = labels
         #
         self.lastPos = None
         self.painter = None
@@ -54,7 +55,6 @@ class MoleculeWidget(QtWidgets.QWidget):
                 x, y, z = self.rotate(at.coordinate.x, at.coordinate.y, at.coordinate.z, 'y', -dx)
                 x, y, z = self.rotate(x, y, z, 'x', dy)
                 self.atoms[num] = Atom(x, y, z, at.name, at.type_, at.part)
-            self.connections = self.get_conntable_from_atoms()
             self.update()
         self.lastPos = event.pos()
 
@@ -80,13 +80,17 @@ class MoleculeWidget(QtWidgets.QWidget):
 
     def draw_bonds(self):
         offset = int(self.atoms_size / 2)
-        for at1, at2 in self.connections:
+        for n1, n2 in self.connections:
+            at1 = self.atoms[n1]
+            at2 = self.atoms[n2]
             self.painter.drawLine(at1.screenx + offset, at1.screeny + offset,
                                   at2.screenx + offset, at2.screeny + offset)
 
     def draw_atoms(self):
         self.painter.setPen(QPen(Qt.black, 2, Qt.SolidLine))
         for atom in self.atoms:
+            if self.labels:
+                self.painter.drawText(atom.screenx + 9, atom.screeny - 1, atom.name)
             color = element2color.get(atom.type_)
             self.painter.setBrush(QBrush(QColor(color), Qt.SolidPattern))
             self.painter.drawEllipse(atom.screenx, atom.screeny, self.atoms_size, self.atoms_size)
@@ -107,9 +111,9 @@ class MoleculeWidget(QtWidgets.QWidget):
         """
         connections = []
         h = ('H', 'D')
-        for num1, at1 in enumerate(self.atoms, 1):
+        for num1, at1 in enumerate(self.atoms, 0):
             rad1 = get_radius_from_element(at1.type_)
-            for num2, at2 in enumerate(self.atoms, 1):
+            for num2, at2 in enumerate(self.atoms, 0):
                 if at1.part * at2.part != 0 and at1.part != at2.part:
                     continue
                 if at1.name == at2.name:  # name1 = name2
@@ -125,7 +129,7 @@ class MoleculeWidget(QtWidgets.QWidget):
                     # The extra time for this is not too much:
                     if (num2, num1) in connections:
                         continue
-                    connections.append([at1, at2])
+                    connections.append([num1, num2])
         return tuple(connections)
 
     def rotate(self, x: float, y: float, z: float, axis: str, angle: float) -> tuple[float, float, float]:
@@ -287,7 +291,6 @@ if __name__ == "__main__":
     # shx.read_file('tests/examples/1979688-finalcif.res')
     # atoms = [x.cart_coords for x in shx.atoms]
     cif = CifContainer('test-data/p21c.cif')
-    #cif = CifContainer('/Users/daniel/Downloads/Strukturen/p21n_neu-final-finalcif.cif')
     # cif = CifContainer('tests/examples/1979688.cif')
     render_widget = MoleculeWidget(cif.atoms_orth)
     # add and show
