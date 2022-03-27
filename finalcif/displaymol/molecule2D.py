@@ -77,7 +77,7 @@ class MoleculeWidget(QtWidgets.QWidget):
         # make everything fit in our dimensions while maintaining proportions
         scale_factor = min((self.width() - 30) / span.x, (self.height() - 30) / span.y)
         # Makes sure the atom size dooes not vary too much:
-        self.atoms_size = 12 * (scale_factor / 25)
+        self.atoms_size = int(12 * (scale_factor / 25))
         extra_space = Coordinate2D(self.width() - 1, self.height() - 1) - span * scale_factor
         offset = extra_space / 2
         for atom in self.atoms:
