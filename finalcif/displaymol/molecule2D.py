@@ -2,7 +2,7 @@ import math
 import sys
 from collections import namedtuple
 from math import sqrt
-from typing import List, Union, Generator, Any
+from typing import List, Union, Generator, Any, Tuple
 
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
@@ -145,7 +145,7 @@ class MoleculeWidget(QtWidgets.QWidget):
                     connections.append([num1, num2])
         return tuple(connections)
 
-    def rotate(self, x: float, y: float, z: float, axis: str, angle: float) -> tuple[float, float, float]:
+    def rotate(self, x: float, y: float, z: float, axis: str, angle: float) -> Tuple[float, float, float]:
         """
         rotate a point around a certain axis with a certain angle
         angle can be any integer between 1, 360 and axis can be any one of
