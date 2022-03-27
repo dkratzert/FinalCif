@@ -20,7 +20,7 @@ import requests
 from PyQt5 import QtCore, QtGui, QtWebEngineWidgets
 from PyQt5.QtCore import QThread, QTimer
 from PyQt5.QtWidgets import QMainWindow, QHeaderView, QShortcut, QCheckBox, QListWidgetItem, QApplication, \
-    QPlainTextEdit, QFileDialog, QLabel
+    QPlainTextEdit, QFileDialog
 from gemmi import cif
 from qtpy.QtGui import QDesktopServices
 
@@ -1429,8 +1429,9 @@ class AppWindow(QMainWindow):
         peak = self.cif['_refine_diff_density_max']
         if peak:
             self.ui.peakLineEdit.setText("{} / {}".format(peak, self.cif['_refine_diff_density_min']))
-        with suppress(Exception):
+        try:
             self.view_molecule()
+        except Exception:
             print('Molecule view crashed!')
 
     def view_molecule(self) -> None:
@@ -1450,8 +1451,9 @@ class AppWindow(QMainWindow):
                 self.ui.render_widget.open_molecule(atoms, labels=self.ui.labelsCheckBox.isChecked())
 
     def redraw_molecule(self) -> None:
-        with suppress(Exception):
+        try:
             self.view_molecule()
+        except Exception:
             print('Molecule view crashed!!')
 
     def check_Z(self) -> None:
