@@ -6,7 +6,7 @@ from typing import List, Union, Generator, Any
 
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPainter, QPen, QBrush, QColor, QMouseEvent
+from PyQt5.QtGui import QPainter, QPen, QBrush, QColor, QMouseEvent, QPalette
 
 from finalcif.cif.atoms import get_radius_from_element, element2color
 from finalcif.cif.cif_file_io import CifContainer
@@ -31,7 +31,11 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.painter = None
         self.x_rot = 0
         self.y_rot = 0
-
+        #
+        pal = QPalette()
+        pal.setColor(QPalette.Window, Qt.white)
+        self.setAutoFillBackground(True)
+        self.setPalette(pal)
         self.layout = QtWidgets.QVBoxLayout(self)
         self.layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(self.layout)
@@ -300,8 +304,8 @@ if __name__ == "__main__":
     # shx.read_file('tests/examples/1979688-finalcif.res')
     # atoms = [x.cart_coords for x in shx.atoms]
     # cif = CifContainer('test-data/p21c.cif')
-    # cif = CifContainer('tests/examples/1979688.cif')
-    cif = CifContainer('/Users/daniel/Documents/GitHub/StructureFinder/test-data/668839.cif')
+    cif = CifContainer('tests/examples/1979688.cif')
+    # cif = CifContainer('/Users/daniel/Documents/GitHub/StructureFinder/test-data/668839.cif')
     render_widget = MoleculeWidget(None)
     render_widget.open_molecule(cif.atoms_orth, labels=True)
     # add and show
