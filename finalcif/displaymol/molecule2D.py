@@ -41,6 +41,7 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.setLayout(self.layout)
         self.atoms: List[Atom] = []
         self.connections = ()
+        self.objects = []
 
     def open_molecule(self, atoms: Generator[Any, Any, atom], labels=False):
         self.labels = labels
@@ -70,7 +71,6 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.lastPos = event.pos()
 
     def draw(self):
-        self.painter.setPen(QPen(Qt.gray, self.bond_width, Qt.SolidLine))
         plane = [Coordinate(1, 0, 0), Coordinate(0, 1, 0)]
         max_extreme, min_extreme = self.molecule_dimensions(plane)
         span = max_extreme - min_extreme
@@ -86,27 +86,43 @@ class MoleculeWidget(QtWidgets.QWidget):
             screen_index = screen_index + offset
             atom.screenx = int(screen_index.x)
             atom.screeny = int(screen_index.y)
-        self.draw_bonds()
-        self.draw_atoms()
+        self.get_z_order()
+        for item in self.objects:
+            if item[0] == 0:
+                self.draw_atom(item[1])
+            if item[0] == 1:
+                self.draw_bond(item[1], item[2], offset=int(self.atoms_size / 2))
         self.painter.end()
 
-    def draw_bonds(self):
-        offset = int(self.atoms_size / 2)
+    def get_z_order(self):
+        """
+        Orders the atoms and bonds by z coordinates.
+        """
+        self.objects.clear()
         for n1, n2 in self.connections:
+            # 1 means bond:
             at1 = self.atoms[n1]
             at2 = self.atoms[n2]
-            self.painter.drawLine(at1.screenx + offset, at1.screeny + offset,
-                                  at2.screenx + offset, at2.screeny + offset)
-
-    def draw_atoms(self):
+            self.objects.append((1, at1, at2))
         for atom in self.atoms:
-            if self.labels and atom.type_ not in ('H', 'D'):
-                self.painter.setPen(QPen(QColor(150, 50, 5), 2, Qt.SolidLine))
-                self.painter.drawText(atom.screenx + 9, atom.screeny - 1, atom.name)
-            self.painter.setPen(QPen(Qt.black, 2, Qt.SolidLine))
-            color = element2color.get(atom.type_)
-            self.painter.setBrush(QBrush(QColor(color), Qt.SolidPattern))
-            self.painter.drawEllipse(int(atom.screenx), int(atom.screeny), int(self.atoms_size), int(self.atoms_size))
+            # 0 means atom
+            self.objects.append((0, atom))
+        self.objects.sort(reverse=True, key=lambda atom: atom[1].coordinate.z)
+
+    def draw_bond(self, at1: 'Atom', at2: 'Atom', offset: int):
+        self.painter.setPen(QPen(Qt.darkGray, self.bond_width, Qt.SolidLine))
+        self.painter.drawLine(at1.screenx + offset, at1.screeny + offset,
+                              at2.screenx + offset, at2.screeny + offset)
+
+    def draw_atom(self, atom: 'Atom'):
+        # for atom in self.atoms:
+        if self.labels and atom.type_ not in ('H', 'D'):
+            self.painter.setPen(QPen(QColor(100, 50, 5), 2, Qt.SolidLine))
+            self.painter.drawText(atom.screenx + 18, atom.screeny - 4, atom.name)
+        self.painter.setPen(QPen(Qt.black, 2, Qt.SolidLine))
+        color = element2color.get(atom.type_)
+        self.painter.setBrush(QBrush(QColor(color), Qt.SolidPattern))
+        self.painter.drawEllipse(int(atom.screenx), int(atom.screeny), int(self.atoms_size), int(self.atoms_size))
 
     def molecule_dimensions(self, plane):
         flattened = [a.flatten(plane) for a in self.atoms]
@@ -216,7 +232,7 @@ class Atom(object):
     def __str__(self) -> str:
         return self.__repr__()
 
-    def flatten(self, plane: List['Coordinate'] = None) -> Coordinate2D:
+    def flatten(self, plane: List['Coordinate'] = None) -> 'Coordinate2D':
         return self.coordinate.flatten(plane)
 
 
@@ -260,7 +276,7 @@ class Coordinate(object):
                           a3 * b1 - a1 * b3,
                           a1 * b2 - a2 * b1)
 
-    def flatten(self, plane: List['Coordinate'] = None) -> Coordinate2D:
+    def flatten(self, plane: List['Coordinate'] = None) -> 'Coordinate2D':
         """
         flatten takes a 2-element list of coordinates. When interpreted as vectors,
         these define a plane in 3-dim'l space
@@ -303,14 +319,14 @@ if __name__ == "__main__":
     # shx = Shelxfile()
     # shx.read_file('tests/examples/1979688-finalcif.res')
     # atoms = [x.cart_coords for x in shx.atoms]
-    # cif = CifContainer('test-data/p21c.cif')
-    cif = CifContainer('tests/examples/1979688.cif')
+    cif = CifContainer('test-data/p21c.cif')
+    # cif = CifContainer('tests/examples/1979688.cif')
     # cif = CifContainer('/Users/daniel/Documents/GitHub/StructureFinder/test-data/668839.cif')
     render_widget = MoleculeWidget(None)
     render_widget.open_molecule(cif.atoms_orth, labels=True)
     # add and show
     window.setCentralWidget(render_widget)
-    window.setMinimumSize(500, 500)
+    window.setMinimumSize(800, 600)
     window.show()
     # start the event loop
     sys.exit(app.exec_())
