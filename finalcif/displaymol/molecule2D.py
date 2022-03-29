@@ -24,8 +24,10 @@ class MoleculeWidget(QtWidgets.QWidget):
     def __init__(self, parent):
         super().__init__(parent=parent)
         self.atoms_size = 10
-        self.bond_width = 3
+        self.bond_width = 2
         self.labels = False
+        self.center = [0, 0, 0]
+        self.molecule_radius = 10
         #
         self.lastPos = None
         self.painter = None
@@ -39,7 +41,7 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.layout = QtWidgets.QVBoxLayout(self)
         self.layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(self.layout)
-        self.atoms: List[Atom] = []
+        self.atoms: List['Atom'] = []
         self.connections = ()
         self.objects = []
 
@@ -48,7 +50,10 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.atoms.clear()
         for at in atoms:
             self.atoms.append(Atom(at.x, at.y, at.z, at.label, at.type, at.part))
+        if len(self.atoms) > 200:
+            self.bond_width = 1
         self.connections = self.get_conntable_from_atoms()
+        # self.get_center_and_radius()
         self.update()
 
     def paintEvent(self, event):
@@ -62,8 +67,8 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.lastPos = event.pos()
 
     def mouseMoveEvent(self, event: QMouseEvent) -> None:
-        dx = (event.x() - self.lastPos.x()) / 50
-        dy = (event.y() - self.lastPos.y()) / 50
+        dx = (event.x() - self.lastPos.x()) / 80
+        dy = (event.y() - self.lastPos.y()) / 80
         if (event.buttons() == Qt.LeftButton):
             for num, at in enumerate(self.atoms):
                 x, y, z = self.rotate(at.coordinate.x, at.coordinate.y, at.coordinate.z, 'y', -dx)
@@ -77,8 +82,8 @@ class MoleculeWidget(QtWidgets.QWidget):
         max_extreme, min_extreme = self.molecule_dimensions(plane)
         span = max_extreme - min_extreme
         # make everything fit in our dimensions while maintaining proportions
-        scale_factor = min((self.width() - 30) / span.x, (self.height() - 30) / span.y)
-        # Makes sure the atom size dooes not vary too much:
+        scale_factor = min((self.width() - 50) / span.x, (self.height() - 50) / span.y)
+        # Makes sure the atom size does not vary too much:
         self.atoms_size = int(12 * (scale_factor / 25))
         extra_space = Coordinate2D(self.width() - 1, self.height() - 1) - span * scale_factor
         offset = extra_space / 2
@@ -112,6 +117,34 @@ class MoleculeWidget(QtWidgets.QWidget):
             self.objects.append((0, atom))
         self.objects.sort(reverse=True, key=lambda atom: atom[1].coordinate.z)
 
+    def distance(self, a, b):
+        d = 0
+        for i in reversed(range(3)):
+            dx = a[i] - b[i]
+            d += dx * dx
+        return math.sqrt(d)
+
+    def get_center_and_radius(self):
+        min = [999999, 999999, 999999]
+        max = [-999999, -999999, -999999]
+        for at in reversed(range(len(self.atoms))):
+            for j in reversed(range(3)):
+                v = self.atoms[at].coordinate[j]
+                if (v < min[j]):
+                    min[j] = v
+                if (v > max[j]):
+                    max[j] = v
+        c = [0, 0, 0]
+        for j in reversed(range(3)):
+            c[j] = (max[j] + min[j]) / 2
+        r = 0
+        for atom in reversed(self.atoms):
+            d = self.distance(atom.coordinate, c) + 1
+            if (d > r):
+                r = d
+        self.center = c
+        self.molecule_radius = r or 10
+
     def draw_bond(self, at1: 'Atom', at2: 'Atom', offset: int):
         self.painter.setPen(QPen(Qt.darkGray, self.bond_width, Qt.SolidLine))
         self.painter.drawLine(at1.screenx + offset, at1.screeny + offset,
@@ -120,12 +153,15 @@ class MoleculeWidget(QtWidgets.QWidget):
     def draw_atom(self, atom: 'Atom'):
         # for atom in self.atoms:
         if self.labels and atom.type_ not in ('H', 'D'):
-            self.painter.setPen(QPen(QColor(100, 50, 5), 2, Qt.SolidLine))
-            self.painter.drawText(atom.screenx + 18, atom.screeny - 4, atom.name)
-        self.painter.setPen(QPen(Qt.black, 2, Qt.SolidLine))
+            self.draw_label(atom)
+        self.painter.setPen(QPen(Qt.black, 1, Qt.SolidLine))
         color = element2color.get(atom.type_)
         self.painter.setBrush(QBrush(QColor(color), Qt.SolidPattern))
         self.painter.drawEllipse(int(atom.screenx), int(atom.screeny), int(self.atoms_size), int(self.atoms_size))
+
+    def draw_label(self, atom):
+        self.painter.setPen(QPen(QColor(100, 50, 5), 2, Qt.SolidLine))
+        self.painter.drawText(atom.screenx + 18, atom.screeny - 4, atom.name)
 
     def molecule_dimensions(self, plane):
         flattened = [a.flatten(plane) for a in self.atoms]
@@ -243,6 +279,14 @@ class Coordinate(object):
     def __init__(self, x: float, y: float, z: float):
         self.x, self.y, self.z = [x, y, z]
 
+    def __getitem__(self, item):
+        if item == 0:
+            return self.x
+        if item == 1:
+            return self.y
+        if item == 2:
+            return self.z
+
     def __repr__(self) -> str:
         return "({:.02f}, {:.02f}, {:.02f})".format(self.x, self.y, self.z)
 
@@ -323,10 +367,12 @@ if __name__ == "__main__":
     # shx.read_file('tests/examples/1979688-finalcif.res')
     # atoms = [x.cart_coords for x in shx.atoms]
     cif = CifContainer('test-data/p21c.cif')
+    # cif = CifContainer(r'C:\Users\daniel.kratzert\Downloads\41467_2015.cif')
+    cif.load_this_block(len(cif.doc) - 1)
     # cif = CifContainer('tests/examples/1979688.cif')
     # cif = CifContainer('/Users/daniel/Documents/GitHub/StructureFinder/test-data/668839.cif')
     render_widget = MoleculeWidget(None)
-    render_widget.open_molecule(cif.atoms_orth, labels=True)
+    render_widget.open_molecule(cif.atoms_orth, labels=False)
     # add and show
     window.setCentralWidget(render_widget)
     window.setMinimumSize(800, 600)
