@@ -59,7 +59,6 @@ class MoleculeWidget(QtWidgets.QWidget):
     def paintEvent(self, event):
         if self.atoms:
             self.painter = QPainter(self)
-            self.painter.begin(self)
             self.painter.setRenderHint(QPainter.Antialiasing)
             self.draw()
 
@@ -82,9 +81,8 @@ class MoleculeWidget(QtWidgets.QWidget):
         max_extreme, min_extreme = self.molecule_dimensions(plane)
         span = max_extreme - min_extreme
         # make everything fit in our dimensions while maintaining proportions
-        scale_factor = min((self.width() - 50) / span.x, (self.height() - 50) / span.y)
-        # Makes sure the atom size does not vary too much:
-        self.atoms_size = int(12 * (scale_factor / 25))
+        scale_factor = min((self.width() - 40) / span.x, (self.height() - 40) / span.y)
+        self.atoms_size = int(12 * (scale_factor / 24))
         extra_space = Coordinate2D(self.width() - 1, self.height() - 1) - span * scale_factor
         offset = extra_space / 2
         for atom in self.atoms:
@@ -97,7 +95,10 @@ class MoleculeWidget(QtWidgets.QWidget):
         offset = int(self.atoms_size / 2)
         for item in self.objects:
             if item[0] == 0:
-                self.draw_atom(item[1])
+                atom = item[1]
+                self.draw_atom(atom)
+                if self.labels and atom.type_ not in ('H', 'D'):
+                    self.draw_label(atom)
             if item[0] == 1:
                 self.draw_bond(item[1], item[2], offset=offset)
         self.painter.end()
@@ -125,22 +126,22 @@ class MoleculeWidget(QtWidgets.QWidget):
         return math.sqrt(d)
 
     def get_center_and_radius(self):
-        min = [999999, 999999, 999999]
-        max = [-999999, -999999, -999999]
+        min_ = [999999, 999999, 999999]
+        max_ = [-999999, -999999, -999999]
         for at in reversed(range(len(self.atoms))):
             for j in reversed(range(3)):
                 v = self.atoms[at].coordinate[j]
-                if (v < min[j]):
-                    min[j] = v
-                if (v > max[j]):
-                    max[j] = v
+                if (v < min_[j]):
+                    min_[j] = v
+                if (v > max_[j]):
+                    max_[j] = v
         c = [0, 0, 0]
         for j in reversed(range(3)):
-            c[j] = (max[j] + min[j]) / 2
+            c[j] = (max_[j] + min_[j]) / 2
         r = 0
         for atom in reversed(self.atoms):
             d = self.distance(atom.coordinate, c) + 1
-            if (d > r):
+            if d > r:
                 r = d
         self.center = c
         self.molecule_radius = r or 10
@@ -151,12 +152,8 @@ class MoleculeWidget(QtWidgets.QWidget):
                               at2.screenx + offset, at2.screeny + offset)
 
     def draw_atom(self, atom: 'Atom'):
-        # for atom in self.atoms:
-        if self.labels and atom.type_ not in ('H', 'D'):
-            self.draw_label(atom)
         self.painter.setPen(QPen(Qt.black, 1, Qt.SolidLine))
-        color = element2color.get(atom.type_)
-        self.painter.setBrush(QBrush(QColor(color), Qt.SolidPattern))
+        self.painter.setBrush(QBrush(atom.color, Qt.SolidPattern))
         self.painter.drawEllipse(int(atom.screenx), int(atom.screeny), int(self.atoms_size), int(self.atoms_size))
 
     def draw_label(self, atom):
@@ -263,7 +260,10 @@ class Atom(object):
         self.type_ = type_
         self.screenx = None
         self.screeny = None
-        # TODO: atom type to color conversion
+
+    @property
+    def color(self):
+        return QColor(element2color.get(self.type_))
 
     def __repr__(self) -> str:
         return str((self.name, self.type_, self.coordinate))
@@ -367,12 +367,12 @@ if __name__ == "__main__":
     # shx.read_file('tests/examples/1979688-finalcif.res')
     # atoms = [x.cart_coords for x in shx.atoms]
     cif = CifContainer('test-data/p21c.cif')
-    # cif = CifContainer(r'C:\Users\daniel.kratzert\Downloads\41467_2015.cif')
+    # cif = CifContainer(r'../41467_2015.cif')
     cif.load_this_block(len(cif.doc) - 1)
     # cif = CifContainer('tests/examples/1979688.cif')
     # cif = CifContainer('/Users/daniel/Documents/GitHub/StructureFinder/test-data/668839.cif')
     render_widget = MoleculeWidget(None)
-    render_widget.open_molecule(cif.atoms_orth, labels=False)
+    render_widget.open_molecule(cif.atoms_orth, labels=True)
     # add and show
     window.setCentralWidget(render_widget)
     window.setMinimumSize(800, 600)
