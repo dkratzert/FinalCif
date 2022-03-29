@@ -54,6 +54,8 @@ class MoleculeWidget(QtWidgets.QWidget):
     def paintEvent(self, event):
         if self.atoms:
             self.painter = QPainter(self)
+            self.painter.begin(self)
+            self.painter.setRenderHint(QPainter.Antialiasing)
             self.draw()
 
     def mousePressEvent(self, event: QMouseEvent) -> None:
@@ -87,11 +89,12 @@ class MoleculeWidget(QtWidgets.QWidget):
             atom.screenx = int(screen_index.x)
             atom.screeny = int(screen_index.y)
         self.get_z_order()
+        offset = int(self.atoms_size / 2)
         for item in self.objects:
             if item[0] == 0:
                 self.draw_atom(item[1])
             if item[0] == 1:
-                self.draw_bond(item[1], item[2], offset=int(self.atoms_size / 2))
+                self.draw_bond(item[1], item[2], offset=offset)
         self.painter.end()
 
     def get_z_order(self):
