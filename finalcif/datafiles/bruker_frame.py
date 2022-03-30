@@ -8,6 +8,7 @@
 # 
 
 import os
+import re
 from pathlib import Path
 from pprint import pformat
 
@@ -16,6 +17,7 @@ from finalcif.tools.misc import isnumeric
 
 class BrukerFrameHeader():
     def __init__(self, basename: str, searchpath: Path = Path(__file__).parent.parent):
+        basename = re.sub(r'_[a-z]$', '', basename)
         frames = searchpath.glob('*{}*.sfrm'.format(basename))
         frames = sorted(frames, key=os.path.getmtime, reverse=True)
         self._fileobj = None

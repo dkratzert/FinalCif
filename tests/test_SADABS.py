@@ -13,7 +13,7 @@ from finalcif.datafiles.sadabs import Sadabs
 
 class TestSADABSWU19(unittest.TestCase):
     def setUp(self) -> None:
-        self.s = Sadabs(r'test-data/IK_WU19.abs')  # this is a sadabs file
+        self.s = Sadabs(r'IK_WU19.abs', searchpath=Path('test-data'))  # this is a sadabs file
 
     def test_twincomp(self):
         self.assertEqual(1, self.s.twin_components)
@@ -39,7 +39,7 @@ class TestSADABSWU19(unittest.TestCase):
 
 class TestTWINABS(unittest.TestCase):
     def setUp(self) -> None:
-        self.s = Sadabs(r'test-data/twin-4-5.abs')  # this is a twinabs file
+        self.s = Sadabs(r'twin-4-5.abs', searchpath=Path('test-data'))  # this is a twinabs file
 
     def test_transmission(self):
         self.assertEqual([0.794433, 0.86207], self.s.dataset(0).transmission)
