@@ -14,6 +14,7 @@
 This file reads Bruker p4p files into a data structure.
 """
 import os
+import re
 from pathlib import Path
 
 
@@ -52,7 +53,8 @@ class P4PFile():
         self._radiation_type = ''
         self.wavelen = ''
         self.filename = Path()
-        p4p_files = searchpath.glob(basename + '*_0m.p4p')
+        basename = re.sub(r'_[a-z]$', '', basename)
+        p4p_files = searchpath.glob('*{}*_0m.p4p'.format(basename))
         if not p4p_files:
             p4p_files = Path(os.curdir).resolve().glob('*.p4p')
         for p4p in p4p_files:

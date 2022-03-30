@@ -209,7 +209,7 @@ class BrukerData(WorkDataMixin):
 
     @property
     def sadabs(self):
-        sad = Sadabs(basename='*.abs')
+        sad = Sadabs(basename='*.abs', searchpath=self.cif.fileobj.parent)
         # self.sad_fileLE, button = self.app.add_new_datafile(0, 'SADABS', 'add specific .abs file here, if needed...')
         # self.sad_fileLE.setText(str(sad.filename.resolve()))
         # button.clicked.connect(self.app.get_cif_file_block)

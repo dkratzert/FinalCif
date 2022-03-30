@@ -60,6 +60,9 @@ class MoleculeWidget(QtWidgets.QWidget):
         if self.atoms:
             self.painter = QPainter(self)
             self.painter.setRenderHint(QPainter.Antialiasing)
+            font = self.painter.font()
+            font.setPixelSize(13)
+            self.painter.setFont(font)
             self.draw()
 
     def mousePressEvent(self, event: QMouseEvent) -> None:

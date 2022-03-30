@@ -50,7 +50,7 @@ class Sadabs():
     _rint_regex = re.compile(r'^.*Rint\s=.*observations and')
     _rint3sig_regex = re.compile(r'^.*Rint\s=.*observations with')
 
-    def __init__(self, basename: str = '', fileobj: Path = None):
+    def __init__(self, basename: str, searchpath: Path = Path(__file__).parent.parent, fileobj: Path = None):
         """
         """
         self.faces = False
@@ -65,7 +65,7 @@ class Sadabs():
         self.batch_input = None
         self.filename = Path('')
         if basename:
-            self._fileobj = get_file_to_parse(name_pattern=basename, base_directory='.')
+            self._fileobj = get_file_to_parse(name_pattern=basename, base_directory=searchpath)
         else:
             self._fileobj = get_file_to_parse(fileobj=fileobj)
         if self._fileobj:
