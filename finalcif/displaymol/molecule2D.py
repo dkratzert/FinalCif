@@ -95,7 +95,7 @@ class MoleculeWidget(QtWidgets.QWidget):
             atom.screenx = int(screen_index.x)
             atom.screeny = int(screen_index.y)
         self.get_z_order()
-        offset = int(self.atoms_size / 2)
+        bond_offset = int(self.atoms_size / 2)
         for item in self.objects:
             if item[0] == 0:
                 atom = item[1]
@@ -103,7 +103,7 @@ class MoleculeWidget(QtWidgets.QWidget):
                 if self.labels and atom.type_ not in ('H', 'D'):
                     self.draw_label(atom)
             if item[0] == 1:
-                self.draw_bond(item[1], item[2], offset=offset)
+                self.draw_bond(item[1], item[2], offset=bond_offset)
         self.painter.end()
 
     def get_z_order(self):
