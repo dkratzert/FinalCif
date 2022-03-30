@@ -178,13 +178,14 @@ class CifContainer():
 
     def __str__(self) -> str:
         return "CIF file: {0}\n" \
-               "data name: {1}\n" \
-               "Contains SHELX res file: {2}\n" \
-               "Contains hkl data: {3}\n" \
-               "Has {4} atoms" \
-               ", {5} bonds" \
-               ", {6} angles" \
-               "".format(str(self.fileobj.resolve()), self.block.name, len(self.res_file_data) > 1,
+               "{1} Block(s): {2}\n" \
+               "Contains SHELX res file: {3}\n" \
+               "Contains hkl data: {4}\n" \
+               "Has {5} atoms" \
+               ", {6} bonds" \
+               ", {7} angles" \
+               "".format(str(self.fileobj.resolve()), len(c.doc), ', '.join([x.name for x in c.doc]),
+                         True if self.res_file_data else False,
                          len(self.hkl_file) > 1,
                          self.natoms(), self.nbonds(), self.nangles())
 
@@ -797,14 +798,17 @@ class CifContainer():
 
 
 if __name__ == '__main__':
+    #c = CifContainer('../41467_2015.cif')
     c = CifContainer('test-data/p21c.cif')
+    c.load_this_block(len(c.doc) - 1)
+    print(c)
     # print(c.hkl_file)
     # print(c.hkl_as_cif)
     # print(c.test_hkl_checksum())
-    s = Shelxfile()
+    # s = Shelxfile()
     # print(c.res_file_data)
-    s.read_string(c.res_file_data)
-    print(s.hklf.n)
+    # s.read_string(c.res_file_data)
+    # print(s.hklf.n)
 
     # print(CifContainer('tests/examples/1979688.cif').hkl_as_cif[-250:])
 
