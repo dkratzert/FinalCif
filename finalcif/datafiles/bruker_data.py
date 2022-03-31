@@ -5,6 +5,7 @@
 #  and you think this stuff is worth it, you can buy me a beer in return.
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
+import re
 from contextlib import suppress
 from pathlib import Path
 
@@ -34,8 +35,10 @@ class BrukerData(WorkDataMixin):
         super(BrukerData, self).__init__()
         self.cif = cif
         self.app = app
-        self.basename = cif.fileobj.stem.split('_0m')[0]
         self.saint_data = SaintListFile(name_patt='*_0*m._ls', directory=self.cif.fileobj.parent.resolve())
+        # Using the saint list files name as base reference for all other data containing files:
+        basename = self.saint_data.filename.stem.split('_0m')[0]
+        self.basename = re.sub(r'^(cu|mo|ag)_', '', basename)
         # This is only in this list file, not in the global:
         saint_first_ls = SaintListFile(name_patt='*_01._ls', directory=self.cif.fileobj.parent.resolve())
         sol = SolutionProgram(cif)
@@ -44,11 +47,10 @@ class BrukerData(WorkDataMixin):
             shelx = 'Sheldrick, G.M. (2015). Acta Cryst. A71, 3-8.\nSheldrick, G.M. (2015). Acta Cryst. C71, 3-8.\n'
         else:
             shelx = ''
-        if cif.res_file_data:
-            if cif.dsr_used:
-                dsr = 'The program DSR was used for model building:\n' \
-                      'D. Kratzert, I. Krossing, J. Appl. Cryst. 2018, 51, 928-934. doi: 10.1107/S1600576718004508'
-                shelx += dsr
+        if cif.res_file_data and cif.dsr_used:
+            dsr = 'The program DSR was used for model building:\n' \
+                  'D. Kratzert, I. Krossing, J. Appl. Cryst. 2018, 51, 928-934. doi: 10.1107/S1600576718004508'
+            shelx += dsr
         abstype = '?'
         t_min = '?'
         t_max = '?'
@@ -210,10 +212,6 @@ class BrukerData(WorkDataMixin):
     @property
     def sadabs(self):
         sad = Sadabs(basename='*.abs', searchpath=self.cif.fileobj.parent)
-        # self.sad_fileLE, button = self.app.add_new_datafile(0, 'SADABS', 'add specific .abs file here, if needed...')
-        # self.sad_fileLE.setText(str(sad.filename.resolve()))
-        # button.clicked.connect(self.app.get_cif_file_block)
-        # I have to run self.app.get_cif_file_block but data sources for abs file should be updated
         return sad
 
     @property
