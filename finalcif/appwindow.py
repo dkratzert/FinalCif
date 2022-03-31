@@ -1170,7 +1170,7 @@ class AppWindow(QMainWindow):
         # Is also done in block load method
         self._clear_state_before_block_load()
         if not filepath:
-            filepath = Path(cif_file_open_dialog())
+            filepath = Path(cif_file_open_dialog(last_dir=self.get_last_workdir()))
             if not filepath.is_file():
                 return
         self.set_path_display_in_file_selector(str(filepath))
@@ -1240,7 +1240,7 @@ class AppWindow(QMainWindow):
         if self.cif:
             self.set_shredcif_state()
             # saving current cif dir as last working directory:
-            self.settings.save_current_dir(str(self.cif.fileobj.resolve().parent))
+            self.settings.save_current_dir(str(self.cif.path_base))
             self.enable_buttons()
             self.fill_space_group_lineedit()
             self.fill_sum_formula_lineedit()
