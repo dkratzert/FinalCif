@@ -1,5 +1,7 @@
 FinalCif recent changes
 -----------------------
+* v103 Correct z-order of atoms and bonds in molecule view. File open dialog points to directory of last
+       opened file again. 
 * v102 Fixes crash with '?' as symmetry information in bond angles. Fixes translation of 'i' character with accent.
        Improved detection of frames in work folder. Replaced 3D molecule viewer with faster and more compatible
        2D viewer.
