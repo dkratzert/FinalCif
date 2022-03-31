@@ -187,7 +187,6 @@ def cif_file_open_dialog(filter: str = "CIF file (*.cif)", last_dir='') -> str:
     """
     Returns a cif file name from a file dialog.
     """
-    print(last_dir, '#')
     filename, _ = QFileDialog.getOpenFileName(filter=filter,
                                               directory=last_dir,
                                               initialFilter=filter,
