@@ -54,7 +54,7 @@ class P4PFile():
         self.wavelen = ''
         self.filename = Path()
         basename = re.sub(r'_[a-z]$', '', basename)
-        p4p_files = searchpath.glob('*{}*_0m.p4p'.format(basename))
+        p4p_files = searchpath.glob('{}{}*_0m.p4p'.format('*' if basename else '', basename))
         if not p4p_files:
             p4p_files = Path(os.curdir).resolve().glob('*.p4p')
         for p4p in p4p_files:
