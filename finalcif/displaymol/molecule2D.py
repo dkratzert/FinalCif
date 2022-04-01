@@ -2,11 +2,12 @@ import math
 import sys
 from collections import namedtuple
 from math import sqrt
+from pathlib import Path
 from typing import List, Union, Generator, Any, Tuple
 
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPainter, QPen, QBrush, QColor, QMouseEvent, QPalette
+from PyQt5.QtGui import QPainter, QPen, QBrush, QColor, QMouseEvent, QPalette, QImage
 
 from finalcif.cif.atoms import get_radius_from_element, element2color
 from finalcif.cif.cif_file_io import CifContainer
@@ -21,6 +22,8 @@ atom = namedtuple('Atom', ('label', 'type', 'x', 'y', 'z', 'part', 'occ', 'u_eq'
 
 
 class MoleculeWidget(QtWidgets.QWidget):
+    painter: QPainter
+
     def __init__(self, parent):
         super().__init__(parent=parent)
         self.atoms_size = 10
@@ -67,6 +70,15 @@ class MoleculeWidget(QtWidgets.QWidget):
 
     def mousePressEvent(self, event: QMouseEvent) -> None:
         self.lastPos = event.pos()
+
+    def save_image(self, filename: Path, image_scale=1.5):
+        image = QImage(self.size() * image_scale, QImage.Format_RGB32)
+        image.fill(Qt.white)
+        imgpainter = QPainter(image)
+        imgpainter.scale(image_scale, image_scale)
+        self.render(imgpainter)
+        image.save(str(filename.resolve()))
+        imgpainter.end()
 
     def mouseMoveEvent(self, event: QMouseEvent) -> None:
         dx = (event.x() - self.lastPos.x()) / 80
@@ -380,5 +392,6 @@ if __name__ == "__main__":
     window.setCentralWidget(render_widget)
     window.setMinimumSize(800, 600)
     window.show()
+    render_widget.save_image(Path('myimage2.png'))
     # start the event loop
     sys.exit(app.exec_())

@@ -24,7 +24,7 @@ class TemplateReportTestCase(unittest.TestCase):
         self.myapp.ui.TemplatesListWidget.setCurrentRow(2)
         self.reportdoc = self.myapp.cif.finalcif_file_prefixed(prefix='report_', suffix='-finalcif.docx')
         self.report_zip = self.myapp.cif.finalcif_file_prefixed(prefix='', suffix='-finalcif.zip')
-        self.myapp.set_report_picture(Path('finalcif/icon/finalcif.png'))
+        self.myapp.select_report_picture(Path('finalcif/icon/finalcif.png'))
         self.myapp.hide()
 
     def tearDown(self) -> None:
