@@ -268,7 +268,7 @@ class AppWindow(QMainWindow):
         self.ui.OptionsPushButton.clicked.connect(self.options.show_options)
         # help
         self.ui.HelpPushButton.clicked.connect(self.show_help)
-        self.ui.ReportPicPushButton.clicked.connect(self.set_report_picture)
+        self.ui.ReportPicPushButton.clicked.connect(self.select_report_picture)
         # brings the html checkcif in from in order to avoid confusion of an "empty" checkcif report page:
         self.ui.CheckCIFResultsTabWidget.currentChanged.connect(lambda: self.ui.ResponsesTabWidget.setCurrentIndex(0))
         ##
@@ -285,6 +285,13 @@ class AppWindow(QMainWindow):
         self.ui.cif_main_table.textTemplate.connect(self.on_text_template_open)
         #
         self.ui.appendCifPushButton.clicked.connect(self.append_cif)
+        self.ui.drawImagePushButton.clicked.connect(self.draw_image)
+
+    def draw_image(self):
+        image_filename = self.cif.finalcif_file_prefixed(prefix='', suffix='-finalcif.png')
+        self.ui.render_widget.save_image(image_filename)
+        self.status_bar.show_message('Image saved to {}'.format(image_filename), timeout=20)
+        self.set_report_picture_path(str(image_filename))
 
     def on_text_template_open(self, row: int):
         self.ui.cif_main_table.setCurrentCell(row, COL_EDIT)
@@ -901,7 +908,7 @@ class AppWindow(QMainWindow):
             txt = combo.itemText(file_index)
             self.load_cif_file(Path(txt))
 
-    def set_report_picture(self, file: Path) -> None:
+    def select_report_picture(self, file: Path) -> None:
         """Sets the picture of the report document."""
         if file:
             self.report_picture_path = Path(file)
@@ -909,11 +916,14 @@ class AppWindow(QMainWindow):
             filename, _ = QFileDialog.getOpenFileName(filter="Image Files (*.png *.jpg *.jpeg *.bmp "
                                                              "*.gif *.tif *.tiff *.eps *.emf *.wmf)",
                                                       caption='Open a Report Picture')
-            with suppress(Exception):
-                self.report_picture_path = Path(filename)
-            if self.report_picture_path.exists() and self.report_picture_path.is_file():
-                self.ui.ReportPicPushButton.setIcon(qta.icon('fa5.image'))
-                self.ui.ReportPicPushButton.setText('')
+            self.set_report_picture_path(filename)
+
+    def set_report_picture_path(self, filename: str):
+        with suppress(Exception):
+            self.report_picture_path = Path(filename)
+        if self.report_picture_path.exists() and self.report_picture_path.is_file():
+            self.ui.ReportPicPushButton.setIcon(qta.icon('fa5.image'))
+            self.ui.ReportPicPushButton.setText('')
 
     def make_report_tables(self) -> None:
         """
