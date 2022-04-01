@@ -89,10 +89,7 @@ class MyQPlainTextEdit(QPlainTextEdit):
         """
         if color:
             self.setBackground(color)
-        txtlst = text.split(r'\n')
-        # special treatment for text fields in order to get line breaks:
-        for txt in txtlst:
-            self.setPlainText(txt)
+        self.setPlainText(text)
 
     def eventFilter(self, widget: QObject, event: QEvent):
         """
@@ -110,9 +107,11 @@ class MyQPlainTextEdit(QPlainTextEdit):
         """Text field sizes are scaled to text length"""
         rect = self.fontmetric.boundingRect(self.contentsRect(), Qt.TextWordWrap, self.toPlainText())
         size = QSize(100, rect.height() + 14)
-        if size.height() > 300:
+        if size.height() > 50:
+            size = QSize(100, rect.height() + 24)
+        if size.height() > 350:
             # Prevent extreme height for long text:
-            size = QSize(100, 300)
+            size = QSize(100, 350)
         return size
 
 
@@ -148,10 +147,7 @@ class PlainTextEditTemplate(QPlainTextEdit):
         """
         if color:
             self.setBackground(color)
-        txtlst = text.split(r'\n')
-        # special treatment for text fields in order to get line breaks:
-        for txt in txtlst:
-            self.setPlainText(txt)
+        self.setPlainText(text)
 
     def eventFilter(self, widget: QObject, event: QEvent):
         """
