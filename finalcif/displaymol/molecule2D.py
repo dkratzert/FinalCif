@@ -7,7 +7,7 @@ from typing import List, Union, Generator, Any, Tuple
 
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPainter, QPen, QBrush, QColor, QMouseEvent, QPalette, QImage
+from PyQt5.QtGui import QPainter, QPen, QBrush, QColor, QMouseEvent, QPalette, QImage, QResizeEvent
 
 from finalcif.cif.atoms import get_radius_from_element, element2color
 from finalcif.cif.cif_file_io import CifContainer
@@ -58,6 +58,10 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.connections = self.get_conntable_from_atoms()
         # self.get_center_and_radius()
         self.update()
+
+    def resizeEvent(self, event: QResizeEvent) -> None:
+        self.setFixedWidth(int(self.height() * 1.8))
+        super().resizeEvent(event)
 
     def paintEvent(self, event):
         if self.atoms:
@@ -392,6 +396,6 @@ if __name__ == "__main__":
     window.setCentralWidget(render_widget)
     window.setMinimumSize(800, 600)
     window.show()
-    render_widget.save_image(Path('myimage2.png'))
+    # render_widget.save_image(Path('myimage2.png'))
     # start the event loop
     sys.exit(app.exec_())
