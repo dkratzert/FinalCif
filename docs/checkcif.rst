@@ -20,7 +20,7 @@ advantage of beeing fast, but the resulting ckecks are far less deeply.
 
 
 Validation Response Forms (_VRF)
--------------------------------
+--------------------------------
 Sometimes you have to explain certain alerts from CheckCif. For example regarding the experiment resolution.
 This is done via validation response forms. FinalCif has a convenient method to do so.
 After a "CheckCif Online HTML" with structure factors you have the option to click on "Edit Response Forms".
@@ -45,7 +45,7 @@ A resulting response form:
 
 
 Structure of a validation response form
-------
+---------------------------------------
 
 .. code-block::
 
