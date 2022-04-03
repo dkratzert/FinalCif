@@ -1,10 +1,11 @@
 import math
 import sys
 from collections import namedtuple
-from math import sqrt
+from math import sqrt, cos, sin
 from pathlib import Path
 from typing import List, Union, Generator, Any, Tuple
 
+import numpy as np
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPainter, QPen, QBrush, QColor, QMouseEvent, QPalette, QImage, QResizeEvent
@@ -26,16 +27,17 @@ class MoleculeWidget(QtWidgets.QWidget):
 
     def __init__(self, parent):
         super().__init__(parent=parent)
+        self.factor = None
         self.atoms_size = 10
         self.bond_width = 2
         self.labels = False
-        self.center = [0, 0, 0]
+        self.mol_center = [0, 0, 0]
         self.molecule_radius = 10
         #
         self.lastPos = None
         self.painter = None
-        self.x_rot = 0
-        self.y_rot = 0
+        self.x_angle = 0
+        self.y_angle = 0
         #
         pal = QPalette()
         pal.setColor(QPalette.Window, Qt.white)
@@ -48,6 +50,13 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.connections = ()
         self.objects = []
 
+        self.screen_center = [self.width() / 2, self.height() / 2]
+        self.projection_matrix = np.matrix(
+            [[1, 0, 0],
+             [0, 1, 0]])
+        self.projected_points = []
+        self.zoom = 1.0
+
     def open_molecule(self, atoms: Generator[Any, Any, atom], labels=False):
         self.labels = labels
         self.atoms.clear()
@@ -56,7 +65,9 @@ class MoleculeWidget(QtWidgets.QWidget):
         if len(self.atoms) > 200:
             self.bond_width = 1
         self.connections = self.get_conntable_from_atoms()
-        # self.get_center_and_radius()
+        self.get_center_and_radius()
+        self.factor = min(self.width(), self.height()) / 2 / self.molecule_radius * self.zoom / 100
+        self.atoms_size = self.factor * 70
         self.update()
 
     def resizeEvent(self, event: QResizeEvent) -> None:
@@ -84,32 +95,44 @@ class MoleculeWidget(QtWidgets.QWidget):
         image.save(str(filename.resolve()))
         imgpainter.end()
 
+    def rotate_x(self):
+        return np.array([
+            [1, 0, 0],
+            [0, cos(self.x_angle), -sin(self.x_angle)],
+            [0, sin(self.x_angle), cos(self.x_angle)],
+        ])
+
+    def rotate_y(self):
+        return np.array([
+            [cos(self.y_angle), 0, sin(self.y_angle)],
+            [0, 1, 0],
+            [-sin(self.y_angle), 0, cos(self.y_angle)],
+        ])
+
     def mouseMoveEvent(self, event: QMouseEvent) -> None:
         dx = (event.x() - self.lastPos.x()) / 80
         dy = (event.y() - self.lastPos.y()) / 80
         if (event.buttons() == Qt.LeftButton):
             for num, at in enumerate(self.atoms):
-                x, y, z = self.rotate(at.coordinate.x, at.coordinate.y, at.coordinate.z, 'y', -dx)
+                # rotated2d = np.dot(self.rotate_y(),
+                #                   np.array([at.coordinate[0], at.coordinate[1], at.coordinate[2]]))
+                # x, y, z = np.dot(self.rotate_x(), rotated2d)
+                coord = at.coordinate - np.array(self.mol_center)  # * self.factor
+                x, y, z = self.rotate(coord[0], coord[1], coord[2], 'y', dx)
                 x, y, z = self.rotate(x, y, z, 'x', dy)
+                x, y, z = np.array([x, y, z]) + np.array(self.mol_center)
                 self.atoms[num] = Atom(x, y, z, at.name, at.type_, at.part)
             self.update()
         self.lastPos = event.pos()
 
     def draw(self):
-        plane = [Coordinate(1, 0, 0), Coordinate(0, 1, 0)]
-        max_extreme, min_extreme = self.molecule_dimensions(plane)
-        span = max_extreme - min_extreme
-        # make everything fit in our dimensions while maintaining proportions
-        scale_factor = min((self.width() - 40) / span.x, (self.height() - 40) / span.y)
-        self.atoms_size = int(12 * (scale_factor / 24))
-        extra_space = Coordinate2D(self.width() - 1, self.height() - 1) - span * scale_factor
-        offset = extra_space / 2
+        scale = self.factor * 150
         for atom in self.atoms:
-            # shift to be in the 1st quadrant (positive coordinates) close to (0,0)
-            screen_index = (atom.flatten(plane) - min_extreme) * scale_factor
-            screen_index = screen_index + offset
-            atom.screenx = int(screen_index.x)
-            atom.screeny = int(screen_index.y)
+            projected2d = np.dot(self.projection_matrix, atom.coordinate.reshape(3, 1))
+            x = int(projected2d[0][0] * scale) + self.screen_center[0] - 20
+            y = int(projected2d[1][0] * scale) + self.screen_center[1] - 240
+            atom.screenx = int(x)
+            atom.screeny = int(y)
         self.get_z_order()
         bond_offset = int(self.atoms_size / 2)
         for item in self.objects:
@@ -135,14 +158,7 @@ class MoleculeWidget(QtWidgets.QWidget):
         for atom in self.atoms:
             # 0 means atom
             self.objects.append((0, atom))
-        self.objects.sort(reverse=True, key=lambda atom: atom[1].coordinate.z)
-
-    def distance(self, a, b):
-        d = 0
-        for i in reversed(range(3)):
-            dx = a[i] - b[i]
-            d += dx * dx
-        return math.sqrt(d)
+        self.objects.sort(reverse=True, key=lambda atom: atom[1].coordinate[2])
 
     def get_center_and_radius(self):
         min_ = [999999, 999999, 999999]
@@ -150,19 +166,19 @@ class MoleculeWidget(QtWidgets.QWidget):
         for at in reversed(range(len(self.atoms))):
             for j in reversed(range(3)):
                 v = self.atoms[at].coordinate[j]
-                if (v < min_[j]):
+                if v < min_[j]:
                     min_[j] = v
-                if (v > max_[j]):
+                if v > max_[j]:
                     max_[j] = v
         c = [0, 0, 0]
         for j in reversed(range(3)):
             c[j] = (max_[j] + min_[j]) / 2
         r = 0
         for atom in reversed(self.atoms):
-            d = self.distance(atom.coordinate, c) + 1
+            d = distance(*atom.coordinate, *c) + 1
             if d > r:
                 r = d
-        self.center = c
+        self.mol_center = c
         self.molecule_radius = r or 10
 
     def draw_bond(self, at1: 'Atom', at2: 'Atom', offset: int):
@@ -179,13 +195,13 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.painter.setPen(QPen(QColor(100, 50, 5), 2, Qt.SolidLine))
         self.painter.drawText(atom.screenx + 18, atom.screeny - 4, atom.name)
 
-    def molecule_dimensions(self, plane):
+    """def molecule_dimensions(self, plane):
         flattened = [a.flatten(plane) for a in self.atoms]
         max_extreme = Coordinate2D(max([coor.x for coor in flattened]),
                                    max([coor.y for coor in flattened]))
         min_extreme = Coordinate2D(min([coor.x for coor in flattened]),
                                    min([coor.y for coor in flattened]))
-        return max_extreme, min_extreme
+        return max_extreme, min_extreme"""
 
     def get_conntable_from_atoms(self, extra_param: float = 0.48) -> tuple:
         """
@@ -202,8 +218,8 @@ class MoleculeWidget(QtWidgets.QWidget):
                     continue
                 if at1.name == at2.name:  # name1 = name2
                     continue
-                d = distance(at1.coordinate.x, at1.coordinate.y, at1.coordinate.z,
-                             at2.coordinate.x, at2.coordinate.y, at2.coordinate.z)
+                d = distance(at1.coordinate[0], at1.coordinate[1], at1.coordinate[2],
+                             at2.coordinate[0], at2.coordinate[1], at2.coordinate[2])
                 if d > 4.0:  # makes bonding faster (longer bonds do not exist)
                     continue
                 rad2 = get_radius_from_element(at2.type_)
@@ -273,7 +289,7 @@ class Coordinate2D(object):
 
 class Atom(object):
     def __init__(self, x: float, y: float, z: float, name: str, type_: str, part: int):
-        self.coordinate = Coordinate(x, y, z)
+        self.coordinate = np.array([x, y, z])
         self.name = name
         self.part = part
         self.type_ = type_
@@ -290,8 +306,8 @@ class Atom(object):
     def __str__(self) -> str:
         return self.__repr__()
 
-    def flatten(self, plane: List['Coordinate'] = None) -> 'Coordinate2D':
-        return self.coordinate.flatten(plane)
+    # def flatten(self, plane: List['Coordinate'] = None) -> 'Coordinate2D':
+    #    return self.coordinate.flatten(plane)
 
 
 class Coordinate(object):
@@ -386,12 +402,12 @@ if __name__ == "__main__":
     # shx.read_file('tests/examples/1979688-finalcif.res')
     # atoms = [x.cart_coords for x in shx.atoms]
     cif = CifContainer('test-data/p21c.cif')
-    # cif = CifContainer(r'../41467_2015.cif')
+    #cif = CifContainer(r'../41467_2015.cif')
     cif.load_this_block(len(cif.doc) - 1)
     # cif = CifContainer('tests/examples/1979688.cif')
     # cif = CifContainer('/Users/daniel/Documents/GitHub/StructureFinder/test-data/668839.cif')
     render_widget = MoleculeWidget(None)
-    render_widget.open_molecule(cif.atoms_orth, labels=True)
+    render_widget.open_molecule(cif.atoms_orth, labels=False)
     # add and show
     window.setCentralWidget(render_widget)
     window.setMinimumSize(800, 600)
