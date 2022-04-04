@@ -332,13 +332,12 @@ class CifContainer():
             pass
         if not hkl:
             return all_sadabs_items
-        pattern = re.compile(r'\s+0\s+0\s+0\s+0')
-        found = pattern.search(hkl)
-        if found:
-            zero_reflection_position = found.start()
-        else:
+        # zero_reflection_position = self.normal_search(hkl)
+        hkl_splitted = hkl.splitlines(keepends=False)
+        zero_reflection_position = self.reversed_search(hkl_splitted)
+        if not zero_reflection_position:
             return all_sadabs_items
-        hkl = hkl[zero_reflection_position:].splitlines(keepends=False)[2:]
+        hkl = hkl.splitlines(keepends=False)[zero_reflection_position:]
         # html-embedded cif has ')' instead of ';':
         hkl = [';' if x[:1] == ')' else x for x in hkl]
         # the keys have a blank char in front:
@@ -356,6 +355,27 @@ class CifContainer():
             if val:
                 all_sadabs_items[key] = gemmi.cif.as_string(val).strip()
         return all_sadabs_items
+
+    def normal_search(self, hkl):
+        pattern = re.compile(r'\s+0\s+0\s+0\s+0')
+        found = pattern.search(hkl)
+        if found:
+            zero_reflection_position = found.start()
+        else:
+            zero_reflection_position = 0
+        return zero_reflection_position
+
+    def reversed_search(self, hkl_splitted: List):
+        pattern = re.compile(r'\s+0\s+0\s+0\s+0')
+        zero_reflection_position = 0
+        for num, line in enumerate(reversed(hkl_splitted)):
+            found = pattern.search(line)
+            if num > 500:
+                # A longer footer is not realistic
+                break
+            if found:
+                zero_reflection_position = len(hkl_splitted) - num
+        return zero_reflection_position
 
     @property
     def loops(self) -> List[gemmi.cif.Loop]:
@@ -798,7 +818,7 @@ class CifContainer():
 
 
 if __name__ == '__main__':
-    #c = CifContainer('../41467_2015.cif')
+    # c = CifContainer('../41467_2015.cif')
     c = CifContainer('test-data/p21c.cif')
     c.load_this_block(len(c.doc) - 1)
     print(c)
