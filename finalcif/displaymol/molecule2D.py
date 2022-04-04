@@ -55,7 +55,7 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.projection_matrix = np.matrix([[1, 0, 0],
                                             [0, 1, 0]], dtype=np.float32)
         self.projected_points = []
-        self.zoom = 1.0
+        self.zoom = 0.9
 
     def open_molecule(self, atoms: Generator[Any, Any, atom], labels=False):
         self.labels = labels
@@ -71,7 +71,7 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.update()
 
     def resizeEvent(self, event: QResizeEvent) -> None:
-        # self.setFixedWidth(int(self.height() * 1.8))
+        #self.factor = min(self.width(), self.height()) / 1 / self.molecule_radius * self.zoom / 100
         super().resizeEvent(event)
 
     def paintEvent(self, event):
@@ -205,7 +205,7 @@ class MoleculeWidget(QtWidgets.QWidget):
             c[j] = (max_[j] + min_[j]) / 2
         r = 0
         for atom in self.atoms:
-            d = self.distance(atom.coordinate, c) + 0.5
+            d = self.distance(atom.coordinate, c) + 0.1
             if d > r:
                 r = d
         self.molecule_center = np.array(c, dtype=np.float32)
