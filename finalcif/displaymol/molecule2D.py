@@ -71,7 +71,7 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.update()
 
     def resizeEvent(self, event: QResizeEvent) -> None:
-        self.setFixedWidth(int(self.height() * 1.8))
+        #self.setFixedWidth(int(self.height() * 1.8))
         super().resizeEvent(event)
 
     def paintEvent(self, event):
@@ -110,27 +110,35 @@ class MoleculeWidget(QtWidgets.QWidget):
         ])
 
     def mouseMoveEvent(self, event: QMouseEvent) -> None:
-        dx = (event.x() - self.lastPos.x()) / 80
-        dy = (event.y() - self.lastPos.y()) / 80
+        # dx = (event.x() - self.lastPos.x()) / 80
+        # dy = (event.y() - self.lastPos.y()) / 80
+        self.y_angle = -(event.x() - self.lastPos.x()) / 80
+        self.x_angle = (event.y() - self.lastPos.y()) / 80
         if (event.buttons() == Qt.LeftButton):
             for num, at in enumerate(self.atoms):
-                # rotated2d = np.dot(self.rotate_y(),
-                #                   np.array([at.coordinate[0], at.coordinate[1], at.coordinate[2]]))
-                # x, y, z = np.dot(self.rotate_x(), rotated2d)
-                coord = at.coordinate - np.array(self.mol_center)  # * self.factor
-                x, y, z = self.rotate(coord[0], coord[1], coord[2], 'y', dx)
-                x, y, z = self.rotate(x, y, z, 'x', dy)
-                x, y, z = np.array([x, y, z]) + np.array(self.mol_center)
+                rotated2d = np.dot(self.rotate_y(), np.array([at.coordinate[0], at.coordinate[1], at.coordinate[2]]) -
+                                   self.mol_center
+                                   )
+                x, y, z = np.dot(self.rotate_x(), rotated2d) + self.mol_center
+                ##
+                # coord = at.coordinate - np.array(self.mol_center)  # * self.factor
+                # x, y, z = self.rotate(coord[0], coord[1], coord[2], 'y', dx)
+                # x, y, z = self.rotate(x, y, z, 'x', dy)
+                # x, y, z = np.array([x, y, z]) + np.array(self.mol_center)
                 self.atoms[num] = Atom(x, y, z, at.name, at.type_, at.part)
+            self.update()
+        elif (event.buttons() == Qt.RightButton):
+            self.factor = (event.x()+event.y() - self.factor) / 80
             self.update()
         self.lastPos = event.pos()
 
     def draw(self):
         scale = self.factor * 150
+        self.screen_center = [self.width() / 2, self.height() / 2]
         for atom in self.atoms:
             projected2d = np.dot(self.projection_matrix, atom.coordinate.reshape(3, 1))
-            x = int(projected2d[0][0] * scale) + self.screen_center[0] - 20
-            y = int(projected2d[1][0] * scale) + self.screen_center[1] - 240
+            x = projected2d[0][0] * scale + self.screen_center[0] - self.mol_center[0] * scale
+            y = projected2d[1][0] * scale + self.screen_center[1] - self.mol_center[1] * scale
             atom.screenx = int(x)
             atom.screeny = int(y)
         self.get_z_order()
@@ -178,7 +186,7 @@ class MoleculeWidget(QtWidgets.QWidget):
             d = distance(*atom.coordinate, *c) + 1
             if d > r:
                 r = d
-        self.mol_center = c
+        self.mol_center = np.array(c)
         self.molecule_radius = r or 10
 
     def draw_bond(self, at1: 'Atom', at2: 'Atom', offset: int):
@@ -404,7 +412,7 @@ if __name__ == "__main__":
     cif = CifContainer('test-data/p21c.cif')
     #cif = CifContainer(r'../41467_2015.cif')
     cif.load_this_block(len(cif.doc) - 1)
-    # cif = CifContainer('tests/examples/1979688.cif')
+    cif = CifContainer('tests/examples/1979688.cif')
     # cif = CifContainer('/Users/daniel/Documents/GitHub/StructureFinder/test-data/668839.cif')
     render_widget = MoleculeWidget(None)
     render_widget.open_molecule(cif.atoms_orth, labels=False)
