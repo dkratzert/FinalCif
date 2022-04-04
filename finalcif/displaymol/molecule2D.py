@@ -8,7 +8,7 @@ from typing import List, Generator, Any, Union
 import numpy as np
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPainter, QPen, QBrush, QColor, QMouseEvent, QPalette, QImage, QResizeEvent, QWheelEvent
+from PyQt5.QtGui import QPainter, QPen, QBrush, QColor, QMouseEvent, QPalette, QImage, QResizeEvent
 
 from finalcif.cif.atoms import get_radius_from_element, element2color
 from finalcif.cif.cif_file_io import CifContainer
@@ -32,7 +32,7 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.atoms_size = 12
         self.bond_width = 2
         self.labels = False
-        self.mol_center = np.array([0, 0, 0])
+        self.molecule_center = np.array([0, 0, 0])
         self.molecule_radius = 10
         #
         self.lastPos = self.pos()
@@ -49,6 +49,7 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.setLayout(self.layout)
         self.atoms: List['Atom'] = []
         self.connections = ()
+        # Takes all atoms and bonds
         self.objects = []
         self.screen_center = [self.width() / 2, self.height() / 2]
         self.projection_matrix = np.matrix([[1, 0, 0],
@@ -108,10 +109,6 @@ class MoleculeWidget(QtWidgets.QWidget):
             [-sin(self.y_angle), 0, cos(self.y_angle)],
         ], dtype=np.float32)
 
-    #def wheelEvent(self, event: QWheelEvent) -> None:
-    #    self.zoom_molecule(event)
-    #    super().wheelEvent(event)
-
     def mouseMoveEvent(self, event: QMouseEvent) -> None:
         if event.buttons() == Qt.LeftButton:
             self.rotate_molecule(event)
@@ -122,21 +119,16 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.lastPos = event.pos()
 
     def pan_molecule(self, event):
-        self.mol_center[0] += (self.lastPos.x() - event.x()) / 50
-        self.mol_center[1] += (self.lastPos.y() - event.y()) / 50
+        self.molecule_center[0] += (self.lastPos.x() - event.x()) / 50
+        self.molecule_center[1] += (self.lastPos.y() - event.y()) / 50
         self.update()
 
-    def zoom_molecule(self, event: Union[QMouseEvent, QWheelEvent]):
-        #if isinstance(event, QMouseEvent):
-        yval = event.y()
-        #elif isinstance(event, QWheelEvent):
-        #    yval = event.pixelDelta().y()
-        #else:
-        #    return
-        self.factor += (self.lastPos.y() - yval) / 380
+    def zoom_molecule(self, event: QMouseEvent):
+        self.factor += (self.lastPos.y() - event.y()) / 350
         if self.factor <= 0.005:
+            # Prevents zooming to infinity where nothing is visible:
             self.factor = 0.005
-        self.zoom -= (self.lastPos.y() - yval) / 350
+        self.zoom -= (self.lastPos.y() - event.y()) / 350
         self.atoms_size = abs(self.factor * 70)
         self.update()
 
@@ -144,8 +136,8 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.y_angle = -(event.x() - self.lastPos.x()) / 80
         self.x_angle = (event.y() - self.lastPos.y()) / 80
         for num, at in enumerate(self.atoms):
-            rotated2d = np.dot(self.rotate_y(), at.coordinate - self.mol_center)
-            x, y, z = np.dot(self.rotate_x(), rotated2d) + self.mol_center
+            rotated2d = np.dot(self.rotate_y(), at.coordinate - self.molecule_center)
+            x, y, z = np.dot(self.rotate_x(), rotated2d) + self.molecule_center
             self.atoms[num] = Atom(x, y, z, at.name, at.type_, at.part)
         self.update()
 
@@ -155,9 +147,9 @@ class MoleculeWidget(QtWidgets.QWidget):
         bond_offset = int(self.atoms_size / 2)
         for atom in self.atoms:
             projected2d = np.dot(self.projection_matrix, atom.coordinate.reshape(3, 1))
-            atom.screenx = int(projected2d[0][0] * scale + self.screen_center[0] - self.mol_center[0] * scale)
-            atom.screeny = int(projected2d[1][0] * scale + self.screen_center[1] - self.mol_center[1] * scale)
-        self.get_z_order()
+            atom.screenx = int(projected2d[0][0] * scale + self.screen_center[0] - self.molecule_center[0] * scale)
+            atom.screeny = int(projected2d[1][0] * scale + self.screen_center[1] - self.molecule_center[1] * scale)
+        self.calculate_z_order()
         for item in self.objects:
             if item[0] == 0:
                 atom = item[1]
@@ -168,7 +160,7 @@ class MoleculeWidget(QtWidgets.QWidget):
                 self.draw_bond(item[1], item[2], offset=bond_offset)
         self.painter.end()
 
-    def get_z_order(self):
+    def calculate_z_order(self):
         """
         Orders the atoms and bonds by z coordinates.
         """
@@ -183,11 +175,17 @@ class MoleculeWidget(QtWidgets.QWidget):
             self.objects.append((0, atom))
         self.objects.sort(reverse=True, key=lambda atom: atom[1].coordinate[2])
 
-    def distance(self, a, b):
+    def distance(self, vector1: np.array, vector2: np.array):
+        """
         d = 0
         for i in range(3):
             d += (a[i] - b[i]) ** 2
         return math.sqrt(d)
+        This is faster:
+        """
+        diff = vector2 - vector1
+        squareDistance = np.dot(diff.T, diff)
+        return math.sqrt(squareDistance)
 
     def get_center_and_radius(self):
         min_ = [999999, 999999, 999999]
@@ -207,7 +205,7 @@ class MoleculeWidget(QtWidgets.QWidget):
             d = self.distance(atom.coordinate, c) + 0.5
             if d > r:
                 r = d
-        self.mol_center = np.array(c, dtype=np.float32)
+        self.molecule_center = np.array(c, dtype=np.float32)
         self.molecule_radius = r or 10
 
     def draw_bond(self, at1: 'Atom', at2: 'Atom', offset: int):
@@ -282,13 +280,13 @@ if __name__ == "__main__":
     # shx = Shelxfile()
     # shx.read_file('tests/examples/1979688-finalcif.res')
     # atoms = [x.cart_coords for x in shx.atoms]
-    cif = CifContainer('test-data/p21c.cif')
-    # cif = CifContainer(r'../41467_2015.cif')
+    # cif = CifContainer('test-data/p21c.cif')
+    cif = CifContainer(r'../41467_2015.cif')
     # cif = CifContainer('tests/examples/1979688.cif')
     # cif = CifContainer('/Users/daniel/Documents/GitHub/StructureFinder/test-data/668839.cif')
     cif.load_this_block(len(cif.doc) - 1)
     render_widget = MoleculeWidget(None)
-    render_widget.open_molecule(cif.atoms_orth, labels=True)
+    render_widget.open_molecule(cif.atoms_orth, labels=False)
     # add and show
     window.setCentralWidget(render_widget)
     window.setMinimumSize(800, 600)
