@@ -55,7 +55,7 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.projection_matrix = np.matrix([[1, 0, 0],
                                             [0, 1, 0]], dtype=np.float32)
         self.projected_points = []
-        self.zoom = 0.9
+        self.zoom = 1.3
 
     def open_molecule(self, atoms: Generator[Any, Any, atom], labels=False):
         self.labels = labels
