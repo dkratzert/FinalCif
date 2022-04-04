@@ -145,17 +145,20 @@ class MoleculeWidget(QtWidgets.QWidget):
         scale = self.factor * 150
         self.screen_center = [self.width() / 2, self.height() / 2]
         bond_offset = int(self.atoms_size / 2)
+        hydrogens = ('H', 'D')
         for atom in self.atoms:
             projected2d = np.dot(self.projection_matrix, atom.coordinate.reshape(3, 1))
             atom.screenx = int(projected2d[0][0] * scale + self.screen_center[0] - self.molecule_center[0] * scale)
             atom.screeny = int(projected2d[1][0] * scale + self.screen_center[1] - self.molecule_center[1] * scale)
         self.calculate_z_order()
         for item in self.objects:
+            # atoms
             if item[0] == 0:
                 atom = item[1]
                 self.draw_atom(atom)
-                if self.labels and atom.type_ not in ('H', 'D'):
+                if self.labels and atom.type_ not in hydrogens:
                     self.draw_label(atom)
+            # bonds:
             if item[0] == 1:
                 self.draw_bond(item[1], item[2], offset=bond_offset)
         self.painter.end()
@@ -190,14 +193,14 @@ class MoleculeWidget(QtWidgets.QWidget):
     def get_center_and_radius(self):
         min_ = [999999, 999999, 999999]
         max_ = [-999999, -999999, -999999]
-        for at in reversed(range(len(self.atoms))):
+        for at in self.atoms:
             for j in reversed(range(3)):
-                v = self.atoms[at].coordinate[j]
+                v = at.coordinate[j]
                 if v < min_[j]:
                     min_[j] = v
                 if v > max_[j]:
                     max_[j] = v
-        c = [0, 0, 0]
+        c = np.array([0, 0, 0])
         for j in reversed(range(3)):
             c[j] = (max_[j] + min_[j]) / 2
         r = 0
@@ -253,7 +256,7 @@ class MoleculeWidget(QtWidgets.QWidget):
 
 class Atom(object):
     def __init__(self, x: float, y: float, z: float, name: str, type_: str, part: int):
-        self.coordinate = np.array([x, y, z], dtype=np.float32)
+        self.coordinate = np.array((x, y, z), dtype=np.float32)
         self.name = name
         self.part = part
         self.type_ = type_
@@ -267,9 +270,6 @@ class Atom(object):
     def __repr__(self) -> str:
         return str((self.name, self.type_, self.coordinate))
 
-    def __str__(self) -> str:
-        return self.__repr__()
-
 
 if __name__ == "__main__":
     # Molecule(atoms).draw()
@@ -280,8 +280,8 @@ if __name__ == "__main__":
     # shx = Shelxfile()
     # shx.read_file('tests/examples/1979688-finalcif.res')
     # atoms = [x.cart_coords for x in shx.atoms]
-    # cif = CifContainer('test-data/p21c.cif')
-    cif = CifContainer(r'../41467_2015.cif')
+    cif = CifContainer('test-data/p21c.cif')
+    # cif = CifContainer(r'../41467_2015.cif')
     # cif = CifContainer('tests/examples/1979688.cif')
     # cif = CifContainer('/Users/daniel/Documents/GitHub/StructureFinder/test-data/668839.cif')
     cif.load_this_block(len(cif.doc) - 1)
