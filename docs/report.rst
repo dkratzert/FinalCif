@@ -34,6 +34,13 @@ FinalCif can add a picture of your structure to the report document.
 
 * Either by previously performing an html or local checkcif. Then it automatically adds a picture from the checkcif report, as in the example above.
 * Or you can add any other picture with the "Picture for Tables" button.
+* A third possibility is the 'Show Details' page where you can use the current structure view as picture
+  for the report:
+
+.. figure:: pics/finalcif_details.png
+   :width: 600
+
+    The Details page.
 
 
 Customizing the Report
