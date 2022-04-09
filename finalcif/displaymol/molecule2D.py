@@ -271,12 +271,22 @@ class Atom(object):
         return str((self.name, self.type_, self.coordinate))
 
 
-if __name__ == "__main__":
-    # Molecule(atoms).draw()
+def display(atoms):
     app = QtWidgets.QApplication(sys.argv)
     # create our new Qt MainWindow
     window = QtWidgets.QMainWindow()
-    # create our new custom VTK Qt widget
+    render_widget = MoleculeWidget(None)
+    render_widget.open_molecule(atoms, labels=False)
+    # add and show
+    window.setCentralWidget(render_widget)
+    window.setMinimumSize(800, 600)
+    window.show()
+    # render_widget.save_image(Path('myimage2.png'))
+    # start the event loop
+    sys.exit(app.exec_())
+
+
+if __name__ == "__main__":
     # shx = Shelxfile()
     # shx.read_file('tests/examples/1979688-finalcif.res')
     # atoms = [x.cart_coords for x in shx.atoms]
@@ -285,12 +295,5 @@ if __name__ == "__main__":
     # cif = CifContainer('tests/examples/1979688.cif')
     # cif = CifContainer('/Users/daniel/Documents/GitHub/StructureFinder/test-data/668839.cif')
     cif.load_this_block(len(cif.doc) - 1)
-    render_widget = MoleculeWidget(None)
-    render_widget.open_molecule(cif.atoms_orth, labels=False)
-    # add and show
-    window.setCentralWidget(render_widget)
-    window.setMinimumSize(800, 600)
-    window.show()
-    # render_widget.save_image(Path('myimage2.png'))
-    # start the event loop
-    sys.exit(app.exec_())
+
+    display(cif.atoms_orth)
