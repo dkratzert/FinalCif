@@ -39,3 +39,14 @@ class TestNosphera2(unittest.TestCase):
     def test_atomic_struct_site_uiso(self):
         atom = self.cif.atomic_struct.sites[0]
         self.assertEqual(0.02037, atom.u_iso)
+
+    def test_shelx_file(self):
+        # Even though, this gives an empty string: -->
+        self.assertEqual('', self.cif['_shelx_res_file'])
+        self.assertEqual('TITL mo_1558 in P2(1)/n', self.cif['_iucr_refine_instructions_details'][:24].lstrip())
+
+    def test_iucr_refine_instructions(self):
+        # <-- We have res file data, because there is iucr_refine_instructions:
+        self.assertEqual(''';
+TITL mo_1558 in P2(1)/n
+CELL 0.71073 10.3975 7.4''', self.cif.res_file_data[:50])

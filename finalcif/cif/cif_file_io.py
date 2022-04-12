@@ -238,10 +238,12 @@ class CifContainer():
     def res_file_data(self) -> str:
         try:
             # Should i do this:
-            # if self['_iucr_refine_instructions_details']:
-            #    return self.block.find_value('_iucr_refine_instructions_details')
-            # else:
-            return self.block.find_value('_shelx_res_file')
+            if self['_shelx_res_file']:
+                return self.block.find_value('_shelx_res_file')
+            elif self['_iucr_refine_instructions_details']:
+                return self.block.find_value('_iucr_refine_instructions_details')
+            else:
+                return ''
         except UnicodeDecodeError:
             # This is a fallback in case _shelx_res_file has non-ascii characters.
             print('File has non-ascii characters. Switching to compatible mode.')
@@ -270,7 +272,12 @@ class CifContainer():
 
     def _hkl_from_shelx(self) -> str:
         try:
-            return self['_shelx_hkl_file'].strip('\r\n')
+            if self['_shelx_hkl_file'].strip('\r\n'):
+                return self['_shelx_hkl_file'].strip('\r\n')
+            elif self['_iucr_refine_reflections_details']:
+                return self['_iucr_refine_reflections_details']
+            else:
+                return ''
         except Exception as e:
             print('No hkl data found in CIF!, {}'.format(e))
             return ''
