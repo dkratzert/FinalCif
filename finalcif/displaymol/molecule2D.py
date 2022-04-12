@@ -3,7 +3,7 @@ import sys
 from collections import namedtuple
 from math import cos, sin
 from pathlib import Path
-from typing import List, Generator, Any, Union
+from typing import List, Union
 
 import numpy as np
 from PyQt5 import QtWidgets
@@ -13,12 +13,8 @@ from PyQt5.QtGui import QPainter, QPen, QBrush, QColor, QMouseEvent, QPalette, Q
 from finalcif.cif.atoms import get_radius_from_element, element2color
 from finalcif.cif.cif_file_io import CifContainer
 
-# from finalcif.tools.misc import distance
-
 """
-A 2D molecule drawing widget. The idea was taken from this molecule viewer for ascii drawing of molecules:
-https://github.com/des4maisons/molecule-viewer
-Additionally the rotation method from https://github.com/TheAlgorithms/Python was added.
+A 2D molecule drawing widget. Feed it with a list (or gneerator) of atoms of this type:
 """
 atom = namedtuple('Atom', ('label', 'type', 'x', 'y', 'z', 'part', 'occ', 'u_eq'))
 
@@ -52,12 +48,12 @@ class MoleculeWidget(QtWidgets.QWidget):
         # Takes all atoms and bonds
         self.objects = []
         self.screen_center = [self.width() / 2, self.height() / 2]
-        self.projection_matrix = np.matrix([[1, 0, 0],
-                                            [0, 1, 0]], dtype=np.float32)
+        self.projection_matrix = np.array([[1, 0, 0],
+                                           [0, 1, 0]], dtype=np.float32)
         self.projected_points = []
         self.zoom = 1.3
 
-    def open_molecule(self, atoms: Generator[Any, Any, atom], labels=False):
+    def open_molecule(self, atoms: List[atom], labels=False):
         self.labels = labels
         self.atoms.clear()
         for at in atoms:
@@ -71,7 +67,7 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.update()
 
     def resizeEvent(self, event: QResizeEvent) -> None:
-        #self.factor = min(self.width(), self.height()) / 1 / self.molecule_radius * self.zoom / 100
+        # self.factor = min(self.width(), self.height()) / 1 / self.molecule_radius * self.zoom / 100
         super().resizeEvent(event)
 
     def paintEvent(self, event):
@@ -205,7 +201,7 @@ class MoleculeWidget(QtWidgets.QWidget):
             c[j] = (max_[j] + min_[j]) / 2
         r = 0
         for atom in self.atoms:
-            d = self.distance(atom.coordinate, c) + 0.1
+            d = self.distance(atom.coordinate, c) + 1.5
             if d > r:
                 r = d
         self.molecule_center = np.array(c, dtype=np.float32)
@@ -271,7 +267,7 @@ class Atom(object):
         return str((self.name, self.type_, self.coordinate))
 
 
-def display(atoms):
+def display(atoms: List[atom]):
     app = QtWidgets.QApplication(sys.argv)
     # create our new Qt MainWindow
     window = QtWidgets.QMainWindow()
