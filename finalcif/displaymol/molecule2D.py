@@ -243,6 +243,8 @@ class MoleculeWidget(QtWidgets.QWidget):
 
 
 class Atom(object):
+    __slots__ = ['coordinate', 'name', 'part', 'type_', 'screenx', 'screeny', 'radius']
+
     def __init__(self, x: float, y: float, z: float, name: str, type_: str, part: int):
         self.coordinate = np.array([x, y, z], dtype=np.float32)
         self.name = name
@@ -261,11 +263,17 @@ class Atom(object):
 
 
 def display(atoms: List[atom]):
+    """
+    This function is for testing purposes. 
+    """
+    import time
     app = QtWidgets.QApplication(sys.argv)
     # create our new Qt MainWindow
     window = QtWidgets.QMainWindow()
     render_widget = MoleculeWidget(None)
+    t1 = time.perf_counter()
     render_widget.open_molecule(atoms, labels=False)
+    print(f'Time to display molecule: {time.perf_counter() - t1:5.4} s')
     # add and show
     window.setCentralWidget(render_widget)
     window.setMinimumSize(800, 600)
@@ -279,8 +287,8 @@ if __name__ == "__main__":
     # shx = Shelxfile()
     # shx.read_file('tests/examples/1979688-finalcif.res')
     # atoms = [x.cart_coords for x in shx.atoms]
-    cif = CifContainer('test-data/p21c.cif')
-    # cif = CifContainer(r'../41467_2015.cif')
+    # cif = CifContainer('test-data/p21c.cif')
+    cif = CifContainer(r'../41467_2015.cif')
     # cif = CifContainer('tests/examples/1979688.cif')
     # cif = CifContainer('/Users/daniel/Documents/GitHub/StructureFinder/test-data/668839.cif')
     cif.load_this_block(len(cif.doc) - 1)
