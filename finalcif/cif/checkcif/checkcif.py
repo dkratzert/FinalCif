@@ -20,7 +20,6 @@ from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkRepl
 from requests.exceptions import MissingSchema
 
 from finalcif.cif.cif_file_io import CifContainer
-from finalcif.tools.misc import strip_finalcif_of_name
 
 
 class CheckCif(QThread):
@@ -281,6 +280,7 @@ if __name__ == "__main__":
     parser = MyHTMLParser(html.read_text())
     # print(parser.imageurl)
     from pprint import pprint
+
     pprint(parser.response_forms)
     # print(parser.alert_levels)
     # print(parser.vrf)
