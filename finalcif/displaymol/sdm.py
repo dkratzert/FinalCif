@@ -311,51 +311,20 @@ class SDM():
         return cart_atoms
 
 
-def display_cif(cif: 'CifContainer'):
-    app = QApplication(sys.argv)
-    # w = QWidget()
-    w = QWebEngineView()
-    w.heightForWidth(1)
-    app.setActiveWindow(w)
-    jsmoldir = TemporaryDirectory()
-    mol = make_molecule(cif)
-    content = write_html.write(mol, 250, 250)
-    Path(jsmoldir.name).joinpath("./jsmol.htm").write_text(data=content, encoding="utf-8", errors='ignore')
-    copy2(Path(__file__).parent.joinpath('jquery.min.js'), jsmoldir.name)
-    copy2(Path(__file__).parent.joinpath('JSmol_dk.nojq.lite.js'), jsmoldir.name)
-    print(Path(jsmoldir.name).joinpath("./jsmol.htm").resolve())
-    w.load(QUrl.fromLocalFile(str(Path(jsmoldir.name).joinpath("./jsmol.htm").resolve())))
-    w.show()
-    w.reload()
-    sys.exit(app.exec_())
-
-
-def make_molecule(cif: 'CifContainer') -> str:
-    atoms = list(cif.atoms_fract)
+def make_molecule(cif: 'CifContainer') -> list:
+    atoms = tuple(cif.atoms_fract)
     sdm = SDM(atoms, cif.symmops, cif.cell[:6], centric=cif.is_centrosymm)
     needsymm = sdm.calc_sdm()
     atoms = sdm.packer(sdm, needsymm)
-    mol = mol_file_writer.MolFile(atoms, bonds=[])
-    mol = mol.make_mol()
-    return mol
+    return atoms
 
 
 if __name__ == "__main__":
-    import sys
     from pathlib import Path
-    from shutil import copy2
-    from tempfile import TemporaryDirectory
-
-    from PyQt5.QtCore import QUrl
-    from PyQt5.QtWebEngineWidgets import QWebEngineView
-    from PyQt5.QtWidgets import QApplication
-
-    from finalcif.displaymol import write_html
-    from finalcif.displaymol import mol_file_writer
+    from molecule2D import display
     from pathlib import Path
     from finalcif.cif.cif_file_io import CifContainer
 
-    cif = CifContainer(Path('test-data/p21c.cif'))
-
-    display_cif(cif)
-    # make_molecule(cif)
+    cif = CifContainer(Path('test-data/4060314.cif'))
+    atoms = make_molecule(cif)
+    display(atoms)

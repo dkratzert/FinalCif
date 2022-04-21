@@ -1,9 +1,8 @@
-import math
 import sys
 from collections import namedtuple
-from math import cos, sin
+from math import sqrt, cos, sin
 from pathlib import Path
-from typing import List, Generator, Any, Union
+from typing import List, Union
 
 import numpy as np
 from PyQt5 import QtWidgets
@@ -13,14 +12,14 @@ from PyQt5.QtGui import QPainter, QPen, QBrush, QColor, QMouseEvent, QPalette, Q
 from finalcif.cif.atoms import get_radius_from_element, element2color
 from finalcif.cif.cif_file_io import CifContainer
 
-# from finalcif.tools.misc import distance
-
 """
-A 2D molecule drawing widget. The idea was taken from this molecule viewer for ascii drawing of molecules:
-https://github.com/des4maisons/molecule-viewer
-Additionally the rotation method from https://github.com/TheAlgorithms/Python was added.
+A 2D molecule drawing widget. Feed it with a list (or generator) of atoms of this type:
+label:   Name of the atom like 'C3'
+type:    Atom type as string like 'C'
+x, y, z: Atom position in cartesian coordinates
+part:    Disorder part in SHELX notation like 1, 2, -1
 """
-atom = namedtuple('Atom', ('label', 'type', 'x', 'y', 'z', 'part', 'occ', 'u_eq'))
+atom = namedtuple('Atom', ('label', 'type', 'x', 'y', 'z', 'part'))
 
 
 class MoleculeWidget(QtWidgets.QWidget):
@@ -52,12 +51,12 @@ class MoleculeWidget(QtWidgets.QWidget):
         # Takes all atoms and bonds
         self.objects = []
         self.screen_center = [self.width() / 2, self.height() / 2]
-        self.projection_matrix = np.matrix([[1, 0, 0],
-                                            [0, 1, 0]], dtype=np.float32)
+        self.projection_matrix = np.array([[1, 0, 0],
+                                           [0, 1, 0]], dtype=np.float32)
         self.projected_points = []
         self.zoom = 1.3
 
-    def open_molecule(self, atoms: Generator[Any, Any, atom], labels=False):
+    def open_molecule(self, atoms: List[atom], labels=False):
         self.labels = labels
         self.atoms.clear()
         for at in atoms:
@@ -71,7 +70,6 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.update()
 
     def resizeEvent(self, event: QResizeEvent) -> None:
-        #self.factor = min(self.width(), self.height()) / 1 / self.molecule_radius * self.zoom / 100
         super().resizeEvent(event)
 
     def paintEvent(self, event):
@@ -179,16 +177,8 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.objects.sort(reverse=True, key=lambda atom: atom[1].coordinate[2])
 
     def distance(self, vector1: np.array, vector2: np.array):
-        """
-        d = 0
-        for i in range(3):
-            d += (a[i] - b[i]) ** 2
-        return math.sqrt(d)
-        This is faster:
-        """
         diff = vector2 - vector1
-        squareDistance = np.dot(diff.T, diff)
-        return math.sqrt(squareDistance)
+        return sqrt(np.dot(diff.T, diff))
 
     def get_center_and_radius(self):
         min_ = [999999, 999999, 999999]
@@ -200,12 +190,12 @@ class MoleculeWidget(QtWidgets.QWidget):
                     min_[j] = v
                 if v > max_[j]:
                     max_[j] = v
-        c = np.array([0, 0, 0])
+        c = np.array([0, 0, 0], dtype=np.float32)
         for j in reversed(range(3)):
             c[j] = (max_[j] + min_[j]) / 2
         r = 0
         for atom in self.atoms:
-            d = self.distance(atom.coordinate, c) + 0.1
+            d = self.distance(atom.coordinate, c) + 1.5
             if d > r:
                 r = d
         self.molecule_center = np.array(c, dtype=np.float32)
@@ -234,34 +224,35 @@ class MoleculeWidget(QtWidgets.QWidget):
         connections = []
         h = ('H', 'D')
         for num1, at1 in enumerate(self.atoms, 0):
-            rad1 = get_radius_from_element(at1.type_)
             for num2, at2 in enumerate(self.atoms, 0):
-                if at1.part * at2.part != 0 and at1.part != at2.part:
-                    continue
-                if at1.name == at2.name:  # name1 = name2
+                if (at1.part != 0 or at2.part != 0) and at1.part != at2.part:
                     continue
                 d = self.distance(at1.coordinate, at2.coordinate)
                 if d > 4.0:  # makes bonding faster (longer bonds do not exist)
                     continue
-                rad2 = get_radius_from_element(at2.type_)
-                if (rad1 + rad2) + extra_param > d:
+                if at1.name == at2.name:  # name1 = name2
+                    continue
+                if (at1.radius + at2.radius) + extra_param > d:
                     if at1.type_ in h and at2.type_ in h:
                         continue
                     # The extra time for this is not too much:
                     if (num2, num1) in connections:
                         continue
-                    connections.append([num1, num2])
+                    connections.append((num1, num2))
         return tuple(connections)
 
 
 class Atom(object):
+    __slots__ = ['coordinate', 'name', 'part', 'type_', 'screenx', 'screeny', 'radius']
+
     def __init__(self, x: float, y: float, z: float, name: str, type_: str, part: int):
-        self.coordinate = np.array((x, y, z), dtype=np.float32)
+        self.coordinate = np.array([x, y, z], dtype=np.float32)
         self.name = name
         self.part = part
         self.type_ = type_
         self.screenx = None
         self.screeny = None
+        self.radius = get_radius_from_element(type_)
 
     @property
     def color(self):
@@ -271,22 +262,18 @@ class Atom(object):
         return str((self.name, self.type_, self.coordinate))
 
 
-if __name__ == "__main__":
-    # Molecule(atoms).draw()
+def display(atoms: List[atom]):
+    """
+    This function is for testing purposes. 
+    """
+    import time
     app = QtWidgets.QApplication(sys.argv)
     # create our new Qt MainWindow
     window = QtWidgets.QMainWindow()
-    # create our new custom VTK Qt widget
-    # shx = Shelxfile()
-    # shx.read_file('tests/examples/1979688-finalcif.res')
-    # atoms = [x.cart_coords for x in shx.atoms]
-    cif = CifContainer('test-data/p21c.cif')
-    # cif = CifContainer(r'../41467_2015.cif')
-    # cif = CifContainer('tests/examples/1979688.cif')
-    # cif = CifContainer('/Users/daniel/Documents/GitHub/StructureFinder/test-data/668839.cif')
-    cif.load_this_block(len(cif.doc) - 1)
     render_widget = MoleculeWidget(None)
-    render_widget.open_molecule(cif.atoms_orth, labels=False)
+    t1 = time.perf_counter()
+    render_widget.open_molecule(atoms, labels=False)
+    print(f'Time to display molecule: {time.perf_counter() - t1:5.4} s')
     # add and show
     window.setCentralWidget(render_widget)
     window.setMinimumSize(800, 600)
@@ -294,3 +281,15 @@ if __name__ == "__main__":
     # render_widget.save_image(Path('myimage2.png'))
     # start the event loop
     sys.exit(app.exec_())
+
+
+if __name__ == "__main__":
+    # shx = Shelxfile()
+    # shx.read_file('tests/examples/1979688-finalcif.res')
+    # atoms = [x.cart_coords for x in shx.atoms]
+    # cif = CifContainer('test-data/p21c.cif')
+    cif = CifContainer(r'../41467_2015.cif')
+    # cif = CifContainer('tests/examples/1979688.cif')
+    # cif = CifContainer('/Users/daniel/Documents/GitHub/StructureFinder/test-data/668839.cif')
+    cif.load_this_block(len(cif.doc) - 1)
+    display(cif.atoms_orth)
