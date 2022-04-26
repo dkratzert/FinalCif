@@ -43,7 +43,7 @@ class MyDownloader(QObject):
             'User-Agent': user_agent,
         }
         try:
-            response = requests.get(self.url, stream=True, headers=headers)
+            response = requests.get(self.url, stream=True, headers=headers, timeout=10)
         except requests.RequestException as e:
             print('Could not connect to download server', e)
             self.loaded.emit(b'')

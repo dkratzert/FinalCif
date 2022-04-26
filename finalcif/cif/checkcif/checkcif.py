@@ -157,7 +157,7 @@ class MyHTMLParser(HTMLParser):
         self.feed(data)
 
     def get_pdf(self) -> Optional[bytes]:
-        return requests.get(self.pdf_link).content
+        return requests.get(self.pdf_link, timeout=10).content
 
     def handle_starttag(self, tag: str, attrs: str) -> None:
         if tag == "a" and len(attrs) > 1 and attrs[0][1] == '_blank' and attrs[1][1].endswith('.pdf'):
@@ -175,7 +175,7 @@ class MyHTMLParser(HTMLParser):
 
     def get_image(self) -> bytes:
         try:
-            return requests.get(self.imageurl).content
+            return requests.get(self.imageurl, timeout=10).content
         except MissingSchema:
             return b''
 

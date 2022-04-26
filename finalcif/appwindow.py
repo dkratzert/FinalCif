@@ -401,7 +401,7 @@ class AppWindow(QMainWindow):
         input_txt = self.ui.SelectCif_LineEdit.text().strip()
         if is_database_number(input_txt):
             file = '{}.cif'.format(input_txt)
-            r = requests.get(self.deposit.main_url + '{}.cif'.format(input_txt))
+            r = requests.get(self.deposit.main_url + '{}.cif'.format(input_txt), timeout=6)
             if r.status_code == 200:
                 file = cif_file_save_dialog(file)
                 Path(file).write_bytes(r.content)
