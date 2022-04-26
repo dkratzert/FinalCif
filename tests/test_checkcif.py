@@ -25,7 +25,7 @@ if os.environ.get('NO_NETWORK'):
 else:
     url = 'https://checkcif.iucr.org/'
     # Do not do this request for each test:
-    request = requests.get(url)
+    request = requests.get(url, timeout=10)
 
 
 class TestCheckCifInterface(TestCase):
