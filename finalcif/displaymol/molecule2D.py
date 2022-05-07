@@ -19,7 +19,7 @@ type:    Atom type as string like 'C'
 x, y, z: Atom position in cartesian coordinates
 part:    Disorder part in SHELX notation like 1, 2, -1
 """
-atom = namedtuple('Atom', ('label', 'type', 'x', 'y', 'z', 'part'))
+Atomtuple = namedtuple('Atomtuple', ('label', 'type', 'x', 'y', 'z', 'part'))
 
 
 class MoleculeWidget(QtWidgets.QWidget):
@@ -56,7 +56,7 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.projected_points = []
         self.zoom = 1.1
 
-    def open_molecule(self, atoms: List[atom], labels=False):
+    def open_molecule(self, atoms: List['Atomtuple'], labels=False):
         self.labels = labels
         self.atoms.clear()
         for at in atoms:
@@ -176,7 +176,7 @@ class MoleculeWidget(QtWidgets.QWidget):
             self.objects.append((0, atom))
         self.objects.sort(reverse=True, key=lambda atom: atom[1].coordinate[2])
 
-    def distance(self, vector1: np.array, vector2: np.array):
+    def distance(self, vector1, vector2):
         diff = vector2 - vector1
         return sqrt(np.dot(diff.T, diff))
 
@@ -250,19 +250,19 @@ class Atom(object):
         self.name = name
         self.part = part
         self.type_ = type_
-        self.screenx = None
-        self.screeny = None
+        self.screenx = 0
+        self.screeny = 0
         self.radius = get_radius_from_element(type_)
 
     @property
-    def color(self):
+    def color(self) -> QColor:
         return QColor(element2color.get(self.type_))
 
     def __repr__(self) -> str:
         return str((self.name, self.type_, self.coordinate))
 
 
-def display(atoms: List[atom]):
+def display(atoms: List[Atomtuple]):
     """
     This function is for testing purposes. 
     """
@@ -292,4 +292,4 @@ if __name__ == "__main__":
     # cif = CifContainer('tests/examples/1979688.cif')
     # cif = CifContainer('/Users/daniel/Documents/GitHub/StructureFinder/test-data/668839.cif')
     cif.load_this_block(len(cif.doc) - 1)
-    display(cif.atoms_orth)
+    display(list(cif.atoms_orth))
