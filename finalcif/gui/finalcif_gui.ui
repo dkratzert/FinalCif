@@ -1061,38 +1061,11 @@
             </property>
             <item>
              <widget class="CifTableView" name="cif_main_table">
-              <property name="sizeAdjustPolicy">
-               <enum>QAbstractScrollArea::AdjustToContents</enum>
-              </property>
               <property name="autoScroll">
                <bool>false</bool>
               </property>
               <property name="editTriggers">
                <set>QAbstractItemView::AllEditTriggers</set>
-              </property>
-              <property name="selectionBehavior">
-               <enum>QAbstractItemView::SelectRows</enum>
-              </property>
-              <property name="verticalScrollMode">
-               <enum>QAbstractItemView::ScrollPerPixel</enum>
-              </property>
-              <property name="horizontalScrollMode">
-               <enum>QAbstractItemView::ScrollPerPixel</enum>
-              </property>
-              <property name="showGrid">
-               <bool>true</bool>
-              </property>
-              <property name="gridStyle">
-               <enum>Qt::SolidLine</enum>
-              </property>
-              <property name="sortingEnabled">
-               <bool>false</bool>
-              </property>
-              <property name="wordWrap">
-               <bool>true</bool>
-              </property>
-              <property name="cornerButtonEnabled">
-               <bool>false</bool>
               </property>
              </widget>
             </item>

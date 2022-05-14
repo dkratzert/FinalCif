@@ -10,7 +10,7 @@ class CifTableView(QtWidgets.QTableView):
         super().__init__(parent)
         self.setContextMenuPolicy(Qt.DefaultContextMenu)
 
-    def contextMenuEvent(self, event: QtGui.QContextMenuEvent) -> None:
+    """def contextMenuEvent(self, event: QtGui.QContextMenuEvent) -> None:
         context_menu = QtWidgets.QMenu(self)
         save_excel = context_menu.addAction("Save as Excel File")
         save_excel.triggered.connect(lambda: self._on_save_excel(event))
@@ -23,4 +23,4 @@ class CifTableView(QtWidgets.QTableView):
     def mousePressEvent(self, e: QtGui.QMouseEvent) -> None:
         if e.button() == Qt.RightButton:
             pass
-        super().mousePressEvent(e)
+        super().mousePressEvent(e)"""

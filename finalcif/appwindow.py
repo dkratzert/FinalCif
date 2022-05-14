@@ -44,6 +44,7 @@ from finalcif.gui.dialogs import show_update_warning, unable_to_open_message, sh
 from finalcif.gui.finalcif_gui import Ui_FinalCifWindow
 from finalcif.gui.loops import Loop
 from finalcif.gui.plaintextedit import MyQPlainTextEdit
+from finalcif.gui.table_model import CifTableModel
 from finalcif.gui.text_value_editor import MyTextTemplateEdit
 from finalcif.gui.vrf_classes import MyVRFContainer, VREF
 from finalcif.report.archive_report import ArchiveReport
@@ -63,7 +64,7 @@ from finalcif.tools.space_groups import SpaceGroups
 from finalcif.tools.statusbar import StatusBar
 from finalcif.tools.sumformula import formula_str_to_dict, sum_formula_to_html
 
-DEBUG = False
+DEBUG = True
 app = QApplication(sys.argv)
 
 
@@ -113,7 +114,8 @@ class AppWindow(QMainWindow):
             self.load_cif_file(Path(sys.argv[1]) if sys.argv[1] != 'compile_ui' else Path())
         elif file:
             self.load_cif_file(file)
-        self.load_recent_cifs_list()
+        # Already in load cif file
+        # self.load_recent_cifs_list()
         self.set_checkcif_output_font(self.ui.CheckcifPlaintextEdit)
         # To make file drag&drop working:
         self.setAcceptDrops(True)
@@ -241,7 +243,7 @@ class AppWindow(QMainWindow):
         self.ui.SaveFullReportButton.clicked.connect(self.make_report_tables)
         self.ui.RecentComboBox.currentIndexChanged.connect(self.load_recent_file)
         #
-        self.ui.cif_main_table.row_deleted.connect(self._deleted_row)
+        #self.ui.cif_main_table.row_deleted.connect(self._deleted_row)
         #
         self.ui.CODpushButton.clicked.connect(self.open_cod_page)
         self.ui.BackToCODPushButton.clicked.connect(self.open_cod_page)
@@ -282,7 +284,7 @@ class AppWindow(QMainWindow):
         self.textedit.ui.savePushButton.clicked.connect(self.save_text_template)
         self.textedit.ui.deletePushButton.clicked.connect(self.delete_text_template)
         self.textedit.ui.importPushButton.clicked.connect(self.import_text_template)
-        self.ui.cif_main_table.textTemplate.connect(self.on_text_template_open)
+        #self.ui.cif_main_table.textTemplate.connect(self.on_text_template_open)
         #
         self.ui.appendCifPushButton.clicked.connect(self.append_cif)
         self.ui.drawImagePushButton.clicked.connect(self.draw_image)
@@ -363,7 +365,7 @@ class AppWindow(QMainWindow):
         self.back_to_main_noload()
         self.status_bar.show_message(f'Template for {cif_key} deleted.', timeout=10)
         self.textedit.clear_fields()
-        self.refresh_color_background_from_templates()
+        #self.refresh_color_background_from_templates()
 
     def save_text_template(self) -> None:
         """
@@ -373,7 +375,7 @@ class AppWindow(QMainWindow):
         table_data = self.textedit.get_template_texts()
         self.settings.save_template_list('text_templates/' + cif_key, table_data)
         self.status_bar.show_message(f'Template for {cif_key} saved.', timeout=10)
-        self.refresh_color_background_from_templates()
+        #self.refresh_color_background_from_templates()
 
     def apply_text_template(self) -> None:
         """
@@ -503,7 +505,8 @@ class AppWindow(QMainWindow):
         """
         Items that got disabled in the sources list are set to ? here.
         """
-        table = self.ui.SourcesTableWidget
+        #TODO: view
+        """table = self.ui.SourcesTableWidget
         for row in range(table.rowCount()):
             if not table.cellWidget(row, 0).isChecked():
                 cifkey = table.item(row, 1).data(2)
@@ -511,10 +514,11 @@ class AppWindow(QMainWindow):
                     row_num = self.ui.cif_main_table.vheaderitems.index(cifkey)
                     del self.ui.cif_main_table.vheaderitems[row_num]
                 except ValueError:
+                    raise 
                     continue
                 self.cif.block.set_pair(cifkey, '?')
                 self.ui.cif_main_table.setText(key=cifkey, column=COL_CIF, txt='?')
-                self.ui.cif_main_table.setText(key=cifkey, column=COL_DATA, txt='?')
+                self.ui.cif_main_table.setText(key=cifkey, column=COL_DATA, txt='?')"""
 
     def show_sources(self) -> None:
         """
@@ -1212,7 +1216,7 @@ class AppWindow(QMainWindow):
         self._load_block(block)
         self.add_data_names_to_combobox()
         self.ui.datanameComboBox.setCurrentIndex(block)
-        self.ui.cif_main_table.resizeRowsToContents()
+        #self.ui.cif_main_table.resizeRowsToContents()
         self.ui.datanameComboBox.blockSignals(False)
         if self.cif.is_multi_cif:
             # short after start, because window size is not finished
@@ -1228,7 +1232,8 @@ class AppWindow(QMainWindow):
         # Set to empty state before loading:
         self.missing_data = set()
         # clean table and vheader before loading:
-        self.ui.cif_main_table.delete_content()
+        # TODO view:
+        #self.ui.cif_main_table.delete_content()
 
     def _load_block(self, index: int):
         if not self.cif:
@@ -1236,13 +1241,11 @@ class AppWindow(QMainWindow):
         self._clear_state_before_block_load()
         self.cif.load_this_block(index)
         self.check_cif_for_missing_values_before_really_open_it()
-        # self.go_into_cifs_directory(filepath)
         try:
             self.fill_cif_table()
         except Exception as e:
             not_ok = e
             print(not_ok)
-            # raise
             # unable_to_open_message(filepath, not_ok)
             raise
         self.load_recent_cifs_list()
@@ -1262,10 +1265,10 @@ class AppWindow(QMainWindow):
                 self.ui.MainStackedWidget.got_to_main_page()
             self.deposit.cif = self.cif
             # self.ui.cif_main_table.resizeRowsToContents()
-            self.ui.cif_main_table.vheaderitems.clear()
-            for row_number in range(self.ui.cif_main_table.model().rowCount()):
-                vhead_key = self.get_key_by_row_number(row_number)
-                self.ui.cif_main_table.vheaderitems.insert(row_number, vhead_key)
+            #self.ui.cif_main_table.vheaderitems.clear()
+            #for row_number in range(self.ui.cif_main_table.model().rowCount()):
+            #    vhead_key = self.get_key_by_row_number(row_number)
+                #self.ui.cif_main_table.vheaderitems.insert(row_number, vhead_key)
 
     def fill_sum_formula_lineedit(self):
         try:
@@ -1512,7 +1515,7 @@ class AppWindow(QMainWindow):
                 continue
             if src and src not in self.missing_data:
                 self.add_row(src, '?')
-        self.refresh_combo_boxes()
+        #self.refresh_combo_boxes()
         # Get missing items from sources and put them into the corresponding rows:
         # missing items will even be used if under the blue separation line:
         for miss_key in self.missing_data:
@@ -1574,7 +1577,9 @@ class AppWindow(QMainWindow):
         """
         Adds the cif content to the main table. also add reference to FinalCif.
         """
-        for key, value in self.cif.key_value_pairs():
+        self.table_model = CifTableModel(parent=self, data=self.cif.key_value_pairs())
+        self.ui.cif_main_table.setModel(self.table_model)
+        """for key, value in self.cif.key_value_pairs():
             if not value or value == '?' or value == "'?'":
                 self.missing_data.add(key)
                 value = '?'
@@ -1583,18 +1588,19 @@ class AppWindow(QMainWindow):
                 txt = 'FinalCif V{} by Daniel Kratzert, Freiburg {}, https://dkratzert.de/finalcif.html'
                 strval = txt.format(VERSION, datetime.now().year)
                 self.ui.cif_main_table.setText(key=key, column=COL_DATA, txt=strval)
-                QTimer.singleShot(200, self.ui.cif_main_table.resizeRowsToContents)
+                QTimer.singleShot(200, self.ui.cif_main_table.resizeRowsToContents)"""
             # print(key, value)
         if not self.cif.test_res_checksum():
             show_res_checksum_warning()
         if not self.cif.test_hkl_checksum():
             show_hkl_checksum_warning()
-        if self.cif.is_multi_cif:
-            self.refresh_combo_boxes()
-        else:
-            self.get_data_sources()
+        #if self.cif.is_multi_cif:
+        #    self.refresh_combo_boxes()
+        #else:
+        #    #self.get_data_sources()
+        #    pass
         self.erase_disabled_items()
-        self.ui.cif_main_table.setCurrentItem(None)
+        #self.ui.cif_main_table.setCurrentItem(None)
 
     def make_loops_tables(self) -> None:
         for _ in range(self.ui.LoopsTabWidget.count()):

@@ -4,11 +4,11 @@ from PyQt5 import QtCore
 from PyQt5.QtCore import QModelIndex, Qt
 
 
-class TableModel(QtCore.QAbstractTableModel):
-    def __init__(self, *args, structures=None, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.horizontalHeaders = ['Id', 'Data Name', 'File Name', 'Last Modified', 'Path']
-        self._data = structures or []
+class CifTableModel(QtCore.QAbstractTableModel):
+    def __init__(self, parent, data=None, **kwargs):
+        super().__init__(parent)
+        self.horizontalHeaders = ['CIF data', 'Edit']
+        self._data = data or []
 
     def data(self, index: QModelIndex, role: int = None):
         row, col = index.row(), index.column()
