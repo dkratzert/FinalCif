@@ -448,6 +448,8 @@ class Ui_FinalCifWindow(object):
         self.cif_main_table = CifTableView(self.page_MainTable)
         self.cif_main_table.setAutoScroll(False)
         self.cif_main_table.setEditTriggers(QtWidgets.QAbstractItemView.AllEditTriggers)
+        self.cif_main_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.cif_main_table.setSortingEnabled(True)
         self.cif_main_table.setObjectName("cif_main_table")
         self.verticalLayout.addWidget(self.cif_main_table)
         self.ButtonsHorizontalLayout = QtWidgets.QHBoxLayout()

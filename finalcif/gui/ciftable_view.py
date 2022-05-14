@@ -8,7 +8,7 @@ class CifTableView(QtWidgets.QTableView):
 
     def __init__(self, parent):
         super().__init__(parent)
-        self.setContextMenuPolicy(Qt.DefaultContextMenu)
+        #self.setContextMenuPolicy(Qt.DefaultContextMenu)
 
     """def contextMenuEvent(self, event: QtGui.QContextMenuEvent) -> None:
         context_menu = QtWidgets.QMenu(self)

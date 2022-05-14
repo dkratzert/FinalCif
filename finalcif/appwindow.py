@@ -101,15 +101,16 @@ class AppWindow(QMainWindow):
         self.status_bar.show_message('FinalCif version {}'.format(VERSION))
         self.authors: Union[AuthorLoops, None] = None
         self.set_window_size_and_position()
-        self.ui.cif_main_table.installEventFilter(self)
+        #self.ui.cif_main_table.installEventFilter(self)
         # Sorting desynchronized header and columns:
-        self.ui.cif_main_table.setSortingEnabled(False)
-        self.distribute_cif_main_table_columns_evenly()
+        #self.ui.cif_main_table.setSortingEnabled(False)
+        #self.distribute_cif_main_table_columns_evenly()
         # Make sure the start page is shown and not the edit page:
         self.ui.CheckCIFResultsTabWidget.setCurrentIndex(0)
         self.ui.TemplatesStackedWidget.setCurrentIndex(0)
         self.ui.MainStackedWidget.got_to_main_page()
         self.set_initial_button_states()
+        self.table_model = CifTableModel(parent=self)
         if len(sys.argv) > 1:
             self.load_cif_file(Path(sys.argv[1]) if sys.argv[1] != 'compile_ui' else Path())
         elif file:
@@ -424,7 +425,7 @@ class AppWindow(QMainWindow):
         super(AppWindow, self).resizeEvent(a0)
         with suppress(AttributeError):
             self._savesize()
-        self.ui.cif_main_table.resizeRowsToContents()
+        #self.ui.cif_main_table.resizeRowsToContents()
 
     def moveEvent(self, a0: QtGui.QMoveEvent) -> None:
         """Is called when the main window moves."""
@@ -1577,8 +1578,9 @@ class AppWindow(QMainWindow):
         """
         Adds the cif content to the main table. also add reference to FinalCif.
         """
-        self.table_model = CifTableModel(parent=self, data=self.cif.key_value_pairs())
+        self.table_model.setCifData(self.cif.key_value_pairs())
         self.ui.cif_main_table.setModel(self.table_model)
+        #self.ui.cif_main_table.
         """for key, value in self.cif.key_value_pairs():
             if not value or value == '?' or value == "'?'":
                 self.missing_data.add(key)

@@ -1,14 +1,21 @@
-from typing import Any
+from contextlib import suppress
+from typing import Any, List, Union, Tuple
 
+import gemmi.cif
 from PyQt5 import QtCore
 from PyQt5.QtCore import QModelIndex, Qt
 
 
 class CifTableModel(QtCore.QAbstractTableModel):
-    def __init__(self, parent, data=None, **kwargs):
+    def __init__(self, parent, **kwargs):
         super().__init__(parent)
-        self.horizontalHeaders = ['CIF data', 'Edit']
-        self._data = data or []
+        self.horizontalHeaders = ['CIF data', 'Sources', 'Own Data']
+        self.verticalHeaders = []
+        self._data = []
+
+    def setCifData(self, data: List[Union[List, Tuple]]):
+        self._data = [(gemmi.cif.as_string(x[1]), '', '') for x in data]
+        self.verticalHeaders = [x[0] for x in data]
 
     def data(self, index: QModelIndex, role: int = None):
         row, col = index.row(), index.column()
@@ -21,19 +28,20 @@ class CifTableModel(QtCore.QAbstractTableModel):
 
     def setHeaderData(self, section, orientation, data, role=Qt.EditRole):
         if orientation == Qt.Horizontal and role in (Qt.DisplayRole, Qt.EditRole):
-            try:
+            with suppress(IndexError):
                 self.horizontalHeaders[section] = data
-                return True
-            except IndexError:
-                return False
+        if orientation == Qt.Vertical and role in (Qt.DisplayRole, Qt.EditRole):
+            with suppress(IndexError):
+                self.verticalHeaders[section] = data
         return super().setHeaderData(section, orientation, data, role)
 
     def headerData(self, section, orientation, role=Qt.DisplayRole):
         if orientation == Qt.Horizontal and role == Qt.DisplayRole:
-            try:
+            with suppress(IndexError):
                 return self.horizontalHeaders[section]
-            except IndexError:
-                pass
+        if orientation == Qt.Vertical and role == Qt.DisplayRole:
+            with suppress(IndexError):
+                return self.verticalHeaders[section]
         return super().headerData(section, orientation, role)
 
     def rowCount(self, parent=None, *args, **kwargs):
@@ -59,7 +67,7 @@ class CifTableModel(QtCore.QAbstractTableModel):
         if index.isValid() and role == Qt.EditRole:
             self._data[row][col] = value
             return True
-        return False
+        return super(CifTableModel, self).setData(index, value, role)
 
     def clear(self):
         self.resetInternalData()
@@ -67,5 +75,6 @@ class CifTableModel(QtCore.QAbstractTableModel):
     def sort(self, column: int, order: Qt.SortOrder = ...) -> None:
         self.layoutAboutToBeChanged.emit()
         self._data.sort(key=lambda x: x[column], reverse=True if order == Qt.DescendingOrder else False)
+        #self._data, self.verticalHeaders = zip(*sorted(zip(self._data, self.verticalHeaders), key=lambda x: x[column]))
         self.layoutChanged.emit()
         # super(TableModel, self).sort(column, order)
