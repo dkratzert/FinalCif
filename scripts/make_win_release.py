@@ -101,7 +101,7 @@ if arg == 'copy':
     copy_dist_to_install_dir()
 else:
     # create executable
-    pyin = subprocess.run("venv/Scripts/pyinstaller.exe -D Finalcif_installer_win.spec --clean -y".split())
+    pyin = subprocess.run("venv/Scripts/pyinstaller.exe Finalcif_installer_win.spec --clean -y".split())
     if pyin.returncode != 0:
         print('Pyinstaller failed with exit code', pyin.returncode)
         sys.exit()
