@@ -7,24 +7,23 @@ gemmi>=0.5.2
 html2text==2020.1.16
 lxml
 pefile
-pybind11==2.9.1
+pybind11==2.9.2
 PyQt5==5.15.6
-PyQt5-sip==12.9.0
-PyQt5-stubs==5.15.2.0
+PyQt5-sip==12.10.1
+PyQt5-stubs==5.15.6.0
 PyQtWebEngine==5.15.5
 python-docx==0.8.11
 pywin32-ctypes==0.2.0
 QtAwesome==1.1.1
-QtPy==2.0.1
+QtPy==2.1.0
 requests==2.27.1
-urllib3==1.26.8
-docxtpl==0.15.2
+urllib3==1.26.9
+docxtpl==0.16.0
 shelxfile
 crossrefapi
-numpy==1.22.2
+numpy==1.22.3
 
-pyinstaller>=4.7
-pyinstaller-hooks-contrib>=2022.2
+pyinstaller
 
 # Upgrade gemmi to Git master:
 # pip install https://github.com/project-gemmi/gemmi/archive/master.zip --upgrade
