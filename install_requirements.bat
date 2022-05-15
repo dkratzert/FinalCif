@@ -3,7 +3,9 @@
 REM Installs the required packages to run the desktop application in Windows.
 REM Change the path to the Python installation according to your needs:
 
+@echo on
 call "c:\Program Files\Python39\python.exe" -m venv venv
+@echo off
 
 call venv\Scripts\activate.bat
 call venv\Scripts\python.exe -m pip install pip -U
