@@ -1,5 +1,5 @@
 from contextlib import suppress
-from typing import Any, List, Union, Tuple
+from typing import Any, List, Union, Tuple, Dict
 
 import gemmi.cif
 from PyQt5 import QtCore
@@ -12,6 +12,13 @@ class CifTableModel(QtCore.QAbstractTableModel):
         self.horizontalHeaders = ['CIF data', 'Sources', 'Own Data']
         self.verticalHeaders = []
         self._data = []
+        self.dataChanged.connect(self.foo)
+
+    def foo(self, *args, **kwargs):
+        print('foo', args, kwargs)
+
+    def resetInternalData(self) -> None:
+        self._data.clear()
 
     def setCifData(self, data: List[Union[List, Tuple]]):
         self._data = [(gemmi.cif.as_string(x[1]), '', '') for x in data]
@@ -25,6 +32,9 @@ class CifTableModel(QtCore.QAbstractTableModel):
                 return value.decode('utf-8')
             else:
                 return value
+        #if role == Qt.EditRole:
+        #    return value
+
 
     def setHeaderData(self, section, orientation, data, role=Qt.EditRole):
         if orientation == Qt.Horizontal and role in (Qt.DisplayRole, Qt.EditRole):
@@ -33,6 +43,7 @@ class CifTableModel(QtCore.QAbstractTableModel):
         if orientation == Qt.Vertical and role in (Qt.DisplayRole, Qt.EditRole):
             with suppress(IndexError):
                 self.verticalHeaders[section] = data
+        #self.headerDataChanged.emit(orientation, section, section)
         return super().setHeaderData(section, orientation, data, role)
 
     def headerData(self, section, orientation, role=Qt.DisplayRole):
@@ -66,6 +77,7 @@ class CifTableModel(QtCore.QAbstractTableModel):
             return False
         if index.isValid() and role == Qt.EditRole:
             self._data[row][col] = value
+            #self.dataChanged.emit(index, index, role)
             return True
         return super(CifTableModel, self).setData(index, value, role)
 
