@@ -67,20 +67,17 @@ Clone the repository from GitHub:
    git clone https://github.com/dkratzert/FinalCif.git
    cd FinalCif
 
-Create a virtual environment and activate it:
+Install a virtual environment and activate it:
 
 .. code-block:: bat
 
-    C:\Python39\python3.exe -m venv venv
-    venv\Scripts\activate.bat
-    (in Linux: source venv/bin/activate)
+    install_requirements.bat
 
-After activation, install all necessary packages using pip:
+Run FinalCif:
 
 .. code-block:: bat
 
-    pip install -r requirements.txt
-
+    run_finalcif.bat
 
 I am always open for suggestions by users. Please tell me if something does not work as expected!
 
