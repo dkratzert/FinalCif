@@ -36,7 +36,7 @@ class MyQPlainTextEdit(QPlainTextEdit):
         self.setWordWrapMode(QTextOption.WordWrap)
         self.fontmetric = QFontMetrics(self.document().defaultFont())
         self.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
-        self.textChanged.connect(lambda: self.parent.resizeRowToContents(self.row))
+        #self.textChanged.connect(lambda: self.parent.resizeRowToContents(self.row))
 
     def __str__(self):
         return self.toPlainText()

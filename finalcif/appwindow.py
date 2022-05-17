@@ -1221,7 +1221,7 @@ class AppWindow(QMainWindow):
         self.ui.datanameComboBox.blockSignals(False)
         if self.cif.is_multi_cif:
             # short after start, because window size is not finished
-            QTimer.singleShot(1000, self.ui.datanameComboBox.showPopup)
+            QTimer.singleShot(300, self.ui.datanameComboBox.showPopup)
 
     def add_data_names_to_combobox(self):
         self.ui.datanameComboBox.clear()

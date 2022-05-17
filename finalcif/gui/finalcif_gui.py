@@ -455,7 +455,6 @@ class Ui_FinalCifWindow(object):
         self.cif_main_table.horizontalHeader().setCascadingSectionResizes(True)
         self.cif_main_table.horizontalHeader().setDefaultSectionSize(180)
         self.cif_main_table.horizontalHeader().setMinimumSectionSize(100)
-        self.cif_main_table.horizontalHeader().setStretchLastSection(True)
         self.verticalLayout.addWidget(self.cif_main_table)
         self.ButtonsHorizontalLayout = QtWidgets.QHBoxLayout()
         self.ButtonsHorizontalLayout.setSpacing(6)

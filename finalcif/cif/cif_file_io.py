@@ -740,12 +740,12 @@ class CifContainer():
             zip(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm):
             yield hydr(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, self.checksymm(symm))
 
-    def key_value_pairs(self) -> List[Tuple[str, str]]:
+    def key_value_pairs(self) -> List[List[str]]:
         """
         Returns the key/value pairs of a cif file sorted by priority.
         """
         keys_without_values, keys_with_values = self.get_keys()
-        return keys_without_values + [('These below are already in:', '---------------------')] + keys_with_values
+        return keys_without_values + [['These below are already in:', '---------------------']] + keys_with_values
 
     def _is_centrokey(self, key) -> bool:
         """
@@ -754,7 +754,7 @@ class CifContainer():
         """
         return self.is_centrosymm and key in non_centrosymm_keys
 
-    def get_keys(self) -> Tuple[List[Tuple[str, str]], List[Tuple[str, str]]]:
+    def get_keys(self) -> Tuple[List[List[str]], List[List[str]]]:
         """
         Returns the keys to be displayed in the main table as two separate lists.
         """
@@ -770,15 +770,14 @@ class CifContainer():
                 if self._is_centrokey(key):
                     continue
                 if not value or value == '?' or value == "'?'":
-                    questions.append((key, value))
+                    questions.append([key, value])
                 else:
-                    with_values.append((key, value))
+                    with_values.append([key, value])
         all_keys = [x[0] for x in with_values] + [x[0] for x in questions]
         self.check_for_missing_essential_keys(all_keys, questions)
         return sorted(questions), sorted(with_values)
 
-    def check_for_missing_essential_keys(self, all_keys: List[Tuple[str, str]],
-                                         questions: List[Tuple[str, str]]) -> None:
+    def check_for_missing_essential_keys(self, all_keys: List[List[str]], questions: List[List[str]]) -> None:
         """
         Check if there are keys not in the cif but in essential_keys and append them if so.
         """
@@ -786,7 +785,7 @@ class CifContainer():
             if key not in all_keys:
                 if self._is_centrokey(key):
                     continue
-                questions.append((key, '?'))
+                questions.append([key, '?'])
                 self.block.set_pair(key, '?')
 
     def test_res_checksum(self) -> bool:
