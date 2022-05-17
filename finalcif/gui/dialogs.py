@@ -12,11 +12,11 @@ from finalcif import VERSION
 
 
 def do_update_program(version) -> None:
-    os.chdir(str(Path(__file__).parent.parent))  # parent path of gui -> main dir
+    updater_exe = str(Path(__file__).parent.parent.parent.joinpath('update.exe'))
     args = ['-v', version,
             '-p', 'finalcif']
     # Using this, because otherwise I can not write to the program dir:
-    ctypes.windll.shell32.ShellExecuteW(None, "runas", 'update.exe', " ".join(args), None, 1)
+    ctypes.windll.shell32.ShellExecuteW(None, "runas", updater_exe, " ".join(args), None, 1)
 
 
 def unable_to_open_message(filepath: Path, not_ok: Exception) -> None:

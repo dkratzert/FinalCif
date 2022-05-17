@@ -1,5 +1,6 @@
 FinalCif recent changes
 -----------------------
+* v105 Small fixes and speed improvements.
 * v104 Faster loading of large CIF files. Adds rotation of structure view around center.
 * v103 Correct z-order of atoms and bonds in molecule view. File open dialog points to directory of last
        opened file again. Better detection of data files with cif relevant information.
