@@ -22,10 +22,22 @@ class CifItemEditor(QtWidgets.QStyledItemDelegate):
     def createEditor(self, parent: QWidget, option: 'QStyleOptionViewItem', index: QtCore.QModelIndex) -> QWidget:
         return MyQPlainTextEdit(parent)
 
-    # def itemEditorFactory(self) -> QItemEditorFactory:
+    #def itemEditorFactory(self) -> QItemEditorFactory:
     #    factory = QItemEditorFactory()
-    #    factory.registerEditor(Qt.EditRole, )
+    #    factory.registerEditor(Qt.EditRole, MyQPlainTextEdit)
+    #    return factory
 
+    #def setEditorData(self, editor: QWidget, index: QtCore.QModelIndex) -> None:
+    #    editor.setPlainText(index.data(role=Qt.EditRole))
+
+    #def updateEditorGeometry(self, editor: QWidget, option: 'QStyleOptionViewItem', index: QtCore.QModelIndex) -> None:
+    #    print(editor)
+    #    print(option)
+    #    pass
+
+    #def setModelData(self, editor: QWidget, model: QtCore.QAbstractItemModel, index: QtCore.QModelIndex) -> None:
+    #    print(editor, model)
+    #    pass
 
 class CifTableView(QtWidgets.QTableView):
     save_excel_triggered = pyqtSignal()
