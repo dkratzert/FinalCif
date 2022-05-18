@@ -26,7 +26,7 @@ from finalcif.report.report_text import CCDC, CrstalSelection, Crystallization, 
 from finalcif.report.templated_report import BondsAndAngles, TorsionAngles, HydrogenBonds
 from finalcif.tools.misc import protected_space, angstrom, bequal, sigma_sm, halbgeviert, degree_sign, ellipsis_mid, \
     less_or_equal, \
-    timessym, lambdasym, this_or_quest, isnumeric, minus_sign, Theta_symbol, grouper
+    timessym, lambdasym, this_or_quest, isnumeric, minus_sign, theta_symbol, grouper
 from finalcif.tools.options import Options
 
 
@@ -358,16 +358,17 @@ def populate_main_table_values(main_table: Table, cif: CifContainer, column=1, c
                                        protected_space,
                                        angstrom)
         # 2theta range:
-        main_table.cell(21 + cell_fact, column).text = "{:.2f} to {:.2f}{}".format(2 * float(theta_min),
-                                                                                   2 * float(theta_max), d_max)
+        main_table.cell(21 + cell_fact,
+                        column).text = f"{2 * float(theta_min):.2f} to {2 * float(theta_max):.2f}{d_max}"
     except ValueError:
         main_table.cell(21 + cell_fact, column).text = '? to ?'
-    main_table.cell(22 + cell_fact, column).text = '{} {} h {} {}\n'.format(limit_h_min, less_or_equal, less_or_equal,
-                                                                            limit_h_max) \
-                                                   + '{} {} k {} {}\n'.format(limit_k_min, less_or_equal, less_or_equal,
-                                                                              limit_k_max) \
-                                                   + '{} {} l {} {}'.format(limit_l_min, less_or_equal, less_or_equal,
-                                                                            limit_l_max)
+    main_table.cell(22 + cell_fact,
+                    column).text = f'{minus_sign if limit_h_min != "0" else ""}{limit_h_min.replace("-", "")} ' \
+                                   f'{less_or_equal} h {less_or_equal} {limit_h_max}\n' \
+                                   + f'{minus_sign if limit_k_min != "0" else ""}{limit_k_min.replace("-", "")} ' \
+                                     f'{less_or_equal} k {less_or_equal} {limit_k_max}\n' \
+                                   + f'{minus_sign if limit_l_min != "0" else ""}{limit_l_min.replace("-", "")} ' \
+                                     f'{less_or_equal} l {less_or_equal} {limit_l_max}'
     rint_p = main_table.cell(24 + cell_fact, column).paragraphs[0]
     add_r_int_value(cif, rint_p)
     main_table.cell(25 + cell_fact, column).paragraphs[0].add_run(completeness)
@@ -697,15 +698,14 @@ def populate_description_columns(main_table: Table, cif: CifContainer, cell_fact
     lgnd18 = main_table.cell(18 + cell_fact, 0).paragraphs[0].add_run('Crystal colour')
     lgnd19 = main_table.cell(19 + cell_fact, 0).paragraphs[0].add_run('Crystal shape')
     lgnd20 = main_table.cell(20 + cell_fact, 0).paragraphs[0].add_run('Radiation')
-    lgnd21 = main_table.cell(21 + cell_fact, 0).paragraphs[0].add_run(
-        '2{} range [{}]'.format(Theta_symbol, degree_sign))
+    lgnd21 = main_table.cell(21 + cell_fact, 0).paragraphs[0].add_run(f'2{theta_symbol} range [{degree_sign}]')
     lgnd22 = main_table.cell(22 + cell_fact, 0).paragraphs[0].add_run('Index ranges')
     lgnd23 = main_table.cell(23 + cell_fact, 0).paragraphs[0].add_run('Reflections collected')
     lgnd24 = main_table.cell(24 + cell_fact, 0).paragraphs[0].add_run('Independent reflections')
     lgnd25 = main_table.cell(25 + cell_fact, 0).paragraphs[0]
     theta_full = cif['_diffrn_reflns_theta_full']
     if theta_full:
-        lgnd25.add_run('Completeness to \n{} = {}°'.format(Theta_symbol, theta_full))
+        lgnd25.add_run(f'Completeness to \n{theta_symbol} = {theta_full}°')
     else:
         lgnd25.add_run('Completeness')
     main_table.cell(26 + cell_fact, 0).paragraphs[0].add_run('Data / Restraints / Parameters')
