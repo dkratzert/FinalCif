@@ -295,11 +295,10 @@ class TemplatedReport():
         theta_max = cif['_diffrn_reflns_theta_max']
         radiation_wavelength = cif['_diffrn_radiation_wavelength']
         try:
-            d_max = ' ({:.2f}{}{})'.format(float(radiation_wavelength) / (2 * sin(radians(float(theta_max)))),
-                                           protected_space,
-                                           angstrom)
+            d_max = f' ({float(radiation_wavelength) / (2 * sin(radians(float(theta_max)))):.2f}' \
+                    f'{protected_space}{angstrom})'
             # 2theta range:
-            return "{:.2f} to {:.2f}{}".format(2 * float(theta_min), 2 * float(theta_max), d_max)
+            return f"{2 * float(theta_min):.2f} to {2 * float(theta_max):.2f}{d_max}"
         except ValueError:
             return '? to ?'
 
@@ -311,9 +310,12 @@ class TemplatedReport():
         limit_k_max = cif['_diffrn_reflns_limit_k_max']
         limit_l_min = cif['_diffrn_reflns_limit_l_min']
         limit_l_max = cif['_diffrn_reflns_limit_l_max']
-        return limit_h_min + ' {} h {} '.format(less_or_equal, less_or_equal) + limit_h_max + '\n' \
-               + limit_k_min + ' {} k {} '.format(less_or_equal, less_or_equal) + limit_k_max + '\n' \
-               + limit_l_min + ' {} l {} '.format(less_or_equal, less_or_equal) + limit_l_max
+        return f'{minus_sign if limit_h_min != "0" else ""}{limit_h_min.replace("-", "")} ' \
+               f'{less_or_equal} h {less_or_equal} {limit_h_max}\n' \
+               + f'{minus_sign if limit_k_min != "0" else ""}{limit_k_min.replace("-", "")} ' \
+                 f'{less_or_equal} k {less_or_equal} {limit_k_max}\n' \
+               + f'{minus_sign if limit_l_min != "0" else ""}{limit_l_min.replace("-", "")} ' \
+                 f'{less_or_equal} l {less_or_equal} {limit_l_max}\n'
 
     @staticmethod
     def get_radiation(cif: CifContainer) -> RichText:
@@ -326,7 +328,7 @@ class TemplatedReport():
     @staticmethod
     def get_completeness(cif: CifContainer) -> str:
         try:
-            completeness = "{0:.1f} %".format(round(float(cif['_diffrn_measured_fraction_theta_full']) * 100, 1))
+            completeness = f"{float(cif['_diffrn_measured_fraction_theta_full']) * 100:.1f} %"
         except ValueError:
             completeness = '?'
         return completeness
@@ -334,7 +336,7 @@ class TemplatedReport():
     @staticmethod
     def get_diff_density_min(cif: CifContainer) -> str:
         try:
-            diff_density_min = "{0:.2f}".format(round(float(cif['_refine_diff_density_min']), 2))
+            diff_density_min = f"{float(cif['_refine_diff_density_min']):.2f}"
         except ValueError:
             diff_density_min = '?'
         return diff_density_min
@@ -342,7 +344,7 @@ class TemplatedReport():
     @staticmethod
     def get_diff_density_max(cif: CifContainer) -> str:
         try:
-            diff_density_max = "{0:.2f}".format(round(float(cif['_refine_diff_density_max']), 2))
+            diff_density_max = f"{float(cif['_refine_diff_density_max']):.2f}"
         except ValueError:
             diff_density_max = '?'
         return diff_density_max
