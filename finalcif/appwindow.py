@@ -257,7 +257,7 @@ class AppWindow(QMainWindow):
         self.ui.DetailsPushButton.clicked.connect(self.show_residuals)
         self.ui.BackpushButtonDetails.clicked.connect(self.back_to_main_noload)
         self.ui.growCheckBox.toggled.connect(self.redraw_molecule)
-        self.ui.labelsCheckBox.toggled.connect(self.redraw_molecule)
+        self.ui.labelsCheckBox.toggled.connect(self.show_labels)
         #
         self.ui.SourcesPushButton.clicked.connect(self.show_sources)
         self.ui.BackSourcesPushButton.clicked.connect(self.back_to_main_noload)
@@ -1465,6 +1465,9 @@ class AppWindow(QMainWindow):
             self.view_molecule()
         except Exception:
             print('Molecule view crashed!!')
+
+    def show_labels(self, value: bool):
+        self.ui.render_widget.show_labels(value)
 
     def check_Z(self) -> None:
         """
