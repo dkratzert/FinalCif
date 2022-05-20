@@ -16,6 +16,9 @@ from finalcif.tools.misc import distance
 
 
 class MoleculeWidget(QtWidgets.QWidget):
+    """
+    This widget is currently unused in FinalCif.
+    """
     def __init__(self, parent):
         super().__init__(parent=parent)
         vtk.vtkObject.GlobalWarningDisplayOff()
