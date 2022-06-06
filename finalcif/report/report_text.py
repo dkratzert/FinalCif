@@ -114,7 +114,7 @@ class MachineType():
                         or '[No detector type given]'
         if detector_type:
             self.detector_type = " and a {} detector".format(detector_type)
-        sentence1 = "on {0} {1} {2} with {3} {4} using {5} as monochromator{6}. " \
+        sentence1 = "on {0} {1} {2} with {3} {4} using a {5} as monochromator{6}. " \
                     "The diffractometer was equipped with {7} {8}low temperature device and used "
         sentence2 = " radiation (λ = {}" + protected_space + "{}). ".format(angstrom)
         txt = sentence1.format(get_inf_article(self.difftype), self.difftype, self.device,
