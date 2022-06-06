@@ -119,8 +119,9 @@ class AppWindow(QMainWindow):
         self.setAcceptDrops(True)
         self.show()
         self.templates = ReportTemplates(self, self.settings)
-        if not self.running_inside_unit_test:
-            self.check_for_update_version()
+        # Disabled for last Windows 7 version:
+        #if not self.running_inside_unit_test:
+        #    self.check_for_update_version()
         self.textedit = MyTextTemplateEdit(parent=self)
         self.ui.page_textTemplate.layout().addWidget(self.textedit)
         #
