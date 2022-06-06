@@ -126,6 +126,7 @@ class AppWindow(QMainWindow):
         #
         self.connect_signals_and_slots()
         self.make_button_icons()
+        self.format_report_button()
 
     def distribute_cif_main_table_columns_evenly(self) -> None:
         hheader = self.ui.cif_main_table.horizontalHeader()
@@ -154,6 +155,12 @@ class AppWindow(QMainWindow):
         self.ui.CCDCpushButton.setDisabled(True)
         self.ui.ShredCifButton.setDisabled(True)
         self.ui.LoopsPushButton.setDisabled(True)
+
+    def format_report_button(self):
+        if self.report_without_template():
+            self.ui.SaveFullReportButton.setText('Make Report')
+        else:
+            self.ui.SaveFullReportButton.setText('Make Report from Template')
 
     def set_window_size_and_position(self) -> None:
         wsettings = self.settings.load_window_position()
@@ -624,6 +631,7 @@ class AppWindow(QMainWindow):
         self.status_bar.show_message('')
         self.ui.TemplatesStackedWidget.setCurrentIndex(0)
         self.ui.MainStackedWidget.got_to_main_page()
+        self.format_report_button()
 
     def _checkcif_failed(self, txt: str):
         self.ui.CheckCifLogPlainTextEdit.appendHtml('<b>{}</b>'.format(txt))
@@ -944,7 +952,7 @@ class AppWindow(QMainWindow):
         else:
             picfile = self.cif.finalcif_file.with_suffix('.gif')
         try:
-            if self.ui.TemplatesListWidget.currentRow() == 0 or not self.ui.TemplatesListWidget.currentItem():
+            if self.report_without_template():
                 print('Report without templates')
                 make_report_from(options=self.options, cif=self.cif,
                                  output_filename=str(report_filename), picfile=picfile)
@@ -974,6 +982,10 @@ class AppWindow(QMainWindow):
             self.open_report_document(report_filename, multi_table_document)
         # Save report and other files to a zip file:
         self.zip_report(report_filename)
+
+    def report_without_template(self) -> bool:
+        """Check whether the report is generated from a template or hard-coded"""
+        return self.ui.TemplatesListWidget.currentRow() == 0 or not self.ui.TemplatesListWidget.currentItem()
 
     def zip_report(self, report_filename: Path):
         zipfile = self.cif.finalcif_file.with_suffix('.zip')
