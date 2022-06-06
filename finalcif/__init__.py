@@ -1,2 +1,2 @@
 
-VERSION = 105
+VERSION = 106
