@@ -225,7 +225,7 @@ class SolveRefine():
         if 'OLEX' in refined.upper():
             refineref = Olex2Reference()
         refine_coef = gstr(self.cif['_refine_ls_structure_factor_coef'])
-        sentence = r"The structure were solved by {} methods using {} and refined by full-matrix " \
+        sentence = r"The structure was solved by {} methods using {} and refined by full-matrix " \
                    "least-squares methods against "
         txt = sentence.format(solution_method.strip('\n\r'), solution_prog.split()[0])
         paragraph.add_run(retranslate_delimiter(txt))
