@@ -7,7 +7,7 @@ rmdir /S build /Q
 CALL venv\Scripts\activate.bat
 
 git restore *
-git switch master
+git switch last_win_7
 git pull
 
 venv\Scripts\python -m pip install -U pip
