@@ -164,7 +164,6 @@ class AuthorLoops():
         """
         Exports the currently selected author to a file.
         """
-        author = self.get_author_info()
         selected_template = self.ui.LoopTemplatesListWidget.currentIndex().data()
         if not selected_template:
             return
@@ -173,6 +172,16 @@ class AuthorLoops():
             filename = cif_file_save_dialog(blockname.replace('__', '_') + '.cif')
         if not filename.strip():
             return
+        author_cif = self.store_author_in_cif_object(blockname, filename)
+        try:
+            author_cif.save(Path(filename))
+        except PermissionError:
+            if Path(filename).is_dir():
+                return
+            show_general_warning('No permission to write file to {}'.format(Path(filename).resolve()))
+
+    def store_author_in_cif_object(self, blockname, filename):
+        author = self.get_author_info()
         author_cif = CifContainer(filename, new_block=blockname)
         contact_author: bool = author.get('contact')
         loop = self.get_author_loop(contact_author)
@@ -182,12 +191,7 @@ class AuthorLoops():
             del data[-1]
         for key, value in zip(loop, data):
             author_cif.set_pair_delimited(key, as_string(value))
-        try:
-            author_cif.save(filename)
-        except PermissionError:
-            if Path(filename).is_dir():
-                return
-            show_general_warning('No permission to write file to {}'.format(Path(filename).resolve()))
+        return author_cif
 
     def import_author(self, filename=''):
         """

@@ -9,6 +9,8 @@ from typing import List, Dict, Union, Tuple, Iterable
 
 from PyQt5.QtCore import QPoint, QSettings, QSize
 
+DEBUG = False
+
 
 class FinalCifSettings():
     def __init__(self):
@@ -99,6 +101,8 @@ class FinalCifSettings():
         """
         Saves Equipment templates into the settings as list.
         """
+        if DEBUG:
+            print(f"Saving {name} {items}")
         self.settings.setValue(name, items)
         self.property_keys_and_values = self.load_property_keys_and_values()
         self.property_keys = self.load_cif_keys_of_properties()
@@ -108,6 +112,8 @@ class FinalCifSettings():
         Saves a single key/value pair.
         """
         self.settings.setValue(name, item)
+        if DEBUG:
+            print(f"Saving {name} {item}")
 
     def load_value_of_key(self, key: str) -> Union[object, Iterable, List]:
         """
@@ -193,6 +199,8 @@ class FinalCifSettings():
     def _save_settings_value(self, items, name, property):
         self.settings.beginGroup(property)
         self.settings.setValue(name, items)
+        if DEBUG:
+            print(f"Saving {name} {items}")
         self.settings.endGroup()
 
     def save_settings_list(self, property: str, name: str, items: List):
