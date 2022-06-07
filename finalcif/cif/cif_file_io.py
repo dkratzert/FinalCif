@@ -571,7 +571,10 @@ class CifContainer():
             # Do not crash without symmops
             return False
         ops = gemmi.GroupOps([gemmi.Op(o) for o in self.symmops])
-        return ops.is_centric()
+        try:
+            return ops.is_centric()
+        except AttributeError:
+            return ops.is_centrosymmetric()
 
     def atoms(self, without_h: bool = False) -> Generator:
         """
