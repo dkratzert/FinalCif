@@ -1,7 +1,7 @@
 from bisect import bisect
 from contextlib import suppress
 from pathlib import Path
-from typing import Tuple
+from typing import List, Dict
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QListWidgetItem
@@ -25,10 +25,11 @@ class Equipment:
     def __init__(self, app: 'AppWindow', settings: FinalCifSettings):
         self.app = app
         self.settings = settings
-        self.app.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
-        self.app.ui.EquipmentEditTableWidget.verticalHeader().hide()
-        self.signals_and_slots()
-        self.load_default_equipment()
+        if app:
+            self.app.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
+            self.app.ui.EquipmentEditTableWidget.verticalHeader().hide()
+            self.signals_and_slots()
+            self.load_default_equipment()
 
     def signals_and_slots(self):
         ## equipment
@@ -62,11 +63,10 @@ class Equipment:
         Loads equipment data to be shown in the main Cif table.
         Not for template edititng!
         """
-        listwidget = self.app.ui.EquipmentTemplatesListWidget
-        equipment_name = listwidget.currentIndex().data()
-        if not equipment_name:
+        if not self.selected_template_name():
             return None
-        equipment = self.settings.load_settings_list_as_dict(property='equipment', item_name=equipment_name)
+        equipment = self.settings.load_settings_list_as_dict(property='equipment',
+                                                             item_name=self.selected_template_name())
         if self.app.ui.cif_main_table.vheaderitems:
             for key in equipment:
                 if key not in self.app.ui.cif_main_table.vheaderitems:
@@ -98,6 +98,20 @@ class Equipment:
         # I do these both to clear the list:
         self.load_default_equipment()
 
+    def export_raw_data(self) -> List[Dict]:
+        equipment_list = []
+        deleted = self.settings.load_value_of_key(key='deleted_templates') or []
+        for equipment_name in self.settings.get_equipment_list():
+            if equipment_name and equipment_name not in deleted:
+                equipment = self.settings.load_settings_list(property='equipment', item_name=equipment_name)
+                equipment_list.append({'name': equipment_name, 'data': equipment})
+        return equipment_list
+
+    def import_raw_data(self, equipment_list: List[Dict]) -> None:
+        for eq in equipment_list:
+            self.settings.save_settings_list('equipment', eq.get('name'), eq.get('data'))
+        self.show_equipment()
+
     def load_default_equipment(self):
         self.store_predefined_templates()
         self.show_equipment()
@@ -105,7 +119,7 @@ class Equipment:
     def store_predefined_templates(self):
         equipment_list = self.settings.get_equipment_list() or []
         for item in misc.predef_equipment_templ:
-            if not item['name'] in equipment_list:
+            if item['name'] not in equipment_list:
                 self.settings.save_settings_list('equipment', item['name'], item['items'])
 
     def edit_equipment_template(self) -> None:
@@ -135,7 +149,7 @@ class Equipment:
         # first load the previous values:
         if table_data:
             for data in table_data:
-                if not len(data) == 2:
+                if len(data) != 2:
                     continue
                 key, value = data
                 table.add_equipment_row(key, string_to_utf8(value))
@@ -171,7 +185,7 @@ class Equipment:
                                          'Keys must start with an underscore.'.format(key))
                     return
                 show_general_warning('"{}" is not an official CIF keyword!'.format(key))
-        self.settings.save_settings_list('equipment', self.selected_template(), table_data)
+        self.settings.save_settings_list('equipment', self.selected_template_name(), table_data)
         self.app.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
         print('saved')
 
@@ -226,7 +240,7 @@ class Equipment:
                 table_data.append([key, value])
         return table_data
 
-    def selected_template(self) -> str:
+    def selected_template_name(self) -> str:
         return self.app.ui.EquipmentTemplatesListWidget.currentIndex().data()
 
     def export_equipment_template(self, filename: str = None) -> None:
@@ -235,7 +249,7 @@ class Equipment:
 
         In order to export, we have to run self.edit_equipment_template() first!
         """
-        selected_template = self.selected_template()
+        selected_template = self.selected_template_name()
         if not selected_template:
             return
         table_data = self.get_equipment_entry_data()
@@ -264,3 +278,9 @@ class Equipment:
         table.setRowCount(0)
         self.app.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
         print('cancelled equipment')
+
+
+if __name__ == '__main__':
+    l = Equipment(None, FinalCifSettings())
+    for line in l.export_raw_data():
+        print(f"{line}")
