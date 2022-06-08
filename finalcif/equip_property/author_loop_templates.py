@@ -303,4 +303,4 @@ class AuthorLoops():
 
 if __name__ == '__main__':
     l = AuthorLoops(Ui_FinalCifWindow(), CifContainer('test-data/1000007.cif'), None)
-    l.export_data()
+    print(l.export_raw_data())
