@@ -161,7 +161,7 @@ class Equipment:
         """
         # Local import for faster startup
         from finalcif.cif.all_cif_dicts import cif_all_dict
-        selected_template_text, table_data = self.get_equipment_entry_data()
+        table_data = self.get_equipment_entry_data()
         # warn if key is not official:
         for key, _ in table_data:
             if key not in cif_all_dict.keys():
@@ -171,7 +171,7 @@ class Equipment:
                                          'Keys must start with an underscore.'.format(key))
                     return
                 show_general_warning('"{}" is not an official CIF keyword!'.format(key))
-        self.settings.save_settings_list('equipment', selected_template_text, table_data)
+        self.settings.save_settings_list('equipment', self.selected_template(), table_data)
         self.app.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
         print('saved')
 
@@ -205,7 +205,7 @@ class Equipment:
             name = block.name.replace('__', ' ')
         self.settings.save_settings_list('equipment', name, table_data)
 
-    def get_equipment_entry_data(self) -> Tuple[str, list]:
+    def get_equipment_entry_data(self) -> list:
         """
         Returns the string of the currently selected entry and the table data behind it.
         """
@@ -213,7 +213,6 @@ class Equipment:
         # Set None Item to prevent loss of the currently edited item:
         # The current item is closed and thus saved.
         table.setCurrentItem(None)
-        selected_template_text = self.app.ui.EquipmentTemplatesListWidget.currentIndex().data()
         table_data = []
         ncolumns = table.rowCount()
         for rownum in range(ncolumns):
@@ -225,7 +224,10 @@ class Equipment:
                 value = ''
             if key and value:
                 table_data.append([key, value])
-        return selected_template_text, table_data
+        return table_data
+
+    def selected_template(self) -> str:
+        return self.app.ui.EquipmentTemplatesListWidget.currentIndex().data()
 
     def export_equipment_template(self, filename: str = None) -> None:
         """
@@ -233,9 +235,10 @@ class Equipment:
 
         In order to export, we have to run self.edit_equipment_template() first!
         """
-        selected_template, table_data = self.get_equipment_entry_data()
+        selected_template = self.selected_template()
         if not selected_template:
             return
+        table_data = self.get_equipment_entry_data()
         blockname = '__'.join(selected_template.split())
         if not filename:
             filename = cif_file_save_dialog(blockname.replace('__', '_') + '.cif')
@@ -245,7 +248,7 @@ class Equipment:
         for key, value in table_data:
             equipment_cif[key] = value.strip('\n\r ')
         try:
-            equipment_cif.save(filename)
+            equipment_cif.save(Path(filename))
             # Path(filename).write_text(doc.as_string(cif.Style.Indent35))
         except PermissionError:
             if Path(filename).is_dir():
