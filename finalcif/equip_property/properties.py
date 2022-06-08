@@ -121,7 +121,7 @@ class Properties:
     def store_predefined_templates(self) -> None:
         property_list = self.settings.get_properties_list() or []
         for item in predef_prop_templ:
-            if not item['name'] in property_list:
+            if item['name'] not in property_list:
                 self.settings.save_settings_list('property', item['name'], item['values'])
 
     def export_property_template(self, filename: str = '') -> None:
