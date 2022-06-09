@@ -12,7 +12,7 @@ from contextlib import suppress
 from datetime import datetime
 from math import sin, radians
 from pathlib import Path, WindowsPath
-from typing import Union, Dict, Tuple
+from typing import Union, Dict, Tuple, List
 
 import gemmi.cif
 import qtawesome as qta
@@ -378,9 +378,21 @@ class AppWindow(QMainWindow):
         """
         cif_key = self.textedit.ui.cifKeyLineEdit.text()
         table_data = self.textedit.get_template_texts()
-        self.settings.save_template_list('text_templates/' + cif_key, table_data)
+        self.settings.save_settings_list(property='text_templates', name=cif_key, items=table_data)
         self.status_bar.show_message(f'Template for {cif_key} saved.', timeout=10)
         self.refresh_color_background_from_templates()
+
+    def export_raw_text_templates(self) -> List[Dict]:
+        templates_list = []
+        for cif_key in self.settings.list_saved_items('text_templates'):
+            template = self.settings.load_settings_list('text_templates', cif_key)
+            templates_list.append({'cif_key': cif_key, 'data': template})
+        return templates_list
+
+    def import_raw_text_templates(self, templates_list: List[Dict]):
+        for template in templates_list:
+            self.settings.save_settings_list(property='text_templates', name=template.get("cif_key"),
+                                             items=template.get("data"))
 
     def apply_text_template(self) -> None:
         """
