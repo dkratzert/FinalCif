@@ -135,17 +135,13 @@ class Equipment:
         Load/Edit the key/value list of an equipment entry.
         """
         table = self.app.ui.EquipmentEditTableWidget
-        listwidget = self.app.ui.EquipmentTemplatesListWidget
         table.blockSignals(True)
         table.clearContents()
         table.setRowCount(0)
-        index = listwidget.currentIndex()
-        if index.row() == -1:
-            # nothing selected
+        if not self.selected_template_name():
             return
-        selected_row_text = listwidget.currentIndex().data()
-        self.check_if_current_item_is_in_deleted_list(selected_row_text)
-        table_data = self.settings.load_settings_list(property='equipment', item_name=selected_row_text)
+        self.check_if_current_item_is_in_deleted_list(self.selected_template_name())
+        table_data = self.settings.load_settings_list(property='equipment', item_name=self.selected_template_name())
         # first load the previous values:
         if table_data:
             for data in table_data:
