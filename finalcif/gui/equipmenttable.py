@@ -55,7 +55,6 @@ class MyEQTableWidget(QTableWidget, ItemTextMixin):
         # This is critical, because otherwise the add_row_if_needed does not work as expected:
         key_item.textChanged.connect(self.add_row_if_needed)
         self.setCellWidget(row_num, 0, key_item)
-        # if len(value) > 38:
         tab_item = PlainTextEditTemplate(self)
         tab_item.textChanged.connect(lambda: self.resizeRowsToContents())
         tab_item.setPlainText(retranslate_delimiter(value_text))
