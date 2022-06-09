@@ -1,5 +1,6 @@
 from contextlib import suppress
 from pathlib import Path
+from typing import List, Dict
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QListWidgetItem, QTableWidget, QListWidget, QStackedWidget
@@ -20,11 +21,12 @@ class Properties:
     def __init__(self, app: 'AppWindow', settings: FinalCifSettings):
         self.app = app
         self.settings = settings
-        self.signals_and_slots()
-        self.app.ui.PropertiesTemplatesStackedWidget.setCurrentIndex(0)
-        self.app.ui.PropertiesEditTableWidget.verticalHeader().hide()
-        self.store_predefined_templates()
-        self.show_properties()
+        if app:
+            self.signals_and_slots()
+            self.app.ui.PropertiesTemplatesStackedWidget.setCurrentIndex(0)
+            self.app.ui.PropertiesEditTableWidget.verticalHeader().hide()
+            self.store_predefined_templates()
+            self.show_properties()
 
     def signals_and_slots(self):
         ## properties
@@ -128,10 +130,9 @@ class Properties:
         """
         Exports the currently selected property entry to a file.
         """
-        selected_row_text = self.app.ui.PropertiesTemplatesListWidget.currentIndex().data()
-        if not selected_row_text:
+        if not self.selected_template_name():
             return
-        prop_data = self.settings.load_settings_list('property', selected_row_text)
+        prop_data = self.settings.load_settings_list('property', self.selected_template_name())
         table_data = []
         cif_key = ''
         if prop_data:
@@ -141,7 +142,7 @@ class Properties:
         if not cif_key:
             return
         doc = cif.Document()
-        blockname = '__'.join(selected_row_text.split())
+        blockname = '__'.join(self.selected_template_name().split())
         block = doc.add_new_block(blockname)
         try:
             loop = block.init_loop(cif_key, [''])
@@ -158,11 +159,13 @@ class Properties:
             return
         try:
             doc.write_file(filename, style=cif.Style.Indent35)
-            # Path(filename).write_text(doc.as_string(cif.Style.Indent35))
         except PermissionError:
             if Path(filename).is_dir():
                 return
             show_general_warning('No permission to write file to {}'.format(Path(filename).resolve()))
+
+    def selected_template_name(self):
+        return self.app.ui.PropertiesTemplatesListWidget.currentIndex().data()
 
     def import_property_from_file(self, filename: str = '') -> None:
         """
@@ -244,6 +247,19 @@ class Properties:
         # table.setWordWrap(False)
         table.resizeRowsToContents()
 
+    def export_raw_data(self) -> List[Dict]:
+        properties_list = []
+        for property in self.settings.get_properties_list():
+            if property:
+                property_name, property_data  = self.settings.load_settings_list('property', item_name=property)
+                properties_list.append({'name': property_name, 'data': property_data})
+        return properties_list
+
+    def import_raw_data(self, properties_list: List[Dict]) -> None:
+        for property in properties_list:
+            self.settings.save_settings_list('property', property.get('name'), property.get('data'))
+        self.show_properties()
+
     @staticmethod
     def add_propeties_row(table: QTableWidget, value: str = '') -> None:
         """
@@ -301,3 +317,9 @@ class Properties:
         table.clearContents()
         table.setRowCount(0)
         self.app.ui.PropertiesTemplatesStackedWidget.setCurrentIndex(0)
+
+
+if __name__ == '__main__':
+    l = Properties(None, FinalCifSettings())
+    for line in l.export_raw_data():
+        print(f"{line}")
