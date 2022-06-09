@@ -946,7 +946,7 @@ class Ui_FinalCifWindow(object):
         self.label_18 = QtWidgets.QLabel(self.groupBox_8)
         self.label_18.setObjectName("label_18")
         self.verticalLayout_34.addWidget(self.label_18)
-        spacerItem17 = QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        spacerItem17 = QtWidgets.QSpacerItem(20, 10, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
         self.verticalLayout_34.addItem(spacerItem17)
         self.ImportAllTemplatesPushButton = QtWidgets.QPushButton(self.groupBox_8)
         self.ImportAllTemplatesPushButton.setObjectName("ImportAllTemplatesPushButton")
