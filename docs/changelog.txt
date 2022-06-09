@@ -1,6 +1,8 @@
 FinalCif recent changes
 -----------------------
-* v106 Many small fixes in report texts. Report button shows report type now (from template or not).
+* v106 Many small fixes in report texts. 
+       The Report button now shows the report type (from template or not).
+       Added central button for export/import of all templates. 
 * v105 Small fixes and speed improvements.
 * v104 Faster loading of large CIF files. Adds rotation of structure view around center.
 * v103 Correct z-order of atoms and bonds in molecule view. File open dialog points to directory of last
