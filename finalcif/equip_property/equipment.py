@@ -103,12 +103,18 @@ class Equipment:
         for equipment_name in self.settings.get_equipment_list():
             if equipment_name:
                 equipment = self.settings.load_settings_list(property='equipment', item_name=equipment_name)
-                equipment_list.append({'name': equipment_name, 'data': equipment})
+                equipment_list.append({'name': equipment_name, 'data': equipment,
+                                       'deleted': self.settings.deleted_equipment})
         return equipment_list
 
     def import_raw_data(self, equipment_list: List[Dict]) -> None:
+        deleted = self.settings.deleted_equipment
         for eq in equipment_list:
-            self.settings.save_settings_list('equipment', eq.get('name'), eq.get('data'))
+            name = eq.get('name')
+            if name in deleted and name not in (eq.get('deleted') or []):
+                deleted.remove(name)
+            self.settings.save_settings_list('equipment', name, eq.get('data'))
+        self.settings.save_key_value(name='deleted_templates', item=deleted)
         self.show_equipment()
 
     def load_default_equipment(self):
