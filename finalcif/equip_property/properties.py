@@ -202,14 +202,12 @@ class Properties:
         self.app.ui.cifKeywordLineEdit.setText(loop_column_name)
         newlist = [x for x in list(set(property_list)) if x]
         newlist.sort()
-        # this list keeps track of the property items:
-        self.settings.save_template_list('property_list', newlist)
         template_list.insert(0, '')
         template_list = list(set(template_list))
         # save as dictionary for properties to have "_cif_key : itemlist"
         # for a table item as dropdown menu in the main table.
         table_data = [loop_column_name, template_list]
-        self.settings.save_template_list('property/' + block_name, table_data)
+        self.settings.save_settings_list(property='property', name=block_name, items=table_data)
 
     def load_property_from_settings(self) -> None:
         """
@@ -252,8 +250,8 @@ class Properties:
 
     def import_raw_data(self, properties_list: List[Dict]) -> None:
         for property in properties_list:
-            self.settings.save_template_list(f'property/{property.get("name")}',
-                                             [property.get('cif_key'), property.get('data')])
+            self.settings.save_settings_list(property='property', name=property.get("name"),
+                                             items=[property.get('cif_key'), property.get('data')])
         self.show_properties()
 
     @staticmethod
@@ -294,7 +292,7 @@ class Properties:
             # save as list for properties to have [_cif_key, itemlist]
             # for a table item as dropdown menu in the main table.
             table_data = [keyword, table_data]
-        self.settings.save_template_list('property/' + self.selected_template_name(), table_data)
+        self.settings.save_settings_list(property='property', name=self.selected_template_name(), items=table_data)
         stackwidget.setCurrentIndex(0)
         print('saved')
 
