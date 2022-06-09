@@ -1,5 +1,3 @@
-import os
-from pathlib import Path
 from unittest import TestCase
 
 from finalcif.cif.cif_file_io import CifContainer
