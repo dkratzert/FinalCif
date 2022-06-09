@@ -100,9 +100,8 @@ class Equipment:
 
     def export_raw_data(self) -> List[Dict]:
         equipment_list = []
-        deleted = self.settings.load_value_of_key(key='deleted_templates') or []
         for equipment_name in self.settings.get_equipment_list():
-            if equipment_name and equipment_name not in deleted:
+            if equipment_name:
                 equipment = self.settings.load_settings_list(property='equipment', item_name=equipment_name)
                 equipment_list.append({'name': equipment_name, 'data': equipment})
         return equipment_list
