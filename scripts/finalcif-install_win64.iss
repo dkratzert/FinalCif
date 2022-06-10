@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "FinalCif"
-#define MyAppVersion "105"
+#define MyAppVersion "106"
 #define MyAppPublisher "Daniel Kratzert"
 
 ; Remember, first run pyInstaller script!
@@ -36,7 +36,7 @@ EnableDirDoesntExistWarning=True
 DirExistsWarning=no
 UninstallLogMode=new
 VersionInfoVersion={#MyAppVersion}
-MinVersion=0,6.1
+MinVersion=10.0.10240
 DefaultGroupName={#MyAppName}
 DisableProgramGroupPage=yes
 AppendDefaultGroupName=True

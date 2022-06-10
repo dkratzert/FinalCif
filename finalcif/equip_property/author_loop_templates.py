@@ -29,21 +29,22 @@ class AuthorLoops():
         self.cif = cif
         self.app = app
         self.settings = FinalCifSettings()
-        self.contact_author_checked(False)
-        self.ui.AddThisAuthorToLoopPushButton.clicked.connect(self.save_author_to_loop)
-        self.ui.ContactAuthorCheckBox.stateChanged.connect(lambda: self.contact_author_checked(
-            self.ui.ContactAuthorCheckBox.isChecked()))
-        self.ui.LoopsTabWidget.currentChanged.connect(
-            lambda: self.ui.AddThisAuthorToLoopPushButton.setDisabled(not self.ui.LoopsTabWidget.count()))
-        self.ui.SaveAuthorLoopToTemplateButton.clicked.connect(self.save_author_to_loop_template)
-        self.ui.LoopTemplatesListWidget.clicked.connect(self.load_selected_loop)
-        self.ui.LoopTemplatesListWidget.doubleClicked.connect(self.save_author_to_loop)
-        self.ui.DeleteLoopAuthorTemplateButton.clicked.connect(self.delete_current_author)
-        self.ui.ExportAuthorPushButton.clicked.connect(self.export_author_template)
-        self.ui.ImportAuthorPushButton.clicked.connect(self.import_author)
-        self.ui.FullNameLineEdit.textChanged.connect(self.make_sure_to_save_only_when_name_field_has_text)
-        self.show_authors_list()
-        self.make_sure_to_save_only_when_name_field_has_text()
+        if app:
+            self.contact_author_checked(False)
+            self.ui.AddThisAuthorToLoopPushButton.clicked.connect(self.save_author_to_loop)
+            self.ui.ContactAuthorCheckBox.stateChanged.connect(lambda: self.contact_author_checked(
+                self.ui.ContactAuthorCheckBox.isChecked()))
+            self.ui.LoopsTabWidget.currentChanged.connect(
+                lambda: self.ui.AddThisAuthorToLoopPushButton.setDisabled(not self.ui.LoopsTabWidget.count()))
+            self.ui.SaveAuthorLoopToTemplateButton.clicked.connect(self.save_author_to_loop_template)
+            self.ui.LoopTemplatesListWidget.clicked.connect(self.load_selected_loop)
+            self.ui.LoopTemplatesListWidget.doubleClicked.connect(self.save_author_to_loop)
+            self.ui.DeleteLoopAuthorTemplateButton.clicked.connect(self.delete_current_author)
+            self.ui.ExportAuthorPushButton.clicked.connect(self.export_author_template)
+            self.ui.ImportAuthorPushButton.clicked.connect(self.import_author)
+            self.ui.FullNameLineEdit.textChanged.connect(self.make_sure_to_save_only_when_name_field_has_text)
+            self.show_authors_list()
+            self.make_sure_to_save_only_when_name_field_has_text()
 
     def make_sure_to_save_only_when_name_field_has_text(self):
         if not len(self.ui.FullNameLineEdit.text()):
@@ -146,16 +147,15 @@ class AuthorLoops():
         self.general_author_save(author)
         self.clear_fields()
 
-    def general_author_save(self, author: dict):
-        if not author.get('name'):
+    def general_author_save(self, author_dict: dict):
+        if not author_dict.get('name'):
             return
-        if author.get('contact'):
-            itemtext = '{} (contact author)'.format(retranslate_delimiter(as_string(author.get('name'))))
+        if author_dict.get('contact'):
+            itemtext = '{} (contact author)'.format(retranslate_delimiter(as_string(author_dict.get('name'))))
         else:
-            itemtext = as_string(author.get('name'))
-        authors = self.settings.list_saved_items(property='authors_list')
-        if itemtext not in authors:
-            self.settings.save_settings_dict(property='authors_list', name=itemtext, items=author)
+            itemtext = as_string(author_dict.get('name'))
+        if itemtext not in self.authors_list():
+            self.settings.save_settings_dict(property='authors_list', name=itemtext, items=author_dict)
         if not itemtext:
             return
         self.show_authors_list()
@@ -164,8 +164,7 @@ class AuthorLoops():
         """
         Exports the currently selected author to a file.
         """
-        author = self.get_author_info()
-        selected_template = self.ui.LoopTemplatesListWidget.currentIndex().data()
+        selected_template = self.get_currently_selected_author_name()
         if not selected_template:
             return
         blockname = '__'.join(selected_template.split())
@@ -173,6 +172,16 @@ class AuthorLoops():
             filename = cif_file_save_dialog(blockname.replace('__', '_') + '.cif')
         if not filename.strip():
             return
+        author_cif = self.store_author_in_cif_object(blockname, filename)
+        try:
+            author_cif.save(Path(filename))
+        except PermissionError:
+            if Path(filename).is_dir():
+                return
+            show_general_warning('No permission to write file to {}'.format(Path(filename).resolve()))
+
+    def store_author_in_cif_object(self, blockname, filename):
+        author = self.get_author_info()
         author_cif = CifContainer(filename, new_block=blockname)
         contact_author: bool = author.get('contact')
         loop = self.get_author_loop(contact_author)
@@ -182,12 +191,7 @@ class AuthorLoops():
             del data[-1]
         for key, value in zip(loop, data):
             author_cif.set_pair_delimited(key, as_string(value))
-        try:
-            author_cif.save(filename)
-        except PermissionError:
-            if Path(filename).is_dir():
-                return
-            show_general_warning('No permission to write file to {}'.format(Path(filename).resolve()))
+        return author_cif
 
     def import_author(self, filename=''):
         """
@@ -230,8 +234,7 @@ class AuthorLoops():
         self.show_authors_list()
 
     def delete_current_author(self):
-        index = self.ui.LoopTemplatesListWidget.currentIndex()
-        selected_author_name = index.data()
+        selected_author_name = self.get_currently_selected_author_name()
         if not selected_author_name:
             return
         self.ui.LoopTemplatesListWidget.clear()
@@ -239,23 +242,41 @@ class AuthorLoops():
         self.show_authors_list()
 
     def get_selected_loop_name(self) -> str:
-        listwidget = self.ui.LoopTemplatesListWidget
-        selected_row_text = listwidget.currentIndex().data()
-        if not selected_row_text:
-            return ''
+        selected_row_text = self.get_currently_selected_author_name() or ''
         return selected_row_text
 
+    def get_currently_selected_author_name(self):
+        return self.ui.LoopTemplatesListWidget.currentIndex().data()
+
     def load_selected_loop(self):
-        author_loopdata = self.settings.load_settings_dict('authors_list', self.get_selected_loop_name())
-        self.set_author_info(author_loopdata)
+        self.set_author_info(self.author_loopdata(author_name=self.get_selected_loop_name()))
         self.ui.LoopsTabWidget.setCurrentIndex(0)
+
+    def author_loopdata(self, author_name):
+        return self.settings.load_settings_dict('authors_list', author_name)
 
     def show_authors_list(self):
         self.ui.LoopTemplatesListWidget.clear()
-        authors = self.settings.list_saved_items(property='authors_list')
-        for author in sorted(authors):
+        for author in sorted(self.authors_list()):
             if author:
                 self.ui.LoopTemplatesListWidget.addItem(QListWidgetItem(author))
+
+    def export_raw_data(self) -> List[Dict]:
+        """Export all authors in order to export them all"""
+        authors = []
+        for author in self.authors_list():
+            author_data = self.author_loopdata(author)
+            authors.append(author_data)
+        return authors
+
+    def import_raw_data(self, authors_data: List[Dict]):
+        """Import all authors from an external file"""
+        for author in authors_data:
+            if author:
+                self.general_author_save(author)
+
+    def authors_list(self):
+        return self.settings.list_saved_items(property='authors_list')
 
     def contact_author_checked(self, checked: bool):
         """
@@ -278,3 +299,8 @@ class AuthorLoops():
             self.ui.FootNoteLineEdit.setToolTip('_publ_author_footnote')
             self.ui.FootNoteLineEdit.setEnabled(True)
             self.ui.footnote_label.setEnabled(True)
+
+
+if __name__ == '__main__':
+    l = AuthorLoops(Ui_FinalCifWindow(), CifContainer('test-data/1000007.cif'), None)
+    print(l.export_raw_data())

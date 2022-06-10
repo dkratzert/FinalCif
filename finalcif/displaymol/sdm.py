@@ -14,7 +14,7 @@
 import time
 from collections import namedtuple
 from math import sqrt, cos, radians, sin
-from typing import List
+from typing import List, Tuple
 
 from finalcif.cif.atoms import get_radius_from_element
 from finalcif.tools.dsrmath import Array, SymmetryElement, Matrix, frac_to_cart
@@ -89,9 +89,9 @@ class SDMItem(object):
 
 
 class SDM():
-    sdm_list: list[SDMItem]
+    sdm_list: List[SDMItem]
 
-    def __init__(self, atoms: tuple[List], symmlist: list, cell: tuple[float, float, float, float, float, float],
+    def __init__(self, atoms: Tuple[List], symmlist: list, cell: Tuple[float, float, float, float, float, float],
                  centric=False):
         """
         Calculates the shortest distance matrix

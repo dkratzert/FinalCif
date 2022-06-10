@@ -18,10 +18,11 @@ from typing import Union, Tuple, List
 # protected space character:
 protected_space = u'\u00A0'
 # Angstrom character:
-# angstrom = u'\u212B'    # Unicode angstrom sign (only for compatibility)
+# angstrom = u'\u212B'  # Unicode angstrom sign (only for compatibility)
+# angstrom = 'Å'      # MSWord seems unable to render the regular letter correctly. It looks like a different font?
 angstrom = u'\u00C5'  # Latin capital A with ring above. The Unicode consortium recommends to use the regular letter
-# capital theta symbol:
-Theta_symbol = u'\u03F4'
+# Greek Small Letter Theta θ:
+theta_symbol = u'\u03B8'
 # bigger or equal:
 bequal = u'\u2265'
 # small_sigma:
