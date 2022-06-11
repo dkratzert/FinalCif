@@ -614,6 +614,21 @@ class CifContainer():
             yield atom(label=at.label, type=at.type_symbol, x=x, y=y, z=z,
                        part=at.disorder_group, occ=at.occ, u_eq=at.u_iso)
 
+    def displacement_parameters(self):
+        """
+        Yields the anisotropic displacement parameters.
+        """
+        labels = self.block.find_loop('_atom_site_aniso_label')
+        u11 = self.block.find_loop('_atom_site_aniso_U_11')
+        u22 = self.block.find_loop('_atom_site_aniso_U_22')
+        u33 = self.block.find_loop('_atom_site_aniso_U_33')
+        u23 = self.block.find_loop('_atom_site_aniso_U_23')
+        u13 = self.block.find_loop('_atom_site_aniso_U_13')
+        u12 = self.block.find_loop('_atom_site_aniso_U_12')
+        adp = namedtuple('adp', ('label', 'U11', 'U22', 'U33', 'U23', 'U13', 'U12'))
+        for label, u11, u22, u33, u23, u13, u12 in zip(labels, u11, u22, u33, u23, u13, u12):
+            yield adp(label=label, U11=u11, U22=u22, U33=u33, U12=u12, U13=u13, U23=u23)
+
     @property
     def hydrogen_atoms_present(self) -> bool:
         for at in self.atomic_struct.sites:
@@ -740,7 +755,7 @@ class CifContainer():
         hydr = namedtuple('HydrogenBond', ('label_d', 'label_h', 'label_a', 'dist_dh', 'dist_ha', 'dist_da',
                                            'angle_dha', 'symm'))
         for label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm in \
-            zip(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm):
+                zip(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm):
             yield hydr(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, self.checksymm(symm))
 
     def key_value_pairs(self) -> List[Tuple[str, str]]:
