@@ -163,23 +163,23 @@ no real minus sign in front. The former values hav hyphens replaced with minus s
 
 .. code-block:: text
 
-   'res_file_data'          : The SHELX res file text
-   'is_centrosymm'          : It true if the space group of the structure is centrosymmetric
-   'atoms'                  : The list of atoms with 'label', 'type', 'x', 'y', 'z', 'part',
-                              'occ', 'u_eq'
-   'hydrogen_atoms_present' : Is true if hydrogen atoms are present in the structure
-   'disorder_present'       : Is true if atoms in parts are present in the structure
-   'cell'                   : The unit cell
-   'bonds'                  : The list of bonds as 'label1', 'label2', 'dist', 'symm'
-   'angles'                 : The list of angles as 'label1', 'label2', 'label3', 'angle_val',
-                              'symm1', 'symm2'
-   'torsion_angles'         : The list of torsion angles as 'label1', 'label2', 'label3', 'label4',
-                              'torsang', 'symm1', 'symm2', 'symm3', 'symm4'
-   'hydrogen_bonds'         : The list of hydrogen atoms involved in HTAB listings as 'label_d',
-                              'label_h', 'label_a', 'dist_dh', 'dist_ha', 'dist_da', 'angle_dha',
-                               'symm'
-   'test_res_checksum'      : True if the checksum of the SHELX .res file fits to the file content.
-   'test_hkl_checksum'      : True if the checksum of the SHELX .hkl file fits to the file content.
+   'cif.res_file_data'          : The SHELX .res file text.
+   'cif.is_centrosymm'          : It true if the space group of the structure is centrosymmetric.
+   'cif.atoms'                  : The list of atoms with 'label', 'type', 'x', 'y', 'z', 'part',
+                                                         'occ', 'u_eq'.
+   'cif.hydrogen_atoms_present' : Is true if hydrogen atoms are present in the structure.
+   'cif.disorder_present'       : Is true if atoms in parts are present in the structure.
+   'cif.cell'                   : The unit cell as 'a', 'b', 'c', 'alpha', 'beta', 'gamma', 'volume'.
+   'cif.bonds'                  : The list of bonds as 'label1', 'label2', 'dist', 'symm'.
+   'angles'                     : The list of angles as 'label1', 'label2', 'label3', 'angle_val',
+                                  'symm1', 'symm2'.
+   'torsion_angles'             : The list of torsion angles as 'label1', 'label2', 'label3', 'label4',
+                                  'torsang', 'symm1', 'symm2', 'symm3', 'symm4'.
+   'hydrogen_bonds'             : The list of hydrogen atoms involved in HTAB listings as 'label_d',
+                                  'label_h', 'label_a', 'dist_dh', 'dist_ha', 'dist_da', 'angle_dha',
+                                  'symm'.
+   'test_res_checksum'          : True if the checksum of the SHELX .res file fits to the file content.
+   'test_hkl_checksum'          : True if the checksum of the SHELX .hkl file fits to the file content.
 
 
 The above is not limited to the templates of FinalCif. It is also possible to insert template tags
