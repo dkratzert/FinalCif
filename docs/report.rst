@@ -137,6 +137,7 @@ Data Available for the Report
     'solution_program'      : The name of the structure solution program
     'refinement_prog'       : The name of the refinement program
     'atomic_coordinates'    : The atomic coordinates
+    'displacement_parameters': The atomic displacement parameters as 'label', 'U11', 'U22', 'U33', 'U23', 'U13', 'U12'
     'bonds'                 : The bonds with lengths
     'angles'                : The bond angles
     'ba_symminfo'           : The symmetry operations used to generate equivalent atoms in the
