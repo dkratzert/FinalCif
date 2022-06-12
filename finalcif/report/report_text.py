@@ -337,7 +337,7 @@ def get_inf_article(next_word: str) -> str:
     if not next_word:
         return 'a'
     voc = 'aeiou'
-    return 'a' if not next_word[0].lower() in voc else 'an'
+    return 'an' if next_word[0].lower() in voc else 'a'
 
 
 def format_radiation(radiation_type: str) -> list:

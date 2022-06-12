@@ -329,7 +329,7 @@ class TemplatedReport():
     @staticmethod
     def get_completeness(cif: CifContainer) -> str:
         try:
-            completeness = f"{float(cif['_diffrn_measured_fraction_theta_full']) * 100:.1f} %"
+            completeness = f"{float(cif['_diffrn_measured_fraction_theta_full']) * 100:.1f}{protected_space}%"
         except ValueError:
             completeness = '?'
         return completeness
@@ -466,6 +466,14 @@ class TemplatedReport():
 
     def make_templated_report(self, options: Options, file_obj: Path, output_filename: str, picfile: Path,
                               template_path: Path):
+        context, tpl_doc = self.prepare_report_data(file_obj, options, picfile, template_path)
+        # Filter definition for {{foobar|filter}} things:
+        jinja_env = jinja2.Environment()
+        jinja_env.filters['inv_article'] = get_inf_article
+        tpl_doc.render(context, jinja_env=jinja_env, autoescape=True)
+        tpl_doc.save(output_filename)
+
+    def prepare_report_data(self, file_obj: Path, options: Options, picfile: Path, template_path: str):
         cif = CifContainer(file_obj)
         tpl_doc = DocxTemplate(Path(__file__).parent.parent.joinpath(template_path))
         ba = BondsAndAngles(cif, without_h=options.without_h)
@@ -533,12 +541,7 @@ class TemplatedReport():
                    'hydrogen_symminfo'      : h.symminfo,
                    'literature'             : self.literature
                    }
-
-        # Filter definition for {{foobar|filter}} things:
-        jinja_env = jinja2.Environment()
-        jinja_env.filters['inv_article'] = get_inf_article
-        tpl_doc.render(context, jinja_env=jinja_env, autoescape=True)
-        tpl_doc.save(output_filename)
+        return context, tpl_doc
 
 
 if __name__ == '__main__':
