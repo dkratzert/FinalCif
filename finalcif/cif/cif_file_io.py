@@ -81,6 +81,15 @@ class CifContainer():
         filename = self.path_base.joinpath(Path(prefix + file_witout_finalcif + suffix))
         return filename
 
+    def get_line_numbers_of_bad_characters(self, filepath: Path):
+        line_numbers = []
+        for num, line in enumerate(filepath.read_bytes().splitlines(keepends=True)):
+            try:
+                line.decode('ascii')
+            except(UnicodeDecodeError):
+                line_numbers.append(num)
+        return line_numbers
+
     @property
     def is_multi_cif(self) -> bool:
         return True if len(self.doc) > 1 else False
