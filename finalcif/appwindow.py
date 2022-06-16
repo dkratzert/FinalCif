@@ -301,10 +301,10 @@ class AppWindow(QMainWindow):
         import pickle
         if not filename:
             filename, _ = QFileDialog.getSaveFileName(directory=str(Path(self.get_last_workdir()).joinpath(
-                                                      f'finalcif_templates_{time.strftime("%Y-%m-%d")}.dat')),
-                                                      initialFilter="Template File (*.dat)",
-                                                      filter="Template File (*.dat)",
-                                                      caption='Save templates')
+                f'finalcif_templates_{time.strftime("%Y-%m-%d")}.dat')),
+                initialFilter="Template File (*.dat)",
+                filter="Template File (*.dat)",
+                caption='Save templates')
         if not filename:
             return
         templates = {'text'      : self.export_raw_text_templates(),
@@ -1200,8 +1200,13 @@ class AppWindow(QMainWindow):
         except IOError as e:
             show_general_warning('Unable to open file {}:\n'.format(filename) + str(e))
             return
-        self.import_key_value_pairs(imp_cif)
-        self.import_loops(imp_cif)
+        self.check_cif_for_missing_values_before_really_open_it()
+        try:
+            self.import_key_value_pairs(imp_cif)
+            self.import_loops(imp_cif)
+        except Exception as e:
+            print(e)
+            unable_to_open_message(Path(self.cif.filename), e)
         # I think I leave the user possibilities to change the imported values:
         # self.save_current_cif_file()
         # self.load_cif_file(str(self.cif.finalcif_file))
@@ -1301,15 +1306,12 @@ class AppWindow(QMainWindow):
         self._clear_state_before_block_load()
         self.cif.load_this_block(index)
         self.check_cif_for_missing_values_before_really_open_it()
-        # self.go_into_cifs_directory(filepath)
         try:
             self.fill_cif_table()
         except Exception as e:
             not_ok = e
-            print(not_ok)
-            # raise
-            # unable_to_open_message(filepath, not_ok)
-            raise
+            print(e)
+            unable_to_open_message(Path(self.cif.filename), not_ok)
         self.load_recent_cifs_list()
         self.make_loops_tables()
         if self.cif:
