@@ -1,6 +1,6 @@
 import sys
 from collections import namedtuple
-from math import sqrt, cos, sin
+from math import sqrt, cos, sin, dist
 from pathlib import Path
 from typing import List, Union
 
@@ -219,7 +219,7 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.painter.setPen(QPen(QColor(100, 50, 5), 2, Qt.SolidLine))
         self.painter.drawText(atom.screenx + 18, atom.screeny - 4, atom.name)
 
-    def get_conntable_from_atoms(self, extra_param: float = 0.48) -> tuple:
+    def get_conntable_from_atoms(self, extra_param: float = 1.2) -> tuple:
         """
         Returns a connectivity table from the atomic coordinates and the covalence
         radii of the atoms.
@@ -229,14 +229,14 @@ class MoleculeWidget(QtWidgets.QWidget):
         h = ('H', 'D')
         for num1, at1 in enumerate(self.atoms, 0):
             for num2, at2 in enumerate(self.atoms, 0):
-                if (at1.part != 0 or at2.part != 0) and at1.part != at2.part:
-                    continue
-                d = self.distance(at1.coordinate, at2.coordinate)
-                if d > 4.0:  # makes bonding faster (longer bonds do not exist)
+                if (at1.part != 0 and at2.part != 0) and at1.part != at2.part:
                     continue
                 if at1.name == at2.name:  # name1 = name2
                     continue
-                if (at1.radius + at2.radius) + extra_param > d:
+                d = dist(at1.coordinate, at2.coordinate)
+                if d > 4.0:  # makes bonding faster (longer bonds do not exist)
+                    continue
+                if (at1.radius + at2.radius) * extra_param > d:
                     if at1.type_ in h and at2.type_ in h:
                         continue
                     # The extra time for this is not too much:
