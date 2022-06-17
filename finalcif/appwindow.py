@@ -1308,9 +1308,19 @@ class AppWindow(QMainWindow):
         self.check_cif_for_missing_values_before_really_open_it()
         try:
             self.fill_cif_table()
+        except UnicodeDecodeError as e:
+            nums = self.cif.get_line_numbers_of_bad_characters(Path(self.cif.doc.source))
+            show_general_warning(window_title='Unable to open file',
+                                 warn_text=f'Invalid characters in file!',
+                                 info_text=f'The file "{Path(self.cif.doc.source)}" has invalid '
+                                           f'characters in line(s)'
+                                           f' {", ".join([str(x + 1) for x in nums])}.'
+                                           '\n\nOnly ascii characters are allowed.')
         except Exception as e:
             not_ok = e
             print(e)
+            if DEBUG:
+                raise
             unable_to_open_message(Path(self.cif.filename), not_ok)
         self.load_recent_cifs_list()
         self.make_loops_tables()
