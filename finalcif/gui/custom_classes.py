@@ -157,8 +157,10 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         Set text in current table cell regardless of the containing item.
         """
         txt = retranslate_delimiter(txt)
-        if row is None:
+        if row is None and key in self.vheaderitems:
             row = self.vheaderitems.index(key)
+        elif row is None and key not in self.vheaderitems:
+            row = 0
         if isinstance(self.cellWidget(row, column), MyComboBox):
             self.cellWidget(row, column).setText(txt)
             return
