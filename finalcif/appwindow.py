@@ -569,7 +569,8 @@ class AppWindow(QMainWindow):
                 cifkey = table.item(row, 1).data(2)
                 try:
                     row_num = self.ui.cif_main_table.vheaderitems.index(cifkey)
-                    del self.ui.cif_main_table.vheaderitems[row_num]
+                    # Leads to a crash when activated:
+                    # del self.ui.cif_main_table.vheaderitems[row_num]
                 except ValueError:
                     continue
                 self.cif.block.set_pair(cifkey, '?')
