@@ -22,7 +22,7 @@ from finalcif.report.mtools import cif_keywords_list, format_space_group
 from finalcif.report.references import ReferenceList, DSRReference2018, DSRReference2015
 from finalcif.report.report_text import CCDC, CrstalSelection, Crystallization, DataReduct, Disorder, Hydrogens, \
     MachineType, \
-    SolveRefine, format_radiation, FinalCifreport, SpaceChar
+    SolveRefine, format_radiation, FinalCifreport, SpaceChar, RefinementDetails
 from finalcif.report.templated_report import BondsAndAngles, TorsionAngles, HydrogenBonds
 from finalcif.tools.misc import protected_space, angstrom, bequal, sigma_sm, halbgeviert, degree_sign, ellipsis_mid, \
     less_or_equal, \
@@ -73,10 +73,10 @@ def make_report_from(options: Options, cif: CifContainer, output_filename: str =
     :param output_filename: the table is saved to this file.
     """
     document = create_document()
-    ref: Union[ReferenceList, None] = None
+    references: Union[ReferenceList, None] = None
 
     if not options.report_text:
-        document.add_heading('Structure Tables for {}'.format(cif.block.name), 1)
+        document.add_heading(f'Structure Tables for {cif.block.name}', 1)
     else:
         document.add_heading('Structure Tables', 1)
         make_columns_section(document, columns='2')
@@ -84,34 +84,38 @@ def make_report_from(options: Options, cif: CifContainer, output_filename: str =
     if options.report_text:
         if picfile and picfile.exists():
             add_picture(document, options, picfile)
-        ref = make_report_text(cif, document)
+        references = make_report_text(cif, document)
 
     # -- The residuals table:
     table_num = 1
     if options.report_text:
-        # I have to do the header and styling here, otherwise I get another paragraph with a line break in front of the heading.
+        # I have to do the header and styling here, otherwise I get another paragraph
+        # with a line break in front of the heading.
         p = document.add_paragraph(style='Heading 2')
         p.add_run().add_break(WD_BREAK.COLUMN)
-        tab0_head = r"Table {}. Crystal data and structure refinement for {}".format(table_num, cif.block.name)
+        tab0_head = fr"Table {table_num}. Crystal data and structure refinement for {cif.block.name}"
         p.add_run(text=tab0_head)
     table_num = add_residuals_table(document, cif, table_num)
     p = document.add_paragraph()
     p.add_run().add_break(WD_BREAK.PAGE)
     if options.report_text:
         make_columns_section(document, columns='1')
+    if cif['_refine_special_details']:
+        # RefinementDetails(cif, document)
+        pass
     table_num = add_coords_table(document, cif, table_num)
 
     if cif.symmops:
         if len(list(cif.bonds())) + len(list(cif.angles())) > 0:
             table_num += 1
-            document.add_heading(r"Table {}. Bond lengths and angles for {}".format(table_num, cif.block.name), 2)
+            document.add_heading(fr"Table {table_num}. Bond lengths and angles for {cif.block.name}", 2)
             make_columns_section(document, columns='2')
             ba = BondsAndAngles(cif, without_h=options.without_h)
             table_num = add_bonds_and_angles_table(document, table_num, ba)
         if len(list(cif.torsion_angles())) > 0:
             make_columns_section(document, columns='1')
             table_num += 1
-            document.add_heading(r"Table {}. Torsion angles for {}".format(table_num, cif.block.name), 2)
+            document.add_heading(fr"Table {table_num}. Torsion angles for {cif.block.name}", 2)
             make_columns_section(document, columns='2')
             tors = TorsionAngles(cif, without_h=options.without_h)
             table_num = add_torsion_angles(document, table_num, tors)
@@ -119,7 +123,7 @@ def make_report_from(options: Options, cif: CifContainer, output_filename: str =
         if len(list(cif.hydrogen_bonds())) > 0:
             table_num += 1
             h = HydrogenBonds(cif)
-            document.add_heading(r"Table {}. Hydrogen bonds for {}".format(table_num, cif.block.name), 2)
+            document.add_heading(fr"Table {table_num}. Hydrogen bonds for {cif.block.name}", 2)
             table_num = add_hydrogen_bonds(document, table_num, h)
         document.add_paragraph('')
     else:
@@ -129,7 +133,7 @@ def make_report_from(options: Options, cif: CifContainer, output_filename: str =
     if options.report_text:
         # -- Bibliography:
         document.add_heading('Bibliography', 2)
-        ref.make_literature_list(document)
+        references.make_literature_list(document)
 
     document.save(output_filename)
     print('\nTables finished - output file: {}'.format(output_filename))

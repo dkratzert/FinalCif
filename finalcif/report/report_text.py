@@ -3,6 +3,8 @@ from builtins import str
 from typing import Union
 
 import gemmi
+from docx import Document
+from docx.enum.text import WD_BREAK
 from docx.text.paragraph import Paragraph
 from docx.text.run import Run
 from lxml import etree
@@ -331,6 +333,15 @@ class FinalCifreport():
         sentence = "This report and the CIF file were generated using FinalCif."
         paragraph.add_run(sentence)
         ref.append(FinalCifReference())
+
+
+class RefinementDetails():
+    def __init__(self, cif: CifContainer, document: Document):
+        ph = document.add_paragraph(style='Heading 2')
+        ph.add_run(text=fr"Refinement details for {cif.block.name}")
+        p = document.add_paragraph()
+        p.style = document.styles['fliesstext']
+        p.add_run(gemmi.cif.as_string(cif['_refine_special_details']))
 
 
 def get_inf_article(next_word: str) -> str:
