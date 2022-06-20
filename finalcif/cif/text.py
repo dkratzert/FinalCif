@@ -17,13 +17,11 @@ def quote(string: str, wrapping=80) -> str:
     """
     if len(string) < 80:
         return gemmi.cif.quote(string)
-    lines = '\n'
+    lines = ''
     for line in string.split('\n'):
         if len(line) > wrapping:
             line = textwrap.fill(line, width=wrapping)
-            lines += line + '\n'
-        else:
-            lines += line + '\n'
+        lines += f'{line}\n'
     quoted = gemmi.cif.quote(lines.rstrip('\n'))
     return quoted
 

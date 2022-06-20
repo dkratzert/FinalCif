@@ -101,7 +101,7 @@ def make_report_from(options: Options, cif: CifContainer, output_filename: str =
     if options.report_text:
         make_columns_section(document, columns='1')
     if cif['_refine_special_details']:
-        # RefinementDetails(cif, document)
+        RefinementDetails(cif, document)
         pass
     table_num = add_coords_table(document, cif, table_num)
 

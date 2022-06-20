@@ -341,7 +341,7 @@ class RefinementDetails():
         ph.add_run(text=fr"Refinement details for {cif.block.name}")
         p = document.add_paragraph()
         p.style = document.styles['fliesstext']
-        p.add_run(gemmi.cif.as_string(cif['_refine_special_details']))
+        p.add_run(' '.join(cif['_refine_special_details'].splitlines(keepends=False)))
 
 
 def get_inf_article(next_word: str) -> str:
