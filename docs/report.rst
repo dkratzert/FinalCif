@@ -155,6 +155,7 @@ Data Available for the Report
     'solution_method'       : The structure solution method used.
     'solution_program'      : The name of the structure solution program.
     'refinement_prog'       : The name of the refinement program.
+    'refinement_details'    : The text of '_refine_special_details'.
 
 
 **This information from the 'cif' variable can also be useful:**
