@@ -24,8 +24,7 @@ class TestText(unittest.TestCase):
     def test_quote_long(self):
         q = quote('This is a moch longer text, because I want to see what this method does with text over 80 '
                   'characters wide. Let\'s add also some special characters; ?!"§$%&/()=`? Oh yeah!#++-_.,:;')
-        quoted = (";\n"
-                  "This is a moch longer text, because I want to see what this method does with\n"
+        quoted = (";This is a moch longer text, because I want to see what this method does with\n"
                   "text over 80 characters wide. Let's add also some special characters;\n"
                   "?!\"§$%&/()=`? Oh yeah!#++-_.,:;\n"
                   ";")
