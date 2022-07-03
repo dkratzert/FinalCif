@@ -67,14 +67,14 @@ class TablesTestCase(TablesTestMixin, unittest.TestCase):
         self.myapp.ui.HAtomsCheckBox.setChecked(False)
         self.myapp.ui.SaveFullReportButton.click()
         doc = Document(self.reportdoc.absolute())
-        table: Table = doc.tables[2]
+        table: Table = doc.tables[3]
         self.assertEqual('C1–H1', table.cell(row_idx=4, col_idx=0).text)
 
     def test_option_without_h(self):
         self.myapp.ui.HAtomsCheckBox.setChecked(True)
         self.myapp.ui.SaveFullReportButton.click()
         doc = Document(self.reportdoc.absolute())
-        table: Table = doc.tables[2]
+        table: Table = doc.tables[3]
         self.assertEqual('O1–C13', table.cell(row_idx=4, col_idx=0).text)
 
     def test_option_no_report_text(self):
