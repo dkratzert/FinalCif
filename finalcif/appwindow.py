@@ -54,7 +54,7 @@ from finalcif.tools.download import MyDownloader, start_worker
 from finalcif.tools.dsrmath import my_isnumeric
 from finalcif.tools.misc import next_path, do_not_import_keys, celltxt, to_float, \
     combobox_fields, \
-    do_not_import_from_stoe_cfx, cif_to_header_label, grouper, is_database_number, file_age_in_days
+    do_not_import_from_stoe_cfx, cif_to_header_label, grouper, is_database_number, file_age_in_days, open_file
 from finalcif.tools.options import Options
 from finalcif.tools.platon import Platon
 from finalcif.tools.settings import FinalCifSettings
@@ -1059,17 +1059,10 @@ class AppWindow(QMainWindow):
             multitable = self.cif.finalcif_file_prefixed(prefix='', suffix='-multitable.docx')
             arc.zip.write(filename=multitable, arcname=multitable.name)
 
-    def open_report_document(self, report_filename: Path, multi_table_document: Path):
+    def open_report_document(self, report_filename: Path, multi_table_document: Path) -> None:
         if self.cif.is_multi_cif:
-            self.open_file(multi_table_document)
-        self.open_file(report_filename)
-
-    def open_file(self, report_filename: Path):
-        if report_filename.exists():
-            if os.name == 'nt':
-                os.startfile(report_filename)
-            if sys.platform == 'darwin':
-                subprocess.call(['open', report_filename])
+            open_file(multi_table_document)
+        open_file(report_filename)
 
     def save_current_recent_files_list(self, file: Path) -> None:
         """

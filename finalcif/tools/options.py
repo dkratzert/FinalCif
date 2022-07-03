@@ -7,8 +7,9 @@ class Options:
         self.ui = ui
         self.settings = settings
         # initial default, otherwise we have width=0.0 and no picture visible:
-        self.ui.PictureWidthDoubleSpinBox.setValue(7.5)
-        self._connect_signal_and_slots()
+        if ui:
+            self.ui.PictureWidthDoubleSpinBox.setValue(7.5)
+            self._connect_signal_and_slots()
         self._options = {}
 
     def _connect_signal_and_slots(self):
