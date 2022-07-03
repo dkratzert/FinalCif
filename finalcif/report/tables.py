@@ -569,7 +569,7 @@ def add_adp_table(document: Document, cif: CifContainer, table_num: int):
     h.add_run(f'2hk'
               f'a*b*U').font.italic = True
     h.add_run('12').font.subscript = True
-    h.add_run(f'{medium_math_space}].')
+    h.add_run(f'{medium_math_space}]')
 
     adp_data = tuple(cif.displacement_parameters())
     adp_table = document.add_table(rows=len(adp_data) + 3, cols=7, style='Table Grid')
