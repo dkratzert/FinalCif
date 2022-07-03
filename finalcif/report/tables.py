@@ -26,8 +26,10 @@ from finalcif.report.report_text import CCDC, CrstalSelection, Crystallization, 
 from finalcif.report.templated_report import BondsAndAngles, TorsionAngles, HydrogenBonds
 from finalcif.tools.misc import protected_space, angstrom, bequal, sigma_sm, halbgeviert, degree_sign, ellipsis_mid, \
     less_or_equal, \
-    timessym, lambdasym, this_or_quest, isnumeric, minus_sign, theta_symbol, grouper
+    timessym, lambdasym, this_or_quest, isnumeric, minus_sign, theta_symbol, grouper, open_file, pi_symbol, \
+    ellipsis_char, medium_math_space
 from finalcif.tools.options import Options
+from finalcif.tools.settings import FinalCifSettings
 
 
 def open_cif_file(cif_fileobj) -> Union[None, CifContainer]:
@@ -104,6 +106,8 @@ def make_report_from(options: Options, cif: CifContainer, output_filename: str =
         RefinementDetails(cif, document)
         pass
     table_num = add_coords_table(document, cif, table_num)
+    if len(tuple(cif.displacement_parameters())) > 0:
+        table_num = add_adp_table(document, cif, table_num)
 
     if cif.symmops:
         if len(list(cif.bonds())) + len(list(cif.angles())) > 0:
@@ -468,7 +472,7 @@ def add_coords_table(document: Document, cif: CifContainer, table_num: int):
     """
     atoms = list(cif.atoms())
     table_num += 1
-    headline = "Table {}. Atomic coordinates and ".format(table_num)
+    headline = f"Table {table_num}. Atomic coordinates and "
     h = document.add_heading(headline, 2)
     h.add_run('U').font.italic = True
     h.add_run('eq').font.subscript = True
@@ -533,6 +537,78 @@ def add_coords_table(document: Document, cif: CifContainer, table_num: int):
     return table_num
 
 
+def add_adp_table(document: Document, cif: CifContainer, table_num: int):
+    """
+    Anisotropic displacement parameters (Å2) for {{ cif.block.name }}.
+    The anisotropic displacement factor exponent takes the form: -2π2[h2a*2U11 + ... + 2hka*b*U12]
+    """
+    table_num += 1
+    headline = f"Table {table_num}. Anisotropic displacement parameters ({angstrom}"
+    h = document.add_heading(headline, 2)
+    h.add_run('2').font.superscript = True
+    h.add_run(f') for {cif.block.name}. The anisotropic displacement factor exponent takes '
+              f'the form: {minus_sign}2{pi_symbol}')
+    h.add_run('2').font.superscript = True
+    h.add_run('[')
+
+    h.add_run(f'{medium_math_space}h').font.italic = True
+    h.add_run('2').font.superscript = True
+    h.add_run(f'(a*)').font.italic = True
+    h.add_run('2').font.superscript = True
+    h.add_run(f'U').font.italic = True
+    h.add_run('11').font.subscript = True
+
+    h.add_run(f'{medium_math_space}+{medium_math_space}k').font.italic = True
+    h.add_run('2').font.superscript = True
+    h.add_run(f'(b*)').font.italic = True
+    h.add_run('2').font.superscript = True
+    h.add_run(f'U').font.italic = True
+    h.add_run('22').font.subscript = True
+
+    h.add_run(f'{medium_math_space}+{medium_math_space}{ellipsis_char}{medium_math_space}+{medium_math_space}')
+    h.add_run(f'2hk'
+              f'a*b*U').font.italic = True
+    h.add_run('12').font.subscript = True
+    h.add_run(f'{medium_math_space}].')
+
+    adp_data = tuple(cif.displacement_parameters())
+    adp_table = document.add_table(rows=len(adp_data) + 3, cols=7, style='Table Grid')
+    head_row = adp_table.rows[0]
+    head_row.cells[0].paragraphs[0].add_run('Atom').bold = True
+    for n, u_val in enumerate(('11', '22', '33', '23', '13', '12'), 1):
+        p_u = head_row.cells[n].paragraphs[0]
+        u_char(p_u)
+        u_number(p_u, u_val)
+    col1_cells = adp_table.columns[0].cells
+    col2_cells = adp_table.columns[1].cells
+    col3_cells = adp_table.columns[2].cells
+    col4_cells = adp_table.columns[3].cells
+    col5_cells = adp_table.columns[4].cells
+    col6_cells = adp_table.columns[5].cells
+    col7_cells = adp_table.columns[6].cells
+    for rowidx, row in enumerate(adp_data, 1):
+        col1_cells[rowidx].text = row.label
+        col2_cells[rowidx].text = row.U11.replace('-', minus_sign)
+        col3_cells[rowidx].text = row.U22.replace('-', minus_sign)
+        col4_cells[rowidx].text = row.U33.replace('-', minus_sign)
+        col5_cells[rowidx].text = row.U23.replace('-', minus_sign)
+        col6_cells[rowidx].text = row.U13.replace('-', minus_sign)
+        col7_cells[rowidx].text = row.U12.replace('-', minus_sign)
+    return table_num
+
+
+def u_char(p_u):
+    r = p_u.add_run('U')
+    r.font.bold = True
+    r.font.italic = True
+
+
+def u_number(p_u, value):
+    r = p_u.add_run(value)
+    r.font.bold = True
+    r.font.subscript = True
+
+
 def add_bonds_and_angles_table(document: Document, table_num: int, data: BondsAndAngles = None) -> int:
     """
     Make table with bonds and angles.
@@ -540,10 +616,10 @@ def add_bonds_and_angles_table(document: Document, table_num: int, data: BondsAn
     # creating rows in advance is *much* faster!
     bond_angle_table = document.add_table(rows=len(data) + 3, cols=2, style='Table Grid')
     head_row = bond_angle_table.rows[0]
-    head_row.cells[0].paragraphs[0].add_run('Atom{}Atom'.format(halbgeviert)).bold = True
+    head_row.cells[0].paragraphs[0].add_run(f'Atom{halbgeviert}Atom').bold = True
     p_length = head_row.cells[1].paragraphs[0]
     p_length.add_run('Length [{}]'.format(angstrom)).bold = True
-    # having a list of column cella before is *much* faster!
+    # having a list of column cells before is *much* faster!
     col1_cells = bond_angle_table.columns[0].cells
     col2_cells = bond_angle_table.columns[1].cells
     rowidx = 1
@@ -624,11 +700,11 @@ def add_hydrogen_bonds(document: Document, table_num: int, data: HydrogenBonds =
     head_row = hydrogen_table.rows[0].cells
     # D-H...A	d(D-H)	d(H...A)	d(D...A)	<(DHA)
     head_row[0].paragraphs[0].add_run(
-        'D{}H{}A{}[{}]'.format(halbgeviert, ellipsis_mid, protected_space, angstrom)).font.bold = True
-    head_row[1].paragraphs[0].add_run('d(D{}H){}[{}]'.format(halbgeviert, protected_space, angstrom)).font.bold = True
-    head_row[2].paragraphs[0].add_run('d(H{}A){}[{}]'.format(ellipsis_mid, protected_space, angstrom)).font.bold = True
-    head_row[3].paragraphs[0].add_run('d(D{}A){}[{}]'.format(ellipsis_mid, protected_space, angstrom)).font.bold = True
-    head_row[4].paragraphs[0].add_run('<(DHA){}[{}]'.format(protected_space, degree_sign)).font.bold = True
+        f'D{halbgeviert}H{ellipsis_mid}A{protected_space}[{angstrom}]').font.bold = True
+    head_row[1].paragraphs[0].add_run(f'd(D{halbgeviert}H){protected_space}[{angstrom}]').font.bold = True
+    head_row[2].paragraphs[0].add_run(f'd(H{ellipsis_mid}A){protected_space}[{angstrom}]').font.bold = True
+    head_row[3].paragraphs[0].add_run(f'd(D{ellipsis_mid}A){protected_space}[{angstrom}]').font.bold = True
+    head_row[4].paragraphs[0].add_run(f'<(DHA){protected_space}[{degree_sign}]').font.bold = True
     col0_cells = hydrogen_table.columns[0].cells
     col1_cells = hydrogen_table.columns[1].cells
     col2_cells = hydrogen_table.columns[2].cells
@@ -791,6 +867,10 @@ if __name__ == '__main__':
     output_filename = 'tables.docx'
     import time
 
-    # make_report_from(Path('./test-data').rglob('*.cif')[1])
-    make_multi_tables(CifContainer('test-data/1000007-multi-finalcif.cif'))
+    settings = FinalCifSettings()
+    options = Options(None, settings)
+    make_report_from(options, CifContainer('test-data/DK_Zucker2_0m.cif'),
+                     output_filename='test.docx')
+    # make_multi_tables(CifContainer('test-data/1000007-multi-finalcif.cif'))
+    open_file(Path('test.docx'))
     t1 = time.perf_counter()

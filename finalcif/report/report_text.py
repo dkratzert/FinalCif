@@ -4,7 +4,6 @@ from typing import Union
 
 import gemmi
 from docx import Document
-from docx.enum.text import WD_BREAK
 from docx.text.paragraph import Paragraph
 from docx.text.run import Run
 from lxml import etree
