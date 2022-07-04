@@ -282,34 +282,69 @@ class Atoms():
 class Hydrogens():
     def __init__(self, cif: CifContainer, paragraph: Paragraph):
         """
-        TODO: check if the proposed things are really there.
+        The hydrogen atoms were refined isotropically on calculated positions using
+        a riding model with their Uiso values constrained to 1.5 times the Ueq of
+        their pivot atoms for terminal sp3 carbon atoms and 1.2 times for all other
+        carbon atoms.
         """
         self.cif = cif
-        # TODO: test how many hydrogen atoms have ueq < -1.0 -> constrained or free refinement
-        #                                                       of hydrogen displacement params
-        # TODO: detect riding model of hydrogen atoms -> res file?
-        sentence1 = f"The hydrogen atoms were refined"
-        sentence_isotropic = "isotropically"
-        sentence_riding =   "on calculated positions using a riding model with their "
-        sentence_15 = " values constrained to 1.5 times the "
-        sentence_pivot = " of their pivot atoms for terminal sp"
-        sentence_12 = " carbon atoms and 1.2 times for all other carbon atoms."
         hatoms: List[SHXAtom] = [x for x in self.cif.shx.atoms.all_atoms if x.is_hydrogen]
-        n_anisotropic = len([x for x in hatoms if sum(x.uvals[1:]) > 0.0001])
+        n_hatoms = len(hatoms)
+        n_anisotropic_h = len([x for x in hatoms if sum(x.uvals[1:]) > 0.0001])
         riding_atoms = [x for x in hatoms if x.afix]
         n_riding = len(riding_atoms)
         n_non_riding = len(hatoms) - n_riding
-        sentence_riding = f""
+
+        atom_type = "carbon"
+        number = "The"
+        sentence_isotropic = "isotropic"
+        sentence_anisotropic = "anisotropic"
+
+        if n_anisotropic_h == n_hatoms:
+            utype = sentence_anisotropic
+        elif n_anisotropic_h > 0 and n_anisotropic_h < n_hatoms:
+            number = "Some"
+            utype = sentence_isotropic + "and some anisotropic "
+        else:
+            number = "The"
+            utype = sentence_isotropic
+        sentence1 = f"{number} hydrogen atoms were refined with {utype} displacement parameters. "
+        sentence_riding = "on calculated positions using a riding model with their "
+        sentence_free_pos = "freely"
+        sentence_15 = " values constrained to 1.5 times the "  # Ueq
+        sentence_pivot = " of their pivot atoms for terminal sp"  # 3
+        sentence_12 = f" {atom_type} atoms and 1.2 times for all other {atom_type} atoms."
 
         paragraph.add_run(sentence1)
-        paragraph.add_run('U').font.italic = True
-        paragraph.add_run('iso').font.subscript = True
-        paragraph.add_run(sentence2)
+        if n_riding == n_hatoms:
+            riding = sentence_riding
+            paragraph.add_run(riding)
+            self.u_iso(paragraph)
+            paragraph.add_run(sentence_15)
+            self.u_eq(paragraph)
+            paragraph.add_run(sentence_pivot)
+            paragraph.add_run('3').font.superscript = True
+            paragraph.add_run(sentence_12)
+        elif n_non_riding == n_hatoms:
+            riding = sentence_free_pos
+            paragraph.add_run(riding)
+        else:
+            riding = f"some were refined {sentence_free_pos} and some {sentence_riding} with their "
+            paragraph.add_run(riding)
+            self.u_iso(paragraph)
+            paragraph.add_run(sentence_15)
+            self.u_eq(paragraph)
+            paragraph.add_run(sentence_pivot)
+            paragraph.add_run('3').font.superscript = True
+            paragraph.add_run(sentence_12)
+
+    def u_eq(self, paragraph):
         paragraph.add_run('U').font.italic = True
         paragraph.add_run('eq').font.subscript = True
-        paragraph.add_run(sentence3)
-        paragraph.add_run('3').font.superscript = True
-        paragraph.add_run(sentence4)
+
+    def u_iso(self, paragraph):
+        paragraph.add_run('U').font.italic = True
+        paragraph.add_run('iso').font.subscript = True
 
 
 class Disorder():
