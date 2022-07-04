@@ -1,12 +1,13 @@
 import os
 from builtins import str
-from typing import Union
+from typing import Union, List
 
 import gemmi
 from docx import Document
 from docx.text.paragraph import Paragraph
 from docx.text.run import Run
 from lxml import etree
+from shelxfile.atoms.atoms import Atom as SHXAtom
 
 from finalcif.app_path import application_path
 from finalcif.cif.cif_file_io import CifContainer
@@ -242,30 +243,64 @@ class SolveRefine():
         ref.append([solveref, refineref, shelxle])
 
 
-class Hydrogens():
+class Atoms():
     def __init__(self, cif: CifContainer, paragraph: Paragraph):
         """
-        TODO: check if the proposed things are really there.
+        Text for non-hydrogen atoms.
         """
         self.cif = cif
         n_isotropic = self.number_of_isotropic_atoms()
         number = 'All'
         parameter_type = 'anisotropic'
         if 0 < n_isotropic < self.cif.natoms(without_h=True):
-            number = 'Some atoms ({}) were refined using isotropic displacement parameters.' \
-                     ' All other'.format(n_isotropic)
+            number = f'Some atoms ({n_isotropic}) were refined using isotropic displacement parameters.' \
+                     ' All other'
         if n_isotropic > 0 and n_isotropic > self.cif.natoms(without_h=True):
-            number = 'Most atoms ({}) were refined using isotropic displacement parameters.' \
-                     ' All other'.format(n_isotropic)
+            number = f'Most atoms ({n_isotropic}) were refined using isotropic displacement parameters.' \
+                     ' All other'
         if n_isotropic == self.cif.natoms(without_h=True):
             number = 'All'
             parameter_type = 'isotropic'
-        sentence1 = "{} non-hydrogen atoms were refined with {} displacement parameters. " \
-                    "The hydrogen atoms were refined isotropically on calculated positions using a riding model " \
-                    "with their ".format(number, parameter_type)
-        sentence2 = " values constrained to 1.5 times the "
-        sentence3 = " of their pivot atoms for terminal sp"
-        sentence4 = " carbon atoms and 1.2 times for all other carbon atoms."
+        # TODO: test how many hydrogen atoms have ueq < -1.0 -> constrained or free refinement
+        #                                                       of hydrogen displacement params
+        # TODO: detect riding model of hydrogen atoms -> res file?
+        sentence1 = f"{number} non-hydrogen atoms were refined with {parameter_type} displacement parameters. "
+        paragraph.add_run(sentence1)
+
+    def number_of_isotropic_atoms(self) -> Union[float, int]:
+        isotropic_count = 0
+        for site in self.cif.atomic_struct.sites:
+            if self.atom_is_isotropic_and_not_hydrogen(site):
+                isotropic_count += 1
+        return isotropic_count
+
+    @staticmethod
+    def atom_is_isotropic_and_not_hydrogen(site):
+        return not site.aniso.nonzero() and not site.element.is_hydrogen
+
+
+class Hydrogens():
+    def __init__(self, cif: CifContainer, paragraph: Paragraph):
+        """
+        TODO: check if the proposed things are really there.
+        """
+        self.cif = cif
+        # TODO: test how many hydrogen atoms have ueq < -1.0 -> constrained or free refinement
+        #                                                       of hydrogen displacement params
+        # TODO: detect riding model of hydrogen atoms -> res file?
+        sentence1 = f"The hydrogen atoms were refined"
+        sentence_isotropic = "isotropically"
+        sentence_riding =   "on calculated positions using a riding model with their "
+        sentence_15 = " values constrained to 1.5 times the "
+        sentence_pivot = " of their pivot atoms for terminal sp"
+        sentence_12 = " carbon atoms and 1.2 times for all other carbon atoms."
+        hatoms: List[SHXAtom] = [x for x in self.cif.shx.atoms.all_atoms if x.is_hydrogen]
+        n_anisotropic = len([x for x in hatoms if sum(x.uvals[1:]) > 0.0001])
+        riding_atoms = [x for x in hatoms if x.afix]
+        n_riding = len(riding_atoms)
+        n_non_riding = len(hatoms) - n_riding
+        sentence_riding = f""
+
         paragraph.add_run(sentence1)
         paragraph.add_run('U').font.italic = True
         paragraph.add_run('iso').font.subscript = True
@@ -275,16 +310,6 @@ class Hydrogens():
         paragraph.add_run(sentence3)
         paragraph.add_run('3').font.superscript = True
         paragraph.add_run(sentence4)
-
-    def number_of_isotropic_atoms(self) -> Union[float, int]:
-        isotropic_count = 0
-        for site in self.cif.atomic_struct.sites:
-            if self.atom_is_isotropic_and_not_hydrogen(site):
-                isotropic_count += 1
-        return isotropic_count
-
-    def atom_is_isotropic_and_not_hydrogen(self, site):
-        return not site.aniso.nonzero() and not site.element.is_hydrogen
 
 
 class Disorder():

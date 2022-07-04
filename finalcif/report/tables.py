@@ -22,7 +22,7 @@ from finalcif.report.mtools import cif_keywords_list, format_space_group
 from finalcif.report.references import ReferenceList, DSRReference2018, DSRReference2015
 from finalcif.report.report_text import CCDC, CrstalSelection, Crystallization, DataReduct, Disorder, Hydrogens, \
     MachineType, \
-    SolveRefine, format_radiation, FinalCifreport, SpaceChar, RefinementDetails
+    SolveRefine, format_radiation, FinalCifreport, SpaceChar, RefinementDetails, Atoms
 from finalcif.report.templated_report import BondsAndAngles, TorsionAngles, HydrogenBonds
 from finalcif.tools.misc import protected_space, angstrom, bequal, sigma_sm, halbgeviert, degree_sign, ellipsis_mid, \
     less_or_equal, \
@@ -167,6 +167,7 @@ def make_report_text(cif, document: Document) -> ReferenceList:
     SolveRefine(cif, paragr, ref)
     SpaceChar(paragr).regular()
     if cif.hydrogen_atoms_present:
+        Atoms(cif, paragr)
         Hydrogens(cif, paragr)
         SpaceChar(paragr).regular()
     if cif.disorder_present:
