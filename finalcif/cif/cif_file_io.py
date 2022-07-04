@@ -45,6 +45,8 @@ class CifContainer():
         # Starting with first block, but can use others with subsequent self._onload():
         self.block = self.doc[0]
         self._on_load()
+        self.shx = Shelxfile()
+        self.shx.read_string(self.res_file_data[1:-1])
 
     @property
     def path_base(self) -> Path:
@@ -306,10 +308,8 @@ class CifContainer():
         return HKL(self.hkl_file, self.block.name, hklf_type=self.hklf_number).get_hkl_min_max()
 
     def _hklf_number_from_shelxl_file(self) -> int:
-        shx = Shelxfile()
-        shx.read_string(self.res_file_data[1:-1])
-        if shx.hklf:
-            return shx.hklf.n if shx.hklf.n != 0 else 4
+        if self.shx.hklf:
+            return self.shx.hklf.n if self.shx.hklf.n != 0 else 4
         else:
             return 4
 
