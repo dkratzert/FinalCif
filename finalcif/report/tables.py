@@ -46,7 +46,7 @@ def make_multi_tables(cif: CifContainer, output_filename: str = 'multitable.docx
     """
     The main loop for doing the report pages with tables.
     """
-    group_of_files = list(grouper(cif.doc, 3))
+    group_of_files = list(grouper([x for x in cif.doc if x.name != 'global'], 3))
     table_index = len(group_of_files) - 1
     document = create_document()
     document.add_heading('Structure Tables', 1)
@@ -869,8 +869,11 @@ if __name__ == '__main__':
 
     settings = FinalCifSettings()
     options = Options(None, settings)
-    make_report_from(options, CifContainer('test-data/DK_Zucker2_0m.cif'),
-                     output_filename='test.docx')
+
+    make_report_from(options, CifContainer('test-data/DK_Zucker2_0m.cif'), output_filename='test.docx')
+    #make_report_from(options, CifContainer(r'C:\Users\daniel.kratzert\Downloads\hydrogen_bond_types\1218_31_7_0m.cif'), output_filename='test.docx')
+    make_report_from(options, CifContainer(r'C:\Users\daniel.kratzert\Downloads\rqt_c1_0m_sq_complete.cif'), output_filename='test.docx')
+
     # make_multi_tables(CifContainer('test-data/1000007-multi-finalcif.cif'))
     open_file(Path('test.docx'))
     t1 = time.perf_counter()
