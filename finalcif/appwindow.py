@@ -18,7 +18,7 @@ import gemmi.cif
 import qtawesome as qta
 import requests
 from PyQt5 import QtCore, QtGui, QtWebEngineWidgets
-from PyQt5.QtCore import QThread, QTimer
+from PyQt5.QtCore import QThread, QTimer, Qt
 from PyQt5.QtWidgets import QMainWindow, QHeaderView, QShortcut, QCheckBox, QListWidgetItem, QApplication, \
     QPlainTextEdit, QFileDialog
 from gemmi import cif
@@ -992,6 +992,8 @@ class AppWindow(QMainWindow):
         Generates a report document.
         """
         current_block = self.ui.datanameComboBox.currentIndex()
+        if self.cif.doc[current_block].name == 'global':
+            return
         not_ok = None
         if not self.cif:
             return None
@@ -1013,10 +1015,10 @@ class AppWindow(QMainWindow):
             else:
                 print('Report with templates')
                 t = TemplatedReport()
-                t.make_templated_report(options=self.options, file_obj=self.cif.fileobj.resolve(),
+                t.make_templated_report(options=self.options, cif=self.cif,
                                         output_filename=str(report_filename), picfile=picfile,
                                         template_path=Path(self.ui.TemplatesListWidget.currentItem().text()))
-            if self.cif.is_multi_cif:
+            if self.cif.is_multi_cif and not self.cif.doc[0].name == 'global':
                 make_multi_tables(cif=self.cif, output_filename=str(multi_table_document))
         except FileNotFoundError as e:
             if DEBUG:
@@ -1039,7 +1041,8 @@ class AppWindow(QMainWindow):
 
     def report_without_template(self) -> bool:
         """Check whether the report is generated from a template or hard-coded"""
-        return self.ui.TemplatesListWidget.currentRow() == 0 or not self.ui.TemplatesListWidget.currentItem()
+        return self.ui.TemplatesListWidget.item(0).checkState() == Qt.CheckState.Checked \
+               or not self.ui.TemplatesListWidget.currentItem()
 
     def zip_report(self, report_filename: Path):
         zipfile = self.cif.finalcif_file.with_suffix('.zip')
