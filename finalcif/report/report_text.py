@@ -292,6 +292,7 @@ class Hydrogens():
         n_hatoms = len(hatoms)
         n_anisotropic_h = len([x for x in hatoms if sum(x.uvals[1:]) > 0.0001])
         riding_atoms = [x for x in hatoms if x.afix]
+        pivot_atoms = self.get_hydrogen_pivot_atoms(riding_atoms)
         n_riding = len(riding_atoms)
         n_non_riding = len(hatoms) - n_riding
 
@@ -304,9 +305,14 @@ class Hydrogens():
             utype = sentence_anisotropic
         elif n_anisotropic_h > 0 and n_anisotropic_h < n_hatoms:
             number = "Some"
-            utype = sentence_isotropic + "and some anisotropic "
+            utype = sentence_isotropic + " and some with anisotropic "
         else:
-            number = "The"
+            if all(self.pivot_atom_types(pivot_atoms)):
+                number = "All"
+            elif any(self.pivot_atom_types(pivot_atoms)):
+                number = "All C-bound"
+            else:
+                number = "The heteroatom-bound"
             utype = sentence_isotropic
         sentence_riding = "on calculated positions using a riding model with their "
         sentence_free_pos = "freely"
@@ -338,6 +344,15 @@ class Hydrogens():
             paragraph.add_run(sentence_pivot)
             paragraph.add_run('3').font.superscript = True
             paragraph.add_run(sentence_12)
+
+    def pivot_atom_types(self, pivot_atoms):
+        return [x.element == 'C' for x in pivot_atoms]
+
+    def get_hydrogen_pivot_atoms(self, riding_atoms):
+        pivot_atoms = []
+        for at in riding_atoms:
+            pivot_atoms.extend(at.find_atoms_around(dist=1.2))
+        return pivot_atoms
 
     def u_eq(self, paragraph):
         paragraph.add_run('U').font.italic = True
