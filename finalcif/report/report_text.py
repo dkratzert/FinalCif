@@ -308,15 +308,14 @@ class Hydrogens():
         else:
             number = "The"
             utype = sentence_isotropic
-        sentence1 = f"{number} hydrogen atoms were refined with {utype} displacement parameters. "
         sentence_riding = "on calculated positions using a riding model with their "
         sentence_free_pos = "freely"
         sentence_15 = " values constrained to 1.5 times the "  # Ueq
         sentence_pivot = " of their pivot atoms for terminal sp"  # 3
         sentence_12 = f" {atom_type} atoms and 1.2 times for all other {atom_type} atoms."
 
-        paragraph.add_run(sentence1)
         if n_riding == n_hatoms:
+            paragraph.add_run(f"{number} hydrogen atoms were refined isotropically ")
             riding = sentence_riding
             paragraph.add_run(riding)
             self.u_iso(paragraph)
@@ -326,10 +325,12 @@ class Hydrogens():
             paragraph.add_run('3').font.superscript = True
             paragraph.add_run(sentence_12)
         elif n_non_riding == n_hatoms:
+            paragraph.add_run(f"{number} hydrogen atoms were refined with {utype} displacement parameters")
             riding = sentence_free_pos
             paragraph.add_run(riding)
         else:
-            riding = f"some were refined {sentence_free_pos} and some {sentence_riding} with their "
+            paragraph.add_run(f"{number} hydrogen atoms were refined with {utype} displacement parameters. ")
+            riding = f"Some were refined {sentence_free_pos} and some {sentence_riding}"
             paragraph.add_run(riding)
             self.u_iso(paragraph)
             paragraph.add_run(sentence_15)
