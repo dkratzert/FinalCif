@@ -291,6 +291,7 @@ class Hydrogens():
         hatoms: List[SHXAtom] = [x for x in self.cif.shx.atoms.all_atoms if x.is_hydrogen]
         n_hatoms = len(hatoms)
         n_anisotropic_h = len([x for x in hatoms if sum(x.uvals[1:]) > 0.0001])
+        n_constr_h = len([x for x in hatoms if x.uvals[0] < -1.0])
         riding_atoms = [x for x in hatoms if x.afix]
         pivot_atoms = self.get_hydrogen_pivot_atoms(riding_atoms)
         n_riding = len(riding_atoms)
@@ -302,6 +303,7 @@ class Hydrogens():
         sentence_anisotropic = "anisotropic"
 
         if n_anisotropic_h == n_hatoms:
+            #number = "All"
             utype = sentence_anisotropic
         elif n_anisotropic_h > 0 and n_anisotropic_h < n_hatoms:
             number = "Some"
@@ -321,7 +323,7 @@ class Hydrogens():
         sentence_12 = f" {atom_type} atoms and 1.2 times for all other {atom_type} atoms."
 
         if n_riding == n_hatoms:
-            paragraph.add_run(f"{number} hydrogen atoms were refined isotropically ")
+            paragraph.add_run(f"{number} hydrogen atoms were refined {utype} ")
             riding = sentence_riding
             paragraph.add_run(riding)
             self.u_iso(paragraph)
@@ -331,9 +333,19 @@ class Hydrogens():
             paragraph.add_run('3').font.superscript = True
             paragraph.add_run(sentence_12)
         elif n_non_riding == n_hatoms:
-            paragraph.add_run(f"{number} hydrogen atoms were refined with {utype} displacement parameters")
-            riding = sentence_free_pos
-            paragraph.add_run(riding)
+            if n_constr_h == n_hatoms:
+                paragraph.add_run(f"{number} hydrogen atoms were refined {sentence_free_pos}"
+                                  f" with their ")
+            else:
+                paragraph.add_run(f"{number} hydrogen atoms were refined {sentence_free_pos}"
+                              f" with {utype} displacement parameters.")
+            if n_constr_h == n_hatoms:
+                self.u_iso(paragraph)
+                paragraph.add_run(sentence_15)
+                self.u_eq(paragraph)
+                paragraph.add_run(sentence_pivot)
+                paragraph.add_run('3').font.superscript = True
+                paragraph.add_run(sentence_12)
         else:
             paragraph.add_run(f"{number} hydrogen atoms were refined with {utype} displacement parameters. ")
             riding = f"Some were refined {sentence_free_pos} and some {sentence_riding}"
