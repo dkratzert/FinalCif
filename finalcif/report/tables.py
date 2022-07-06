@@ -871,9 +871,10 @@ if __name__ == '__main__':
     settings = FinalCifSettings()
     options = Options(None, settings)
 
-    make_report_from(options, CifContainer('test-data/DK_Zucker2_0m.cif'), output_filename='test.docx')
+    make_report_from(options, CifContainer('test-data/hydrogen/all_free_free_anisotropic.cif'), output_filename='test.docx')
+    #make_report_from(options, CifContainer('test-data/DK_Zucker2_0m.cif'), output_filename='test.docx')
     #make_report_from(options, CifContainer(r'C:\Users\daniel.kratzert\Downloads\hydrogen_bond_types\1218_31_7_0m.cif'), output_filename='test.docx')
-    make_report_from(options, CifContainer(r'C:\Users\daniel.kratzert\Downloads\rqt_c1_0m_sq_complete.cif'), output_filename='test.docx')
+    #make_report_from(options, CifContainer(r'C:\Users\daniel.kratzert\Downloads\rqt_c1_0m_sq_complete.cif'), output_filename='test.docx')
 
     # make_multi_tables(CifContainer('test-data/1000007-multi-finalcif.cif'))
     open_file(Path('test.docx'))
