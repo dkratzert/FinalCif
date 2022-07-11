@@ -8,7 +8,7 @@
     <x>0</x>
     <y>0</y>
     <width>1604</width>
-    <height>817</height>
+    <height>833</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -2570,6 +2570,9 @@ The data source will be ignored until next program restart.</string>
                   <widget class="QCheckBox" name="ADPTableCheckBox">
                    <property name="text">
                     <string>Add ADP table</string>
+                   </property>
+                   <property name="checked">
+                    <bool>true</bool>
                    </property>
                   </widget>
                  </item>

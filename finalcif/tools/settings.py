@@ -148,6 +148,7 @@ class FinalCifSettings():
             options = {'report_text'  : True,
                        'picture_width': 7.5,
                        'without_h'    : False,
+                       'report_adp'   : True,
                        'checkcif_url' : 'https://checkcif.iucr.org/cgi-bin/checkcif_hkl.pl',
                        }
         # self.settings.endGroup()
