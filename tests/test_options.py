@@ -10,12 +10,14 @@ class TestOptions(unittest.TestCase):
         self.myapp.running_inside_unit_test = True
         self.myapp.ui.HAtomsCheckBox.setChecked(False)
         self.myapp.ui.ReportTextCheckBox.setChecked(False)
+        self.myapp.ui.ADPTableCheckBox.setChecked(False)
         self.myapp.ui.PictureWidthDoubleSpinBox.setValue(0.0)
         self.myapp.hide()
 
     def tearDown(self) -> None:
         self.myapp.ui.HAtomsCheckBox.setChecked(False)
         self.myapp.ui.ReportTextCheckBox.setChecked(False)
+        self.myapp.ui.ADPTableCheckBox.setChecked(False)
         self.myapp.ui.PictureWidthDoubleSpinBox.setValue(0.0)
         self.myapp.close()
 
@@ -32,6 +34,15 @@ class TestOptions(unittest.TestCase):
         self.assertEqual(self.myapp.options.without_h, True)
         self.myapp.ui.HAtomsCheckBox.setChecked(False)
         self.assertEqual(self.myapp.options.without_h, False)
+
+    def test_report_adp_checked(self):
+        self.myapp.ui.ADPTableCheckBox.setChecked(True)
+        self.assertEqual(True, self.myapp.ui.ADPTableCheckBox.isChecked())
+        self.assertEqual(True, self.myapp.options.report_adp)
+
+    def test_report_adp_unchecked(self):
+        self.myapp.ui.ADPTableCheckBox.setChecked(False)
+        self.assertEqual(False, self.myapp.options.report_adp)
 
     def test_report_text(self):
         self.assertEqual(self.myapp.ui.ReportTextCheckBox.isChecked(), False)

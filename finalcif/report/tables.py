@@ -106,7 +106,7 @@ def make_report_from(options: Options, cif: CifContainer, output_filename: str =
         RefinementDetails(cif, document)
         pass
     table_num = add_coords_table(document, cif, table_num)
-    if len(tuple(cif.displacement_parameters())) > 0:
+    if options.report_adp and len(tuple(cif.displacement_parameters())) > 0:
         table_num = add_adp_table(document, cif, table_num)
 
     if cif.symmops:
@@ -544,10 +544,10 @@ def add_adp_table(document: Document, cif: CifContainer, table_num: int):
     The anisotropic displacement factor exponent takes the form: -2π2[h2a*2U11 + ... + 2hka*b*U12]
     """
     table_num += 1
-    headline = f"Table {table_num}. Anisotropic displacement parameters ({angstrom}"
+    headline = f"Table {table_num}. Anisotropic displacement parameters [{angstrom}"
     h = document.add_heading(headline, 2)
     h.add_run('2').font.superscript = True
-    h.add_run(f') for {cif.block.name}. The anisotropic displacement factor exponent takes '
+    h.add_run(f'] for {cif.block.name}.\nThe anisotropic displacement factor exponent takes '
               f'the form: {minus_sign}2{pi_symbol}')
     h.add_run('2').font.superscript = True
     h.add_run('[')
@@ -595,6 +595,9 @@ def add_adp_table(document: Document, cif: CifContainer, table_num: int):
         col5_cells[rowidx].text = row.U23.replace('-', minus_sign)
         col6_cells[rowidx].text = row.U13.replace('-', minus_sign)
         col7_cells[rowidx].text = row.U12.replace('-', minus_sign)
+    set_column_width(adp_table.columns[0], Cm(1.6))
+    for num in range(1, 7):
+        set_column_width(adp_table.columns[num], Cm(2.4))
     return table_num
 
 
@@ -871,10 +874,11 @@ if __name__ == '__main__':
     settings = FinalCifSettings()
     options = Options(None, settings)
 
-    make_report_from(options, CifContainer('test-data/hydrogen/some_riding_some_isotropic.cif'), output_filename='test.docx')
-    #make_report_from(options, CifContainer('test-data/DK_Zucker2_0m.cif'), output_filename='test.docx')
-    #make_report_from(options, CifContainer(r'C:\Users\daniel.kratzert\Downloads\hydrogen_bond_types\1218_31_7_0m.cif'), output_filename='test.docx')
-    #make_report_from(options, CifContainer(r'C:\Users\daniel.kratzert\Downloads\rqt_c1_0m_sq_complete.cif'), output_filename='test.docx')
+    #make_report_from(options, CifContainer('test-data/hydrogen/some_riding_some_isotropic.cif'),
+    #                 output_filename='test.docx')
+    make_report_from(options, CifContainer('test-data/DK_Zucker2_0m.cif'), output_filename='test.docx')
+    # make_report_from(options, CifContainer(r'C:\Users\daniel.kratzert\Downloads\hydrogen_bond_types\1218_31_7_0m.cif'), output_filename='test.docx')
+    # make_report_from(options, CifContainer(r'C:\Users\daniel.kratzert\Downloads\rqt_c1_0m_sq_complete.cif'), output_filename='test.docx')
 
     # make_multi_tables(CifContainer('test-data/1000007-multi-finalcif.cif'))
     open_file(Path('test.docx'))
