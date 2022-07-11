@@ -44,9 +44,9 @@ class CifContainer():
             self.doc = self.read_file(str(self.fileobj.resolve(strict=True)))
         # Starting with first block, but can use others with subsequent self._onload():
         self.block = self.doc[0]
-        self._on_load()
         self.shx = Shelxfile()
         self.shx.read_string(self.res_file_data[1:-1])
+        self._on_load()
 
     @property
     def path_base(self) -> Path:
