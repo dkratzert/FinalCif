@@ -104,7 +104,6 @@ def make_report_from(options: Options, cif: CifContainer, output_filename: str =
         make_columns_section(document, columns='1')
     if cif['_refine_special_details'] and options.report_text:
         RefinementDetails(cif, document)
-        pass
     table_num = add_coords_table(document, cif, table_num)
     if options.report_adp and len(tuple(cif.displacement_parameters())) > 0:
         table_num = add_adp_table(document, cif, table_num)

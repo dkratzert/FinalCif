@@ -11,7 +11,7 @@ from shelxfile.atoms.atoms import Atom as SHXAtom
 
 from finalcif.app_path import application_path
 from finalcif.cif.cif_file_io import CifContainer
-from finalcif.cif.text import retranslate_delimiter
+from finalcif.cif.text import retranslate_delimiter, string_to_utf8
 from finalcif.report.references import DummyReference, SAINTReference, SORTAVReference, ReferenceList, CCDCReference, \
     SHELXLReference, SHELXTReference, SHELXSReference, FinalCifReference, ShelXleReference, Olex2Reference, \
     SHELXDReference, SadabsTwinabsReference, CrysalisProReference
@@ -303,7 +303,7 @@ class Hydrogens():
         sentence_anisotropic = "anisotropic"
 
         if n_anisotropic_h == n_hatoms:
-            #number = "All"
+            # number = "All"
             utype = sentence_anisotropic
         elif n_anisotropic_h > 0 and n_anisotropic_h < n_hatoms:
             number = "Some"
@@ -338,7 +338,7 @@ class Hydrogens():
                                   f" with their ")
             else:
                 paragraph.add_run(f"{number} hydrogen atoms were refined {sentence_free_pos}"
-                              f" with {utype} displacement parameters.")
+                                  f" with {utype} displacement parameters.")
             if n_constr_h == n_hatoms:
                 self.u_iso(paragraph)
                 paragraph.add_run(sentence_15)
@@ -428,7 +428,10 @@ class RefinementDetails():
         ph.add_run(text=fr"Refinement details for {cif.block.name}")
         p = document.add_paragraph()
         p.style = document.styles['fliesstext']
-        p.add_run(' '.join(cif['_refine_special_details'].splitlines(keepends=False)))
+        text = ' '.join(cif['_refine_special_details'].splitlines(keepends=False))
+        # Replacing semicolon, because it can damage the CIF:
+        text = text.replace(';', '.')
+        p.add_run(string_to_utf8(text))
 
 
 def get_inf_article(next_word: str) -> str:
