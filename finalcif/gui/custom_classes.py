@@ -3,7 +3,7 @@ from typing import List
 from PyQt5 import QtCore
 from PyQt5.QtCore import QEvent, QObject, Qt
 from PyQt5.QtGui import QColor, QKeySequence, QBrush
-from PyQt5.QtWidgets import QAbstractScrollArea, QAction, QFrame, QTableWidget, \
+from PyQt5.QtWidgets import QAbstractScrollArea, QTableWidget, \
     QTableWidgetItem, QWidget, QApplication, QShortcut
 
 from finalcif.cif.text import retranslate_delimiter
