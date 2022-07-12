@@ -27,9 +27,9 @@ jobs:
       fail-fast: false
       matrix:
         python-version: [ "3.9", "3.10" ]
-        os: [ windows-latest, macos-latest, ubuntu-20.04 ]
+        os: [ windows-latest, macos-latest, ubuntu-22.04 ]
         include:
-          - os: ubuntu-20.04
+          - os: ubuntu-22.04
             path: ~/.cache/pip
           - os: macos-latest
             path: ~/Library/Caches/pip
