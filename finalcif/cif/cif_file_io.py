@@ -27,6 +27,13 @@ class CifContainer():
     """
 
     def __init__(self, file: Union[Path, str], new_block: str = ''):
+        """
+
+        Args:
+            file: CIF file to open
+            new_block: Create a new block if a name is given. Otherwise, just
+                       the existing document is opened.
+        """
         if isinstance(file, str):
             self.fileobj = Path(file)
         elif isinstance(file, Path):
@@ -216,7 +223,7 @@ class CifContainer():
             else:
                 self.block.set_pair(key, quote(txt))
 
-    def save(self, filename: Path = None) -> None:
+    def save(self, filename: Union[Path, None] = None) -> None:
         """
         Saves the current cif file.
         :param filename:  Name to save cif file to.
