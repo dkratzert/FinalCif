@@ -1127,6 +1127,10 @@ class AppWindow(QMainWindow):
         """
         Stores the data from the main table in the cif object.
         """
+        finalcif_changes_file = self.cif.finalcif_file_prefixed(prefix='', suffix='-finalcif_changes.cif')
+        changes_cif = CifContainer(
+            file=finalcif_changes_file,
+            new_block=f'{self.cif.block.name}_finalcif_changes' if not finalcif_changes_file.exists() else '')
         for row in range(self.ui.cif_main_table.rows_count):
             vhead = self.ui.cif_main_table.vheader_text(row)
             if not self.is_row_a_cif_item(vhead):
@@ -1136,10 +1140,16 @@ class AppWindow(QMainWindow):
             if col_data and not col_edit and col_data != '?':
                 self.cif[vhead] = col_data
             if col_edit:
+                if self.cif[vhead] != col_edit:
+                    changes_cif[vhead] = col_edit
                 try:
                     self.cif[vhead] = col_edit
                 except (RuntimeError, ValueError, IOError) as e:
                     print('Can not take cif info from table:', e)
+        try:
+            changes_cif.save(filename=finalcif_changes_file)
+        except Exception as e:
+            print('Unable to save changes file.')
 
     def is_row_a_cif_item(self, vhead):
         is_cif = False
