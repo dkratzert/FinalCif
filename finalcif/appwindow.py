@@ -1128,9 +1128,14 @@ class AppWindow(QMainWindow):
         Stores the data from the main table in the cif object.
         """
         finalcif_changes_file = self.cif.finalcif_file_prefixed(prefix='', suffix='-finalcif_changes.cif')
+        block_name = self.cif.current_block if self.cif.current_block else self.cif.block.name
+        print(f'current: {self.cif.current_block} name: {self.cif.block.name}')
         changes_cif = CifContainer(
             file=finalcif_changes_file,
-            new_block=f'{self.cif.block.name}_finalcif_changes' if not finalcif_changes_file.exists() else '')
+            new_block=block_name if not finalcif_changes_file.exists() else '')
+        # new block of added cif is not loaded:
+        if block_name in changes_cif.doc:
+            changes_cif.load_this_block(list(changes_cif.doc).index(block_name))
         for row in range(self.ui.cif_main_table.rows_count):
             vhead = self.ui.cif_main_table.vheader_text(row)
             if not self.is_row_a_cif_item(vhead):
@@ -1291,9 +1296,22 @@ class AppWindow(QMainWindow):
         self.ui.datanameComboBox.setCurrentIndex(block)
         self.ui.cif_main_table.resizeRowsToContents()
         self.ui.datanameComboBox.blockSignals(False)
+        #if not self.cif.is_multi_cif:
+        self.load_changes_cif()
         if self.cif.is_multi_cif:
             # short after start, because window size is not finished
             QTimer.singleShot(1000, self.ui.datanameComboBox.showPopup)
+
+    def load_changes_cif(self):
+        finalcif_changes_file = self.cif.finalcif_file_prefixed(prefix='', suffix='-finalcif_changes.cif')
+        if not finalcif_changes_file.exists():
+            return
+        changes = CifContainer(finalcif_changes_file)
+        for item in changes.block:
+            if item.pair is not None:
+                key, value = item.pair
+                value = gemmi.cif.as_string(value).strip()
+                self.ui.cif_main_table.setText(key=key, column=COL_EDIT, color=None, txt=value)
 
     def add_data_names_to_combobox(self):
         self.ui.datanameComboBox.clear()
