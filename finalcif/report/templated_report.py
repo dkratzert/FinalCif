@@ -528,7 +528,7 @@ class TemplatedReport():
                    'abs_details'            : self.get_absortion_correction_program(cif),
                    'solution_method'        : self.solution_method(cif),
                    'solution_program'       : self.solution_program(cif),
-                   'refinement_details'     : ' '.join(cif['_refine_special_details'].splitlines(keepends=False)),
+                   'refinement_details'     : ' '.join(cif['_refine_special_details'].splitlines(keepends=False)).strip(),
                    'refinement_prog'        : self.refinement_prog(cif),
                    'atomic_coordinates'     : self.get_atomic_coordinates(cif),
                    'displacement_parameters': self.get_displacement_parameters(cif),
