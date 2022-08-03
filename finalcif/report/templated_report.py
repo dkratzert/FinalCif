@@ -316,7 +316,7 @@ class TemplatedReport():
                + f'{minus_sign if limit_k_min != "0" else ""}{limit_k_min.replace("-", "")} ' \
                  f'{less_or_equal} k {less_or_equal} {limit_k_max}\n' \
                + f'{minus_sign if limit_l_min != "0" else ""}{limit_l_min.replace("-", "")} ' \
-                 f'{less_or_equal} l {less_or_equal} {limit_l_max}\n'
+                 f'{less_or_equal} l {less_or_equal} {limit_l_max}'
 
     @staticmethod
     def get_radiation(cif: CifContainer) -> RichText:
