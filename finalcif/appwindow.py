@@ -987,6 +987,12 @@ class AppWindow(QMainWindow):
             self.ui.ReportPicPushButton.setIcon(qta.icon('fa5.image'))
             self.ui.ReportPicPushButton.setText('')
 
+    def get_checked_templates_list_text(self):
+        for index in range(self.ui.TemplatesListWidget.count()):
+            item = self.ui.TemplatesListWidget.item(index)
+            if item.checkState() == Qt.Checked:
+                return item.text()
+
     def make_report_tables(self) -> None:
         """
         Generates a report document.
@@ -1017,8 +1023,8 @@ class AppWindow(QMainWindow):
                 t = TemplatedReport()
                 t.make_templated_report(options=self.options, cif=self.cif,
                                         output_filename=str(report_filename), picfile=picfile,
-                                        template_path=Path(self.ui.TemplatesListWidget.currentItem().text()))
-            if self.cif.is_multi_cif and not self.cif.doc[0].name == 'global':
+                                        template_path=Path(self.get_checked_templates_list_text()))
+            if self.cif.is_multi_cif and self.cif.doc[0].name != 'global':
                 make_multi_tables(cif=self.cif, output_filename=str(multi_table_document))
         except FileNotFoundError as e:
             if DEBUG:
