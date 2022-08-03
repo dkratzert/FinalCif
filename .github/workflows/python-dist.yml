@@ -16,7 +16,7 @@ jobs:
       with:
         python-version: '3.10'
 
-    - run: pip install pip -U
+    - run: python.exe -m pip install --upgrade pip
     - run: pip install -r requirements.txt
     - run: pip install pyinstaller
     - run: pyinstaller Finalcif_installer_win.spec --clean -y
