@@ -474,15 +474,15 @@ class TemplatedReport():
 
     def make_templated_report(self, options: Options, cif: CifContainer, output_filename: str, picfile: Path,
                               template_path: Path):
-        context, tpl_doc = self.prepare_report_data(cif, options, picfile, str(template_path))
+        context, tpl_doc = self.prepare_report_data(cif, options, picfile, template_path)
         # Filter definition for {{foobar|filter}} things:
         jinja_env = jinja2.Environment()
         jinja_env.filters['inv_article'] = get_inf_article
         tpl_doc.render(context, jinja_env=jinja_env, autoescape=True)
         tpl_doc.save(output_filename)
 
-    def prepare_report_data(self, cif: CifContainer, options: Options, picfile: Path, template_path: str):
-        tpl_doc = DocxTemplate(Path(__file__).parent.parent.joinpath(template_path))
+    def prepare_report_data(self, cif: CifContainer, options: Options, picfile: Path, template_path: Path):
+        tpl_doc = DocxTemplate(template_path)
         ba = BondsAndAngles(cif, without_h=options.without_h)
         t = TorsionAngles(cif, without_h=options.without_h)
         h = HydrogenBonds(cif)
