@@ -262,11 +262,19 @@ class TemplatedReport():
             for _, word in enumerate(sum_formula_group):
                 if isnumeric(word):
                     richtext.add(word, subscript=True)
+                elif ')' in word:
+                    richtext.add(word.split(')')[0], subscript=True)
+                    richtext.add(')')
+                elif ']' in word:
+                    richtext.add(word.split(']')[0], subscript=True)
+                    richtext.add(']')
                 else:
                     richtext.add(word)
+                    if word == ',':
+                        richtext.add(' ')
             return richtext
         else:
-            return RichText('No sum formula')
+            return RichText('no formula')
 
     @staticmethod
     def space_group_subdoc(tpl_doc: DocxTemplate, cif: CifContainer) -> Subdoc:
@@ -485,6 +493,7 @@ class TemplatedReport():
                    'structure_figure'       : self.make_picture(options, picfile, tpl_doc),
                    'crystallization_method' : self.get_crystallization_method(cif),
                    'sum_formula'            : self.format_sum_formula(cif['_chemical_formula_sum'].replace(" ", "")),
+                   'moiety_formula'         : self.format_sum_formula(cif['_chemical_formula_moiety'].replace(" ", "")),
                    'itnum'                  : cif['_space_group_IT_number'],
                    'crystal_size'           : this_or_quest(cif['_exptl_crystal_size_min']) + timessym +
                                               this_or_quest(cif['_exptl_crystal_size_mid']) + timessym +
@@ -528,7 +537,8 @@ class TemplatedReport():
                    'abs_details'            : self.get_absortion_correction_program(cif),
                    'solution_method'        : self.solution_method(cif),
                    'solution_program'       : self.solution_program(cif),
-                   'refinement_details'     : ' '.join(cif['_refine_special_details'].splitlines(keepends=False)).strip(),
+                   'refinement_details'     : ' '.join(
+                       cif['_refine_special_details'].splitlines(keepends=False)).strip(),
                    'refinement_prog'        : self.refinement_prog(cif),
                    'atomic_coordinates'     : self.get_atomic_coordinates(cif),
                    'displacement_parameters': self.get_displacement_parameters(cif),
