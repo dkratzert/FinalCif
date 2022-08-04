@@ -83,7 +83,11 @@ class MoleculeWidget(QtWidgets.QWidget):
             font = self.painter.font()
             font.setPixelSize(13)
             self.painter.setFont(font)
-            self.draw()
+            try:
+                self.draw()
+            except ValueError as e:
+                print(f'Draw structure crashed: {e}')
+                self.painter.end()
 
     def mousePressEvent(self, event: QMouseEvent) -> None:
         self.lastPos = event.pos()
