@@ -1,6 +1,8 @@
 FinalCif recent changes
 -----------------------
-* v107 New ADP table in report document. It is configurable in the options. 
+* v108 Fixed item selection bug in report templates list. Fixed extra empty line after index ranges.
+       Adds a formatted moiety formula to templated reports. Fixed path to report templates.
+* v107 New ADP table in report document. It is configurable in the options.
        More details about hydrogen atoms in report.
        Refinment details (_refine_special_details) are added to the report document.
        Slightly improved handling of CIF with 'global', but better never use 'global'.
