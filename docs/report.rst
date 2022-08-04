@@ -99,15 +99,12 @@ Data Available for the Report
                                'U23', 'U13', 'U12') for each atom.
     'bonds'                 : The bonds with lengths as ('atoms', 'dist') for each atom pair.
     'angles'                : The bond angles as ('atoms', 'angle') for each atom triple.
-    'ba_symminfo'           : The symmetry operations used to generate equivalent atoms in the
-                              angles list.
+    'ba_symminfo'           : The symmetry operations used to generate equivalent atoms in the angles list.
     'torsions'              : The torsion angles as ('atoms', 'angle') for each atom quartet.
-    'torsion_symminfo'      : The symmetry operations used to generate equivalent atoms in the
-                              torsion angles list.
+    'torsion_symminfo'      : The symmetry operations used to generate equivalent atoms in the torsion angles list.
     'hydrogen_bonds'        : The hydrogen bonds (in case there are some defined with HTAB) as
                                ('atoms', 'dist_dh', 'dist_ha', 'dist_da', 'angle_dha').
-    'hydrogen_symminfo'     : The symmetry operations used to generate equivalent atoms in the
-                              hydrogen bonds list
+    'hydrogen_symminfo'     : The symmetry operations used to generate equivalent atoms in the hydrogen bonds list
     'literature'            : A list of citations to the above used programs, e.g. literature.integration.richtext.
                               The richtext attribute formats the citation. Available literature:
                               ('integration', 'absorption', 'solution', 'refinement', 'ccdc', 'finalcif')
@@ -116,8 +113,8 @@ Data Available for the Report
     'space_group'           : The space group formatted as formula object.
     'structure_figure'      : A picture selected with the 'Picture for Report' button.
     'crystallization_method': The value of '_exptl_crystal_recrystallization_method'
-    'sum_formula'           : The html formatted version of '_chemical_formula_sum' with
-                              subscript numbers.
+    'sum_formula'           : The formatted version of '_chemical_formula_sum' with subscript numbers.
+    'moiety_formula'        : The formatted version of '_chemical_formula_moiety' with subscript numbers.
     'itnum'                 : The space group number from the international tables.
     'crystal_size'          : The crystal size as X x Y x Z.
     'crystal_colour'        : The crystal colour.
