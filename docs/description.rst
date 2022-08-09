@@ -68,13 +68,14 @@ This will import all key/values and loops from the file except for unit cell and
 **CIF format specification**
 
 FinalCif uses the `IUCr CIF specification 1.1 <https://www.iucr.org/resources/cif/spec/version1.1/>`_.
-Among other minor restrictions, this means that the global\_ keyword `is not allowed in CIF 1.1
+Among other minor restrictions, this means that the 'global\_' keyword `is not allowed in FinalCif
 <https://www.iucr.org/resources/cif/spec/version1.1/cifsyntax#global>`_.
-Some CIF writing programs still use the global\_ keyword. You may circumvent this by exchanging the
-global\_ key with a data\_ keyword and delete the previous data\_.
+Some CIF writing programs still use the 'global\_' keyword. You may circumvent this by exchanging the
+'global\_' key with a 'data\_' keyword and delete the subsequent 'data\_'.
 
-Since version 99, FinalCif supports multi-CIFs, so CIF files with multiple data\_ blocks can be
+Since version 99, FinalCif supports multi-CIFs, so CIF files with multiple 'data\_' blocks can be
 opened and edited. Please note that auto-filling of missing values is disabled in multi-CIF mode.
+Some other minor details my not function as in single-CIF mode.
 
 
 .. figure:: pics/multi_cif.png

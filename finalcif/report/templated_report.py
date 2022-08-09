@@ -262,11 +262,19 @@ class TemplatedReport():
             for _, word in enumerate(sum_formula_group):
                 if isnumeric(word):
                     richtext.add(word, subscript=True)
+                elif ')' in word:
+                    richtext.add(word.split(')')[0], subscript=True)
+                    richtext.add(')')
+                elif ']' in word:
+                    richtext.add(word.split(']')[0], subscript=True)
+                    richtext.add(']')
                 else:
                     richtext.add(word)
+                    if word == ',':
+                        richtext.add(' ')
             return richtext
         else:
-            return RichText('No sum formula')
+            return RichText('no formula')
 
     @staticmethod
     def space_group_subdoc(tpl_doc: DocxTemplate, cif: CifContainer) -> Subdoc:
@@ -316,7 +324,7 @@ class TemplatedReport():
                + f'{minus_sign if limit_k_min != "0" else ""}{limit_k_min.replace("-", "")} ' \
                  f'{less_or_equal} k {less_or_equal} {limit_k_max}\n' \
                + f'{minus_sign if limit_l_min != "0" else ""}{limit_l_min.replace("-", "")} ' \
-                 f'{less_or_equal} l {less_or_equal} {limit_l_max}\n'
+                 f'{less_or_equal} l {less_or_equal} {limit_l_max}'
 
     @staticmethod
     def get_radiation(cif: CifContainer) -> RichText:
@@ -466,15 +474,15 @@ class TemplatedReport():
 
     def make_templated_report(self, options: Options, cif: CifContainer, output_filename: str, picfile: Path,
                               template_path: Path):
-        context, tpl_doc = self.prepare_report_data(cif, options, picfile, str(template_path))
+        context, tpl_doc = self.prepare_report_data(cif, options, picfile, template_path)
         # Filter definition for {{foobar|filter}} things:
         jinja_env = jinja2.Environment()
         jinja_env.filters['inv_article'] = get_inf_article
         tpl_doc.render(context, jinja_env=jinja_env, autoescape=True)
         tpl_doc.save(output_filename)
 
-    def prepare_report_data(self, cif: CifContainer, options: Options, picfile: Path, template_path: str):
-        tpl_doc = DocxTemplate(Path(__file__).parent.parent.joinpath(template_path))
+    def prepare_report_data(self, cif: CifContainer, options: Options, picfile: Path, template_path: Path):
+        tpl_doc = DocxTemplate(template_path)
         ba = BondsAndAngles(cif, without_h=options.without_h)
         t = TorsionAngles(cif, without_h=options.without_h)
         h = HydrogenBonds(cif)
@@ -485,6 +493,7 @@ class TemplatedReport():
                    'structure_figure'       : self.make_picture(options, picfile, tpl_doc),
                    'crystallization_method' : self.get_crystallization_method(cif),
                    'sum_formula'            : self.format_sum_formula(cif['_chemical_formula_sum'].replace(" ", "")),
+                   'moiety_formula'         : self.format_sum_formula(cif['_chemical_formula_moiety'].replace(" ", "")),
                    'itnum'                  : cif['_space_group_IT_number'],
                    'crystal_size'           : this_or_quest(cif['_exptl_crystal_size_min']) + timessym +
                                               this_or_quest(cif['_exptl_crystal_size_mid']) + timessym +
@@ -528,7 +537,8 @@ class TemplatedReport():
                    'abs_details'            : self.get_absortion_correction_program(cif),
                    'solution_method'        : self.solution_method(cif),
                    'solution_program'       : self.solution_program(cif),
-                   'refinement_details'     : ' '.join(cif['_refine_special_details'].splitlines(keepends=False)),
+                   'refinement_details'     : ' '.join(
+                       cif['_refine_special_details'].splitlines(keepends=False)).strip(),
                    'refinement_prog'        : self.refinement_prog(cif),
                    'atomic_coordinates'     : self.get_atomic_coordinates(cif),
                    'displacement_parameters': self.get_displacement_parameters(cif),
