@@ -26,11 +26,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [ "3.9" ]  # Pyqt5.15.2 does not install on python3.10 "3.10" ] #[ "3.8", "3.9", "3.10" ]
+        python-version: [ "3.9", "3.10" ]
         os: [ windows-latest, macos-latest, ubuntu-latest ]
         include:
-          - os: ubuntu-latest
-            path: ~/.cache/pip
+          #- os: ubuntu-latest
+          #  path: ~/.cache/pip
           - os: macos-latest
             path: ~/Library/Caches/pip
           - os: windows-latest
@@ -74,8 +74,9 @@ jobs:
         run: |
           if [ "$RUNNER_OS" == "Linux" ]; then
             # Ubuntu needs this to be able to start pyqt5
-            sudo apt install libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xinerama0 libxcb-xinerama0 libxcb-xfixes0
-            /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -screen 0 1920x1200x24 -ac +extension GLX
+            sudo apt-get -qq install libxcb-xinerama0 pyqt5-dev-tools
+            xvfb-run --auto-servernum pytest
+          else
+            pytest
           fi
-          pytest
 

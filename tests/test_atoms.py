@@ -14,11 +14,11 @@ class TestAtoms(unittest.TestCase):
 
     def test_get_radius(self):
         r = get_radius(6)
-        self.assertEqual(0.75, r)
+        self.assertEqual(0.77, r)
 
     def test_get_radius_from_element(self):
         r = get_radius_from_element('F')
-        self.assertEqual(0.71, r)
+        self.assertEqual(0.72, r)
 
     def test_get_atomic_number(self):
         r = get_atomic_number('F')

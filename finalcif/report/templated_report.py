@@ -1,4 +1,5 @@
 import itertools
+from collections import namedtuple
 from math import sin, radians
 from pathlib import Path
 from typing import List, Dict
@@ -261,11 +262,19 @@ class TemplatedReport():
             for _, word in enumerate(sum_formula_group):
                 if isnumeric(word):
                     richtext.add(word, subscript=True)
+                elif ')' in word:
+                    richtext.add(word.split(')')[0], subscript=True)
+                    richtext.add(')')
+                elif ']' in word:
+                    richtext.add(word.split(']')[0], subscript=True)
+                    richtext.add(']')
                 else:
                     richtext.add(word)
+                    if word == ',':
+                        richtext.add(' ')
             return richtext
         else:
-            return RichText('No sum formula')
+            return RichText('no formula')
 
     @staticmethod
     def space_group_subdoc(tpl_doc: DocxTemplate, cif: CifContainer) -> Subdoc:
@@ -295,11 +304,10 @@ class TemplatedReport():
         theta_max = cif['_diffrn_reflns_theta_max']
         radiation_wavelength = cif['_diffrn_radiation_wavelength']
         try:
-            d_max = ' ({:.2f}{}{})'.format(float(radiation_wavelength) / (2 * sin(radians(float(theta_max)))),
-                                           protected_space,
-                                           angstrom)
+            d_max = f' ({float(radiation_wavelength) / (2 * sin(radians(float(theta_max)))):.2f}' \
+                    f'{protected_space}{angstrom})'
             # 2theta range:
-            return "{:.2f} to {:.2f}{}".format(2 * float(theta_min), 2 * float(theta_max), d_max)
+            return f"{2 * float(theta_min):.2f} to {2 * float(theta_max):.2f}{d_max}"
         except ValueError:
             return '? to ?'
 
@@ -311,9 +319,12 @@ class TemplatedReport():
         limit_k_max = cif['_diffrn_reflns_limit_k_max']
         limit_l_min = cif['_diffrn_reflns_limit_l_min']
         limit_l_max = cif['_diffrn_reflns_limit_l_max']
-        return limit_h_min + ' {} h {} '.format(less_or_equal, less_or_equal) + limit_h_max + '\n' \
-               + limit_k_min + ' {} k {} '.format(less_or_equal, less_or_equal) + limit_k_max + '\n' \
-               + limit_l_min + ' {} l {} '.format(less_or_equal, less_or_equal) + limit_l_max
+        return f'{minus_sign if limit_h_min != "0" else ""}{limit_h_min.replace("-", "")} ' \
+               f'{less_or_equal} h {less_or_equal} {limit_h_max}\n' \
+               + f'{minus_sign if limit_k_min != "0" else ""}{limit_k_min.replace("-", "")} ' \
+                 f'{less_or_equal} k {less_or_equal} {limit_k_max}\n' \
+               + f'{minus_sign if limit_l_min != "0" else ""}{limit_l_min.replace("-", "")} ' \
+                 f'{less_or_equal} l {less_or_equal} {limit_l_max}'
 
     @staticmethod
     def get_radiation(cif: CifContainer) -> RichText:
@@ -326,7 +337,7 @@ class TemplatedReport():
     @staticmethod
     def get_completeness(cif: CifContainer) -> str:
         try:
-            completeness = "{0:.1f} %".format(round(float(cif['_diffrn_measured_fraction_theta_full']) * 100, 1))
+            completeness = f"{float(cif['_diffrn_measured_fraction_theta_full']) * 100:.1f}{protected_space}%"
         except ValueError:
             completeness = '?'
         return completeness
@@ -334,7 +345,7 @@ class TemplatedReport():
     @staticmethod
     def get_diff_density_min(cif: CifContainer) -> str:
         try:
-            diff_density_min = "{0:.2f}".format(round(float(cif['_refine_diff_density_min']), 2))
+            diff_density_min = f"{float(cif['_refine_diff_density_min']):.2f}"
         except ValueError:
             diff_density_min = '?'
         return diff_density_min
@@ -342,7 +353,7 @@ class TemplatedReport():
     @staticmethod
     def get_diff_density_max(cif: CifContainer) -> str:
         try:
-            diff_density_max = "{0:.2f}".format(round(float(cif['_refine_diff_density_max']), 2))
+            diff_density_max = f"{float(cif['_refine_diff_density_max']):.2f}"
         except ValueError:
             diff_density_max = '?'
         return diff_density_max
@@ -438,6 +449,20 @@ class TemplatedReport():
                    'occ'  : at.occ.replace('-', minus_sign),
                    'u_eq' : at.u_eq.replace('-', minus_sign)}
 
+    def get_displacement_parameters(self, cif: CifContainer):
+        """
+        Yields the anisotropic displacement parameters. With hypehens replaced to minus signs.
+        """
+        adp = namedtuple('adp', ('label', 'U11', 'U22', 'U33', 'U23', 'U13', 'U12'))
+        for label, u11, u22, u33, u23, u13, u12 in cif.displacement_parameters():
+            yield adp(label=label,
+                      U11=u11.replace('-', minus_sign),
+                      U22=u22.replace('-', minus_sign),
+                      U33=u33.replace('-', minus_sign),
+                      U12=u12.replace('-', minus_sign),
+                      U13=u13.replace('-', minus_sign),
+                      U23=u23.replace('-', minus_sign))
+
     def get_crystallization_method(self, cif):
         return remove_line_endings(retranslate_delimiter(
             cif['_exptl_crystal_recrystallization_method'])) or '[No crystallization method given!]'
@@ -447,80 +472,86 @@ class TemplatedReport():
             return InlineImage(tpl_doc, str(picfile.resolve()), width=Cm(options.picture_width))
         return None
 
-    def make_templated_report(self, options: Options, file_obj: Path, output_filename: str, picfile: Path,
+    def make_templated_report(self, options: Options, cif: CifContainer, output_filename: str, picfile: Path,
                               template_path: Path):
-        cif = CifContainer(file_obj)
-        tpl_doc = DocxTemplate(Path(__file__).parent.parent.joinpath(template_path))
-        ba = BondsAndAngles(cif, without_h=options.without_h)
-        t = TorsionAngles(cif, without_h=options.without_h)
-        h = HydrogenBonds(cif)
-        context = {'options'               : options,
-                   # {'without_h': True, 'atoms_table': True, 'text': True, 'bonds_table': True},
-                   'cif'                   : cif,
-                   'space_group'           : self.space_group_subdoc(tpl_doc, cif),
-                   'structure_figure'      : self.make_picture(options, picfile, tpl_doc),
-                   'crystallization_method': self.get_crystallization_method(cif),
-                   'sum_formula'           : self.format_sum_formula(cif['_chemical_formula_sum'].replace(" ", "")),
-                   'itnum'                 : cif['_space_group_IT_number'],
-                   'crystal_size'          : this_or_quest(cif['_exptl_crystal_size_min']) + timessym +
-                                             this_or_quest(cif['_exptl_crystal_size_mid']) + timessym +
-                                             this_or_quest(cif['_exptl_crystal_size_max']),
-                   'crystal_colour'        : this_or_quest(cif['_exptl_crystal_colour']),
-                   'crystal_shape'         : this_or_quest(cif['_exptl_crystal_description']),
-                   'radiation'             : self.get_radiation(cif),
-                   'wavelength'            : cif['_diffrn_radiation_wavelength'],
-                   'theta_range'           : self.get_from_to_theta_range(cif),
-                   'diffr_type'            : gstr(cif['_diffrn_measurement_device_type'])
-                                             or '[No measurement device type given]',
-                   'diffr_device'          : gstr(cif['_diffrn_measurement_device'])
-                                             or '[No measurement device given]',
-                   'diffr_source'          : gstr(cif['_diffrn_source']).strip('\n\r')
-                                             or '[No radiation source given]',
-                   'monochromator'         : gstr(cif['_diffrn_radiation_monochromator']) \
-                                             or '[No monochromator type given]',
-                   'detector'              : gstr(cif['_diffrn_detector_type']) \
-                                             or '[No detector type given]',
-                   'lowtemp_dev'           : MachineType._get_cooling_device(cif),
-                   'index_ranges'          : self.hkl_index_limits(cif),
-                   'indepentent_refl'      : this_or_quest(cif['_reflns_number_total']),
-                   'r_int'                 : this_or_quest(cif['_diffrn_reflns_av_R_equivalents']),
-                   'r_sigma'               : this_or_quest(cif['_diffrn_reflns_av_unetI/netI']),
-                   'completeness'          : self.get_completeness(cif),
-                   'theta_full'            : cif['_diffrn_reflns_theta_full'],
-                   'data'                  : this_or_quest(cif['_refine_ls_number_reflns']),
-                   'restraints'            : this_or_quest(cif['_refine_ls_number_restraints']),
-                   'parameters'            : this_or_quest(cif['_refine_ls_number_parameters']),
-                   'goof'                  : this_or_quest(cif['_refine_ls_goodness_of_fit_ref']),
-                   'ls_R_factor_gt'        : this_or_quest(cif['_refine_ls_R_factor_gt']),
-                   'ls_wR_factor_gt'       : this_or_quest(cif['_refine_ls_wR_factor_gt']),
-                   'ls_R_factor_all'       : this_or_quest(cif['_refine_ls_R_factor_all']),
-                   'ls_wR_factor_ref'      : this_or_quest(cif['_refine_ls_wR_factor_ref']),
-                   'diff_dens_min'         : self.get_diff_density_min(cif).replace('-', minus_sign),
-                   'diff_dens_max'         : self.get_diff_density_max(cif).replace('-', minus_sign),
-                   'exti'                  : self.get_exti(cif),
-                   'flack_x'               : self.get_flackx(cif),
-                   'integration_progr'     : self.get_integration_program(cif),
-                   'abstype'               : gstr(cif['_exptl_absorpt_correction_type']) or '??',
-                   'abs_details'           : self.get_absortion_correction_program(cif),
-                   'solution_method'       : self.solution_method(cif),
-                   'solution_program'      : self.solution_program(cif),
-                   'refinement_prog'       : self.refinement_prog(cif),
-                   'atomic_coordinates'    : self.get_atomic_coordinates(cif),
-                   'bonds'                 : ba.bonds,
-                   'angles'                : ba.angles,
-                   'ba_symminfo'           : ba.symminfo,
-                   'torsions'              : t.torsion_angles,
-                   'torsion_symminfo'      : t.symminfo,
-                   'hydrogen_bonds'        : h.hydrogen_bonds,
-                   'hydrogen_symminfo'     : h.symminfo,
-                   'literature'            : self.literature
-                   }
-
+        context, tpl_doc = self.prepare_report_data(cif, options, picfile, template_path)
         # Filter definition for {{foobar|filter}} things:
         jinja_env = jinja2.Environment()
         jinja_env.filters['inv_article'] = get_inf_article
         tpl_doc.render(context, jinja_env=jinja_env, autoescape=True)
         tpl_doc.save(output_filename)
+
+    def prepare_report_data(self, cif: CifContainer, options: Options, picfile: Path, template_path: Path):
+        tpl_doc = DocxTemplate(template_path)
+        ba = BondsAndAngles(cif, without_h=options.without_h)
+        t = TorsionAngles(cif, without_h=options.without_h)
+        h = HydrogenBonds(cif)
+        context = {'options'                : options,
+                   # {'without_h': True, 'atoms_table': True, 'text': True, 'bonds_table': True},
+                   'cif'                    : cif,
+                   'space_group'            : self.space_group_subdoc(tpl_doc, cif),
+                   'structure_figure'       : self.make_picture(options, picfile, tpl_doc),
+                   'crystallization_method' : self.get_crystallization_method(cif),
+                   'sum_formula'            : self.format_sum_formula(cif['_chemical_formula_sum'].replace(" ", "")),
+                   'moiety_formula'         : self.format_sum_formula(cif['_chemical_formula_moiety'].replace(" ", "")),
+                   'itnum'                  : cif['_space_group_IT_number'],
+                   'crystal_size'           : this_or_quest(cif['_exptl_crystal_size_min']) + timessym +
+                                              this_or_quest(cif['_exptl_crystal_size_mid']) + timessym +
+                                              this_or_quest(cif['_exptl_crystal_size_max']),
+                   'crystal_colour'         : this_or_quest(cif['_exptl_crystal_colour']),
+                   'crystal_shape'          : this_or_quest(cif['_exptl_crystal_description']),
+                   'radiation'              : self.get_radiation(cif),
+                   'wavelength'             : cif['_diffrn_radiation_wavelength'],
+                   'theta_range'            : self.get_from_to_theta_range(cif),
+                   'diffr_type'             : gstr(cif['_diffrn_measurement_device_type'])
+                                              or '[No measurement device type given]',
+                   'diffr_device'           : gstr(cif['_diffrn_measurement_device'])
+                                              or '[No measurement device given]',
+                   'diffr_source'           : gstr(cif['_diffrn_source']).strip('\n\r')
+                                              or '[No radiation source given]',
+                   'monochromator'          : gstr(cif['_diffrn_radiation_monochromator']) \
+                                              or '[No monochromator type given]',
+                   'detector'               : gstr(cif['_diffrn_detector_type']) \
+                                              or '[No detector type given]',
+                   'lowtemp_dev'            : MachineType._get_cooling_device(cif),
+                   'index_ranges'           : self.hkl_index_limits(cif),
+                   'indepentent_refl'       : this_or_quest(cif['_reflns_number_total']),
+                   'r_int'                  : this_or_quest(cif['_diffrn_reflns_av_R_equivalents']),
+                   'r_sigma'                : this_or_quest(cif['_diffrn_reflns_av_unetI/netI']),
+                   'completeness'           : self.get_completeness(cif),
+                   'theta_full'             : cif['_diffrn_reflns_theta_full'],
+                   'data'                   : this_or_quest(cif['_refine_ls_number_reflns']),
+                   'restraints'             : this_or_quest(cif['_refine_ls_number_restraints']),
+                   'parameters'             : this_or_quest(cif['_refine_ls_number_parameters']),
+                   'goof'                   : this_or_quest(cif['_refine_ls_goodness_of_fit_ref']),
+                   'ls_R_factor_gt'         : this_or_quest(cif['_refine_ls_R_factor_gt']),
+                   'ls_wR_factor_gt'        : this_or_quest(cif['_refine_ls_wR_factor_gt']),
+                   'ls_R_factor_all'        : this_or_quest(cif['_refine_ls_R_factor_all']),
+                   'ls_wR_factor_ref'       : this_or_quest(cif['_refine_ls_wR_factor_ref']),
+                   'diff_dens_min'          : self.get_diff_density_min(cif).replace('-', minus_sign),
+                   'diff_dens_max'          : self.get_diff_density_max(cif).replace('-', minus_sign),
+                   'exti'                   : self.get_exti(cif),
+                   'flack_x'                : self.get_flackx(cif),
+                   'integration_progr'      : self.get_integration_program(cif),
+                   'abstype'                : gstr(cif['_exptl_absorpt_correction_type']) or '??',
+                   'abs_details'            : self.get_absortion_correction_program(cif),
+                   'solution_method'        : self.solution_method(cif),
+                   'solution_program'       : self.solution_program(cif),
+                   'refinement_details'     : ' '.join(
+                       cif['_refine_special_details'].splitlines(keepends=False)).strip(),
+                   'refinement_prog'        : self.refinement_prog(cif),
+                   'atomic_coordinates'     : self.get_atomic_coordinates(cif),
+                   'displacement_parameters': self.get_displacement_parameters(cif),
+                   'bonds'                  : ba.bonds,
+                   'angles'                 : ba.angles,
+                   'ba_symminfo'            : ba.symminfo,
+                   'torsions'               : t.torsion_angles,
+                   'torsion_symminfo'       : t.symminfo,
+                   'hydrogen_bonds'         : h.hydrogen_bonds,
+                   'hydrogen_symminfo'      : h.symminfo,
+                   'literature'             : self.literature
+                   }
+        return context, tpl_doc
 
 
 if __name__ == '__main__':

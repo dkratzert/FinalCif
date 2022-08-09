@@ -12,11 +12,11 @@ from finalcif import VERSION
 
 
 def do_update_program(version) -> None:
-    os.chdir(str(Path(__file__).parent.parent))  # parent path of gui -> main dir
+    updater_exe = str(Path(__file__).parent.parent.parent.joinpath('update.exe'))
     args = ['-v', version,
             '-p', 'finalcif']
     # Using this, because otherwise I can not write to the program dir:
-    ctypes.windll.shell32.ShellExecuteW(None, "runas", 'update.exe', " ".join(args), None, 1)
+    ctypes.windll.shell32.ShellExecuteW(None, "runas", updater_exe, " ".join(args), None, 1)
 
 
 def unable_to_open_message(filepath: Path, not_ok: Exception) -> None:
@@ -66,7 +66,7 @@ def show_hkl_checksum_warning() -> None:
     info.exec()
 
 
-def show_general_warning(warn_text: str = '', info_text: str = '') -> None:
+def show_general_warning(warn_text: str = '', info_text: str = '', window_title=' ') -> None:
     """
     A message box to display if the checksums do not agree.
     warn_text is displayed bold.
@@ -76,7 +76,7 @@ def show_general_warning(warn_text: str = '', info_text: str = '') -> None:
         return None
     box = QMessageBox()
     box.setTextFormat(Qt.AutoText)
-    box.setWindowTitle(" ")
+    box.setWindowTitle(window_title)
     box.setTextInteractionFlags(Qt.TextBrowserInteraction)
     box.setText(warn_text)
     if info_text:

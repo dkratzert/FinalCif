@@ -20,7 +20,6 @@ from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkRepl
 from requests.exceptions import MissingSchema
 
 from finalcif.cif.cif_file_io import CifContainer
-from finalcif.tools.misc import strip_finalcif_of_name
 
 
 class CheckCif(QThread):
@@ -158,7 +157,7 @@ class MyHTMLParser(HTMLParser):
         self.feed(data)
 
     def get_pdf(self) -> Optional[bytes]:
-        return requests.get(self.pdf_link).content
+        return requests.get(self.pdf_link, timeout=10).content
 
     def handle_starttag(self, tag: str, attrs: str) -> None:
         if tag == "a" and len(attrs) > 1 and attrs[0][1] == '_blank' and attrs[1][1].endswith('.pdf'):
@@ -176,7 +175,7 @@ class MyHTMLParser(HTMLParser):
 
     def get_image(self) -> bytes:
         try:
-            return requests.get(self.imageurl).content
+            return requests.get(self.imageurl, timeout=10).content
         except MissingSchema:
             return b''
 
@@ -281,6 +280,7 @@ if __name__ == "__main__":
     parser = MyHTMLParser(html.read_text())
     # print(parser.imageurl)
     from pprint import pprint
+
     pprint(parser.response_forms)
     # print(parser.alert_levels)
     # print(parser.vrf)

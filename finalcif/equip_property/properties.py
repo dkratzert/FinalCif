@@ -1,5 +1,6 @@
 from contextlib import suppress
 from pathlib import Path
+from typing import List, Dict
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QListWidgetItem, QTableWidget, QListWidget, QStackedWidget
@@ -20,11 +21,12 @@ class Properties:
     def __init__(self, app: 'AppWindow', settings: FinalCifSettings):
         self.app = app
         self.settings = settings
-        self.signals_and_slots()
-        self.app.ui.PropertiesTemplatesStackedWidget.setCurrentIndex(0)
-        self.app.ui.PropertiesEditTableWidget.verticalHeader().hide()
-        self.store_predefined_templates()
-        self.show_properties()
+        if app:
+            self.signals_and_slots()
+            self.app.ui.PropertiesTemplatesStackedWidget.setCurrentIndex(0)
+            self.app.ui.PropertiesEditTableWidget.verticalHeader().hide()
+            self.store_predefined_templates()
+            self.show_properties()
 
     def signals_and_slots(self):
         ## properties
@@ -113,25 +115,23 @@ class Properties:
     def save_property_template(self) -> None:
         table = self.app.ui.PropertiesEditTableWidget
         stackedwidget = self.app.ui.PropertiesTemplatesStackedWidget
-        listwidget = self.app.ui.PropertiesTemplatesListWidget
         keyword = self.app.ui.cifKeywordLineEdit.text()
-        self.save_property(table, stackedwidget, listwidget, keyword)
+        self.save_property(table, stackedwidget, keyword)
         self.app.refresh_combo_boxes()
 
     def store_predefined_templates(self) -> None:
         property_list = self.settings.get_properties_list() or []
         for item in predef_prop_templ:
-            if not item['name'] in property_list:
+            if item['name'] not in property_list:
                 self.settings.save_settings_list('property', item['name'], item['values'])
 
     def export_property_template(self, filename: str = '') -> None:
         """
         Exports the currently selected property entry to a file.
         """
-        selected_row_text = self.app.ui.PropertiesTemplatesListWidget.currentIndex().data()
-        if not selected_row_text:
+        if not self.selected_template_name():
             return
-        prop_data = self.settings.load_settings_list('property', selected_row_text)
+        prop_data = self.settings.load_settings_list('property', self.selected_template_name())
         table_data = []
         cif_key = ''
         if prop_data:
@@ -141,7 +141,7 @@ class Properties:
         if not cif_key:
             return
         doc = cif.Document()
-        blockname = '__'.join(selected_row_text.split())
+        blockname = '__'.join(self.selected_template_name().split())
         block = doc.add_new_block(blockname)
         try:
             loop = block.init_loop(cif_key, [''])
@@ -158,11 +158,13 @@ class Properties:
             return
         try:
             doc.write_file(filename, style=cif.Style.Indent35)
-            # Path(filename).write_text(doc.as_string(cif.Style.Indent35))
         except PermissionError:
             if Path(filename).is_dir():
                 return
             show_general_warning('No permission to write file to {}'.format(Path(filename).resolve()))
+
+    def selected_template_name(self):
+        return self.app.ui.PropertiesTemplatesListWidget.currentIndex().data()
 
     def import_property_from_file(self, filename: str = '') -> None:
         """
@@ -200,31 +202,25 @@ class Properties:
         self.app.ui.cifKeywordLineEdit.setText(loop_column_name)
         newlist = [x for x in list(set(property_list)) if x]
         newlist.sort()
-        # this list keeps track of the property items:
-        self.settings.save_template_list('property_list', newlist)
         template_list.insert(0, '')
         template_list = list(set(template_list))
         # save as dictionary for properties to have "_cif_key : itemlist"
         # for a table item as dropdown menu in the main table.
         table_data = [loop_column_name, template_list]
-        self.settings.save_template_list('property/' + block_name, table_data)
+        self.settings.save_settings_list(property='property', name=block_name, items=table_data)
 
     def load_property_from_settings(self) -> None:
         """
         Load/Edit the value list of a property entry.
         """
+        if not self.selected_template_name():
+            # nothing selected
+            return
         table = self.app.ui.PropertiesEditTableWidget
-        listwidget = self.app.ui.PropertiesTemplatesListWidget
         table.blockSignals(True)
         table.clearContents()
         table.setRowCount(0)
-        index = listwidget.currentIndex()
-        if index.row() == -1:
-            # nothing selected
-            # self.app.ui.PropertiesEditTableWidget.blockSignals(False)
-            return
-        selected_row_text = listwidget.currentIndex().data()
-        table_data = self.settings.load_settings_list('property', selected_row_text)
+        table_data = self.settings.load_settings_list('property', self.selected_template_name())
         if table_data:
             cif_key = table_data[0]
             with suppress(Exception):
@@ -244,6 +240,20 @@ class Properties:
         # table.setWordWrap(False)
         table.resizeRowsToContents()
 
+    def export_raw_data(self) -> List[Dict]:
+        properties_list = []
+        for property_name in self.settings.get_properties_list():
+            if property_name:
+                property_cif_key, property_data  = self.settings.load_settings_list('property', item_name=property_name)
+                properties_list.append({'name': property_name, 'cif_key': property_cif_key, 'data': property_data})
+        return properties_list
+
+    def import_raw_data(self, properties_list: List[Dict]) -> None:
+        for property in properties_list:
+            self.settings.save_settings_list(property='property', name=property.get("name"),
+                                             items=[property.get('cif_key'), property.get('data')])
+        self.show_properties()
+
     @staticmethod
     def add_propeties_row(table: QTableWidget, value: str = '') -> None:
         """
@@ -252,19 +262,13 @@ class Properties:
         # Create a empty row at bottom of table
         row_num = table.rowCount()
         table.insertRow(row_num)
-        # Add cif key and value to the row:
-        # item_val = MyTableWidgetItem(value)
-        # table.setItem(row_num, 0, item_val)
         key_item = PlainTextEditTemplate(parent=table)
         key_item.textChanged.connect(lambda: table.resizeRowsToContents())
         key_item.setPlainText(value)
-        ## This is critical, because otherwise the add_row_if_needed does not work as expected:
-        # key_item.textChanged.connect(self.add_row_if_needed)
         table.setCellWidget(row_num, 0, key_item)
 
     def save_property(self, table: QTableWidget,
                       stackwidget: QStackedWidget,
-                      listwidget: QListWidget,
                       keyword: str = '') -> None:
         """
         Saves the currently selected Property template to the config file.
@@ -272,7 +276,6 @@ class Properties:
         # Set None Item to prevent loss of the currently edited item:
         # The current item is closed and thus saved.
         table.setCurrentItem(None)
-        selected_template_text = listwidget.currentIndex().data()
         table_data = []
         ncolumns = table.rowCount()
         for rownum in range(ncolumns):
@@ -286,10 +289,10 @@ class Properties:
         # make sure to have always a blank item first:
         table_data.insert(0, '')
         if keyword:
-            # save as dictionary for properties to have "_cif_key : itemlist"
+            # save as list for properties to have [_cif_key, itemlist]
             # for a table item as dropdown menu in the main table.
             table_data = [keyword, table_data]
-        self.settings.save_template_list('property/' + selected_template_text, table_data)
+        self.settings.save_settings_list(property='property', name=self.selected_template_name(), items=table_data)
         stackwidget.setCurrentIndex(0)
         print('saved')
 
@@ -301,3 +304,9 @@ class Properties:
         table.clearContents()
         table.setRowCount(0)
         self.app.ui.PropertiesTemplatesStackedWidget.setCurrentIndex(0)
+
+
+if __name__ == '__main__':
+    l = Properties(None, FinalCifSettings())
+    for line in l.export_raw_data():
+        print(f"{line}")

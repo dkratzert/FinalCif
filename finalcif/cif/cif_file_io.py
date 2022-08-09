@@ -44,6 +44,8 @@ class CifContainer():
             self.doc = self.read_file(str(self.fileobj.resolve(strict=True)))
         # Starting with first block, but can use others with subsequent self._onload():
         self.block = self.doc[0]
+        self.shx = Shelxfile()
+        self.shx.read_string(self.res_file_data[1:-1])
         self._on_load()
 
     @property
@@ -80,6 +82,15 @@ class CifContainer():
         file_witout_finalcif = strip_finalcif_of_name(Path(self.filename).stem)
         filename = self.path_base.joinpath(Path(prefix + file_witout_finalcif + suffix))
         return filename
+
+    def get_line_numbers_of_bad_characters(self, filepath: Path):
+        line_numbers = []
+        for num, line in enumerate(filepath.read_bytes().splitlines(keepends=True)):
+            try:
+                line.decode('ascii')
+            except(UnicodeDecodeError):
+                line_numbers.append(num)
+        return line_numbers
 
     @property
     def is_multi_cif(self) -> bool:
@@ -238,10 +249,12 @@ class CifContainer():
     def res_file_data(self) -> str:
         try:
             # Should i do this:
-            # if self['_iucr_refine_instructions_details']:
-            #    return self.block.find_value('_iucr_refine_instructions_details')
-            # else:
-            return self.block.find_value('_shelx_res_file')
+            if self['_shelx_res_file']:
+                return self.block.find_value('_shelx_res_file')
+            elif self['_iucr_refine_instructions_details']:
+                return self.block.find_value('_iucr_refine_instructions_details')
+            else:
+                return ''
         except UnicodeDecodeError:
             # This is a fallback in case _shelx_res_file has non-ascii characters.
             print('File has non-ascii characters. Switching to compatible mode.')
@@ -270,7 +283,12 @@ class CifContainer():
 
     def _hkl_from_shelx(self) -> str:
         try:
-            return self['_shelx_hkl_file'].strip('\r\n')
+            if self['_shelx_hkl_file'].strip('\r\n'):
+                return self['_shelx_hkl_file'].strip('\r\n')
+            elif self['_iucr_refine_reflections_details']:
+                return self['_iucr_refine_reflections_details']
+            else:
+                return ''
         except Exception as e:
             print('No hkl data found in CIF!, {}'.format(e))
             return ''
@@ -290,10 +308,8 @@ class CifContainer():
         return HKL(self.hkl_file, self.block.name, hklf_type=self.hklf_number).get_hkl_min_max()
 
     def _hklf_number_from_shelxl_file(self) -> int:
-        shx = Shelxfile()
-        shx.read_string(self.res_file_data[1:-1])
-        if shx.hklf:
-            return shx.hklf.n if shx.hklf.n != 0 else 4
+        if self.shx.hklf:
+            return self.shx.hklf.n if self.shx.hklf.n != 0 else 4
         else:
             return 4
 
@@ -564,7 +580,10 @@ class CifContainer():
             # Do not crash without symmops
             return False
         ops = gemmi.GroupOps([gemmi.Op(o) for o in self.symmops])
-        return ops.is_centric()
+        try:
+            return ops.is_centric()
+        except AttributeError:
+            return ops.is_centrosymmetric()
 
     def atoms(self, without_h: bool = False) -> Generator:
         """
@@ -603,6 +622,21 @@ class CifContainer():
             x, y, z = at.orth(cell)
             yield atom(label=at.label, type=at.type_symbol, x=x, y=y, z=z,
                        part=at.disorder_group, occ=at.occ, u_eq=at.u_iso)
+
+    def displacement_parameters(self):
+        """
+        Yields the anisotropic displacement parameters.
+        """
+        labels = self.block.find_loop('_atom_site_aniso_label')
+        u11 = self.block.find_loop('_atom_site_aniso_U_11')
+        u22 = self.block.find_loop('_atom_site_aniso_U_22')
+        u33 = self.block.find_loop('_atom_site_aniso_U_33')
+        u23 = self.block.find_loop('_atom_site_aniso_U_23')
+        u13 = self.block.find_loop('_atom_site_aniso_U_13')
+        u12 = self.block.find_loop('_atom_site_aniso_U_12')
+        adp = namedtuple('adp', ('label', 'U11', 'U22', 'U33', 'U23', 'U13', 'U12'))
+        for label, u11, u22, u33, u23, u13, u12 in zip(labels, u11, u22, u33, u23, u13, u12):
+            yield adp(label=label, U11=u11, U22=u22, U33=u33, U12=u12, U13=u13, U23=u23)
 
     @property
     def hydrogen_atoms_present(self) -> bool:
@@ -730,7 +764,7 @@ class CifContainer():
         hydr = namedtuple('HydrogenBond', ('label_d', 'label_h', 'label_a', 'dist_dh', 'dist_ha', 'dist_da',
                                            'angle_dha', 'symm'))
         for label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm in \
-            zip(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm):
+                zip(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm):
             yield hydr(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, self.checksymm(symm))
 
     def key_value_pairs(self) -> List[Tuple[str, str]]:

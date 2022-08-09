@@ -8,7 +8,7 @@
     <x>0</x>
     <y>0</y>
     <width>1604</width>
-    <height>776</height>
+    <height>833</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -173,12 +173,12 @@
            <number>1</number>
           </property>
           <property name="currentIndex">
-           <number>1</number>
+           <number>0</number>
           </property>
           <widget class="QWidget" name="page_equipment">
            <layout class="QVBoxLayout" name="verticalLayout_16">
             <property name="spacing">
-             <number>-1</number>
+             <number>6</number>
             </property>
             <property name="leftMargin">
              <number>0</number>
@@ -199,7 +199,7 @@
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_7">
                <property name="spacing">
-                <number>-1</number>
+                <number>6</number>
                </property>
                <property name="leftMargin">
                 <number>0</number>
@@ -406,8 +406,14 @@
               </property>
              </widget>
             </item>
-            <item>
+            <item alignment="Qt::AlignHCenter">
              <widget class="QPushButton" name="ImportCifPushButton">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
               <property name="text">
                <string>Import .cif, .pcf, .cif_od, .cfx or .sqf file</string>
               </property>
@@ -1040,7 +1046,7 @@
         <item row="1" column="0" colspan="13">
          <widget class="MyMainStackedWidget" name="MainStackedWidget">
           <property name="currentIndex">
-           <number>2</number>
+           <number>4</number>
           </property>
           <widget class="QWidget" name="page_MainTable">
            <layout class="QVBoxLayout" name="verticalLayout">
@@ -2167,36 +2173,7 @@ The data source will be ignored until next program restart.</string>
           </widget>
           <widget class="QWidget" name="page_options">
            <layout class="QGridLayout" name="gridLayout_12">
-            <item row="6" column="1" colspan="3">
-             <spacer name="horizontalSpacer_14">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item row="4" column="0">
-             <spacer name="verticalSpacer_6">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
-              <property name="sizeType">
-               <enum>QSizePolicy::Expanding</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>40</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item row="6" column="0">
+            <item row="8" column="0">
              <widget class="QPushButton" name="BackFromOptionspPushButton">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -2209,7 +2186,7 @@ The data source will be ignored until next program restart.</string>
               </property>
              </widget>
             </item>
-            <item row="7" column="0">
+            <item row="9" column="0">
              <spacer name="verticalSpacer_5">
               <property name="orientation">
                <enum>Qt::Vertical</enum>
@@ -2260,6 +2237,59 @@ The data source will be ignored until next program restart.</string>
               </layout>
              </widget>
             </item>
+            <item row="6" column="0">
+             <widget class="QGroupBox" name="groupBox_8">
+              <property name="title">
+               <string>Export</string>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_34">
+               <item alignment="Qt::AlignLeft">
+                <widget class="QPushButton" name="ExportAllTemplatesPushButton">
+                 <property name="text">
+                  <string>Export all Templates</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_18">
+                 <property name="text">
+                  <string>Exports all templates from Equipment, Properties and Text snippets to a single file.</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <spacer name="verticalSpacer">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeType">
+                  <enum>QSizePolicy::Fixed</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>10</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item alignment="Qt::AlignLeft">
+                <widget class="QPushButton" name="ImportAllTemplatesPushButton">
+                 <property name="text">
+                  <string>Import all Templates</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_17">
+                 <property name="text">
+                  <string>Imports all templates from a template file.</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
             <item row="2" column="0">
              <widget class="QGroupBox" name="groupBox_7">
               <property name="title">
@@ -2295,27 +2325,42 @@ The data source will be ignored until next program restart.</string>
               </layout>
              </widget>
             </item>
+            <item row="8" column="1" colspan="3">
+             <spacer name="horizontalSpacer_14">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="7" column="0">
+             <spacer name="verticalSpacer_6">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Expanding</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
             <item row="1" column="0">
              <widget class="QGroupBox" name="groupBox_5">
               <property name="title">
                <string>Report Options</string>
               </property>
               <layout class="QFormLayout" name="formLayout_5">
-               <item row="0" column="0" colspan="2">
-                <widget class="QCheckBox" name="ReportTextCheckBox">
-                 <property name="text">
-                  <string>No report text in structure report</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0" colspan="2">
-                <widget class="QCheckBox" name="HAtomsCheckBox">
-                 <property name="text">
-                  <string>No bonds and angles to hydrogen atoms</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="0" colspan="2">
+               <item row="3" column="0" colspan="2">
                 <layout class="QHBoxLayout" name="horizontalLayout_6">
                  <property name="topMargin">
                   <number>0</number>
@@ -2377,21 +2422,21 @@ The data source will be ignored until next program restart.</string>
                  </item>
                 </layout>
                </item>
-               <item row="4" column="0">
-                <widget class="Line" name="line_3">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="0" colspan="2">
+               <item row="4" column="0" colspan="2">
                 <widget class="Line" name="line_4">
                  <property name="orientation">
                   <enum>Qt::Horizontal</enum>
                  </property>
                 </widget>
                </item>
-               <item row="5" column="0" colspan="2">
+               <item row="5" column="0">
+                <widget class="Line" name="line_3">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="0" colspan="2">
                 <widget class="QGroupBox" name="groupBox_6">
                  <property name="title">
                   <string>Report Templates</string>
@@ -2497,6 +2542,54 @@ The data source will be ignored until next program restart.</string>
                   </item>
                  </layout>
                 </widget>
+               </item>
+               <item row="0" column="0">
+                <layout class="QVBoxLayout" name="verticalLayout_35">
+                 <item>
+                  <widget class="QCheckBox" name="ReportTextCheckBox">
+                   <property name="text">
+                    <string>No report text in structure report</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QCheckBox" name="HAtomsCheckBox">
+                   <property name="text">
+                    <string>No bonds and angles to hydrogen atoms</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item row="0" column="1">
+                <layout class="QVBoxLayout" name="verticalLayout_36">
+                 <property name="leftMargin">
+                  <number>12</number>
+                 </property>
+                 <item>
+                  <widget class="QCheckBox" name="ADPTableCheckBox">
+                   <property name="text">
+                    <string>Add ADP table</string>
+                   </property>
+                   <property name="checked">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <spacer name="verticalSpacer_8">
+                   <property name="orientation">
+                    <enum>Qt::Vertical</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>20</width>
+                     <height>40</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                </layout>
                </item>
               </layout>
              </widget>
@@ -4085,8 +4178,6 @@ please add a publication author:</string>
   <tabstop>BackSourcesPushButton</tabstop>
   <tabstop>BackFromOptionspPushButton</tabstop>
   <tabstop>CheckCIFServerURLTextedit</tabstop>
-  <tabstop>ReportTextCheckBox</tabstop>
-  <tabstop>HAtomsCheckBox</tabstop>
   <tabstop>PictureWidthDoubleSpinBox</tabstop>
   <tabstop>AddNewTemplPushButton</tabstop>
   <tabstop>RemoveTemplPushButton</tabstop>

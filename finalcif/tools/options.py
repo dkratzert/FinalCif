@@ -1,3 +1,5 @@
+from contextlib import suppress
+
 from finalcif.gui.finalcif_gui import Ui_FinalCifWindow
 from finalcif.tools.settings import FinalCifSettings
 
@@ -7,8 +9,9 @@ class Options:
         self.ui = ui
         self.settings = settings
         # initial default, otherwise we have width=0.0 and no picture visible:
-        self.ui.PictureWidthDoubleSpinBox.setValue(7.5)
-        self._connect_signal_and_slots()
+        if ui:
+            self.ui.PictureWidthDoubleSpinBox.setValue(7.5)
+            self._connect_signal_and_slots()
         self._options = {}
 
     def _connect_signal_and_slots(self):
@@ -17,10 +20,11 @@ class Options:
         self.ui.PictureWidthDoubleSpinBox.valueChanged.connect(self._state_changed)
         self.ui.CheckCIFServerURLTextedit.textChanged.connect(self._state_changed)
         self.ui.CODURLTextedit.textChanged.connect(self._state_changed)
+        self.ui.ADPTableCheckBox.stateChanged.connect(self._state_changed)
 
     def show_options(self):
         """
-        This method and pnöy this is called in order to show the options page.
+        This method is called in order to show the options page.
         It also sets the state of the options widgets.
         """
         self.ui.HAtomsCheckBox.setChecked(self.without_h)
@@ -28,12 +32,15 @@ class Options:
         self.ui.PictureWidthDoubleSpinBox.setValue(self.picture_width)
         self.ui.CheckCIFServerURLTextedit.setText(self.checkcif_url)
         self.ui.CODURLTextedit.setText(self.cod_url)
+        self.ui.ADPTableCheckBox.setChecked(self.report_adp)
+        #
         self.ui.MainStackedWidget.go_to_options_page()
 
     def _state_changed(self):
         lw = self.ui.TemplatesListWidget
         self._options = {
             'report_text'            : not self.ui.ReportTextCheckBox.isChecked(),
+            'report_adp'             : self.ui.ADPTableCheckBox.isChecked(),
             'without_h'              : self.ui.HAtomsCheckBox.isChecked(),
             'picture_width'          : self.ui.PictureWidthDoubleSpinBox.value(),
             'checkcif_url'           : self.ui.CheckCIFServerURLTextedit.text(),
@@ -60,6 +67,12 @@ class Options:
             return self.settings.load_options()['report_text']
         except KeyError:
             return True
+
+    @property
+    def report_adp(self) -> bool:
+        with suppress(KeyError):
+            return self.settings.load_options()['report_adp']
+        return True
 
     @property
     def without_h(self) -> bool:

@@ -400,8 +400,8 @@ class TestWorkfolderOtherCifName(unittest.TestCase):
         self.assertEqual('plate', self.cell_text('_exptl_crystal_description', COL_DATA))
         # _exptl_crystal_recrystallization_method Yellow:
         self.assertEqual('', self.cell_text('_exptl_crystal_recrystallization_method', COL_DATA))
-        # self.assertEqual('QPlainTextEdit {background-color: #faf796;}',
-        #                 self.myapp.ui.cif_main_table.cellWidget(41, 1).styleSheet())
+        self.assertEqual('background-color: #faf796;',
+                         self.myapp.ui.cif_main_table.cellWidget(41, 1).styleSheet())
         self.assertEqual(
             """Sheldrick, G.M. (2015). Acta Cryst. A71, 3-8.\nSheldrick, G.M. (2015). Acta Cryst. C71, 3-8.""",
             self.cell_text('_publ_section_references', COL_DATA))

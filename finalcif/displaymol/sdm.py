@@ -12,33 +12,15 @@
 
 
 import time
+from collections import namedtuple
 from math import sqrt, cos, radians, sin
-from typing import Union
-
-from numpy.random._common import namedtuple
+from typing import List, Tuple
 
 from finalcif.cif.atoms import get_radius_from_element
 from finalcif.tools.dsrmath import Array, SymmetryElement, Matrix, frac_to_cart
 
 DEBUG = False
-
-
-class Atom():
-    def __init__(self, name, element, x, z, y, part):
-        self._dict = {'name': name, 'element': element, 'x': x, 'y': y, 'z': z,
-                      'part': part, 'molindex': None}
-
-    def __getitem__(self, key):
-        return self._dict[key]
-
-    def __repr__(self):
-        return "Atom: " + repr(self._dict)
-
-    def __setitem__(self, key, val):
-        self._dict[key] = val
-
-    def __iter__(self):
-        return iter(['name', 'element', 'x', 'y', 'z', 'part', 'molindex'])
+Atomtuple = namedtuple('Atomtuple', 'label, type, x, y, z, part')
 
 
 class SymmCards():
@@ -92,10 +74,10 @@ class SDMItem(object):
         self.covalent = True
         self.dddd = 0
 
-    def __lt__(self, a2):
+    def __lt__(self, a2) -> bool:
         return True if self.dist < a2.dist else False
 
-    def __eq__(self, other: 'SDMItem'):
+    def __eq__(self, other) -> bool:
         if other.a1 == self.a2 and other.a2 == self.a1:
             return True
         return False
@@ -107,7 +89,10 @@ class SDMItem(object):
 
 
 class SDM():
-    def __init__(self, atoms: Union[list, tuple], symmlist: list, cell: list, centric=False):
+    sdm_list: List[SDMItem]
+
+    def __init__(self, atoms: Tuple[List], symmlist: list, cell: Tuple[float, float, float, float, float, float],
+                 centric=False):
         """
         Calculates the shortest distance matrix
                         0      1      2  3  4   5     6          7
@@ -134,7 +119,7 @@ class SDM():
         self.csq = self.cell[2] ** 2
         self.sdm_list = []  # list of sdmitems
         self.maxmol = 1
-        self.sdmtime = 0
+        self.sdmtime = 0.0
 
     def orthogonal_matrix(self):
         """
@@ -168,7 +153,7 @@ class SDM():
                     if dk > 4.0:
                         continue
                     if (dk > 0.01) and (mind >= dk):
-                        mind = min(dk, mind)
+                        mind = min(int(dk), mind)
                         sdmItem.dist = mind
                         sdmItem.atom1 = at1
                         sdmItem.atom2 = at2
@@ -270,7 +255,7 @@ class SDM():
         A = 2.0 * (x * y * self.aga + x * z * self.bbe + y * z * self.cal)
         return sqrt(x ** 2 * self.asq + y ** 2 * self.bsq + z ** 2 * self.csq + A)
 
-    def packer(self, sdm: 'SDM', need_symm: list, with_qpeaks=False):
+    def packer(self, sdm: 'SDM', need_symm: list, with_qpeaks=False) -> List[Atomtuple]:
         """
         Packs atoms of the asymmetric unit to real molecules.
         """
@@ -303,59 +288,27 @@ class SDM():
                     if not isthere:
                         showatoms.append(new)
         cart_atoms = []
-        Atom = namedtuple('Atom', 'label, type, x, y, z, part')
         cell = self.cell[:6]
         for at in showatoms:
             x, y, z = frac_to_cart([at[2], at[3], at[4]], cell)
-            cart_atoms.append(Atom(label=at[0], type=at[1], x=x, y=y, z=z, part=at[5]))
+            cart_atoms.append(Atomtuple(label=at[0], type=at[1], x=x, y=y, z=z, part=at[5]))
         return cart_atoms
 
 
-def display_cif(cif: 'CifContainer'):
-    app = QApplication(sys.argv)
-    # w = QWidget()
-    w = QWebEngineView()
-    w.heightForWidth(1)
-    app.setActiveWindow(w)
-    jsmoldir = TemporaryDirectory()
-    mol = make_molecule(cif)
-    content = write_html.write(mol, 250, 250)
-    Path(jsmoldir.name).joinpath("./jsmol.htm").write_text(data=content, encoding="utf-8", errors='ignore')
-    copy2(Path(__file__).parent.joinpath('jquery.min.js'), jsmoldir.name)
-    copy2(Path(__file__).parent.joinpath('JSmol_dk.nojq.lite.js'), jsmoldir.name)
-    print(Path(jsmoldir.name).joinpath("./jsmol.htm").resolve())
-    w.load(QUrl.fromLocalFile(str(Path(jsmoldir.name).joinpath("./jsmol.htm").resolve())))
-    w.show()
-    w.reload()
-    sys.exit(app.exec_())
-
-
-def make_molecule(cif: 'CifContainer') -> str:
-    atoms = list(cif.atoms_fract)
+def make_molecule(cif: 'CifContainer') -> List[Atomtuple]:
+    atoms = tuple(cif.atoms_fract)
     sdm = SDM(atoms, cif.symmops, cif.cell[:6], centric=cif.is_centrosymm)
     needsymm = sdm.calc_sdm()
     atoms = sdm.packer(sdm, needsymm)
-    mol = mol_file_writer.MolFile(atoms, bonds=[])
-    mol = mol.make_mol()
-    return mol
+    return atoms
 
 
 if __name__ == "__main__":
-    import sys
     from pathlib import Path
-    from shutil import copy2
-    from tempfile import TemporaryDirectory
-
-    from PyQt5.QtCore import QUrl
-    from PyQt5.QtWebEngineWidgets import QWebEngineView
-    from PyQt5.QtWidgets import QApplication
-
-    from finalcif.displaymol import write_html
-    from finalcif.displaymol import mol_file_writer
+    from molecule2D import display
     from pathlib import Path
     from finalcif.cif.cif_file_io import CifContainer
 
-    cif = CifContainer(Path('test-data/p21c.cif'))
-
-    display_cif(cif)
-    # make_molecule(cif)
+    cif = CifContainer(Path('test-data/4060314.cif'))
+    atoms = make_molecule(cif)
+    display(atoms)

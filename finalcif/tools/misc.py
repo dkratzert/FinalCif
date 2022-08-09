@@ -8,7 +8,10 @@
 #
 import hashlib
 import itertools as it
+import os
 import re
+import subprocess
+import sys
 from datetime import datetime
 from math import sqrt
 from os import path
@@ -17,11 +20,15 @@ from typing import Union, Tuple, List
 
 # protected space character:
 protected_space = u'\u00A0'
+medium_math_space = u'\u205F'
 # Angstrom character:
-# angstrom = u'\u212B'    # Unicode angstrom sign (only for compatibility)
+# angstrom = u'\u212B'  # Unicode angstrom sign (only for compatibility)
+# angstrom = 'Å'      # MSWord seems unable to render the regular letter correctly. It looks like a different font?
 angstrom = u'\u00C5'  # Latin capital A with ring above. The Unicode consortium recommends to use the regular letter
-# capital theta symbol:
-Theta_symbol = u'\u03F4'
+# Greek Small Letter Theta θ:
+theta_symbol = u'\u03B8'
+# Greek Small Letter Pi
+pi_symbol = u'\u03C0'
 # bigger or equal:
 bequal = u'\u2265'
 # small_sigma:
@@ -36,6 +43,8 @@ degree_sign = u'\u00B0'
 ellipsis_mid = u'\u22EF'
 # ellipsis
 ellipsis_char = u'\u2026'
+# middle dot
+middle_dot = u'\u00B7'
 # less or equal sign
 less_or_equal = u'\u2264'
 # times (cross) symbol
@@ -894,3 +903,11 @@ def unify_line_endings(text: str):
 
 def remove_line_endings(text: str):
     return ' '.join(text.splitlines())
+
+
+def open_file(report_filename: Path):
+    if report_filename.exists():
+        if os.name == 'nt':
+            os.startfile(report_filename)
+        if sys.platform == 'darwin':
+            subprocess.call(['open', report_filename])

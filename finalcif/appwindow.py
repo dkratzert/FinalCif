@@ -12,13 +12,13 @@ from contextlib import suppress
 from datetime import datetime
 from math import sin, radians
 from pathlib import Path, WindowsPath
-from typing import Union, Dict, Tuple
+from typing import Union, Dict, Tuple, List
 
 import gemmi.cif
 import qtawesome as qta
 import requests
 from PyQt5 import QtCore, QtGui, QtWebEngineWidgets
-from PyQt5.QtCore import QThread, QTimer
+from PyQt5.QtCore import QThread, QTimer, Qt
 from PyQt5.QtWidgets import QMainWindow, QHeaderView, QShortcut, QCheckBox, QListWidgetItem, QApplication, \
     QPlainTextEdit, QFileDialog
 from gemmi import cif
@@ -54,7 +54,7 @@ from finalcif.tools.download import MyDownloader, start_worker
 from finalcif.tools.dsrmath import my_isnumeric
 from finalcif.tools.misc import next_path, do_not_import_keys, celltxt, to_float, \
     combobox_fields, \
-    do_not_import_from_stoe_cfx, cif_to_header_label, grouper, is_database_number, file_age_in_days
+    do_not_import_from_stoe_cfx, cif_to_header_label, grouper, is_database_number, file_age_in_days, open_file
 from finalcif.tools.options import Options
 from finalcif.tools.platon import Platon
 from finalcif.tools.settings import FinalCifSettings
@@ -126,6 +126,7 @@ class AppWindow(QMainWindow):
         #
         self.connect_signals_and_slots()
         self.make_button_icons()
+        self.format_report_button()
 
     def distribute_cif_main_table_columns_evenly(self) -> None:
         hheader = self.ui.cif_main_table.horizontalHeader()
@@ -154,6 +155,12 @@ class AppWindow(QMainWindow):
         self.ui.CCDCpushButton.setDisabled(True)
         self.ui.ShredCifButton.setDisabled(True)
         self.ui.LoopsPushButton.setDisabled(True)
+
+    def format_report_button(self):
+        if self.report_without_template():
+            self.ui.SaveFullReportButton.setText('Make Report')
+        else:
+            self.ui.SaveFullReportButton.setText('Make Report from Template')
 
     def set_window_size_and_position(self) -> None:
         wsettings = self.settings.load_window_position()
@@ -257,7 +264,7 @@ class AppWindow(QMainWindow):
         self.ui.DetailsPushButton.clicked.connect(self.show_residuals)
         self.ui.BackpushButtonDetails.clicked.connect(self.back_to_main_noload)
         self.ui.growCheckBox.toggled.connect(self.redraw_molecule)
-        self.ui.labelsCheckBox.toggled.connect(self.redraw_molecule)
+        self.ui.labelsCheckBox.toggled.connect(self.show_labels)
         #
         self.ui.SourcesPushButton.clicked.connect(self.show_sources)
         self.ui.BackSourcesPushButton.clicked.connect(self.back_to_main_noload)
@@ -286,6 +293,46 @@ class AppWindow(QMainWindow):
         #
         self.ui.appendCifPushButton.clicked.connect(self.append_cif)
         self.ui.drawImagePushButton.clicked.connect(self.draw_image)
+        #
+        self.ui.ExportAllTemplatesPushButton.clicked.connect(self.export_all_templates)
+        self.ui.ImportAllTemplatesPushButton.clicked.connect(self.import_all_templates)
+
+    def export_all_templates(self, filename: Path = None):
+        import pickle
+        if not filename:
+            filename, _ = QFileDialog.getSaveFileName(directory=str(Path(self.get_last_workdir()).joinpath(
+                f'finalcif_templates_{time.strftime("%Y-%m-%d")}.dat')),
+                initialFilter="Template File (*.dat)",
+                filter="Template File (*.dat)",
+                caption='Save templates')
+        if not filename:
+            return
+        templates = {'text'      : self.export_raw_text_templates(),
+                     'equipment' : self.equipment.export_raw_data(),
+                     'properties': self.properties.export_raw_data(),
+                     }
+        try:
+            pickle.dump(templates, open(filename, "wb"))
+        except pickle.PickleError as e:
+            self.status_bar.show_message(f'Saving templetes failed: {str(e)}')
+
+    def import_all_templates(self, filename: Path = None):
+        import pickle
+        if not filename:
+            filename, _ = QFileDialog.getOpenFileName(directory=self.get_last_workdir(),
+                                                      initialFilter="Template File (*.dat)",
+                                                      filter="Template File (*.dat)",
+                                                      caption='Save templates')
+        if not filename:
+            return
+        try:
+            templates = pickle.load(open(filename, "rb"))
+        except pickle.PickleError:
+            return
+        self.import_raw_text_templates(templates.get('text'))
+        self.equipment.import_raw_data(templates.get('equipment'))
+        self.properties.import_raw_data(templates.get('properties'))
+        self.status_bar.show_message('Template import successful.')
 
     def draw_image(self):
         image_filename = self.cif.finalcif_file_prefixed(prefix='', suffix='-finalcif.png')
@@ -371,8 +418,21 @@ class AppWindow(QMainWindow):
         """
         cif_key = self.textedit.ui.cifKeyLineEdit.text()
         table_data = self.textedit.get_template_texts()
-        self.settings.save_template_list('text_templates/' + cif_key, table_data)
+        self.settings.save_settings_list(property='text_templates', name=cif_key, items=table_data)
         self.status_bar.show_message(f'Template for {cif_key} saved.', timeout=10)
+        self.refresh_color_background_from_templates()
+
+    def export_raw_text_templates(self) -> List[Dict]:
+        templates_list = []
+        for cif_key in self.settings.list_saved_items('text_templates'):
+            template = self.settings.load_settings_list('text_templates', cif_key)
+            templates_list.append({'cif_key': cif_key, 'data': template})
+        return templates_list
+
+    def import_raw_text_templates(self, templates_list: List[Dict]):
+        for template in templates_list:
+            self.settings.save_settings_list(property='text_templates', name=template.get("cif_key"),
+                                             items=template.get("data"))
         self.refresh_color_background_from_templates()
 
     def apply_text_template(self) -> None:
@@ -401,7 +461,7 @@ class AppWindow(QMainWindow):
         input_txt = self.ui.SelectCif_LineEdit.text().strip()
         if is_database_number(input_txt):
             file = '{}.cif'.format(input_txt)
-            r = requests.get(self.deposit.main_url + '{}.cif'.format(input_txt))
+            r = requests.get(self.deposit.main_url + '{}.cif'.format(input_txt), timeout=6)
             if r.status_code == 200:
                 file = cif_file_save_dialog(file)
                 Path(file).write_bytes(r.content)
@@ -509,7 +569,8 @@ class AppWindow(QMainWindow):
                 cifkey = table.item(row, 1).data(2)
                 try:
                     row_num = self.ui.cif_main_table.vheaderitems.index(cifkey)
-                    del self.ui.cif_main_table.vheaderitems[row_num]
+                    # Leads to a crash when activated:
+                    # del self.ui.cif_main_table.vheaderitems[row_num]
                 except ValueError:
                     continue
                 self.cif.block.set_pair(cifkey, '?')
@@ -624,6 +685,7 @@ class AppWindow(QMainWindow):
         self.status_bar.show_message('')
         self.ui.TemplatesStackedWidget.setCurrentIndex(0)
         self.ui.MainStackedWidget.got_to_main_page()
+        self.format_report_button()
 
     def _checkcif_failed(self, txt: str):
         self.ui.CheckCifLogPlainTextEdit.appendHtml('<b>{}</b>'.format(txt))
@@ -925,11 +987,19 @@ class AppWindow(QMainWindow):
             self.ui.ReportPicPushButton.setIcon(qta.icon('fa5.image'))
             self.ui.ReportPicPushButton.setText('')
 
+    def get_checked_templates_list_text(self):
+        for index in range(self.ui.TemplatesListWidget.count()):
+            item = self.ui.TemplatesListWidget.item(index)
+            if item.checkState() == Qt.Checked:
+                return item.text()
+
     def make_report_tables(self) -> None:
         """
         Generates a report document.
         """
         current_block = self.ui.datanameComboBox.currentIndex()
+        if self.cif.doc[current_block].name == 'global':
+            return
         not_ok = None
         if not self.cif:
             return None
@@ -944,17 +1014,17 @@ class AppWindow(QMainWindow):
         else:
             picfile = self.cif.finalcif_file.with_suffix('.gif')
         try:
-            if self.ui.TemplatesListWidget.currentRow() == 0 or not self.ui.TemplatesListWidget.currentItem():
+            if self.report_without_template():
                 print('Report without templates')
                 make_report_from(options=self.options, cif=self.cif,
                                  output_filename=str(report_filename), picfile=picfile)
             else:
                 print('Report with templates')
                 t = TemplatedReport()
-                t.make_templated_report(options=self.options, file_obj=self.cif.fileobj.resolve(),
+                t.make_templated_report(options=self.options, cif=self.cif,
                                         output_filename=str(report_filename), picfile=picfile,
-                                        template_path=Path(self.ui.TemplatesListWidget.currentItem().text()))
-            if self.cif.is_multi_cif:
+                                        template_path=Path(self.get_checked_templates_list_text()))
+            if self.cif.is_multi_cif and self.cif.doc[0].name != 'global':
                 make_multi_tables(cif=self.cif, output_filename=str(multi_table_document))
         except FileNotFoundError as e:
             if DEBUG:
@@ -975,6 +1045,11 @@ class AppWindow(QMainWindow):
         # Save report and other files to a zip file:
         self.zip_report(report_filename)
 
+    def report_without_template(self) -> bool:
+        """Check whether the report is generated from a template or hard-coded"""
+        return self.ui.TemplatesListWidget.item(0).checkState() == Qt.CheckState.Checked \
+               or not self.ui.TemplatesListWidget.currentItem()
+
     def zip_report(self, report_filename: Path):
         zipfile = self.cif.finalcif_file.with_suffix('.zip')
         if zipfile.exists():
@@ -993,17 +1068,10 @@ class AppWindow(QMainWindow):
             multitable = self.cif.finalcif_file_prefixed(prefix='', suffix='-multitable.docx')
             arc.zip.write(filename=multitable, arcname=multitable.name)
 
-    def open_report_document(self, report_filename: Path, multi_table_document: Path):
+    def open_report_document(self, report_filename: Path, multi_table_document: Path) -> None:
         if self.cif.is_multi_cif:
-            self.open_file(multi_table_document)
-        self.open_file(report_filename)
-
-    def open_file(self, report_filename: Path):
-        if report_filename.exists():
-            if os.name == 'nt':
-                os.startfile(report_filename)
-            if sys.platform == 'darwin':
-                subprocess.call(['open', report_filename])
+            open_file(multi_table_document)
+        open_file(report_filename)
 
     def save_current_recent_files_list(self, file: Path) -> None:
         """
@@ -1135,8 +1203,13 @@ class AppWindow(QMainWindow):
         except IOError as e:
             show_general_warning('Unable to open file {}:\n'.format(filename) + str(e))
             return
-        self.import_key_value_pairs(imp_cif)
-        self.import_loops(imp_cif)
+        self.check_cif_for_missing_values_before_really_open_it()
+        try:
+            self.import_key_value_pairs(imp_cif)
+            self.import_loops(imp_cif)
+        except Exception as e:
+            print(e)
+            unable_to_open_message(Path(self.cif.filename), e)
         # I think I leave the user possibilities to change the imported values:
         # self.save_current_cif_file()
         # self.load_cif_file(str(self.cif.finalcif_file))
@@ -1236,15 +1309,22 @@ class AppWindow(QMainWindow):
         self._clear_state_before_block_load()
         self.cif.load_this_block(index)
         self.check_cif_for_missing_values_before_really_open_it()
-        # self.go_into_cifs_directory(filepath)
         try:
             self.fill_cif_table()
+        except UnicodeDecodeError as e:
+            nums = self.cif.get_line_numbers_of_bad_characters(Path(self.cif.doc.source))
+            show_general_warning(window_title='Unable to open file',
+                                 warn_text=f'Invalid characters in file!',
+                                 info_text=f'The file "{Path(self.cif.doc.source)}" has invalid '
+                                           f'characters in line(s)'
+                                           f' {", ".join([str(x + 1) for x in nums])}.'
+                                           '\n\nOnly ascii characters are allowed.')
         except Exception as e:
             not_ok = e
-            print(not_ok)
-            # raise
-            # unable_to_open_message(filepath, not_ok)
-            raise
+            print(e)
+            if DEBUG:
+                raise
+            unable_to_open_message(Path(self.cif.filename), not_ok)
         self.load_recent_cifs_list()
         self.make_loops_tables()
         if self.cif:
@@ -1465,6 +1545,9 @@ class AppWindow(QMainWindow):
             self.view_molecule()
         except Exception:
             print('Molecule view crashed!!')
+
+    def show_labels(self, value: bool):
+        self.ui.render_widget.show_labels(value)
 
     def check_Z(self) -> None:
         """

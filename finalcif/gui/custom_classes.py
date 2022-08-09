@@ -3,7 +3,7 @@ from typing import List
 from PyQt5 import QtCore
 from PyQt5.QtCore import QEvent, QObject, Qt
 from PyQt5.QtGui import QColor, QKeySequence, QBrush
-from PyQt5.QtWidgets import QAbstractScrollArea, QAction, QFrame, QTableWidget, \
+from PyQt5.QtWidgets import QAbstractScrollArea, QTableWidget, \
     QTableWidgetItem, QWidget, QApplication, QShortcut
 
 from finalcif.cif.text import retranslate_delimiter
@@ -157,8 +157,10 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         Set text in current table cell regardless of the containing item.
         """
         txt = retranslate_delimiter(txt)
-        if row is None:
+        if row is None and key in self.vheaderitems:
             row = self.vheaderitems.index(key)
+        elif row is None and key not in self.vheaderitems:
+            row = 0
         if isinstance(self.cellWidget(row, column), MyComboBox):
             self.cellWidget(row, column).setText(txt)
             return

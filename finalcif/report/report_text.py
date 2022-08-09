@@ -1,15 +1,17 @@
 import os
 from builtins import str
-from typing import Union
+from typing import Union, List
 
 import gemmi
+from docx import Document
 from docx.text.paragraph import Paragraph
 from docx.text.run import Run
 from lxml import etree
+from shelxfile.atoms.atoms import Atom as SHXAtom
 
 from finalcif.app_path import application_path
 from finalcif.cif.cif_file_io import CifContainer
-from finalcif.cif.text import retranslate_delimiter
+from finalcif.cif.text import retranslate_delimiter, string_to_utf8
 from finalcif.report.references import DummyReference, SAINTReference, SORTAVReference, ReferenceList, CCDCReference, \
     SHELXLReference, SHELXTReference, SHELXSReference, FinalCifReference, ShelXleReference, Olex2Reference, \
     SHELXDReference, SadabsTwinabsReference, CrysalisProReference
@@ -114,7 +116,7 @@ class MachineType():
                         or '[No detector type given]'
         if detector_type:
             self.detector_type = " and a {} detector".format(detector_type)
-        sentence1 = "on {0} {1} {2} with {3} {4} using {5} as monochromator{6}. " \
+        sentence1 = "on {0} {1} {2} with {3} {4} using a {5} as monochromator{6}. " \
                     "The diffractometer was equipped with {7} {8}low temperature device and used "
         sentence2 = " radiation (λ = {}" + protected_space + "{}). ".format(angstrom)
         txt = sentence1.format(get_inf_article(self.difftype), self.difftype, self.device,
@@ -225,7 +227,7 @@ class SolveRefine():
         if 'OLEX' in refined.upper():
             refineref = Olex2Reference()
         refine_coef = gstr(self.cif['_refine_ls_structure_factor_coef'])
-        sentence = r"The structure were solved by {} methods using {} and refined by full-matrix " \
+        sentence = r"The structure was solved by {} methods using {} and refined by full-matrix " \
                    "least-squares methods against "
         txt = sentence.format(solution_method.strip('\n\r'), solution_prog.split()[0])
         paragraph.add_run(retranslate_delimiter(txt))
@@ -241,39 +243,29 @@ class SolveRefine():
         ref.append([solveref, refineref, shelxle])
 
 
-class Hydrogens():
+class Atoms():
     def __init__(self, cif: CifContainer, paragraph: Paragraph):
         """
-        TODO: check if the proposed things are really there.
+        Text for non-hydrogen atoms.
         """
         self.cif = cif
         n_isotropic = self.number_of_isotropic_atoms()
         number = 'All'
         parameter_type = 'anisotropic'
         if 0 < n_isotropic < self.cif.natoms(without_h=True):
-            number = 'Some atoms ({}) were refined using isotropic displacement parameters.' \
-                     ' All other'.format(n_isotropic)
+            number = f'Some atoms ({n_isotropic}) were refined using isotropic displacement parameters.' \
+                     ' All other'
         if n_isotropic > 0 and n_isotropic > self.cif.natoms(without_h=True):
-            number = 'Most atoms ({}) were refined using isotropic displacement parameters.' \
-                     ' All other'.format(n_isotropic)
+            number = f'Most atoms ({n_isotropic}) were refined using isotropic displacement parameters.' \
+                     ' All other'
         if n_isotropic == self.cif.natoms(without_h=True):
             number = 'All'
             parameter_type = 'isotropic'
-        sentence1 = "{} non-hydrogen atoms were refined with {} displacement parameters. " \
-                    "The hydrogen atoms were refined isotropically on calculated positions using a riding model " \
-                    "with their ".format(number, parameter_type)
-        sentence2 = " values constrained to 1.5 times the "
-        sentence3 = " of their pivot atoms for terminal sp"
-        sentence4 = " carbon atoms and 1.2 times for all other carbon atoms."
+        # TODO: test how many hydrogen atoms have ueq < -1.0 -> constrained or free refinement
+        #                                                       of hydrogen displacement params
+        # TODO: detect riding model of hydrogen atoms -> res file?
+        sentence1 = f"{number} non-hydrogen atoms were refined with {parameter_type} displacement parameters. "
         paragraph.add_run(sentence1)
-        paragraph.add_run('U').font.italic = True
-        paragraph.add_run('iso').font.subscript = True
-        paragraph.add_run(sentence2)
-        paragraph.add_run('U').font.italic = True
-        paragraph.add_run('eq').font.subscript = True
-        paragraph.add_run(sentence3)
-        paragraph.add_run('3').font.superscript = True
-        paragraph.add_run(sentence4)
 
     def number_of_isotropic_atoms(self) -> Union[float, int]:
         isotropic_count = 0
@@ -282,8 +274,105 @@ class Hydrogens():
                 isotropic_count += 1
         return isotropic_count
 
-    def atom_is_isotropic_and_not_hydrogen(self, site):
+    @staticmethod
+    def atom_is_isotropic_and_not_hydrogen(site):
         return not site.aniso.nonzero() and not site.element.is_hydrogen
+
+
+class Hydrogens():
+    def __init__(self, cif: CifContainer, paragraph: Paragraph):
+        """
+        The hydrogen atoms were refined isotropically on calculated positions using
+        a riding model with their Uiso values constrained to 1.5 times the Ueq of
+        their pivot atoms for terminal sp3 carbon atoms and 1.2 times for all other
+        carbon atoms.
+        """
+        self.cif = cif
+        hatoms: List[SHXAtom] = [x for x in self.cif.shx.atoms.all_atoms if x.is_hydrogen]
+        n_hatoms = len(hatoms)
+        n_anisotropic_h = len([x for x in hatoms if sum(x.uvals[1:]) > 0.0001])
+        n_constr_h = len([x for x in hatoms if x.uvals[0] < -1.0])
+        riding_atoms = [x for x in hatoms if x.afix]
+        pivot_atoms = self.get_hydrogen_pivot_atoms(riding_atoms)
+        n_riding = len(riding_atoms)
+        n_non_riding = len(hatoms) - n_riding
+
+        atom_type = "carbon"
+        number = "The"
+        sentence_isotropic = "isotropic"
+        sentence_anisotropic = "anisotropic"
+
+        if n_anisotropic_h == n_hatoms:
+            # number = "All"
+            utype = sentence_anisotropic
+        elif n_anisotropic_h > 0 and n_anisotropic_h < n_hatoms:
+            number = "Some"
+            utype = sentence_isotropic + " and some with anisotropic "
+        else:
+            if all(self.pivot_atom_types(pivot_atoms)):
+                number = "All"
+            elif any(self.pivot_atom_types(pivot_atoms)):
+                number = "All C-bound"
+            else:
+                number = "The heteroatom-bound"
+            utype = sentence_isotropic
+        sentence_riding = "on calculated positions using a riding model with their "
+        sentence_free_pos = "freely"
+        sentence_15 = " values constrained to 1.5 times the "  # Ueq
+        sentence_pivot = " of their pivot atoms for terminal sp"  # 3
+        sentence_12 = f" {atom_type} atoms and 1.2 times for all other {atom_type} atoms."
+
+        if n_riding == n_hatoms:
+            paragraph.add_run(f"{number} hydrogen atoms were refined {utype} ")
+            riding = sentence_riding
+            paragraph.add_run(riding)
+            self.u_iso(paragraph)
+            paragraph.add_run(sentence_15)
+            self.u_eq(paragraph)
+            paragraph.add_run(sentence_pivot)
+            paragraph.add_run('3').font.superscript = True
+            paragraph.add_run(sentence_12)
+        elif n_non_riding == n_hatoms:
+            if n_constr_h == n_hatoms:
+                paragraph.add_run(f"{number} hydrogen atoms were refined {sentence_free_pos}"
+                                  f" with their ")
+            else:
+                paragraph.add_run(f"{number} hydrogen atoms were refined {sentence_free_pos}"
+                                  f" with {utype} displacement parameters.")
+            if n_constr_h == n_hatoms:
+                self.u_iso(paragraph)
+                paragraph.add_run(sentence_15)
+                self.u_eq(paragraph)
+                paragraph.add_run(sentence_pivot)
+                paragraph.add_run('3').font.superscript = True
+                paragraph.add_run(sentence_12)
+        else:
+            paragraph.add_run(f"{number} hydrogen atoms were refined with {utype} displacement parameters. ")
+            riding = f"Some were refined {sentence_free_pos} and some {sentence_riding}"
+            paragraph.add_run(riding)
+            self.u_iso(paragraph)
+            paragraph.add_run(sentence_15)
+            self.u_eq(paragraph)
+            paragraph.add_run(sentence_pivot)
+            paragraph.add_run('3').font.superscript = True
+            paragraph.add_run(sentence_12)
+
+    def pivot_atom_types(self, pivot_atoms):
+        return [x.element == 'C' for x in pivot_atoms]
+
+    def get_hydrogen_pivot_atoms(self, riding_atoms):
+        pivot_atoms = []
+        for at in riding_atoms:
+            pivot_atoms.extend(at.find_atoms_around(dist=1.2))
+        return pivot_atoms
+
+    def u_eq(self, paragraph):
+        paragraph.add_run('U').font.italic = True
+        paragraph.add_run('eq').font.subscript = True
+
+    def u_iso(self, paragraph):
+        paragraph.add_run('U').font.italic = True
+        paragraph.add_run('iso').font.subscript = True
 
 
 class Disorder():
@@ -333,11 +422,23 @@ class FinalCifreport():
         ref.append(FinalCifReference())
 
 
+class RefinementDetails():
+    def __init__(self, cif: CifContainer, document: Document):
+        ph = document.add_paragraph(style='Heading 2')
+        ph.add_run(text=fr"Refinement details for {cif.block.name}")
+        p = document.add_paragraph()
+        p.style = document.styles['fliesstext']
+        text = ' '.join(cif['_refine_special_details'].splitlines(keepends=False))
+        # Replacing semicolon, because it can damage the CIF:
+        text = text.replace(';', '.')
+        p.add_run(string_to_utf8(text).strip())
+
+
 def get_inf_article(next_word: str) -> str:
     if not next_word:
         return 'a'
     voc = 'aeiou'
-    return 'a' if not next_word[0].lower() in voc else 'an'
+    return 'an' if next_word[0].lower() in voc else 'a'
 
 
 def format_radiation(radiation_type: str) -> list:

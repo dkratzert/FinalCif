@@ -71,7 +71,7 @@ def load_cif_as_dictionary(link, path_to_cif):
 
 def get_dictionary_cif(link, path_to_cif):
     import requests
-    r = requests.get(link)
+    r = requests.get(link, timeout=10)
     path_to_cif.write_text(r.text)
 
 
