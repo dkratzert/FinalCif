@@ -431,7 +431,7 @@ class RefinementDetails():
         text = ' '.join(cif['_refine_special_details'].splitlines(keepends=False))
         # Replacing semicolon, because it can damage the CIF:
         text = text.replace(';', '.')
-        p.add_run(string_to_utf8(text))
+        p.add_run(string_to_utf8(text).strip())
 
 
 def get_inf_article(next_word: str) -> str:
