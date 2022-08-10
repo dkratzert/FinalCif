@@ -38,7 +38,7 @@ class MyDownloader(QObject):
     def download(self) -> None:
         # print('Downloading:', self.url)
         OS = sys.platform
-        user_agent = 'FinalCif v{} ({})'.format(VERSION, OS)
+        user_agent = f'FinalCif v{VERSION} ({OS})'
         headers = {
             'User-Agent': user_agent,
         }
