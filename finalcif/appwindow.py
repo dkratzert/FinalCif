@@ -10,7 +10,6 @@ import sys
 import time
 from contextlib import suppress
 from datetime import datetime
-from math import sin, radians
 from pathlib import Path, WindowsPath
 from typing import Union, Dict, Tuple, List
 
@@ -19,9 +18,10 @@ import qtawesome as qta
 import requests
 from PyQt5 import QtCore, QtGui, QtWebEngineWidgets
 from PyQt5.QtCore import QThread, QTimer, Qt
-from PyQt5.QtWidgets import QMainWindow, QHeaderView, QShortcut, QCheckBox, QListWidgetItem, QApplication, \
+from PyQt5.QtWidgets import QMainWindow, QShortcut, QCheckBox, QListWidgetItem, QApplication, \
     QPlainTextEdit, QFileDialog
 from gemmi import cif
+from math import sin, radians
 from qtpy.QtGui import QDesktopServices
 
 from finalcif import VERSION
@@ -103,7 +103,7 @@ class AppWindow(QMainWindow):
         self.ui.cif_main_table.installEventFilter(self)
         # Sorting desynchronized header and columns:
         self.ui.cif_main_table.setSortingEnabled(False)
-        self.distribute_cif_main_table_columns_evenly()
+        self.ui.cif_main_table.distribute_cif_main_table_columns_evenly()
         # Make sure the start page is shown and not the edit page:
         self.ui.CheckCIFResultsTabWidget.setCurrentIndex(0)
         self.ui.TemplatesStackedWidget.setCurrentIndex(0)
@@ -127,14 +127,6 @@ class AppWindow(QMainWindow):
         self.connect_signals_and_slots()
         self.make_button_icons()
         self.format_report_button()
-
-    def distribute_cif_main_table_columns_evenly(self) -> None:
-        hheader = self.ui.cif_main_table.horizontalHeader()
-        hheader.setSectionResizeMode(COL_CIF, QHeaderView.Stretch)
-        hheader.setSectionResizeMode(COL_DATA, QHeaderView.Stretch)
-        hheader.setSectionResizeMode(COL_EDIT, QHeaderView.Stretch)
-        hheader.setAlternatingRowColors(True)
-        self.ui.cif_main_table.verticalHeader().setAlternatingRowColors(True)
 
     def set_initial_button_states(self) -> None:
         self.ui.appendCifPushButton.setDisabled(True)
@@ -1133,15 +1125,8 @@ class AppWindow(QMainWindow):
         """
         Stores the data from the main table in the cif object.
         """
-        finalcif_changes_file = self.cif.finalcif_file_prefixed(prefix='', suffix='-finalcif_changes.cif')
-        block_name = self.cif.current_block if self.cif.current_block else self.cif.block.name
-        print(f'current: {self.cif.current_block} name: {self.cif.block.name}')
-        changes_cif = CifContainer(
-            file=finalcif_changes_file,
-            new_block=block_name if not finalcif_changes_file.exists() else '')
-        # new block of added cif is not loaded:
-        if block_name in changes_cif.doc:
-            changes_cif.load_this_block(list(changes_cif.doc).index(block_name))
+        finalcif_changes_filename = self.cif.finalcif_file_prefixed(prefix='', suffix='-finalcif_changes.cif')
+        changes_cif = self.get_changes_cif(finalcif_changes_filename)
         for row in range(self.ui.cif_main_table.rows_count):
             vhead = self.ui.cif_main_table.vheader_text(row)
             if not self.is_row_a_cif_item(vhead):
@@ -1158,9 +1143,31 @@ class AppWindow(QMainWindow):
                 except (RuntimeError, ValueError, IOError) as e:
                     print('Can not take cif info from table:', e)
         try:
-            changes_cif.save(filename=finalcif_changes_file)
+            changes_cif.save(filename=finalcif_changes_filename)
         except Exception as e:
             print('Unable to save changes file.')
+
+    def get_changes_cif(self, finalcif_changes_file):
+        block_name = self.cif.current_block if self.cif.current_block else self.cif.block.name
+        # print(f'current: {self.cif.current_block} name: {self.cif.block.name}')
+        changes_cif = CifContainer(
+            file=finalcif_changes_file,
+            new_block=block_name if not finalcif_changes_file.exists() else '')
+        # new block of added cif is not loaded:
+        if block_name in changes_cif.doc:
+            changes_cif.load_this_block(list(changes_cif.doc).index(block_name))
+        return changes_cif
+
+    def load_changes_cif(self):
+        finalcif_changes_file = self.cif.finalcif_file_prefixed(prefix='', suffix='-finalcif_changes.cif')
+        if not finalcif_changes_file.exists():
+            return
+        changes = CifContainer(finalcif_changes_file)
+        for item in changes.block:
+            if item.pair is not None:
+                key, value = item.pair
+                value = gemmi.cif.as_string(value).strip()
+                self.ui.cif_main_table.setText(key=key, column=COL_EDIT, color=None, txt=value)
 
     def is_row_a_cif_item(self, vhead):
         is_cif = False
@@ -1302,22 +1309,11 @@ class AppWindow(QMainWindow):
         self.ui.datanameComboBox.setCurrentIndex(block)
         self.ui.cif_main_table.resizeRowsToContents()
         self.ui.datanameComboBox.blockSignals(False)
-        #if not self.cif.is_multi_cif:
+        # if not self.cif.is_multi_cif:
         self.load_changes_cif()
         if self.cif.is_multi_cif:
             # short after start, because window size is not finished
             QTimer.singleShot(1000, self.ui.datanameComboBox.showPopup)
-
-    def load_changes_cif(self):
-        finalcif_changes_file = self.cif.finalcif_file_prefixed(prefix='', suffix='-finalcif_changes.cif')
-        if not finalcif_changes_file.exists():
-            return
-        changes = CifContainer(finalcif_changes_file)
-        for item in changes.block:
-            if item.pair is not None:
-                key, value = item.pair
-                value = gemmi.cif.as_string(value).strip()
-                self.ui.cif_main_table.setText(key=key, column=COL_EDIT, color=None, txt=value)
 
     def add_data_names_to_combobox(self):
         self.ui.datanameComboBox.clear()

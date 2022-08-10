@@ -4,7 +4,7 @@ from PyQt5 import QtCore
 from PyQt5.QtCore import QEvent, QObject, Qt
 from PyQt5.QtGui import QColor, QKeySequence, QBrush
 from PyQt5.QtWidgets import QAbstractScrollArea, QTableWidget, \
-    QTableWidgetItem, QWidget, QApplication, QShortcut
+    QTableWidgetItem, QWidget, QApplication, QShortcut, QHeaderView
 
 from finalcif.cif.text import retranslate_delimiter
 from finalcif.gui.combobox import MyComboBox
@@ -239,6 +239,14 @@ class MyCifTable(QTableWidget, ItemTextMixin):
     def vheader_text(self, row):
         vhead = self.model().headerData(row, Qt.Vertical)
         return str(vhead)
+
+    def distribute_cif_main_table_columns_evenly(self) -> None:
+        hheader = self.horizontalHeader()
+        hheader.setSectionResizeMode(COL_CIF, QHeaderView.Stretch)
+        hheader.setSectionResizeMode(COL_DATA, QHeaderView.Stretch)
+        hheader.setSectionResizeMode(COL_EDIT, QHeaderView.Stretch)
+        hheader.setAlternatingRowColors(True)
+        self.verticalHeader().setAlternatingRowColors(True)
 
 
 class MyTableWidgetItem(QTableWidgetItem):
