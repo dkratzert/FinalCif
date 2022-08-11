@@ -44,8 +44,8 @@ class TestFileIsOpened(unittest.TestCase):
         self.myapp.hide()
         self.myapp.setWindowIcon(QIcon('./icon/multitable.png'))
         self.myapp.setWindowTitle('FinalCif v{}'.format(VERSION))
-        Path('foo.cif').unlink(missing_ok=True)
-        Path('cu_BruecknerJK_153F40_0m-finalcif.cif').unlink(missing_ok=True)
+        Path('tests/examples/work/foo.cif').unlink(missing_ok=True)
+        Path('tests/examples/work/cu_BruecknerJK_153F40_0m-finalcif.cif').unlink(missing_ok=True)
 
     def tearDown(self) -> None:
         Path('foo.cif').unlink(missing_ok=True)
@@ -62,6 +62,8 @@ class TestWorkfolder(unittest.TestCase):
 
     def setUp(self) -> None:
         self.testcif = Path('tests/examples/work/cu_BruecknerJK_153F40_0m.cif').resolve()
+        # TODO: Adapt this to the bahavior with the changes file:
+        Path('tests/examples/work/cu_BruecknerJK_153F40_0m-finalcif_changes.cif').unlink(missing_ok=True)
         self.myapp = AppWindow(self.testcif, unit_test=True)
         self.myapp.equipment.import_equipment_from_file('test-data/Crystallographer_Details.cif')
         self.myapp.running_inside_unit_test = True
@@ -74,6 +76,7 @@ class TestWorkfolder(unittest.TestCase):
         self.testcif.with_suffix('.lst').unlink(missing_ok=True)
         self.testcif.with_suffix('.2fcf').unlink(missing_ok=True)
         Path('tests/testcif_file.cif').unlink(missing_ok=True)
+        Path('tests/examples/work/cu_BruecknerJK_153F40_0m-finalcif_changes.cif').unlink(missing_ok=True)
         self.myapp.close()
 
     def key_row(self, key: str) -> int:
