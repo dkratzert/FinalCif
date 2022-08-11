@@ -103,7 +103,7 @@ class Equipment:
         for equipment_name in self.settings.get_equipment_list():
             if equipment_name:
                 equipment = self.settings.load_settings_list(property='equipment', item_name=equipment_name)
-                equipment_list.append({'name': equipment_name, 'data': equipment,
+                equipment_list.append({'name'   : equipment_name, 'data': equipment,
                                        'deleted': self.settings.deleted_equipment})
         return equipment_list
 
@@ -145,7 +145,7 @@ class Equipment:
         table.setRowCount(0)
         if not self.selected_template_name():
             return
-        self.check_if_current_item_is_in_deleted_list(self.selected_template_name())
+        self.undelete_equipment(self.selected_template_name())
         table_data = self.settings.load_settings_list(property='equipment', item_name=self.selected_template_name())
         # first load the previous values:
         if table_data:
@@ -164,10 +164,10 @@ class Equipment:
         table.resizeRowsToContents()
         table.blockSignals(False)
 
-    def check_if_current_item_is_in_deleted_list(self, selected_row_text):
+    def undelete_equipment(self, equipment_name: str) -> None:
         deleted = self.settings.deleted_equipment or []
-        if selected_row_text in deleted:
-            del deleted[deleted.index(selected_row_text)]
+        if equipment_name in deleted:
+            del deleted[deleted.index(equipment_name)]
             self.settings.save_key_value(name='deleted_templates', item=deleted)
 
     def save_equipment_template(self) -> None:
@@ -218,6 +218,7 @@ class Equipment:
             name = Path(filename).stem
         else:
             name = block.name.replace('__', ' ')
+        self.undelete_equipment(equipment_name=name)
         self.settings.save_settings_list('equipment', name, table_data)
 
     def get_equipment_entry_data(self) -> list:
