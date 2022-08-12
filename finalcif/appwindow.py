@@ -10,6 +10,7 @@ import sys
 import time
 from contextlib import suppress
 from datetime import datetime
+from math import sin, radians
 from pathlib import Path, WindowsPath
 from typing import Union, Dict, Tuple, List
 
@@ -21,7 +22,6 @@ from PyQt5.QtCore import QThread, QTimer, Qt
 from PyQt5.QtWidgets import QMainWindow, QShortcut, QCheckBox, QListWidgetItem, QApplication, \
     QPlainTextEdit, QFileDialog
 from gemmi import cif
-from math import sin, radians
 from qtpy.QtGui import QDesktopServices
 
 from finalcif import VERSION
@@ -289,6 +289,10 @@ class AppWindow(QMainWindow):
         self.ui.ExportAllTemplatesPushButton.clicked.connect(self.export_all_templates)
         self.ui.ImportAllTemplatesPushButton.clicked.connect(self.import_all_templates)
 
+    @property
+    def finalcif_changes_filename(self):
+        return self.cif.finalcif_file_prefixed(prefix='', suffix='-finalcif_changes.cif')
+
     def export_all_templates(self, filename: Path = None):
         import pickle
         if not filename:
@@ -462,10 +466,13 @@ class AppWindow(QMainWindow):
             else:
                 self.ui.SelectCif_LineEdit.setText('')
 
+    @property
+    def current_block(self) -> int:
+        return self.ui.datanameComboBox.currentIndex()
+
     def open_cod_page(self):
-        current_block = self.ui.datanameComboBox.currentIndex()
         self.save_current_cif_file()
-        self.load_cif_file(self.cif.finalcif_file, current_block)
+        self.load_cif_file(self.cif.finalcif_file, self.current_block)
         self.deposit.cif = self.cif
         self.ui.MainStackedWidget.setCurrentIndex(7)
 
@@ -1125,8 +1132,7 @@ class AppWindow(QMainWindow):
         """
         Stores the data from the main table in the cif object.
         """
-        finalcif_changes_filename = self.cif.finalcif_file_prefixed(prefix='', suffix='-finalcif_changes.cif')
-        changes_cif = self.get_changes_cif(finalcif_changes_filename)
+        changes_cif = self.get_changes_cif(self.finalcif_changes_filename)
         for row in range(self.ui.cif_main_table.rows_count):
             vhead = self.ui.cif_main_table.vheader_text(row)
             if not self.is_row_a_cif_item(vhead):
@@ -1143,16 +1149,23 @@ class AppWindow(QMainWindow):
                 except (RuntimeError, ValueError, IOError) as e:
                     print('Can not take cif info from table:', e)
         try:
-            changes_cif.save(filename=finalcif_changes_filename)
+            changes_cif.save(filename=self.finalcif_changes_filename)
         except Exception as e:
             print('Unable to save changes file.')
 
+    def save_changed_loops(self):
+        """
+        * load original cif
+        * load current block (if present, else assume all loops are new)
+        * go through loops and save alle loops that are different to changes file
+        """
+        pass
+
+
     def get_changes_cif(self, finalcif_changes_file):
         block_name = self.cif.current_block if self.cif.current_block else self.cif.block.name
-        # print(f'current: {self.cif.current_block} name: {self.cif.block.name}')
-        changes_cif = CifContainer(
-            file=finalcif_changes_file,
-            new_block=block_name if not finalcif_changes_file.exists() else '')
+        changes_cif = CifContainer(file=finalcif_changes_file,
+                                   new_block=block_name if not finalcif_changes_file.exists() else '')
         # new block of added cif is not loaded:
         if block_name in changes_cif.doc:
             changes_cif.load_this_block(list(changes_cif.doc).index(block_name))
