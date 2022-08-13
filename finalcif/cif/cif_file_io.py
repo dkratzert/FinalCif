@@ -7,6 +7,7 @@
 #  ----------------------------------------------------------------------------
 import re
 from collections import namedtuple
+from functools import cache
 from pathlib import Path
 from typing import Dict, List, Tuple, Union, Generator, Type
 
@@ -112,7 +113,6 @@ class CifContainer():
         # will not ok with non-ascii characters in the res file:
         self.chars_ok = True
         self.doc.check_for_duplicates()
-        self.hkl_extra_info = self._abs_hkl_details()
         self.order = order
         self.dsr_used = DSRFind(self.res_file_data).dsr_used
         self.atomic_struct: gemmi.SmallStructure = gemmi.make_small_structure_from_block(self.block)
@@ -121,6 +121,11 @@ class CifContainer():
             zip([x.upper() for x in self.block.find_loop('_atom_site_label')],
                 [x.upper() for x in self.block.find_loop('_atom_site_type_symbol')]))
         self.check_hkl_min_max()
+
+    @property
+    @cache
+    def hkl_extra_info(self):
+        return self._abs_hkl_details()
 
     def check_hkl_min_max(self) -> None:
         if not all([self['_diffrn_reflns_limit_h_min'], self['_diffrn_reflns_limit_h_max'],
