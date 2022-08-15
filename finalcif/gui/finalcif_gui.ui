@@ -8,7 +8,7 @@
     <x>0</x>
     <y>0</y>
     <width>1604</width>
-    <height>833</height>
+    <height>852</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -1046,7 +1046,7 @@
         <item row="1" column="0" colspan="13">
          <widget class="MyMainStackedWidget" name="MainStackedWidget">
           <property name="currentIndex">
-           <number>4</number>
+           <number>1</number>
           </property>
           <widget class="QWidget" name="page_MainTable">
            <layout class="QVBoxLayout" name="verticalLayout">
@@ -1333,7 +1333,7 @@
              <number>0</number>
             </property>
             <item>
-             <widget class="QPlainTextEdit" name="FinalCifFilePlainTextEdit">
+             <widget class="QCodeEditor" name="FinalCifFilePlainTextEdit">
               <property name="textInteractionFlags">
                <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
               </property>
@@ -4116,6 +4116,11 @@ please add a publication author:</string>
    <extends>QWidget</extends>
    <header>finalcif.displaymol.molecule2D.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QCodeEditor</class>
+   <extends>QPlainTextEdit</extends>
+   <header>finalcif.gui.file_editor.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>
