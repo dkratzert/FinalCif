@@ -1,0 +1,19 @@
+How to run cif_cod_check in Windows
+-----------------------------------
+
+These are rough instructions for cif_cod_check from the COD tools
+to run on Windows. Have to do this in an automated script...
+
+* install strawberry perl
+* install perl packages:
+  - Parse::Yapp
+  - DateTime::Format::RFC3339
+  - Date::Calc
+  - Data::Compare
+* Compile parser:
+  yapp -m COD::CIF::Parser::Yapp  Yapp.yp
+* How about spglib Perl binding?
+
+* Comment out line 49 in cif_cod_check
+* Comment out 71-87 so that parser is yapp version only
+* Make version in line 26 of Yapp.pm work
