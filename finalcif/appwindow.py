@@ -135,18 +135,43 @@ class AppWindow(QMainWindow):
         # Just too slow for large structures:
         self.ui.growCheckBox.setChecked(False)
         self.ui.CheckcifButton.setDisabled(True)
+        self.ui.CheckcifStartButton.setDisabled(True)
+        self.ui.ReportPicPushButton.setDisabled(True)
+        self.ui.SaveFullReportButton.setDisabled(True)
         self.ui.CheckcifHTMLOnlineButton.setDisabled(True)
         self.ui.CheckcifPDFOnlineButton.setDisabled(True)
         self.ui.SaveCifButton.setDisabled(True)
         self.ui.ExploreDirButton.setDisabled(True)
         self.ui.DetailsPushButton.setDisabled(True)
         self.ui.SourcesPushButton.setDisabled(True)
-        self.ui.OptionsPushButton.setDisabled(True)
+        self.ui.OptionsPushButton.setEnabled(True)
         self.ui.ImportCifPushButton.setDisabled(True)
         self.ui.CODpushButton.setDisabled(True)
         self.ui.CCDCpushButton.setDisabled(True)
         self.ui.ShredCifButton.setDisabled(True)
         self.ui.LoopsPushButton.setDisabled(True)
+
+    def enable_buttons(self):
+        self.ui.appendCifPushButton.setEnabled(True)
+        self.ui.CheckcifButton.setEnabled(True)
+        self.ui.CheckcifStartButton.setEnabled(True)
+        self.ui.ReportPicPushButton.setEnabled(True)
+        self.ui.SaveFullReportButton.setEnabled(True)
+        self.ui.CheckcifHTMLOnlineButton.setEnabled(True)
+        self.ui.CheckcifPDFOnlineButton.setEnabled(True)
+        self.ui.SaveCifButton.setEnabled(True)
+        self.ui.ExploreDirButton.setEnabled(True)
+        self.ui.DetailsPushButton.setEnabled(True)
+        self.ui.SourcesPushButton.setEnabled(True)
+        self.ui.OptionsPushButton.setEnabled(True)
+        self.ui.ImportCifPushButton.setEnabled(True)
+        self.ui.CODpushButton.setEnabled(True)
+        self.ui.CCDCpushButton.setEnabled(True)
+        self.ui.LoopsPushButton.setEnabled(True)
+        if self.cif.is_multi_cif:
+            self.ui.CODpushButton.setDisabled(True)
+        else:
+            self.ui.CODpushButton.setEnabled(True)
 
     def format_report_button(self):
         if self.report_without_template():
@@ -883,7 +908,6 @@ class AppWindow(QMainWindow):
             p = Platon(self.cif.fileobj.resolve(), timeout, '-u')
         except Exception as e:
             print(e)
-            # self.ui.CheckcifButton.setDisabled(True)
             return
         checkcif_out = self.ui.CheckcifPlaintextEdit
         checkcif_out.setPlainText('Platon output: \nThis might not be the same as the IUCr CheckCIF!')
@@ -1161,7 +1185,6 @@ class AppWindow(QMainWindow):
         """
         pass
 
-
     def get_changes_cif(self, finalcif_changes_file):
         block_name = self.cif.current_block if self.cif.current_block else self.cif.block.name
         changes_cif = CifContainer(file=finalcif_changes_file,
@@ -1404,25 +1427,6 @@ class AppWindow(QMainWindow):
             self.ui.ShredCifButton.setEnabled(True)
         else:
             self.ui.ShredCifButton.setDisabled(True)
-
-    def enable_buttons(self):
-        self.ui.appendCifPushButton.setEnabled(True)
-        self.ui.CheckcifButton.setEnabled(True)
-        self.ui.CheckcifHTMLOnlineButton.setEnabled(True)
-        self.ui.CheckcifPDFOnlineButton.setEnabled(True)
-        self.ui.SaveCifButton.setEnabled(True)
-        self.ui.ExploreDirButton.setEnabled(True)
-        self.ui.DetailsPushButton.setEnabled(True)
-        self.ui.SourcesPushButton.setEnabled(True)
-        self.ui.OptionsPushButton.setEnabled(True)
-        self.ui.ImportCifPushButton.setEnabled(True)
-        self.ui.CODpushButton.setEnabled(True)
-        self.ui.CCDCpushButton.setEnabled(True)
-        self.ui.LoopsPushButton.setEnabled(True)
-        if self.cif.is_multi_cif:
-            self.ui.CODpushButton.setDisabled(True)
-        else:
-            self.ui.CODpushButton.setEnabled(True)
 
     def append_cif(self):
         self.cif.save()
