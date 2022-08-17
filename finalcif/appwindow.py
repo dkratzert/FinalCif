@@ -23,6 +23,7 @@ from PyQt5.QtWidgets import QMainWindow, QShortcut, QCheckBox, QListWidgetItem, 
     QPlainTextEdit, QFileDialog
 from gemmi import cif
 from qtpy.QtGui import QDesktopServices
+from shelxfile.misc.misc import chunks
 
 from finalcif import VERSION
 from finalcif.cif.checkcif.checkcif import MyHTMLParser, AlertHelp, CheckCif
@@ -77,6 +78,7 @@ class AppWindow(QMainWindow):
         # open report doc,
         # get check.def from platon server
         self.running_inside_unit_test = unit_test
+        self.original_cif_name: Union[Path, None] = None
         self.sources: Union[None, Dict[str, Tuple[Union[str, None]]]] = None
         self.cif: Union[CifContainer, None] = None
         self.report_picture_path: Union[Path, None] = None
@@ -1157,6 +1159,7 @@ class AppWindow(QMainWindow):
         Stores the data from the main table in the cif object.
         """
         changes_cif = self.get_changes_cif(self.finalcif_changes_filename)
+        self.save_changed_loops(changes_cif)
         for row in range(self.ui.cif_main_table.rows_count):
             vhead = self.ui.cif_main_table.vheader_text(row)
             if not self.is_row_a_cif_item(vhead):
@@ -1177,15 +1180,25 @@ class AppWindow(QMainWindow):
         except Exception as e:
             print('Unable to save changes file.')
 
-    def save_changed_loops(self):
+    def save_changed_loops(self, changes_cif: CifContainer):
         """
         * load original cif
         * load current block (if present, else assume all loops are new)
         * go through loops and save alle loops that are different to changes file
         """
-        pass
+        previous_cif = CifContainer(self.original_cif_name)
+        previous_values = []
+        for loop2 in previous_cif.loops:
+            previous_values.append(loop2.values)
+        for loop in self.cif.loops:
+            if loop.values not in previous_values:
+                #print(loop.values)
+                gemmi_loop = changes_cif.init_loop(loop.tags)
+                for row in chunks(gemmi_loop.values, len(gemmi_loop.tags)):
+                    gemmi_loop.add_row(row)
+        changes_cif.save()
 
-    def get_changes_cif(self, finalcif_changes_file):
+    def get_changes_cif(self, finalcif_changes_file) -> CifContainer:
         block_name = self.cif.current_block if self.cif.current_block else self.cif.block.name
         changes_cif = CifContainer(file=finalcif_changes_file,
                                    new_block=block_name if not finalcif_changes_file.exists() else '')
@@ -1204,6 +1217,10 @@ class AppWindow(QMainWindow):
                 key, value = item.pair
                 value = gemmi.cif.as_string(value).strip()
                 self.ui.cif_main_table.setText(key=key, column=COL_EDIT, color=None, txt=value)
+        for loop in changes.loops:
+            new_loop = self.cif.block.init_loop('', loop.tags)
+            for row in chunks(loop.values, len(loop.tags)):
+                new_loop.add_row(row)
 
     def is_row_a_cif_item(self, vhead):
         is_cif = False
@@ -1315,6 +1332,7 @@ class AppWindow(QMainWindow):
             if not filepath.is_file():
                 return
         self.set_path_display_in_file_selector(str(filepath))
+        self.original_cif_name = filepath
         try:
             if not self.able_to_open(filepath):
                 return
@@ -1345,8 +1363,6 @@ class AppWindow(QMainWindow):
         self.ui.datanameComboBox.setCurrentIndex(block)
         self.ui.cif_main_table.resizeRowsToContents()
         self.ui.datanameComboBox.blockSignals(False)
-        # if not self.cif.is_multi_cif:
-        self.load_changes_cif()
         if self.cif.is_multi_cif:
             # short after start, because window size is not finished
             QTimer.singleShot(1000, self.ui.datanameComboBox.showPopup)
@@ -1386,6 +1402,7 @@ class AppWindow(QMainWindow):
                 raise
             unable_to_open_message(Path(self.cif.filename), not_ok)
         self.load_recent_cifs_list()
+        self.load_changes_cif()
         self.make_loops_tables()
         if self.cif:
             self.set_shredcif_state()
@@ -1660,7 +1677,7 @@ class AppWindow(QMainWindow):
         combos_from_settings = self.settings.load_cif_keys_of_properties()
         for row_number in range(self.ui.cif_main_table.model().rowCount()):
             vhead_key = self.get_key_by_row_number(row_number)
-            if not vhead_key in self.ui.cif_main_table.vheaderitems:
+            if vhead_key not in self.ui.cif_main_table.vheaderitems:
                 self.ui.cif_main_table.vheaderitems.insert(row_number, vhead_key)
             # adding comboboxes:
             if vhead_key in combos_from_settings:
