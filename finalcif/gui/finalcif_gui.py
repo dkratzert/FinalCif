@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file './finalcif/gui\finalcif_gui.ui'
+# Form implementation generated from reading ui file 'C:\_DEV\GitHub\FinalCif\finalcif\gui\finalcif_gui.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.7
 #
@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_FinalCifWindow(object):
     def setupUi(self, FinalCifWindow):
         FinalCifWindow.setObjectName("FinalCifWindow")
-        FinalCifWindow.resize(1604, 833)
+        FinalCifWindow.resize(1604, 852)
         self.Mainwidget = QtWidgets.QWidget(FinalCifWindow)
         self.Mainwidget.setObjectName("Mainwidget")
         self.horizontalLayout_4 = QtWidgets.QHBoxLayout(self.Mainwidget)
@@ -552,7 +552,7 @@ class Ui_FinalCifWindow(object):
         self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.page_FinalCif)
         self.verticalLayout_3.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout_3.setObjectName("verticalLayout_3")
-        self.FinalCifFilePlainTextEdit = QtWidgets.QPlainTextEdit(self.page_FinalCif)
+        self.FinalCifFilePlainTextEdit = QCodeEditor(self.page_FinalCif)
         self.FinalCifFilePlainTextEdit.setTextInteractionFlags(QtCore.Qt.LinksAccessibleByMouse|QtCore.Qt.TextSelectableByKeyboard|QtCore.Qt.TextSelectableByMouse)
         self.FinalCifFilePlainTextEdit.setObjectName("FinalCifFilePlainTextEdit")
         self.verticalLayout_3.addWidget(self.FinalCifFilePlainTextEdit)
@@ -1686,7 +1686,7 @@ class Ui_FinalCifWindow(object):
         self.TemplatesStackedWidget.setCurrentIndex(0)
         self.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
         self.PropertiesTemplatesStackedWidget.setCurrentIndex(1)
-        self.MainStackedWidget.setCurrentIndex(4)
+        self.MainStackedWidget.setCurrentIndex(1)
         self.LoopsTabWidget.setCurrentIndex(0)
         self.CheckCIFResultsTabWidget.setCurrentIndex(1)
         self.ResponsesTabWidget.setCurrentIndex(0)
@@ -1995,5 +1995,6 @@ class Ui_FinalCifWindow(object):
 from finalcif.displaymol.molecule2D import MoleculeWidget
 from finalcif.gui.custom_classes import MyCifTable
 from finalcif.gui.equipmenttable import MyEQTableWidget
+from finalcif.gui.file_editor import QCodeEditor
 from finalcif.gui.mainstackwidget import MyMainStackedWidget
 from finalcif.gui.propertytable import MyPropTableWidget
