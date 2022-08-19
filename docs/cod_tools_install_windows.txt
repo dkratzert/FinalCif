@@ -4,15 +4,19 @@ How to run cif_cod_check in Windows
 These are rough instructions for cif_cod_check from the COD tools
 to run on Windows. Have to do this in an automated script...
 
-* install strawberry perl
+* Download strawberry perl portable
+  https://strawberryperl.com/download/5.32.1.1/strawberry-perl-5.32.1.1-64bit-portable.zip
+* extract perl to temporary directory 'myperl'
 * install perl packages:
   - Parse::Yapp
   - DateTime::Format::RFC3339
   - Date::Calc
   - Data::Compare
+* To install the packages run "call ./portableshell.bat" first
+  then "cpan Parse::Yapp" etc.
 * Compile parser:
+  go to "cod-tools-3.5.0\src\lib\perl5\COD\CIF\Parser\Yapp"
   yapp -m COD::CIF::Parser::Yapp  Yapp.yp
-* How about spglib Perl binding?
 
 * Comment out line 49 in cif_cod_check
 * Comment out 71-87 so that parser is yapp version only
