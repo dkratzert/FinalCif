@@ -184,11 +184,12 @@ class Multilog(object):
         return g
 
 
-def strip_finalcif_of_name(pth: str) -> str:
+def strip_finalcif_of_name(pth: Union[str, Path], till_name_ends=False) -> str:
     """
     Strips '-finalcif' from the stem path
     """
-    return re.sub('-finalcif$', '', pth)
+    pth = str(pth)
+    return re.sub(f'-finalcif{".*" if till_name_ends else ""}$', '', pth)
 
 
 def flatten(lis: list) -> list:
