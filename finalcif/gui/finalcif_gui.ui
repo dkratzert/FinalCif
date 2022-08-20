@@ -2231,6 +2231,94 @@ The data source will be ignored until next program restart.</string>
               </property>
              </spacer>
             </item>
+            <item row="6" column="0" colspan="2">
+             <widget class="QGroupBox" name="groupBox_8">
+              <property name="title">
+               <string>Export</string>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_34">
+               <item alignment="Qt::AlignLeft">
+                <widget class="QPushButton" name="ExportAllTemplatesPushButton">
+                 <property name="text">
+                  <string>Export all Templates</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_18">
+                 <property name="text">
+                  <string>Exports all templates from Equipment, Properties and Text snippets to a single file.</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <spacer name="verticalSpacer">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeType">
+                  <enum>QSizePolicy::Fixed</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>10</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item alignment="Qt::AlignLeft">
+                <widget class="QPushButton" name="ImportAllTemplatesPushButton">
+                 <property name="text">
+                  <string>Import all Templates</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_17">
+                 <property name="text">
+                  <string>Imports all templates from a template file.</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="2" column="0" colspan="2">
+             <widget class="QGroupBox" name="groupBox_7">
+              <property name="title">
+               <string>CheckCIF Server</string>
+              </property>
+              <layout class="QFormLayout" name="formLayout_4">
+               <item row="0" column="0" colspan="2">
+                <widget class="QLabel" name="label_4">
+                 <property name="text">
+                  <string>Change this URL if the CheckCIF server URL changes:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0" colspan="2">
+                <widget class="QLineEdit" name="CheckCIFServerURLTextedit">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>300</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>https://checkcif.iucr.org/cgi-bin/checkcif_hkl.pl</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
             <item row="1" column="0" colspan="4">
              <widget class="QGroupBox" name="groupBox_5">
               <property name="title">
@@ -2471,94 +2559,6 @@ The data source will be ignored until next program restart.</string>
               </layout>
              </widget>
             </item>
-            <item row="6" column="0" colspan="2">
-             <widget class="QGroupBox" name="groupBox_8">
-              <property name="title">
-               <string>Export</string>
-              </property>
-              <layout class="QVBoxLayout" name="verticalLayout_34">
-               <item alignment="Qt::AlignLeft">
-                <widget class="QPushButton" name="ExportAllTemplatesPushButton">
-                 <property name="text">
-                  <string>Export all Templates</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="label_18">
-                 <property name="text">
-                  <string>Exports all templates from Equipment, Properties and Text snippets to a single file.</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <spacer name="verticalSpacer">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                 <property name="sizeType">
-                  <enum>QSizePolicy::Fixed</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>20</width>
-                   <height>10</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item alignment="Qt::AlignLeft">
-                <widget class="QPushButton" name="ImportAllTemplatesPushButton">
-                 <property name="text">
-                  <string>Import all Templates</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="label_17">
-                 <property name="text">
-                  <string>Imports all templates from a template file.</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="2" column="0" colspan="2">
-             <widget class="QGroupBox" name="groupBox_7">
-              <property name="title">
-               <string>CheckCIF Server</string>
-              </property>
-              <layout class="QFormLayout" name="formLayout_4">
-               <item row="0" column="0" colspan="2">
-                <widget class="QLabel" name="label_4">
-                 <property name="text">
-                  <string>Change this URL if the CheckCIF server URL changes:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0" colspan="2">
-                <widget class="QLineEdit" name="CheckCIFServerURLTextedit">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="minimumSize">
-                  <size>
-                   <width>300</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                 <property name="text">
-                  <string>https://checkcif.iucr.org/cgi-bin/checkcif_hkl.pl</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
             <item row="2" column="2" colspan="2">
              <widget class="QGroupBox" name="groupBox_COD">
               <property name="title">
@@ -2599,15 +2599,15 @@ The data source will be ignored until next program restart.</string>
               <property name="title">
                <string>General Options</string>
               </property>
-              <layout class="QFormLayout" name="formLayout_7">
-               <item row="0" column="0">
-                <widget class="QCheckBox" name="trackChangesCif">
+              <layout class="QVBoxLayout" name="verticalLayout_37">
+               <item>
+                <widget class="QCheckBox" name="trackChangesCifCheckBox">
                  <property name="text">
-                  <string>Track CIF changes in extra &quot;[name]-finalcif_changes.cif&quot; file.</string>
+                  <string>Track CIF changes in separate file &quot;[name]-finalcif_changes.cif&quot;.</string>
                  </property>
                 </widget>
                </item>
-               <item row="1" column="0">
+               <item>
                 <spacer name="verticalSpacer_14">
                  <property name="orientation">
                   <enum>Qt::Vertical</enum>
