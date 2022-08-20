@@ -7,6 +7,7 @@
 #  ----------------------------------------------------------------------------
 import re
 from collections import namedtuple
+from functools import cache
 from pathlib import Path
 from typing import Dict, List, Tuple, Union, Generator, Type
 
@@ -27,6 +28,13 @@ class CifContainer():
     """
 
     def __init__(self, file: Union[Path, str], new_block: str = ''):
+        """
+
+        Args:
+            file: CIF file to open
+            new_block: Create a new block if a name is given. Otherwise, just
+                       the existing document is opened.
+        """
         if isinstance(file, str):
             self.fileobj = Path(file)
         elif isinstance(file, Path):
@@ -43,7 +51,7 @@ class CifContainer():
         else:
             self.doc = self.read_file(str(self.fileobj.resolve(strict=True)))
         # Starting with first block, but can use others with subsequent self._onload():
-        self.block = self.doc[0]
+        self.block: gemmi.cif.Block = self.doc[0]
         self.shx = Shelxfile()
         self.shx.read_string(self.res_file_data[1:-1])
         self._on_load()
@@ -73,13 +81,15 @@ class CifContainer():
         filename = self.finalcif_file_prefixed(prefix='', suffix='-finalcif.cif')
         return filename
 
-    def finalcif_file_prefixed(self, prefix: str, suffix: str = '-finalcif.cif') -> Path:
+    def finalcif_file_prefixed(self, prefix: str, suffix: str = '-finalcif.cif', force_strip=True) -> Path:
         """
         The full path of the file with a prefix and '-finalcif.cif' attached to the end.
         The suffix needs '-finalcif' in order to contain the finalcif ending.
         "foo/bar/baz-finalcif.cif"
+
+        :param forece_strip: Forces to strip the filename also after the '-finalcif' string.
         """
-        file_witout_finalcif = strip_finalcif_of_name(Path(self.filename).stem)
+        file_witout_finalcif = strip_finalcif_of_name(Path(self.filename).stem, till_name_ends=force_strip)
         filename = self.path_base.joinpath(Path(prefix + file_witout_finalcif + suffix))
         return filename
 
@@ -105,7 +115,6 @@ class CifContainer():
         # will not ok with non-ascii characters in the res file:
         self.chars_ok = True
         self.doc.check_for_duplicates()
-        self.hkl_extra_info = self._abs_hkl_details()
         self.order = order
         self.dsr_used = DSRFind(self.res_file_data).dsr_used
         self.atomic_struct: gemmi.SmallStructure = gemmi.make_small_structure_from_block(self.block)
@@ -114,6 +123,11 @@ class CifContainer():
             zip([x.upper() for x in self.block.find_loop('_atom_site_label')],
                 [x.upper() for x in self.block.find_loop('_atom_site_type_symbol')]))
         self.check_hkl_min_max()
+
+    @property
+    @cache
+    def hkl_extra_info(self):
+        return self._abs_hkl_details()
 
     def check_hkl_min_max(self) -> None:
         if not all([self['_diffrn_reflns_limit_h_min'], self['_diffrn_reflns_limit_h_max'],
@@ -182,7 +196,11 @@ class CifContainer():
         self.set_pair_delimited(key, value)
 
     def __delitem__(self, key: str):
-        self.block.find_pair_item(key).erase()
+        try:
+            self.block.find_pair_item(key).erase()
+        except AttributeError:
+            pass
+            # key is not in block
 
     def __contains__(self, item):
         return bool(self.__getitem__(item))
@@ -216,7 +234,7 @@ class CifContainer():
             else:
                 self.block.set_pair(key, quote(txt))
 
-    def save(self, filename: Path = None) -> None:
+    def save(self, filename: Union[Path, None] = None) -> None:
         """
         Saves the current cif file.
         :param filename:  Name to save cif file to.
@@ -403,6 +421,11 @@ class CifContainer():
             if b.loop:
                 loops.append(b.loop)
         return loops
+
+    def add_loop_to_cif(self, loop_tags: List[str], loop_values: Union[list, tuple]):
+        gemmi_loop = self.init_loop(loop_tags)
+        for row in list(grouper(loop_values, len(loop_tags))):
+            gemmi_loop.add_row(row)
 
     @property
     def n_loops(self):
