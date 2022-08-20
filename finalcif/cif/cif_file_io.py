@@ -81,13 +81,15 @@ class CifContainer():
         filename = self.finalcif_file_prefixed(prefix='', suffix='-finalcif.cif')
         return filename
 
-    def finalcif_file_prefixed(self, prefix: str, suffix: str = '-finalcif.cif') -> Path:
+    def finalcif_file_prefixed(self, prefix: str, suffix: str = '-finalcif.cif', force_strip=True) -> Path:
         """
         The full path of the file with a prefix and '-finalcif.cif' attached to the end.
         The suffix needs '-finalcif' in order to contain the finalcif ending.
         "foo/bar/baz-finalcif.cif"
+
+        :param forece_strip: Forces to strip the filename also after the '-finalcif' string.
         """
-        file_witout_finalcif = strip_finalcif_of_name(Path(self.filename).stem)
+        file_witout_finalcif = strip_finalcif_of_name(Path(self.filename).stem, till_name_ends=force_strip)
         filename = self.path_base.joinpath(Path(prefix + file_witout_finalcif + suffix))
         return filename
 
@@ -194,7 +196,11 @@ class CifContainer():
         self.set_pair_delimited(key, value)
 
     def __delitem__(self, key: str):
-        self.block.find_pair_item(key).erase()
+        try:
+            self.block.find_pair_item(key).erase()
+        except AttributeError:
+            pass
+            # key is not in block
 
     def __contains__(self, item):
         return bool(self.__getitem__(item))

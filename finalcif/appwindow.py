@@ -37,8 +37,8 @@ from finalcif.equip_property.author_loop_templates import AuthorLoops
 from finalcif.equip_property.equipment import Equipment
 from finalcif.equip_property.properties import Properties
 from finalcif.equip_property.tools import read_document_from_cif_file
-from finalcif.gui.custom_classes import COL_CIF, COL_DATA, COL_EDIT, MyTableWidgetItem, light_green, yellow, MyCifTable, \
-    light_blue, white
+from finalcif.gui.custom_classes import COL_CIF, COL_DATA, COL_EDIT, MyTableWidgetItem, light_green, yellow, light_blue, \
+    white
 from finalcif.gui.dialogs import show_update_warning, unable_to_open_message, show_general_warning, \
     cif_file_open_dialog, \
     bad_z_message, show_res_checksum_warning, show_hkl_checksum_warning, cif_file_save_dialog
@@ -55,7 +55,8 @@ from finalcif.tools.download import MyDownloader, start_worker
 from finalcif.tools.dsrmath import my_isnumeric
 from finalcif.tools.misc import next_path, do_not_import_keys, celltxt, to_float, \
     combobox_fields, \
-    do_not_import_from_stoe_cfx, cif_to_header_label, grouper, is_database_number, file_age_in_days, open_file
+    do_not_import_from_stoe_cfx, cif_to_header_label, grouper, is_database_number, file_age_in_days, open_file, \
+    strip_finalcif_of_name
 from finalcif.tools.options import Options
 from finalcif.tools.platon import Platon
 from finalcif.tools.settings import FinalCifSettings
@@ -318,7 +319,7 @@ class AppWindow(QMainWindow):
 
     @property
     def finalcif_changes_filename(self):
-        return self.cif.finalcif_file_prefixed(prefix='', suffix='-finalcif_changes.cif')
+        return self.cif.finalcif_file_prefixed(prefix='', suffix='-finalcif_changes.cif', force_strip=True)
 
     def export_all_templates(self, filename: Path = None):
         import pickle
@@ -1138,10 +1139,7 @@ class AppWindow(QMainWindow):
             # No file is opened
             return None
         self.cif.rename_data_name(''.join(self.ui.datanameComboBox.currentText().split(' ')))
-        # restore header, otherwise item is not saved:
-        table = self.ui.cif_main_table
-        table.setCurrentItem(None)  # makes sure also the currently edited item is saved
-        self.store_data_from_table_rows(table)
+        self.store_data_from_table_rows()
         self.save_ccdc_number()
         try:
             self.cif.save()
@@ -1154,12 +1152,13 @@ class AppWindow(QMainWindow):
             show_general_warning('Can not save file: ' + str(e))
             return False
 
-    def store_data_from_table_rows(self, table: MyCifTable) -> None:
+    def store_data_from_table_rows(self) -> None:
         """
         Stores the data from the main table in the cif object.
         """
         changes_cif = self.get_changes_cif(self.finalcif_changes_filename)
-        self.save_changed_loops(changes_cif)
+        table = self.ui.cif_main_table
+        table.setCurrentItem(None)  # makes sure also the currently edited item is saved
         for row in range(self.ui.cif_main_table.rows_count):
             vhead = self.ui.cif_main_table.vheader_text(row)
             if not self.is_row_a_cif_item(vhead):
@@ -1175,7 +1174,11 @@ class AppWindow(QMainWindow):
                     self.cif[vhead] = col_edit
                 except (RuntimeError, ValueError, IOError) as e:
                     print('Can not take cif info from table:', e)
+            else:
+                del changes_cif[vhead]
+        self.save_changed_loops(changes_cif)
         try:
+            print('#### store_data_from_table_rows:')
             changes_cif.save(filename=self.finalcif_changes_filename)
         except Exception as e:
             print('Unable to save changes file.')
@@ -1186,17 +1189,18 @@ class AppWindow(QMainWindow):
         * load current block (if present, else assume all loops are new)
         * go through loops and save alle loops that are different to changes file
         """
-        previous_cif = CifContainer(self.original_cif_name)
+        previous_cif = CifContainer(Path(strip_finalcif_of_name(self.original_cif_name, till_name_ends=True)).with_suffix('.cif'))
         previous_values = []
         for loop2 in previous_cif.loops:
             previous_values.append(loop2.values)
         for loop in self.cif.loops:
             if loop.values not in previous_values:
-                #print(loop.values)
                 gemmi_loop = changes_cif.init_loop(loop.tags)
-                for row in chunks(gemmi_loop.values, len(gemmi_loop.tags)):
+                for row in list(grouper(loop.values, len(loop.tags))):
                     gemmi_loop.add_row(row)
-        changes_cif.save()
+        print('#### save_changed_loops:')
+        changes_cif.save(filename=self.finalcif_changes_filename)
+        print('end----')
 
     def get_changes_cif(self, finalcif_changes_file) -> CifContainer:
         block_name = self.cif.current_block if self.cif.current_block else self.cif.block.name
@@ -1208,7 +1212,8 @@ class AppWindow(QMainWindow):
         return changes_cif
 
     def load_changes_cif(self):
-        finalcif_changes_file = self.cif.finalcif_file_prefixed(prefix='', suffix='-finalcif_changes.cif')
+        finalcif_changes_file = self.cif.finalcif_file_prefixed(prefix='', suffix='-finalcif_changes.cif',
+                                                                force_strip=True)
         if not finalcif_changes_file.exists():
             return
         changes = CifContainer(finalcif_changes_file)
@@ -1635,7 +1640,7 @@ class AppWindow(QMainWindow):
             ccdc = CCDCMail(self.cif)
             if ccdc.depnum > 0:
                 # The next line is necessary, otherwise reopening of a cif would not add the CCDC number:
-                if not '_database_code_depnum_ccdc_archive' in self.ui.cif_main_table.vheaderitems:
+                if '_database_code_depnum_ccdc_archive' not in self.ui.cif_main_table.vheaderitems:
                     # self.ui.cif_main_table.vheaderitems.insert(0, '_database_code_depnum_ccdc_archive')
                     self.add_row('_database_code_depnum_ccdc_archive', '', at_start=True)
                 txt = self.ui.cif_main_table.getTextFromKey('_database_code_depnum_ccdc_archive', COL_EDIT).strip()
