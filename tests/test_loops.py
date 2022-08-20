@@ -25,6 +25,7 @@ class TestLoops(unittest.TestCase):
         self.myapp.running_inside_unit_test = True
         self.myapp.hide()  # For full screen view
         self.myapp.ui.LoopsPushButton.click()
+        self.myapp.ui.trackChangesCifCheckBox.setChecked(False)
 
     def tearDown(self) -> None:
         self.myapp.cif.finalcif_file.unlink(missing_ok=True)
