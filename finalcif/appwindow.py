@@ -12,7 +12,7 @@ from contextlib import suppress
 from datetime import datetime
 from math import sin, radians
 from pathlib import Path, WindowsPath
-from typing import Union, Dict, Tuple, List
+from typing import Union, Dict, Tuple, List, Optional
 
 import gemmi.cif
 import qtawesome as qta
@@ -553,9 +553,10 @@ class AppWindow(QMainWindow):
         Deletes a row of the main table.
         """
         del self.cif[key]
-        changes_cif = self.get_changes_cif(self.finalcif_changes_filename)
-        del changes_cif[key]
-        changes_cif.save(self.finalcif_changes_filename)
+        if self.options.track_changes:
+            changes_cif = self.get_changes_cif(self.finalcif_changes_filename)
+            del changes_cif[key]
+            changes_cif.save(self.finalcif_changes_filename)
 
     def check_for_update_version(self) -> None:
         if os.environ.get('NO_NETWORK'):
@@ -1150,7 +1151,9 @@ class AppWindow(QMainWindow):
         """
         Stores the data from the main table in the cif object.
         """
-        changes_cif = self.get_changes_cif(self.finalcif_changes_filename)
+        changes_cif: Optional[CifContainer] = None
+        if self.options.track_changes:
+            changes_cif = self.get_changes_cif(self.finalcif_changes_filename)
         # makes sure also the currently edited item is saved:
         self.ui.cif_main_table.setCurrentItem(None)
         for row in range(self.ui.cif_main_table.rows_count):
@@ -1162,19 +1165,21 @@ class AppWindow(QMainWindow):
             if col_data and not col_edit and col_data != '?':
                 self.cif[vhead] = col_data
             if col_edit:
-                if self.cif[vhead] != col_edit:
+                if self.cif[vhead] != col_edit and changes_cif:
                     changes_cif[vhead] = col_edit
                 try:
                     self.cif[vhead] = col_edit
                 except (RuntimeError, ValueError, IOError) as e:
                     print('Can not take cif info from table:', e)
             else:
-                del changes_cif[vhead]
-        self.save_changed_loops(changes_cif)
-        try:
-            changes_cif.save(filename=self.finalcif_changes_filename)
-        except Exception as e:
-            print(f'Unable to save changes file: {e}')
+                if changes_cif:
+                    del changes_cif[vhead]
+        if changes_cif:
+            self.save_changed_loops(changes_cif)
+            try:
+                changes_cif.save(filename=self.finalcif_changes_filename)
+            except Exception as e:
+                print(f'Unable to save changes file: {e}')
 
     def save_changed_loops(self, changes_cif: CifContainer):
         """
@@ -1394,7 +1399,8 @@ class AppWindow(QMainWindow):
                 raise
             unable_to_open_message(Path(self.cif.filename), not_ok)
         self.load_recent_cifs_list()
-        self.load_changes_cif()
+        if self.options.track_changes:
+            self.load_changes_cif()
         self.make_loops_tables()
         if self.cif:
             self.set_shredcif_state()
