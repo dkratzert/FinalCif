@@ -54,6 +54,11 @@ class TestMisc(unittest.TestCase):
         self.assertEqual('406-0308', stripped)
         self.assertEqual('foobar', strip_finalcif_of_name('foobar'))
 
+    def test_strip_finalcif_till_end(self):
+        self.assertEqual('cu_BruecknerJK_153F40_0m', strip_finalcif_of_name('cu_BruecknerJK_153F40_0m-finalcif'))
+        self.assertEqual('cu_BruecknerJK_153F40_0m-finalcif_changes', strip_finalcif_of_name('cu_BruecknerJK_153F40_0m-finalcif_changes'))
+        self.assertEqual('cu_BruecknerJK_153F40_0m', strip_finalcif_of_name('cu_BruecknerJK_153F40_0m-finalcif_changes', till_name_ends=True))
+
     def test_isnumeric_true(self):
         self.assertEqual(True, isnumeric('1.234'))
         self.assertEqual(True, isnumeric('234'))

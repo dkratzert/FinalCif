@@ -1,4 +1,5 @@
 from contextlib import suppress
+from functools import cache
 
 from PyQt5.QtCore import pyqtSignal, Qt, QObject, QEvent, QSize
 from PyQt5.QtGui import QTextOption, QFontMetrics, QContextMenuEvent, QFont
@@ -24,8 +25,7 @@ class MyQPlainTextEdit(QPlainTextEdit):
         self.setParent(parent)
         self.cif_key = ''
         font = QFont()
-        # font.setFamily("Arial")
-        font.setPointSize(self.document().defaultFont().pointSize()+1)
+        font.setPointSize(self.document().defaultFont().pointSize() + 1)
         self.setFont(font)
         self.parent: 'MyCifTable' = parent
         self.setFocusPolicy(Qt.StrongFocus)
@@ -34,12 +34,16 @@ class MyQPlainTextEdit(QPlainTextEdit):
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setWordWrapMode(QTextOption.WordWrap)
-        self.fontmetric = QFontMetrics(self.document().defaultFont())
         self.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
         self.textChanged.connect(lambda: self.parent.resizeRowToContents(self.row))
 
     def __str__(self):
         return self.toPlainText()
+
+    @property
+    @cache
+    def fontmetric(self):
+        return QFontMetrics(self.document().defaultFont())
 
     def contextMenuEvent(self, event: QContextMenuEvent):
         menu = self.createStandardContextMenu(event.pos())

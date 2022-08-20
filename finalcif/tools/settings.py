@@ -145,10 +145,12 @@ class FinalCifSettings():
     def load_options(self) -> dict:
         options = self.load_settings_dict('Options', "options")
         if not options:
+            # These are the default values
             options = {'report_text'  : True,
                        'picture_width': 7.5,
                        'without_h'    : False,
                        'report_adp'   : True,
+                       'track_changes': False,
                        'checkcif_url' : 'https://checkcif.iucr.org/cgi-bin/checkcif_hkl.pl',
                        }
         # self.settings.endGroup()

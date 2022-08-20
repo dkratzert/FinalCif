@@ -83,7 +83,7 @@ class BrukerData(WorkDataMixin):
             frame_name = self.frame_header.filename.name
         except FileNotFoundError:
             frame_name = ''
-        if self.cif.solution_program_details:
+        if not self.cif['_computing_structure_solution'] and self.cif.solution_program_details:
             solution_program = (self.cif.solution_program_details, self.cif.fileobj.name)
         if self.cif['_computing_structure_solution']:
             solution_program = (gcif.as_string(self.cif['_computing_structure_solution']), self.cif.fileobj.name)
