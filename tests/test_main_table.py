@@ -24,6 +24,7 @@ class TestMainTableFieldBehavior(unittest.TestCase):
         self.myapp.running_inside_unit_test = True
         self.myapp.hide()  # For full screen view
         self.myapp.settings.empty_deleted_list()
+        self.myapp.ui.trackChangesCifCheckBox.setChecked(False)
 
     def tearDown(self) -> None:
         self.myapp.cif.finalcif_file.unlink(missing_ok=True)
