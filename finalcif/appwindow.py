@@ -23,7 +23,6 @@ from PyQt5.QtWidgets import QMainWindow, QShortcut, QCheckBox, QListWidgetItem, 
     QPlainTextEdit, QFileDialog
 from gemmi import cif
 from qtpy.QtGui import QDesktopServices
-from shelxfile.misc.misc import chunks
 
 from finalcif import VERSION
 from finalcif.cif.checkcif.checkcif import MyHTMLParser, AlertHelp, CheckCif
@@ -1179,9 +1178,8 @@ class AppWindow(QMainWindow):
 
     def save_changed_loops(self, changes_cif: CifContainer):
         """
-        * load original cif
-        * load current block (if present, else assume all loops are new)
-        * go through loops and save alle loops that are different to changes file
+        previous_cif is the original unchanged cif that gets 'previous_cif'-finalcif.cif after saving.
+        previous_values contains its loops.
         """
         previous_cif = CifContainer(Path(strip_finalcif_of_name(self.cif.finalcif_file,
                                                                 till_name_ends=True)).with_suffix('.cif'))
@@ -1190,9 +1188,7 @@ class AppWindow(QMainWindow):
             previous_values.append(loop2.values)
         for loop in self.cif.loops:
             if loop.values not in previous_values:
-                gemmi_loop = changes_cif.init_loop(loop.tags)
-                for row in list(grouper(loop.values, len(loop.tags))):
-                    gemmi_loop.add_row(row)
+                changes_cif.add_loop_to_cif(loop_tags=loop.tags, loop_values=loop.values)
         changes_cif.save(filename=self.finalcif_changes_filename)
 
     def get_changes_cif(self, finalcif_changes_file) -> CifContainer:
@@ -1217,9 +1213,7 @@ class AppWindow(QMainWindow):
                 value = gemmi.cif.as_string(value).strip()
                 self.ui.cif_main_table.setText(key=key, column=COL_EDIT, color=None, txt=value)
         for loop in changes.loops:
-            new_loop = self.cif.block.init_loop('', loop.tags)
-            for row in chunks(loop.values, len(loop.tags)):
-                new_loop.add_row(row)
+            self.cif.add_loop_to_cif(loop_tags=loop.tags, loop_values=loop.values)
 
     def is_row_a_cif_item(self, vhead):
         is_cif = False
