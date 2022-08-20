@@ -79,7 +79,6 @@ class AppWindow(QMainWindow):
         # open report doc,
         # get check.def from platon server
         self.running_inside_unit_test = unit_test
-        self.original_cif_name: Union[Path, None] = None
         self.sources: Union[None, Dict[str, Tuple[Union[str, None]]]] = None
         self.cif: Union[CifContainer, None] = None
         self.report_picture_path: Union[Path, None] = None
@@ -1153,14 +1152,14 @@ class AppWindow(QMainWindow):
         Stores the data from the main table in the cif object.
         """
         changes_cif = self.get_changes_cif(self.finalcif_changes_filename)
-        table = self.ui.cif_main_table
-        table.setCurrentItem(None)  # makes sure also the currently edited item is saved
+        # makes sure also the currently edited item is saved:
+        self.ui.cif_main_table.setCurrentItem(None)
         for row in range(self.ui.cif_main_table.rows_count):
             vhead = self.ui.cif_main_table.vheader_text(row)
             if not self.is_row_a_cif_item(vhead):
                 continue
-            col_data = table.text(row, COL_DATA)
-            col_edit = table.text(row, COL_EDIT)
+            col_data = self.ui.cif_main_table.text(row, COL_DATA)
+            col_edit = self.ui.cif_main_table.text(row, COL_EDIT)
             if col_data and not col_edit and col_data != '?':
                 self.cif[vhead] = col_data
             if col_edit:
@@ -1184,7 +1183,7 @@ class AppWindow(QMainWindow):
         * load current block (if present, else assume all loops are new)
         * go through loops and save alle loops that are different to changes file
         """
-        previous_cif = CifContainer(Path(strip_finalcif_of_name(self.original_cif_name,
+        previous_cif = CifContainer(Path(strip_finalcif_of_name(self.cif.finalcif_file,
                                                                 till_name_ends=True)).with_suffix('.cif'))
         previous_values = []
         for loop2 in previous_cif.loops:
@@ -1332,7 +1331,6 @@ class AppWindow(QMainWindow):
             if not filepath.is_file():
                 return
         self.set_path_display_in_file_selector(str(filepath))
-        self.original_cif_name = filepath
         try:
             if not self.able_to_open(filepath):
                 return
