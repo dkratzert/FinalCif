@@ -4,7 +4,6 @@
 #   this notice you can do whatever you want with this stuff. If we meet some day,
 #   and you think this stuff is worth it, you can buy me a beer in return.
 #   ----------------------------------------------------------------------------
-import os
 import unittest
 from pathlib import Path
 
@@ -21,6 +20,7 @@ class TestLoops(unittest.TestCase):
 
     def setUp(self) -> None:
         self.testcif = Path('tests/examples/1979688.cif').resolve()
+        Path('tests/examples/1979688-finalcif_changes.cif').unlink(missing_ok=True)
         self.myapp = AppWindow(self.testcif, unit_test=True)
         self.myapp.running_inside_unit_test = True
         self.myapp.hide()  # For full screen view
@@ -29,6 +29,7 @@ class TestLoops(unittest.TestCase):
     def tearDown(self) -> None:
         self.myapp.cif.finalcif_file.unlink(missing_ok=True)
         self.myapp.close()
+        Path('tests/examples/1979688-finalcif_changes.cif').unlink(missing_ok=True)
 
     def get_index_of(self, loopkey: str = ''):
         tabw: QTabWidget = self.myapp.ui.LoopsTabWidget
@@ -79,10 +80,21 @@ class TestLoops(unittest.TestCase):
         c = CifContainer(self.myapp.cif.finalcif_file)
         self.assertEqual('foo bar', as_string(c.loops[3].val(0, 2)))
 
+
 class TestLoopsMove(unittest.TestCase):
+    def setUp(self) -> None:
+        self.testcif = Path('tests/examples/1979688.cif').resolve()
+        # TODO: make tests where changes file is active:
+        Path('tests/examples/1979688-finalcif_changes.cif').unlink(missing_ok=True)
+        self.myapp = AppWindow(self.testcif, unit_test=True)
+        self.myapp.running_inside_unit_test = True
+        self.myapp.hide()  # For full screen view
+        self.myapp.ui.LoopsPushButton.click()
+
     def tearDown(self) -> None:
         self.myapp.cif.finalcif_file.unlink(missing_ok=True)
         self.myapp.close()
+        Path('tests/examples/1979688-finalcif_changes.cif').unlink(missing_ok=True)
 
     def get_index_of(self, loopkey: str = ''):
         tabw: QTabWidget = self.myapp.ui.LoopsTabWidget
@@ -93,13 +105,6 @@ class TestLoopsMove(unittest.TestCase):
             else:
                 tab = -1
         return tab
-
-    def setUp(self) -> None:
-        self.testcif = Path('tests/examples/1979688.cif').resolve()
-        self.myapp = AppWindow(self.testcif, unit_test=True)
-        self.myapp.running_inside_unit_test = True
-        self.myapp.hide()  # For full screen view
-        self.myapp.ui.LoopsPushButton.click()
 
     def set_current_index_to_row_col(self, row, col, tab='Scattering'):
         view = self.myapp.ui.LoopsTabWidget.widget(self.get_index_of(tab))
@@ -164,7 +169,6 @@ class TestLoopsMove(unittest.TestCase):
         self.assertEqual('C', as_string(c.loops[3].val(0, 0)))
         self.assertEqual('H', as_string(c.loops[3].val(1, 0)))
         self.assertEqual('O', as_string(c.loops[3].val(2, 0)))
-
 
     def test_move_row_up_from_middle(self):
         view = self.set_current_index_to_row_col(1, 0)
