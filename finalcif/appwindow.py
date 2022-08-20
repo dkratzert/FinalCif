@@ -552,16 +552,12 @@ class AppWindow(QMainWindow):
 
     def _deleted_row(self, key: str) -> None:
         """
-        Deletes a row of the main table and reloads the cif file.
+        Deletes a row of the main table.
         """
-        current_block = self.ui.datanameComboBox.currentIndex()
-        if self.cif.block.find_pair(key):
-            self.cif.block.find([key]).erase()
-            if key in self.missing_data:
-                self.missing_data.discard(key)
-                # del self.missing_data[self.missing_data.index(key)]
-            self.save_current_cif_file()
-            self.load_cif_file(self.cif.finalcif_file, block=current_block)
+        del self.cif[key]
+        changes_cif = self.get_changes_cif(self.finalcif_changes_filename)
+        del changes_cif[key]
+        changes_cif.save(self.finalcif_changes_filename)
 
     def check_for_update_version(self) -> None:
         if os.environ.get('NO_NETWORK'):
@@ -1178,10 +1174,9 @@ class AppWindow(QMainWindow):
                 del changes_cif[vhead]
         self.save_changed_loops(changes_cif)
         try:
-            print('#### store_data_from_table_rows:')
             changes_cif.save(filename=self.finalcif_changes_filename)
         except Exception as e:
-            print('Unable to save changes file.')
+            print(f'Unable to save changes file: {e}')
 
     def save_changed_loops(self, changes_cif: CifContainer):
         """
@@ -1189,7 +1184,8 @@ class AppWindow(QMainWindow):
         * load current block (if present, else assume all loops are new)
         * go through loops and save alle loops that are different to changes file
         """
-        previous_cif = CifContainer(Path(strip_finalcif_of_name(self.original_cif_name, till_name_ends=True)).with_suffix('.cif'))
+        previous_cif = CifContainer(Path(strip_finalcif_of_name(self.original_cif_name,
+                                                                till_name_ends=True)).with_suffix('.cif'))
         previous_values = []
         for loop2 in previous_cif.loops:
             previous_values.append(loop2.values)
@@ -1198,12 +1194,11 @@ class AppWindow(QMainWindow):
                 gemmi_loop = changes_cif.init_loop(loop.tags)
                 for row in list(grouper(loop.values, len(loop.tags))):
                     gemmi_loop.add_row(row)
-        print('#### save_changed_loops:')
         changes_cif.save(filename=self.finalcif_changes_filename)
-        print('end----')
 
     def get_changes_cif(self, finalcif_changes_file) -> CifContainer:
         block_name = self.cif.current_block if self.cif.current_block else self.cif.block.name
+        block_name = block_name + '_changes'
         changes_cif = CifContainer(file=finalcif_changes_file,
                                    new_block=block_name if not finalcif_changes_file.exists() else '')
         # new block of added cif is not loaded:
