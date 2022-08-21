@@ -1156,7 +1156,11 @@ class AppWindow(QMainWindow):
         """
         changes_cif: Optional[CifContainer] = None
         if self.options.track_changes:
-            changes_cif = self.get_changes_cif(self.finalcif_changes_filename)
+            try:
+                changes_cif = self.get_changes_cif(self.finalcif_changes_filename)
+            except Exception as e:
+                unable_to_open_message(filepath=self.finalcif_changes_filename, not_ok=e)
+                changes_cif = None
         # makes sure also the currently edited item is saved:
         self.ui.cif_main_table.setCurrentItem(None)
         for row in range(self.ui.cif_main_table.rows_count):
@@ -1213,11 +1217,9 @@ class AppWindow(QMainWindow):
         return changes_cif
 
     def load_changes_cif(self):
-        finalcif_changes_file = self.cif.finalcif_file_prefixed(prefix='', suffix='-finalcif_changes.cif',
-                                                                force_strip=True)
-        if not finalcif_changes_file.exists():
+        if not self.finalcif_changes_filename.exists():
             return
-        changes = CifContainer(finalcif_changes_file)
+        changes = CifContainer(self.finalcif_changes_filename)
         for item in changes.block:
             if item.pair is not None:
                 key, value = item.pair
@@ -1406,7 +1408,10 @@ class AppWindow(QMainWindow):
             unable_to_open_message(Path(self.cif.filename), not_ok)
         self.load_recent_cifs_list()
         if self.options.track_changes:
-            self.load_changes_cif()
+            try:
+                self.load_changes_cif()
+            except Exception as e:
+                unable_to_open_message(filepath=self.finalcif_changes_filename, not_ok=e)
         self.make_loops_tables()
         if self.cif:
             self.set_shredcif_state()
