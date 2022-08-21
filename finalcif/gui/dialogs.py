@@ -1,5 +1,4 @@
 import ctypes
-import os
 import sys
 from pathlib import Path
 
@@ -30,15 +29,15 @@ def unable_to_open_message(filepath: Path, not_ok: Exception) -> None:
         line = str(not_ok)[4:].split(':')[1]
     except IndexError:
         line = None
+    info.setText('This cif file is not readable!                                           ')
     if line:
         try:
             int(line)
-            info.setText('This cif file is not readable!\n'
-                         'Please check line {} in\n{}'.format(line, filepath.name))
+            info.setInformativeText(f'\nPlease check line {line} in\n{filepath.name}')
         except ValueError:
-            info.setText('This cif file is not readable! "{}"\n{}'.format(filepath.name, not_ok))
+            info.setInformativeText(f'"{filepath.name}"\n{not_ok}')
     else:
-        info.setText('This cif file is not readable! "{}"\n{}'.format(filepath.name, not_ok))
+        info.setInformativeText(f'"{filepath.name}"\n{not_ok}')
     info.show()
     info.exec()
 
