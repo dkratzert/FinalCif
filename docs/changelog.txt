@@ -1,6 +1,7 @@
 FinalCif recent changes
 -----------------------
-* v109 New option to track changes in a separate CIF in order to be faster at a previous state.
+* v109 New option to track changes in a separate CIF in order to be faster at a previous state when starting from scratch
+       (see new checkbox in options menu).
        Added line number in CIF text viewer after file save.
        Deleted equipment templates now reappear again when they are re-imported.
 * v108 Fixed item selection bug in report templates list. Fixed extra empty line after index ranges.
