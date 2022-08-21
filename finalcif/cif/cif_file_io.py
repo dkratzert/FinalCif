@@ -794,7 +794,7 @@ class CifContainer():
         """
         Returns the key/value pairs of a cif file sorted by priority.
         """
-        keys_without_values, keys_with_values = self.get_keys()
+        keys_without_values, keys_with_values = self.keys_with_essentials()
         return keys_without_values + [('These below are already in:', '---------------------')] + keys_with_values
 
     def _is_centrokey(self, key) -> bool:
@@ -804,7 +804,7 @@ class CifContainer():
         """
         return self.is_centrosymm and key in non_centrosymm_keys
 
-    def get_keys(self) -> Tuple[List[Tuple[str, str]], List[Tuple[str, str]]]:
+    def keys_with_essentials(self) -> Tuple[List[Tuple[str, str]], List[Tuple[str, str]]]:
         """
         Returns the keys to be displayed in the main table as two separate lists.
         """
@@ -826,6 +826,28 @@ class CifContainer():
         all_keys = [x[0] for x in with_values] + [x[0] for x in questions]
         self.check_for_missing_essential_keys(all_keys, questions)
         return sorted(questions), sorted(with_values)
+
+    def keys(self):
+        """
+        Returns a plain list of keys that are really in this CIF.
+        """
+        keys = []
+        for item in self.block:
+            if item.pair is not None:
+                key, _ = item.pair
+                keys.append(key)
+        return keys
+
+    def values(self):
+        """
+        Returns a plain list of keys that are really in this CIF.
+        """
+        values = []
+        for item in self.block:
+            if item.pair is not None:
+                _, value = item.pair
+                values.append(value)
+        return values
 
     def check_for_missing_essential_keys(self, all_keys: List[Tuple[str, str]],
                                          questions: List[Tuple[str, str]]) -> None:

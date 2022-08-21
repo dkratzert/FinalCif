@@ -70,7 +70,7 @@ app = QApplication(sys.argv)
 
 class AppWindow(QMainWindow):
 
-    def __init__(self, file=None, unit_test: bool = False):
+    def __init__(self, file: Optional[Path] = None, unit_test: bool = False):
         super().__init__()
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
         # This prevents some things to happen during unit tests:
@@ -110,7 +110,7 @@ class AppWindow(QMainWindow):
         self.ui.TemplatesStackedWidget.setCurrentIndex(0)
         self.ui.MainStackedWidget.got_to_main_page()
         self.set_initial_button_states()
-        if len(sys.argv) > 1:
+        if len(sys.argv) > 1 and not file:
             self.load_cif_file(Path(sys.argv[1]) if sys.argv[1] != 'compile_ui' else Path())
         elif file:
             self.load_cif_file(file)
@@ -554,9 +554,12 @@ class AppWindow(QMainWindow):
         """
         del self.cif[key]
         if self.options.track_changes:
-            changes_cif = self.get_changes_cif(self.finalcif_changes_filename)
-            del changes_cif[key]
-            changes_cif.save(self.finalcif_changes_filename)
+            self.delete_key_from_changes_cif(key)
+
+    def delete_key_from_changes_cif(self, key):
+        changes_cif = self.get_changes_cif(self.finalcif_changes_filename)
+        del changes_cif[key]
+        changes_cif.save(self.finalcif_changes_filename)
 
     def check_for_update_version(self) -> None:
         if os.environ.get('NO_NETWORK'):
@@ -1175,11 +1178,14 @@ class AppWindow(QMainWindow):
                 if changes_cif:
                     del changes_cif[vhead]
         if changes_cif:
-            self.save_changed_loops(changes_cif)
-            try:
-                changes_cif.save(filename=self.finalcif_changes_filename)
-            except Exception as e:
-                print(f'Unable to save changes file: {e}')
+            self.save_keys_and_loops_to_changes_cif(changes_cif)
+
+    def save_keys_and_loops_to_changes_cif(self, changes_cif):
+        self.save_changed_loops(changes_cif)
+        try:
+            changes_cif.save(filename=self.finalcif_changes_filename)
+        except Exception as e:
+            print(f'Unable to save changes file: {e}')
 
     def save_changed_loops(self, changes_cif: CifContainer):
         """
@@ -1196,11 +1202,11 @@ class AppWindow(QMainWindow):
                 changes_cif.add_loop_to_cif(loop_tags=loop.tags, loop_values=loop.values)
         changes_cif.save(filename=self.finalcif_changes_filename)
 
-    def get_changes_cif(self, finalcif_changes_file) -> CifContainer:
+    def get_changes_cif(self, finalcif_changes_filename: Path) -> CifContainer:
         block_name = self.cif.current_block if self.cif.current_block else self.cif.block.name
         block_name = block_name + '_changes'
-        changes_cif = CifContainer(file=finalcif_changes_file,
-                                   new_block=block_name if not finalcif_changes_file.exists() else '')
+        changes_cif = CifContainer(file=finalcif_changes_filename,
+                                   new_block=block_name if not finalcif_changes_filename.exists() else '')
         # new block of added cif is not loaded:
         if block_name in changes_cif.doc:
             changes_cif.load_this_block(list(changes_cif.doc).index(block_name))
