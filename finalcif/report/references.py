@@ -22,7 +22,8 @@ from finalcif import VERSION
 [6] DSR
 [7] Olex2
 [8] Absolute structure (nach S. Parson)
-[9] Überstrukturen (A non-mathematical introduction to superstructures)
+[9] Superstructures (A non-mathematical introduction to superstructures)
+[10] Nosphera2 
 
 [1] SAINT V8.37A, Bruker AXS, Madison, Wisconsin, USA, 2015.
 [2] L. Krause, R. Herbst-Irmer, G. M. Sheldrick, D. Stalke, J. Appl. Cryst. 2015, 48, 3–10, doi:10.1107/S1600576714022985
@@ -34,8 +35,11 @@ from finalcif import VERSION
 [7] L. J. Bourhis, O. V. Dolomanov, R. J. Gildea, J. A. K. Howard, H. Puschmann, Acta Cryst. 2015, A71, 59–75, doi:10.1107/S2053273314022207
 [8] S. Parsons, H. D. Flack, T. Wagner, Acta Cryst. 2013, B69, 249-259, doi:10.1107/S2052519213010014
 [9] T. Wagner, A. Schonleber, Acta Cryst. 2009, 65, 249–268, doi:10.1107/S0108768109015614
+[10] F. Kleemiss, O. V. Dolomanov, M. Bodensteiner, N. Peyerimhoff, L. Midgley, L. J. Bourhis, A. Genoni, 
+     L. A. Malaspina, D. Jayatilaka, J. L. Spencer, F. White, B. Grundkotter-Stock, S. Steinhauer, 
+     D. Lentz, H. Puschmann, S. Grabowsky, Chem. Sci. 2021, 12, 1675–1692, doi: 10.1039/D0SC05526C.
 
-Missing: d*trek, SORTAV, Crysalispro, CCDC, 
+Missing: d*trek
 """
 
 
@@ -57,7 +61,7 @@ class ReferenceList():
                 return None
             self._append_list(ref)
         else:
-            if not ref in self._references:
+            if ref not in self._references:
                 self._references.append(ref)
             self.paragraph.add_run('[{}]'.format(self._references.index(ref) + 1)).font.superscript = True
         # better not here:
@@ -68,7 +72,7 @@ class ReferenceList():
         self.paragraph.add_run('[').font.superscript = True
         reflist = [x for x in reflist if x]
         for n, ref in enumerate(reflist):
-            if not ref in self._references:
+            if ref not in self._references:
                 self._references.append(ref)
             refnum = self._references.index(ref) + 1
             reflst_long.append(refnum)
@@ -268,6 +272,26 @@ class DSRReference2018(ReferenceFormatter):
         self.pages = '928–934'
 
 
+class Nosphera2Reference(ReferenceFormatter):
+    """
+    >>> Nosphera2Reference()
+    F. Kleemiss, O. V. Dolomanov, M. Bodensteiner, N. Peyerimhoff, L. Midgley, L. J. Bourhis, A. Genoni,
+     L. A. Malaspina, D. Jayatilaka, J. L. Spencer, F. White, B. Grundkotter-Stock, S. Steinhauer,
+     D. Lentz, H. Puschmann, S. Grabowsky, Chem. Sci. 2021, 12, 1675–1692, doi: 10.1039/D0SC05526C.
+    """
+
+    def __init__(self):
+        super().__init__()
+        self.doi = 'doi:10.1039/D0SC05526C'
+        self.authors = ('F. Kleemiss, O. V. Dolomanov, M. Bodensteiner, N. Peyerimhoff, L. Midgley, L. J. Bourhis, '
+                        'A. Genoni, L. A. Malaspina, D. Jayatilaka, J. L. Spencer, F. White, B. Grundkotter-Stock, '
+                        'S. Steinhauer, D. Lentz, H. Puschmann, S. Grabowsky')
+        self.journal = 'Chem. Sci.'
+        self.year = '2021'
+        self.volume = '12'
+        self.pages = '1675–1692'
+
+
 class SAINTReference(ReferenceFormatter):
     def __init__(self, name: str, version: str):
         """
@@ -282,6 +306,20 @@ class SAINTReference(ReferenceFormatter):
         #    self.year = '2001'
         self.volume = version
         self.pages = 'Bruker AXS Inc., Madison, Wisconsin, USA'
+
+
+class XDSReference(ReferenceFormatter):
+    def __init__(self):
+        """
+        >>> XDSReference()
+        W. Kabsch, Acta Cryst. 2010, D66, 125-132.
+        """
+        super().__init__()
+        self.authors = 'W. Kabsch'
+        self.journal = 'Acta Cryst.'
+        self.year = '2010'
+        self.volume = 'D66'
+        self.pages = '125-132'
 
 
 class SadabsTwinabsReference(ReferenceFormatter):

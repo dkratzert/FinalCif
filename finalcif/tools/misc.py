@@ -607,6 +607,11 @@ REFINE_LS_STRUCTURE_FACTOR_COEF = make_numbered(['F', 'Fsqd', 'Inet'])
 
 REFINE_LS_MATRIX_TYPE = make_numbered(['full', 'fullcycle', 'atomblock', 'userblock', 'diagonal', 'sparse'])
 
+COMPUTING_STRUCTURE_REFINEMENT = make_numbered(['SHELXL-2019/2', 'SHELXL-2018/3', 'SHELXL-2018/1', 'SHELXL-97',
+                                                'olex2.refine', 'NoSpherA2', 'Jana2006', 'MoPro', 'BayMEM'])
+
+COMPUTING_DATA_REDUCTION = make_numbered(['SAINT', 'CrysalisPro', 'XDS', 'OpenHKL', 'HKL-2000', 'HKL-3000'])
+
 combobox_fields = {'_exptl_crystal_colour'                : COLOUR_CHOICES,
                    '_exptl_crystal_colour_primary'        : COLOUR_CHOICES,
                    '_chemical_absolute_configuration'     : ABSOLUTE_CONFIGURATION_CHOICES,
@@ -630,6 +635,8 @@ combobox_fields = {'_exptl_crystal_colour'                : COLOUR_CHOICES,
                    '_exptl_crystal_colour_modifier'       : EXPTL_CRYSTAL_COLOUR_MODIFIER,
                    '_refine_ls_structure_factor_coef'     : REFINE_LS_STRUCTURE_FACTOR_COEF,
                    '_refine_ls_matrix_type'               : REFINE_LS_MATRIX_TYPE,
+                   '_computing_structure_refinement'      : COMPUTING_STRUCTURE_REFINEMENT,
+                   '_computing_data_reduction'            : COMPUTING_DATA_REDUCTION,
                    }
 
 include_equipment_imports = (

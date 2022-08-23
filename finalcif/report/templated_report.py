@@ -14,7 +14,7 @@ from finalcif.cif.cif_file_io import CifContainer
 from finalcif.cif.text import retranslate_delimiter
 from finalcif.report.references import SAINTReference, SHELXLReference, SadabsTwinabsReference, SHELXTReference, \
     SHELXSReference, SHELXDReference, SORTAVReference, FinalCifReference, CCDCReference, \
-    CrysalisProReference
+    CrysalisProReference, Nosphera2Reference, Olex2Reference
 from finalcif.report.report_text import math_to_word, gstr, format_radiation, get_inf_article, MachineType
 from finalcif.report.symm import SymmetryElement
 from finalcif.tools.misc import isnumeric, this_or_quest, timessym, angstrom, protected_space, less_or_equal, \
@@ -435,7 +435,12 @@ class TemplatedReport():
 
     def refinement_prog(self, cif: CifContainer) -> str:
         refined = gstr(cif['_computing_structure_refinement']) or '??'
-        self.literature['refinement'] = SHELXLReference()
+        if 'SHELXL' in refined.upper() or 'XL' in refined.upper():
+            self.literature['refinement'] = SHELXLReference()
+        if 'OLEX' in refined.upper():
+            self.literature['refinement'] = Olex2Reference()
+        if 'NOSPHERA2' in refined.upper() or 'NOSPHERA2' in cif['_refine_special_details'].upper():
+            self.literature['refinement'] = Nosphera2Reference()
         return refined.split()[0]
 
     def get_atomic_coordinates(self, cif: CifContainer):

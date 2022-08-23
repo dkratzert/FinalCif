@@ -14,7 +14,7 @@ from finalcif.cif.cif_file_io import CifContainer
 from finalcif.cif.text import retranslate_delimiter, string_to_utf8
 from finalcif.report.references import DummyReference, SAINTReference, SORTAVReference, ReferenceList, CCDCReference, \
     SHELXLReference, SHELXTReference, SHELXSReference, FinalCifReference, ShelXleReference, Olex2Reference, \
-    SHELXDReference, SadabsTwinabsReference, CrysalisProReference
+    SHELXDReference, SadabsTwinabsReference, CrysalisProReference, Nosphera2Reference, XDSReference
 from finalcif.tools.misc import protected_space, angstrom, zero_width_space, remove_line_endings
 
 
@@ -160,6 +160,9 @@ class DataReduct():
         scale_prog = '[unknown program]'
         if 'SAINT' in integration:
             data_reduct_ref, integration_prog = self.add_saint_reference(integration)
+        if 'XDS' in integration:
+            data_reduct_ref = XDSReference()
+            integration_prog = 'XDS'
         if 'CrysAlisPro'.lower() in integration.lower():
             data_reduct_ref, absorpt_ref, integration_prog = self.add_crysalispro_reference(integration)
         absdetails = cif['_exptl_absorpt_process_details'].replace('-', ' ')
@@ -226,6 +229,8 @@ class SolveRefine():
             refineref = SHELXLReference()
         if 'OLEX' in refined.upper():
             refineref = Olex2Reference()
+        if 'NOSPHERA2' in solution_prog.upper() or 'NOSPHERA2' in self.cif['_refine_special_details'].upper():
+            refineref = Nosphera2Reference()
         refine_coef = gstr(self.cif['_refine_ls_structure_factor_coef'])
         sentence = r"The structure was solved by {} methods using {} and refined by full-matrix " \
                    "least-squares methods against "
