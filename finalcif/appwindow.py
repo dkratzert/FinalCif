@@ -1757,17 +1757,26 @@ class AppWindow(QMainWindow):
         """
         Generates a list of tables containing the cif loops.
         """
+        do_not_display = ('_diffrn_refln_index_h')
         for num, loop in enumerate(self.cif.loops):
             tags = loop.tags
             if not tags or len(tags) < 1:
                 continue
-            loop = Loop(tags, values=grouper(loop.values, loop.width()),
-                        parent=self.ui.LoopsTabWidget, block=self.cif.block)
-            self.ui.LoopsTabWidget.addTab(loop.tableview, cif_to_header_label.get(tags[0]) or tags[0])
-            self.ui.LoopsTabWidget.setTabToolTip(num + 1, tags[0])
-            self.ui.revertLoopsPushButton.clicked.connect(loop.model.revert)
+            if tags[0] in do_not_display:
+                continue
+            self.new_loop_tab(loop, num, tags)
         if self.cif.res_file_data:
             self.add_res_file_to_loops()
+
+    def new_loop_tab(self, loop: gemmi.cif.Loop, num: int, tags: List[str]):
+        loop = Loop(tags, values=grouper(loop.values, loop.width()),
+                    parent=self.ui.LoopsTabWidget, block=self.cif.block)
+        self.add_loop_widget(loop, first_tag=tags[0])
+        self.ui.LoopsTabWidget.setTabToolTip(num + 1, tags[0])
+        self.ui.revertLoopsPushButton.clicked.connect(loop.model.revert)
+
+    def add_loop_widget(self, loop: Loop, first_tag: str) -> None:
+        self.ui.LoopsTabWidget.addTab(loop.tableview, cif_to_header_label.get(first_tag) or first_tag)
 
     def add_res_file_to_loops(self):
         textedit = QPlainTextEdit()
@@ -1795,7 +1804,7 @@ class AppWindow(QMainWindow):
             else:
                 row_num = self.ui.cif_main_table.rowCount()
         self.ui.cif_main_table.insertRow(row_num)
-        if not key in self.ui.cif_main_table.vheaderitems:
+        if key not in self.ui.cif_main_table.vheaderitems:
             self.ui.cif_main_table.vheaderitems.insert(row_num, key)
         if value is None or value == '?':
             strval = '?'
@@ -1817,7 +1826,7 @@ class AppWindow(QMainWindow):
             self.ui.cif_main_table.setText(row=row_num, key=key, column=COL_EDIT, color=color,
                                            txt=strval if at_start else '')
         head_item_key = MyTableWidgetItem(key)
-        if not key == "These below are already in:":
+        if key != "These below are already in:":
             self.ui.cif_main_table.setVerticalHeaderItem(row_num, head_item_key)
         if not key.startswith('_'):
             return
