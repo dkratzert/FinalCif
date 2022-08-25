@@ -269,8 +269,8 @@ class AppWindow(QMainWindow):
         self.ui.cif_main_table.row_deleted.connect(self._deleted_row)
         #
         self.ui.CODpushButton.clicked.connect(self.open_cod_page)
-        self.ui.BackToCODPushButton.clicked.connect(self.open_cod_page)
         self.ui.CCDCpushButton.clicked.connect(self._ccdc_deposit)
+        self.ui.newLoopPushButton.clicked.connect(self._go_to_new_loop_page)
         #
         save_shortcut = QShortcut(QtGui.QKeySequence('Ctrl+S'), self)
         save_shortcut.activated.connect(self.save_current_cif_file)
@@ -1790,6 +1790,30 @@ class AppWindow(QMainWindow):
         doc.setDefaultFont(font)
         textedit.setLineWrapMode(QPlainTextEdit.NoWrap)
         textedit.setReadOnly(True)
+
+    def _go_to_new_loop_page(self):
+        # Add a temporary widget for loop creation
+        pass
+        # self.ui.LoopsTabWidget.addTab(#make ui file for widget)
+        """
+        The loop page
+        _______________       |-Loop header:---|
+        | search      |       | _first_key     | 
+        |-------------|       | _second_key    | 
+        | _foo_key    |  ->   |                | 
+        | _bar_key    |  <-   |                | 
+        | _...        |       |                | 
+        |-------------|       |----------------| 
+        ______
+        |Save|
+        ------
+        - On save, remove tabwidget
+        
+        - Search:
+        p = re.compile(f'.*{searchtext}.*', re.IGNORECASE)
+        cif_keys = ["_all", "_keys", "_from_official_dicts"]
+        l2 = [ x for x in cif_keys if p.match(x) ]
+        """
 
     def add_row(self, key: str, value: str, at_start=False, position: Union[int, None] = None) -> None:
         """
