@@ -67,16 +67,16 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="leftPushButton">
+      <widget class="QPushButton" name="rightPushButton">
        <property name="text">
-        <string>&lt;--</string>
+        <string>--&gt;</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="rightPushButton">
+      <widget class="QPushButton" name="leftPushButton">
        <property name="text">
-        <string>--&gt;</string>
+        <string>&lt;--</string>
        </property>
       </widget>
      </item>
@@ -112,7 +112,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QListWidget" name="selectedKeysListWidget">
+      <widget class="QListWidget" name="newLoopKeysListWidget">
        <property name="font">
         <font>
          <pointsize>13</pointsize>
