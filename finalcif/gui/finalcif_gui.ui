@@ -684,11 +684,6 @@
                </property>
                <item>
                 <widget class="QListWidget" name="LoopTemplatesListWidget">
-                 <property name="font">
-                  <font>
-                   <pointsize>11</pointsize>
-                  </font>
-                 </property>
                  <property name="editTriggers">
                   <set>QAbstractItemView::NoEditTriggers</set>
                  </property>

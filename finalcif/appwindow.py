@@ -25,6 +25,7 @@ from gemmi import cif
 from qtpy.QtGui import QDesktopServices
 
 from finalcif import VERSION
+from finalcif.cif import all_cif_dicts
 from finalcif.cif.checkcif.checkcif import MyHTMLParser, AlertHelp, CheckCif
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.cif.cod.deposit import CODdeposit
@@ -703,6 +704,8 @@ class AppWindow(QMainWindow):
         self.ui.cif_main_table.scrollToTop()
         self.ui.TemplatesStackedWidget.setCurrentIndex(0)
         self.ui.cif_main_table.resizeRowsToContents()
+        self.ui.revertLoopsPushButton.show()
+        self.ui.newLoopPushButton.show()
 
     def back_to_main_noload(self):
         """
@@ -712,6 +715,8 @@ class AppWindow(QMainWindow):
         self.ui.TemplatesStackedWidget.setCurrentIndex(0)
         self.ui.MainStackedWidget.got_to_main_page()
         self.format_report_button()
+        self.ui.revertLoopsPushButton.show()
+        self.ui.newLoopPushButton.show()
 
     def _checkcif_failed(self, txt: str):
         self.ui.CheckCifLogPlainTextEdit.appendHtml('<b>{}</b>'.format(txt))
@@ -1797,6 +1802,10 @@ class AppWindow(QMainWindow):
         #pass
         loopcreate = LoopCreator()
         self.ui.LoopsTabWidget.addTab(loopcreate, 'Create Loops')
+        self.ui.LoopsTabWidget.setCurrentIndex(self.ui.LoopsTabWidget.count()-1)
+        self.ui.revertLoopsPushButton.hide()
+        self.ui.newLoopPushButton.hide()
+        loopcreate.availableKeysListWidget.addItems(all_cif_dicts.cif_all_dict.keys())
         """
         The loop page
         _______________       |-Loop header:---|
