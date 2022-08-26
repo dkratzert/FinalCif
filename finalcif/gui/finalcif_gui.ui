@@ -173,7 +173,7 @@
            <number>1</number>
           </property>
           <property name="currentIndex">
-           <number>0</number>
+           <number>1</number>
           </property>
           <widget class="QWidget" name="page_equipment">
            <layout class="QVBoxLayout" name="verticalLayout_16">
@@ -726,19 +726,6 @@
                   <widget class="QPushButton" name="DeleteLoopAuthorTemplateButton">
                    <property name="text">
                     <string>Delete Author</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="1">
-                  <widget class="QPushButton" name="AddThisAuthorToLoopPushButton">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="text">
-                    <string>Add Author to CIF Loop</string>
                    </property>
                   </widget>
                  </item>
@@ -2637,14 +2624,14 @@ The data source will be ignored until next program restart.</string>
                 <string>Manuscript related</string>
                </attribute>
                <layout class="QGridLayout" name="gridLayout_2">
-                <item row="0" column="2">
-                 <spacer name="horizontalSpacer_21">
+                <item row="0" column="1">
+                 <spacer name="horizontalSpacer_22">
                   <property name="orientation">
                    <enum>Qt::Horizontal</enum>
                   </property>
                   <property name="sizeHint" stdset="0">
                    <size>
-                    <width>535</width>
+                    <width>40</width>
                     <height>20</height>
                    </size>
                   </property>
@@ -2659,6 +2646,19 @@ The data source will be ignored until next program restart.</string>
                    <size>
                     <width>20</width>
                     <height>162</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item row="0" column="2">
+                 <spacer name="horizontalSpacer_21">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>535</width>
+                    <height>20</height>
                    </size>
                   </property>
                  </spacer>
@@ -2788,23 +2788,17 @@ Contact authors should always also appear as regular authors.</string>
                        </property>
                       </widget>
                      </item>
+                     <item>
+                      <widget class="QPushButton" name="AddThisAuthorToLoopPushButton">
+                       <property name="text">
+                        <string>Add Author to CIF Loop</string>
+                       </property>
+                      </widget>
+                     </item>
                     </layout>
                    </item>
                   </layout>
                  </widget>
-                </item>
-                <item row="0" column="1">
-                 <spacer name="horizontalSpacer_22">
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>40</width>
-                    <height>20</height>
-                   </size>
-                  </property>
-                 </spacer>
                 </item>
                </layout>
               </widget>
@@ -4243,7 +4237,6 @@ please add a publication author:</string>
   <tabstop>BackpushButtonDetails</tabstop>
   <tabstop>completeLineEdit</tabstop>
   <tabstop>ContactAuthorCheckBox</tabstop>
-  <tabstop>SaveAuthorLoopToTemplateButton</tabstop>
   <tabstop>CODtableWidget</tabstop>
   <tabstop>FullNameLineEdit</tabstop>
   <tabstop>journalNameLineEdit</tabstop>
