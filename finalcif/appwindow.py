@@ -42,6 +42,7 @@ from finalcif.gui.dialogs import show_update_warning, unable_to_open_message, sh
     cif_file_open_dialog, \
     bad_z_message, show_res_checksum_warning, show_hkl_checksum_warning, cif_file_save_dialog
 from finalcif.gui.finalcif_gui import Ui_FinalCifWindow
+from finalcif.gui.loop_creator import LoopCreator
 from finalcif.gui.loops import Loop
 from finalcif.gui.plaintextedit import MyQPlainTextEdit
 from finalcif.gui.text_value_editor import MyTextTemplateEdit
@@ -1793,8 +1794,9 @@ class AppWindow(QMainWindow):
 
     def _go_to_new_loop_page(self):
         # Add a temporary widget for loop creation
-        pass
-        # self.ui.LoopsTabWidget.addTab(#make ui file for widget)
+        #pass
+        loopcreate = LoopCreator()
+        self.ui.LoopsTabWidget.addTab(loopcreate, 'Create Loops')
         """
         The loop page
         _______________       |-Loop header:---|
@@ -1807,7 +1809,7 @@ class AppWindow(QMainWindow):
         ______
         |Save|
         ------
-        - On save, remove tabwidget
+        - On save, remove tabwidget and show new loop
         
         - Search:
         p = re.compile(f'.*{searchtext}.*', re.IGNORECASE)
