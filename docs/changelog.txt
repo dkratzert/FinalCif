@@ -1,5 +1,7 @@
 FinalCif recent changes
 -----------------------
+* v110 Added possibility to create new loops from the list of all official CIF keywords.
+       Reference for NospherA2 added.
 * v109 New option to track changes in a separate CIF in order to be faster at a previous state when starting from scratch
        (see new checkbox in options menu).
        Added line number in CIF text viewer after file save.
