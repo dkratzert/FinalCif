@@ -42,6 +42,7 @@ from finalcif.gui.dialogs import show_update_warning, unable_to_open_message, sh
     cif_file_open_dialog, \
     bad_z_message, show_res_checksum_warning, show_hkl_checksum_warning, cif_file_save_dialog
 from finalcif.gui.finalcif_gui import Ui_FinalCifWindow
+from finalcif.gui.loop_creator import LoopCreator
 from finalcif.gui.loops import Loop
 from finalcif.gui.plaintextedit import MyQPlainTextEdit
 from finalcif.gui.text_value_editor import MyTextTemplateEdit
@@ -78,9 +79,10 @@ class AppWindow(QMainWindow):
         # open report doc,
         # get check.def from platon server
         self.running_inside_unit_test = unit_test
-        self.sources: Union[None, Dict[str, Tuple[Union[str, None]]]] = None
-        self.cif: Union[CifContainer, None] = None
-        self.report_picture_path: Union[Path, None] = None
+        self.sources: Optional[Dict[str, Tuple[Optional[str]]]] = None
+        self.cif: Optional[CifContainer] = None
+        self.report_picture_path: Optional[Path] = None
+        self.loopcreate: Optional[LoopCreator] = None
         self.checkdef = []
         self.validation_response_forms_list = []
         self.checkdef_file: Path = Path.home().joinpath('check.def')
@@ -99,7 +101,7 @@ class AppWindow(QMainWindow):
         self.properties = Properties(app=self, settings=self.settings)
         self.status_bar = StatusBar(ui=self.ui)
         self.status_bar.show_message('FinalCif version {}'.format(VERSION))
-        self.authors: Union[AuthorLoops, None] = None
+        self.authors: Optional[AuthorLoops] = None
         self.set_window_size_and_position()
         self.ui.cif_main_table.installEventFilter(self)
         # Sorting desynchronized header and columns:
@@ -269,8 +271,8 @@ class AppWindow(QMainWindow):
         self.ui.cif_main_table.row_deleted.connect(self._deleted_row)
         #
         self.ui.CODpushButton.clicked.connect(self.open_cod_page)
-        self.ui.BackToCODPushButton.clicked.connect(self.open_cod_page)
         self.ui.CCDCpushButton.clicked.connect(self._ccdc_deposit)
+        self.ui.newLoopPushButton.clicked.connect(self._go_to_new_loop_page)
         #
         save_shortcut = QShortcut(QtGui.QKeySequence('Ctrl+S'), self)
         save_shortcut.activated.connect(self.save_current_cif_file)
@@ -702,6 +704,8 @@ class AppWindow(QMainWindow):
         self.ui.cif_main_table.scrollToTop()
         self.ui.TemplatesStackedWidget.setCurrentIndex(0)
         self.ui.cif_main_table.resizeRowsToContents()
+        self.ui.revertLoopsPushButton.show()
+        self.ui.newLoopPushButton.show()
 
     def back_to_main_noload(self):
         """
@@ -711,6 +715,8 @@ class AppWindow(QMainWindow):
         self.ui.TemplatesStackedWidget.setCurrentIndex(0)
         self.ui.MainStackedWidget.got_to_main_page()
         self.format_report_button()
+        self.ui.revertLoopsPushButton.show()
+        self.ui.newLoopPushButton.show()
 
     def _checkcif_failed(self, txt: str):
         self.ui.CheckCifLogPlainTextEdit.appendHtml('<b>{}</b>'.format(txt))
@@ -1790,6 +1796,23 @@ class AppWindow(QMainWindow):
         doc.setDefaultFont(font)
         textedit.setLineWrapMode(QPlainTextEdit.NoWrap)
         textedit.setReadOnly(True)
+
+    def _go_to_new_loop_page(self):
+        self.loopcreate = LoopCreator()
+        self.ui.LoopsTabWidget.addTab(self.loopcreate, 'Create Loops')
+        self.ui.LoopsTabWidget.setCurrentIndex(self.ui.LoopsTabWidget.count() - 1)
+        self.ui.revertLoopsPushButton.hide()
+        self.ui.newLoopPushButton.hide()
+        self.loopcreate.saveLoopPushButton.clicked.connect(self.save_new_loop_to_cif)
+
+    def save_new_loop_to_cif(self):
+        if self.loopcreate:
+            tags = self.loopcreate.tags
+            loop = self.cif.add_loop_to_cif(loop_tags=tags, loop_values=('?',) * len(tags))
+            self.new_loop_tab(loop=loop, num=self.ui.LoopsTabWidget.count(), tags=tags)
+            self.ui.LoopsTabWidget.removeTab(self.ui.LoopsTabWidget.count() - 2)
+            self.loopcreate.deleteLater()
+            self.ui.LoopsTabWidget.setCurrentIndex(self.ui.LoopsTabWidget.count() - 1)
 
     def add_row(self, key: str, value: str, at_start=False, position: Union[int, None] = None) -> None:
         """
