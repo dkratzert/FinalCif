@@ -25,7 +25,6 @@ from gemmi import cif
 from qtpy.QtGui import QDesktopServices
 
 from finalcif import VERSION
-from finalcif.cif import all_cif_dicts
 from finalcif.cif.checkcif.checkcif import MyHTMLParser, AlertHelp, CheckCif
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.cif.cod.deposit import CODdeposit
@@ -80,9 +79,10 @@ class AppWindow(QMainWindow):
         # open report doc,
         # get check.def from platon server
         self.running_inside_unit_test = unit_test
-        self.sources: Union[None, Dict[str, Tuple[Union[str, None]]]] = None
-        self.cif: Union[CifContainer, None] = None
-        self.report_picture_path: Union[Path, None] = None
+        self.sources: Optional[Dict[str, Tuple[Optional[str]]]] = None
+        self.cif: Optional[CifContainer] = None
+        self.report_picture_path: Optional[Path] = None
+        self.loopcreate: Optional[LoopCreator] = None
         self.checkdef = []
         self.validation_response_forms_list = []
         self.checkdef_file: Path = Path.home().joinpath('check.def')
@@ -101,7 +101,7 @@ class AppWindow(QMainWindow):
         self.properties = Properties(app=self, settings=self.settings)
         self.status_bar = StatusBar(ui=self.ui)
         self.status_bar.show_message('FinalCif version {}'.format(VERSION))
-        self.authors: Union[AuthorLoops, None] = None
+        self.authors: Optional[AuthorLoops] = None
         self.set_window_size_and_position()
         self.ui.cif_main_table.installEventFilter(self)
         # Sorting desynchronized header and columns:
@@ -1798,33 +1798,21 @@ class AppWindow(QMainWindow):
         textedit.setReadOnly(True)
 
     def _go_to_new_loop_page(self):
-        # Add a temporary widget for loop creation
-        #pass
-        loopcreate = LoopCreator()
-        self.ui.LoopsTabWidget.addTab(loopcreate, 'Create Loops')
-        self.ui.LoopsTabWidget.setCurrentIndex(self.ui.LoopsTabWidget.count()-1)
+        self.loopcreate = LoopCreator()
+        self.ui.LoopsTabWidget.addTab(self.loopcreate, 'Create Loops')
+        self.ui.LoopsTabWidget.setCurrentIndex(self.ui.LoopsTabWidget.count() - 1)
         self.ui.revertLoopsPushButton.hide()
         self.ui.newLoopPushButton.hide()
-        loopcreate.availableKeysListWidget.addItems(all_cif_dicts.cif_all_dict.keys())
-        """
-        The loop page
-        _______________       |-Loop header:---|
-        | search      |       | _first_key     | 
-        |-------------|       | _second_key    | 
-        | _foo_key    |  ->   |                | 
-        | _bar_key    |  <-   |                | 
-        | _...        |       |                | 
-        |-------------|       |----------------| 
-        ______
-        |Save|
-        ------
-        - On save, remove tabwidget and show new loop
-        
-        - Search:
-        p = re.compile(f'.*{searchtext}.*', re.IGNORECASE)
-        cif_keys = ["_all", "_keys", "_from_official_dicts"]
-        l2 = [ x for x in cif_keys if p.match(x) ]
-        """
+        self.loopcreate.saveLoopPushButton.clicked.connect(self.save_new_loop_to_cif)
+
+    def save_new_loop_to_cif(self):
+        if self.loopcreate:
+            tags = self.loopcreate.tags
+            loop = self.cif.add_loop_to_cif(loop_tags=tags, loop_values=('?',) * len(tags))
+            self.new_loop_tab(loop=loop, num=self.ui.LoopsTabWidget.count(), tags=tags)
+            self.ui.LoopsTabWidget.removeTab(self.ui.LoopsTabWidget.count() - 2)
+            self.loopcreate.deleteLater()
+            self.ui.LoopsTabWidget.setCurrentIndex(self.ui.LoopsTabWidget.count() - 1)
 
     def add_row(self, key: str, value: str, at_start=False, position: Union[int, None] = None) -> None:
         """

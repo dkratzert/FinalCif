@@ -66,9 +66,9 @@ class Ui_LoopCreator(object):
         self.newLoopKeysListWidget.setFont(font)
         self.newLoopKeysListWidget.setObjectName("newLoopKeysListWidget")
         self.verticalLayout_3.addWidget(self.newLoopKeysListWidget)
-        self.SaveLoopPushButton = QtWidgets.QPushButton(LoopCreator)
-        self.SaveLoopPushButton.setObjectName("SaveLoopPushButton")
-        self.verticalLayout_3.addWidget(self.SaveLoopPushButton)
+        self.saveLoopPushButton = QtWidgets.QPushButton(LoopCreator)
+        self.saveLoopPushButton.setObjectName("saveLoopPushButton")
+        self.verticalLayout_3.addWidget(self.saveLoopPushButton)
         self.horizontalLayout_2.addLayout(self.verticalLayout_3)
 
         self.retranslateUi(LoopCreator)
@@ -83,4 +83,4 @@ class Ui_LoopCreator(object):
         self.leftPushButton.setText(_translate("LoopCreator", "<--"))
         self.label_3.setText(_translate("LoopCreator", "<html><head/><body><p><span style=\" font-size:18pt;\">New Loop Header</span></p></body></html>"))
         self.label_4.setText(_translate("LoopCreator", "Add CIF keys in order to create a new loop"))
-        self.SaveLoopPushButton.setText(_translate("LoopCreator", "Save new Loop"))
+        self.saveLoopPushButton.setText(_translate("LoopCreator", "Save new Loop"))

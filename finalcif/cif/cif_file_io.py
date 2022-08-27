@@ -422,10 +422,11 @@ class CifContainer():
                 loops.append(b.loop)
         return loops
 
-    def add_loop_to_cif(self, loop_tags: List[str], loop_values: Union[list, tuple]):
+    def add_loop_to_cif(self, loop_tags: List[str], loop_values: Union[list, tuple]) -> gemmi.cif.Loop:
         gemmi_loop = self.init_loop(loop_tags)
         for row in list(grouper(loop_values, len(loop_tags))):
             gemmi_loop.add_row(row)
+        return gemmi_loop
 
     @property
     def n_loops(self):
