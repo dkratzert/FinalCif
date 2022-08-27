@@ -1798,7 +1798,7 @@ class AppWindow(QMainWindow):
         textedit.setReadOnly(True)
 
     def _go_to_new_loop_page(self):
-        self.loopcreate = LoopCreator()
+        self.loopcreate = LoopCreator(cif=self.cif)
         self.ui.LoopsTabWidget.addTab(self.loopcreate, 'Create Loops')
         self.ui.LoopsTabWidget.setCurrentIndex(self.ui.LoopsTabWidget.count() - 1)
         self.ui.revertLoopsPushButton.hide()
@@ -1807,9 +1807,8 @@ class AppWindow(QMainWindow):
 
     def save_new_loop_to_cif(self):
         if self.loopcreate:
-            tags = self.loopcreate.tags
-            loop = self.cif.add_loop_to_cif(loop_tags=tags, loop_values=('?',) * len(tags))
-            self.new_loop_tab(loop=loop, num=self.ui.LoopsTabWidget.count(), tags=tags)
+            loop = self.loopcreate.save_new_loop_to_cif()
+            self.new_loop_tab(loop=loop, num=self.ui.LoopsTabWidget.count(), tags=self.loopcreate.tags)
             self.ui.LoopsTabWidget.removeTab(self.ui.LoopsTabWidget.count() - 2)
             self.loopcreate.deleteLater()
             self.ui.LoopsTabWidget.setCurrentIndex(self.ui.LoopsTabWidget.count() - 1)
