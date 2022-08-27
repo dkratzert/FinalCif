@@ -1,7 +1,9 @@
+import re
 from typing import List
 
 from PyQt5.QtWidgets import QWidget
 
+from finalcif.cif import all_cif_dicts
 from finalcif.gui.loop_creator_ui import Ui_LoopCreator
 
 
@@ -11,10 +13,26 @@ class LoopCreator(QWidget, Ui_LoopCreator):
         self.setupUi(self)
         self.leftPushButton.clicked.connect(self.move_selected_key_to_left)
         self.rightPushButton.clicked.connect(self.move_selected_key_to_right)
+        self.searchLineEdit.textChanged.connect(self.search)
+        self.availableKeysListWidget.addItems(all_cif_dicts.cif_all_dict.keys())
+        for num in range(self.availableKeysListWidget.count()):
+            item = self.availableKeysListWidget.item(num)
+            helptext = all_cif_dicts.cif_all_dict.get(item.text())
+            item.setToolTip(helptext)
 
     @property
-    def keys(self):
+    def tags(self):
         return self.get_itemtexts_from_new_loop()
+
+    def search(self, searchtext: str):
+        self.availableKeysListWidget.clear()
+        cif_keys = all_cif_dicts.cif_all_dict.keys()
+        if searchtext:
+            searchpattern = re.compile(f'.*{searchtext}.*', re.IGNORECASE)
+            searched = [x for x in cif_keys if searchpattern.match(x)]
+            self.availableKeysListWidget.addItems(searched)
+        else:
+            self.availableKeysListWidget.addItems(cif_keys)
 
     def move_selected_key_to_right(self):
         itemtexts = self.get_itemtexts_from_new_loop()
