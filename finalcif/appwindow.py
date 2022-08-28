@@ -20,7 +20,7 @@ import requests
 from PyQt5 import QtCore, QtGui, QtWebEngineWidgets
 from PyQt5.QtCore import QThread, QTimer, Qt
 from PyQt5.QtWidgets import QMainWindow, QShortcut, QCheckBox, QListWidgetItem, QApplication, \
-    QPlainTextEdit, QFileDialog
+    QPlainTextEdit, QFileDialog, QMessageBox
 from gemmi import cif
 from qtpy.QtGui import QDesktopServices
 
@@ -84,6 +84,7 @@ class AppWindow(QMainWindow):
         self.report_picture_path: Optional[Path] = None
         self.loopcreate: Optional[LoopCreator] = None
         self.checkdef = []
+        self.changes_answer: int = 0
         self.validation_response_forms_list = []
         self.checkdef_file: Path = Path.home().joinpath('check.def')
         self.missing_data: set = set()
@@ -1222,10 +1223,8 @@ class AppWindow(QMainWindow):
             changes_cif.load_this_block(list(changes_cif.doc).index(block_name))
         return changes_cif
 
-    def load_changes_cif(self):
-        if not self.finalcif_changes_filename.exists():
-            return
-        changes = CifContainer(self.finalcif_changes_filename)
+    def load_changes_cif(self) -> bool:
+        changes = self.get_changes_cif(self.finalcif_changes_filename)
         for item in changes.block:
             if item.pair is not None:
                 key, value = item.pair
@@ -1233,6 +1232,7 @@ class AppWindow(QMainWindow):
                 self.ui.cif_main_table.setText(key=key, column=COL_EDIT, color=None, txt=value)
         for loop in changes.loops:
             self.cif.add_loop_to_cif(loop_tags=loop.tags, loop_values=loop.values)
+        return True
 
     def is_row_a_cif_item(self, vhead):
         is_cif = False
@@ -1414,10 +1414,22 @@ class AppWindow(QMainWindow):
             unable_to_open_message(Path(self.cif.filename), not_ok)
         self.load_recent_cifs_list()
         if self.options.track_changes:
-            try:
+            changes_exist = False
+            if self.finalcif_changes_filename.exists():
+                changes_exist = True
+            if changes_exist and not self.running_inside_unit_test and self.changes_answer == 0:
+                self.changes_answer = QMessageBox.question(self, 'Previous changes found',
+                                                           f'Previous changes from a former FinalCif session '
+                                                           f'were found in\n{self.finalcif_changes_filename.name}.\n\n'
+                                                           'Do you wish to reload them?',
+                                                           QMessageBox.Yes | QMessageBox.No)
+            if self.changes_answer == QMessageBox.Yes:
+                try:
+                    self.load_changes_cif()
+                except Exception as e:
+                    unable_to_open_message(filepath=self.finalcif_changes_filename, not_ok=e)
+            if self.running_inside_unit_test and changes_exist:
                 self.load_changes_cif()
-            except Exception as e:
-                unable_to_open_message(filepath=self.finalcif_changes_filename, not_ok=e)
         self.make_loops_tables()
         if self.cif:
             self.set_shredcif_state()
