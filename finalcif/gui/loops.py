@@ -11,10 +11,10 @@ from typing import Union, List, Any
 
 import gemmi
 import qtawesome
-from PyQt5 import QtCore
-from PyQt5.QtCore import QAbstractTableModel, QModelIndex, Qt, QSize, QVariant, pyqtSignal, QEvent
-from PyQt5.QtGui import QColor, QCursor
-from PyQt5.QtWidgets import QTableView, QHeaderView, QMenu, QAction
+from PyQt6 import QtCore
+from PyQt6.QtCore import QAbstractTableModel, QModelIndex, Qt, QSize, QVariant, pyqtSignal, QEvent
+from PyQt6.QtGui import QColor, QCursor
+from PyQt6.QtWidgets import QTableView, QHeaderView, QMenu
 from gemmi import cif
 from gemmi.cif import as_string, is_null
 from packaging import version
@@ -250,16 +250,16 @@ class LoopTableModel(QAbstractTableModel):
         else:
             return 0
 
-    def flags(self, index: QModelIndex) -> Qt.ItemFlags:
+    def flags(self, index: QModelIndex) -> Qt.ItemFlag:
         if index.isValid():
-            return QAbstractTableModel.flags(self, index) | Qt.ItemIsEditable | Qt.ItemIsEnabled | Qt.ItemIsSelectable
+            return QAbstractTableModel.flags(self, index) | Qt.ItemFlag.ItemIsEditable | Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable
 
     def setData(self, index: QModelIndex, value: Any, role: int = None) -> bool:
         row, col = index.row(), index.column()
         previous = self._original[row][col]
         if not index:
             return False
-        if index.isValid() and role == Qt.EditRole and value != previous:
+        if index.isValid() and role == Qt.ItemDataRole.EditRole and value != previous:
             self._data[row][col] = value
             self.modified.append({'row': row, 'column': col, 'previous': previous})
             self.modelChanged.emit(row, col, utf8_to_str(value), self._header)

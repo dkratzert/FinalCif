@@ -1,7 +1,7 @@
 import re
 from typing import List
 
-from PyQt5.QtWidgets import QWidget
+from PyQt6.QtWidgets import QWidget
 
 from finalcif.cif import all_cif_dicts
 from finalcif.cif.cif_file_io import CifContainer

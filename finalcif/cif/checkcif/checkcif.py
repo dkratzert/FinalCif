@@ -15,8 +15,8 @@ from pathlib import Path
 from typing import List, Optional, Dict
 
 import requests
-from PyQt5.QtCore import QUrl, QThread, pyqtSignal
-from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply
+from PyQt6.QtCore import QUrl, QThread, pyqtSignal
+from PyQt6.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply
 from requests.exceptions import MissingSchema
 
 from finalcif.cif.cif_file_io import CifContainer
@@ -76,7 +76,7 @@ class CheckCif(QThread):
         req = self._do_the_server_request(headers, temp_cif)
         if req:
             self.progress.emit('request finished')
-            if not req.status_code == 200:
+            if req.status_code != 200:
                 self.failed.emit('Request failed with code: {}'.format(str(req.status_code)))
             else:
                 t2 = time.perf_counter()
@@ -143,8 +143,8 @@ def fix_iucr_urls(content: str):
     """
     The IuCr checkcif page suddenly contains urls where the protocol is missing.
     """
-    href = re.sub(r'\s+href\s{0,}=\s{0,}"//', ' href="https://', content)
-    return re.sub(r'\s+src\s{0,}=\s{0,}"//', ' src="https://', href)
+    href = re.sub(r'\s+href\s*=\s*"//', ' href="https://', content)
+    return re.sub(r'\s+src\s*=\s*"//', ' src="https://', href)
 
 
 class MyHTMLParser(HTMLParser):

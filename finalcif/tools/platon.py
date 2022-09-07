@@ -18,7 +18,7 @@ from subprocess import TimeoutExpired
 from time import sleep
 from typing import Union
 
-from PyQt5.QtCore import QThread
+from PyQt6.QtCore import QThread
 
 
 class Platon(QThread):

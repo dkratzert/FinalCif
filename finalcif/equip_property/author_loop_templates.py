@@ -8,7 +8,7 @@ from contextlib import suppress
 from pathlib import Path
 from typing import Dict, Union, List
 
-from PyQt5.QtWidgets import QListWidgetItem
+from PyQt6.QtWidgets import QListWidgetItem
 from gemmi.cif import Loop, as_string
 
 from finalcif.cif.cif_file_io import CifContainer

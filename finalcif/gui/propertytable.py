@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QTableWidget
+from PyQt6.QtWidgets import QTableWidget
 
 from finalcif.gui.plaintextedit import MyQPlainTextEdit
 

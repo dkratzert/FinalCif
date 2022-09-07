@@ -1,9 +1,10 @@
 from contextlib import suppress
 from textwrap import wrap
 
-from PyQt5 import QtCore
-from PyQt5.QtCore import Qt, QObject, QEvent
-from PyQt5.QtWidgets import QComboBox, QSizePolicy, QAction
+from PyQt6 import QtCore
+from PyQt6.QtCore import Qt, QObject, QEvent
+from PyQt6.QtGui import QAction
+from PyQt6.QtWidgets import QComboBox, QSizePolicy
 
 with suppress(ImportError):
     from finalcif.gui.custom_classes import MyCifTable
@@ -20,13 +21,13 @@ class MyComboBox(QComboBox):
         self.parent: 'MyCifTable' = parent
         self.setParent(parent)
         self.cif_key = ''
-        self.setFocusPolicy(Qt.StrongFocus)
-        self.setSizeAdjustPolicy(QComboBox.AdjustToMinimumContentsLength)
-        self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
+        self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
+        self.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLengthWithIcon)
+        self.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Expanding)
         self.setEditable(True)  # only editable as new template
         self.installEventFilter(self)
         self.actionDelete = QAction("Delete Row", self)
-        self.setContextMenuPolicy(Qt.ActionsContextMenu)
+        self.setContextMenuPolicy(Qt.ContextMenuPolicy.ActionsContextMenu)
         self.addAction(self.actionDelete)
         self.actionDelete.triggered.connect(self._delete_row)
         #action_template = QAction("Text Template", self)

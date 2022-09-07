@@ -17,9 +17,10 @@ from typing import Union, Dict, Tuple, List, Optional
 import gemmi.cif
 import qtawesome as qta
 import requests
-from PyQt5 import QtCore, QtGui, QtWebEngineWidgets
-from PyQt5.QtCore import QThread, QTimer, Qt
-from PyQt5.QtWidgets import QMainWindow, QShortcut, QCheckBox, QListWidgetItem, QApplication, \
+from PyQt6 import QtCore, QtGui
+from PyQt6.QtCore import QThread, QTimer, Qt
+from PyQt6.QtGui import QShortcut
+from PyQt6.QtWidgets import QMainWindow, QCheckBox, QListWidgetItem, QApplication, \
     QPlainTextEdit, QFileDialog, QMessageBox
 from gemmi import cif
 from qtpy.QtGui import QDesktopServices

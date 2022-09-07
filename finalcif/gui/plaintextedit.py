@@ -1,9 +1,9 @@
 from contextlib import suppress
 from functools import cache
 
-from PyQt5.QtCore import pyqtSignal, Qt, QObject, QEvent, QSize
-from PyQt5.QtGui import QTextOption, QFontMetrics, QContextMenuEvent, QFont
-from PyQt5.QtWidgets import QPlainTextEdit, QFrame, QApplication, QAbstractScrollArea
+from PyQt6.QtCore import pyqtSignal, Qt, QObject, QEvent, QSize
+from PyQt6.QtGui import QTextOption, QFontMetrics, QContextMenuEvent, QFont
+from PyQt6.QtWidgets import QPlainTextEdit, QFrame, QApplication, QAbstractScrollArea
 
 with suppress(ImportError):
     from finalcif.gui.custom_classes import MyCifTable

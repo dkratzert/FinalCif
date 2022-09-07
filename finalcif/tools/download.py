@@ -1,8 +1,8 @@
 import sys
 
 import requests
-from PyQt5 import QtCore
-from PyQt5.QtCore import pyqtSignal, QObject, QThread, pyqtSlot
+from PyQt6 import QtCore
+from PyQt6.QtCore import pyqtSignal, QObject, QThread, pyqtSlot
 
 from finalcif import VERSION
 

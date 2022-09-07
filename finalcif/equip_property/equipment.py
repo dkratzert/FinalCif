@@ -3,8 +3,8 @@ from contextlib import suppress
 from pathlib import Path
 from typing import List, Dict
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QListWidgetItem
+from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QListWidgetItem
 from gemmi import cif
 
 from finalcif.cif.cif_file_io import CifContainer

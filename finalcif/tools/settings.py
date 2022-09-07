@@ -7,7 +7,7 @@
 #  ----------------------------------------------------------------------------
 from typing import List, Dict, Union, Tuple, Iterable
 
-from PyQt5.QtCore import QPoint, QSettings, QSize
+from PyQt6.QtCore import QPoint, QSettings, QSize
 
 DEBUG = False
 

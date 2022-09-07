@@ -19,7 +19,7 @@ import os
 from finalcif.app_path import application_path
 
 if COMPILE:
-    from PyQt5 import uic
+    from PyQt6 import uic
 
     print('Compiling ui ...')
     uic.compileUiDir(os.path.join(application_path, 'gui'))
@@ -31,7 +31,7 @@ from pathlib import Path
 from finalcif.gui.dialogs import bug_found_warning
 from finalcif import VERSION
 
-from PyQt5.QtGui import QIcon
+from PyQt6.QtGui import QIcon
 from finalcif.appwindow import AppWindow, DEBUG, app
 
 r"""

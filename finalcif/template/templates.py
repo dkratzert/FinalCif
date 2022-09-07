@@ -2,9 +2,9 @@ from contextlib import suppress
 from pathlib import Path
 from typing import List
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QColor
-from PyQt5.QtWidgets import QFileDialog, QListWidgetItem
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QColor
+from PyQt6.QtWidgets import QFileDialog, QListWidgetItem
 
 with suppress(ImportError):
     from finalcif.appwindow import AppWindow

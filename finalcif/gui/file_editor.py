@@ -3,9 +3,9 @@
 # -*- coding: utf-8 -*-
 # Taken from: https://stackoverflow.com/questions/40386194/create-text-area-textedit-with-line-number-in-pyqt
 
-from PyQt5.QtCore import Qt, QRect, QSize
-from PyQt5.QtGui import QColor, QPainter, QTextFormat, QFont
-from PyQt5.QtWidgets import QWidget, QPlainTextEdit, QTextEdit
+from PyQt6.QtCore import Qt, QRect, QSize
+from PyQt6.QtGui import QColor, QPainter, QTextFormat, QFont
+from PyQt6.QtWidgets import QWidget, QPlainTextEdit, QTextEdit
 
 
 class QLineNumberArea(QWidget):

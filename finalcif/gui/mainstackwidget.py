@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QStackedWidget
+from PyQt6.QtWidgets import QStackedWidget
 
 
 class MyMainStackedWidget(QStackedWidget):

@@ -5,9 +5,9 @@ from pathlib import Path
 from typing import List, Union
 
 import numpy as np
-from PyQt5 import QtWidgets
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPainter, QPen, QBrush, QColor, QMouseEvent, QPalette, QImage, QResizeEvent
+from PyQt6 import QtWidgets
+from PyQt6.QtCore import Qt, QPoint
+from PyQt6.QtGui import QPainter, QPen, QBrush, QColor, QMouseEvent, QPalette, QImage, QResizeEvent
 
 from finalcif.cif.atoms import get_radius_from_element, element2color
 from finalcif.cif.cif_file_io import CifContainer
@@ -34,7 +34,7 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.molecule_center = np.array([0, 0, 0])
         self.molecule_radius = 10
         #
-        self.lastPos = self.pos()
+        self.lastPos: QPoint = self.pos()
         self.painter = Union[None, QPainter]
         self.x_angle = 0
         self.y_angle = 0
@@ -138,9 +138,9 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.atoms_size = abs(self.factor * 70)
         self.update()
 
-    def rotate_molecule(self, event):
-        self.y_angle = -(event.x() - self.lastPos.x()) / 80
-        self.x_angle = (event.y() - self.lastPos.y()) / 80
+    def rotate_molecule(self, event: QMouseEvent):
+        self.y_angle = -(event.pos().x() - self.lastPos.x()) / 80
+        self.x_angle = (event.pos().y() - self.lastPos.y()) / 80
         for num, at in enumerate(self.atoms):
             rotated2d = np.dot(self.rotate_y(), at.coordinate - self.molecule_center)
             x, y, z = np.dot(self.rotate_x(), rotated2d) + self.molecule_center

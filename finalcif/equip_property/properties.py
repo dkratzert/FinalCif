@@ -2,8 +2,8 @@ from contextlib import suppress
 from pathlib import Path
 from typing import List, Dict
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QListWidgetItem, QTableWidget, QListWidget, QStackedWidget
+from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QListWidgetItem, QTableWidget, QStackedWidget
 from gemmi import cif
 
 from finalcif.cif.text import retranslate_delimiter, utf8_to_str

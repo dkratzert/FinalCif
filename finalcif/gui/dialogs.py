@@ -2,9 +2,9 @@ import ctypes
 import sys
 from pathlib import Path
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QMessageBox, QMainWindow, QSplashScreen, QFileDialog, QVBoxLayout, QTextEdit, \
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QFont
+from PyQt6.QtWidgets import QMessageBox, QMainWindow, QSplashScreen, QFileDialog, QVBoxLayout, QTextEdit, \
     QPushButton, QFrame
 
 from finalcif import VERSION

@@ -1,10 +1,10 @@
 from typing import List
 
-from PyQt5 import QtCore
-from PyQt5.QtCore import QEvent, QObject, Qt
-from PyQt5.QtGui import QColor, QKeySequence, QBrush
-from PyQt5.QtWidgets import QAbstractScrollArea, QTableWidget, \
-    QTableWidgetItem, QWidget, QApplication, QShortcut, QHeaderView
+from PyQt6 import QtCore
+from PyQt6.QtCore import QEvent, QObject, Qt
+from PyQt6.QtGui import QColor, QKeySequence, QBrush, QShortcut
+from PyQt6.QtWidgets import QAbstractScrollArea, QTableWidget, \
+    QTableWidgetItem, QWidget, QApplication, QHeaderView
 
 from finalcif.cif.text import retranslate_delimiter
 from finalcif.gui.combobox import MyComboBox
