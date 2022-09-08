@@ -13,7 +13,7 @@
 
 import time
 from collections import namedtuple
-from math import sqrt, cos, radians, sin
+from math import cos, radians, sin, sqrt
 from typing import List, Tuple
 
 from finalcif.cif.atoms import get_radius_from_element
@@ -50,7 +50,7 @@ class SymmCards():
     def __len__(self):
         return len(self._symmcards)
 
-    def append(self, symmData: list) -> None:
+    def append(self, symmData: List) -> None:
         """
         Add the content of a Shelxl SYMM command to generate the appropriate SymmetryElement instance.
         :param symmData: list of strings. eg.['1/2+X', '1/2+Y', '1/2+Z']
@@ -132,9 +132,9 @@ class SDM():
                             self.cell[5]))],
                        [0, 0, self.cell[6] / (self.cell[0] * self.cell[1] * sin(self.cell[5]))]])
 
-    def calc_sdm(self) -> list:
+    def calc_sdm(self) -> List[int]:
         t1 = time.perf_counter()
-        h = ('H', 'D')
+        h = {'H', 'D'}
         nlen = len(self.symmcards)
         at2_plushalf = [Array([j + 0.5 for j in x[2:5]]) for x in self.atoms]
         for i, at1 in enumerate(self.atoms):
@@ -189,7 +189,7 @@ class SDM():
             print("The asymmetric unit contains {} fragments.".format(self.maxmol))
         return need_symm
 
-    def collect_needed_symmetry(self) -> list:
+    def collect_needed_symmetry(self) -> List[int]:
         need_symm = []
         h = ('H', 'D')
         # Collect needsymm list:

@@ -40,7 +40,7 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.y_angle = 0
         #
         pal = QPalette()
-        pal.setColor(QPalette.Window, Qt.white)
+        pal.setColor(QPalette.ColorRole.Window, Qt.GlobalColor.white)
         self.setAutoFillBackground(True)
         self.setPalette(pal)
         self.layout = QtWidgets.QVBoxLayout(self)
@@ -79,7 +79,7 @@ class MoleculeWidget(QtWidgets.QWidget):
     def paintEvent(self, event):
         if self.atoms:
             self.painter = QPainter(self)
-            self.painter.setRenderHint(QPainter.Antialiasing)
+            self.painter.setRenderHint(QPainter.RenderHint.Antialiasing)
             font = self.painter.font()
             font.setPixelSize(13)
             self.painter.setFont(font)
@@ -116,25 +116,25 @@ class MoleculeWidget(QtWidgets.QWidget):
         ], dtype=np.float32)
 
     def mouseMoveEvent(self, event: QMouseEvent) -> None:
-        if event.buttons() == Qt.LeftButton:
+        if event.buttons() == Qt.MouseButton.LeftButton:
             self.rotate_molecule(event)
-        elif event.buttons() == Qt.RightButton:
+        elif event.buttons() == Qt.MouseButton.RightButton:
             self.zoom_molecule(event)
-        elif event.buttons() == Qt.MiddleButton:
+        elif event.buttons() == Qt.MouseButton.MiddleButton:
             self.pan_molecule(event)
         self.lastPos = event.pos()
 
     def pan_molecule(self, event):
-        self.molecule_center[0] += (self.lastPos.x() - event.x()) / 50
-        self.molecule_center[1] += (self.lastPos.y() - event.y()) / 50
+        self.molecule_center[0] += (self.lastPos.x() - event.pos().x()) / 50
+        self.molecule_center[1] += (self.lastPos.y() - event.pos().y()) / 50
         self.update()
 
     def zoom_molecule(self, event: QMouseEvent):
-        self.factor += (self.lastPos.y() - event.y()) / 350
+        self.factor += (self.lastPos.y() - event.pos().y()) / 350
         if self.factor <= 0.005:
             # Prevents zooming to infinity where nothing is visible:
             self.factor = 0.005
-        self.zoom -= (self.lastPos.y() - event.y()) / 350
+        self.zoom -= (self.lastPos.y() - event.pos().y()) / 350
         self.atoms_size = abs(self.factor * 70)
         self.update()
 
@@ -210,17 +210,17 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.molecule_radius = r or 10
 
     def draw_bond(self, at1: 'Atom', at2: 'Atom', offset: int):
-        self.painter.setPen(QPen(Qt.darkGray, self.bond_width, Qt.SolidLine))
+        self.painter.setPen(QPen(Qt.GlobalColor.darkGray, self.bond_width, Qt.PenStyle.SolidLine))
         self.painter.drawLine(at1.screenx + offset, at1.screeny + offset,
                               at2.screenx + offset, at2.screeny + offset)
 
     def draw_atom(self, atom: 'Atom'):
-        self.painter.setPen(QPen(Qt.black, 1, Qt.SolidLine))
-        self.painter.setBrush(QBrush(atom.color, Qt.SolidPattern))
+        self.painter.setPen(QPen(Qt.GlobalColor.black, 1, Qt.PenStyle.SolidLine))
+        self.painter.setBrush(QBrush(atom.color, Qt.BrushStyle.SolidPattern))
         self.painter.drawEllipse(int(atom.screenx), int(atom.screeny), int(self.atoms_size), int(self.atoms_size))
 
     def draw_label(self, atom: 'Atom'):
-        self.painter.setPen(QPen(QColor(100, 50, 5), 2, Qt.SolidLine))
+        self.painter.setPen(QPen(QColor(100, 50, 5), 2, Qt.PenStyle.SolidLine))
         self.painter.drawText(atom.screenx + 18, atom.screeny - 4, atom.name)
 
     def get_conntable_from_atoms(self, extra_param: float = 1.2) -> tuple:
@@ -288,7 +288,7 @@ def display(atoms: List[Atomtuple]):
     window.show()
     # render_widget.save_image(Path('myimage2.png'))
     # start the event loop
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
 
 
 if __name__ == "__main__":
