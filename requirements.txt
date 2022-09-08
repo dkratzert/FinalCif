@@ -10,7 +10,7 @@ pefile
 pybind11
 PyQt6
 PyQt6-sip
-PyQtWebEngine
+PyQt6-WebEngine
 python-docx==0.8.11
 pywin32-ctypes==0.2.0
 QtAwesome==1.1.1

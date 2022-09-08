@@ -23,6 +23,7 @@ from PyQt6.QtGui import QShortcut
 from PyQt6.QtWidgets import QMainWindow, QCheckBox, QListWidgetItem, QApplication, \
     QPlainTextEdit, QFileDialog, QMessageBox
 from gemmi import cif
+from qtpy import QtWebEngineWidgets
 from qtpy.QtGui import QDesktopServices
 
 from finalcif import VERSION
@@ -74,7 +75,6 @@ class AppWindow(QMainWindow):
 
     def __init__(self, file: Optional[Path] = None, unit_test: bool = False):
         super().__init__()
-        self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
         # This prevents some things to happen during unit tests:
         # Open of target dir of shred cif,
         # open report doc,
