@@ -1188,7 +1188,7 @@ class AppWindow(QMainWindow):
             else:
                 if changes_cif:
                     del changes_cif[vhead]
-        if changes_cif.file_is_there_and_writable():
+        if self.options.track_changes and changes_cif and changes_cif.file_is_there_and_writable():
             self.save_keys_and_loops_to_changes_cif(changes_cif)
 
     def save_keys_and_loops_to_changes_cif(self, changes_cif):

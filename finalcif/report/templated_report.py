@@ -379,10 +379,10 @@ class TemplatedReport():
         integration_prog = '[unknown integration program]'
         if 'SAINT' in integration:
             saintversion = ''
+            integration_prog = 'SAINT'
             if len(integration.split()) > 1:
                 saintversion = integration.split()[1]
-            integration_prog = 'SAINT'
-            integration_prog += " " + saintversion
+                integration_prog += " " + saintversion
             self.literature['integration'] = SAINTReference('SAINT', saintversion)
         if 'CrysAlisPro'.lower() in integration.lower():
             regex = r"(CrysAlisPro)\s{0,2}(\d+\.\d+\.\d+\.\d+.*)\((.*),\s?(\d+)\)"
