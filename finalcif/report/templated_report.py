@@ -1,4 +1,5 @@
 import itertools
+import re
 from collections import namedtuple
 from math import sin, radians
 from pathlib import Path
@@ -384,13 +385,16 @@ class TemplatedReport():
             integration_prog += " " + saintversion
             self.literature['integration'] = SAINTReference('SAINT', saintversion)
         if 'CrysAlisPro'.lower() in integration.lower():
+            regex = r"(CrysAlisPro)\s{0,2}(\d+\.\d+\.\d+\.\d+.*)\((.*),\s?(\d+)\)"
             year = 'unknown version'
-            if len(integration.split()) > 3:
-                year = integration.split()[4][:-1]
-            version = 'unknown year'
-            if len(integration.split()) >= 1:
-                version = integration.split()[1][:-1]
-            integration_prog = 'Crysalispro'
+            version = ''
+            match = re.match(regex, integration, re.MULTILINE | re.IGNORECASE | re.ASCII)
+            if match:
+                year = match.group(4).strip()
+                version = match.group(2).strip()
+                integration_prog = match.group(1).strip()
+            else:
+                integration_prog = 'CrysAlisPro'
             self.literature['integration'] = CrysalisProReference(version=version, year=year)
             self.literature['absorption'] = CrysalisProReference(version=version, year=year)
         return integration_prog

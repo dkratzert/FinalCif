@@ -32,7 +32,7 @@ class CifContainer():
 
         Args:
             file: CIF file to open
-            new_block: Create a new block if a name is given. Otherwise, just
+            new_block: Create a new block (new file) if a name is given. Otherwise, just
                        the existing document is opened.
         """
         if isinstance(file, str):
@@ -206,17 +206,16 @@ class CifContainer():
         return bool(self.__getitem__(item))
 
     def __str__(self) -> str:
-        return "CIF file: {0}\n" \
-               "{1} Block(s): {2}\n" \
-               "Contains SHELX res file: {3}\n" \
-               "Contains hkl data: {4}\n" \
-               "Has {5} atoms" \
-               ", {6} bonds" \
-               ", {7} angles" \
-               "".format(str(self.fileobj.resolve()), len(c.doc), ', '.join([x.name for x in c.doc]),
-                         True if self.res_file_data else False,
-                         len(self.hkl_file) > 1,
-                         self.natoms(), self.nbonds(), self.nangles())
+        return (f"CIF file: {str(self.fileobj.resolve())}\n"
+                f"{len(self.doc)} Block(s): {', '.join([x.name for x in self.doc])}\n"
+                f"Contains SHELX res file: {True if self.res_file_data else False}\n"
+                f"Has {self.natoms()} atoms"
+                f", {self.nbonds()} bonds"
+                f", {self.nangles()} angles")
+
+    def file_is_there_and_writable(self):
+        import os
+        return self.fileobj.exists() and self.fileobj.is_file() and os.access(self.fileobj, os.W_OK)
 
     def set_pair_delimited(self, key: str, txt: str):
         """
@@ -788,7 +787,7 @@ class CifContainer():
         hydr = namedtuple('HydrogenBond', ('label_d', 'label_h', 'label_a', 'dist_dh', 'dist_ha', 'dist_da',
                                            'angle_dha', 'symm'))
         for label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm in \
-                zip(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm):
+            zip(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm):
             yield hydr(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, self.checksymm(symm))
 
     def key_value_pairs(self) -> List[Tuple[str, str]]:
@@ -800,7 +799,7 @@ class CifContainer():
 
     def _is_centrokey(self, key) -> bool:
         """
-        Is True if the kurrent key is only valid 
+        Is True if the kurrent key is only valid
         for non-centrosymmetric structures
         """
         return self.is_centrosymm and key in non_centrosymm_keys
