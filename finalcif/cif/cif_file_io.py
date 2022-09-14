@@ -215,6 +215,7 @@ class CifContainer():
 
     def file_is_there_and_writable(self):
         import os
+        self.fileobj.touch(exist_ok=True)
         return self.fileobj.exists() and self.fileobj.is_file() and os.access(self.fileobj, os.W_OK)
 
     def set_pair_delimited(self, key: str, txt: str):

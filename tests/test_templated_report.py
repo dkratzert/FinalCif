@@ -87,7 +87,7 @@ class TemplateReportTestCase(unittest.TestCase):
         self.assertEqual(Cm(7.43).emu, shapes[0].width)
 
 
-class TestRigakuData(unittest.TestCase):
+class TestData(unittest.TestCase):
 
     def setUp(self) -> None:
         self.cif = CifContainer('foo.cif', 'testblock')
@@ -119,6 +119,23 @@ class TestRigakuData(unittest.TestCase):
         result = r.get_integration_program(self.cif)
         self.assertEqual('CrysAlisPro', result)
         self.assertEqual('Crysalispro, unknown version, Rigaku OD.', str(r.literature['integration']))
+
+    def test_get_integration_program_saint(self):
+        # Here we have all in one line with spaces inbetween:
+        self.cif['_computing_data_reduction'] = 'SAINT V8.40A'
+        r = TemplatedReport()
+        result = r.get_integration_program(self.cif)
+        self.assertEqual('SAINT V8.40A', result)
+        self.assertEqual('Bruker, SAINT, V8.40A, Bruker AXS Inc., Madison, Wisconsin, USA.',
+                         str(r.literature['integration']))
+
+    def test_get_integration_program_saint_without_version(self):
+        # Here we have all in one line with spaces inbetween:
+        self.cif['_computing_data_reduction'] = 'SAINT'
+        r = TemplatedReport()
+        result = r.get_integration_program(self.cif)
+        self.assertEqual('SAINT', result)
+        self.assertEqual('Bruker, SAINT, Bruker AXS Inc., Madison, Wisconsin, USA.', str(r.literature['integration']))
 
 
 if __name__ == '__main__':
