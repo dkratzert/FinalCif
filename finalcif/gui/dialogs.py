@@ -1,4 +1,5 @@
 import ctypes
+import os
 import sys
 from pathlib import Path
 
@@ -155,12 +156,18 @@ def bad_z_message(z) -> None:
 
 def bug_found_warning(logfile) -> None:
     window = QMainWindow()
-    text = 'Congratulations, you found a bug in ' \
-           'FinalCif!<br>Please send the file <br>"{}" <br>to Daniel Kratzert:  ' \
-           '<a href="mailto:dkratzert@gmx.de?subject=FinalCif version {} crash report">' \
-           'dkratzert@gmx.de</a><br>' \
-           'If possible, the corresponding CIF file is also desired.'.format(logfile.resolve(), VERSION)
-    QMessageBox.warning(window, 'Warning', text)
+    title = f'Congratulations, you found a bug in FinalCif!'
+    text = (f'<br>Please send the file <br>'
+            f'<a href=file:{os.sep*2}{logfile.resolve()}>{logfile.resolve()}</a> '
+            f'<br>to Daniel Kratzert:  '
+            f'<a href="mailto:dkratzert@gmx.de?subject=FinalCif version {VERSION} crash report">'
+            f'dkratzert@gmx.de</a><br>'
+            f'<br>If possible, the corresponding CIF file is also desired.')
+    box = QMessageBox(parent=window)
+    box.setWindowTitle('Warning')
+    box.setText(title)
+    box.setInformativeText(text)
+    box.exec()
     window.show()
 
 
