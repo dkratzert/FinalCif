@@ -40,6 +40,16 @@ class TestChangesTrackingActive(unittest.TestCase):
         self.assertEqual(['_audit_contact_author_email', '_audit_contact_author_address'], changes.keys())
         self.assertEqual(['testauthoremail', 'testauthoradress'], changes.values())
 
+    def test_save_with_no_changes(self):
+        self.assertEqual(False, self.myapp.finalcif_changes_filename.exists())
+        self.myapp.ui.SaveCifButton.click()
+        self.assertEqual(True, self.myapp.cif.finalcif_file.exists())
+        self.assertEqual(True, self.myapp.finalcif_changes_filename.exists())
+        changes = self.myapp.get_changes_cif(self.myapp.finalcif_changes_filename)
+        self.assertEqual('data_cu_BruecknerJK_153F40_0m_changes\n', changes.fileobj.read_text())
+        self.assertEqual([], changes.keys())
+        self.assertEqual([], changes.values())
+
     def test_save_with_loop(self):
         self.myapp.cif.add_loop_to_cif(loop_tags=['_foo', '_bar'], loop_values=['fooval', 'barval'])
         self.myapp.ui.SaveCifButton.click()
