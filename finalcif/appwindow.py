@@ -1203,15 +1203,17 @@ class AppWindow(QMainWindow):
         previous_cif is the original unchanged cif that gets 'previous_cif'-finalcif.cif after saving.
         previous_values contains its loops.
         """
-        previous_cif = CifContainer(Path(strip_finalcif_of_name(self.cif.finalcif_file,
-                                                                till_name_ends=True)).with_suffix('.cif'))
-        previous_values = []
-        for loop2 in previous_cif.loops:
-            previous_values.append(loop2.values)
-        for loop in self.cif.loops:
-            if loop.values not in previous_values:
-                changes_cif.add_loop_to_cif(loop_tags=loop.tags, loop_values=loop.values)
-        changes_cif.save(filename=self.finalcif_changes_filename)
+        previous_cif_path = Path(strip_finalcif_of_name(self.cif.finalcif_file, till_name_ends=True)).with_suffix(
+            '.cif')
+        if previous_cif_path.exists():
+            previous_cif = CifContainer(previous_cif_path)
+            previous_values = []
+            for loop2 in previous_cif.loops:
+                previous_values.append(loop2.values)
+            for loop in self.cif.loops:
+                if loop.values not in previous_values:
+                    changes_cif.add_loop_to_cif(loop_tags=loop.tags, loop_values=loop.values)
+            changes_cif.save(filename=self.finalcif_changes_filename)
 
     def get_changes_cif(self, finalcif_changes_filename: Path) -> CifContainer:
         block_name = self.cif.current_block if self.cif.current_block else self.cif.block.name
