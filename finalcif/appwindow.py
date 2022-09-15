@@ -1166,6 +1166,7 @@ class AppWindow(QMainWindow):
             try:
                 changes_cif = self.get_changes_cif(self.finalcif_changes_filename)
             except Exception as e:
+                print('Unable to create changes CIF:', e)
                 unable_to_open_message(filepath=self.finalcif_changes_filename, not_ok=e)
                 changes_cif = None
         # makes sure also the currently edited item is saved:
@@ -1197,6 +1198,10 @@ class AppWindow(QMainWindow):
             changes_cif.save(filename=self.finalcif_changes_filename)
         except Exception as e:
             print(f'Unable to save changes file: {e}')
+        if changes_cif.fileobj.stat().st_size == 0:
+            print('Changes file has no content. Deleting it ...')
+            with suppress(Exception):
+                changes_cif.fileobj.unlink(missing_ok=True)
 
     def save_changed_loops(self, changes_cif: CifContainer):
         """
@@ -1223,6 +1228,7 @@ class AppWindow(QMainWindow):
         # new block of added cif is not loaded:
         if block_name in changes_cif.doc:
             changes_cif.load_this_block(list(changes_cif.doc).index(block_name))
+        changes_cif.fileobj.touch(exist_ok=True)
         return changes_cif
 
     def load_changes_cif(self) -> bool:
