@@ -56,6 +56,9 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.projected_points = []
         self.zoom = 1.1
 
+    def clear(self):
+        self.open_molecule(atoms=[])
+
     def show_labels(self, value: bool):
         self.labels = value
         self.update()
@@ -65,7 +68,7 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.atoms.clear()
         for at in atoms:
             self.atoms.append(Atom(at.x, at.y, at.z, at.label, at.type, at.part))
-        if len(self.atoms) > 200:
+        if len(self.atoms) > 400:
             self.bond_width = 1
         self.connections = self.get_conntable_from_atoms()
         self.get_center_and_radius()
@@ -184,7 +187,7 @@ class MoleculeWidget(QtWidgets.QWidget):
             self.objects.append((0, atom))
         self.objects.sort(reverse=True, key=lambda atom: atom[1].coordinate[2])
 
-    def distance(self, vector1, vector2):
+    def distance(self, vector1: np.array, vector2: np.array):
         diff = vector2 - vector1
         return sqrt(np.dot(diff.T, diff))
 
@@ -203,7 +206,7 @@ class MoleculeWidget(QtWidgets.QWidget):
             c[j] = (max_[j] + min_[j]) / 2
         r = 0
         for atom in self.atoms:
-            d = self.distance(atom.coordinate, c) + 1.5
+            d = dist(atom.coordinate, c) + 1.5
             if d > r:
                 r = d
         self.molecule_center = np.array(c, dtype=np.float32)
