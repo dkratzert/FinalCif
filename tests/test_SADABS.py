@@ -46,7 +46,7 @@ class TestTWINABS(unittest.TestCase):
         self.assertEqual([0.793942, 0.862070], self.s.dataset(1).transmission)
 
     def test_rint(self):
-        self.assertEqual(0.0376, self.s.Rint)
+        self.assertEqual(0.0456, self.s.Rint)
 
     def test_hklfile(self):
         self.assertEqual('twin4.hkl', self.s.dataset(0).hklfile)

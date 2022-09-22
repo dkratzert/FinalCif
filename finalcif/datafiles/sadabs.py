@@ -30,14 +30,14 @@ class Dataset():
 
     def __repr__(self):
         out = ''
-        out += 'written refl.:\t{}\n'.format(self.written_reflections)
-        out += 'transmission:\t{}\n'.format(self.transmission)
-        out += 'Mu*r:\t\t\t{}\n'.format(self.mu_r)
-        out += 'Merging:\t\t{}\n'.format(self.point_group_merge)
-        out += 'hklfile:\t\t{}\n'.format(self.hklfile)
-        out += 'HKL file type:\t{}\n'.format(self.filetype)
-        out += 'Domain in hkl:\t{}\n'.format(self.domain)
-        out += 'Abs. type:\t\t{}'.format('multi-scan' if not self.numerical else 'numerical')
+        out += f'written refl.:\t{self.written_reflections}\n'
+        out += f'transmission:\t{self.transmission}\n'
+        out += f'Mu*r:\t\t\t{self.mu_r}\n'
+        out += f'Merging:\t\t{self.point_group_merge}\n'
+        out += f'hklfile:\t\t{self.hklfile}\n'
+        out += f'HKL file type:\t{self.filetype}\n'
+        out += f'Domain in hkl:\t{self.domain}\n'
+        out += f'Abs. type:\t\t{"multi-scan" if not self.numerical else "numerical"}'
         out += '\n'
         return out
 
@@ -50,7 +50,7 @@ class Sadabs():
     _rint_regex = re.compile(r'^.*Rint\s=.*observations and')
     _rint3sig_regex = re.compile(r'^.*Rint\s=.*observations with')
 
-    def __init__(self, basename: str, searchpath: Path = Path(__file__).parent.parent, fileobj: Path = None):
+    def __init__(self, basename: str = '', searchpath: Path = Path(__file__).parent.parent, fileobj: Path = None):
         """
         """
         self.faces = False
@@ -84,7 +84,7 @@ class Sadabs():
                 self.observations = to_float(spline[5])
             if self._rint3sig_regex.match(line):
                 #  Rint = 0.0376  for all   44606  observations with I > 3sigma(I)
-                self.Rint = to_float(spline[2])
+                self.Rint_3sig = to_float(spline[2])
                 self.observations_3sig = to_float(spline[5])
             if line.startswith(" Reading file"):
                 self.input_files.append(spline[2])
@@ -145,18 +145,20 @@ class Sadabs():
             return Dataset()
 
     def __repr__(self):
-        out = 'Program:\t\t{}\n'.format(self.program)
-        out += 'version:\t\t{}\n'.format(self.version)
-        out += 'Input File:\t\t{}\n'.format(' '.join(self.input_files))
-        out += 'Input Batch:\t{}\n'.format(self.batch_input)
-        out += 'rint:\t\t\t{}\n'.format(self.Rint)
-        out += 'components:\t\t{}\n'.format(self.twin_components)
+        out = f'Program:\t\t{self.program}\n'
+        out += f'version:\t\t{self.version}\n'
+        out += f'Input File:\t\t{" ".join(self.input_files)}\n'
+        out += f'Input Batch:\t{self.batch_input}\n'
+        out += f'Rint:\t\t\t{self.Rint}\n'
+        out += f'Rint-3sig:\t\t{self.Rint_3sig}\n'
+        out += f'components:\t\t{self.twin_components}\n'
         out += '\n'
         return out
 
 
 if __name__ == '__main__':
     print('###############\n\n')
+    #s = Sadabs(fileobj=Path(r'1163_67_1_rint_matt.abs'))
     s = Sadabs(fileobj=Path(r'/Volumes/nifty/test_workordner/test766-twin/work/test766.abs'))
     print(s)
     for dat in s:
