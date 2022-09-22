@@ -158,8 +158,8 @@ class Sadabs():
 
 if __name__ == '__main__':
     print('###############\n\n')
-    #s = Sadabs(fileobj=Path(r'1163_67_1_rint_matt.abs'))
-    s = Sadabs(fileobj=Path(r'/Volumes/nifty/test_workordner/test766-twin/work/test766.abs'))
+    s = Sadabs(fileobj=Path(r'tests/statics/1163_67_1_rint_matt.abs'))
+    #s = Sadabs(fileobj=Path(r'/Volumes/nifty/test_workordner/test766-twin/work/test766.abs'))
     print(s)
     for dat in s:
         print(dat)
