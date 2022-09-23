@@ -58,8 +58,8 @@ class BrukerData(WorkDataMixin):
         for n in range(1, len(self.sadabs.datasets) + 1):
             try:
                 abstype = 'numerical' if self.sadabs.dataset(-n).numerical else 'multi-scan'
-                t_min = min(self.sadabs.dataset(-n).transmission)
-                t_max = max(self.sadabs.dataset(-n).transmission)
+                t_min = self.sadabs.dataset(-n).transmission.tmin
+                t_max = self.sadabs.dataset(-n).transmission.tmax
                 if all([abstype, t_min, t_max]):
                     break
             except (KeyError, AttributeError, TypeError):

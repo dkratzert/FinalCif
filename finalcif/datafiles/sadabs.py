@@ -1,35 +1,45 @@
 #!python
-
-#  ----------------------------------------------------------------------------
-#  "THE BEER-WARE LICENSE" (Revision 42):
-#  dkratzert@gmx.de> wrote this file.  As long as you retain
-#  this notice you can do whatever you want with this stuff. If we meet some day,
-#  and you think this stuff is worth it, you can buy me a beer in return. 
-#  Dr. Daniel Kratzert
-#  ----------------------------------------------------------------------------
-# 
-
+import dataclasses
 #  Copyright (c)  2019 by Daniel Kratzert
 import re
 from pathlib import Path
+from typing import Optional
 
 from finalcif.datafiles.utils import get_file_to_parse
 from finalcif.tools.misc import to_float, to_int
 
 
-class Dataset():
-    def __init__(self):
-        self.written_reflections = None
-        self.hklfile = None
-        self.transmission = None
-        self.mu_r = None
-        self.point_group_merge = 1
-        self.filetype = 4
-        self.domain = 1
-        self.numerical = False
+#  ----------------------------------------------------------------------------
+#  "THE BEER-WARE LICENSE" (Revision 42):
+#  dkratzert@gmx.de> wrote this file.  As long as you retain
+#  this notice you can do whatever you want with this stuff. If we meet some day,
+#  and you think this stuff is worth it, you can buy me a beer in return.
+#  Dr. Daniel Kratzert
+#  ----------------------------------------------------------------------------
+#
+
+@dataclasses.dataclass
+class Transmission():
+    tmin: float = None
+    tmax: float = None
 
     def __repr__(self):
-        out = ''
+        return f'min: {self.tmin}, max: {self.tmax}'
+
+
+class Dataset():
+    def __init__(self):
+        self.written_reflections: Optional[int] = None
+        self.hklfile: Optional[str] = None
+        self.transmission = Transmission()
+        self.mu_r: Optional[str] = None
+        self.point_group_merge: Optional[str] = '1'
+        self.filetype: Optional[int] = 4
+        self.domain: str = '1'
+        self.numerical: bool = False
+
+    def __repr__(self):
+        out = f''
         out += f'written refl.:\t{self.written_reflections}\n'
         out += f'transmission:\t{self.transmission}\n'
         out += f'Mu*r:\t\t\t{self.mu_r}\n'
@@ -119,7 +129,9 @@ class Sadabs():
             if "Estimated minimum and maximum transmission" in line \
                     or 'Minimum and maximum apparent transmission' in line:
                 try:
-                    self.dataset(n).transmission = [float(x) for x in spline[-2:]]
+                    transmissions = [float(x) for x in spline[-2:]]
+                    self.dataset(n).transmission.tmin = min(transmissions)
+                    self.dataset(n).transmission.tmax = max(transmissions)
                 except ValueError:
                     pass
             # This is always last:
@@ -147,7 +159,8 @@ class Sadabs():
     def __repr__(self):
         out = f'Program:\t\t{self.program}\n'
         out += f'version:\t\t{self.version}\n'
-        out += f'Input File:\t\t{" ".join(self.input_files)}\n'
+        out += f'Abs File:\t\t{self.filename.name}\n'
+        out += f'raw input File:\t{" ".join(self.input_files)}\n'
         out += f'Input Batch:\t{self.batch_input}\n'
         out += f'Rint:\t\t\t{self.Rint}\n'
         out += f'Rint-3sig:\t\t{self.Rint_3sig}\n'
@@ -158,8 +171,8 @@ class Sadabs():
 
 if __name__ == '__main__':
     print('###############\n\n')
-    s = Sadabs(fileobj=Path(r'tests/statics/1163_67_1_rint_matt.abs'))
-    #s = Sadabs(fileobj=Path(r'/Volumes/nifty/test_workordner/test766-twin/work/test766.abs'))
+    # s = Sadabs(fileobj=Path(r'tests/statics/1163_67_1_rint_matt.abs'))
+    s = Sadabs(fileobj=Path(r'tests/examples/work/cu_BruecknerJK_153F40.abs'))
     print(s)
     for dat in s:
         print(dat)
