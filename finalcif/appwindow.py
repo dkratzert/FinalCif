@@ -1202,8 +1202,8 @@ class AppWindow(QMainWindow):
             changes_cif.save(filename=self.finalcif_changes_filename)
         except Exception as e:
             print(f'Unable to save changes file: {e}')
-            del changes_cif
-            self.finalcif_changes_filename.unlink(missing_ok=True)
+            #del changes_cif
+            #self.finalcif_changes_filename.unlink(missing_ok=True)
             return
         if changes_cif.fileobj.exists() and changes_cif.fileobj.stat().st_size == 0 or changes_cif.is_empty():
             print('Changes file has no content. Deleting it ...')
