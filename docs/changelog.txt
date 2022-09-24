@@ -1,5 +1,6 @@
 FinalCif recent changes
 -----------------------
+* v113 Improved handling of empty changes files.
 * v112 Use correct Rint from TWINABS output file for _diffrn_reflns_av_R_equivalents.
 * v111 Fixed possible crashes with the "track changes" option. Fixed crash with unusual format of refinement program.
 * v110 Added possibility to create new loops from the list of all official CIF keywords.
