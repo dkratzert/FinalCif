@@ -70,7 +70,7 @@ class CifContainer():
         The name of the current file without path:
         foo.cif
         """
-        return Path(self.doc.source).name
+        return Path(self.doc.source).name or self.fileobj.name
 
     @property
     def finalcif_file(self) -> Path:
@@ -240,6 +240,9 @@ class CifContainer():
         """
         if not filename:
             filename = self.finalcif_file
+        if self.is_empty():
+            print(f'File {filename} is empty.')
+            return
         self.order_cif_keys()
         print('Saving to', Path(filename).resolve())
         self.doc.write_file(str(filename), gemmi.cif.Style.Indent35)
@@ -409,6 +412,33 @@ class CifContainer():
             if found:
                 zero_reflection_position = len(hkl_splitted) - num
         return zero_reflection_position
+
+    def is_empty(self):
+        if len(self.keys()) + len(self.loops) == 0:
+            return True
+        return False
+
+    def keys(self):
+        """
+        Returns a plain list of keys that are really in this CIF.
+        """
+        keys = []
+        for item in self.block:
+            if item.pair is not None:
+                key, _ = item.pair
+                keys.append(key)
+        return keys
+
+    def values(self):
+        """
+        Returns a plain list of keys that are really in this CIF.
+        """
+        values = []
+        for item in self.block:
+            if item.pair is not None:
+                _, value = item.pair
+                values.append(value)
+        return values
 
     @property
     def loops(self) -> List[gemmi.cif.Loop]:
@@ -826,28 +856,6 @@ class CifContainer():
         all_keys = [x[0] for x in with_values] + [x[0] for x in questions]
         self.check_for_missing_essential_keys(all_keys, questions)
         return sorted(questions), sorted(with_values)
-
-    def keys(self):
-        """
-        Returns a plain list of keys that are really in this CIF.
-        """
-        keys = []
-        for item in self.block:
-            if item.pair is not None:
-                key, _ = item.pair
-                keys.append(key)
-        return keys
-
-    def values(self):
-        """
-        Returns a plain list of keys that are really in this CIF.
-        """
-        values = []
-        for item in self.block:
-            if item.pair is not None:
-                _, value = item.pair
-                values.append(value)
-        return values
 
     def check_for_missing_essential_keys(self, all_keys: List[Tuple[str, str]],
                                          questions: List[Tuple[str, str]]) -> None:
