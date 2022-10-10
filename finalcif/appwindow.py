@@ -603,12 +603,6 @@ class AppWindow(QMainWindow):
         for row in range(table.rowCount()):
             if not table.cellWidget(row, 0).isChecked():
                 cifkey = table.item(row, 1).data(2)
-                try:
-                    row_num = self.ui.cif_main_table.vheaderitems.index(cifkey)
-                    # Leads to a crash when activated:
-                    # del self.ui.cif_main_table.vheaderitems[row_num]
-                except ValueError:
-                    continue
                 self.cif.block.set_pair(cifkey, '?')
                 self.ui.cif_main_table.setText(key=cifkey, column=COL_CIF, txt='?')
                 self.ui.cif_main_table.setText(key=cifkey, column=COL_DATA, txt='?')
