@@ -14,26 +14,6 @@ from finalcif.tools.misc import unify_line_endings
 from tests.helpers import addr
 
 
-class TestNothingOpened(unittest.TestCase):
-    """A CIF fle in a complete work folder"""
-
-    def setUp(self) -> None:
-        self.myapp = AppWindow(unit_test=True)
-        self.myapp.running_inside_unit_test = True
-        self.myapp.hide()
-        self.myapp.setWindowIcon(QIcon('./icon/multitable.png'))
-        self.myapp.setWindowTitle('FinalCif v{}'.format(VERSION))
-        Path('foo.cif').unlink(missing_ok=True)
-        Path('cu_BruecknerJK_153F40_0m-finalcif.cif').unlink(missing_ok=True)
-
-    def tearDown(self) -> None:
-        self.myapp.close()
-
-    def test_save_noting(self):
-        self.myapp.save_current_cif_file()
-        self.assertEqual(False, Path('cu_BruecknerJK_153F40_0m-finalcif.cif').exists())
-
-
 class TestFileIsOpened(unittest.TestCase):
     """A CIF fle in a complete work folder"""
 
