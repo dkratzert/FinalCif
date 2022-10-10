@@ -86,7 +86,10 @@ class AppWindow(QMainWindow):
         self.checkdef = []
         self.changes_answer: int = 0
         self.validation_response_forms_list = []
-        self.checkdef_file: Path = Path.home().joinpath('check.def')
+        if not os.environ.get('NO_NETWORK'):
+            self.checkdef_file: Path = Path.home().joinpath('check.def')
+        else:
+            self.checkdef_file = None
         self.missing_data: set = set()
         self.temperature_warning_displayed = False
         self.threadpool = []
@@ -277,10 +280,11 @@ class AppWindow(QMainWindow):
         #
         save_shortcut = QShortcut(QtGui.QKeySequence('Ctrl+S'), self)
         save_shortcut.activated.connect(self.save_current_cif_file)
-        save_shortcut = QShortcut(QtGui.QKeySequence('Ctrl+H'), self)
-        save_shortcut.activated.connect(self.do_html_checkcif)
-        save_shortcut = QShortcut(QtGui.QKeySequence('Ctrl+P'), self)
-        save_shortcut.activated.connect(self.do_pdf_checkcif)
+        if not os.environ.get('NO_NETWORK'):
+            save_shortcut = QShortcut(QtGui.QKeySequence('Ctrl+H'), self)
+            save_shortcut.activated.connect(self.do_html_checkcif)
+            save_shortcut = QShortcut(QtGui.QKeySequence('Ctrl+P'), self)
+            save_shortcut.activated.connect(self.do_pdf_checkcif)
         #
         self.ui.DetailsPushButton.clicked.connect(self.show_residuals)
         self.ui.BackpushButtonDetails.clicked.connect(self.back_to_main_noload)
@@ -599,12 +603,6 @@ class AppWindow(QMainWindow):
         for row in range(table.rowCount()):
             if not table.cellWidget(row, 0).isChecked():
                 cifkey = table.item(row, 1).data(2)
-                try:
-                    row_num = self.ui.cif_main_table.vheaderitems.index(cifkey)
-                    # Leads to a crash when activated:
-                    # del self.ui.cif_main_table.vheaderitems[row_num]
-                except ValueError:
-                    continue
                 self.cif.block.set_pair(cifkey, '?')
                 self.ui.cif_main_table.setText(key=cifkey, column=COL_CIF, txt='?')
                 self.ui.cif_main_table.setText(key=cifkey, column=COL_DATA, txt='?')
@@ -814,6 +812,8 @@ class AppWindow(QMainWindow):
         self.ckf.start()
 
     def _get_check_def(self):
+        if os.environ.get('NO_NETWORK'):
+            return
         if self.checkdef_file.exists() and file_age_in_days(self.checkdef_file) < 60:
             self.checkdef = self.checkdef_file.read_text().splitlines(keepends=False)
         else:
