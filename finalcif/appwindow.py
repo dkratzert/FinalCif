@@ -86,10 +86,7 @@ class AppWindow(QMainWindow):
         self.checkdef = []
         self.changes_answer: int = 0
         self.validation_response_forms_list = []
-        if not os.environ.get('NO_NETWORK'):
-            self.checkdef_file: Path = Path.home().joinpath('check.def')
-        else:
-            self.checkdef_file = None
+        self.checkdef_file: Path = Path.home().joinpath('check.def')
         self.missing_data: set = set()
         self.temperature_warning_displayed = False
         self.threadpool = []
@@ -280,11 +277,10 @@ class AppWindow(QMainWindow):
         #
         save_shortcut = QShortcut(QtGui.QKeySequence('Ctrl+S'), self)
         save_shortcut.activated.connect(self.save_current_cif_file)
-        if not os.environ.get('NO_NETWORK'):
-            save_shortcut = QShortcut(QtGui.QKeySequence('Ctrl+H'), self)
-            save_shortcut.activated.connect(self.do_html_checkcif)
-            save_shortcut = QShortcut(QtGui.QKeySequence('Ctrl+P'), self)
-            save_shortcut.activated.connect(self.do_pdf_checkcif)
+        save_shortcut = QShortcut(QtGui.QKeySequence('Ctrl+H'), self)
+        save_shortcut.activated.connect(self.do_html_checkcif)
+        save_shortcut = QShortcut(QtGui.QKeySequence('Ctrl+P'), self)
+        save_shortcut.activated.connect(self.do_pdf_checkcif)
         #
         self.ui.DetailsPushButton.clicked.connect(self.show_residuals)
         self.ui.BackpushButtonDetails.clicked.connect(self.back_to_main_noload)
@@ -812,8 +808,6 @@ class AppWindow(QMainWindow):
         self.ckf.start()
 
     def _get_check_def(self):
-        if os.environ.get('NO_NETWORK'):
-            return
         if self.checkdef_file.exists() and file_age_in_days(self.checkdef_file) < 60:
             self.checkdef = self.checkdef_file.read_text().splitlines(keepends=False)
         else:
