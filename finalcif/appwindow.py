@@ -1230,7 +1230,8 @@ class AppWindow(QMainWindow):
                                    new_block=block_name if not finalcif_changes_filename.exists() else '')
         # new block of added cif is not loaded:
         if block_name in changes_cif.doc:
-            changes_cif.load_this_block(list(changes_cif.doc).index(block_name))
+            block_names = [x.name for x in changes_cif.doc]
+            changes_cif.load_this_block(block_names.index(block_name))
         changes_cif.fileobj.touch(exist_ok=True)
         return changes_cif
 

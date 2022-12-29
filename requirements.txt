@@ -14,8 +14,8 @@ PyQt5-stubs==5.15.6.0
 PyQtWebEngine==5.15.6
 python-docx==0.8.11
 pywin32-ctypes==0.2.0
-QtAwesome==1.1.1
-QtPy==2.1.0
+QtAwesome
+QtPy
 requests
 urllib3
 docxtpl
