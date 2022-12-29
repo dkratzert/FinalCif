@@ -60,6 +60,8 @@ So you can use them with MS Word, Openoffice or Libre Office and other Office Op
 
 FinalCif uses the Jinja2 template language to exchange specific instructions in the templates with
 precalculated information and direct values from the CIF file.
+Be careful with the 'Track Changes' feature of MS Word. It tends to create incompatible
+template documents, but this is can be fixed with the 'accept all changes' option in Word.
 
 In the templates, you have two different types of information to add:
 
