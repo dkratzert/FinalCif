@@ -72,7 +72,7 @@ class Crystallization(FormatMixin):
         self.crytsalization_method = gstr(self.cif['_exptl_crystal_recrystallization_method'])
         if not self.crytsalization_method:
             self.crytsalization_method = '[No crystallization method was given]'
-        sentence = "{}. "
+        sentence = "The sample was crystallized {}. "
         self.text = sentence.format(remove_line_endings(retranslate_delimiter(self.crytsalization_method)))
         paragraph.add_run(retranslate_delimiter(self.text))
 
@@ -80,16 +80,27 @@ class Crystallization(FormatMixin):
 class CrstalSelection(FormatMixin):
     def __init__(self, cif: CifContainer, paragraph: Paragraph):
         self.cif = cif
-        self.temperature = gstr(self.cif['_diffrn_ambient_temperature'])
+        temperature = gstr(self.cif['_diffrn_ambient_temperature'])
+        shape = gstr(self.cif['_exptl_crystal_description'])
+        colour = gstr(self.cif['_exptl_crystal_colour'])
+        crystal_mount = gstr(self.cif['_diffrn_measurement_specimen_support'])
+        #adhesive = gstr(self.cif['_diffrn_measurement_specimen_adhesive'])
+        #if not adhesive:
+        #    adhesive = '[No _diffrn_measurement_specimen_adhesive given]'
+        if not crystal_mount:
+            crystal_mount = '[No _diffrn_measurement_specimen_support given]'
         method = 'shock-cooled '
-        sentence = "The data for {} were collected from a {}single crystal at {}{}K "
         try:
-            if float(self.temperature.split('(')[0]) > 200:
+            if float(temperature.split('(')[0]) > 200:
                 method = ''
         except ValueError:
             method = ''
-        self.txt = sentence.format(self.cif.block.name, method, self.temperature, protected_space)
-        paragraph.add_run(retranslate_delimiter(self.txt))
+        txt_crystal = (f"A {colour}, {shape} shaped crystal of {self.cif.block.name} was mounted on a "
+                       f"{crystal_mount} with perfluoroether oil. ")
+        txt_data = (f"Data were collected from a {method}single crystal at {temperature}{protected_space}K ")
+        paragraph.add_run(retranslate_delimiter(txt_crystal))
+        Crystallization(cif, paragraph)
+        paragraph.add_run(retranslate_delimiter(txt_data))
 
 
 class MachineType():
