@@ -1,15 +1,11 @@
-pyinstaller
-
-# Upgrade gemmi to Git master:
-# pip install https://github.com/project-gemmi/gemmi/archive/master.zip --upgrade
-
 # documentation:
 # Go to docs and do:
 # ./make singlehtml
 
 # For development
-
+pyinstaller
 sphinx
 sphinx-rtd-theme
 py
 pluggy
+pytest
