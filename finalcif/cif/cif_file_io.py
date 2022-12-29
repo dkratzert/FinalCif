@@ -111,6 +111,11 @@ class CifContainer():
         self.current_block = self.block.name
         self._on_load()
 
+    def load_block_by_name(self, blockname):
+        self.block = self.doc.find_block(blockname)
+        self.current_block = self.block.name
+        self._on_load()
+
     def _on_load(self) -> None:
         # will not ok with non-ascii characters in the res file:
         self.chars_ok = True

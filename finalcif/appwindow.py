@@ -1229,9 +1229,8 @@ class AppWindow(QMainWindow):
         changes_cif = CifContainer(file=finalcif_changes_filename,
                                    new_block=block_name if not finalcif_changes_filename.exists() else '')
         # new block of added cif is not loaded:
-        if block_name in changes_cif.doc:
-            block_names = [x.name for x in changes_cif.doc]
-            changes_cif.load_this_block(block_names.index(block_name))
+        if block_name in [x.name for x in changes_cif.doc]:
+            changes_cif.load_block_by_name(block_name)
         changes_cif.fileobj.touch(exist_ok=True)
         return changes_cif
 
