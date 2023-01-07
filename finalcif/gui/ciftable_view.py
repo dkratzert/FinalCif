@@ -1,9 +1,9 @@
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtCore import pyqtSignal, Qt
 from PyQt5.QtGui import QCursor
-from PyQt5.QtWidgets import QWidget, QStyleOptionViewItem, QItemEditorFactory, QHeaderView
+from PyQt5.QtWidgets import QWidget, QStyleOptionViewItem, QHeaderView
+
 from finalcif.gui.plaintextedit import MyQPlainTextEdit
-from finalcif.gui.table_model import Column
 
 """
 textedit = MyQPlainTextEdit(self)
@@ -22,22 +22,34 @@ class CifItemEditor(QtWidgets.QStyledItemDelegate):
     def createEditor(self, parent: QWidget, option: 'QStyleOptionViewItem', index: QtCore.QModelIndex) -> QWidget:
         return MyQPlainTextEdit(parent)
 
-    #def itemEditorFactory(self) -> QItemEditorFactory:
+    def setEditorData(self, editor: MyQPlainTextEdit, index):
+        editor.setPlainText(index.data())
+
+    def setModelData(self, editor: MyQPlainTextEdit, model, index):
+        model.setData(index, editor.toPlainText(), Qt.ItemDataRole.EditRole)
+
+    def updateEditorGeometry(self, editor: MyQPlainTextEdit, option: 'QStyleOptionViewItem', index: QtCore.QModelIndex):
+        print(editor.toPlainText())
+        print(editor.sizeHint())
+        editor.setGeometry(option.rect)
+
+    # def itemEditorFactory(self) -> QItemEditorFactory:
     #    factory = QItemEditorFactory()
     #    factory.registerEditor(Qt.EditRole, MyQPlainTextEdit)
     #    return factory
 
-    #def setEditorData(self, editor: QWidget, index: QtCore.QModelIndex) -> None:
+    # def setEditorData(self, editor: QWidget, index: QtCore.QModelIndex) -> None:
     #    editor.setPlainText(index.data(role=Qt.EditRole))
 
-    #def updateEditorGeometry(self, editor: QWidget, option: 'QStyleOptionViewItem', index: QtCore.QModelIndex) -> None:
+    # def updateEditorGeometry(self, editor: QWidget, option: 'QStyleOptionViewItem', index: QtCore.QModelIndex) -> None:
     #    print(editor)
     #    print(option)
     #    pass
 
-    #def setModelData(self, editor: QWidget, model: QtCore.QAbstractItemModel, index: QtCore.QModelIndex) -> None:
+    # def setModelData(self, editor: QWidget, model: QtCore.QAbstractItemModel, index: QtCore.QModelIndex) -> None:
     #    print(editor, model)
     #    pass
+
 
 class CifTableView(QtWidgets.QTableView):
     save_excel_triggered = pyqtSignal()
