@@ -317,8 +317,9 @@ class AppWindow(QMainWindow):
         self.ui.appendCifPushButton.clicked.connect(self.append_cif)
         self.ui.drawImagePushButton.clicked.connect(self.draw_image)
         #
-        self.ui.ExportAllTemplatesPushButton.clicked.connect(self.export_all_templates)
-        self.ui.ImportAllTemplatesPushButton.clicked.connect(self.import_all_templates)
+        # TODO: re-add these widgets in the ui file:
+        #self.ui.ExportAllTemplatesPushButton.clicked.connect(self.export_all_templates)
+        #self.ui.ImportAllTemplatesPushButton.clicked.connect(self.import_all_templates)
 
     @property
     def finalcif_changes_filename(self):

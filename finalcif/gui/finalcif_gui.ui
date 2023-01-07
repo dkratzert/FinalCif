@@ -2574,7 +2574,6 @@ The data source will be ignored until next program restart.</string>
               </layout>
              </widget>
             </item>
-
            </layout>
           </widget>
           <widget class="QWidget" name="page_Loops">
