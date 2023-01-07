@@ -1,5 +1,22 @@
 FinalCif recent changes
 -----------------------
+* v113 Improved handling of empty changes files.
+* v112 Use correct Rint from TWINABS output file for _diffrn_reflns_av_R_equivalents.
+* v111 Fixed possible crashes with the "track changes" option. Fixed crash with unusual format of refinement program.
+* v110 Added possibility to create new loops from the list of all official CIF keywords.
+       Reference for NospherA2 added.
+* v109 New option to track changes in a separate CIF in order to be faster at a previous state when starting from scratch
+       (see new checkbox in options menu).
+       Added line number in CIF text viewer after file save.
+       Deleted equipment templates now reappear again when they are re-imported.
+* v108 Fixed item selection bug in report templates list. Fixed extra empty line after index ranges.
+       Adds a formatted moiety formula to templated reports. Fixed path to report templates.
+* v107 New ADP table in report document. It is configurable in the options.
+       More details about hydrogen atoms in report.
+       Refinment details (_refine_special_details) are added to the report document.
+       Slightly improved handling of CIF with 'global', but better never use 'global'.
+       Improved handling and warning about utf-8 characters in CIF files.
+       Improved report text for different hydrogen atom refinement types.
 * v106 Many small fixes in report texts. Fixed incompatibility with gemmi-0.5.5 due to api change.
        The Report button now shows the report type (from template or not).
        Added central button for export/import of all templates. 

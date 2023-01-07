@@ -26,7 +26,7 @@ class TestSADABSWU19(unittest.TestCase):
         self.assertEqual(0.0472, self.s.Rint)
 
     def test_transmission(self):
-        self.assertEqual([0.7135, 0.7459], self.s.dataset(0).transmission)
+        self.assertEqual('min: 0.7135, max: 0.7459', str(self.s.dataset(0).transmission))
 
     def test_version(self):
         self.assertEqual('SADABS-2016/2 - Bruker AXS area detector scaling and absorption correction: Krause, L., '
@@ -42,11 +42,11 @@ class TestTWINABS(unittest.TestCase):
         self.s = Sadabs(r'twin-4-5.abs', searchpath=Path('test-data'))  # this is a twinabs file
 
     def test_transmission(self):
-        self.assertEqual([0.794433, 0.86207], self.s.dataset(0).transmission)
-        self.assertEqual([0.793942, 0.862070], self.s.dataset(1).transmission)
+        self.assertEqual([0.794433, 0.86207], [self.s.dataset(0).transmission.tmin, self.s.dataset(0).transmission.tmax])
+        self.assertEqual([0.793942, 0.862070], [self.s.dataset(1).transmission.tmin, self.s.dataset(1).transmission.tmax])
 
     def test_rint(self):
-        self.assertEqual(0.0376, self.s.Rint)
+        self.assertEqual(0.0456, self.s.Rint)
 
     def test_hklfile(self):
         self.assertEqual('twin4.hkl', self.s.dataset(0).hklfile)

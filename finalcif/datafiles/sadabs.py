@@ -1,43 +1,53 @@
 #!python
-
-#  ----------------------------------------------------------------------------
-#  "THE BEER-WARE LICENSE" (Revision 42):
-#  dkratzert@gmx.de> wrote this file.  As long as you retain
-#  this notice you can do whatever you want with this stuff. If we meet some day,
-#  and you think this stuff is worth it, you can buy me a beer in return. 
-#  Dr. Daniel Kratzert
-#  ----------------------------------------------------------------------------
-# 
-
+import dataclasses
 #  Copyright (c)  2019 by Daniel Kratzert
 import re
 from pathlib import Path
+from typing import Optional
 
 from finalcif.datafiles.utils import get_file_to_parse
 from finalcif.tools.misc import to_float, to_int
 
 
-class Dataset():
-    def __init__(self):
-        self.written_reflections = None
-        self.hklfile = None
-        self.transmission = None
-        self.mu_r = None
-        self.point_group_merge = 1
-        self.filetype = 4
-        self.domain = 1
-        self.numerical = False
+#  ----------------------------------------------------------------------------
+#  "THE BEER-WARE LICENSE" (Revision 42):
+#  dkratzert@gmx.de> wrote this file.  As long as you retain
+#  this notice you can do whatever you want with this stuff. If we meet some day,
+#  and you think this stuff is worth it, you can buy me a beer in return.
+#  Dr. Daniel Kratzert
+#  ----------------------------------------------------------------------------
+#
+
+@dataclasses.dataclass
+class Transmission():
+    tmin: float = None
+    tmax: float = None
 
     def __repr__(self):
-        out = ''
-        out += 'written refl.:\t{}\n'.format(self.written_reflections)
-        out += 'transmission:\t{}\n'.format(self.transmission)
-        out += 'Mu*r:\t\t\t{}\n'.format(self.mu_r)
-        out += 'Merging:\t\t{}\n'.format(self.point_group_merge)
-        out += 'hklfile:\t\t{}\n'.format(self.hklfile)
-        out += 'HKL file type:\t{}\n'.format(self.filetype)
-        out += 'Domain in hkl:\t{}\n'.format(self.domain)
-        out += 'Abs. type:\t\t{}'.format('multi-scan' if not self.numerical else 'numerical')
+        return f'min: {self.tmin}, max: {self.tmax}'
+
+
+class Dataset():
+    def __init__(self):
+        self.written_reflections: Optional[int] = None
+        self.hklfile: Optional[str] = None
+        self.transmission = Transmission()
+        self.mu_r: Optional[str] = None
+        self.point_group_merge: Optional[str] = '1'
+        self.filetype: Optional[int] = 4
+        self.domain: str = '1'
+        self.numerical: bool = False
+
+    def __repr__(self):
+        out = f''
+        out += f'written refl.:\t{self.written_reflections}\n'
+        out += f'transmission:\t{self.transmission}\n'
+        out += f'Mu*r:\t\t\t{self.mu_r}\n'
+        out += f'Merging:\t\t{self.point_group_merge}\n'
+        out += f'hklfile:\t\t{self.hklfile}\n'
+        out += f'HKL file type:\t{self.filetype}\n'
+        out += f'Domain in hkl:\t{self.domain}\n'
+        out += f'Abs. type:\t\t{"multi-scan" if not self.numerical else "numerical"}'
         out += '\n'
         return out
 
@@ -50,7 +60,7 @@ class Sadabs():
     _rint_regex = re.compile(r'^.*Rint\s=.*observations and')
     _rint3sig_regex = re.compile(r'^.*Rint\s=.*observations with')
 
-    def __init__(self, basename: str, searchpath: Path = Path(__file__).parent.parent, fileobj: Path = None):
+    def __init__(self, basename: str = '', searchpath: Path = Path(__file__).parent.parent, fileobj: Path = None):
         """
         """
         self.faces = False
@@ -84,7 +94,7 @@ class Sadabs():
                 self.observations = to_float(spline[5])
             if self._rint3sig_regex.match(line):
                 #  Rint = 0.0376  for all   44606  observations with I > 3sigma(I)
-                self.Rint = to_float(spline[2])
+                self.Rint_3sig = to_float(spline[2])
                 self.observations_3sig = to_float(spline[5])
             if line.startswith(" Reading file"):
                 self.input_files.append(spline[2])
@@ -119,7 +129,9 @@ class Sadabs():
             if "Estimated minimum and maximum transmission" in line \
                     or 'Minimum and maximum apparent transmission' in line:
                 try:
-                    self.dataset(n).transmission = [float(x) for x in spline[-2:]]
+                    transmissions = [float(x) for x in spline[-2:]]
+                    self.dataset(n).transmission.tmin = min(transmissions)
+                    self.dataset(n).transmission.tmax = max(transmissions)
                 except ValueError:
                     pass
             # This is always last:
@@ -145,19 +157,22 @@ class Sadabs():
             return Dataset()
 
     def __repr__(self):
-        out = 'Program:\t\t{}\n'.format(self.program)
-        out += 'version:\t\t{}\n'.format(self.version)
-        out += 'Input File:\t\t{}\n'.format(' '.join(self.input_files))
-        out += 'Input Batch:\t{}\n'.format(self.batch_input)
-        out += 'rint:\t\t\t{}\n'.format(self.Rint)
-        out += 'components:\t\t{}\n'.format(self.twin_components)
+        out = f'Program:\t\t{self.program}\n'
+        out += f'version:\t\t{self.version}\n'
+        out += f'Abs File:\t\t{self.filename.name}\n'
+        out += f'raw input File:\t{" ".join(self.input_files)}\n'
+        out += f'Input Batch:\t{self.batch_input}\n'
+        out += f'Rint:\t\t\t{self.Rint}\n'
+        out += f'Rint-3sig:\t\t{self.Rint_3sig}\n'
+        out += f'components:\t\t{self.twin_components}\n'
         out += '\n'
         return out
 
 
 if __name__ == '__main__':
     print('###############\n\n')
-    s = Sadabs(fileobj=Path(r'/Volumes/nifty/test_workordner/test766-twin/work/test766.abs'))
+    # s = Sadabs(fileobj=Path(r'tests/statics/1163_67_1_rint_matt.abs'))
+    s = Sadabs(fileobj=Path(r'tests/examples/work/cu_BruecknerJK_153F40.abs'))
     print(s)
     for dat in s:
         print(dat)

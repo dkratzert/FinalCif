@@ -2,8 +2,8 @@
 
 # Installs the required packages to run the Linux/MacOS application
 
-python3.9 -m venv venv
+python3.10 -m venv venv
 source venv/bin/activate
-venv/bin/python3.9 -m pip install pip -U
+venv/bin/python3.10 -m pip install pip -U
 
 venv/bin/pip3 install -r requirements.txt

@@ -7,6 +7,7 @@
 #  ----------------------------------------------------------------------------
 import re
 from collections import namedtuple
+from functools import cache
 from pathlib import Path
 from typing import Dict, List, Tuple, Union, Generator, Type
 
@@ -27,6 +28,13 @@ class CifContainer():
     """
 
     def __init__(self, file: Union[Path, str], new_block: str = ''):
+        """
+
+        Args:
+            file: CIF file to open
+            new_block: Create a new block (new file) if a name is given. Otherwise, just
+                       the existing document is opened.
+        """
         if isinstance(file, str):
             self.fileobj = Path(file)
         elif isinstance(file, Path):
@@ -43,7 +51,9 @@ class CifContainer():
         else:
             self.doc = self.read_file(str(self.fileobj.resolve(strict=True)))
         # Starting with first block, but can use others with subsequent self._onload():
-        self.block = self.doc[0]
+        self.block: gemmi.cif.Block = self.doc[0]
+        self.shx = Shelxfile()
+        self.shx.read_string(self.res_file_data[1:-1])
         self._on_load()
 
     @property
@@ -60,7 +70,7 @@ class CifContainer():
         The name of the current file without path:
         foo.cif
         """
-        return Path(self.doc.source).name
+        return Path(self.doc.source).name or self.fileobj.name
 
     @property
     def finalcif_file(self) -> Path:
@@ -71,15 +81,26 @@ class CifContainer():
         filename = self.finalcif_file_prefixed(prefix='', suffix='-finalcif.cif')
         return filename
 
-    def finalcif_file_prefixed(self, prefix: str, suffix: str = '-finalcif.cif') -> Path:
+    def finalcif_file_prefixed(self, prefix: str, suffix: str = '-finalcif.cif', force_strip=True) -> Path:
         """
         The full path of the file with a prefix and '-finalcif.cif' attached to the end.
         The suffix needs '-finalcif' in order to contain the finalcif ending.
         "foo/bar/baz-finalcif.cif"
+
+        :param forece_strip: Forces to strip the filename also after the '-finalcif' string.
         """
-        file_witout_finalcif = strip_finalcif_of_name(Path(self.filename).stem)
+        file_witout_finalcif = strip_finalcif_of_name(Path(self.filename).stem, till_name_ends=force_strip)
         filename = self.path_base.joinpath(Path(prefix + file_witout_finalcif + suffix))
         return filename
+
+    def get_line_numbers_of_bad_characters(self, filepath: Path):
+        line_numbers = []
+        for num, line in enumerate(filepath.read_bytes().splitlines(keepends=True)):
+            try:
+                line.decode('ascii')
+            except(UnicodeDecodeError):
+                line_numbers.append(num)
+        return line_numbers
 
     @property
     def is_multi_cif(self) -> bool:
@@ -90,11 +111,15 @@ class CifContainer():
         self.current_block = self.block.name
         self._on_load()
 
+    def load_block_by_name(self, blockname):
+        self.block = self.doc.find_block(blockname)
+        self.current_block = self.block.name
+        self._on_load()
+
     def _on_load(self) -> None:
         # will not ok with non-ascii characters in the res file:
         self.chars_ok = True
         self.doc.check_for_duplicates()
-        self.hkl_extra_info = self._abs_hkl_details()
         self.order = order
         self.dsr_used = DSRFind(self.res_file_data).dsr_used
         self.atomic_struct: gemmi.SmallStructure = gemmi.make_small_structure_from_block(self.block)
@@ -103,6 +128,11 @@ class CifContainer():
             zip([x.upper() for x in self.block.find_loop('_atom_site_label')],
                 [x.upper() for x in self.block.find_loop('_atom_site_type_symbol')]))
         self.check_hkl_min_max()
+
+    @property
+    @cache
+    def hkl_extra_info(self):
+        return self._abs_hkl_details()
 
     def check_hkl_min_max(self) -> None:
         if not all([self['_diffrn_reflns_limit_h_min'], self['_diffrn_reflns_limit_h_max'],
@@ -171,23 +201,26 @@ class CifContainer():
         self.set_pair_delimited(key, value)
 
     def __delitem__(self, key: str):
-        self.block.find_pair_item(key).erase()
+        try:
+            self.block.find_pair_item(key).erase()
+        except AttributeError:
+            pass
+            # key is not in block
 
     def __contains__(self, item):
         return bool(self.__getitem__(item))
 
     def __str__(self) -> str:
-        return "CIF file: {0}\n" \
-               "{1} Block(s): {2}\n" \
-               "Contains SHELX res file: {3}\n" \
-               "Contains hkl data: {4}\n" \
-               "Has {5} atoms" \
-               ", {6} bonds" \
-               ", {7} angles" \
-               "".format(str(self.fileobj.resolve()), len(c.doc), ', '.join([x.name for x in c.doc]),
-                         True if self.res_file_data else False,
-                         len(self.hkl_file) > 1,
-                         self.natoms(), self.nbonds(), self.nangles())
+        return (f"CIF file: {str(self.fileobj.resolve())}\n"
+                f"{len(self.doc)} Block(s): {', '.join([x.name for x in self.doc])}\n"
+                f"Contains SHELX res file: {True if self.res_file_data else False}\n"
+                f"Has {self.natoms()} atoms"
+                f", {self.nbonds()} bonds"
+                f", {self.nangles()} angles")
+
+    def file_is_there_and_writable(self):
+        import os
+        return self.fileobj.exists() and self.fileobj.is_file() and os.access(self.fileobj, os.W_OK)
 
     def set_pair_delimited(self, key: str, txt: str):
         """
@@ -205,13 +238,16 @@ class CifContainer():
             else:
                 self.block.set_pair(key, quote(txt))
 
-    def save(self, filename: Path = None) -> None:
+    def save(self, filename: Union[Path, None] = None) -> None:
         """
         Saves the current cif file.
         :param filename:  Name to save cif file to.
         """
         if not filename:
             filename = self.finalcif_file
+        if self.is_empty():
+            print(f'File {filename} is empty.')
+            return
         self.order_cif_keys()
         print('Saving to', Path(filename).resolve())
         self.doc.write_file(str(filename), gemmi.cif.Style.Indent35)
@@ -297,10 +333,8 @@ class CifContainer():
         return HKL(self.hkl_file, self.block.name, hklf_type=self.hklf_number).get_hkl_min_max()
 
     def _hklf_number_from_shelxl_file(self) -> int:
-        shx = Shelxfile()
-        shx.read_string(self.res_file_data[1:-1])
-        if shx.hklf:
-            return shx.hklf.n if shx.hklf.n != 0 else 4
+        if self.shx.hklf:
+            return self.shx.hklf.n if self.shx.hklf.n != 0 else 4
         else:
             return 4
 
@@ -384,6 +418,33 @@ class CifContainer():
                 zero_reflection_position = len(hkl_splitted) - num
         return zero_reflection_position
 
+    def is_empty(self):
+        if len(self.keys()) + len(self.loops) == 0:
+            return True
+        return False
+
+    def keys(self):
+        """
+        Returns a plain list of keys that are really in this CIF.
+        """
+        keys = []
+        for item in self.block:
+            if item.pair is not None:
+                key, _ = item.pair
+                keys.append(key)
+        return keys
+
+    def values(self):
+        """
+        Returns a plain list of keys that are really in this CIF.
+        """
+        values = []
+        for item in self.block:
+            if item.pair is not None:
+                _, value = item.pair
+                values.append(value)
+        return values
+
     @property
     def loops(self) -> List[gemmi.cif.Loop]:
         """
@@ -394,6 +455,12 @@ class CifContainer():
             if b.loop:
                 loops.append(b.loop)
         return loops
+
+    def add_loop_to_cif(self, loop_tags: List[str], loop_values: Union[list, tuple]) -> gemmi.cif.Loop:
+        gemmi_loop = self.init_loop(loop_tags)
+        for row in list(grouper(loop_values, len(loop_tags))):
+            gemmi_loop.add_row(row)
+        return gemmi_loop
 
     @property
     def n_loops(self):
@@ -614,6 +681,21 @@ class CifContainer():
             yield atom(label=at.label, type=at.type_symbol, x=x, y=y, z=z,
                        part=at.disorder_group, occ=at.occ, u_eq=at.u_iso)
 
+    def displacement_parameters(self):
+        """
+        Yields the anisotropic displacement parameters.
+        """
+        labels = self.block.find_loop('_atom_site_aniso_label')
+        u11 = self.block.find_loop('_atom_site_aniso_U_11')
+        u22 = self.block.find_loop('_atom_site_aniso_U_22')
+        u33 = self.block.find_loop('_atom_site_aniso_U_33')
+        u23 = self.block.find_loop('_atom_site_aniso_U_23')
+        u13 = self.block.find_loop('_atom_site_aniso_U_13')
+        u12 = self.block.find_loop('_atom_site_aniso_U_12')
+        adp = namedtuple('adp', ('label', 'U11', 'U22', 'U33', 'U23', 'U13', 'U12'))
+        for label, u11, u22, u33, u23, u13, u12 in zip(labels, u11, u22, u33, u23, u13, u12):
+            yield adp(label=label, U11=u11, U22=u22, U33=u33, U12=u12, U13=u13, U23=u23)
+
     @property
     def hydrogen_atoms_present(self) -> bool:
         for at in self.atomic_struct.sites:
@@ -743,21 +825,21 @@ class CifContainer():
             zip(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm):
             yield hydr(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, self.checksymm(symm))
 
-    def key_value_pairs(self) -> List[List[str]]:
+    def key_value_pairs(self) -> List[Tuple[str, str]]:
         """
         Returns the key/value pairs of a cif file sorted by priority.
         """
-        keys_without_values, keys_with_values = self.get_keys()
-        return keys_without_values + [['These below are already in:', '---------------------']] + keys_with_values
+        keys_without_values, keys_with_values = self.keys_with_essentials()
+        return keys_without_values + [('These below are already in:', '---------------------')] + keys_with_values
 
     def _is_centrokey(self, key) -> bool:
         """
-        Is True if the kurrent key is only valid 
+        Is True if the kurrent key is only valid
         for non-centrosymmetric structures
         """
         return self.is_centrosymm and key in non_centrosymm_keys
 
-    def get_keys(self) -> Tuple[List[List[str]], List[List[str]]]:
+    def keys_with_essentials(self) -> Tuple[List[Tuple[str, str]], List[Tuple[str, str]]]:
         """
         Returns the keys to be displayed in the main table as two separate lists.
         """

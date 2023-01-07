@@ -1,6 +1,6 @@
 import sys
 from collections import namedtuple
-from math import sqrt, cos, sin
+from math import sqrt, cos, sin, dist
 from pathlib import Path
 from typing import List, Union
 
@@ -56,6 +56,9 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.projected_points = []
         self.zoom = 1.1
 
+    def clear(self):
+        self.open_molecule(atoms=[])
+
     def show_labels(self, value: bool):
         self.labels = value
         self.update()
@@ -65,7 +68,7 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.atoms.clear()
         for at in atoms:
             self.atoms.append(Atom(at.x, at.y, at.z, at.label, at.type, at.part))
-        if len(self.atoms) > 200:
+        if len(self.atoms) > 400:
             self.bond_width = 1
         self.connections = self.get_conntable_from_atoms()
         self.get_center_and_radius()
@@ -83,7 +86,11 @@ class MoleculeWidget(QtWidgets.QWidget):
             font = self.painter.font()
             font.setPixelSize(13)
             self.painter.setFont(font)
-            self.draw()
+            try:
+                self.draw()
+            except ValueError as e:
+                print(f'Draw structure crashed: {e}')
+                self.painter.end()
 
     def mousePressEvent(self, event: QMouseEvent) -> None:
         self.lastPos = event.pos()
@@ -180,7 +187,7 @@ class MoleculeWidget(QtWidgets.QWidget):
             self.objects.append((0, atom))
         self.objects.sort(reverse=True, key=lambda atom: atom[1].coordinate[2])
 
-    def distance(self, vector1, vector2):
+    def distance(self, vector1: np.array, vector2: np.array):
         diff = vector2 - vector1
         return sqrt(np.dot(diff.T, diff))
 
@@ -199,7 +206,7 @@ class MoleculeWidget(QtWidgets.QWidget):
             c[j] = (max_[j] + min_[j]) / 2
         r = 0
         for atom in self.atoms:
-            d = self.distance(atom.coordinate, c) + 1.5
+            d = dist(atom.coordinate, c) + 1.5
             if d > r:
                 r = d
         self.molecule_center = np.array(c, dtype=np.float32)
@@ -219,7 +226,7 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.painter.setPen(QPen(QColor(100, 50, 5), 2, Qt.SolidLine))
         self.painter.drawText(atom.screenx + 18, atom.screeny - 4, atom.name)
 
-    def get_conntable_from_atoms(self, extra_param: float = 0.48) -> tuple:
+    def get_conntable_from_atoms(self, extra_param: float = 1.2) -> tuple:
         """
         Returns a connectivity table from the atomic coordinates and the covalence
         radii of the atoms.
@@ -229,14 +236,14 @@ class MoleculeWidget(QtWidgets.QWidget):
         h = ('H', 'D')
         for num1, at1 in enumerate(self.atoms, 0):
             for num2, at2 in enumerate(self.atoms, 0):
-                if (at1.part != 0 or at2.part != 0) and at1.part != at2.part:
-                    continue
-                d = self.distance(at1.coordinate, at2.coordinate)
-                if d > 4.0:  # makes bonding faster (longer bonds do not exist)
+                if (at1.part != 0 and at2.part != 0) and at1.part != at2.part:
                     continue
                 if at1.name == at2.name:  # name1 = name2
                     continue
-                if (at1.radius + at2.radius) + extra_param > d:
+                d = dist(at1.coordinate, at2.coordinate)
+                if d > 4.0:  # makes bonding faster (longer bonds do not exist)
+                    continue
+                if (at1.radius + at2.radius) * extra_param > d:
                     if at1.type_ in h and at2.type_ in h:
                         continue
                     # The extra time for this is not too much:

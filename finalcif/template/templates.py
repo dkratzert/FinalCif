@@ -68,7 +68,7 @@ class ReportTemplates:
         itemslist = []
         for num in range(self.lw.count()):
             itemtext = self.lw.item(num).text()
-            if not itemtext in itemslist:
+            if itemtext not in itemslist:
                 itemslist.append(itemtext)
         return itemslist
 

@@ -8,7 +8,7 @@
     <x>0</x>
     <y>0</y>
     <width>1604</width>
-    <height>776</height>
+    <height>852</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -406,8 +406,14 @@
               </property>
              </widget>
             </item>
-            <item>
+            <item alignment="Qt::AlignHCenter">
              <widget class="QPushButton" name="ImportCifPushButton">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
               <property name="text">
                <string>Import .cif, .pcf, .cif_od, .cfx or .sqf file</string>
               </property>
@@ -678,11 +684,6 @@
                </property>
                <item>
                 <widget class="QListWidget" name="LoopTemplatesListWidget">
-                 <property name="font">
-                  <font>
-                   <pointsize>11</pointsize>
-                  </font>
-                 </property>
                  <property name="editTriggers">
                   <set>QAbstractItemView::NoEditTriggers</set>
                  </property>
@@ -720,19 +721,6 @@
                   <widget class="QPushButton" name="DeleteLoopAuthorTemplateButton">
                    <property name="text">
                     <string>Delete Author</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="1">
-                  <widget class="QPushButton" name="AddThisAuthorToLoopPushButton">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="text">
-                    <string>Add Author to CIF Loop</string>
                    </property>
                   </widget>
                  </item>
@@ -1282,7 +1270,7 @@
              <number>0</number>
             </property>
             <item>
-             <widget class="QPlainTextEdit" name="FinalCifFilePlainTextEdit">
+             <widget class="QCodeEditor" name="FinalCifFilePlainTextEdit">
               <property name="textInteractionFlags">
                <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
               </property>
@@ -2180,21 +2168,52 @@ The data source will be ignored until next program restart.</string>
               </property>
              </spacer>
             </item>
-            <item row="3" column="0">
-             <widget class="QGroupBox" name="groupBox_COD">
-              <property name="title">
-               <string>Crystallography Open Database</string>
+            <item row="8" column="1" colspan="3">
+             <spacer name="horizontalSpacer_14">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
               </property>
-              <layout class="QFormLayout" name="formLayout_6">
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+
+            <item row="7" column="0">
+             <spacer name="verticalSpacer_6">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Expanding</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="6" column="0" colspan="2">
+             <widget class="QGroupBox" name="groupBox_8">
+
+              <property name="title">
+               <string>CheckCIF Server</string>
+              </property>
+              <layout class="QFormLayout" name="formLayout_4">
                <item row="0" column="0" colspan="2">
-                <widget class="QLabel" name="label_7">
+                <widget class="QLabel" name="label_4">
                  <property name="text">
-                  <string>COD deposit URL:</string>
+                  <string>Change this URL if the CheckCIF server URL changes:</string>
                  </property>
                 </widget>
                </item>
                <item row="1" column="0" colspan="2">
-                <widget class="QLineEdit" name="CODURLTextedit">
+                <widget class="QLineEdit" name="CheckCIFServerURLTextedit">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                    <horstretch>0</horstretch>
@@ -2208,14 +2227,14 @@ The data source will be ignored until next program restart.</string>
                   </size>
                  </property>
                  <property name="text">
-                  <string>https://www.crystallography.net/cod/cgi-bin/cif-deposit.pl</string>
+                  <string>https://checkcif.iucr.org/cgi-bin/checkcif_hkl.pl</string>
                  </property>
                 </widget>
                </item>
               </layout>
              </widget>
             </item>
-            <item row="2" column="0">
+            <item row="2" column="0" colspan="2">
              <widget class="QGroupBox" name="groupBox_7">
               <property name="title">
                <string>CheckCIF Server</string>
@@ -2250,27 +2269,13 @@ The data source will be ignored until next program restart.</string>
               </layout>
              </widget>
             </item>
-            <item row="1" column="0">
+            <item row="1" column="0" colspan="4">
              <widget class="QGroupBox" name="groupBox_5">
               <property name="title">
                <string>Report Options</string>
               </property>
               <layout class="QFormLayout" name="formLayout_5">
-               <item row="0" column="0" colspan="2">
-                <widget class="QCheckBox" name="ReportTextCheckBox">
-                 <property name="text">
-                  <string>No report text in structure report</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0" colspan="2">
-                <widget class="QCheckBox" name="HAtomsCheckBox">
-                 <property name="text">
-                  <string>No bonds and angles to hydrogen atoms</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="0" colspan="2">
+               <item row="3" column="0" colspan="2">
                 <layout class="QHBoxLayout" name="horizontalLayout_6">
                  <property name="topMargin">
                   <number>0</number>
@@ -2332,21 +2337,21 @@ The data source will be ignored until next program restart.</string>
                  </item>
                 </layout>
                </item>
-               <item row="4" column="0">
-                <widget class="Line" name="line_3">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="0" colspan="2">
+               <item row="4" column="0" colspan="2">
                 <widget class="Line" name="line_4">
                  <property name="orientation">
                   <enum>Qt::Horizontal</enum>
                  </property>
                 </widget>
                </item>
-               <item row="5" column="0" colspan="2">
+               <item row="5" column="0">
+                <widget class="Line" name="line_3">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="0" colspan="2">
                 <widget class="QGroupBox" name="groupBox_6">
                  <property name="title">
                   <string>Report Templates</string>
@@ -2453,9 +2458,123 @@ The data source will be ignored until next program restart.</string>
                  </layout>
                 </widget>
                </item>
+               <item row="0" column="0">
+                <layout class="QVBoxLayout" name="verticalLayout_35">
+                 <item>
+                  <widget class="QCheckBox" name="ReportTextCheckBox">
+                   <property name="text">
+                    <string>No report text in structure report</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QCheckBox" name="HAtomsCheckBox">
+                   <property name="text">
+                    <string>No bonds and angles to hydrogen atoms</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item row="0" column="1">
+                <layout class="QVBoxLayout" name="verticalLayout_36">
+                 <property name="leftMargin">
+                  <number>12</number>
+                 </property>
+                 <item>
+                  <widget class="QCheckBox" name="ADPTableCheckBox">
+                   <property name="text">
+                    <string>Add ADP table</string>
+                   </property>
+                   <property name="checked">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <spacer name="verticalSpacer_8">
+                   <property name="orientation">
+                    <enum>Qt::Vertical</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>20</width>
+                     <height>40</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                </layout>
+               </item>
               </layout>
              </widget>
             </item>
+
+            <item row="2" column="2" colspan="2">
+             <widget class="QGroupBox" name="groupBox_COD">
+              <property name="title">
+               <string>Crystallography Open Database</string>
+              </property>
+              <layout class="QFormLayout" name="formLayout_6">
+               <item row="0" column="0" colspan="2">
+                <widget class="QLabel" name="label_7">
+                 <property name="text">
+                  <string>COD deposit URL:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0" colspan="2">
+                <widget class="QLineEdit" name="CODURLTextedit">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>300</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>https://www.crystallography.net/cod/cgi-bin/cif-deposit.pl</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="6" column="2" colspan="2">
+             <widget class="QGroupBox" name="groupBox_10">
+              <property name="title">
+               <string>General Options</string>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_37">
+               <item>
+                <widget class="QCheckBox" name="trackChangesCifCheckBox">
+                 <property name="text">
+                  <string>Track CIF changes in separate file &quot;[name]-finalcif_changes.cif&quot;.</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <spacer name="verticalSpacer_14">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
+             </widget>
+            </item>
+
            </layout>
           </widget>
           <widget class="QWidget" name="page_Loops">
@@ -2470,14 +2589,14 @@ The data source will be ignored until next program restart.</string>
                 <string>Manuscript related</string>
                </attribute>
                <layout class="QGridLayout" name="gridLayout_2">
-                <item row="0" column="2">
-                 <spacer name="horizontalSpacer_21">
+                <item row="0" column="1">
+                 <spacer name="horizontalSpacer_22">
                   <property name="orientation">
                    <enum>Qt::Horizontal</enum>
                   </property>
                   <property name="sizeHint" stdset="0">
                    <size>
-                    <width>535</width>
+                    <width>40</width>
                     <height>20</height>
                    </size>
                   </property>
@@ -2492,6 +2611,19 @@ The data source will be ignored until next program restart.</string>
                    <size>
                     <width>20</width>
                     <height>162</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item row="0" column="2">
+                 <spacer name="horizontalSpacer_21">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>535</width>
+                    <height>20</height>
                    </size>
                   </property>
                  </spacer>
@@ -2621,23 +2753,17 @@ Contact authors should always also appear as regular authors.</string>
                        </property>
                       </widget>
                      </item>
+                     <item>
+                      <widget class="QPushButton" name="AddThisAuthorToLoopPushButton">
+                       <property name="text">
+                        <string>Add Author to CIF Loop</string>
+                       </property>
+                      </widget>
+                     </item>
                     </layout>
                    </item>
                   </layout>
                  </widget>
-                </item>
-                <item row="0" column="1">
-                 <spacer name="horizontalSpacer_22">
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>40</width>
-                    <height>20</height>
-                   </size>
-                  </property>
-                 </spacer>
                 </item>
                </layout>
               </widget>
@@ -2645,35 +2771,6 @@ Contact authors should always also appear as regular authors.</string>
             </item>
             <item>
              <layout class="QGridLayout" name="gridLayout_16">
-              <item row="0" column="3">
-               <spacer name="horizontalSpacer_16">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>20</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-              <item row="4" column="0">
-               <spacer name="verticalSpacer_7">
-                <property name="orientation">
-                 <enum>Qt::Vertical</enum>
-                </property>
-                <property name="sizeType">
-                 <enum>QSizePolicy::Fixed</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>20</width>
-                  <height>28</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
               <item row="0" column="2">
                <widget class="QPushButton" name="revertLoopsPushButton">
                 <property name="text">
@@ -2700,6 +2797,22 @@ Contact authors should always also appear as regular authors.</string>
                 </property>
                </widget>
               </item>
+              <item row="3" column="0">
+               <spacer name="verticalSpacer_7">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+                <property name="sizeType">
+                 <enum>QSizePolicy::Fixed</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>20</width>
+                  <height>28</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
               <item row="0" column="1">
                <spacer name="horizontalSpacer_15">
                 <property name="orientation">
@@ -2713,10 +2826,23 @@ Contact authors should always also appear as regular authors.</string>
                 </property>
                </spacer>
               </item>
-              <item row="1" column="0">
-               <widget class="QPushButton" name="BackToCODPushButton">
+              <item row="0" column="3">
+               <spacer name="horizontalSpacer_16">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>20</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item row="0" column="4">
+               <widget class="QPushButton" name="newLoopPushButton">
                 <property name="text">
-                 <string>Back to COD Deposit</string>
+                 <string>Add New Loop</string>
                 </property>
                </widget>
               </item>
@@ -3255,23 +3381,16 @@ Contact authors should always also appear as regular authors.</string>
                   </item>
                   <item>
                    <widget class="QPushButton" name="Upload_hkl_pushButton">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
                     <property name="text">
                      <string>choose different hkl file</string>
                     </property>
                    </widget>
-                  </item>
-                  <item>
-                   <spacer name="horizontalSpacer_36">
-                    <property name="orientation">
-                     <enum>Qt::Horizontal</enum>
-                    </property>
-                    <property name="sizeHint" stdset="0">
-                     <size>
-                      <width>40</width>
-                      <height>20</height>
-                     </size>
-                    </property>
-                   </spacer>
                   </item>
                  </layout>
                 </item>
@@ -3979,6 +4098,11 @@ please add a publication author:</string>
    <extends>QTableView</extends>
    <header>finalcif.gui.ciftable_view.h</header>
   </customwidget>
+  <customwidget>
+   <class>QCodeEditor</class>
+   <extends>QPlainTextEdit</extends>
+   <header>finalcif.gui.file_editor.h</header>
+  </customwidget>
  </customwidgets>
  <tabstops>
   <tabstop>EMailLineEdit</tabstop>
@@ -4040,8 +4164,6 @@ please add a publication author:</string>
   <tabstop>BackSourcesPushButton</tabstop>
   <tabstop>BackFromOptionspPushButton</tabstop>
   <tabstop>CheckCIFServerURLTextedit</tabstop>
-  <tabstop>ReportTextCheckBox</tabstop>
-  <tabstop>HAtomsCheckBox</tabstop>
   <tabstop>PictureWidthDoubleSpinBox</tabstop>
   <tabstop>AddNewTemplPushButton</tabstop>
   <tabstop>RemoveTemplPushButton</tabstop>
@@ -4073,7 +4195,6 @@ please add a publication author:</string>
   <tabstop>BackpushButtonDetails</tabstop>
   <tabstop>completeLineEdit</tabstop>
   <tabstop>ContactAuthorCheckBox</tabstop>
-  <tabstop>SaveAuthorLoopToTemplateButton</tabstop>
   <tabstop>CODtableWidget</tabstop>
   <tabstop>FullNameLineEdit</tabstop>
   <tabstop>journalNameLineEdit</tabstop>

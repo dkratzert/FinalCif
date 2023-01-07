@@ -30,15 +30,15 @@ def unable_to_open_message(filepath: Path, not_ok: Exception) -> None:
         line = str(not_ok)[4:].split(':')[1]
     except IndexError:
         line = None
+    info.setText('This cif file is not readable!                                           ')
     if line:
         try:
             int(line)
-            info.setText('This cif file is not readable!\n'
-                         'Please check line {} in\n{}'.format(line, filepath.name))
+            info.setInformativeText(f'\nPlease check line {line} in\n{filepath.name}')
         except ValueError:
-            info.setText('This cif file is not readable! "{}"\n{}'.format(filepath.name, not_ok))
+            info.setInformativeText(f'"{filepath.name}"\n{not_ok}')
     else:
-        info.setText('This cif file is not readable! "{}"\n{}'.format(filepath.name, not_ok))
+        info.setInformativeText(f'"{filepath.name}"\n{not_ok}')
     info.show()
     info.exec()
 
@@ -66,7 +66,7 @@ def show_hkl_checksum_warning() -> None:
     info.exec()
 
 
-def show_general_warning(warn_text: str = '', info_text: str = '') -> None:
+def show_general_warning(warn_text: str = '', info_text: str = '', window_title=' ') -> None:
     """
     A message box to display if the checksums do not agree.
     warn_text is displayed bold.
@@ -76,7 +76,7 @@ def show_general_warning(warn_text: str = '', info_text: str = '') -> None:
         return None
     box = QMessageBox()
     box.setTextFormat(Qt.AutoText)
-    box.setWindowTitle(" ")
+    box.setWindowTitle(window_title)
     box.setTextInteractionFlags(Qt.TextBrowserInteraction)
     box.setText(warn_text)
     if info_text:
@@ -156,12 +156,18 @@ def bad_z_message(z) -> None:
 
 def bug_found_warning(logfile) -> None:
     window = QMainWindow()
-    text = 'Congratulations, you found a bug in ' \
-           'FinalCif!<br>Please send the file <br>"{}" <br>to Daniel Kratzert:  ' \
-           '<a href="mailto:dkratzert@gmx.de?subject=FinalCif version {} crash report">' \
-           'dkratzert@gmx.de</a><br>' \
-           'If possible, the corresponding CIF file is also desired.'.format(logfile.resolve(), VERSION)
-    QMessageBox.warning(window, 'Warning', text)
+    title = f'Congratulations, you found a bug in FinalCif!'
+    text = (f'<br>Please send the file <br>'
+            f'<a href=file:{os.sep*2}{logfile.resolve()}>{logfile.resolve()}</a> '
+            f'<br>to Daniel Kratzert:  '
+            f'<a href="mailto:dkratzert@gmx.de?subject=FinalCif version {VERSION} crash report">'
+            f'dkratzert@gmx.de</a><br>'
+            f'<br>If possible, the corresponding CIF file is also desired.')
+    box = QMessageBox(parent=window)
+    box.setWindowTitle('Warning')
+    box.setText(title)
+    box.setInformativeText(text)
+    box.exec()
     window.show()
 
 

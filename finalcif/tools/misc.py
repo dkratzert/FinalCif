@@ -8,7 +8,10 @@
 #
 import hashlib
 import itertools as it
+import os
 import re
+import subprocess
+import sys
 from datetime import datetime
 from math import sqrt
 from os import path
@@ -17,12 +20,15 @@ from typing import Union, Tuple, List
 
 # protected space character:
 protected_space = u'\u00A0'
+medium_math_space = u'\u205F'
 # Angstrom character:
 # angstrom = u'\u212B'  # Unicode angstrom sign (only for compatibility)
 # angstrom = 'Å'      # MSWord seems unable to render the regular letter correctly. It looks like a different font?
 angstrom = u'\u00C5'  # Latin capital A with ring above. The Unicode consortium recommends to use the regular letter
 # Greek Small Letter Theta θ:
 theta_symbol = u'\u03B8'
+# Greek Small Letter Pi
+pi_symbol = u'\u03C0'
 # bigger or equal:
 bequal = u'\u2265'
 # small_sigma:
@@ -37,6 +43,8 @@ degree_sign = u'\u00B0'
 ellipsis_mid = u'\u22EF'
 # ellipsis
 ellipsis_char = u'\u2026'
+# middle dot
+middle_dot = u'\u00B7'
 # less or equal sign
 less_or_equal = u'\u2264'
 # times (cross) symbol
@@ -176,11 +184,12 @@ class Multilog(object):
         return g
 
 
-def strip_finalcif_of_name(pth: str) -> str:
+def strip_finalcif_of_name(pth: Union[str, Path], till_name_ends=False) -> str:
     """
     Strips '-finalcif' from the stem path
     """
-    return re.sub('-finalcif$', '', pth)
+    pth = str(pth)
+    return re.sub(f'-finalcif{".*" if till_name_ends else ""}$', '', pth)
 
 
 def flatten(lis: list) -> list:
@@ -598,6 +607,11 @@ REFINE_LS_STRUCTURE_FACTOR_COEF = make_numbered(['F', 'Fsqd', 'Inet'])
 
 REFINE_LS_MATRIX_TYPE = make_numbered(['full', 'fullcycle', 'atomblock', 'userblock', 'diagonal', 'sparse'])
 
+COMPUTING_STRUCTURE_REFINEMENT = make_numbered(['SHELXL-2019/2', 'SHELXL-2018/3', 'SHELXL-2018/1', 'SHELXL-97',
+                                                'olex2.refine', 'NoSpherA2', 'Jana2006', 'MoPro', 'BayMEM'])
+
+COMPUTING_DATA_REDUCTION = make_numbered(['SAINT', 'CrysalisPro', 'XDS', 'OpenHKL', 'HKL-2000', 'HKL-3000'])
+
 combobox_fields = {'_exptl_crystal_colour'                : COLOUR_CHOICES,
                    '_exptl_crystal_colour_primary'        : COLOUR_CHOICES,
                    '_chemical_absolute_configuration'     : ABSOLUTE_CONFIGURATION_CHOICES,
@@ -621,6 +635,8 @@ combobox_fields = {'_exptl_crystal_colour'                : COLOUR_CHOICES,
                    '_exptl_crystal_colour_modifier'       : EXPTL_CRYSTAL_COLOUR_MODIFIER,
                    '_refine_ls_structure_factor_coef'     : REFINE_LS_STRUCTURE_FACTOR_COEF,
                    '_refine_ls_matrix_type'               : REFINE_LS_MATRIX_TYPE,
+                   '_computing_structure_refinement'      : COMPUTING_STRUCTURE_REFINEMENT,
+                   '_computing_data_reduction'            : COMPUTING_DATA_REDUCTION,
                    }
 
 include_equipment_imports = (
@@ -895,3 +911,11 @@ def unify_line_endings(text: str):
 
 def remove_line_endings(text: str):
     return ' '.join(text.splitlines())
+
+
+def open_file(report_filename: Path):
+    if report_filename.exists():
+        if os.name == 'nt':
+            os.startfile(report_filename)
+        if sys.platform == 'darwin':
+            subprocess.call(['open', report_filename])
