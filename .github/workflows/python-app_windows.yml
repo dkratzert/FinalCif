@@ -74,6 +74,7 @@ jobs:
         run: |
           if [ "$RUNNER_OS" == "Linux" ]; then
             # Ubuntu needs this to be able to start pyqt5
+            sudo apt-get update 
             sudo apt-get -qq install libxcb-xinerama0 pyqt5-dev-tools
             xvfb-run --auto-servernum pytest
           else
