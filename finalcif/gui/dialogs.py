@@ -158,7 +158,7 @@ def bug_found_warning(logfile) -> None:
     window = QMainWindow()
     title = f'Congratulations, you found a bug in FinalCif!'
     text = (f'<br>Please send the file <br>'
-            f'<a href=file:{os.sep*2}{logfile.resolve()}>{logfile.resolve()}</a> '
+            f'<a href=file:{os.sep * 2}{logfile.resolve()}>{logfile.resolve()}</a> '
             f'<br>to Daniel Kratzert:  '
             f'<a href="mailto:dkratzert@gmx.de?subject=FinalCif version {VERSION} crash report">'
             f'dkratzert@gmx.de</a><br>'
@@ -169,6 +169,14 @@ def bug_found_warning(logfile) -> None:
     box.setInformativeText(text)
     box.exec()
     window.show()
+
+
+def show_yes_now_question(title: str, question: str, parent=None) -> bool:
+    response = QMessageBox.question(parent, title, question, QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+    if response == QMessageBox.Yes:
+        return True
+    else:
+        return False
 
 
 def show_splash(text: str) -> QSplashScreen:

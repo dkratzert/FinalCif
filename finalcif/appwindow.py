@@ -40,12 +40,12 @@ from finalcif.gui.custom_classes import COL_CIF, COL_DATA, COL_EDIT, MyTableWidg
     white
 from finalcif.gui.dialogs import show_update_warning, unable_to_open_message, show_general_warning, \
     cif_file_open_dialog, \
-    bad_z_message, show_res_checksum_warning, show_hkl_checksum_warning, cif_file_save_dialog
+    bad_z_message, show_res_checksum_warning, show_hkl_checksum_warning, cif_file_save_dialog, show_yes_now_question
 from finalcif.gui.finalcif_gui import Ui_FinalCifWindow
 from finalcif.gui.loop_creator import LoopCreator
 from finalcif.gui.loops import Loop
 from finalcif.gui.plaintextedit import MyQPlainTextEdit
-from finalcif.gui.text_value_editor import MyTextTemplateEdit
+from finalcif.gui.text_value_editor import MyTextTemplateEdit, TextEditItem
 from finalcif.gui.vrf_classes import MyVRFContainer, VREF
 from finalcif.report.archive_report import ArchiveReport
 from finalcif.report.tables import make_report_from, make_multi_tables
@@ -431,8 +431,13 @@ class AppWindow(QMainWindow):
         Delete template from settings.
         """
         cif_key = self.textedit.ui.cifKeyLineEdit.text()
+        txt = f'Do you really want to delete all template texts for {cif_key}?'
+        answer = show_yes_now_question(title='Delete templates', question=txt, parent=self)
+        if not answer:
+            return
         self.settings.delete_template('text_templates/', cif_key)
         self.back_to_main_noload()
+        TextEditItem._num = 1
         self.status_bar.show_message(f'Template for {cif_key} deleted.', timeout=10)
         self.textedit.clear_fields()
         self.refresh_color_background_from_templates()
@@ -467,6 +472,7 @@ class AppWindow(QMainWindow):
         """
         cif_key = self.textedit.ui.cifKeyLineEdit.text()
         text = self.textedit.ui.plainTextEdit.toPlainText()
+        TextEditItem._num = 1
         self.ui.cif_main_table.setText(key=cif_key, column=COL_EDIT, txt=text)
         self.ui.MainStackedWidget.got_to_main_page()
         self.textedit.clear_fields()
@@ -1077,7 +1083,7 @@ class AppWindow(QMainWindow):
     def report_without_template(self) -> bool:
         """Check whether the report is generated from a template or hard-coded"""
         return self.ui.TemplatesListWidget.item(0).checkState() == Qt.CheckState.Checked \
-               or not self.ui.TemplatesListWidget.currentItem()
+            or not self.ui.TemplatesListWidget.currentItem()
 
     def zip_report(self, report_filename: Path):
         zipfile = self.cif.finalcif_file.with_suffix('.zip')
@@ -1102,22 +1108,22 @@ class AppWindow(QMainWindow):
             open_file(multi_table_document)
         open_file(report_filename)
 
-    def save_current_recent_files_list(self, file: Path) -> None:
+    def save_current_recent_files_list(self, filename: Path) -> None:
         """
         Saves the list of the recently opened files. Non-existent files are removed.
         """
         if os.name == 'nt':
-            # Used path with backslash for windows systems:
-            file: str = str(WindowsPath(file.resolve()).absolute())
+            # Use path with backslash for Windows systems:
+            filename: str = str(WindowsPath(filename.resolve()).absolute())
         else:
-            file: str = str(Path(file.resolve()).absolute())
+            filename: str = str(Path(filename.resolve()).absolute())
         recent = list(self.settings.settings.value('recent_files', type=list))
-        # delete possible previous occurence of new file:
-        while file in recent:
-            recent.remove(file)
+        # delete possible previous occurrence of new file:
+        while filename in recent:
+            recent.remove(filename)
         # file has to be str not Path():
-        recent.insert(0, file)
-        recent = recent[:8]
+        recent.insert(0, filename)
+        recent = recent[:10]
         self.settings.settings.setValue('recent_files', recent)
 
     def load_recent_cifs_list(self) -> None:
@@ -1196,8 +1202,8 @@ class AppWindow(QMainWindow):
             changes_cif.save(filename=self.finalcif_changes_filename)
         except Exception as e:
             print(f'Unable to save changes file: {e}')
-            #del changes_cif
-            #self.finalcif_changes_filename.unlink(missing_ok=True)
+            # del changes_cif
+            # self.finalcif_changes_filename.unlink(missing_ok=True)
             return
         if changes_cif.fileobj.exists() and changes_cif.fileobj.stat().st_size == 0 or changes_cif.is_empty():
             print('Changes file has no content. Deleting it ...')
