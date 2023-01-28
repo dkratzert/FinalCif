@@ -8,7 +8,7 @@
 
 # FinalCif
 
-FinalCif helps you to get a complete CIF file from a single-xrystal X-ray diffraction experiment. See here [https://dkratzert.de/finalcif.html](https://dkratzert.de/finalcif.html) for details.
+FinalCif helps you to get a complete [CIF](https://www.iucr.org/resources/cif) file from a single-xrystal X-ray diffraction experiment. See here [https://dkratzert.de/finalcif.html](https://dkratzert.de/finalcif.html) for details.
 
 For tables from multiple CIF files, you may want to use the program [multitable](https://github.com/dkratzert/multitable).
 
