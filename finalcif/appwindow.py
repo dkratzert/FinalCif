@@ -311,6 +311,7 @@ class AppWindow(QMainWindow):
         self.textedit.ui.deletePushButton.clicked.connect(self.delete_text_template)
         self.textedit.ui.importPushButton.clicked.connect(self.import_text_template)
         self.ui.cif_main_table.textTemplate.connect(self.on_text_template_open)
+        self.ui.cif_main_table.new_key.connect(lambda x: self.add_row(key=x, value='', at_start=True))
         #
         self.ui.appendCifPushButton.clicked.connect(self.append_cif)
         self.ui.drawImagePushButton.clicked.connect(self.draw_image)

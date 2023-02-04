@@ -1,6 +1,7 @@
 from contextlib import suppress
 from functools import cache
 
+from PyQt5 import QtWidgets
 from PyQt5.QtCore import pyqtSignal, Qt, QObject, QEvent, QSize
 from PyQt5.QtGui import QTextOption, QFontMetrics, QContextMenuEvent, QFont
 from PyQt5.QtWidgets import QPlainTextEdit, QFrame, QApplication, QAbstractScrollArea
@@ -14,6 +15,7 @@ class MyQPlainTextEdit(QPlainTextEdit):
     A special plaintextedit with convenient methods to set the background color and other things.
     """
     templateRequested = pyqtSignal(int)
+    new_key = pyqtSignal(str)
 
     def __init__(self, parent=None, *args, **kwargs):
         """
@@ -51,10 +53,24 @@ class MyQPlainTextEdit(QPlainTextEdit):
         deleterow = menu.addAction("Delete Row")
         menu.addSeparator()
         action_template = menu.addAction("Text Template")
+        new_key = menu.addAction('Add new CIF key')
         action_copy_vhead.triggered.connect(self.copy_vhead_item)
         action_template.triggered.connect(self._on_create_template)
         deleterow.triggered.connect(self._delete_row)
+        new_key.triggered.connect(self._add_cif_key)
         choosed_action = menu.exec(event.globalPos())
+
+    def _add_cif_key(self):
+        new_key = QtWidgets.QDialog(parent=self)
+        vl = QtWidgets.QVBoxLayout(new_key)
+        combo = QtWidgets.QComboBox(new_key)
+        vl.addWidget(combo)
+        from finalcif.cif import all_cif_dicts
+        combo.addItems(all_cif_dicts.cif_all_dict.keys())
+        okbutton = QtWidgets.QPushButton(parent=new_key, text='Add Key')
+        vl.addWidget(okbutton)
+        okbutton.clicked.connect(lambda: self.new_key.emit(combo.currentText()))
+        new_key.exec()
 
     def _on_create_template(self):
         self.templateRequested.emit(self.row)
