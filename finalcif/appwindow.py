@@ -193,7 +193,6 @@ class AppWindow(QMainWindow):
             self.showMaximized()
 
     def make_button_icons(self) -> None:
-        print(QApplication.style())
         self.ui.CheckcifButton.setIcon(qta.icon('mdi.file-document-outline'))
         self.ui.CheckcifStartButton.setIcon(qta.icon('mdi.file-document-outline'))
         self.ui.LoopsPushButton.setIcon(qta.icon('mdi.table'))
@@ -986,7 +985,7 @@ class AppWindow(QMainWindow):
                 stop += 1
             time.sleep(0.5)
 
-    def set_checkcif_output_font(self, ccpe: QPlainTextEdit) -> None:
+    def set_checkcif_output_font(self, ccpe: 'QPlainTextEdit') -> None:
         doc = ccpe.document()
         font = doc.defaultFont()
         font.setFamily("Courier New")
