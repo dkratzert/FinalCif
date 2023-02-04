@@ -381,8 +381,15 @@ class AppWindow(QMainWindow):
         if not self.textedit.ui.plainTextEdit.toPlainText():
             self.textedit.ui.plainTextEdit.setPlainText(edit_text)
 
-    def get_vrf_errortype(self, cif_key: str) -> str:
-        return '_'.join(cif_key.split('_')[:3])
+    @staticmethod
+    def get_vrf_errortype(cif_key: str) -> str:
+        if cif_key.startswith('_vrf_'):
+            splitkey = cif_key.split('_')
+            if len(splitkey) > 2:
+                return '_'.join(splitkey[:3])
+            return cif_key
+        else:
+            return cif_key
 
     def import_text_template(self):
         """
@@ -441,7 +448,7 @@ class AppWindow(QMainWindow):
         """
         Delete template from settings.
         """
-        cif_key = self.textedit.cif_key
+        cif_key = self.get_vrf_errortype(self.textedit.cif_key)
         txt = f'Do you really want to delete all template texts for {cif_key}?'
         answer = show_yes_now_question(title='Delete templates', question=txt, parent=self)
         if not answer:
@@ -457,9 +464,7 @@ class AppWindow(QMainWindow):
         """
         Save template in settings.
         """
-        cif_key = self.textedit.cif_key
-        if cif_key.startswith('_vrf_'):
-            cif_key = self.get_vrf_errortype(cif_key)
+        cif_key = self.get_vrf_errortype(self.textedit.cif_key)
         table_data = self.textedit.get_template_texts()
         self.settings.save_settings_list(property='text_templates', name=cif_key, items=table_data)
         self.status_bar.show_message(f'Template for {cif_key} saved.', timeout=10)
@@ -1760,8 +1765,7 @@ class AppWindow(QMainWindow):
     def refresh_color_background_from_templates(self):
         for row_number in range(self.ui.cif_main_table.model().rowCount()):
             vhead_key = self.get_key_by_row_number(row_number)
-            if vhead_key.startswith('_vrf_'):
-                vhead_key = self.get_vrf_errortype(vhead_key)
+            vhead_key = self.get_vrf_errortype(vhead_key)
             widget = self.ui.cif_main_table.cellWidget(row_number, COL_EDIT)
             if isinstance(widget, MyQPlainTextEdit):
                 if self.settings.load_settings_list('text_templates', vhead_key):
@@ -1897,8 +1901,7 @@ class AppWindow(QMainWindow):
         else:
             color = None
             load_key = key
-            if key.startswith('_vrf_'):
-                load_key = self.get_vrf_errortype(load_key)
+            load_key = self.get_vrf_errortype(load_key)
             if load_key in self.settings.list_saved_items('text_templates'):
                 color = light_blue
             self.ui.cif_main_table.setText(row=row_num, key=key, column=COL_CIF,
