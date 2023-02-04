@@ -40,6 +40,19 @@ class TestChangesTrackingActive(unittest.TestCase):
         self.assertEqual(['_audit_contact_author_email', '_audit_contact_author_address'], changes.keys())
         self.assertEqual(['testauthoremail', 'testauthoradress'], changes.values())
 
+    def test_save_with_no_changes(self):
+        # Track changes is activated in self.setUp()
+        self.assertEqual(False, self.myapp.finalcif_changes_filename.exists())
+        self.myapp.ui.SaveCifButton.click()
+        self.assertEqual(True, self.myapp.cif.finalcif_file.exists())
+        self.assertEqual(False, self.myapp.finalcif_changes_filename.exists())
+        # This creates a new file:
+        changes = self.myapp.get_changes_cif(self.myapp.finalcif_changes_filename)
+        # And it is empty
+        self.assertEqual('', changes.fileobj.read_text())
+        self.assertEqual([], changes.keys())
+        self.assertEqual([], changes.values())
+
     def test_save_with_loop(self):
         self.myapp.cif.add_loop_to_cif(loop_tags=['_foo', '_bar'], loop_values=['fooval', 'barval'])
         self.myapp.ui.SaveCifButton.click()

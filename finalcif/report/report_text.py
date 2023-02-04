@@ -72,7 +72,7 @@ class Crystallization(FormatMixin):
         self.crytsalization_method = gstr(self.cif['_exptl_crystal_recrystallization_method'])
         if not self.crytsalization_method:
             self.crytsalization_method = '[No crystallization method was given]'
-        sentence = "{}. "
+        sentence = "The sample was crystallized {}. "
         self.text = sentence.format(remove_line_endings(retranslate_delimiter(self.crytsalization_method)))
         paragraph.add_run(retranslate_delimiter(self.text))
 
@@ -80,40 +80,55 @@ class Crystallization(FormatMixin):
 class CrstalSelection(FormatMixin):
     def __init__(self, cif: CifContainer, paragraph: Paragraph):
         self.cif = cif
-        self.temperature = gstr(self.cif['_diffrn_ambient_temperature'])
+        temperature = gstr(self.cif['_diffrn_ambient_temperature'])
+        if not temperature:
+            temperature = '[No _diffrn_ambient_temperature given]'
+        shape = gstr(self.cif['_exptl_crystal_description'])
+        if not shape:
+            shape = '[No _exptl_crystal_description given]'
+        colour = gstr(self.cif['_exptl_crystal_colour'])
+        crystal_mount = gstr(self.cif['_diffrn_measurement_specimen_support'])
+        #adhesive = gstr(self.cif['_diffrn_measurement_specimen_adhesive'])
+        #if not adhesive:
+        #    adhesive = '[No _diffrn_measurement_specimen_adhesive given]'
+        if not crystal_mount:
+            crystal_mount = '[No _diffrn_measurement_specimen_support given]'
         method = 'shock-cooled '
-        sentence = "The data for {} were collected from a {}single crystal at {}{}K "
         try:
-            if float(self.temperature.split('(')[0]) > 200:
+            if float(temperature.split('(')[0]) > 200:
                 method = ''
         except ValueError:
             method = ''
-        self.txt = sentence.format(self.cif.block.name, method, self.temperature, protected_space)
-        paragraph.add_run(retranslate_delimiter(self.txt))
+        txt_crystal = (f"A {colour}{', ' if colour else ''}{shape} shaped crystal of {self.cif.block.name} was mounted on a "
+                       f"{crystal_mount} with perfluoroether oil. ")
+        txt_data = (f"Data were collected from a {method}single crystal at {temperature}{protected_space}K ")
+        paragraph.add_run(retranslate_delimiter(txt_crystal))
+        Crystallization(cif, paragraph)
+        paragraph.add_run(retranslate_delimiter(txt_data))
 
 
 class MachineType():
     def __init__(self, cif: CifContainer, paragraph: Paragraph):
         self.cif = cif
         self.difftype = gstr(self.cif['_diffrn_measurement_device_type']) \
-                        or '[No measurement device type given]'
+                        or '[No _diffrn_measurement_device_type given]'
         self.device = gstr(self.cif['_diffrn_measurement_device']) \
-                      or '[No measurement device given]'
+                      or '[No _diffrn_measurement_device given]'
         self.source = gstr(self.cif['_diffrn_source']).strip('\n\r') \
-                      or '[No radiation source given]'
+                      or '[No _diffrn_source given]'
         self.monochrom = gstr(self.cif['_diffrn_radiation_monochromator']) \
-                         or '[No monochromator type given]'
+                         or '[No _diffrn_radiation_monochromator given]'
         if not self.monochrom:
             self.monochrom = '?'
         self.cooling = self._get_cooling_device(self.cif)
         self.rad_type = gstr(self.cif['_diffrn_radiation_type']) \
-                        or '[No radiation type given]'
+                        or '[No _diffrn_radiation_type given]'
         radtype = format_radiation(self.rad_type)
         self.wavelen = gstr(self.cif['_diffrn_radiation_wavelength']) \
-                       or '[No wavelength given]'
+                       or '[No _diffrn_radiation_wavelength given]'
         self.detector_type = ''
         detector_type = gstr(self.cif['_diffrn_detector_type']) \
-                        or '[No detector type given]'
+                        or '[No _diffrn_detector_type given]'
         if detector_type:
             self.detector_type = " and a {} detector".format(detector_type)
         sentence1 = "on {0} {1} {2} with {3} {4} using a {5} as monochromator{6}. " \
@@ -167,10 +182,10 @@ class DataReduct():
             data_reduct_ref, absorpt_ref, integration_prog = self.add_crysalispro_reference(integration)
         absdetails = cif['_exptl_absorpt_process_details'].replace('-', ' ')
         if 'SADABS' in absdetails.upper() or 'TWINABS' in absdetails.upper():
-            if len(absdetails.split()) > 1:
-                version = absdetails.split()[1]
-            else:
-                version = 'unknown version'
+            #if len(absdetails.split()) > 1:
+            #    version = absdetails.split()[1]
+            #else:
+            #    version = 'unknown version'
             if 'SADABS' in absdetails:
                 scale_prog = 'SADABS'
             else:

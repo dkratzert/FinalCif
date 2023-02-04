@@ -52,13 +52,13 @@ TODO:
 
 
 if __name__ == '__main__':
-    def my_exception_hook(exctype: Type[BaseException], value: BaseException, error_traceback) -> None:
+    def my_exception_hook(exctype: Type[BaseException], value: BaseException, error_traceback, exit=True) -> None:
         """
         Hooks into Exceptions to create debug reports.
         """
         errortext = 'FinalCif V{} crash report\n\n'.format(VERSION)
         errortext += 'Please send also the corresponding CIF file, if possible.'
-        errortext += 'Python ' + sys.version + '\n'
+        errortext += f'Python {sys.version}\n'
         errortext += sys.platform + '\n'
         errortext += time.asctime(time.localtime(time.time())) + '\n'
         errortext += "Finalcif crashed during the following operation:" + '\n'
@@ -75,7 +75,8 @@ if __name__ == '__main__':
         sys.__excepthook__(exctype, value, error_traceback)
         # Hier Fenster für meldung öffnen
         bug_found_warning(logfile)
-        sys.exit(1)
+        if exit:
+            sys.exit(1)
 
 
     if not DEBUG:

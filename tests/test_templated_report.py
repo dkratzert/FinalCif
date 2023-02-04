@@ -9,6 +9,8 @@ from docx.table import Table
 
 from finalcif import VERSION
 from finalcif.appwindow import AppWindow
+from finalcif.cif.cif_file_io import CifContainer
+from finalcif.report.templated_report import TemplatedReport
 
 
 class TemplateReportTestCase(unittest.TestCase):
@@ -83,6 +85,57 @@ class TemplateReportTestCase(unittest.TestCase):
         shapes: InlineShapes = doc.inline_shapes
         self.assertEqual(WD_INLINE_SHAPE.PICTURE, shapes[0].type)
         self.assertEqual(Cm(7.43).emu, shapes[0].width)
+
+
+class TestData(unittest.TestCase):
+
+    def setUp(self) -> None:
+        self.cif = CifContainer('foo.cif', 'testblock')
+
+    def test_get_integration_program_with_spaces(self):
+        # Here we have the special case, that there is no space character between the version number and the bracket.
+        self.cif['_computing_data_reduction'] = 'CrysAlisPro 1.171.39.20a (Rigaku OD, 2015)'
+        self.assertEqual('CrysAlisPro 1.171.39.20a (Rigaku OD, 2015)', self.cif['_computing_data_reduction'])
+        r = TemplatedReport()
+        result = r.get_integration_program(self.cif)
+        self.assertEqual('CrysAlisPro', result)
+        self.assertEqual('Crysalispro, 1.171.39.20a, 2015, Rigaku OD.', str(r.literature['integration']))
+
+    def test_get_integration_program_with_line_break(self):
+        # Here we have the special case, that there is no space character between the version number and the bracket.
+        self.cif['_computing_data_reduction'] = "CrysAlisPro 1.171.39.20a\n" \
+                                                "(Rigaku OD, 2015)\n"
+        self.assertEqual('CrysAlisPro 1.171.39.20a\n(Rigaku OD, 2015)\n', self.cif['_computing_data_reduction'])
+        r = TemplatedReport()
+        result = r.get_integration_program(self.cif)
+        self.assertEqual('CrysAlisPro', result)
+        self.assertEqual('Crysalispro, 1.171.39.20a, 2015, Rigaku OD.', str(r.literature['integration']))
+
+    def test_get_integration_program_with_missing_information(self):
+        # Here we have all in one line with spaces inbetween:
+        self.cif['_computing_data_reduction'] = 'CrysAlisPro 1.171.39.20a (Rigaku OD)'
+        self.assertEqual('CrysAlisPro 1.171.39.20a (Rigaku OD)', self.cif['_computing_data_reduction'])
+        r = TemplatedReport()
+        result = r.get_integration_program(self.cif)
+        self.assertEqual('CrysAlisPro', result)
+        self.assertEqual('Crysalispro, unknown version, Rigaku OD.', str(r.literature['integration']))
+
+    def test_get_integration_program_saint(self):
+        # Here we have all in one line with spaces inbetween:
+        self.cif['_computing_data_reduction'] = 'SAINT V8.40A'
+        r = TemplatedReport()
+        result = r.get_integration_program(self.cif)
+        self.assertEqual('SAINT V8.40A', result)
+        self.assertEqual('Bruker, SAINT, V8.40A, Bruker AXS Inc., Madison, Wisconsin, USA.',
+                         str(r.literature['integration']))
+
+    def test_get_integration_program_saint_without_version(self):
+        # Here we have all in one line with spaces inbetween:
+        self.cif['_computing_data_reduction'] = 'SAINT'
+        r = TemplatedReport()
+        result = r.get_integration_program(self.cif)
+        self.assertEqual('SAINT', result)
+        self.assertEqual('Bruker, SAINT, Bruker AXS Inc., Madison, Wisconsin, USA.', str(r.literature['integration']))
 
 
 if __name__ == '__main__':

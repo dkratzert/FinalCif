@@ -70,6 +70,7 @@ class MyTextTemplateEdit(QWidget):
 
     def _on_backbutton_clicked(self) -> None:
         self.ui.templatesListWidget.clear()
+        TextEditItem._num = 1
 
     def add_textfields(self, text_list: Union[List, Tuple]) -> None:
         self.ui.templatesListWidget.clear()

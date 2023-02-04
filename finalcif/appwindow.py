@@ -42,12 +42,12 @@ from finalcif.gui.custom_classes import COL_CIF, COL_DATA, COL_EDIT, MyTableWidg
     white
 from finalcif.gui.dialogs import show_update_warning, unable_to_open_message, show_general_warning, \
     cif_file_open_dialog, \
-    bad_z_message, show_res_checksum_warning, show_hkl_checksum_warning, cif_file_save_dialog
+    bad_z_message, show_res_checksum_warning, show_hkl_checksum_warning, cif_file_save_dialog, show_yes_now_question
 from finalcif.gui.finalcif_gui import Ui_FinalCifWindow
 from finalcif.gui.loop_creator import LoopCreator
 from finalcif.gui.loops import Loop
 from finalcif.gui.plaintextedit import MyQPlainTextEdit
-from finalcif.gui.text_value_editor import MyTextTemplateEdit
+from finalcif.gui.text_value_editor import MyTextTemplateEdit, TextEditItem
 from finalcif.gui.vrf_classes import MyVRFContainer, VREF
 from finalcif.report.archive_report import ArchiveReport
 from finalcif.report.tables import make_report_from, make_multi_tables
@@ -432,8 +432,13 @@ class AppWindow(QMainWindow):
         Delete template from settings.
         """
         cif_key = self.textedit.ui.cifKeyLineEdit.text()
+        txt = f'Do you really want to delete all template texts for {cif_key}?'
+        answer = show_yes_now_question(title='Delete templates', question=txt, parent=self)
+        if not answer:
+            return
         self.settings.delete_template('text_templates/', cif_key)
         self.back_to_main_noload()
+        TextEditItem._num = 1
         self.status_bar.show_message(f'Template for {cif_key} deleted.', timeout=10)
         self.textedit.clear_fields()
         self.refresh_color_background_from_templates()
@@ -468,6 +473,7 @@ class AppWindow(QMainWindow):
         """
         cif_key = self.textedit.ui.cifKeyLineEdit.text()
         text = self.textedit.ui.plainTextEdit.toPlainText()
+        TextEditItem._num = 1
         self.ui.cif_main_table.setText(key=cif_key, column=COL_EDIT, txt=text)
         self.ui.MainStackedWidget.got_to_main_page()
         self.textedit.clear_fields()
@@ -557,12 +563,16 @@ class AppWindow(QMainWindow):
         Deletes a row of the main table.
         """
         del self.cif[key]
-        if self.options.track_changes:
+        # Only delete from changes cif if changes were loaded:
+        if self.options.track_changes and self.changes_answer == QMessageBox.Yes:
             self.delete_key_from_changes_cif(key)
 
     def delete_key_from_changes_cif(self, key):
         changes_cif = self.get_changes_cif(self.finalcif_changes_filename)
         del changes_cif[key]
+        if changes_cif.is_empty():
+            changes_cif.fileobj.unlink(missing_ok=True)
+            return
         changes_cif.save(self.finalcif_changes_filename)
 
     def check_for_update_version(self) -> None:
@@ -596,12 +606,6 @@ class AppWindow(QMainWindow):
         for row in range(table.rowCount()):
             if not table.cellWidget(row, 0).isChecked():
                 cifkey = table.item(row, 1).data(2)
-                try:
-                    row_num = self.ui.cif_main_table.vheaderitems.index(cifkey)
-                    # Leads to a crash when activated:
-                    # del self.ui.cif_main_table.vheaderitems[row_num]
-                except ValueError:
-                    continue
                 self.cif.block.set_pair(cifkey, '?')
                 self.ui.cif_main_table.setText(key=cifkey, column=COL_CIF, txt='?')
                 self.ui.cif_main_table.setText(key=cifkey, column=COL_DATA, txt='?')
@@ -1080,7 +1084,7 @@ class AppWindow(QMainWindow):
     def report_without_template(self) -> bool:
         """Check whether the report is generated from a template or hard-coded"""
         return self.ui.TemplatesListWidget.item(0).checkState() == Qt.CheckState.Checked \
-               or not self.ui.TemplatesListWidget.currentItem()
+            or not self.ui.TemplatesListWidget.currentItem()
 
     def zip_report(self, report_filename: Path):
         zipfile = self.cif.finalcif_file.with_suffix('.zip')
@@ -1105,22 +1109,22 @@ class AppWindow(QMainWindow):
             open_file(multi_table_document)
         open_file(report_filename)
 
-    def save_current_recent_files_list(self, file: Path) -> None:
+    def save_current_recent_files_list(self, filename: Path) -> None:
         """
         Saves the list of the recently opened files. Non-existent files are removed.
         """
         if os.name == 'nt':
-            # Used path with backslash for windows systems:
-            file: str = str(WindowsPath(file.resolve()).absolute())
+            # Use path with backslash for Windows systems:
+            filename: str = str(WindowsPath(filename.resolve()).absolute())
         else:
-            file: str = str(Path(file.resolve()).absolute())
+            filename: str = str(Path(filename.resolve()).absolute())
         recent = list(self.settings.settings.value('recent_files', type=list))
-        # delete possible previous occurence of new file:
-        while file in recent:
-            recent.remove(file)
+        # delete possible previous occurrence of new file:
+        while filename in recent:
+            recent.remove(filename)
         # file has to be str not Path():
-        recent.insert(0, file)
-        recent = recent[:8]
+        recent.insert(0, filename)
+        recent = recent[:10]
         self.settings.settings.setValue('recent_files', recent)
 
     def load_recent_cifs_list(self) -> None:
@@ -1167,6 +1171,7 @@ class AppWindow(QMainWindow):
             try:
                 changes_cif = self.get_changes_cif(self.finalcif_changes_filename)
             except Exception as e:
+                print('Unable to create changes CIF:', e)
                 unable_to_open_message(filepath=self.finalcif_changes_filename, not_ok=e)
                 changes_cif = None
         # makes sure also the currently edited item is saved:
@@ -1189,40 +1194,55 @@ class AppWindow(QMainWindow):
             else:
                 if changes_cif:
                     del changes_cif[vhead]
-        if changes_cif:
+        if self.options.track_changes and changes_cif and changes_cif.file_is_there_and_writable():
             self.save_keys_and_loops_to_changes_cif(changes_cif)
 
-    def save_keys_and_loops_to_changes_cif(self, changes_cif):
+    def save_keys_and_loops_to_changes_cif(self, changes_cif: CifContainer):
         self.save_changed_loops(changes_cif)
         try:
             changes_cif.save(filename=self.finalcif_changes_filename)
         except Exception as e:
             print(f'Unable to save changes file: {e}')
+            # del changes_cif
+            # self.finalcif_changes_filename.unlink(missing_ok=True)
+            return
+        if changes_cif.fileobj.exists() and changes_cif.fileobj.stat().st_size == 0 or changes_cif.is_empty():
+            print('Changes file has no content. Deleting it ...')
+            with suppress(Exception):
+                changes_cif.fileobj.unlink(missing_ok=True)
 
     def save_changed_loops(self, changes_cif: CifContainer):
         """
         previous_cif is the original unchanged cif that gets 'previous_cif'-finalcif.cif after saving.
         previous_values contains its loops.
         """
-        previous_cif = CifContainer(Path(strip_finalcif_of_name(self.cif.finalcif_file,
-                                                                till_name_ends=True)).with_suffix('.cif'))
-        previous_values = []
-        for loop2 in previous_cif.loops:
-            previous_values.append(loop2.values)
-        for loop in self.cif.loops:
-            if loop.values not in previous_values:
-                changes_cif.add_loop_to_cif(loop_tags=loop.tags, loop_values=loop.values)
-        changes_cif.save(filename=self.finalcif_changes_filename)
+        previous_cif_path = Path(strip_finalcif_of_name(self.cif.finalcif_file,
+                                                        till_name_ends=True)).with_suffix('.cif')
+        if previous_cif_path.exists():
+            previous_cif = CifContainer(previous_cif_path)
+            previous_values = []
+            for loop2 in previous_cif.loops:
+                previous_values.append(loop2.values)
+            for loop in self.cif.loops:
+                if loop.values not in previous_values:
+                    changes_cif.add_loop_to_cif(loop_tags=loop.tags, loop_values=loop.values)
+            changes_cif.save(filename=self.finalcif_changes_filename)
 
     def get_changes_cif(self, finalcif_changes_filename: Path) -> CifContainer:
+        if self.changes_cif_has_zero_size():
+            finalcif_changes_filename.unlink()
         block_name = self.cif.current_block if self.cif.current_block else self.cif.block.name
         block_name = block_name + '_changes'
         changes_cif = CifContainer(file=finalcif_changes_filename,
                                    new_block=block_name if not finalcif_changes_filename.exists() else '')
         # new block of added cif is not loaded:
-        if block_name in changes_cif.doc:
-            changes_cif.load_this_block(list(changes_cif.doc).index(block_name))
+        if block_name in [x.name for x in changes_cif.doc]:
+            changes_cif.load_block_by_name(block_name)
+        changes_cif.fileobj.touch(exist_ok=True)
         return changes_cif
+
+    def changes_cif_has_zero_size(self):
+        return self.finalcif_changes_filename.exists() and self.finalcif_changes_filename.stat().st_size == 0
 
     def load_changes_cif(self) -> bool:
         changes = self.get_changes_cif(self.finalcif_changes_filename)
@@ -1416,7 +1436,9 @@ class AppWindow(QMainWindow):
         self.load_recent_cifs_list()
         if self.options.track_changes:
             changes_exist = False
-            if self.finalcif_changes_filename.exists():
+            if self.changes_cif_has_zero_size():
+                self.finalcif_changes_filename.unlink(missing_ok=True)
+            elif self.finalcif_changes_filename.exists() and self.changes_cif_has_values():
                 changes_exist = True
             if changes_exist and not self.running_inside_unit_test and self.changes_answer == 0:
                 self.changes_answer = QMessageBox.question(self, 'Previous changes found',
@@ -1451,6 +1473,12 @@ class AppWindow(QMainWindow):
             for row_number in range(self.ui.cif_main_table.model().rowCount()):
                 vhead_key = self.get_key_by_row_number(row_number)
                 self.ui.cif_main_table.vheaderitems.insert(row_number, vhead_key)
+
+    def changes_cif_has_values(self) -> bool:
+        try:
+            return not self.get_changes_cif(self.finalcif_changes_filename).is_empty()
+        except IndexError:
+            return False
 
     def fill_sum_formula_lineedit(self):
         try:

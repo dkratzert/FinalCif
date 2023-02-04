@@ -11,7 +11,6 @@
 # .\venv\Scripts\pyinstaller.exe scripts\Finalcif.spec -F     # one file
 # copy dist\FinalCif.exe W:\htdocs\finalcif
 import os
-import shutil
 import subprocess
 import sys
 from datetime import datetime
@@ -26,13 +25,6 @@ from PyQt5 import uic
 
 from finalcif.tools.misc import sha512_checksum_of_file
 from finalcif import VERSION
-
-iss_file = 'scripts/finalcif-install_win64.iss'
-
-try:
-    arg = sys.argv[1]
-except IndexError:
-    arg = ''
 
 
 def disable_debug(filepath: str):
@@ -66,11 +58,6 @@ def make_shasum(filename):
     print("SHA512: {}".format(sha))
 
 
-def copy_dist_to_install_dir():
-    print('copying files')
-    shutil.copytree(r'dist/FinalCif', r'C:\Program Files\FinalCif', dirs_exist_ok=True)
-
-
 def process_iss(filepath):
     pth = Path(filepath)
     iss_file = pth.read_text(encoding="UTF-8").split("\n")
@@ -85,32 +72,35 @@ def process_iss(filepath):
     pth.write_text(iss_file, encoding="UTF-8")
 
 
-recompile_ui()
-
-disable_debug('finalcif/appwindow.py')
-
-os.chdir(application_path)
-
-print(arg)
-
-process_iss(iss_file)
-
-if arg == 'copy':
-    subprocess.run("venv/Scripts/pyinstaller.exe -D Finalcif_installer_win.spec --clean -y".split())
-    # this copies the content of the dist directory to the install directory
-    copy_dist_to_install_dir()
-else:
-    # create executable
+def make_executable():
     pyin = subprocess.run("venv/Scripts/pyinstaller.exe Finalcif_installer_win.spec --clean -y".split())
     if pyin.returncode != 0:
         print('Pyinstaller failed with exit code', pyin.returncode)
         sys.exit()
-    # Run 64bit Inno setup compiler
+
+
+def make_installer():
     innosetup_compiler = r'C:/Program Files (x86)/Inno Setup 6/ISCC.exe'
     subprocess.run([innosetup_compiler, iss_file, ])
+    make_shasum("scripts/Output/FinalCif-setup-x64-v{}.exe".format(VERSION))
+    print('Created version: {}'.format(VERSION))
+    print(datetime.now().strftime("%d.%m.%Y %H:%M:%S"))
 
-make_shasum("scripts/Output/FinalCif-setup-x64-v{}.exe".format(VERSION))
-print('Created version: {}'.format(VERSION))
-print(datetime.now().strftime("%d.%m.%Y %H:%M:%S"))
 
-subprocess.call("scripts/Output/FinalCif-setup-x64-v{}.exe".format(VERSION))
+if __name__ == '__main__':
+    iss_file = 'scripts/finalcif-install_win64.iss'
+
+    recompile_ui()
+
+    disable_debug('finalcif/appwindow.py')
+
+    os.chdir(application_path)
+
+    process_iss(iss_file)
+
+    # create executable
+    make_executable()
+    # Run 64bit Inno setup compiler
+    make_installer()
+
+    subprocess.call("scripts/Output/FinalCif-setup-x64-v{}.exe".format(VERSION))

@@ -20,7 +20,7 @@ from finalcif.app_path import application_path
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.report.mtools import cif_keywords_list, format_space_group
 from finalcif.report.references import ReferenceList, DSRReference2018, DSRReference2015
-from finalcif.report.report_text import CCDC, CrstalSelection, Crystallization, DataReduct, Disorder, Hydrogens, \
+from finalcif.report.report_text import CCDC, CrstalSelection, DataReduct, Disorder, Hydrogens, \
     MachineType, \
     SolveRefine, format_radiation, FinalCifreport, SpaceChar, RefinementDetails, Atoms
 from finalcif.report.templated_report import BondsAndAngles, TorsionAngles, HydrogenBonds
@@ -158,7 +158,6 @@ def make_report_text(cif, document: Document) -> ReferenceList:
     ref = ReferenceList(paragr)
     # -- The main text:
     paragr.add_run('The following text is only a suggestion: ').font.bold = True
-    Crystallization(cif, paragr)
     CrstalSelection(cif, paragr)
     MachineType(cif, paragr)
     DataReduct(cif, paragr, ref)

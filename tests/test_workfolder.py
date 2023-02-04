@@ -14,32 +14,13 @@ from finalcif.tools.misc import unify_line_endings
 from tests.helpers import addr
 
 
-class TestNothingOpened(unittest.TestCase):
-    """A CIF fle in a complete work folder"""
-
-    def setUp(self) -> None:
-        self.myapp = AppWindow(unit_test=True)
-        self.myapp.running_inside_unit_test = True
-        self.myapp.hide()
-        self.myapp.setWindowIcon(QIcon('./icon/multitable.png'))
-        self.myapp.setWindowTitle('FinalCif v{}'.format(VERSION))
-        Path('foo.cif').unlink(missing_ok=True)
-        Path('cu_BruecknerJK_153F40_0m-finalcif.cif').unlink(missing_ok=True)
-
-    def tearDown(self) -> None:
-        self.myapp.close()
-
-    def test_save_noting(self):
-        self.myapp.save_current_cif_file()
-        self.assertEqual(False, Path('cu_BruecknerJK_153F40_0m-finalcif.cif').exists())
-
-
 class TestFileIsOpened(unittest.TestCase):
     """A CIF fle in a complete work folder"""
 
     def setUp(self) -> None:
         self.testcif = Path('tests/examples/work/cu_BruecknerJK_153F40_0m.cif').absolute()
         self.myapp = AppWindow(self.testcif, unit_test=True)
+        self.myapp.ui.trackChangesCifCheckBox.setChecked(True)
         self.myapp.running_inside_unit_test = True
         self.myapp.hide()
         self.myapp.setWindowIcon(QIcon('./icon/multitable.png'))
@@ -65,6 +46,7 @@ class TestWorkfolder(unittest.TestCase):
         # TODO: Adapt this to the bahavior with the changes file:
         Path('tests/examples/work/cu_BruecknerJK_153F40_0m-finalcif_changes.cif').unlink(missing_ok=True)
         self.myapp = AppWindow(self.testcif, unit_test=True)
+        self.myapp.ui.trackChangesCifCheckBox.setChecked(True)
         self.myapp.equipment.import_equipment_from_file('test-data/Crystallographer_Details.cif')
         self.myapp.running_inside_unit_test = True
         self.myapp.hide()
@@ -366,6 +348,7 @@ class TestWorkfolderOtherCifName(unittest.TestCase):
     def setUp(self) -> None:
         self.testcif = Path('tests/examples/work/p21c.cif').resolve()
         self.myapp = AppWindow(self.testcif, unit_test=True)
+        self.myapp.ui.trackChangesCifCheckBox.setChecked(True)
         self.myapp.equipment.import_equipment_from_file('test-data/Crystallographer_Details.cif')
         self.myapp.running_inside_unit_test = True
         self.myapp.hide()

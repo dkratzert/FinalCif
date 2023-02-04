@@ -32,7 +32,7 @@ class CifContainer():
 
         Args:
             file: CIF file to open
-            new_block: Create a new block if a name is given. Otherwise, just
+            new_block: Create a new block (new file) if a name is given. Otherwise, just
                        the existing document is opened.
         """
         if isinstance(file, str):
@@ -70,7 +70,7 @@ class CifContainer():
         The name of the current file without path:
         foo.cif
         """
-        return Path(self.doc.source).name
+        return Path(self.doc.source).name or self.fileobj.name
 
     @property
     def finalcif_file(self) -> Path:
@@ -108,6 +108,11 @@ class CifContainer():
 
     def load_this_block(self, index: int) -> None:
         self.block = self.doc[index]
+        self.current_block = self.block.name
+        self._on_load()
+
+    def load_block_by_name(self, blockname):
+        self.block = self.doc.find_block(blockname)
         self.current_block = self.block.name
         self._on_load()
 
@@ -206,17 +211,16 @@ class CifContainer():
         return bool(self.__getitem__(item))
 
     def __str__(self) -> str:
-        return "CIF file: {0}\n" \
-               "{1} Block(s): {2}\n" \
-               "Contains SHELX res file: {3}\n" \
-               "Contains hkl data: {4}\n" \
-               "Has {5} atoms" \
-               ", {6} bonds" \
-               ", {7} angles" \
-               "".format(str(self.fileobj.resolve()), len(c.doc), ', '.join([x.name for x in c.doc]),
-                         True if self.res_file_data else False,
-                         len(self.hkl_file) > 1,
-                         self.natoms(), self.nbonds(), self.nangles())
+        return (f"CIF file: {str(self.fileobj.resolve())}\n"
+                f"{len(self.doc)} Block(s): {', '.join([x.name for x in self.doc])}\n"
+                f"Contains SHELX res file: {True if self.res_file_data else False}\n"
+                f"Has {self.natoms()} atoms"
+                f", {self.nbonds()} bonds"
+                f", {self.nangles()} angles")
+
+    def file_is_there_and_writable(self):
+        import os
+        return self.fileobj.exists() and self.fileobj.is_file() and os.access(self.fileobj, os.W_OK)
 
     def set_pair_delimited(self, key: str, txt: str):
         """
@@ -241,6 +245,9 @@ class CifContainer():
         """
         if not filename:
             filename = self.finalcif_file
+        if self.is_empty():
+            print(f'File {filename} is empty.')
+            return
         self.order_cif_keys()
         print('Saving to', Path(filename).resolve())
         self.doc.write_file(str(filename), gemmi.cif.Style.Indent35)
@@ -410,6 +417,33 @@ class CifContainer():
             if found:
                 zero_reflection_position = len(hkl_splitted) - num
         return zero_reflection_position
+
+    def is_empty(self):
+        if len(self.keys()) + len(self.loops) == 0:
+            return True
+        return False
+
+    def keys(self):
+        """
+        Returns a plain list of keys that are really in this CIF.
+        """
+        keys = []
+        for item in self.block:
+            if item.pair is not None:
+                key, _ = item.pair
+                keys.append(key)
+        return keys
+
+    def values(self):
+        """
+        Returns a plain list of keys that are really in this CIF.
+        """
+        values = []
+        for item in self.block:
+            if item.pair is not None:
+                _, value = item.pair
+                values.append(value)
+        return values
 
     @property
     def loops(self) -> List[gemmi.cif.Loop]:
@@ -788,7 +822,7 @@ class CifContainer():
         hydr = namedtuple('HydrogenBond', ('label_d', 'label_h', 'label_a', 'dist_dh', 'dist_ha', 'dist_da',
                                            'angle_dha', 'symm'))
         for label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm in \
-                zip(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm):
+            zip(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm):
             yield hydr(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, self.checksymm(symm))
 
     def key_value_pairs(self) -> List[Tuple[str, str]]:
@@ -800,7 +834,7 @@ class CifContainer():
 
     def _is_centrokey(self, key) -> bool:
         """
-        Is True if the kurrent key is only valid 
+        Is True if the kurrent key is only valid
         for non-centrosymmetric structures
         """
         return self.is_centrosymm and key in non_centrosymm_keys
@@ -827,28 +861,6 @@ class CifContainer():
         all_keys = [x[0] for x in with_values] + [x[0] for x in questions]
         self.check_for_missing_essential_keys(all_keys, questions)
         return sorted(questions), sorted(with_values)
-
-    def keys(self):
-        """
-        Returns a plain list of keys that are really in this CIF.
-        """
-        keys = []
-        for item in self.block:
-            if item.pair is not None:
-                key, _ = item.pair
-                keys.append(key)
-        return keys
-
-    def values(self):
-        """
-        Returns a plain list of keys that are really in this CIF.
-        """
-        values = []
-        for item in self.block:
-            if item.pair is not None:
-                _, value = item.pair
-                values.append(value)
-        return values
 
     def check_for_missing_essential_keys(self, all_keys: List[Tuple[str, str]],
                                          questions: List[Tuple[str, str]]) -> None:
