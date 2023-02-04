@@ -42,7 +42,7 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         self.setItemPrototype(item)
         del_shortcut = QShortcut(QKeySequence('Ctrl+Del'), self)
         del_shortcut.activated.connect(self.delete_row)
-        self.vheaderitems: list = []
+        self.vheaderitems: List[str] = []
         vheader = self.verticalHeader()
         vheader.setSectionsClickable(True)
         vheader.sectionClicked.connect(self.vheader_section_click)

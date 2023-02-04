@@ -368,10 +368,21 @@ class AppWindow(QMainWindow):
     def on_text_template_open(self, row: int):
         self.ui.cif_main_table.setCurrentCell(row, COL_EDIT)
         cif_key = self.ui.cif_main_table.vheaderitems[row]
-        self.textedit.ui.cifKeyLineEdit.setText(cif_key)
-        self.textedit.add_textfields(self.settings.load_settings_list('text_templates', cif_key))
+        self.textedit.cif_key = cif_key
+        if cif_key.startswith('_vrf_'):
+            # _vrf_DIFF003_cifname
+            self.textedit.ui.cifKeyLineEdit.setText('Validation Response Form')
+            self.textedit.add_textfields(self.settings.load_settings_list('text_templates', self.get_vrf_errortype(cif_key)))
+            self.textedit.ui.plainTextEdit.setPlainText(self.ui.cif_main_table.getText(row, COL_CIF))
+        else:
+            self.textedit.ui.cifKeyLineEdit.setText(cif_key)
+            self.textedit.add_textfields(self.settings.load_settings_list('text_templates', cif_key))
         edit_text = self.ui.cif_main_table.getText(row, COL_EDIT)
-        self.textedit.ui.plainTextEdit.setPlainText(edit_text)
+        if not self.textedit.ui.plainTextEdit.toPlainText():
+            self.textedit.ui.plainTextEdit.setPlainText(edit_text)
+
+    def get_vrf_errortype(self, cif_key: str) -> str:
+        return '_'.join(cif_key.split('_')[:3])
 
     def import_text_template(self):
         """
@@ -430,7 +441,7 @@ class AppWindow(QMainWindow):
         """
         Delete template from settings.
         """
-        cif_key = self.textedit.ui.cifKeyLineEdit.text()
+        cif_key = self.textedit.cif_key
         txt = f'Do you really want to delete all template texts for {cif_key}?'
         answer = show_yes_now_question(title='Delete templates', question=txt, parent=self)
         if not answer:
@@ -446,7 +457,9 @@ class AppWindow(QMainWindow):
         """
         Save template in settings.
         """
-        cif_key = self.textedit.ui.cifKeyLineEdit.text()
+        cif_key = self.textedit.cif_key
+        if cif_key.startswith('_vrf_'):
+            cif_key = self.get_vrf_errortype(cif_key)
         table_data = self.textedit.get_template_texts()
         self.settings.save_settings_list(property='text_templates', name=cif_key, items=table_data)
         self.status_bar.show_message(f'Template for {cif_key} saved.', timeout=10)
@@ -470,10 +483,9 @@ class AppWindow(QMainWindow):
         Use text from self.textedit.ui.plainTextEdit and fill it into current cell. Then go back to
         main table. And scroll to changed row.
         """
-        cif_key = self.textedit.ui.cifKeyLineEdit.text()
         text = self.textedit.ui.plainTextEdit.toPlainText()
         TextEditItem._num = 1
-        self.ui.cif_main_table.setText(key=cif_key, column=COL_EDIT, txt=text)
+        self.ui.cif_main_table.setText(key=self.textedit.cif_key, column=COL_EDIT, txt=text)
         self.ui.MainStackedWidget.got_to_main_page()
         self.textedit.clear_fields()
 
@@ -1748,6 +1760,8 @@ class AppWindow(QMainWindow):
     def refresh_color_background_from_templates(self):
         for row_number in range(self.ui.cif_main_table.model().rowCount()):
             vhead_key = self.get_key_by_row_number(row_number)
+            if vhead_key.startswith('_vrf_'):
+                vhead_key = self.get_vrf_errortype(vhead_key)
             widget = self.ui.cif_main_table.cellWidget(row_number, COL_EDIT)
             if isinstance(widget, MyQPlainTextEdit):
                 if self.settings.load_settings_list('text_templates', vhead_key):
@@ -1882,7 +1896,10 @@ class AppWindow(QMainWindow):
             self.complete_data_row = row_num
         else:
             color = None
-            if key in self.settings.list_saved_items('text_templates'):
+            load_key = key
+            if key.startswith('_vrf_'):
+                load_key = self.get_vrf_errortype(load_key)
+            if load_key in self.settings.list_saved_items('text_templates'):
                 color = light_blue
             self.ui.cif_main_table.setText(row=row_num, key=key, column=COL_CIF,
                                            txt='?' if at_start else strval)
