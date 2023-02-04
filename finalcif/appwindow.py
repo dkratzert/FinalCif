@@ -519,7 +519,7 @@ class AppWindow(QMainWindow):
 
     def open_cod_page(self) -> None:
         self.save_current_cif_file()
-        self.load_cif_file(self.cif.finalcif_file, self.current_block)
+        self.load_cif_file(self.cif.finalcif_file, self.current_block, load_changes=False)
         self.deposit.cif = self.cif
         self.ui.MainStackedWidget.setCurrentIndex(7)
 
@@ -807,7 +807,7 @@ class AppWindow(QMainWindow):
         if not self.save_current_cif_file():
             self.ui.CheckCifLogPlainTextEdit.appendHtml('<b>Unable to save CIF file. Aborting action...</b>')
             return None
-        self.load_cif_file(self.cif.finalcif_file, block=current_block)
+        self.load_cif_file(self.cif.finalcif_file, block=current_block, load_changes=False)
         self.htmlfile = self.cif.finalcif_file_prefixed(prefix='checkcif-', suffix='-finalcif.html')
         try:
             self.htmlfile.unlink()
@@ -855,7 +855,7 @@ class AppWindow(QMainWindow):
                 if block.name == v.data_name:
                     block.set_pair(v.key, quote(utf8_to_str(v.value)))
         self.save_current_cif_file()
-        self.load_cif_file(self.cif.finalcif_file, current_block)
+        self.load_cif_file(self.cif.finalcif_file, current_block, load_changes=False)
         if n:
             self.ui.CheckCifLogPlainTextEdit.appendPlainText('Forms saved')
         else:
@@ -879,7 +879,7 @@ class AppWindow(QMainWindow):
         if not self.save_current_cif_file():
             self.ui.CheckCifLogPlainTextEdit.appendHtml('<b>Unable to save CIF file. Aborting action...</b>')
             return None
-        self.load_cif_file(self.cif.finalcif_file, current_block)
+        self.load_cif_file(self.cif.finalcif_file, current_block, load_changes=False)
         htmlfile = self.cif.finalcif_file_prefixed(prefix='checkpdf-', suffix='.html')
         try:
             htmlfile.unlink()
@@ -924,7 +924,7 @@ class AppWindow(QMainWindow):
         if not self.save_current_cif_file():
             self.ui.CheckCifLogPlainTextEdit.appendPlainText('Unable to save CIF file. Aborting action...')
             return None
-        self.load_cif_file(self.cif.finalcif_file, block=current_block)
+        self.load_cif_file(self.cif.finalcif_file, block=current_block, load_changes=False)
         self.ui.MainStackedWidget.go_to_checkcif_page()
         QApplication.processEvents()
         timeout = 350
@@ -1052,7 +1052,7 @@ class AppWindow(QMainWindow):
             return None
         if not self.save_current_cif_file():
             return None
-        self.load_cif_file(self.cif.finalcif_file, block=current_block)
+        self.load_cif_file(self.cif.finalcif_file, block=current_block, load_changes=False)
         report_filename = self.cif.finalcif_file_prefixed(prefix='report_', suffix='-finalcif.docx')
         multi_table_document = self.cif.finalcif_file_prefixed(prefix='', suffix='-multitable.docx')
         # The picture after the header:
@@ -1514,7 +1514,7 @@ class AppWindow(QMainWindow):
 
     def append_cif(self):
         self.cif.save()
-        self.load_cif_file(filepath=self.cif.finalcif_file)
+        self.load_cif_file(filepath=self.cif.finalcif_file, load_changes=False)
         file = self.get_file_from_dialog()
         if not file:
             return
@@ -1527,7 +1527,7 @@ class AppWindow(QMainWindow):
             return
         self.cif.doc.add_copied_block(block=cif2.block, pos=-1)
         self.cif.save()
-        self.load_cif_file(filepath=self.cif.fileobj)
+        self.load_cif_file(filepath=self.cif.fileobj, load_changes=False)
 
     def get_file_from_dialog(self) -> Union[Path, None]:
         fp = cif_file_open_dialog(last_dir=self.get_last_workdir())
