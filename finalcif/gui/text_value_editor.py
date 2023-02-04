@@ -33,7 +33,7 @@ class TextEditItem(QWidget):
         self.vlayout.addWidget(self.checkbox)
         layout.addLayout(self.vlayout)
         layout.addWidget(self.textfield)
-        layout.setContentsMargins(4, 8, 4, 4)
+        layout.setContentsMargins(12, 8, 30, 8)
         self.setAutoFillBackground(False)
         self.checkbox.clicked.connect(self.on_checkbox_clicked)
 
@@ -56,12 +56,13 @@ class TextEditItem(QWidget):
         self.checkbox.setObjectName(name)
 
     def sizeHint(self) -> QSize:
-        return QSize(400, 200)
+        return QSize(400, 180)
 
 
 class MyTextTemplateEdit(QWidget):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: object, **kwargs: object) -> None:
         super().__init__(*args, **kwargs)
+        self.cif_key: str = ''
         self.ui = text_templates.Ui_TextTemplatesWidget()
         self.ui.setupUi(self)
         self.ui.cancelTextPushButton.clicked.connect(self._on_backbutton_clicked)
@@ -79,11 +80,11 @@ class MyTextTemplateEdit(QWidget):
                 self.add_one_textfield(text)
         self.add_more_fiels()
 
-    def add_more_fiels(self):
+    def add_more_fiels(self) -> None:
         for empty in ('',) * 20:
             self.add_one_textfield(empty)
 
-    def add_one_textfield(self, text):
+    def add_one_textfield(self, text: str) -> None:
         edit_item = TextEditItem(self.ui.templatesListWidget)
         edit_item.setText(text)
         edit_item.checkbox_clicked.connect(lambda x: self.ui.plainTextEdit.appendPlainText(x))
