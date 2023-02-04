@@ -1220,7 +1220,7 @@
                  <item row="0" column="1">
                   <widget class="QPushButton" name="ReportPicPushButton">
                    <property name="text">
-                    <string>Picture for Tables</string>
+                    <string>Picture for Report</string>
                    </property>
                   </widget>
                  </item>
