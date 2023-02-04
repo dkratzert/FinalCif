@@ -29,6 +29,7 @@ DEBUG = False
 class MyCifTable(QTableWidget, ItemTextMixin):
     row_deleted = QtCore.pyqtSignal(str)
     textTemplate = QtCore.pyqtSignal(int)
+    new_key = QtCore.pyqtSignal(str)
 
     def __init__(self, parent: QWidget = None, *args, **kwargs):
         self.parent = parent
@@ -173,6 +174,7 @@ class MyCifTable(QTableWidget, ItemTextMixin):
             textedit = MyQPlainTextEdit(self)
             textedit.cif_key = key
             textedit.templateRequested.connect(self.goto_template_page)
+            textedit.new_key.connect(lambda x: self.new_key.emit(x))
             self.setCellWidget(row, column, textedit)
             textedit.setText(txt, color=color)
             if (column == COL_CIF) or (column == COL_DATA):
