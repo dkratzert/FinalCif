@@ -1851,7 +1851,7 @@ class Ui_FinalCifWindow(object):
         self.DetailsPushButton.setText(_translate("FinalCifWindow", "Show Details"))
         self.SourcesPushButton.setText(_translate("FinalCifWindow", "Data Sources"))
         self.LoopsPushButton.setText(_translate("FinalCifWindow", "Edit Loops"))
-        self.ReportPicPushButton.setText(_translate("FinalCifWindow", "Picture for Tables"))
+        self.ReportPicPushButton.setText(_translate("FinalCifWindow", "Picture for Report"))
         self.SaveFullReportButton.setText(_translate("FinalCifWindow", "Make Tables"))
         self.CheckcifStartButton.setText(_translate("FinalCifWindow", "CheckCIF"))
         self.CODpushButton.setText(_translate("FinalCifWindow", "COD Deposit"))
