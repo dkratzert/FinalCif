@@ -8,7 +8,6 @@
 import sys
 from typing import Type
 
-
 if 'compile_ui' in sys.argv:
     COMPILE = True
     del sys.argv[sys.argv.index('compile_ui')]
