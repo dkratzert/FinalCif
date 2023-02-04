@@ -193,6 +193,7 @@ class AppWindow(QMainWindow):
             self.showMaximized()
 
     def make_button_icons(self) -> None:
+        print(QApplication.style())
         self.ui.CheckcifButton.setIcon(qta.icon('mdi.file-document-outline'))
         self.ui.CheckcifStartButton.setIcon(qta.icon('mdi.file-document-outline'))
         self.ui.LoopsPushButton.setIcon(qta.icon('mdi.table'))
@@ -505,7 +506,7 @@ class AppWindow(QMainWindow):
     def current_block(self) -> int:
         return self.ui.datanameComboBox.currentIndex()
 
-    def open_cod_page(self):
+    def open_cod_page(self) -> None:
         self.save_current_cif_file()
         self.load_cif_file(self.cif.finalcif_file, self.current_block)
         self.deposit.cif = self.cif
@@ -524,18 +525,18 @@ class AppWindow(QMainWindow):
         with suppress(AttributeError):
             self._savesize()
 
-    def changeEvent(self, event):
+    def changeEvent(self, event: QtCore.QEvent) -> None:
         """Is called when the main window changes its state."""
         if event.type() == QtCore.QEvent.WindowStateChange:
             with suppress(AttributeError):
                 self._savesize()
 
-    def _savesize(self):
+    def _savesize(self) -> None:
         """Saves the main window size nd position."""
         x, y = self.pos().x(), self.pos().y()
         self.settings.save_window_position(QtCore.QPoint(x, y), self.size(), self.isMaximized())
 
-    def show_help(self):
+    def show_help(self) -> None:
         QDesktopServices.openUrl(QtCore.QUrl('https://dkratzert.de/files/finalcif/docs/'))
 
     def do_shred_cif(self):
@@ -662,7 +663,7 @@ class AppWindow(QMainWindow):
             self.checkdef_file.write_bytes(reply)
         self.checkdef = reply.decode('ascii', errors='ignore').splitlines(keepends=False)
 
-    def explore_current_dir(self):
+    def explore_current_dir(self) -> None:
         """
         Opens the file checkcif_browser for the current directory.
         """
@@ -704,7 +705,7 @@ class AppWindow(QMainWindow):
         """
         Get back to the main table and load the new cif file.
         """
-        self.load_cif_file(filepath=self.cif.finalcif_file)
+        self.load_cif_file(filepath=self.cif.finalcif_file, load_changes=False)
         self.ui.MainStackedWidget.got_to_main_page()
         self.ui.cif_main_table.scrollToTop()
         self.ui.TemplatesStackedWidget.setCurrentIndex(0)
@@ -712,7 +713,7 @@ class AppWindow(QMainWindow):
         self.ui.revertLoopsPushButton.show()
         self.ui.newLoopPushButton.show()
 
-    def back_to_main_noload(self):
+    def back_to_main_noload(self) -> None:
         """
         Get back to the main table. Without loading a new cif file.
         """
@@ -985,7 +986,7 @@ class AppWindow(QMainWindow):
                 stop += 1
             time.sleep(0.5)
 
-    def set_checkcif_output_font(self, ccpe):
+    def set_checkcif_output_font(self, ccpe: QPlainTextEdit) -> None:
         doc = ccpe.document()
         font = doc.defaultFont()
         font.setFamily("Courier New")
@@ -1022,7 +1023,7 @@ class AppWindow(QMainWindow):
             self.ui.ReportPicPushButton.setIcon(qta.icon('fa5.image'))
             self.ui.ReportPicPushButton.setText('')
 
-    def get_checked_templates_list_text(self):
+    def get_checked_templates_list_text(self) -> str:
         for index in range(self.ui.TemplatesListWidget.count()):
             item = self.ui.TemplatesListWidget.item(index)
             if item.checkState() == Qt.Checked:
@@ -1085,7 +1086,7 @@ class AppWindow(QMainWindow):
         return self.ui.TemplatesListWidget.item(0).checkState() == Qt.CheckState.Checked \
             or not self.ui.TemplatesListWidget.currentItem()
 
-    def zip_report(self, report_filename: Path):
+    def zip_report(self, report_filename: Path) -> None:
         zipfile = self.cif.finalcif_file.with_suffix('.zip')
         if zipfile.exists():
             zipname = next_path(zipfile.stem + '-%s.zip')
@@ -1196,7 +1197,7 @@ class AppWindow(QMainWindow):
         if self.options.track_changes and changes_cif and changes_cif.file_is_there_and_writable():
             self.save_keys_and_loops_to_changes_cif(changes_cif)
 
-    def save_keys_and_loops_to_changes_cif(self, changes_cif: CifContainer):
+    def save_keys_and_loops_to_changes_cif(self, changes_cif: CifContainer) -> None:
         self.save_changed_loops(changes_cif)
         try:
             changes_cif.save(filename=self.finalcif_changes_filename)
@@ -1210,7 +1211,7 @@ class AppWindow(QMainWindow):
             with suppress(Exception):
                 changes_cif.fileobj.unlink(missing_ok=True)
 
-    def save_changed_loops(self, changes_cif: CifContainer):
+    def save_changed_loops(self, changes_cif: CifContainer) -> None:
         """
         previous_cif is the original unchanged cif that gets 'previous_cif'-finalcif.cif after saving.
         previous_values contains its loops.
@@ -1240,7 +1241,7 @@ class AppWindow(QMainWindow):
         changes_cif.fileobj.touch(exist_ok=True)
         return changes_cif
 
-    def changes_cif_has_zero_size(self):
+    def changes_cif_has_zero_size(self) -> bool:
         return self.finalcif_changes_filename.exists() and self.finalcif_changes_filename.stat().st_size == 0
 
     def load_changes_cif(self) -> bool:
@@ -1254,7 +1255,7 @@ class AppWindow(QMainWindow):
             self.cif.add_loop_to_cif(loop_tags=loop.tags, loop_values=loop.values)
         return True
 
-    def is_row_a_cif_item(self, vhead):
+    def is_row_a_cif_item(self, vhead: str) -> bool:
         is_cif = False
         # vertical header item is a cif keyword:
         if vhead.startswith('_'):
@@ -1343,7 +1344,7 @@ class AppWindow(QMainWindow):
                 else:
                     self.add_row(key, value)  # , column=COL_EDIT
 
-    def do_not_import_this_key(self, key: str, value: str, cif: CifContainer) -> bool:
+    def do_not_import_this_key(self, key: str, value: str, cif: 'CifContainer') -> bool:
         if value == '?' or value.strip() == '':
             return True
         if key in do_not_import_keys:
@@ -1352,7 +1353,7 @@ class AppWindow(QMainWindow):
             return True
         return False
 
-    def load_cif_file(self, filepath: Path, block=0) -> None:
+    def load_cif_file(self, filepath: Path, block=0, load_changes: bool = True) -> None:
         """
         Opens the cif file and fills information into the main table.
         """
@@ -1389,7 +1390,7 @@ class AppWindow(QMainWindow):
             self.warn_about_bad_cif()
         # Do this only when sure we can load the file:
         self.save_current_recent_files_list(filepath)
-        self._load_block(block)
+        self._load_block(block, load_changes=load_changes)
         self.add_data_names_to_combobox()
         self.ui.datanameComboBox.setCurrentIndex(block)
         self.ui.cif_main_table.resizeRowsToContents()
@@ -1398,19 +1399,19 @@ class AppWindow(QMainWindow):
             # short after start, because window size is not finished
             QTimer.singleShot(1000, self.ui.datanameComboBox.showPopup)
 
-    def add_data_names_to_combobox(self):
+    def add_data_names_to_combobox(self) -> None:
         self.ui.datanameComboBox.clear()
         for block in self.cif.doc:
             self.ui.datanameComboBox.addItem(block.name)
 
-    def _clear_state_before_block_load(self):
+    def _clear_state_before_block_load(self) -> None:
         self.status_bar.show_message('')
         # Set to empty state before loading:
         self.missing_data = set()
         # clean table and vheader before loading:
         self.ui.cif_main_table.delete_content()
 
-    def _load_block(self, index: int):
+    def _load_block(self, index: int, load_changes: bool = True) -> None:
         if not self.cif:
             return
         self._clear_state_before_block_load()
@@ -1433,7 +1434,7 @@ class AppWindow(QMainWindow):
                 raise
             unable_to_open_message(Path(self.cif.filename), not_ok)
         self.load_recent_cifs_list()
-        if self.options.track_changes:
+        if self.options.track_changes and load_changes:
             changes_exist = False
             if self.changes_cif_has_zero_size():
                 self.finalcif_changes_filename.unlink(missing_ok=True)
@@ -1479,14 +1480,14 @@ class AppWindow(QMainWindow):
         except IndexError:
             return False
 
-    def fill_sum_formula_lineedit(self):
+    def fill_sum_formula_lineedit(self) -> None:
         try:
             self.ui.SumFormMainLineEdit.setText(sum_formula_to_html(formula_str_to_dict(
                 self.cif['_chemical_formula_sum'].strip(" '"))))
         except Exception:
             self.ui.SumFormMainLineEdit.setText(self.cif['_chemical_formula_sum'].strip(" '"))
 
-    def fill_space_group_lineedit(self):
+    def fill_space_group_lineedit(self) -> None:
         try:
             self.ui.Spacegroup_top_LineEdit.setText(
                 SpaceGroups().to_html(self.cif.space_group))
@@ -1494,7 +1495,7 @@ class AppWindow(QMainWindow):
             print('Space group error:', str(e))
             self.ui.Spacegroup_top_LineEdit.setText(self.cif.space_group)
 
-    def set_shredcif_state(self):
+    def set_shredcif_state(self) -> None:
         if ShredCIF(cif=self.cif, ui=self.ui).cif_has_hkl_or_res_file():
             self.ui.ShredCifButton.setEnabled(True)
         else:
@@ -1534,7 +1535,7 @@ class AppWindow(QMainWindow):
         except OSError:
             print("Can't change the Current Working Directory")
 
-    def check_cif_for_missing_values_before_really_open_it(self):
+    def check_cif_for_missing_values_before_really_open_it(self) -> None:
         try:
             # Will not stop reading if only the value is missing and ends with newline:
             self.cif.doc.check_for_missing_values()
@@ -1728,7 +1729,7 @@ class AppWindow(QMainWindow):
                 # print(e, '##', miss_key)
                 pass
 
-    def refresh_combo_boxes(self):
+    def refresh_combo_boxes(self) -> None:
         combos_from_settings = self.settings.load_cif_keys_of_properties()
         for row_number in range(self.ui.cif_main_table.model().rowCount()):
             vhead_key = self.get_key_by_row_number(row_number)
@@ -1753,11 +1754,11 @@ class AppWindow(QMainWindow):
                 else:
                     widget.setBackground(white)
 
-    def get_key_by_row_number(self, row_number):
+    def get_key_by_row_number(self, row_number: int) -> str:
         vhead_key = self.ui.cif_main_table.model().headerData(row_number, QtCore.Qt.Vertical)
         return vhead_key
 
-    def add_combobox(self, num: int, vhead_key: str):
+    def add_combobox(self, num: int, vhead_key: str) -> None:
         """
         :param num: row number
         :param vhead_key: CIF keyword for combobox
@@ -1824,7 +1825,7 @@ class AppWindow(QMainWindow):
     def add_loop_widget(self, loop: Loop, first_tag: str) -> None:
         self.ui.LoopsTabWidget.addTab(loop.tableview, cif_to_header_label.get(first_tag) or first_tag)
 
-    def add_res_file_to_loops(self):
+    def add_res_file_to_loops(self) -> None:
         textedit = QPlainTextEdit()
         self.ui.LoopsTabWidget.addTab(textedit, 'SHELX res file')
         textedit.setPlainText(self.cif.res_file_data[1:-1])
