@@ -1708,6 +1708,8 @@ class AppWindow(QMainWindow):
                 continue
             if src and src not in self.missing_data:
                 self.add_row(src, '?')
+                # Makes sure data is loaded on first load and not only after saving:
+                self.missing_data.add(src)
         self.refresh_combo_boxes()
         # Get missing items from sources and put them into the corresponding rows:
         # missing items will even be used if under the blue separation line:
