@@ -371,7 +371,7 @@ class AppWindow(QMainWindow):
         self.textedit.cif_key = cif_key
         if cif_key.startswith('_vrf_'):
             # _vrf_DIFF003_cifname
-            self.textedit.ui.cifKeyLineEdit.setText('Validation Response Form')
+            self.textedit.ui.cifKeyLineEdit.setText(self.get_vrf_errortype(cif_key))
             self.textedit.add_textfields(self.settings.load_settings_list('text_templates', self.get_vrf_errortype(cif_key)))
             self.textedit.ui.plainTextEdit.setPlainText(self.ui.cif_main_table.getText(row, COL_CIF))
         else:
