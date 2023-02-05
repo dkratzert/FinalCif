@@ -1028,7 +1028,7 @@
         <item row="1" column="0" colspan="13">
          <widget class="MyMainStackedWidget" name="MainStackedWidget">
           <property name="currentIndex">
-           <number>7</number>
+           <number>5</number>
           </property>
           <widget class="QWidget" name="page_MainTable">
            <layout class="QVBoxLayout" name="verticalLayout">
@@ -2659,140 +2659,150 @@ The data source will be ignored until next program restart.</string>
                  </spacer>
                 </item>
                 <item row="0" column="0">
-                 <widget class="QGroupBox" name="groupBox_9">
-                  <property name="title">
-                   <string>Publication Authors</string>
+                 <widget class="QTabWidget" name="tabWidget_9">
+                  <property name="currentIndex">
+                   <number>1</number>
                   </property>
-                  <layout class="QVBoxLayout" name="verticalLayout_23">
-                   <item>
-                    <layout class="QVBoxLayout" name="verticalLayout_24">
-                     <item>
-                      <widget class="QLabel" name="label_20">
-                       <property name="text">
-                        <string>Details about the authors of a manuscript submitted for publication.
+                  <widget class="QWidget" name="page_publication" native="true">
+                   <attribute name="title">
+                    <string>Publication Authors</string>
+                   </attribute>
+                   <layout class="QVBoxLayout" name="verticalLayout_23">
+                    <item>
+                     <layout class="QVBoxLayout" name="verticalLayout_24">
+                      <item>
+                       <widget class="QLabel" name="label_20">
+                        <property name="text">
+                         <string>Details about the authors of a manuscript submitted for publication.
 Contact authors should always also appear as regular authors.</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <layout class="QGridLayout" name="gridLayout_5">
-                       <item row="0" column="0">
-                        <widget class="QLabel" name="label_22">
-                         <property name="text">
-                          <string>Full Name</string>
-                         </property>
-                         <property name="alignment">
-                          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                         </property>
-                         <property name="openExternalLinks">
-                          <bool>true</bool>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="4" column="2">
-                        <widget class="QLineEdit" name="PhoneLineEdit"/>
-                       </item>
-                       <item row="0" column="2">
-                        <widget class="QLineEdit" name="FullNameLineEdit"/>
-                       </item>
-                       <item row="5" column="0">
-                        <widget class="QLabel" name="label_34">
-                         <property name="text">
-                          <string>ORCID</string>
-                         </property>
-                         <property name="alignment">
-                          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="1" column="2">
-                        <widget class="QCheckBox" name="ContactAuthorCheckBox">
-                         <property name="text">
-                          <string>This is a contact author</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="3" column="2">
-                        <widget class="QLineEdit" name="EMailLineEdit"/>
-                       </item>
-                       <item row="6" column="0">
-                        <widget class="QLabel" name="footnote_label">
-                         <property name="text">
-                          <string>footnote</string>
-                         </property>
-                         <property name="alignment">
-                          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="2" column="0">
-                        <widget class="QLabel" name="label_21">
-                         <property name="text">
-                          <string>Adresss</string>
-                         </property>
-                         <property name="alignment">
-                          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="3" column="0">
-                        <widget class="QLabel" name="label_16">
-                         <property name="text">
-                          <string>e-mail</string>
-                         </property>
-                         <property name="alignment">
-                          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="6" column="2">
-                        <widget class="QLineEdit" name="FootNoteLineEdit"/>
-                       </item>
-                       <item row="4" column="0">
-                        <widget class="QLabel" name="label_13">
-                         <property name="text">
-                          <string>phone number</string>
-                         </property>
-                         <property name="alignment">
-                          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="2" column="2">
-                        <widget class="QTextEdit" name="AddressTextedit"/>
-                       </item>
-                       <item row="5" column="2">
-                        <widget class="QLineEdit" name="ORCIDLineEdit"/>
-                       </item>
-                      </layout>
-                     </item>
-                    </layout>
-                   </item>
-                   <item>
-                    <layout class="QVBoxLayout" name="verticalLayout_32">
-                     <item alignment="Qt::AlignRight">
-                      <widget class="QPushButton" name="SaveAuthorLoopToTemplateButton">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="text">
-                        <string>Save Author as Template</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QPushButton" name="AddThisAuthorToLoopPushButton">
-                       <property name="text">
-                        <string>Add Author to CIF Loop</string>
-                       </property>
-                      </widget>
-                     </item>
-                    </layout>
-                   </item>
-                  </layout>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <layout class="QGridLayout" name="gridLayout_5">
+                        <item row="0" column="0">
+                         <widget class="QLabel" name="label_22">
+                          <property name="text">
+                           <string>Full Name</string>
+                          </property>
+                          <property name="alignment">
+                           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                          </property>
+                          <property name="openExternalLinks">
+                           <bool>true</bool>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="4" column="2">
+                         <widget class="QLineEdit" name="PhoneLineEdit"/>
+                        </item>
+                        <item row="0" column="2">
+                         <widget class="QLineEdit" name="FullNameLineEdit"/>
+                        </item>
+                        <item row="5" column="0">
+                         <widget class="QLabel" name="label_34">
+                          <property name="text">
+                           <string>ORCID</string>
+                          </property>
+                          <property name="alignment">
+                           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="1" column="2">
+                         <widget class="QCheckBox" name="ContactAuthorCheckBox">
+                          <property name="text">
+                           <string>This is a contact author</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="3" column="2">
+                         <widget class="QLineEdit" name="EMailLineEdit"/>
+                        </item>
+                        <item row="6" column="0">
+                         <widget class="QLabel" name="footnote_label">
+                          <property name="text">
+                           <string>footnote</string>
+                          </property>
+                          <property name="alignment">
+                           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="2" column="0">
+                         <widget class="QLabel" name="label_21">
+                          <property name="text">
+                           <string>Adresss</string>
+                          </property>
+                          <property name="alignment">
+                           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="3" column="0">
+                         <widget class="QLabel" name="label_16">
+                          <property name="text">
+                           <string>e-mail</string>
+                          </property>
+                          <property name="alignment">
+                           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="6" column="2">
+                         <widget class="QLineEdit" name="FootNoteLineEdit"/>
+                        </item>
+                        <item row="4" column="0">
+                         <widget class="QLabel" name="label_13">
+                          <property name="text">
+                           <string>phone number</string>
+                          </property>
+                          <property name="alignment">
+                           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="2" column="2">
+                         <widget class="QTextEdit" name="AddressTextedit"/>
+                        </item>
+                        <item row="5" column="2">
+                         <widget class="QLineEdit" name="ORCIDLineEdit"/>
+                        </item>
+                       </layout>
+                      </item>
+                     </layout>
+                    </item>
+                    <item>
+                     <layout class="QVBoxLayout" name="verticalLayout_32">
+                      <item alignment="Qt::AlignRight">
+                       <widget class="QPushButton" name="SaveAuthorLoopToTemplateButton">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
+                        </property>
+                        <property name="text">
+                         <string>Save Author as Template</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QPushButton" name="AddThisAuthorToLoopPushButton">
+                        <property name="text">
+                         <string>Add Author to CIF Loop</string>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </item>
+                   </layout>
+                  </widget>
+                  <widget class="QWidget" name="page_audit">
+                   <attribute name="title">
+                    <string>Audit Authors</string>
+                   </attribute>
+                  </widget>
                  </widget>
                 </item>
                </layout>
