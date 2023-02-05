@@ -5,9 +5,11 @@
 #   and you think this stuff is worth it, you can buy me a beer in return.
 #   ----------------------------------------------------------------------------
 from contextlib import suppress
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, Union, List
 
+import gemmi.cif
 from PyQt5.QtWidgets import QListWidgetItem
 from gemmi.cif import Loop, as_string
 
@@ -21,6 +23,18 @@ from finalcif.tools.settings import FinalCifSettings
 
 with suppress(ImportError):
     from finalcif.appwindow import AppWindow
+
+
+@dataclass()
+class Author:
+    name: str
+    address: str
+    email: str
+    phone: str
+    orcid: str
+    footnote: str
+    contact_author: bool
+    author_type: str
 
 
 class AuthorLoops():
@@ -46,7 +60,7 @@ class AuthorLoops():
             self.show_authors_list()
             self.make_sure_to_save_only_when_name_field_has_text()
 
-    def make_sure_to_save_only_when_name_field_has_text(self):
+    def make_sure_to_save_only_when_name_field_has_text(self) -> None:
         if not len(self.ui.FullNameLineEdit.text()):
             self.ui.SaveAuthorLoopToTemplateButton.setDisabled(True)
             self.ui.AddThisAuthorToLoopPushButton.setDisabled(True)
@@ -77,23 +91,20 @@ class AuthorLoops():
 
     def save_author_to_loop(self):
         author = self.get_author_info()
-        row = [author.get('name'), author.get('address'), author.get('email'), author.get('phone'),
-               author.get('orcid'), author.get('footnote')]
-        if self.ui.ContactAuthorCheckBox.isChecked():
-            author_type = '_publ_contact_author_name'
-            contact_author = True
+        row = [author.name, author.address, author.email, author.phone, author.orcid, author.footnote]
+        if author.contact_author:
+            author_type = f'_{author.author_type}_contact_author_name'
             del row[-1]  # contact author has no footnote
         else:
-            author_type = '_publ_author_name'
-            contact_author = False
+            author_type = f'_{author.author_type}_author_name'
         if self.cif.block.find_loop(author_type):
             gemmi_loop: Loop = self.cif.block.find_loop(author_type).get_loop()
             if tuple(row) in list(grouper(gemmi_loop.values, len(row))):
                 self.app.status_bar.show_message('This author already exists.', 10)
-                print('author already there')
-                return  # Author already exists
+                print('dbg> Author already exists.')
+                return
         else:
-            gemmi_loop = self.cif.init_loop(self.get_author_loop(contact_author))
+            gemmi_loop = self.cif.init_loop(self.get_author_loop(author.contact_author))
         self.check_if_loop_and_row_size_fit_together(gemmi_loop, row)
         self.app.make_loops_tables()
         self.show_authors_list()
@@ -104,16 +115,27 @@ class AuthorLoops():
         else:
             show_general_warning('An author loop with different size is already in the CIF. Can not proceed.')
 
-    def get_author_info(self) -> Dict[str, Union[str, bool, None]]:
-        name = quote(utf8_to_str(self.ui.FullNameLineEdit.text()))
-        address = quote(utf8_to_str(self.ui.AddressTextedit.toPlainText()))
-        email = quote(utf8_to_str(self.ui.EMailLineEdit.text()))
-        footnote = quote(utf8_to_str(self.ui.FootNoteLineEdit.text()))
-        orcid = quote(utf8_to_str(self.ui.ORCIDLineEdit.text()))
-        phone = quote(utf8_to_str(self.ui.PhoneLineEdit.text()))
-        contact: bool = self.ui.ContactAuthorCheckBox.isChecked()
-        return {'address': address, 'footnote': footnote, 'email': email,
-                'name'   : name, 'orcid': orcid, 'phone': phone, 'contact': contact}
+    def get_author_info(self) -> Author:
+        if self.ui.authorEditTabWidget.currentWidget().objectName() == 'page_publication':
+            name = quote(utf8_to_str(self.ui.FullNameLineEdit.text()))
+            address = quote(utf8_to_str(self.ui.AddressTextedit.toPlainText()))
+            email = quote(utf8_to_str(self.ui.EMailLineEdit.text()))
+            footnote = quote(utf8_to_str(self.ui.FootNoteLineEdit.text()))
+            orcid = quote(utf8_to_str(self.ui.ORCIDLineEdit.text()))
+            phone = quote(utf8_to_str(self.ui.PhoneLineEdit.text()))
+            contact: bool = self.ui.ContactAuthorCheckBox.isChecked()
+            author_type = 'publ'
+        else:
+            name = quote(utf8_to_str(self.ui.FullNameLineEdit_cif.text()))
+            address = quote(utf8_to_str(self.ui.AddressTextedit_cif.toPlainText()))
+            email = quote(utf8_to_str(self.ui.EMailLineEdit_cif.text()))
+            footnote = quote(utf8_to_str(self.ui.FootNoteLineEdit_cif.text()))
+            orcid = quote(utf8_to_str(self.ui.ORCIDLineEdit_cif.text()))
+            phone = quote(utf8_to_str(self.ui.PhoneLineEdit_cif.text()))
+            contact: bool = self.ui.ContactAuthorCheckBox_cif.isChecked()
+            author_type = 'audit'
+        return Author(name=name, address=address, email=email, footnote=footnote,
+                      orcid=orcid, phone=phone, contact_author=contact, author_type=author_type)
 
     def set_author_info(self, author: Dict[str, Union[str, None]]):
         if not author:
@@ -143,20 +165,20 @@ class AuthorLoops():
 
     def save_author_to_loop_template(self):
         author = self.get_author_info()
-        if not author.get('name'):
+        if not author.name:
             return
         self.general_author_save(author)
         self.clear_fields()
 
-    def general_author_save(self, author_dict: dict):
-        if not author_dict.get('name'):
+    def general_author_save(self, author: Author):
+        if not author.name:
             return
-        if author_dict.get('contact'):
-            itemtext = '{} (contact author)'.format(retranslate_delimiter(as_string(author_dict.get('name'))))
+        if author.contact_author:
+            itemtext = f'{retranslate_delimiter(as_string(author.name))} (contact author)'
         else:
-            itemtext = as_string(author_dict.get('name'))
+            itemtext = as_string(author.name)
         if itemtext not in self.authors_list():
-            self.settings.save_settings_dict(property='authors_list', name=itemtext, items=author_dict)
+            self.settings.save_settings_dict(property='authors_list', name=itemtext, items=author)
         if not itemtext:
             return
         self.show_authors_list()
@@ -184,10 +206,9 @@ class AuthorLoops():
     def store_author_in_cif_object(self, blockname, filename):
         author = self.get_author_info()
         author_cif = CifContainer(filename, new_block=blockname)
-        contact_author: bool = author.get('contact')
+        contact_author: bool = author.contact_author
         loop = self.get_author_loop(contact_author)
-        data = [author.get('name'), author.get('address'), author.get('email'), author.get('phone'),
-                author.get('orcid'), author.get('footnote')]
+        data = [author.name, author.address, author.email, author.phone, author.orcid, author.footnote]
         if contact_author:
             del data[-1]
         for key, value in zip(loop, data):
@@ -217,16 +238,19 @@ class AuthorLoops():
         doc = read_document_from_cif_file(filename)
         if not doc:
             return
-        block = doc.sole_block()
-        table_data = {}
-        for item in block:
-            if item.pair is not None:
-                key, value = item.pair
-                if key not in cif_auth_to_str:
-                    continue
-                key = cif_auth_to_str.get(key)
-                table_data.update({key: retranslate_delimiter(as_string(value).strip('\n\r ;'))})
+        block: gemmi.cif.Block = doc.sole_block()
+        #table_data = {}
+        #for item in block:
+        #    if item.pair is not None:
+        #        key, value = item.pair
+        #        if key not in cif_auth_to_str:
+        #            continue
+        #        key = cif_auth_to_str.get(key)
+        #        table_data.update({key: retranslate_delimiter(as_string(value).strip('\n\r ;'))})
+        # TODO: Make this work:
         name = block.name.replace('__', ' ')
+        name: str = block.find_value('_publ_contact_author_name')
+        author = Author(name=name)
         if 'contact author' in name:
             table_data.update({'contact': True})
         if not table_data.get('name'):
@@ -256,7 +280,7 @@ class AuthorLoops():
     def author_loopdata(self, author_name):
         return self.settings.load_settings_dict('authors_list', author_name)
 
-    def show_authors_list(self):
+    def show_authors_list(self) -> None:
         self.ui.LoopTemplatesListWidget.clear()
         for author in sorted(self.authors_list()):
             if author:
@@ -276,7 +300,7 @@ class AuthorLoops():
             if author:
                 self.general_author_save(author)
 
-    def authors_list(self):
+    def authors_list(self) -> List[str]:
         return self.settings.list_saved_items(property='authors_list')
 
     def contact_author_checked(self, checked: bool):
