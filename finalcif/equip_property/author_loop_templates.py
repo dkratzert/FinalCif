@@ -34,7 +34,7 @@ class Author:
     orcid: str
     footnote: str
     contact_author: bool
-    author_type: str
+    author_type: str  # 'publ' or 'audit'
 
 
 class AuthorLoops():
@@ -46,13 +46,15 @@ class AuthorLoops():
         if app:
             self.contact_author_checked(False)
             self.ui.AddThisAuthorToLoopPushButton.clicked.connect(self.save_author_to_loop)
+            self.ui.AddThisAuthorToLoopPushButton_cif.clicked.connect(self.save_author_to_loop)
             self.ui.ContactAuthorCheckBox.stateChanged.connect(lambda: self.contact_author_checked(
                 self.ui.ContactAuthorCheckBox.isChecked()))
             self.ui.LoopsTabWidget.currentChanged.connect(
                 lambda: self.ui.AddThisAuthorToLoopPushButton.setDisabled(not self.ui.LoopsTabWidget.count()))
             self.ui.SaveAuthorLoopToTemplateButton.clicked.connect(self.save_author_to_loop_template)
+            #self.ui.authorEditTabWidget.currentChanged.connect(lambda: self.clear_fields())
             self.ui.LoopTemplatesListWidget.clicked.connect(self.load_selected_loop)
-            self.ui.LoopTemplatesListWidget.doubleClicked.connect(self.save_author_to_loop)
+            # self.ui.LoopTemplatesListWidget.doubleClicked.connect(self.save_author_to_loop)
             self.ui.DeleteLoopAuthorTemplateButton.clicked.connect(self.delete_current_author)
             self.ui.ExportAuthorPushButton.clicked.connect(self.export_author_template)
             self.ui.ImportAuthorPushButton.clicked.connect(self.import_author)
@@ -71,22 +73,15 @@ class AuthorLoops():
             self.ui.SaveAuthorLoopToTemplateButton.setDisabled(True)
             self.ui.AddThisAuthorToLoopPushButton.setDisabled(True)
 
-    def get_author_loop(self, contact_author: bool = False, audit_author: bool = False) -> List:
-        author_type = 'publ' if not audit_author else 'audit'
-        if contact_author:
-            author_loop = [f'_{author_type}_contact_author_name',
-                           f'_{author_type}_contact_author_address',
-                           f'_{author_type}_contact_author_email',
-                           f'_{author_type}_contact_author_phone',
-                           f'_{author_type}_contact_author_id_orcid', ]
-        else:
-            author_loop = [f'_{author_type}_author_name',
-                           f'_{author_type}_author_address',
-                           f'_{author_type}_author_email',
-                           f'_{author_type}_author_phone',
-                           f'_{author_type}_author_id_orcid',
-                           f'_{author_type}_author_footnote',
-                           ]
+    def get_author_loop(self, author: Author) -> List:
+        contact = 'contact_' if author.contact_author else ''
+        author_loop = [f'_{author.author_type}_{contact}author_name',
+                       f'_{author.author_type}_{contact}author_address',
+                       f'_{author.author_type}_{contact}author_email',
+                       f'_{author.author_type}_{contact}author_phone',
+                       f'_{author.author_type}_{contact}author_id_orcid', ]
+        if not author.contact_author:
+            author_loop.append(f'_{author.author_type}_author_footnote')
         return author_loop
 
     def save_author_to_loop(self):
@@ -104,7 +99,7 @@ class AuthorLoops():
                 print('dbg> Author already exists.')
                 return
         else:
-            gemmi_loop = self.cif.init_loop(self.get_author_loop(author.contact_author))
+            gemmi_loop = self.cif.init_loop(self.get_author_loop(author))
         self.check_if_loop_and_row_size_fit_together(gemmi_loop, row)
         self.app.make_loops_tables()
         self.show_authors_list()
@@ -137,22 +132,33 @@ class AuthorLoops():
         return Author(name=name, address=address, email=email, footnote=footnote,
                       orcid=orcid, phone=phone, contact_author=contact, author_type=author_type)
 
-    def set_author_info(self, author: Dict[str, Union[str, None]]):
+    def set_author_info(self, author: Union[Dict[str, Union[str, None]], Author]):
         if not author:
             return
-        if author.get('name'):
-            self.ui.FullNameLineEdit.setText(retranslate_delimiter(as_string(author.get('name'))))
-        if author.get('address'):
-            self.ui.AddressTextedit.setText(retranslate_delimiter(as_string(author.get('address'))))
-        if author.get('email'):
-            self.ui.EMailLineEdit.setText(retranslate_delimiter(as_string(author.get('email'))))
-        if author.get('footnote'):
-            self.ui.FootNoteLineEdit.setText(retranslate_delimiter(as_string(author.get('footnote'))))
-        if author.get('orcid'):
-            self.ui.ORCIDLineEdit.setText(retranslate_delimiter(as_string(author.get('orcid'))))
-        if author.get('phone'):
-            self.ui.PhoneLineEdit.setText(retranslate_delimiter(as_string(author.get('phone'))))
-        self.ui.ContactAuthorCheckBox.setChecked(author.get('contact') or False)
+        if type(author) == dict:
+            author_type = 'publ' if self.ui.authorEditTabWidget.currentWidget().objectName() == 'page_publication' else 'cif'
+            author = Author(name=author.get('name'), address=author.get('address'), email=author.get('email'),
+                            phone=author.get('phone'), orcid=author.get('orcid'), footnote=author.get('footnote'),
+                            contact_author=author.get('contact', False), author_type=author_type)
+        self.set_authorinfo_from_dataclass(author)
+        self.ui.ContactAuthorCheckBox.setChecked(author.contact_author or False)
+        self.ui.ContactAuthorCheckBox_cif.setChecked(author.contact_author or False)
+
+    def set_authorinfo_from_dataclass(self, author: Author):
+        author_type = "_cif" if author.author_type == "cif" else ""
+        if author.name:
+            getattr(self.ui, f'FullNameLineEdit{author_type}').setText(retranslate_delimiter(as_string(author.name)))
+        if author.address:
+            getattr(self.ui, f'AddressTextedit{author_type}').setText(retranslate_delimiter(as_string(author.address)))
+        if author.email:
+            getattr(self.ui, f'EMailLineEdit{author_type}').setText(retranslate_delimiter(as_string(author.email)))
+        if author.footnote:
+            getattr(self.ui, f'FootNoteLineEdit{author_type}').setText(
+                retranslate_delimiter(as_string(author.footnote)))
+        if author.orcid:
+            getattr(self.ui, f'ORCIDLineEdit{author_type}').setText(retranslate_delimiter(as_string(author.orcid)))
+        if author.phone:
+            getattr(self.ui, f'PhoneLineEdit{author_type}').setText(retranslate_delimiter(as_string(author.phone)))
 
     def clear_fields(self):
         self.ui.FullNameLineEdit.clear()
@@ -162,6 +168,13 @@ class AuthorLoops():
         self.ui.ORCIDLineEdit.clear()
         self.ui.PhoneLineEdit.clear()
         self.ui.ContactAuthorCheckBox.setChecked(False)
+        self.ui.FullNameLineEdit_cif.clear()
+        self.ui.AddressTextedit_cif.clear()
+        self.ui.EMailLineEdit_cif.clear()
+        self.ui.FootNoteLineEdit_cif.clear()
+        self.ui.ORCIDLineEdit_cif.clear()
+        self.ui.PhoneLineEdit_cif.clear()
+        self.ui.ContactAuthorCheckBox_cif.setChecked(False)
 
     def save_author_to_loop_template(self):
         author = self.get_author_info()
@@ -239,8 +252,8 @@ class AuthorLoops():
         if not doc:
             return
         block: gemmi.cif.Block = doc.sole_block()
-        #table_data = {}
-        #for item in block:
+        # table_data = {}
+        # for item in block:
         #    if item.pair is not None:
         #        key, value = item.pair
         #        if key not in cif_auth_to_str:
@@ -306,6 +319,7 @@ class AuthorLoops():
     def contact_author_checked(self, checked: bool):
         """
         :parameter checked: state of the ContactAuthorCheckBox
+        # TODO: Do the same for audit_x_author_[]
         """
         if checked:
             self.ui.FullNameLineEdit.setToolTip('_publ_contact_author_name')
