@@ -57,20 +57,21 @@ class AuthorLoops():
             self.ui.SaveAuthorLoopToTemplateButton.setDisabled(True)
             self.ui.AddThisAuthorToLoopPushButton.setDisabled(True)
 
-    def get_author_loop(self, contact_author: bool = False) -> List:
+    def get_author_loop(self, contact_author: bool = False, audit_author: bool = False) -> List:
+        author_type = 'publ' if not audit_author else 'audit'
         if contact_author:
-            author_loop = ['_publ_contact_author_name',
-                           '_publ_contact_author_address',
-                           '_publ_contact_author_email',
-                           '_publ_contact_author_phone',
-                           '_publ_contact_author_id_orcid', ]
+            author_loop = [f'_{author_type}_contact_author_name',
+                           f'_{author_type}_contact_author_address',
+                           f'_{author_type}_contact_author_email',
+                           f'_{author_type}_contact_author_phone',
+                           f'_{author_type}_contact_author_id_orcid', ]
         else:
-            author_loop = ['_publ_author_name',
-                           '_publ_author_address',
-                           '_publ_author_email',
-                           '_publ_author_phone',
-                           '_publ_author_id_orcid',
-                           '_publ_author_footnote',
+            author_loop = [f'_{author_type}_author_name',
+                           f'_{author_type}_author_address',
+                           f'_{author_type}_author_email',
+                           f'_{author_type}_author_phone',
+                           f'_{author_type}_author_id_orcid',
+                           f'_{author_type}_author_footnote',
                            ]
         return author_loop
 
