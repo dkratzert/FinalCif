@@ -2640,16 +2640,10 @@ The data source will be ignored until next program restart.</string>
                 </item>
                 <item row="0" column="0">
                  <widget class="QTabWidget" name="authorEditTabWidget">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                    <horstretch>80</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
                   <property name="currentIndex">
-                   <number>1</number>
+                   <number>0</number>
                   </property>
-                  <widget class="QWidget" name="page_publication" native="true">
+                  <widget class="QWidget" name="page_publication">
                    <attribute name="title">
                     <string>Publication Authors</string>
                    </attribute>
@@ -2850,7 +2844,7 @@ Contact authors should always also appear as regular authors.</string>
                          <widget class="QLineEdit" name="ORCIDLineEdit_cif"/>
                         </item>
                         <item row="6" column="0">
-                         <widget class="QLabel" name="footnote_label_2">
+                         <widget class="QLabel" name="footnote_label_cif">
                           <property name="text">
                            <string>footnote</string>
                           </property>
