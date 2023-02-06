@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/Users/daniel/Documents/GitHub/FinalCif/finalcif/gui/finalcif_gui.ui'
+# Form implementation generated from reading ui file 'D:\_DEV\GitHub\FinalCif\finalcif\gui\finalcif_gui.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.7
 #
@@ -1096,11 +1096,6 @@ class Ui_FinalCifWindow(object):
         spacerItem25 = QtWidgets.QSpacerItem(20, 162, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.gridLayout_2.addItem(spacerItem25, 1, 0, 1, 1)
         self.authorEditTabWidget = QtWidgets.QTabWidget(self.tab_2)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
-        sizePolicy.setHorizontalStretch(80)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.authorEditTabWidget.sizePolicy().hasHeightForWidth())
-        self.authorEditTabWidget.setSizePolicy(sizePolicy)
         self.authorEditTabWidget.setObjectName("authorEditTabWidget")
         self.page_publication = QtWidgets.QWidget()
         self.page_publication.setObjectName("page_publication")
@@ -1209,10 +1204,10 @@ class Ui_FinalCifWindow(object):
         self.ORCIDLineEdit_cif = QtWidgets.QLineEdit(self.page_audit)
         self.ORCIDLineEdit_cif.setObjectName("ORCIDLineEdit_cif")
         self.gridLayout_25.addWidget(self.ORCIDLineEdit_cif, 5, 1, 1, 1)
-        self.footnote_label_2 = QtWidgets.QLabel(self.page_audit)
-        self.footnote_label_2.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
-        self.footnote_label_2.setObjectName("footnote_label_2")
-        self.gridLayout_25.addWidget(self.footnote_label_2, 6, 0, 1, 1)
+        self.footnote_label_cif = QtWidgets.QLabel(self.page_audit)
+        self.footnote_label_cif.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.footnote_label_cif.setObjectName("footnote_label_cif")
+        self.gridLayout_25.addWidget(self.footnote_label_cif, 6, 0, 1, 1)
         self.PhoneLineEdit_cif = QtWidgets.QLineEdit(self.page_audit)
         self.PhoneLineEdit_cif.setObjectName("PhoneLineEdit_cif")
         self.gridLayout_25.addWidget(self.PhoneLineEdit_cif, 4, 1, 1, 1)
@@ -2038,7 +2033,7 @@ class Ui_FinalCifWindow(object):
         self.label_23.setText(_translate("FinalCifWindow", "Details about the author(s) of this CIF data block (most often the crystallographer).\n"
 "Contact authors should always also appear as regular authors."))
         self.label_35.setText(_translate("FinalCifWindow", "ORCID"))
-        self.footnote_label_2.setText(_translate("FinalCifWindow", "footnote"))
+        self.footnote_label_cif.setText(_translate("FinalCifWindow", "footnote"))
         self.label_24.setText(_translate("FinalCifWindow", "Full Name"))
         self.label_25.setText(_translate("FinalCifWindow", "Adresss"))
         self.label_19.setText(_translate("FinalCifWindow", "e-mail"))

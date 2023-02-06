@@ -199,7 +199,7 @@ class FinalCifSettings():
         self.settings.endGroup()
         return v
 
-    def save_settings_dict(self, property: str, name: str, items: dict) -> None:
+    def save_settings_dict(self, property: str, name: str, items) -> None:
         self._save_settings_value(items, name, property)
 
     def _save_settings_value(self, items: Union[str, Dict[str, bool], List[str]], name: str, property: str) -> None:
