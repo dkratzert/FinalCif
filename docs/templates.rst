@@ -36,7 +36,6 @@ The template editor for large text snippets.
     The template values are accessible as a dropdown behind the respective key in the main table of FinalCif.
 
 .. figure:: pics/templates.png
-   :width: 700
 
 The templates selection and editor.
 
