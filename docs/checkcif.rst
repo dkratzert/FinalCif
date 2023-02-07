@@ -28,6 +28,7 @@ There you have the possibility to reply to A, B or C level alerts and save them 
 This works also with multi-CIFs. The respective data block name after the alert numbers indicates
 the respective CIF file.
 
+Common responses can be saved for later use. See the templates section how to do this.
 
 .. figure:: pics/finalcif_responses.png
 
