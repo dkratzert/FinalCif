@@ -12,7 +12,8 @@ FinalCif uses three different kinds of templates to simplify recurring tasks:
     These fields can be saved with the "Save as Template" button. A saved template is indicated with
     light-blue background color in the respective edit field of the main table.
 
-.. image:: pics/text_templates.png
+.. figure:: pics/text_templates.png
+   :width: 700
 
 The template editor for large text snippets.
 
@@ -34,26 +35,27 @@ The template editor for large text snippets.
     Property templates define possible dropdown-menus for common CIF keywords like _cell_measurement_temperature.
     The template values are accessible as a dropdown behind the respective key in the main table of FinalCif.
 
-.. image:: pics/templates.png
+.. figure:: pics/templates.png
+   :width: 700
 
 The templates selection and editor.
 
 Templates can be edited anytime and they can be saved as a CIF file. You can use them for any cif keyword.
 Just be creative...
 
-.. image:: pics/property_templates.png
+.. figure:: pics/property_templates.png
 
 Template editor for crystallization methods.
 
 For example the crystallographer information:
 
-.. image:: pics/equipment_templates.png
+.. figure:: pics/equipment_templates.png
 
 Crystallographer details template.
 
 Or just one keyword for only the absolute configuration information:
 
-.. image:: pics/absolute_configuration.png
+.. figure:: pics/absolute_configuration.png
 
 Absolute configuration template.
 
