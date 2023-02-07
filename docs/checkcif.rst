@@ -31,7 +31,7 @@ the respective CIF file.
 Common responses can be saved for later use. See the templates section how to do this.
 
 .. figure:: pics/finalcif_responses.png
-    :width: 700
+   :width: 700
 
    Validation response form editor.
 
