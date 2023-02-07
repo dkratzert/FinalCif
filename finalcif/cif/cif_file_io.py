@@ -852,6 +852,8 @@ class CifContainer():
                 if key.startswith('_shelx'):
                     # No-one should edit shelx values:
                     continue
+                if key == '_iucr_refine_instructions_details':
+                    continue
                 if self._is_centrokey(key):
                     continue
                 if not value or value == '?' or value == "'?'":
