@@ -6,6 +6,7 @@
 #   ----------------------------------------------------------------------------
 from contextlib import suppress
 from dataclasses import dataclass
+from enum import Enum
 from pathlib import Path
 from typing import Dict, Union, List
 
@@ -17,12 +18,20 @@ from finalcif.cif.cif_file_io import CifContainer
 from finalcif.cif.text import utf8_to_str, quote, retranslate_delimiter
 from finalcif.equip_property.tools import read_document_from_cif_file
 from finalcif.gui.dialogs import cif_file_save_dialog, show_general_warning, cif_file_open_dialog
-from finalcif.gui.finalcif_gui import Ui_FinalCifWindow
+from finalcif.gui.finalcif_gui_ui import Ui_FinalCifWindow
 from finalcif.tools.misc import grouper
 from finalcif.tools.settings import FinalCifSettings
 
 with suppress(ImportError):
     from finalcif.appwindow import AppWindow
+
+
+class AuthorType(Enum):
+    publ = 'publ'
+    audit = 'audit'
+
+    def __str__(self):
+        return self.name
 
 
 @dataclass()
@@ -34,7 +43,8 @@ class Author:
     orcid: str
     footnote: str
     contact_author: bool
-    author_type: str  # 'publ' or 'audit'
+    author_type: AuthorType  # 'publ' or 'audit'
+    iucr_id: str = ''
 
 
 class AuthorLoops():
@@ -44,7 +54,9 @@ class AuthorLoops():
         self.app = app
         self.settings = FinalCifSettings()
         if app:
+            self.ui.authorEditTabWidget.setCurrentIndex(0)
             self.contact_author_checked(self.ui.ContactAuthorCheckBox.isChecked())
+            self.contact_author_checked(self.ui.ContactAuthorCheckBox_cif.isChecked())
             self.connect_signals_and_slots()
             self.show_authors_list()
             self.make_sure_to_save_only_when_name_field_has_text()
@@ -56,7 +68,8 @@ class AuthorLoops():
         self.ui.ContactAuthorCheckBox_cif.stateChanged.connect(self.contact_author_checked)
         self.ui.LoopsTabWidget.currentChanged.connect(
             lambda: self.ui.AddThisAuthorToLoopPushButton.setDisabled(not self.ui.LoopsTabWidget.count()))
-        self.ui.authorEditTabWidget.currentChanged.connect(self.contact_author_checked)
+        self.ui.authorEditTabWidget.currentChanged.connect(self.set_author_state)
+        #self.ui.authorEditTabWidget.currentChanged.connect(self.contact_author_checked)
         self.ui.SaveAuthorLoopToTemplateButton.clicked.connect(self.save_author_to_loop_template)
         # self.ui.authorEditTabWidget.currentChanged.connect(lambda: self.clear_fields())
         self.ui.LoopTemplatesListWidget.clicked.connect(self.load_selected_loop)
@@ -65,6 +78,12 @@ class AuthorLoops():
         self.ui.ExportAuthorPushButton.clicked.connect(self.export_author_template)
         self.ui.ImportAuthorPushButton.clicked.connect(self.import_author)
         self.ui.FullNameLineEdit.textChanged.connect(self.make_sure_to_save_only_when_name_field_has_text)
+
+    def set_author_state(self):
+        if self.ui.authorEditTabWidget.currentWidget().objectName() == 'page_publication':
+            self.contact_author_checked(self.ui.ContactAuthorCheckBox.isChecked())
+        else:
+            self.contact_author_checked(self.ui.ContactAuthorCheckBox_cif.isChecked())
 
     def make_sure_to_save_only_when_name_field_has_text(self) -> None:
         if not len(self.ui.FullNameLineEdit.text()):
@@ -79,13 +98,30 @@ class AuthorLoops():
 
     def get_author_loop(self, author: Author) -> List:
         contact = 'contact_' if author.contact_author else ''
-        author_loop = [f'_{author.author_type}_{contact}author_name',
-                       f'_{author.author_type}_{contact}author_address',
-                       f'_{author.author_type}_{contact}author_email',
-                       f'_{author.author_type}_{contact}author_phone',
-                       f'_{author.author_type}_{contact}author_id_orcid', ]
-        if not author.contact_author:
-            author_loop.append(f'_{author.author_type}_author_footnote')
+        if author.author_type == AuthorType.publ and author.contact_author:
+            author_loop = [f'_{author.author_type}_{contact}author_name',
+                           f'_{author.author_type}_{contact}author_address',
+                           f'_{author.author_type}_{contact}author_email',
+                           f'_{author.author_type}_{contact}author_phone',
+                           f'_{author.author_type}_{contact}author_id_orcid'
+                           f'_{author.author_type}_{contact}author_id_iucr'
+                           ]
+        elif author.author_type == AuthorType.publ and not author.contact_author:
+            author_loop = [f'_{author.author_type}_{contact}author_name',
+                           f'_{author.author_type}_{contact}author_address',
+                           f'_{author.author_type}_{contact}author_email',
+                           f'_{author.author_type}_{contact}author_phone',
+                           f'_{author.author_type}_{contact}author_id_orcid',
+                           f'_{author.author_type}_{contact}author_id_iucr'
+                           f'_{author.author_type}_author_footnote']
+        elif author.author_type == AuthorType.audit and author.contact_author:
+            author_loop = [f'_{author.author_type}_{contact}author_name',
+                           f'_{author.author_type}_{contact}author_address',
+                           f'_{author.author_type}_{contact}author_email',
+                           f'_{author.author_type}_{contact}author_phone']
+        else:
+            author_loop = [f'_{author.author_type}_{contact}author_name',
+                           f'_{author.author_type}_{contact}author_address']
         return author_loop
 
     def save_author_to_loop(self):
@@ -121,27 +157,29 @@ class AuthorLoops():
             email = quote(utf8_to_str(self.ui.EMailLineEdit.text()))
             footnote = quote(utf8_to_str(self.ui.FootNoteLineEdit.text()))
             orcid = quote(utf8_to_str(self.ui.ORCIDLineEdit.text()))
-            # _publ_author has no phone number!
-            #phone = quote(utf8_to_str(self.ui.PhoneLineEdit.text()))
-            phone = ''
+            phone = quote(utf8_to_str(self.ui.PhoneLineEdit.text()))
             contact: bool = self.ui.ContactAuthorCheckBox.isChecked()
-            author_type = 'publ'
+            iucr = quote(utf8_to_str(self.ui.IUCRIDLineEdit.text()))
+            author_type = AuthorType.publ
         else:
             name = quote(utf8_to_str(self.ui.FullNameLineEdit_cif.text()))
             address = quote(utf8_to_str(self.ui.AddressTextedit_cif.toPlainText()))
             email = quote(utf8_to_str(self.ui.EMailLineEdit_cif.text()))
-            footnote = quote(utf8_to_str(self.ui.FootNoteLineEdit_cif.text()))
-            orcid = quote(utf8_to_str(self.ui.ORCIDLineEdit_cif.text()))
+            #footnote = quote(utf8_to_str(self.ui.FootNoteLineEdit_cif.text()))
+            footnote = ''
+            orcid = ''#quote(utf8_to_str(self.ui.ORCIDLineEdit_cif.text()))
             phone = quote(utf8_to_str(self.ui.PhoneLineEdit_cif.text()))
             contact: bool = self.ui.ContactAuthorCheckBox_cif.isChecked()
-            author_type = 'audit'
-        return Author(name=name, address=address, email=email, footnote=footnote,
-                      orcid=orcid, phone=phone, contact_author=contact, author_type=author_type)
+            author_type = AuthorType.audit
+            iucr = ''
+        return Author(name=name, address=address, email=email, footnote=footnote, orcid=orcid,
+                      phone=phone, contact_author=contact, author_type=author_type, iucr_id=iucr)
 
     def set_author_info(self, author: Union[Dict[str, Union[str, None]], Author]):
         if not author:
             return
-        author_type = 'publ' if self.ui.authorEditTabWidget.currentWidget().objectName() == 'page_publication' else 'cif'
+        author_type = AuthorType.publ if self.ui.authorEditTabWidget.currentWidget().objectName() == \
+                                         'page_publication' else AuthorType.audit
         if type(author) == dict:
             author = Author(name=author.get('name'), address=author.get('address'), email=author.get('email'),
                             phone=author.get('phone'), orcid=author.get('orcid'), footnote=author.get('footnote'),
@@ -153,7 +191,7 @@ class AuthorLoops():
         self.ui.ContactAuthorCheckBox_cif.setChecked(author.contact_author or False)
 
     def set_authorinfo(self, author: Author):
-        author_type = "_cif" if author.author_type == "cif" else ""
+        author_type = "_cif" if author.author_type == AuthorType.audit else ""
         if author.name:
             getattr(self.ui, f'FullNameLineEdit{author_type}').setText(retranslate_delimiter(as_string(author.name)))
         if author.address:
@@ -165,6 +203,8 @@ class AuthorLoops():
                 retranslate_delimiter(as_string(author.footnote)))
         if author.orcid:
             getattr(self.ui, f'ORCIDLineEdit{author_type}').setText(retranslate_delimiter(as_string(author.orcid)))
+        if author.iucr_id:
+            getattr(self.ui, f'IUCRIDLineEdit{author_type}').setText(retranslate_delimiter(as_string(author.orcid)))
         if author.phone:
             getattr(self.ui, f'PhoneLineEdit{author_type}').setText(retranslate_delimiter(as_string(author.phone)))
 
@@ -331,25 +371,33 @@ class AuthorLoops():
         author_type = 'publ' if self.ui.authorEditTabWidget.currentWidget().objectName() == 'page_publication' else 'audit'
         contact = 'contact_' if checked else ''
 
-        print(f'page: {page}, author: {author_type}, contact: {contact}')
-
         getattr(self.ui, f'FullNameLineEdit{page}').setToolTip(f'_{author_type}_{contact}author_name')
         getattr(self.ui, f'AddressTextedit{page}').setToolTip(f'_{author_type}_{contact}author_address')
         getattr(self.ui, f'EMailLineEdit{page}').setToolTip(f'_{author_type}_{contact}author_email')
         getattr(self.ui, f'PhoneLineEdit{page}').setToolTip(f'_{author_type}_{contact}author_phone')
-        getattr(self.ui, f'ORCIDLineEdit{page}').setToolTip(f'_{author_type}_{contact}author_id_orcid')
-        getattr(self.ui, f'FootNoteLineEdit{page}').setToolTip(f'_{author_type}_{contact}author_footnote')
-        getattr(self.ui, f'footnote_label{page}').setToolTip(f'_{author_type}_{contact}author_footnote')
-        if getattr(self.ui, f'ContactAuthorCheckBox{page}').isChecked():
-            getattr(self.ui, f'FootNoteLineEdit{page}').setDisabled(True)
-            getattr(self.ui, f'footnote_label{page}').setDisabled(True)
-        else:
-            getattr(self.ui, f'FootNoteLineEdit{page}').setEnabled(True)
-            getattr(self.ui, f'footnote_label{page}').setEnabled(True)
-        if author_type == 'publ':
+        if author_type == AuthorType.publ.name:
+            getattr(self.ui, f'ORCIDLineEdit{page}').setToolTip(f'_{author_type}_{contact}author_id_orcid')
+            getattr(self.ui, f'IUCRIDLineEdit{page}').setToolTip(f'_{author_type}_{contact}author_id_iucr')
+            getattr(self.ui, f'FootNoteLineEdit{page}').setToolTip(f'_{author_type}_{contact}author_footnote')
+            getattr(self.ui, f'footnote_label{page}').setToolTip(f'_{author_type}_{contact}author_footnote')
+            if checked:
+                getattr(self.ui, f'FootNoteLineEdit{page}').setDisabled(True)
+                getattr(self.ui, f'footnote_label{page}').setDisabled(True)
+            else:
+                getattr(self.ui, f'FootNoteLineEdit{page}').setEnabled(True)
+                getattr(self.ui, f'footnote_label{page}').setEnabled(True)
+        if not checked and author_type == AuthorType.audit.name:
             getattr(self.ui, f'PhoneLineEdit{page}').setDisabled(True)
-        else:
+            getattr(self.ui, f'PhoneLineEdit{page}').setDisabled(True)
+            getattr(self.ui, f'EmailLabel{page}').setDisabled(True)
+            getattr(self.ui, f'PhoneLabel{page}').setDisabled(True)
+        elif author_type == AuthorType.audit.name:
             getattr(self.ui, f'PhoneLineEdit{page}').setEnabled(True)
+            getattr(self.ui, f'PhoneLineEdit{page}').setEnabled(True)
+            getattr(self.ui, f'EmailLabel{page}').setEnabled(True)
+            getattr(self.ui, f'PhoneLabel{page}').setEnabled(True)
+
+
 
 
 if __name__ == '__main__':

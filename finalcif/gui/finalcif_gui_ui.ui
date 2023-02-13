@@ -2641,7 +2641,7 @@ The data source will be ignored until next program restart.</string>
                 <item row="0" column="0">
                  <widget class="QTabWidget" name="authorEditTabWidget">
                   <property name="currentIndex">
-                   <number>0</number>
+                   <number>1</number>
                   </property>
                   <widget class="QWidget" name="page_publication">
                    <attribute name="title">
@@ -2670,46 +2670,7 @@ Contact authors should always also appear as regular authors.</string>
                           </property>
                          </widget>
                         </item>
-                        <item row="1" column="1">
-                         <widget class="QCheckBox" name="ContactAuthorCheckBox">
-                          <property name="text">
-                           <string>This is a contact author</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item row="3" column="0">
-                         <widget class="QLabel" name="label_16">
-                          <property name="text">
-                           <string>e-mail</string>
-                          </property>
-                          <property name="alignment">
-                           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                          </property>
-                         </widget>
-                        </item>
-                        <item row="4" column="0">
-                         <widget class="QLabel" name="label_13">
-                          <property name="text">
-                           <string>phone number</string>
-                          </property>
-                          <property name="alignment">
-                           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                          </property>
-                         </widget>
-                        </item>
-                        <item row="0" column="1">
-                         <widget class="QLineEdit" name="FullNameLineEdit"/>
-                        </item>
-                        <item row="3" column="1">
-                         <widget class="QLineEdit" name="EMailLineEdit"/>
-                        </item>
-                        <item row="2" column="1">
-                         <widget class="QTextEdit" name="AddressTextedit"/>
-                        </item>
-                        <item row="5" column="1">
-                         <widget class="QLineEdit" name="ORCIDLineEdit"/>
-                        </item>
-                        <item row="6" column="0">
+                        <item row="7" column="0">
                          <widget class="QLabel" name="footnote_label">
                           <property name="text">
                            <string>footnote</string>
@@ -2719,8 +2680,35 @@ Contact authors should always also appear as regular authors.</string>
                           </property>
                          </widget>
                         </item>
+                        <item row="2" column="0">
+                         <widget class="QLabel" name="label_21">
+                          <property name="text">
+                           <string>Adresss</string>
+                          </property>
+                          <property name="alignment">
+                           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="2" column="2">
+                         <widget class="QLabel" name="label_28">
+                          <property name="text">
+                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#666666;&quot;&gt;The adress of an author&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#666666;&quot;&gt;Department&lt;br/&gt;Institute&lt;br/&gt;Street&lt;br/&gt;City and postcode&lt;br/&gt;COUNTRY&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                          </property>
+                          <property name="scaledContents">
+                           <bool>false</bool>
+                          </property>
+                         </widget>
+                        </item>
                         <item row="4" column="1">
                          <widget class="QLineEdit" name="PhoneLineEdit"/>
+                        </item>
+                        <item row="1" column="1">
+                         <widget class="QCheckBox" name="ContactAuthorCheckBox">
+                          <property name="text">
+                           <string>This is a contact author</string>
+                          </property>
+                         </widget>
                         </item>
                         <item row="0" column="0">
                          <widget class="QLabel" name="label_22">
@@ -2735,18 +2723,18 @@ Contact authors should always also appear as regular authors.</string>
                           </property>
                          </widget>
                         </item>
-                        <item row="6" column="1">
-                         <widget class="QLineEdit" name="FootNoteLineEdit"/>
-                        </item>
-                        <item row="2" column="0">
-                         <widget class="QLabel" name="label_21">
+                        <item row="3" column="0">
+                         <widget class="QLabel" name="EmailLabel">
                           <property name="text">
-                           <string>Adresss</string>
+                           <string>e-mail</string>
                           </property>
                           <property name="alignment">
                            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                           </property>
                          </widget>
+                        </item>
+                        <item row="7" column="1">
+                         <widget class="QLineEdit" name="FootNoteLineEdit"/>
                         </item>
                         <item row="0" column="2">
                          <widget class="QLabel" name="label_27">
@@ -2758,15 +2746,40 @@ Contact authors should always also appear as regular authors.</string>
                           </property>
                          </widget>
                         </item>
-                        <item row="2" column="2">
-                         <widget class="QLabel" name="label_28">
+                        <item row="4" column="0">
+                         <widget class="QLabel" name="PhoneLabel">
                           <property name="text">
-                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#666666;&quot;&gt;The adress of an author&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#666666;&quot;&gt;Department&lt;br/&gt;Institute&lt;br/&gt;Street&lt;br/&gt;City and postcode&lt;br/&gt;COUNTRY&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                           <string>phone number</string>
                           </property>
-                          <property name="scaledContents">
-                           <bool>false</bool>
+                          <property name="alignment">
+                           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                           </property>
                          </widget>
+                        </item>
+                        <item row="2" column="1">
+                         <widget class="QTextEdit" name="AddressTextedit"/>
+                        </item>
+                        <item row="0" column="1">
+                         <widget class="QLineEdit" name="FullNameLineEdit"/>
+                        </item>
+                        <item row="3" column="1">
+                         <widget class="QLineEdit" name="EMailLineEdit"/>
+                        </item>
+                        <item row="5" column="1">
+                         <widget class="QLineEdit" name="ORCIDLineEdit"/>
+                        </item>
+                        <item row="6" column="0">
+                         <widget class="QLabel" name="label_36">
+                          <property name="text">
+                           <string>IUCr Id</string>
+                          </property>
+                          <property name="alignment">
+                           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="6" column="1">
+                         <widget class="QLineEdit" name="IUCRIDLineEdit"/>
                         </item>
                        </layout>
                       </item>
@@ -2824,37 +2837,54 @@ Contact authors should always also appear as regular authors.</string>
                       </item>
                       <item>
                        <layout class="QGridLayout" name="gridLayout_25">
+                        <item row="0" column="2">
+                         <widget class="QLabel" name="label_29">
+                          <property name="text">
+                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#666666;&quot;&gt;Family name, first name&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                          </property>
+                          <property name="scaledContents">
+                           <bool>false</bool>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="4" column="0">
+                         <widget class="QLabel" name="PhoneLabel_cif">
+                          <property name="text">
+                           <string>phone number</string>
+                          </property>
+                          <property name="alignment">
+                           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="0" column="1">
+                         <widget class="QLineEdit" name="FullNameLineEdit_cif"/>
+                        </item>
                         <item row="3" column="1">
                          <widget class="QLineEdit" name="EMailLineEdit_cif"/>
                         </item>
-                        <item row="5" column="0">
-                         <widget class="QLabel" name="label_35">
-                          <property name="text">
-                           <string>ORCID</string>
-                          </property>
-                          <property name="alignment">
-                           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                          </property>
-                         </widget>
-                        </item>
-                        <item row="6" column="1">
-                         <widget class="QLineEdit" name="FootNoteLineEdit_cif"/>
-                        </item>
-                        <item row="5" column="1">
-                         <widget class="QLineEdit" name="ORCIDLineEdit_cif"/>
-                        </item>
-                        <item row="6" column="0">
-                         <widget class="QLabel" name="footnote_label_cif">
-                          <property name="text">
-                           <string>footnote</string>
-                          </property>
-                          <property name="alignment">
-                           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                          </property>
-                         </widget>
-                        </item>
                         <item row="4" column="1">
                          <widget class="QLineEdit" name="PhoneLineEdit_cif"/>
+                        </item>
+                        <item row="1" column="1">
+                         <widget class="QCheckBox" name="ContactAuthorCheckBox_cif">
+                          <property name="text">
+                           <string>This is a contact author</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="2" column="1">
+                         <widget class="QTextEdit" name="AddressTextedit_cif"/>
+                        </item>
+                        <item row="2" column="2">
+                         <widget class="QLabel" name="label_30">
+                          <property name="text">
+                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#666666;&quot;&gt;The adress of an author&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#666666;&quot;&gt;Department&lt;br/&gt;Institute&lt;br/&gt;Street&lt;br/&gt;City and postcode&lt;br/&gt;COUNTRY&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                          </property>
+                          <property name="scaledContents">
+                           <bool>false</bool>
+                          </property>
+                         </widget>
                         </item>
                         <item row="0" column="0">
                          <widget class="QLabel" name="label_24">
@@ -2869,9 +2899,6 @@ Contact authors should always also appear as regular authors.</string>
                           </property>
                          </widget>
                         </item>
-                        <item row="2" column="1">
-                         <widget class="QTextEdit" name="AddressTextedit_cif"/>
-                        </item>
                         <item row="2" column="0">
                          <widget class="QLabel" name="label_25">
                           <property name="text">
@@ -2883,7 +2910,7 @@ Contact authors should always also appear as regular authors.</string>
                          </widget>
                         </item>
                         <item row="3" column="0">
-                         <widget class="QLabel" name="label_19">
+                         <widget class="QLabel" name="EmailLabel_cif">
                           <property name="text">
                            <string>e-mail</string>
                           </property>
@@ -2892,45 +2919,31 @@ Contact authors should always also appear as regular authors.</string>
                           </property>
                          </widget>
                         </item>
-                        <item row="4" column="0">
-                         <widget class="QLabel" name="label_26">
-                          <property name="text">
-                           <string>phone number</string>
+                        <item row="6" column="0">
+                         <spacer name="horizontalSpacer_22">
+                          <property name="orientation">
+                           <enum>Qt::Horizontal</enum>
                           </property>
-                          <property name="alignment">
-                           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                          <property name="sizeHint" stdset="0">
+                           <size>
+                            <width>40</width>
+                            <height>20</height>
+                           </size>
                           </property>
-                         </widget>
+                         </spacer>
                         </item>
-                        <item row="0" column="1">
-                         <widget class="QLineEdit" name="FullNameLineEdit_cif"/>
-                        </item>
-                        <item row="1" column="1">
-                         <widget class="QCheckBox" name="ContactAuthorCheckBox_cif">
-                          <property name="text">
-                           <string>This is a contact author</string>
+                        <item row="5" column="0">
+                         <spacer name="horizontalSpacer_36">
+                          <property name="orientation">
+                           <enum>Qt::Horizontal</enum>
                           </property>
-                         </widget>
-                        </item>
-                        <item row="0" column="2">
-                         <widget class="QLabel" name="label_29">
-                          <property name="text">
-                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#666666;&quot;&gt;Family name, first name&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                          <property name="sizeHint" stdset="0">
+                           <size>
+                            <width>40</width>
+                            <height>20</height>
+                           </size>
                           </property>
-                          <property name="scaledContents">
-                           <bool>false</bool>
-                          </property>
-                         </widget>
-                        </item>
-                        <item row="2" column="2">
-                         <widget class="QLabel" name="label_30">
-                          <property name="text">
-                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#666666;&quot;&gt;The adress of an author&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#666666;&quot;&gt;Department&lt;br/&gt;Institute&lt;br/&gt;Street&lt;br/&gt;City and postcode&lt;br/&gt;COUNTRY&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                          </property>
-                          <property name="scaledContents">
-                           <bool>false</bool>
-                          </property>
-                         </widget>
+                         </spacer>
                         </item>
                        </layout>
                       </item>
