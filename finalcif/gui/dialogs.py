@@ -154,7 +154,7 @@ def bad_z_message(z) -> None:
     zinfo.exec()
 
 
-def bug_found_warning(logfile) -> None:
+def show_bug_found_warning(logfile) -> None:
     window = QMainWindow()
     title = f'Congratulations, you found a bug in FinalCif!'
     text = (f'<br>Please send the file <br>'

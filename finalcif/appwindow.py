@@ -26,7 +26,7 @@ from qtpy.QtGui import QDesktopServices
 
 from finalcif import VERSION
 from finalcif.cif.checkcif.checkcif import MyHTMLParser, AlertHelp, CheckCif
-from finalcif.cif.cif_file_io import CifContainer
+from finalcif.cif.cif_file_io import CifContainer, GemmiError
 from finalcif.cif.cod.deposit import CODdeposit
 from finalcif.cif.text import utf8_to_str, quote
 from finalcif.datafiles.bruker_data import BrukerData
@@ -1394,7 +1394,7 @@ class AppWindow(QMainWindow):
         try:
             e = None
             self.cif = CifContainer(filepath)
-        except (RuntimeError, IndexError, ValueError) as e:
+        except GemmiError as e:
             print('Unable to open cif file...')
             if DEBUG:
                 raise
@@ -1521,10 +1521,10 @@ class AppWindow(QMainWindow):
     def append_cif(self):
         self.cif.save()
         self.load_cif_file(filepath=self.cif.finalcif_file, load_changes=False)
-        file = self.get_file_from_dialog()
-        if not file:
+        cif_file = self.get_file_from_dialog()
+        if not cif_file:
             return
-        cif2 = CifContainer(file)
+        cif2 = CifContainer(cif_file)
         if cif2.is_multi_cif:
             show_general_warning('Can add single data CIFs only!')
         if cif2.block.name in [x.name for x in self.cif.doc]:
@@ -1545,13 +1545,6 @@ class AppWindow(QMainWindow):
         self.temperature_warning_displayed = False
         return filepath
 
-    def go_into_cifs_directory(self, filepath):
-        try:
-            # Change the current working Directory
-            os.chdir(filepath.resolve().parent)
-        except OSError:
-            print("Can't change the Current Working Directory")
-
     def check_cif_for_missing_values_before_really_open_it(self) -> None:
         try:
             # Will not stop reading if only the value is missing and ends with newline:
@@ -1562,7 +1555,7 @@ class AppWindow(QMainWindow):
             errlist = str(e).split(':')
             if len(errlist) > 1:
                 show_general_warning(
-                    "Attention CIF line {}: '{}' has no value.".format(errlist[1], errlist[2].split()[0]))
+                    f"Attention in CIF line {errlist[1]}:\n'{errlist[2].split()[0]}' has no value.")
 
     def get_last_workdir(self):
         try:
