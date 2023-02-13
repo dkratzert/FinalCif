@@ -22,6 +22,10 @@ from finalcif.datafiles.utils import DSRFind
 from finalcif.tools.misc import essential_keys, non_centrosymm_keys, isnumeric, grouper, strip_finalcif_of_name
 
 
+class GemmiError(Exception):
+    pass
+
+
 class CifContainer():
     """
     This class holds the content of a cif file, independent of the file parser used.
@@ -49,10 +53,13 @@ class CifContainer():
             self.doc: Document = gemmi.cif.Document()
             self.doc.add_new_block(new_block)
         else:
-            self.doc = self.read_file(str(self.fileobj.resolve(strict=True)))
+            try:
+                self.doc = self.read_file(str(self.fileobj.resolve(strict=True)))
+            except Exception:
+                raise GemmiError
         # Starting with first block, but can use others with subsequent self._onload():
         self.block: gemmi.cif.Block = self.doc[0]
-        self.shx = Shelxfile()
+        self.shx = Shelxfile(verbose=True)
         self.shx.read_string(self.res_file_data[1:-1])
         self._on_load()
 
@@ -111,7 +118,7 @@ class CifContainer():
         self.current_block = self.block.name
         self._on_load()
 
-    def load_block_by_name(self, blockname):
+    def load_block_by_name(self, blockname: str) -> None:
         self.block = self.doc.find_block(blockname)
         self.current_block = self.block.name
         self._on_load()
@@ -218,7 +225,7 @@ class CifContainer():
                 f", {self.nbonds()} bonds"
                 f", {self.nangles()} angles")
 
-    def file_is_there_and_writable(self):
+    def file_is_there_and_writable(self) -> bool:
         import os
         return self.fileobj.exists() and self.fileobj.is_file() and os.access(self.fileobj, os.W_OK)
 
@@ -252,7 +259,7 @@ class CifContainer():
         print('Saving to', Path(filename).resolve())
         self.doc.write_file(str(filename), gemmi.cif.Style.Indent35)
 
-    def order_cif_keys(self):
+    def order_cif_keys(self) -> None:
         """
         Brings the current CIF in the specific order of the order list.
         """
@@ -418,32 +425,22 @@ class CifContainer():
                 zero_reflection_position = len(hkl_splitted) - num
         return zero_reflection_position
 
-    def is_empty(self):
+    def is_empty(self) -> bool:
         if len(self.keys()) + len(self.loops) == 0:
             return True
         return False
 
-    def keys(self):
+    def keys(self) -> List[str]:
         """
         Returns a plain list of keys that are really in this CIF.
         """
-        keys = []
-        for item in self.block:
-            if item.pair is not None:
-                key, _ = item.pair
-                keys.append(key)
-        return keys
+        return [x.pair[0] for x in self.block if x.pair is not None]
 
     def values(self):
         """
         Returns a plain list of keys that are really in this CIF.
         """
-        values = []
-        for item in self.block:
-            if item.pair is not None:
-                _, value = item.pair
-                values.append(value)
-        return values
+        return [x.pair[1] for x in self.block if x.pair is not None]
 
     @property
     def loops(self) -> List[gemmi.cif.Loop]:
@@ -851,6 +848,8 @@ class CifContainer():
                 key, value = item.pair
                 if key.startswith('_shelx'):
                     # No-one should edit shelx values:
+                    continue
+                if key == '_iucr_refine_instructions_details':
                     continue
                 if self._is_centrokey(key):
                     continue
