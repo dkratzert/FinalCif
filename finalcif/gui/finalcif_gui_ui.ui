@@ -2641,7 +2641,7 @@ The data source will be ignored until next program restart.</string>
                 <item row="0" column="0">
                  <widget class="QTabWidget" name="authorEditTabWidget">
                   <property name="currentIndex">
-                   <number>1</number>
+                   <number>0</number>
                   </property>
                   <widget class="QWidget" name="page_publication">
                    <attribute name="title">
@@ -4315,9 +4315,9 @@ please add a publication author:</string>
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>EMailLineEdit</tabstop>
-  <tabstop>AddressTextedit</tabstop>
-  <tabstop>FootNoteLineEdit</tabstop>
+  <tabstop>publishedDepositionRadioButton</tabstop>
+  <tabstop>prepublicationDepositRadioButton</tabstop>
+  <tabstop>SelectCif_PushButton</tabstop>
   <tabstop>EditEquipmentTemplateButton</tabstop>
   <tabstop>ImportEquipmentTemplateButton</tabstop>
   <tabstop>DeleteEquipmentButton</tabstop>
@@ -4404,15 +4404,62 @@ please add a publication author:</string>
   <tabstop>CCDCNumLineEdit</tabstop>
   <tabstop>BackpushButtonDetails</tabstop>
   <tabstop>completeLineEdit</tabstop>
-  <tabstop>ContactAuthorCheckBox</tabstop>
-  <tabstop>CODtableWidget</tabstop>
-  <tabstop>FullNameLineEdit</tabstop>
-  <tabstop>journalNameLineEdit</tabstop>
   <tabstop>personalDepositRadioButton</tabstop>
-  <tabstop>prepublicationDepositRadioButton</tabstop>
-  <tabstop>publishedDepositionRadioButton</tabstop>
+  <tabstop>CODtableWidget</tabstop>
+  <tabstop>journalNameLineEdit</tabstop>
+  <tabstop>FullNameLineEdit</tabstop>
+  <tabstop>ContactAuthorCheckBox</tabstop>
+  <tabstop>AddressTextedit</tabstop>
+  <tabstop>EMailLineEdit</tabstop>
+  <tabstop>PhoneLineEdit</tabstop>
+  <tabstop>ORCIDLineEdit</tabstop>
+  <tabstop>IUCRIDLineEdit</tabstop>
+  <tabstop>FootNoteLineEdit</tabstop>
+  <tabstop>SaveAuthorLoopToTemplateButton</tabstop>
+  <tabstop>AddThisAuthorToLoopPushButton</tabstop>
+  <tabstop>drawImagePushButton</tabstop>
+  <tabstop>ExportAllTemplatesPushButton</tabstop>
+  <tabstop>ImportAllTemplatesPushButton</tabstop>
+  <tabstop>ReportTextCheckBox</tabstop>
+  <tabstop>HAtomsCheckBox</tabstop>
+  <tabstop>ADPTableCheckBox</tabstop>
+  <tabstop>CODURLTextedit</tabstop>
+  <tabstop>trackChangesCifCheckBox</tabstop>
+  <tabstop>authorEditTabWidget</tabstop>
   <tabstop>depositorUsernameLineEdit</tabstop>
   <tabstop>depositorPasswordLineEdit</tabstop>
+  <tabstop>SelectCif_LineEdit</tabstop>
+  <tabstop>growCheckBox</tabstop>
+  <tabstop>labelsCheckBox</tabstop>
+  <tabstop>FullNameLineEdit_cif</tabstop>
+  <tabstop>ContactAuthorCheckBox_cif</tabstop>
+  <tabstop>AddressTextedit_cif</tabstop>
+  <tabstop>EMailLineEdit_cif</tabstop>
+  <tabstop>PhoneLineEdit_cif</tabstop>
+  <tabstop>SaveAuthorLoopToTemplateButton_cif</tabstop>
+  <tabstop>AddThisAuthorToLoopPushButton_cif</tabstop>
+  <tabstop>newLoopPushButton</tabstop>
+  <tabstop>structfactCheckBox</tabstop>
+  <tabstop>fullIucrCheckBox</tabstop>
+  <tabstop>BackFromPlatonPushButton</tabstop>
+  <tabstop>depositHKLcheckBox</tabstop>
+  <tabstop>Upload_hkl_pushButton</tabstop>
+  <tabstop>userEmailLineEdit</tabstop>
+  <tabstop>authorEditorPushButton</tabstop>
+  <tabstop>ContactAuthorLineEdit</tabstop>
+  <tabstop>ContactEmailLineEdit</tabstop>
+  <tabstop>embargoTimeInMonthsSpinBox</tabstop>
+  <tabstop>ContactAuthorLineEdit_2</tabstop>
+  <tabstop>authorEditorPushButton_2</tabstop>
+  <tabstop>ContactEmailLineEdit_2</tabstop>
+  <tabstop>publication_doi_lineedit</tabstop>
+  <tabstop>GetDOIPushButton</tabstop>
+  <tabstop>depositOutputTextBrowser</tabstop>
+  <tabstop>refreshDepositListPushButton</tabstop>
+  <tabstop>BackFromDepositPushButton</tabstop>
+  <tabstop>depositCIFpushButton</tabstop>
+  <tabstop>datanameComboBox</tabstop>
+  <tabstop>appendCifPushButton</tabstop>
  </tabstops>
  <includes>
   <include location="local">finalcif.gui.custom_classes.h</include>
