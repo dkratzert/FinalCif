@@ -158,7 +158,7 @@ class AuthorLoops():
             if row[:gemmi_loop.width()] not in gemmi_loop.values:
                 gemmi_loop.add_row(row[:gemmi_loop.width()])
         elif gemmi_loop.width() > len(row):
-            show_general_warning('An author loop with different size is already in the CIF. Can not proceed.')
+            show_general_warning('An author loop with larger size is already in the CIF. Can not proceed.')
         else:
             if row not in gemmi_loop.values:
                 gemmi_loop.add_row(row)
