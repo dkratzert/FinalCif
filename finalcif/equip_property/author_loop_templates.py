@@ -154,10 +154,14 @@ class AuthorLoops():
         self.show_authors_list()
 
     def check_if_loop_and_row_size_fit_together(self, gemmi_loop, row):
-        if gemmi_loop.width() == len(row):
-            gemmi_loop.add_row(row)
-        else:
+        if gemmi_loop.width() < len(row):
+            if row[:gemmi_loop.width()] not in gemmi_loop.values:
+                gemmi_loop.add_row(row[:gemmi_loop.width()])
+        elif gemmi_loop.width() > len(row):
             show_general_warning('An author loop with different size is already in the CIF. Can not proceed.')
+        else:
+            if row not in gemmi_loop.values:
+                gemmi_loop.add_row(row)
 
     def get_author_info(self) -> Author:
         if self.ui.authorEditTabWidget.currentWidget().objectName() == 'page_publication':
@@ -212,7 +216,7 @@ class AuthorLoops():
         if author.orcid and author.author_type == AuthorType.publ:
             # Audit authors have no ORCID:
             getattr(self.ui, f'ORCIDLineEdit').setText(retranslate_delimiter(as_string(author.orcid)))
-        if author.iucr_id  and author.author_type == AuthorType.publ:
+        if author.iucr_id and author.author_type == AuthorType.publ:
             # Audit authors have no IUCrID:
             getattr(self.ui, f'IUCRIDLineEdit').setText(retranslate_delimiter(as_string(author.iucr_id)))
         if author.phone:
