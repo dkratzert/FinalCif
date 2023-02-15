@@ -1,5 +1,6 @@
 FinalCif recent changes
 -----------------------
+* v116 Added a full-featured author editor to create all possibilities of author loops for publication or audit.
 * v115 Made the text template layout side-by-side. Added possibility to add a new CIF key by right-click on the main table.
 * v114 Improved reports a bit. Redesigned UI for text templates. Changed saving of templates for _vrf_xxxxxx keywords
        so that templates can be used for validation response forms.
