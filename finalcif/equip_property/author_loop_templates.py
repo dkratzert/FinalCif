@@ -55,7 +55,7 @@ class AuthorLoops():
         self.app = app
         self.cif_key = '_publ_author'
         self.keys_list = [f'{self.cif_key}_name', f'{self.cif_key}_address', f'{self.cif_key}_email',
-                          f'{self.cif_key}_phone', f'{self.cif_key}id_orcid', f'{self.cif_key}_id_iucr',
+                          f'{self.cif_key}_phone', f'{self.cif_key}_id_orcid', f'{self.cif_key}_id_iucr',
                           f'{self.cif_key}_footnote']
         self.settings = FinalCifSettings()
         if app:
@@ -292,7 +292,7 @@ class AuthorLoops():
                 author_cif.set_pair_delimited(key, as_string(value))
         return author_cif
 
-    def import_author(self, filename: bool = '') -> None:
+    def import_author(self, filename: str = '') -> None:
         """
         Import an author from a cif file.
         """

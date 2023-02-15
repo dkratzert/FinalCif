@@ -1,4 +1,3 @@
-import time
 import unittest
 from pathlib import Path
 
@@ -16,6 +15,7 @@ class MyTestCase(unittest.TestCase):
         self.app.hide()
         self.author = {'address': 'address', 'footnote': 'footnote', 'email': 'email',
                        'name'   : 'name', 'orcid': 'orcid', 'phone': 'phone', 'contact': True}
+        self.app.ui.authorEditTabWidget.setCurrentIndex(0)
 
     def tearDown(self) -> None:
         self.authorexport_file.unlink(missing_ok=True)
@@ -56,37 +56,73 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(True, self.authorexport_file.exists())
         self.assertEqual(self.testimport_author.read_text(), self.authorexport_file.read_text())
 
+    def test_export_selected_author_cif(self):
+        self.app.ui.authorEditTabWidget.setCurrentIndex(1)
+        self._delete_test_author()
+        self.authorexport_file.unlink(missing_ok=True)
+        self._import_testauthor()
+        self._select_row_of_author('AATest Author')
+        self.app.authors.export_author_template(str(self.authorexport_file))
+        self.assertEqual(True, self.authorexport_file.exists())
+        self.assertEqual(self.testimport_author.read_text(), self.authorexport_file.read_text())
+
     def test_set_name(self):
         self.app.ui.FullNameLineEdit.setText('test')
-        self.assertEqual('test', self.app.authors.get_author_info().get('name'))
+        self.assertEqual('test', self.app.authors.get_author_info().name)
+        #
+        self.app.ui.FullNameLineEdit.clear()
+        self.app.ui.authorEditTabWidget.setCurrentIndex(1)
+        self.app.ui.FullNameLineEdit_cif.setText('test2')
+        self.assertEqual('test2', self.app.authors.get_author_info().name)
 
     def test_set_contact_author(self):
         self.assertEqual(False, self.app.ui.ContactAuthorCheckBox.isChecked())
         self.app.ui.ContactAuthorCheckBox.setChecked(True)
-        self.assertEqual(True, self.app.authors.get_author_info().get('contact'))
+        self.assertEqual(True, self.app.authors.get_author_info().contact_author)
+        #
+        self.app.ui.authorEditTabWidget.setCurrentIndex(1)
+        self.assertEqual(False, self.app.ui.ContactAuthorCheckBox_cif.isChecked())
+        self.app.ui.ContactAuthorCheckBox_cif.setChecked(True)
+        self.assertEqual(True, self.app.authors.get_author_info().contact_author)
 
     def test_set_address(self):
         self.app.ui.AddressTextedit.setText('Eine Adresse 1')
-        self.assertEqual("'Eine Adresse 1'", self.app.authors.get_author_info().get('address'))
+        self.assertEqual("'Eine Adresse 1'", self.app.authors.get_author_info().address)
+        #
+        self.app.ui.AddressTextedit.clear()
+        self.app.ui.authorEditTabWidget.setCurrentIndex(1)
+        self.app.ui.AddressTextedit_cif.setText('Eine Adresse 2')
+        self.assertEqual("'Eine Adresse 2'", self.app.authors.get_author_info().address)
 
     def test_set_footnote(self):
         self.app.ui.FootNoteLineEdit.setText('notex')
-        self.assertEqual('notex', self.app.authors.get_author_info().get('footnote'))
+        self.assertEqual('notex', self.app.authors.get_author_info().footnote)
 
     def test_set_email(self):
         self.app.ui.EMailLineEdit.setText('test@foo.de')
-        self.assertEqual('test@foo.de', self.app.authors.get_author_info().get('email'))
+        self.assertEqual('test@foo.de', self.app.authors.get_author_info().email)
+        #
+        self.app.ui.authorEditTabWidget.setCurrentIndex(1)
+        self.app.ui.EMailLineEdit.clear()
+        self.app.ui.EMailLineEdit_cif.setText('test@foo.de')
+        self.assertEqual('test@foo.de', self.app.authors.get_author_info().email)
 
     def test_set_orcid(self):
         self.app.ui.ORCIDLineEdit.setText('12345a')
-        self.assertEqual('12345a', self.app.authors.get_author_info().get('orcid'))
+        self.assertEqual('12345a', self.app.authors.get_author_info().orcid)
 
     def test_set_phone(self):
         self.app.ui.PhoneLineEdit.setText('12345a')
-        self.assertEqual('12345a', self.app.authors.get_author_info().get('phone'))
+        self.assertEqual('12345a', self.app.authors.get_author_info().phone)
+        #
+        self.app.ui.PhoneLineEdit.clear()
+        self.app.ui.authorEditTabWidget.setCurrentIndex(1)
+        self.app.ui.PhoneLineEdit_cif.setText('12345b')
+        self.assertEqual('12345b', self.app.authors.get_author_info().phone)
 
     def test_set_foo(self):
-        self.assertEqual(None, self.app.authors.get_author_info().get('foo'))
+        self.app.ui.IUCRIDLineEdit.setText('123-45a')
+        self.assertEqual('123-45a', self.app.authors.get_author_info().iucr_id)
 
     def test_set_author_info(self):
         self.app.authors.set_author_info(self.author)
