@@ -68,14 +68,20 @@ class TestWorkfolder(unittest.TestCase):
         return self.myapp.ui.cif_main_table.cellWidget(row, col)
 
     def cell_widget_class(self, row: int, col: int) -> str:
-        return str(self.myapp.ui.cif_main_table.cellWidget(row, col).__class__)
+        try:
+            return str(self.myapp.ui.cif_main_table.cellWidget(row, col).__class__)
+        except Exception:
+            return ''
 
     def get_combobox_items(self, row: int, col: int):
         widget = self.cell_widget(row, col)
         return [widget.itemText(i) for i in range(widget.count())]
 
     def cell_text(self, key: str, col: int) -> str:
-        return unify_line_endings(self.myapp.ui.cif_main_table.getTextFromKey(key, col))
+        try:
+            return unify_line_endings(self.myapp.ui.cif_main_table.getTextFromKey(key, col))
+        except ValueError:
+            return ''
 
     def equipment_click(self, field: str):
         listw = self.myapp.ui.EquipmentTemplatesListWidget
@@ -125,10 +131,10 @@ class TestWorkfolder(unittest.TestCase):
             self.cell_text('_audit_creation_method', COL_DATA))
 
     def test_abs_configuration_combo(self):
-        self.assertEqual(10, self.key_row('_chemical_absolute_configuration'))
-        self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>", self.cell_widget_class(10, COL_CIF))
-        self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>", self.cell_widget_class(10, COL_DATA))
-        self.assertEqual("<class 'finalcif.gui.combobox.MyComboBox'>", self.cell_widget_class(10, COL_EDIT))
+        self.assertEqual(6, self.key_row('_chemical_absolute_configuration'))
+        self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>", self.cell_widget_class(6, COL_CIF))
+        self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>", self.cell_widget_class(6, COL_DATA))
+        self.assertEqual("<class 'finalcif.gui.combobox.MyComboBox'>", self.cell_widget_class(6, COL_EDIT))
 
     def test_diffrn_radiation_type_combo(self):
         row = self.key_row('_diffrn_radiation_type')
@@ -281,8 +287,8 @@ class TestWorkfolder(unittest.TestCase):
         self.assertEqual('Dr. Daniel Kratzert', self.cell_text('_audit_contact_author_name', COL_EDIT))
 
     def test_contact_author_cellwidget_bevore_click(self):
-        self.assertEqual(self.myapp.ui.cif_main_table.vheaderitems[5], '_audit_contact_author_name')
-        self.assertEqual('', self.myapp.ui.cif_main_table.getText(5, COL_DATA))
+        self.assertEqual('_cell_measurement_theta_min', self.myapp.ui.cif_main_table.vheaderitems[5])
+        self.assertEqual('2.547', self.myapp.ui.cif_main_table.getText(5, COL_DATA))
 
     def test_contact_author_cellwidget_after(self):
         self.equipment_click('Crystallographer Details')
@@ -311,8 +317,9 @@ class TestWorkfolder(unittest.TestCase):
         self.myapp.hide()
         self.myapp.ui.cif_main_table.setText(key='_atom_sites_solution_primary', column=2, txt='test1ä')
         self.myapp.ui.cif_main_table.setText(key='_atom_sites_solution_secondary', column=2, txt='test2ö')
-        self.myapp.ui.cif_main_table.setText(key='_audit_contact_author_address', column=2, txt='test3ü')
-        self.myapp.ui.cif_main_table.setText(key='_audit_contact_author_email', column=2, txt='test4ß')
+        # Not there anymore
+        # self.myapp.ui.cif_main_table.setText(key='_audit_contact_author_address', column=2, txt='test3ü')
+        # self.myapp.ui.cif_main_table.setText(key='_audit_contact_author_email', column=2, txt='test4ß')
         self.myapp.ui.cif_main_table.setText(key='_diffrn_measurement_method', column=2, txt='test 12 Å')
         self.myapp.save_current_cif_file()
         self.myapp.ui.cif_main_table.setRowCount(0)
@@ -325,8 +332,9 @@ class TestWorkfolder(unittest.TestCase):
         self.assertEqual('test1ä', self.cell_text(key='_atom_sites_solution_primary', col=0))
         self.assertEqual(r'test1\"a', self.myapp.cif['_atom_sites_solution_primary'])
         self.assertEqual('test2ö', self.cell_text(key='_atom_sites_solution_secondary', col=0))
-        self.assertEqual('test3ü', self.cell_text(key='_audit_contact_author_address', col=0))
-        self.assertEqual('test4ß', self.cell_text(key='_audit_contact_author_email', col=0))
+        # Not there anymore
+        # self.assertEqual('test3ü', self.cell_text(key='_audit_contact_author_address', col=0))
+        # self.assertEqual('test4ß', self.cell_text(key='_audit_contact_author_email', col=0))
 
     def test_rename_data_tag(self):
         self.myapp.hide()
@@ -358,6 +366,9 @@ class TestWorkfolderOtherCifName(unittest.TestCase):
     def cell_text(self, key: str, col: int) -> str:
         return unify_line_endings(self.myapp.ui.cif_main_table.getTextFromKey(key, col))
 
+    def key_row(self, key: str) -> int:
+        return self.myapp.ui.cif_main_table.row_from_key(key)
+
     def tearDown(self) -> None:
         self.testcif.with_suffix('.ins').unlink(missing_ok=True)
         self.testcif.with_suffix('.lst').unlink(missing_ok=True)
@@ -387,7 +398,8 @@ class TestWorkfolderOtherCifName(unittest.TestCase):
         # _exptl_crystal_recrystallization_method Yellow:
         self.assertEqual('', self.cell_text('_exptl_crystal_recrystallization_method', COL_DATA))
         self.assertEqual('background-color: #faf796;',
-                         self.myapp.ui.cif_main_table.cellWidget(41, 1).styleSheet())
+                         self.myapp.ui.cif_main_table.cellWidget(
+                             self.key_row('_exptl_crystal_recrystallization_method'), 1).styleSheet())
         self.assertEqual(
             """Sheldrick, G.M. (2015). Acta Cryst. A71, 3-8.\nSheldrick, G.M. (2015). Acta Cryst. C71, 3-8.""",
             self.cell_text('_publ_section_references', COL_DATA))

@@ -162,6 +162,7 @@ class MyCifTable(QTableWidget, ItemTextMixin):
             row = self.vheaderitems.index(key)
         elif row is None and key not in self.vheaderitems:
             row = 0
+            raise IndexError
         if isinstance(self.cellWidget(row, column), MyComboBox):
             self.cellWidget(row, column).setText(txt)
             return
