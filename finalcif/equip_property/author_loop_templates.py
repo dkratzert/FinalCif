@@ -26,10 +26,6 @@ from finalcif.tools.settings import FinalCifSettings
 with suppress(ImportError):
     from finalcif.appwindow import AppWindow
 
-cif_key = '_publ_contact_author'
-keys = [f'{cif_key}_name', f'{cif_key}_address', f'{cif_key}_email', f'{cif_key}_phone',
-        f'{cif_key}id_orcid', f'{cif_key}_id_iucr', f'{cif_key}_footnote']
-
 
 class AuthorType(Enum):
     publ = 'publ'
@@ -57,6 +53,10 @@ class AuthorLoops():
         self.ui = ui
         self.cif = cif
         self.app = app
+        self.cif_key = '_publ_author'
+        self.keys_list = [f'{self.cif_key}_name', f'{self.cif_key}_address', f'{self.cif_key}_email',
+                          f'{self.cif_key}_phone', f'{self.cif_key}id_orcid', f'{self.cif_key}_id_iucr',
+                          f'{self.cif_key}_footnote']
         self.settings = FinalCifSettings()
         if app:
             self.ui.authorEditTabWidget.setCurrentIndex(0)
@@ -287,7 +287,7 @@ class AuthorLoops():
         data = [author.name, author.address, author.email, author.phone, author.orcid, author.iucr_id,
                 author.footnote]
         author_cif = CifContainer(filename, new_block=blockname)
-        for key, value in zip(keys, data):
+        for key, value in zip(self.keys_list, data):
             if value:
                 author_cif.set_pair_delimited(key, as_string(value))
         return author_cif
@@ -304,14 +304,18 @@ class AuthorLoops():
         if not doc:
             return
         block: gemmi.cif.Block = doc.sole_block()
-        author = Author(name=block.find_value(keys[0]),
-                        address=block.find_value(keys[1]),
-                        email=block.find_value(keys[2]),
-                        phone=block.find_value(keys[3]),
-                        orcid=block.find_value(keys[4]),
-                        iucr_id=block.find_value(keys[5]),
-                        footnote=block.find_value(keys[6]),
-                        author_type=AuthorType.publ,
+        if block.find_value('_publ_author_name'):
+            self.cif_key = '_publ_author'
+        else:
+            self.cif_key = '_publ_contact_author'
+        author = Author(name=block.find_value(self.keys_list[0]),
+                        address=block.find_value(self.keys_list[1]),
+                        email=block.find_value(self.keys_list[2]),
+                        phone=block.find_value(self.keys_list[3]),
+                        orcid=block.find_value(self.keys_list[4]),
+                        iucr_id=block.find_value(self.keys_list[5]),
+                        footnote=block.find_value(self.keys_list[6]),
+                        author_type=AuthorType.audit,
                         contact_author=False
                         )
         if not author.name:
