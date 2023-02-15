@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/Users/daniel/Documents/GitHub/FinalCif/finalcif/gui/text_templates.ui'
+# Form implementation generated from reading ui file 'D:\_DEV\GitHub\FinalCif\finalcif\gui\text_templates_ui.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.7
 #

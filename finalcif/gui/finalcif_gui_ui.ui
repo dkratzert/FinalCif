@@ -7,8 +7,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1604</width>
-    <height>852</height>
+    <width>1645</width>
+    <height>899</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -1028,7 +1028,7 @@
         <item row="1" column="0" colspan="13">
          <widget class="MyMainStackedWidget" name="MainStackedWidget">
           <property name="currentIndex">
-           <number>7</number>
+           <number>5</number>
           </property>
           <widget class="QWidget" name="page_MainTable">
            <layout class="QVBoxLayout" name="verticalLayout">
@@ -2616,11 +2616,373 @@ The data source will be ignored until next program restart.</string>
               </property>
               <widget class="QWidget" name="tab_2">
                <attribute name="title">
-                <string>Manuscript related</string>
+                <string>Author Editor</string>
                </attribute>
                <layout class="QGridLayout" name="gridLayout_2">
                 <item row="0" column="1">
-                 <spacer name="horizontalSpacer_22">
+                 <spacer name="verticalSpacer_16">
+                  <property name="orientation">
+                   <enum>Qt::Vertical</enum>
+                  </property>
+                  <property name="sizeType">
+                   <enum>QSizePolicy::Minimum</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>0</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item row="2" column="1">
+                 <widget class="QTabWidget" name="authorEditTabWidget">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                    <horstretch>40</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="currentIndex">
+                   <number>0</number>
+                  </property>
+                  <widget class="QWidget" name="page_publication">
+                   <attribute name="title">
+                    <string>Publication Authors</string>
+                   </attribute>
+                   <layout class="QVBoxLayout" name="verticalLayout_23">
+                    <item>
+                     <layout class="QVBoxLayout" name="verticalLayout_24">
+                      <item>
+                       <widget class="QLabel" name="label_20">
+                        <property name="text">
+                         <string>Details about the author(s) of a manuscript submitted for publication.
+Contact authors should always also appear as regular authors.</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <layout class="QGridLayout" name="gridLayout_5">
+                        <item row="5" column="0">
+                         <widget class="QLabel" name="label_34">
+                          <property name="text">
+                           <string>ORCID</string>
+                          </property>
+                          <property name="alignment">
+                           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="7" column="0">
+                         <widget class="QLabel" name="footnote_label">
+                          <property name="text">
+                           <string>footnote</string>
+                          </property>
+                          <property name="alignment">
+                           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="2" column="0">
+                         <widget class="QLabel" name="label_21">
+                          <property name="text">
+                           <string>Adresss</string>
+                          </property>
+                          <property name="alignment">
+                           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="2" column="2">
+                         <widget class="QLabel" name="label_28">
+                          <property name="text">
+                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#666666;&quot;&gt;The adress of an author&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#666666;&quot;&gt;Department&lt;br/&gt;Institute&lt;br/&gt;Street&lt;br/&gt;City and postcode&lt;br/&gt;COUNTRY&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                          </property>
+                          <property name="scaledContents">
+                           <bool>false</bool>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="4" column="1">
+                         <widget class="QLineEdit" name="PhoneLineEdit"/>
+                        </item>
+                        <item row="1" column="1">
+                         <widget class="QCheckBox" name="ContactAuthorCheckBox">
+                          <property name="text">
+                           <string>This is a contact author</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="0" column="0">
+                         <widget class="QLabel" name="label_22">
+                          <property name="text">
+                           <string>Full Name</string>
+                          </property>
+                          <property name="alignment">
+                           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                          </property>
+                          <property name="openExternalLinks">
+                           <bool>true</bool>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="3" column="0">
+                         <widget class="QLabel" name="EmailLabel">
+                          <property name="text">
+                           <string>e-mail</string>
+                          </property>
+                          <property name="alignment">
+                           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="7" column="1">
+                         <widget class="QLineEdit" name="FootNoteLineEdit"/>
+                        </item>
+                        <item row="0" column="2">
+                         <widget class="QLabel" name="label_27">
+                          <property name="text">
+                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#666666;&quot;&gt;Family name, first name&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                          </property>
+                          <property name="scaledContents">
+                           <bool>false</bool>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="4" column="0">
+                         <widget class="QLabel" name="PhoneLabel">
+                          <property name="text">
+                           <string>phone number</string>
+                          </property>
+                          <property name="alignment">
+                           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="2" column="1">
+                         <widget class="QTextEdit" name="AddressTextedit"/>
+                        </item>
+                        <item row="0" column="1">
+                         <widget class="QLineEdit" name="FullNameLineEdit"/>
+                        </item>
+                        <item row="3" column="1">
+                         <widget class="QLineEdit" name="EMailLineEdit"/>
+                        </item>
+                        <item row="5" column="1">
+                         <widget class="QLineEdit" name="ORCIDLineEdit"/>
+                        </item>
+                        <item row="6" column="0">
+                         <widget class="QLabel" name="label_36">
+                          <property name="text">
+                           <string>IUCr Id</string>
+                          </property>
+                          <property name="alignment">
+                           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="6" column="1">
+                         <widget class="QLineEdit" name="IUCRIDLineEdit"/>
+                        </item>
+                       </layout>
+                      </item>
+                     </layout>
+                    </item>
+                    <item>
+                     <layout class="QVBoxLayout" name="verticalLayout_32">
+                      <item alignment="Qt::AlignRight">
+                       <widget class="QPushButton" name="SaveAuthorLoopToTemplateButton">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
+                        </property>
+                        <property name="text">
+                         <string>Save Author as Template</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QPushButton" name="AddThisAuthorToLoopPushButton">
+                        <property name="text">
+                         <string>Add Publication Author to CIF Loop</string>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </item>
+                   </layout>
+                  </widget>
+                  <widget class="QWidget" name="page_audit">
+                   <attribute name="title">
+                    <string>Audit (CIF) Authors</string>
+                   </attribute>
+                   <layout class="QVBoxLayout" name="verticalLayout_40">
+                    <item>
+                     <layout class="QVBoxLayout" name="verticalLayout_38">
+                      <item>
+                       <widget class="QLabel" name="label_23">
+                        <property name="text">
+                         <string>Details about the author(s) of this CIF data block (most often the crystallographer).
+Contact authors should always also appear as regular authors.</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <layout class="QGridLayout" name="gridLayout_25">
+                        <item row="0" column="2">
+                         <widget class="QLabel" name="label_29">
+                          <property name="text">
+                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#666666;&quot;&gt;Family name, first name&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                          </property>
+                          <property name="scaledContents">
+                           <bool>false</bool>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="0" column="0">
+                         <widget class="QLabel" name="label_24">
+                          <property name="text">
+                           <string>Full Name</string>
+                          </property>
+                          <property name="alignment">
+                           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                          </property>
+                          <property name="openExternalLinks">
+                           <bool>true</bool>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="2" column="2">
+                         <widget class="QLabel" name="label_30">
+                          <property name="text">
+                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#666666;&quot;&gt;The adress of an author&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#666666;&quot;&gt;Department&lt;br/&gt;Institute&lt;br/&gt;Street&lt;br/&gt;City and postcode&lt;br/&gt;COUNTRY&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                          </property>
+                          <property name="scaledContents">
+                           <bool>false</bool>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="3" column="0">
+                         <widget class="QLabel" name="EmailLabel_cif">
+                          <property name="text">
+                           <string>e-mail</string>
+                          </property>
+                          <property name="alignment">
+                           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="4" column="1">
+                         <widget class="QLineEdit" name="PhoneLineEdit_cif"/>
+                        </item>
+                        <item row="1" column="1">
+                         <widget class="QCheckBox" name="ContactAuthorCheckBox_cif">
+                          <property name="text">
+                           <string>This is a contact author</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="2" column="1">
+                         <widget class="QTextEdit" name="AddressTextedit_cif"/>
+                        </item>
+                        <item row="2" column="0">
+                         <widget class="QLabel" name="label_25">
+                          <property name="text">
+                           <string>Adresss</string>
+                          </property>
+                          <property name="alignment">
+                           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="0" column="1">
+                         <widget class="QLineEdit" name="FullNameLineEdit_cif"/>
+                        </item>
+                        <item row="4" column="0">
+                         <widget class="QLabel" name="PhoneLabel_cif">
+                          <property name="text">
+                           <string>phone number</string>
+                          </property>
+                          <property name="alignment">
+                           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="3" column="1">
+                         <widget class="QLineEdit" name="EMailLineEdit_cif"/>
+                        </item>
+                        <item row="6" column="0" colspan="3">
+                         <widget class="QLabel" name="label_16">
+                          <property name="text">
+                           <string> </string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="7" column="0" colspan="3">
+                         <widget class="QLabel" name="label_19">
+                          <property name="text">
+                           <string> </string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="5" column="1" colspan="2">
+                         <widget class="QLabel" name="label_13">
+                          <property name="sizePolicy">
+                           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                           </sizepolicy>
+                          </property>
+                          <property name="text">
+                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#666666;&quot;&gt;Audit authors have less possibilities than publication authors.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                          </property>
+                          <property name="wordWrap">
+                           <bool>true</bool>
+                          </property>
+                         </widget>
+                        </item>
+                       </layout>
+                      </item>
+                     </layout>
+                    </item>
+                    <item>
+                     <layout class="QVBoxLayout" name="verticalLayout_39">
+                      <item alignment="Qt::AlignRight">
+                       <widget class="QPushButton" name="SaveAuthorLoopToTemplateButton_cif">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
+                        </property>
+                        <property name="text">
+                         <string>Save Author as Template</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QPushButton" name="AddThisAuthorToLoopPushButton_cif">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
+                        </property>
+                        <property name="text">
+                         <string>Add Audit Author to CIF Loop</string>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </item>
+                   </layout>
+                  </widget>
+                 </widget>
+                </item>
+                <item row="2" column="0">
+                 <spacer name="horizontalSpacer_21">
                   <property name="orientation">
                    <enum>Qt::Horizontal</enum>
                   </property>
@@ -2632,168 +2994,50 @@ The data source will be ignored until next program restart.</string>
                   </property>
                  </spacer>
                 </item>
-                <item row="1" column="0">
+                <item row="3" column="1">
                  <spacer name="verticalSpacer_10">
                   <property name="orientation">
                    <enum>Qt::Vertical</enum>
                   </property>
                   <property name="sizeHint" stdset="0">
                    <size>
-                    <width>20</width>
-                    <height>162</height>
+                    <width>0</width>
+                    <height>0</height>
                    </size>
                   </property>
                  </spacer>
                 </item>
-                <item row="0" column="2">
-                 <spacer name="horizontalSpacer_21">
+                <item row="2" column="2">
+                 <widget class="QFrame" name="frame_2">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                    <horstretch>60</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="frameShape">
+                   <enum>QFrame::StyledPanel</enum>
+                  </property>
+                  <property name="frameShadow">
+                   <enum>QFrame::Raised</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="1">
+                 <spacer name="verticalSpacer_15">
                   <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
+                   <enum>Qt::Vertical</enum>
+                  </property>
+                  <property name="sizeType">
+                   <enum>QSizePolicy::Fixed</enum>
                   </property>
                   <property name="sizeHint" stdset="0">
                    <size>
-                    <width>535</width>
+                    <width>20</width>
                     <height>20</height>
                    </size>
                   </property>
                  </spacer>
-                </item>
-                <item row="0" column="0">
-                 <widget class="QGroupBox" name="groupBox_9">
-                  <property name="title">
-                   <string>Publication Authors</string>
-                  </property>
-                  <layout class="QVBoxLayout" name="verticalLayout_23">
-                   <item>
-                    <layout class="QVBoxLayout" name="verticalLayout_24">
-                     <item>
-                      <widget class="QLabel" name="label_20">
-                       <property name="text">
-                        <string>Details about the authors of a manuscript submitted for publication.
-Contact authors should always also appear as regular authors.</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <layout class="QGridLayout" name="gridLayout_5">
-                       <item row="0" column="0">
-                        <widget class="QLabel" name="label_22">
-                         <property name="text">
-                          <string>Full Name</string>
-                         </property>
-                         <property name="alignment">
-                          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                         </property>
-                         <property name="openExternalLinks">
-                          <bool>true</bool>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="4" column="2">
-                        <widget class="QLineEdit" name="PhoneLineEdit"/>
-                       </item>
-                       <item row="0" column="2">
-                        <widget class="QLineEdit" name="FullNameLineEdit"/>
-                       </item>
-                       <item row="5" column="0">
-                        <widget class="QLabel" name="label_34">
-                         <property name="text">
-                          <string>ORCID</string>
-                         </property>
-                         <property name="alignment">
-                          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="1" column="2">
-                        <widget class="QCheckBox" name="ContactAuthorCheckBox">
-                         <property name="text">
-                          <string>This is a contact author</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="3" column="2">
-                        <widget class="QLineEdit" name="EMailLineEdit"/>
-                       </item>
-                       <item row="6" column="0">
-                        <widget class="QLabel" name="footnote_label">
-                         <property name="text">
-                          <string>footnote</string>
-                         </property>
-                         <property name="alignment">
-                          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="2" column="0">
-                        <widget class="QLabel" name="label_21">
-                         <property name="text">
-                          <string>Adresss</string>
-                         </property>
-                         <property name="alignment">
-                          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="3" column="0">
-                        <widget class="QLabel" name="label_16">
-                         <property name="text">
-                          <string>e-mail</string>
-                         </property>
-                         <property name="alignment">
-                          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="6" column="2">
-                        <widget class="QLineEdit" name="FootNoteLineEdit"/>
-                       </item>
-                       <item row="4" column="0">
-                        <widget class="QLabel" name="label_13">
-                         <property name="text">
-                          <string>phone number</string>
-                         </property>
-                         <property name="alignment">
-                          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="2" column="2">
-                        <widget class="QTextEdit" name="AddressTextedit"/>
-                       </item>
-                       <item row="5" column="2">
-                        <widget class="QLineEdit" name="ORCIDLineEdit"/>
-                       </item>
-                      </layout>
-                     </item>
-                    </layout>
-                   </item>
-                   <item>
-                    <layout class="QVBoxLayout" name="verticalLayout_32">
-                     <item alignment="Qt::AlignRight">
-                      <widget class="QPushButton" name="SaveAuthorLoopToTemplateButton">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="text">
-                        <string>Save Author as Template</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QPushButton" name="AddThisAuthorToLoopPushButton">
-                       <property name="text">
-                        <string>Add Author to CIF Loop</string>
-                       </property>
-                      </widget>
-                     </item>
-                    </layout>
-                   </item>
-                  </layout>
-                 </widget>
                 </item>
                </layout>
               </widget>
@@ -2804,7 +3048,7 @@ Contact authors should always also appear as regular authors.</string>
               <item row="0" column="2">
                <widget class="QPushButton" name="revertLoopsPushButton">
                 <property name="text">
-                 <string>revert changes</string>
+                 <string>Revert Changes</string>
                 </property>
                </widget>
               </item>
@@ -4084,21 +4328,6 @@ please add a publication author:</string>
    </layout>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
-  <action name="actionSave_Report">
-   <property name="text">
-    <string>Save Report</string>
-   </property>
-  </action>
-  <action name="actionSave_CIF_File">
-   <property name="text">
-    <string>Save CIF File</string>
-   </property>
-  </action>
-  <action name="actionedit_templates">
-   <property name="text">
-    <string>edit templates</string>
-   </property>
-  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -4135,9 +4364,9 @@ please add a publication author:</string>
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>EMailLineEdit</tabstop>
-  <tabstop>AddressTextedit</tabstop>
-  <tabstop>FootNoteLineEdit</tabstop>
+  <tabstop>publishedDepositionRadioButton</tabstop>
+  <tabstop>prepublicationDepositRadioButton</tabstop>
+  <tabstop>SelectCif_PushButton</tabstop>
   <tabstop>EditEquipmentTemplateButton</tabstop>
   <tabstop>ImportEquipmentTemplateButton</tabstop>
   <tabstop>DeleteEquipmentButton</tabstop>
@@ -4224,15 +4453,62 @@ please add a publication author:</string>
   <tabstop>CCDCNumLineEdit</tabstop>
   <tabstop>BackpushButtonDetails</tabstop>
   <tabstop>completeLineEdit</tabstop>
-  <tabstop>ContactAuthorCheckBox</tabstop>
-  <tabstop>CODtableWidget</tabstop>
-  <tabstop>FullNameLineEdit</tabstop>
-  <tabstop>journalNameLineEdit</tabstop>
   <tabstop>personalDepositRadioButton</tabstop>
-  <tabstop>prepublicationDepositRadioButton</tabstop>
-  <tabstop>publishedDepositionRadioButton</tabstop>
+  <tabstop>CODtableWidget</tabstop>
+  <tabstop>journalNameLineEdit</tabstop>
+  <tabstop>FullNameLineEdit</tabstop>
+  <tabstop>ContactAuthorCheckBox</tabstop>
+  <tabstop>AddressTextedit</tabstop>
+  <tabstop>EMailLineEdit</tabstop>
+  <tabstop>PhoneLineEdit</tabstop>
+  <tabstop>ORCIDLineEdit</tabstop>
+  <tabstop>IUCRIDLineEdit</tabstop>
+  <tabstop>FootNoteLineEdit</tabstop>
+  <tabstop>SaveAuthorLoopToTemplateButton</tabstop>
+  <tabstop>AddThisAuthorToLoopPushButton</tabstop>
+  <tabstop>drawImagePushButton</tabstop>
+  <tabstop>ExportAllTemplatesPushButton</tabstop>
+  <tabstop>ImportAllTemplatesPushButton</tabstop>
+  <tabstop>ReportTextCheckBox</tabstop>
+  <tabstop>HAtomsCheckBox</tabstop>
+  <tabstop>ADPTableCheckBox</tabstop>
+  <tabstop>CODURLTextedit</tabstop>
+  <tabstop>trackChangesCifCheckBox</tabstop>
+  <tabstop>authorEditTabWidget</tabstop>
   <tabstop>depositorUsernameLineEdit</tabstop>
   <tabstop>depositorPasswordLineEdit</tabstop>
+  <tabstop>SelectCif_LineEdit</tabstop>
+  <tabstop>growCheckBox</tabstop>
+  <tabstop>labelsCheckBox</tabstop>
+  <tabstop>FullNameLineEdit_cif</tabstop>
+  <tabstop>ContactAuthorCheckBox_cif</tabstop>
+  <tabstop>AddressTextedit_cif</tabstop>
+  <tabstop>EMailLineEdit_cif</tabstop>
+  <tabstop>PhoneLineEdit_cif</tabstop>
+  <tabstop>SaveAuthorLoopToTemplateButton_cif</tabstop>
+  <tabstop>AddThisAuthorToLoopPushButton_cif</tabstop>
+  <tabstop>newLoopPushButton</tabstop>
+  <tabstop>structfactCheckBox</tabstop>
+  <tabstop>fullIucrCheckBox</tabstop>
+  <tabstop>BackFromPlatonPushButton</tabstop>
+  <tabstop>depositHKLcheckBox</tabstop>
+  <tabstop>Upload_hkl_pushButton</tabstop>
+  <tabstop>userEmailLineEdit</tabstop>
+  <tabstop>authorEditorPushButton</tabstop>
+  <tabstop>ContactAuthorLineEdit</tabstop>
+  <tabstop>ContactEmailLineEdit</tabstop>
+  <tabstop>embargoTimeInMonthsSpinBox</tabstop>
+  <tabstop>ContactAuthorLineEdit_2</tabstop>
+  <tabstop>authorEditorPushButton_2</tabstop>
+  <tabstop>ContactEmailLineEdit_2</tabstop>
+  <tabstop>publication_doi_lineedit</tabstop>
+  <tabstop>GetDOIPushButton</tabstop>
+  <tabstop>depositOutputTextBrowser</tabstop>
+  <tabstop>refreshDepositListPushButton</tabstop>
+  <tabstop>BackFromDepositPushButton</tabstop>
+  <tabstop>depositCIFpushButton</tabstop>
+  <tabstop>datanameComboBox</tabstop>
+  <tabstop>appendCifPushButton</tabstop>
  </tabstops>
  <includes>
   <include location="local">finalcif.gui.custom_classes.h</include>
