@@ -41,7 +41,7 @@ from finalcif.gui.custom_classes import COL_CIF, COL_DATA, COL_EDIT, MyTableWidg
 from finalcif.gui.dialogs import show_update_warning, unable_to_open_message, show_general_warning, \
     cif_file_open_dialog, \
     bad_z_message, show_res_checksum_warning, show_hkl_checksum_warning, cif_file_save_dialog, show_yes_now_question
-from finalcif.gui.finalcif_gui import Ui_FinalCifWindow
+from finalcif.gui.finalcif_gui_ui import Ui_FinalCifWindow
 from finalcif.gui.loop_creator import LoopCreator
 from finalcif.gui.loops import Loop
 from finalcif.gui.plaintextedit import MyQPlainTextEdit

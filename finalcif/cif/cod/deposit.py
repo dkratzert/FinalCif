@@ -21,7 +21,7 @@ from finalcif.cif.cod.website_parser import MyCODStructuresParser
 from finalcif.cif.hkl import HKL
 from finalcif.cif.text import delimit_string
 from finalcif.gui.dialogs import cif_file_open_dialog, show_general_warning, show_ok_cancel_warning
-from finalcif.gui.finalcif_gui import Ui_FinalCifWindow
+from finalcif.gui.finalcif_gui_ui import Ui_FinalCifWindow
 from finalcif.tools.options import Options
 from finalcif.tools.settings import FinalCifSettings
 

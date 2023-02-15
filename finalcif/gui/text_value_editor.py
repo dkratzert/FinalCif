@@ -5,10 +5,12 @@ from PyQt5.QtCore import QSize, Qt, pyqtSignal
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QCheckBox, QApplication, QPlainTextEdit, \
     QListWidgetItem, QVBoxLayout, QLabel
 
+from finalcif.gui import text_templates_ui
+
+
 # print('Compiling textedit ui ...')
 # application_path = Path(os.path.abspath(__file__)).parent.parent
 # uic.compileUiDir(os.path.join(application_path, 'gui'))
-from finalcif.gui import text_templates
 
 
 class TextEditItem(QWidget):
@@ -63,7 +65,7 @@ class MyTextTemplateEdit(QWidget):
     def __init__(self, *args: object, **kwargs: object) -> None:
         super().__init__(*args, **kwargs)
         self.cif_key: str = ''
-        self.ui = text_templates.Ui_TextTemplatesWidget()
+        self.ui = text_templates_ui.Ui_TextTemplatesWidget()
         self.ui.setupUi(self)
         self.ui.cancelTextPushButton.clicked.connect(self._on_backbutton_clicked)
         if not self.ui.templatesListWidget.count():
