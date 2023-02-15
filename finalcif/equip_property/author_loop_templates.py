@@ -117,16 +117,17 @@ class AuthorLoops():
                            f'_{author.author_type}_{contact}author_address',
                            f'_{author.author_type}_{contact}author_email',
                            f'_{author.author_type}_{contact}author_phone',
-                           f'_{author.author_type}_{contact}author_id_orcid'
-                           f'_{author.author_type}_{contact}author_id_iucr'
+                           f'_{author.author_type}_{contact}author_id_orcid',
+                           f'_{author.author_type}_{contact}author_id_iucr',
                            ]
         elif author.author_type == AuthorType.publ and not author.contact_author:
             author_loop = [f'_{author.author_type}_{contact}author_name',
                            f'_{author.author_type}_{contact}author_address',
                            f'_{author.author_type}_{contact}author_email',
+                           # In fact, email should be disabled in coreCIF version 2.4.5:
                            f'_{author.author_type}_{contact}author_phone',
                            f'_{author.author_type}_{contact}author_id_orcid',
-                           f'_{author.author_type}_{contact}author_id_iucr'
+                           f'_{author.author_type}_{contact}author_id_iucr',
                            f'_{author.author_type}_author_footnote']
         elif author.author_type == AuthorType.audit and author.contact_author:
             author_loop = [f'_{author.author_type}_{contact}author_name',
@@ -140,7 +141,7 @@ class AuthorLoops():
 
     def save_author_to_loop(self) -> None:
         author = self.get_author_info()
-        row = [author.name, author.address, author.email, author.phone, author.orcid, author.footnote]
+        row = [author.name, author.address, author.email, author.phone, author.orcid, author.iucr_id, author.footnote]
         if author.contact_author:
             author_type = f'_{author.author_type}_contact_author_name'
             del row[-1]  # contact author has no footnote
@@ -153,15 +154,17 @@ class AuthorLoops():
                 print('dbg> Author already exists.')
                 return
         else:
-            gemmi_loop = self.cif.init_loop(self.get_author_loop(author))
+            author_loop = self.get_author_loop(author)
+            gemmi_loop = self.cif.init_loop(author_loop)
         self.check_if_loop_and_row_size_fit_together(gemmi_loop, row)
         self.app.make_loops_tables()
         self.show_authors_list()
 
     def check_if_loop_and_row_size_fit_together(self, gemmi_loop: gemmi.cif.Loop, row: List[str]) -> None:
         if gemmi_loop.width() < len(row):
-            if row[:gemmi_loop.width()] not in gemmi_loop.values:
-                gemmi_loop.add_row(row[:gemmi_loop.width()])
+            cut_row = row[:gemmi_loop.width()]
+            if cut_row not in gemmi_loop.values:
+                gemmi_loop.add_row(cut_row)
         elif gemmi_loop.width() > len(row):
             show_general_warning('An author loop with larger size is already in the CIF. Can not proceed.')
         else:
@@ -390,7 +393,12 @@ class AuthorLoops():
             if checked:
                 getattr(self.ui, f'FootNoteLineEdit{page}').setDisabled(True)
                 getattr(self.ui, f'footnote_label{page}').setDisabled(True)
+                # In fact, this should be enabled in coreCIF version 2.4.5:
+                # getattr(self.ui, f'PhoneLineEdit{page}').setEnabled(True)
+                # getattr(self.ui, f'PhoneLabel{page}').setEnabled(True)
             else:
+                # getattr(self.ui, f'PhoneLineEdit{page}').setDisabled(True)
+                # getattr(self.ui, f'PhoneLabel{page}').setDisabled(True)
                 getattr(self.ui, f'FootNoteLineEdit{page}').setEnabled(True)
                 getattr(self.ui, f'footnote_label{page}').setEnabled(True)
         if not checked and author_type == AuthorType.audit.name:

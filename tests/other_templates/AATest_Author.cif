@@ -1,6 +1,5 @@
 data_AATest__Author
 _publ_author_name                 'AATest Author'
-_publ_author_footnote             'testing things'
 _publ_author_address
 ;Testuniversit\"at Foo
 Eine Stra\&se 123
@@ -8,5 +7,6 @@ Eine Stra\&se 123
 ;
 _publ_author_email                blah@blub.de
 _publ_author_phone                +4912345678
-_publ_author_id_orcid             123-456-789
 _publ_author_id_iucr              32456265
+_publ_author_id_orcid             123-456-789
+_publ_author_footnote             'testing things'
