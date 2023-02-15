@@ -11,4 +11,3 @@ Freiburg i. Br.
 Germany
 ;
 _audit_contact_author_phone       +4917665715733
-_publ_contact_author_id_orcid     https://orcid.org/0000-0003-0970-9780
