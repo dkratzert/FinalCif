@@ -1025,10 +1025,67 @@
           </property>
          </widget>
         </item>
+        <item row="0" column="1">
+         <widget class="QComboBox" name="datanameComboBox">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+            <horstretch>1</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="font">
+           <font>
+            <family>Arial</family>
+            <pointsize>11</pointsize>
+           </font>
+          </property>
+          <property name="editable">
+           <bool>true</bool>
+          </property>
+          <property name="maxVisibleItems">
+           <number>20</number>
+          </property>
+          <property name="insertPolicy">
+           <enum>QComboBox::InsertAtCurrent</enum>
+          </property>
+          <property name="sizeAdjustPolicy">
+           <enum>QComboBox::AdjustToContents</enum>
+          </property>
+          <property name="minimumContentsLength">
+           <number>20</number>
+          </property>
+          <property name="frame">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="6">
+         <spacer name="horizontalSpacer_12">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Fixed</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>10</width>
+            <height>0</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="0" column="2">
+         <widget class="QPushButton" name="appendCifPushButton">
+          <property name="text">
+           <string>Append CIF</string>
+          </property>
+         </widget>
+        </item>
         <item row="1" column="0" colspan="13">
          <widget class="MyMainStackedWidget" name="MainStackedWidget">
           <property name="currentIndex">
-           <number>5</number>
+           <number>4</number>
           </property>
           <widget class="QWidget" name="page_MainTable">
            <layout class="QVBoxLayout" name="verticalLayout">
@@ -2184,19 +2241,6 @@ The data source will be ignored until next program restart.</string>
               </property>
              </spacer>
             </item>
-            <item row="8" column="1" colspan="3">
-             <spacer name="horizontalSpacer_14">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
             <item row="7" column="0">
              <spacer name="verticalSpacer_6">
               <property name="orientation">
@@ -2229,7 +2273,7 @@ The data source will be ignored until next program restart.</string>
                <item>
                 <widget class="QLabel" name="label_18">
                  <property name="text">
-                  <string>Exports all templates from Equipment, Properties and Text snippets to a single file.</string>
+                  <string>Exports all templates from Equipment, Properties, Authors and Text snippets to a single file.</string>
                  </property>
                 </widget>
                </item>
@@ -2301,12 +2345,151 @@ The data source will be ignored until next program restart.</string>
               </layout>
              </widget>
             </item>
+            <item row="8" column="1" colspan="3">
+             <spacer name="horizontalSpacer_14">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="6" column="2" colspan="2">
+             <widget class="QGroupBox" name="groupBox_10">
+              <property name="title">
+               <string>General Options</string>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_37">
+               <item>
+                <widget class="QCheckBox" name="trackChangesCifCheckBox">
+                 <property name="text">
+                  <string>Track CIF changes in separate file &quot;[name]-finalcif_changes.cif&quot;.</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <spacer name="verticalSpacer_14">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="2" column="2" colspan="2">
+             <widget class="QGroupBox" name="groupBox_COD">
+              <property name="title">
+               <string>Crystallography Open Database</string>
+              </property>
+              <layout class="QFormLayout" name="formLayout_6">
+               <item row="0" column="0" colspan="2">
+                <widget class="QLabel" name="label_7">
+                 <property name="text">
+                  <string>COD deposit URL:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0" colspan="2">
+                <widget class="QLineEdit" name="CODURLTextedit">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>300</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>https://www.crystallography.net/cod/cgi-bin/cif-deposit.pl</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
             <item row="1" column="0" colspan="4">
              <widget class="QGroupBox" name="groupBox_5">
               <property name="title">
                <string>Report Options</string>
               </property>
               <layout class="QFormLayout" name="formLayout_5">
+               <item row="5" column="0">
+                <widget class="Line" name="line_3">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0">
+                <layout class="QVBoxLayout" name="verticalLayout_35">
+                 <item>
+                  <widget class="QCheckBox" name="ReportTextCheckBox">
+                   <property name="text">
+                    <string>No report text in structure report</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QCheckBox" name="HAtomsCheckBox">
+                   <property name="text">
+                    <string>No bonds and angles to hydrogen atoms</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item row="4" column="0" colspan="2">
+                <widget class="Line" name="line_4">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <layout class="QVBoxLayout" name="verticalLayout_36">
+                 <property name="leftMargin">
+                  <number>12</number>
+                 </property>
+                 <item>
+                  <widget class="QCheckBox" name="ADPTableCheckBox">
+                   <property name="text">
+                    <string>Add ADP table</string>
+                   </property>
+                   <property name="checked">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <spacer name="verticalSpacer_8">
+                   <property name="orientation">
+                    <enum>Qt::Vertical</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>20</width>
+                     <height>40</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                </layout>
+               </item>
                <item row="3" column="0" colspan="2">
                 <layout class="QHBoxLayout" name="horizontalLayout_6">
                  <property name="topMargin">
@@ -2368,20 +2551,6 @@ The data source will be ignored until next program restart.</string>
                   </spacer>
                  </item>
                 </layout>
-               </item>
-               <item row="4" column="0" colspan="2">
-                <widget class="Line" name="line_4">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                </widget>
-               </item>
-               <item row="5" column="0">
-                <widget class="Line" name="line_3">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                </widget>
                </item>
                <item row="6" column="0" colspan="2">
                 <widget class="QGroupBox" name="groupBox_6">
@@ -2489,118 +2658,6 @@ The data source will be ignored until next program restart.</string>
                   </item>
                  </layout>
                 </widget>
-               </item>
-               <item row="0" column="0">
-                <layout class="QVBoxLayout" name="verticalLayout_35">
-                 <item>
-                  <widget class="QCheckBox" name="ReportTextCheckBox">
-                   <property name="text">
-                    <string>No report text in structure report</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QCheckBox" name="HAtomsCheckBox">
-                   <property name="text">
-                    <string>No bonds and angles to hydrogen atoms</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item row="0" column="1">
-                <layout class="QVBoxLayout" name="verticalLayout_36">
-                 <property name="leftMargin">
-                  <number>12</number>
-                 </property>
-                 <item>
-                  <widget class="QCheckBox" name="ADPTableCheckBox">
-                   <property name="text">
-                    <string>Add ADP table</string>
-                   </property>
-                   <property name="checked">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <spacer name="verticalSpacer_8">
-                   <property name="orientation">
-                    <enum>Qt::Vertical</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>20</width>
-                     <height>40</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                </layout>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="2" column="2" colspan="2">
-             <widget class="QGroupBox" name="groupBox_COD">
-              <property name="title">
-               <string>Crystallography Open Database</string>
-              </property>
-              <layout class="QFormLayout" name="formLayout_6">
-               <item row="0" column="0" colspan="2">
-                <widget class="QLabel" name="label_7">
-                 <property name="text">
-                  <string>COD deposit URL:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0" colspan="2">
-                <widget class="QLineEdit" name="CODURLTextedit">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="minimumSize">
-                  <size>
-                   <width>300</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                 <property name="text">
-                  <string>https://www.crystallography.net/cod/cgi-bin/cif-deposit.pl</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="6" column="2" colspan="2">
-             <widget class="QGroupBox" name="groupBox_10">
-              <property name="title">
-               <string>General Options</string>
-              </property>
-              <layout class="QVBoxLayout" name="verticalLayout_37">
-               <item>
-                <widget class="QCheckBox" name="trackChangesCifCheckBox">
-                 <property name="text">
-                  <string>Track CIF changes in separate file &quot;[name]-finalcif_changes.cif&quot;.</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <spacer name="verticalSpacer_14">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>20</width>
-                   <height>40</height>
-                  </size>
-                 </property>
-                </spacer>
                </item>
               </layout>
              </widget>
@@ -2916,14 +2973,14 @@ Contact authors should always also appear as regular authors.</string>
                         <item row="6" column="0" colspan="3">
                          <widget class="QLabel" name="label_16">
                           <property name="text">
-                           <string> </string>
+                           <string/>
                           </property>
                          </widget>
                         </item>
                         <item row="7" column="0" colspan="3">
                          <widget class="QLabel" name="label_19">
                           <property name="text">
-                           <string> </string>
+                           <string/>
                           </property>
                          </widget>
                         </item>
@@ -4262,63 +4319,6 @@ please add a publication author:</string>
           <widget class="QWidget" name="page_textTemplate">
            <layout class="QVBoxLayout" name="verticalLayout_33"/>
           </widget>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QComboBox" name="datanameComboBox">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-            <horstretch>1</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="font">
-           <font>
-            <family>Arial</family>
-            <pointsize>11</pointsize>
-           </font>
-          </property>
-          <property name="editable">
-           <bool>true</bool>
-          </property>
-          <property name="maxVisibleItems">
-           <number>20</number>
-          </property>
-          <property name="insertPolicy">
-           <enum>QComboBox::InsertAtCurrent</enum>
-          </property>
-          <property name="sizeAdjustPolicy">
-           <enum>QComboBox::AdjustToContents</enum>
-          </property>
-          <property name="minimumContentsLength">
-           <number>20</number>
-          </property>
-          <property name="frame">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="6">
-         <spacer name="horizontalSpacer_12">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeType">
-           <enum>QSizePolicy::Fixed</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>10</width>
-            <height>0</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="0" column="2">
-         <widget class="QPushButton" name="appendCifPushButton">
-          <property name="text">
-           <string>Append CIF</string>
-          </property>
          </widget>
         </item>
        </layout>

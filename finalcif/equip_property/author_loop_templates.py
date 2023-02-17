@@ -259,9 +259,9 @@ class AuthorLoops():
             itemtext = f'{string_to_utf8(as_string(author.name))} (contact author)'
         else:
             itemtext = string_to_utf8(as_string(author.name))
-        self.settings.save_settings_dict(property='authors_list', name=itemtext, items=author)
         if not itemtext:
             return
+        self.settings.save_settings_dict(property='authors_list', name=itemtext, items=author)
         self.show_authors_list()
 
     def export_author_template(self, filename: str = None) -> None:
@@ -354,8 +354,8 @@ class AuthorLoops():
             if author:
                 self.ui.LoopTemplatesListWidget.addItem(QListWidgetItem(author))
 
-    def export_raw_data(self) -> List[Dict]:
-        """ TODO: make this work
+    def export_raw_data(self) -> List[Author]:
+        """
         Export all authors in order to export them all"""
         authors = []
         for author in self.authors_list():
@@ -363,8 +363,8 @@ class AuthorLoops():
             authors.append(author_data)
         return authors
 
-    def import_raw_data(self, authors_data: List[Dict]):
-        """ TODO: make this work
+    def import_raw_data(self, authors_data: List[Author]):
+        """
         Import all authors from an external file"""
         for author in authors_data:
             if author:

@@ -336,11 +336,12 @@ class AppWindow(QMainWindow):
         templates = {'text'      : self.export_raw_text_templates(),
                      'equipment' : self.equipment.export_raw_data(),
                      'properties': self.properties.export_raw_data(),
+                     'authors'   : self.authors.export_raw_data(),
                      }
         try:
             pickle.dump(templates, open(filename, "wb"))
         except pickle.PickleError as e:
-            self.status_bar.show_message(f'Saving templetes failed: {str(e)}')
+            self.status_bar.show_message(f'Saving templates failed: {str(e)}')
 
     def import_all_templates(self, filename: Path = None):
         import pickle
@@ -358,6 +359,7 @@ class AppWindow(QMainWindow):
         self.import_raw_text_templates(templates.get('text'))
         self.equipment.import_raw_data(templates.get('equipment'))
         self.properties.import_raw_data(templates.get('properties'))
+        self.authors.import_raw_data(templates.get('authors'))
         self.status_bar.show_message('Template import successful.')
 
     def draw_image(self):
@@ -373,7 +375,8 @@ class AppWindow(QMainWindow):
         if cif_key.startswith('_vrf_'):
             # _vrf_DIFF003_cifname
             self.textedit.ui.cifKeyLineEdit.setText(self.get_vrf_errortype(cif_key))
-            self.textedit.add_textfields(self.settings.load_settings_list('text_templates', self.get_vrf_errortype(cif_key)))
+            self.textedit.add_textfields(
+                self.settings.load_settings_list('text_templates', self.get_vrf_errortype(cif_key)))
             self.textedit.ui.plainTextEdit.setPlainText(self.ui.cif_main_table.getText(row, COL_CIF))
         else:
             self.textedit.ui.cifKeyLineEdit.setText(cif_key)
