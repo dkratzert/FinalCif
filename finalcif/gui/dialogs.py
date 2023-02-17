@@ -23,6 +23,9 @@ def unable_to_open_message(filepath: Path, not_ok: Exception) -> None:
     """
     Shows a message if the current cif file can not be opened.
     """
+    if "PYTEST_CURRENT_TEST" in os.environ:
+        print('DBG> Running inside a pytest -> not showing error message.')
+        return
     info = QMessageBox()
     info.setIcon(QMessageBox.Information)
     print('Output from gemmi:', not_ok)
@@ -47,6 +50,9 @@ def show_res_checksum_warning() -> None:
     """
     A message box to display if the checksums do not agree.
     """
+    if "PYTEST_CURRENT_TEST" in os.environ:
+        print('DBG> Running inside a pytest -> not showing error message.')
+        return
     info = QMessageBox()
     info.setIcon(QMessageBox.Warning)
     info.setText('The "_shelx_res_checksum" is not consistent with the .res file content!\n\n'
@@ -59,6 +65,9 @@ def show_hkl_checksum_warning() -> None:
     """
     A message box to display if the checksums do not agree.
     """
+    if "PYTEST_CURRENT_TEST" in os.environ:
+        print('DBG> Running inside a pytest -> not showing error message.')
+        return
     info = QMessageBox()
     info.setIcon(QMessageBox.Warning)
     info.setText('The "_shelx_hkl_checksum" is not\nconsistent with the .hkl file content!')
