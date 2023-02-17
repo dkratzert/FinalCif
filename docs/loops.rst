@@ -19,8 +19,9 @@ The "revert changes" button reverts all changes done to the current loop, except
 
    Atomic coordinates table (loop)
 
-Special Loops
--------------
+Author Editor
+=============
+
 FinalCif has a special editor for Author related loops.
 The "Author Editor" tab contains an input mask to add author information for publication purpose as a cif loop.
 
