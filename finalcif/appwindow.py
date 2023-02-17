@@ -199,13 +199,14 @@ class AppWindow(QMainWindow):
         self.ui.CheckcifHTMLOnlineButton.setIcon(qta.icon('mdi.comment-check-outline'))
         self.ui.CheckcifPDFOnlineButton.setIcon(qta.icon('mdi.comment-check'))
         self.ui.SaveFullReportButton.setIcon(qta.icon('mdi.file-table-outline'))
-        self.ui.ExploreDirButton.setIcon(qta.icon('fa5.folder-open'))
-        self.ui.SaveCifButton.setIcon(qta.icon('fa5.save'))
-        self.ui.SelectCif_PushButton.setIcon(qta.icon('fa5.file-alt', options=[{'color': 'darkgreen'}]))
-        # self.ui.SelectCif_PushButton.setIcon(qta.icon('fa5s.spinner', color='red',
-        #             animation=qta.Spin(self.ui.SelectCif_PushButton)))
-        self.ui.SourcesPushButton.setIcon(qta.icon('fa5s.tasks'))
-        self.ui.DetailsPushButton.setIcon(qta.icon('fa5s.crow'))
+        self.ui.ExploreDirButton.setIcon(qta.icon('ph.folder-open'))
+        self.ui.SaveCifButton.setIcon(qta.icon('ri.save-3-line'))
+        self.ui.SelectCif_PushButton.setIcon(qta.icon('ri.file-text-line', options=[{'color': 'darkgreen'}]))
+        self.ui.AuthorEditPushButton.setIcon(qta.icon('ph.users-three-bold'))
+        self.ui.SourcesPushButton.setIcon(qta.icon('ph.list-bullets-bold'))
+        self.ui.OptionsPushButton.setIcon(qta.icon('ri.settings-5-line'))
+        self.ui.ShredCifButton.setIcon(qta.icon('ph.files-bold'))
+        self.ui.DetailsPushButton.setIcon(qta.icon('ph.bird-bold'))
         self.ui.NewEquipmentTemplateButton.setIcon(qta.icon('mdi.playlist-plus'))
         self.ui.EditEquipmentTemplateButton.setIcon(qta.icon('mdi.playlist-edit'))
         self.ui.DeleteEquipmentButton.setIcon(qta.icon('mdi.playlist-minus'))
@@ -220,7 +221,7 @@ class AppWindow(QMainWindow):
         self.ui.SavePropertiesButton.setIcon(qta.icon('mdi.content-save-outline'))
         self.ui.CancelPropertiesButton.setIcon(qta.icon('mdi.cancel'))
         self.ui.ExportPropertyButton.setIcon(qta.icon('mdi.export'))
-        self.ui.CCDCpushButton.setIcon(qta.icon('fa5s.upload'))
+        self.ui.CCDCpushButton.setIcon(qta.icon('ph.upload-simple-bold'))
         self.ui.CODpushButton.setIcon(qta.icon('mdi.upload'))
         self.ui.SavePushButton.setIcon(qta.icon('mdi.content-save'))
         self.ui.revertLoopsPushButton.setIcon(qta.icon('mdi.backup-restore'))
@@ -233,7 +234,7 @@ class AppWindow(QMainWindow):
         self.ui.BackFromLoopsPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
         self.ui.BackFromPlatonPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
         self.textedit.ui.cancelTextPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
-        self.textedit.ui.applyTextPushButton.setIcon(qta.icon('fa5s.check'))
+        self.textedit.ui.applyTextPushButton.setIcon(qta.icon('ph.check-bold'))
         self.textedit.ui.exportTextPushButton.setIcon(qta.icon('mdi.export'))
         self.textedit.ui.savePushButton.setIcon(qta.icon('mdi.content-save'))
         self.textedit.ui.deletePushButton.setIcon(qta.icon('mdi.playlist-minus'))
@@ -253,7 +254,12 @@ class AppWindow(QMainWindow):
         self.ui.BackFromDepositPushButton.clicked.connect(self.back_to_main)
         self.ui.ExploreDirButton.clicked.connect(self.explore_current_dir)
         self.ui.LoopsPushButton.clicked.connect(self.ui.MainStackedWidget.go_to_loops_page)
-        self.ui.LoopsPushButton.clicked.connect(lambda: self.ui.TemplatesStackedWidget.setCurrentIndex(1))
+        self.ui.LoopsPushButton.clicked.connect(
+            lambda x: self.ui.LoopsTabWidget.setCurrentIndex(1) if self.ui.LoopsTabWidget.count() > 0 else None)
+        self.ui.LoopsPushButton.clicked.connect(lambda x: self.ui.TemplatesStackedWidget.setCurrentIndex(1))
+        self.ui.AuthorEditPushButton.clicked.connect(self.ui.MainStackedWidget.go_to_loops_page)
+        self.ui.AuthorEditPushButton.clicked.connect(lambda x: self.ui.TemplatesStackedWidget.setCurrentIndex(1))
+        self.ui.AuthorEditPushButton.clicked.connect(lambda x: self.ui.LoopsTabWidget.setCurrentIndex(0))
         ## checkcif
         self.ui.CheckcifStartButton.clicked.connect(self.open_checkcif_page)
         self.ui.CheckcifButton.clicked.connect(self.do_offline_checkcif)
@@ -1040,8 +1046,8 @@ class AppWindow(QMainWindow):
         with suppress(Exception):
             self.report_picture_path = Path(filename)
         if self.report_picture_path.exists() and self.report_picture_path.is_file():
-            self.ui.ReportPicPushButton.setIcon(qta.icon('fa5.image'))
-            self.ui.ReportPicPushButton.setText('')
+            self.ui.ReportPicPushButton.setIcon(qta.icon('ph.image-bold'))
+            #self.ui.ReportPicPushButton.setText('')
 
     def get_checked_templates_list_text(self) -> str:
         for index in range(self.ui.TemplatesListWidget.count()):
@@ -1646,25 +1652,30 @@ class AppWindow(QMainWindow):
         peak = self.cif['_refine_diff_density_max']
         if peak:
             self.ui.peakLineEdit.setText("{} / {}".format(peak, self.cif['_refine_diff_density_min']))
+        if self.cif.res_file_data:
+            self.ui.shelx_TextEdit.setPlainText(cif.as_string(self.cif.res_file_data))
         try:
-            self.view_molecule()
+            QTimer.singleShot(0, self.view_molecule)
         except Exception:
             print('Molecule view crashed!')
 
     def view_molecule(self) -> None:
         if self.ui.growCheckBox.isChecked():
             self.ui.molGroupBox.setTitle('Completed Molecule')
-            atoms = tuple(self.cif.atoms_fract)
-            if atoms:
-                sdm = SDM(atoms, self.cif.symmops, self.cif.cell[:6], centric=self.cif.is_centrosymm)
-                with suppress(Exception):
-                    needsymm = sdm.calc_sdm()
-                    atoms = sdm.packer(sdm, needsymm)
-                    self.ui.render_widget.open_molecule(atoms, labels=self.ui.labelsCheckBox.isChecked())
+            self.grow_molecule()
         else:
             self.ui.molGroupBox.setTitle('Asymmetric Unit')
             with suppress(Exception):
                 atoms = [x for x in self.cif.atoms_orth]
+                self.ui.render_widget.open_molecule(atoms, labels=self.ui.labelsCheckBox.isChecked())
+
+    def grow_molecule(self):
+        atoms = tuple(self.cif.atoms_fract)
+        if atoms:
+            sdm = SDM(atoms, self.cif.symmops, self.cif.cell[:6], centric=self.cif.is_centrosymm)
+            with suppress(Exception):
+                needsymm = sdm.calc_sdm()
+                atoms = sdm.packer(sdm, needsymm)
                 self.ui.render_widget.open_molecule(atoms, labels=self.ui.labelsCheckBox.isChecked())
 
     def redraw_molecule(self) -> None:
