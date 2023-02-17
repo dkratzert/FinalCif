@@ -55,8 +55,8 @@ class CifContainer():
         else:
             try:
                 self.doc = self.read_file(str(self.fileobj.resolve(strict=True)))
-            except Exception:
-                raise GemmiError
+            except Exception as e:
+                raise GemmiError(e)
         # Starting with first block, but can use others with subsequent self._onload():
         self.block: gemmi.cif.Block = self.doc[0]
         self.shx = Shelxfile(verbose=True)
