@@ -37,13 +37,12 @@ class ShredCIF():
             self._statusbar.show_message('No .res and .hkl file data found!')
             return
         if self._cif.res_file_data:
-            res_data = self._cif.res_file_data.splitlines(keepends=True)
+            res_data = self._cif.res_file_data
         if self._cif.hkl_file:
-            hkl_data = self._cif.hkl_file.splitlines(keepends=True)
+            hkl_data = self._cif.hkl_file
         if not self._data_is_valid(res_data):
             self._statusbar.show_message('No .res file data found!')
         else:
-            res_data = res_data[1:-1]  # first and last char is a semicolon
             if not self._write_res_file(resfile_path, res_data):
                 return None
         if not self._data_is_valid(hkl_data):
@@ -55,37 +54,39 @@ class ShredCIF():
         self._show_info(resfile_path, hklfile_path, res_data, hkl_data)
 
     @staticmethod
-    def format_hkl_data(hkl_data: list) -> list:
-        for num, line in enumerate(hkl_data):
+    def format_hkl_data(hkl_data: str) -> str:
+        """
+        Replaces ')' characters at the start of lines in the hkl file (after the 0 0 0 reflection)
+        with ';' characters. The round brackets are placed there by SADABS, because a semicolon
+        would interfere with the CIF syntax.
+        """
+        lines = []
+        for num, line in enumerate(hkl_data.splitlines(keepends=False)):
             if line[:1] == ')':
-                hkl_data[num] = ';' + line[1:]
-        return hkl_data
+                line = ';' + line[1:]
+            lines.append(line)
+        return '\n'.join(lines)
 
-    def _show_info(self, resname: Path, hklname: Path, resdata: list, hkldata: list) -> None:
+    def _show_info(self, resname: Path, hklname: Path, resdata: Union[str, None], hkldata: Union[str, None]) -> None:
         if resdata and not hkldata:
-            self._statusbar.show_message(
-                self._statusbar.current_message + '\nFinished writing data to {}.'.format(resname.name))
+            self._statusbar.show_message(f'{self._statusbar.current_message}\nFinished writing data to {resname.name}.')
         if hkldata and not resdata:
-            self._statusbar.show_message(
-                self._statusbar.current_message + '\nFinished writing data to {}.'.format(hklname.name))
+            self._statusbar.show_message(f'{self._statusbar.current_message}\nFinished writing data to {hklname.name}.')
         if hkldata and resdata:
             self._statusbar.show_message(
-                self._statusbar.current_message + '\nFinished writing data to {} \nand {}.'.format(resname.name,
-                                                                                                   hklname.name))
+                f'{self._statusbar.current_message}\nFinished writing data to {resname.name} and {hklname.name}.')
 
     @staticmethod
-    def _data_is_valid(data: list) -> bool:
-        if not data or len(data) < 3:
+    def _data_is_valid(data: Union[str, None]) -> bool:
+        if not data or len(data.splitlines(keepends=False)) < 3:
             return False
         else:
             return True
 
     @staticmethod
-    def _write_hkl_file(hklfile: Path, hkl: list) -> bool:
+    def _write_hkl_file(hklfile: Path, hkl: Union[str, None]) -> bool:
         try:
-            with open(hklfile, mode='w', newline='\n') as f:
-                for line in hkl:
-                    f.write(line)
+            hklfile.write_text(hkl, encoding='latin1', errors='ignore')
         except Exception as e:
             print(e)
             show_general_warning('Unable to write files: ' + str(e))
@@ -107,16 +108,14 @@ class ShredCIF():
             return True
 
     @staticmethod
-    def _write_res_file(resfile: Path, reslines: list) -> bool:
+    def _write_res_file(resfile: Path, reslines: Union[str, None]) -> bool:
         """
         Writes a res file from the cif content.
         """
         try:
-            with open(resfile, mode='w', newline='\n') as f:
-                for line in reslines:
-                    f.write(line)
-            return True
+            resfile.write_text(reslines, encoding='latin1', errors='ignore')
         except Exception as e:
             print(e)
             show_general_warning('Unable to write files: ' + str(e))
             return False
+        return True
