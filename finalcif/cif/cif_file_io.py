@@ -7,6 +7,7 @@
 #  ----------------------------------------------------------------------------
 import re
 from collections import namedtuple
+from contextlib import suppress
 from functools import cache
 from pathlib import Path
 from typing import Dict, List, Tuple, Union, Generator, Type
@@ -193,11 +194,8 @@ class CifContainer():
             return self.doc.as_string(style=gemmi.cif.Style.Indent35)
 
     def __getitem__(self, item: str) -> str:
-        result = self.block.find_value(item)
-        if result:
-            # can I do this? No:
-            # return retranslate_delimiter(result)
-            return as_string(result)
+        if self.block.find_value(item):
+            return as_string(self.block.find_value(item))
         else:
             return ''
 
@@ -207,14 +205,11 @@ class CifContainer():
         """
         self.set_pair_delimited(key, value)
 
-    def __delitem__(self, key: str):
-        try:
+    def __delitem__(self, key: str) -> None:
+        with suppress(AttributeError):
             self.block.find_pair_item(key).erase()
-        except AttributeError:
-            pass
-            # key is not in block
 
-    def __contains__(self, item):
+    def __contains__(self, item) -> bool:
         return bool(self.__getitem__(item))
 
     def __str__(self) -> str:
@@ -280,17 +275,16 @@ class CifContainer():
     @property
     def res_file_data(self) -> str:
         try:
-            # Should i do this:
             if self['_shelx_res_file']:
-                return self.block.find_value('_shelx_res_file')
+                return self['_shelx_res_file']
             elif self['_iucr_refine_instructions_details']:
-                return self.block.find_value('_iucr_refine_instructions_details')
+                return self['_iucr_refine_instructions_details']
             else:
                 return ''
         except UnicodeDecodeError:
             # This is a fallback in case _shelx_res_file has non-ascii characters.
             print('File has non-ascii characters. Switching to compatible mode.')
-            self.doc = self.read_string(self.fileobj.read_text(encoding='cp1250', errors='ignore'))
+            self.doc = self.read_string(self.fileobj.read_text(encoding='latin1', errors='ignore'))
             self.block = self.doc.sole_block()
             self.chars_ok = False
             return self.block.find_value('_shelx_res_file')
@@ -315,8 +309,8 @@ class CifContainer():
 
     def _hkl_from_shelx(self) -> str:
         try:
-            if self['_shelx_hkl_file'].strip('\r\n'):
-                return self['_shelx_hkl_file'].strip('\r\n')
+            if self['_shelx_hkl_file']:
+                return self['_shelx_hkl_file']
             elif self['_iucr_refine_reflections_details']:
                 return self['_iucr_refine_reflections_details']
             else:
@@ -572,7 +566,7 @@ class CifContainer():
         Calculates the shelx checksum for the res file content of a cif file.
         """
         if self.res_file_data:
-            return self.calc_checksum(self.res_file_data[1:-1])
+            return self.calc_checksum(self.res_file_data)
         return 0
 
     @staticmethod
@@ -910,9 +904,12 @@ class CifContainer():
 
 if __name__ == '__main__':
     # c = CifContainer('../41467_2015.cif')
-    c = CifContainer('test-data/p21c.cif')
+    #c = CifContainer('test-data/p21c.cif')
+    from pprint import pp
+    c = CifContainer('test-data/DK_Zucker2_0m.cif')
     c.load_this_block(len(c.doc) - 1)
     print(c)
+    pp(c.hkl_extra_info)
     # print(c.hkl_file)
     # print(c.hkl_as_cif)
     # print(c.test_hkl_checksum())
