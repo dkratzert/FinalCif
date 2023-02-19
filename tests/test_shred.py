@@ -77,5 +77,7 @@ class TestExport(unittest.TestCase):
 
     def test_export_res(self):
         test_res_file = Path('tests/examples/work/test_res_file.txt')
-        self.assertEqual(test_res_file.read_text().splitlines(keepends=True),
-                         self.outfile_res.read_text().splitlines(keepends=True))
+        self.assertEqual(test_res_file.read_text()#.lstrip()
+        ,
+                         self.outfile_res.read_text()#.lstrip()
+                         )

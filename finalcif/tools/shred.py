@@ -113,7 +113,7 @@ class ShredCIF():
         Writes a res file from the cif content.
         """
         try:
-            resfile.write_text(reslines, encoding='latin1', errors='ignore')
+            resfile.write_text(reslines, encoding='latin1', errors='ignore', newline='\n')
         except Exception as e:
             print(e)
             show_general_warning('Unable to write files: ' + str(e))
