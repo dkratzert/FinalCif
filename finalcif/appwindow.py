@@ -18,7 +18,7 @@ import gemmi.cif
 import qtawesome as qta
 import requests
 from PyQt5 import QtCore, QtGui, QtWebEngineWidgets
-from PyQt5.QtCore import QThread, QTimer, Qt
+from PyQt5.QtCore import QThread, QTimer, Qt, QEvent
 from PyQt5.QtWidgets import QMainWindow, QShortcut, QCheckBox, QListWidgetItem, QApplication, \
     QPlainTextEdit, QFileDialog, QMessageBox
 from gemmi import cif
@@ -541,8 +541,8 @@ class AppWindow(QMainWindow):
         self.deposit.cif = self.cif
         self.ui.MainStackedWidget.setCurrentIndex(7)
 
-    def event(self, event: 'QEvent') -> bool:
-        if event.type() == QtCore.QEvent.KeyPress:
+    def event(self, event: QEvent) -> bool:
+        if event.type() == QEvent.KeyPress:
             key = event.key()
             if key == Qt.Key_Escape and self.ui.searchMainTableLineEdit.hasFocus():
                 self.ui.searchMainTableLineEdit.clear()
