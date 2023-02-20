@@ -1,3 +1,4 @@
+import re
 from typing import List
 
 from PyQt5 import QtCore
@@ -83,7 +84,25 @@ class MyCifTable(QTableWidget, ItemTextMixin):
                 continue
         combobox.setCurrentIndex(0)
 
-    def delete_content(self):
+    def search(self, searchtext: str):
+        # Clear current selection.
+        self.setCurrentItem(None)
+        if not searchtext:
+            # Empty string, don't search and set all unhidden:
+            for row in range(self.rowCount()):
+                self.setRowHidden(row, False)
+            return
+
+        searchpattern = re.compile(f'.*{searchtext}.*', re.IGNORECASE)
+        searched = [x for x in self.vheaderitems if searchpattern.match(x)]
+
+        for row in range(self.rowCount()):
+            if self.vheaderitems[row] in searched:
+                self.setRowHidden(row, False)
+            else:
+                self.setRowHidden(row, True)
+
+    def delete_content(self) -> None:
         """
         Deletes all content in the table.
         """

@@ -325,6 +325,8 @@ class AppWindow(QMainWindow):
         #
         self.ui.ExportAllTemplatesPushButton.clicked.connect(self.export_all_templates)
         self.ui.ImportAllTemplatesPushButton.clicked.connect(self.import_all_templates)
+        #
+        self.ui.searchMainTableLineEdit.textChanged.connect(self.ui.cif_main_table.search)
 
     @property
     def finalcif_changes_filename(self):

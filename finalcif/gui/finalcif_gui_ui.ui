@@ -168,12 +168,36 @@
          </widget>
         </item>
         <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_8">
+          <property name="leftMargin">
+           <number>3</number>
+          </property>
+          <property name="rightMargin">
+           <number>3</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="searchMainTableLabel">
+            <property name="text">
+             <string>Search Key</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="searchMainTableLineEdit">
+            <property name="placeholderText">
+             <string>Find a CIF keyword in the main table</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
          <widget class="QStackedWidget" name="TemplatesStackedWidget">
           <property name="lineWidth">
            <number>1</number>
           </property>
           <property name="currentIndex">
-           <number>1</number>
+           <number>0</number>
           </property>
           <widget class="QWidget" name="page_equipment">
            <layout class="QVBoxLayout" name="verticalLayout_16">
@@ -790,8 +814,42 @@
         <property name="spacing">
          <number>6</number>
         </property>
-        <item row="0" column="3">
-         <spacer name="horizontalSpacer_11">
+        <item row="0" column="1">
+         <widget class="QComboBox" name="datanameComboBox">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+            <horstretch>1</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="font">
+           <font>
+            <family>Arial</family>
+            <pointsize>11</pointsize>
+           </font>
+          </property>
+          <property name="editable">
+           <bool>true</bool>
+          </property>
+          <property name="maxVisibleItems">
+           <number>20</number>
+          </property>
+          <property name="insertPolicy">
+           <enum>QComboBox::InsertAtCurrent</enum>
+          </property>
+          <property name="sizeAdjustPolicy">
+           <enum>QComboBox::AdjustToContents</enum>
+          </property>
+          <property name="minimumContentsLength">
+           <number>20</number>
+          </property>
+          <property name="frame">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="9">
+         <spacer name="horizontalSpacer_10">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
@@ -806,10 +864,30 @@
           </property>
          </spacer>
         </item>
+        <item row="0" column="10">
+         <widget class="QLabel" name="SumFormMainLabel">
+          <property name="text">
+           <string>Sum Formula</string>
+          </property>
+         </widget>
+        </item>
         <item row="0" column="12">
          <widget class="QPushButton" name="HelpPushButton">
           <property name="text">
            <string>Help</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="datanameLabel">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>Data Name</string>
           </property>
          </widget>
         </item>
@@ -868,30 +946,55 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="10">
-         <widget class="QLabel" name="SumFormMainLabel">
-          <property name="text">
-           <string>Sum Formula</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="4">
-         <widget class="QLabel" name="spacegroupLabel">
-          <property name="text">
-           <string>Space-Group Type</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0">
-         <widget class="QLabel" name="datanameLabel">
+        <item row="0" column="8">
+         <widget class="QTextEdit" name="CCDCNumLineEdit">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
+           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+            <horstretch>1</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
-          <property name="text">
-           <string>Data Name</string>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>24</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>24</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <family>Arial</family>
+            <pointsize>11</pointsize>
+           </font>
+          </property>
+          <property name="cursor" stdset="0">
+           <cursorShape>IBeamCursor</cursorShape>
+          </property>
+          <property name="verticalScrollBarPolicy">
+           <enum>Qt::ScrollBarAlwaysOff</enum>
+          </property>
+          <property name="horizontalScrollBarPolicy">
+           <enum>Qt::ScrollBarAlwaysOff</enum>
+          </property>
+          <property name="sizeAdjustPolicy">
+           <enum>QAbstractScrollArea::AdjustToContents</enum>
+          </property>
+          <property name="tabChangesFocus">
+           <bool>true</bool>
+          </property>
+          <property name="lineWrapMode">
+           <enum>QTextEdit::NoWrap</enum>
+          </property>
+          <property name="readOnly">
+           <bool>false</bool>
+          </property>
+          <property name="acceptRichText">
+           <bool>false</bool>
           </property>
          </widget>
         </item>
@@ -950,60 +1053,8 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="8">
-         <widget class="QTextEdit" name="CCDCNumLineEdit">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-            <horstretch>1</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <family>Arial</family>
-            <pointsize>11</pointsize>
-           </font>
-          </property>
-          <property name="cursor" stdset="0">
-           <cursorShape>IBeamCursor</cursorShape>
-          </property>
-          <property name="verticalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="horizontalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="sizeAdjustPolicy">
-           <enum>QAbstractScrollArea::AdjustToContents</enum>
-          </property>
-          <property name="tabChangesFocus">
-           <bool>true</bool>
-          </property>
-          <property name="lineWrapMode">
-           <enum>QTextEdit::NoWrap</enum>
-          </property>
-          <property name="readOnly">
-           <bool>false</bool>
-          </property>
-          <property name="acceptRichText">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="9">
-         <spacer name="horizontalSpacer_10">
+        <item row="0" column="3">
+         <spacer name="horizontalSpacer_11">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
@@ -1017,47 +1068,6 @@
            </size>
           </property>
          </spacer>
-        </item>
-        <item row="0" column="7">
-         <widget class="QLabel" name="CCDCNumLabel">
-          <property name="text">
-           <string>CCDC Number</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QComboBox" name="datanameComboBox">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-            <horstretch>1</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="font">
-           <font>
-            <family>Arial</family>
-            <pointsize>11</pointsize>
-           </font>
-          </property>
-          <property name="editable">
-           <bool>true</bool>
-          </property>
-          <property name="maxVisibleItems">
-           <number>20</number>
-          </property>
-          <property name="insertPolicy">
-           <enum>QComboBox::InsertAtCurrent</enum>
-          </property>
-          <property name="sizeAdjustPolicy">
-           <enum>QComboBox::AdjustToContents</enum>
-          </property>
-          <property name="minimumContentsLength">
-           <number>20</number>
-          </property>
-          <property name="frame">
-           <bool>true</bool>
-          </property>
-         </widget>
         </item>
         <item row="0" column="6">
          <spacer name="horizontalSpacer_12">
@@ -1075,6 +1085,20 @@
           </property>
          </spacer>
         </item>
+        <item row="0" column="4">
+         <widget class="QLabel" name="spacegroupLabel">
+          <property name="text">
+           <string>Space-Group Type</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="7">
+         <widget class="QLabel" name="CCDCNumLabel">
+          <property name="text">
+           <string>CCDC Number</string>
+          </property>
+         </widget>
+        </item>
         <item row="0" column="2">
          <widget class="QPushButton" name="appendCifPushButton">
           <property name="text">
@@ -1082,7 +1106,7 @@
           </property>
          </widget>
         </item>
-        <item row="1" column="0" colspan="13">
+        <item row="2" column="0" colspan="13">
          <widget class="MyMainStackedWidget" name="MainStackedWidget">
           <property name="currentIndex">
            <number>0</number>
