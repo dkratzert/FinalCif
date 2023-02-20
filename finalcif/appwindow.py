@@ -541,6 +541,13 @@ class AppWindow(QMainWindow):
         self.deposit.cif = self.cif
         self.ui.MainStackedWidget.setCurrentIndex(7)
 
+    def event(self, event: 'QEvent') -> bool:
+        if event.type() == QtCore.QEvent.KeyPress:
+            key = event.key()
+            if key == Qt.Key_Escape and self.ui.searchMainTableLineEdit.hasFocus():
+                self.ui.searchMainTableLineEdit.clear()
+        return super().event(event)
+
     def resizeEvent(self, a0: QtGui.QResizeEvent) -> None:
         """It called when the main window resizes."""
         super(AppWindow, self).resizeEvent(a0)
