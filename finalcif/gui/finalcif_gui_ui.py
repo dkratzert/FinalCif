@@ -48,6 +48,7 @@ class Ui_FinalCifWindow(object):
         self.LeftFrame.setObjectName("LeftFrame")
         self.verticalLayout_5 = QtWidgets.QVBoxLayout(self.LeftFrame)
         self.verticalLayout_5.setContentsMargins(3, 0, 3, 0)
+        self.verticalLayout_5.setSpacing(6)
         self.verticalLayout_5.setObjectName("verticalLayout_5")
         self.SelectCifFileGroupBox = QtWidgets.QGroupBox(self.LeftFrame)
         self.SelectCifFileGroupBox.setFlat(False)
