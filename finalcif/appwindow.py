@@ -317,7 +317,8 @@ class AppWindow(QMainWindow):
         self.textedit.ui.deletePushButton.clicked.connect(self.delete_text_template)
         self.textedit.ui.importPushButton.clicked.connect(self.import_text_template)
         self.ui.cif_main_table.textTemplate.connect(self.on_text_template_open)
-        self.ui.cif_main_table.new_key.connect(lambda x: self.add_row(key=x, value='', at_start=True))
+        # value has to be '?', because otherwise it adds a key without a value:
+        self.ui.cif_main_table.new_key.connect(lambda x: self.add_row(key=x, value='?', at_start=True))
         #
         self.ui.appendCifPushButton.clicked.connect(self.append_cif)
         self.ui.drawImagePushButton.clicked.connect(self.draw_image)
@@ -1047,7 +1048,7 @@ class AppWindow(QMainWindow):
             self.report_picture_path = Path(filename)
         if self.report_picture_path.exists() and self.report_picture_path.is_file():
             self.ui.ReportPicPushButton.setIcon(qta.icon('ph.image-bold'))
-            #self.ui.ReportPicPushButton.setText('')
+            # self.ui.ReportPicPushButton.setText('')
 
     def get_checked_templates_list_text(self) -> str:
         for index in range(self.ui.TemplatesListWidget.count()):
@@ -1893,9 +1894,12 @@ class AppWindow(QMainWindow):
                 row_num = position
             else:
                 row_num = self.ui.cif_main_table.rowCount()
-        self.ui.cif_main_table.insertRow(row_num)
         if key not in self.ui.cif_main_table.vheaderitems:
             self.ui.cif_main_table.vheaderitems.insert(row_num, key)
+        else:
+            print(f'The key {key} is already present.')
+            return
+        self.ui.cif_main_table.insertRow(row_num)
         if value is None or value == '?':
             strval = '?'
         else:
