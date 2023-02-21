@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/Users/daniel/Documents/GitHub/FinalCif/finalcif/gui/finalcif_gui_ui.ui'
+# Form implementation generated from reading ui file 'finalcif_gui_ui.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.7
 #
@@ -2230,3 +2230,13 @@ from finalcif.gui.equipmenttable import MyEQTableWidget
 from finalcif.gui.file_editor import QCodeEditor
 from finalcif.gui.mainstackwidget import MyMainStackedWidget
 from finalcif.gui.propertytable import MyPropTableWidget
+
+
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    FinalCifWindow = QtWidgets.QMainWindow()
+    ui = Ui_FinalCifWindow()
+    ui.setupUi(FinalCifWindow)
+    FinalCifWindow.show()
+    sys.exit(app.exec_())

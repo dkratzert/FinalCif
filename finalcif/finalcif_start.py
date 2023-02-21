@@ -5,33 +5,19 @@
 #  and you think this stuff is worth it, you can buy me a beer in return.
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
-import sys
-from typing import Type
-
-if 'compile_ui' in sys.argv:
-    COMPILE = True
-    del sys.argv[sys.argv.index('compile_ui')]
-else:
-    COMPILE = False
 import os
-
-from finalcif.app_path import application_path
-
-if COMPILE:
-    from PyQt5 import uic
-
-    print('Compiling ui ...')
-    uic.compileUiDir(os.path.join(application_path, 'gui'))
-
+import sys
 import time
 import traceback
 from pathlib import Path
-
-from finalcif.gui.dialogs import show_bug_found_warning
-from finalcif import VERSION
+from typing import Type
 
 from PyQt5.QtGui import QIcon
+
+from finalcif import VERSION
+from finalcif.app_path import application_path
 from finalcif.appwindow import AppWindow, DEBUG, app
+from finalcif.gui.dialogs import show_bug_found_warning
 
 r"""
 TODO:

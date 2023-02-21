@@ -114,7 +114,7 @@ class AppWindow(QMainWindow):
         self.ui.MainStackedWidget.got_to_main_page()
         self.set_initial_button_states()
         if len(sys.argv) > 1 and not file:
-            self.load_cif_file(Path(sys.argv[1]) if sys.argv[1] != 'compile_ui' else Path())
+            self.load_cif_file(Path(sys.argv[1]))
         elif file:
             self.load_cif_file(file)
         self.load_recent_cifs_list()
