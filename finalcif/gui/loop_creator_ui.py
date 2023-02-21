@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/Users/daniel/Documents/GitHub/FinalCif/finalcif/gui/loop_creator_ui.ui'
+# Form implementation generated from reading ui file 'loop_creator_ui.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.7
 #
@@ -84,3 +84,13 @@ class Ui_LoopCreator(object):
         self.label_3.setText(_translate("LoopCreator", "<html><head/><body><p><span style=\" font-size:18pt;\">New Loop Header</span></p></body></html>"))
         self.label_4.setText(_translate("LoopCreator", "Add CIF keys in order to create a new loop"))
         self.saveLoopPushButton.setText(_translate("LoopCreator", "Save new Loop"))
+
+
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    LoopCreator = QtWidgets.QWidget()
+    ui = Ui_LoopCreator()
+    ui.setupUi(LoopCreator)
+    LoopCreator.show()
+    sys.exit(app.exec_())

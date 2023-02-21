@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/Users/daniel/Documents/GitHub/FinalCif/finalcif/gui/text_templates_ui.ui'
+# Form implementation generated from reading ui file 'text_templates_ui.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.7
 #
@@ -141,3 +141,13 @@ class Ui_TextTemplatesWidget(object):
         self.importPushButton.setText(_translate("TextTemplatesWidget", "Import Template"))
         self.exportTextPushButton.setText(_translate("TextTemplatesWidget", "Export to CIF"))
         self.deletePushButton.setText(_translate("TextTemplatesWidget", "Delete Template"))
+
+
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    TextTemplatesWidget = QtWidgets.QWidget()
+    ui = Ui_TextTemplatesWidget()
+    ui.setupUi(TextTemplatesWidget)
+    TextTemplatesWidget.show()
+    sys.exit(app.exec_())

@@ -16,12 +16,12 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
+from scripts.compile_ui_files import compile_ui
+
 application_path = Path(os.path.abspath(__file__)).parent.parent
 
 sys.path.append(str(Path(__file__).parent.parent))
 sys.path.append(str(application_path))
-
-from PyQt5 import uic
 
 from finalcif.tools.misc import sha512_checksum_of_file
 from finalcif import VERSION
@@ -38,16 +38,6 @@ def disable_debug(filepath: str):
             file[num] = " ".join(l)
     iss_file = "\n".join(file)
     pth.write_text(iss_file, encoding="UTF-8")
-
-
-def recompile_ui():
-    try:
-        print(os.path.abspath('./finalcif/gui'))
-        uic.compileUiDir('./finalcif/gui')
-        print('recompiled ui')
-    except:
-        print("Unable to compile UI!")
-        raise
 
 
 def make_shasum(filename):
@@ -90,7 +80,7 @@ def make_installer():
 if __name__ == '__main__':
     iss_file = 'scripts/finalcif-install_win64.iss'
 
-    recompile_ui()
+    compile_ui()
 
     disable_debug('finalcif/appwindow.py')
 
