@@ -521,15 +521,19 @@ class AppWindow(QMainWindow):
         """
         input_txt = self.ui.SelectCif_LineEdit.text().strip()
         if is_database_number(input_txt):
-            file = '{}.cif'.format(input_txt)
-            r = requests.get(self.deposit.main_url + '{}.cif'.format(input_txt), timeout=6)
+            self.status_bar.show_message('Request sent to COD...')
+            r = requests.get(f'{self.deposit.main_url}{input_txt}.cif', timeout=8)
+            self.status_bar.show_message('Got a result.')
             if r.status_code == 200:
-                file = cif_file_save_dialog(file)
-                Path(file).write_bytes(r.content)
+                filename = cif_file_save_dialog(f'{input_txt}.cif')
+                Path(filename).write_bytes(r.content)
                 r.close()
-                self.load_cif_file(Path(file))
+                self.load_cif_file(Path(filename))
             else:
-                self.ui.SelectCif_LineEdit.setText('')
+                #self.ui.SelectCif_LineEdit.setText('')
+                self.status_bar.show_message(f'No COD entry for {input_txt} found.')
+        else:
+            self.status_bar.show_message(f'Not a valid COD number. It must be seven digits.')
 
     @property
     def current_block(self) -> int:
