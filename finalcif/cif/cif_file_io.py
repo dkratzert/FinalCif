@@ -731,9 +731,10 @@ class CifContainer():
         label2 = self.block.find_loop('_geom_bond_atom_site_label_2')
         dist = self.block.find_loop('_geom_bond_distance')
         symm = self.block.find_loop('_geom_bond_site_symmetry_2')
+        publ_flag = any([x[0].lower() == 'y' for x in list(self.block.find_loop('_geom_bond_publ_flag')) if x])
         bond = namedtuple('Bond', ('label1', 'label2', 'dist', 'symm'))
-        for label1, label2, dist, symm in zip(label1, label2, dist, symm):
-            if without_h and (self.ishydrogen(label1) or self.ishydrogen(label2)):
+        for label1, label2, dist, symm, publ in zip(label1, label2, dist, symm, self.block.find_loop('_geom_bond_publ_flag')):
+            if without_h and (self.ishydrogen(label1) or self.ishydrogen(label2)) or (publ_flag and publ not in {'y', 'yes'}):
                 continue
             else:
                 yield bond(label1=label1, label2=label2, dist=dist, symm=self.checksymm(symm))
@@ -813,7 +814,7 @@ class CifContainer():
         hydr = namedtuple('HydrogenBond', ('label_d', 'label_h', 'label_a', 'dist_dh', 'dist_ha', 'dist_da',
                                            'angle_dha', 'symm'))
         for label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm in \
-            zip(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm):
+                zip(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm):
             yield hydr(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, self.checksymm(symm))
 
     def key_value_pairs(self) -> List[Tuple[str, str]]:
@@ -904,8 +905,9 @@ class CifContainer():
 
 if __name__ == '__main__':
     # c = CifContainer('../41467_2015.cif')
-    #c = CifContainer('test-data/p21c.cif')
+    # c = CifContainer('test-data/p21c.cif')
     from pprint import pp
+
     c = CifContainer('test-data/DK_Zucker2_0m.cif')
     c.load_this_block(len(c.doc) - 1)
     print(c)
