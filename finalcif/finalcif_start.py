@@ -8,7 +8,6 @@
 import sys
 from typing import Type
 
-
 if 'compile_ui' in sys.argv:
     COMPILE = True
     del sys.argv[sys.argv.index('compile_ui')]
@@ -28,7 +27,7 @@ import time
 import traceback
 from pathlib import Path
 
-from finalcif.gui.dialogs import bug_found_warning
+from finalcif.gui.dialogs import show_bug_found_warning
 from finalcif import VERSION
 
 from PyQt5.QtGui import QIcon
@@ -52,30 +51,31 @@ TODO:
 
 
 if __name__ == '__main__':
-    def my_exception_hook(exctype: Type[BaseException], value: BaseException, error_traceback) -> None:
+    def my_exception_hook(exctype: Type[BaseException], value: BaseException, error_traceback: traceback,
+                          exit=True) -> None:
         """
         Hooks into Exceptions to create debug reports.
         """
-        errortext = 'FinalCif V{} crash report\n\n'.format(VERSION)
-        errortext += 'Please send also the corresponding CIF file, if possible.'
-        errortext += 'Python ' + sys.version + '\n'
-        errortext += sys.platform + '\n'
-        errortext += time.asctime(time.localtime(time.time())) + '\n'
-        errortext += "Finalcif crashed during the following operation:" + '\n'
-        errortext += '-' * 80 + '\n'
-        errortext += ''.join(traceback.format_tb(error_traceback)) + '\n'
-        errortext += str(exctype.__name__) + ': '
-        errortext += str(value) + '\n'
-        errortext += '-' * 80 + '\n'
+        errortext = (f'FinalCif V{VERSION} crash report\n\n'
+                     f'Please send also the corresponding CIF file, if possible. \n'
+                     f'Python {sys.version}\n'
+                     f'Platform: {sys.platform}\n'
+                     f'Date: {time.asctime(time.localtime(time.time()))}\n'
+                     f'Finalcif crashed during the following operation:\n\n'
+                     f'{"-" * 120}\n'
+                     f'{"".join(traceback.format_tb(error_traceback))}\n'
+                     f'{str(exctype.__name__)}: '
+                     f'{str(value)} \n'
+                     f'{"-" * 120}\n')
         logfile = Path.home().joinpath(Path(r'finalcif-crash.txt'))
         try:
             logfile.write_text(errortext)
         except PermissionError:
             pass
         sys.__excepthook__(exctype, value, error_traceback)
-        # Hier Fenster für meldung öffnen
-        bug_found_warning(logfile)
-        sys.exit(1)
+        show_bug_found_warning(logfile)
+        if exit:
+            sys.exit(1)
 
 
     if not DEBUG:

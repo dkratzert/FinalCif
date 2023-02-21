@@ -17,9 +17,8 @@ values are below.
 
 Each input field in FinalCif accepts Unicode characters like "ω" or "ä". They are automatically
 translated into the CIF ascii format.
-Please let me know if a character does not work. Also the length of text lines are nor concern,
-finalCif handles the maximum line lenght
-according to the CIF format definition automatically.
+Please let me know if a character does not work. Also the length of text lines are no concern,
+finalCif handles the maximum line length according to the CIF format definition automatically.
 
 Various possibilities of Checkcif are available, online with html or pdf result and offline.
 The button "save cif file" saves the current file under 'name'-finalcif.cif. FinalCif will never make Changes to the

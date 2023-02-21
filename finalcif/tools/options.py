@@ -1,6 +1,6 @@
 from contextlib import suppress
 
-from finalcif.gui.finalcif_gui import Ui_FinalCifWindow
+from finalcif.gui.finalcif_gui_ui import Ui_FinalCifWindow
 from finalcif.tools.settings import FinalCifSettings
 
 
@@ -21,6 +21,7 @@ class Options:
         self.ui.CheckCIFServerURLTextedit.textChanged.connect(self._state_changed)
         self.ui.CODURLTextedit.textChanged.connect(self._state_changed)
         self.ui.ADPTableCheckBox.stateChanged.connect(self._state_changed)
+        self.ui.trackChangesCifCheckBox.stateChanged.connect(self._state_changed)
 
     def show_options(self):
         """
@@ -33,6 +34,7 @@ class Options:
         self.ui.CheckCIFServerURLTextedit.setText(self.checkcif_url)
         self.ui.CODURLTextedit.setText(self.cod_url)
         self.ui.ADPTableCheckBox.setChecked(self.report_adp)
+        self.ui.trackChangesCifCheckBox.setChecked(self.track_changes)
         #
         self.ui.MainStackedWidget.go_to_options_page()
 
@@ -49,6 +51,7 @@ class Options:
             'hydrogen_bonds'         : True,
             'current_report_template': lw.row(lw.currentItem()),
             'cod_url'                : self.ui.CODURLTextedit.text(),
+            'track_changes'          : self.ui.trackChangesCifCheckBox.isChecked(),
         }
         # print('saving:', self._options)
         self.settings.save_options(self._options)
@@ -78,6 +81,13 @@ class Options:
     def without_h(self) -> bool:
         try:
             return self.settings.load_options()['without_h']
+        except KeyError:
+            return False
+
+    @property
+    def track_changes(self) -> bool:
+        try:
+            return self.settings.load_options()['track_changes']
         except KeyError:
             return False
 

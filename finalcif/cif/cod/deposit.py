@@ -21,7 +21,7 @@ from finalcif.cif.cod.website_parser import MyCODStructuresParser
 from finalcif.cif.hkl import HKL
 from finalcif.cif.text import delimit_string
 from finalcif.gui.dialogs import cif_file_open_dialog, show_general_warning, show_ok_cancel_warning
-from finalcif.gui.finalcif_gui import Ui_FinalCifWindow
+from finalcif.gui.finalcif_gui_ui import Ui_FinalCifWindow
 from finalcif.tools.options import Options
 from finalcif.tools.settings import FinalCifSettings
 
@@ -52,8 +52,6 @@ class CODdeposit():
         self.ui.refreshDepositListPushButton.clicked.connect(self._refresh_cod_list)
         self.ui.GetDOIPushButton.clicked.connect(self.get_doi_data)
         self.ui.Upload_hkl_pushButton.clicked.connect(self._set_external_hkl_file)
-        #
-        self.ui.BackToCODPushButton.clicked.connect(self._back_to_cod_page)
         #
         self.ui.depositCIFpushButton.clicked.connect(self._init_deposit)
         # The full deposit url: self.deposit_url = 'https://www.crystallography.net/cod/cgi-bin/cif-deposit.pl'
@@ -89,7 +87,6 @@ class CODdeposit():
     def author_editor_clicked(self):
         self.ui.MainStackedWidget.go_to_loops_page()
         self.ui.TemplatesStackedWidget.setCurrentIndex(1)
-        self.ui.BackToCODPushButton.setVisible(True)
 
     def get_cod_hostname(self) -> str:
         parsed_url = urlparse(self.ui.CODURLTextedit.text())
@@ -119,7 +116,6 @@ class CODdeposit():
         self.ui.depositHKLcheckBox.setDisabled(not len(self._cif['_shelx_hkl_file']))
 
     def _back_to_cod_page(self):
-        self.ui.BackToCODPushButton.clicked.connect(lambda: self.ui.BackToCODPushButton.setVisible(False))
         self.ui.MainStackedWidget.got_to_cod_page()
         self.check_for_publ_author()
         self.ui.TemplatesStackedWidget.setCurrentIndex(0)

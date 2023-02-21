@@ -58,8 +58,8 @@ class BrukerData(WorkDataMixin):
         for n in range(1, len(self.sadabs.datasets) + 1):
             try:
                 abstype = 'numerical' if self.sadabs.dataset(-n).numerical else 'multi-scan'
-                t_min = min(self.sadabs.dataset(-n).transmission)
-                t_max = max(self.sadabs.dataset(-n).transmission)
+                t_min = self.sadabs.dataset(-n).transmission.tmin
+                t_max = self.sadabs.dataset(-n).transmission.tmax
                 if all([abstype, t_min, t_max]):
                     break
             except (KeyError, AttributeError, TypeError):
@@ -83,7 +83,7 @@ class BrukerData(WorkDataMixin):
             frame_name = self.frame_header.filename.name
         except FileNotFoundError:
             frame_name = ''
-        if self.cif.solution_program_details:
+        if not self.cif['_computing_structure_solution'] and self.cif.solution_program_details:
             solution_program = (self.cif.solution_program_details, self.cif.fileobj.name)
         if self.cif['_computing_structure_solution']:
             solution_program = (gcif.as_string(self.cif['_computing_structure_solution']), self.cif.fileobj.name)

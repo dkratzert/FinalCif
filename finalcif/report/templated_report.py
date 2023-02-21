@@ -1,4 +1,5 @@
 import itertools
+import re
 from collections import namedtuple
 from math import sin, radians
 from pathlib import Path
@@ -14,7 +15,7 @@ from finalcif.cif.cif_file_io import CifContainer
 from finalcif.cif.text import retranslate_delimiter
 from finalcif.report.references import SAINTReference, SHELXLReference, SadabsTwinabsReference, SHELXTReference, \
     SHELXSReference, SHELXDReference, SORTAVReference, FinalCifReference, CCDCReference, \
-    CrysalisProReference
+    CrysalisProReference, Nosphera2Reference, Olex2Reference
 from finalcif.report.report_text import math_to_word, gstr, format_radiation, get_inf_article, MachineType
 from finalcif.report.symm import SymmetryElement
 from finalcif.tools.misc import isnumeric, this_or_quest, timessym, angstrom, protected_space, less_or_equal, \
@@ -378,19 +379,22 @@ class TemplatedReport():
         integration_prog = '[unknown integration program]'
         if 'SAINT' in integration:
             saintversion = ''
+            integration_prog = 'SAINT'
             if len(integration.split()) > 1:
                 saintversion = integration.split()[1]
-            integration_prog = 'SAINT'
-            integration_prog += " " + saintversion
+                integration_prog += " " + saintversion
             self.literature['integration'] = SAINTReference('SAINT', saintversion)
         if 'CrysAlisPro'.lower() in integration.lower():
+            regex = r"(CrysAlisPro)\s{0,2}(\d+\.\d+\.\d+\.\d+.*)\((.*),\s?(\d+)\)"
             year = 'unknown version'
-            if len(integration.split()) > 3:
-                year = integration.split()[4][:-1]
-            version = 'unknown year'
-            if len(integration.split()) >= 1:
-                version = integration.split()[1][:-1]
-            integration_prog = 'Crysalispro'
+            version = ''
+            match = re.match(regex, integration, re.MULTILINE | re.IGNORECASE | re.ASCII)
+            if match:
+                year = match.group(4).strip()
+                version = match.group(2).strip()
+                integration_prog = match.group(1).strip()
+            else:
+                integration_prog = 'CrysAlisPro'
             self.literature['integration'] = CrysalisProReference(version=version, year=year)
             self.literature['absorption'] = CrysalisProReference(version=version, year=year)
         return integration_prog
@@ -435,7 +439,12 @@ class TemplatedReport():
 
     def refinement_prog(self, cif: CifContainer) -> str:
         refined = gstr(cif['_computing_structure_refinement']) or '??'
-        self.literature['refinement'] = SHELXLReference()
+        if 'SHELXL' in refined.upper() or 'XL' in refined.upper():
+            self.literature['refinement'] = SHELXLReference()
+        if 'OLEX' in refined.upper():
+            self.literature['refinement'] = Olex2Reference()
+        if 'NOSPHERA2' in refined.upper() or 'NOSPHERA2' in cif['_refine_special_details'].upper():
+            self.literature['refinement'] = Nosphera2Reference()
         return refined.split()[0]
 
     def get_atomic_coordinates(self, cif: CifContainer):

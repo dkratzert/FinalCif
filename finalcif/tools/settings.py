@@ -5,9 +5,12 @@
 #  and you think this stuff is worth it, you can buy me a beer in return.
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
-from typing import List, Dict, Union, Tuple, Iterable
+from typing import List, Dict, Union, Tuple, Iterable, TYPE_CHECKING
 
 from PyQt5.QtCore import QPoint, QSettings, QSize
+
+if TYPE_CHECKING:
+    pass
 
 DEBUG = False
 
@@ -145,10 +148,12 @@ class FinalCifSettings():
     def load_options(self) -> dict:
         options = self.load_settings_dict('Options', "options")
         if not options:
+            # These are the default values
             options = {'report_text'  : True,
                        'picture_width': 7.5,
                        'without_h'    : False,
                        'report_adp'   : True,
+                       'track_changes': False,
                        'checkcif_url' : 'https://checkcif.iucr.org/cgi-bin/checkcif_hkl.pl',
                        }
         # self.settings.endGroup()
@@ -194,10 +199,10 @@ class FinalCifSettings():
         self.settings.endGroup()
         return v
 
-    def save_settings_dict(self, property: str, name: str, items: Dict) -> None:
+    def save_settings_dict(self, property: str, name: str, items) -> None:
         self._save_settings_value(items, name, property)
 
-    def _save_settings_value(self, items, name, property):
+    def _save_settings_value(self, items: Union[str, Dict[str, bool], List[str]], name: str, property: str) -> None:
         self.settings.beginGroup(property)
         self.settings.setValue(name, items)
         if DEBUG:

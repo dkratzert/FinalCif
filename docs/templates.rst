@@ -12,7 +12,8 @@ FinalCif uses three different kinds of templates to simplify recurring tasks:
     These fields can be saved with the "Save as Template" button. A saved template is indicated with
     light-blue background color in the respective edit field of the main table.
 
-.. image:: pics/text_templates.png
+.. figure:: pics/text_templates.png
+   :width: 700
 
 The template editor for large text snippets.
 
@@ -22,6 +23,9 @@ The template editor for large text snippets.
     As any other templates in FinalCif, you can export/import them to CIF files.
     "Delete Template" deletes it from the configuration and will not show up again.
     So large text templates are usable either as a comfortable text editor and/or as template manager.
+    For validation response forms, so CIF keywords starting with _vrf_, the template editor stores the
+    template with the key _vrf_PLAT[number] rather than the full name. This also makes it usable as a
+    template collection for validation responses with checkCIF.
 
 
 * Equipment and Author templates
@@ -31,26 +35,26 @@ The template editor for large text snippets.
     Property templates define possible dropdown-menus for common CIF keywords like _cell_measurement_temperature.
     The template values are accessible as a dropdown behind the respective key in the main table of FinalCif.
 
-.. image:: pics/templates.png
+.. figure:: pics/templates.png
 
 The templates selection and editor.
 
 Templates can be edited anytime and they can be saved as a CIF file. You can use them for any cif keyword.
 Just be creative...
 
-.. image:: pics/property_templates.png
+.. figure:: pics/property_templates.png
 
 Template editor for crystallization methods.
 
 For example the crystallographer information:
 
-.. image:: pics/equipment_templates.png
+.. figure:: pics/equipment_templates.png
 
 Crystallographer details template.
 
 Or just one keyword for only the absolute configuration information:
 
-.. image:: pics/absolute_configuration.png
+.. figure:: pics/absolute_configuration.png
 
 Absolute configuration template.
 

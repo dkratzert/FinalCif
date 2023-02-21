@@ -23,6 +23,9 @@ def unable_to_open_message(filepath: Path, not_ok: Exception) -> None:
     """
     Shows a message if the current cif file can not be opened.
     """
+    if "PYTEST_CURRENT_TEST" in os.environ:
+        print('DBG> Running inside a pytest -> not showing error message.')
+        return
     info = QMessageBox()
     info.setIcon(QMessageBox.Information)
     print('Output from gemmi:', not_ok)
@@ -30,15 +33,15 @@ def unable_to_open_message(filepath: Path, not_ok: Exception) -> None:
         line = str(not_ok)[4:].split(':')[1]
     except IndexError:
         line = None
+    info.setText('This cif file is not readable!                                           ')
     if line:
         try:
             int(line)
-            info.setText('This cif file is not readable!\n'
-                         'Please check line {} in\n{}'.format(line, filepath.name))
+            info.setInformativeText(f'\nPlease check line {line} in\n{filepath.name}')
         except ValueError:
-            info.setText('This cif file is not readable! "{}"\n{}'.format(filepath.name, not_ok))
+            info.setInformativeText(f'"{filepath.name}"\n{not_ok}')
     else:
-        info.setText('This cif file is not readable! "{}"\n{}'.format(filepath.name, not_ok))
+        info.setInformativeText(f'"{filepath.name}"\n{not_ok}')
     info.show()
     info.exec()
 
@@ -47,6 +50,9 @@ def show_res_checksum_warning() -> None:
     """
     A message box to display if the checksums do not agree.
     """
+    if "PYTEST_CURRENT_TEST" in os.environ:
+        print('DBG> Running inside a pytest -> not showing error message.')
+        return
     info = QMessageBox()
     info.setIcon(QMessageBox.Warning)
     info.setText('The "_shelx_res_checksum" is not consistent with the .res file content!\n\n'
@@ -59,6 +65,9 @@ def show_hkl_checksum_warning() -> None:
     """
     A message box to display if the checksums do not agree.
     """
+    if "PYTEST_CURRENT_TEST" in os.environ:
+        print('DBG> Running inside a pytest -> not showing error message.')
+        return
     info = QMessageBox()
     info.setIcon(QMessageBox.Warning)
     info.setText('The "_shelx_hkl_checksum" is not\nconsistent with the .hkl file content!')
@@ -154,15 +163,29 @@ def bad_z_message(z) -> None:
     zinfo.exec()
 
 
-def bug_found_warning(logfile) -> None:
+def show_bug_found_warning(logfile) -> None:
     window = QMainWindow()
-    text = 'Congratulations, you found a bug in ' \
-           'FinalCif!<br>Please send the file <br>"{}" <br>to Daniel Kratzert:  ' \
-           '<a href="mailto:dkratzert@gmx.de?subject=FinalCif version {} crash report">' \
-           'dkratzert@gmx.de</a><br>' \
-           'If possible, the corresponding CIF file is also desired.'.format(logfile.resolve(), VERSION)
-    QMessageBox.warning(window, 'Warning', text)
+    title = f'Congratulations, you found a bug in FinalCif!'
+    text = (f'<br>Please send the file <br>'
+            f'<a href=file:{os.sep * 2}{logfile.resolve()}>{logfile.resolve()}</a> '
+            f'<br>to Daniel Kratzert:  '
+            f'<a href="mailto:dkratzert@gmx.de?subject=FinalCif version {VERSION} crash report">'
+            f'dkratzert@gmx.de</a><br>'
+            f'<br>If possible, the corresponding CIF file is also desired.')
+    box = QMessageBox(parent=window)
+    box.setWindowTitle('Warning')
+    box.setText(title)
+    box.setInformativeText(text)
+    box.exec()
     window.show()
+
+
+def show_yes_now_question(title: str, question: str, parent=None) -> bool:
+    response = QMessageBox.question(parent, title, question, QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+    if response == QMessageBox.Yes:
+        return True
+    else:
+        return False
 
 
 def show_splash(text: str) -> QSplashScreen:

@@ -184,11 +184,12 @@ class Multilog(object):
         return g
 
 
-def strip_finalcif_of_name(pth: str) -> str:
+def strip_finalcif_of_name(pth: Union[str, Path], till_name_ends=False) -> str:
     """
     Strips '-finalcif' from the stem path
     """
-    return re.sub('-finalcif$', '', pth)
+    pth = str(pth)
+    return re.sub(f'-finalcif{".*" if till_name_ends else ""}$', '', pth)
 
 
 def flatten(lis: list) -> list:
@@ -264,11 +265,12 @@ essential_keys = (
     '_diffrn_measurement_ambient_temperature_device_make',
     '_atom_sites_solution_hydrogens',
     '_atom_sites_solution_primary',
-    '_audit_contact_author_address',
-    '_audit_contact_author_email',
-    '_audit_contact_author_name',
-    '_audit_contact_author_phone',
+    #'_audit_contact_author_name',
+    #'_audit_contact_author_address',
+    #'_audit_contact_author_email',
+    #'_audit_contact_author_phone',
     '_audit_creation_method',
+    '_publ_section_references',
     '_cell_angle_alpha',
     '_cell_angle_beta',
     '_cell_angle_gamma',
@@ -341,8 +343,6 @@ essential_keys = (
     '_exptl_crystal_size_min',
     '_exptl_special_details',
     '_geom_special_details',
-    '_publ_contact_author_id_orcid',
-    '_publ_section_references',
     '_refine_ls_R_factor_all',
     '_refine_ls_R_factor_gt',
     '_refine_ls_abs_structure_Flack',
@@ -606,6 +606,11 @@ REFINE_LS_STRUCTURE_FACTOR_COEF = make_numbered(['F', 'Fsqd', 'Inet'])
 
 REFINE_LS_MATRIX_TYPE = make_numbered(['full', 'fullcycle', 'atomblock', 'userblock', 'diagonal', 'sparse'])
 
+COMPUTING_STRUCTURE_REFINEMENT = make_numbered(['SHELXL-2019/2', 'SHELXL-2018/3', 'SHELXL-2018/1', 'SHELXL-97',
+                                                'olex2.refine', 'NoSpherA2', 'Jana2006', 'MoPro', 'BayMEM'])
+
+COMPUTING_DATA_REDUCTION = make_numbered(['SAINT', 'CrysalisPro', 'XDS', 'OpenHKL', 'HKL-2000', 'HKL-3000'])
+
 combobox_fields = {'_exptl_crystal_colour'                : COLOUR_CHOICES,
                    '_exptl_crystal_colour_primary'        : COLOUR_CHOICES,
                    '_chemical_absolute_configuration'     : ABSOLUTE_CONFIGURATION_CHOICES,
@@ -629,6 +634,8 @@ combobox_fields = {'_exptl_crystal_colour'                : COLOUR_CHOICES,
                    '_exptl_crystal_colour_modifier'       : EXPTL_CRYSTAL_COLOUR_MODIFIER,
                    '_refine_ls_structure_factor_coef'     : REFINE_LS_STRUCTURE_FACTOR_COEF,
                    '_refine_ls_matrix_type'               : REFINE_LS_MATRIX_TYPE,
+                   '_computing_structure_refinement'      : COMPUTING_STRUCTURE_REFINEMENT,
+                   '_computing_data_reduction'            : COMPUTING_DATA_REDUCTION,
                    }
 
 include_equipment_imports = (
@@ -650,7 +657,6 @@ cif_to_header_label = {
     '_atom_site_aniso_label'                : 'Displacement Parameters',
     '_atom_site_label'                      : 'Atomic Coordinates',
     '_atom_type_symbol'                     : 'Scattering Factors',
-    '_audit_author_name'                    : 'CIF Author',
     '_citation_doi'                         : 'Citations',
     '_citation_id'                          : 'Citations',
     '_citation_year'                        : 'Citations',
@@ -662,8 +668,10 @@ cif_to_header_label = {
     '_space_group_symop_operation_xyz'      : 'Symmetry',
     '_symmetry_equiv_pos_site_id'           : 'Symmetry',
     '_symmetry_equiv_pos_as_xyz'            : 'Symmetry',
-    '_publ_contact_author_name'             : 'Publication Contact Authors',
+    '_audit_author_name'                    : 'CIF Author',
+    '_audit_contact_author_name'            : 'CIF Contact Authors',
     '_publ_author_name'                     : 'Publication Authors',
+    '_publ_contact_author_name'             : 'Publication Contact Authors',
     '_geom_hbond_atom_site_label_D'         : 'Hydrogen Bonds',
     '_geom_hbond_atom_site_label_H'         : 'Hydrogen Bonds',
     '_geom_hbond_atom_site_label_A'         : 'Hydrogen Bonds',
@@ -745,27 +753,9 @@ predef_equipment_templ = [{'name' : 'D8 VENTURE',
                                ['_audit_contact_author_address', "?"],
                                ['_audit_contact_author_email', '?'],
                                ['_audit_contact_author_phone', '?'],
-                               ['_publ_contact_author_id_orcid', '?'],
                            ]
                            },
                           ]
-
-"""
-{'name' : 'Contact author name and address',
-'items': [
-   ['_audit_contact_author_name', 'Dr. Daniel Kratzert'],
-   ['_audit_contact_author_address',
-    "Albert-Ludwigs-Universität Freiburg\n"
-    "Institut für Anorganische und Analytische Chemie\n"
-    "Albertstraße 21\n"
-    "Freiburg i. Br.\n"
-    "79104\n"
-    "Germany"],
-   ['_audit_contact_author_email', 'dkratzert@gmx.de'],
-   ['_audit_contact_author_phone', '+497612036156'],
-   ['_publ_contact_author_id_orcid', 'https://orcid.org/0000-0003-0970-9780'],
-]
-},"""
 
 ### Property contents:
 

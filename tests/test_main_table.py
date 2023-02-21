@@ -4,7 +4,6 @@
 #   this notice you can do whatever you want with this stuff. If we meet some day,
 #   and you think this stuff is worth it, you can buy me a beer in return.
 #   ----------------------------------------------------------------------------
-import os
 import unittest
 from pathlib import Path
 
@@ -20,14 +19,17 @@ class TestMainTableFieldBehavior(unittest.TestCase):
 
     def setUp(self) -> None:
         self.testcif = Path('tests/examples/1979688.cif').absolute()
+        Path('tests/examples/1979688-finalcif_changes.cif').unlink(missing_ok=True)
         self.myapp = AppWindow(self.testcif, unit_test=True)
         self.myapp.running_inside_unit_test = True
         self.myapp.hide()  # For full screen view
         self.myapp.settings.empty_deleted_list()
+        self.myapp.ui.trackChangesCifCheckBox.setChecked(False)
 
     def tearDown(self) -> None:
         self.myapp.cif.finalcif_file.unlink(missing_ok=True)
         self.myapp.close()
+        Path('tests/examples/1979688-finalcif_changes.cif').unlink(missing_ok=True)
 
     def key_row(self, key: str) -> int:
         return self.myapp.ui.cif_main_table.row_from_key(key)
@@ -57,15 +59,13 @@ class TestMainTableFieldBehavior(unittest.TestCase):
         self.assertEqual(130, self.myapp.ui.cif_main_table.rowCount())
 
     def test_delete_and_reappear(self):
+        self.assertEqual(131, self.myapp.ui.cif_main_table.rowCount())
         self.myapp.ui.cif_main_table.delete_row(
             self.myapp.ui.cif_main_table.row_from_key('_atom_sites_solution_primary'))
-        # cline count stays the same:
-        self.assertEqual(131, self.myapp.ui.cif_main_table.rowCount())
-        self.assertEqual('?', self.cell_text('_atom_sites_solution_primary', COL_CIF))
-        # method comes from solution program now:
-        self.assertEqual('direct', self.cell_text('_atom_sites_solution_primary', COL_DATA))
-        # This is an essential key, it reappears after reload:
-        self.assertEqual(0, self.key_row('_atom_sites_solution_primary'))
+        # One less than before:
+        self.assertEqual(130, self.myapp.ui.cif_main_table.rowCount())
+        # Line is deleted:
+        self.assertFalse('_atom_sites_solution_primary' in self.myapp.ui.cif_main_table.vheaderitems)
 
     def test_get_text_by_key(self):
         self.assertEqual('geom', self.cell_text('_atom_sites_solution_hydrogens', COL_CIF))

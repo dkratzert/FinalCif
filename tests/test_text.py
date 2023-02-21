@@ -7,6 +7,7 @@
 import unittest
 
 import gemmi
+from packaging.version import Version
 
 from finalcif.cif.text import quote, utf8_to_str, retranslate_delimiter, delimit_string, charcters, string_to_utf8
 
@@ -32,19 +33,31 @@ class TestText(unittest.TestCase):
 
     def test_set_pair_delimited_empty(self):
         self.block.set_pair('_foobar', delimit_string(''))
-        self.assertEqual(['_foobar', ''], self.block.find_pair('_foobar'))
+        if Version(gemmi.__version__) >= Version('0.5.7'):
+            self.assertEqual(('_foobar', ''), self.block.find_pair('_foobar'))
+        else:
+            self.assertEqual(['_foobar', ''], self.block.find_pair('_foobar'))
 
     def test_set_pair_delimited_question(self):
         self.block.set_pair('_foobar', delimit_string('?'))
-        self.assertEqual(['_foobar', '?'], self.block.find_pair('_foobar'))
+        if Version(gemmi.__version__) >= Version('0.5.7'):
+            self.assertEqual(('_foobar', '?'), self.block.find_pair('_foobar'))
+        else:
+            self.assertEqual(['_foobar', '?'], self.block.find_pair('_foobar'))
 
     def test_set_pair_delimited_number(self):
         self.block.set_pair('_foobar', delimit_string('1.123'))
-        self.assertEqual(['_foobar', '1.123'], self.block.find_pair('_foobar'))
+        if Version(gemmi.__version__) >= Version('0.5.7'):
+            self.assertEqual(('_foobar', '1.123'), self.block.find_pair('_foobar'))
+        else:
+            self.assertEqual(['_foobar', '1.123'], self.block.find_pair('_foobar'))
 
     def test_set_pair_delimited_with_newline(self):
         self.block.set_pair('_foobar', delimit_string('abc\ndef foo'))
-        self.assertEqual(['_foobar', 'abc\ndef foo'], self.block.find_pair('_foobar'))
+        if Version(gemmi.__version__) >= Version('0.5.7'):
+            self.assertEqual(('_foobar', 'abc\ndef foo'), self.block.find_pair('_foobar'))
+        else:
+            self.assertEqual(['_foobar', 'abc\ndef foo'], self.block.find_pair('_foobar'))
 
     def test_delimit_ut8_to_cif_str(self):
         s = utf8_to_str('100 °C')

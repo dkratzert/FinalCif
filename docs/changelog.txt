@@ -1,6 +1,20 @@
 FinalCif recent changes
 -----------------------
 
+* v116 Added a full-featured author editor to create all possibilities of author loops for publication or audit.
+* v115 Made the text template layout side-by-side. Added possibility to add a new CIF key by right-click on the main table.
+* v114 Improved reports a bit. Redesigned UI for text templates. Changed saving of templates for _vrf_xxxxxx keywords
+       so that templates can be used for validation response forms.
+* v113 Improved handling of empty changes files.
+* v112 Use correct Rint from TWINABS output file for _diffrn_reflns_av_R_equivalents.
+* v111 Fixed possible crashes with the "track changes" option. Fixed crash with unusual format of refinement program.
+* v110 Added possibility to create new loops from the list of all official CIF keywords.
+       Reference for NospherA2 added.
+* v109 New option to track changes in a separate CIF in order to be faster at a previous state when starting from scratch
+       (see new checkbox in options menu).
+       Added line number in CIF text viewer after file save.
+       Deleted equipment templates now reappear again when they are re-imported.
+
 * v108 Fixed item selection bug in report templates list. Fixed extra empty line after index ranges.
        Adds a formatted moiety formula to templated reports. Fixed path to report templates.
 * v107 New ADP table in report document. It is configurable in the options.

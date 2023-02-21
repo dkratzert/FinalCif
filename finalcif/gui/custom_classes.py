@@ -1,10 +1,11 @@
+import re
 from typing import List
 
 from PyQt5 import QtCore
 from PyQt5.QtCore import QEvent, QObject, Qt
 from PyQt5.QtGui import QColor, QKeySequence, QBrush
 from PyQt5.QtWidgets import QAbstractScrollArea, QTableWidget, \
-    QTableWidgetItem, QWidget, QApplication, QShortcut
+    QTableWidgetItem, QWidget, QApplication, QShortcut, QHeaderView
 
 from finalcif.cif.text import retranslate_delimiter
 from finalcif.gui.combobox import MyComboBox
@@ -29,6 +30,7 @@ DEBUG = False
 class MyCifTable(QTableWidget, ItemTextMixin):
     row_deleted = QtCore.pyqtSignal(str)
     textTemplate = QtCore.pyqtSignal(int)
+    new_key = QtCore.pyqtSignal(str)
 
     def __init__(self, parent: QWidget = None, *args, **kwargs):
         self.parent = parent
@@ -42,7 +44,7 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         self.setItemPrototype(item)
         del_shortcut = QShortcut(QKeySequence('Ctrl+Del'), self)
         del_shortcut.activated.connect(self.delete_row)
-        self.vheaderitems: list = []
+        self.vheaderitems: List[str] = []
         vheader = self.verticalHeader()
         vheader.setSectionsClickable(True)
         vheader.sectionClicked.connect(self.vheader_section_click)
@@ -82,7 +84,25 @@ class MyCifTable(QTableWidget, ItemTextMixin):
                 continue
         combobox.setCurrentIndex(0)
 
-    def delete_content(self):
+    def search(self, searchtext: str):
+        # Clear current selection.
+        self.setCurrentItem(None)
+        if not searchtext:
+            # Empty string, don't search and set all unhidden:
+            for row in range(self.rowCount()):
+                self.setRowHidden(row, False)
+            return
+
+        searchpattern = re.compile(f'.*{searchtext}.*', re.IGNORECASE)
+        searched = [x for x in self.vheaderitems if searchpattern.match(x)]
+
+        for row in range(self.rowCount()):
+            if self.vheaderitems[row] in searched:
+                self.setRowHidden(row, False)
+            else:
+                self.setRowHidden(row, True)
+
+    def delete_content(self) -> None:
         """
         Deletes all content in the table.
         """
@@ -161,6 +181,7 @@ class MyCifTable(QTableWidget, ItemTextMixin):
             row = self.vheaderitems.index(key)
         elif row is None and key not in self.vheaderitems:
             row = 0
+            raise IndexError
         if isinstance(self.cellWidget(row, column), MyComboBox):
             self.cellWidget(row, column).setText(txt)
             return
@@ -173,6 +194,7 @@ class MyCifTable(QTableWidget, ItemTextMixin):
             textedit = MyQPlainTextEdit(self)
             textedit.cif_key = key
             textedit.templateRequested.connect(self.goto_template_page)
+            textedit.new_key.connect(lambda x: self.new_key.emit(x))
             self.setCellWidget(row, column, textedit)
             textedit.setText(txt, color=color)
             if (column == COL_CIF) or (column == COL_DATA):
@@ -239,6 +261,14 @@ class MyCifTable(QTableWidget, ItemTextMixin):
     def vheader_text(self, row):
         vhead = self.model().headerData(row, Qt.Vertical)
         return str(vhead)
+
+    def distribute_cif_main_table_columns_evenly(self) -> None:
+        hheader = self.horizontalHeader()
+        hheader.setSectionResizeMode(COL_CIF, QHeaderView.Stretch)
+        hheader.setSectionResizeMode(COL_DATA, QHeaderView.Stretch)
+        hheader.setSectionResizeMode(COL_EDIT, QHeaderView.Stretch)
+        hheader.setAlternatingRowColors(True)
+        self.verticalHeader().setAlternatingRowColors(True)
 
 
 class MyTableWidgetItem(QTableWidgetItem):

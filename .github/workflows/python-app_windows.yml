@@ -20,13 +20,11 @@ jobs:
 
     env:
       DISPLAY: ':99.0'
-      #NO_NETWORK: 'True'
-      FINALCIF_NO_3D: 'True'
 
     strategy:
       fail-fast: false
       matrix:
-        python-version: [ "3.9", "3.10" ]
+        python-version: [ "3.10", "3.11" ]
         os: [ windows-latest, macos-latest, ubuntu-latest ]
         include:
           #- os: ubuntu-latest
@@ -37,25 +35,12 @@ jobs:
             path: ~\AppData\Local\pip\Cache
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
           architecture: x64
-
-      - name: Get pip cache dir
-        id: pip-cache
-        run: |
-          echo "::set-output name=dir::$(pip cache dir)"
-
-      - name: pip cache
-        uses: actions/cache@v2
-        with:
-          path: ${{ steps.pip-cache.outputs.dir }}
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
 
       - name: Install dependencies
         run: |
@@ -74,6 +59,7 @@ jobs:
         run: |
           if [ "$RUNNER_OS" == "Linux" ]; then
             # Ubuntu needs this to be able to start pyqt5
+            sudo apt-get update 
             sudo apt-get -qq install libxcb-xinerama0 pyqt5-dev-tools
             xvfb-run --auto-servernum pytest
           else

@@ -1,3 +1,4 @@
+
 TITL cu_BruecknerJK_153F40_0m_a.res in P2(1)2(1)2
     cu_BruecknerJK_153F40_0m.res
     created by SHELXL-2018/3 at 17:06:19 on 23-Jan-2020

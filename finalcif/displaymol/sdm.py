@@ -77,7 +77,7 @@ class SDMItem(object):
     def __lt__(self, a2) -> bool:
         return True if self.dist < a2.dist else False
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other: 'SDMItem') -> bool:
         if other.a1 == self.a2 and other.a2 == self.a1:
             return True
         return False
@@ -119,7 +119,7 @@ class SDM():
         self.csq = self.cell[2] ** 2
         self.sdm_list = []  # list of sdmitems
         self.maxmol = 1
-        self.sdmtime = 0.0
+        self.sdmtime = 0
 
     def orthogonal_matrix(self):
         """
@@ -134,7 +134,7 @@ class SDM():
 
     def calc_sdm(self) -> list:
         t1 = time.perf_counter()
-        h = ('H', 'D')
+        h = {'H', 'D'}
         nlen = len(self.symmcards)
         at2_plushalf = [Array([j + 0.5 for j in x[2:5]]) for x in self.atoms]
         for i, at1 in enumerate(self.atoms):
@@ -143,7 +143,7 @@ class SDM():
                 mind = 1000000
                 hma = False
                 atp = at2_plushalf[j]
-                sdmItem = SDMItem()
+                sdm_item = SDMItem()
                 for n in range(nlen):
                     D = prime_array[n] - atp
                     dp = [v - 0.5 for v in D - D.floor]
@@ -153,34 +153,32 @@ class SDM():
                     if dk > 4.0:
                         continue
                     if (dk > 0.01) and (mind >= dk):
-                        mind = min(int(dk), mind)
-                        sdmItem.dist = mind
-                        sdmItem.atom1 = at1
-                        sdmItem.atom2 = at2
-                        sdmItem.a1 = i
-                        sdmItem.a2 = j
-                        sdmItem.symmetry_number = n
+                        mind = min(dk, mind)
+                        sdm_item.dist = mind
+                        sdm_item.atom1 = at1
+                        sdm_item.atom2 = at2
+                        sdm_item.a1 = i
+                        sdm_item.a2 = j
+                        sdm_item.symmetry_number = n
                         hma = True
-                if not sdmItem.atom1:
+                if not sdm_item.atom1:
                     # Do not grow grown atoms:
                     continue
-                if (not sdmItem.atom1[1] in h and not sdmItem.atom2[1] in h) and \
-                    sdmItem.atom1[5] * sdmItem.atom2[5] == 0 or sdmItem.atom1[5] == sdmItem.atom2[5]:
+                if (sdm_item.atom1[1] not in h and sdm_item.atom2[1] not in h) and \
+                    sdm_item.atom1[5] * sdm_item.atom2[5] == 0 or sdm_item.atom1[5] == sdm_item.atom2[5]:
                     dddd = (get_radius_from_element(at1[1]) + get_radius_from_element(at2[1])) * 1.2
-                    sdmItem.dddd = dddd
+                    sdm_item.dddd = dddd
                 else:
                     dddd = 0.0
-                if sdmItem.dist < dddd:
+                if sdm_item.dist < dddd:
                     if hma:
-                        sdmItem.covalent = True
-                        # self.bondlist.append((i, j, sdmItem.atom1[0], sdmItem.atom2[0], sdmItem.dist))
+                        sdm_item.covalent = True
                 else:
-                    sdmItem.covalent = False
+                    sdm_item.covalent = False
                 if hma:
-                    self.sdm_list.append(sdmItem)
+                    self.sdm_list.append(sdm_item)
         t2 = time.perf_counter()
         self.sdmtime = t2 - t1
-        # if DEBUG:
         print('Time for sdm:', round(self.sdmtime, 3), 's')
         self.sdm_list.sort()
         self.calc_molindex(self.atoms)
@@ -193,32 +191,29 @@ class SDM():
         need_symm = []
         h = ('H', 'D')
         # Collect needsymm list:
-        for sdmItem in self.sdm_list:
-            if sdmItem.covalent:
-                if sdmItem.atom1[-1] < 1 or sdmItem.atom1[-1] > 6:
+        for sdm_item in self.sdm_list:
+            if sdm_item.covalent:
+                if sdm_item.atom1[-1] < 1 or sdm_item.atom1[-1] > 6:
                     continue
                 for n, symop in enumerate(self.symmcards):
-                    if sdmItem.atom1[5] * sdmItem.atom2[5] != 0 and \
-                        sdmItem.atom1[5] != sdmItem.atom2[5]:
+                    if sdm_item.atom1[5] * sdm_item.atom2[5] != 0 and \
+                        sdm_item.atom1[5] != sdm_item.atom2[5]:
                         continue
                     # Both the same atomic number and number 0 (hydrogen)
-                    if sdmItem.atom1[1] == sdmItem.atom2[1] and sdmItem.atom1[1] in h:
+                    if sdm_item.atom1[1] == sdm_item.atom2[1] and sdm_item.atom1[1] in h:
                         continue
-                    prime = Array(sdmItem.atom1[2:5]) * symop.matrix + symop.trans
-                    D = prime - Array(sdmItem.atom2[2:5]) + Array([0.5, 0.5, 0.5])
+                    prime = Array(sdm_item.atom1[2:5]) * symop.matrix + symop.trans
+                    D = prime - Array(sdm_item.atom2[2:5]) + Array([0.5, 0.5, 0.5])
                     floorD = D.floor
                     dp = D - floorD - Array([0.5, 0.5, 0.5])
                     if n == 0 and Array([0, 0, 0]) == floorD:
                         continue
                     dk = self.vector_length(*dp)
-                    dddd = sdmItem.dist + 0.2
-                    # Idea for fast bon list:
-                    # self.bondlist.append((sdmItem.a1, sdmItem.a2, sdmItem.atom1[0] + '<',
-                    #                      sdmItem.atom2[0] + '<', sdmItem.dist))
-                    if sdmItem.atom1[1] in h and sdmItem.atom2[1] in h:
+                    dddd = sdm_item.dist + 0.2
+                    if sdm_item.atom1[1] in h and sdm_item.atom2[1] in h:
                         dddd = 1.8
                     if (dk > 0.001) and (dddd >= dk):
-                        bs = [n + 1, (5 - floorD[0]), (5 - floorD[1]), (5 - floorD[2]), sdmItem.atom1[-1]]
+                        bs = [n + 1, (5 - floorD[0]), (5 - floorD[1]), (5 - floorD[2]), sdm_item.atom1[-1]]
                         if bs not in need_symm:
                             need_symm.append(bs)
         return need_symm
@@ -235,10 +230,10 @@ class SDM():
             nextmol = 0
             while someleft:
                 someleft = 0
-                for sdmItem in self.sdm_list:
-                    if sdmItem.covalent and sdmItem.atom1[-1] * sdmItem.atom2[-1] < 0:
-                        sdmItem.atom1[-1] = self.maxmol  # last item is the molindex
-                        sdmItem.atom2[-1] = self.maxmol
+                for sdm_item in self.sdm_list:
+                    if sdm_item.covalent and sdm_item.atom1[-1] * sdm_item.atom2[-1] < 0:
+                        sdm_item.atom1[-1] = self.maxmol  # last item is the molindex
+                        sdm_item.atom2[-1] = self.maxmol
                         someleft += 1
             for ni, at in enumerate(all_atoms):
                 if at[-1] < 0:
