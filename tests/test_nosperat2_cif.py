@@ -48,5 +48,5 @@ class TestNosphera2(unittest.TestCase):
 
     def test_iucr_refine_instructions(self):
         # <-- We have res file data, because there is iucr_refine_instructions:
-        self.assertEqual(';TITL mo_1558 in P2(1)/nCELL 0.71073 10.3975 7.4202 34.4844 90 94.29 90',
+        self.assertEqual('TITL mo_1558 in P2(1)/nCELL 0.71073 10.3975 7.4202 34.4844 90 94.29 90',
                          ''.join(self.cif.res_file_data.splitlines(keepends=False)[:3]))

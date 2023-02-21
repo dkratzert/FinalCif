@@ -19,16 +19,20 @@ The "revert changes" button reverts all changes done to the current loop, except
 
    Atomic coordinates table (loop)
 
-Special Loops
--------------
+Author Editor
+=============
+
 FinalCif has a special editor for Author related loops.
-The "Manuscript Related" tab contains an input mask to add author information for publication purpose as a cif loop.
+The "Author Editor" tab contains an input mask to add author information for publication purpose as a cif loop.
 
 This is not to be confused with the "Crystallographer Details" in the "Equipment and Author Templates" section.
+There you add just a single audit_author_[...]
 
-New authors can be saved as templates for future use.
+New authors can be saved as templates for future use. The templates can be exported/imported to/from a CIF file.
 
-The button "Add Author to CIF Loop" creates a loop with the author information unless it is not already existing.
+The button "Add Author to CIF Loop" creates a loop or appends to an existing with the author information
+of the currently selected author. The author type, i.e. publ- or audit-author, is controlled by the selection
+of the corresponding tab. A template can be used for any author type.
 Further authors get appended to the list of authors with the same button. The order of authors can be changed any time
 by right-click on a table row and "Move Row up/down".
 
