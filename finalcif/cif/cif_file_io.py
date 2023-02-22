@@ -732,16 +732,15 @@ class CifContainer():
         dist = self.block.find_loop('_geom_bond_distance')
         symm = self.block.find_loop('_geom_bond_site_symmetry_2')
         publ_loop = self.block.find_loop('_geom_bond_publ_flag')
-        publ_flag = self._has_publ_flag_set(publ_loop)
         bond = namedtuple('Bond', ('label1', 'label2', 'dist', 'symm'))
         for label1, label2, dist, symm, publ in zip(label1, label2, dist, symm, publ_loop):
-            yes_not_set = (publ_flag and publ not in {'y', 'yes'})
-            if without_h and (self.ishydrogen(label1) or self.ishydrogen(label2)) or yes_not_set:
+            if without_h and (self.ishydrogen(label1) or self.ishydrogen(label2)) or \
+                    self.yes_not_set(publ, self._has_publ_flag_set(publ_loop)):
                 continue
             else:
                 yield bond(label1=label1, label2=label2, dist=dist, symm=self.checksymm(symm))
 
-    def _has_publ_flag_set(self, publ_loop):
+    def _has_publ_flag_set(self, publ_loop: gemmi.cif.Column) -> bool:
         return any([x[0].lower() == 'y' for x in list(publ_loop) if x])
 
     def angles(self, without_H: bool = False) -> Generator:
@@ -752,13 +751,12 @@ class CifContainer():
         symm1 = self.block.find_loop('_geom_angle_site_symmetry_1')
         symm2 = self.block.find_loop('_geom_angle_site_symmetry_3')
         publ_loop = self.block.find_loop('_geom_angle_publ_flag')
-        publ_flag = self._has_publ_flag_set(publ_loop)
         angle = namedtuple('Angle', ('label1', 'label2', 'label3', 'angle_val', 'symm1', 'symm2'))
         for label1, label2, label3, angle_val, symm1, symm2, publ in \
-            zip(label1, label2, label3, angle_val, symm1, symm2, publ_loop):
-            yes_not_set = (publ_flag and publ not in {'y', 'yes'})
+                zip(label1, label2, label3, angle_val, symm1, symm2, publ_loop):
             if without_H and (
-                self.ishydrogen(label1) or self.ishydrogen(label2) or self.ishydrogen(label3)) or yes_not_set:
+                    self.ishydrogen(label1) or self.ishydrogen(label2) or self.ishydrogen(label3)) or \
+                    self.yes_not_set(publ, self._has_publ_flag_set(publ_loop)):
                 continue
             else:
                 yield angle(label1=label1, label2=label2, label3=label3, angle_val=angle_val,
@@ -799,7 +797,6 @@ class CifContainer():
         symm3 = self.block.find_loop('_geom_torsion_site_symmetry_3')
         symm4 = self.block.find_loop('_geom_torsion_site_symmetry_4')
         publ_loop = self.block.find_loop('_geom_torsion_publ_flag')
-        publ_flag = self._has_publ_flag_set(publ_loop)
         tors = namedtuple('Torsion',
                           ('label1', 'label2', 'label3', 'label4', 'torsang', 'symm1', 'symm2', 'symm3', 'symm4'))
         for label1, label2, label3, label4, torsang, symm1, symm2, symm3, symm4, publ in zip(label1, label2, label3,
@@ -807,9 +804,9 @@ class CifContainer():
                                                                                              torsang, symm1, symm2,
                                                                                              symm3,
                                                                                              symm4, publ_loop):
-            yes_not_set = (publ_flag and publ not in {'y', 'yes'})
             if without_h and (self.ishydrogen(label1) or self.ishydrogen(label2)
-                              or self.ishydrogen(label3) or self.ishydrogen(label3)) or yes_not_set:
+                              or self.ishydrogen(label3) or self.ishydrogen(label3)) or \
+                    self.yes_not_set(publ, self._has_publ_flag_set(publ_loop)):
                 continue
             yield tors(label1=label1, label2=label2, label3=label3, label4=label4, torsang=torsang,
                        symm1=self.checksymm(symm1),
@@ -826,11 +823,17 @@ class CifContainer():
         dist_da = self.block.find_loop('_geom_hbond_distance_DA')
         angle_dha = self.block.find_loop('_geom_hbond_angle_DHA')
         symm = self.block.find_loop('_geom_hbond_site_symmetry_A')
+        publ_loop = self.block.find_loop('_geom_hbond_publ_flag')
         hydr = namedtuple('HydrogenBond', ('label_d', 'label_h', 'label_a', 'dist_dh', 'dist_ha', 'dist_da',
                                            'angle_dha', 'symm'))
-        for label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm in \
-            zip(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm):
+        for label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm, publ in \
+                zip(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm, publ_loop):
+            if self.yes_not_set(publ, self._has_publ_flag_set(publ_loop)):
+                continue
             yield hydr(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, self.checksymm(symm))
+
+    def yes_not_set(self, publ: str, publ_flag):
+        return publ_flag and publ not in {'y', 'yes'} or publ in {'n', 'no'}
 
     def key_value_pairs(self) -> List[Tuple[str, str]]:
         """
