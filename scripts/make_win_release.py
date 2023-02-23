@@ -16,13 +16,12 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-from scripts.compile_ui_files import compile_ui
-
 application_path = Path(os.path.abspath(__file__)).parent.parent
 
 sys.path.append(str(Path(__file__).parent.parent))
 sys.path.append(str(application_path))
 
+from scripts.compile_ui_files import compile_ui
 from finalcif.tools.misc import sha512_checksum_of_file
 from finalcif import VERSION
 
