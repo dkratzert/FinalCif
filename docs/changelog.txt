@@ -1,5 +1,7 @@
 FinalCif recent changes
 -----------------------
+* v118 Added search for CIF keys in the main table. Improved the key adding dialog. Improves COD download by typing
+       the respective number in the file field a bit. Bonds and angles tables now consider publ flags for the report.
 * v117 Introduced an "Author Editor" button. Authors also go into global template backup now.
 * v116 Added a full-featured author editor to create all possibilities of author loops for publication or audit.
 * v115 Made the text template layout side-by-side. Added possibility to add a new CIF key by right-click on the main table.
