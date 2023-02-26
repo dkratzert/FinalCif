@@ -1593,7 +1593,7 @@
                 <widget class="QPlainTextEdit" name="shelx_TextEdit">
                  <property name="font">
                   <font>
-                   <family>Consolas</family>
+                   <family>Courier New</family>
                    <pointsize>11</pointsize>
                   </font>
                  </property>
