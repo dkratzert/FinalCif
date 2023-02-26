@@ -647,7 +647,7 @@ class Ui_FinalCifWindow(object):
         self.verticalLayout_41.setObjectName("verticalLayout_41")
         self.shelx_TextEdit = QtWidgets.QPlainTextEdit(self.groupBox_9)
         font = QtGui.QFont()
-        font.setFamily("Consolas")
+        font.setFamily("Courier New")
         font.setPointSize(11)
         self.shelx_TextEdit.setFont(font)
         self.shelx_TextEdit.setFrameShape(QtWidgets.QFrame.NoFrame)
