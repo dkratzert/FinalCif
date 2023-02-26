@@ -265,11 +265,12 @@ essential_keys = (
     '_diffrn_measurement_ambient_temperature_device_make',
     '_atom_sites_solution_hydrogens',
     '_atom_sites_solution_primary',
-    '_audit_contact_author_address',
-    '_audit_contact_author_email',
-    '_audit_contact_author_name',
-    '_audit_contact_author_phone',
+    #'_audit_contact_author_name',
+    #'_audit_contact_author_address',
+    #'_audit_contact_author_email',
+    #'_audit_contact_author_phone',
     '_audit_creation_method',
+    '_publ_section_references',
     '_cell_angle_alpha',
     '_cell_angle_beta',
     '_cell_angle_gamma',
@@ -342,8 +343,6 @@ essential_keys = (
     '_exptl_crystal_size_min',
     '_exptl_special_details',
     '_geom_special_details',
-    '_publ_contact_author_id_orcid',
-    '_publ_section_references',
     '_refine_ls_R_factor_all',
     '_refine_ls_R_factor_gt',
     '_refine_ls_abs_structure_Flack',
@@ -658,7 +657,6 @@ cif_to_header_label = {
     '_atom_site_aniso_label'                : 'Displacement Parameters',
     '_atom_site_label'                      : 'Atomic Coordinates',
     '_atom_type_symbol'                     : 'Scattering Factors',
-    '_audit_author_name'                    : 'CIF Author',
     '_citation_doi'                         : 'Citations',
     '_citation_id'                          : 'Citations',
     '_citation_year'                        : 'Citations',
@@ -670,8 +668,10 @@ cif_to_header_label = {
     '_space_group_symop_operation_xyz'      : 'Symmetry',
     '_symmetry_equiv_pos_site_id'           : 'Symmetry',
     '_symmetry_equiv_pos_as_xyz'            : 'Symmetry',
-    '_publ_contact_author_name'             : 'Publication Contact Authors',
+    '_audit_author_name'                    : 'CIF Author',
+    '_audit_contact_author_name'            : 'CIF Contact Authors',
     '_publ_author_name'                     : 'Publication Authors',
+    '_publ_contact_author_name'             : 'Publication Contact Authors',
     '_geom_hbond_atom_site_label_D'         : 'Hydrogen Bonds',
     '_geom_hbond_atom_site_label_H'         : 'Hydrogen Bonds',
     '_geom_hbond_atom_site_label_A'         : 'Hydrogen Bonds',
@@ -753,27 +753,9 @@ predef_equipment_templ = [{'name' : 'D8 VENTURE',
                                ['_audit_contact_author_address', "?"],
                                ['_audit_contact_author_email', '?'],
                                ['_audit_contact_author_phone', '?'],
-                               ['_publ_contact_author_id_orcid', '?'],
                            ]
                            },
                           ]
-
-"""
-{'name' : 'Contact author name and address',
-'items': [
-   ['_audit_contact_author_name', 'Dr. Daniel Kratzert'],
-   ['_audit_contact_author_address',
-    "Albert-Ludwigs-Universität Freiburg\n"
-    "Institut für Anorganische und Analytische Chemie\n"
-    "Albertstraße 21\n"
-    "Freiburg i. Br.\n"
-    "79104\n"
-    "Germany"],
-   ['_audit_contact_author_email', 'dkratzert@gmx.de'],
-   ['_audit_contact_author_phone', '+497612036156'],
-   ['_publ_contact_author_id_orcid', 'https://orcid.org/0000-0003-0970-9780'],
-]
-},"""
 
 ### Property contents:
 

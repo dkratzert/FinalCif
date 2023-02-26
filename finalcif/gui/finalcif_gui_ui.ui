@@ -7,8 +7,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1604</width>
-    <height>852</height>
+    <width>1645</width>
+    <height>899</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -77,6 +77,9 @@
         <number>0</number>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_5">
+        <property name="spacing">
+         <number>6</number>
+        </property>
         <property name="leftMargin">
          <number>3</number>
         </property>
@@ -168,12 +171,36 @@
          </widget>
         </item>
         <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_8">
+          <property name="leftMargin">
+           <number>3</number>
+          </property>
+          <property name="rightMargin">
+           <number>3</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="searchMainTableLabel">
+            <property name="text">
+             <string>Search Key</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="searchMainTableLineEdit">
+            <property name="placeholderText">
+             <string>Find a CIF keyword in the main table</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
          <widget class="QStackedWidget" name="TemplatesStackedWidget">
           <property name="lineWidth">
            <number>1</number>
           </property>
           <property name="currentIndex">
-           <number>1</number>
+           <number>0</number>
           </property>
           <widget class="QWidget" name="page_equipment">
            <layout class="QVBoxLayout" name="verticalLayout_16">
@@ -790,8 +817,42 @@
         <property name="spacing">
          <number>6</number>
         </property>
-        <item row="0" column="3">
-         <spacer name="horizontalSpacer_11">
+        <item row="0" column="1">
+         <widget class="QComboBox" name="datanameComboBox">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+            <horstretch>1</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="font">
+           <font>
+            <family>Arial</family>
+            <pointsize>11</pointsize>
+           </font>
+          </property>
+          <property name="editable">
+           <bool>true</bool>
+          </property>
+          <property name="maxVisibleItems">
+           <number>20</number>
+          </property>
+          <property name="insertPolicy">
+           <enum>QComboBox::InsertAtCurrent</enum>
+          </property>
+          <property name="sizeAdjustPolicy">
+           <enum>QComboBox::AdjustToContents</enum>
+          </property>
+          <property name="minimumContentsLength">
+           <number>20</number>
+          </property>
+          <property name="frame">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="9">
+         <spacer name="horizontalSpacer_10">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
@@ -806,10 +867,30 @@
           </property>
          </spacer>
         </item>
+        <item row="0" column="10">
+         <widget class="QLabel" name="SumFormMainLabel">
+          <property name="text">
+           <string>Sum Formula</string>
+          </property>
+         </widget>
+        </item>
         <item row="0" column="12">
          <widget class="QPushButton" name="HelpPushButton">
           <property name="text">
            <string>Help</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="datanameLabel">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>Data Name</string>
           </property>
          </widget>
         </item>
@@ -868,30 +949,55 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="10">
-         <widget class="QLabel" name="SumFormMainLabel">
-          <property name="text">
-           <string>Sum Formula</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="4">
-         <widget class="QLabel" name="spacegroupLabel">
-          <property name="text">
-           <string>Space-Group Type</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0">
-         <widget class="QLabel" name="datanameLabel">
+        <item row="0" column="8">
+         <widget class="QTextEdit" name="CCDCNumLineEdit">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
+           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+            <horstretch>1</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
-          <property name="text">
-           <string>Data Name</string>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>24</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>24</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <family>Arial</family>
+            <pointsize>11</pointsize>
+           </font>
+          </property>
+          <property name="cursor" stdset="0">
+           <cursorShape>IBeamCursor</cursorShape>
+          </property>
+          <property name="verticalScrollBarPolicy">
+           <enum>Qt::ScrollBarAlwaysOff</enum>
+          </property>
+          <property name="horizontalScrollBarPolicy">
+           <enum>Qt::ScrollBarAlwaysOff</enum>
+          </property>
+          <property name="sizeAdjustPolicy">
+           <enum>QAbstractScrollArea::AdjustToContents</enum>
+          </property>
+          <property name="tabChangesFocus">
+           <bool>true</bool>
+          </property>
+          <property name="lineWrapMode">
+           <enum>QTextEdit::NoWrap</enum>
+          </property>
+          <property name="readOnly">
+           <bool>false</bool>
+          </property>
+          <property name="acceptRichText">
+           <bool>false</bool>
           </property>
          </widget>
         </item>
@@ -950,60 +1056,8 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="8">
-         <widget class="QTextEdit" name="CCDCNumLineEdit">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-            <horstretch>1</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <family>Arial</family>
-            <pointsize>11</pointsize>
-           </font>
-          </property>
-          <property name="cursor" stdset="0">
-           <cursorShape>IBeamCursor</cursorShape>
-          </property>
-          <property name="verticalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="horizontalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="sizeAdjustPolicy">
-           <enum>QAbstractScrollArea::AdjustToContents</enum>
-          </property>
-          <property name="tabChangesFocus">
-           <bool>true</bool>
-          </property>
-          <property name="lineWrapMode">
-           <enum>QTextEdit::NoWrap</enum>
-          </property>
-          <property name="readOnly">
-           <bool>false</bool>
-          </property>
-          <property name="acceptRichText">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="9">
-         <spacer name="horizontalSpacer_10">
+        <item row="0" column="3">
+         <spacer name="horizontalSpacer_11">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
@@ -1018,6 +1072,29 @@
           </property>
          </spacer>
         </item>
+        <item row="0" column="6">
+         <spacer name="horizontalSpacer_12">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Fixed</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>10</width>
+            <height>0</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="0" column="4">
+         <widget class="QLabel" name="spacegroupLabel">
+          <property name="text">
+           <string>Space-Group Type</string>
+          </property>
+         </widget>
+        </item>
         <item row="0" column="7">
          <widget class="QLabel" name="CCDCNumLabel">
           <property name="text">
@@ -1025,7 +1102,14 @@
           </property>
          </widget>
         </item>
-        <item row="1" column="0" colspan="13">
+        <item row="0" column="2">
+         <widget class="QPushButton" name="appendCifPushButton">
+          <property name="text">
+           <string>Append CIF</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0" colspan="13">
          <widget class="MyMainStackedWidget" name="MainStackedWidget">
           <property name="currentIndex">
            <number>0</number>
@@ -1132,9 +1216,9 @@
                   </widget>
                  </item>
                  <item row="1" column="1">
-                  <widget class="QPushButton" name="SourcesPushButton">
+                  <widget class="QPushButton" name="AuthorEditPushButton">
                    <property name="text">
-                    <string>Data Sources</string>
+                    <string>Author Editor</string>
                    </property>
                   </widget>
                  </item>
@@ -1175,7 +1259,7 @@
                  <item row="0" column="1">
                   <widget class="QPushButton" name="ReportPicPushButton">
                    <property name="text">
-                    <string>Picture for Tables</string>
+                    <string>Picture for Report</string>
                    </property>
                   </widget>
                  </item>
@@ -1342,201 +1426,168 @@
           </widget>
           <widget class="QWidget" name="page_molinfo">
            <layout class="QGridLayout" name="gridLayout_3">
-            <item row="1" column="0" colspan="2">
+            <item row="0" column="0">
+             <widget class="QGroupBox" name="molGroupBox">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>55</horstretch>
+                <verstretch>80</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="title">
+               <string>Molecule</string>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_8">
+               <property name="leftMargin">
+                <number>6</number>
+               </property>
+               <property name="topMargin">
+                <number>3</number>
+               </property>
+               <property name="rightMargin">
+                <number>6</number>
+               </property>
+               <property name="bottomMargin">
+                <number>8</number>
+               </property>
+               <item>
+                <widget class="MoleculeWidget" name="render_widget" native="true">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_7">
+                 <property name="sizeConstraint">
+                  <enum>QLayout::SetDefaultConstraint</enum>
+                 </property>
+                 <item>
+                  <widget class="QCheckBox" name="growCheckBox">
+                   <property name="minimumSize">
+                    <size>
+                     <width>0</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>Grow Structure</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QCheckBox" name="labelsCheckBox">
+                   <property name="minimumSize">
+                    <size>
+                     <width>0</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>Show Labels</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <spacer name="horizontalSpacer_5">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeType">
+                    <enum>QSizePolicy::Minimum</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="drawImagePushButton">
+                   <property name="text">
+                    <string>Use as Image for Report</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <spacer name="horizontalSpacer_23">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QGroupBox" name="groupBox_9">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>45</horstretch>
+                <verstretch>80</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="title">
+               <string>Shelx File</string>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_41">
+               <item>
+                <widget class="QPlainTextEdit" name="shelx_TextEdit">
+                 <property name="font">
+                  <font>
+                   <family>Courier New</family>
+                   <pointsize>11</pointsize>
+                  </font>
+                 </property>
+                 <property name="frameShape">
+                  <enum>QFrame::NoFrame</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Plain</enum>
+                 </property>
+                 <property name="undoRedoEnabled">
+                  <bool>false</bool>
+                 </property>
+                 <property name="lineWrapMode">
+                  <enum>QPlainTextEdit::NoWrap</enum>
+                 </property>
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                 <property name="plainText">
+                  <string>No Shelx file available</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="1" column="0" colspan="3">
              <widget class="QGroupBox" name="groupBox_3">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
                 <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
+                <verstretch>30</verstretch>
                </sizepolicy>
               </property>
               <property name="title">
                <string>Properties</string>
               </property>
               <layout class="QGridLayout" name="gridLayout_4">
-               <item row="0" column="7">
-                <spacer name="horizontalSpacer_25">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>40</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item row="0" column="8">
-                <spacer name="horizontalSpacer_24">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>40</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item row="0" column="4">
-                <spacer name="horizontalSpacer_8">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                 <property name="sizeType">
-                  <enum>QSizePolicy::Preferred</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>20</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item row="2" column="8">
-                <spacer name="horizontalSpacer_6">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>40</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item row="0" column="5">
-                <layout class="QFormLayout" name="formLayout_2">
-                 <item row="0" column="0">
-                  <widget class="QLabel" name="reflTotalLabel">
-                   <property name="text">
-                    <string>Measured Refl.</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="1">
-                  <widget class="QLineEdit" name="reflTotalLineEdit">
-                   <property name="readOnly">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="0">
-                  <widget class="QLabel" name="refl2sigmaLabel">
-                   <property name="text">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Data with [&lt;span style=&quot; font-style:italic;&quot;&gt;I &lt;/span&gt;&amp;gt; 2σ(&lt;span style=&quot; font-style:italic;&quot;&gt;I&lt;/span&gt;)]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="1">
-                  <widget class="QLineEdit" name="refl2sigmaLineEdit"/>
-                 </item>
-                 <item row="2" column="0">
-                  <widget class="QLabel" name="uniqReflLabel">
-                   <property name="text">
-                    <string>Independent Refl.</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="2" column="1">
-                  <widget class="QLineEdit" name="uniqReflLineEdit"/>
-                 </item>
-                 <item row="3" column="0">
-                  <widget class="QLabel" name="numParametersLabel">
-                   <property name="text">
-                    <string>Parameters</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="3" column="1">
-                  <widget class="QLineEdit" name="numParametersLineEdit">
-                   <property name="minimumSize">
-                    <size>
-                     <width>0</width>
-                     <height>0</height>
-                    </size>
-                   </property>
-                   <property name="readOnly">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="4" column="0">
-                  <widget class="QLabel" name="dataReflnsLabel">
-                   <property name="font">
-                    <font>
-                     <weight>50</weight>
-                     <bold>false</bold>
-                    </font>
-                   </property>
-                   <property name="text">
-                    <string>Data/Parameters</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="4" column="1">
-                  <widget class="QLineEdit" name="dataReflnsLineEdit">
-                   <property name="readOnly">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="5" column="0">
-                  <widget class="QLabel" name="wavelengthLabel">
-                   <property name="text">
-                    <string>Wavelength [Å]</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="5" column="1">
-                  <widget class="QLineEdit" name="wavelengthLineEdit">
-                   <property name="readOnly">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="6" column="0">
-                  <widget class="QLabel" name="flackXLabel">
-                   <property name="text">
-                    <string>Flack x</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="6" column="1">
-                  <widget class="QLineEdit" name="flackXLineEdit"/>
-                 </item>
-                </layout>
-               </item>
-               <item row="2" column="1">
-                <widget class="QPushButton" name="BackpushButtonDetails">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>Back to CIF Table</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="1">
+               <item row="0" column="2">
                 <layout class="QFormLayout" name="formLayout_3">
                  <item row="0" column="0">
                   <widget class="QLabel" name="zLabel">
@@ -1676,7 +1727,227 @@
                  </item>
                 </layout>
                </item>
-               <item row="0" column="3">
+               <item row="1" column="2">
+                <spacer name="verticalSpacer_2">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeType">
+                  <enum>QSizePolicy::MinimumExpanding</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>12</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="0" column="7">
+                <spacer name="horizontalSpacer_24">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="0" column="6">
+                <layout class="QFormLayout" name="formLayout_2">
+                 <item row="0" column="0">
+                  <widget class="QLabel" name="reflTotalLabel">
+                   <property name="text">
+                    <string>Measured Refl.</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="1">
+                  <widget class="QLineEdit" name="reflTotalLineEdit">
+                   <property name="readOnly">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QLabel" name="refl2sigmaLabel">
+                   <property name="text">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Data with [&lt;span style=&quot; font-style:italic;&quot;&gt;I &lt;/span&gt;&amp;gt; 2σ(&lt;span style=&quot; font-style:italic;&quot;&gt;I&lt;/span&gt;)]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="1">
+                  <widget class="QLineEdit" name="refl2sigmaLineEdit"/>
+                 </item>
+                 <item row="2" column="0">
+                  <widget class="QLabel" name="uniqReflLabel">
+                   <property name="text">
+                    <string>Independent Refl.</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="1">
+                  <widget class="QLineEdit" name="uniqReflLineEdit"/>
+                 </item>
+                 <item row="3" column="0">
+                  <widget class="QLabel" name="numParametersLabel">
+                   <property name="text">
+                    <string>Parameters</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="1">
+                  <widget class="QLineEdit" name="numParametersLineEdit">
+                   <property name="minimumSize">
+                    <size>
+                     <width>0</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="readOnly">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="0">
+                  <widget class="QLabel" name="dataReflnsLabel">
+                   <property name="font">
+                    <font>
+                     <weight>50</weight>
+                     <bold>false</bold>
+                    </font>
+                   </property>
+                   <property name="text">
+                    <string>Data/Parameters</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="1">
+                  <widget class="QLineEdit" name="dataReflnsLineEdit">
+                   <property name="readOnly">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="5" column="0">
+                  <widget class="QLabel" name="wavelengthLabel">
+                   <property name="text">
+                    <string>Wavelength [Å]</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="5" column="1">
+                  <widget class="QLineEdit" name="wavelengthLineEdit">
+                   <property name="readOnly">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="6" column="0">
+                  <widget class="QLabel" name="flackXLabel">
+                   <property name="text">
+                    <string>Flack x</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="6" column="1">
+                  <widget class="QLineEdit" name="flackXLineEdit"/>
+                 </item>
+                </layout>
+               </item>
+               <item row="0" column="0">
+                <widget class="QGroupBox" name="groupBox_4">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="title">
+                  <string>Unit Cell</string>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_9">
+                  <item row="0" column="2">
+                   <widget class="QLabel" name="cellField">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>75</height>
+                     </size>
+                    </property>
+                    <property name="baseSize">
+                     <size>
+                      <width>0</width>
+                      <height>75</height>
+                     </size>
+                    </property>
+                    <property name="contextMenuPolicy">
+                     <enum>Qt::ActionsContextMenu</enum>
+                    </property>
+                    <property name="autoFillBackground">
+                     <bool>false</bool>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">border-color: rgb(53, 53, 53);</string>
+                    </property>
+                    <property name="frameShape">
+                     <enum>QFrame::NoFrame</enum>
+                    </property>
+                    <property name="frameShadow">
+                     <enum>QFrame::Plain</enum>
+                    </property>
+                    <property name="text">
+                     <string/>
+                    </property>
+                    <property name="textFormat">
+                     <enum>Qt::RichText</enum>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="0" column="5">
+                <spacer name="horizontalSpacer_8">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeType">
+                  <enum>QSizePolicy::Preferred</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="0" column="4">
                 <layout class="QFormLayout" name="formLayout">
                  <item row="0" column="0">
                   <widget class="QLabel" name="peakLabel">
@@ -1817,23 +2088,20 @@
                  </item>
                 </layout>
                </item>
-               <item row="1" column="1">
-                <spacer name="verticalSpacer_2">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
+               <item row="2" column="0">
+                <widget class="QPushButton" name="BackpushButtonDetails">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
                  </property>
-                 <property name="sizeType">
-                  <enum>QSizePolicy::MinimumExpanding</enum>
+                 <property name="text">
+                  <string>Back to CIF Table</string>
                  </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>20</width>
-                   <height>40</height>
-                  </size>
-                 </property>
-                </spacer>
+                </widget>
                </item>
-               <item row="0" column="2">
+               <item row="0" column="3">
                 <spacer name="horizontalSpacer_7">
                  <property name="orientation">
                   <enum>Qt::Horizontal</enum>
@@ -1849,179 +2117,34 @@
                  </property>
                 </spacer>
                </item>
-               <item row="0" column="6">
-                <spacer name="horizontalSpacer_26">
+               <item row="0" column="1">
+                <spacer name="horizontalSpacer_22">
                  <property name="orientation">
                   <enum>Qt::Horizontal</enum>
                  </property>
+                 <property name="sizeType">
+                  <enum>QSizePolicy::Preferred</enum>
+                 </property>
                  <property name="sizeHint" stdset="0">
                   <size>
-                   <width>40</width>
+                   <width>20</width>
                    <height>20</height>
                   </size>
                  </property>
                 </spacer>
                </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QGroupBox" name="groupBox_4">
-              <property name="title">
-               <string>Unit Cell</string>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_9">
-               <item row="0" column="2">
-                <widget class="QLabel" name="cellField">
+               <item row="2" column="7">
+                <widget class="QPushButton" name="SourcesPushButton">
                  <property name="sizePolicy">
-                  <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                    <horstretch>0</horstretch>
                    <verstretch>0</verstretch>
                   </sizepolicy>
-                 </property>
-                 <property name="minimumSize">
-                  <size>
-                   <width>0</width>
-                   <height>75</height>
-                  </size>
-                 </property>
-                 <property name="baseSize">
-                  <size>
-                   <width>0</width>
-                   <height>75</height>
-                  </size>
-                 </property>
-                 <property name="contextMenuPolicy">
-                  <enum>Qt::ActionsContextMenu</enum>
-                 </property>
-                 <property name="autoFillBackground">
-                  <bool>false</bool>
-                 </property>
-                 <property name="styleSheet">
-                  <string notr="true">border-color: rgb(53, 53, 53);</string>
-                 </property>
-                 <property name="frameShape">
-                  <enum>QFrame::NoFrame</enum>
-                 </property>
-                 <property name="frameShadow">
-                  <enum>QFrame::Plain</enum>
                  </property>
                  <property name="text">
-                  <string/>
-                 </property>
-                 <property name="textFormat">
-                  <enum>Qt::RichText</enum>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+                  <string>Data Sources</string>
                  </property>
                 </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="0" column="0">
-             <widget class="QGroupBox" name="molGroupBox">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                <horstretch>1</horstretch>
-                <verstretch>1</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="title">
-               <string>Molecule</string>
-              </property>
-              <layout class="QVBoxLayout" name="verticalLayout_8">
-               <property name="leftMargin">
-                <number>6</number>
-               </property>
-               <property name="topMargin">
-                <number>3</number>
-               </property>
-               <property name="rightMargin">
-                <number>6</number>
-               </property>
-               <property name="bottomMargin">
-                <number>8</number>
-               </property>
-               <item>
-                <widget class="MoleculeWidget" name="render_widget" native="true">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_7">
-                 <property name="sizeConstraint">
-                  <enum>QLayout::SetDefaultConstraint</enum>
-                 </property>
-                 <item>
-                  <widget class="QCheckBox" name="growCheckBox">
-                   <property name="minimumSize">
-                    <size>
-                     <width>0</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                   <property name="text">
-                    <string>Grow Structure</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QCheckBox" name="labelsCheckBox">
-                   <property name="minimumSize">
-                    <size>
-                     <width>0</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                   <property name="text">
-                    <string>Show Labels</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <spacer name="horizontalSpacer_5">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeType">
-                    <enum>QSizePolicy::Minimum</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="drawImagePushButton">
-                   <property name="text">
-                    <string>Use as Image for Report</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <spacer name="horizontalSpacer_23">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                </layout>
                </item>
               </layout>
              </widget>
@@ -2168,20 +2291,6 @@ The data source will be ignored until next program restart.</string>
               </property>
              </spacer>
             </item>
-            <item row="8" column="1" colspan="3">
-             <spacer name="horizontalSpacer_14">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-
             <item row="7" column="0">
              <spacer name="verticalSpacer_6">
               <property name="orientation">
@@ -2212,13 +2321,10 @@ The data source will be ignored until next program restart.</string>
                  </property>
                 </widget>
                </item>
-               <item row="1" column="0" colspan="2">
-                <widget class="QLineEdit" name="CheckCIFServerURLTextedit">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
+               <item>
+                <widget class="QLabel" name="label_18">
+                 <property name="text">
+                  <string>Exports all templates from Equipment, Properties, Authors and Text snippets to a single file.</string>
                  </property>
                  <property name="minimumSize">
                   <size>
@@ -2269,12 +2375,151 @@ The data source will be ignored until next program restart.</string>
               </layout>
              </widget>
             </item>
+            <item row="8" column="1" colspan="3">
+             <spacer name="horizontalSpacer_14">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="6" column="2" colspan="2">
+             <widget class="QGroupBox" name="groupBox_10">
+              <property name="title">
+               <string>General Options</string>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_37">
+               <item>
+                <widget class="QCheckBox" name="trackChangesCifCheckBox">
+                 <property name="text">
+                  <string>Track CIF changes in separate file &quot;[name]-finalcif_changes.cif&quot;.</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <spacer name="verticalSpacer_14">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="2" column="2" colspan="2">
+             <widget class="QGroupBox" name="groupBox_COD">
+              <property name="title">
+               <string>Crystallography Open Database</string>
+              </property>
+              <layout class="QFormLayout" name="formLayout_6">
+               <item row="0" column="0" colspan="2">
+                <widget class="QLabel" name="label_7">
+                 <property name="text">
+                  <string>COD deposit URL:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0" colspan="2">
+                <widget class="QLineEdit" name="CODURLTextedit">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>300</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>https://www.crystallography.net/cod/cgi-bin/cif-deposit.pl</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
             <item row="1" column="0" colspan="4">
              <widget class="QGroupBox" name="groupBox_5">
               <property name="title">
                <string>Report Options</string>
               </property>
               <layout class="QFormLayout" name="formLayout_5">
+               <item row="5" column="0">
+                <widget class="Line" name="line_3">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0">
+                <layout class="QVBoxLayout" name="verticalLayout_35">
+                 <item>
+                  <widget class="QCheckBox" name="ReportTextCheckBox">
+                   <property name="text">
+                    <string>No report text in structure report</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QCheckBox" name="HAtomsCheckBox">
+                   <property name="text">
+                    <string>No bonds and angles to hydrogen atoms</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item row="4" column="0" colspan="2">
+                <widget class="Line" name="line_4">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <layout class="QVBoxLayout" name="verticalLayout_36">
+                 <property name="leftMargin">
+                  <number>12</number>
+                 </property>
+                 <item>
+                  <widget class="QCheckBox" name="ADPTableCheckBox">
+                   <property name="text">
+                    <string>Add ADP table</string>
+                   </property>
+                   <property name="checked">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <spacer name="verticalSpacer_8">
+                   <property name="orientation">
+                    <enum>Qt::Vertical</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>20</width>
+                     <height>40</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                </layout>
+               </item>
                <item row="3" column="0" colspan="2">
                 <layout class="QHBoxLayout" name="horizontalLayout_6">
                  <property name="topMargin">
@@ -2336,20 +2581,6 @@ The data source will be ignored until next program restart.</string>
                   </spacer>
                  </item>
                 </layout>
-               </item>
-               <item row="4" column="0" colspan="2">
-                <widget class="Line" name="line_4">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                </widget>
-               </item>
-               <item row="5" column="0">
-                <widget class="Line" name="line_3">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                </widget>
                </item>
                <item row="6" column="0" colspan="2">
                 <widget class="QGroupBox" name="groupBox_6">
@@ -2458,6 +2689,7 @@ The data source will be ignored until next program restart.</string>
                  </layout>
                 </widget>
                </item>
+
                <item row="0" column="0">
                 <layout class="QVBoxLayout" name="verticalLayout_35">
                  <item>
@@ -2571,6 +2803,7 @@ The data source will be ignored until next program restart.</string>
                  </property>
                 </spacer>
                </item>
+
               </layout>
              </widget>
             </item>
@@ -2585,11 +2818,373 @@ The data source will be ignored until next program restart.</string>
               </property>
               <widget class="QWidget" name="tab_2">
                <attribute name="title">
-                <string>Manuscript related</string>
+                <string>Author Editor</string>
                </attribute>
                <layout class="QGridLayout" name="gridLayout_2">
                 <item row="0" column="1">
-                 <spacer name="horizontalSpacer_22">
+                 <spacer name="verticalSpacer_16">
+                  <property name="orientation">
+                   <enum>Qt::Vertical</enum>
+                  </property>
+                  <property name="sizeType">
+                   <enum>QSizePolicy::Minimum</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>0</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item row="2" column="1">
+                 <widget class="QTabWidget" name="authorEditTabWidget">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                    <horstretch>40</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="currentIndex">
+                   <number>0</number>
+                  </property>
+                  <widget class="QWidget" name="page_publication">
+                   <attribute name="title">
+                    <string>Publication Authors</string>
+                   </attribute>
+                   <layout class="QVBoxLayout" name="verticalLayout_23">
+                    <item>
+                     <layout class="QVBoxLayout" name="verticalLayout_24">
+                      <item>
+                       <widget class="QLabel" name="label_20">
+                        <property name="text">
+                         <string>Details about the author(s) of a manuscript submitted for publication.
+Contact authors should always also appear as regular authors.</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <layout class="QGridLayout" name="gridLayout_5">
+                        <item row="5" column="0">
+                         <widget class="QLabel" name="label_34">
+                          <property name="text">
+                           <string>ORCID</string>
+                          </property>
+                          <property name="alignment">
+                           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="7" column="0">
+                         <widget class="QLabel" name="footnote_label">
+                          <property name="text">
+                           <string>footnote</string>
+                          </property>
+                          <property name="alignment">
+                           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="2" column="0">
+                         <widget class="QLabel" name="label_21">
+                          <property name="text">
+                           <string>Adresss</string>
+                          </property>
+                          <property name="alignment">
+                           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="2" column="2">
+                         <widget class="QLabel" name="label_28">
+                          <property name="text">
+                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#666666;&quot;&gt;The adress of an author&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#666666;&quot;&gt;Department&lt;br/&gt;Institute&lt;br/&gt;Street&lt;br/&gt;City and postcode&lt;br/&gt;COUNTRY&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                          </property>
+                          <property name="scaledContents">
+                           <bool>false</bool>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="4" column="1">
+                         <widget class="QLineEdit" name="PhoneLineEdit"/>
+                        </item>
+                        <item row="1" column="1">
+                         <widget class="QCheckBox" name="ContactAuthorCheckBox">
+                          <property name="text">
+                           <string>This is a contact author</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="0" column="0">
+                         <widget class="QLabel" name="label_22">
+                          <property name="text">
+                           <string>Full Name</string>
+                          </property>
+                          <property name="alignment">
+                           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                          </property>
+                          <property name="openExternalLinks">
+                           <bool>true</bool>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="3" column="0">
+                         <widget class="QLabel" name="EmailLabel">
+                          <property name="text">
+                           <string>e-mail</string>
+                          </property>
+                          <property name="alignment">
+                           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="7" column="1">
+                         <widget class="QLineEdit" name="FootNoteLineEdit"/>
+                        </item>
+                        <item row="0" column="2">
+                         <widget class="QLabel" name="label_27">
+                          <property name="text">
+                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#666666;&quot;&gt;Family name, first name&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                          </property>
+                          <property name="scaledContents">
+                           <bool>false</bool>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="4" column="0">
+                         <widget class="QLabel" name="PhoneLabel">
+                          <property name="text">
+                           <string>phone number</string>
+                          </property>
+                          <property name="alignment">
+                           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="2" column="1">
+                         <widget class="QTextEdit" name="AddressTextedit"/>
+                        </item>
+                        <item row="0" column="1">
+                         <widget class="QLineEdit" name="FullNameLineEdit"/>
+                        </item>
+                        <item row="3" column="1">
+                         <widget class="QLineEdit" name="EMailLineEdit"/>
+                        </item>
+                        <item row="5" column="1">
+                         <widget class="QLineEdit" name="ORCIDLineEdit"/>
+                        </item>
+                        <item row="6" column="0">
+                         <widget class="QLabel" name="label_36">
+                          <property name="text">
+                           <string>IUCr Id</string>
+                          </property>
+                          <property name="alignment">
+                           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="6" column="1">
+                         <widget class="QLineEdit" name="IUCRIDLineEdit"/>
+                        </item>
+                       </layout>
+                      </item>
+                     </layout>
+                    </item>
+                    <item>
+                     <layout class="QVBoxLayout" name="verticalLayout_32">
+                      <item alignment="Qt::AlignRight">
+                       <widget class="QPushButton" name="SaveAuthorLoopToTemplateButton">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
+                        </property>
+                        <property name="text">
+                         <string>Save Author as Template</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QPushButton" name="AddThisAuthorToLoopPushButton">
+                        <property name="text">
+                         <string>Add Publication Author to CIF Loop</string>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </item>
+                   </layout>
+                  </widget>
+                  <widget class="QWidget" name="page_audit">
+                   <attribute name="title">
+                    <string>Audit (CIF) Authors</string>
+                   </attribute>
+                   <layout class="QVBoxLayout" name="verticalLayout_40">
+                    <item>
+                     <layout class="QVBoxLayout" name="verticalLayout_38">
+                      <item>
+                       <widget class="QLabel" name="label_23">
+                        <property name="text">
+                         <string>Details about the author(s) of this CIF data block (most often the crystallographer).
+Contact authors should always also appear as regular authors.</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <layout class="QGridLayout" name="gridLayout_25">
+                        <item row="0" column="2">
+                         <widget class="QLabel" name="label_29">
+                          <property name="text">
+                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#666666;&quot;&gt;Family name, first name&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                          </property>
+                          <property name="scaledContents">
+                           <bool>false</bool>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="0" column="0">
+                         <widget class="QLabel" name="label_24">
+                          <property name="text">
+                           <string>Full Name</string>
+                          </property>
+                          <property name="alignment">
+                           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                          </property>
+                          <property name="openExternalLinks">
+                           <bool>true</bool>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="2" column="2">
+                         <widget class="QLabel" name="label_30">
+                          <property name="text">
+                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#666666;&quot;&gt;The adress of an author&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#666666;&quot;&gt;Department&lt;br/&gt;Institute&lt;br/&gt;Street&lt;br/&gt;City and postcode&lt;br/&gt;COUNTRY&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                          </property>
+                          <property name="scaledContents">
+                           <bool>false</bool>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="3" column="0">
+                         <widget class="QLabel" name="EmailLabel_cif">
+                          <property name="text">
+                           <string>e-mail</string>
+                          </property>
+                          <property name="alignment">
+                           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="4" column="1">
+                         <widget class="QLineEdit" name="PhoneLineEdit_cif"/>
+                        </item>
+                        <item row="1" column="1">
+                         <widget class="QCheckBox" name="ContactAuthorCheckBox_cif">
+                          <property name="text">
+                           <string>This is a contact author</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="2" column="1">
+                         <widget class="QTextEdit" name="AddressTextedit_cif"/>
+                        </item>
+                        <item row="2" column="0">
+                         <widget class="QLabel" name="label_25">
+                          <property name="text">
+                           <string>Adresss</string>
+                          </property>
+                          <property name="alignment">
+                           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="0" column="1">
+                         <widget class="QLineEdit" name="FullNameLineEdit_cif"/>
+                        </item>
+                        <item row="4" column="0">
+                         <widget class="QLabel" name="PhoneLabel_cif">
+                          <property name="text">
+                           <string>phone number</string>
+                          </property>
+                          <property name="alignment">
+                           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="3" column="1">
+                         <widget class="QLineEdit" name="EMailLineEdit_cif"/>
+                        </item>
+                        <item row="6" column="0" colspan="3">
+                         <widget class="QLabel" name="label_16">
+                          <property name="text">
+                           <string/>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="7" column="0" colspan="3">
+                         <widget class="QLabel" name="label_19">
+                          <property name="text">
+                           <string/>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="5" column="1" colspan="2">
+                         <widget class="QLabel" name="label_13">
+                          <property name="sizePolicy">
+                           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                           </sizepolicy>
+                          </property>
+                          <property name="text">
+                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#666666;&quot;&gt;Audit authors have less possibilities than publication authors.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                          </property>
+                          <property name="wordWrap">
+                           <bool>true</bool>
+                          </property>
+                         </widget>
+                        </item>
+                       </layout>
+                      </item>
+                     </layout>
+                    </item>
+                    <item>
+                     <layout class="QVBoxLayout" name="verticalLayout_39">
+                      <item alignment="Qt::AlignRight">
+                       <widget class="QPushButton" name="SaveAuthorLoopToTemplateButton_cif">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
+                        </property>
+                        <property name="text">
+                         <string>Save Author as Template</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QPushButton" name="AddThisAuthorToLoopPushButton_cif">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
+                        </property>
+                        <property name="text">
+                         <string>Add Audit Author to CIF Loop</string>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </item>
+                   </layout>
+                  </widget>
+                 </widget>
+                </item>
+                <item row="2" column="0">
+                 <spacer name="horizontalSpacer_21">
                   <property name="orientation">
                    <enum>Qt::Horizontal</enum>
                   </property>
@@ -2601,168 +3196,50 @@ The data source will be ignored until next program restart.</string>
                   </property>
                  </spacer>
                 </item>
-                <item row="1" column="0">
+                <item row="3" column="1">
                  <spacer name="verticalSpacer_10">
                   <property name="orientation">
                    <enum>Qt::Vertical</enum>
                   </property>
                   <property name="sizeHint" stdset="0">
                    <size>
-                    <width>20</width>
-                    <height>162</height>
+                    <width>0</width>
+                    <height>0</height>
                    </size>
                   </property>
                  </spacer>
                 </item>
-                <item row="0" column="2">
-                 <spacer name="horizontalSpacer_21">
+                <item row="2" column="2">
+                 <widget class="QFrame" name="frame_2">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                    <horstretch>60</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="frameShape">
+                   <enum>QFrame::StyledPanel</enum>
+                  </property>
+                  <property name="frameShadow">
+                   <enum>QFrame::Raised</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="1">
+                 <spacer name="verticalSpacer_15">
                   <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
+                   <enum>Qt::Vertical</enum>
+                  </property>
+                  <property name="sizeType">
+                   <enum>QSizePolicy::Fixed</enum>
                   </property>
                   <property name="sizeHint" stdset="0">
                    <size>
-                    <width>535</width>
+                    <width>20</width>
                     <height>20</height>
                    </size>
                   </property>
                  </spacer>
-                </item>
-                <item row="0" column="0">
-                 <widget class="QGroupBox" name="groupBox_9">
-                  <property name="title">
-                   <string>Publication Authors</string>
-                  </property>
-                  <layout class="QVBoxLayout" name="verticalLayout_23">
-                   <item>
-                    <layout class="QVBoxLayout" name="verticalLayout_24">
-                     <item>
-                      <widget class="QLabel" name="label_20">
-                       <property name="text">
-                        <string>Details about the authors of a manuscript submitted for publication.
-Contact authors should always also appear as regular authors.</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <layout class="QGridLayout" name="gridLayout_5">
-                       <item row="0" column="0">
-                        <widget class="QLabel" name="label_22">
-                         <property name="text">
-                          <string>Full Name</string>
-                         </property>
-                         <property name="alignment">
-                          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                         </property>
-                         <property name="openExternalLinks">
-                          <bool>true</bool>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="4" column="2">
-                        <widget class="QLineEdit" name="PhoneLineEdit"/>
-                       </item>
-                       <item row="0" column="2">
-                        <widget class="QLineEdit" name="FullNameLineEdit"/>
-                       </item>
-                       <item row="5" column="0">
-                        <widget class="QLabel" name="label_34">
-                         <property name="text">
-                          <string>ORCID</string>
-                         </property>
-                         <property name="alignment">
-                          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="1" column="2">
-                        <widget class="QCheckBox" name="ContactAuthorCheckBox">
-                         <property name="text">
-                          <string>This is a contact author</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="3" column="2">
-                        <widget class="QLineEdit" name="EMailLineEdit"/>
-                       </item>
-                       <item row="6" column="0">
-                        <widget class="QLabel" name="footnote_label">
-                         <property name="text">
-                          <string>footnote</string>
-                         </property>
-                         <property name="alignment">
-                          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="2" column="0">
-                        <widget class="QLabel" name="label_21">
-                         <property name="text">
-                          <string>Adresss</string>
-                         </property>
-                         <property name="alignment">
-                          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="3" column="0">
-                        <widget class="QLabel" name="label_16">
-                         <property name="text">
-                          <string>e-mail</string>
-                         </property>
-                         <property name="alignment">
-                          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="6" column="2">
-                        <widget class="QLineEdit" name="FootNoteLineEdit"/>
-                       </item>
-                       <item row="4" column="0">
-                        <widget class="QLabel" name="label_13">
-                         <property name="text">
-                          <string>phone number</string>
-                         </property>
-                         <property name="alignment">
-                          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="2" column="2">
-                        <widget class="QTextEdit" name="AddressTextedit"/>
-                       </item>
-                       <item row="5" column="2">
-                        <widget class="QLineEdit" name="ORCIDLineEdit"/>
-                       </item>
-                      </layout>
-                     </item>
-                    </layout>
-                   </item>
-                   <item>
-                    <layout class="QVBoxLayout" name="verticalLayout_32">
-                     <item alignment="Qt::AlignRight">
-                      <widget class="QPushButton" name="SaveAuthorLoopToTemplateButton">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="text">
-                        <string>Save Author as Template</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QPushButton" name="AddThisAuthorToLoopPushButton">
-                       <property name="text">
-                        <string>Add Author to CIF Loop</string>
-                       </property>
-                      </widget>
-                     </item>
-                    </layout>
-                   </item>
-                  </layout>
-                 </widget>
                 </item>
                </layout>
               </widget>
@@ -2773,7 +3250,7 @@ Contact authors should always also appear as regular authors.</string>
               <item row="0" column="2">
                <widget class="QPushButton" name="revertLoopsPushButton">
                 <property name="text">
-                 <string>revert changes</string>
+                 <string>Revert Changes</string>
                 </property>
                </widget>
               </item>
@@ -3989,63 +4466,6 @@ please add a publication author:</string>
           </widget>
          </widget>
         </item>
-        <item row="0" column="1">
-         <widget class="QComboBox" name="datanameComboBox">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-            <horstretch>1</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="font">
-           <font>
-            <family>Arial</family>
-            <pointsize>11</pointsize>
-           </font>
-          </property>
-          <property name="editable">
-           <bool>true</bool>
-          </property>
-          <property name="maxVisibleItems">
-           <number>20</number>
-          </property>
-          <property name="insertPolicy">
-           <enum>QComboBox::InsertAtCurrent</enum>
-          </property>
-          <property name="sizeAdjustPolicy">
-           <enum>QComboBox::AdjustToContents</enum>
-          </property>
-          <property name="minimumContentsLength">
-           <number>20</number>
-          </property>
-          <property name="frame">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="6">
-         <spacer name="horizontalSpacer_12">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeType">
-           <enum>QSizePolicy::Fixed</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>10</width>
-            <height>0</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="0" column="2">
-         <widget class="QPushButton" name="appendCifPushButton">
-          <property name="text">
-           <string>Append CIF</string>
-          </property>
-         </widget>
-        </item>
        </layout>
       </widget>
      </widget>
@@ -4053,21 +4473,6 @@ please add a publication author:</string>
    </layout>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
-  <action name="actionSave_Report">
-   <property name="text">
-    <string>Save Report</string>
-   </property>
-  </action>
-  <action name="actionSave_CIF_File">
-   <property name="text">
-    <string>Save CIF File</string>
-   </property>
-  </action>
-  <action name="actionedit_templates">
-   <property name="text">
-    <string>edit templates</string>
-   </property>
-  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -4104,9 +4509,9 @@ please add a publication author:</string>
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>EMailLineEdit</tabstop>
-  <tabstop>AddressTextedit</tabstop>
-  <tabstop>FootNoteLineEdit</tabstop>
+  <tabstop>publishedDepositionRadioButton</tabstop>
+  <tabstop>prepublicationDepositRadioButton</tabstop>
+  <tabstop>SelectCif_PushButton</tabstop>
   <tabstop>EditEquipmentTemplateButton</tabstop>
   <tabstop>ImportEquipmentTemplateButton</tabstop>
   <tabstop>DeleteEquipmentButton</tabstop>
@@ -4128,7 +4533,6 @@ please add a publication author:</string>
   <tabstop>SaveCifButton</tabstop>
   <tabstop>ExploreDirButton</tabstop>
   <tabstop>DetailsPushButton</tabstop>
-  <tabstop>SourcesPushButton</tabstop>
   <tabstop>LoopsPushButton</tabstop>
   <tabstop>ReportPicPushButton</tabstop>
   <tabstop>SaveFullReportButton</tabstop>
@@ -4193,15 +4597,62 @@ please add a publication author:</string>
   <tabstop>CCDCNumLineEdit</tabstop>
   <tabstop>BackpushButtonDetails</tabstop>
   <tabstop>completeLineEdit</tabstop>
-  <tabstop>ContactAuthorCheckBox</tabstop>
-  <tabstop>CODtableWidget</tabstop>
-  <tabstop>FullNameLineEdit</tabstop>
-  <tabstop>journalNameLineEdit</tabstop>
   <tabstop>personalDepositRadioButton</tabstop>
-  <tabstop>prepublicationDepositRadioButton</tabstop>
-  <tabstop>publishedDepositionRadioButton</tabstop>
+  <tabstop>CODtableWidget</tabstop>
+  <tabstop>journalNameLineEdit</tabstop>
+  <tabstop>FullNameLineEdit</tabstop>
+  <tabstop>ContactAuthorCheckBox</tabstop>
+  <tabstop>AddressTextedit</tabstop>
+  <tabstop>EMailLineEdit</tabstop>
+  <tabstop>PhoneLineEdit</tabstop>
+  <tabstop>ORCIDLineEdit</tabstop>
+  <tabstop>IUCRIDLineEdit</tabstop>
+  <tabstop>FootNoteLineEdit</tabstop>
+  <tabstop>SaveAuthorLoopToTemplateButton</tabstop>
+  <tabstop>AddThisAuthorToLoopPushButton</tabstop>
+  <tabstop>drawImagePushButton</tabstop>
+  <tabstop>ExportAllTemplatesPushButton</tabstop>
+  <tabstop>ImportAllTemplatesPushButton</tabstop>
+  <tabstop>ReportTextCheckBox</tabstop>
+  <tabstop>HAtomsCheckBox</tabstop>
+  <tabstop>ADPTableCheckBox</tabstop>
+  <tabstop>CODURLTextedit</tabstop>
+  <tabstop>trackChangesCifCheckBox</tabstop>
+  <tabstop>authorEditTabWidget</tabstop>
   <tabstop>depositorUsernameLineEdit</tabstop>
   <tabstop>depositorPasswordLineEdit</tabstop>
+  <tabstop>SelectCif_LineEdit</tabstop>
+  <tabstop>growCheckBox</tabstop>
+  <tabstop>labelsCheckBox</tabstop>
+  <tabstop>FullNameLineEdit_cif</tabstop>
+  <tabstop>ContactAuthorCheckBox_cif</tabstop>
+  <tabstop>AddressTextedit_cif</tabstop>
+  <tabstop>EMailLineEdit_cif</tabstop>
+  <tabstop>PhoneLineEdit_cif</tabstop>
+  <tabstop>SaveAuthorLoopToTemplateButton_cif</tabstop>
+  <tabstop>AddThisAuthorToLoopPushButton_cif</tabstop>
+  <tabstop>newLoopPushButton</tabstop>
+  <tabstop>structfactCheckBox</tabstop>
+  <tabstop>fullIucrCheckBox</tabstop>
+  <tabstop>BackFromPlatonPushButton</tabstop>
+  <tabstop>depositHKLcheckBox</tabstop>
+  <tabstop>Upload_hkl_pushButton</tabstop>
+  <tabstop>userEmailLineEdit</tabstop>
+  <tabstop>authorEditorPushButton</tabstop>
+  <tabstop>ContactAuthorLineEdit</tabstop>
+  <tabstop>ContactEmailLineEdit</tabstop>
+  <tabstop>embargoTimeInMonthsSpinBox</tabstop>
+  <tabstop>ContactAuthorLineEdit_2</tabstop>
+  <tabstop>authorEditorPushButton_2</tabstop>
+  <tabstop>ContactEmailLineEdit_2</tabstop>
+  <tabstop>publication_doi_lineedit</tabstop>
+  <tabstop>GetDOIPushButton</tabstop>
+  <tabstop>depositOutputTextBrowser</tabstop>
+  <tabstop>refreshDepositListPushButton</tabstop>
+  <tabstop>BackFromDepositPushButton</tabstop>
+  <tabstop>depositCIFpushButton</tabstop>
+  <tabstop>datanameComboBox</tabstop>
+  <tabstop>appendCifPushButton</tabstop>
  </tabstops>
  <includes>
   <include location="local">finalcif.gui.custom_classes.h</include>

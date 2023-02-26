@@ -1,3 +1,5 @@
+import re
+from enum import IntEnum
 from typing import List
 
 from PyQt5 import QtCore
@@ -18,10 +20,13 @@ light_blue = QColor(193, 217, 247)
 blue = QColor(102, 150, 179)
 yellow = QColor(250, 247, 150)  # #faf796
 
-[COL_CIF,
- COL_DATA,
- COL_EDIT
- ] = range(3)
+
+class Column(IntEnum):
+    CIF = 0
+    DATA = 1
+    EDIT = 2
+    BUTTON = 3
+
 
 DEBUG = False
 
@@ -29,6 +34,7 @@ DEBUG = False
 class MyCifTable(QTableWidget, ItemTextMixin):
     row_deleted = QtCore.pyqtSignal(str)
     textTemplate = QtCore.pyqtSignal(int)
+    new_key = QtCore.pyqtSignal(str)
 
     def __init__(self, parent: QWidget = None, *args, **kwargs):
         self.parent = parent
@@ -38,18 +44,18 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         self.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        item = MyTableWidgetItem()
-        self.setItemPrototype(item)
+        # item = MyTableWidgetItem()
+        # self.setItemPrototype(item)
         del_shortcut = QShortcut(QKeySequence('Ctrl+Del'), self)
         del_shortcut.activated.connect(self.delete_row)
-        self.vheaderitems: list = []
+        self.vheaderitems: List[str] = []
         vheader = self.verticalHeader()
         vheader.setSectionsClickable(True)
         vheader.sectionClicked.connect(self.vheader_section_click)
 
     def setCellWidget(self, row: int, column: int, widget) -> None:
         widget.cif_key = self.vheaderitems[row]
-        if (column == COL_CIF) or (column == COL_DATA):
+        if (column == Column.CIF) or (column == Column.DATA):
             # noinspection PyUnresolvedReferences
             widget.setUneditable()
         super(MyCifTable, self).setCellWidget(row, column, widget)
@@ -70,7 +76,7 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         combobox.cif_key = key
         combobox.textTemplate.connect(self.goto_template_page)
         # print('special:', row_num, miss_data)
-        self.setCellWidget(row_num, COL_EDIT, combobox)
+        self.setCellWidget(row_num, Column.EDIT, combobox)
         self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         for num, value in data:
             try:
@@ -82,7 +88,25 @@ class MyCifTable(QTableWidget, ItemTextMixin):
                 continue
         combobox.setCurrentIndex(0)
 
-    def delete_content(self):
+    def search(self, searchtext: str):
+        # Clear current selection.
+        self.setCurrentItem(None)
+        if not searchtext:
+            # Empty string, don't search and set all unhidden:
+            for row in range(self.rowCount()):
+                self.setRowHidden(row, False)
+            return
+
+        searchpattern = re.compile(f'.*{searchtext}.*', re.IGNORECASE)
+        searched = [x for x in self.vheaderitems if searchpattern.match(x)]
+
+        for row in range(self.rowCount()):
+            if self.vheaderitems[row] in searched:
+                self.setRowHidden(row, False)
+            else:
+                self.setRowHidden(row, True)
+
+    def delete_content(self) -> None:
         """
         Deletes all content in the table.
         """
@@ -92,7 +116,7 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         self.clearContents()
         self.vheaderitems.clear()
 
-    def vheader_section_click(self, section):
+    def vheader_section_click(self, section: int) -> None:
         from finalcif.cif.all_cif_dicts import cif_all_dict
         item = self.verticalHeaderItem(section)
         itemtext = item.text()
@@ -130,9 +154,9 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         item3.setBackground(diag)
         item3.setUneditable()
         self.setVerticalHeaderItem(row_num, item_vhead)
-        self.setItem(row_num, COL_CIF, item1)
-        self.setItem(row_num, COL_DATA, item2)
-        self.setItem(row_num, COL_EDIT, item3)
+        self.setItem(row_num, Column.CIF, item1)
+        self.setItem(row_num, Column.DATA, item2)
+        self.setItem(row_num, Column.EDIT, item3)
         self.resizeRowToContents(row_num)
 
     def eventFilter(self, widget: QObject, event: QEvent):
@@ -161,6 +185,7 @@ class MyCifTable(QTableWidget, ItemTextMixin):
             row = self.vheaderitems.index(key)
         elif row is None and key not in self.vheaderitems:
             row = 0
+            raise IndexError
         if isinstance(self.cellWidget(row, column), MyComboBox):
             self.cellWidget(row, column).setText(txt)
             return
@@ -173,15 +198,16 @@ class MyCifTable(QTableWidget, ItemTextMixin):
             textedit = MyQPlainTextEdit(self)
             textedit.cif_key = key
             textedit.templateRequested.connect(self.goto_template_page)
+            textedit.new_key.connect(lambda x: self.new_key.emit(x))
             self.setCellWidget(row, column, textedit)
             textedit.setText(txt, color=color)
-            if (column == COL_CIF) or (column == COL_DATA):
+            if (column == Column.CIF) or (column == Column.DATA):
                 textedit.setUneditable()
         if color:
             self.cellWidget(row, column).setBackground(color)
 
     def goto_template_page(self, row):
-        self.setCurrentCell(row, COL_EDIT)
+        self.setCurrentCell(row, Column.EDIT)
         self.parent.parent().go_to_text_template_page()
         self.textTemplate.emit(self.currentRow())
 
@@ -236,15 +262,15 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         self.removeRow(row)
         self.row_deleted.emit(key)
 
-    def vheader_text(self, row):
+    def vheader_text(self, row: int) -> str:
         vhead = self.model().headerData(row, Qt.Vertical)
         return str(vhead)
 
     def distribute_cif_main_table_columns_evenly(self) -> None:
         hheader = self.horizontalHeader()
-        hheader.setSectionResizeMode(COL_CIF, QHeaderView.Stretch)
-        hheader.setSectionResizeMode(COL_DATA, QHeaderView.Stretch)
-        hheader.setSectionResizeMode(COL_EDIT, QHeaderView.Stretch)
+        hheader.setSectionResizeMode(Column.CIF, QHeaderView.Stretch)
+        hheader.setSectionResizeMode(Column.DATA, QHeaderView.Stretch)
+        hheader.setSectionResizeMode(Column.EDIT, QHeaderView.Stretch)
         hheader.setAlternatingRowColors(True)
         self.verticalHeader().setAlternatingRowColors(True)
 
@@ -255,7 +281,7 @@ class MyTableWidgetItem(QTableWidgetItem):
         # args and kwargs are essential here. Otherwise, the horizontal header text is missing!
         super().__init__(*args, **kwargs)
 
-    def setUneditable(self):
+    def setUneditable(self) -> None:
         # noinspection PyTypeChecker
         self.setFlags(self.flags() ^ Qt.ItemIsEditable)
         # noinspection PyTypeChecker

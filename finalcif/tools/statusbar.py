@@ -1,6 +1,6 @@
 from typing import Union
 
-from finalcif.gui.finalcif_gui import Ui_FinalCifWindow
+from finalcif.gui.finalcif_gui_ui import Ui_FinalCifWindow
 
 
 class StatusBar():

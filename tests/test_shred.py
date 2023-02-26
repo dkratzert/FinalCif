@@ -1,4 +1,3 @@
-import os
 import unittest
 from pathlib import Path
 
@@ -27,8 +26,8 @@ class TestShedCifWithData(unittest.TestCase):
         self.shred.shred_cif()
         self.assertEqual(self.outfile_res.exists(), True)
         self.assertEqual(self.outfile_hkl.exists(), True)
-        self.assertEqual(self.shred._statusbar.current_message,
-                         '\nFinished writing data to p21c-finalcif.res \nand p21c-finalcif.hkl.')
+        self.assertEqual('\nFinished writing data to p21c-finalcif.res and p21c-finalcif.hkl.',
+                         self.shred._statusbar.current_message)
 
 
 class TestShedCifNoData(unittest.TestCase):
@@ -46,14 +45,13 @@ class TestShedCifNoData(unittest.TestCase):
     def test_no_shred(self):
         self.assertEqual(self.outfile_hkl.exists(), False)
         self.assertEqual(self.outfile_res.exists(), False)
-        self.assertEqual(self.shred._statusbar.current_message, '')
+        self.assertEqual('', self.shred._statusbar.current_message)
 
     def test_shred(self):
         self.shred.shred_cif()
         self.assertEqual(self.outfile_res.exists(), False)
         self.assertEqual(self.outfile_hkl.exists(), False)
-        self.assertEqual(self.shred._statusbar.current_message,
-                         'No .res and .hkl file data found!')
+        self.assertEqual('No .res and .hkl file data found!', self.shred._statusbar.current_message)
 
 
 class TestExport(unittest.TestCase):
@@ -73,11 +71,13 @@ class TestExport(unittest.TestCase):
         """
         Shredcif test
         """
-        test_res_file = Path('tests/examples/work/test_hkl_file.txt')
-        self.assertEqual(test_res_file.read_text().splitlines(keepends=True),
+        test_hkl_file = Path('tests/examples/work/test_hkl_file.txt')
+        self.assertEqual(test_hkl_file.read_text().splitlines(keepends=True),
                          self.outfile_hkl.read_text().splitlines(keepends=True))
 
     def test_export_res(self):
         test_res_file = Path('tests/examples/work/test_res_file.txt')
-        self.assertEqual(test_res_file.read_text().splitlines(keepends=True),
-                         self.outfile_res.read_text().splitlines(keepends=True))
+        self.assertEqual(test_res_file.read_text()#.lstrip()
+        ,
+                         self.outfile_res.read_text()#.lstrip()
+                         )

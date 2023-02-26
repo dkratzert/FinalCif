@@ -17,7 +17,7 @@ import gemmi.cif
 import qtawesome as qta
 import requests
 from PyQt5 import QtCore, QtGui, QtWebEngineWidgets
-from PyQt5.QtCore import QThread, QTimer, Qt
+from PyQt5.QtCore import QThread, QTimer, Qt, QEvent
 from PyQt5.QtWidgets import QMainWindow, QShortcut, QCheckBox, QListWidgetItem, QApplication, \
     QPlainTextEdit, QFileDialog, QMessageBox
 from gemmi import cif
@@ -25,7 +25,7 @@ from qtpy.QtGui import QDesktopServices
 
 from finalcif import VERSION
 from finalcif.cif.checkcif.checkcif import MyHTMLParser, AlertHelp, CheckCif
-from finalcif.cif.cif_file_io import CifContainer
+from finalcif.cif.cif_file_io import CifContainer, GemmiError
 from finalcif.cif.cod.deposit import CODdeposit
 from finalcif.cif.text import utf8_to_str, quote
 from finalcif.datafiles.bruker_data import BrukerData
@@ -35,17 +35,17 @@ from finalcif.equip_property.author_loop_templates import AuthorLoops
 from finalcif.equip_property.equipment import Equipment
 from finalcif.equip_property.properties import Properties
 from finalcif.equip_property.tools import read_document_from_cif_file
-from finalcif.gui.custom_classes import COL_CIF, COL_DATA, COL_EDIT, MyTableWidgetItem, light_green, yellow, light_blue, \
+from finalcif.gui.custom_classes import Column, MyTableWidgetItem, light_green, yellow, light_blue, \
     white
 from finalcif.gui.dialogs import show_update_warning, unable_to_open_message, show_general_warning, \
     cif_file_open_dialog, \
-    bad_z_message, show_res_checksum_warning, show_hkl_checksum_warning, cif_file_save_dialog
-from finalcif.gui.finalcif_gui import Ui_FinalCifWindow
+    bad_z_message, show_res_checksum_warning, show_hkl_checksum_warning, cif_file_save_dialog, show_yes_now_question
+from finalcif.gui.finalcif_gui_ui import Ui_FinalCifWindow
 from finalcif.gui.loop_creator import LoopCreator
 from finalcif.gui.loops import Loop
 from finalcif.gui.plaintextedit import MyQPlainTextEdit
 from finalcif.gui.table_model import CifTableModel
-from finalcif.gui.text_value_editor import MyTextTemplateEdit
+from finalcif.gui.text_value_editor import MyTextTemplateEdit, TextEditItem
 from finalcif.gui.vrf_classes import MyVRFContainer, VREF
 from finalcif.report.archive_report import ArchiveReport
 from finalcif.report.tables import make_report_from, make_multi_tables
@@ -115,7 +115,7 @@ class AppWindow(QMainWindow):
         self.set_initial_button_states()
         self.table_model = CifTableModel(parent=self)
         if len(sys.argv) > 1 and not file:
-            self.load_cif_file(Path(sys.argv[1]) if sys.argv[1] != 'compile_ui' else Path())
+            self.load_cif_file(Path(sys.argv[1]))
         elif file:
             self.load_cif_file(file)
         # Already in load cif file
@@ -179,7 +179,7 @@ class AppWindow(QMainWindow):
         else:
             self.ui.CODpushButton.setEnabled(True)
 
-    def format_report_button(self):
+    def format_report_button(self) -> None:
         if self.report_without_template():
             self.ui.SaveFullReportButton.setText('Make Report')
         else:
@@ -201,13 +201,14 @@ class AppWindow(QMainWindow):
         self.ui.CheckcifHTMLOnlineButton.setIcon(qta.icon('mdi.comment-check-outline'))
         self.ui.CheckcifPDFOnlineButton.setIcon(qta.icon('mdi.comment-check'))
         self.ui.SaveFullReportButton.setIcon(qta.icon('mdi.file-table-outline'))
-        self.ui.ExploreDirButton.setIcon(qta.icon('fa5.folder-open'))
-        self.ui.SaveCifButton.setIcon(qta.icon('fa5.save'))
-        self.ui.SelectCif_PushButton.setIcon(qta.icon('fa5.file-alt', options=[{'color': 'darkgreen'}]))
-        # self.ui.SelectCif_PushButton.setIcon(qta.icon('fa5s.spinner', color='red',
-        #             animation=qta.Spin(self.ui.SelectCif_PushButton)))
-        self.ui.SourcesPushButton.setIcon(qta.icon('fa5s.tasks'))
-        self.ui.DetailsPushButton.setIcon(qta.icon('fa5s.crow'))
+        self.ui.ExploreDirButton.setIcon(qta.icon('ph.folder-open'))
+        self.ui.SaveCifButton.setIcon(qta.icon('ri.save-3-line'))
+        self.ui.SelectCif_PushButton.setIcon(qta.icon('ri.file-text-line', options=[{'color': 'darkgreen'}]))
+        self.ui.AuthorEditPushButton.setIcon(qta.icon('ph.users-three-bold'))
+        self.ui.SourcesPushButton.setIcon(qta.icon('ph.list-bullets-bold'))
+        self.ui.OptionsPushButton.setIcon(qta.icon('ri.settings-5-line'))
+        self.ui.ShredCifButton.setIcon(qta.icon('ph.files-bold'))
+        self.ui.DetailsPushButton.setIcon(qta.icon('ph.bird-bold'))
         self.ui.NewEquipmentTemplateButton.setIcon(qta.icon('mdi.playlist-plus'))
         self.ui.EditEquipmentTemplateButton.setIcon(qta.icon('mdi.playlist-edit'))
         self.ui.DeleteEquipmentButton.setIcon(qta.icon('mdi.playlist-minus'))
@@ -222,7 +223,7 @@ class AppWindow(QMainWindow):
         self.ui.SavePropertiesButton.setIcon(qta.icon('mdi.content-save-outline'))
         self.ui.CancelPropertiesButton.setIcon(qta.icon('mdi.cancel'))
         self.ui.ExportPropertyButton.setIcon(qta.icon('mdi.export'))
-        self.ui.CCDCpushButton.setIcon(qta.icon('fa5s.upload'))
+        self.ui.CCDCpushButton.setIcon(qta.icon('ph.upload-simple-bold'))
         self.ui.CODpushButton.setIcon(qta.icon('mdi.upload'))
         self.ui.SavePushButton.setIcon(qta.icon('mdi.content-save'))
         self.ui.revertLoopsPushButton.setIcon(qta.icon('mdi.backup-restore'))
@@ -235,7 +236,7 @@ class AppWindow(QMainWindow):
         self.ui.BackFromLoopsPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
         self.ui.BackFromPlatonPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
         self.textedit.ui.cancelTextPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
-        self.textedit.ui.applyTextPushButton.setIcon(qta.icon('fa5s.check'))
+        self.textedit.ui.applyTextPushButton.setIcon(qta.icon('ph.check-bold'))
         self.textedit.ui.exportTextPushButton.setIcon(qta.icon('mdi.export'))
         self.textedit.ui.savePushButton.setIcon(qta.icon('mdi.content-save'))
         self.textedit.ui.deletePushButton.setIcon(qta.icon('mdi.playlist-minus'))
@@ -255,7 +256,12 @@ class AppWindow(QMainWindow):
         self.ui.BackFromDepositPushButton.clicked.connect(self.back_to_main)
         self.ui.ExploreDirButton.clicked.connect(self.explore_current_dir)
         self.ui.LoopsPushButton.clicked.connect(self.ui.MainStackedWidget.go_to_loops_page)
-        self.ui.LoopsPushButton.clicked.connect(lambda: self.ui.TemplatesStackedWidget.setCurrentIndex(1))
+        self.ui.LoopsPushButton.clicked.connect(
+            lambda x: self.ui.LoopsTabWidget.setCurrentIndex(1) if self.ui.LoopsTabWidget.count() > 0 else None)
+        self.ui.LoopsPushButton.clicked.connect(lambda x: self.ui.TemplatesStackedWidget.setCurrentIndex(1))
+        self.ui.AuthorEditPushButton.clicked.connect(self.ui.MainStackedWidget.go_to_loops_page)
+        self.ui.AuthorEditPushButton.clicked.connect(lambda x: self.ui.TemplatesStackedWidget.setCurrentIndex(1))
+        self.ui.AuthorEditPushButton.clicked.connect(lambda x: self.ui.LoopsTabWidget.setCurrentIndex(0))
         ## checkcif
         self.ui.CheckcifStartButton.clicked.connect(self.open_checkcif_page)
         self.ui.CheckcifButton.clicked.connect(self.do_offline_checkcif)
@@ -312,14 +318,20 @@ class AppWindow(QMainWindow):
         self.textedit.ui.savePushButton.clicked.connect(self.save_text_template)
         self.textedit.ui.deletePushButton.clicked.connect(self.delete_text_template)
         self.textedit.ui.importPushButton.clicked.connect(self.import_text_template)
-        #self.ui.cif_main_table.textTemplate.connect(self.on_text_template_open)
+
+        self.ui.cif_main_table.textTemplate.connect(self.on_text_template_open)
+        # value has to be '?', because otherwise it adds a key without a value:
+        self.ui.cif_main_table.new_key.connect(lambda x: self.add_row(key=x, value='?', at_start=True))
+
         #
         self.ui.appendCifPushButton.clicked.connect(self.append_cif)
         self.ui.drawImagePushButton.clicked.connect(self.draw_image)
         #
-        # TODO: re-add these widgets in the ui file:
-        #self.ui.ExportAllTemplatesPushButton.clicked.connect(self.export_all_templates)
-        #self.ui.ImportAllTemplatesPushButton.clicked.connect(self.import_all_templates)
+        self.ui.ExportAllTemplatesPushButton.clicked.connect(self.export_all_templates)
+        self.ui.ImportAllTemplatesPushButton.clicked.connect(self.import_all_templates)
+        #
+        self.ui.searchMainTableLineEdit.textChanged.connect(self.ui.cif_main_table.search)
+
 
     @property
     def finalcif_changes_filename(self):
@@ -338,11 +350,12 @@ class AppWindow(QMainWindow):
         templates = {'text'      : self.export_raw_text_templates(),
                      'equipment' : self.equipment.export_raw_data(),
                      'properties': self.properties.export_raw_data(),
+                     'authors'   : self.authors.export_raw_data(),
                      }
         try:
             pickle.dump(templates, open(filename, "wb"))
         except pickle.PickleError as e:
-            self.status_bar.show_message(f'Saving templetes failed: {str(e)}')
+            self.status_bar.show_message(f'Saving templates failed: {str(e)}')
 
     def import_all_templates(self, filename: Path = None):
         import pickle
@@ -360,6 +373,7 @@ class AppWindow(QMainWindow):
         self.import_raw_text_templates(templates.get('text'))
         self.equipment.import_raw_data(templates.get('equipment'))
         self.properties.import_raw_data(templates.get('properties'))
+        self.authors.import_raw_data(templates.get('authors'))
         self.status_bar.show_message('Template import successful.')
 
     def draw_image(self):
@@ -369,12 +383,31 @@ class AppWindow(QMainWindow):
         self.set_report_picture_path(str(image_filename))
 
     def on_text_template_open(self, row: int):
-        self.ui.cif_main_table.setCurrentCell(row, COL_EDIT)
+        self.ui.cif_main_table.setCurrentCell(row, Column.EDIT)
         cif_key = self.ui.cif_main_table.vheaderitems[row]
-        self.textedit.ui.cifKeyLineEdit.setText(cif_key)
-        self.textedit.add_textfields(self.settings.load_settings_list('text_templates', cif_key))
-        edit_text = self.ui.cif_main_table.getText(row, COL_EDIT)
-        self.textedit.ui.plainTextEdit.setPlainText(edit_text)
+        self.textedit.cif_key = cif_key
+        if cif_key.startswith('_vrf_'):
+            # _vrf_DIFF003_cifname
+            self.textedit.ui.cifKeyLineEdit.setText(self.get_vrf_errortype(cif_key))
+            self.textedit.add_textfields(
+                self.settings.load_settings_list('text_templates', self.get_vrf_errortype(cif_key)))
+            self.textedit.ui.plainTextEdit.setPlainText(self.ui.cif_main_table.getText(row, Column.CIF))
+        else:
+            self.textedit.ui.cifKeyLineEdit.setText(cif_key)
+            self.textedit.add_textfields(self.settings.load_settings_list('text_templates', cif_key))
+        edit_text = self.ui.cif_main_table.getText(row, Column.EDIT)
+        if not self.textedit.ui.plainTextEdit.toPlainText():
+            self.textedit.ui.plainTextEdit.setPlainText(edit_text)
+
+    @staticmethod
+    def get_vrf_errortype(cif_key: str) -> str:
+        if cif_key.startswith('_vrf_'):
+            splitkey = cif_key.split('_')
+            if len(splitkey) > 2:
+                return '_'.join(splitkey[:3])
+            return cif_key
+        else:
+            return cif_key
 
     def import_text_template(self):
         """
@@ -433,9 +466,14 @@ class AppWindow(QMainWindow):
         """
         Delete template from settings.
         """
-        cif_key = self.textedit.ui.cifKeyLineEdit.text()
+        cif_key = self.get_vrf_errortype(self.textedit.cif_key)
+        txt = f'Do you really want to delete all template texts for {cif_key}?'
+        answer = show_yes_now_question(title='Delete templates', question=txt, parent=self)
+        if not answer:
+            return
         self.settings.delete_template('text_templates/', cif_key)
         self.back_to_main_noload()
+        TextEditItem._num = 1
         self.status_bar.show_message(f'Template for {cif_key} deleted.', timeout=10)
         self.textedit.clear_fields()
         #self.refresh_color_background_from_templates()
@@ -444,7 +482,7 @@ class AppWindow(QMainWindow):
         """
         Save template in settings.
         """
-        cif_key = self.textedit.ui.cifKeyLineEdit.text()
+        cif_key = self.get_vrf_errortype(self.textedit.cif_key)
         table_data = self.textedit.get_template_texts()
         self.settings.save_settings_list(property='text_templates', name=cif_key, items=table_data)
         self.status_bar.show_message(f'Template for {cif_key} saved.', timeout=10)
@@ -468,9 +506,9 @@ class AppWindow(QMainWindow):
         Use text from self.textedit.ui.plainTextEdit and fill it into current cell. Then go back to
         main table. And scroll to changed row.
         """
-        cif_key = self.textedit.ui.cifKeyLineEdit.text()
         text = self.textedit.ui.plainTextEdit.toPlainText()
-        self.ui.cif_main_table.setText(key=cif_key, column=COL_EDIT, txt=text)
+        TextEditItem._num = 1
+        self.ui.cif_main_table.setText(key=self.textedit.cif_key, column =Column.EDIT, txt=text)
         self.ui.MainStackedWidget.got_to_main_page()
         self.textedit.clear_fields()
 
@@ -488,25 +526,36 @@ class AppWindow(QMainWindow):
         """
         input_txt = self.ui.SelectCif_LineEdit.text().strip()
         if is_database_number(input_txt):
-            file = '{}.cif'.format(input_txt)
-            r = requests.get(self.deposit.main_url + '{}.cif'.format(input_txt), timeout=6)
+            self.status_bar.show_message('Request sent to COD...')
+            r = requests.get(f'{self.deposit.main_url}{input_txt}.cif', timeout=8)
+            self.status_bar.show_message('Got a result.')
             if r.status_code == 200:
-                file = cif_file_save_dialog(file)
-                Path(file).write_bytes(r.content)
+                filename = cif_file_save_dialog(f'{input_txt}.cif')
+                Path(filename).write_bytes(r.content)
                 r.close()
-                self.load_cif_file(Path(file))
+                self.load_cif_file(Path(filename))
             else:
-                self.ui.SelectCif_LineEdit.setText('')
+                #self.ui.SelectCif_LineEdit.setText('')
+                self.status_bar.show_message(f'No COD entry for {input_txt} found.')
+        else:
+            self.status_bar.show_message(f'Not a valid COD number. It must be seven digits.')
 
     @property
     def current_block(self) -> int:
         return self.ui.datanameComboBox.currentIndex()
 
-    def open_cod_page(self):
+    def open_cod_page(self) -> None:
         self.save_current_cif_file()
-        self.load_cif_file(self.cif.finalcif_file, self.current_block)
+        self.load_cif_file(self.cif.finalcif_file, self.current_block, load_changes=False)
         self.deposit.cif = self.cif
         self.ui.MainStackedWidget.setCurrentIndex(7)
+
+    def event(self, event: QEvent) -> bool:
+        if event.type() == QEvent.KeyPress:
+            key = event.key()
+            if key == Qt.Key_Escape and self.ui.searchMainTableLineEdit.hasFocus():
+                self.ui.searchMainTableLineEdit.clear()
+        return super().event(event)
 
     def resizeEvent(self, a0: QtGui.QResizeEvent) -> None:
         """It called when the main window resizes."""
@@ -521,18 +570,18 @@ class AppWindow(QMainWindow):
         with suppress(AttributeError):
             self._savesize()
 
-    def changeEvent(self, event):
+    def changeEvent(self, event: QtCore.QEvent) -> None:
         """Is called when the main window changes its state."""
         if event.type() == QtCore.QEvent.WindowStateChange:
             with suppress(AttributeError):
                 self._savesize()
 
-    def _savesize(self):
+    def _savesize(self) -> None:
         """Saves the main window size nd position."""
         x, y = self.pos().x(), self.pos().y()
         self.settings.save_window_position(QtCore.QPoint(x, y), self.size(), self.isMaximized())
 
-    def show_help(self):
+    def show_help(self) -> None:
         QDesktopServices.openUrl(QtCore.QUrl('https://dkratzert.de/files/finalcif/docs/'))
 
     def do_shred_cif(self):
@@ -612,6 +661,7 @@ class AppWindow(QMainWindow):
                     continue
 
                 self.cif.block.set_pair(cifkey, '?')
+
                 self.ui.cif_main_table.setText(key=cifkey, column=COL_CIF, txt='?')
                 self.ui.cif_main_table.setText(key=cifkey, column=COL_DATA, txt='?')"""
 
@@ -668,7 +718,7 @@ class AppWindow(QMainWindow):
             self.checkdef_file.write_bytes(reply)
         self.checkdef = reply.decode('ascii', errors='ignore').splitlines(keepends=False)
 
-    def explore_current_dir(self):
+    def explore_current_dir(self) -> None:
         """
         Opens the file checkcif_browser for the current directory.
         """
@@ -710,7 +760,7 @@ class AppWindow(QMainWindow):
         """
         Get back to the main table and load the new cif file.
         """
-        self.load_cif_file(filepath=self.cif.finalcif_file)
+        self.load_cif_file(filepath=self.cif.finalcif_file, load_changes=False)
         self.ui.MainStackedWidget.got_to_main_page()
         self.ui.cif_main_table.scrollToTop()
         self.ui.TemplatesStackedWidget.setCurrentIndex(0)
@@ -718,7 +768,7 @@ class AppWindow(QMainWindow):
         self.ui.revertLoopsPushButton.show()
         self.ui.newLoopPushButton.show()
 
-    def back_to_main_noload(self):
+    def back_to_main_noload(self) -> None:
         """
         Get back to the main table. Without loading a new cif file.
         """
@@ -801,7 +851,7 @@ class AppWindow(QMainWindow):
         if not self.save_current_cif_file():
             self.ui.CheckCifLogPlainTextEdit.appendHtml('<b>Unable to save CIF file. Aborting action...</b>')
             return None
-        self.load_cif_file(self.cif.finalcif_file, block=current_block)
+        self.load_cif_file(self.cif.finalcif_file, block=current_block, load_changes=False)
         self.htmlfile = self.cif.finalcif_file_prefixed(prefix='checkcif-', suffix='-finalcif.html')
         try:
             self.htmlfile.unlink()
@@ -849,7 +899,7 @@ class AppWindow(QMainWindow):
                 if block.name == v.data_name:
                     block.set_pair(v.key, quote(utf8_to_str(v.value)))
         self.save_current_cif_file()
-        self.load_cif_file(self.cif.finalcif_file, current_block)
+        self.load_cif_file(self.cif.finalcif_file, current_block, load_changes=False)
         if n:
             self.ui.CheckCifLogPlainTextEdit.appendPlainText('Forms saved')
         else:
@@ -873,7 +923,7 @@ class AppWindow(QMainWindow):
         if not self.save_current_cif_file():
             self.ui.CheckCifLogPlainTextEdit.appendHtml('<b>Unable to save CIF file. Aborting action...</b>')
             return None
-        self.load_cif_file(self.cif.finalcif_file, current_block)
+        self.load_cif_file(self.cif.finalcif_file, current_block, load_changes=False)
         htmlfile = self.cif.finalcif_file_prefixed(prefix='checkpdf-', suffix='.html')
         try:
             htmlfile.unlink()
@@ -918,7 +968,7 @@ class AppWindow(QMainWindow):
         if not self.save_current_cif_file():
             self.ui.CheckCifLogPlainTextEdit.appendPlainText('Unable to save CIF file. Aborting action...')
             return None
-        self.load_cif_file(self.cif.finalcif_file, block=current_block)
+        self.load_cif_file(self.cif.finalcif_file, block=current_block, load_changes=False)
         self.ui.MainStackedWidget.go_to_checkcif_page()
         QApplication.processEvents()
         timeout = 350
@@ -953,7 +1003,7 @@ class AppWindow(QMainWindow):
         checkcif_out.verticalScrollBar().setValue(0)
         moiety = self.ui.cif_main_table.getTextFromKey(key='_chemical_formula_moiety', col=0)
         if p.formula_moiety and moiety in ['', '?'] and not self.cif.is_multi_cif:
-            self.ui.cif_main_table.setText(key='_chemical_formula_moiety', txt=p.formula_moiety, column=COL_EDIT)
+            self.ui.cif_main_table.setText(key='_chemical_formula_moiety', txt=p.formula_moiety, column=Column.EDIT)
         print('Killing platon!')
         p.kill()
         p.delete_orphaned_files()
@@ -991,7 +1041,7 @@ class AppWindow(QMainWindow):
                 stop += 1
             time.sleep(0.5)
 
-    def set_checkcif_output_font(self, ccpe):
+    def set_checkcif_output_font(self, ccpe: 'QPlainTextEdit') -> None:
         doc = ccpe.document()
         font = doc.defaultFont()
         font.setFamily("Courier New")
@@ -1025,10 +1075,10 @@ class AppWindow(QMainWindow):
         with suppress(Exception):
             self.report_picture_path = Path(filename)
         if self.report_picture_path.exists() and self.report_picture_path.is_file():
-            self.ui.ReportPicPushButton.setIcon(qta.icon('fa5.image'))
-            self.ui.ReportPicPushButton.setText('')
+            self.ui.ReportPicPushButton.setIcon(qta.icon('ph.image-bold'))
+            # self.ui.ReportPicPushButton.setText('')
 
-    def get_checked_templates_list_text(self):
+    def get_checked_templates_list_text(self) -> str:
         for index in range(self.ui.TemplatesListWidget.count()):
             item = self.ui.TemplatesListWidget.item(index)
             if item.checkState() == Qt.Checked:
@@ -1046,7 +1096,7 @@ class AppWindow(QMainWindow):
             return None
         if not self.save_current_cif_file():
             return None
-        self.load_cif_file(self.cif.finalcif_file, block=current_block)
+        self.load_cif_file(self.cif.finalcif_file, block=current_block, load_changes=False)
         report_filename = self.cif.finalcif_file_prefixed(prefix='report_', suffix='-finalcif.docx')
         multi_table_document = self.cif.finalcif_file_prefixed(prefix='', suffix='-multitable.docx')
         # The picture after the header:
@@ -1089,9 +1139,9 @@ class AppWindow(QMainWindow):
     def report_without_template(self) -> bool:
         """Check whether the report is generated from a template or hard-coded"""
         return self.ui.TemplatesListWidget.item(0).checkState() == Qt.CheckState.Checked \
-               or not self.ui.TemplatesListWidget.currentItem()
+            or not self.ui.TemplatesListWidget.currentItem()
 
-    def zip_report(self, report_filename: Path):
+    def zip_report(self, report_filename: Path) -> None:
         zipfile = self.cif.finalcif_file.with_suffix('.zip')
         if zipfile.exists():
             zipname = next_path(zipfile.stem + '-%s.zip')
@@ -1114,22 +1164,22 @@ class AppWindow(QMainWindow):
             open_file(multi_table_document)
         open_file(report_filename)
 
-    def save_current_recent_files_list(self, file: Path) -> None:
+    def save_current_recent_files_list(self, filename: Path) -> None:
         """
         Saves the list of the recently opened files. Non-existent files are removed.
         """
         if os.name == 'nt':
-            # Used path with backslash for windows systems:
-            file: str = str(WindowsPath(file.resolve()).absolute())
+            # Use path with backslash for Windows systems:
+            filename: str = str(WindowsPath(filename.resolve()).absolute())
         else:
-            file: str = str(Path(file.resolve()).absolute())
+            filename: str = str(Path(filename.resolve()).absolute())
         recent = list(self.settings.settings.value('recent_files', type=list))
-        # delete possible previous occurence of new file:
-        while file in recent:
-            recent.remove(file)
+        # delete possible previous occurrence of new file:
+        while filename in recent:
+            recent.remove(filename)
         # file has to be str not Path():
-        recent.insert(0, file)
-        recent = recent[:8]
+        recent.insert(0, filename)
+        recent = recent[:10]
         self.settings.settings.setValue('recent_files', recent)
 
     def load_recent_cifs_list(self) -> None:
@@ -1185,8 +1235,8 @@ class AppWindow(QMainWindow):
             vhead = self.ui.cif_main_table.vheader_text(row)
             if not self.is_row_a_cif_item(vhead):
                 continue
-            col_data = self.ui.cif_main_table.text(row, COL_DATA)
-            col_edit = self.ui.cif_main_table.text(row, COL_EDIT)
+            col_data = self.ui.cif_main_table.text(row, Column.DATA)
+            col_edit = self.ui.cif_main_table.text(row, Column.EDIT)
             if col_data and not col_edit and col_data != '?':
                 self.cif[vhead] = col_data
             if col_edit:
@@ -1202,21 +1252,21 @@ class AppWindow(QMainWindow):
         if self.options.track_changes and changes_cif and changes_cif.file_is_there_and_writable():
             self.save_keys_and_loops_to_changes_cif(changes_cif)
 
-    def save_keys_and_loops_to_changes_cif(self, changes_cif: CifContainer):
+    def save_keys_and_loops_to_changes_cif(self, changes_cif: CifContainer) -> None:
         self.save_changed_loops(changes_cif)
         try:
             changes_cif.save(filename=self.finalcif_changes_filename)
         except Exception as e:
             print(f'Unable to save changes file: {e}')
-            #del changes_cif
-            #self.finalcif_changes_filename.unlink(missing_ok=True)
+            # del changes_cif
+            # self.finalcif_changes_filename.unlink(missing_ok=True)
             return
         if changes_cif.fileobj.exists() and changes_cif.fileobj.stat().st_size == 0 or changes_cif.is_empty():
             print('Changes file has no content. Deleting it ...')
             with suppress(Exception):
                 changes_cif.fileobj.unlink(missing_ok=True)
 
-    def save_changed_loops(self, changes_cif: CifContainer):
+    def save_changed_loops(self, changes_cif: CifContainer) -> None:
         """
         previous_cif is the original unchanged cif that gets 'previous_cif'-finalcif.cif after saving.
         previous_values contains its loops.
@@ -1246,7 +1296,7 @@ class AppWindow(QMainWindow):
         changes_cif.fileobj.touch(exist_ok=True)
         return changes_cif
 
-    def changes_cif_has_zero_size(self):
+    def changes_cif_has_zero_size(self) -> bool:
         return self.finalcif_changes_filename.exists() and self.finalcif_changes_filename.stat().st_size == 0
 
     def load_changes_cif(self) -> bool:
@@ -1255,12 +1305,12 @@ class AppWindow(QMainWindow):
             if item.pair is not None:
                 key, value = item.pair
                 value = gemmi.cif.as_string(value).strip()
-                self.ui.cif_main_table.setText(key=key, column=COL_EDIT, color=None, txt=value)
+                self.ui.cif_main_table.setText(key=key, column =Column.EDIT, color=None, txt=value)
         for loop in changes.loops:
             self.cif.add_loop_to_cif(loop_tags=loop.tags, loop_values=loop.values)
         return True
 
-    def is_row_a_cif_item(self, vhead):
+    def is_row_a_cif_item(self, vhead: str) -> bool:
         is_cif = False
         # vertical header item is a cif keyword:
         if vhead.startswith('_'):
@@ -1345,11 +1395,11 @@ class AppWindow(QMainWindow):
                     continue
                 value = cif.as_string(value)
                 if key in self.ui.cif_main_table.vheaderitems:
-                    self.ui.cif_main_table.setText(key=key, column=COL_EDIT, txt=value, color=light_green)
+                    self.ui.cif_main_table.setText(key=key, column =Column.EDIT, txt=value, color=light_green)
                 else:
-                    self.add_row(key, value)  # , column=COL_EDIT
+                    self.add_row(key, value)  # , column =Column.EDIT
 
-    def do_not_import_this_key(self, key: str, value: str, cif: CifContainer) -> bool:
+    def do_not_import_this_key(self, key: str, value: str, cif: 'CifContainer') -> bool:
         if value == '?' or value.strip() == '':
             return True
         if key in do_not_import_keys:
@@ -1358,7 +1408,7 @@ class AppWindow(QMainWindow):
             return True
         return False
 
-    def load_cif_file(self, filepath: Path, block=0) -> None:
+    def load_cif_file(self, filepath: Path, block=0, load_changes: bool = True) -> None:
         """
         Opens the cif file and fills information into the main table.
         """
@@ -1382,7 +1432,7 @@ class AppWindow(QMainWindow):
         try:
             e = None
             self.cif = CifContainer(filepath)
-        except (RuntimeError, IndexError, ValueError) as e:
+        except GemmiError as e:
             print('Unable to open cif file...')
             if DEBUG:
                 raise
@@ -1395,7 +1445,7 @@ class AppWindow(QMainWindow):
             self.warn_about_bad_cif()
         # Do this only when sure we can load the file:
         self.save_current_recent_files_list(filepath)
-        self._load_block(block)
+        self._load_block(block, load_changes=load_changes)
         self.add_data_names_to_combobox()
         self.ui.datanameComboBox.setCurrentIndex(block)
         #self.ui.cif_main_table.resizeRowsToContents()
@@ -1404,12 +1454,12 @@ class AppWindow(QMainWindow):
             # short after start, because window size is not finished
             QTimer.singleShot(300, self.ui.datanameComboBox.showPopup)
 
-    def add_data_names_to_combobox(self):
+    def add_data_names_to_combobox(self) -> None:
         self.ui.datanameComboBox.clear()
         for block in self.cif.doc:
             self.ui.datanameComboBox.addItem(block.name)
 
-    def _clear_state_before_block_load(self):
+    def _clear_state_before_block_load(self) -> None:
         self.status_bar.show_message('')
         # Set to empty state before loading:
         self.missing_data = set()
@@ -1417,7 +1467,7 @@ class AppWindow(QMainWindow):
         # TODO view:
         #self.ui.cif_main_table.delete_content()
 
-    def _load_block(self, index: int):
+    def _load_block(self, index: int, load_changes: bool = True) -> None:
         if not self.cif:
             return
         self._clear_state_before_block_load()
@@ -1440,7 +1490,7 @@ class AppWindow(QMainWindow):
                 raise
             unable_to_open_message(Path(self.cif.filename), not_ok)
         self.load_recent_cifs_list()
-        if self.options.track_changes:
+        if self.options.track_changes and load_changes:
             changes_exist = False
             if self.changes_cif_has_zero_size():
                 self.finalcif_changes_filename.unlink(missing_ok=True)
@@ -1486,14 +1536,14 @@ class AppWindow(QMainWindow):
         except IndexError:
             return False
 
-    def fill_sum_formula_lineedit(self):
+    def fill_sum_formula_lineedit(self) -> None:
         try:
             self.ui.SumFormMainLineEdit.setText(sum_formula_to_html(formula_str_to_dict(
                 self.cif['_chemical_formula_sum'].strip(" '"))))
         except Exception:
             self.ui.SumFormMainLineEdit.setText(self.cif['_chemical_formula_sum'].strip(" '"))
 
-    def fill_space_group_lineedit(self):
+    def fill_space_group_lineedit(self) -> None:
         try:
             self.ui.Spacegroup_top_LineEdit.setText(
                 SpaceGroups().to_html(self.cif.space_group))
@@ -1501,7 +1551,7 @@ class AppWindow(QMainWindow):
             print('Space group error:', str(e))
             self.ui.Spacegroup_top_LineEdit.setText(self.cif.space_group)
 
-    def set_shredcif_state(self):
+    def set_shredcif_state(self) -> None:
         if ShredCIF(cif=self.cif, ui=self.ui).cif_has_hkl_or_res_file():
             self.ui.ShredCifButton.setEnabled(True)
         else:
@@ -1509,11 +1559,11 @@ class AppWindow(QMainWindow):
 
     def append_cif(self):
         self.cif.save()
-        self.load_cif_file(filepath=self.cif.finalcif_file)
-        file = self.get_file_from_dialog()
-        if not file:
+        self.load_cif_file(filepath=self.cif.finalcif_file, load_changes=False)
+        cif_file = self.get_file_from_dialog()
+        if not cif_file:
             return
-        cif2 = CifContainer(file)
+        cif2 = CifContainer(cif_file)
         if cif2.is_multi_cif:
             show_general_warning('Can add single data CIFs only!')
         if cif2.block.name in [x.name for x in self.cif.doc]:
@@ -1522,7 +1572,7 @@ class AppWindow(QMainWindow):
             return
         self.cif.doc.add_copied_block(block=cif2.block, pos=-1)
         self.cif.save()
-        self.load_cif_file(filepath=self.cif.fileobj)
+        self.load_cif_file(filepath=self.cif.fileobj, load_changes=False)
 
     def get_file_from_dialog(self) -> Union[Path, None]:
         fp = cif_file_open_dialog(last_dir=self.get_last_workdir())
@@ -1534,14 +1584,7 @@ class AppWindow(QMainWindow):
         self.temperature_warning_displayed = False
         return filepath
 
-    def go_into_cifs_directory(self, filepath):
-        try:
-            # Change the current working Directory
-            os.chdir(filepath.resolve().parent)
-        except OSError:
-            print("Can't change the Current Working Directory")
-
-    def check_cif_for_missing_values_before_really_open_it(self):
+    def check_cif_for_missing_values_before_really_open_it(self) -> None:
         try:
             # Will not stop reading if only the value is missing and ends with newline:
             self.cif.doc.check_for_missing_values()
@@ -1551,7 +1594,7 @@ class AppWindow(QMainWindow):
             errlist = str(e).split(':')
             if len(errlist) > 1:
                 show_general_warning(
-                    "Attention CIF line {}: '{}' has no value.".format(errlist[1], errlist[2].split()[0]))
+                    f"Attention in CIF line {errlist[1]}:\n'{errlist[2].split()[0]}' has no value.")
 
     def get_last_workdir(self):
         try:
@@ -1639,25 +1682,30 @@ class AppWindow(QMainWindow):
         peak = self.cif['_refine_diff_density_max']
         if peak:
             self.ui.peakLineEdit.setText("{} / {}".format(peak, self.cif['_refine_diff_density_min']))
+        if self.cif.res_file_data:
+            self.ui.shelx_TextEdit.setPlainText(cif.as_string(self.cif.res_file_data))
         try:
-            self.view_molecule()
+            QTimer.singleShot(0, self.view_molecule)
         except Exception:
             print('Molecule view crashed!')
 
     def view_molecule(self) -> None:
         if self.ui.growCheckBox.isChecked():
             self.ui.molGroupBox.setTitle('Completed Molecule')
-            atoms = tuple(self.cif.atoms_fract)
-            if atoms:
-                sdm = SDM(atoms, self.cif.symmops, self.cif.cell[:6], centric=self.cif.is_centrosymm)
-                with suppress(Exception):
-                    needsymm = sdm.calc_sdm()
-                    atoms = sdm.packer(sdm, needsymm)
-                    self.ui.render_widget.open_molecule(atoms, labels=self.ui.labelsCheckBox.isChecked())
+            self.grow_molecule()
         else:
             self.ui.molGroupBox.setTitle('Asymmetric Unit')
             with suppress(Exception):
                 atoms = [x for x in self.cif.atoms_orth]
+                self.ui.render_widget.open_molecule(atoms, labels=self.ui.labelsCheckBox.isChecked())
+
+    def grow_molecule(self):
+        atoms = tuple(self.cif.atoms_fract)
+        if atoms:
+            sdm = SDM(atoms, self.cif.symmops, self.cif.cell[:6], centric=self.cif.is_centrosymm)
+            with suppress(Exception):
+                needsymm = sdm.calc_sdm()
+                atoms = sdm.packer(sdm, needsymm)
                 self.ui.render_widget.open_molecule(atoms, labels=self.ui.labelsCheckBox.isChecked())
 
     def redraw_molecule(self) -> None:
@@ -1700,7 +1748,7 @@ class AppWindow(QMainWindow):
                 if '_database_code_depnum_ccdc_archive' not in self.ui.cif_main_table.vheaderitems:
                     # self.ui.cif_main_table.vheaderitems.insert(0, '_database_code_depnum_ccdc_archive')
                     self.add_row('_database_code_depnum_ccdc_archive', '', at_start=True)
-                txt = self.ui.cif_main_table.getTextFromKey('_database_code_depnum_ccdc_archive', COL_EDIT).strip()
+                txt = self.ui.cif_main_table.getTextFromKey('_database_code_depnum_ccdc_archive', Column.EDIT).strip()
                 if not txt or (txt == '?'):
                     self.sources['_database_code_depnum_ccdc_archive'] = (str(ccdc.depnum), str(ccdc.emlfile.name))
                     self.missing_data.add('_database_code_depnum_ccdc_archive')
@@ -1715,7 +1763,11 @@ class AppWindow(QMainWindow):
                 continue
             if src and src not in self.missing_data:
                 self.add_row(src, '?')
+
         #self.refresh_combo_boxes()
+           # Makes sure data is loaded on first load and not only after saving:
+            #self.missing_data.add(src)
+
         # Get missing items from sources and put them into the corresponding rows:
         # missing items will even be used if under the blue separation line:
         for miss_key in self.missing_data:
@@ -1724,18 +1776,18 @@ class AppWindow(QMainWindow):
             try:
                 txt = str(self.sources[miss_key][0])
                 if row_num > self.complete_data_row:
-                    self.ui.cif_main_table.setText(key=miss_key, column=COL_DATA, txt=txt)
+                    self.ui.cif_main_table.setText(key=miss_key, column =Column.DATA, txt=txt)
                 else:
                     if txt and txt != '?':
-                        self.ui.cif_main_table.setText(key=miss_key, column=COL_DATA, txt=txt, color=light_green)
+                        self.ui.cif_main_table.setText(key=miss_key, column =Column.DATA, txt=txt, color=light_green)
                     else:
-                        self.ui.cif_main_table.setText(key=miss_key, column=COL_DATA, txt=txt, color=yellow)
+                        self.ui.cif_main_table.setText(key=miss_key, column =Column.DATA, txt=txt, color=yellow)
             except (KeyError, TypeError) as e:
                 # TypeError my originate from incomplete self.missing_data list!
                 # print(e, '##', miss_key)
                 pass
 
-    def refresh_combo_boxes(self):
+    def refresh_combo_boxes(self) -> None:
         combos_from_settings = self.settings.load_cif_keys_of_properties()
         for row_number in range(self.ui.cif_main_table.model().rowCount()):
             vhead_key = self.get_key_by_row_number(row_number)
@@ -1753,18 +1805,19 @@ class AppWindow(QMainWindow):
     def refresh_color_background_from_templates(self):
         for row_number in range(self.ui.cif_main_table.model().rowCount()):
             vhead_key = self.get_key_by_row_number(row_number)
-            widget = self.ui.cif_main_table.cellWidget(row_number, COL_EDIT)
+            vhead_key = self.get_vrf_errortype(vhead_key)
+            widget = self.ui.cif_main_table.cellWidget(row_number, Column.EDIT)
             if isinstance(widget, MyQPlainTextEdit):
                 if self.settings.load_settings_list('text_templates', vhead_key):
                     widget.setBackground(light_blue)
                 else:
                     widget.setBackground(white)
 
-    def get_key_by_row_number(self, row_number):
+    def get_key_by_row_number(self, row_number: int) -> str:
         vhead_key = self.ui.cif_main_table.model().headerData(row_number, QtCore.Qt.Vertical)
         return vhead_key
 
-    def add_combobox(self, num: int, vhead_key: str):
+    def add_combobox(self, num: int, vhead_key: str) -> None:
         """
         :param num: row number
         :param vhead_key: CIF keyword for combobox
@@ -1788,8 +1841,10 @@ class AppWindow(QMainWindow):
             if key == '_audit_creation_method':
                 txt = 'FinalCif V{} by Daniel Kratzert, Freiburg {}, https://dkratzert.de/finalcif.html'
                 strval = txt.format(VERSION, datetime.now().year)
+
                 self.ui.cif_main_table.setText(key=key, column=COL_DATA, txt=strval)
                 QTimer.singleShot(200, self.ui.cif_main_table.resizeRowsToContents)"""
+
             # print(key, value)
         if not self.cif.test_res_checksum():
             show_res_checksum_warning()
@@ -1835,13 +1890,13 @@ class AppWindow(QMainWindow):
     def add_loop_widget(self, loop: Loop, first_tag: str) -> None:
         self.ui.LoopsTabWidget.addTab(loop.tableview, cif_to_header_label.get(first_tag) or first_tag)
 
-    def add_res_file_to_loops(self):
+    def add_res_file_to_loops(self) -> None:
         textedit = QPlainTextEdit()
         self.ui.LoopsTabWidget.addTab(textedit, 'SHELX res file')
         textedit.setPlainText(self.cif.res_file_data[1:-1])
         doc = textedit.document()
         font = doc.defaultFont()
-        font.setFamily("Courier")
+        font.setFamily("Courier New")
         font.setStyleHint(QtGui.QFont.Monospace)
         font.setPointSize(14)
         doc.setDefaultFont(font)
@@ -1876,9 +1931,12 @@ class AppWindow(QMainWindow):
                 row_num = position
             else:
                 row_num = self.ui.cif_main_table.rowCount()
-        self.ui.cif_main_table.insertRow(row_num)
         if key not in self.ui.cif_main_table.vheaderitems:
             self.ui.cif_main_table.vheaderitems.insert(row_num, key)
+        else:
+            print(f'The key {key} is already present.')
+            return
+        self.ui.cif_main_table.insertRow(row_num)
         if value is None or value == '?':
             strval = '?'
         else:
@@ -1891,12 +1949,14 @@ class AppWindow(QMainWindow):
             self.complete_data_row = row_num
         else:
             color = None
-            if key in self.settings.list_saved_items('text_templates'):
+            load_key = key
+            load_key = self.get_vrf_errortype(load_key)
+            if load_key in self.settings.list_saved_items('text_templates'):
                 color = light_blue
-            self.ui.cif_main_table.setText(row=row_num, key=key, column=COL_CIF,
+            self.ui.cif_main_table.setText(row=row_num, key=key, column =Column.CIF,
                                            txt='?' if at_start else strval)
-            self.ui.cif_main_table.setText(row=row_num, key=key, column=COL_DATA, txt='')
-            self.ui.cif_main_table.setText(row=row_num, key=key, column=COL_EDIT, color=color,
+            self.ui.cif_main_table.setText(row=row_num, key=key, column =Column.DATA, txt='')
+            self.ui.cif_main_table.setText(row=row_num, key=key, column =Column.EDIT, color=color,
                                            txt=strval if at_start else '')
         head_item_key = MyTableWidgetItem(key)
         if key != "These below are already in:":

@@ -102,7 +102,7 @@ def make_report_from(options: Options, cif: CifContainer, output_filename: str =
     p.add_run().add_break(WD_BREAK.PAGE)
     if options.report_text:
         make_columns_section(document, columns='1')
-    if cif['_refine_special_details'] and options.report_text:
+    if cif['_refine_special_details'] and cif['_refine_special_details'] != '?' and options.report_text:
         RefinementDetails(cif, document)
     table_num = add_coords_table(document, cif, table_num)
     if options.report_adp and len(tuple(cif.displacement_parameters())) > 0:

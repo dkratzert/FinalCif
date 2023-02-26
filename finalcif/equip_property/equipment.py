@@ -10,7 +10,7 @@ from gemmi import cif
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.cif.text import retranslate_delimiter, string_to_utf8
 from finalcif.equip_property.tools import read_document_from_cif_file
-from finalcif.gui.custom_classes import COL_CIF, COL_DATA, light_green, COL_EDIT
+from finalcif.gui.custom_classes import Column, light_green
 from finalcif.gui.dialogs import show_general_warning, cif_file_open_dialog, cif_file_save_dialog
 from finalcif.tools import misc
 from finalcif.tools.misc import include_equipment_imports
@@ -74,9 +74,9 @@ class Equipment:
                     self.app.add_row(key, equipment[key], at_start=False,
                                      position=bisect(self.app.ui.cif_main_table.vheaderitems, key))
                 # Key is already there:
-                self.app.ui.cif_main_table.setText(key, COL_CIF, txt='?')
-                self.app.ui.cif_main_table.setText(key, COL_DATA, txt=equipment[key], color=light_green)
-                self.app.ui.cif_main_table.setText(key, COL_EDIT, txt=equipment[key])
+                self.app.ui.cif_main_table.setText(key, Column.CIF, txt='?')
+                self.app.ui.cif_main_table.setText(key, Column.DATA, txt=equipment[key], color=light_green)
+                self.app.ui.cif_main_table.setText(key, Column.EDIT, txt=equipment[key])
         else:
             print('Empty main table!')
 

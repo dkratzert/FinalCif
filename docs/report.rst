@@ -33,7 +33,7 @@ Picture
 FinalCif can add a picture of your structure to the report document.
 
 * Either by previously performing an html or local checkcif. Then it automatically adds a picture from the checkcif report, as in the example above.
-* Or you can add any other picture with the "Picture for Tables" button.
+* Or you can add any other picture with the "Picture for Report" button.
 * A third possibility is the 'Show Details' page where you can use the current structure view as picture
   for the report:
 
@@ -41,6 +41,15 @@ FinalCif can add a picture of your structure to the report document.
    :width: 600
 
     The Details page.
+
+
+Bonds and Angles Tables
+-----------------------
+By default, the report document contains tables for bonds, angles, torsion angles and
+hydrogen bonds of all atoms.
+It is also possible to tabulate only a selection by entering 'y' or 'yes' at the
+corresponding atom row in the _geom_[angle/bond/torsion/hbond]_publ_flag column of
+the loop editor. On the other hand, 'n' or 'no' disables a table row.
 
 
 Customizing the Report
@@ -61,7 +70,8 @@ So you can use them with MS Word, Openoffice or Libre Office and other Office Op
 FinalCif uses the Jinja2 template language to exchange specific instructions in the templates with
 precalculated information and direct values from the CIF file.
 Be careful with the 'Track Changes' feature of MS Word. It tends to create incompatible
-template documents, but this is can be fixed with the 'accept all changes' option in Word.
+template documents, but it can be fixed with the 'accept all changes' option in Word. It accepts all
+changes and the template document is 'normal' again.
 
 In the templates, you have two different types of information to add:
 

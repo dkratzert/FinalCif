@@ -31,14 +31,14 @@ class TestChangesTrackingActive(unittest.TestCase):
         self.myapp.close()
 
     def test_save_with_keys(self):
-        self.myapp.ui.cif_main_table.setText(key='_audit_contact_author_address', column=2, txt='testauthoradress')
-        self.myapp.ui.cif_main_table.setText(key='_audit_contact_author_email', column=2, txt='testauthoremail')
+        self.myapp.ui.cif_main_table.setText(key='_chemical_formula_moiety', column=2, txt='testauthoradress')
+        self.myapp.ui.cif_main_table.setText(key='_chemical_melting_point', column=2, txt='testauthoremail')
         self.myapp.ui.SaveCifButton.click()
         self.assertEqual(True, self.myapp.cif.finalcif_file.exists())
         self.assertEqual(True, self.myapp.finalcif_changes_filename.exists())
         changes = self.myapp.get_changes_cif(self.myapp.finalcif_changes_filename)
-        self.assertEqual(['_audit_contact_author_email', '_audit_contact_author_address'], changes.keys())
-        self.assertEqual(['testauthoremail', 'testauthoradress'], changes.values())
+        self.assertEqual(['_chemical_formula_moiety', '_chemical_melting_point'], changes.keys())
+        self.assertEqual(['testauthoradress', 'testauthoremail'], changes.values())
 
     def test_save_with_no_changes(self):
         # Track changes is activated in self.setUp()

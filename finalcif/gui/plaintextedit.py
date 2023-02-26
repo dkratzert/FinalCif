@@ -5,6 +5,8 @@ from PyQt5.QtCore import pyqtSignal, Qt, QObject, QEvent, QSize
 from PyQt5.QtGui import QTextOption, QFontMetrics, QContextMenuEvent, QFont
 from PyQt5.QtWidgets import QPlainTextEdit, QFrame, QApplication, QAbstractScrollArea
 
+from finalcif.gui.new_key_dialog import NewKey
+
 with suppress(ImportError):
     from finalcif.gui.custom_classes import MyCifTable
 
@@ -14,6 +16,7 @@ class MyQPlainTextEdit(QPlainTextEdit):
     A special plaintextedit with convenient methods to set the background color and other things.
     """
     templateRequested = pyqtSignal(int)
+    new_key = pyqtSignal(str)
 
     def __init__(self, parent=None, *args, **kwargs):
         """
@@ -51,10 +54,17 @@ class MyQPlainTextEdit(QPlainTextEdit):
         deleterow = menu.addAction("Delete Row")
         menu.addSeparator()
         action_template = menu.addAction("Text Template")
+        new_key = menu.addAction('Add new CIF keys')
         action_copy_vhead.triggered.connect(self.copy_vhead_item)
         action_template.triggered.connect(self._on_create_template)
         deleterow.triggered.connect(self._delete_row)
+        new_key.triggered.connect(self._add_cif_keys)
         choosed_action = menu.exec(event.globalPos())
+
+    def _add_cif_keys(self):
+        new_key = NewKey(self)
+        new_key.show()
+        new_key.new_key_added.connect(lambda x: self.new_key.emit(x))
 
     def _on_create_template(self):
         self.templateRequested.emit(self.row)

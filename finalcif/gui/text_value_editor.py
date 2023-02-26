@@ -5,10 +5,12 @@ from PyQt5.QtCore import QSize, Qt, pyqtSignal
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QCheckBox, QApplication, QPlainTextEdit, \
     QListWidgetItem, QVBoxLayout, QLabel
 
+from finalcif.gui import text_templates_ui
+
+
 # print('Compiling textedit ui ...')
 # application_path = Path(os.path.abspath(__file__)).parent.parent
 # uic.compileUiDir(os.path.join(application_path, 'gui'))
-from finalcif.gui import text_templates
 
 
 class TextEditItem(QWidget):
@@ -33,7 +35,7 @@ class TextEditItem(QWidget):
         self.vlayout.addWidget(self.checkbox)
         layout.addLayout(self.vlayout)
         layout.addWidget(self.textfield)
-        layout.setContentsMargins(4, 8, 4, 4)
+        layout.setContentsMargins(12, 8, 30, 8)
         self.setAutoFillBackground(False)
         self.checkbox.clicked.connect(self.on_checkbox_clicked)
 
@@ -56,13 +58,14 @@ class TextEditItem(QWidget):
         self.checkbox.setObjectName(name)
 
     def sizeHint(self) -> QSize:
-        return QSize(400, 200)
+        return QSize(400, 180)
 
 
 class MyTextTemplateEdit(QWidget):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: object, **kwargs: object) -> None:
         super().__init__(*args, **kwargs)
-        self.ui = text_templates.Ui_TextTemplatesWidget()
+        self.cif_key: str = ''
+        self.ui = text_templates_ui.Ui_TextTemplatesWidget()
         self.ui.setupUi(self)
         self.ui.cancelTextPushButton.clicked.connect(self._on_backbutton_clicked)
         if not self.ui.templatesListWidget.count():
@@ -70,6 +73,7 @@ class MyTextTemplateEdit(QWidget):
 
     def _on_backbutton_clicked(self) -> None:
         self.ui.templatesListWidget.clear()
+        TextEditItem._num = 1
 
     def add_textfields(self, text_list: Union[List, Tuple]) -> None:
         self.ui.templatesListWidget.clear()
@@ -78,11 +82,11 @@ class MyTextTemplateEdit(QWidget):
                 self.add_one_textfield(text)
         self.add_more_fiels()
 
-    def add_more_fiels(self):
+    def add_more_fiels(self) -> None:
         for empty in ('',) * 20:
             self.add_one_textfield(empty)
 
-    def add_one_textfield(self, text):
+    def add_one_textfield(self, text: str) -> None:
         edit_item = TextEditItem(self.ui.templatesListWidget)
         edit_item.setText(text)
         edit_item.checkbox_clicked.connect(lambda x: self.ui.plainTextEdit.appendPlainText(x))

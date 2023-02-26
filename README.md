@@ -1,4 +1,4 @@
-![Lates Release](https://img.shields.io/github/v/tag/dkratzert/FinalCif?label=Latest%20Release)
+![Lates Release](https://img.shields.io/github/v/tag/dkratzert/FinalCif?label=Release)
 [![Unit Tests](https://github.com/dkratzert/FinalCif/actions/workflows/python-app_windows.yml/badge.svg?branch=master)](https://github.com/dkratzert/FinalCif/actions/workflows/python-app_windows.yml)
 ![Contributions](https://img.shields.io/badge/contributions-welcome-blue)
 <a href="https://repology.org/project/finalcif/versions">
@@ -8,7 +8,7 @@
 
 # FinalCif
 
-FinalCif helps you to get a complete CIF file from a single-xrystal X-ray diffraction experiment. See here [https://dkratzert.de/finalcif.html](https://dkratzert.de/finalcif.html) for details.
+FinalCif helps you to get a complete [CIF](https://www.iucr.org/resources/cif) file from a single-xrystal X-ray diffraction experiment. See here [https://dkratzert.de/finalcif.html](https://dkratzert.de/finalcif.html) for details.
 
 For tables from multiple CIF files, you may want to use the program [multitable](https://github.com/dkratzert/multitable).
 
