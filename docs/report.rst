@@ -43,6 +43,15 @@ FinalCif can add a picture of your structure to the report document.
     The Details page.
 
 
+Bonds and Angles Tables
+-----------------------
+By default, the report document contains tables for bonds, angles, torsion angles and
+hydrogen bonds of all atoms.
+It is also possible to tabulate only a selection by entering 'y' or 'yes' at the
+corresponding atom row in the _geom_[angle/bond/torsion/hbond]_publ_flag column of
+the loop editor. On the other hand, 'n' or 'no' disables a table row.
+
+
 Customizing the Report
 ----------------------
 

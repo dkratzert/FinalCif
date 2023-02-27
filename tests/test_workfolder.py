@@ -9,7 +9,7 @@ from qtpy.QtTest import QTest
 
 from finalcif import VERSION
 from finalcif.appwindow import AppWindow
-from finalcif.gui.custom_classes import COL_DATA, COL_CIF, COL_EDIT
+from finalcif.gui.custom_classes import Column
 from finalcif.tools.misc import unify_line_endings
 from tests.helpers import addr
 
@@ -100,123 +100,123 @@ class TestWorkfolder(unittest.TestCase):
     def testDataColumn(self):
         self.myapp.hide()
         # test of ccdc number added from email during load:
-        self.assertEqual('1979688', self.cell_text('_database_code_depnum_ccdc_archive', COL_DATA))
+        self.assertEqual('1979688', self.cell_text('_database_code_depnum_ccdc_archive', Column.DATA))
         # '_computing_structure_solution:'
-        self.assertEqual('SHELXT (G. Sheldrick)', self.cell_text('_computing_structure_solution', COL_DATA))
-        self.assertEqual('direct', self.cell_text('_atom_sites_solution_primary', COL_DATA))
-        self.assertEqual('9624', self.cell_text('_cell_measurement_reflns_used', COL_DATA))
-        self.assertEqual('78.8605', self.cell_text('_cell_measurement_theta_max', COL_DATA))
-        self.assertEqual('2.547', self.cell_text('_cell_measurement_theta_min', COL_DATA))
+        self.assertEqual('SHELXT (G. Sheldrick)', self.cell_text('_computing_structure_solution', Column.DATA))
+        self.assertEqual('direct', self.cell_text('_atom_sites_solution_primary', Column.DATA))
+        self.assertEqual('9624', self.cell_text('_cell_measurement_reflns_used', Column.DATA))
+        self.assertEqual('78.8605', self.cell_text('_cell_measurement_theta_max', Column.DATA))
+        self.assertEqual('2.547', self.cell_text('_cell_measurement_theta_min', Column.DATA))
         # Test for auto-fill data:
-        self.assertEqual('SAINT V8.40A', self.cell_text('_computing_cell_refinement', COL_DATA))
-        self.assertEqual('?', self.cell_text('_computing_cell_refinement', COL_CIF))
-        self.assertEqual('Bruker BIS V6.2.12/2019-08-12', self.cell_text('_computing_data_collection', COL_DATA))
-        self.assertEqual('SHELXT (G. Sheldrick)', self.cell_text('_computing_structure_solution', COL_DATA))
-        self.assertEqual('1.1', self.cell_text('_diffrn_source_current', COL_DATA))
-        self.assertEqual('50.0', self.cell_text('_diffrn_source_voltage', COL_DATA))
-        self.assertEqual('colourless', self.cell_text('_exptl_crystal_colour', COL_DATA))
-        self.assertEqual('plate', self.cell_text('_exptl_crystal_description', COL_DATA))
+        self.assertEqual('SAINT V8.40A', self.cell_text('_computing_cell_refinement', Column.DATA))
+        self.assertEqual('?', self.cell_text('_computing_cell_refinement', Column.CIF))
+        self.assertEqual('Bruker BIS V6.2.12/2019-08-12', self.cell_text('_computing_data_collection', Column.DATA))
+        self.assertEqual('SHELXT (G. Sheldrick)', self.cell_text('_computing_structure_solution', Column.DATA))
+        self.assertEqual('1.1', self.cell_text('_diffrn_source_current', Column.DATA))
+        self.assertEqual('50.0', self.cell_text('_diffrn_source_voltage', Column.DATA))
+        self.assertEqual('colourless', self.cell_text('_exptl_crystal_colour', Column.DATA))
+        self.assertEqual('plate', self.cell_text('_exptl_crystal_description', Column.DATA))
         # _exptl_crystal_recrystallization_method Yellow:
-        self.assertEqual('', self.cell_text('_exptl_crystal_recrystallization_method', COL_DATA))
+        self.assertEqual('', self.cell_text('_exptl_crystal_recrystallization_method', Column.DATA))
         # self.assertEqual('QPlainTextEdit {background-color: #faf796;}',
         #                 self.myapp.ui.cif_main_table.cellWidget(41, 1).styleSheet())
         self.assertEqual(
             """Sheldrick, G.M. (2015). Acta Cryst. A71, 3-8.\nSheldrick, G.M. (2015). Acta Cryst. C71, 3-8.""",
-            self.cell_text('_publ_section_references', COL_DATA))
+            self.cell_text('_publ_section_references', Column.DATA))
         self.assertEqual('geom', self.cell_text('_atom_sites_solution_hydrogens', 0))
-        self.assertEqual('', self.cell_text('_atom_sites_solution_hydrogens', COL_DATA))
+        self.assertEqual('', self.cell_text('_atom_sites_solution_hydrogens', Column.DATA))
         self.assertEqual(
             """FinalCif V{} by Daniel Kratzert, Freiburg {}, https://dkratzert.de/finalcif.html""".format(VERSION,
                                                                                                           datetime.now().year),
-            self.cell_text('_audit_creation_method', COL_DATA))
+            self.cell_text('_audit_creation_method', Column.DATA))
 
     def test_abs_configuration_combo(self):
         self.assertEqual(6, self.key_row('_chemical_absolute_configuration'))
-        self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>", self.cell_widget_class(6, COL_CIF))
-        self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>", self.cell_widget_class(6, COL_DATA))
-        self.assertEqual("<class 'finalcif.gui.combobox.MyComboBox'>", self.cell_widget_class(6, COL_EDIT))
+        self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>", self.cell_widget_class(6, Column.CIF))
+        self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>", self.cell_widget_class(6, Column.DATA))
+        self.assertEqual("<class 'finalcif.gui.combobox.MyComboBox'>", self.cell_widget_class(6, Column.EDIT))
 
     def test_diffrn_radiation_type_combo(self):
         row = self.key_row('_diffrn_radiation_type')
-        self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>", self.cell_widget_class(row, COL_CIF))
-        self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>", self.cell_widget_class(row, COL_DATA))
-        self.assertEqual("<class 'finalcif.gui.combobox.MyComboBox'>", self.cell_widget_class(row, COL_EDIT))
+        self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>", self.cell_widget_class(row, Column.CIF))
+        self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>", self.cell_widget_class(row, Column.DATA))
+        self.assertEqual("<class 'finalcif.gui.combobox.MyComboBox'>", self.cell_widget_class(row, Column.EDIT))
 
     def test_diffrn_ambient_temperature_combo(self):
         row = self.key_row('_diffrn_ambient_temperature')
-        self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>", self.cell_widget_class(row, COL_CIF))
-        self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>", self.cell_widget_class(row, COL_DATA))
-        self.assertEqual("<class 'finalcif.gui.combobox.MyComboBox'>", self.cell_widget_class(row, COL_EDIT))
+        self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>", self.cell_widget_class(row, Column.CIF))
+        self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>", self.cell_widget_class(row, Column.DATA))
+        self.assertEqual("<class 'finalcif.gui.combobox.MyComboBox'>", self.cell_widget_class(row, Column.EDIT))
 
     def test_combo_items_ambient_temp(self):
         row = self.key_row('_diffrn_ambient_temperature')
         self.assertEqual(
             ['', '15(1)', '80(2)', '100(2)', '110(2)', '120(2)', '130(2)', '150(2)', '200(2)', '293.15(2)', '298(2)'],
-            self.get_combobox_items(row, COL_EDIT))
+            self.get_combobox_items(row, Column.EDIT))
 
     def test_combo_items_radiation(self):
         row = self.key_row('_diffrn_radiation_type')
         self.assertEqual(['', 'Mo Kα', 'Cu Kα', 'Ag Kα', 'In Kα', 'Ga Kα', 'Fe Kα', 'W Kα'],
-                         self.get_combobox_items(row, COL_EDIT))
+                         self.get_combobox_items(row, Column.EDIT))
 
     def test_ambient_conditions_combo(self):
         # Test if N~~2~ is correctly translated to N_2
         row = self.key_row('_diffrn_ambient_environment')
-        self.assertEqual('N₂', self.get_combobox_items(row, COL_EDIT)[1])
+        self.assertEqual('N₂', self.get_combobox_items(row, Column.EDIT)[1])
 
     def test_combo_items_exptl_crystal_description(self):
         row = self.key_row('_exptl_crystal_description')
-        self.assertEqual(['', 'block', 'needle', 'plate', 'prism', 'sphere'], self.get_combobox_items(row, COL_EDIT))
+        self.assertEqual(['', 'block', 'needle', 'plate', 'prism', 'sphere'], self.get_combobox_items(row, Column.EDIT))
 
     def test_combo_items_atom_sites_solution_primary(self):
         row = self.key_row('_atom_sites_solution_primary')
         self.assertEqual(
             ['', 'direct', 'vecmap', 'heavy', 'difmap', 'geom', 'disper', 'isomor', 'notdet', 'dual', 'iterative',
-             'other'], self.get_combobox_items(row, COL_EDIT))
+             'other'], self.get_combobox_items(row, Column.EDIT))
 
     def test_combo_items_exptl_crystal_colour(self):
         row = self.key_row('_exptl_crystal_colour')
         self.assertEqual(
             ['', 'colourless', 'white', 'black', 'yellow', 'red', 'blue', 'green', 'gray', 'pink', 'orange',
              'violet',
-             'brown'], self.get_combobox_items(row, COL_EDIT))
+             'brown'], self.get_combobox_items(row, Column.EDIT))
 
     def test_background_color_data(self):
         self.assertEqual('background-color: #d9ffc9;',
                          self.myapp.ui.cif_main_table.widget_from_key('_computing_cell_refinement',
-                                                                      COL_DATA).styleSheet())
+                                                                      Column.DATA).styleSheet())
         self.assertEqual('background-color: #d9ffc9;',
                          self.myapp.ui.cif_main_table.widget_from_key('_computing_data_collection',
-                                                                      COL_DATA).styleSheet())
+                                                                      Column.DATA).styleSheet())
         self.assertEqual('background-color: #d9ffc9;',
                          self.myapp.ui.cif_main_table.widget_from_key('_computing_data_reduction',
-                                                                      COL_DATA).styleSheet())
+                                                                      Column.DATA).styleSheet())
 
     def test_background_color_theta_max(self):
         self.assertEqual('', self.myapp.ui.cif_main_table.widget_from_key('_cell_measurement_theta_max',
-                                                                          COL_CIF).styleSheet())
+                                                                          Column.CIF).styleSheet())
         self.assertEqual('background-color: #d9ffc9;',
                          self.myapp.ui.cif_main_table.widget_from_key('_cell_measurement_theta_max',
-                                                                      COL_DATA).styleSheet())
+                                                                      Column.DATA).styleSheet())
         self.assertEqual('', self.myapp.ui.cif_main_table.widget_from_key('_cell_measurement_theta_max',
-                                                                          COL_EDIT).styleSheet())
+                                                                          Column.EDIT).styleSheet())
 
     def test_color(self):
         self.assertEqual('', self.myapp.ui.cif_main_table.widget_from_key('_computing_molecular_graphics',
-                                                                          COL_DATA).styleSheet())
+                                                                          Column.DATA).styleSheet())
 
     def test_chemical_formula_moiety(self):
         self.assertEqual('?',
-                         self.cell_text('_chemical_formula_moiety', COL_CIF))
+                         self.cell_text('_chemical_formula_moiety', Column.CIF))
         self.assertEqual('',
-                         self.cell_text('_chemical_formula_moiety', COL_DATA))
+                         self.cell_text('_chemical_formula_moiety', Column.DATA))
         self.assertEqual('',
-                         self.cell_text('_chemical_formula_moiety', COL_EDIT))
+                         self.cell_text('_chemical_formula_moiety', Column.EDIT))
 
     def test_exptl_crystal_size(self):
-        self.assertEqual('0.220', self.cell_text('_exptl_crystal_size_max', COL_DATA))
-        self.assertEqual('0.100', self.cell_text('_exptl_crystal_size_mid', COL_DATA))
-        self.assertEqual('0.040', self.cell_text('_exptl_crystal_size_min', COL_DATA))
+        self.assertEqual('0.220', self.cell_text('_exptl_crystal_size_max', Column.DATA))
+        self.assertEqual('0.100', self.cell_text('_exptl_crystal_size_mid', Column.DATA))
+        self.assertEqual('0.040', self.cell_text('_exptl_crystal_size_min', Column.DATA))
 
     def test_symmetry(self):
         self.assertEqual('18', self.cell_text('_space_group_IT_number', 0))
@@ -225,9 +225,9 @@ class TestWorkfolder(unittest.TestCase):
         self.assertEqual('P 2 2ab', self.cell_text('_space_group_name_Hall', 0))
 
     def test_abs_configuration(self):
-        self.assertEqual('?', self.cell_text('_chemical_absolute_configuration', COL_CIF))
-        self.assertEqual('', self.cell_text('_chemical_absolute_configuration', COL_DATA))
-        self.assertEqual('', self.cell_text('_chemical_absolute_configuration', COL_EDIT))
+        self.assertEqual('?', self.cell_text('_chemical_absolute_configuration', Column.CIF))
+        self.assertEqual('', self.cell_text('_chemical_absolute_configuration', Column.DATA))
+        self.assertEqual('', self.cell_text('_chemical_absolute_configuration', Column.EDIT))
         self.assertIn('background-color: #faf796;',
                       self.myapp.ui.cif_main_table.widget_from_key('_chemical_absolute_configuration',
                                                                    1).styleSheet())
@@ -249,69 +249,69 @@ class TestWorkfolder(unittest.TestCase):
     def test_equipment_click_machine_oxford_0(self):
         self.equipment_click('APEX2 QUAZAR')
         # We have a value which is new. So a row at start is created and only the CIF column is populated
-        self.assertEqual('?', self.cell_text('_diffrn_measurement_ambient_temperature_device_make', COL_CIF))
+        self.assertEqual('?', self.cell_text('_diffrn_measurement_ambient_temperature_device_make', Column.CIF))
 
     def test_equipment_click_machine_oxford_1(self):
         self.equipment_click('APEX2 QUAZAR')
         self.assertEqual('Oxford Cryostream 800',
-                         self.cell_text('_diffrn_measurement_ambient_temperature_device_make', COL_DATA))
+                         self.cell_text('_diffrn_measurement_ambient_temperature_device_make', Column.DATA))
 
     def test_equipment_click_machine_oxford_2(self):
         self.equipment_click('APEX2 QUAZAR')
         self.assertEqual('Oxford Cryostream 800',
-                         self.cell_text('_diffrn_measurement_ambient_temperature_device_make', COL_EDIT))
+                         self.cell_text('_diffrn_measurement_ambient_temperature_device_make', Column.EDIT))
 
     def test_equipment_click_author_address_0(self):
         # Check if click on author adds the address to second and third column:
         self.equipment_click('Crystallographer Details')
-        self.assertEqual('?', self.cell_text('_audit_contact_author_address', COL_CIF))
+        self.assertEqual('?', self.cell_text('_audit_contact_author_address', Column.CIF))
 
     def test_equipment_click_author_address_1(self):
         self.equipment_click('Crystallographer Details')
-        self.assertEqual(unify_line_endings(addr), self.cell_text('_audit_contact_author_address', COL_DATA))
+        self.assertEqual(unify_line_endings(addr), self.cell_text('_audit_contact_author_address', Column.DATA))
 
     def test_equipment_click_author_address_2(self):
         self.equipment_click('Crystallographer Details')
-        self.assertEqual(unify_line_endings(addr), self.cell_text('_audit_contact_author_address', COL_EDIT))
+        self.assertEqual(unify_line_endings(addr), self.cell_text('_audit_contact_author_address', Column.EDIT))
 
     def test_contact_author_name_0(self):
         self.equipment_click('Crystallographer Details')
-        self.assertEqual('?', self.cell_text('_audit_contact_author_name', COL_CIF))
+        self.assertEqual('?', self.cell_text('_audit_contact_author_name', Column.CIF))
 
     def test_contact_author_name_1(self):
         self.equipment_click('Crystallographer Details')
-        self.assertEqual('Dr. Daniel Kratzert', self.cell_text('_audit_contact_author_name', COL_DATA))
+        self.assertEqual('Dr. Daniel Kratzert', self.cell_text('_audit_contact_author_name', Column.DATA))
 
     def test_contact_author_name_2(self):
         self.equipment_click('Crystallographer Details')
-        self.assertEqual('Dr. Daniel Kratzert', self.cell_text('_audit_contact_author_name', COL_EDIT))
+        self.assertEqual('Dr. Daniel Kratzert', self.cell_text('_audit_contact_author_name', Column.EDIT))
 
     def test_contact_author_cellwidget_bevore_click(self):
         self.assertEqual('_cell_measurement_theta_min', self.myapp.ui.cif_main_table.vheaderitems[5])
-        self.assertEqual('2.547', self.myapp.ui.cif_main_table.getText(5, COL_DATA))
+        self.assertEqual('2.547', self.myapp.ui.cif_main_table.getText(5, Column.DATA))
 
     def test_contact_author_cellwidget_after(self):
         self.equipment_click('Crystallographer Details')
         self.assertEqual(self.myapp.ui.cif_main_table.vheaderitems[5], '_audit_contact_author_name')
-        self.assertEqual('Dr. Daniel Kratzert', self.myapp.ui.cif_main_table.getText(5, COL_DATA))
-        self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>", self.cell_widget_class(5, COL_CIF))
-        self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>", self.cell_widget_class(5, COL_DATA))
-        self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>", self.cell_widget_class(5, COL_EDIT))
+        self.assertEqual('Dr. Daniel Kratzert', self.myapp.ui.cif_main_table.getText(5, Column.DATA))
+        self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>", self.cell_widget_class(5, Column.CIF))
+        self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>", self.cell_widget_class(5, Column.DATA))
+        self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>", self.cell_widget_class(5, Column.EDIT))
 
     def test_addr(self):
-        self.assertNotEqual(unify_line_endings(addr), self.cell_text('_audit_contact_author_address', COL_EDIT))
+        self.assertNotEqual(unify_line_endings(addr), self.cell_text('_audit_contact_author_address', Column.EDIT))
 
     def test_addr_after_author_click_0(self):
         self.equipment_click('Crystallographer Details')
-        self.assertEqual(unify_line_endings(addr), self.cell_text('_audit_contact_author_address', COL_EDIT))
+        self.assertEqual(unify_line_endings(addr), self.cell_text('_audit_contact_author_address', Column.EDIT))
 
     def test_addr_after_author_click_1(self):
         self.equipment_click('Crystallographer Details')
-        self.assertEqual(unify_line_endings(addr), self.cell_text('_audit_contact_author_address', COL_DATA))
+        self.assertEqual(unify_line_endings(addr), self.cell_text('_audit_contact_author_address', Column.DATA))
 
     def test_addr_after_author_click_2(self):
         self.equipment_click('Crystallographer Details')
-        self.assertEqual('?', self.cell_text('_audit_contact_author_address', COL_CIF))
+        self.assertEqual('?', self.cell_text('_audit_contact_author_address', Column.CIF))
 
     def test_edit_values_and_save(self):
         self.myapp.hide()
@@ -379,36 +379,36 @@ class TestWorkfolderOtherCifName(unittest.TestCase):
     def testDataColumn(self):
         self.myapp.hide()
         # test of ccdc number added from email during load:
-        self.assertEqual('1979688', self.cell_text('_database_code_depnum_ccdc_archive', COL_DATA))
+        self.assertEqual('1979688', self.cell_text('_database_code_depnum_ccdc_archive', Column.DATA))
         # '_computing_structure_solution:'
-        self.assertEqual('SHELXT (G. Sheldrick)', self.cell_text('_computing_structure_solution', COL_DATA))
-        self.assertEqual('direct', self.cell_text('_atom_sites_solution_primary', COL_DATA))
-        self.assertEqual('9624', self.cell_text('_cell_measurement_reflns_used', COL_DATA))
-        self.assertEqual('78.8605', self.cell_text('_cell_measurement_theta_max', COL_DATA))
-        self.assertEqual('2.547', self.cell_text('_cell_measurement_theta_min', COL_DATA))
+        self.assertEqual('SHELXT (G. Sheldrick)', self.cell_text('_computing_structure_solution', Column.DATA))
+        self.assertEqual('direct', self.cell_text('_atom_sites_solution_primary', Column.DATA))
+        self.assertEqual('9624', self.cell_text('_cell_measurement_reflns_used', Column.DATA))
+        self.assertEqual('78.8605', self.cell_text('_cell_measurement_theta_max', Column.DATA))
+        self.assertEqual('2.547', self.cell_text('_cell_measurement_theta_min', Column.DATA))
         # Test for auto-fill data:
-        self.assertEqual('SAINT V8.40A', self.cell_text('_computing_cell_refinement', COL_DATA))
-        self.assertEqual('?', self.cell_text('_computing_cell_refinement', COL_CIF))
-        self.assertEqual('Bruker BIS V6.2.12/2019-08-12', self.cell_text('_computing_data_collection', COL_DATA))
-        self.assertEqual('SHELXT (G. Sheldrick)', self.cell_text('_computing_structure_solution', COL_DATA))
-        self.assertEqual('1.1', self.cell_text('_diffrn_source_current', COL_DATA))
-        self.assertEqual('50.0', self.cell_text('_diffrn_source_voltage', COL_DATA))
-        self.assertEqual('colourless', self.cell_text('_exptl_crystal_colour', COL_DATA))
-        self.assertEqual('plate', self.cell_text('_exptl_crystal_description', COL_DATA))
+        self.assertEqual('SAINT V8.40A', self.cell_text('_computing_cell_refinement', Column.DATA))
+        self.assertEqual('?', self.cell_text('_computing_cell_refinement', Column.CIF))
+        self.assertEqual('Bruker BIS V6.2.12/2019-08-12', self.cell_text('_computing_data_collection', Column.DATA))
+        self.assertEqual('SHELXT (G. Sheldrick)', self.cell_text('_computing_structure_solution', Column.DATA))
+        self.assertEqual('1.1', self.cell_text('_diffrn_source_current', Column.DATA))
+        self.assertEqual('50.0', self.cell_text('_diffrn_source_voltage', Column.DATA))
+        self.assertEqual('colourless', self.cell_text('_exptl_crystal_colour', Column.DATA))
+        self.assertEqual('plate', self.cell_text('_exptl_crystal_description', Column.DATA))
         # _exptl_crystal_recrystallization_method Yellow:
-        self.assertEqual('', self.cell_text('_exptl_crystal_recrystallization_method', COL_DATA))
+        self.assertEqual('', self.cell_text('_exptl_crystal_recrystallization_method', Column.DATA))
         self.assertEqual('background-color: #faf796;',
                          self.myapp.ui.cif_main_table.cellWidget(
                              self.key_row('_exptl_crystal_recrystallization_method'), 1).styleSheet())
         self.assertEqual(
             """Sheldrick, G.M. (2015). Acta Cryst. A71, 3-8.\nSheldrick, G.M. (2015). Acta Cryst. C71, 3-8.""",
-            self.cell_text('_publ_section_references', COL_DATA))
+            self.cell_text('_publ_section_references', Column.DATA))
         self.assertEqual('geom', self.cell_text('_atom_sites_solution_hydrogens', 0))
-        self.assertEqual('', self.cell_text('_atom_sites_solution_hydrogens', COL_DATA))
+        self.assertEqual('', self.cell_text('_atom_sites_solution_hydrogens', Column.DATA))
         self.assertEqual(
             """FinalCif V{} by Daniel Kratzert, Freiburg {}, https://dkratzert.de/finalcif.html""".format(VERSION,
                                                                                                           datetime.now().year),
-            self.cell_text('_audit_creation_method', COL_DATA))
+            self.cell_text('_audit_creation_method', Column.DATA))
 
 
 if __name__ == '__main__':

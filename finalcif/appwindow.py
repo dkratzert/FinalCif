@@ -39,7 +39,7 @@ from finalcif.equip_property.author_loop_templates import AuthorLoops
 from finalcif.equip_property.equipment import Equipment
 from finalcif.equip_property.properties import Properties
 from finalcif.equip_property.tools import read_document_from_cif_file
-from finalcif.gui.custom_classes import COL_CIF, COL_DATA, COL_EDIT, MyTableWidgetItem, light_green, yellow, light_blue, \
+from finalcif.gui.custom_classes import Column, MyTableWidgetItem, light_green, yellow, light_blue, \
     white
 from finalcif.gui.dialogs import show_update_warning, unable_to_open_message, show_general_warning, \
     cif_file_open_dialog, \
@@ -116,7 +116,7 @@ class AppWindow(QMainWindow):
         self.ui.MainStackedWidget.got_to_main_page()
         self.set_initial_button_states()
         if len(sys.argv) > 1 and not file:
-            self.load_cif_file(Path(sys.argv[1]) if sys.argv[1] != 'compile_ui' else Path())
+            self.load_cif_file(Path(sys.argv[1]))
         elif file:
             self.load_cif_file(file)
         self.load_recent_cifs_list()
@@ -380,7 +380,7 @@ class AppWindow(QMainWindow):
         self.set_report_picture_path(str(image_filename))
 
     def on_text_template_open(self, row: int):
-        self.ui.cif_main_table.setCurrentCell(row, COL_EDIT)
+        self.ui.cif_main_table.setCurrentCell(row, Column.EDIT)
         cif_key = self.ui.cif_main_table.vheaderitems[row]
         self.textedit.cif_key = cif_key
         if cif_key.startswith('_vrf_'):
@@ -388,11 +388,11 @@ class AppWindow(QMainWindow):
             self.textedit.ui.cifKeyLineEdit.setText(self.get_vrf_errortype(cif_key))
             self.textedit.add_textfields(
                 self.settings.load_settings_list('text_templates', self.get_vrf_errortype(cif_key)))
-            self.textedit.ui.plainTextEdit.setPlainText(self.ui.cif_main_table.getText(row, COL_CIF))
+            self.textedit.ui.plainTextEdit.setPlainText(self.ui.cif_main_table.getText(row, Column.CIF))
         else:
             self.textedit.ui.cifKeyLineEdit.setText(cif_key)
             self.textedit.add_textfields(self.settings.load_settings_list('text_templates', cif_key))
-        edit_text = self.ui.cif_main_table.getText(row, COL_EDIT)
+        edit_text = self.ui.cif_main_table.getText(row, Column.EDIT)
         if not self.textedit.ui.plainTextEdit.toPlainText():
             self.textedit.ui.plainTextEdit.setPlainText(edit_text)
 
@@ -505,7 +505,7 @@ class AppWindow(QMainWindow):
         """
         text = self.textedit.ui.plainTextEdit.toPlainText()
         TextEditItem._num = 1
-        self.ui.cif_main_table.setText(key=self.textedit.cif_key, column=COL_EDIT, txt=text)
+        self.ui.cif_main_table.setText(key=self.textedit.cif_key, column =Column.EDIT, txt=text)
         self.ui.MainStackedWidget.got_to_main_page()
         self.textedit.clear_fields()
 
@@ -523,15 +523,19 @@ class AppWindow(QMainWindow):
         """
         input_txt = self.ui.SelectCif_LineEdit.text().strip()
         if is_database_number(input_txt):
-            file = '{}.cif'.format(input_txt)
-            r = requests.get(self.deposit.main_url + '{}.cif'.format(input_txt), timeout=6)
+            self.status_bar.show_message('Request sent to COD...')
+            r = requests.get(f'{self.deposit.main_url}{input_txt}.cif', timeout=8)
+            self.status_bar.show_message('Got a result.')
             if r.status_code == 200:
-                file = cif_file_save_dialog(file)
-                Path(file).write_bytes(r.content)
+                filename = cif_file_save_dialog(f'{input_txt}.cif')
+                Path(filename).write_bytes(r.content)
                 r.close()
-                self.load_cif_file(Path(file))
+                self.load_cif_file(Path(filename))
             else:
-                self.ui.SelectCif_LineEdit.setText('')
+                #self.ui.SelectCif_LineEdit.setText('')
+                self.status_bar.show_message(f'No COD entry for {input_txt} found.')
+        else:
+            self.status_bar.show_message(f'Not a valid COD number. It must be seven digits.')
 
     @property
     def current_block(self) -> int:
@@ -645,8 +649,8 @@ class AppWindow(QMainWindow):
             if not table.cellWidget(row, 0).isChecked():
                 cifkey = table.item(row, 1).data(2)
                 self.cif.block.set_pair(cifkey, '?')
-                self.ui.cif_main_table.setText(key=cifkey, column=COL_CIF, txt='?')
-                self.ui.cif_main_table.setText(key=cifkey, column=COL_DATA, txt='?')
+                self.ui.cif_main_table.setText(key=cifkey, column =Column.CIF, txt='?')
+                self.ui.cif_main_table.setText(key=cifkey, column =Column.DATA, txt='?')
 
     def show_sources(self) -> None:
         """
@@ -986,7 +990,7 @@ class AppWindow(QMainWindow):
         checkcif_out.verticalScrollBar().setValue(0)
         moiety = self.ui.cif_main_table.getTextFromKey(key='_chemical_formula_moiety', col=0)
         if p.formula_moiety and moiety in ['', '?'] and not self.cif.is_multi_cif:
-            self.ui.cif_main_table.setText(key='_chemical_formula_moiety', txt=p.formula_moiety, column=COL_EDIT)
+            self.ui.cif_main_table.setText(key='_chemical_formula_moiety', txt=p.formula_moiety, column=Column.EDIT)
         print('Killing platon!')
         p.kill()
         p.delete_orphaned_files()
@@ -1218,8 +1222,8 @@ class AppWindow(QMainWindow):
             vhead = self.ui.cif_main_table.vheader_text(row)
             if not self.is_row_a_cif_item(vhead):
                 continue
-            col_data = self.ui.cif_main_table.text(row, COL_DATA)
-            col_edit = self.ui.cif_main_table.text(row, COL_EDIT)
+            col_data = self.ui.cif_main_table.text(row, Column.DATA)
+            col_edit = self.ui.cif_main_table.text(row, Column.EDIT)
             if col_data and not col_edit and col_data != '?':
                 self.cif[vhead] = col_data
             if col_edit:
@@ -1288,7 +1292,7 @@ class AppWindow(QMainWindow):
             if item.pair is not None:
                 key, value = item.pair
                 value = gemmi.cif.as_string(value).strip()
-                self.ui.cif_main_table.setText(key=key, column=COL_EDIT, color=None, txt=value)
+                self.ui.cif_main_table.setText(key=key, column =Column.EDIT, color=None, txt=value)
         for loop in changes.loops:
             self.cif.add_loop_to_cif(loop_tags=loop.tags, loop_values=loop.values)
         return True
@@ -1378,9 +1382,9 @@ class AppWindow(QMainWindow):
                     continue
                 value = cif.as_string(value)
                 if key in self.ui.cif_main_table.vheaderitems:
-                    self.ui.cif_main_table.setText(key=key, column=COL_EDIT, txt=value, color=light_green)
+                    self.ui.cif_main_table.setText(key=key, column =Column.EDIT, txt=value, color=light_green)
                 else:
-                    self.add_row(key, value)  # , column=COL_EDIT
+                    self.add_row(key, value)  # , column =Column.EDIT
 
     def do_not_import_this_key(self, key: str, value: str, cif: 'CifContainer') -> bool:
         if value == '?' or value.strip() == '':
@@ -1730,7 +1734,7 @@ class AppWindow(QMainWindow):
                 if '_database_code_depnum_ccdc_archive' not in self.ui.cif_main_table.vheaderitems:
                     # self.ui.cif_main_table.vheaderitems.insert(0, '_database_code_depnum_ccdc_archive')
                     self.add_row('_database_code_depnum_ccdc_archive', '', at_start=True)
-                txt = self.ui.cif_main_table.getTextFromKey('_database_code_depnum_ccdc_archive', COL_EDIT).strip()
+                txt = self.ui.cif_main_table.getTextFromKey('_database_code_depnum_ccdc_archive', Column.EDIT).strip()
                 if not txt or (txt == '?'):
                     self.sources['_database_code_depnum_ccdc_archive'] = (str(ccdc.depnum), str(ccdc.emlfile.name))
                     self.missing_data.add('_database_code_depnum_ccdc_archive')
@@ -1756,12 +1760,12 @@ class AppWindow(QMainWindow):
             try:
                 txt = str(self.sources[miss_key][0])
                 if row_num > self.complete_data_row:
-                    self.ui.cif_main_table.setText(key=miss_key, column=COL_DATA, txt=txt)
+                    self.ui.cif_main_table.setText(key=miss_key, column =Column.DATA, txt=txt)
                 else:
                     if txt and txt != '?':
-                        self.ui.cif_main_table.setText(key=miss_key, column=COL_DATA, txt=txt, color=light_green)
+                        self.ui.cif_main_table.setText(key=miss_key, column =Column.DATA, txt=txt, color=light_green)
                     else:
-                        self.ui.cif_main_table.setText(key=miss_key, column=COL_DATA, txt=txt, color=yellow)
+                        self.ui.cif_main_table.setText(key=miss_key, column =Column.DATA, txt=txt, color=yellow)
             except (KeyError, TypeError) as e:
                 # TypeError my originate from incomplete self.missing_data list!
                 # print(e, '##', miss_key)
@@ -1786,7 +1790,7 @@ class AppWindow(QMainWindow):
         for row_number in range(self.ui.cif_main_table.model().rowCount()):
             vhead_key = self.get_key_by_row_number(row_number)
             vhead_key = self.get_vrf_errortype(vhead_key)
-            widget = self.ui.cif_main_table.cellWidget(row_number, COL_EDIT)
+            widget = self.ui.cif_main_table.cellWidget(row_number, Column.EDIT)
             if isinstance(widget, MyQPlainTextEdit):
                 if self.settings.load_settings_list('text_templates', vhead_key):
                     widget.setBackground(light_blue)
@@ -1818,7 +1822,7 @@ class AppWindow(QMainWindow):
             if key == '_audit_creation_method':
                 txt = 'FinalCif V{} by Daniel Kratzert, Freiburg {}, https://dkratzert.de/finalcif.html'
                 strval = txt.format(VERSION, datetime.now().year)
-                self.ui.cif_main_table.setText(key=key, column=COL_DATA, txt=strval)
+                self.ui.cif_main_table.setText(key=key, column =Column.DATA, txt=strval)
                 QTimer.singleShot(200, self.ui.cif_main_table.resizeRowsToContents)
             # print(key, value)
         if not self.cif.test_res_checksum():
@@ -1870,7 +1874,7 @@ class AppWindow(QMainWindow):
         textedit.setPlainText(self.cif.res_file_data[1:-1])
         doc = textedit.document()
         font = doc.defaultFont()
-        font.setFamily("Courier")
+        font.setFamily("Courier New")
         font.setStyleHint(QtGui.QFont.Monospace)
         font.setPointSize(14)
         doc.setDefaultFont(font)
@@ -1927,10 +1931,10 @@ class AppWindow(QMainWindow):
             load_key = self.get_vrf_errortype(load_key)
             if load_key in self.settings.list_saved_items('text_templates'):
                 color = light_blue
-            self.ui.cif_main_table.setText(row=row_num, key=key, column=COL_CIF,
+            self.ui.cif_main_table.setText(row=row_num, key=key, column =Column.CIF,
                                            txt='?' if at_start else strval)
-            self.ui.cif_main_table.setText(row=row_num, key=key, column=COL_DATA, txt='')
-            self.ui.cif_main_table.setText(row=row_num, key=key, column=COL_EDIT, color=color,
+            self.ui.cif_main_table.setText(row=row_num, key=key, column =Column.DATA, txt='')
+            self.ui.cif_main_table.setText(row=row_num, key=key, column =Column.EDIT, color=color,
                                            txt=strval if at_start else '')
         head_item_key = MyTableWidgetItem(key)
         if key != "These below are already in:":

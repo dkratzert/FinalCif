@@ -1,4 +1,6 @@
-# Form implementation generated from reading ui file 'D:\_DEV\GitHub\FinalCif\finalcif\gui\new_key_dialog_ui.ui'
+# -*- coding: utf-8 -*-
+
+# Form implementation generated from reading ui file 'new_key_dialog_ui.ui'
 #
 # Created by: PyQt6 UI code generator 6.4.2
 #
@@ -52,3 +54,13 @@ class Ui_AddKeyWindow(object):
         self.searchLabel.setText(_translate("AddKeyWindow", "Search"))
         self.addKeyPushButton.setText(_translate("AddKeyWindow", "Add Key(s)"))
         self.cancelPushButton.setText(_translate("AddKeyWindow", "Close"))
+
+
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    AddKeyWindow = QtWidgets.QMainWindow()
+    ui = Ui_AddKeyWindow()
+    ui.setupUi(AddKeyWindow)
+    AddKeyWindow.show()
+    sys.exit(app.exec_())

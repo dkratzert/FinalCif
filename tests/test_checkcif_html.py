@@ -13,8 +13,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtTest import QTest
 
 from finalcif.appwindow import AppWindow
-from finalcif.gui.custom_classes import COL_EDIT
-from finalcif.tools.misc import strip_finalcif_of_name
+from finalcif.gui.custom_classes import Column
 
 
 class TestCheckCifHTML(unittest.TestCase):
@@ -53,7 +52,7 @@ class TestCheckCifHTML(unittest.TestCase):
         self.maxDiff = None
         self.equipment_click('D8 VENTURE')
         self.equipment_click('Crystallographer Details')
-        self.myapp.ui.cif_main_table.setText(key='_chemical_absolute_configuration', txt='ad', column=COL_EDIT)
+        self.myapp.ui.cif_main_table.setText(key='_chemical_absolute_configuration', txt='ad', column=Column.EDIT)
         # Remember: This test is without structure factors!
         self.myapp.ui.structfactCheckBox.setChecked(True)
         QTest.mouseClick(self.myapp.ui.CheckcifHTMLOnlineButton, Qt.LeftButton, Qt.NoModifier)

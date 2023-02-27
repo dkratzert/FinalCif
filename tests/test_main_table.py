@@ -11,7 +11,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor
 
 from finalcif.appwindow import AppWindow
-from finalcif.gui.custom_classes import COL_CIF, COL_DATA, COL_EDIT
+from finalcif.gui.custom_classes import Column
 from finalcif.tools.misc import unify_line_endings
 
 
@@ -68,9 +68,9 @@ class TestMainTableFieldBehavior(unittest.TestCase):
         self.assertFalse('_atom_sites_solution_primary' in self.myapp.ui.cif_main_table.vheaderitems)
 
     def test_get_text_by_key(self):
-        self.assertEqual('geom', self.cell_text('_atom_sites_solution_hydrogens', COL_CIF))
-        self.assertEqual('', self.cell_text('_atom_sites_solution_hydrogens', COL_DATA))
-        self.assertEqual('', self.cell_text('_atom_sites_solution_hydrogens', COL_EDIT))
+        self.assertEqual('geom', self.cell_text('_atom_sites_solution_hydrogens', Column.CIF))
+        self.assertEqual('', self.cell_text('_atom_sites_solution_hydrogens', Column.DATA))
+        self.assertEqual('', self.cell_text('_atom_sites_solution_hydrogens', Column.EDIT))
 
     def test_Crystallographer_in_equipment_list(self):
         self.assertEqual('Crystallographer Details', self.myapp.ui.EquipmentTemplatesListWidget.item(1).text())
@@ -81,32 +81,32 @@ class TestMainTableFieldBehavior(unittest.TestCase):
         self.equipment_click('Crystallographer Details')
         # It is important here, that the first column has 'dkratzert@gmx.de' in it:
         self.assertEqual('?',
-                         self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_email', COL_CIF))
+                         self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_email', Column.CIF))
         self.assertEqual('dkratzert@gmx.de',
-                         self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_email', COL_DATA))
+                         self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_email', Column.DATA))
         self.assertEqual('dkratzert@gmx.de',
-                         self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_email', COL_EDIT))
+                         self.myapp.ui.cif_main_table.getTextFromKey('_audit_contact_author_email', Column.EDIT))
 
     def test_field_types(self):
         self.assertEqual("<class 'NoneType'>",
                          str(self.myapp.ui.cif_main_table.itemFromKey('_atom_sites_solution_hydrogens',
-                                                                      COL_CIF).__class__))
+                                                                      Column.CIF).__class__))
         self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>",
                          str(self.myapp.ui.cif_main_table.widget_from_key('_atom_sites_solution_hydrogens',
-                                                                          COL_CIF).__class__))
+                                                                          Column.CIF).__class__))
 
     def test_combobox_field(self):
         self.assertEqual("<class 'finalcif.gui.combobox.MyComboBox'>",
                          str(self.myapp.ui.cif_main_table.widget_from_key('_atom_sites_solution_hydrogens',
-                                                                          COL_EDIT).__class__))
+                                                                          Column.EDIT).__class__))
 
     def test_plaintextedit_field(self):
         self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>",
                          str(self.myapp.ui.cif_main_table.widget_from_key('_audit_contact_author_address',
-                                                                          COL_CIF).__class__))
+                                                                          Column.CIF).__class__))
         self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>",
                          str(self.myapp.ui.cif_main_table.widget_from_key('_audit_contact_author_address',
-                                                                          COL_DATA).__class__))
+                                                                          Column.DATA).__class__))
         self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>",
                          str(self.myapp.ui.cif_main_table.widget_from_key('_audit_contact_author_address',
-                                                                          COL_EDIT).__class__))
+                                                                          Column.EDIT).__class__))
