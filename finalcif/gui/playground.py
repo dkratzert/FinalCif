@@ -53,17 +53,19 @@ class MainWindow(QMainWindow):
         # Update the label with the result
         txt = self.label.text()
         self.label.setText(f"{txt}{result}")
-        print(result)
+        print(result, '##')
 
 
-'''if __name__ == "__main__":
-    app = QApplication(sys.argv)
+if __name__ == "__main__":
+    import sys
+    from PyQt5 import QtWidgets
+    app = QtWidgets.QApplication(sys.argv)
     window = MainWindow()
     window.show()
     sys.exit(app.exec_())
-'''
 
-if __name__ == '__main__':
+
+"""if __name__ == '__main__':
     from PyQt5 import QtWidgets
 
     app = QtWidgets.QApplication([])
@@ -85,4 +87,4 @@ if __name__ == '__main__':
     l2.addWidget(q_label)
     gb.setDisabled(True)
 
-    app.exec()
+    app.exec()"""
