@@ -52,7 +52,6 @@ dependencies = [
 
 [tool.hatch.build.targets.sdist]
 only-include = ["finalcif"]
-sources = ["finalcif"]
 exclude = [
     "/.github",
     "/test-data",
