@@ -19,54 +19,37 @@ from finalcif.app_path import application_path
 from finalcif.appwindow import AppWindow, DEBUG, app
 from finalcif.gui.dialogs import show_bug_found_warning
 
-r"""
-TODO:
-- Try https://qpageview.org/usage.html
-- generate picture with local platon
-- dist errors: Giacovazzo p.122
-- Read measurement time from SAINT 0m._ls file and its list of integrated files. Or even better from the .xml file.
-- Extract more data from .xml file
-- Extract "_diffrn_measurement_details from .xml file
-- maybe add refinement model description via ShelXFile parser 
-- Add one picture of the vzs video file to report.
-- Improve handling of SQUEEZEd data
-- Improove handling of Flack x parameter
-    - citation, method used, success
-"""
-# They must be here in order to have directly updated ui files from the ui compiler:
+
+def my_exception_hook(exctype: Type[BaseException], value: BaseException, error_traceback: traceback,
+                      exit=True) -> None:
+    """
+    Hooks into Exceptions to create debug reports.
+    """
+    errortext = (f'FinalCif V{VERSION} crash report\n\n'
+                 f'Please send also the corresponding CIF file, if possible. \n'
+                 f'Python {sys.version}\n'
+                 f'Platform: {sys.platform}\n'
+                 f'Date: {time.asctime(time.localtime(time.time()))}\n'
+                 f'Finalcif crashed during the following operation:\n\n'
+                 f'{"-" * 120}\n'
+                 f'{"".join(traceback.format_tb(error_traceback))}\n'
+                 f'{str(exctype.__name__)}: '
+                 f'{str(value)} \n'
+                 f'{"-" * 120}\n')
+    logfile = Path.home().joinpath(Path(r'finalcif-crash.txt'))
+    try:
+        logfile.write_text(errortext)
+    except PermissionError:
+        pass
+    sys.__excepthook__(exctype, value, error_traceback)
+    show_bug_found_warning(logfile)
+    if exit:
+        sys.exit(1)
 
 
-if __name__ == '__main__':
-    def my_exception_hook(exctype: Type[BaseException], value: BaseException, error_traceback: traceback,
-                          exit=True) -> None:
-        """
-        Hooks into Exceptions to create debug reports.
-        """
-        errortext = (f'FinalCif V{VERSION} crash report\n\n'
-                     f'Please send also the corresponding CIF file, if possible. \n'
-                     f'Python {sys.version}\n'
-                     f'Platform: {sys.platform}\n'
-                     f'Date: {time.asctime(time.localtime(time.time()))}\n'
-                     f'Finalcif crashed during the following operation:\n\n'
-                     f'{"-" * 120}\n'
-                     f'{"".join(traceback.format_tb(error_traceback))}\n'
-                     f'{str(exctype.__name__)}: '
-                     f'{str(value)} \n'
-                     f'{"-" * 120}\n')
-        logfile = Path.home().joinpath(Path(r'finalcif-crash.txt'))
-        try:
-            logfile.write_text(errortext)
-        except PermissionError:
-            pass
-        sys.__excepthook__(exctype, value, error_traceback)
-        show_bug_found_warning(logfile)
-        if exit:
-            sys.exit(1)
-
-
+def main():
     if not DEBUG:
         sys.excepthook = my_exception_hook
-
     # windows_style = QStyleFactory.create('Fusion')
     # app.setStyle(windows_style)
     w = AppWindow()
@@ -75,3 +58,7 @@ if __name__ == '__main__':
     # w.showMaximized()  # For full screen view
     w.setBaseSize(1200, 780)
     sys.exit(app.exec_())
+
+
+if __name__ == '__main__':
+    main()

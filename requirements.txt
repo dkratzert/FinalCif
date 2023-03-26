@@ -8,8 +8,8 @@ html2text
 lxml
 pefile
 pybind11
-PyQt5==5.15.7
-PyQt5-sip==12.11.0
+PyQt5==5.15.9
+PyQt5-sip==12.11.1
 PyQt5-stubs==5.15.6.0
 PyQtWebEngine==5.15.6
 python-docx==0.8.11
