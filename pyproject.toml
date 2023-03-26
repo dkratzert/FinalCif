@@ -1,0 +1,70 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "finalcif"
+version = "118"
+authors = [
+    { name = "Daniel Kratzert", email = "dkratzert@gmx.de" },
+]
+description = "Search X-ray structures on your hard drive"
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering :: Chemistry",
+    "Development Status :: 5 - Production/Stable",
+    "Programming Language :: Python :: 3",
+]
+dependencies = [
+    'wheel',
+    'altgraph',
+    'certifi',
+    'chardet',
+    'future',
+    'gemmi',
+    'html2text',
+    'lxml',
+    'pefile',
+    'pybind11',
+    'PyQt5==5.15.9',
+    'PyQt5-sip==12.11.1',
+    'PyQt5-stubs==5.15.6.0',
+    'PyQtWebEngine==5.15.6',
+    'python-docx==0.8.11',
+    'pywin32-ctypes==0.2.0',
+    'QtAwesome',
+    'QtPy',
+    'requests',
+    'urllib3',
+    'docxtpl',
+    'shelxfile',
+    'crossrefapi',
+    'numpy',
+]
+
+[project.urls]
+"Homepage" = "https://dkratzert.de/finalcif.html"
+"Bug Tracker" = "https://github.com/dkratzert/FinalCif/issues"
+
+[tool.hatch.build.targets.sdist]
+only-include = ["finalcif"]
+sources = ["finalcif"]
+exclude = [
+    "/.github",
+    "/test-data",
+    "/scripts",
+    "/setup",
+    "/tests",
+    "/docs",
+    "/requirements-devel.txt",
+    "/requirements.txt",
+    "/make_release.sh",
+    "/venv*",
+]
+
+[project.scripts]
+finalcif = "finalcif.finalcif_start:main"
