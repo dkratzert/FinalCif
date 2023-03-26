@@ -17,9 +17,9 @@ thoroughly afterwards, no software is perfect!
 
 
 .. toctree::
-   
-   install
+
    description
+   install
    templates
    loops
    checkcif

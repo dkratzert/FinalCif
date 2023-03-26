@@ -13,6 +13,17 @@ anywhere on you computer.
 Thanks to Andrius Merkys, Debian and Ubuntu also have FinalCif in their official distribution.
 
 
-Developers
+Any System
 ----------
-FinalCif can also run directly from python. Please refer to :ref: `sources` for further instructions. 
+
+Alternatively, there is a pypi package for FinalCif:
+
+Since version 118, there is a `pypi <https://pypi.org/project/finalcif>`_ package for installation in a Python environment.
+Do the following steps in order to install and run FinalCif in any Python environment:
+
+.. code-block::
+
+    >> python -m venv venv
+    >> source venv/bin/activate   (Windows: venv\Scripts\activate.bat)
+    >> pip install finalcif
+    >> finalcif
