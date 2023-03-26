@@ -40,7 +40,7 @@ FinalCif can add a picture of your structure to the report document.
 .. figure:: pics/finalcif_details.png
    :width: 600
 
-    The Details page.
+   The Details page.
 
 
 Bonds and Angles Tables
