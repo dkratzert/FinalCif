@@ -22,7 +22,15 @@ Do the following steps in order to install and run FinalCif in any Python enviro
 
 .. code-block::
 
-    >> python -m venv venv
-    >> source venv/bin/activate   (Windows: venv\Scripts\activate.bat)
+    >> python -m venv venv        <-- creates a virtual environment
+    >> source venv/bin/activate   (Windows: venv\Scripts\activate.bat)  <-- Activates the environment
     >> pip install finalcif
     >> finalcif
+
+Next time, only
+
+.. code-block::
+
+    >> source venv/bin/activate   (Windows: venv\Scripts\activate.bat)
+    >> finalcif
+is necessary.
