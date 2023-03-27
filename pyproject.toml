@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "finalcif"
-version = "118"
+version = "118.post1"
 authors = [
     { name = "Daniel Kratzert", email = "dkratzert@gmx.de" },
 ]
@@ -30,12 +30,11 @@ dependencies = [
     'lxml',
     'pefile',
     'pybind11',
-    'PyQt5==5.15.9',
-    'PyQt5-sip==12.11.1',
-    'PyQt5-stubs==5.15.6.0',
-    'PyQtWebEngine==5.15.6',
-    'python-docx==0.8.11',
-    'pywin32-ctypes==0.2.0',
+    'PyQt5~=5.15',
+    'PyQt5-sip~=12.11',
+    'PyQtWebEngine~=5.15',
+    'python-docx~=0.8',
+    'pywin32-ctypes~=0.2',
     'QtAwesome',
     'QtPy',
     'requests',
