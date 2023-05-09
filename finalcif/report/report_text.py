@@ -1,6 +1,6 @@
 import os
 from builtins import str
-from typing import Union, List
+from typing import Union, List, Tuple
 
 import gemmi
 from docx import Document
@@ -14,8 +14,9 @@ from finalcif.cif.cif_file_io import CifContainer
 from finalcif.cif.text import retranslate_delimiter, string_to_utf8
 from finalcif.report.references import DummyReference, SAINTReference, SORTAVReference, ReferenceList, CCDCReference, \
     SHELXLReference, SHELXTReference, SHELXSReference, FinalCifReference, ShelXleReference, Olex2Reference, \
-    SHELXDReference, SadabsTwinabsReference, CrysalisProReference, Nosphera2Reference, XDSReference
-from finalcif.tools.misc import protected_space, angstrom, zero_width_space, remove_line_endings
+    SHELXDReference, SadabsTwinabsReference, CrysalisProReference, Nosphera2Reference, XDSReference, DSRReference2015, \
+    DSRReference2018
+from finalcif.tools.misc import protected_space, angstrom, zero_width_space, remove_line_endings, flatten
 
 
 def math_to_word(eq: str) -> str:
@@ -213,16 +214,27 @@ class DataReduct():
         data_reduct_ref = SAINTReference('SAINT', saintversion)
         return data_reduct_ref, integration_prog
 
-    def add_crysalispro_reference(self, integration):
+    def add_crysalispro_reference(self, integration: str) -> Tuple[CrysalisProReference, CrysalisProReference, str]:
+        """
+        CrysAlisPro, Agilent Technologies,Version 1.171.37.31h (release 21-03-2014 CrysAlis171 .NET)(compiled Mar 21 2014,18:13:45)
+        CrysAlisPro 1.171.42.58a (Rigaku OD, 2022)
+        """
         year = 'unknown version'
-        if len(integration.split()) > 3:
-            year = integration.split()[4][:-1]
         version = 'unknown year'
-        if len(integration.split()) >= 1:
+        pages = 'Rigaku OD'
+        length = len(integration.split())
+        if 3 < length <= 5:
+            year = integration.split()[4][:-1]
             version = integration.split()[1][:-1]
+        elif length > 8 and 'agilent' in integration.lower():
+            pages = 'Agilent Technologies'
+            year = integration.split()[5]
+            if '-' in year:
+                year = year.split('-')[-1]
+            version = integration.split()[3]
         integration_prog = 'Crysalispro'
-        data_reduct_ref = CrysalisProReference(version=version, year=year)
-        absorpt_ref = CrysalisProReference(version=version, year=year)
+        data_reduct_ref = CrysalisProReference(version=version, year=year, pages=pages)
+        absorpt_ref = CrysalisProReference(version=version, year=year, pages=pages)
         return data_reduct_ref, absorpt_ref, integration_prog
 
 
@@ -239,13 +251,15 @@ class SolveRefine():
             solveref = SHELXSReference()
         if 'SHELXD' in solution_prog.upper():
             solveref = SHELXDReference()
+        ref.append(solveref)
         refined = gstr(self.cif['_computing_structure_refinement']) or '??'
         if refined.upper().startswith(('SHELXL', 'XL')):
             refineref = SHELXLReference()
         if 'OLEX' in refined.upper():
             refineref = Olex2Reference()
-        if 'NOSPHERA2' in solution_prog.upper() or 'NOSPHERA2' in self.cif['_refine_special_details'].upper():
-            refineref = Nosphera2Reference()
+        if 'NOSPHERA2' in solution_prog.upper() or 'NOSPHERA2' in self.cif['_refine_special_details'].upper() \
+                or 'NOSPHERA2' in self.cif['_olex2_refine_details'].upper():
+            refineref = [Olex2Reference(), Nosphera2Reference()]
         refine_coef = gstr(self.cif['_refine_ls_structure_factor_coef'])
         sentence = r"The structure was solved by {} methods using {} and refined by full-matrix " \
                    "least-squares methods against "
@@ -260,7 +274,7 @@ class SolveRefine():
             paragraph.add_run(' using ShelXle')
             shelxle = ShelXleReference()
         paragraph.add_run('.')
-        ref.append([solveref, refineref, shelxle])
+        ref.append(flatten([solveref, refineref, shelxle]))
 
 
 class Atoms():
@@ -436,10 +450,9 @@ class CCDC():
 
 
 class FinalCifreport():
-    def __init__(self, paragraph: Paragraph, ref: ReferenceList):
+    def __init__(self, paragraph: Paragraph):
         sentence = "This report and the CIF file were generated using FinalCif."
         paragraph.add_run(sentence)
-        ref.append(FinalCifReference())
 
 
 class RefinementDetails():
@@ -468,3 +481,31 @@ def format_radiation(radiation_type: str) -> list:
         return radtype
     else:
         return radtype
+
+
+def make_report_text(cif, document: Document) -> ReferenceList:
+    paragr = document.add_paragraph()
+    paragr.style = document.styles['fliesstext']
+    ref = ReferenceList(paragr)
+    # -- The main text:
+    paragr.add_run('The following text is only a suggestion: ').font.bold = True
+    CrstalSelection(cif, paragr)
+    MachineType(cif, paragr)
+    DataReduct(cif, paragr, ref)
+    SpaceChar(paragr).regular()
+    SolveRefine(cif, paragr, ref)
+    SpaceChar(paragr).regular()
+    if cif.hydrogen_atoms_present:
+        Atoms(cif, paragr)
+        Hydrogens(cif, paragr)
+        SpaceChar(paragr).regular()
+    if cif.disorder_present:
+        d = Disorder(cif, paragr)
+        if d.dsr_sentence:
+            ref.append([DSRReference2015(), DSRReference2018()])
+            SpaceChar(paragr).regular()
+    CCDC(cif, paragr, ref)
+    SpaceChar(paragr).regular()
+    FinalCifreport(paragr)
+    ref.append(FinalCifReference())
+    return ref

@@ -54,7 +54,7 @@ class ReferenceList():
         self.paragraph = paragraph
         self._references = list()
 
-    def append(self, ref: Union[List, Tuple]) -> None:
+    def append(self, ref: Union[List['ReferenceFormatter'], Tuple['ReferenceFormatter'], 'ReferenceFormatter']) -> None:
         """Adds a superscript list of reference numbers in brackets to the document."""
         if isinstance(ref, (list, tuple)):
             if not ref:
@@ -290,6 +290,7 @@ class Nosphera2Reference(ReferenceFormatter):
         self.year = '2021'
         self.volume = '12'
         self.pages = '1675–1692'
+        self.title = 'Accurate crystal structures and chemical properties from NoSpherA2'
 
 
 class SAINTReference(ReferenceFormatter):
@@ -532,14 +533,14 @@ class CrysalisProReference(ReferenceFormatter):
     Crysalispro, 1.171.40.68a, 2019, Rigaku OD.
     """
 
-    def __init__(self, version: str, year: str):
+    def __init__(self, version: str, year: str, pages: str = 'Rigaku OD'):
         super().__init__()
         self.authors = 'Crysalispro'
         self.journal = version
         self.year = year
-        self.pages = 'Rigaku OD'
+        self.pages = pages
 
 
 if __name__ == '__main__':
-    r = ReferenceList.get_sequence([1, 2, 3, 4])
+    r = ReferenceList.get_sequence([1, 2, 3, 6])
     print(r)

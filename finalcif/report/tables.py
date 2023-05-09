@@ -19,10 +19,8 @@ from docx.text.paragraph import Paragraph
 from finalcif.app_path import application_path
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.report.mtools import cif_keywords_list, format_space_group
-from finalcif.report.references import ReferenceList, DSRReference2018, DSRReference2015
-from finalcif.report.report_text import CCDC, CrstalSelection, DataReduct, Disorder, Hydrogens, \
-    MachineType, \
-    SolveRefine, format_radiation, FinalCifreport, SpaceChar, RefinementDetails, Atoms
+from finalcif.report.references import ReferenceList
+from finalcif.report.report_text import format_radiation, RefinementDetails, make_report_text
 from finalcif.report.templated_report import BondsAndAngles, TorsionAngles, HydrogenBonds
 from finalcif.tools.misc import protected_space, angstrom, bequal, sigma_sm, halbgeviert, degree_sign, ellipsis_mid, \
     less_or_equal, \
@@ -150,33 +148,6 @@ def add_picture(document: Document, options: Options, picfile: Path) -> None:
     except ValueError:
         width = 7.0
     pic.add_run().add_picture(str(picfile), width=Cm(width))
-
-
-def make_report_text(cif, document: Document) -> ReferenceList:
-    paragr = document.add_paragraph()
-    paragr.style = document.styles['fliesstext']
-    ref = ReferenceList(paragr)
-    # -- The main text:
-    paragr.add_run('The following text is only a suggestion: ').font.bold = True
-    CrstalSelection(cif, paragr)
-    MachineType(cif, paragr)
-    DataReduct(cif, paragr, ref)
-    SpaceChar(paragr).regular()
-    SolveRefine(cif, paragr, ref)
-    SpaceChar(paragr).regular()
-    if cif.hydrogen_atoms_present:
-        Atoms(cif, paragr)
-        Hydrogens(cif, paragr)
-        SpaceChar(paragr).regular()
-    if cif.disorder_present:
-        d = Disorder(cif, paragr)
-        if d.dsr_sentence:
-            ref.append([DSRReference2015(), DSRReference2018()])
-            SpaceChar(paragr).regular()
-    CCDC(cif, paragr, ref)
-    SpaceChar(paragr).regular()
-    FinalCifreport(paragr, ref)
-    return ref
 
 
 def create_document() -> Document:
