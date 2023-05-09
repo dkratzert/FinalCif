@@ -57,7 +57,7 @@ class BondsAndAngles():
                 symm2 = None
             num = symmsearch(self.cif, newsymms, num, symm2, symms)
             # Atom1 - Atom2:
-            a = '{}{}{}'.format(at1, halbgeviert, at2)
+            a = f'{at1}{halbgeviert}{at2}'
             symm = '#' + str(symms[symm2]) if symm2 else ''
             atoms = RichText(a)
             atoms.add(symm, superscript=True)
@@ -86,7 +86,7 @@ class BondsAndAngles():
             # atom1 symm1_str a symm2_str
             atoms = RichText(ang.label1)
             atoms.add(symm1_str, superscript=True)
-            a = '{}{}{}{}'.format(halbgeviert, ang.label2, halbgeviert, ang.label3)
+            a = f'{halbgeviert}{ang.label2}{halbgeviert}{ang.label3}'
             atoms.add(a, superscript=False)
             atoms.add(symm2_str, superscript=True)
             angles_list.append({'atoms': atoms, 'angle': angle_val})
@@ -231,7 +231,7 @@ def get_symminfo(newsymms: dict) -> str:
         if n == nitems:
             sep = ''
         n += 1
-        line += "#{}: {}{}   ".format(key, value, sep)
+        line += f"#{key}: {value}{sep}   "
     if newsymms:
         return line
     else:
@@ -301,7 +301,7 @@ class TemplatedReport():
         p.alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
         p._element.append(spgr_word)
         try:
-            p.add_run(' ({})'.format(cif.spgr_number))
+            p.add_run(f' ({cif.spgr_number})')
         except AttributeError:
             pass
         return sd
