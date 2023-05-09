@@ -3,7 +3,7 @@ import re
 from collections import namedtuple
 from math import sin, radians
 from pathlib import Path
-from typing import List, Dict
+from typing import List, Dict, Union
 
 import jinja2
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
@@ -205,14 +205,17 @@ class HydrogenBonds():
         return atoms_list
 
 
-def get_card(cif: CifContainer, symm: str) -> List[str]:
+def get_card(cif: CifContainer, symm: str) -> Union[List[str], None]:
     """
     Returns a symmetry card from the _space_group_symop_operation_xyz or _symmetry_equiv_pos_as_xyz list.
     :param cif: the cif file object
     :param symm: the symmetry number
     :return: ['x', ' y', ' z'] etc
     """
-    card = cif.symmops[int(symm.split('_')[0]) - 1].split(',')
+    try:
+        card = cif.symmops[int(symm.split('_')[0]) - 1].split(',')
+    except IndexError:
+        return None
     return card
 
 
@@ -238,7 +241,11 @@ def get_symminfo(newsymms: dict) -> str:
 def symmsearch(cif: CifContainer, newsymms, num, symm, symms_list) -> int:
     if symm and symm not in symms_list.keys():
         symms_list[symm] = num
-        s = SymmetryElement(get_card(cif, symm))
+        card = get_card(cif, symm)
+        if card is None:
+            num += 1
+            return num
+        s = SymmetryElement(card)
         s.translate(symm)
         newsymms[num] = s.toShelxl()
         num += 1
