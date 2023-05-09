@@ -1,5 +1,7 @@
 FinalCif recent changes
 -----------------------
+* v119 Improved NospherA2 handling, but there is still more work to do. Fixed crash from discrepancy between
+       symmetry code of atoms and _space_group_symop_operation_xyz.
 * v118 Added search for CIF keys in the main table. Improved the key adding dialog. Improves COD download by typing
        the respective number in the file field a bit. Bonds and angles tables now consider publ flags for the report.
 * v117 Introduced an "Author Editor" button. Authors also go into global template backup now.
