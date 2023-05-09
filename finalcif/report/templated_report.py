@@ -450,7 +450,8 @@ class TemplatedReport():
             self.literature['refinement'] = SHELXLReference()
         if 'OLEX' in refined.upper():
             self.literature['refinement'] = Olex2Reference()
-        if 'NOSPHERA2' in refined.upper() or 'NOSPHERA2' in cif['_refine_special_details'].upper():
+        if ('NOSPHERA2' in refined.upper() or 'NOSPHERA2' in cif['_refine_special_details'].upper() or
+                'NOSPHERAT2' in cif['_olex2_refine_details'].upper()):
             self.literature['refinement'] = Nosphera2Reference()
         return refined.split()[0]
 

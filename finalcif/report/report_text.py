@@ -89,8 +89,8 @@ class CrstalSelection(FormatMixin):
             shape = '[No _exptl_crystal_description given]'
         colour = gstr(self.cif['_exptl_crystal_colour'])
         crystal_mount = gstr(self.cif['_diffrn_measurement_specimen_support'])
-        #adhesive = gstr(self.cif['_diffrn_measurement_specimen_adhesive'])
-        #if not adhesive:
+        # adhesive = gstr(self.cif['_diffrn_measurement_specimen_adhesive'])
+        # if not adhesive:
         #    adhesive = '[No _diffrn_measurement_specimen_adhesive given]'
         if not crystal_mount:
             crystal_mount = '[No _diffrn_measurement_specimen_support given]'
@@ -100,8 +100,9 @@ class CrstalSelection(FormatMixin):
                 method = ''
         except ValueError:
             method = ''
-        txt_crystal = (f"A {colour}{', ' if colour else ''}{shape} shaped crystal of {self.cif.block.name} was mounted on a "
-                       f"{crystal_mount} with perfluoroether oil. ")
+        txt_crystal = (
+            f"A {colour}{', ' if colour else ''}{shape} shaped crystal of {self.cif.block.name} was mounted on a "
+            f"{crystal_mount} with perfluoroether oil. ")
         txt_data = (f"Data were collected from a {method}single crystal at {temperature}{protected_space}K ")
         paragraph.add_run(retranslate_delimiter(txt_crystal))
         Crystallization(cif, paragraph)
@@ -183,9 +184,9 @@ class DataReduct():
             data_reduct_ref, absorpt_ref, integration_prog = self.add_crysalispro_reference(integration)
         absdetails = cif['_exptl_absorpt_process_details'].replace('-', ' ')
         if 'SADABS' in absdetails.upper() or 'TWINABS' in absdetails.upper():
-            #if len(absdetails.split()) > 1:
+            # if len(absdetails.split()) > 1:
             #    version = absdetails.split()[1]
-            #else:
+            # else:
             #    version = 'unknown version'
             if 'SADABS' in absdetails:
                 scale_prog = 'SADABS'
@@ -198,11 +199,8 @@ class DataReduct():
             absorpt_ref = SORTAVReference()
         if 'crysalis' in abs_details.lower():
             scale_prog = 'SCALE3 ABSPACK'
-        sentence = 'All data were integrated with {} and {} {} absorption correction using {} was applied.'
-        txt = sentence.format(integration_prog,
-                              get_inf_article(abstype),
-                              abstype,
-                              scale_prog)
+        txt = (f'All data were integrated with {integration_prog} and {get_inf_article(abstype)} '
+               f'{abstype} absorption correction using {scale_prog} was applied.')
         paragraph.add_run(retranslate_delimiter(txt))
         ref.append([data_reduct_ref, absorpt_ref])
 
@@ -216,7 +214,8 @@ class DataReduct():
 
     def add_crysalispro_reference(self, integration: str) -> Tuple[CrysalisProReference, CrysalisProReference, str]:
         """
-        CrysAlisPro, Agilent Technologies,Version 1.171.37.31h (release 21-03-2014 CrysAlis171 .NET)(compiled Mar 21 2014,18:13:45)
+        CrysAlisPro, Agilent Technologies,Version 1.171.37.31h (release 21-03-2014 CrysAlis171 .NET)
+            (compiled Mar 21 2014,18:13:45)
         CrysAlisPro 1.171.42.58a (Rigaku OD, 2022)
         """
         year = 'unknown version'
@@ -251,7 +250,6 @@ class SolveRefine():
             solveref = SHELXSReference()
         if 'SHELXD' in solution_prog.upper():
             solveref = SHELXDReference()
-        ref.append(solveref)
         refined = gstr(self.cif['_computing_structure_refinement']) or '??'
         if refined.upper().startswith(('SHELXL', 'XL')):
             refineref = SHELXLReference()
@@ -261,14 +259,14 @@ class SolveRefine():
                 or 'NOSPHERA2' in self.cif['_olex2_refine_details'].upper():
             refineref = [Olex2Reference(), Nosphera2Reference()]
         refine_coef = gstr(self.cif['_refine_ls_structure_factor_coef'])
-        sentence = r"The structure was solved by {} methods using {} and refined by full-matrix " \
-                   "least-squares methods against "
-        txt = sentence.format(solution_method.strip('\n\r'), solution_prog.split()[0])
+        newline = '\n\r'
+        txt = (f"The structure was solved by {solution_method.strip(newline)} methods using "
+               f"{solution_prog.split()[0]} and refined by full-matrix least-squares methods against ")
         paragraph.add_run(retranslate_delimiter(txt))
         paragraph.add_run('F').font.italic = True
         if refine_coef.lower() == 'fsqd':
             paragraph.add_run('2').font.superscript = True
-        paragraph.add_run(' by {}'.format(refined.split()[0]))
+        paragraph.add_run(f' by {refined.split()[0]}')
         shelxle = None
         if 'shelxle' in refined.lower() or 'shelxle' in self.cif['_computing_molecular_graphics'].lower():
             paragraph.add_run(' using ShelXle')
@@ -283,24 +281,24 @@ class Atoms():
         Text for non-hydrogen atoms.
         """
         self.cif = cif
-        n_isotropic = self.number_of_isotropic_atoms()
+        n_isotropic = self.number_of_isotropic_atoms
         number = 'All'
         parameter_type = 'anisotropic'
         if 0 < n_isotropic < self.cif.natoms(without_h=True):
-            number = f'Some atoms ({n_isotropic}) were refined using isotropic displacement parameters.' \
-                     ' All other'
+            number = (f'Some atoms ({n_isotropic}) were refined using isotropic displacement parameters. '
+                      f'All other')
         if n_isotropic > 0 and n_isotropic > self.cif.natoms(without_h=True):
-            number = f'Most atoms ({n_isotropic}) were refined using isotropic displacement parameters.' \
-                     ' All other'
+            number = (f'Most atoms ({n_isotropic}) were refined using isotropic displacement parameters. '
+                      f'All other')
         if n_isotropic == self.cif.natoms(without_h=True):
             number = 'All'
             parameter_type = 'isotropic'
-        # TODO: test how many hydrogen atoms have ueq < -1.0 -> constrained or free refinement
-        #                                                       of hydrogen displacement params
-        # TODO: detect riding model of hydrogen atoms -> res file?
-        sentence1 = f"{number} non-hydrogen atoms were refined with {parameter_type} displacement parameters. "
+        non_h = 'non-hydrogen '
+        sentence1 = (f"{number} {non_h if n_isotropic > 0 else ''}atoms were refined with {parameter_type} "
+                     f"displacement parameters. ")
         paragraph.add_run(sentence1)
 
+    @property
     def number_of_isotropic_atoms(self) -> Union[float, int]:
         isotropic_count = 0
         for site in self.cif.atomic_struct.sites:
@@ -462,6 +460,8 @@ class RefinementDetails():
         p = document.add_paragraph()
         p.style = document.styles['fliesstext']
         text = ' '.join(cif['_refine_special_details'].splitlines(keepends=False))
+        if cif['_olex2_refine_details']:
+            text += ' '.join(cif['_olex2_refine_details'].splitlines(keepends=False))
         # Replacing semicolon, because it can damage the CIF:
         text = text.replace(';', '.')
         p.add_run(string_to_utf8(text).strip())
@@ -496,8 +496,9 @@ def make_report_text(cif, document: Document) -> ReferenceList:
     SolveRefine(cif, paragr, ref)
     SpaceChar(paragr).regular()
     if cif.hydrogen_atoms_present:
-        Atoms(cif, paragr)
-        Hydrogens(cif, paragr)
+        a = Atoms(cif, paragr)
+        if a.number_of_isotropic_atoms != 0:
+            Hydrogens(cif, paragr)
         SpaceChar(paragr).regular()
     if cif.disorder_present:
         d = Disorder(cif, paragr)

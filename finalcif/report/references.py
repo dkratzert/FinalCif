@@ -63,7 +63,7 @@ class ReferenceList():
         else:
             if ref not in self._references:
                 self._references.append(ref)
-            self.paragraph.add_run('[{}]'.format(self._references.index(ref) + 1)).font.superscript = True
+            self.paragraph.add_run(f'[{self._references.index(ref) + 1}]').font.superscript = True
         # better not here:
         # self.paragraph.add_run(' ')
 
@@ -104,7 +104,7 @@ class ReferenceList():
                 start = val
             # in a sequence and next value is not +1 -> squence ends with val:
             if start and nextval != val + 1:
-                folg.append('{}-{}'.format(start, val))
+                folg.append(f'{start}-{val}')
                 start = 0
                 continue
             # everything outside a sequence:
@@ -119,7 +119,7 @@ class ReferenceList():
             template = 'references'
         for num, ref in enumerate(self._references, 1):
             paragraph_reflist = document.add_paragraph('', template)
-            paragraph_reflist.add_run('[{}] \t'.format(str(num)))
+            paragraph_reflist.add_run(f'[{str(num)}] \t')
             ref.add_reference(paragraph_reflist)
             # paragraph_reflist.add_run('\n')
 
