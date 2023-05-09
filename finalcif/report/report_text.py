@@ -281,35 +281,37 @@ class Atoms():
         Text for non-hydrogen atoms.
         """
         self.cif = cif
-        n_isotropic = self.number_of_isotropic_atoms
+        self.n_isotropic = self.number_of_isotropic_atoms(without_h=True)
+        self.n_isotropic_with_h = self.number_of_isotropic_atoms(without_h=False)
         number = 'All'
         parameter_type = 'anisotropic'
-        if 0 < n_isotropic < self.cif.natoms(without_h=True):
-            number = (f'Some atoms ({n_isotropic}) were refined using isotropic displacement parameters. '
+        if 0 < self.n_isotropic < self.cif.natoms(without_h=True):
+            number = (f'Some atoms ({self.n_isotropic}) were refined using isotropic displacement parameters. '
                       f'All other')
-        if n_isotropic > 0 and n_isotropic > self.cif.natoms(without_h=True):
-            number = (f'Most atoms ({n_isotropic}) were refined using isotropic displacement parameters. '
+        if self.n_isotropic > 0 and self.n_isotropic > self.cif.natoms(without_h=True):
+            number = (f'Most atoms ({self.n_isotropic}) were refined using isotropic displacement parameters. '
                       f'All other')
-        if n_isotropic == self.cif.natoms(without_h=True):
+        if self.n_isotropic == self.cif.natoms(without_h=True):
             number = 'All'
             parameter_type = 'isotropic'
         non_h = 'non-hydrogen '
-        sentence1 = (f"{number} {non_h if n_isotropic > 0 else ''}atoms were refined with {parameter_type} "
+        sentence1 = (f"{number} {non_h if self.n_isotropic_with_h > 0 else ''}atoms were refined with {parameter_type} "
                      f"displacement parameters. ")
         paragraph.add_run(sentence1)
 
-    @property
-    def number_of_isotropic_atoms(self) -> Union[float, int]:
+    def number_of_isotropic_atoms(self, without_h: bool = True) -> Union[float, int]:
         isotropic_count = 0
         for site in self.cif.atomic_struct.sites:
-            if self.atom_is_isotropic_and_not_hydrogen(site):
+            if self.atom_is_isotropic(site, without_h):
                 isotropic_count += 1
         return isotropic_count
 
     @staticmethod
-    def atom_is_isotropic_and_not_hydrogen(site):
-        return not site.aniso.nonzero() and not site.element.is_hydrogen
-
+    def atom_is_isotropic(site, without_h: bool):
+        if without_h:
+            return not site.aniso.nonzero() and not site.element.is_hydrogen
+        else:
+            return not site.aniso.nonzero()
 
 class Hydrogens():
     def __init__(self, cif: CifContainer, paragraph: Paragraph):
@@ -322,7 +324,7 @@ class Hydrogens():
         self.cif = cif
         hatoms: List[SHXAtom] = [x for x in self.cif.shx.atoms.all_atoms if x.is_hydrogen]
         n_hatoms = len(hatoms)
-        n_anisotropic_h = len([x for x in hatoms if sum(x.uvals[1:]) > 0.0001])
+        n_anisotropic_h = len([x for x in hatoms if sum([abs(y) for y in x.uvals[1:]]) > 0.0001])
         n_constr_h = len([x for x in hatoms if x.uvals[0] < -1.0])
         riding_atoms = [x for x in hatoms if x.afix]
         pivot_atoms = self.get_hydrogen_pivot_atoms(riding_atoms)
@@ -497,9 +499,9 @@ def make_report_text(cif, document: Document) -> ReferenceList:
     SpaceChar(paragr).regular()
     if cif.hydrogen_atoms_present:
         a = Atoms(cif, paragr)
-        if a.number_of_isotropic_atoms != 0:
+        if a.n_isotropic_with_h != 0 and (a.n_isotropic_with_h > a.n_isotropic):
             Hydrogens(cif, paragr)
-        SpaceChar(paragr).regular()
+            SpaceChar(paragr).regular()
     if cif.disorder_present:
         d = Disorder(cif, paragr)
         if d.dsr_sentence:

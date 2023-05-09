@@ -100,9 +100,9 @@ def make_report_from(options: Options, cif: CifContainer, output_filename: str =
     p.add_run().add_break(WD_BREAK.PAGE)
     if options.report_text:
         make_columns_section(document, columns='1')
-    if cif['_refine_special_details'] and cif['_refine_special_details'] != '?' and options.report_text:
-        RefinementDetails(cif, document)
-    if cif['_olex2_refine_details'] and cif['_olex2_refine_details'] != '?' and options.report_text:
+    if ((cif['_refine_special_details'] or cif['_olex2_refine_details']) and
+            (cif['_refine_special_details'] != '?') or
+            (cif['_olex2_refine_details'] != '?') and options.report_text):
         RefinementDetails(cif, document)
     table_num = add_coords_table(document, cif, table_num)
     if options.report_adp and len(tuple(cif.displacement_parameters())) > 0:
@@ -483,7 +483,7 @@ def add_coords_table(document: Document, cif: CifContainer, table_num: int):
     rowidx = 1
     for at in atoms:
         c0, c1, c2, c3, c4 = col0_cells[rowidx], col1_cells[rowidx], col2_cells[rowidx], \
-                             col3_cells[rowidx], col4_cells[rowidx]
+            col3_cells[rowidx], col4_cells[rowidx]
         rowidx += 1
         c0.text = at[0]  # label
         c1.text = (str(at[2]))  # x
@@ -688,7 +688,7 @@ def add_hydrogen_bonds(document: Document, table_num: int, data: HydrogenBonds =
     rowidx = 1
     for h in data.hydrogen_bonds_as_str:
         c0, c1, c2, c3, c4 = col0_cells[rowidx], col1_cells[rowidx], \
-                             col2_cells[rowidx], col3_cells[rowidx], col4_cells[rowidx]
+            col2_cells[rowidx], col3_cells[rowidx], col4_cells[rowidx]
         rowidx += 1
         c0.text = h.get('atoms')
         c0.paragraphs[0].add_run(h.get('symm')).font.superscript = True
@@ -845,7 +845,7 @@ if __name__ == '__main__':
     settings = FinalCifSettings()
     options = Options(None, settings)
 
-    #make_report_from(options, CifContainer('test-data/hydrogen/some_riding_some_isotropic.cif'),
+    # make_report_from(options, CifContainer('test-data/hydrogen/some_riding_some_isotropic.cif'),
     #                 output_filename='test.docx')
     make_report_from(options, CifContainer('test-data/DK_Zucker2_0m.cif'), output_filename='test.docx')
     # make_report_from(options, CifContainer(r'C:\Users\daniel.kratzert\Downloads\hydrogen_bond_types\1218_31_7_0m.cif'), output_filename='test.docx')
