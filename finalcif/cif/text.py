@@ -26,7 +26,7 @@ def quote(string: str, wrapping=80) -> str:
     return quoted
 
 
-charcters = {
+characters = {
     '—'      : r'--',
     '±'      : r'+-',
     '×'      : r'\\times',
@@ -154,6 +154,7 @@ charcters = {
 
 false_characters_map = {
     # Fix for wrong characters in FinalCif prior to version 96:
+    # Removing it from 110, because there are no v96 users left.
     'ü': r'u\"',
     'Ü': r'U\"',
     'ö': r'o\"',
@@ -167,8 +168,8 @@ def invert_dict(input: dict) -> dict:
     return {v: k for k, v in input.items()}
 
 
-inverted_characters_map = invert_dict(charcters)
-inverted_characters_map.update(invert_dict(false_characters_map))
+inverted_characters_map = invert_dict(characters)
+#inverted_characters_map.update(invert_dict(false_characters_map))
 
 
 def utf8_to_str(txt: str) -> str:
@@ -176,8 +177,8 @@ def utf8_to_str(txt: str) -> str:
     Translates an utf-8 text to a CIF ascii string.
     """
     for char in txt:
-        if char in charcters:
-            txt = txt.replace(char, charcters[char])
+        if char in characters:
+            txt = txt.replace(char, characters[char])
     return utf8_to_html_ascii(txt)
 
 

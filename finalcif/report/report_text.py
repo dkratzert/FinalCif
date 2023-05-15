@@ -31,28 +31,26 @@ def math_to_word(eq: str) -> str:
 def clean_string(string: str) -> str:
     """
     Removes control characters from a string.
-    >>> clean_string('This is a sentence\\r with newline.')
+    >>> clean_string('This is a sentence\\nwith newline.')
     'This is a sentence with newline'
     >>> clean_string('')
     ''
-    >>> clean_string('  This is  a sentence\\r with. newline.  ')
+    >>> clean_string('  This is  a sentence\\nwith. newline.  ')
     'This is  a sentence with. newline'
     """
-    return string \
-        .replace('\n', '') \
-        .replace('\r', '') \
-        .replace('\t', '') \
-        .replace('\f', '') \
-        .replace('\0', '') \
+    repl =  string.replace('\t', ' ') \
+        .replace('\f', ' ') \
+        .replace('\0', ' ') \
         .strip(' ') \
         .strip('.')
+    return remove_line_endings(repl)
 
 
 def gstr(string: str) -> str:
     """
     Turn a string into a gemmi string and remove control characters.
     """
-    return clean_string(gemmi.cif.as_string(string).strip("'"))
+    return clean_string(gemmi.cif.as_string(string))
 
 
 class FormatMixin():
@@ -72,10 +70,11 @@ class Crystallization(FormatMixin):
         self.cif = cif
         self.crytsalization_method = gstr(self.cif['_exptl_crystal_recrystallization_method'])
         if not self.crytsalization_method:
-            self.crytsalization_method = '[No crystallization method was given]'
-        sentence = "The sample was crystallized {}. "
-        self.text = sentence.format(remove_line_endings(retranslate_delimiter(self.crytsalization_method)))
-        paragraph.add_run(retranslate_delimiter(self.text))
+            self.crytsalization_method = ('[No _exptl_crystal_recrystallization_method like "from methanol '
+                                          'by room temperature" was given]')
+        self.text = f"The sample was crystallized {self.crytsalization_method}. "
+        delimiter = retranslate_delimiter(self.text)
+        paragraph.add_run(delimiter)
 
 
 class CrstalSelection(FormatMixin):
@@ -312,6 +311,7 @@ class Atoms():
             return not site.aniso.nonzero() and not site.element.is_hydrogen
         else:
             return not site.aniso.nonzero()
+
 
 class Hydrogens():
     def __init__(self, cif: CifContainer, paragraph: Paragraph):

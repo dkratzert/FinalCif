@@ -9,7 +9,7 @@ import unittest
 import gemmi
 from packaging.version import Version
 
-from finalcif.cif.text import quote, utf8_to_str, retranslate_delimiter, delimit_string, charcters, string_to_utf8
+from finalcif.cif.text import quote, utf8_to_str, retranslate_delimiter, delimit_string, characters, string_to_utf8
 
 
 class TestText(unittest.TestCase):
@@ -78,7 +78,7 @@ class TestText(unittest.TestCase):
         self.assertEqual('ä ö ü ç', retranslate_delimiter(r'\"a \"o \"u \,c'))
 
     def test_retranslate_all(self):
-        for char in charcters:
+        for char in characters:
             if char in ('Å', 'Å'):
                 continue
             self.assertEqual(char, retranslate_delimiter(delimit_string(char)))
