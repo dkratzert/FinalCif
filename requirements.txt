@@ -17,7 +17,7 @@ pywin32-ctypes==0.2.0
 QtAwesome
 QtPy
 requests
-urllib3==1.26.15
+urllib3~=1.26
 docxtpl
 shelxfile
 crossrefapi
