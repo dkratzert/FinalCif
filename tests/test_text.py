@@ -7,9 +7,13 @@
 import unittest
 
 import gemmi
+from PyQt5 import QtWidgets, QtGui, QtCore
 from packaging.version import Version
 
+# noinspection PyUnresolvedReferences
+from finalcif.appwindow import app
 from finalcif.cif.text import quote, utf8_to_str, retranslate_delimiter, delimit_string, characters, string_to_utf8
+from finalcif.report.report_text import gstr
 
 
 class TestText(unittest.TestCase):
@@ -112,3 +116,20 @@ class TestHeavyUtf8(unittest.TestCase):
     def test_encode_and_decode_utf8(self):
         # Test for quote and immediate decode to utf-8 again:
         self.assertEqual(self.txt, retranslate_delimiter(utf8_to_str(self.txt)))
+
+
+class TestLongTextinField(unittest.TestCase):
+    def setUp(self):
+        self.textedit = QtWidgets.QTextEdit()
+        self.textedit.setWordWrapMode(QtGui.QTextOption.WordWrap)
+        self.textedit.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
+        self.textedit.setFixedSize(QtCore.QSize(100, 100))
+        self.textedit.show()
+
+    def test_long_text_in_texedit_and_gstr(self):
+        self.textedit.setText('This is a much longer text, because I want to see what this method does with text '
+                              'over 80 characters wide. Let\'s add also some special characters; '
+                              '?!"§$%&/()=`? Oh yeah!#++-_.,:;')
+        self.assertEqual(('This is a much longer text, because I want to see what this method does with '
+                          "text over 80 characters wide. Let's add also some special characters; "
+                          '?!"§$%&/()=`? Oh yeah!#++-_.,:;'), gstr(self.textedit.toPlainText()))
