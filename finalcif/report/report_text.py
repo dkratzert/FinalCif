@@ -64,8 +64,8 @@ class Crystallization(FormatMixin):
     def __init__(self, cif: CifContainer, paragraph: Paragraph):
         crystalization_method = gstr(cif['_exptl_crystal_recrystallization_method'])
         if not crystalization_method:
-            crystalization_method = ("[No _exptl_crystal_recrystallization_method like 'The compound was "
-                                     "crystallized in methanol at 25 °C by evaporation.' was given]")
+            crystalization_method = "[No _exptl_crystal_recrystallization_method like 'The compound was " \
+                                    "crystallized from methanol by evaporation at 25 °C.' was given]"
         delimiter = retranslate_delimiter(f"{crystalization_method}. ")
         paragraph.add_run(delimiter)
 
