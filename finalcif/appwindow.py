@@ -502,10 +502,13 @@ class AppWindow(QMainWindow):
         main table. And scroll to changed row.
         """
         text = self.textedit.ui.plainTextEdit.toPlainText()
-        TextEditItem._num = 1
-        self.ui.cif_main_table.setText(key=self.textedit.cif_key, column =Column.EDIT, txt=text)
-        self.ui.MainStackedWidget.got_to_main_page()
-        self.textedit.clear_fields()
+        if text:
+            TextEditItem._num = 1
+            self.ui.cif_main_table.setText(key=self.textedit.cif_key, column=Column.EDIT, txt=text)
+            self.ui.MainStackedWidget.got_to_main_page()
+            self.textedit.clear_fields()
+        else:
+            self.status_bar.show_message('No combined text to apply.')
 
     def toggle_hkl_option(self, iucr_is_checked: bool) -> None:
         if iucr_is_checked:
@@ -533,7 +536,7 @@ class AppWindow(QMainWindow):
                 #self.ui.SelectCif_LineEdit.setText('')
                 self.status_bar.show_message(f'No COD entry for {input_txt} found.')
         else:
-            self.status_bar.show_message(f'Not a valid COD number. It must be seven digits.')
+            self.status_bar.show_message('Not a valid COD number. It must be seven digits.')
 
     @property
     def current_block(self) -> int:

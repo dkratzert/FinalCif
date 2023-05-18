@@ -38,7 +38,7 @@ def clean_string(string: str) -> str:
     >>> clean_string('  This is  a sentence\\nwith. newline.  ')
     'This is  a sentence with. newline'
     """
-    repl =  string.replace('\t', ' ') \
+    repl = string.replace('\t', ' ') \
         .replace('\f', ' ') \
         .replace('\0', ' ') \
         .strip(' ') \
@@ -60,51 +60,49 @@ class FormatMixin():
         return r
 
 
-class ReportText():
-    def __init__(self):
-        pass
-
-
 class Crystallization(FormatMixin):
     def __init__(self, cif: CifContainer, paragraph: Paragraph):
         self.cif = cif
-        self.crytsalization_method = gstr(self.cif['_exptl_crystal_recrystallization_method'])
-        if not self.crytsalization_method:
-            self.crytsalization_method = ('[No _exptl_crystal_recrystallization_method like "from methanol '
-                                          'by room temperature" was given]')
-        self.text = f"The sample was crystallized {self.crytsalization_method}. "
-        delimiter = retranslate_delimiter(self.text)
+        crystalization_method = gstr(self.cif['_exptl_crystal_recrystallization_method'])
+        if not crystalization_method:
+            crystalization_method = ("[No _exptl_crystal_recrystallization_method like 'The compound was "
+                                     "crystallized in methanol at 25 °C by evaporation.' was given]")
+        delimiter = retranslate_delimiter(f"{crystalization_method}. ")
         paragraph.add_run(delimiter)
 
 
-class CrstalSelection(FormatMixin):
+class CrystalSelection(FormatMixin):
     def __init__(self, cif: CifContainer, paragraph: Paragraph):
-        self.cif = cif
-        temperature = gstr(self.cif['_diffrn_ambient_temperature'])
-        if not temperature:
-            temperature = '[No _diffrn_ambient_temperature given]'
-        shape = gstr(self.cif['_exptl_crystal_description'])
+        shape = gstr(cif['_exptl_crystal_description'])
         if not shape:
             shape = '[No _exptl_crystal_description given]'
-        colour = gstr(self.cif['_exptl_crystal_colour'])
-        crystal_mount = gstr(self.cif['_diffrn_measurement_specimen_support'])
+        colour = gstr(cif['_exptl_crystal_colour']).strip()
+        colour = f"{colour}{', ' if colour else ''}"
+        crystal_mount = gstr(cif['_diffrn_measurement_specimen_support'])
         # adhesive = gstr(self.cif['_diffrn_measurement_specimen_adhesive'])
         # if not adhesive:
         #    adhesive = '[No _diffrn_measurement_specimen_adhesive given]'
         if not crystal_mount:
             crystal_mount = '[No _diffrn_measurement_specimen_support given]'
+        txt_crystal = (
+            f"A {colour}{shape} shaped crystal of {cif.block.name} was mounted on a "
+            f"{crystal_mount} with perfluoroether oil. ")
+        paragraph.add_run(retranslate_delimiter(txt_crystal))
+
+
+class DataCollection(FormatMixin):
+    def __init__(self, cif: CifContainer, paragraph: Paragraph):
+        temperature = gstr(cif['_diffrn_ambient_temperature'])
+        if not temperature:
+            temperature = '[No _diffrn_ambient_temperature given]'
         method = 'shock-cooled '
         try:
             if float(temperature.split('(')[0]) > 200:
                 method = ''
         except ValueError:
             method = ''
-        txt_crystal = (
-            f"A {colour}{', ' if colour else ''}{shape} shaped crystal of {self.cif.block.name} was mounted on a "
-            f"{crystal_mount} with perfluoroether oil. ")
-        txt_data = (f"Data were collected from a {method}single crystal at {temperature}{protected_space}K ")
-        paragraph.add_run(retranslate_delimiter(txt_crystal))
-        Crystallization(cif, paragraph)
+        txt_data = (f"Data were collected from a {method}single crystal at "
+                    f"{temperature}{protected_space}K")
         paragraph.add_run(retranslate_delimiter(txt_data))
 
 
@@ -164,7 +162,7 @@ class MachineType():
             return ''
 
 
-class DataReduct():
+class DataReduction():
     def __init__(self, cif: CifContainer, paragraph: Paragraph, ref: ReferenceList):
         self.cif = cif
         integration = gstr(self.cif['_computing_data_reduction']) or '??'
@@ -255,7 +253,7 @@ class SolveRefine():
         if 'OLEX' in refined.upper():
             refineref = Olex2Reference()
         if 'NOSPHERA2' in solution_prog.upper() or 'NOSPHERA2' in self.cif['_refine_special_details'].upper() \
-                or 'NOSPHERA2' in self.cif['_olex2_refine_details'].upper():
+            or 'NOSPHERA2' in self.cif['_olex2_refine_details'].upper():
             refineref = [Olex2Reference(), Nosphera2Reference()]
         refine_coef = gstr(self.cif['_refine_ls_structure_factor_coef'])
         newline = '\n\r'
@@ -427,10 +425,10 @@ class SpaceChar(object):
     def __init__(self, paragraph: Paragraph):
         self.p = paragraph
 
-    def regular(self):
+    def regular(self) -> None:
         self.p.add_run(' ')
 
-    def porotected(self):
+    def protected(self):
         self.p.add_run(protected_space)
 
 
@@ -491,9 +489,12 @@ def make_report_text(cif, document: Document) -> ReferenceList:
     ref = ReferenceList(paragr)
     # -- The main text:
     paragr.add_run('The following text is only a suggestion: ').font.bold = True
-    CrstalSelection(cif, paragr)
+    Crystallization(cif, paragr)
+    CrystalSelection(cif, paragr)
+    DataCollection(cif, paragr)
+    SpaceChar(paragr).regular()
     MachineType(cif, paragr)
-    DataReduct(cif, paragr, ref)
+    DataReduction(cif, paragr, ref)
     SpaceChar(paragr).regular()
     SolveRefine(cif, paragr, ref)
     SpaceChar(paragr).regular()
