@@ -7,12 +7,12 @@
 import unittest
 
 import gemmi
-from PyQt5 import QtWidgets, QtGui, QtCore
 from packaging.version import Version
 
 # noinspection PyUnresolvedReferences
 from finalcif.appwindow import app
 from finalcif.cif.text import quote, utf8_to_str, retranslate_delimiter, delimit_string, characters, string_to_utf8
+from finalcif.gui.custom_classes import MyCifTable
 from finalcif.report.report_text import gstr
 
 
@@ -120,16 +120,20 @@ class TestHeavyUtf8(unittest.TestCase):
 
 class TestLongTextinField(unittest.TestCase):
     def setUp(self):
-        self.textedit = QtWidgets.QTextEdit()
-        self.textedit.setWordWrapMode(QtGui.QTextOption.WordWrap)
-        self.textedit.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
-        self.textedit.setFixedSize(QtCore.QSize(100, 100))
-        self.textedit.show()
+        self.table = MyCifTable()
+        self.table.vheaderitems.append('_foo')
+        self.table.setRowCount(1)
+        self.table.setColumnCount(3)
+        self.table.setMinimumHeight(200)
+        self.table.horizontalHeader().setDefaultSectionSize(200)
+        self.table.show()
 
     def test_long_text_in_texedit_and_gstr(self):
-        self.textedit.setText('This is a much longer text, because I want to see what this method does with text '
-                              'over 80 characters wide. Let\'s add also some special characters; '
-                              '?!"§$%&/()=`? Oh yeah!#++-_.,:;')
+        txt = ('This is a much longer text, because I want to see what this method does with text '
+               'over 80 characters wide. Let\'s add also some special characters; '
+               '?!"§$%&/()=`? Oh yeah!#+±_.,:;')
+        self.table.setText(key='_foo', row=0, column=2, txt=txt)
+        # app.exec()
         self.assertEqual(('This is a much longer text, because I want to see what this method does with '
                           "text over 80 characters wide. Let's add also some special characters; "
-                          '?!"§$%&/()=`? Oh yeah!#++-_.,:;'), gstr(self.textedit.toPlainText()))
+                          '?!"§$%&/()=`? Oh yeah!#+±_.,:;'), gstr(self.table.getText(row=0, col=2)))

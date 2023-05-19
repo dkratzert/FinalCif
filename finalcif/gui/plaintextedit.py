@@ -1,6 +1,7 @@
 from contextlib import suppress
 from functools import cache
 
+from PyQt5 import QtGui
 from PyQt5.QtCore import pyqtSignal, Qt, QObject, QEvent, QSize
 from PyQt5.QtGui import QTextOption, QFontMetrics, QContextMenuEvent, QFont
 from PyQt5.QtWidgets import QPlainTextEdit, QFrame, QApplication, QAbstractScrollArea
@@ -18,14 +19,11 @@ class MyQPlainTextEdit(QPlainTextEdit):
     templateRequested = pyqtSignal(int)
     new_key = pyqtSignal(str)
 
-    def __init__(self, parent=None, *args, **kwargs):
+    def __init__(self, parent=None):
         """
         Plaintext edit field for most of the table cells.
-        :param parent:
-        :param minheight: minimum height of the widget.
         """
-        super().__init__(parent, *args, **kwargs)
-        self.setParent(parent)
+        super().__init__(parent=parent)
         self.cif_key = ''
         font = QFont()
         font.setPointSize(self.document().defaultFont().pointSize() + 1)
@@ -84,11 +82,11 @@ class MyQPlainTextEdit(QPlainTextEdit):
     def row(self) -> int:
         return self.parent.vheaderitems.index(self.cif_key)
 
-    def setBackground(self, color):
+    def setBackground(self, color: QtGui.QColor) -> None:
         """
         Set background color of the text field.
         """
-        self.setStyleSheet("background-color: {};".format(str(color.name())))
+        self.setStyleSheet(f"background-color: {color.name()};")
         # No idea why tis does not work
         # pal = self.palette()
         # pal.setColor(QPalette.Base, color)
