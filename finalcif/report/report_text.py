@@ -236,8 +236,8 @@ class SolveRefine():
         manual_method = False
         refineref = DummyReference()
         solveref = DummyReference()
-        solution_prog = gstr(cif['_computing_structure_solution']) or '??'
-        solution_method = gstr(cif['_atom_sites_solution_primary']).strip('\n\r') or '??'
+        solution_prog = gstr(cif['_computing_structure_solution']) or '[No _computing_structure_solution given]'
+        solution_method = gstr(cif['_atom_sites_solution_primary']).strip('\n\r') or '[No _atom_sites_solution_primary given]'
         if 'isomor' in solution_method:
             manual_method = True
         if solution_prog.upper().startswith(('SHELXT', 'XT')):
@@ -246,7 +246,7 @@ class SolveRefine():
             solveref = SHELXSReference()
         if 'SHELXD' in solution_prog.upper():
             solveref = SHELXDReference()
-        refined = gstr(cif['_computing_structure_refinement']) or '??'
+        refined = gstr(cif['_computing_structure_refinement']).split(' ')[0] or '[No _computing_structure_refinement given]'
         if refined.upper().startswith(('SHELXL', 'XL')):
             refineref = SHELXLReference()
         if 'OLEX' in refined.upper():
@@ -258,19 +258,22 @@ class SolveRefine():
         if manual_method:
             methods = f"{solution_prog} "
         else:
-            methods = f"{solution_method} methods using {solution_prog} "
+            methods = f"{solution_method} methods using {solution_prog.split(' ')[0]} "
         txt = (f"The structure was solved by {methods}and refined by full-matrix least-squares methods against ")
         paragraph.add_run(retranslate_delimiter(txt))
         paragraph.add_run('F').font.italic = True
         if refine_coef.lower() == 'fsqd':
             paragraph.add_run('2').font.superscript = True
-        paragraph.add_run(f' by {refined.split()[0]}')
-        shelxle = None
+        paragraph.add_run(f' by {refined}')
+        gui_reference = None
         if 'shelxle' in refined.lower() or 'shelxle' in cif['_computing_molecular_graphics'].lower():
             paragraph.add_run(' using ShelXle')
-            shelxle = ShelXleReference()
+            gui_reference = ShelXleReference()
+        if 'olex' in refined.lower() or 'olex' in cif['_computing_molecular_graphics'].lower():
+            paragraph.add_run(' using Olex2')
+            gui_reference = Olex2Reference()
         paragraph.add_run('.')
-        ref.append(flatten([solveref, refineref, shelxle]))
+        ref.append(flatten([solveref, refineref, gui_reference]))
 
 
 class Atoms():
