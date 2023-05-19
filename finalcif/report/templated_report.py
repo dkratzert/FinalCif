@@ -329,10 +329,10 @@ class TemplatedReport():
         limit_l_max = cif['_diffrn_reflns_limit_l_max']
         return f'{minus_sign if limit_h_min != "0" else ""}{limit_h_min.replace("-", "")} ' \
                f'{less_or_equal} h {less_or_equal} {limit_h_max}\n' \
-               + f'{minus_sign if limit_k_min != "0" else ""}{limit_k_min.replace("-", "")} ' \
-                 f'{less_or_equal} k {less_or_equal} {limit_k_max}\n' \
-               + f'{minus_sign if limit_l_min != "0" else ""}{limit_l_min.replace("-", "")} ' \
-                 f'{less_or_equal} l {less_or_equal} {limit_l_max}'
+            + f'{minus_sign if limit_k_min != "0" else ""}{limit_k_min.replace("-", "")} ' \
+              f'{less_or_equal} k {less_or_equal} {limit_k_max}\n' \
+            + f'{minus_sign if limit_l_min != "0" else ""}{limit_l_min.replace("-", "")} ' \
+              f'{less_or_equal} l {less_or_equal} {limit_l_max}'
 
     @staticmethod
     def get_radiation(cif: CifContainer) -> RichText:
@@ -451,7 +451,7 @@ class TemplatedReport():
         if 'OLEX' in refined.upper():
             self.literature['refinement'] = Olex2Reference()
         if ('NOSPHERA2' in refined.upper() or 'NOSPHERA2' in cif['_refine_special_details'].upper() or
-                'NOSPHERAT2' in cif['_olex2_refine_details'].upper()):
+            'NOSPHERAT2' in cif['_olex2_refine_details'].upper()):
             self.literature['refinement'] = Nosphera2Reference()
         return refined.split()[0]
 
@@ -481,8 +481,7 @@ class TemplatedReport():
                       U23=u23.replace('-', minus_sign))
 
     def get_crystallization_method(self, cif):
-        return remove_line_endings(retranslate_delimiter(
-            cif['_exptl_crystal_recrystallization_method'])) or '[No crystallization method given!]'
+        return gstr(cif['_exptl_crystal_recrystallization_method']) or '[No crystallization method given!]'
 
     def make_picture(self, options: Options, picfile: Path, tpl_doc: DocxTemplate):
         if options.report_text and picfile and picfile.exists():

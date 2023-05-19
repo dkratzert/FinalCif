@@ -11,7 +11,7 @@ from finalcif import VERSION
 from finalcif.appwindow import AppWindow
 
 
-class TablesTestMixin():
+class TablesTestMixin(unittest.TestCase):
 
     def setUp(self) -> None:
         self.testcif = Path('tests/examples/1979688.cif').absolute()

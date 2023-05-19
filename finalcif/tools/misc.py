@@ -892,7 +892,7 @@ def unify_line_endings(text: str):
 
 
 def remove_line_endings(text: str):
-    return ' '.join(text.splitlines())
+    return ''.join(text.splitlines())
 
 
 def open_file(report_filename: Path):

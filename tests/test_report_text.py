@@ -66,7 +66,7 @@ class TestTextParagraphs(unittest.TestCase):
                           "crystallized from methanol by evaporation at 25 °C.' was given]. "), self.paragraph.text)
 
     def test_crystallization_with_a_newline_in_the_input(self):
-        cif = {'_exptl_crystal_recrystallization_method': 'The compound was crystallized\n'
+        cif = {'_exptl_crystal_recrystallization_method': 'The compound was crystallized \n'
                                                           'from water by evaporation at 25 °C.'}
         # noinspection PyTypeChecker
         Crystallization(cif, paragraph=self.paragraph)

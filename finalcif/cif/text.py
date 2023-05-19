@@ -20,7 +20,7 @@ def quote(string: str, wrapping=80) -> str:
     lines = ''
     for line in string.split('\n'):
         if len(line) > wrapping:
-            line = textwrap.fill(line, width=wrapping)
+            line = textwrap.fill(line, width=wrapping, drop_whitespace=False)
         lines += f'{line}\n'
     quoted = gemmi.cif.quote(lines.rstrip('\n'))
     return quoted
@@ -169,7 +169,9 @@ def invert_dict(input: dict) -> dict:
 
 
 inverted_characters_map = invert_dict(characters)
-#inverted_characters_map.update(invert_dict(false_characters_map))
+
+# Removed, because it became obsolete
+# inverted_characters_map.update(invert_dict(false_characters_map))
 
 
 def utf8_to_str(txt: str) -> str:
