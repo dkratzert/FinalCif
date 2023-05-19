@@ -16,7 +16,7 @@ from finalcif.gui.plaintextedit import MyQPlainTextEdit
 
 white = QColor(255, 255, 255)
 light_green = QColor(217, 255, 201)
-light_blue = QColor(193, 217, 247)
+light_blue = QColor(220, 232, 247)
 blue = QColor(102, 150, 179)
 yellow = QColor(250, 247, 150)  # #faf796
 
@@ -195,7 +195,7 @@ class MyCifTable(QTableWidget, ItemTextMixin):
             # setting the CIF key here is important for the finding of row e.g. for clipboard copy
             widget.cif_key = key
         else:
-            textedit = MyQPlainTextEdit(self)
+            textedit = MyQPlainTextEdit(parent=self)
             textedit.cif_key = key
             textedit.templateRequested.connect(self.goto_template_page)
             textedit.new_key.connect(lambda x: self.new_key.emit(x))
