@@ -57,7 +57,7 @@ def main():
     w.setWindowTitle('FinalCif v{}'.format(VERSION))
     # w.showMaximized()  # For full screen view
     w.setBaseSize(1200, 780)
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
 
 
 if __name__ == '__main__':

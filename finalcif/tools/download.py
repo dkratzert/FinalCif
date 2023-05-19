@@ -27,8 +27,8 @@ class MyDownloader(QObject):
     finished = pyqtSignal()
     loaded = pyqtSignal(bytes)
 
-    def __init__(self, url):
-        super().__init__()
+    def __init__(self, url, parent=None):
+        super().__init__(parent)
         self.url = url
 
     def failed_to_load(self, txt: str) -> None:

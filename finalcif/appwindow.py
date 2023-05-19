@@ -623,7 +623,7 @@ class AppWindow(QMainWindow):
             print('Skipping version.txt download because NO_NETWORK variable is set.')
             return
         mainurl = "https://dkratzert.de/files/finalcif/version.txt"
-        self.upd = MyDownloader(mainurl)
+        self.upd = MyDownloader(mainurl, parent=self)
         version_thread = QThread()
         self.threadpool.append(version_thread)
         start_worker(self.upd, version_thread, onload=self.is_update_necessary)
@@ -693,8 +693,8 @@ class AppWindow(QMainWindow):
             print('Skipping check.def download because NO_NETWORK variable is set.')
             return
         url = 'http://www.platonsoft.nl/xraysoft/unix/platon/check.def'
-        self.updc = MyDownloader(url)
-        checkdef_thread = QThread()
+        self.updc = MyDownloader(url, parent=self)
+        checkdef_thread = QThread(parent=self)
         self.threadpool.append(checkdef_thread)
         start_worker(self.updc, checkdef_thread, onload=self._save_checkdef)
 
