@@ -8,5 +8,5 @@ def test_nosphera2reference():
         "D. Lentz, H. Puschmann, S. Grabowsky, Chem. Sci. 2021, 12, 1675–1692, doi:10.1039/D0SC05526C.")
 
 
-def test_SaintReference():
+def test_saint_reference():
     assert str(SAINTReference('SAINT', 'V7.68a')) == "Bruker, SAINT, V7.68a, Bruker AXS Inc., Madison, Wisconsin, USA."
