@@ -237,7 +237,8 @@ class SolveRefine():
         refineref = DummyReference()
         solveref = DummyReference()
         solution_prog = gstr(cif['_computing_structure_solution']) or '[No _computing_structure_solution given]'
-        solution_method = gstr(cif['_atom_sites_solution_primary']).strip('\n\r') or '[No _atom_sites_solution_primary given]'
+        solution_method = gstr(cif['_atom_sites_solution_primary']).strip(
+            '\n\r') or '[No _atom_sites_solution_primary given]'
         if 'isomor' in solution_method:
             manual_method = True
         if solution_prog.upper().startswith(('SHELXT', 'XT')):
@@ -246,7 +247,8 @@ class SolveRefine():
             solveref = SHELXSReference()
         if 'SHELXD' in solution_prog.upper():
             solveref = SHELXDReference()
-        refined = gstr(cif['_computing_structure_refinement']).split(' ')[0] or '[No _computing_structure_refinement given]'
+        refined = gstr(cif['_computing_structure_refinement']).split(' ')[
+                      0] or '[No _computing_structure_refinement given]'
         if refined.upper().startswith(('SHELXL', 'XL')):
             refineref = SHELXLReference()
         if 'OLEX' in refined.upper():
@@ -412,6 +414,11 @@ class Hydrogens():
 
 class Disorder():
     def __init__(self, cif: CifContainer, paragraph: Paragraph):
+        """
+        TODO: Search for SIMU, DELU, SADI, DFIX, etc in cif.shx.restraints in order to
+              make the sentence1 more specific.
+        """
+
         self.dsr_sentence = ''
         sentence1 = "Disordered moieties were refined using bond lengths " \
                     "restraints and displacement parameter restraints. "
@@ -437,11 +444,14 @@ class SpaceChar(object):
 class CCDC():
     def __init__(self, cif: CifContainer, paragraph: Paragraph, ref: ReferenceList):
         ccdc_num = gstr(cif['_database_code_depnum_ccdc_archive']) or '??????'
-        sentence1 = "Crystallographic data for the structures reported in this " \
-                    "paper have been deposited with the Cambridge Crystallographic Data Centre."
-        sentence2 = "CCDC {} contain the supplementary crystallographic data for this paper. " \
+        splitted_number = ccdc_num.split(' ')
+        if len(splitted_number) > 1 and splitted_number[1].isdigit():
+            ccdc_num = splitted_number[1]
+        sentence1 = "Crystallographic data for the structures reported here " \
+                    "have been deposited with the Cambridge Crystallographic Data Centre."
+        sentence2 = f"CCDC {ccdc_num} contain the supplementary crystallographic data for this paper. " \
                     "These data can be obtained free of charge from The Cambridge Crystallographic Data Centre " \
-                    "via www.ccdc.cam.ac.uk/{}structures.".format(ccdc_num, zero_width_space)
+                    f"via www.ccdc.cam.ac.uk/{zero_width_space}structures."
         paragraph.add_run(sentence1)
         ref.append(CCDCReference())
         SpaceChar(paragraph).regular()

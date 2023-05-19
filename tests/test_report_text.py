@@ -8,7 +8,7 @@ from docx.text.paragraph import Paragraph
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.report.references import ReferenceList
 from finalcif.report.report_text import Hydrogens, MachineType, Crystallization, CrystalSelection, DataCollection, \
-    DataReduction, SolveRefine
+    DataReduction, SolveRefine, CCDC
 
 
 class MyMock(Mock):
@@ -261,3 +261,43 @@ class TestTextParagraphs(unittest.TestCase):
                           'doi:10.1107/S2053229614024218.\n'
                           '[2] C. B. Hübschle, G. M. Sheldrick, B. Dittrich, J. Appl. Cryst. 2011, 44, '
                           '1281–1284, doi:10.1107/S0021889811043202.'), str(self.reflist))
+
+    def test_ccdc_empty(self):
+        cif = {
+            '_database_code_depnum_ccdc_archive': '',
+        }
+        # noinspection PyTypeChecker
+        CCDC(cif, paragraph=self.paragraph, ref=self.reflist)
+        self.assertEqual(('Crystallographic data for the structures reported here have been '
+                          'deposited with the Cambridge Crystallographic Data Centre.[1] CCDC ?????? '
+                          'contain the supplementary crystallographic data for this paper. These data '
+                          'can be obtained free of charge from The Cambridge Crystallographic Data '
+                          'Centre via www.ccdc.cam.ac.uk/\u200bstructures.'), self.paragraph.text)
+        self.assertEqual(('[0] C. R. Groom, I. J. Bruno, M. P. Lightfoot, S. C. Ward, Acta Cryst. 2016, '
+                          'B72, 171–179, doi:10.1107/S2052520616003954.'), str(self.reflist))
+
+    def test_ccdc_with_number(self):
+        cif = {
+            '_database_code_depnum_ccdc_archive': '123456',
+        }
+        # noinspection PyTypeChecker
+        CCDC(cif, paragraph=self.paragraph, ref=self.reflist)
+        self.assertEqual(('Crystallographic data for the structures reported here have been '
+                          'deposited with the Cambridge Crystallographic Data Centre.[1] CCDC 123456 '
+                          'contain the supplementary crystallographic data for this paper. These data '
+                          'can be obtained free of charge from The Cambridge Crystallographic Data '
+                          'Centre via www.ccdc.cam.ac.uk/\u200bstructures.'), self.paragraph.text)
+        self.assertEqual(('[0] C. R. Groom, I. J. Bruno, M. P. Lightfoot, S. C. Ward, Acta Cryst. 2016, '
+                          'B72, 171–179, doi:10.1107/S2052520616003954.'), str(self.reflist))
+
+    def test_ccdc_with_number_and_CCDC(self):
+        cif = {
+            '_database_code_depnum_ccdc_archive': 'CCDC 123456',
+        }
+        # noinspection PyTypeChecker
+        CCDC(cif, paragraph=self.paragraph, ref=self.reflist)
+        self.assertEqual(('Crystallographic data for the structures reported here have been '
+                          'deposited with the Cambridge Crystallographic Data Centre.[1] CCDC 123456 '
+                          'contain the supplementary crystallographic data for this paper. These data '
+                          'can be obtained free of charge from The Cambridge Crystallographic Data '
+                          'Centre via www.ccdc.cam.ac.uk/\u200bstructures.'), self.paragraph.text)
