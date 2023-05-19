@@ -73,20 +73,22 @@ class Crystallization(FormatMixin):
 class CrystalSelection(FormatMixin):
     def __init__(self, cif: CifContainer, paragraph: Paragraph):
         shape = gstr(cif['_exptl_crystal_description'])
-        if not shape:
-            shape = '[No _exptl_crystal_description given]'
-        colour = gstr(cif['_exptl_crystal_colour']).strip()
-        colour = f"{colour}{', ' if colour else ''}"
         crystal_mount = gstr(cif['_diffrn_measurement_specimen_support'])
+        colour = gstr(cif['_exptl_crystal_colour']).strip()
+        if colour:
+            colour = f" {colour}{',' if shape else ''}"
         # adhesive = gstr(cif['_diffrn_measurement_specimen_adhesive'])
         # if not adhesive:
         #    adhesive = '[No _diffrn_measurement_specimen_adhesive given]'
-        if not crystal_mount:
-            crystal_mount = '[No _diffrn_measurement_specimen_support given]'
-        txt_crystal = (
-            f"A {colour}{shape} shaped crystal of {cif.block.name} was mounted on a "
-            f"{crystal_mount} with perfluoroether oil. ")
-        paragraph.add_run(retranslate_delimiter(txt_crystal))
+        shaped = f" {shape} shaped " if shape else ' '
+        if crystal_mount:
+            txt_crystal = (f"A{colour}{shaped}crystal of {cif.block.name} was mounted on a "
+                           f"{crystal_mount} with perfluoroether oil. ")
+            paragraph.add_run(retranslate_delimiter(txt_crystal))
+        else:
+            txt_crystal = (f"A{colour}{shaped}crystal of {cif.block.name} "
+                           f"was mounted on the goniometer. ")
+            paragraph.add_run(retranslate_delimiter(txt_crystal))
 
 
 class DataCollection(FormatMixin):

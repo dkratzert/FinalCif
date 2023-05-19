@@ -92,8 +92,39 @@ class TestTextParagraphs(unittest.TestCase):
 
         # noinspection PyTypeChecker
         CrystalSelection(cif, paragraph=self.paragraph)
-        self.assertEqual(('A [No _exptl_crystal_description given] shaped crystal of mocked_block_name '
-                          'was mounted on a [No _diffrn_measurement_specimen_support given] with '
+        self.assertEqual(('A crystal of mocked_block_name was mounted on the goniometer. '), self.paragraph.text)
+
+    def test_crystal_selection_only_shape(self):
+        data = {'_exptl_crystal_description'          : 'block',
+                '_exptl_crystal_colour'               : '',
+                '_diffrn_measurement_specimen_support': ''}
+        cif = CifMock(data)
+
+        # noinspection PyTypeChecker
+        CrystalSelection(cif, paragraph=self.paragraph)
+        self.assertEqual(('A block shaped crystal of mocked_block_name '
+                          'was mounted on the goniometer. '), self.paragraph.text)
+
+    def test_crystal_selection_only_color(self):
+        data = {'_exptl_crystal_description'          : '',
+                '_exptl_crystal_colour'               : 'yellow',
+                '_diffrn_measurement_specimen_support': ''}
+        cif = CifMock(data)
+
+        # noinspection PyTypeChecker
+        CrystalSelection(cif, paragraph=self.paragraph)
+        self.assertEqual(('A yellow crystal of mocked_block_name '
+                          'was mounted on the goniometer. '), self.paragraph.text)
+
+    def test_crystal_selection_only_support(self):
+        data = {'_exptl_crystal_description'          : '',
+                '_exptl_crystal_colour'               : '',
+                '_diffrn_measurement_specimen_support': 'Mitegen micromount'}
+        cif = CifMock(data)
+
+        # noinspection PyTypeChecker
+        CrystalSelection(cif, paragraph=self.paragraph)
+        self.assertEqual(('A crystal of mocked_block_name was mounted on a Mitegen micromount with '
                           'perfluoroether oil. '), self.paragraph.text)
 
     def test_data_collection(self):
