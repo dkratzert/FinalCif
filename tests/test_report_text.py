@@ -369,3 +369,33 @@ class TestTextParagraphs(unittest.TestCase):
                           'a riding model with their Uiso values constrained to 1.5 times the Ueq of '
                           'their pivot atoms for terminal sp3 carbon atoms and 1.2 times for all '
                           'other carbon atoms.'), self.paragraph.text)
+
+    def test_hydrogens_all_riding_isotropic(self):
+        cif = CifContainer(Path('test-data/hydrogen/all_riding_isotropic.cif'))
+        # noinspection PyTypeChecker
+        Hydrogens(cif, paragraph=self.paragraph)
+        self.assertEqual(('All C-bound hydrogen atoms were refined isotropic on calculated positions '
+                          'using a riding model with their Uiso values constrained to 1.5 times the Ueq '
+                          'of their pivot atoms for terminal sp3 carbon atoms and 1.2 times for all '
+                          'other carbon atoms.'), self.paragraph.text)
+
+    def test_hydrogens_some_riding_isotropic(self):
+        cif = CifContainer(Path('test-data/hydrogen/some_riding_isotropic.cif'))
+        # noinspection PyTypeChecker
+        Hydrogens(cif, paragraph=self.paragraph)
+        self.assertEqual(('All C-bound hydrogen atoms were refined with isotropic displacement '
+                          'parameters. Some were refined freely and some on calculated positions using '
+                          'a riding model with their Uiso values constrained to 1.5 times the Ueq of '
+                          'their pivot atoms for terminal sp3 carbon atoms and 1.2 times for all other '
+                          'carbon atoms.'), self.paragraph.text)
+
+    def test_hydrogens_some_riding_some_isotropic(self):
+        cif = CifContainer(Path('test-data/hydrogen/some_riding_some_isotropic.cif'))
+        # noinspection PyTypeChecker
+        Hydrogens(cif, paragraph=self.paragraph)
+        self.assertEqual(('All C-bound hydrogen atoms were refined with isotropic displacement '
+                          'parameters. Some were refined freely and some on calculated positions using '
+                          'a riding model with their Uiso values constrained to 1.5 times the Ueq of '
+                          'their pivot atoms for terminal sp3 carbon atoms and 1.2 times for all other '
+                          'carbon atoms.'), self.paragraph.text)
+
