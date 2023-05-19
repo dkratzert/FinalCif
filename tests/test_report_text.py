@@ -8,7 +8,7 @@ from docx.text.paragraph import Paragraph
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.report.references import ReferenceList
 from finalcif.report.report_text import Hydrogens, MachineType, Crystallization, CrystalSelection, DataCollection, \
-    DataReduction, SolveRefine, CCDC
+    DataReduction, SolveRefine, CCDC, FinalCifreport
 
 
 class MyMock(Mock):
@@ -301,3 +301,8 @@ class TestTextParagraphs(unittest.TestCase):
                           'contain the supplementary crystallographic data for this paper. These data '
                           'can be obtained free of charge from The Cambridge Crystallographic Data '
                           'Centre via www.ccdc.cam.ac.uk/\u200bstructures.'), self.paragraph.text)
+
+    def test_finalcif_report(self):
+        FinalCifreport(paragraph=self.paragraph, reflist=self.reflist)
+        self.assertEqual('This report and the CIF file were generated using FinalCif.[1]', self.paragraph.text)
+        self.assertEqual('[0] D. Kratzert, FinalCif, V119, https://dkratzert.de/finalcif.html.', str(self.reflist))

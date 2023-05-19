@@ -459,9 +459,10 @@ class CCDC():
 
 
 class FinalCifreport():
-    def __init__(self, paragraph: Paragraph):
+    def __init__(self, paragraph: Paragraph, reflist: ReferenceList):
         sentence = "This report and the CIF file were generated using FinalCif."
         paragraph.add_run(sentence)
+        reflist.append(FinalCifReference())
 
 
 class RefinementDetails():
@@ -521,6 +522,5 @@ def make_report_text(cif, document: Document) -> ReferenceList:
             SpaceChar(paragr).regular()
     CCDC(cif, paragr, ref)
     SpaceChar(paragr).regular()
-    FinalCifreport(paragr)
-    ref.append(FinalCifReference())
+    FinalCifreport(paragr, ref)
     return ref
