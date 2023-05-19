@@ -80,7 +80,7 @@ class CrystalSelection(FormatMixin):
         # adhesive = gstr(cif['_diffrn_measurement_specimen_adhesive'])
         # if not adhesive:
         #    adhesive = '[No _diffrn_measurement_specimen_adhesive given]'
-        shaped = f" {shape} shaped " if shape else ' '
+        shaped = f" {shape}-shaped " if shape else ' '
         if crystal_mount:
             txt_crystal = (f"A{colour}{shaped}crystal of {cif.block.name} was mounted on a "
                            f"{crystal_mount} with perfluoroether oil. ")

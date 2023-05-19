@@ -81,7 +81,7 @@ class TestTextParagraphs(unittest.TestCase):
 
         # noinspection PyTypeChecker
         CrystalSelection(cif, paragraph=self.paragraph)
-        self.assertEqual(('A yellow, block shaped crystal of mocked_block_name was mounted on a Nylon '
+        self.assertEqual(('A yellow, block-shaped crystal of mocked_block_name was mounted on a Nylon '
                           'loop with perfluoroether oil. '), self.paragraph.text)
 
     def test_crystal_selection_empty(self):
@@ -102,7 +102,7 @@ class TestTextParagraphs(unittest.TestCase):
 
         # noinspection PyTypeChecker
         CrystalSelection(cif, paragraph=self.paragraph)
-        self.assertEqual(('A block shaped crystal of mocked_block_name '
+        self.assertEqual(('A block-shaped crystal of mocked_block_name '
                           'was mounted on the goniometer. '), self.paragraph.text)
 
     def test_crystal_selection_only_color(self):
