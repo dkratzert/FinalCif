@@ -1,4 +1,5 @@
 import unittest
+from pathlib import Path
 from unittest import TestCase
 from unittest.mock import Mock
 
@@ -337,3 +338,34 @@ class TestTextParagraphs(unittest.TestCase):
         FinalCifreport(paragraph=self.paragraph, reflist=self.reflist)
         self.assertEqual('This report and the CIF file were generated using FinalCif.[1]', self.paragraph.text)
         self.assertEqual('[0] D. Kratzert, FinalCif, V119, https://dkratzert.de/finalcif.html.', str(self.reflist))
+
+    def test_hydrogens_all_free_anis(self):
+        cif = CifContainer(Path('test-data/hydrogen/all_free_free_anisotropic.cif'))
+        # noinspection PyTypeChecker
+        Hydrogens(cif, paragraph=self.paragraph)
+        self.assertEqual(('The hydrogen atoms were refined freely with anisotropic displacement '
+                          'parameters.'), self.paragraph.text)
+
+    def test_hydrogens_all_free_iso(self):
+        cif = CifContainer(Path('test-data/hydrogen/all_free_free_isotropic.cif'))
+        # noinspection PyTypeChecker
+        Hydrogens(cif, paragraph=self.paragraph)
+        self.assertEqual(('All hydrogen atoms were refined freely with '
+                          'isotropic displacement parameters.'), self.paragraph.text)
+
+    def test_hydrogens_all_iso_constr(self):
+        cif = CifContainer(Path('test-data/hydrogen/all_free_isotropic_constr.cif'))
+        # noinspection PyTypeChecker
+        Hydrogens(cif, paragraph=self.paragraph)
+        self.assertEqual(('All hydrogen atoms were refined freely with their Uiso values constrained to '
+                          '1.5 times the Ueq of their pivot atoms for terminal sp3 carbon atoms and 1.2 '
+                          'times for all other carbon atoms.'), self.paragraph.text)
+
+    def test_hydrogens_all_riding_anis(self):
+        cif = CifContainer(Path('test-data/hydrogen/all_riding_anisotropic.cif'))
+        # noinspection PyTypeChecker
+        Hydrogens(cif, paragraph=self.paragraph)
+        self.assertEqual(('The hydrogen atoms were refined anisotropic on calculated positions using '
+                          'a riding model with their Uiso values constrained to 1.5 times the Ueq of '
+                          'their pivot atoms for terminal sp3 carbon atoms and 1.2 times for all '
+                          'other carbon atoms.'), self.paragraph.text)

@@ -195,7 +195,7 @@ class MyCifTable(QTableWidget, ItemTextMixin):
             # setting the CIF key here is important for the finding of row e.g. for clipboard copy
             widget.cif_key = key
         else:
-            textedit = MyQPlainTextEdit(parent=self)
+            textedit = MyQPlainTextEdit(self)
             textedit.cif_key = key
             textedit.templateRequested.connect(self.goto_template_page)
             textedit.new_key.connect(lambda x: self.new_key.emit(x))
