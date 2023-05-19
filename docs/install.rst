@@ -33,4 +33,6 @@ Next time, only
 
     >> source venv/bin/activate   (Windows: venv\Scripts\activate.bat)
     >> finalcif
+
 is necessary.
+
