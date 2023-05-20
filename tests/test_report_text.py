@@ -9,7 +9,7 @@ from docx.text.paragraph import Paragraph
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.report.references import ReferenceList
 from finalcif.report.report_text import Hydrogens, MachineType, Crystallization, CrystalSelection, DataCollection, \
-    DataReduction, SolveRefine, CCDC, FinalCifreport
+    DataReduction, SolveRefine, CCDC, FinalCifreport, Disorder
 
 
 class MyMock(Mock):
@@ -399,3 +399,22 @@ class TestTextParagraphs(unittest.TestCase):
                           'their pivot atoms for terminal sp3 carbon atoms and 1.2 times for all other '
                           'carbon atoms.'), self.paragraph.text)
 
+    def test_disorder(self):
+        cif = type('CifContainer', (object,), {'dsr_used': True})()
+        # noinspection PyTypeChecker
+        Disorder(cif, paragraph=self.paragraph, reflist=self.reflist)
+        self.assertEqual(('Disordered moieties were refined using bond lengths restraints and '
+                          'displacement parameter restraints. Some parts of the disorder model were '
+                          'introduced by the program DSR.[1,2] '), self.paragraph.text)
+        self.assertEqual(('[0] D. Kratzert, J.J. Holstein, I. Krossing, J. Appl. Cryst. 2015, 48, '
+                          '933–938, doi:10.1107/S1600576715005580.\n'
+                          '[1] D. Kratzert, I. Krossing, J. Appl. Cryst. 2018, 51, 928–934, '
+                          'doi:10.1107/S1600576718004508.'), str(self.reflist))
+
+    def test_disorder_without_dsr(self):
+        cif = type('CifContainer', (object,), {'dsr_used': False})()
+        # noinspection PyTypeChecker
+        Disorder(cif, paragraph=self.paragraph, reflist=self.reflist)
+        self.assertEqual(('Disordered moieties were refined using bond lengths restraints and '
+                          'displacement parameter restraints. '), self.paragraph.text)
+        self.assertEqual('', str(self.reflist))

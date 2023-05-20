@@ -415,7 +415,7 @@ class Hydrogens():
 
 
 class Disorder():
-    def __init__(self, cif: CifContainer, paragraph: Paragraph):
+    def __init__(self, cif: CifContainer, paragraph: Paragraph, reflist: ReferenceList):
         """
         TODO: Search for SIMU, DELU, SADI, DFIX, etc in cif.shx.restraints in order to
               make the sentence1 more specific.
@@ -424,12 +424,13 @@ class Disorder():
         self.dsr_sentence = ''
         sentence1 = "Disordered moieties were refined using bond lengths " \
                     "restraints and displacement parameter restraints. "
-        if cif.dsr_used:
-            self.dsr_sentence = "Some parts of the disorder model were introduced by the " \
-                                "program DSR."
         paragraph.add_run(sentence1)
-        if self.dsr_sentence:
-            paragraph.add_run(self.dsr_sentence)
+        if cif.dsr_used:
+            dsr_sentence = "Some parts of the disorder model were introduced by the " \
+                           "program DSR."
+            paragraph.add_run(dsr_sentence)
+            reflist.append([DSRReference2015(), DSRReference2018()])
+            SpaceChar(paragraph).regular()
 
 
 class SpaceChar(object):
@@ -518,10 +519,7 @@ def make_report_text(cif, document: Document) -> ReferenceList:
             Hydrogens(cif, paragr)
             SpaceChar(paragr).regular()
     if cif.disorder_present:
-        d = Disorder(cif, paragr)
-        if d.dsr_sentence:
-            ref.append([DSRReference2015(), DSRReference2018()])
-            SpaceChar(paragr).regular()
+        Disorder(cif, paragr, ref)
     CCDC(cif, paragr, ref)
     SpaceChar(paragr).regular()
     FinalCifreport(paragr, ref)
