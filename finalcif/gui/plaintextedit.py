@@ -6,12 +6,13 @@ from PyQt5.QtGui import QTextOption, QFontMetrics, QContextMenuEvent, QFont, QCo
 from PyQt5.QtWidgets import QPlainTextEdit, QFrame, QApplication, QAbstractScrollArea
 
 from finalcif.gui.new_key_dialog import NewKey
+from finalcif.gui.spell_check_edit import SpellTextEdit
 
 with suppress(ImportError):
     from finalcif.gui.custom_classes import MyCifTable
 
 
-class MyQPlainTextEdit(QPlainTextEdit):
+class MyQPlainTextEdit(SpellTextEdit):
     """
     A special plaintextedit with convenient methods to set the background color and other things.
     """
@@ -47,7 +48,11 @@ class MyQPlainTextEdit(QPlainTextEdit):
         return QFontMetrics(self.document().defaultFont())
 
     def contextMenuEvent(self, event: QContextMenuEvent):
+        #super().contextMenuEvent(event)
         menu = self.createStandardContextMenu(event.pos())
+        popup_menu = self.createSpellcheckContextMenu(event.pos())
+        #popup_menu.exec_(event.globalPos())
+        menu.addMenu(popup_menu)
         action_copy_vhead = menu.addAction("Copy CIF Keyword")
         deleterow = menu.addAction("Delete Row")
         menu.addSeparator()
@@ -57,7 +62,8 @@ class MyQPlainTextEdit(QPlainTextEdit):
         action_template.triggered.connect(self._on_create_template)
         deleterow.triggered.connect(self._delete_row)
         new_key.triggered.connect(self._add_cif_keys)
-        choosed_action = menu.exec(event.globalPos())
+        menu.exec(event.globalPos())
+
 
     def _add_cif_keys(self):
         new_key = NewKey(self)
