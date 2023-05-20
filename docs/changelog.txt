@@ -1,8 +1,10 @@
 FinalCif recent changes
 -----------------------
 * v120 The template for the description of the crystallization method needs again the complete sentence instead of
-       only the half sentence "from xx at y or similar". Small Improvements in report text wording.
-       Fields with dropdown menus can now also be used in combination of large text templates.
+       only the half sentence "from xx at y or similar". Small improvements were made in the report text wording.
+       Fields with dropdown menus can now also be used in combination with large text templates. Improved line wrapping
+       of longer text, so that space characters don't vanish anymore.
+       Other small improvements.
 * v119 Improved NospherA2 handling, but there is still more work to do. Fixed crash from discrepancy between
        symmetry code of atoms and _space_group_symop_operation_xyz.
 * v118 Added search for CIF keys in the main table. Improved the key adding dialog. Improves COD download by typing
