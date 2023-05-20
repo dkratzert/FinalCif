@@ -38,7 +38,7 @@ dependencies = [
     'QtAwesome',
     'QtPy',
     'requests',
-    'urllib3',
+    'urllib3~=1.26',
     'docxtpl',
     'shelxfile',
     'crossrefapi',
