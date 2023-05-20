@@ -312,6 +312,22 @@ class SAINTReference(ReferenceFormatter):
         self.pages = 'Bruker AXS Inc., Madison, Wisconsin, USA'
 
 
+class XRedReference(ReferenceFormatter):
+    def __init__(self, name: str, version: str):
+        """
+        >>> XRedReference('X-RED', 'version')
+        Stoe & Cie, X-RED, version, Stoe & Cie, Darmstadt, Germany.
+        """
+        super().__init__()
+        self.authors = 'Stoe & Cie'
+        self.journal = name
+        # self.year = '2012'
+        # if '6.28' in self.year:
+        #    self.year = '2001'
+        self.volume = version
+        self.pages = 'Stoe & Cie, Darmstadt, Germany'
+
+
 class XDSReference(ReferenceFormatter):
     def __init__(self):
         """

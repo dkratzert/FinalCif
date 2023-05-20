@@ -15,7 +15,7 @@ from finalcif.cif.text import retranslate_delimiter, string_to_utf8
 from finalcif.report.references import DummyReference, SAINTReference, SORTAVReference, ReferenceList, CCDCReference, \
     SHELXLReference, SHELXTReference, SHELXSReference, FinalCifReference, ShelXleReference, Olex2Reference, \
     SHELXDReference, SadabsTwinabsReference, CrysalisProReference, Nosphera2Reference, XDSReference, DSRReference2015, \
-    DSRReference2018
+    DSRReference2018, XRedReference
 from finalcif.tools.misc import protected_space, angstrom, zero_width_space, remove_line_endings, flatten
 
 
@@ -178,6 +178,8 @@ class DataReduction():
             integration_prog = 'XDS'
         if 'CrysAlisPro'.lower() in integration.lower():
             data_reduct_ref, absorpt_ref, integration_prog = self.add_crysalispro_reference(integration)
+        if 'STOE X-RED'.lower() in integration.lower():
+            data_reduct_ref, integration_prog = self.add_x_red_reference(integration)
         absdetails = cif['_exptl_absorpt_process_details'].replace('-', ' ')
         if 'SADABS' in absdetails.upper() or 'TWINABS' in absdetails.upper():
             # if len(absdetails.split()) > 1:
@@ -206,6 +208,14 @@ class DataReduction():
             saintversion = integration.split()[1]
         integration_prog = 'SAINT'
         data_reduct_ref = SAINTReference('SAINT', saintversion)
+        return data_reduct_ref, integration_prog
+
+    def add_x_red_reference(self, integration):
+        xredversion = 'unknown version'
+        #if len(integration.split()) > 1:
+        #    xredversion = integration.split()[1]
+        integration_prog = 'STOE X-RED'
+        data_reduct_ref = XRedReference('X-RED', xredversion)
         return data_reduct_ref, integration_prog
 
     def add_crysalispro_reference(self, integration: str) -> Tuple[CrysalisProReference, CrysalisProReference, str]:
