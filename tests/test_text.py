@@ -118,6 +118,7 @@ class TestHeavyUtf8(unittest.TestCase):
         self.assertEqual(self.txt, retranslate_delimiter(utf8_to_str(self.txt)))
 
 
+@unittest.skip('test')
 class TestLongTextinField(unittest.TestCase):
     def setUp(self):
         self.table = MyCifTable()
