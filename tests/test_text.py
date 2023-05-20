@@ -7,6 +7,7 @@
 import unittest
 
 import gemmi
+from PyQt5 import QtWidgets
 from packaging.version import Version
 
 # noinspection PyUnresolvedReferences
@@ -118,16 +119,23 @@ class TestHeavyUtf8(unittest.TestCase):
         self.assertEqual(self.txt, retranslate_delimiter(utf8_to_str(self.txt)))
 
 
-@unittest.skip('test')
 class TestLongTextinField(unittest.TestCase):
     def setUp(self):
+        self.w = QtWidgets.QMainWindow()
         self.table = MyCifTable()
+        self.w.setCentralWidget(self.table)
         self.table.vheaderitems.append('_foo')
         self.table.setRowCount(1)
         self.table.setColumnCount(3)
         self.table.setMinimumHeight(200)
         self.table.horizontalHeader().setDefaultSectionSize(200)
-        self.table.show()
+        self.w.show()
+
+    def tearDown(self) -> None:
+        self.table.deleteLater()
+        del self.table
+        self.w.deleteLater()
+        del self.w
 
     def test_long_text_in_texedit_and_gstr(self):
         txt = ('This is a much longer text, because I want to see what this method does with text '
