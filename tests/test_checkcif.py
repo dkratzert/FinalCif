@@ -23,10 +23,13 @@ if os.environ.get('NO_NETWORK'):
     url = ''
     request = None
 else:
-    url = 'https://checkcif.iucr.org/'
     # Do not do this request for each test:
-    request = requests.get(url, timeout=10)
-
+    try:
+        url = 'https://checkcif.iucr.org/'
+        request = requests.get(url, timeout=5)
+    except (SSLError, ssl.SSLEOFError):
+        url = 'http://checkcif.iucr.org/'
+        request = requests.get(url, timeout=5)
 
 class TestCheckCifInterface(TestCase):
     def setUp(self) -> None:
