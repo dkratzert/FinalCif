@@ -28,7 +28,7 @@ else:
     try:
         url = 'https://checkcif.iucr.org/'
         request = requests.get(url, timeout=5)
-    except (ssl.SSLError, ssl.SSLEOFError):
+    except (ssl.SSLError, ssl.SSLEOFError, requests.exceptions.SSLError):
         url = 'http://checkcif.iucr.org/'
         request = requests.get(url, timeout=5)
 
