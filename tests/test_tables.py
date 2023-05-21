@@ -7,6 +7,7 @@ from docx.shape import InlineShapes
 from docx.shared import Cm
 from docx.table import Table
 
+from finalcif import VERSION
 from finalcif.appwindow import AppWindow
 # noinspection PyUnresolvedReferences
 from finalcif.appwindow import app
@@ -134,9 +135,9 @@ class TablesTestCase(TablesTestMixin, unittest.TestCase):
                   'doi:10.1107/S2053229614024218.\n'
                   '[5] \tC. R. Groom, I. J. Bruno, M. P. Lightfoot, S. C. Ward, Acta Cryst. '
                   '2016, B72, 171–179, doi:10.1107/S2052520616003954.\n'
-                  '[6] \tD. Kratzert, FinalCif,')
+                  f'[6] \tD. Kratzert, FinalCif, V{VERSION}, https://dkratzert.de/finalcif.html.')
 
-        self.assertEqual(result, '\n'.join([x.text for x in doc.paragraphs])[:-42])
+        self.assertEqual(result, '\n'.join([x.text for x in doc.paragraphs]))
 
 
 class TablesNoPictureTestCase(TablesTestMixin, unittest.TestCase):

@@ -6,6 +6,7 @@ from unittest.mock import Mock
 from docx import Document
 from docx.text.paragraph import Paragraph
 
+from finalcif import VERSION
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.report.references import ReferenceList
 from finalcif.report.report_text import Hydrogens, MachineType, Crystallization, CrystalSelection, DataCollection, \
@@ -337,7 +338,7 @@ class TestTextParagraphs(unittest.TestCase):
     def test_finalcif_report(self):
         FinalCifreport(paragraph=self.paragraph, reflist=self.reflist)
         self.assertEqual('This report and the CIF file were generated using FinalCif.[1]', self.paragraph.text)
-        self.assertEqual('[0] D. Kratzert, FinalCif, V119, https://dkratzert.de/finalcif.html.', str(self.reflist))
+        self.assertEqual(f'[0] D. Kratzert, FinalCif, V{VERSION}, https://dkratzert.de/finalcif.html.', str(self.reflist))
 
     def test_hydrogens_all_free_anis(self):
         cif = CifContainer(Path('test-data/hydrogen/all_free_free_anisotropic.cif'))
