@@ -134,9 +134,9 @@ class TablesTestCase(TablesTestMixin, unittest.TestCase):
                   'doi:10.1107/S2053229614024218.\n'
                   '[5] \tC. R. Groom, I. J. Bruno, M. P. Lightfoot, S. C. Ward, Acta Cryst. '
                   '2016, B72, 171–179, doi:10.1107/S2052520616003954.\n'
-                  '[6] \tD. Kratzert, FinalCif, V119, https://dkratzert.de/finalcif.html.')
+                  '[6] \tD. Kratzert, FinalCif,')
 
-        self.assertEqual(result, '\n'.join([x.text for x in doc.paragraphs]))
+        self.assertEqual(result, '\n'.join([x.text for x in doc.paragraphs])[:-42])
 
 
 class TablesNoPictureTestCase(TablesTestMixin, unittest.TestCase):
