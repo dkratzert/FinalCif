@@ -29,7 +29,7 @@ __docformat__ = 'restructuredtext en'
 import sys
 
 from PyQt5.Qt import Qt
-from PyQt5.QtCore import QEvent
+from PyQt5.QtCore import QEvent, QPoint
 from PyQt5.QtGui import (QFocusEvent, QSyntaxHighlighter, QTextBlockUserData, QTextCharFormat, QTextCursor,
                          QContextMenuEvent)
 from PyQt5.QtWidgets import (QAction, QActionGroup, QApplication, QMenu,
@@ -52,10 +52,10 @@ try:
 
         def __init__(self, *args, **kwargs) -> None:
             QPlainTextEdit.__init__(self, *args, **kwargs)
-            start_langiage = 'en_US'
+            start_language = 'en_US'
             # Start with a default dictionary based on US english.
             self.highlighter = EnchantHighlighter(self.document())
-            self.highlighter.setDict(enchant.Dict(start_langiage))
+            self.highlighter.setDict(enchant.Dict(start_language))
 
         def contextMenuEvent(self, event: QContextMenuEvent) -> None:
             """Custom context menu handler to add a spelling suggestions submenu"""
@@ -68,7 +68,7 @@ try:
             # 3. Switching focus away from and back to the window fixes it
             self.focusInEvent(QFocusEvent(QEvent.FocusIn))
 
-        def create_spellcheck_context_menu(self, pos):
+        def create_spellcheck_context_menu(self, pos: QPoint) -> QMenu:
             """Create and return an augmented default context menu.
             This may be used as an alternative to the QPoint-taking form of
             ``createStandardContextMenu`` and will work on pre-5.5 Qt.
@@ -80,17 +80,30 @@ try:
             menu.setTitle('Spell Checking')
             # Add a submenu for setting the spell-check language
             menu.addSeparator()
+            cursor = self.cursor_for_misspelling(pos)
+            text = cursor.selectedText()
+            action = QAction(f"Learn '{text}'", parent=menu)
+            action.setData(text)
+            menu.triggered.connect(self.learn_word)
+            menu.addAction(action)
             menu.addMenu(self.create_languages_menu(menu))
             # menu.addMenu(self.createFormatsMenu(menu))
 
             # Try to retrieve a menu of corrections for the right-clicked word
-            spell_menu = self.create_corrections_menu(self.cursor_for_misspelling(pos), menu)
+            spell_menu = self.create_corrections_menu(cursor, menu)
 
             if spell_menu:
                 menu.insertSeparator(menu.actions()[0])
                 menu.insertMenu(menu.actions()[0], spell_menu)
 
             return menu
+
+        def learn_word(self, action: QAction):
+            misspelled_word = action.data()
+            # Add the misspelled word to the personal dictionary
+            personal_dictionary = self.highlighter.dict()
+            personal_dictionary.add(misspelled_word)
+            self.highlighter.rehighlight()
 
         def create_corrections_menu(self, cursor, parent=None):
             """Create and return a menu for correcting the selected word."""
@@ -260,5 +273,6 @@ if __name__ == '__main__':
 
     spellEdit = SpellTextEdit()
     spellEdit.show()
+    spellEdit.setPlainText('This is somee missspelled texawt with errorsd.')
 
     sys.exit(app.exec_())
