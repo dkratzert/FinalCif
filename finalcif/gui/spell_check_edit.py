@@ -28,13 +28,13 @@ __docformat__ = 'restructuredtext en'
 
 import sys
 
-import enchant
 from PyQt5.Qt import Qt
 from PyQt5.QtCore import QEvent
 from PyQt5.QtGui import (QFocusEvent, QSyntaxHighlighter, QTextBlockUserData, QTextCharFormat, QTextCursor,
                          QContextMenuEvent)
 from PyQt5.QtWidgets import (QAction, QActionGroup, QApplication, QMenu,
                              QPlainTextEdit)
+import enchant
 from enchant import tokenize
 from enchant.errors import TokenizerNotFoundError
 from enchant.utils import trim_suggestions
