@@ -26,12 +26,13 @@ if os.environ.get('NO_NETWORK'):
 else:
     # Do not do this request for each test:
     try:
-        url = 'https://checkcif.iucr.org/'
-        request = requests.get(url, timeout=5)
-    except (ssl.SSLError, ssl.SSLEOFError, requests.exceptions.SSLError):
-        url = 'http://checkcif.iucr.org/'
-        request = requests.get(url, timeout=5)
+        request = requests.get('https://checkcif.iucr.org/', timeout=5)
+    except (ssl.SSLError, requests.exceptions.SSLError):
+        request = requests.get('http://checkcif.iucr.org/', timeout=5)
+    except Exception:
+        request = None
 
+@unittest.skipIf(not request, 'Skip without network')
 class TestCheckCifInterface(TestCase):
     def setUp(self) -> None:
         if os.environ.get('NO_NETWORK'):
