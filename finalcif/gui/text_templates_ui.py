@@ -82,7 +82,7 @@ class Ui_TextTemplatesWidget(object):
         self.verticalLayout_4.setContentsMargins(12, 6, 12, 6)
         self.verticalLayout_4.setSpacing(6)
         self.verticalLayout_4.setObjectName("verticalLayout_4")
-        self.plainTextEdit = QtWidgets.QPlainTextEdit(self.combinedTestGroupBox)
+        self.plainTextEdit = SpellTextEdit(self.combinedTestGroupBox)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -140,6 +140,7 @@ class Ui_TextTemplatesWidget(object):
         self.importPushButton.setText(_translate("TextTemplatesWidget", "Import Template"))
         self.exportTextPushButton.setText(_translate("TextTemplatesWidget", "Export to CIF"))
         self.deletePushButton.setText(_translate("TextTemplatesWidget", "Delete Template"))
+from finalcif.gui.spell_check_edit import SpellTextEdit
 
 
 if __name__ == "__main__":

@@ -57,7 +57,7 @@ class MyQPlainTextEdit(QPlainTextEdit):
         action_template.triggered.connect(self._on_create_template)
         deleterow.triggered.connect(self._delete_row)
         new_key.triggered.connect(self._add_cif_keys)
-        choosed_action = menu.exec(event.globalPos())
+        menu.exec(event.globalPos())
 
     def _add_cif_keys(self):
         new_key = NewKey(self)

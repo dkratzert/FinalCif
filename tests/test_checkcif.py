@@ -1,4 +1,5 @@
 import os
+import ssl
 import unittest
 from pathlib import Path
 from unittest import TestCase
@@ -23,11 +24,15 @@ if os.environ.get('NO_NETWORK'):
     url = ''
     request = None
 else:
-    url = 'https://checkcif.iucr.org/'
     # Do not do this request for each test:
-    request = requests.get(url, timeout=10)
+    try:
+        request = requests.get('https://checkcif.iucr.org/', timeout=5)
+    except (ssl.SSLError, requests.exceptions.SSLError):
+        request = requests.get('http://checkcif.iucr.org/', timeout=5)
+    except Exception:
+        request = None
 
-
+@unittest.skipIf(not request, 'Skip without network')
 class TestCheckCifInterface(TestCase):
     def setUp(self) -> None:
         if os.environ.get('NO_NETWORK'):
