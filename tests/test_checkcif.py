@@ -1,4 +1,5 @@
 import os
+import ssl
 import unittest
 from pathlib import Path
 from unittest import TestCase
@@ -27,7 +28,7 @@ else:
     try:
         url = 'https://checkcif.iucr.org/'
         request = requests.get(url, timeout=5)
-    except (SSLError, ssl.SSLEOFError):
+    except (ssl.SSLError, ssl.SSLEOFError):
         url = 'http://checkcif.iucr.org/'
         request = requests.get(url, timeout=5)
 
