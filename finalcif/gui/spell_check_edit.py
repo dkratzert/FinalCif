@@ -29,11 +29,10 @@ __docformat__ = 'restructuredtext en'
 import sys
 
 import enchant
-# pylint: disable=no-name-in-module
 from PyQt5.Qt import Qt
 from PyQt5.QtCore import QEvent
-from PyQt5.QtGui import (QFocusEvent, QSyntaxHighlighter, QTextBlockUserData,
-                         QTextCharFormat, QTextCursor)
+from PyQt5.QtGui import (QFocusEvent, QSyntaxHighlighter, QTextBlockUserData, QTextCharFormat, QTextCursor,
+                         QContextMenuEvent)
 from PyQt5.QtWidgets import (QAction, QActionGroup, QApplication, QMenu,
                              QPlainTextEdit)
 from enchant import tokenize
@@ -47,18 +46,18 @@ class SpellTextEdit(QPlainTextEdit):
     # Clamping value for words like "regex" which suggest so many things that
     # the menu runs from the top to the bottom of the screen and spills over
     # into a second column.
-    max_suggestions = 15
+    max_suggestions = 10
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         QPlainTextEdit.__init__(self, *args, **kwargs)
-
-        # Start with a default dictionary based on the current locale.
+        start_langiage = 'en_US'
+        # Start with a default dictionary based on US english.
         self.highlighter = EnchantHighlighter(self.document())
-        self.highlighter.setDict(enchant.Dict())
+        self.highlighter.setDict(enchant.Dict(start_langiage))
 
-    def contextMenuEvent(self, event):
+    def contextMenuEvent(self, event: QContextMenuEvent) -> None:
         """Custom context menu handler to add a spelling suggestions submenu"""
-        popup_menu = self.createSpellcheckContextMenu(event.pos())
+        popup_menu = self.create_spellcheck_context_menu(event.pos())
         popup_menu.exec_(event.globalPos())
 
         # Fix bug observed in Qt 5.2.1 on *buntu 14.04 LTS where:
@@ -67,7 +66,7 @@ class SpellTextEdit(QPlainTextEdit):
         # 3. Switching focus away from and back to the window fixes it
         self.focusInEvent(QFocusEvent(QEvent.FocusIn))
 
-    def createSpellcheckContextMenu(self, pos):
+    def create_spellcheck_context_menu(self, pos):
         """Create and return an augmented default context menu.
         This may be used as an alternative to the QPoint-taking form of
         ``createStandardContextMenu`` and will work on pre-5.5 Qt.
@@ -79,12 +78,11 @@ class SpellTextEdit(QPlainTextEdit):
         menu.setTitle('Spell Checking')
         # Add a submenu for setting the spell-check language
         menu.addSeparator()
-        menu.addMenu(self.createLanguagesMenu(menu))
-        #menu.addMenu(self.createFormatsMenu(menu))
+        menu.addMenu(self.create_languages_menu(menu))
+        # menu.addMenu(self.createFormatsMenu(menu))
 
         # Try to retrieve a menu of corrections for the right-clicked word
-        spell_menu = self.createCorrectionsMenu(
-            self.cursorForMisspelling(pos), menu)
+        spell_menu = self.create_corrections_menu(self.cursor_for_misspelling(pos), menu)
 
         if spell_menu:
             menu.insertSeparator(menu.actions()[0])
@@ -92,15 +90,13 @@ class SpellTextEdit(QPlainTextEdit):
 
         return menu
 
-    def createCorrectionsMenu(self, cursor, parent=None):
+    def create_corrections_menu(self, cursor, parent=None):
         """Create and return a menu for correcting the selected word."""
         if not cursor:
             return None
 
         text = cursor.selectedText()
-        suggests = trim_suggestions(text,
-                                    self.highlighter.dict().suggest(text),
-                                    self.max_suggestions)
+        suggests = trim_suggestions(text, self.highlighter.dict().suggest(text), self.max_suggestions)
 
         spell_menu = QMenu('Spelling Suggestions', parent)
         for word in suggests:
@@ -115,7 +111,7 @@ class SpellTextEdit(QPlainTextEdit):
 
         return None
 
-    def createLanguagesMenu(self, parent=None):
+    def create_languages_menu(self, parent=None):
         """Create and return a menu for selecting the spell-check language."""
         curr_lang = self.highlighter.dict().tag
         lang_menu = QMenu("Language", parent)
@@ -131,7 +127,7 @@ class SpellTextEdit(QPlainTextEdit):
         lang_menu.triggered.connect(self.cb_set_language)
         return lang_menu
 
-    def createFormatsMenu(self, parent=None):
+    def create_formats_menu(self, parent=None):
         """Create and return a menu for selecting the spell-check language."""
         fmt_menu = QMenu("Format", parent)
         fmt_actions = QActionGroup(fmt_menu)
@@ -147,7 +143,7 @@ class SpellTextEdit(QPlainTextEdit):
         fmt_menu.triggered.connect(self.cb_set_format)
         return fmt_menu
 
-    def cursorForMisspelling(self, pos):
+    def cursor_for_misspelling(self, pos):
         """Return a cursor selecting the misspelled word at ``pos`` or ``None``
         This leverages the fact that QPlainTextEdit already has a system for
         processing its contents in limited-size blocks to keep things fast.
@@ -169,10 +165,9 @@ class SpellTextEdit(QPlainTextEdit):
         else:
             return None
 
-    def cb_correct_word(self, action):  # pylint: disable=no-self-use
+    def cb_correct_word(self, action):
         """Event handler for 'Spelling Suggestions' entries."""
         cursor, word = action.data()
-
         cursor.beginEditBlock()
         cursor.removeSelectedText()
         cursor.insertText(word)
@@ -203,7 +198,7 @@ class EnchantHighlighter(QSyntaxHighlighter):
     # err_format.setUnderlineStyle(QTextCharFormat.SpellCheckUnderline)
     err_format.setUnderlineStyle(QTextCharFormat.WaveUnderline)
 
-    def __init__(self, *args):
+    def __init__(self, *args) -> None:
         QSyntaxHighlighter.__init__(self, *args)
 
         # Initialize private members
@@ -214,7 +209,7 @@ class EnchantHighlighter(QSyntaxHighlighter):
         """Gets the chunkers in use"""
         return self._chunkers
 
-    def dict(self):
+    def dict(self) -> enchant.Dict:
         """Gets the spelling dictionary in use"""
         return self._sp_dict
 
@@ -237,7 +232,7 @@ class EnchantHighlighter(QSyntaxHighlighter):
 
         self.rehighlight()
 
-    def highlightBlock(self, text):
+    def highlightBlock(self, text: str) -> None:
         """Overridden QSyntaxHighlighter method to apply the highlight"""
         if not self._sp_dict:
             return
