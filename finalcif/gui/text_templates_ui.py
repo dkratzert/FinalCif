@@ -140,7 +140,7 @@ class Ui_TextTemplatesWidget(object):
         self.importPushButton.setText(_translate("TextTemplatesWidget", "Import Template"))
         self.exportTextPushButton.setText(_translate("TextTemplatesWidget", "Export to CIF"))
         self.deletePushButton.setText(_translate("TextTemplatesWidget", "Delete Template"))
-from finalcif.gui.customWidgets.spellcheckPlugin import SpellTextEdit
+from finalcif.gui.spell_check_edit import SpellTextEdit
 
 
 if __name__ == "__main__":
