@@ -276,7 +276,7 @@
   <customwidget>
    <class>SpellTextEdit</class>
    <extends>QPlainTextEdit</extends>
-   <header>finalcif.gui.customWidgets.spellcheckPlugin.h</header>
+   <header>finalcif.gui.spell_check_edit.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
