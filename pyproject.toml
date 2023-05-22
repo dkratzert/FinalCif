@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "finalcif"
-version = "120"
+version = "121"
 authors = [
     { name = "Daniel Kratzert", email = "dkratzert@gmx.de" },
 ]
@@ -43,6 +43,7 @@ dependencies = [
     'shelxfile',
     'crossrefapi',
     'numpy',
+    'pyenchant',
 ]
 
 [project.urls]
