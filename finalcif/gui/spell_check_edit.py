@@ -27,6 +27,7 @@ __author__ = 'John Schember; Stephan Sokolow'
 __docformat__ = 'restructuredtext en'
 
 import sys
+from typing import Union
 
 from PyQt5.Qt import Qt
 from PyQt5.QtCore import QEvent, QPoint
@@ -78,34 +79,38 @@ try:
             except TypeError:  # Before Qt 5.5
                 menu = self.createStandardContextMenu()
             menu.setTitle('Spell Checking')
+            menu.insertMenu(menu.actions()[0], self.create_languages_menu(menu))
+            # menu.insertSeparator(menu.actions()[1])
             # Add a submenu for setting the spell-check language
-            menu.addSeparator()
             cursor = self.cursor_for_misspelling(pos)
-            text = cursor.selectedText()
-            action = QAction(f"Learn '{text}'", parent=menu)
-            action.setData(text)
-            menu.triggered.connect(self.learn_word)
-            menu.addAction(action)
-            menu.addMenu(self.create_languages_menu(menu))
+            self.create_learn_word_menu(cursor, menu)
             # menu.addMenu(self.createFormatsMenu(menu))
-
             # Try to retrieve a menu of corrections for the right-clicked word
             spell_menu = self.create_corrections_menu(cursor, menu)
-
             if spell_menu:
-                menu.insertSeparator(menu.actions()[0])
+                menu.insertSeparator(menu.actions()[2])
                 menu.insertMenu(menu.actions()[0], spell_menu)
-
             return menu
 
-        def learn_word(self, action: QAction):
+        def create_learn_word_menu(self, cursor, menu):
+            if not cursor:
+                return None
+            text = cursor.selectedText()
+            learn_action = QAction(f"Learn '{text}'", parent=menu)
+            learn_action.setData(text)
+            menu.triggered.connect(self.learn_word)
+            menu.insertAction(menu.actions()[0], learn_action)
+
+        def learn_word(self, action: QAction) -> None:
             misspelled_word = action.data()
+            if 'Learn' not in action.text() or isinstance(misspelled_word, tuple):
+                return None
             # Add the misspelled word to the personal dictionary
             personal_dictionary = self.highlighter.dict()
             personal_dictionary.add(misspelled_word)
             self.highlighter.rehighlight()
 
-        def create_corrections_menu(self, cursor, parent=None):
+        def create_corrections_menu(self, cursor, parent=None) -> Union[QMenu, None]:
             """Create and return a menu for correcting the selected word."""
             if not cursor:
                 return None
@@ -123,7 +128,6 @@ try:
             if spell_menu.actions():
                 spell_menu.triggered.connect(self.cb_correct_word)
                 return spell_menu
-
             return None
 
         def create_languages_menu(self, parent=None):
