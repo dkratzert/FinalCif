@@ -12,6 +12,8 @@ a = Analysis(['finalcif/finalcif_start.py'],
              datas=[('finalcif/gui', 'gui'),
                     (path.join(site_packages, "docx", "templates"), 'finalcif/docx/templates'),
                     ('finalcif/template', 'template'), ('finalcif/icon', 'icon'),
+                    # Copies also the missing files from enchant to the distributions enchant directory:
+                    ((path.join(site_packages, "enchant")), ('enchant'))
                     ],
              hiddenimports=['tools', 'tools.misc', 'tools.settings', 'datafiles', 'gemmi', 'qtawesome', 'finalcif',
                             'finalcif.app_path', 'numpy', 'enchant'],
