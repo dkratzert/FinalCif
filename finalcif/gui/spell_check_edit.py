@@ -210,17 +210,17 @@ try:
         """
         # _pattern = re.compile(r"^([A-Z]\w+[A-Z]+\w+)")
         words_to_skip = (
-            'FinalCif',
-            'StructureFinder',
-            'CCDC',
-            'COD',
-            'ShelXle',
-            'SHELX',
-            'SHELXl',
-            'SHELXD',
-            'SHELXT',
-            'SHELXS',
-            'WinGX',
+            'finalcif',
+            'structurefinder',
+            'ccdc',
+            'cod',
+            'shelxle',
+            'shelx',
+            'shelxl',
+            'shelxd',
+            'shelxt',
+            'shelxs',
+            'wingx',
         )
 
         def _skip(self, word):
