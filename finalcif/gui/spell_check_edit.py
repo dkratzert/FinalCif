@@ -35,6 +35,7 @@ from PyQt5.QtGui import (QFocusEvent, QSyntaxHighlighter, QTextBlockUserData, QT
                          QContextMenuEvent)
 from PyQt5.QtWidgets import (QAction, QActionGroup, QApplication, QMenu,
                              QPlainTextEdit)
+from enchant.tokenize import Filter
 
 try:
     import enchant
@@ -204,10 +205,34 @@ try:
             # TODO: Emit an event so this menu can trigger other things
 
 
+    class CustomFilter(Filter):
+        r"""Filter skipping over listed words.
+        """
+        # _pattern = re.compile(r"^([A-Z]\w+[A-Z]+\w+)")
+        words_to_skip = (
+            'FinalCif',
+            'StructureFinder',
+            'CCDC',
+            'COD',
+            'ShelXle',
+            'SHELX',
+            'SHELXl',
+            'SHELXD',
+            'SHELXT',
+            'SHELXS',
+            'WinGX',
+        )
+
+        def _skip(self, word):
+            if word.lower() in self.words_to_skip:
+                return True
+            return False
+
+
     class EnchantHighlighter(QSyntaxHighlighter):
         """QSyntaxHighlighter subclass which consults a PyEnchant dictionary"""
         tokenizer = None
-        token_filters = (tokenize.EmailFilter, tokenize.URLFilter)
+        token_filters = (tokenize.EmailFilter, tokenize.URLFilter, CustomFilter)
 
         # Define the spellcheck style once and just assign it as necessary
         # XXX: Does QSyntaxHighlighter.setFormat handle keeping this from
