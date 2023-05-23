@@ -212,7 +212,7 @@ class DataReduction():
 
     def add_x_red_reference(self, integration):
         xredversion = 'unknown version'
-        #if len(integration.split()) > 1:
+        # if len(integration.split()) > 1:
         #    xredversion = integration.split()[1]
         integration_prog = 'STOE X-RED'
         data_reduct_ref = XRedReference('X-RED', xredversion)
@@ -443,7 +443,29 @@ class Disorder():
             SpaceChar(paragraph).regular()
 
 
-class SpaceChar(object):
+class Twinning():
+    def __init__(self, cif: CifContainer, paragraph: Paragraph, reflist: ReferenceList):
+        """ _twin_formation_mechanism         gt
+            _twin_dimensionality              triperiodic
+            _twin_morphology                  polysynthetic
+            _twin_special_details             'The data was integrated as a 2-component twin.'
+            _twin_individual_id               2
+            _twin_individual_twin_matrix_11   -0.00018
+            _twin_individual_twin_matrix_12   -0.00091
+            _twin_individual_twin_matrix_13   -0.9998
+            _twin_individual_twin_matrix_21   0.99999
+            _twin_individual_twin_matrix_22   -0.26475
+            _twin_individual_twin_matrix_23   -0.36925
+            _twin_individual_twin_matrix_31   0.00018
+            _twin_individual_twin_matrix_32   -1.00019
+            _twin_individual_twin_matrix_33   0.00187
+        """
+        twining = cif['_twin_individual_id']
+        if twining:
+            sentence = f''
+
+
+class SpaceChar():
     def __init__(self, paragraph: Paragraph):
         self.p = paragraph
 
