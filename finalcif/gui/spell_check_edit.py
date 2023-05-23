@@ -35,7 +35,6 @@ from PyQt5.QtGui import (QFocusEvent, QSyntaxHighlighter, QTextBlockUserData, QT
                          QContextMenuEvent)
 from PyQt5.QtWidgets import (QAction, QActionGroup, QApplication, QMenu,
                              QPlainTextEdit)
-from enchant.tokenize import Filter
 
 try:
     import enchant
@@ -205,7 +204,7 @@ try:
             # TODO: Emit an event so this menu can trigger other things
 
 
-    class CustomFilter(Filter):
+    class CustomFilter(tokenize.Filter):
         r"""Filter skipping over listed words.
         """
         # _pattern = re.compile(r"^([A-Z]\w+[A-Z]+\w+)")
