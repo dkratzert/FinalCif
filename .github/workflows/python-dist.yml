@@ -1,4 +1,4 @@
-name: PypiPublish
+name: publish
 on:
   push:
     tags:
