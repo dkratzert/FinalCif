@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "finalcif"
-version = "121"
+version = "121.post5"
 authors = [
     { name = "Daniel Kratzert", email = "dkratzert@gmx.de" },
 ]
