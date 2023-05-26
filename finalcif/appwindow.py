@@ -129,7 +129,8 @@ class AppWindow(QMainWindow):
         self.ui.page_textTemplate.layout().addWidget(self.textedit)
         #
         self.connect_signals_and_slots()
-        self.make_button_icons()
+        with suppress(Exception):
+            self.make_button_icons()
         self.format_report_button()
 
     def set_initial_button_states(self) -> None:
@@ -198,13 +199,14 @@ class AppWindow(QMainWindow):
         self.ui.LoopsPushButton.setIcon(qta.icon('mdi.table'))
         self.ui.CheckcifHTMLOnlineButton.setIcon(qta.icon('mdi.comment-check-outline'))
         self.ui.CheckcifPDFOnlineButton.setIcon(qta.icon('mdi.comment-check'))
-        self.ui.SaveFullReportButton.setIcon(qta.icon('mdi.file-table-outline'))
+        with suppress(Exception):
+            self.ui.SaveFullReportButton.setIcon(qta.icon('mdi.file-table-outline'))
         try:
             self.ui.ExploreDirButton.setIcon(qta.icon('ph.folder-open'))
         except Exception:
             self.ui.ExploreDirButton.setIcon(qta.icon('mdi.folder-open-outline'))
-        self.ui.SaveCifButton.setIcon(qta.icon('ri.save-3-line'))
-        self.ui.SelectCif_PushButton.setIcon(qta.icon('ri.file-text-line', options=[{'color': 'darkgreen'}]))
+        self.ui.SaveCifButton.setIcon(qta.icon('fa5.save'))
+        self.ui.SelectCif_PushButton.setIcon(qta.icon('fa.file-text-o', options=[{'color': 'darkgreen'}]))
         try:
             self.ui.AuthorEditPushButton.setIcon(qta.icon('ph.users-three-bold'))
         except Exception:
@@ -213,7 +215,10 @@ class AppWindow(QMainWindow):
             self.ui.SourcesPushButton.setIcon(qta.icon('ph.list-bullets-bold'))
         except Exception:
             self.ui.SourcesPushButton.setIcon(qta.icon('fa5s.list-ul'))
-        self.ui.OptionsPushButton.setIcon(qta.icon('ri.settings-5-line'))
+        try:
+            self.ui.OptionsPushButton.setIcon(qta.icon('ph.gear'))
+        except Exception:
+            self.ui.OptionsPushButton.setIcon(qta.icon('fa.gear'))
         try:
             self.ui.ShredCifButton.setIcon(qta.icon('ph.files-bold'))
         except Exception:
@@ -261,9 +266,16 @@ class AppWindow(QMainWindow):
         self.textedit.ui.deletePushButton.setIcon(qta.icon('mdi.playlist-minus'))
         self.textedit.ui.importPushButton.setIcon(qta.icon('mdi.import'))
         #
-        self.ui.SaveAuthorLoopToTemplateButton.setIcon(qta.icon('mdi.badge-account-outline'))
-        self.ui.AddThisAuthorToLoopPushButton.setIcon(qta.icon('mdi.folder-table-outline'))
-        self.ui.DeleteLoopAuthorTemplateButton.setIcon(qta.icon('mdi.delete-forever-outline'))
+        try:
+            self.ui.SaveAuthorLoopToTemplateButton.setIcon(qta.icon('mdi.badge-account-outline'))
+        except Exception:
+            self.ui.SaveAuthorLoopToTemplateButton.setIcon(qta.icon('fa.id-badge'))
+        try:
+            self.ui.AddThisAuthorToLoopPushButton.setIcon(qta.icon('mdi.folder-table-outline'))
+        except Exception:
+            self.ui.AddThisAuthorToLoopPushButton.setIcon(qta.icon('mdi.file-table-outline'))
+        with suppress(Exception):
+            self.ui.DeleteLoopAuthorTemplateButton.setIcon(qta.icon('mdi.delete-forever-outline'))
 
     def connect_signals_and_slots(self) -> None:
         """
@@ -1084,11 +1096,14 @@ class AppWindow(QMainWindow):
         with suppress(Exception):
             self.report_picture_path = Path(filename)
         if self.report_picture_path.exists() and self.report_picture_path.is_file():
-            try:
-                self.ui.ReportPicPushButton.setIcon(qta.icon('ph.image-bold'))
-            except Exception:
-                self.ui.ReportPicPushButton.setIcon(qta.icon('fa.image'))
-            # self.ui.ReportPicPushButton.setText('')
+            with suppress(Exception):
+                self.set_picture_button_icon()
+
+    def set_picture_button_icon(self):
+        try:
+            self.ui.ReportPicPushButton.setIcon(qta.icon('ph.image-bold'))
+        except Exception:
+            self.ui.ReportPicPushButton.setIcon(qta.icon('fa.image'))
 
     def get_checked_templates_list_text(self) -> str:
         for index in range(self.ui.TemplatesListWidget.count()):
