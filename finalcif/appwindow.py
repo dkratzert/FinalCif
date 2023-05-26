@@ -199,14 +199,29 @@ class AppWindow(QMainWindow):
         self.ui.CheckcifHTMLOnlineButton.setIcon(qta.icon('mdi.comment-check-outline'))
         self.ui.CheckcifPDFOnlineButton.setIcon(qta.icon('mdi.comment-check'))
         self.ui.SaveFullReportButton.setIcon(qta.icon('mdi.file-table-outline'))
-        self.ui.ExploreDirButton.setIcon(qta.icon('ph.folder-open'))
+        try:
+            self.ui.ExploreDirButton.setIcon(qta.icon('ph.folder-open'))
+        except Exception:
+            self.ui.ExploreDirButton.setIcon(qta.icon('mdi.folder-open-outline'))
         self.ui.SaveCifButton.setIcon(qta.icon('ri.save-3-line'))
         self.ui.SelectCif_PushButton.setIcon(qta.icon('ri.file-text-line', options=[{'color': 'darkgreen'}]))
-        self.ui.AuthorEditPushButton.setIcon(qta.icon('ph.users-three-bold'))
-        self.ui.SourcesPushButton.setIcon(qta.icon('ph.list-bullets-bold'))
+        try:
+            self.ui.AuthorEditPushButton.setIcon(qta.icon('ph.users-three-bold'))
+        except Exception:
+            self.ui.AuthorEditPushButton.setIcon(qta.icon('fa5s.users'))
+        try:
+            self.ui.SourcesPushButton.setIcon(qta.icon('ph.list-bullets-bold'))
+        except Exception:
+            self.ui.SourcesPushButton.setIcon(qta.icon('fa5s.list-ul'))
         self.ui.OptionsPushButton.setIcon(qta.icon('ri.settings-5-line'))
-        self.ui.ShredCifButton.setIcon(qta.icon('ph.files-bold'))
-        self.ui.DetailsPushButton.setIcon(qta.icon('ph.bird-bold'))
+        try:
+            self.ui.ShredCifButton.setIcon(qta.icon('ph.files-bold'))
+        except Exception:
+            self.ui.ShredCifButton.setIcon(qta.icon('fa.files-o'))
+        try:
+            self.ui.DetailsPushButton.setIcon(qta.icon('ph.bird-bold'))
+        except Exception:
+            self.ui.DetailsPushButton.setIcon(qta.icon('fa5s.kiwi-bird'))
         self.ui.NewEquipmentTemplateButton.setIcon(qta.icon('mdi.playlist-plus'))
         self.ui.EditEquipmentTemplateButton.setIcon(qta.icon('mdi.playlist-edit'))
         self.ui.DeleteEquipmentButton.setIcon(qta.icon('mdi.playlist-minus'))
@@ -221,7 +236,10 @@ class AppWindow(QMainWindow):
         self.ui.SavePropertiesButton.setIcon(qta.icon('mdi.content-save-outline'))
         self.ui.CancelPropertiesButton.setIcon(qta.icon('mdi.cancel'))
         self.ui.ExportPropertyButton.setIcon(qta.icon('mdi.export'))
-        self.ui.CCDCpushButton.setIcon(qta.icon('ph.upload-simple-bold'))
+        try:
+            self.ui.CCDCpushButton.setIcon(qta.icon('ph.upload-simple-bold'))
+        except Exception:
+            self.ui.CCDCpushButton.setIcon(qta.icon('fa5s.cloud-upload-alt'))
         self.ui.CODpushButton.setIcon(qta.icon('mdi.upload'))
         self.ui.SavePushButton.setIcon(qta.icon('mdi.content-save'))
         self.ui.revertLoopsPushButton.setIcon(qta.icon('mdi.backup-restore'))
@@ -234,7 +252,10 @@ class AppWindow(QMainWindow):
         self.ui.BackFromLoopsPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
         self.ui.BackFromPlatonPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
         self.textedit.ui.cancelTextPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
-        self.textedit.ui.applyTextPushButton.setIcon(qta.icon('ph.check-bold'))
+        try:
+            self.textedit.ui.applyTextPushButton.setIcon(qta.icon('ph.check-bold'))
+        except Exception:
+            self.textedit.ui.applyTextPushButton.setIcon(qta.icon('fa.check'))
         self.textedit.ui.exportTextPushButton.setIcon(qta.icon('mdi.export'))
         self.textedit.ui.savePushButton.setIcon(qta.icon('mdi.content-save'))
         self.textedit.ui.deletePushButton.setIcon(qta.icon('mdi.playlist-minus'))
@@ -1063,7 +1084,10 @@ class AppWindow(QMainWindow):
         with suppress(Exception):
             self.report_picture_path = Path(filename)
         if self.report_picture_path.exists() and self.report_picture_path.is_file():
-            self.ui.ReportPicPushButton.setIcon(qta.icon('ph.image-bold'))
+            try:
+                self.ui.ReportPicPushButton.setIcon(qta.icon('ph.image-bold'))
+            except Exception:
+                self.ui.ReportPicPushButton.setIcon(qta.icon('fa.image'))
             # self.ui.ReportPicPushButton.setText('')
 
     def get_checked_templates_list_text(self) -> str:
