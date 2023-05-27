@@ -1106,8 +1106,8 @@ class AppWindow(QMainWindow):
             self.ui.ReportPicPushButton.setIcon(qta.icon('fa.image'))
 
     def get_checked_templates_list_text(self) -> str:
-        for index in range(self.ui.TemplatesListWidget.count()):
-            item = self.ui.TemplatesListWidget.item(index)
+        for index in range(self.ui.docxTemplatesListWidget.count()):
+            item = self.ui.docxTemplatesListWidget.item(index)
             if item.checkState() == Qt.Checked:
                 return item.text()
 
@@ -1165,8 +1165,8 @@ class AppWindow(QMainWindow):
 
     def report_without_template(self) -> bool:
         """Check whether the report is generated from a template or hard-coded"""
-        return self.ui.TemplatesListWidget.item(0).checkState() == Qt.CheckState.Checked \
-            or not self.ui.TemplatesListWidget.currentItem()
+        return self.ui.docxTemplatesListWidget.item(0).checkState() == Qt.CheckState.Checked \
+            or not self.ui.docxTemplatesListWidget.currentItem()
 
     def zip_report(self, report_filename: Path) -> None:
         zipfile = self.cif.finalcif_file.with_suffix('.zip')

@@ -39,7 +39,7 @@ class Options:
         self.ui.MainStackedWidget.go_to_options_page()
 
     def _state_changed(self):
-        lw = self.ui.TemplatesListWidget
+        lw = self.ui.docxTemplatesListWidget
         self._options = {
             'report_text'            : not self.ui.ReportTextCheckBox.isChecked(),
             'report_adp'             : self.ui.ADPTableCheckBox.isChecked(),

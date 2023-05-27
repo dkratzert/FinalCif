@@ -23,7 +23,7 @@ class TemplateReportTestCase(unittest.TestCase):
         self.myapp.ui.ReportTextCheckBox.setChecked(False)
         self.myapp.ui.PictureWidthDoubleSpinBox.setValue(7.43)
         self.import_templates()
-        self.myapp.ui.TemplatesListWidget.setCurrentRow(2)
+        self.myapp.ui.docxTemplatesListWidget.setCurrentRow(2)
         self.reportdoc = self.myapp.cif.finalcif_file_prefixed(prefix='report_', suffix='-finalcif.docx')
         self.report_zip = self.myapp.cif.finalcif_file_prefixed(prefix='', suffix='-finalcif.zip')
         self.myapp.select_report_picture(Path('finalcif/icon/finalcif.png'))
@@ -36,27 +36,27 @@ class TemplateReportTestCase(unittest.TestCase):
         self.myapp.ui.ReportTextCheckBox.setChecked(False)
         self.myapp.ui.HAtomsCheckBox.setChecked(False)
         self.myapp.ui.PictureWidthDoubleSpinBox.setValue(7.5)
-        self.myapp.ui.TemplatesListWidget.blockSignals(True)
-        for num in range(1, self.myapp.ui.TemplatesListWidget.count()):
-            self.myapp.ui.TemplatesListWidget.setCurrentRow(num)
+        self.myapp.ui.docxTemplatesListWidget.blockSignals(True)
+        for num in range(1, self.myapp.ui.docxTemplatesListWidget.count()):
+            self.myapp.ui.docxTemplatesListWidget.setCurrentRow(num)
             self.myapp.templates.remove_current_template()
-        self.myapp.ui.TemplatesListWidget.blockSignals(False)
+        self.myapp.ui.docxTemplatesListWidget.blockSignals(False)
 
     def import_templates(self):
         # blocking signals, because signal gets fired after delete and crashes: 
-        self.myapp.ui.TemplatesListWidget.blockSignals(True)
-        for num in range(1, self.myapp.ui.TemplatesListWidget.count()):
-            self.myapp.ui.TemplatesListWidget.setCurrentRow(num)
+        self.myapp.ui.docxTemplatesListWidget.blockSignals(True)
+        for num in range(1, self.myapp.ui.docxTemplatesListWidget.count()):
+            self.myapp.ui.docxTemplatesListWidget.setCurrentRow(num)
             self.myapp.templates.remove_current_template()
         self.myapp.templates.add_new_template(str(Path('finalcif/template/template_text.docx').absolute()))
         self.myapp.templates.add_new_template(
             str(Path('finalcif/template/template_without_text.docx').absolute()))
         print('imported templates')
-        self.myapp.ui.TemplatesListWidget.blockSignals(False)
+        self.myapp.ui.docxTemplatesListWidget.blockSignals(False)
 
     def test_with_report_text(self):
         self.import_templates()
-        self.myapp.ui.TemplatesListWidget.setCurrentRow(2)
+        self.myapp.ui.docxTemplatesListWidget.setCurrentRow(2)
         self.myapp.ui.SaveFullReportButton.click()
         doc = Document(self.reportdoc.absolute())
         self.assertEqual('The following text is only', doc.paragraphs[2].text[:26])
