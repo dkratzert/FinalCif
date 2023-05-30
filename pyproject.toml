@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "finalcif"
-version = "121.post5"
+dynamic = ["version"]
 authors = [
     { name = "Daniel Kratzert", email = "dkratzert@gmx.de" },
 ]
@@ -49,6 +49,10 @@ dependencies = [
 [project.urls]
 "Homepage" = "https://dkratzert.de/finalcif.html"
 "Bug Tracker" = "https://github.com/dkratzert/FinalCif/issues"
+
+[tool.hatch.version]
+path = "finalcif/__init__.py"
+pattern = "VERSION\\s*=\\s*(?P<version>\\d+)"
 
 [tool.hatch.build.targets.sdist]
 only-include = ["finalcif"]
