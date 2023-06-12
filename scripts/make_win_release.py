@@ -28,15 +28,14 @@ from finalcif import VERSION
 
 def disable_debug(filepath: str):
     pth = Path(filepath)
-    file = pth.read_text(encoding="UTF-8", errors='ignore').split("\n")
-    for num, line in enumerate(file):
+    file_lst = pth.read_text(encoding="UTF-8", errors='ignore').split("\n")
+    for num, line in enumerate(file_lst):
         if line.startswith("DEBUG") or line.startswith("PROFILE"):
             l = line.split()
             print("DEBUG/PROFILE.. {}, {}".format(l[2], filepath))
             l[2] = '{}'.format("False")
-            file[num] = " ".join(l)
-    iss_file = "\n".join(file)
-    pth.write_text(iss_file, encoding="UTF-8")
+            file_lst[num] = " ".join(l)
+    pth.write_text("\n".join(file_lst), encoding="UTF-8")
 
 
 def make_shasum(filename):
@@ -49,16 +48,15 @@ def make_shasum(filename):
 
 def process_iss(filepath):
     pth = Path(filepath)
-    iss_file = pth.read_text(encoding="UTF-8").split("\n")
-    for num, line in enumerate(iss_file):
+    iss_lst = pth.read_text(encoding="UTF-8").split("\n")
+    for num, line in enumerate(iss_lst):
         if line.startswith("#define MyAppVersion"):
             l = line.split()
             l[2] = '"{}"'.format(VERSION)
-            iss_file[num] = " ".join(l)
+            iss_lst[num] = " ".join(l)
             break
-    iss_file = "\n".join(iss_file)
     print("windows... {}, {}".format(VERSION, filepath))
-    pth.write_text(iss_file, encoding="UTF-8")
+    pth.write_text("\n".join(iss_lst), encoding="UTF-8")
 
 
 def make_executable():
@@ -68,9 +66,9 @@ def make_executable():
         sys.exit()
 
 
-def make_installer():
+def make_installer(iss_file: str):
     innosetup_compiler = r'C:/Program Files (x86)/Inno Setup 6/ISCC.exe'
-    subprocess.run([innosetup_compiler, iss_file, ])
+    subprocess.run([innosetup_compiler, f'/dMyAppVersion={VERSION}', iss_file, ])
     make_shasum("scripts/Output/FinalCif-setup-x64-v{}.exe".format(VERSION))
     print('Created version: {}'.format(VERSION))
     print(datetime.now().strftime("%d.%m.%Y %H:%M:%S"))
@@ -90,6 +88,6 @@ if __name__ == '__main__':
     # create executable
     make_executable()
     # Run 64bit Inno setup compiler
-    make_installer()
+    make_installer(iss_file)
 
     subprocess.call("scripts/Output/FinalCif-setup-x64-v{}.exe".format(VERSION))

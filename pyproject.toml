@@ -1,10 +1,13 @@
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling", "hatch-requirements-txt"]
 build-backend = "hatchling.build"
+
+[tool.hatch.metadata.hooks.requirements_txt]
+files = ["requirements.txt"]
 
 [project]
 name = "finalcif"
-dynamic = ["version"]
+dynamic = ["version", "dependencies"]
 authors = [
     { name = "Daniel Kratzert", email = "dkratzert@gmx.de" },
 ]
@@ -19,32 +22,6 @@ classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Programming Language :: Python :: 3",
 ]
-dependencies = [
-    'wheel',
-    'altgraph',
-    'certifi',
-    'chardet',
-    'future',
-    'gemmi',
-    'html2text',
-    'lxml',
-    'pefile',
-    'pybind11',
-    'PyQt5~=5.15',
-    'PyQt5-sip~=12.11',
-    'PyQtWebEngine~=5.15',
-    'python-docx~=0.8',
-    'pywin32-ctypes~=0.2',
-    'QtAwesome',
-    'QtPy',
-    'requests',
-    'urllib3~=1.26',
-    'docxtpl',
-    'shelxfile',
-    'crossrefapi',
-    'numpy',
-    'pyenchant',
-]
 
 [project.urls]
 "Homepage" = "https://dkratzert.de/finalcif.html"
@@ -52,10 +29,9 @@ dependencies = [
 
 [tool.hatch.version]
 path = "finalcif/__init__.py"
-pattern = "VERSION\\s*=\\s*(?P<version>\\d+)"
+pattern = "VERSION\\s*=\\s*(?P<version>\\d+\\.{0,1}\\d{0,1})"
 
 [tool.hatch.build.targets.sdist]
-only-include = ["finalcif"]
 exclude = [
     "/.github",
     "/test-data",
@@ -63,8 +39,6 @@ exclude = [
     "/setup",
     "/tests",
     "/docs",
-    "/requirements-devel.txt",
-    "/requirements.txt",
     "/make_release.sh",
     "/venv*",
 ]

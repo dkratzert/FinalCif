@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "FinalCif"
-#define MyAppVersion "121"
+;#define MyAppVersion "121"  ; Defined by commandline
 #define MyAppPublisher "Daniel Kratzert"
 
 ; Remember, first run pyInstaller script!
