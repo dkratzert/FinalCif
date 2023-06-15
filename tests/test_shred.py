@@ -28,6 +28,9 @@ class TestShedCifWithData(unittest.TestCase):
         self.assertEqual(self.outfile_hkl.exists(), True)
         self.assertEqual('\nFinished writing data to p21c-finalcif.res and p21c-finalcif.hkl.',
                          self.shred._statusbar.current_message)
+        # Make sure the extracted hkl does start with a reflection and not a newline:
+        self.assertEqual('   1   0   0  323.11   10.61\n',
+                         self.outfile_hkl.read_text(encoding='latin1')[:29])
 
 
 class TestShedCifNoData(unittest.TestCase):

@@ -1,5 +1,6 @@
 FinalCif recent changes
 -----------------------
+* v122 Fixed hkl and res file extraction. The hkl file had a newline at the start which made it invalid.
 * v121 Adds spell checking for US english in the larget-text template fields.
 * v120 The template for the description of the crystallization method needs again the complete sentence instead of
        only the half sentence "from xx at y or similar". Small improvements were made in the report text wording.
