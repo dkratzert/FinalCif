@@ -65,7 +65,7 @@ class ShredCIF():
             if line[:1] == ')':
                 line = ';' + line[1:]
             lines.append(line)
-        return '\n'.join(lines)
+        return '\n'.join(lines).lstrip('\n')
 
     def _show_info(self, resname: Path, hklname: Path, resdata: Union[str, None], hkldata: Union[str, None]) -> None:
         if resdata and not hkldata:
