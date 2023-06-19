@@ -194,6 +194,9 @@ class CifContainer():
             return self.doc.as_string(style=gemmi.cif.Style.Indent35)
 
     def __getitem__(self, item: str) -> str:
+        """
+        This method returns an empty string when the item value is '?'
+        """
         if self.block.find_value(item):
             return as_string(self.block.find_value(item))
         else:

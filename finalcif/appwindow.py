@@ -566,7 +566,7 @@ class AppWindow(QMainWindow):
                 r.close()
                 self.load_cif_file(Path(filename))
             else:
-                #self.ui.SelectCif_LineEdit.setText('')
+                # self.ui.SelectCif_LineEdit.setText('')
                 self.status_bar.show_message(f'No COD entry for {input_txt} found.')
         else:
             self.status_bar.show_message('Not a valid COD number. It must be seven digits.')
@@ -683,8 +683,8 @@ class AppWindow(QMainWindow):
             if not table.cellWidget(row, 0).isChecked():
                 cifkey = table.item(row, 1).data(2)
                 self.cif.block.set_pair(cifkey, '?')
-                self.ui.cif_main_table.setText(key=cifkey, column =Column.CIF, txt='?')
-                self.ui.cif_main_table.setText(key=cifkey, column =Column.DATA, txt='?')
+                self.ui.cif_main_table.setText(key=cifkey, column=Column.CIF, txt='?')
+                self.ui.cif_main_table.setText(key=cifkey, column=Column.DATA, txt='?')
 
     def show_sources(self) -> None:
         """
@@ -1332,7 +1332,7 @@ class AppWindow(QMainWindow):
             if item.pair is not None:
                 key, value = item.pair
                 value = gemmi.cif.as_string(value).strip()
-                self.ui.cif_main_table.setText(key=key, column =Column.EDIT, color=None, txt=value)
+                self.ui.cif_main_table.setText(key=key, column=Column.EDIT, color=None, txt=value)
         for loop in changes.loops:
             self.cif.add_loop_to_cif(loop_tags=loop.tags, loop_values=loop.values)
         return True
@@ -1409,6 +1409,9 @@ class AppWindow(QMainWindow):
         Import all loops from the CifContainer imp_cif to the current block.
         """
         for loop in imp_cif.loops:
+            if self.ui.importOnlyNewDataCheckBox.isChecked() and self.cif.block.find(loop.tags):
+                # Import only new loops
+                continue
             new_loop = self.cif.block.init_loop('', loop.tags)
             for row in imp_cif.block.find(loop.tags):
                 new_loop.add_row(row)
@@ -1420,9 +1423,12 @@ class AppWindow(QMainWindow):
                 # leave out unit cell etc.:
                 if self.do_not_import_this_key(key, value, imp_cif):
                     continue
+                if self.ui.importOnlyNewDataCheckBox.isChecked() and self.cif[key]:
+                    # Import only new key/values
+                    continue
                 value = cif.as_string(value)
                 if key in self.ui.cif_main_table.vheaderitems:
-                    self.ui.cif_main_table.setText(key=key, column =Column.EDIT, txt=value, color=light_green)
+                    self.ui.cif_main_table.setText(key=key, column=Column.EDIT, txt=value, color=light_green)
                 else:
                     self.add_row(key, value)  # , column =Column.EDIT
 
@@ -1800,12 +1806,12 @@ class AppWindow(QMainWindow):
             try:
                 txt = str(self.sources[miss_key][0])
                 if row_num > self.complete_data_row:
-                    self.ui.cif_main_table.setText(key=miss_key, column =Column.DATA, txt=txt)
+                    self.ui.cif_main_table.setText(key=miss_key, column=Column.DATA, txt=txt)
                 else:
                     if txt and txt != '?':
-                        self.ui.cif_main_table.setText(key=miss_key, column =Column.DATA, txt=txt, color=light_green)
+                        self.ui.cif_main_table.setText(key=miss_key, column=Column.DATA, txt=txt, color=light_green)
                     else:
-                        self.ui.cif_main_table.setText(key=miss_key, column =Column.DATA, txt=txt, color=yellow)
+                        self.ui.cif_main_table.setText(key=miss_key, column=Column.DATA, txt=txt, color=yellow)
             except (KeyError, TypeError) as e:
                 # TypeError my originate from incomplete self.missing_data list!
                 # print(e, '##', miss_key)
@@ -1862,7 +1868,7 @@ class AppWindow(QMainWindow):
             if key == '_audit_creation_method':
                 txt = 'FinalCif V{} by Daniel Kratzert, Freiburg {}, https://dkratzert.de/finalcif.html'
                 strval = txt.format(VERSION, datetime.now().year)
-                self.ui.cif_main_table.setText(key=key, column =Column.DATA, txt=strval)
+                self.ui.cif_main_table.setText(key=key, column=Column.DATA, txt=strval)
                 QTimer.singleShot(200, self.ui.cif_main_table.resizeRowsToContents)
             # print(key, value)
         if not self.cif.test_res_checksum():
@@ -1971,10 +1977,10 @@ class AppWindow(QMainWindow):
             load_key = self.get_vrf_errortype(load_key)
             if load_key in self.settings.list_saved_items('text_templates'):
                 color = light_blue
-            self.ui.cif_main_table.setText(row=row_num, key=key, column =Column.CIF,
+            self.ui.cif_main_table.setText(row=row_num, key=key, column=Column.CIF,
                                            txt='?' if at_start else strval)
-            self.ui.cif_main_table.setText(row=row_num, key=key, column =Column.DATA, txt='')
-            self.ui.cif_main_table.setText(row=row_num, key=key, column =Column.EDIT, color=color,
+            self.ui.cif_main_table.setText(row=row_num, key=key, column=Column.DATA, txt='')
+            self.ui.cif_main_table.setText(row=row_num, key=key, column=Column.EDIT, color=color,
                                            txt=strval if at_start else '')
         head_item_key = MyTableWidgetItem(key)
         if key != "These below are already in:":
