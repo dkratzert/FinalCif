@@ -316,6 +316,8 @@ class CifContainer():
                 return self['_shelx_hkl_file']
             elif self['_iucr_refine_reflections_details']:
                 return self['_iucr_refine_reflections_details']
+            elif self['_xd_hkl_file']:
+                return self['_xd_hkl_file']
             else:
                 return ''
         except Exception as e:
