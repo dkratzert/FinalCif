@@ -27,6 +27,10 @@ class TestText(unittest.TestCase):
         q = quote('Hello this is a test for a quoted text')
         self.assertEqual("'Hello this is a test for a quoted text'", q)
 
+    def test_quote_quotation_mark(self):
+        q = quote("Jesus' live")
+        self.assertEqual('"Jesus\' live"', q)
+
     def test_quote_long(self):
         q = quote('This is a moch longer text, because I want to see what this method does with text over 80 '
                   'characters wide. Let\'s add also some special characters; ?!"§$%&/()=`? Oh yeah!#++-_.,:;')
