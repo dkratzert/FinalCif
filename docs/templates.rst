@@ -34,6 +34,8 @@ The template editor for large text snippets.
 * Property templates
     Property templates define possible dropdown-menus for common CIF keywords like _cell_measurement_temperature.
     The template values are accessible as a dropdown behind the respective key in the main table of FinalCif.
+    Some CIF keywords have hard-coded values for the drop-down menus, but you can change them by defining a
+    new template entry for that CIF keyword.
 
 .. figure:: pics/templates.png
 
