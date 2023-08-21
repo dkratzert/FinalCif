@@ -83,7 +83,7 @@ class FinalCifSettings():
                 pass
         return keylist
 
-    def load_cif_keys_of_properties(self):
+    def load_cif_keys_of_properties(self) -> List[str]:
         property_keys = [x[0] for x in self.load_property_keys_and_values()]
         return property_keys
 
