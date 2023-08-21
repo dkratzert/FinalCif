@@ -31,18 +31,16 @@ The template editor for large text snippets.
 * Equipment and Author templates
     They are useful for definitions of parameters like the properties of a measurement device
     or the name and address of the crystallographer. Apply template by double-clicking on one row.
-* Property templates
-    Property templates define possible dropdown-menus for common CIF keywords like _cell_measurement_temperature.
-    The template values are accessible as a dropdown behind the respective key in the main table of FinalCif.
-    Some CIF keywords have hard-coded values for the drop-down menus, but you can change them by defining a
-    new template entry for that CIF keyword. FinalCif must be restarted for the changes to take effect after saving.
 
 .. figure:: pics/templates.png
 
 The templates selection and editor.
 
-Templates can be edited anytime and they can be saved as a CIF file. You can use them for any cif keyword.
-Just be creative...
+* Property templates
+    Property templates define possible dropdown-menus for common CIF keywords like _cell_measurement_temperature.
+    The template values are accessible as a dropdown behind the respective key in the main table of FinalCif.
+    Some CIF keywords have hard-coded values for the drop-down menus, but you can change them by defining a
+    new template entry for that CIF keyword. FinalCif must be restarted for the changes to take effect after saving.
 
 .. figure:: pics/property_templates.png
 
@@ -59,6 +57,9 @@ Or just one keyword for only the absolute configuration information:
 .. figure:: pics/absolute_configuration.png
 
 Absolute configuration template.
+
+Templates can be edited anytime and they can be saved as a CIF file. You can use them for any cif keyword.
+Just be creative...
 
 
 Sidenotes
