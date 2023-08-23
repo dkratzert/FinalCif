@@ -2,8 +2,8 @@ from contextlib import suppress
 from pathlib import Path
 from typing import List, Dict
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QListWidgetItem, QTableWidget, QListWidget, QStackedWidget
+from PyQt5 import QtCore
+from PyQt5.QtWidgets import QListWidgetItem, QTableWidget, QStackedWidget, QLabel
 from gemmi import cif
 
 from finalcif.cif.text import retranslate_delimiter, utf8_to_str
@@ -27,6 +27,7 @@ class Properties:
             self.app.ui.PropertiesEditTableWidget.verticalHeader().hide()
             self.store_predefined_templates()
             self.show_properties()
+            self.lb = QLabel(self.app)
 
     def signals_and_slots(self):
         ## properties
@@ -47,6 +48,23 @@ class Properties:
         self.app.ui.NewPropertyTemplateButton.clicked.connect(self.new_property)
         self.app.ui.ImportPropertyTemplateButton.clicked.connect(self.import_property_from_file)
         self.app.ui.ExportPropertyButton.clicked.connect(self.export_property_template)
+        self.app.ui.cifKeywordLineEdit.textChanged.connect(self.check_for_duplicates)
+
+    def check_for_duplicates(self):
+        key = self.app.ui.cifKeywordLineEdit.text()
+        props = self.export_raw_data()
+        keys = [x['cif_key'] for x in props]
+        names = [x['name'] for x in props]
+        if key in keys and self.selected_template_name() not in names:
+            self.app.ui.SavePropertiesButton.setDisabled(True)
+            self.lb.setWindowFlags(QtCore.Qt.ToolTip)
+            self.lb.setText(f'key {key} already exists')
+            self.lb.move(self.app.ui.cifKeywordLineEdit.mapToGlobal(QtCore.QPoint(15, 25)))
+            self.lb.show()
+            QtCore.QTimer.singleShot(4000, self.lb.hide)
+        else:
+            self.app.ui.SavePropertiesButton.setEnabled(True)
+            self.lb.hide()
 
     def show_properties(self) -> None:
         """
@@ -63,7 +81,7 @@ class Properties:
         item = QListWidgetItem('')
         self.app.ui.PropertiesTemplatesListWidget.addItem(item)
         self.app.ui.PropertiesTemplatesListWidget.setCurrentItem(item)
-        item.setFlags(Qt.ItemIsEditable | Qt.ItemIsEnabled | Qt.ItemIsSelectable)
+        item.setFlags(QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
         self.app.ui.PropertiesTemplatesListWidget.editItem(item)
         self.app.ui.cifKeywordLineEdit.clear()
 
@@ -105,7 +123,7 @@ class Properties:
         """
         Edit the Property table.
         """
-        # make sure the current item doesnt get lost:
+        # make sure the current item doesn't get lost:
         it = self.app.ui.PropertiesTemplatesListWidget.currentItem()
         self.app.ui.PropertiesTemplatesListWidget.setCurrentItem(None)
         self.app.ui.PropertiesTemplatesListWidget.setCurrentItem(it)
@@ -163,7 +181,7 @@ class Properties:
                 return
             show_general_warning('No permission to write file to {}'.format(Path(filename).resolve()))
 
-    def selected_template_name(self):
+    def selected_template_name(self) -> None:
         return self.app.ui.PropertiesTemplatesListWidget.currentIndex().data()
 
     def import_property_from_file(self, filename: str = '') -> None:
@@ -244,7 +262,7 @@ class Properties:
         properties_list = []
         for property_name in self.settings.get_properties_list():
             if property_name:
-                property_cif_key, property_data  = self.settings.load_settings_list('property', item_name=property_name)
+                property_cif_key, property_data = self.settings.load_settings_list('property', item_name=property_name)
                 properties_list.append({'name': property_name, 'cif_key': property_cif_key, 'data': property_data})
         return properties_list
 
@@ -310,3 +328,4 @@ if __name__ == '__main__':
     l = Properties(None, FinalCifSettings())
     for line in l.export_raw_data():
         print(f"{line}")
+    print(l.export_raw_data())
