@@ -616,7 +616,7 @@ class AppWindow(QMainWindow):
         QDesktopServices.openUrl(QtCore.QUrl('https://dkratzert.de/files/finalcif/docs/'))
 
     def do_shred_cif(self):
-        shred = ShredCIF(cif=self.cif, ui=self.ui)
+        shred = ShredCIF(cif=self.cif, statusbar=self.status_bar)
         shred.shred_cif()
         if not self.running_inside_unit_test:
             self.explore_current_dir()
@@ -1584,7 +1584,7 @@ class AppWindow(QMainWindow):
             self.ui.Spacegroup_top_LineEdit.setText(self.cif.space_group)
 
     def set_shredcif_state(self) -> None:
-        if ShredCIF(cif=self.cif, ui=self.ui).cif_has_hkl_or_res_file():
+        if ShredCIF(cif=self.cif, statusbar=self.status_bar).cif_has_hkl_or_res_file():
             self.ui.ShredCifButton.setEnabled(True)
         else:
             self.ui.ShredCifButton.setDisabled(True)

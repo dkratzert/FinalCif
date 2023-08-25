@@ -1,5 +1,6 @@
 from pathlib import Path
 from typing import Union
+from unittest.mock import Mock
 
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.gui.dialogs import show_general_warning
@@ -12,9 +13,9 @@ class ShredCIF():
     This class extracts the .res and .hkl file content from a cif file.
     """
 
-    def __init__(self, cif: CifContainer, ui: Union[Ui_FinalCifWindow, None]):
+    def __init__(self, cif: CifContainer, statusbar: Union[StatusBar, None]):
         self._cif = cif
-        self._statusbar = StatusBar(ui)
+        self._statusbar = statusbar or Mock()
 
     def shred_cif(self) -> None:
         """
