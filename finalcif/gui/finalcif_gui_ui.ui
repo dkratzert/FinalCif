@@ -7,7 +7,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1394</width>
+    <width>1411</width>
     <height>830</height>
    </rect>
   </property>
@@ -166,7 +166,7 @@
           <number>1</number>
          </property>
          <property name="currentIndex">
-          <number>0</number>
+          <number>1</number>
          </property>
          <widget class="QWidget" name="page_equipment">
           <layout class="QVBoxLayout" name="verticalLayout_16">
@@ -215,7 +215,7 @@
                  </sizepolicy>
                 </property>
                 <property name="currentIndex">
-                 <number>0</number>
+                 <number>1</number>
                 </property>
                 <widget class="QWidget" name="EquipmentSelectPage">
                  <layout class="QVBoxLayout" name="verticalLayout_19">
@@ -233,11 +233,6 @@
                   </property>
                   <item>
                    <widget class="QListWidget" name="EquipmentTemplatesListWidget">
-                    <property name="font">
-                     <font>
-                      <pointsize>11</pointsize>
-                     </font>
-                    </property>
                     <property name="toolTip">
                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Each entry can have a list of key/value pairs. For example a Diffractometer model can have a list of features.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                     </property>
@@ -576,13 +571,6 @@
                  </property>
                  <item>
                   <widget class="QListWidget" name="docxTemplatesListWidget">
-                   <property name="font">
-                    <font>
-                     <pointsize>10</pointsize>
-                     <weight>50</weight>
-                     <bold>false</bold>
-                    </font>
-                   </property>
                    <property name="sizeAdjustPolicy">
                     <enum>QAbstractScrollArea::AdjustToContents</enum>
                    </property>
@@ -819,12 +807,6 @@
            <height>24</height>
           </size>
          </property>
-         <property name="font">
-          <font>
-           <family>Arial</family>
-           <pointsize>11</pointsize>
-          </font>
-         </property>
          <property name="cursor" stdset="0">
           <cursorShape>IBeamCursor</cursorShape>
          </property>
@@ -880,7 +862,7 @@
        <item row="2" column="0" colspan="13">
         <widget class="MyMainStackedWidget" name="MainStackedWidget">
          <property name="currentIndex">
-          <number>4</number>
+          <number>8</number>
          </property>
          <widget class="QWidget" name="page_MainTable">
           <layout class="QVBoxLayout" name="verticalLayout">
@@ -2073,11 +2055,6 @@ The data source will be ignored until next program restart.</string>
                   </property>
                   <item>
                    <widget class="QListWidget" name="PropertiesTemplatesListWidget">
-                    <property name="font">
-                     <font>
-                      <pointsize>11</pointsize>
-                     </font>
-                    </property>
                     <property name="toolTip">
                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A list of common properties like &lt;/p&gt;&lt;p&gt;_exptl_crystal_colour: yellow, red, blue, ...&lt;/p&gt;&lt;p&gt;Lists defined here will appear as dropdown menus in the main Table.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                     </property>
@@ -2449,12 +2426,12 @@ The data source will be ignored until next program restart.</string>
                 <widget class="QTabWidget" name="authorEditTabWidget">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                   <horstretch>40</horstretch>
+                   <horstretch>45</horstretch>
                    <verstretch>0</verstretch>
                   </sizepolicy>
                  </property>
                  <property name="currentIndex">
-                  <number>0</number>
+                  <number>1</number>
                  </property>
                  <widget class="QWidget" name="page_publication">
                   <attribute name="title">
@@ -2602,12 +2579,6 @@ Contact authors should always also appear as regular authors.</string>
                     <layout class="QVBoxLayout" name="verticalLayout_32">
                      <item alignment="Qt::AlignRight">
                       <widget class="QPushButton" name="SaveAuthorLoopToTemplateButton">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
                        <property name="text">
                         <string>Save Author as Template</string>
                        </property>
@@ -2761,12 +2732,6 @@ Contact authors should always also appear as regular authors.</string>
                     <layout class="QVBoxLayout" name="verticalLayout_39">
                      <item alignment="Qt::AlignRight">
                       <widget class="QPushButton" name="SaveAuthorLoopToTemplateButton_cif">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
                        <property name="text">
                         <string>Save Author as Template</string>
                        </property>
@@ -2821,7 +2786,7 @@ Contact authors should always also appear as regular authors.</string>
                 <widget class="QFrame" name="frame_2">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                   <horstretch>60</horstretch>
+                   <horstretch>55</horstretch>
                    <verstretch>0</verstretch>
                   </sizepolicy>
                  </property>
@@ -2945,7 +2910,7 @@ Contact authors should always also appear as regular authors.</string>
               </sizepolicy>
              </property>
              <property name="currentIndex">
-              <number>1</number>
+              <number>2</number>
              </property>
              <property name="documentMode">
               <bool>false</bool>
@@ -3014,7 +2979,7 @@ Contact authors should always also appear as regular authors.</string>
                   <enum>QTabWidget::South</enum>
                  </property>
                  <property name="currentIndex">
-                  <number>0</number>
+                  <number>1</number>
                  </property>
                  <property name="movable">
                   <bool>false</bool>
@@ -3528,7 +3493,7 @@ Contact authors should always also appear as regular authors.</string>
                 <number>1</number>
                </property>
                <property name="currentIndex">
-                <number>0</number>
+                <number>3</number>
                </property>
                <widget class="QWidget" name="page_personal">
                 <layout class="QVBoxLayout" name="verticalLayout_30">
@@ -3889,11 +3854,6 @@ please add a publication author:</string>
                  </item>
                  <item>
                   <widget class="QTextBrowser" name="depositOutputTextBrowser">
-                   <property name="font">
-                    <font>
-                     <pointsize>12</pointsize>
-                    </font>
-                   </property>
                    <property name="horizontalScrollBarPolicy">
                     <enum>Qt::ScrollBarAsNeeded</enum>
                    </property>
@@ -4076,12 +4036,6 @@ please add a publication author:</string>
        </item>
        <item row="0" column="1">
         <widget class="QComboBox" name="datanameComboBox">
-         <property name="font">
-          <font>
-           <family>Arial</family>
-           <pointsize>11</pointsize>
-          </font>
-         </property>
          <property name="editable">
           <bool>true</bool>
          </property>
@@ -4115,12 +4069,6 @@ please add a publication author:</string>
            <width>16777215</width>
            <height>24</height>
           </size>
-         </property>
-         <property name="font">
-          <font>
-           <family>Arial</family>
-           <pointsize>11</pointsize>
-          </font>
          </property>
          <property name="cursor" stdset="0">
           <cursorShape>IBeamCursor</cursorShape>
@@ -4161,12 +4109,6 @@ please add a publication author:</string>
            <width>16777215</width>
            <height>24</height>
           </size>
-         </property>
-         <property name="font">
-          <font>
-           <family>Arial</family>
-           <pointsize>11</pointsize>
-          </font>
          </property>
          <property name="cursor" stdset="0">
           <cursorShape>IBeamCursor</cursorShape>

@@ -132,6 +132,7 @@ class AppWindow(QMainWindow):
         with suppress(Exception):
             self.make_button_icons()
         self.format_report_button()
+        self.set_font_sizes()
 
     def set_initial_button_states(self) -> None:
         self.ui.appendCifPushButton.setDisabled(True)
@@ -177,6 +178,24 @@ class AppWindow(QMainWindow):
             self.ui.CODpushButton.setDisabled(True)
         else:
             self.ui.CODpushButton.setEnabled(True)
+
+    def set_font_sizes(self):
+        large_font = QtGui.QFont()
+        ps = large_font.pointSize()
+        large_font.setPointSize(int(ps + ps * 0.38))
+        mid_font = QtGui.QFont()
+        ps = mid_font.pointSize()
+        mid_font.setPointSize(int(ps + ps * 0.3))
+
+        self.ui.datanameComboBox.setFont(large_font)
+        self.ui.Spacegroup_top_LineEdit.setFont(large_font)
+        self.ui.CCDCNumLineEdit.setFont(large_font)
+        self.ui.SumFormMainLineEdit.setFont(large_font)
+
+        self.ui.EquipmentTemplatesListWidget.setFont(mid_font)
+        self.ui.docxTemplatesListWidget.setFont(mid_font)
+        self.ui.PropertiesTemplatesListWidget.setFont(mid_font)
+        self.ui.depositOutputTextBrowser.setFont(mid_font)
 
     def format_report_button(self):
         if self.report_without_template():
@@ -1512,10 +1531,10 @@ class AppWindow(QMainWindow):
         self.check_cif_for_missing_values_before_really_open_it()
         try:
             self.fill_cif_table()
-        except UnicodeDecodeError as e:
+        except UnicodeDecodeError:
             nums = self.cif.get_line_numbers_of_bad_characters(Path(self.cif.doc.source))
             show_general_warning(window_title='Unable to open file',
-                                 warn_text=f'Invalid characters in file!',
+                                 warn_text='Invalid characters in file!',
                                  info_text=f'The file "{Path(self.cif.doc.source)}" has invalid '
                                            f'characters in line(s)'
                                            f' {", ".join([str(x + 1) for x in nums])}.'
@@ -1817,7 +1836,7 @@ class AppWindow(QMainWindow):
                         self.ui.cif_main_table.setText(key=miss_key, column=Column.DATA, txt=txt, color=light_green)
                     else:
                         self.ui.cif_main_table.setText(key=miss_key, column=Column.DATA, txt=txt, color=yellow)
-            except (KeyError, TypeError) as e:
+            except (KeyError, TypeError):
                 # TypeError my originate from incomplete self.missing_data list!
                 # print(e, '##', miss_key)
                 pass
