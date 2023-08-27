@@ -53,9 +53,8 @@ from finalcif.report.templated_report import TemplatedReport
 from finalcif.template.templates import ReportTemplates
 from finalcif.tools.download import MyDownloader, start_worker
 from finalcif.tools.dsrmath import my_isnumeric
-from finalcif.tools.misc import next_path, do_not_import_keys, celltxt, to_float, \
-    combobox_fields, \
-    do_not_import_from_stoe_cfx, cif_to_header_label, grouper, is_database_number, file_age_in_days, open_file, \
+from finalcif.tools.misc import next_path, do_not_import_keys, celltxt, to_float, do_not_import_from_stoe_cfx, \
+    cif_to_header_label, grouper, is_database_number, file_age_in_days, open_file, \
     strip_finalcif_of_name
 from finalcif.tools.options import Options
 from finalcif.tools.platon import Platon
@@ -1851,10 +1850,6 @@ class AppWindow(QMainWindow):
             if vhead_key in combos_from_settings:
                 # First add self-made properties:
                 self.add_combobox(row_number, vhead_key)
-            elif vhead_key in combobox_fields:
-                # Then the pre-defined:
-                self.ui.cif_main_table.add_property_combobox(data=combobox_fields[vhead_key], row_num=row_number,
-                                                             key=vhead_key)
 
     def refresh_color_background_from_templates(self):
         for row_number in range(self.ui.cif_main_table.model().rowCount()):

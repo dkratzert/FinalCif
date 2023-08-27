@@ -13,7 +13,7 @@ class TestFinalCifSettings(TestCase):
         self.assertEqual(result, self.s.load_property_values_by_key('_diffrn_ambient_environment'))
 
     def test_load_cif_keys_of_properties(self):
-        self.assertEqual(['_cell_measurement_temperature', '_exptl_crystal_colour'],
+        self.assertEqual(['_chemical_absolute_configuration', '_exptl_absorpt_correction_type'],
                          self.s.load_cif_keys_of_properties()[:2])
 
     def test_load_property_values_by_key_empty(self):
