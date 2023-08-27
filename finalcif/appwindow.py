@@ -1865,14 +1865,14 @@ class AppWindow(QMainWindow):
         vhead_key = self.ui.cif_main_table.model().headerData(row_number, QtCore.Qt.Vertical)
         return vhead_key
 
-    def add_combobox(self, num: int, vhead_key: str) -> None:
+    def add_combobox(self, row: int, vhead_key: str) -> None:
         """
-        :param num: row number
+        :param row: row number
         :param vhead_key: CIF keyword for combobox
         """
         properties_list = self.settings.load_property_values_by_key(vhead_key)
         if properties_list:
-            self.ui.cif_main_table.add_property_combobox(properties_list, num, vhead_key)
+            self.ui.cif_main_table.add_property_combobox(properties_list, row, vhead_key)
 
     def fill_cif_table(self) -> None:
         """
