@@ -185,16 +185,15 @@ class AppWindow(QMainWindow):
         mid_font = QtGui.QFont()
         ps = mid_font.pointSize()
         mid_font.setPointSize(int(ps + ps * 0.3))
-
-        self.ui.datanameComboBox.setFont(large_font)
-        self.ui.Spacegroup_top_LineEdit.setFont(large_font)
-        self.ui.CCDCNumLineEdit.setFont(large_font)
-        self.ui.SumFormMainLineEdit.setFont(large_font)
-
-        self.ui.EquipmentTemplatesListWidget.setFont(mid_font)
-        self.ui.docxTemplatesListWidget.setFont(mid_font)
-        self.ui.PropertiesTemplatesListWidget.setFont(mid_font)
-        self.ui.depositOutputTextBrowser.setFont(mid_font)
+        if sys.platform.startswith('win'):
+            self.ui.datanameComboBox.setFont(large_font)
+            self.ui.Spacegroup_top_LineEdit.setFont(large_font)
+            self.ui.CCDCNumLineEdit.setFont(large_font)
+            self.ui.SumFormMainLineEdit.setFont(large_font)
+            self.ui.EquipmentTemplatesListWidget.setFont(mid_font)
+            self.ui.docxTemplatesListWidget.setFont(mid_font)
+            self.ui.PropertiesTemplatesListWidget.setFont(mid_font)
+            self.ui.depositOutputTextBrowser.setFont(mid_font)
 
     def format_report_button(self):
         if self.report_without_template():
