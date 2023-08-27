@@ -508,70 +508,71 @@ Sheldrick, G.M. (2015). Acta Cryst. C71, 3-8.
 """
 # Equipment templates
 
-predef_equipment_templ = [{'name' : 'D8 VENTURE',
-                           'items': [
-                               ['_diffrn_radiation_monochromator', 'mirror optics'],
-                               ['_diffrn_measurement_device', 'three-circle diffractometer'],
-                               ['_diffrn_measurement_device_type', 'Bruker D8 VENTURE dual wavelength Mo/Cu'],
-                               ['_diffrn_measurement_method', r'\w and \f scans'],
-                               ['_diffrn_source', 'microfocus sealed X-ray tube'],
-                               # ['_diffrn_source_current', '50'],
-                               # ['_diffrn_source_voltage', '1.1'],
-                               ['_diffrn_detector_area_resol_mean', '7.41'],
-                               ['_diffrn_detector', 'CPAD'],
-                               ['_diffrn_detector_type', 'Bruker PHOTON III'],
-                               ['_diffrn_source_type', r'Incoatec I\ms'],
-                               ['_diffrn_radiation_probe', 'x-ray'],
-                               ['_diffrn_measurement_specimen_support', 'MiTeGen micromount'],
-                               ['_diffrn_measurement_ambient_temperature_device_make', 'Oxford Cryostream 800'],
-                               ['_diffrn_ambient_environment', 'N~2~'],
-                           ]
-                           },
-                          {'name' : 'APEX2 QUAZAR',
-                           'items': [
-                               ['_diffrn_radiation_monochromator', 'mirror optics'],
-                               ['_diffrn_measurement_device', 'three-circle diffractometer'],
-                               ['_diffrn_measurement_device_type', 'Bruker APEX2 QUAZAR'],
-                               ['_diffrn_measurement_method', r'\w and \f scans'],
-                               ['_diffrn_source', 'microfocus sealed X-ray tube'],
-                               ['_diffrn_source_type', r'Incoatec I\ms'],
-                               ['_diffrn_detector', 'CCD'],
-                               ['_diffrn_detector_type', 'Bruker APEXII'],
-                               ['_diffrn_detector_area_resol_mean', '8.3'],
-                               ['_diffrn_radiation_probe', 'x-ray'],
-                               ['_diffrn_measurement_specimen_support', 'MiTeGen micromount'],
-                               ['_diffrn_measurement_ambient_temperature_device_make', 'Oxford Cryostream 800'],
-                               ['_diffrn_ambient_environment', 'N~2~'],
-                           ]
-                           },
-                          {'name' : 'Rigaku Spider',
-                           'items': [
-                               ['_diffrn_radiation_monochromator', 'graphite'],
-                               ['_diffrn_measurement_device', 'four-circle diffractometer'],
-                               ['_diffrn_measurement_device_type', 'Rigaku R-AXIS SPIDER'],
-                               ['_diffrn_measurement_method', r'\w scans'],
-                               ['_diffrn_source', 'sealed X-ray tube'],  # obsolete: _diffrn_radiation_source
-                               ['_diffrn_detector', 'Image Plate'],
-                               ['_diffrn_detector_type', 'Rigaku Image Plate'],
-                               ['_diffrn_detector_area_resol_mean', '?'],
-                               ['_diffrn_radiation_probe', 'x-ray'],
-                               ['_diffrn_measurement_specimen_support', 'MiTeGen micromount'],
-                               ['_diffrn_measurement_ambient_temperature_device_make', 'Bruker Kryoflex II'],
-                           ]
-                           },
-                          {'name' : 'Crystallographer Details',
-                           'items': [
-                               ['_audit_contact_author_name', '?'],
-                               ['_audit_contact_author_address', "?"],
-                               ['_audit_contact_author_email', '?'],
-                               ['_audit_contact_author_phone', '?'],
-                           ]
-                           },
-                          ]
+predefined_equipment_templates = [
+    {'name' : 'D8 VENTURE',
+     'items': [
+         ['_diffrn_radiation_monochromator', 'mirror optics'],
+         ['_diffrn_measurement_device', 'three-circle diffractometer'],
+         ['_diffrn_measurement_device_type', 'Bruker D8 VENTURE dual wavelength Mo/Cu'],
+         ['_diffrn_measurement_method', r'\w and \f scans'],
+         ['_diffrn_source', 'microfocus sealed X-ray tube'],
+         # ['_diffrn_source_current', '50'],
+         # ['_diffrn_source_voltage', '1.1'],
+         ['_diffrn_detector_area_resol_mean', '7.41'],
+         ['_diffrn_detector', 'CPAD'],
+         ['_diffrn_detector_type', 'Bruker PHOTON III'],
+         ['_diffrn_source_type', r'Incoatec I\ms'],
+         ['_diffrn_radiation_probe', 'x-ray'],
+         ['_diffrn_measurement_specimen_support', 'MiTeGen micromount'],
+         ['_diffrn_measurement_ambient_temperature_device_make', 'Oxford Cryostream 800'],
+         ['_diffrn_ambient_environment', 'N~2~'],
+     ]
+     },
+    {'name' : 'APEX2 QUAZAR',
+     'items': [
+         ['_diffrn_radiation_monochromator', 'mirror optics'],
+         ['_diffrn_measurement_device', 'three-circle diffractometer'],
+         ['_diffrn_measurement_device_type', 'Bruker APEX2 QUAZAR'],
+         ['_diffrn_measurement_method', r'\w and \f scans'],
+         ['_diffrn_source', 'microfocus sealed X-ray tube'],
+         ['_diffrn_source_type', r'Incoatec I\ms'],
+         ['_diffrn_detector', 'CCD'],
+         ['_diffrn_detector_type', 'Bruker APEXII'],
+         ['_diffrn_detector_area_resol_mean', '8.3'],
+         ['_diffrn_radiation_probe', 'x-ray'],
+         ['_diffrn_measurement_specimen_support', 'MiTeGen micromount'],
+         ['_diffrn_measurement_ambient_temperature_device_make', 'Oxford Cryostream 800'],
+         ['_diffrn_ambient_environment', 'N~2~'],
+     ]
+     },
+    {'name' : 'Rigaku Spider',
+     'items': [
+         ['_diffrn_radiation_monochromator', 'graphite'],
+         ['_diffrn_measurement_device', 'four-circle diffractometer'],
+         ['_diffrn_measurement_device_type', 'Rigaku R-AXIS SPIDER'],
+         ['_diffrn_measurement_method', r'\w scans'],
+         ['_diffrn_source', 'sealed X-ray tube'],  # obsolete: _diffrn_radiation_source
+         ['_diffrn_detector', 'Image Plate'],
+         ['_diffrn_detector_type', 'Rigaku Image Plate'],
+         ['_diffrn_detector_area_resol_mean', '?'],
+         ['_diffrn_radiation_probe', 'x-ray'],
+         ['_diffrn_measurement_specimen_support', 'MiTeGen micromount'],
+         ['_diffrn_measurement_ambient_temperature_device_make', 'Bruker Kryoflex II'],
+     ]
+     },
+    {'name' : 'Crystallographer Details',
+     'items': [
+         ['_audit_contact_author_name', '?'],
+         ['_audit_contact_author_address', "?"],
+         ['_audit_contact_author_email', '?'],
+         ['_audit_contact_author_phone', '?'],
+     ]
+     },
+]
 
 ### Property contents:
 
-predef_prop_templ = [
+predefined_property_templates = [
     {'name'  : 'Absolute Configuration',
      'values': ['_chemical_absolute_configuration',
                 ['', 'ad', 'rm', 'rmad', 'syn', 'unk', '.']]

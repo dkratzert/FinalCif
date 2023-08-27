@@ -10,7 +10,7 @@ from finalcif.cif.text import retranslate_delimiter, utf8_to_str
 from finalcif.equip_property.tools import read_document_from_cif_file
 from finalcif.gui.dialogs import cif_file_open_dialog, show_general_warning, cif_file_save_dialog
 from finalcif.gui.plaintextedit import PlainTextEditTemplate
-from finalcif.tools.misc import predef_prop_templ
+from finalcif.tools.misc import predefined_property_templates
 from finalcif.tools.settings import FinalCifSettings
 
 with suppress(ImportError):
@@ -139,7 +139,7 @@ class Properties:
 
     def store_predefined_templates(self) -> None:
         property_list = self.settings.get_properties_list() or []
-        for item in predef_prop_templ:
+        for item in predefined_property_templates:
             if item['name'] not in property_list:
                 self.settings.save_settings_list('property', item['name'], item['values'])
 
