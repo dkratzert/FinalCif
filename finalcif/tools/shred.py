@@ -62,7 +62,7 @@ class ShredCIF():
         would interfere with the CIF syntax.
         """
         lines = []
-        for num, line in enumerate(hkl_data.splitlines(keepends=False)):
+        for line in hkl_data.splitlines(keepends=False):
             if line[:1] == ')':
                 line = ';' + line[1:]
             lines.append(line)
