@@ -15,6 +15,8 @@ In ideal cases, it takes one click to have a publication-ready file. But check t
 thoroughly afterwards, no software is perfect!
 
 
+`Back to the FinalCif home page <https://dkratzert.de/finalcif.html>`_
+
 
 .. toctree::
 
@@ -27,3 +29,4 @@ thoroughly afterwards, no software is perfect!
    deposition
    sources
    homepage
+
