@@ -610,12 +610,12 @@ class AppWindow(QMainWindow):
         super(AppWindow, self).resizeEvent(a0)
         with suppress(AttributeError):
             self._savesize()
-        #main_width = self.ui.Mainwidget.width()
-        #left_frame = main_width * 0.22
-        #if left_frame <= 300:
-        #    left_frame = 300
-        #self.ui.LeftFrame.setFixedWidth(int(left_frame))
-        self.ui.cif_main_table.resizeRowsToContents()
+        main_width = self.ui.Mainwidget.width()
+        left_frame = main_width * 0.22
+        if left_frame <= 300:
+            left_frame = 300
+        self.ui.LeftFrame.setMinimumWidth(int(left_frame))
+        QtCore.QTimer.singleShot(0, self.ui.cif_main_table.resizeRowsToContents)
 
     def moveEvent(self, a0: QtGui.QMoveEvent) -> None:
         """Is called when the main window moves."""
