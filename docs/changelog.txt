@@ -1,5 +1,7 @@
 FinalCif recent changes
 -----------------------
+* v124 Exchanged position of property templates and report options. Added all hard-coded properties to the
+       templates list which makes them easier to change. Updated documentation. And other small changes.
 * v123 Added checkbox to import only new items from a CIF.
 * v122 Fixed hkl and res file extraction. The hkl file had a newline at the start which made it invalid.
 * v121 Adds spell checking for US english in the larget-text template fields.
