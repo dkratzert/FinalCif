@@ -10,6 +10,7 @@ rmdir python_dist
 mkdir python_dist
 
 tar -xf python-%PYTHON_VERSION%.zip -C python_dist
+del python-%PYTHON_VERSION%.zip
 
 echo python311.zip > python_dist\python311._pth
 echo . >> python_dist\python311._pth
@@ -27,10 +28,16 @@ python get-pip.py
 
 python -m pip install virtualenv
 python -m virtualenv venv
-venv\Scripts\activate.bat
+call venv\Scripts\activate.bat
 
-pip install -r ..\..\requirements.txt
+call pip install -r ..\..\requirements.txt
 
 cd ..\..
 
-run_finalcif.bat
+call run_finalcif.bat
+
+rem * zip the python-dist dir (in inno setup)
+rem * add Github/FinalCif/finalcif/* and FinalCif/run_finalcif.bat
+rem * add update.exe
+rem * add a C++ start program finalcif.exe
+rem * install ms vc_redist with inno setup
