@@ -1,23 +1,20 @@
-#include <cstdlib>
-#include <iostream>
+#include <stdio.h>
+#include <conio.h>
+#include <Python.h>
 
-int main() {
-    // Replace "your_script.py" with the actual path to your Python script
-    const char* pythonScriptPath = "finalcif\\finalcif_start.py";
+int main()
+{
+	char filename[] = ("finalcif/finalcif_start.py");
 
-    // Construct the command to run the Python script using the "python" command
-    // If you're using Python 3, replace "python" with "python3"
-    const char* command = ("python " + std::string(pythonScriptPath)).c_str();
+	FILE* fp;
 
-    // Execute the Python script using the system() function
-    int result = system(command);
+	Py_Initialize();
 
-    // Check the result of the system call
-    if (result == 0) {
-        std::cout << "Python script executed successfully." << std::endl;
-    } else {
-        std::cerr << "Error executing Python script." << std::endl;
-    }
+	//fp = _Py_fopen(filename, "r");
+	//PyRun_SimpleFile(fp, filename);
+	PyRun_SimpleString("from time import time,ctime\n"
+		"print('Today is', ctime(time()))\n");
 
-    return 0;
+	Py_Finalize();
+	return 0;
 }
