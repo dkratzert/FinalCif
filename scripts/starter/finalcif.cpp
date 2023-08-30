@@ -18,3 +18,19 @@ int main()
 	Py_Finalize();
 	return 0;
 }
+
+// or just
+
+/*
+
+#include <iostream>
+#include <cstdlib>
+
+int main() {
+    std::cout << "Starte Python-Applikation..." << std::endl;
+    std::system("python3 pfad_zu_deiner_python_datei.py");
+    return 0;
+}
+
+
+*/

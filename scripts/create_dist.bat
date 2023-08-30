@@ -47,7 +47,7 @@ python get-pip.py
 del get-pip.py
 
 python -m pip install virtualenv
-python -m virtualenv venv
+python -m virtualenv venv --clear --no-periodic-update
 call venv\Scripts\activate.bat
 
 call pip install -r %SCRIPT_DIR%\..\requirements.txt
