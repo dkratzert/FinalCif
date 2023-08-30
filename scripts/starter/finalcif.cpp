@@ -1,4 +1,5 @@
 #include <cstdlib>
+#include <iostream>
 
 int main() {
     // Replace "your_script.py" with the actual path to your Python script
@@ -6,10 +7,10 @@ int main() {
 
     // Construct the command to run the Python script using the "python" command
     // If you're using Python 3, replace "python" with "python3"
-    std::string command = "python " + std::string(pythonScriptPath);
+    const char* command = ("python " + std::string(pythonScriptPath)).c_str();
 
     // Execute the Python script using the system() function
-    int result = system(command.c_str());
+    int result = system(command);
 
     // Check the result of the system call
     if (result == 0) {
