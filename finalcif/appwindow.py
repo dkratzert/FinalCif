@@ -1540,9 +1540,9 @@ class AppWindow(QMainWindow):
         except Exception as e:
             not_ok = e
             print(e)
-            if DEBUG:
-                raise
-            unable_to_open_message(Path(self.cif.filename), not_ok)
+            #if DEBUG:
+            raise
+            #unable_to_open_message(Path(self.cif.filename), not_ok)
         self.load_recent_cifs_list()
         if self.options.track_changes and load_changes:
             changes_exist = False
