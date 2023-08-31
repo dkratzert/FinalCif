@@ -32,7 +32,7 @@ int main(int argc, char* argv[]) {
 #endif
 	string command = "venv\\Scripts\\pythonw finalcif/finalcif_start.py";
 	add_argvalues(command, argc, argv);
-	cout << command << endl;
+	// cout << command << endl;
 	system(command.c_str());
 	return 0;
 }
