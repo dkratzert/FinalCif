@@ -44,7 +44,7 @@ endlocal
 
 del vc_redist.x64.exe
 
-rem curl -L https://aka.ms/vs/17/release/vc_redist.x64.exe -o vc_redist.x64.exe
+curl -L https://aka.ms/vs/17/release/vc_redist.x64.exe -o vc_redist.x64.exe
 rem vc_redist.x64.exe /passive /quiet /install
 
 cd %PACKAGE_DIR%
