@@ -6,7 +6,7 @@ updater
 *$py.class
 venv2
 .idea
-
+vc_redist*.exe
 
 # C extensions
 *.so
