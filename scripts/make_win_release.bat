@@ -20,7 +20,7 @@ rem CALL C:\Users\daniel\Documents\sign_bootloader.bat
 
 rem venv\Scripts\pip3.exe install -r requirements.txt -U
 
-call create_dist.bat
+call scripts\create_dist.bat
 
 CALL venv\Scripts\activate.bat
 venv\Scripts\python.exe scripts\make_win_release.py
