@@ -30,7 +30,7 @@ int main(int argc, char* argv[]) {
 #else
 	setenv("PYTHONPATH", ".", 1);
 #endif
-	string command = "venv\\Scripts\\pythonw finalcif/finalcif_start.py";
+	string command = "venv\\Scripts\\python finalcif/finalcif_start.py";
 	add_argvalues(command, argc, argv);
 	// cout << command << endl;
 	system(command.c_str());
