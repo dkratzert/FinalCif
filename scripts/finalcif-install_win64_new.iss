@@ -61,8 +61,8 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 [Run]
 
 [Icons]
-Name: "{group}\{#MyAppName}"; Filename: "{app}\finalcif.exe"; WorkingDir: "{app}"; IconFilename: "{app}\icon\finalcif2.ico"; Check: IsWin64
-Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"; IconFilename: "{app}\icon\finalcif2.ico"
+Name: "{group}\{#MyAppName}"; Filename: "{app}\finalcif.exe"; WorkingDir: "{app}"; IconFilename: "{app}\finalcif\icon\finalcif2.ico"; Check: IsWin64
+Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"; IconFilename: "{app}\finalcif\icon\finalcif2.ico"
 
 
 [UninstallDelete]
