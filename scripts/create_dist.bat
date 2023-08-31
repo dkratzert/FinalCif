@@ -24,7 +24,7 @@ cd %BUILD_DIR%
 curl %PYTHON_URL% -o python-%PYTHON_VERSION%.zip
 
 del /S /Q /F %PACKAGE_DIR%\*.* >NUL
-rmdir %PACKAGE_DIR%
+rmdir /s /q %PACKAGE_DIR%
 mkdir %PACKAGE_DIR%
 
 tar -xf python-%PYTHON_VERSION%.zip -C %PACKAGE_DIR%
