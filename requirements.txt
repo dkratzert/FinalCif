@@ -13,7 +13,6 @@ PyQt5-sip~=12.12
 PyQt5-stubs~=5.15
 PyQtWebEngine~=5.15
 python-docx~=0.8
-pywin32-ctypes==0.2.0
 QtAwesome
 QtPy
 requests
