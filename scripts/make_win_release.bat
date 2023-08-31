@@ -3,7 +3,7 @@ REM execute me from the main directory
 
 rmdir /S dist /Q
 rmdir /S build /Q
-del /S /Q *.pyc
+rem del /S /Q *.pyc
 
 
 
@@ -20,7 +20,7 @@ rem CALL C:\Users\daniel\Documents\sign_bootloader.bat
 
 rem venv\Scripts\pip3.exe install -r requirements.txt -U
 
-call create_dist.bat
+call scripts\create_dist.bat
 
 CALL venv\Scripts\activate.bat
 venv\Scripts\python.exe scripts\make_win_release.py
