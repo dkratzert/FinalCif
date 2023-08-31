@@ -74,19 +74,25 @@ def make_installer(iss_file: str):
     print(datetime.now().strftime("%d.%m.%Y %H:%M:%S"))
 
 
+def compile_python_files():
+    import compileall
+    compileall.compile_dir(dir='dist', workers=2, force=True)
+    compileall.compile_dir(dir='finalcif', workers=2, force=True)
+
+
 if __name__ == '__main__':
     iss_file = 'scripts/finalcif-install_win64_new.iss'
 
     compile_ui()
-
+    compile_python_files()
     disable_debug('finalcif/appwindow.py')
 
     os.chdir(application_path)
 
-    #process_iss(iss_file)
+    # process_iss(iss_file)
 
     # create executable
-    #make_executable()
+    # make_executable()
     # Run 64bit Inno setup compiler
     make_installer(iss_file)
 

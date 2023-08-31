@@ -59,7 +59,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 
 
 [Run]
-Filename: "{app}\vc_redist.x64.exe"; WorkingDir: "{app}"; Parameters: " /passive /quiet /norestart"
+Filename: "{app}\vc_redist.x64.exe"; WorkingDir: "{app}"; Parameters: "/passive /norestart"
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\finalcif.exe"; WorkingDir: "{app}"; IconFilename: "{app}\finalcif\icon\finalcif2.ico"; Check: IsWin64
@@ -75,10 +75,11 @@ Type: filesandordirs; Name: "{app}\*"
 
 [Files]
 ;Excludes: "*.pyc"
-Source: "..\finalcif\*";            DestDir: "{app}\finalcif"; Flags: ignoreversion createallsubdirs recursesubdirs; Excludes: *.pyc
-Source: "..\dist\python_dist\*";    DestDir: "{app}"; Flags: ignoreversion createallsubdirs recursesubdirs; Excludes: *.pyc
+Source: "..\finalcif\*";            DestDir: "{app}\finalcif"; Flags: ignoreversion createallsubdirs recursesubdirs
+//; Excludes: *.pyc
+Source: "..\dist\python_dist\*";    DestDir: "{app}"; Flags: ignoreversion createallsubdirs recursesubdirs
 Source: "..\finalcif.exe";          DestDir: "{app}"; Flags: ignoreversion
-Source: "..\vc_redist.x64.exe";     DestDir: "{app}"; Flags: ignoreversion
+Source: "vc_redist.x64.exe";        DestDir: "{app}"; Flags: ignoreversion
 
 [Dirs]
 Name: "{app}\displaymol"; Permissions: everyone-full
