@@ -57,14 +57,13 @@ ArchitecturesInstallIn64BitMode=x64
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
-; adds a new page to the setup where you can choose if the path should be added
-;Excludes: "*.pyc"
 
 [Run]
 
 [Icons]
+Name: "{group}\{#MyAppName}"; Filename: "{app}\finalcif.exe"; WorkingDir: "{app}"; IconFilename: "{app}\icon\finalcif2.ico"; Check: IsWin64
 Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"; IconFilename: "{app}\icon\finalcif2.ico"
-Name: "{group}\{#MyAppName}"; Filename: "{app}\run_finalcif.bat"; WorkingDir: "{app}"; IconFilename: "{app}\icon\finalcif2.ico"; Check: IsWin64
+
 
 [UninstallDelete]
 Type: files; Name: "{app}\*.pyc"
@@ -74,9 +73,10 @@ Type: filesandordirs; Name: "{app}\*"
 [Tasks]
 
 [Files]
+;Excludes: "*.pyc"
 Source: "..\finalcif\*"; DestDir: "{app}\finalcif"; Flags: ignoreversion createallsubdirs recursesubdirs; Excludes: *.pyc
 Source: "..\dist\python_dist\*"; DestDir: "{app}"; Flags: ignoreversion createallsubdirs recursesubdirs
-Source: "..\run_finalcif.bat"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\finalcif.exe"; DestDir: "{app}"; Flags: ignoreversion
 
 [Dirs]
 Name: "{app}\displaymol"; Permissions: everyone-full
