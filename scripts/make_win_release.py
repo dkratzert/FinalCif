@@ -68,6 +68,9 @@ def make_executable():
 
 def make_installer(iss_file: str):
     innosetup_compiler = r'D:\Programme\Inno Setup 6/ISCC.exe'
+    innosetup_compiler2 = r'C:\Program Files (x86)\Inno Setup 6/ISCC.exe'
+    if not Path(innosetup_compiler).exists():
+        innosetup_compiler = innosetup_compiler2
     subprocess.run([innosetup_compiler, f'/dMyAppVersion={VERSION}', iss_file, ])
     make_shasum("scripts/Output/FinalCif-setup-x64-v{}.exe".format(VERSION))
     print('Created version: {}'.format(VERSION))
