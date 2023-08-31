@@ -17,7 +17,7 @@ AppVersion={#MyAppVersion}
 AppPublisher={#MyAppPublisher}
 DefaultDirName={commonpf}\{#MyAppName}
 OutputBaseFilename={#MyAppName}-setup-x64-v{#MyAppVersion}
-Compression=lzma2/fast
+Compression=lzma2/ultra
 SolidCompression=yes
 SetupLogging=True
 CloseApplications=False
@@ -75,7 +75,7 @@ Type: filesandordirs; Name: "{app}\*"
 [Files]
 ;Excludes: "*.pyc"
 Source: "..\finalcif\*"; DestDir: "{app}\finalcif"; Flags: ignoreversion createallsubdirs recursesubdirs; Excludes: *.pyc
-Source: "..\dist\python_dist\*"; DestDir: "{app}"; Flags: ignoreversion createallsubdirs recursesubdirs
+Source: "..\dist\python_dist\*"; DestDir: "{app}"; Flags: ignoreversion createallsubdirs recursesubdirs; Excludes: *.pyc
 Source: "..\finalcif.exe"; DestDir: "{app}"; Flags: ignoreversion
 
 [Dirs]
