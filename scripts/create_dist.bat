@@ -25,6 +25,13 @@ curl %PYTHON_URL% -o python-%PYTHON_VERSION%.zip
 
 del /S /Q /F %PACKAGE_DIR%\*.* >NUL
 rmdir /s /q %PACKAGE_DIR%
+dir "%PACKAGE_DIR%" | findstr /v "\<.*\>"
+if not errorlevel 1 (
+    echo Directory is not empty.
+    exit /b
+) else (
+    echo Package dir is empty
+)
 mkdir %PACKAGE_DIR%
 
 tar -xf python-%PYTHON_VERSION%.zip -C %PACKAGE_DIR%
