@@ -1,5 +1,7 @@
 FinalCif recent changes
 -----------------------
+* v125 Fixed potential crash in p4p file reader. The distribution architecture of the application was changed so that
+       virus scanners should detect FinalCif as malicious software less often.
 * v124 Exchanged position of property templates and report options. Added all hard-coded properties to the
        templates list which makes them easier to change. Updated documentation. And other small changes.
 * v123 Added checkbox to import only new items from a CIF.
