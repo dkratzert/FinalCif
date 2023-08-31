@@ -3,7 +3,7 @@ REM execute me from the main directory
 
 rmdir /S dist /Q
 rmdir /S build /Q
-del /S /Q *.pyc
+rem del /S /Q *.pyc
 
 
 
