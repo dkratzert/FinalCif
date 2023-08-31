@@ -48,7 +48,7 @@ AlwaysShowComponentsList=False
 ShowComponentSizes=False
 SetupIconFile="..\finalcif\icon\finalcif2.ico"
 UninstallDisplayIcon={app}\{#MyAppName}.exe
-;SignTool=sign_sha256
+SignTool=sign_sha256
 ArchitecturesInstallIn64BitMode=x64
 
 [UninstallRun]
