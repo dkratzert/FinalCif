@@ -1,4 +1,4 @@
-@echo on
+@echo off
 
 REM This script builds a working Python environment into ..\dist of the current file location.
 
