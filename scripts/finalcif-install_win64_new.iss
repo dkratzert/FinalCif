@@ -79,7 +79,8 @@ Source: "..\finalcif\*";            DestDir: "{app}\finalcif"; Flags: ignorevers
 //; Excludes: *.pyc
 Source: "..\dist\python_dist\*";    DestDir: "{app}"; Flags: ignoreversion createallsubdirs recursesubdirs
 Source: "..\finalcif.exe";          DestDir: "{app}"; Flags: ignoreversion
-Source: "..\vc_redist.x64.exe";        DestDir: "{app}"; Flags: ignoreversion
+Source: "..\update.exe";            DestDir: "{app}"; Flags: ignoreversion
+Source: "..\vc_redist.x64.exe";     DestDir: "{app}"; Flags: ignoreversion
 
 [Dirs]
 Name: "{app}\displaymol"; Permissions: everyone-full
