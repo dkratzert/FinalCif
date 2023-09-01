@@ -14,4 +14,3 @@ CALL venv\Scripts\activate.bat
 rem venv\Scripts\python.exe scripts\create_dist.py
 venv\Scripts\python.exe scripts\make_win_release.py
 CALL venv\Scripts\deactivate.bat
-cd scripts
