@@ -60,11 +60,3 @@ call venv\Scripts\activate.bat
 call pip install -r %SCRIPT_DIR%\..\requirements.txt
 
 cd %SCRIPT_DIR%\..
-
-rem call run_finalcif.bat
-
-rem * zip the python-dist dir (in inno setup)
-rem * add Github/FinalCif/finalcif/* and FinalCif/run_finalcif.bat
-rem * add update.exe
-rem * add a C++ start program finalcif.exe
-rem * install ms vc_redist with inno setup
