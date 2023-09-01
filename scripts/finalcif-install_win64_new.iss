@@ -76,7 +76,6 @@ Type: filesandordirs; Name: "{app}\*"
 [Files]
 ;Excludes: "*.pyc"
 Source: "..\finalcif\*";            DestDir: "{app}\finalcif"; Flags: ignoreversion createallsubdirs recursesubdirs
-//; Excludes: *.pyc
 Source: "..\dist\python_dist\*";    DestDir: "{app}"; Flags: ignoreversion createallsubdirs recursesubdirs
 Source: "..\finalcif.exe";          DestDir: "{app}"; Flags: ignoreversion
 Source: "..\update.exe";            DestDir: "{app}"; Flags: ignoreversion
