@@ -51,17 +51,18 @@ cd %PACKAGE_DIR%
 
 curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
 python get-pip.py
-rem del get-pip.py
+del get-pip.py
 
-rem python -m pip install virtualenv
-rem python -m virtualenv venv --clear --no-periodic-update
-mkdir _venv
-mkdir _venv\scripts\nt
-curl -L https://github.com/python/cpython/raw/3.11/Lib/venv/__init__.py -o _venv\__init__.py
-curl -L https://github.com/python/cpython/raw/3.11/Lib/venv/__main__.py -o _venv\__main__.py
-curl -L https://github.com/python/cpython/raw/3.11/Lib/venv/scripts/nt/activate.bat -o _venv\scripts\nt\activate.bat
+python -m pip install virtualenv
+python -m virtualenv venv --clear --no-periodic-update
 
-python -m _venv venv --without-pip
+rem mkdir _venv
+rem mkdir _venv\scripts\nt
+rem curl -L https://github.com/python/cpython/raw/3.11/Lib/venv/__init__.py -o _venv\__init__.py
+rem curl -L https://github.com/python/cpython/raw/3.11/Lib/venv/__main__.py -o _venv\__main__.py
+rem curl -L https://github.com/python/cpython/raw/3.11/Lib/venv/scripts/nt/activate.bat -o _venv\scripts\nt\activate.bat
+rem python -m venv venv --without-pip
+
 call venv\Scripts\activate.bat
 
 call pip install -r %SCRIPT_DIR%\..\requirements.txt
