@@ -56,6 +56,7 @@ del get-pip.py
 rem python -m pip install virtualenv
 rem python -m virtualenv venv --clear --no-periodic-update
 mkdir _venv
+mkdir _venv\scripts\nt
 curl https://github.com/python/cpython/raw/3.11/Lib/venv/__init__.py -o _venv\__init__.py
 curl https://github.com/python/cpython/raw/3.11/Lib/venv/__main__.py -o _venv\__main__.py
 https://github.com/python/cpython/raw/3.11/Lib/venv/scripts/nt/activate.bat -o _venv\scripts\nt\activate.bat
