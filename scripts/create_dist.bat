@@ -51,7 +51,7 @@ cd %PACKAGE_DIR%
 
 curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
 python get-pip.py
-del get-pip.py
+rem del get-pip.py
 
 rem python -m pip install virtualenv
 rem python -m virtualenv venv --clear --no-periodic-update
