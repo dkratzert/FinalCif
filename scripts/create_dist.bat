@@ -61,7 +61,7 @@ curl -L https://github.com/python/cpython/raw/3.11/Lib/venv/__init__.py -o _venv
 curl -L https://github.com/python/cpython/raw/3.11/Lib/venv/__main__.py -o _venv\__main__.py
 curl -L https://github.com/python/cpython/raw/3.11/Lib/venv/scripts/nt/activate.bat -o _venv\scripts\nt\activate.bat
 
-python -m _venv venv
+python -m _venv venv --without-pip
 call venv\Scripts\activate.bat
 
 call pip install -r %SCRIPT_DIR%\..\requirements.txt
