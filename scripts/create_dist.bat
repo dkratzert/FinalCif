@@ -53,8 +53,14 @@ curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
 python get-pip.py
 del get-pip.py
 
-python -m pip install virtualenv
-python -m virtualenv venv --clear --no-periodic-update
+rem python -m pip install virtualenv
+rem python -m virtualenv venv --clear --no-periodic-update
+mkdir _venv
+curl https://github.com/python/cpython/raw/3.11/Lib/venv/__init__.py -o _venv\__init__.py
+curl https://github.com/python/cpython/raw/3.11/Lib/venv/__main__.py -o _venv\__main__.py
+https://github.com/python/cpython/raw/3.11/Lib/venv/scripts/nt/activate.bat -o _venv\scripts\nt\activate.bat
+
+python -m _venv venv
 call venv\Scripts\activate.bat
 
 call pip install -r %SCRIPT_DIR%\..\requirements.txt
