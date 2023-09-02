@@ -6,10 +6,6 @@
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
 
-# .\venv\Scripts\pyinstaller.exe scripts\Finalcif.spec -D     # one dir
-
-# .\venv\Scripts\pyinstaller.exe scripts\Finalcif.spec -F     # one file
-# copy dist\FinalCif.exe W:\htdocs\finalcif
 import os
 import subprocess
 import sys
@@ -46,26 +42,6 @@ def make_shasum(filename):
     print("SHA512: {}".format(sha))
 
 
-def process_iss(filepath):
-    pth = Path(filepath)
-    iss_lst = pth.read_text(encoding="UTF-8").split("\n")
-    for num, line in enumerate(iss_lst):
-        if line.startswith("#define MyAppVersion"):
-            l = line.split()
-            l[2] = '"{}"'.format(VERSION)
-            iss_lst[num] = " ".join(l)
-            break
-    print("windows... {}, {}".format(VERSION, filepath))
-    pth.write_text("\n".join(iss_lst), encoding="UTF-8")
-
-
-def make_executable():
-    pyin = subprocess.run("venv/Scripts/pyinstaller.exe Finalcif_installer_win.spec --clean -y".split())
-    if pyin.returncode != 0:
-        print('Pyinstaller failed with exit code', pyin.returncode)
-        sys.exit()
-
-
 def make_installer(iss_file: str):
     innosetup_compiler = r'D:\Programme\Inno Setup 6/ISCC.exe'
     innosetup_compiler2 = r'C:\Program Files (x86)\Inno Setup 6/ISCC.exe'
@@ -84,7 +60,7 @@ def compile_python_files():
 
 
 if __name__ == '__main__':
-    iss_file = 'scripts/finalcif-install_win64_new.iss'
+    iss_file = 'scripts/finalcif-install_win64.iss'
 
     compile_ui()
     compile_python_files()
@@ -92,10 +68,6 @@ if __name__ == '__main__':
 
     os.chdir(application_path)
 
-    # process_iss(iss_file)
-
-    # create executable
-    # make_executable()
     # Run 64bit Inno setup compiler
     make_installer(iss_file)
 
