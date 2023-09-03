@@ -53,18 +53,14 @@ curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
 python get-pip.py
 del get-pip.py
 
-python -m pip install virtualenv
-python -m virtualenv venv --clear --no-periodic-update
+set PYTHONPATH=%PACKAGE_DIR%
+mkdir %PACKAGE_DIR%\Lib\site-packages > NUL
 
-rem mkdir _venv
-rem mkdir _venv\scripts\nt
-rem curl -L https://github.com/python/cpython/raw/3.11/Lib/venv/__init__.py -o _venv\__init__.py
-rem curl -L https://github.com/python/cpython/raw/3.11/Lib/venv/__main__.py -o _venv\__main__.py
-rem curl -L https://github.com/python/cpython/raw/3.11/Lib/venv/scripts/nt/activate.bat -o _venv\scripts\nt\activate.bat
-rem python -m venv venv --without-pip
+REM Not needed, because it just installs in local python path without venv:
+rem python -m pip install virtualenv
+rem python -m virtualenv venv --clear --no-periodic-update
+rem call venv\Scripts\activate.bat
 
-call venv\Scripts\activate.bat
-
-call pip install -r %SCRIPT_DIR%\..\requirements.txt
+call Scripts\pip install -r %SCRIPT_DIR%\..\requirements.txt
 
 cd %SCRIPT_DIR%\..
