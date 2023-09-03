@@ -84,7 +84,7 @@ Source: "..\vc_redist.x64.exe";     DestDir: "{app}"; Flags: ignoreversion
 [Dirs]
 ; Not needed anymore:
 ;Name: "{app}\displaymol"; Permissions: everyone-full
-:Name: "{app}\gui"; Permissions: everyone-full
+;Name: "{app}\gui"; Permissions: everyone-full
 
 [InstallDelete]
 Type: filesandordirs; Name: "{app}\*"
