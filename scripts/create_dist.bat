@@ -61,6 +61,6 @@ rem python -m pip install virtualenv
 rem python -m virtualenv venv --clear --no-periodic-update
 rem call venv\Scripts\activate.bat
 
-call Scripts\pip install -r %SCRIPT_DIR%\..\requirements.txt
+call Scripts\pip install -r %SCRIPT_DIR%\..\requirements.txt --no-warn-script-location
 
 cd %SCRIPT_DIR%\..
