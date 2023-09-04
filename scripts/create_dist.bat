@@ -62,5 +62,9 @@ rem python -m virtualenv venv --clear --no-periodic-update
 rem call venv\Scripts\activate.bat
 
 call Scripts\pip install -r %SCRIPT_DIR%\..\requirements.txt --no-warn-script-location
+if %errorlevel% neq 0 (
+    echo pip failed to install all packages. Stopping now.
+    exit /b %errorlevel%
+)
 
 cd %SCRIPT_DIR%\..
