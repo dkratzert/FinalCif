@@ -15,15 +15,15 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="scripts\starter\finalcif.cpp">
+    <ClCompile Include="finalcif.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="resource.h">
+    <ClInclude Include="finalcif.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\starter\finalcif.h">
+    <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -33,10 +33,7 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="finalcif\icon\finalcif2.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="finalcif\icon\finalcif2.png">
+    <Image Include="..\..\finalcif\icon\finalcif2.ico">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
