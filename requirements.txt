@@ -2,7 +2,6 @@ wheel
 altgraph
 certifi
 chardet
-future
 gemmi~=0.6
 html2text
 lxml
