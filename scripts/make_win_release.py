@@ -55,8 +55,8 @@ def make_installer(iss_file: str):
 
 def compile_python_files():
     import compileall
-    compileall.compile_dir(dir='dist', workers=2, force=True)
-    compileall.compile_dir(dir='finalcif', workers=2, force=True)
+    compileall.compile_dir(dir='dist', workers=2, force=True, quiet=True)
+    compileall.compile_dir(dir='finalcif', workers=2, force=True, quiet=True)
 
 
 if __name__ == '__main__':
