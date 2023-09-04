@@ -24,8 +24,8 @@ cd %BUILD_DIR%
 curl %PYTHON_URL% -o python-%PYTHON_VERSION%.zip
 
 del /S /Q /F %PACKAGE_DIR%\*.* >NUL
-rmdir /s /q %PACKAGE_DIR%
-dir "%PACKAGE_DIR%" | findstr /v "\<.*\>"
+rmdir /s /q %PACKAGE_DIR% > NUL
+dir "%PACKAGE_DIR%" | findstr /v "\<.*\>" > NUL
 if not errorlevel 1 (
     echo Directory is not empty.
     exit /b
