@@ -46,6 +46,7 @@ int main(int argc, char* argv[]) {
 
 	cout << "Starting FinalCif..." << endl;
 
+	// This dir may not be the path of the Python installation!
 	char current_dir[MAX_PATH];
 	GetCurrentDirectory(MAX_PATH, current_dir);
 
