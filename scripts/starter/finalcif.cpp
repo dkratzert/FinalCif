@@ -68,7 +68,7 @@ int main(int argc, char* argv[]) {
 		cout << "Running command: '" << command.c_str() << "' Inside of: " << std::string(current_dir) << endl;
 	}
 
-	WinExec(command.c_str(), SW_HIDE);
+	WinExec(command.c_str(), SW_SHOW);
 	
 	return 0;
 }
