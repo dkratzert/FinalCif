@@ -19,10 +19,8 @@ from docx.text.paragraph import Paragraph
 from finalcif.app_path import application_path
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.report.mtools import cif_keywords_list, format_space_group
-from finalcif.report.references import ReferenceList, DSRReference2018, DSRReference2015
-from finalcif.report.report_text import CCDC, CrstalSelection, DataReduct, Disorder, Hydrogens, \
-    MachineType, \
-    SolveRefine, format_radiation, FinalCifreport, SpaceChar, RefinementDetails, Atoms
+from finalcif.report.references import ReferenceList
+from finalcif.report.report_text import format_radiation, RefinementDetails, make_report_text
 from finalcif.report.templated_report import BondsAndAngles, TorsionAngles, HydrogenBonds
 from finalcif.tools.misc import protected_space, angstrom, bequal, sigma_sm, halbgeviert, degree_sign, ellipsis_mid, \
     less_or_equal, \
@@ -102,8 +100,11 @@ def make_report_from(options: Options, cif: CifContainer, output_filename: str =
     p.add_run().add_break(WD_BREAK.PAGE)
     if options.report_text:
         make_columns_section(document, columns='1')
-    if cif['_refine_special_details'] and cif['_refine_special_details'] != '?' and options.report_text:
+
+    if ((cif['_refine_special_details'].strip() != '' or cif['_olex2_refine_details'].strip() != '') and not
+        (cif['_refine_special_details'] == '?' or cif['_olex2_refine_details'] == '?') and options.report_text):
         RefinementDetails(cif, document)
+
     table_num = add_coords_table(document, cif, table_num)
     if options.report_adp and len(tuple(cif.displacement_parameters())) > 0:
         table_num = add_adp_table(document, cif, table_num)
@@ -150,33 +151,6 @@ def add_picture(document: Document, options: Options, picfile: Path) -> None:
     except ValueError:
         width = 7.0
     pic.add_run().add_picture(str(picfile), width=Cm(width))
-
-
-def make_report_text(cif, document: Document) -> ReferenceList:
-    paragr = document.add_paragraph()
-    paragr.style = document.styles['fliesstext']
-    ref = ReferenceList(paragr)
-    # -- The main text:
-    paragr.add_run('The following text is only a suggestion: ').font.bold = True
-    CrstalSelection(cif, paragr)
-    MachineType(cif, paragr)
-    DataReduct(cif, paragr, ref)
-    SpaceChar(paragr).regular()
-    SolveRefine(cif, paragr, ref)
-    SpaceChar(paragr).regular()
-    if cif.hydrogen_atoms_present:
-        Atoms(cif, paragr)
-        Hydrogens(cif, paragr)
-        SpaceChar(paragr).regular()
-    if cif.disorder_present:
-        d = Disorder(cif, paragr)
-        if d.dsr_sentence:
-            ref.append([DSRReference2015(), DSRReference2018()])
-            SpaceChar(paragr).regular()
-    CCDC(cif, paragr, ref)
-    SpaceChar(paragr).regular()
-    FinalCifreport(paragr, ref)
-    return ref
 
 
 def create_document() -> Document:
@@ -510,7 +484,7 @@ def add_coords_table(document: Document, cif: CifContainer, table_num: int):
     rowidx = 1
     for at in atoms:
         c0, c1, c2, c3, c4 = col0_cells[rowidx], col1_cells[rowidx], col2_cells[rowidx], \
-                             col3_cells[rowidx], col4_cells[rowidx]
+            col3_cells[rowidx], col4_cells[rowidx]
         rowidx += 1
         c0.text = at[0]  # label
         c1.text = (str(at[2]))  # x
@@ -715,7 +689,7 @@ def add_hydrogen_bonds(document: Document, table_num: int, data: HydrogenBonds =
     rowidx = 1
     for h in data.hydrogen_bonds_as_str:
         c0, c1, c2, c3, c4 = col0_cells[rowidx], col1_cells[rowidx], \
-                             col2_cells[rowidx], col3_cells[rowidx], col4_cells[rowidx]
+            col2_cells[rowidx], col3_cells[rowidx], col4_cells[rowidx]
         rowidx += 1
         c0.text = h.get('atoms')
         c0.paragraphs[0].add_run(h.get('symm')).font.superscript = True
@@ -872,7 +846,7 @@ if __name__ == '__main__':
     settings = FinalCifSettings()
     options = Options(None, settings)
 
-    #make_report_from(options, CifContainer('test-data/hydrogen/some_riding_some_isotropic.cif'),
+    # make_report_from(options, CifContainer('test-data/hydrogen/some_riding_some_isotropic.cif'),
     #                 output_filename='test.docx')
     make_report_from(options, CifContainer('test-data/DK_Zucker2_0m.cif'), output_filename='test.docx')
     # make_report_from(options, CifContainer(r'C:\Users\daniel.kratzert\Downloads\hydrogen_bond_types\1218_31_7_0m.cif'), output_filename='test.docx')

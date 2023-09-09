@@ -7,9 +7,14 @@
 import unittest
 
 import gemmi
+from PyQt5 import QtWidgets
 from packaging.version import Version
 
-from finalcif.cif.text import quote, utf8_to_str, retranslate_delimiter, delimit_string, charcters, string_to_utf8
+# noinspection PyUnresolvedReferences
+from finalcif.appwindow import app
+from finalcif.cif.text import quote, utf8_to_str, retranslate_delimiter, delimit_string, characters, string_to_utf8
+from finalcif.gui.custom_classes import MyCifTable
+from finalcif.report.report_text import gstr
 
 
 class TestText(unittest.TestCase):
@@ -22,11 +27,15 @@ class TestText(unittest.TestCase):
         q = quote('Hello this is a test for a quoted text')
         self.assertEqual("'Hello this is a test for a quoted text'", q)
 
+    def test_quote_quotation_mark(self):
+        q = quote("Jesus' live")
+        self.assertEqual('"Jesus\' live"', q)
+
     def test_quote_long(self):
         q = quote('This is a moch longer text, because I want to see what this method does with text over 80 '
                   'characters wide. Let\'s add also some special characters; ?!"§$%&/()=`? Oh yeah!#++-_.,:;')
-        quoted = (";This is a moch longer text, because I want to see what this method does with\n"
-                  "text over 80 characters wide. Let's add also some special characters;\n"
+        quoted = (";This is a moch longer text, because I want to see what this method does with \n"
+                  "text over 80 characters wide. Let's add also some special characters; \n"
                   "?!\"§$%&/()=`? Oh yeah!#++-_.,:;\n"
                   ";")
         self.assertEqual(quoted, q)
@@ -78,18 +87,16 @@ class TestText(unittest.TestCase):
         self.assertEqual('ä ö ü ç', retranslate_delimiter(r'\"a \"o \"u \,c'))
 
     def test_retranslate_all(self):
-        for char in charcters:
+        for char in characters:
             if char in ('Å', 'Å'):
                 continue
             self.assertEqual(char, retranslate_delimiter(delimit_string(char)))
 
     def test_translate_wrong_cif_umlauts(self):
-        # This can fail if äöü are next to each other but this is unlikely
-        self.assertEqual('ä ö ü', string_to_utf8(r'a\" o\" u\"'))
+        self.assertEqual('ä ö ü', string_to_utf8(r'\"a \"o \"u'))
 
     def test_translate_wrong_cif_umlauts_next_to_each_other(self):
-        # This can fail if äöü are next to each other but this is unlikely
-        self.assertEqual(r'aöü\"', string_to_utf8(r'a\"o\"u\"'))
+        self.assertEqual(r'äöü', string_to_utf8(r'\"a\"o\"u'))
 
 
 class TestHeavyUtf8(unittest.TestCase):
@@ -114,3 +121,32 @@ class TestHeavyUtf8(unittest.TestCase):
     def test_encode_and_decode_utf8(self):
         # Test for quote and immediate decode to utf-8 again:
         self.assertEqual(self.txt, retranslate_delimiter(utf8_to_str(self.txt)))
+
+
+class TestLongTextinField(unittest.TestCase):
+    def setUp(self):
+        self.w = QtWidgets.QMainWindow()
+        self.table = MyCifTable()
+        self.w.setCentralWidget(self.table)
+        self.table.vheaderitems.append('_foo')
+        self.table.setRowCount(1)
+        self.table.setColumnCount(3)
+        self.table.setMinimumHeight(200)
+        self.table.horizontalHeader().setDefaultSectionSize(200)
+        self.w.show()
+
+    def tearDown(self) -> None:
+        self.table.deleteLater()
+        del self.table
+        self.w.deleteLater()
+        del self.w
+
+    def test_long_text_in_texedit_and_gstr(self):
+        txt = ('This is a much longer text, because I want to see what this method does with text '
+               'over 80 characters wide. Let\'s add also some special characters; '
+               '?!"§$%&/()=`? Oh yeah!#+±_.,:;')
+        self.table.setText(key='_foo', row=0, column=2, txt=txt)
+        # app.exec()
+        self.assertEqual(('This is a much longer text, because I want to see what this method does with '
+                          "text over 80 characters wide. Let's add also some special characters; "
+                          '?!"§$%&/()=`? Oh yeah!#+±_.,:;'), gstr(self.table.getText(row=0, col=2)))

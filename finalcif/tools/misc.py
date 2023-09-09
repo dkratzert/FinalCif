@@ -265,10 +265,10 @@ essential_keys = (
     '_diffrn_measurement_ambient_temperature_device_make',
     '_atom_sites_solution_hydrogens',
     '_atom_sites_solution_primary',
-    #'_audit_contact_author_name',
-    #'_audit_contact_author_address',
-    #'_audit_contact_author_email',
-    #'_audit_contact_author_phone',
+    # '_audit_contact_author_name',
+    # '_audit_contact_author_address',
+    # '_audit_contact_author_email',
+    # '_audit_contact_author_phone',
     '_audit_creation_method',
     '_publ_section_references',
     '_cell_angle_alpha',
@@ -450,194 +450,6 @@ do_not_import_from_stoe_cfx = (
     '',
 )
 
-ABSORPTION_CORRECTION_TYPES = (
-    (0, ''),  # , ''),
-    (1, 'multi-scan'),  # , 'symmetry-related measurements'),
-    (2, 'numerical'),  # , 'numerical from crystal shape'),
-    (3, 'empirical'),  # , 'empirical from intensities'),
-    (4, 'gaussian'),  # , 'Gaussian from crystal shape'),
-    (5, 'integration'),  # , 'integration from crystal shape'),
-    (6, 'analytical'),  # , 'analytical from crystal shape'),
-    (7, 'none'),  # , 'no absorption correction applied'),
-    (8, 'cylinder'),  # , 'cylindrical'),
-    (9, 'psi-scan'),  # , 'psi-scan corrections'),
-    (10, 'refdelf'),  # , 'refined from delta-F'),
-    (11, 'sphere'),  # , 'spherical'),
-)
-
-COLOUR_CHOICES = (
-    (0, ''),
-    (1, 'colourless'),
-    (2, 'white'),
-    (3, 'black'),
-    (4, 'gray'),
-    (5, 'brown'),
-    (6, 'red'),
-    (7, 'pink'),
-    (8, 'orange'),
-    (9, 'yellow'),
-    (10, 'green'),
-    (11, 'blue'),
-    (12, 'violet')
-)
-
-SPECIMEN_SUPPORT = (
-    (0, ''),
-    (1, 'MiTeGen micromount'),
-    (2, 'glass capillary'),
-    (3, 'quartz capillary'),
-    (4, 'glass fiber'),
-    (5, 'metal loop'),
-    (6, 'nylon loop'),
-    (7, 'cactus needle'),
-    (8, 'cat whisker'),
-    (9, 'carbon fiber'),
-    (10, 'beryllium pin'),
-)
-
-ADHESIVE = (
-    (0, ''),
-    (1, 'perfluorether oil'),
-    (2, 'epoxy glue'),
-    (3, 'motor oil'),
-    (4, 'grease'),
-    (5, 'honey'),
-)
-
-ABSOLUTE_CONFIGURATION_CHOICES = (
-    (0, ''),  #
-    (1, 'ad'),  # , 'Anomalous dispersion'),
-    (2, 'rm'),  # , 'Reference Molecule'),
-    (3, 'rmad'),  # , 'Reference Molecule and ad'),
-    (4, 'syn'),  # , 'Synthesis'),
-    (5, 'unk'),  # , 'Unknown'),
-    (6, '.'),  # , 'Inapplicable'),
-)
-
-REFINE_LS_HYDROGEN_TREATMENT = (
-    (0, ''),
-    (1, 'undef'),
-    (2, 'mixed'),
-    (3, 'constr'),
-    (4, 'noref'),
-    (5, 'refall'),
-    (6, 'refxyz'),
-    (7, 'refU'),
-    (8, 'hetero'),
-    (9, 'heteroxyz'),
-    (10, 'heteroU'),
-    (11, 'heteronoref'),
-    (12, 'hetero-mixed'),
-    (13, 'heteroxyz-mixed'),
-    (14, 'heteroU-mixed'),
-    (15, 'heteronoref-mixed'),
-)
-
-RADIATION_TYPE = (
-    (0, r''),
-    (1, r'Mo K\a'),
-    (2, r'Cu K\a'),
-    (3, r'Ag K\a'),
-    (4, r'In K\a'),
-    (5, r'Ga K\a'),
-    (6, r'Fe K\a'),
-    (7, r'W K\a'),
-)
-
-SOLUTION_PRIMARY = (
-    (0, ''),
-    (1, 'direct'),
-    (2, 'vecmap'),
-    (3, 'heavy'),
-    (4, 'difmap'),
-    (5, 'geom'),
-    (6, 'disper'),
-    (7, 'isomor'),
-    (8, 'notdet'),
-    (9, 'dual'),
-    (10, 'iterative'),
-    (11, 'other'),
-)
-
-SOLUTION_SECONDARY = (
-    (0, ''),
-    (1, 'direct'),
-    (2, 'vecmap'),
-    (3, 'heavy'),
-    (4, 'difmap'),
-    (5, 'geom'),
-    (6, 'disper'),
-    (7, 'isomor'),
-    (8, 'notdet'),
-    (9, 'dual'),
-    (10, 'iterative'),
-    (11, 'other'),
-)
-
-CRYSTAL_TYPE = (
-    (0, 'cryst'),
-    (1, 'mod'),
-    (2, 'comp')
-)
-
-TWIN_DIMENSIONALITY = make_numbered(['triperiodic', 'diperiodic', 'monoperiodic'])
-
-CRYSTAL_SYSTEM = make_numbered(['triclinic', 'monoclinic', 'orthorhombic',
-                                'tetragonal', 'trigonal', 'hexagonal', 'cubic'])
-
-CELL_SETTING = make_numbered(['triclinic', 'monoclinic', 'orthorhombic', 'tetragonal',
-                              'rhombohedral', 'trigonal', 'hexagonal', 'cubic'])
-
-PUBL_REQUESTED_CATEGORY = make_numbered(['AD', 'CI', 'CM', 'CO', 'EI', 'EM', 'EO', 'FA', 'FI', 'FM', 'FO', 'GI',
-                                         'GM', 'GO', 'HI', 'HM', 'HO', 'QI', 'QM', 'QO', 'SC'])
-
-PUBL_BODY_ELEMENT = make_numbered(['section', 'subsection', 'subsubsection', 'appendix', 'footnote'])
-
-PUBL_BODY_FORMAT = make_numbered(['ascii', 'cif', 'latex', 'rtf', 'sgml', 'tex', 'troff'])
-
-PUBL_MANUSCRIPT_INCL_EXTRA_DEFN = make_numbered(['no', 'n', 'yes', 'y'])
-
-EXPTL_CRYSTAL_COLOUR_LUSTRE = make_numbered(['metallic', 'dull', 'clear'])
-
-EXPTL_CRYSTAL_COLOUR_MODIFIER = make_numbered(['light', 'dark', 'whitish', 'blackish', 'grayish', 'brownish',
-                                               'reddish', 'pinkish', 'orangish', 'yellowish', 'greenish', 'bluish'])
-
-REFINE_LS_STRUCTURE_FACTOR_COEF = make_numbered(['F', 'Fsqd', 'Inet'])
-
-REFINE_LS_MATRIX_TYPE = make_numbered(['full', 'fullcycle', 'atomblock', 'userblock', 'diagonal', 'sparse'])
-
-COMPUTING_STRUCTURE_REFINEMENT = make_numbered(['SHELXL-2019/2', 'SHELXL-2018/3', 'SHELXL-2018/1', 'SHELXL-97',
-                                                'olex2.refine', 'NoSpherA2', 'Jana2006', 'MoPro', 'BayMEM'])
-
-COMPUTING_DATA_REDUCTION = make_numbered(['SAINT', 'CrysalisPro', 'XDS', 'OpenHKL', 'HKL-2000', 'HKL-3000'])
-
-combobox_fields = {'_exptl_crystal_colour'                : COLOUR_CHOICES,
-                   '_exptl_crystal_colour_primary'        : COLOUR_CHOICES,
-                   '_chemical_absolute_configuration'     : ABSOLUTE_CONFIGURATION_CHOICES,
-                   '_exptl_absorpt_correction_type'       : ABSORPTION_CORRECTION_TYPES,
-                   '_refine_ls_hydrogen_treatment'        : REFINE_LS_HYDROGEN_TREATMENT,
-                   '_diffrn_radiation_type'               : RADIATION_TYPE,
-                   '_atom_sites_solution_primary'         : SOLUTION_PRIMARY,
-                   '_atom_sites_solution_secondary'       : SOLUTION_PRIMARY,
-                   '_diffrn_measurement_specimen_support' : SPECIMEN_SUPPORT,
-                   '_atom_sites_solution_hydrogens'       : SOLUTION_PRIMARY,
-                   '_diffrn_measurement_specimen_adhesive': ADHESIVE,
-                   '_exptl_crystal_type_of_structure'     : CRYSTAL_TYPE,
-                   '_twin_dimensionality'                 : TWIN_DIMENSIONALITY,
-                   '_space_group_crystal_system'          : CRYSTAL_SYSTEM,
-                   '_symmetry_cell_setting'               : CELL_SETTING,
-                   '_publ_requested_category'             : PUBL_REQUESTED_CATEGORY,
-                   '_publ_body_element'                   : PUBL_BODY_ELEMENT,
-                   '_publ_body_format'                    : PUBL_BODY_FORMAT,
-                   '_publ_manuscript_incl_extra_defn'     : PUBL_MANUSCRIPT_INCL_EXTRA_DEFN,
-                   '_exptl_crystal_colour_lustre'         : EXPTL_CRYSTAL_COLOUR_LUSTRE,
-                   '_exptl_crystal_colour_modifier'       : EXPTL_CRYSTAL_COLOUR_MODIFIER,
-                   '_refine_ls_structure_factor_coef'     : REFINE_LS_STRUCTURE_FACTOR_COEF,
-                   '_refine_ls_matrix_type'               : REFINE_LS_MATRIX_TYPE,
-                   '_computing_structure_refinement'      : COMPUTING_STRUCTURE_REFINEMENT,
-                   '_computing_data_reduction'            : COMPUTING_DATA_REDUCTION,
-                   }
-
 include_equipment_imports = (
     '_diffrn_detector',
     '_diffrn_detector_area_resol_mean',
@@ -696,154 +508,259 @@ Sheldrick, G.M. (2015). Acta Cryst. C71, 3-8.
 """
 # Equipment templates
 
-predef_equipment_templ = [{'name' : 'D8 VENTURE',
-                           'items': [
-                               ['_diffrn_radiation_monochromator', 'mirror optics'],
-                               ['_diffrn_measurement_device', 'three-circle diffractometer'],
-                               ['_diffrn_measurement_device_type', 'Bruker D8 VENTURE dual wavelength Mo/Cu'],
-                               ['_diffrn_measurement_method', r'\w and \f scans'],
-                               ['_diffrn_source', 'microfocus sealed X-ray tube'],
-                               # ['_diffrn_source_current', '50'],
-                               # ['_diffrn_source_voltage', '1.1'],
-                               ['_diffrn_detector_area_resol_mean', '7.41'],
-                               ['_diffrn_detector', 'CPAD'],
-                               ['_diffrn_detector_type', 'Bruker PHOTON III'],
-                               ['_diffrn_source_type', r'Incoatec I\ms'],
-                               ['_diffrn_radiation_probe', 'x-ray'],
-                               ['_diffrn_measurement_specimen_support', 'MiTeGen micromount'],
-                               ['_diffrn_measurement_ambient_temperature_device_make', 'Oxford Cryostream 800'],
-                               ['_diffrn_ambient_environment', 'N~2~'],
-                           ]
-                           },
-                          {'name' : 'APEX2 QUAZAR',
-                           'items': [
-                               ['_diffrn_radiation_monochromator', 'mirror optics'],
-                               ['_diffrn_measurement_device', 'three-circle diffractometer'],
-                               ['_diffrn_measurement_device_type', 'Bruker APEX2 QUAZAR'],
-                               ['_diffrn_measurement_method', r'\w and \f scans'],
-                               ['_diffrn_source', 'microfocus sealed X-ray tube'],
-                               ['_diffrn_source_type', r'Incoatec I\ms'],
-                               ['_diffrn_detector', 'CCD'],
-                               ['_diffrn_detector_type', 'Bruker APEXII'],
-                               ['_diffrn_detector_area_resol_mean', '8.3'],
-                               ['_diffrn_radiation_probe', 'x-ray'],
-                               ['_diffrn_measurement_specimen_support', 'MiTeGen micromount'],
-                               ['_diffrn_measurement_ambient_temperature_device_make', 'Oxford Cryostream 800'],
-                               ['_diffrn_ambient_environment', 'N~2~'],
-                           ]
-                           },
-                          {'name' : 'Rigaku Spider',
-                           'items': [
-                               ['_diffrn_radiation_monochromator', 'graphite'],
-                               ['_diffrn_measurement_device', 'four-circle diffractometer'],
-                               ['_diffrn_measurement_device_type', 'Rigaku R-AXIS SPIDER'],
-                               ['_diffrn_measurement_method', r'\w scans'],
-                               ['_diffrn_source', 'sealed X-ray tube'],  # obsolete: _diffrn_radiation_source
-                               ['_diffrn_detector', 'Image Plate'],
-                               ['_diffrn_detector_type', 'Rigaku Image Plate'],
-                               ['_diffrn_detector_area_resol_mean', '?'],
-                               ['_diffrn_radiation_probe', 'x-ray'],
-                               ['_diffrn_measurement_specimen_support', 'MiTeGen micromount'],
-                               ['_diffrn_measurement_ambient_temperature_device_make', 'Bruker Kryoflex II'],
-                           ]
-                           },
-                          {'name' : 'Crystallographer Details',
-                           'items': [
-                               ['_audit_contact_author_name', '?'],
-                               ['_audit_contact_author_address', "?"],
-                               ['_audit_contact_author_email', '?'],
-                               ['_audit_contact_author_phone', '?'],
-                           ]
-                           },
-                          ]
+predefined_equipment_templates = [
+    {'name' : 'D8 VENTURE',
+     'items': [
+         ['_diffrn_radiation_monochromator', 'mirror optics'],
+         ['_diffrn_measurement_device', 'three-circle diffractometer'],
+         ['_diffrn_measurement_device_type', 'Bruker D8 VENTURE dual wavelength Mo/Cu'],
+         ['_diffrn_measurement_method', r'\w and \f scans'],
+         ['_diffrn_source', 'microfocus sealed X-ray tube'],
+         # ['_diffrn_source_current', '50'],
+         # ['_diffrn_source_voltage', '1.1'],
+         ['_diffrn_detector_area_resol_mean', '7.41'],
+         ['_diffrn_detector', 'CPAD'],
+         ['_diffrn_detector_type', 'Bruker PHOTON III'],
+         ['_diffrn_source_type', r'Incoatec I\ms'],
+         ['_diffrn_radiation_probe', 'x-ray'],
+         ['_diffrn_measurement_specimen_support', 'MiTeGen micromount'],
+         ['_diffrn_measurement_ambient_temperature_device_make', 'Oxford Cryostream 800'],
+         ['_diffrn_ambient_environment', 'N~2~'],
+     ]
+     },
+    {'name' : 'APEX2 QUAZAR',
+     'items': [
+         ['_diffrn_radiation_monochromator', 'mirror optics'],
+         ['_diffrn_measurement_device', 'three-circle diffractometer'],
+         ['_diffrn_measurement_device_type', 'Bruker APEX2 QUAZAR'],
+         ['_diffrn_measurement_method', r'\w and \f scans'],
+         ['_diffrn_source', 'microfocus sealed X-ray tube'],
+         ['_diffrn_source_type', r'Incoatec I\ms'],
+         ['_diffrn_detector', 'CCD'],
+         ['_diffrn_detector_type', 'Bruker APEXII'],
+         ['_diffrn_detector_area_resol_mean', '8.3'],
+         ['_diffrn_radiation_probe', 'x-ray'],
+         ['_diffrn_measurement_specimen_support', 'MiTeGen micromount'],
+         ['_diffrn_measurement_ambient_temperature_device_make', 'Oxford Cryostream 800'],
+         ['_diffrn_ambient_environment', 'N~2~'],
+     ]
+     },
+    {'name' : 'Rigaku Spider',
+     'items': [
+         ['_diffrn_radiation_monochromator', 'graphite'],
+         ['_diffrn_measurement_device', 'four-circle diffractometer'],
+         ['_diffrn_measurement_device_type', 'Rigaku R-AXIS SPIDER'],
+         ['_diffrn_measurement_method', r'\w scans'],
+         ['_diffrn_source', 'sealed X-ray tube'],  # obsolete: _diffrn_radiation_source
+         ['_diffrn_detector', 'Image Plate'],
+         ['_diffrn_detector_type', 'Rigaku Image Plate'],
+         ['_diffrn_detector_area_resol_mean', '?'],
+         ['_diffrn_radiation_probe', 'x-ray'],
+         ['_diffrn_measurement_specimen_support', 'MiTeGen micromount'],
+         ['_diffrn_measurement_ambient_temperature_device_make', 'Bruker Kryoflex II'],
+     ]
+     },
+    {'name' : 'Crystallographer Details',
+     'items': [
+         ['_audit_contact_author_name', '?'],
+         ['_audit_contact_author_address', "?"],
+         ['_audit_contact_author_email', '?'],
+         ['_audit_contact_author_phone', '?'],
+     ]
+     },
+]
 
 ### Property contents:
 
-predef_prop_templ = [{'name'  : 'Crystal Color',
-                      'values': ['_exptl_crystal_colour',
-                                 ['', 'colourless', 'white', 'black', 'yellow', 'red', 'blue',
-                                  'green', 'gray', 'pink', 'orange', 'violet', 'brown']]
-                      },
-                     {'name'  : 'Crystal Habit Description',
-                      'values': ['_exptl_crystal_description',
-                                 ['', 'block', 'needle', 'plate', 'prism', 'sphere']]
-                      },
-                     {'name'  : 'Cell Measurement Temperature',
-                      'values': ['_cell_measurement_temperature',
-                                 ['', '15', '80(2)', '100(2)', '110(2)',
-                                  '120(2)', '130(2)', '150(2)', '200(2)', '298(2)']]
-                      },
-                     {'name'  : 'Measurement Temperature',
-                      'values': ['_diffrn_ambient_temperature',
-                                 ['', '15(1)', '80(2)', '100(2)', '110(2)',
-                                  '120(2)', '130(2)', '150(2)', '200(2)', '293.15(2)', '298(2)']]
-                      },
-                     {'name'  : 'Molecular Graphics',
-                      'values': ['_computing_molecular_graphics',
-                                 ['', 'Olex2 (Dolomanov et al., 2009)',
-                                  'ShelXle (Hübschle 2011)',
-                                  'ORTEP Farrujia 2012',
-                                  'Bruker SHELXTL, XP (G. Sheldrick)',
-                                  'Mercury CSD, C. F. Macrae et al. 2008',
-                                  'PLATON (A.L.Spek, 2019)'
-                                  ]]
-                      },
-                     {'name'  : 'Crystal Cooling Device',
-                      'values': ['_diffrn_measurement_ambient_temperature_device_make',
-                                 ['',
-                                  'Oxford Cryostream',
-                                  'Oxford Cryostream 800',
-                                  'Oxford Cryostream 700',
-                                  'Oxford Cryostream 600',
-                                  'Oxford N-Helix',
-                                  'Oxford Smartstream',
-                                  'Oxford Cobra',
-                                  'Bruker Kryofelx II',
-                                  'Bruker Kryofelx I',
-                                  ]
-                                 ]
+predefined_property_templates = [
+    {'name'  : 'Absolute Configuration',
+     'values': ['_chemical_absolute_configuration',
+                ['', 'ad', 'rm', 'rmad', 'syn', 'unk', '.']]
+     },
+    {'name'  : 'Crystal Color',
+     'values': ['_exptl_crystal_colour',
+                ['', 'colourless', 'white', 'black', 'yellow', 'red', 'blue',
+                 'green', 'gray', 'pink', 'orange', 'violet', 'brown']]
+     },
+    {'name'  : 'Crystal Color Primary',
+     'values': ['_exptl_crystal_colour_primary',
+                ['', 'colourless', 'white', 'black', 'yellow', 'red', 'blue',
+                 'green', 'gray', 'pink', 'orange', 'violet', 'brown']]
+     },
+    {'name'  : 'Crystal Habit Description',
+     'values': ['_exptl_crystal_description',
+                ['', 'block', 'needle', 'plate', 'prism', 'sphere']]
+     },
+    {'name'  : 'Cell Measurement Temperature',
+     'values': ['_cell_measurement_temperature',
+                ['', '15', '80(2)', '100(2)', '110(2)',
+                 '120(2)', '130(2)', '150(2)', '200(2)', '298(2)']]
+     },
+    {'name'  : 'Measurement Temperature',
+     'values': ['_diffrn_ambient_temperature',
+                ['', '15(1)', '80(2)', '100(2)', '110(2)',
+                 '120(2)', '130(2)', '150(2)', '200(2)', '293.15(2)', '298(2)']]
+     },
+    {'name'  : 'Molecular Graphics',
+     'values': ['_computing_molecular_graphics',
+                ['', 'Olex2 (Dolomanov et al., 2009)',
+                 'ShelXle (Hübschle 2011)',
+                 'ORTEP Farrujia 2012',
+                 'Bruker SHELXTL, XP (G. Sheldrick)',
+                 'Mercury CSD, C. F. Macrae et al. 2008',
+                 'PLATON (A.L.Spek, 2019)'
+                 ]]
+     },
+    {'name'  : 'Crystal Cooling Device',
+     'values': ['_diffrn_measurement_ambient_temperature_device_make',
+                ['',
+                 'Oxford Cryostream',
+                 'Oxford Cryostream 800',
+                 'Oxford Cryostream 700',
+                 'Oxford Cryostream 600',
+                 'Oxford N-Helix',
+                 'Oxford Smartstream',
+                 'Oxford Cobra',
+                 'Bruker Kryofelx II',
+                 'Bruker Kryofelx I',
+                 ]
+                ]
 
-                      },
-                     {'name'  : 'Radiation Type',
-                      'values': ['_diffrn_radiation_probe',
-                                 ['',
-                                  'x-ray',
-                                  'neutron',
-                                  'electron',
-                                  'gamma',
-                                  ]
-                                 ]
+     },
+    {'name'  : 'Radiation Type',
+     'values': ['_diffrn_radiation_probe',
+                ['',
+                 'x-ray',
+                 'neutron',
+                 'electron',
+                 'gamma',
+                 ]
+                ]
 
-                      },
-                     {'name'  : 'Sample environment',
-                      'values': ['_diffrn_ambient_environment',
-                                 ['',
-                                  'N~2~',
-                                  'He',
-                                  'vacuum',
-                                  'mother liquor',
-                                  'Ar',
-                                  'H~2~'
-                                  ]
-                                 ]
+     },
+    {'name'  : 'Sample environment',
+     'values': ['_diffrn_ambient_environment',
+                ['',
+                 'N~2~',
+                 'He',
+                 'vacuum',
+                 'mother liquor',
+                 'Ar',
+                 'H~2~'
+                 ]
+                ]
 
-                      },
-                     {'name'  : 'Twin relationship',
-                      'values': ['_twin_individual_twin_lattice_type',
-                                 ['',
-                                  'ref',  # reference twin
-                                  'mt_I',  # merohedral class I (simple inversion)
-                                  'mt_II',  # merohedral class II (mirror or twofold)
-                                  'mt_I+II',  # class I and II simultaneously present
-                                  'rmt',  # reticular merohedral
-                                  'pmt',  # pseudo-merohedral
-                                  'rpmt',  # reticular pseudo-merohedral
-                                  'nmt',  # non-merohedral
-                                  ]
-                                 ]
-                      }
-
-                     ]
+     },
+    {'name'  : 'Twin relationship',
+     'values': ['_twin_individual_twin_lattice_type',
+                ['',
+                 'ref',  # reference twin
+                 'mt_I',  # merohedral class I (simple inversion)
+                 'mt_II',  # merohedral class II (mirror or twofold)
+                 'mt_I+II',  # class I and II simultaneously present
+                 'rmt',  # reticular merohedral
+                 'pmt',  # pseudo-merohedral
+                 'rpmt',  # reticular pseudo-merohedral
+                 'nmt',  # non-merohedral
+                 ]
+                ]
+     },
+    {'name'  : 'Absorption correction type',
+     'values': ['_exptl_absorpt_correction_type',
+                ['', 'multi-scan', 'numerical', 'empirical', 'gaussian', 'integration', 'analytical', 'none',
+                 'cylinder', 'psi-scan', 'refdelf', 'sphere']]
+     },
+    {'name'  : 'Hydrogen refinement treatment',
+     'values': ['_refine_ls_hydrogen_treatment',
+                ['', 'undef', 'mixed', 'constr', 'noref', 'refall', 'refxyz', 'refU', 'hetero', 'heteroxyz', 'heteroU',
+                 'heteronoref', 'hetero-mixed', 'heteroxyz-mixed', 'heteroU-mixed', 'heteronoref-mixed']]
+     },
+    {'name'  : 'Radiation type',
+     'values': ['_diffrn_radiation_type',
+                ['', 'Mo K\\a', 'Cu K\\a', 'Ag K\\a', 'In K\\a', 'Ga K\\a', 'Fe K\\a', 'W K\\a']]
+     },
+    {'name'  : 'Solution type',
+     'values': ['_atom_sites_solution_primary',
+                ['', 'direct', 'vecmap', 'heavy', 'difmap', 'geom', 'disper', 'isomor', 'notdet', 'dual', 'iterative',
+                 'other']]
+     },
+    {'name'  : 'Solution type secondary',
+     'values': ['_atom_sites_solution_secondary',
+                ['', 'direct', 'vecmap', 'heavy', 'difmap', 'geom', 'disper', 'isomor', 'notdet', 'dual', 'iterative',
+                 'other']]
+     },
+    {'name'  : 'Specimen support',
+     'values': ['_diffrn_measurement_specimen_support',
+                ['', 'MiTeGen micromount', 'glass capillary', 'quartz capillary', 'glass fiber', 'metal loop',
+                 'nylon loop', 'cactus needle', 'cat whisker', 'carbon fiber', 'beryllium pin']]
+     },
+    {'name'  : 'Hydrogen solution type',
+     'values': ['_atom_sites_solution_hydrogens',
+                ['', 'direct', 'vecmap', 'heavy', 'difmap', 'geom', 'disper', 'isomor', 'notdet', 'dual', 'iterative',
+                 'other']]
+     },
+    {'name'  : 'Specimen adhesive',
+     'values': ['_diffrn_measurement_specimen_adhesive',
+                ['', 'perfluorether oil', 'epoxy glue', 'motor oil', 'grease', 'honey']]
+     },
+    {'name'  : 'Type of structure',
+     'values': ['_exptl_crystal_type_of_structure',
+                ['cryst', 'mod', 'comp']]
+     },
+    {'name'  : 'Twin overlap',
+     'values': ['_twin_dimensionality',
+                ['', 'triperiodic', 'diperiodic', 'monoperiodic']]
+     },
+    {'name'  : 'Crystal system',
+     'values': ['_space_group_crystal_system',
+                ['', 'triclinic', 'monoclinic', 'orthorhombic', 'tetragonal', 'trigonal', 'hexagonal', 'cubic']]
+     },
+    # Obsolete by _space_group_crystal_system
+    {'name'  : 'Crystal system (obsolete)',
+     'values': ['_symmetry_cell_setting',
+                ['', 'triclinic', 'monoclinic', 'orthorhombic', 'tetragonal', 'rhombohedral', 'trigonal', 'hexagonal',
+                 'cubic']]
+     },
+    {'name'  : 'Paper submission category',
+     'values': ['_publ_requested_category',
+                ['', 'AD', 'CI', 'CM', 'CO', 'EI', 'EM', 'EO', 'FA', 'FI', 'FM', 'FO', 'GI', 'GM', 'GO', 'HI', 'HM',
+                 'HO', 'QI', 'QM', 'QO', 'SC']]
+     },
+    {'name'  : 'Text section role',
+     'values': ['_publ_body_element',
+                ['', 'section', 'subsection', 'subsubsection', 'appendix', 'footnote']]
+     },
+    {'name'  : 'Text body format',
+     'values': ['_publ_body_format',
+                ['', 'ascii', 'cif', 'latex', 'rtf', 'sgml', 'tex', 'troff']]
+     },
+    {'name'  : 'Crystal color lustre',
+     'values': ['_exptl_crystal_colour_lustre',
+                ['', 'metallic', 'dull', 'clear']]
+     },
+    {'name'  : 'Crystal color modifier',
+     'values': ['_exptl_crystal_colour_modifier',
+                ['', 'light', 'dark', 'whitish', 'blackish', 'grayish', 'brownish', 'reddish', 'pinkish', 'orangish',
+                 'yellowish', 'greenish', 'bluish']]
+     },
+    {'name'  : 'Structure-factor coefficient for refinement',
+     'values': ['_refine_ls_structure_factor_coef',
+                ['', 'F', 'Fsqd', 'Inet']]
+     },
+    {'name'  : 'Refinement matrix type',
+     'values': ['_refine_ls_matrix_type',
+                ['', 'full', 'fullcycle', 'atomblock', 'userblock', 'diagonal', 'sparse']]
+     },
+    {'name'  : 'Refinement software',
+     'values': ['_computing_structure_refinement',
+                ['', 'SHELXL-2019/2', 'SHELXL-2018/3', 'SHELXL-2018/1', 'SHELXL-97', 'olex2.refine', 'NoSpherA2',
+                 'Jana2006', 'Jana2020', 'MoPro', 'BayMEM']]
+     },
+    {'name'  : 'Data reduction software',
+     'values': ['_computing_data_reduction',
+                ['', 'SAINT', 'CrysalisPro', 'XDS', 'OpenHKL', 'HKL-2000', 'HKL-3000']]
+     },
+]
 
 celltxt = """
     <html>
@@ -892,7 +809,7 @@ def unify_line_endings(text: str):
 
 
 def remove_line_endings(text: str):
-    return ' '.join(text.splitlines())
+    return ''.join(text.splitlines())
 
 
 def open_file(report_filename: Path):
@@ -901,3 +818,7 @@ def open_file(report_filename: Path):
             os.startfile(report_filename)
         if sys.platform == 'darwin':
             subprocess.call(['open', report_filename])
+
+
+if __name__ == '__main__':
+    pass

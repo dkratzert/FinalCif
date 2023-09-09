@@ -2,7 +2,7 @@ from contextlib import suppress
 from functools import cache
 
 from PyQt5.QtCore import pyqtSignal, Qt, QObject, QEvent, QSize
-from PyQt5.QtGui import QTextOption, QFontMetrics, QContextMenuEvent, QFont
+from PyQt5.QtGui import QTextOption, QFontMetrics, QContextMenuEvent, QFont, QColor
 from PyQt5.QtWidgets import QPlainTextEdit, QFrame, QApplication, QAbstractScrollArea
 
 from finalcif.gui.new_key_dialog import NewKey
@@ -21,8 +21,6 @@ class MyQPlainTextEdit(QPlainTextEdit):
     def __init__(self, parent=None, *args, **kwargs):
         """
         Plaintext edit field for most of the table cells.
-        :param parent:
-        :param minheight: minimum height of the widget.
         """
         super().__init__(parent, *args, **kwargs)
         self.setParent(parent)
@@ -59,7 +57,7 @@ class MyQPlainTextEdit(QPlainTextEdit):
         action_template.triggered.connect(self._on_create_template)
         deleterow.triggered.connect(self._delete_row)
         new_key.triggered.connect(self._add_cif_keys)
-        choosed_action = menu.exec(event.globalPos())
+        menu.exec(event.globalPos())
 
     def _add_cif_keys(self):
         new_key = NewKey(self)
@@ -84,12 +82,12 @@ class MyQPlainTextEdit(QPlainTextEdit):
     def row(self) -> int:
         return self.parent.vheaderitems.index(self.cif_key)
 
-    def setBackground(self, color):
+    def setBackground(self, color: QColor) -> None:
         """
         Set background color of the text field.
         """
         self.setStyleSheet("background-color: {};".format(str(color.name())))
-        # No idea why tis does not work
+        # No idea why this does not work
         # pal = self.palette()
         # pal.setColor(QPalette.Base, color)
         # self.setPalette(pal)

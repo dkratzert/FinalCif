@@ -3,7 +3,7 @@ import re
 from collections import namedtuple
 from math import sin, radians
 from pathlib import Path
-from typing import List, Dict
+from typing import List, Dict, Union
 
 import jinja2
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
@@ -57,7 +57,7 @@ class BondsAndAngles():
                 symm2 = None
             num = symmsearch(self.cif, newsymms, num, symm2, symms)
             # Atom1 - Atom2:
-            a = '{}{}{}'.format(at1, halbgeviert, at2)
+            a = f'{at1}{halbgeviert}{at2}'
             symm = '#' + str(symms[symm2]) if symm2 else ''
             atoms = RichText(a)
             atoms.add(symm, superscript=True)
@@ -86,7 +86,7 @@ class BondsAndAngles():
             # atom1 symm1_str a symm2_str
             atoms = RichText(ang.label1)
             atoms.add(symm1_str, superscript=True)
-            a = '{}{}{}{}'.format(halbgeviert, ang.label2, halbgeviert, ang.label3)
+            a = f'{halbgeviert}{ang.label2}{halbgeviert}{ang.label3}'
             atoms.add(a, superscript=False)
             atoms.add(symm2_str, superscript=True)
             angles_list.append({'atoms': atoms, 'angle': angle_val})
@@ -205,14 +205,17 @@ class HydrogenBonds():
         return atoms_list
 
 
-def get_card(cif: CifContainer, symm: str) -> List[str]:
+def get_card(cif: CifContainer, symm: str) -> Union[List[str], None]:
     """
     Returns a symmetry card from the _space_group_symop_operation_xyz or _symmetry_equiv_pos_as_xyz list.
     :param cif: the cif file object
     :param symm: the symmetry number
     :return: ['x', ' y', ' z'] etc
     """
-    card = cif.symmops[int(symm.split('_')[0]) - 1].split(',')
+    try:
+        card = cif.symmops[int(symm.split('_')[0]) - 1].split(',')
+    except IndexError:
+        return None
     return card
 
 
@@ -228,7 +231,7 @@ def get_symminfo(newsymms: dict) -> str:
         if n == nitems:
             sep = ''
         n += 1
-        line += "#{}: {}{}   ".format(key, value, sep)
+        line += f"#{key}: {value}{sep}   "
     if newsymms:
         return line
     else:
@@ -238,7 +241,11 @@ def get_symminfo(newsymms: dict) -> str:
 def symmsearch(cif: CifContainer, newsymms, num, symm, symms_list) -> int:
     if symm and symm not in symms_list.keys():
         symms_list[symm] = num
-        s = SymmetryElement(get_card(cif, symm))
+        card = get_card(cif, symm)
+        if card is None:
+            num += 1
+            return num
+        s = SymmetryElement(card)
         s.translate(symm)
         newsymms[num] = s.toShelxl()
         num += 1
@@ -294,7 +301,7 @@ class TemplatedReport():
         p.alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
         p._element.append(spgr_word)
         try:
-            p.add_run(' ({})'.format(cif.spgr_number))
+            p.add_run(f' ({cif.spgr_number})')
         except AttributeError:
             pass
         return sd
@@ -322,10 +329,10 @@ class TemplatedReport():
         limit_l_max = cif['_diffrn_reflns_limit_l_max']
         return f'{minus_sign if limit_h_min != "0" else ""}{limit_h_min.replace("-", "")} ' \
                f'{less_or_equal} h {less_or_equal} {limit_h_max}\n' \
-               + f'{minus_sign if limit_k_min != "0" else ""}{limit_k_min.replace("-", "")} ' \
-                 f'{less_or_equal} k {less_or_equal} {limit_k_max}\n' \
-               + f'{minus_sign if limit_l_min != "0" else ""}{limit_l_min.replace("-", "")} ' \
-                 f'{less_or_equal} l {less_or_equal} {limit_l_max}'
+            + f'{minus_sign if limit_k_min != "0" else ""}{limit_k_min.replace("-", "")} ' \
+              f'{less_or_equal} k {less_or_equal} {limit_k_max}\n' \
+            + f'{minus_sign if limit_l_min != "0" else ""}{limit_l_min.replace("-", "")} ' \
+              f'{less_or_equal} l {less_or_equal} {limit_l_max}'
 
     @staticmethod
     def get_radiation(cif: CifContainer) -> RichText:
@@ -443,7 +450,8 @@ class TemplatedReport():
             self.literature['refinement'] = SHELXLReference()
         if 'OLEX' in refined.upper():
             self.literature['refinement'] = Olex2Reference()
-        if 'NOSPHERA2' in refined.upper() or 'NOSPHERA2' in cif['_refine_special_details'].upper():
+        if ('NOSPHERA2' in refined.upper() or 'NOSPHERA2' in cif['_refine_special_details'].upper() or
+            'NOSPHERAT2' in cif['_olex2_refine_details'].upper()):
             self.literature['refinement'] = Nosphera2Reference()
         return refined.split()[0]
 
@@ -473,8 +481,7 @@ class TemplatedReport():
                       U23=u23.replace('-', minus_sign))
 
     def get_crystallization_method(self, cif):
-        return remove_line_endings(retranslate_delimiter(
-            cif['_exptl_crystal_recrystallization_method'])) or '[No crystallization method given!]'
+        return gstr(cif['_exptl_crystal_recrystallization_method']) or '[No crystallization method given!]'
 
     def make_picture(self, options: Options, picfile: Path, tpl_doc: DocxTemplate):
         if options.report_text and picfile and picfile.exists():

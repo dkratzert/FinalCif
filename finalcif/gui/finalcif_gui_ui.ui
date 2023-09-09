@@ -7,8 +7,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1645</width>
-    <height>899</height>
+    <width>1637</width>
+    <height>803</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,55 +17,28 @@
   <widget class="QWidget" name="Mainwidget">
    <layout class="QHBoxLayout" name="horizontalLayout_4">
     <property name="leftMargin">
-     <number>3</number>
+     <number>6</number>
     </property>
     <property name="topMargin">
-     <number>3</number>
+     <number>6</number>
     </property>
     <property name="rightMargin">
-     <number>3</number>
+     <number>6</number>
     </property>
     <property name="bottomMargin">
-     <number>3</number>
+     <number>0</number>
     </property>
     <item>
      <widget class="QSplitter" name="splitter">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">QSplitter::handle {
-	background-color: rgb(220, 220, 220);
-	margin: 0px 0px;
-}</string>
-      </property>
-      <property name="lineWidth">
-       <number>0</number>
-      </property>
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
-      </property>
-      <property name="opaqueResize">
-       <bool>true</bool>
-      </property>
-      <property name="handleWidth">
-       <number>2</number>
       </property>
       <widget class="QFrame" name="LeftFrame">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-         <horstretch>6</horstretch>
+         <horstretch>20</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
-       </property>
-       <property name="baseSize">
-        <size>
-         <width>0</width>
-         <height>0</height>
-        </size>
        </property>
        <property name="frameShape">
         <enum>QFrame::NoFrame</enum>
@@ -139,12 +112,6 @@
              </item>
              <item>
               <widget class="QPushButton" name="SelectCif_PushButton">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
                <property name="text">
                 <string>Select File</string>
                </property>
@@ -196,6 +163,12 @@
         </item>
         <item>
          <widget class="QStackedWidget" name="TemplatesStackedWidget">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="lineWidth">
            <number>1</number>
           </property>
@@ -221,27 +194,39 @@
             </property>
             <item>
              <widget class="QGroupBox" name="EquipmentGroupBox">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>36</verstretch>
+               </sizepolicy>
+              </property>
               <property name="title">
-               <string>Equipment and Author Templates</string>
+               <string>Equipment Templates</string>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_7">
                <property name="spacing">
                 <number>-1</number>
                </property>
                <property name="leftMargin">
-                <number>0</number>
+                <number>6</number>
                </property>
                <property name="topMargin">
-                <number>3</number>
+                <number>4</number>
                </property>
                <property name="rightMargin">
-                <number>0</number>
+                <number>6</number>
                </property>
                <property name="bottomMargin">
-                <number>3</number>
+                <number>4</number>
                </property>
                <item>
                 <widget class="QStackedWidget" name="EquipmentTemplatesStackedWidget">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
                  <property name="currentIndex">
                   <number>0</number>
                  </property>
@@ -261,11 +246,6 @@
                    </property>
                    <item>
                     <widget class="QListWidget" name="EquipmentTemplatesListWidget">
-                     <property name="font">
-                      <font>
-                       <pointsize>11</pointsize>
-                      </font>
-                     </property>
                      <property name="toolTip">
                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Each entry can have a list of key/value pairs. For example a Diffractometer model can have a list of features.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                      </property>
@@ -428,242 +408,265 @@
             </item>
             <item>
              <widget class="Line" name="line">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-             </widget>
-            </item>
-            <item alignment="Qt::AlignHCenter">
-             <widget class="QPushButton" name="ImportCifPushButton">
               <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
               </property>
-              <property name="text">
-               <string>Import .cif, .pcf, .cif_od, .cfx or .sqf file</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="Line" name="line_5">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QGroupBox" name="PropertiesGroupBox">
-              <property name="title">
-               <string>Property Templates</string>
+             <layout class="QHBoxLayout" name="horizontalLayout_13">
+              <property name="leftMargin">
+               <number>6</number>
               </property>
-              <layout class="QVBoxLayout" name="verticalLayout_6">
+              <property name="topMargin">
+               <number>6</number>
+              </property>
+              <property name="bottomMargin">
+               <number>6</number>
+              </property>
+              <item>
+               <widget class="QPushButton" name="ImportCifPushButton">
+                <property name="text">
+                 <string>Import .cif, .pcf, .cif_od, .cfx or .sqf file</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="importOnlyNewDataCheckBox">
+                <property name="text">
+                 <string>Only new data</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <widget class="Line" name="line_5">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QGroupBox" name="groupBox_5">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>50</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="title">
+               <string>Report Options</string>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_35">
                <property name="leftMargin">
-                <number>0</number>
+                <number>6</number>
                </property>
                <property name="topMargin">
-                <number>3</number>
+                <number>9</number>
                </property>
                <property name="rightMargin">
-                <number>0</number>
+                <number>6</number>
                </property>
                <property name="bottomMargin">
-                <number>3</number>
+                <number>9</number>
                </property>
                <item>
-                <widget class="QStackedWidget" name="PropertiesTemplatesStackedWidget">
-                 <property name="currentIndex">
-                  <number>1</number>
+                <layout class="QGridLayout" name="gridLayout_26">
+                 <property name="bottomMargin">
+                  <number>12</number>
                  </property>
-                 <widget class="QWidget" name="PropertiesSelectPage">
-                  <layout class="QVBoxLayout" name="verticalLayout_20">
-                   <property name="leftMargin">
-                    <number>0</number>
+                 <item row="0" column="1">
+                  <widget class="QCheckBox" name="ADPTableCheckBox">
+                   <property name="text">
+                    <string>Add ADP table</string>
                    </property>
+                   <property name="checked">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="0">
+                  <widget class="QCheckBox" name="ReportTextCheckBox">
+                   <property name="text">
+                    <string>No report text in structure report</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="0">
+                  <layout class="QHBoxLayout" name="horizontalLayout_6">
                    <property name="topMargin">
-                    <number>3</number>
+                    <number>0</number>
                    </property>
                    <property name="rightMargin">
                     <number>0</number>
                    </property>
-                   <property name="bottomMargin">
-                    <number>3</number>
-                   </property>
                    <item>
-                    <widget class="QListWidget" name="PropertiesTemplatesListWidget">
+                    <widget class="QLabel" name="PictureWidthLabel">
+                     <property name="text">
+                      <string>Picture width [cm]</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QDoubleSpinBox" name="PictureWidthDoubleSpinBox">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="minimumSize">
+                      <size>
+                       <width>80</width>
+                       <height>0</height>
+                      </size>
+                     </property>
+                     <property name="value">
+                      <double>7.000000000000000</double>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <spacer name="horizontalSpacer_20">
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>40</width>
+                       <height>0</height>
+                      </size>
+                     </property>
+                    </spacer>
+                   </item>
+                  </layout>
+                 </item>
+                 <item row="1" column="0" colspan="2">
+                  <widget class="QCheckBox" name="HAtomsCheckBox">
+                   <property name="text">
+                    <string>No bonds and angles to hydrogen atoms</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <widget class="QGroupBox" name="groupBox_6">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="title">
+                  <string>Report Templates:</string>
+                 </property>
+                 <layout class="QVBoxLayout" name="verticalLayout_2">
+                  <property name="leftMargin">
+                   <number>6</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>3</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>6</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>6</number>
+                  </property>
+                  <item>
+                   <widget class="QListWidget" name="docxTemplatesListWidget">
+                    <property name="sizeAdjustPolicy">
+                     <enum>QAbstractScrollArea::AdjustToContents</enum>
+                    </property>
+                    <property name="selectionMode">
+                     <enum>QAbstractItemView::NoSelection</enum>
+                    </property>
+                    <property name="selectionRectVisible">
+                     <bool>false</bool>
+                    </property>
+                    <item>
+                     <property name="text">
+                      <string>Use FinalCif default template</string>
+                     </property>
                      <property name="font">
                       <font>
-                       <pointsize>11</pointsize>
+                       <italic>true</italic>
                       </font>
                      </property>
-                     <property name="toolTip">
-                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A list of common properties like &lt;/p&gt;&lt;p&gt;_exptl_crystal_colour: yellow, red, blue, ...&lt;/p&gt;&lt;p&gt;Lists defined here will appear as dropdown menus in the main Table.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                     <property name="checkState">
+                      <enum>Checked</enum>
                      </property>
-                     <property name="selectionMode">
-                      <enum>QAbstractItemView::SingleSelection</enum>
-                     </property>
-                     <property name="selectionBehavior">
-                      <enum>QAbstractItemView::SelectRows</enum>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <layout class="QHBoxLayout" name="horizontalLayout_Buttons2">
-                     <item>
-                      <widget class="QPushButton" name="EditPropertyTemplateButton">
-                       <property name="text">
-                        <string>Edit Template</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QPushButton" name="NewPropertyTemplateButton">
-                       <property name="text">
-                        <string>New Template</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QPushButton" name="ImportPropertyTemplateButton">
-                       <property name="text">
-                        <string>Import</string>
-                       </property>
-                      </widget>
-                     </item>
-                    </layout>
-                   </item>
-                  </layout>
-                 </widget>
-                 <widget class="QWidget" name="PropertiesEditPage">
-                  <layout class="QVBoxLayout" name="verticalLayout_22">
-                   <property name="leftMargin">
-                    <number>0</number>
-                   </property>
-                   <property name="topMargin">
-                    <number>3</number>
-                   </property>
-                   <property name="rightMargin">
-                    <number>0</number>
-                   </property>
-                   <property name="bottomMargin">
-                    <number>3</number>
-                   </property>
-                   <item>
-                    <layout class="QVBoxLayout" name="KeywordVerticalLayout">
-                     <item>
-                      <widget class="QLabel" name="cifKeywordLB">
-                       <property name="text">
-                        <string>cif keyword</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QLineEdit" name="cifKeywordLineEdit"/>
-                     </item>
-                    </layout>
-                   </item>
-                   <item>
-                    <widget class="MyPropTableWidget" name="PropertiesEditTableWidget">
-                     <property name="autoScroll">
-                      <bool>false</bool>
-                     </property>
-                     <property name="editTriggers">
-                      <set>QAbstractItemView::AllEditTriggers</set>
-                     </property>
-                     <property name="selectionMode">
-                      <enum>QAbstractItemView::SingleSelection</enum>
-                     </property>
-                     <property name="selectionBehavior">
-                      <enum>QAbstractItemView::SelectRows</enum>
-                     </property>
-                     <property name="verticalScrollMode">
-                      <enum>QAbstractItemView::ScrollPerPixel</enum>
-                     </property>
-                     <property name="horizontalScrollMode">
-                      <enum>QAbstractItemView::ScrollPerPixel</enum>
-                     </property>
-                     <property name="rowCount">
-                      <number>1</number>
-                     </property>
-                     <attribute name="horizontalHeaderVisible">
-                      <bool>false</bool>
-                     </attribute>
-                     <attribute name="horizontalHeaderMinimumSectionSize">
-                      <number>90</number>
-                     </attribute>
-                     <attribute name="horizontalHeaderDefaultSectionSize">
-                      <number>170</number>
-                     </attribute>
-                     <attribute name="horizontalHeaderStretchLastSection">
-                      <bool>true</bool>
-                     </attribute>
-                     <attribute name="verticalHeaderVisible">
-                      <bool>false</bool>
-                     </attribute>
-                     <attribute name="verticalHeaderDefaultSectionSize">
-                      <number>30</number>
-                     </attribute>
-                     <row/>
-                     <column>
+                    </item>
+                   </widget>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_14">
+                    <property name="topMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>0</number>
+                    </property>
+                    <item>
+                     <widget class="QPushButton" name="AddNewTemplPushButton">
                       <property name="text">
-                       <string/>
+                       <string>Add New Template</string>
                       </property>
-                     </column>
-                    </widget>
-                   </item>
-                   <item>
-                    <layout class="QHBoxLayout" name="horizontalLayout">
-                     <item>
-                      <widget class="QPushButton" name="DeletePropertiesButton">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                         <horstretch>1</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="text">
-                        <string>Delete Template</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QPushButton" name="SavePropertiesButton">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                         <horstretch>1</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="text">
-                        <string>Save</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QPushButton" name="CancelPropertiesButton">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                         <horstretch>1</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="text">
-                        <string>Cancel</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QPushButton" name="ExportPropertyButton">
-                       <property name="text">
-                        <string>Export</string>
-                       </property>
-                      </widget>
-                     </item>
-                    </layout>
-                   </item>
-                  </layout>
-                 </widget>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="RemoveTemplPushButton">
+                      <property name="text">
+                       <string>Remove Selected</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <spacer name="horizontalSpacer_13">
+                      <property name="orientation">
+                       <enum>Qt::Horizontal</enum>
+                      </property>
+                      <property name="sizeHint" stdset="0">
+                       <size>
+                        <width>40</width>
+                        <height>20</height>
+                       </size>
+                      </property>
+                     </spacer>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="label">
+                    <property name="text">
+                     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Get more templates here:  &lt;a href=&quot;https://github.com/dkratzert/FinalCif&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0068da;&quot;&gt;https://github.com/dkratzert/FinalCif&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                    </property>
+                    <property name="textFormat">
+                     <enum>Qt::RichText</enum>
+                    </property>
+                    <property name="openExternalLinks">
+                     <bool>true</bool>
+                    </property>
+                    <property name="textInteractionFlags">
+                     <set>Qt::TextBrowserInteraction</set>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
                 </widget>
                </item>
               </layout>
@@ -698,13 +701,13 @@
                 <number>0</number>
                </property>
                <property name="leftMargin">
-                <number>0</number>
+                <number>6</number>
                </property>
                <property name="topMargin">
                 <number>6</number>
                </property>
                <property name="rightMargin">
-                <number>0</number>
+                <number>6</number>
                </property>
                <property name="bottomMargin">
                 <number>6</number>
@@ -785,28 +788,16 @@
       <widget class="QFrame" name="CifDataItemsFrame">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-         <horstretch>9</horstretch>
+         <horstretch>80</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="baseSize">
-        <size>
-         <width>0</width>
-         <height>0</height>
-        </size>
-       </property>
        <layout class="QGridLayout" name="gridLayout_6">
         <property name="leftMargin">
-         <number>6</number>
+         <number>3</number>
         </property>
         <property name="topMargin">
-         <number>12</number>
+         <number>9</number>
         </property>
         <property name="rightMargin">
          <number>6</number>
@@ -817,37 +808,10 @@
         <property name="spacing">
          <number>6</number>
         </property>
-        <item row="0" column="1">
-         <widget class="QComboBox" name="datanameComboBox">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-            <horstretch>1</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="font">
-           <font>
-            <family>Arial</family>
-            <pointsize>11</pointsize>
-           </font>
-          </property>
-          <property name="editable">
-           <bool>true</bool>
-          </property>
-          <property name="maxVisibleItems">
-           <number>20</number>
-          </property>
-          <property name="insertPolicy">
-           <enum>QComboBox::InsertAtCurrent</enum>
-          </property>
-          <property name="sizeAdjustPolicy">
-           <enum>QComboBox::AdjustToContents</enum>
-          </property>
-          <property name="minimumContentsLength">
-           <number>20</number>
-          </property>
-          <property name="frame">
-           <bool>true</bool>
+        <item row="0" column="4">
+         <widget class="QLabel" name="spacegroupLabel">
+          <property name="text">
+           <string>Space-Group Type</string>
           </property>
          </widget>
         </item>
@@ -867,245 +831,10 @@
           </property>
          </spacer>
         </item>
-        <item row="0" column="10">
-         <widget class="QLabel" name="SumFormMainLabel">
-          <property name="text">
-           <string>Sum Formula</string>
-          </property>
-         </widget>
-        </item>
         <item row="0" column="12">
          <widget class="QPushButton" name="HelpPushButton">
           <property name="text">
            <string>Help</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0">
-         <widget class="QLabel" name="datanameLabel">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="text">
-           <string>Data Name</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="5">
-         <widget class="QTextEdit" name="Spacegroup_top_LineEdit">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-            <horstretch>1</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <family>Arial</family>
-            <pointsize>11</pointsize>
-           </font>
-          </property>
-          <property name="cursor" stdset="0">
-           <cursorShape>IBeamCursor</cursorShape>
-          </property>
-          <property name="inputMethodHints">
-           <set>Qt::ImhNone</set>
-          </property>
-          <property name="verticalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="horizontalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="sizeAdjustPolicy">
-           <enum>QAbstractScrollArea::AdjustToContents</enum>
-          </property>
-          <property name="tabChangesFocus">
-           <bool>true</bool>
-          </property>
-          <property name="lineWrapMode">
-           <enum>QTextEdit::NoWrap</enum>
-          </property>
-          <property name="readOnly">
-           <bool>true</bool>
-          </property>
-          <property name="textInteractionFlags">
-           <set>Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="8">
-         <widget class="QTextEdit" name="CCDCNumLineEdit">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-            <horstretch>1</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <family>Arial</family>
-            <pointsize>11</pointsize>
-           </font>
-          </property>
-          <property name="cursor" stdset="0">
-           <cursorShape>IBeamCursor</cursorShape>
-          </property>
-          <property name="verticalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="horizontalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="sizeAdjustPolicy">
-           <enum>QAbstractScrollArea::AdjustToContents</enum>
-          </property>
-          <property name="tabChangesFocus">
-           <bool>true</bool>
-          </property>
-          <property name="lineWrapMode">
-           <enum>QTextEdit::NoWrap</enum>
-          </property>
-          <property name="readOnly">
-           <bool>false</bool>
-          </property>
-          <property name="acceptRichText">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="11">
-         <widget class="QTextEdit" name="SumFormMainLineEdit">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-            <horstretch>1</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <family>Arial</family>
-            <pointsize>11</pointsize>
-           </font>
-          </property>
-          <property name="cursor" stdset="0">
-           <cursorShape>IBeamCursor</cursorShape>
-          </property>
-          <property name="inputMethodHints">
-           <set>Qt::ImhNone</set>
-          </property>
-          <property name="verticalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="horizontalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="sizeAdjustPolicy">
-           <enum>QAbstractScrollArea::AdjustToContents</enum>
-          </property>
-          <property name="tabChangesFocus">
-           <bool>true</bool>
-          </property>
-          <property name="undoRedoEnabled">
-           <bool>false</bool>
-          </property>
-          <property name="lineWrapMode">
-           <enum>QTextEdit::NoWrap</enum>
-          </property>
-          <property name="readOnly">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="3">
-         <spacer name="horizontalSpacer_11">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeType">
-           <enum>QSizePolicy::Fixed</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>10</width>
-            <height>0</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="0" column="6">
-         <spacer name="horizontalSpacer_12">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeType">
-           <enum>QSizePolicy::Fixed</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>10</width>
-            <height>0</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="0" column="4">
-         <widget class="QLabel" name="spacegroupLabel">
-          <property name="text">
-           <string>Space-Group Type</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="7">
-         <widget class="QLabel" name="CCDCNumLabel">
-          <property name="text">
-           <string>CCDC Number</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="2">
-         <widget class="QPushButton" name="appendCifPushButton">
-          <property name="text">
-           <string>Append CIF</string>
           </property>
          </widget>
         </item>
@@ -1580,7 +1309,7 @@
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
                 <horstretch>0</horstretch>
-                <verstretch>30</verstretch>
+                <verstretch>20</verstretch>
                </sizepolicy>
               </property>
               <property name="title">
@@ -2233,98 +1962,26 @@ The data source will be ignored until next program restart.</string>
           </widget>
           <widget class="QWidget" name="page_options">
            <layout class="QGridLayout" name="gridLayout_12">
-            <item row="6" column="1" colspan="3">
-             <spacer name="horizontalSpacer_14">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item row="4" column="0">
-             <spacer name="verticalSpacer_6">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
-              <property name="sizeType">
-               <enum>QSizePolicy::Expanding</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>40</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item row="6" column="0">
-             <widget class="QPushButton" name="BackFromOptionspPushButton">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>Back to Main Table</string>
-              </property>
-             </widget>
-            </item>
-            <item row="7" column="0">
-             <spacer name="verticalSpacer_5">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
-              <property name="sizeType">
-               <enum>QSizePolicy::Preferred</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>40</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item row="7" column="0">
-             <spacer name="verticalSpacer_6">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
-              <property name="sizeType">
-               <enum>QSizePolicy::Expanding</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>40</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item row="6" column="0" colspan="2">
-             <widget class="QGroupBox" name="groupBox_8">
-
+            <item row="2" column="1">
+             <widget class="QGroupBox" name="groupBox_COD">
               <property name="title">
-               <string>CheckCIF Server</string>
+               <string>Crystallography Open Database Server</string>
               </property>
-              <layout class="QFormLayout" name="formLayout_4">
+              <layout class="QFormLayout" name="formLayout_6">
                <item row="0" column="0" colspan="2">
-                <widget class="QLabel" name="label_4">
+                <widget class="QLabel" name="label_7">
                  <property name="text">
-                  <string>Change this URL if the CheckCIF server URL changes:</string>
+                  <string>COD deposit URL:</string>
                  </property>
                 </widget>
                </item>
-               <item>
-                <widget class="QLabel" name="label_18">
-                 <property name="text">
-                  <string>Exports all templates from Equipment, Properties, Authors and Text snippets to a single file.</string>
+               <item row="1" column="0" colspan="2">
+                <widget class="QLineEdit" name="CODURLTextedit">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
                  </property>
                  <property name="minimumSize">
                   <size>
@@ -2333,14 +1990,14 @@ The data source will be ignored until next program restart.</string>
                   </size>
                  </property>
                  <property name="text">
-                  <string>https://checkcif.iucr.org/cgi-bin/checkcif_hkl.pl</string>
+                  <string>https://www.crystallography.net/cod/cgi-bin/cif-deposit.pl</string>
                  </property>
                 </widget>
                </item>
               </layout>
              </widget>
             </item>
-            <item row="2" column="0" colspan="2">
+            <item row="2" column="0">
              <widget class="QGroupBox" name="groupBox_7">
               <property name="title">
                <string>CheckCIF Server</string>
@@ -2375,20 +2032,54 @@ The data source will be ignored until next program restart.</string>
               </layout>
              </widget>
             </item>
-            <item row="8" column="1" colspan="3">
-             <spacer name="horizontalSpacer_14">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
+            <item row="7" column="0">
+             <widget class="QPushButton" name="BackFromOptionspPushButton">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
               </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
+              <property name="text">
+               <string>Back to Main Table</string>
               </property>
-             </spacer>
+             </widget>
             </item>
-            <item row="6" column="2" colspan="2">
+
+            <item row="3" column="0">
+            <widget class="QGroupBox" name="groupBox_8">
+
+              <property name="title">
+               <string>CheckCIF Server</string>
+              </property>
+              <layout class="QFormLayout" name="formLayout_4">
+               <item row="0" column="0" colspan="2">
+                <widget class="QLabel" name="label_4">
+                 <property name="text">
+                  <string>Change this URL if the CheckCIF server URL changes:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_18">
+                 <property name="text">
+                  <string>Exports all templates from Equipment, Properties, Authors and Text snippets to a single file.</string>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>300</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>https://checkcif.iucr.org/cgi-bin/checkcif_hkl.pl</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="4" column="0" rowspan="2">
              <widget class="QGroupBox" name="groupBox_10">
               <property name="title">
                <string>General Options</string>
@@ -2417,276 +2108,200 @@ The data source will be ignored until next program restart.</string>
               </layout>
              </widget>
             </item>
-            <item row="2" column="2" colspan="2">
-             <widget class="QGroupBox" name="groupBox_COD">
+            <item row="3" column="1" rowspan="3">
+             <widget class="QGroupBox" name="PropertiesGroupBox">
               <property name="title">
-               <string>Crystallography Open Database</string>
+               <string>Property Templates</string>
               </property>
-              <layout class="QFormLayout" name="formLayout_6">
-               <item row="0" column="0" colspan="2">
-                <widget class="QLabel" name="label_7">
-                 <property name="text">
-                  <string>COD deposit URL:</string>
+              <layout class="QVBoxLayout" name="verticalLayout_6">
+               <item>
+                <widget class="QStackedWidget" name="PropertiesTemplatesStackedWidget">
+                 <property name="currentIndex">
+                  <number>1</number>
                  </property>
-                </widget>
-               </item>
-               <item row="1" column="0" colspan="2">
-                <widget class="QLineEdit" name="CODURLTextedit">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="minimumSize">
-                  <size>
-                   <width>300</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                 <property name="text">
-                  <string>https://www.crystallography.net/cod/cgi-bin/cif-deposit.pl</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="1" column="0" colspan="4">
-             <widget class="QGroupBox" name="groupBox_5">
-              <property name="title">
-               <string>Report Options</string>
-              </property>
-              <layout class="QFormLayout" name="formLayout_5">
-               <item row="5" column="0">
-                <widget class="Line" name="line_3">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="0">
-                <layout class="QVBoxLayout" name="verticalLayout_35">
-                 <item>
-                  <widget class="QCheckBox" name="ReportTextCheckBox">
-                   <property name="text">
-                    <string>No report text in structure report</string>
+                 <widget class="QWidget" name="PropertiesSelectPage">
+                  <layout class="QVBoxLayout" name="verticalLayout_20">
+                   <property name="leftMargin">
+                    <number>0</number>
                    </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QCheckBox" name="HAtomsCheckBox">
-                   <property name="text">
-                    <string>No bonds and angles to hydrogen atoms</string>
+                   <property name="topMargin">
+                    <number>3</number>
                    </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item row="4" column="0" colspan="2">
-                <widget class="Line" name="line_4">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="1">
-                <layout class="QVBoxLayout" name="verticalLayout_36">
-                 <property name="leftMargin">
-                  <number>12</number>
-                 </property>
-                 <item>
-                  <widget class="QCheckBox" name="ADPTableCheckBox">
-                   <property name="text">
-                    <string>Add ADP table</string>
+                   <property name="rightMargin">
+                    <number>0</number>
                    </property>
-                   <property name="checked">
-                    <bool>true</bool>
+                   <property name="bottomMargin">
+                    <number>3</number>
                    </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <spacer name="verticalSpacer_8">
-                   <property name="orientation">
-                    <enum>Qt::Vertical</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>20</width>
-                     <height>40</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                </layout>
-               </item>
-               <item row="3" column="0" colspan="2">
-                <layout class="QHBoxLayout" name="horizontalLayout_6">
-                 <property name="topMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="rightMargin">
-                  <number>0</number>
-                 </property>
-                 <item>
-                  <widget class="QLabel" name="PictureWidthLabel">
-                   <property name="text">
-                    <string>Picture width [cm]</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QDoubleSpinBox" name="PictureWidthDoubleSpinBox">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="minimumSize">
-                    <size>
-                     <width>80</width>
-                     <height>0</height>
-                    </size>
-                   </property>
-                   <property name="value">
-                    <double>7.000000000000000</double>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <spacer name="horizontalSpacer_20">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                 <item>
-                  <spacer name="horizontalSpacer_18">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                </layout>
-               </item>
-               <item row="6" column="0" colspan="2">
-                <widget class="QGroupBox" name="groupBox_6">
-                 <property name="title">
-                  <string>Report Templates</string>
-                 </property>
-                 <layout class="QGridLayout" name="gridLayout_13">
-                  <property name="leftMargin">
-                   <number>6</number>
-                  </property>
-                  <property name="topMargin">
-                   <number>0</number>
-                  </property>
-                  <property name="rightMargin">
-                   <number>6</number>
-                  </property>
-                  <property name="bottomMargin">
-                   <number>6</number>
-                  </property>
-                  <item row="2" column="0">
-                   <widget class="QPushButton" name="AddNewTemplPushButton">
-                    <property name="text">
-                     <string>Add New Template</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="2" column="1">
-                   <widget class="QPushButton" name="RemoveTemplPushButton">
-                    <property name="text">
-                     <string>Remove Selected</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="0" colspan="3">
-                   <layout class="QVBoxLayout" name="verticalLayout_2">
-                    <property name="topMargin">
-                     <number>0</number>
-                    </property>
-                    <item>
-                     <widget class="QListWidget" name="TemplatesListWidget">
-                      <property name="maximumSize">
-                       <size>
-                        <width>16777215</width>
-                        <height>120</height>
-                       </size>
-                      </property>
-                      <property name="font">
-                       <font>
-                        <pointsize>10</pointsize>
-                        <weight>50</weight>
-                        <bold>false</bold>
-                       </font>
-                      </property>
-                      <property name="selectionMode">
-                       <enum>QAbstractItemView::NoSelection</enum>
-                      </property>
-                      <property name="selectionRectVisible">
-                       <bool>false</bool>
-                      </property>
-                      <item>
+                   <item>
+                    <widget class="QListWidget" name="PropertiesTemplatesListWidget">
+                     <property name="toolTip">
+                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A list of common properties like &lt;/p&gt;&lt;p&gt;_exptl_crystal_colour: yellow, red, blue, ...&lt;/p&gt;&lt;p&gt;Lists defined here will appear as dropdown menus in the main Table.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                     </property>
+                     <property name="selectionMode">
+                      <enum>QAbstractItemView::SingleSelection</enum>
+                     </property>
+                     <property name="selectionBehavior">
+                      <enum>QAbstractItemView::SelectRows</enum>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_Buttons2">
+                     <item>
+                      <widget class="QPushButton" name="EditPropertyTemplateButton">
                        <property name="text">
-                        <string>Use FinalCif default template</string>
+                        <string>Edit Template</string>
                        </property>
-                       <property name="font">
-                        <font>
-                         <italic>true</italic>
-                        </font>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QPushButton" name="NewPropertyTemplateButton">
+                       <property name="text">
+                        <string>New Template</string>
                        </property>
-                       <property name="checkState">
-                        <enum>Checked</enum>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QPushButton" name="ImportPropertyTemplateButton">
+                       <property name="text">
+                        <string>Import</string>
                        </property>
-                      </item>
-                     </widget>
-                    </item>
-                   </layout>
-                  </item>
-                  <item row="2" column="2">
-                   <spacer name="horizontalSpacer_13">
-                    <property name="orientation">
-                     <enum>Qt::Horizontal</enum>
-                    </property>
-                    <property name="sizeHint" stdset="0">
-                     <size>
-                      <width>40</width>
-                      <height>20</height>
-                     </size>
-                    </property>
-                   </spacer>
-                  </item>
-                  <item row="3" column="0" colspan="3">
-                   <widget class="QLabel" name="label">
-                    <property name="text">
-                     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Get more templates here:  &lt;a href=&quot;https://github.com/dkratzert/FinalCif&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0068da;&quot;&gt;https://github.com/dkratzert/FinalCif&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                    </property>
-                    <property name="textFormat">
-                     <enum>Qt::RichText</enum>
-                    </property>
-                    <property name="openExternalLinks">
-                     <bool>true</bool>
-                    </property>
-                    <property name="textInteractionFlags">
-                     <set>Qt::TextBrowserInteraction</set>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                  </layout>
+                 </widget>
+                 <widget class="QWidget" name="PropertiesEditPage">
+                  <layout class="QVBoxLayout" name="verticalLayout_22">
+                   <property name="leftMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>3</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="bottomMargin">
+                    <number>3</number>
+                   </property>
+                   <item>
+                    <layout class="QVBoxLayout" name="KeywordVerticalLayout">
+                     <item>
+                      <widget class="QLabel" name="cifKeywordLB">
+                       <property name="text">
+                        <string>CIF keyword:</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QLineEdit" name="cifKeywordLineEdit"/>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <widget class="MyPropTableWidget" name="PropertiesEditTableWidget">
+                     <property name="autoScroll">
+                      <bool>false</bool>
+                     </property>
+                     <property name="editTriggers">
+                      <set>QAbstractItemView::AllEditTriggers</set>
+                     </property>
+                     <property name="selectionMode">
+                      <enum>QAbstractItemView::SingleSelection</enum>
+                     </property>
+                     <property name="selectionBehavior">
+                      <enum>QAbstractItemView::SelectRows</enum>
+                     </property>
+                     <property name="verticalScrollMode">
+                      <enum>QAbstractItemView::ScrollPerPixel</enum>
+                     </property>
+                     <property name="horizontalScrollMode">
+                      <enum>QAbstractItemView::ScrollPerPixel</enum>
+                     </property>
+                     <property name="rowCount">
+                      <number>1</number>
+                     </property>
+                     <attribute name="horizontalHeaderVisible">
+                      <bool>false</bool>
+                     </attribute>
+                     <attribute name="horizontalHeaderMinimumSectionSize">
+                      <number>90</number>
+                     </attribute>
+                     <attribute name="horizontalHeaderDefaultSectionSize">
+                      <number>170</number>
+                     </attribute>
+                     <attribute name="horizontalHeaderStretchLastSection">
+                      <bool>true</bool>
+                     </attribute>
+                     <attribute name="verticalHeaderVisible">
+                      <bool>false</bool>
+                     </attribute>
+                     <attribute name="verticalHeaderDefaultSectionSize">
+                      <number>30</number>
+                     </attribute>
+                     <row/>
+                     <column>
+                      <property name="text">
+                       <string/>
+                      </property>
+                     </column>
+                    </widget>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout">
+                     <item>
+                      <widget class="QPushButton" name="DeletePropertiesButton">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                         <horstretch>1</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="text">
+                        <string>Delete Template</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QPushButton" name="SavePropertiesButton">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                         <horstretch>1</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="text">
+                        <string>Save</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QPushButton" name="CancelPropertiesButton">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                         <horstretch>1</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="text">
+                        <string>Cancel</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QPushButton" name="ExportPropertyButton">
+                       <property name="text">
+                        <string>Export</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                  </layout>
+                 </widget>
                 </widget>
                </item>
 
@@ -2841,12 +2456,12 @@ The data source will be ignored until next program restart.</string>
                  <widget class="QTabWidget" name="authorEditTabWidget">
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                    <horstretch>40</horstretch>
+                    <horstretch>45</horstretch>
                     <verstretch>0</verstretch>
                    </sizepolicy>
                   </property>
                   <property name="currentIndex">
-                   <number>0</number>
+                   <number>1</number>
                   </property>
                   <widget class="QWidget" name="page_publication">
                    <attribute name="title">
@@ -2994,12 +2609,6 @@ Contact authors should always also appear as regular authors.</string>
                      <layout class="QVBoxLayout" name="verticalLayout_32">
                       <item alignment="Qt::AlignRight">
                        <widget class="QPushButton" name="SaveAuthorLoopToTemplateButton">
-                        <property name="sizePolicy">
-                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                          <horstretch>0</horstretch>
-                          <verstretch>0</verstretch>
-                         </sizepolicy>
-                        </property>
                         <property name="text">
                          <string>Save Author as Template</string>
                         </property>
@@ -3153,12 +2762,6 @@ Contact authors should always also appear as regular authors.</string>
                      <layout class="QVBoxLayout" name="verticalLayout_39">
                       <item alignment="Qt::AlignRight">
                        <widget class="QPushButton" name="SaveAuthorLoopToTemplateButton_cif">
-                        <property name="sizePolicy">
-                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                          <horstretch>0</horstretch>
-                          <verstretch>0</verstretch>
-                         </sizepolicy>
-                        </property>
                         <property name="text">
                          <string>Save Author as Template</string>
                         </property>
@@ -3213,7 +2816,7 @@ Contact authors should always also appear as regular authors.</string>
                  <widget class="QFrame" name="frame_2">
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                    <horstretch>60</horstretch>
+                    <horstretch>55</horstretch>
                     <verstretch>0</verstretch>
                    </sizepolicy>
                   </property>
@@ -3337,7 +2940,7 @@ Contact authors should always also appear as regular authors.</string>
                </sizepolicy>
               </property>
               <property name="currentIndex">
-               <number>1</number>
+               <number>2</number>
               </property>
               <property name="documentMode">
                <bool>false</bool>
@@ -3406,7 +3009,7 @@ Contact authors should always also appear as regular authors.</string>
                    <enum>QTabWidget::South</enum>
                   </property>
                   <property name="currentIndex">
-                   <number>0</number>
+                   <number>1</number>
                   </property>
                   <property name="movable">
                    <bool>false</bool>
@@ -3920,7 +3523,7 @@ Contact authors should always also appear as regular authors.</string>
                  <number>1</number>
                 </property>
                 <property name="currentIndex">
-                 <number>0</number>
+                 <number>3</number>
                 </property>
                 <widget class="QWidget" name="page_personal">
                  <layout class="QVBoxLayout" name="verticalLayout_30">
@@ -4281,11 +3884,6 @@ please add a publication author:</string>
                   </item>
                   <item>
                    <widget class="QTextBrowser" name="depositOutputTextBrowser">
-                    <property name="font">
-                     <font>
-                      <pointsize>12</pointsize>
-                     </font>
-                    </property>
                     <property name="horizontalScrollBarPolicy">
                      <enum>Qt::ScrollBarAsNeeded</enum>
                     </property>
@@ -4466,6 +4064,214 @@ please add a publication author:</string>
           </widget>
          </widget>
         </item>
+        <item row="0" column="1">
+         <widget class="QComboBox" name="datanameComboBox">
+          <property name="editable">
+           <bool>true</bool>
+          </property>
+          <property name="maxVisibleItems">
+           <number>20</number>
+          </property>
+          <property name="insertPolicy">
+           <enum>QComboBox::InsertAtCurrent</enum>
+          </property>
+          <property name="sizeAdjustPolicy">
+           <enum>QComboBox::AdjustToContents</enum>
+          </property>
+          <property name="minimumContentsLength">
+           <number>20</number>
+          </property>
+          <property name="frame">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="8">
+         <widget class="QTextEdit" name="CCDCNumLineEdit">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>24</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>24</height>
+           </size>
+          </property>
+          <property name="cursor" stdset="0">
+           <cursorShape>IBeamCursor</cursorShape>
+          </property>
+          <property name="verticalScrollBarPolicy">
+           <enum>Qt::ScrollBarAlwaysOff</enum>
+          </property>
+          <property name="horizontalScrollBarPolicy">
+           <enum>Qt::ScrollBarAlwaysOff</enum>
+          </property>
+          <property name="sizeAdjustPolicy">
+           <enum>QAbstractScrollArea::AdjustToContents</enum>
+          </property>
+          <property name="tabChangesFocus">
+           <bool>true</bool>
+          </property>
+          <property name="lineWrapMode">
+           <enum>QTextEdit::NoWrap</enum>
+          </property>
+          <property name="readOnly">
+           <bool>false</bool>
+          </property>
+          <property name="acceptRichText">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="11">
+         <widget class="QTextEdit" name="SumFormMainLineEdit">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>24</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>24</height>
+           </size>
+          </property>
+          <property name="cursor" stdset="0">
+           <cursorShape>IBeamCursor</cursorShape>
+          </property>
+          <property name="inputMethodHints">
+           <set>Qt::ImhNone</set>
+          </property>
+          <property name="verticalScrollBarPolicy">
+           <enum>Qt::ScrollBarAlwaysOff</enum>
+          </property>
+          <property name="horizontalScrollBarPolicy">
+           <enum>Qt::ScrollBarAlwaysOff</enum>
+          </property>
+          <property name="sizeAdjustPolicy">
+           <enum>QAbstractScrollArea::AdjustToContents</enum>
+          </property>
+          <property name="tabChangesFocus">
+           <bool>true</bool>
+          </property>
+          <property name="undoRedoEnabled">
+           <bool>false</bool>
+          </property>
+          <property name="lineWrapMode">
+           <enum>QTextEdit::NoWrap</enum>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="datanameLabel">
+          <property name="text">
+           <string>Data Name</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="7">
+         <widget class="QLabel" name="CCDCNumLabel">
+          <property name="text">
+           <string>CCDC Number</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="10">
+         <widget class="QLabel" name="SumFormMainLabel">
+          <property name="text">
+           <string>Sum Formula</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="2">
+         <widget class="QPushButton" name="appendCifPushButton">
+          <property name="text">
+           <string>Append CIF</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="3">
+         <spacer name="horizontalSpacer_11">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Fixed</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>10</width>
+            <height>0</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="0" column="6">
+         <spacer name="horizontalSpacer_12">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Fixed</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>10</width>
+            <height>0</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="0" column="5">
+         <widget class="QTextEdit" name="Spacegroup_top_LineEdit">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>24</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>24</height>
+           </size>
+          </property>
+          <property name="cursor" stdset="0">
+           <cursorShape>IBeamCursor</cursorShape>
+          </property>
+          <property name="inputMethodHints">
+           <set>Qt::ImhNone</set>
+          </property>
+          <property name="verticalScrollBarPolicy">
+           <enum>Qt::ScrollBarAlwaysOff</enum>
+          </property>
+          <property name="horizontalScrollBarPolicy">
+           <enum>Qt::ScrollBarAlwaysOff</enum>
+          </property>
+          <property name="sizeAdjustPolicy">
+           <enum>QAbstractScrollArea::AdjustToContents</enum>
+          </property>
+          <property name="tabChangesFocus">
+           <bool>true</bool>
+          </property>
+          <property name="lineWrapMode">
+           <enum>QTextEdit::NoWrap</enum>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+          <property name="textInteractionFlags">
+           <set>Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+          </property>
+         </widget>
+        </item>
        </layout>
       </widget>
      </widget>
@@ -4518,7 +4324,6 @@ please add a publication author:</string>
   <tabstop>SaveEquipmentButton</tabstop>
   <tabstop>CancelEquipmentButton</tabstop>
   <tabstop>ExportEquipmentButton</tabstop>
-  <tabstop>ImportCifPushButton</tabstop>
   <tabstop>EditPropertyTemplateButton</tabstop>
   <tabstop>NewPropertyTemplateButton</tabstop>
   <tabstop>ImportPropertyTemplateButton</tabstop>
@@ -4568,9 +4373,6 @@ please add a publication author:</string>
   <tabstop>BackFromOptionspPushButton</tabstop>
   <tabstop>CheckCIFServerURLTextedit</tabstop>
   <tabstop>PictureWidthDoubleSpinBox</tabstop>
-  <tabstop>AddNewTemplPushButton</tabstop>
-  <tabstop>RemoveTemplPushButton</tabstop>
-  <tabstop>TemplatesListWidget</tabstop>
   <tabstop>LoopsTabWidget</tabstop>
   <tabstop>revertLoopsPushButton</tabstop>
   <tabstop>BackFromLoopsPushButton</tabstop>
@@ -4615,7 +4417,6 @@ please add a publication author:</string>
   <tabstop>ImportAllTemplatesPushButton</tabstop>
   <tabstop>ReportTextCheckBox</tabstop>
   <tabstop>HAtomsCheckBox</tabstop>
-  <tabstop>ADPTableCheckBox</tabstop>
   <tabstop>CODURLTextedit</tabstop>
   <tabstop>trackChangesCifCheckBox</tabstop>
   <tabstop>authorEditTabWidget</tabstop>

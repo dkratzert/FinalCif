@@ -53,9 +53,8 @@ from finalcif.report.templated_report import TemplatedReport
 from finalcif.template.templates import ReportTemplates
 from finalcif.tools.download import MyDownloader, start_worker
 from finalcif.tools.dsrmath import my_isnumeric
-from finalcif.tools.misc import next_path, do_not_import_keys, celltxt, to_float, \
-    combobox_fields, \
-    do_not_import_from_stoe_cfx, cif_to_header_label, grouper, is_database_number, file_age_in_days, open_file, \
+from finalcif.tools.misc import next_path, do_not_import_keys, celltxt, to_float, do_not_import_from_stoe_cfx, \
+    cif_to_header_label, grouper, is_database_number, file_age_in_days, open_file, \
     strip_finalcif_of_name
 from finalcif.tools.options import Options
 from finalcif.tools.platon import Platon
@@ -131,8 +130,10 @@ class AppWindow(QMainWindow):
         self.ui.page_textTemplate.layout().addWidget(self.textedit)
         #
         self.connect_signals_and_slots()
-        self.make_button_icons()
+        with suppress(Exception):
+            self.make_button_icons()
         self.format_report_button()
+        self.set_font_sizes()
 
     def set_initial_button_states(self) -> None:
         self.ui.appendCifPushButton.setDisabled(True)
@@ -179,6 +180,23 @@ class AppWindow(QMainWindow):
         else:
             self.ui.CODpushButton.setEnabled(True)
 
+    def set_font_sizes(self):
+        large_font = QtGui.QFont()
+        ps = large_font.pointSize()
+        large_font.setPointSize(int(ps + ps * 0.38))
+        mid_font = QtGui.QFont()
+        ps = mid_font.pointSize()
+        mid_font.setPointSize(int(ps + ps * 0.3))
+        if sys.platform.startswith('win'):
+            self.ui.datanameComboBox.setFont(large_font)
+            self.ui.Spacegroup_top_LineEdit.setFont(large_font)
+            self.ui.CCDCNumLineEdit.setFont(large_font)
+            self.ui.SumFormMainLineEdit.setFont(large_font)
+            self.ui.EquipmentTemplatesListWidget.setFont(mid_font)
+            self.ui.docxTemplatesListWidget.setFont(mid_font)
+            self.ui.PropertiesTemplatesListWidget.setFont(mid_font)
+            self.ui.depositOutputTextBrowser.setFont(mid_font)
+
     def format_report_button(self) -> None:
         if self.report_without_template():
             self.ui.SaveFullReportButton.setText('Make Report')
@@ -200,15 +218,34 @@ class AppWindow(QMainWindow):
         self.ui.LoopsPushButton.setIcon(qta.icon('mdi.table'))
         self.ui.CheckcifHTMLOnlineButton.setIcon(qta.icon('mdi.comment-check-outline'))
         self.ui.CheckcifPDFOnlineButton.setIcon(qta.icon('mdi.comment-check'))
-        self.ui.SaveFullReportButton.setIcon(qta.icon('mdi.file-table-outline'))
-        self.ui.ExploreDirButton.setIcon(qta.icon('ph.folder-open'))
-        self.ui.SaveCifButton.setIcon(qta.icon('ri.save-3-line'))
-        self.ui.SelectCif_PushButton.setIcon(qta.icon('ri.file-text-line', options=[{'color': 'darkgreen'}]))
-        self.ui.AuthorEditPushButton.setIcon(qta.icon('ph.users-three-bold'))
-        self.ui.SourcesPushButton.setIcon(qta.icon('ph.list-bullets-bold'))
-        self.ui.OptionsPushButton.setIcon(qta.icon('ri.settings-5-line'))
-        self.ui.ShredCifButton.setIcon(qta.icon('ph.files-bold'))
-        self.ui.DetailsPushButton.setIcon(qta.icon('ph.bird-bold'))
+        with suppress(Exception):
+            self.ui.SaveFullReportButton.setIcon(qta.icon('mdi.file-table-outline'))
+        try:
+            self.ui.ExploreDirButton.setIcon(qta.icon('ph.folder-open'))
+        except Exception:
+            self.ui.ExploreDirButton.setIcon(qta.icon('mdi.folder-open-outline'))
+        self.ui.SaveCifButton.setIcon(qta.icon('fa5.save'))
+        self.ui.SelectCif_PushButton.setIcon(qta.icon('fa.file-text-o', options=[{'color': 'darkgreen'}]))
+        try:
+            self.ui.AuthorEditPushButton.setIcon(qta.icon('ph.users-three-bold'))
+        except Exception:
+            self.ui.AuthorEditPushButton.setIcon(qta.icon('fa5s.users'))
+        try:
+            self.ui.SourcesPushButton.setIcon(qta.icon('ph.list-bullets-bold'))
+        except Exception:
+            self.ui.SourcesPushButton.setIcon(qta.icon('fa5s.list-ul'))
+        try:
+            self.ui.OptionsPushButton.setIcon(qta.icon('ph.gear'))
+        except Exception:
+            self.ui.OptionsPushButton.setIcon(qta.icon('fa.gear'))
+        try:
+            self.ui.ShredCifButton.setIcon(qta.icon('ph.files-bold'))
+        except Exception:
+            self.ui.ShredCifButton.setIcon(qta.icon('fa.files-o'))
+        try:
+            self.ui.DetailsPushButton.setIcon(qta.icon('ph.bird-bold'))
+        except Exception:
+            self.ui.DetailsPushButton.setIcon(qta.icon('fa5s.kiwi-bird'))
         self.ui.NewEquipmentTemplateButton.setIcon(qta.icon('mdi.playlist-plus'))
         self.ui.EditEquipmentTemplateButton.setIcon(qta.icon('mdi.playlist-edit'))
         self.ui.DeleteEquipmentButton.setIcon(qta.icon('mdi.playlist-minus'))
@@ -223,7 +260,10 @@ class AppWindow(QMainWindow):
         self.ui.SavePropertiesButton.setIcon(qta.icon('mdi.content-save-outline'))
         self.ui.CancelPropertiesButton.setIcon(qta.icon('mdi.cancel'))
         self.ui.ExportPropertyButton.setIcon(qta.icon('mdi.export'))
-        self.ui.CCDCpushButton.setIcon(qta.icon('ph.upload-simple-bold'))
+        try:
+            self.ui.CCDCpushButton.setIcon(qta.icon('ph.upload-simple-bold'))
+        except Exception:
+            self.ui.CCDCpushButton.setIcon(qta.icon('fa5s.cloud-upload-alt'))
         self.ui.CODpushButton.setIcon(qta.icon('mdi.upload'))
         self.ui.SavePushButton.setIcon(qta.icon('mdi.content-save'))
         self.ui.revertLoopsPushButton.setIcon(qta.icon('mdi.backup-restore'))
@@ -236,15 +276,25 @@ class AppWindow(QMainWindow):
         self.ui.BackFromLoopsPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
         self.ui.BackFromPlatonPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
         self.textedit.ui.cancelTextPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
-        self.textedit.ui.applyTextPushButton.setIcon(qta.icon('ph.check-bold'))
+        try:
+            self.textedit.ui.applyTextPushButton.setIcon(qta.icon('ph.check-bold'))
+        except Exception:
+            self.textedit.ui.applyTextPushButton.setIcon(qta.icon('fa.check'))
         self.textedit.ui.exportTextPushButton.setIcon(qta.icon('mdi.export'))
         self.textedit.ui.savePushButton.setIcon(qta.icon('mdi.content-save'))
         self.textedit.ui.deletePushButton.setIcon(qta.icon('mdi.playlist-minus'))
         self.textedit.ui.importPushButton.setIcon(qta.icon('mdi.import'))
         #
-        self.ui.SaveAuthorLoopToTemplateButton.setIcon(qta.icon('mdi.badge-account-outline'))
-        self.ui.AddThisAuthorToLoopPushButton.setIcon(qta.icon('mdi.folder-table-outline'))
-        self.ui.DeleteLoopAuthorTemplateButton.setIcon(qta.icon('mdi.delete-forever-outline'))
+        try:
+            self.ui.SaveAuthorLoopToTemplateButton.setIcon(qta.icon('mdi.badge-account-outline'))
+        except Exception:
+            self.ui.SaveAuthorLoopToTemplateButton.setIcon(qta.icon('fa.id-badge'))
+        try:
+            self.ui.AddThisAuthorToLoopPushButton.setIcon(qta.icon('mdi.folder-table-outline'))
+        except Exception:
+            self.ui.AddThisAuthorToLoopPushButton.setIcon(qta.icon('mdi.file-table-outline'))
+        with suppress(Exception):
+            self.ui.DeleteLoopAuthorTemplateButton.setIcon(qta.icon('mdi.delete-forever-outline'))
 
     def connect_signals_and_slots(self) -> None:
         """
@@ -507,10 +557,13 @@ class AppWindow(QMainWindow):
         main table. And scroll to changed row.
         """
         text = self.textedit.ui.plainTextEdit.toPlainText()
-        TextEditItem._num = 1
-        self.ui.cif_main_table.setText(key=self.textedit.cif_key, column =Column.EDIT, txt=text)
-        self.ui.MainStackedWidget.got_to_main_page()
-        self.textedit.clear_fields()
+        if text:
+            TextEditItem._num = 1
+            self.ui.cif_main_table.setText(key=self.textedit.cif_key, column=Column.EDIT, txt=text)
+            self.ui.MainStackedWidget.got_to_main_page()
+            self.textedit.clear_fields()
+        else:
+            self.status_bar.show_message('No combined text to apply.')
 
     def toggle_hkl_option(self, iucr_is_checked: bool) -> None:
         if iucr_is_checked:
@@ -535,10 +588,10 @@ class AppWindow(QMainWindow):
                 r.close()
                 self.load_cif_file(Path(filename))
             else:
-                #self.ui.SelectCif_LineEdit.setText('')
+                # self.ui.SelectCif_LineEdit.setText('')
                 self.status_bar.show_message(f'No COD entry for {input_txt} found.')
         else:
-            self.status_bar.show_message(f'Not a valid COD number. It must be seven digits.')
+            self.status_bar.show_message('Not a valid COD number. It must be seven digits.')
 
     @property
     def current_block(self) -> int:
@@ -563,6 +616,12 @@ class AppWindow(QMainWindow):
         with suppress(AttributeError):
             self._savesize()
         #self.ui.cif_main_table.resizeRowsToContents()
+        main_width = self.ui.Mainwidget.width()
+        left_frame = main_width * 0.22
+        if left_frame <= 300:
+            left_frame = 300
+        self.ui.LeftFrame.setMinimumWidth(int(left_frame))
+        QtCore.QTimer.singleShot(0, self.ui.cif_main_table.resizeRowsToContents)
 
     def moveEvent(self, a0: QtGui.QMoveEvent) -> None:
         """Is called when the main window moves."""
@@ -585,7 +644,7 @@ class AppWindow(QMainWindow):
         QDesktopServices.openUrl(QtCore.QUrl('https://dkratzert.de/files/finalcif/docs/'))
 
     def do_shred_cif(self):
-        shred = ShredCIF(cif=self.cif, ui=self.ui)
+        shred = ShredCIF(cif=self.cif, statusbar=self.status_bar)
         shred.shred_cif()
         if not self.running_inside_unit_test:
             self.explore_current_dir()
@@ -625,7 +684,7 @@ class AppWindow(QMainWindow):
             print('Skipping version.txt download because NO_NETWORK variable is set.')
             return
         mainurl = "https://dkratzert.de/files/finalcif/version.txt"
-        self.upd = MyDownloader(mainurl)
+        self.upd = MyDownloader(mainurl, parent=None)
         version_thread = QThread()
         self.threadpool.append(version_thread)
         start_worker(self.upd, version_thread, onload=self.is_update_necessary)
@@ -661,9 +720,9 @@ class AppWindow(QMainWindow):
                     continue
 
                 self.cif.block.set_pair(cifkey, '?')
-
                 self.ui.cif_main_table.setText(key=cifkey, column=COL_CIF, txt='?')
                 self.ui.cif_main_table.setText(key=cifkey, column=COL_DATA, txt='?')"""
+
 
     def show_sources(self) -> None:
         """
@@ -705,8 +764,8 @@ class AppWindow(QMainWindow):
             print('Skipping check.def download because NO_NETWORK variable is set.')
             return
         url = 'http://www.platonsoft.nl/xraysoft/unix/platon/check.def'
-        self.updc = MyDownloader(url)
-        checkdef_thread = QThread()
+        self.updc = MyDownloader(url, parent=None)
+        checkdef_thread = QThread(parent=self)
         self.threadpool.append(checkdef_thread)
         start_worker(self.updc, checkdef_thread, onload=self._save_checkdef)
 
@@ -1075,12 +1134,18 @@ class AppWindow(QMainWindow):
         with suppress(Exception):
             self.report_picture_path = Path(filename)
         if self.report_picture_path.exists() and self.report_picture_path.is_file():
+            with suppress(Exception):
+                self.set_picture_button_icon()
+
+    def set_picture_button_icon(self):
+        try:
             self.ui.ReportPicPushButton.setIcon(qta.icon('ph.image-bold'))
-            # self.ui.ReportPicPushButton.setText('')
+        except Exception:
+            self.ui.ReportPicPushButton.setIcon(qta.icon('fa.image'))
 
     def get_checked_templates_list_text(self) -> str:
-        for index in range(self.ui.TemplatesListWidget.count()):
-            item = self.ui.TemplatesListWidget.item(index)
+        for index in range(self.ui.docxTemplatesListWidget.count()):
+            item = self.ui.docxTemplatesListWidget.item(index)
             if item.checkState() == Qt.Checked:
                 return item.text()
 
@@ -1138,8 +1203,8 @@ class AppWindow(QMainWindow):
 
     def report_without_template(self) -> bool:
         """Check whether the report is generated from a template or hard-coded"""
-        return self.ui.TemplatesListWidget.item(0).checkState() == Qt.CheckState.Checked \
-            or not self.ui.TemplatesListWidget.currentItem()
+        return self.ui.docxTemplatesListWidget.item(0).checkState() == Qt.CheckState.Checked \
+            or not self.ui.docxTemplatesListWidget.currentItem()
 
     def zip_report(self, report_filename: Path) -> None:
         zipfile = self.cif.finalcif_file.with_suffix('.zip')
@@ -1305,7 +1370,7 @@ class AppWindow(QMainWindow):
             if item.pair is not None:
                 key, value = item.pair
                 value = gemmi.cif.as_string(value).strip()
-                self.ui.cif_main_table.setText(key=key, column =Column.EDIT, color=None, txt=value)
+                self.ui.cif_main_table.setText(key=key, column=Column.EDIT, color=None, txt=value)
         for loop in changes.loops:
             self.cif.add_loop_to_cif(loop_tags=loop.tags, loop_values=loop.values)
         return True
@@ -1382,6 +1447,9 @@ class AppWindow(QMainWindow):
         Import all loops from the CifContainer imp_cif to the current block.
         """
         for loop in imp_cif.loops:
+            if self.ui.importOnlyNewDataCheckBox.isChecked() and self.cif.block.find(loop.tags):
+                # Import only new loops
+                continue
             new_loop = self.cif.block.init_loop('', loop.tags)
             for row in imp_cif.block.find(loop.tags):
                 new_loop.add_row(row)
@@ -1393,9 +1461,12 @@ class AppWindow(QMainWindow):
                 # leave out unit cell etc.:
                 if self.do_not_import_this_key(key, value, imp_cif):
                     continue
+                if self.ui.importOnlyNewDataCheckBox.isChecked() and self.cif[key]:
+                    # Import only new key/values
+                    continue
                 value = cif.as_string(value)
                 if key in self.ui.cif_main_table.vheaderitems:
-                    self.ui.cif_main_table.setText(key=key, column =Column.EDIT, txt=value, color=light_green)
+                    self.ui.cif_main_table.setText(key=key, column=Column.EDIT, txt=value, color=light_green)
                 else:
                     self.add_row(key, value)  # , column =Column.EDIT
 
@@ -1475,10 +1546,10 @@ class AppWindow(QMainWindow):
         self.check_cif_for_missing_values_before_really_open_it()
         try:
             self.fill_cif_table()
-        except UnicodeDecodeError as e:
+        except UnicodeDecodeError:
             nums = self.cif.get_line_numbers_of_bad_characters(Path(self.cif.doc.source))
             show_general_warning(window_title='Unable to open file',
-                                 warn_text=f'Invalid characters in file!',
+                                 warn_text='Invalid characters in file!',
                                  info_text=f'The file "{Path(self.cif.doc.source)}" has invalid '
                                            f'characters in line(s)'
                                            f' {", ".join([str(x + 1) for x in nums])}.'
@@ -1486,9 +1557,9 @@ class AppWindow(QMainWindow):
         except Exception as e:
             not_ok = e
             print(e)
-            if DEBUG:
-                raise
-            unable_to_open_message(Path(self.cif.filename), not_ok)
+            #if DEBUG:
+            raise
+            #unable_to_open_message(Path(self.cif.filename), not_ok)
         self.load_recent_cifs_list()
         if self.options.track_changes and load_changes:
             changes_exist = False
@@ -1552,7 +1623,7 @@ class AppWindow(QMainWindow):
             self.ui.Spacegroup_top_LineEdit.setText(self.cif.space_group)
 
     def set_shredcif_state(self) -> None:
-        if ShredCIF(cif=self.cif, ui=self.ui).cif_has_hkl_or_res_file():
+        if ShredCIF(cif=self.cif, statusbar=self.status_bar).cif_has_hkl_or_res_file():
             self.ui.ShredCifButton.setEnabled(True)
         else:
             self.ui.ShredCifButton.setDisabled(True)
@@ -1776,13 +1847,13 @@ class AppWindow(QMainWindow):
             try:
                 txt = str(self.sources[miss_key][0])
                 if row_num > self.complete_data_row:
-                    self.ui.cif_main_table.setText(key=miss_key, column =Column.DATA, txt=txt)
+                    self.ui.cif_main_table.setText(key=miss_key, column=Column.DATA, txt=txt)
                 else:
                     if txt and txt != '?':
-                        self.ui.cif_main_table.setText(key=miss_key, column =Column.DATA, txt=txt, color=light_green)
+                        self.ui.cif_main_table.setText(key=miss_key, column=Column.DATA, txt=txt, color=light_green)
                     else:
-                        self.ui.cif_main_table.setText(key=miss_key, column =Column.DATA, txt=txt, color=yellow)
-            except (KeyError, TypeError) as e:
+                        self.ui.cif_main_table.setText(key=miss_key, column=Column.DATA, txt=txt, color=yellow)
+            except (KeyError, TypeError):
                 # TypeError my originate from incomplete self.missing_data list!
                 # print(e, '##', miss_key)
                 pass
@@ -1797,10 +1868,6 @@ class AppWindow(QMainWindow):
             if vhead_key in combos_from_settings:
                 # First add self-made properties:
                 self.add_combobox(row_number, vhead_key)
-            elif vhead_key in combobox_fields:
-                # Then the pre-defined:
-                self.ui.cif_main_table.add_property_combobox(data=combobox_fields[vhead_key], row_num=row_number,
-                                                             key=vhead_key)
 
     def refresh_color_background_from_templates(self):
         for row_number in range(self.ui.cif_main_table.model().rowCount()):
@@ -1817,14 +1884,14 @@ class AppWindow(QMainWindow):
         vhead_key = self.ui.cif_main_table.model().headerData(row_number, QtCore.Qt.Vertical)
         return vhead_key
 
-    def add_combobox(self, num: int, vhead_key: str) -> None:
+    def add_combobox(self, row: int, vhead_key: str) -> None:
         """
-        :param num: row number
+        :param row: row number
         :param vhead_key: CIF keyword for combobox
         """
         properties_list = self.settings.load_property_values_by_key(vhead_key)
         if properties_list:
-            self.ui.cif_main_table.add_property_combobox(properties_list, num, vhead_key)
+            self.ui.cif_main_table.add_property_combobox(properties_list, row, vhead_key)
 
     def fill_cif_table(self) -> None:
         """
@@ -1841,7 +1908,6 @@ class AppWindow(QMainWindow):
             if key == '_audit_creation_method':
                 txt = 'FinalCif V{} by Daniel Kratzert, Freiburg {}, https://dkratzert.de/finalcif.html'
                 strval = txt.format(VERSION, datetime.now().year)
-
                 self.ui.cif_main_table.setText(key=key, column=COL_DATA, txt=strval)
                 QTimer.singleShot(200, self.ui.cif_main_table.resizeRowsToContents)"""
 
@@ -1953,10 +2019,10 @@ class AppWindow(QMainWindow):
             load_key = self.get_vrf_errortype(load_key)
             if load_key in self.settings.list_saved_items('text_templates'):
                 color = light_blue
-            self.ui.cif_main_table.setText(row=row_num, key=key, column =Column.CIF,
+            self.ui.cif_main_table.setText(row=row_num, key=key, column=Column.CIF,
                                            txt='?' if at_start else strval)
-            self.ui.cif_main_table.setText(row=row_num, key=key, column =Column.DATA, txt='')
-            self.ui.cif_main_table.setText(row=row_num, key=key, column =Column.EDIT, color=color,
+            self.ui.cif_main_table.setText(row=row_num, key=key, column=Column.DATA, txt='')
+            self.ui.cif_main_table.setText(row=row_num, key=key, column=Column.EDIT, color=color,
                                            txt=strval if at_start else '')
         head_item_key = MyTableWidgetItem(key)
         if key != "These below are already in:":

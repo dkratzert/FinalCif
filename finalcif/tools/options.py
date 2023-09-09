@@ -39,7 +39,7 @@ class Options:
         self.ui.MainStackedWidget.go_to_options_page()
 
     def _state_changed(self):
-        lw = self.ui.TemplatesListWidget
+        lw = self.ui.docxTemplatesListWidget
         self._options = {
             'report_text'            : not self.ui.ReportTextCheckBox.isChecked(),
             'report_adp'             : self.ui.ADPTableCheckBox.isChecked(),
@@ -58,52 +58,39 @@ class Options:
 
     @property
     def values(self):
-        # print('loading:', self._options, self.settings.load_options())
         return self.settings.load_options()
 
     def __getitem__(self, item):
         return self.settings.load_options()[item]
 
+    def _get_setting(self, setting: str, default: object):
+        with suppress(KeyError):
+            return self.settings.load_options()[setting]
+        return default
+
     @property
     def report_text(self) -> bool:
-        try:
-            return self.settings.load_options()['report_text']
-        except KeyError:
-            return True
+        return self._get_setting('report_text', True)
 
     @property
     def report_adp(self) -> bool:
-        with suppress(KeyError):
-            return self.settings.load_options()['report_adp']
-        return True
+        return self._get_setting('report_adp', True)
 
     @property
     def without_h(self) -> bool:
-        try:
-            return self.settings.load_options()['without_h']
-        except KeyError:
-            return False
+        return self._get_setting('without_h', False)
 
     @property
     def track_changes(self) -> bool:
-        try:
-            return self.settings.load_options()['track_changes']
-        except KeyError:
-            return False
+        return self._get_setting('track_changes', False)
 
     @property
     def current_template(self) -> int:
-        try:
-            return self.settings.load_options()['current_report_template']
-        except KeyError:
-            return 0
+        return self._get_setting('current_report_template', 0)
 
     @property
     def picture_width(self) -> float:
-        try:
-            width = self.settings.load_options()['picture_width']
-        except KeyError:
-            return 7.5
+        width = self._get_setting('picture_width', 7.5)
         if width < 0.001:
             # preventing invisible picture
             return 7.5

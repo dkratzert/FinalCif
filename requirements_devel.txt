@@ -3,7 +3,7 @@
 # ./make singlehtml
 
 # For development
-pyinstaller
+#pyinstaller
 sphinx
 sphinx-rtd-theme
 py

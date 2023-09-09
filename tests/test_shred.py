@@ -3,13 +3,14 @@ from pathlib import Path
 
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.tools.shred import ShredCIF
+from finalcif.tools.statusbar import StatusBar
 
 
 class TestShedCifWithData(unittest.TestCase):
 
     def setUp(self) -> None:
         self.cif = CifContainer(Path('test-data/p21c.cif'))
-        self.shred = ShredCIF(self.cif, ui=None)
+        self.shred = ShredCIF(self.cif, statusbar=StatusBar())
         self.outfile_hkl = self.cif.finalcif_file.with_suffix('.hkl')
         self.outfile_res = self.cif.finalcif_file.with_suffix('.res')
 
@@ -28,13 +29,16 @@ class TestShedCifWithData(unittest.TestCase):
         self.assertEqual(self.outfile_hkl.exists(), True)
         self.assertEqual('\nFinished writing data to p21c-finalcif.res and p21c-finalcif.hkl.',
                          self.shred._statusbar.current_message)
+        # Make sure the extracted hkl does start with a reflection and not a newline:
+        self.assertEqual('   1   0   0  323.11   10.61\n',
+                         self.outfile_hkl.read_text(encoding='latin1')[:29])
 
 
 class TestShedCifNoData(unittest.TestCase):
 
     def setUp(self) -> None:
         self.cif = CifContainer(Path('test-data/1000007.cif'))
-        self.shred = ShredCIF(self.cif, ui=None)
+        self.shred = ShredCIF(self.cif, statusbar=StatusBar())
         self.outfile_hkl = self.cif.finalcif_file.with_suffix('.hkl')
         self.outfile_res = self.cif.finalcif_file.with_suffix('.res')
 
@@ -60,7 +64,7 @@ class TestExport(unittest.TestCase):
         self.cif = CifContainer(Path('tests/examples/work/cu_BruecknerJK_153F40_0m.cif'))
         self.outfile_hkl = self.cif.finalcif_file.with_suffix('.hkl')
         self.outfile_res = self.cif.finalcif_file.with_suffix('.res')
-        self.shred = ShredCIF(self.cif, ui=None)
+        self.shred = ShredCIF(self.cif, statusbar=StatusBar())
         self.shred.shred_cif()
 
     def tearDown(self):
@@ -77,7 +81,4 @@ class TestExport(unittest.TestCase):
 
     def test_export_res(self):
         test_res_file = Path('tests/examples/work/test_res_file.txt')
-        self.assertEqual(test_res_file.read_text()#.lstrip()
-        ,
-                         self.outfile_res.read_text()#.lstrip()
-                         )
+        self.assertEqual(test_res_file.read_text(), self.outfile_res.read_text())

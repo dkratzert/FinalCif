@@ -220,13 +220,13 @@ class AuthorLoops():
             getattr(self.ui, f'EMailLineEdit{author_type}').setText(retranslate_delimiter(as_string(author.email)))
         if author.footnote and author.author_type == AuthorType.publ:
             # Audit authors have no footnote:
-            getattr(self.ui, f'FootNoteLineEdit').setText(retranslate_delimiter(as_string(author.footnote)))
+            getattr(self.ui, 'FootNoteLineEdit').setText(retranslate_delimiter(as_string(author.footnote)))
         if author.orcid and author.author_type == AuthorType.publ:
             # Audit authors have no ORCID:
-            getattr(self.ui, f'ORCIDLineEdit').setText(retranslate_delimiter(as_string(author.orcid)))
+            getattr(self.ui, 'ORCIDLineEdit').setText(retranslate_delimiter(as_string(author.orcid)))
         if author.iucr_id and author.author_type == AuthorType.publ:
             # Audit authors have no IUCrID:
-            getattr(self.ui, f'IUCRIDLineEdit').setText(retranslate_delimiter(as_string(author.iucr_id)))
+            getattr(self.ui, 'IUCRIDLineEdit').setText(retranslate_delimiter(as_string(author.iucr_id)))
         if author.phone:
             getattr(self.ui, f'PhoneLineEdit{author_type}').setText(retranslate_delimiter(as_string(author.phone)))
 

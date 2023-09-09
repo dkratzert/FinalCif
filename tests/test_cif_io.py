@@ -1,7 +1,9 @@
+import shutil
 import unittest
 from pathlib import Path
 
 from finalcif.cif.cif_file_io import CifContainer
+from finalcif.cif.text import quote
 
 
 class CifFileCRCTestCase(unittest.TestCase):
@@ -78,6 +80,23 @@ class CifFileTestCase(unittest.TestCase):
     def test_checksum_test_without_checksum(self):
         self.assertEqual(True, CifContainer('test-data/1000006.cif').test_res_checksum())
         self.assertEqual(True, CifContainer('test-data/1000006.cif').test_hkl_checksum())
+
+
+class TestQuotationMark(unittest.TestCase):
+    def setUp(self) -> None:
+        self.cif = CifContainer(Path('tests/examples/1979688.cif'))
+        shutil.copyfile(self.cif.fileobj, 'tests/test.cif')
+        self.cif2 = CifContainer('tests/test.cif')
+
+    def tearDown(self) -> None:
+        self.cif2.fileobj.unlink(missing_ok=True)
+
+    def test_insert_quotation_mark(self):
+        self.cif['_diffrn_detector'] = "Jesus' live"
+        self.assertEqual("Jesus' live", self.cif['_diffrn_detector'])
+        self.cif.save(self.cif2.fileobj)
+        self.cif2 = CifContainer(self.cif2.fileobj)
+        self.assertEqual("Jesus' live", self.cif['_diffrn_detector'])
 
 
 if __name__ == '__main__':

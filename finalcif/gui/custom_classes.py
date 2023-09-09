@@ -16,7 +16,7 @@ from finalcif.gui.plaintextedit import MyQPlainTextEdit
 
 white = QColor(255, 255, 255)
 light_green = QColor(217, 255, 201)
-light_blue = QColor(193, 217, 247)
+light_blue = QColor(220, 232, 247)
 blue = QColor(102, 150, 179)
 yellow = QColor(250, 247, 150)  # #faf796
 
@@ -37,8 +37,9 @@ class MyCifTable(QTableWidget, ItemTextMixin):
     new_key = QtCore.pyqtSignal(str)
 
     def __init__(self, parent: QWidget = None, *args, **kwargs):
-        self.parent = parent
         super().__init__(*args, **kwargs)
+        self.parent = parent
+        self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
         self.setParent(parent)
         self.installEventFilter(self)
         self.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)

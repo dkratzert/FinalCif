@@ -2,26 +2,25 @@ wheel
 altgraph
 certifi
 chardet
-future
-gemmi
+gemmi~=0.6
 html2text
 lxml
 pefile
 pybind11
-PyQt5==5.15.7
-PyQt5-sip==12.11.0
-PyQt5-stubs==5.15.6.0
-PyQtWebEngine==5.15.6
-python-docx==0.8.11
-pywin32-ctypes==0.2.0
+PyQt5~=5.15
+PyQt5-sip~=12.12
+PyQt5-stubs~=5.15
+PyQtWebEngine~=5.15
+python-docx~=0.8
 QtAwesome
 QtPy
 requests
-urllib3
+urllib3~=1.26
 docxtpl
 shelxfile
 crossrefapi
 numpy
+pyenchant
 
 # Upgrade gemmi to Git master:
 # pip install https://github.com/project-gemmi/gemmi/archive/master.zip --upgrade

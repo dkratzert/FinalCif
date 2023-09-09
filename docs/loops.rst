@@ -26,7 +26,7 @@ FinalCif has a special editor for Author related loops.
 The "Author Editor" tab contains an input mask to add author information for publication purpose as a cif loop.
 
 This is not to be confused with the "Crystallographer Details" in the "Equipment and Author Templates" section.
-There you add just a single audit_author_[...]
+With that, you just add a single \audit_author_[...] entry to the CIF.
 
 New authors can be saved as templates for future use. The templates can be exported/imported to/from a CIF file.
 

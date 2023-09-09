@@ -6,6 +6,7 @@ def fix_comment(pyfile: Path, uifile: Path):
     txt = pyfile.read_text()
     lines = txt.splitlines(keepends=True)
     lines[2] = f"# Form implementation generated from reading ui file '{uifile.name}'\n"
+    lines[4] = "# Created by: PyQt5 UI code generator"
     pyfile.write_text(data=''.join(lines))
 
 

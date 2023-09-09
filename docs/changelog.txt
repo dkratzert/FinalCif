@@ -1,5 +1,19 @@
 FinalCif recent changes
 -----------------------
+* v125 Fixed potential crash in p4p file reader. The distribution architecture of the application was changed so that
+       virus scanners should detect FinalCif as malicious software less often.
+* v124 Exchanged position of property templates and report options. Added all hard-coded properties to the
+       templates list which makes them easier to change. Updated documentation. And other small changes.
+* v123 Added checkbox to import only new items from a CIF.
+* v122 Fixed hkl and res file extraction. The hkl file had a newline at the start which made it invalid.
+* v121 Adds spell checking for US english in the larget-text template fields.
+* v120 The template for the description of the crystallization method needs again the complete sentence instead of
+       only the half sentence "from xx at y or similar". Small improvements were made in the report text wording.
+       Fields with dropdown menus can now also be used in combination with large text templates. Improved line wrapping
+       of longer text, so that space characters don't vanish anymore.
+       Other small improvements.
+* v119 Improved NospherA2 handling, but there is still more work to do. Fixed crash from discrepancy between
+       symmetry code of atoms and _space_group_symop_operation_xyz.
 * v118 Added search for CIF keys in the main table. Improved the key adding dialog. Improves COD download by typing
        the respective number in the file field a bit. Bonds and angles tables now consider publ flags for the report.
 * v117 Introduced an "Author Editor" button. Authors also go into global template backup now.
@@ -20,7 +34,7 @@ FinalCif recent changes
        Adds a formatted moiety formula to templated reports. Fixed path to report templates.
 * v107 New ADP table in report document. It is configurable in the options.
        More details about hydrogen atoms in report.
-       Refinment details (_refine_special_details) are added to the report document.
+       Refinement details (_refine_special_details) are added to the report document.
        Slightly improved handling of CIF with 'global', but better never use 'global'.
        Improved handling and warning about utf-8 characters in CIF files.
        Improved report text for different hydrogen atom refinement types.

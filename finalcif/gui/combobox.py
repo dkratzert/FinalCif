@@ -29,9 +29,9 @@ class MyComboBox(QComboBox):
         self.setContextMenuPolicy(Qt.ActionsContextMenu)
         self.addAction(self.actionDelete)
         self.actionDelete.triggered.connect(self._delete_row)
-        #action_template = QAction("Text Template", self)
-        #self.addAction(action_template)
-        #action_template.triggered.connect(self._on_create_template)
+        action_template = QAction("Text Template", self)
+        self.addAction(action_template)
+        action_template.triggered.connect(lambda: self.textTemplate.emit(self.row))
 
     def __str__(self):
         return self.currentText()
@@ -60,8 +60,8 @@ class MyComboBox(QComboBox):
         self.setFlags(self.flags() ^ Qt.ItemIsEditable)
 
     def setText(self, txt: str):
-        self.setEditText('\n'.join(wrap(txt, width=30)))
+        self.setEditText('\n'.join(wrap(txt, width=80)))
 
     def addItem(self, *__args):
-        text = '\n'.join(wrap(__args[0], width=60))
+        text = '\n'.join(wrap(__args[0], width=80))
         super().addItem(text, __args[1])

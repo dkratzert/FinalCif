@@ -123,7 +123,7 @@ class Equipment:
 
     def store_predefined_templates(self):
         equipment_list = self.settings.get_equipment_list() or []
-        for item in misc.predef_equipment_templ:
+        for item in misc.predefined_equipment_templates:
             if item['name'] not in equipment_list:
                 self.settings.save_settings_list('equipment', item['name'], item['items'])
 

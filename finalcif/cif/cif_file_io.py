@@ -48,14 +48,14 @@ class CifContainer():
             raise TypeError('The file parameter must be string or Path object.')
         self.current_block = ''
         # I do this in small steps instead of gemmi.cif.read_file() in order to
-        # leave out the check_for_missing_values. This was gemmi reads cif files
+        # leave out the check_for_missing_values. This way, gemmi reads cif files even
         # with missing values.
         if new_block:
             self.doc: Document = gemmi.cif.Document()
             self.doc.add_new_block(new_block)
         else:
             try:
-                self.doc = self.read_file(str(self.fileobj.resolve(strict=True)))
+                self.doc = self.read_file(self.fileobj)
             except Exception as e:
                 raise GemmiError(e)
         # Starting with first block, but can use others with subsequent self._onload():
@@ -154,19 +154,19 @@ class CifContainer():
             self['_diffrn_reflns_limit_l_min'] = str(limits.l_min)
             self['_diffrn_reflns_limit_l_max'] = str(limits.l_max)
 
-    def read_file(self, path: str) -> gemmi.cif.Document:
+    def read_file(self, path: Path) -> gemmi.cif.Document:
         """
         Reads a cif file and returns a gemmi document object.
         """
         doc = gemmi.cif.Document()
         # support for platon squeeze files:
-        if path.endswith('.sqf'):
-            txt = Path(path).read_text(encoding='ascii')
+        if path.suffix == '.sqf':
+            txt = path.read_text(encoding='ascii')
             txt = 'data_justrandomlkdsadflkmcn\n' + txt
             doc.parse_string(txt)
         else:
-            doc.source = path
-            doc.parse_file(path)
+            doc.source = str(path.resolve())
+            doc.parse_file(str(path.resolve()))
         return doc
 
     def read_string(self, cif_string: str) -> gemmi.cif.Document:
@@ -194,6 +194,9 @@ class CifContainer():
             return self.doc.as_string(style=gemmi.cif.Style.Indent35)
 
     def __getitem__(self, item: str) -> str:
+        """
+        This method returns an empty string when the item value is '?'
+        """
         if self.block.find_value(item):
             return as_string(self.block.find_value(item))
         else:
@@ -313,6 +316,8 @@ class CifContainer():
                 return self['_shelx_hkl_file']
             elif self['_iucr_refine_reflections_details']:
                 return self['_iucr_refine_reflections_details']
+            elif self['_xd_hkl_file']:
+                return self['_xd_hkl_file']
             else:
                 return ''
         except Exception as e:

@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import QWidget, QHBoxLayout, QCheckBox, QApplication, QPlai
     QListWidgetItem, QVBoxLayout, QLabel
 
 from finalcif.gui import text_templates_ui
+from finalcif.gui.spell_check_edit import SpellTextEdit
 
 
 # print('Compiling textedit ui ...')
@@ -28,7 +29,7 @@ class TextEditItem(QWidget):
         self.checkbox = QCheckBox()
         self.number_label = QLabel()
         self.vlayout.addWidget(self.number_label)
-        self.textfield = QPlainTextEdit(self)
+        self.textfield = SpellTextEdit(self)
         font = self.textfield.font()
         font.setPixelSize(12)
         self.textfield.setFont(font)

@@ -54,7 +54,7 @@ class ReferenceList():
         self.paragraph = paragraph
         self._references = list()
 
-    def append(self, ref: Union[List, Tuple]) -> None:
+    def append(self, ref: Union[List['ReferenceFormatter'], Tuple['ReferenceFormatter'], 'ReferenceFormatter']) -> None:
         """Adds a superscript list of reference numbers in brackets to the document."""
         if isinstance(ref, (list, tuple)):
             if not ref:
@@ -63,7 +63,7 @@ class ReferenceList():
         else:
             if ref not in self._references:
                 self._references.append(ref)
-            self.paragraph.add_run('[{}]'.format(self._references.index(ref) + 1)).font.superscript = True
+            self.paragraph.add_run(f'[{self._references.index(ref) + 1}]').font.superscript = True
         # better not here:
         # self.paragraph.add_run(' ')
 
@@ -104,7 +104,7 @@ class ReferenceList():
                 start = val
             # in a sequence and next value is not +1 -> squence ends with val:
             if start and nextval != val + 1:
-                folg.append('{}-{}'.format(start, val))
+                folg.append(f'{start}-{val}')
                 start = 0
                 continue
             # everything outside a sequence:
@@ -119,9 +119,12 @@ class ReferenceList():
             template = 'references'
         for num, ref in enumerate(self._references, 1):
             paragraph_reflist = document.add_paragraph('', template)
-            paragraph_reflist.add_run('[{}] \t'.format(str(num)))
+            paragraph_reflist.add_run(f'[{str(num)}] \t')
             ref.add_reference(paragraph_reflist)
             # paragraph_reflist.add_run('\n')
+
+    def __repr__(self):
+        return '\n'.join([f'[{num}] {x}' for num, x in enumerate(self._references)])
 
 
 class ReferenceFormatter():
@@ -290,6 +293,7 @@ class Nosphera2Reference(ReferenceFormatter):
         self.year = '2021'
         self.volume = '12'
         self.pages = '1675–1692'
+        self.title = 'Accurate crystal structures and chemical properties from NoSpherA2'
 
 
 class SAINTReference(ReferenceFormatter):
@@ -306,6 +310,22 @@ class SAINTReference(ReferenceFormatter):
         #    self.year = '2001'
         self.volume = version
         self.pages = 'Bruker AXS Inc., Madison, Wisconsin, USA'
+
+
+class XRedReference(ReferenceFormatter):
+    def __init__(self, name: str, version: str):
+        """
+        >>> XRedReference('X-RED', 'version')
+        Stoe & Cie, X-RED, version, Stoe & Cie, Darmstadt, Germany.
+        """
+        super().__init__()
+        self.authors = 'Stoe & Cie'
+        self.journal = name
+        # self.year = '2012'
+        # if '6.28' in self.year:
+        #    self.year = '2001'
+        self.volume = version
+        self.pages = 'Stoe & Cie, Darmstadt, Germany'
 
 
 class XDSReference(ReferenceFormatter):
@@ -532,14 +552,14 @@ class CrysalisProReference(ReferenceFormatter):
     Crysalispro, 1.171.40.68a, 2019, Rigaku OD.
     """
 
-    def __init__(self, version: str, year: str):
+    def __init__(self, version: str, year: str, pages: str = 'Rigaku OD'):
         super().__init__()
         self.authors = 'Crysalispro'
         self.journal = version
         self.year = year
-        self.pages = 'Rigaku OD'
+        self.pages = pages
 
 
 if __name__ == '__main__':
-    r = ReferenceList.get_sequence([1, 2, 3, 4])
+    r = ReferenceList.get_sequence([1, 2, 3, 6])
     print(r)
