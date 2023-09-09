@@ -58,6 +58,7 @@ from finalcif.tools.misc import next_path, do_not_import_keys, celltxt, to_float
     strip_finalcif_of_name
 from finalcif.tools.options import Options
 from finalcif.tools.platon import Platon
+from finalcif.tools.process import PlatonRunner
 from finalcif.tools.settings import FinalCifSettings
 from finalcif.tools.shred import ShredCIF
 from finalcif.tools.space_groups import SpaceGroups
@@ -990,99 +991,34 @@ class AppWindow(QMainWindow):
         except (FileNotFoundError, PermissionError):
             pass
 
+    def do_offline_checkcif(self) -> None:
+        self.ui.CheckcifButton.setDisabled(True)
+        app.processEvents()
+        self.ui.CheckCifLogPlainTextEdit.clear()
+        self.ui.MainStackedWidget.go_to_checkcif_page()
+        self.ui.CheckCIFResultsTabWidget.setCurrentIndex(0)
+        self.ui.CheckcifPlaintextEdit.clear()
+        self.ui.CheckCifLogPlainTextEdit.appendPlainText("Running Checkcif locally. Please wait...\n")
+        self.ui.cif_main_table.setCurrentItem(None)
+        if not self.save_current_cif_file():
+            self.ui.CheckCifLogPlainTextEdit.appendPlainText('Unable to save CIF file. Aborting action...')
+            return None
+        self.load_cif_file(self.cif.finalcif_file, block=self.ui.datanameComboBox.currentIndex(), load_changes=False)
+        self.ui.MainStackedWidget.go_to_checkcif_page()
+        runner = PlatonRunner(parent=self,
+                              log_widget=self.ui.CheckCifLogPlainTextEdit,
+                              output_widget=self.ui.CheckcifPlaintextEdit,
+                              cif_file=self.cif.fileobj)
+        runner.tick.connect(self.append_to_ciflog_without_newline)
+        runner.run_process()
+        runner.finished.connect(lambda: self.ui.CheckcifButton.setEnabled(True))
+        app.processEvents()
+
     def append_to_ciflog_without_newline(self, text: str = '') -> None:
         self.ui.CheckCifLogPlainTextEdit.moveCursor(QtGui.QTextCursor.End)
         self.ui.CheckCifLogPlainTextEdit.insertPlainText(text)
         self.ui.CheckCifLogPlainTextEdit.moveCursor(QtGui.QTextCursor.End)
-
-    def do_offline_checkcif(self) -> None:
-        """
-        Performs a checkcif with platon and displays it in the text editor of the MainStackedWidget.
-        """
-        current_block = self.ui.datanameComboBox.currentIndex()
-        self.ui.CheckCifLogPlainTextEdit.clear()
-        self.ui.MainStackedWidget.go_to_checkcif_page()
-        self.ui.CheckCIFResultsTabWidget.setCurrentIndex(0)
-        self.ui.CheckCifLogPlainTextEdit.appendPlainText("Running Checkcif locally. Please wait...\n")
-        QApplication.processEvents()
-        # makes sure also the currently edited item is saved:
-        self.ui.cif_main_table.setCurrentItem(None)
-        self.ui.CheckcifPlaintextEdit.clear()
-        if not self.save_current_cif_file():
-            self.ui.CheckCifLogPlainTextEdit.appendPlainText('Unable to save CIF file. Aborting action...')
-            return None
-        self.load_cif_file(self.cif.finalcif_file, block=current_block, load_changes=False)
-        self.ui.MainStackedWidget.go_to_checkcif_page()
-        QApplication.processEvents()
-        timeout = 350
-        try:
-            p = Platon(self.cif.fileobj.resolve(), timeout, '-u')
-        except Exception as e:
-            print(e)
-            return
-        checkcif_out = self.ui.CheckcifPlaintextEdit
-        checkcif_out.setPlainText('Platon output: \nThis might not be the same as the IUCr CheckCIF!')
-        QApplication.processEvents()
-        p.start()
-        if not self.wait_for_chk_file(p):
-            checkcif_out.appendPlainText('Platon did not start. No .chk file from Platon found!')
-            checkcif_out.appendPlainText(p.platon_output)
-            p.kill()
-            p.delete_orphaned_files()
-            return
-        checkcif_out.appendPlainText('\n' + '#' * 80)
-        checkcif_out.setLineWrapMode(QPlainTextEdit.NoWrap)
-        self.wait_until_platon_finished(timeout)
-        checkcif_out.appendPlainText(p.platon_output)
-        p.parse_chk_file()
-        vrf_txt = ''
-        with suppress(FileNotFoundError):
-            vrf_txt = self.cif.finalcif_file.with_suffix('.vrf').read_text()
-        if p.chk_file_text:
-            with suppress(AttributeError):
-                checkcif_out.appendPlainText(p.chk_file_text)
-                checkcif_out.appendPlainText('\n' + '#' * 27 + ' Validation Response Forms ' + '#' * 26 + '\n')
-                checkcif_out.appendPlainText(vrf_txt)
-        checkcif_out.verticalScrollBar().setValue(0)
-        moiety = self.ui.cif_main_table.getTextFromKey(key='_chemical_formula_moiety', col=0)
-        if p.formula_moiety and moiety in ['', '?'] and not self.cif.is_multi_cif:
-            self.ui.cif_main_table.setText(key='_chemical_formula_moiety', txt=p.formula_moiety, column=Column.EDIT)
-        print('Killing platon!')
-        p.kill()
-        p.delete_orphaned_files()
-
-    def wait_for_chk_file(self, p) -> bool:
-        time.sleep(2)
-        stop = 0
-        while not p.chkfile.exists():
-            self.append_to_ciflog_without_newline('.')
-            QApplication.processEvents()
-            time.sleep(2)
-            if not p.plat:
-                self.append_to_ciflog_without_newline('aborted here')
-                self.append_to_ciflog_without_newline(p.platon_output)
-                return False
-            stop += 1
-            if stop == 8:
-                return False
-        return True
-
-    def wait_until_platon_finished(self, timeout: int = 300):
-        stop = 0
-        if not self.cif.finalcif_file.with_suffix('.chk').exists():
-            self.ui.CheckCifLogPlainTextEdit.appendPlainText('Platon returned no output.')
-            QApplication.processEvents()
-            return
-        with suppress(FileNotFoundError):
-            while self.cif.finalcif_file.with_suffix('.chk').stat().st_size < 200:
-                self.append_to_ciflog_without_newline('*')
-                QApplication.processEvents()
-                if stop == timeout:
-                    self.ui.CheckcifPlaintextEdit.appendPlainText('PLATON timed out')
-                    break
-                time.sleep(1)
-                stop += 1
-            time.sleep(0.5)
+        self.ui.CheckCifLogPlainTextEdit.unsetCursor()
 
     def set_checkcif_output_font(self, ccpe: 'QPlainTextEdit') -> None:
         doc = ccpe.document()
@@ -1540,9 +1476,9 @@ class AppWindow(QMainWindow):
         except Exception as e:
             not_ok = e
             print(e)
-            #if DEBUG:
+            # if DEBUG:
             raise
-            #unable_to_open_message(Path(self.cif.filename), not_ok)
+            # unable_to_open_message(Path(self.cif.filename), not_ok)
         self.load_recent_cifs_list()
         if self.options.track_changes and load_changes:
             changes_exist = False

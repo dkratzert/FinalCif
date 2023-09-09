@@ -1,32 +1,139 @@
-import sys, os
-import time
+import os
+import sys
 import threading
+import time
 from pathlib import Path
 
-from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QTextEdit, QVBoxLayout, QWidget, QLabel
-from PyQt5.QtCore import QProcess, QIODevice, QTimer, QTime
+from PyQt5 import QtCore
+from PyQt5.QtCore import QProcess, QTimer, QTime
+from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QWidget, QLabel, \
+    QPlainTextEdit
+
+
+class PlatonRunner(QtCore.QObject):
+    finished = QtCore.pyqtSignal(bool)
+    tick = QtCore.pyqtSignal(str)
+
+    def __init__(self, parent, output_widget: QPlainTextEdit, log_widget: QPlainTextEdit, cif_file: Path):
+        super().__init__(parent)
+        self.cif_file = cif_file.resolve().absolute()
+        self.process = None
+        self.is_stopped = False
+        self._origdir = None
+        self.output_widget = output_widget
+        self.log_widget = log_widget
+        self.formula_moiety = ''
+        self.Z = ''
+        self.chk_file_text = ''
+
+    def run_process(self):
+        self._origdir = os.curdir
+        os.chdir(self.cif_file.parent)
+        self.formula_moiety = ''
+        self.Z = ''
+        self.process = QProcess()
+        self.output_widget.clear()
+        threading.Thread(target=self._monitor_output_log).start()
+        # self.process.readyReadStandardOutput.connect(self.on_ready_read)
+        self.process.finished.connect(self._onfinished)
+        self.cif_file.with_suffix('.chk').unlink(missing_ok=True)
+        self.process.start(self.platon_exe, ["-U", str(self.cif_file.name)])
+
+    def _onfinished(self):
+        self._on_ready_read()
+        os.chdir(self._origdir)
+        self._parse_chk_file()
+        self.output_widget.setPlainText(self.chk_file_text)
+        self.finished.emit(True)
+        self.delete_orphaned_files()
+
+    def _on_ready_read(self):
+        output = self.process.readAllStandardOutput().data().decode()
+        self.log_widget.setPlainText(output)
+
+    def _monitor_output_log(self):
+        while not self.is_stopped:
+            self.tick.emit('#')
+            time.sleep(1)
+            try:
+                log_file = self.cif_file.with_suffix('.chk').read_text('latin1', errors='ignore')
+                if 'Unresolved or to be Checked Issue' in log_file:
+                    self._stop_program()
+            except FileNotFoundError:
+                break
+
+    def _stop_program(self):
+        self.is_stopped = True
+        if self.process and self.process.state() == QProcess.Running:
+            self.process.terminate()
+        self.finished.emit(True)
+
+    def _parse_chk_file(self):
+        try:
+            self.chk_file_text = self.cif_file.with_suffix('.chk').read_text(encoding='latin1', errors='ignore')
+        except FileNotFoundError as e:
+            print('CHK file not found:', e)
+            self.chk_file_text = ''
+        for num, line in enumerate(self.chk_file_text.splitlines(keepends=False)):
+            if line.startswith('# MoietyFormula'):
+                self.formula_moiety = ' '.join(line.split(' ')[2:])
+            if line.startswith('# Z'):
+                self.Z = line[19:24].strip(' ')
+
+    @property
+    def platon_exe(self):
+        if sys.platform.startswith('win'):
+            in_pwt = r'C:\pwt\platon.exe'
+        else:
+            in_pwt = 'platon'
+        if Path(in_pwt).exists():
+            return in_pwt
+        else:
+            return 'platon'
+
+    def kill(self):
+        if sys.platform.startswith('win'):
+            with suppress(FileNotFoundError):
+                subprocess.run(["taskkill", "/f", "/im", "platon.exe"], shell=False)
+        if sys.platform[:5] in ('linux', 'darwi'):
+            with suppress(FileNotFoundError):
+                subprocess.run(["killall", "platon"], shell=False)
+
+    def delete_orphaned_files(self):
+        # delete orphaned files:
+        for ext in ['.ckf', '.fcf', '.def', '.lis', '.sar', '.ckf',
+                    '.sum', '.hkp', '.pjn', '.bin', '.spf']:
+            try:
+                file = self.cif_file.resolve().with_suffix(ext)
+                if file.stat().st_size < 100:
+                    file.unlink(missing_ok=True)
+                if file.suffix in ['.sar', '.spf', '.ckf']:
+                    file.unlink(missing_ok=True)
+            except FileNotFoundError:
+                pass
 
 
 class ProcessWidget(QWidget):
     def __init__(self):
         super().__init__()
         layout = QVBoxLayout()
-
-        self.text_widget = QTextEdit()
+        self.text_widget = QPlainTextEdit()
+        self.log_widget = QPlainTextEdit()
+        layout.addWidget(self.log_widget)
         layout.addWidget(self.text_widget)
-
         self.button = QPushButton("Run QProcess")
         layout.addWidget(self.button)
-
         self.time_label = QLabel()
         layout.addWidget(self.time_label)
-
         self.setLayout(layout)
+        self.runner = PlatonRunner(parent=self, output_widget=self.text_widget, log_widget=self.log_widget,
+                                   cif_file=Path("tests/examples/work/cu_BruecknerJK_153F40_0m.cif"))
+        self.button.clicked.connect(lambda x: self.button.setDisabled(True))
+        self.button.clicked.connect(lambda x: self.runner.run_process())
+        self.button.clicked.connect(lambda x: self.log_widget.setPlainText('Running Platon'))
+        self.runner.finished.connect(lambda x: self.button.setEnabled(True))
 
-        self.button.clicked.connect(self.run_process)
-        self.process = None
-        self.stop_monitor = False
-
+        # Only to show that the main thread works continuously:
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_time)
         self.timer.start(1000)
@@ -36,45 +143,17 @@ class ProcessWidget(QWidget):
         time_text = current_time.toString("hh:mm:ss")
         self.time_label.setText(f"Current Time: {time_text}")
 
-    def run_process(self):
-        self.text_widget.clear()
-        self.process = QProcess()
-        self.process.readyReadStandardOutput.connect(self.on_ready_read)
-        Path("tests/examples/work/cu_BruecknerJK_153F40_0m.chk").unlink(missing_ok=True)
-        self.process.start("platon", ["-U",
-                                      "tests/examples/work/cu_BruecknerJK_153F40_0m.cif"])
-        threading.Thread(target=self.monitor_output_log).start()
 
-    def on_ready_read(self):
-        output = self.process.readAllStandardOutput().data().decode()
-        self.text_widget.append(output)
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    window = QMainWindow()
+    window.setWindowTitle("QProcess Example")
+    window.setMinimumWidth(800)
+    window.setMinimumHeight(600)
 
-    def monitor_output_log(self):
-        while not self.stop_monitor:
-            try:
-                with open("tests/examples/work/cu_BruecknerJK_153F40_0m.chk", "r") as log_file:
-                    content = log_file.read()
-                    if '#                                                                              *' in content:
-                        self.stop_program()
-            except FileNotFoundError:
-                pass
-            time.sleep(1)
+    process_widget = ProcessWidget()
+    window.setCentralWidget(process_widget)
 
-    def stop_program(self):
-        print('# Stopping Platon!')
-        self.stop_monitor = True
-        if self.process and self.process.state() == QProcess.Running:
-            self.process.terminate()
-        #app.quit()
+    window.show()
 
-
-app = QApplication(sys.argv)
-window = QMainWindow()
-window.setWindowTitle("QProcess Example")
-
-process_widget = ProcessWidget()
-window.setCentralWidget(process_widget)
-
-window.show()
-
-sys.exit(app.exec_())
+    sys.exit(app.exec_())
