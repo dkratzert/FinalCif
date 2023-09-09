@@ -1009,6 +1009,9 @@ class AppWindow(QMainWindow):
                               log_widget=self.ui.CheckCifLogPlainTextEdit,
                               output_widget=self.ui.CheckcifPlaintextEdit,
                               cif_file=self.cif.fileobj)
+        if not Path(runner.platon_exe).resolve().exists():
+            self.ui.CheckCifLogPlainTextEdit.setPlainText('Platon executable not found!')
+            self.ui.CheckCifLogPlainTextEdit.setPlainText('You can download Platon at http://www.platonsoft.nl/platon/')
         runner.tick.connect(self.append_to_ciflog_without_newline)
         runner.run_process()
         runner.finished.connect(lambda: self.ui.CheckcifButton.setEnabled(True))

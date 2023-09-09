@@ -3,6 +3,7 @@ import subprocess
 import sys
 import threading
 import time
+from contextlib import suppress
 from pathlib import Path
 
 from PyQt5 import QtCore
