@@ -30,7 +30,7 @@ class PlatonRunner(QtCore.QObject):
 
     def run_process(self):
         self._origdir = os.curdir
-        os.chdir(self.cif_file.parent)
+        #os.chdir(self.cif_file.parent)
         self.formula_moiety = ''
         self.Z = ''
         self.process = QProcess()
@@ -38,12 +38,13 @@ class PlatonRunner(QtCore.QObject):
         threading.Thread(target=self._monitor_output_log).start()
         # self.process.readyReadStandardOutput.connect(self.on_ready_read)
         self.process.finished.connect(self._onfinished)
+        self.process.setWorkingDirectory(str(self.cif_file.parent))
         self.cif_file.with_suffix('.chk').unlink(missing_ok=True)
         self.process.start(self.platon_exe, ["-U", str(self.cif_file.name)])
 
     def _onfinished(self):
         self._on_ready_read()
-        os.chdir(self._origdir)
+        #os.chdir(self._origdir)
         self._parse_chk_file()
         self.output_widget.setPlainText(self.chk_file_text)
         self.finished.emit(True)

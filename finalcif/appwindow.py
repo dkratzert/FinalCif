@@ -12,6 +12,7 @@ from contextlib import suppress
 from datetime import datetime
 from math import sin, radians
 from pathlib import Path, WindowsPath
+from shutil import which
 from typing import Union, Dict, Tuple, List, Optional
 
 import gemmi.cif
@@ -1009,7 +1010,7 @@ class AppWindow(QMainWindow):
                               log_widget=self.ui.CheckCifLogPlainTextEdit,
                               output_widget=self.ui.CheckcifPlaintextEdit,
                               cif_file=self.cif.fileobj)
-        if not Path(runner.platon_exe).resolve().exists():
+        if not Path(which(runner.platon_exe)).exists():
             self.ui.CheckCifLogPlainTextEdit.setPlainText('\nPlaton executable not found!')
             self.ui.CheckCifLogPlainTextEdit.appendPlainText('You can download Platon at http://www.platonsoft.nl/platon/\n')
         runner.tick.connect(self.append_to_ciflog_without_newline)
