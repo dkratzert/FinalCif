@@ -58,8 +58,7 @@ from finalcif.tools.misc import next_path, do_not_import_keys, celltxt, to_float
     cif_to_header_label, grouper, is_database_number, file_age_in_days, open_file, \
     strip_finalcif_of_name
 from finalcif.tools.options import Options
-from finalcif.tools.platon import Platon
-from finalcif.tools.process import PlatonRunner
+from finalcif.tools.platon import PlatonRunner
 from finalcif.tools.settings import FinalCifSettings
 from finalcif.tools.shred import ShredCIF
 from finalcif.tools.space_groups import SpaceGroups
@@ -1012,7 +1011,8 @@ class AppWindow(QMainWindow):
                               cif_file=self.cif.fileobj)
         if not Path(which(runner.platon_exe)).exists():
             self.ui.CheckCifLogPlainTextEdit.setPlainText('\nPlaton executable not found!')
-            self.ui.CheckCifLogPlainTextEdit.appendPlainText('You can download Platon at http://www.platonsoft.nl/platon/\n')
+            self.ui.CheckCifLogPlainTextEdit.appendPlainText(
+                'You can download Platon at http://www.platonsoft.nl/platon/\n')
         runner.tick.connect(self.append_to_ciflog_without_newline)
         runner.finished.connect(lambda: self.ui.CheckcifButton.setEnabled(True))
         runner.run_process()
