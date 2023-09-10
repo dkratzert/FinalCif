@@ -102,6 +102,10 @@ def show_keyword_help(parent, helptext: str, title: str = ''):
     window = QMainWindow(parent=parent)
     window.setWindowFlags(Qt.Tool)
     window.setWindowTitle(title)
+    def close_window(event):
+        if event.key() == Qt.Key_Escape:
+            window.close()
+    window.keyPressEvent = close_window
     widget = QFrame()
     layout = QVBoxLayout()
     button = QPushButton('close')
