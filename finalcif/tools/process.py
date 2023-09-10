@@ -39,8 +39,6 @@ class PlatonRunner(QtCore.QObject):
         threading.Thread(target=self._monitor_output_log).start()
         # self.process.readyReadStandardOutput.connect(self.on_ready_read)
         self.process.finished.connect(self._onfinished)
-        if sys.platform.startswith('win'):
-            self.process.setCreateProcessArgumentsModifier(self.hide_window)
         self.process.setWorkingDirectory(str(self.cif_file.parent))
         self.cif_file.with_suffix('.chk').unlink(missing_ok=True)
         self.process.start(self.platon_exe, ["-U", str(self.cif_file.name)])
@@ -86,11 +84,6 @@ class PlatonRunner(QtCore.QObject):
                 self.formula.emit(self.formula_moiety)
             if line.startswith('# Z'):
                 self.Z = line[19:24].strip(' ')
-
-    def hide_window(self, args):
-        # This needs Windows
-        args[0] = args[0] | 0x08000000  # CREATE_NO_WINDOW flag
-        return args
 
     @property
     def platon_exe(self):
