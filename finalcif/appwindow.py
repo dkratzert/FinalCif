@@ -1016,7 +1016,12 @@ class AppWindow(QMainWindow):
         runner.tick.connect(self.append_to_ciflog_without_newline)
         runner.finished.connect(lambda: self.ui.CheckcifButton.setEnabled(True))
         runner.run_process()
-        app.processEvents()
+        runner.formula.connect(self.add_moiety_furmula)
+
+    def add_moiety_furmula(self, formula_moiety):
+        moiety = self.ui.cif_main_table.getTextFromKey(key='_chemical_formula_moiety', col=Column.CIF)
+        if formula_moiety and moiety in ['', '?'] and not self.cif.is_multi_cif:
+            self.ui.cif_main_table.setText(key='_chemical_formula_moiety', txt=formula_moiety, column=Column.EDIT)
 
     def append_to_ciflog_without_newline(self, text: str = '') -> None:
         self.ui.CheckCifLogPlainTextEdit.moveCursor(QtGui.QTextCursor.End)
