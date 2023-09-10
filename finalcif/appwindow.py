@@ -1014,8 +1014,8 @@ class AppWindow(QMainWindow):
             self.ui.CheckCifLogPlainTextEdit.setPlainText('\nPlaton executable not found!')
             self.ui.CheckCifLogPlainTextEdit.appendPlainText('You can download Platon at http://www.platonsoft.nl/platon/\n')
         runner.tick.connect(self.append_to_ciflog_without_newline)
-        runner.run_process()
         runner.finished.connect(lambda: self.ui.CheckcifButton.setEnabled(True))
+        runner.run_process()
         app.processEvents()
 
     def append_to_ciflog_without_newline(self, text: str = '') -> None:

@@ -67,8 +67,8 @@ class PlatonRunner(QtCore.QObject):
 
     def _stop_program(self):
         self.is_stopped = True
-        if self.process and self.process.state() == QProcess.Running:
-            self.process.terminate()
+        #if self.process and self.process.state() == QProcess.Running:
+        self.process.terminate()
         self.finished.emit(True)
 
     def _parse_chk_file(self):
