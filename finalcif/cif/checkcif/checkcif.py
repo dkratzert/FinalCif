@@ -15,7 +15,7 @@ from pathlib import Path
 from typing import List, Optional, Dict
 
 import requests
-from PyQt5.QtCore import QUrl, QThread, pyqtSignal
+from PyQt5.QtCore import QThread, pyqtSignal
 from requests.exceptions import MissingSchema
 
 from finalcif.cif.cif_file_io import CifContainer
@@ -241,32 +241,6 @@ class AlertHelp():
             if found:
                 helptext.append(line)
         return ''
-
-
-class AlertHelpRemote():
-    def __init__(self, alert: str):
-        from PyQt5.QtNetwork import QNetworkAccessManager
-        self.netman = QNetworkAccessManager()
-        self.helpurl = fr'https://journals.iucr.org/services/cif/checking/{alert}.html'
-        print('url:', self.helpurl)
-        self.netman.finished.connect(self._parse_result)
-
-    def get_help(self) -> None:
-        url = QUrl(self.helpurl)
-        req = QNetworkRequest(url)
-        print('doing request')
-        self.netman.get(req)
-
-    def _parse_result(self, reply: 'QNetworkReply') -> str:
-        if reply.error():
-            print(reply.errorString())
-        print('parsing reply')
-        text = 'no help available'
-        try:
-            text = bytes(reply.readAll()).decode('ascii', 'ignore')
-        except Exception as e:
-            print(e)
-        return text
 
 
 if __name__ == "__main__":
