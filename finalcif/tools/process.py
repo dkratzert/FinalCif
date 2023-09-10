@@ -53,7 +53,7 @@ class PlatonRunner(QtCore.QObject):
 
     def _on_ready_read(self):
         output = self.process.readAllStandardOutput().data().decode()
-        self.log_widget.setPlainText(output)
+        self.log_widget.appendPlainText(output)
 
     def _monitor_output_log(self):
         while not self.is_stopped:
