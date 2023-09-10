@@ -16,7 +16,6 @@ from typing import List, Optional, Dict
 
 import requests
 from PyQt5.QtCore import QUrl, QThread, pyqtSignal
-from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply
 from requests.exceptions import MissingSchema
 
 from finalcif.cif.cif_file_io import CifContainer
@@ -76,7 +75,7 @@ class CheckCif(QThread):
         req = self._do_the_server_request(headers, temp_cif)
         if req:
             self.progress.emit('request finished')
-            if not req.status_code == 200:
+            if req.status_code != 200:
                 self.failed.emit('Request failed with code: {}'.format(str(req.status_code)))
             else:
                 t2 = time.perf_counter()
@@ -143,8 +142,8 @@ def fix_iucr_urls(content: str):
     """
     The IuCr checkcif page suddenly contains urls where the protocol is missing.
     """
-    href = re.sub(r'\s+href\s{0,}=\s{0,}"//', ' href="https://', content)
-    return re.sub(r'\s+src\s{0,}=\s{0,}"//', ' src="https://', href)
+    href = re.sub(r'\s+href\s*=\s*"//', ' href="https://', content)
+    return re.sub(r'\s+src\s*=\s*"//', ' src="https://', href)
 
 
 class MyHTMLParser(HTMLParser):
@@ -246,8 +245,9 @@ class AlertHelp():
 
 class AlertHelpRemote():
     def __init__(self, alert: str):
+        from PyQt5.QtNetwork import QNetworkAccessManager
         self.netman = QNetworkAccessManager()
-        self.helpurl = r'https://journals.iucr.org/services/cif/checking/' + alert + '.html'
+        self.helpurl = fr'https://journals.iucr.org/services/cif/checking/{alert}.html'
         print('url:', self.helpurl)
         self.netman.finished.connect(self._parse_result)
 
@@ -257,7 +257,7 @@ class AlertHelpRemote():
         print('doing request')
         self.netman.get(req)
 
-    def _parse_result(self, reply: QNetworkReply) -> str:
+    def _parse_result(self, reply: 'QNetworkReply') -> str:
         if reply.error():
             print(reply.errorString())
         print('parsing reply')
