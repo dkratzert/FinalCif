@@ -526,21 +526,21 @@ def add_adp_table(document: Document, cif: CifContainer, table_num: int):
 
     h.add_run(f'{medium_math_space}h').font.italic = True
     h.add_run('2').font.superscript = True
-    h.add_run(f'(a*)').font.italic = True
+    h.add_run('(a*)').font.italic = True
     h.add_run('2').font.superscript = True
-    h.add_run(f'U').font.italic = True
+    h.add_run('U').font.italic = True
     h.add_run('11').font.subscript = True
 
     h.add_run(f'{medium_math_space}+{medium_math_space}k').font.italic = True
     h.add_run('2').font.superscript = True
-    h.add_run(f'(b*)').font.italic = True
+    h.add_run('(b*)').font.italic = True
     h.add_run('2').font.superscript = True
-    h.add_run(f'U').font.italic = True
+    h.add_run('U').font.italic = True
     h.add_run('22').font.subscript = True
 
     h.add_run(f'{medium_math_space}+{medium_math_space}{ellipsis_char}{medium_math_space}+{medium_math_space}')
-    h.add_run(f'2hk'
-              f'a*b*U').font.italic = True
+    h.add_run('2hk'
+              'a*b*U').font.italic = True
     h.add_run('12').font.subscript = True
     h.add_run(f'{medium_math_space}]')
 

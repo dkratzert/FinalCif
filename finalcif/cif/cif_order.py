@@ -29,6 +29,9 @@ order = [
     '_audit_author_footnote',
 
     '_audit_creation_method',
+
+    '_entry_id',
+
     '_journal_data_validation_number',
     '_journal_date_recd_electronic',
     '_journal_date_to_coeditor',
@@ -167,6 +170,7 @@ order = [
     '_cell_measurement_reflns_used',
     '_cell_measurement_theta_min',
     '_cell_measurement_theta_max',
+    '_cell_measurement_wavelength',
     '_exptl_crystal_description',
     '_exptl_crystal_colour',
     '_exptl_crystal_recrystallization_method',
@@ -184,12 +188,14 @@ order = [
     '_exptl_absorpt_correction_T_max',
     '_exptl_absorpt_process_details',
     '_exptl_absorpt_special_details',
+    '_exptl_bruker_absorpt_correction_T_ratio',
     '_shelx_estimated_absorpt_T_min',
     '_shelx_estimated_absorpt_T_max',
     '_exptl_transmission_factor_min',
     # http://oldwww.iucr.org/iucr-top/cif/cifdic_html/1/cif_core.dic/Iexptl_transmission_factor_min.html
     '_exptl_transmission_factor_max',
     '_exptl_special_details',
+
     '_diffrn_ambient_temperature',
     '_diffrn_ambient_environment',
     '_diffrn_radiation_type',
@@ -242,6 +248,10 @@ order = [
     '_diffrn_reflns_Laue_measured_fraction_full',
     '_diffrn_reflns_point_group_measured_fraction_max',
     '_diffrn_reflns_point_group_measured_fraction_full',
+    '_diffrn_reflns_bruker_av_norm_I',
+    '_diffrn_reflns_bruker_number_gt',
+    '_diffrn_reflns_bruker_theta_full',
+    '_diffrn_reflns_bruker_reduction_algorithm',
 
     '_reflns_number_total',
     '_reflns_number_gt',
@@ -266,6 +276,7 @@ order = [
     '_computing_structure_refinement',
     '_computing_molecular_graphics',
     '_computing_publication_material',
+    '_computing_bruker_data_scaling',
 
     '_refine_special_details',
     '_refine_ls_structure_factor_coef',
@@ -324,6 +335,7 @@ order = [
     '_atom_type_scat_dispersion_imag',
     '_atom_type_scat_source',
 
+    '_geom_details',
     '_geom_special_details',
 
 ]
