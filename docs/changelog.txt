@@ -1,5 +1,8 @@
 FinalCif recent changes
 -----------------------
+* v126 Improved handling of PLATON for local Checkcif. The output windows of PLATON is now visible, but closes automatically
+       when Checkcif is finished. Fixed behavior of FinalCif when run from within ShelXle. The commandline arguments
+       are now handled correctly.
 * v125 Fixed potential crash in p4p file reader. The distribution architecture of the application was changed so that
        virus scanners should detect FinalCif as malicious software less often.
 * v124 Exchanged position of property templates and report options. Added all hard-coded properties to the
