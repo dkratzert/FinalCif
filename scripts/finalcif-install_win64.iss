@@ -18,6 +18,7 @@ AppPublisher={#MyAppPublisher}
 DefaultDirName={commonpf}\{#MyAppName}
 OutputBaseFilename={#MyAppName}-setup-x64-v{#MyAppVersion}
 Compression=lzma2/max
+WizardStyle=modern
 SolidCompression=yes
 SetupLogging=True
 CloseApplications=False
