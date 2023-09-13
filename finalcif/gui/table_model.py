@@ -5,8 +5,10 @@ from typing import Any, List, Union, Tuple
 import gemmi.cif
 from PyQt5 import QtCore
 from PyQt5.QtCore import QModelIndex, Qt
+from PyQt5.QtWidgets import QApplication, QMainWindow
 
-from finalcif.gui.ciftable_view import CifItemEditor, CifTableView
+from finalcif.cif.cif_file_io import CifContainer
+from finalcif.gui.ciftable_view import CifTableView
 
 
 class Column(IntEnum):
@@ -21,9 +23,8 @@ class CifTableModel(QtCore.QAbstractTableModel):
         if data is None:
             data = []
         self._data = data  # A list of rows where each row is a list of cells
-        self.vheaderItems = []
-        self.horizontalHeaderItems = ['CIF data', 'Sources', 'Own Data']
-        self._data = []
+        self.verticalHeaders = []
+        self.horizontalHeaders = ['CIF data', 'Sources', 'Own Data']
         self.dataChanged.connect(self._on_data_changed)
 
     def _on_data_changed(self, *args):
@@ -43,6 +44,8 @@ class CifTableModel(QtCore.QAbstractTableModel):
         self.verticalHeaders = [x[0] for x in data]
 
     def data(self, index: QModelIndex, role: int = Qt.DisplayRole):
+        if not self._data:
+            return None
         row, col = index.row(), index.column()
         value = self._data[row][col]
         if role == Qt.DisplayRole:
@@ -65,7 +68,7 @@ class CifTableModel(QtCore.QAbstractTableModel):
 
     def headerData(self, section, orientation, role=Qt.DisplayRole):
         if orientation == Qt.Horizontal and role == Qt.DisplayRole:
-            with suppress(IndexError):
+            with suppress(IndexError, AttributeError):
                 return self.horizontalHeaders[section]
         if orientation == Qt.Vertical and role == Qt.DisplayRole:
             with suppress(IndexError):
@@ -120,28 +123,23 @@ class CifTableModel(QtCore.QAbstractTableModel):
         return True
 
 
-from PyQt5.QtWidgets import QApplication, QMainWindow, QTableView
-
-
 def main():
     app = QApplication([])
 
-    # Sample data
-    data = [
-        ["CIF_1", "DATA_1", "EDIT_1"],
-        ["CIF_2", "DATA_2", "EDIT_2"],
-        ["CIF_3", "DATA_3", "EDIT_3"],
-    ]
+    c = CifContainer('tests/examples/1979688.cif')
+    data = [(key, value) for key, value in c.key_value_pairs()]
 
     main_window = QMainWindow()
 
     # Set up the QTableView
     table_view = CifTableView(main_window)
-    model = CifTableModel(parent=main_window, data=data)
+    model = CifTableModel(parent=main_window)
     table_view.setModel(model)
+    model.setCifData(data)
 
     main_window.setCentralWidget(table_view)
     main_window.show()
+    main_window.setMinimumSize(800, 600)
 
     app.exec_()
 
