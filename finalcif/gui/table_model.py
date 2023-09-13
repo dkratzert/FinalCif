@@ -6,6 +6,8 @@ import gemmi.cif
 from PyQt5 import QtCore
 from PyQt5.QtCore import QModelIndex, Qt
 
+from finalcif.gui.ciftable_view import CifItemEditor, CifTableView
+
 
 class Column(IntEnum):
     CIF: int = 0
@@ -14,10 +16,13 @@ class Column(IntEnum):
 
 
 class CifTableModel(QtCore.QAbstractTableModel):
-    def __init__(self, parent, **kwargs):
+    def __init__(self, parent=None, data=None):
         super().__init__(parent)
-        self.horizontalHeaders = ['CIF data', 'Sources', 'Own Data']
-        self.verticalHeaders = []
+        if data is None:
+            data = []
+        self._data = data  # A list of rows where each row is a list of cells
+        self.vheaderItems = []
+        self.horizontalHeaderItems = ['CIF data', 'Sources', 'Own Data']
         self._data = []
         self.dataChanged.connect(self._on_data_changed)
 
@@ -37,7 +42,7 @@ class CifTableModel(QtCore.QAbstractTableModel):
         self._data = [[gemmi.cif.as_string(x[1]), '', ''] if x[1] != '?' else ['?', '', ''] for x in data]
         self.verticalHeaders = [x[0] for x in data]
 
-    def data(self, index: QModelIndex, role: int = None):
+    def data(self, index: QModelIndex, role: int = Qt.DisplayRole):
         row, col = index.row(), index.column()
         value = self._data[row][col]
         if role == Qt.DisplayRole:
@@ -78,10 +83,9 @@ class CifTableModel(QtCore.QAbstractTableModel):
         Takes the first sub-list, and returns
         the length (only works if all rows are an equal length)
         """
-        if len(self._data) > 0:
-            return len(self._data[0])
-        else:
+        if not self._data:
             return 0
+        return len(self._data[0])
 
     def setData(self, index: QModelIndex, value: Any, role: int = None) -> bool:
         row, col = index.row(), index.column()
@@ -102,3 +106,45 @@ class CifTableModel(QtCore.QAbstractTableModel):
         # self._data, self.verticalHeaders = zip(*sorted(zip(self._data, self.verticalHeaders), key=lambda x: x[column]))
         self.layoutChanged.emit()
         # super(TableModel, self).sort(column, order)
+
+    def appendRow(self, row_data):
+        self.beginInsertRows(QtCore.QModelIndex(), self.rowCount(), self.rowCount())
+        self._data.append(row_data)
+        self.endInsertRows()
+
+    def removeRow(self, row: int, parent: QModelIndex = None) -> bool:
+        self.beginRemoveRows(QtCore.QModelIndex(), row, row)
+        del self._data[row]
+        del self.vheaderitems[row]
+        self.endRemoveRows()
+        return True
+
+
+from PyQt5.QtWidgets import QApplication, QMainWindow, QTableView
+
+
+def main():
+    app = QApplication([])
+
+    # Sample data
+    data = [
+        ["CIF_1", "DATA_1", "EDIT_1"],
+        ["CIF_2", "DATA_2", "EDIT_2"],
+        ["CIF_3", "DATA_3", "EDIT_3"],
+    ]
+
+    main_window = QMainWindow()
+
+    # Set up the QTableView
+    table_view = CifTableView(main_window)
+    model = CifTableModel(parent=main_window, data=data)
+    table_view.setModel(model)
+
+    main_window.setCentralWidget(table_view)
+    main_window.show()
+
+    app.exec_()
+
+
+if __name__ == "__main__":
+    main()

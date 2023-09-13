@@ -54,12 +54,21 @@ class CifItemEditor(QtWidgets.QStyledItemDelegate):
 class CifTableView(QtWidgets.QTableView):
     save_excel_triggered = pyqtSignal()
 
-    def __init__(self, parent):
+    def __init__(self, parent: QWidget = None, *args, **kwargs):
         super().__init__(parent)
+        #self.setModel(CifTableModel(self))
         delegate = CifItemEditor(self)
         self.setItemDelegate(delegate)
         # self.setContextMenuPolicy(Qt.DefaultContextMenu)
         self.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+
+    @property
+    def rows_count(self):
+        return self.model().rowCount()
+
+    @property
+    def columns_count(self):
+        return self.model().columnCount()
 
     def contextMenuEvent(self, event: QtGui.QContextMenuEvent) -> None:
         context_menu = QtWidgets.QMenu(self)
