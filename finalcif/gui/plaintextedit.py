@@ -17,6 +17,8 @@ class MyQPlainTextEdit(QPlainTextEdit):
     """
     templateRequested = pyqtSignal(int)
     new_key = pyqtSignal(str)
+    changed = pyqtSignal(int)
+
 
     def __init__(self, parent=None, *args, **kwargs):
         """

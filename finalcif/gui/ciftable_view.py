@@ -17,7 +17,7 @@ textedit = MyQPlainTextEdit(self)
 
 
 class CifItemEditor(QtWidgets.QStyledItemDelegate):
-    text_changed = pyqtSignal(object)
+    heightChanged = pyqtSignal(int)
 
     def __init__(self, parent):
         self.parent = parent
@@ -28,14 +28,24 @@ class CifItemEditor(QtWidgets.QStyledItemDelegate):
     def createEditor(self, parent: QWidget, option: 'QStyleOptionViewItem', index: QtCore.QModelIndex) -> QWidget:
         text = index.model().data(index, Qt.EditRole)
         #if len(text) > 20:
-        editor = MyQPlainTextEdit(parent)
-        #editor = QtWidgets.QPlainTextEdit(parent)
+        self.parent = parent
+        #editor = MyQPlainTextEdit(parent)
+        editor = QtWidgets.QPlainTextEdit(parent)
+        #editor.textChanged.connect(lambda: self.text_changed.emit(index.row()))
+        editor.textChanged.connect(self.adjustHeight)
         return editor
 
     """def editorEvent(self, event: QtCore.QEvent, model: QtCore.QAbstractItemModel, option: 'QStyleOptionViewItem', index: QtCore.QModelIndex) -> bool:
         print(event, index.row())
         self.text_changed.emit(index)
         return super().editorEvent(event, model, option, index)"""
+
+    def adjustHeight(self):
+        editor = self.sender()
+        doc_height = editor.document().size().height()
+        editor.setMinimumHeight(int(doc_height))
+        editor.updateGeometry()
+        self.heightChanged.emit(self.parent.parent().currentIndex().row())
 
     def setEditorData(self, editor, index):
         text = index.model().data(index, Qt.EditRole)
@@ -82,8 +92,10 @@ class CifTableView(QtWidgets.QTableView):
         super().__init__(parent)
         # self.setModel(CifTableModel(self))
         delegate = CifItemEditor(self)
+        delegate.heightChanged.connect(self.resizeRowToContents)
         self.setItemDelegate(delegate)
-        delegate.text_changed.connect(lambda index: self.resizeRowToContents(index.row()))
+        #delegate.text_changed.connect(lambda index: self.resizeRowToContents(index.row()))
+        #delegate.text_changed.connect(lambda row: self.resizeRowToContents(row))
         # self.setContextMenuPolicy(Qt.DefaultContextMenu)
         self.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.horizontalHeader().setEnabled(True)
@@ -123,6 +135,7 @@ class CifTableView(QtWidgets.QTableView):
         super().mousePressEvent(e)
 
     def resizeRowToContents(self, row: int) -> None:
+        self.setRowHeight(row, 200)
         super().resizeRowToContents(row)
 
     """def resizeRowsToContents(self):

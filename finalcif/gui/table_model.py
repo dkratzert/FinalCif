@@ -6,6 +6,7 @@ import gemmi.cif
 from PyQt5 import QtCore
 from PyQt5.QtCore import QModelIndex, Qt
 from PyQt5.QtWidgets import QApplication, QMainWindow
+from qtpy import QtWidgets
 
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.gui.ciftable_view import CifTableView
@@ -133,6 +134,8 @@ def main():
 
     # Set up the QTableView
     table_view = CifTableView(main_window)
+    table_view.verticalHeader().setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
+
     model = CifTableModel(parent=main_window)
     table_view.setModel(model)
     model.setCifData(data)
