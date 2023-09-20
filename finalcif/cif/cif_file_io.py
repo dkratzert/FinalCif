@@ -425,7 +425,10 @@ class CifContainer():
         return zero_reflection_position
 
     def is_empty(self) -> bool:
-        if len(self.keys()) + len(self.loops) == 0:
+        """
+        Checks if the currebt CIF contains data, but this works only for single-CIFs!
+        """
+        if len(self.doc) < 2 and len(self.keys()) + len(self.loops) == 0:
             return True
         return False
 
