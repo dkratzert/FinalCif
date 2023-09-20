@@ -1,5 +1,6 @@
 FinalCif recent changes
 -----------------------
+* v127 Fixed bug that a multi-CIF could not be created by appending another CIF.
 * v126 Improved handling of PLATON for local Checkcif. The output windows of PLATON is now visible, but closes automatically
        when Checkcif is finished. Fixed behavior of FinalCif when run from within ShelXle. The commandline arguments
        are now handled correctly.
