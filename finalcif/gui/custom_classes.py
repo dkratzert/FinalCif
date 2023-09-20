@@ -59,7 +59,7 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         if (column == Column.CIF) or (column == Column.DATA):
             # noinspection PyUnresolvedReferences
             widget.setUneditable()
-        super(MyCifTable, self).setCellWidget(row, column, widget)
+        super().setCellWidget(row, column, widget)
 
     @property
     def rows_count(self):
@@ -209,7 +209,6 @@ class MyCifTable(QTableWidget, ItemTextMixin):
 
     def goto_template_page(self, row):
         self.setCurrentCell(row, Column.EDIT)
-        self.parent.parent().go_to_text_template_page()
         self.textTemplate.emit(self.currentRow())
 
     def getText(self, row: int, col: int):

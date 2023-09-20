@@ -368,6 +368,7 @@ class AppWindow(QMainWindow):
         self.textedit.ui.deletePushButton.clicked.connect(self.delete_text_template)
         self.textedit.ui.importPushButton.clicked.connect(self.import_text_template)
         self.ui.cif_main_table.textTemplate.connect(self.on_text_template_open)
+        self.ui.cif_main_table.textTemplate.connect(self.ui.MainStackedWidget.go_to_text_template_page)
         # value has to be '?', because otherwise it adds a key without a value:
         self.ui.cif_main_table.new_key.connect(lambda x: self.add_row(key=x, value='?', at_start=True))
         #
@@ -1556,10 +1557,11 @@ class AppWindow(QMainWindow):
         else:
             self.ui.ShredCifButton.setDisabled(True)
 
-    def append_cif(self):
+    def append_cif(self, cif_file: Path):
         self.cif.save()
         self.load_cif_file(filepath=self.cif.finalcif_file, load_changes=False)
-        cif_file = self.get_file_from_dialog()
+        if not cif_file:
+            cif_file = self.get_file_from_dialog()
         if not cif_file:
             return
         cif2 = CifContainer(cif_file)
