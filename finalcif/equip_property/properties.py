@@ -61,7 +61,7 @@ class Properties:
             self.lb.setText(f'key {key} already exists')
             self.lb.move(self.app.ui.cifKeywordLineEdit.mapToGlobal(QtCore.QPoint(15, 25)))
             self.lb.show()
-            QtCore.QTimer.singleShot(4000, self.lb.hide)
+            QtCore.QTimer(self).singleShot(4000, self.lb.hide)
         else:
             self.app.ui.SavePropertiesButton.setEnabled(True)
             self.lb.hide()

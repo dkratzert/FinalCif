@@ -7,7 +7,6 @@ from contextlib import suppress
 from pathlib import Path
 
 from PyQt5 import QtCore
-from PyQt5.QtCore import QProcess, QTimer, QTime
 from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QWidget, QLabel, \
     QPlainTextEdit
 
@@ -34,7 +33,7 @@ class PlatonRunner(QtCore.QObject):
         #os.chdir(self.cif_file.parent)
         self.formula_moiety = ''
         self.Z = ''
-        self.process = QProcess()
+        self.process = QtCore.QProcess()
         self.output_widget.clear()
         threading.Thread(target=self._monitor_output_log).start()
         # self.process.readyReadStandardOutput.connect(self.on_ready_read)
@@ -139,12 +138,12 @@ class ProcessWidget(QWidget):
         self.runner.finished.connect(lambda x: self.button.setEnabled(True))
 
         # Only to show that the main thread works continuously:
-        self.timer = QTimer(self)
+        self.timer = QtCore.QTimer(self)
         self.timer.timeout.connect(self.update_time)
         self.timer.start(1000)
 
     def update_time(self):
-        current_time = QTime.currentTime()
+        current_time = QtCore.QTime.currentTime()
         time_text = current_time.toString("hh:mm:ss")
         self.time_label.setText(f"Current Time: {time_text}")
 
