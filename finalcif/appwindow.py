@@ -16,7 +16,6 @@ from shutil import which
 from typing import Union, Dict, Tuple, List, Optional
 
 import gemmi.cif
-import qtawesome as qta
 import requests
 from PyQt5 import QtCore, QtGui, QtWebEngineWidgets
 from PyQt5.QtCore import QThread, QTimer, Qt, QEvent
@@ -66,7 +65,10 @@ from finalcif.tools.statusbar import StatusBar
 from finalcif.tools.sumformula import formula_str_to_dict, sum_formula_to_html
 
 DEBUG = False
-app = QApplication(sys.argv)
+app = QApplication.instance()
+if app is None:
+    app = QApplication([])
+import qtawesome as qta
 
 
 class AppWindow(QMainWindow):
@@ -224,7 +226,7 @@ class AppWindow(QMainWindow):
         except Exception:
             self.ui.ExploreDirButton.setIcon(qta.icon('mdi.folder-open-outline'))
         self.ui.SaveCifButton.setIcon(qta.icon('fa5.save'))
-        self.ui.SelectCif_PushButton.setIcon(qta.icon('fa.file-text-o', options=[{'color': 'darkgreen'}]))
+        self.ui.SelectCif_PushButton.setIcon(qta.icon('ph.file-text', options=[{'color': 'darkgreen'}]))
         try:
             self.ui.AuthorEditPushButton.setIcon(qta.icon('ph.users-three-bold'))
         except Exception:
@@ -236,11 +238,11 @@ class AppWindow(QMainWindow):
         try:
             self.ui.OptionsPushButton.setIcon(qta.icon('ph.gear'))
         except Exception:
-            self.ui.OptionsPushButton.setIcon(qta.icon('fa.gear'))
+            self.ui.OptionsPushButton.setIcon(qta.icon('msc.gear'))
         try:
             self.ui.ShredCifButton.setIcon(qta.icon('ph.files-bold'))
         except Exception:
-            self.ui.ShredCifButton.setIcon(qta.icon('fa.files-o'))
+            pass
         try:
             self.ui.DetailsPushButton.setIcon(qta.icon('ph.bird-bold'))
         except Exception:
@@ -278,7 +280,7 @@ class AppWindow(QMainWindow):
         try:
             self.textedit.ui.applyTextPushButton.setIcon(qta.icon('ph.check-bold'))
         except Exception:
-            self.textedit.ui.applyTextPushButton.setIcon(qta.icon('fa.check'))
+            pass
         self.textedit.ui.exportTextPushButton.setIcon(qta.icon('mdi.export'))
         self.textedit.ui.savePushButton.setIcon(qta.icon('mdi.content-save'))
         self.textedit.ui.deletePushButton.setIcon(qta.icon('mdi.playlist-minus'))
@@ -287,7 +289,7 @@ class AppWindow(QMainWindow):
         try:
             self.ui.SaveAuthorLoopToTemplateButton.setIcon(qta.icon('mdi.badge-account-outline'))
         except Exception:
-            self.ui.SaveAuthorLoopToTemplateButton.setIcon(qta.icon('fa.id-badge'))
+            pass
         try:
             self.ui.AddThisAuthorToLoopPushButton.setIcon(qta.icon('mdi.folder-table-outline'))
         except Exception:
@@ -1071,7 +1073,7 @@ class AppWindow(QMainWindow):
         try:
             self.ui.ReportPicPushButton.setIcon(qta.icon('ph.image-bold'))
         except Exception:
-            self.ui.ReportPicPushButton.setIcon(qta.icon('fa.image'))
+            pass
 
     def get_checked_templates_list_text(self) -> str:
         for index in range(self.ui.docxTemplatesListWidget.count()):
