@@ -100,7 +100,7 @@ class AppWindow(QMainWindow):
         self.options = Options(self.ui, self.settings)
         self.deposit = CODdeposit(self.ui, self.cif, self.options)
         self.equipment = Equipment(app=self, settings=self.settings)
-        self.properties = Properties(app=self, settings=self.settings)
+        self.properties = Properties(parent=self, settings=self.settings)
         self.status_bar = StatusBar(ui=self.ui)
         self.status_bar.show_message('FinalCif version {}'.format(VERSION))
         self.authors: Optional[AuthorLoops] = None
@@ -114,9 +114,7 @@ class AppWindow(QMainWindow):
         self.ui.TemplatesStackedWidget.setCurrentIndex(0)
         self.ui.MainStackedWidget.got_to_main_page()
         self.set_initial_button_states()
-        if len(sys.argv) > 1 and not file:
-            self.load_cif_file(Path(sys.argv[1]))
-        elif file:
+        if file:
             self.load_cif_file(file)
         self.load_recent_cifs_list()
         self.set_checkcif_output_font(self.ui.CheckcifPlaintextEdit)

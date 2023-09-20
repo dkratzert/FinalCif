@@ -8,16 +8,15 @@ from docx.shared import Cm
 from docx.table import Table
 
 from finalcif import VERSION
-from finalcif.appwindow import AppWindow
+from finalcif.appwindow import AppWindow, app
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.report.templated_report import TemplatedReport
 
 
 class TemplateReportTestCase(unittest.TestCase):
     def setUp(self) -> None:
-        self.myapp = AppWindow()
         self.testcif = Path('tests/examples/1979688.cif').absolute()
-        self.myapp.load_cif_file(self.testcif.resolve())
+        self.myapp = AppWindow(file=self.testcif)
         self.myapp.ui.HAtomsCheckBox.setChecked(False)
         self.myapp.ui.ReportTextCheckBox.setChecked(False)
         self.myapp.ui.PictureWidthDoubleSpinBox.setValue(7.43)
@@ -26,7 +25,6 @@ class TemplateReportTestCase(unittest.TestCase):
         self.reportdoc = self.myapp.cif.finalcif_file_prefixed(prefix='report_', suffix='-finalcif.docx')
         self.report_zip = self.myapp.cif.finalcif_file_prefixed(prefix='', suffix='-finalcif.zip')
         self.myapp.select_report_picture(Path('finalcif/icon/finalcif.png'))
-        self.myapp.hide()
 
     def tearDown(self) -> None:
         self.myapp.cif.finalcif_file.unlink(missing_ok=True)
@@ -40,6 +38,8 @@ class TemplateReportTestCase(unittest.TestCase):
             self.myapp.ui.docxTemplatesListWidget.setCurrentRow(num)
             self.myapp.templates.remove_current_template()
         self.myapp.ui.docxTemplatesListWidget.blockSignals(False)
+        self.myapp.close()
+        app.quit()
 
     def import_templates(self):
         # blocking signals, because signal gets fired after delete and crashes: 

@@ -17,11 +17,12 @@ with suppress(ImportError):
     from finalcif.appwindow import AppWindow
 
 
-class Properties:
-    def __init__(self, app: 'AppWindow', settings: FinalCifSettings):
-        self.app = app
+class Properties(QtCore.QObject):
+    def __init__(self, parent: 'AppWindow', settings: FinalCifSettings):
+        super().__init__(parent=parent)
+        self.app = parent
         self.settings = settings
-        if app:
+        if parent:
             self.signals_and_slots()
             self.app.ui.PropertiesTemplatesStackedWidget.setCurrentIndex(0)
             self.app.ui.PropertiesEditTableWidget.verticalHeader().hide()
@@ -181,7 +182,7 @@ class Properties:
                 return
             show_general_warning('No permission to write file to {}'.format(Path(filename).resolve()))
 
-    def selected_template_name(self) -> None:
+    def selected_template_name(self) -> str:
         return self.app.ui.PropertiesTemplatesListWidget.currentIndex().data()
 
     def import_property_from_file(self, filename: str = '') -> None:

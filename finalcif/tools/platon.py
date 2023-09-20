@@ -1,7 +1,6 @@
 import os
 import subprocess
 import sys
-import threading
 import time
 from contextlib import suppress
 from pathlib import Path
@@ -35,7 +34,7 @@ class PlatonRunner(QtCore.QObject):
         self.Z = ''
         self.process = QtCore.QProcess()
         self.output_widget.clear()
-        threading.Thread(target=self._monitor_output_log).start()
+        QtCore.QTimer(self).singleShot(100, self._monitor_output_log)
         # self.process.readyReadStandardOutput.connect(self.on_ready_read)
         self.process.finished.connect(self._onfinished)
         self.process.setWorkingDirectory(str(self.cif_file.parent))

@@ -1,4 +1,5 @@
 import unittest
+from pathlib import Path
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtTest import QTest
@@ -8,7 +9,7 @@ from finalcif.appwindow import AppWindow
 
 class EquipmentTestCase(unittest.TestCase):
     def setUp(self) -> None:
-        self.app = AppWindow()
+        self.app = AppWindow(Path('test-data/1000006.cif'))
         self.app.equipment.import_equipment_from_file('test-data/Crystallographer_Details.cif')
         self.app.hide()
 
@@ -38,7 +39,7 @@ class EquipmentTestCase(unittest.TestCase):
 
 class PropertiesTestCase(unittest.TestCase):
     def setUp(self) -> None:
-        self.app = AppWindow()
+        self.app = AppWindow(Path('test-data/1000006.cif'))
         self.app.hide()
 
     def property_edit_click(self, field: str):

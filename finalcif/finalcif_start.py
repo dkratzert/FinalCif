@@ -52,7 +52,10 @@ def main():
         sys.excepthook = my_exception_hook
     # windows_style = QStyleFactory.create('Fusion')
     # app.setStyle(windows_style)
-    w = AppWindow()
+    file = None
+    if len(sys.argv) > 1 and Path(sys.argv[1]).is_file():
+        file = Path(sys.argv[1])
+    w = AppWindow(file=file)
     app.setWindowIcon(QIcon(os.path.join(application_path, r'icon/finalcif2.png')))
     w.setWindowTitle('FinalCif v{}'.format(VERSION))
     # w.showMaximized()  # For full screen view
