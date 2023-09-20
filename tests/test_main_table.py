@@ -11,7 +11,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor
 
 from finalcif.appwindow import AppWindow
-from finalcif.gui.custom_classes import Column
+from finalcif.gui.custom_classes import Column, MyCifTable
 from finalcif.tools.misc import unify_line_endings
 
 
@@ -110,3 +110,9 @@ class TestMainTableFieldBehavior(unittest.TestCase):
         self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>",
                          str(self.myapp.ui.cif_main_table.widget_from_key('_audit_contact_author_address',
                                                                           Column.EDIT).__class__))
+
+    def test_multicif(self):
+        self.assertEqual(False, self.myapp.cif.is_multi_cif)
+        self.assertEqual(1, len(self.myapp.cif.doc))
+        self.myapp.append_cif(Path('test-data/1000006.cif'))
+        self.assertEqual(True, self.myapp.cif.is_multi_cif)

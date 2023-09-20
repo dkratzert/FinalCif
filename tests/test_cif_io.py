@@ -99,5 +99,16 @@ class TestQuotationMark(unittest.TestCase):
         self.assertEqual("Jesus' live", self.cif['_diffrn_detector'])
 
 
+class TestMultiCif(unittest.TestCase):
+    def setUp(self) -> None:
+        self.cif = CifContainer(Path('tests/examples/multi.cif'))
+
+    def test_ismulti(self):
+        self.assertEqual(True, self.cif.is_multi_cif)
+
+    def test_isempty(self):
+        self.assertEqual(False, self.cif.is_empty())
+
+
 if __name__ == '__main__':
     unittest.main()
