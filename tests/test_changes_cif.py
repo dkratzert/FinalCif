@@ -12,9 +12,8 @@ class TestChangesTrackingActive(unittest.TestCase):
 
     def setUp(self) -> None:
         self.testcif = Path('tests/examples/work/cu_BruecknerJK_153F40_0m.cif').absolute()
-        self.myapp = AppWindow(self.testcif, unit_test=True)
+        self.myapp = AppWindow(self.testcif)
         self.myapp.finalcif_changes_filename.unlink(missing_ok=True)
-        self.myapp.running_inside_unit_test = True
         self.myapp.hide()
         self.myapp.ui.trackChangesCifCheckBox.setChecked(True)
         self.myapp.setWindowIcon(QIcon('./icon/multitable.png'))

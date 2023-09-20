@@ -1,7 +1,7 @@
 import unittest
 from pathlib import Path
 
-from finalcif.appwindow import AppWindow
+from finalcif.appwindow import AppWindow, app
 
 
 class MyTestCase(unittest.TestCase):
@@ -10,9 +10,8 @@ class MyTestCase(unittest.TestCase):
         self.testcif = Path('tests/examples/1979688.cif').resolve()
         self.authorexport_file = Path('tests/examples/testexport_author.cif').resolve()
         self.testimport_author = Path('tests/other_templates/AATest_Author.cif').resolve()
-        self.app = AppWindow(self.testcif, unit_test=True)
-        self.app.running_inside_unit_test = True
-        self.app.hide()
+        self.app = AppWindow(self.testcif)
+        self.app.show()
         self.author = {'address': 'address', 'footnote': 'footnote', 'email': 'email',
                        'name'   : 'name', 'orcid': 'orcid', 'phone': 'phone', 'contact': True}
         self.app.ui.authorEditTabWidget.setCurrentIndex(0)
@@ -20,6 +19,7 @@ class MyTestCase(unittest.TestCase):
     def tearDown(self) -> None:
         self.authorexport_file.unlink(missing_ok=True)
         self.app.close()
+        app.quit()
 
     def _import_testauthor(self):
         # To be used in other tests

@@ -1,18 +1,17 @@
 import unittest
+from pathlib import Path
 
-from finalcif.appwindow import AppWindow
+from finalcif import appwindow
 
 
 class TestOptions(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.myapp = AppWindow(unit_test=True)
-        self.myapp.running_inside_unit_test = True
+        self.myapp = appwindow.AppWindow(file=Path('test-data/1000006.cif'))
         self.myapp.ui.HAtomsCheckBox.setChecked(False)
         self.myapp.ui.ReportTextCheckBox.setChecked(False)
         self.myapp.ui.ADPTableCheckBox.setChecked(False)
         self.myapp.ui.PictureWidthDoubleSpinBox.setValue(0.0)
-        self.myapp.hide()
 
     def tearDown(self) -> None:
         self.myapp.ui.HAtomsCheckBox.setChecked(False)

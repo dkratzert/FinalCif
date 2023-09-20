@@ -8,8 +8,7 @@ from finalcif.appwindow import AppWindow
 
 class EquipmentTestCase(unittest.TestCase):
     def setUp(self) -> None:
-        self.app = AppWindow(unit_test=True)
-        self.app.running_inside_unit_test = True
+        self.app = AppWindow()
         self.app.equipment.import_equipment_from_file('test-data/Crystallographer_Details.cif')
         self.app.hide()
 
@@ -39,8 +38,7 @@ class EquipmentTestCase(unittest.TestCase):
 
 class PropertiesTestCase(unittest.TestCase):
     def setUp(self) -> None:
-        self.app = AppWindow(unit_test=True)
-        self.app.running_inside_unit_test = True
+        self.app = AppWindow()
         self.app.hide()
 
     def property_edit_click(self, field: str):

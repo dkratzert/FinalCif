@@ -25,10 +25,10 @@ class CheckCif(QThread):
     progress = pyqtSignal(str)
     failed = pyqtSignal(str)
 
-    def __init__(self, cif: CifContainer, outfile: Path, hkl_upload: bool = True,
+    def __init__(self, parent, cif: CifContainer, outfile: Path, hkl_upload: bool = True,
                  pdf: bool = False, url: str = '', full_iucr: bool = False):
         # hkl == False means no hkl upload
-        super().__init__()
+        super().__init__(parent=parent)
         self.hkl_upload = hkl_upload
         self.html_out_file = outfile
         self.cif = cif

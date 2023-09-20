@@ -8,26 +8,22 @@ from docx.shared import Cm
 from docx.table import Table
 
 from finalcif import VERSION
-from finalcif.appwindow import AppWindow
-# noinspection PyUnresolvedReferences
-from finalcif.appwindow import app
+from finalcif.appwindow import AppWindow, app
 
 
 class TablesTestMixin():
 
     def setUp(self) -> None:
         self.testcif = Path('tests/examples/1979688.cif').absolute()
-        self.myapp = AppWindow(self.testcif, unit_test=True)
+        self.myapp = AppWindow(file=self.testcif)
         self.myapp.ui.HAtomsCheckBox.setChecked(False)
         self.myapp.ui.ReportTextCheckBox.setChecked(False)
         self.myapp.ui.PictureWidthDoubleSpinBox.setValue(0.0)
         # make sure to use no template:
         self.myapp.ui.docxTemplatesListWidget.setCurrentRow(0)
-        self.myapp.running_inside_unit_test = True
-        self.myapp.hide()
+        self.myapp.show()
         self.reportdoc = self.myapp.cif.finalcif_file_prefixed(prefix='report_', suffix='-finalcif.docx')
         self.report_zip = self.myapp.cif.finalcif_file_prefixed(prefix='', suffix='-finalcif.zip')
-        self.myapp.hide()
 
     def tearDown(self) -> None:
         self.myapp.cif.finalcif_file.unlink(missing_ok=True)
@@ -37,6 +33,7 @@ class TablesTestMixin():
         self.myapp.ui.HAtomsCheckBox.setChecked(False)
         self.myapp.ui.PictureWidthDoubleSpinBox.setValue(7.5)
         self.myapp.close()
+        app.quit()
 
 
 class TablesTestCase(TablesTestMixin, unittest.TestCase):
@@ -144,6 +141,9 @@ class TablesNoPictureTestCase(TablesTestMixin, unittest.TestCase):
 
     def setUp(self) -> None:
         super().setUp()
+
+    def tearDown(self) -> None:
+        super().tearDown()
 
     def test_save_report_works(self):
         self.myapp.ui.SaveFullReportButton.click()

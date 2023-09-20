@@ -15,10 +15,9 @@ from finalcif.report.templated_report import TemplatedReport
 
 class TemplateReportTestCase(unittest.TestCase):
     def setUp(self) -> None:
-        self.myapp = AppWindow(unit_test=True)
+        self.myapp = AppWindow()
         self.testcif = Path('tests/examples/1979688.cif').absolute()
         self.myapp.load_cif_file(self.testcif.resolve())
-        self.myapp.running_inside_unit_test = True
         self.myapp.ui.HAtomsCheckBox.setChecked(False)
         self.myapp.ui.ReportTextCheckBox.setChecked(False)
         self.myapp.ui.PictureWidthDoubleSpinBox.setValue(7.43)

@@ -16,9 +16,10 @@ from shutil import which
 from typing import Union, Dict, Tuple, List, Optional
 
 import gemmi.cif
+import pytest
 import requests
 from PyQt5 import QtCore, QtGui, QtWebEngineWidgets
-from PyQt5.QtCore import QThread, QTimer, Qt, QEvent
+from PyQt5.QtCore import QThread, Qt, QEvent
 from PyQt5.QtWidgets import QMainWindow, QShortcut, QCheckBox, QListWidgetItem, QApplication, \
     QPlainTextEdit, QFileDialog, QMessageBox
 from gemmi import cif
@@ -73,14 +74,13 @@ import qtawesome as qta
 
 class AppWindow(QMainWindow):
 
-    def __init__(self, file: Optional[Path] = None, unit_test: bool = False):
+    def __init__(self, file: Optional[Path] = None):
         super().__init__()
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
         # This prevents some things to happen during unit tests:
         # Open of target dir of shred cif,
         # open report doc,
         # get check.def from platon server
-        self.running_inside_unit_test = unit_test
         self.sources: Optional[Dict[str, Tuple[Optional[str]]]] = None
         self.cif: Optional[CifContainer] = None
         self.report_picture_path: Optional[Path] = None
@@ -91,7 +91,6 @@ class AppWindow(QMainWindow):
         self.checkdef_file: Path = Path.home().joinpath('check.def')
         self.missing_data: set = set()
         self.temperature_warning_displayed = False
-        self.threadpool = []
         # True if line with "these are already in" reached:
         self.complete_data_row = -1
         self.ui = Ui_FinalCifWindow()
@@ -135,6 +134,14 @@ class AppWindow(QMainWindow):
             self.make_button_icons()
         self.format_report_button()
         self.set_font_sizes()
+
+    @property
+    def running_inside_unit_test(self):
+        if "PYTEST_CURRENT_TEST" in os.environ:
+            if DEBUG:
+                print(f'pytest process running: {os.environ["PYTEST_CURRENT_TEST"]}')
+            return True
+        return False
 
     def set_initial_button_states(self) -> None:
         self.ui.appendCifPushButton.setDisabled(True)
@@ -682,10 +689,9 @@ class AppWindow(QMainWindow):
             print('Skipping version.txt download because NO_NETWORK variable is set.')
             return
         mainurl = "https://dkratzert.de/files/finalcif/version.txt"
-        self.upd = MyDownloader(mainurl, parent=None)
-        version_thread = QThread()
-        self.threadpool.append(version_thread)
-        start_worker(self.upd, version_thread, onload=self.is_update_necessary)
+        self.upd = MyDownloader(mainurl, parent=self)
+        self.version_thread = QThread(parent=self)
+        start_worker(self.upd, self.version_thread, onload=self.is_update_necessary)
 
     def is_update_necessary(self, content: bytes) -> None:
         """
@@ -752,10 +758,9 @@ class AppWindow(QMainWindow):
             print('Skipping check.def download because NO_NETWORK variable is set.')
             return
         url = 'http://www.platonsoft.nl/xraysoft/unix/platon/check.def'
-        self.updc = MyDownloader(url, parent=None)
-        checkdef_thread = QThread(parent=self)
-        self.threadpool.append(checkdef_thread)
-        start_worker(self.updc, checkdef_thread, onload=self._save_checkdef)
+        self.updc = MyDownloader(url, parent=self)
+        self.checkdef_thread = QThread(parent=self)
+        start_worker(self.updc, self.checkdef_thread, onload=self._save_checkdef)
 
     def _save_checkdef(self, reply: bytes) -> None:
         """
@@ -904,7 +909,7 @@ class AppWindow(QMainWindow):
             self.htmlfile.unlink()
         except (FileNotFoundError, PermissionError):
             pass
-        self.ckf = CheckCif(cif=self.cif, outfile=self.htmlfile,
+        self.ckf = CheckCif(parent=self, cif=self.cif, outfile=self.htmlfile,
                             hkl_upload=(not self.ui.structfactCheckBox.isChecked()), pdf=False,
                             url=self.options.checkcif_url,
                             full_iucr=self.ui.fullIucrCheckBox.isChecked())
@@ -978,7 +983,8 @@ class AppWindow(QMainWindow):
             pass
         self.ui.CheckCifLogPlainTextEdit.appendPlainText(
             'Sending pdf report request to {} ...'.format(self.options.checkcif_url))
-        self.ckf = CheckCif(cif=self.cif, outfile=htmlfile, hkl_upload=(not self.ui.structfactCheckBox.isChecked()),
+        self.ckf = CheckCif(parent=self, cif=self.cif, outfile=htmlfile,
+                            hkl_upload=(not self.ui.structfactCheckBox.isChecked()),
                             pdf=True, url=self.options.checkcif_url,
                             full_iucr=self.ui.fullIucrCheckBox.isChecked())
         self.ckf.failed.connect(self._checkcif_failed)

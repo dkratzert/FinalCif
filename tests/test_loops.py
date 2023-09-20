@@ -21,8 +21,7 @@ class TestLoops(unittest.TestCase):
     def setUp(self) -> None:
         self.testcif = Path('tests/examples/1979688.cif').resolve()
         Path('tests/examples/1979688-finalcif_changes.cif').unlink(missing_ok=True)
-        self.myapp = AppWindow(self.testcif, unit_test=True)
-        self.myapp.running_inside_unit_test = True
+        self.myapp = AppWindow(self.testcif)
         self.myapp.hide()  # For full screen view
         self.myapp.ui.LoopsPushButton.click()
         self.myapp.ui.trackChangesCifCheckBox.setChecked(False)
@@ -87,8 +86,7 @@ class TestLoopsMove(unittest.TestCase):
         self.testcif = Path('tests/examples/1979688.cif').resolve()
         # TODO: make tests where changes file is active:
         Path('tests/examples/1979688-finalcif_changes.cif').unlink(missing_ok=True)
-        self.myapp = AppWindow(self.testcif, unit_test=True)
-        self.myapp.running_inside_unit_test = True
+        self.myapp = AppWindow(self.testcif)
         self.myapp.hide()  # For full screen view
         self.myapp.ui.LoopsPushButton.click()
 

@@ -20,9 +20,8 @@ class TestMainTableFieldBehavior(unittest.TestCase):
     def setUp(self) -> None:
         self.testcif = Path('tests/examples/1979688.cif').absolute()
         Path('tests/examples/1979688-finalcif_changes.cif').unlink(missing_ok=True)
-        self.myapp = AppWindow(self.testcif, unit_test=True)
-        self.myapp.running_inside_unit_test = True
-        self.myapp.hide()  # For full screen view
+        self.myapp = AppWindow(self.testcif)
+        self.myapp.show()
         self.myapp.settings.empty_deleted_list()
         self.myapp.ui.trackChangesCifCheckBox.setChecked(False)
 
