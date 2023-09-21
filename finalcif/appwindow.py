@@ -7,6 +7,7 @@
 import os
 import subprocess
 import sys
+import threading
 import time
 from contextlib import suppress
 from datetime import datetime
@@ -16,17 +17,15 @@ from shutil import which
 from typing import Union, Dict, Tuple, List, Optional
 
 import gemmi.cif
-import pytest
 import requests
 from PyQt5 import QtCore, QtGui, QtWebEngineWidgets
-from PyQt5.QtCore import QThread, Qt, QEvent
+from PyQt5.QtCore import Qt, QEvent
 from PyQt5.QtWidgets import QMainWindow, QShortcut, QCheckBox, QListWidgetItem, QApplication, \
     QPlainTextEdit, QFileDialog, QMessageBox
 from gemmi import cif
 from qtpy.QtGui import QDesktopServices
 
 from finalcif import VERSION
-from finalcif.cif.checkcif.checkcif import MyHTMLParser, AlertHelp, CheckCif
 from finalcif.cif.cif_file_io import CifContainer, GemmiError
 from finalcif.cif.cod.deposit import CODdeposit
 from finalcif.cif.text import utf8_to_str, quote
@@ -52,7 +51,7 @@ from finalcif.report.archive_report import ArchiveReport
 from finalcif.report.tables import make_report_from, make_multi_tables
 from finalcif.report.templated_report import TemplatedReport
 from finalcif.template.templates import ReportTemplates
-from finalcif.tools.download import MyDownloader, start_worker
+from finalcif.tools.download import MyDownloader
 from finalcif.tools.dsrmath import my_isnumeric
 from finalcif.tools.misc import next_path, do_not_import_keys, celltxt, to_float, do_not_import_from_stoe_cfx, \
     cif_to_header_label, grouper, is_database_number, file_age_in_days, open_file, \
@@ -71,6 +70,7 @@ if app is None:
     app = QApplication([])
 with suppress(ImportError):
     import qtawesome as qta
+from finalcif.cif.checkcif.checkcif import MyHTMLParser, AlertHelp, CheckCif
 
 
 class AppWindow(QMainWindow):
@@ -689,9 +689,10 @@ class AppWindow(QMainWindow):
             return
         mainurl = "https://dkratzert.de/files/finalcif/version.txt"
         # parent must be None, otherwise it can't be moved to a thread:
-        self.upd = MyDownloader(mainurl, parent=None)
-        self.version_thread = QThread(parent=self)
-        start_worker(self.upd, self.version_thread, onload=self.is_update_necessary)
+        self.worker = MyDownloader(mainurl, parent=None)
+        self.worker.loaded.connect(self.is_update_necessary)
+        self.thread = threading.Thread(target=self.worker.download)
+        self.thread.start()
 
     def is_update_necessary(self, content: bytes) -> None:
         """
@@ -758,9 +759,10 @@ class AppWindow(QMainWindow):
             print('Skipping check.def download because NO_NETWORK variable is set.')
             return
         url = 'http://www.platonsoft.nl/xraysoft/unix/platon/check.def'
-        self.updc = MyDownloader(url, parent=None)
-        self.checkdef_thread = QThread(parent=self)
-        start_worker(self.updc, self.checkdef_thread, onload=self._save_checkdef)
+        self.worker = MyDownloader(url, parent=None)
+        self.worker.loaded.connect(self._save_checkdef)
+        self.thread = threading.Thread(target=self.worker.download)
+        self.thread.start()
 
     def _save_checkdef(self, reply: bytes) -> None:
         """

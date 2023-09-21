@@ -10,6 +10,7 @@ from contextlib import suppress
 from typing import Union, List, Any
 
 import gemmi
+
 with suppress(ImportError):
     import qtawesome
 from PyQt5 import QtCore

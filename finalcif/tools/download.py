@@ -1,23 +1,9 @@
 import sys
 
 import requests
-from PyQt5 import QtCore
-from PyQt5.QtCore import pyqtSignal, QObject, QThread, pyqtSlot
+from PyQt5.QtCore import pyqtSignal, QObject
 
 from finalcif import VERSION
-
-
-def start_worker(runnable: QtCore.QObject, thread: QThread, onload: object):
-    """
-    Starts the worker class in a separate thread.
-    """
-    runnable.moveToThread(thread)
-    runnable.loaded.connect(onload)
-    thread.started.connect(runnable.download)
-    runnable.finished.connect(thread.quit)
-    runnable.finished.connect(runnable.deleteLater)
-    thread.finished.connect(thread.deleteLater)
-    thread.start()
 
 
 # noinspection PyUnresolvedReferences
@@ -34,7 +20,6 @@ class MyDownloader(QObject):
     def failed_to_load(self, txt: str) -> None:
         print('Failed to load {}', self.url)
 
-    @pyqtSlot()
     def download(self) -> None:
         # print('Downloading:', self.url)
         OS = sys.platform
@@ -62,7 +47,7 @@ class MyDownloader(QObject):
 if __name__ == "__main__":
     from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLabel
     from PyQt5.QtWidgets import QApplication
-    from PyQt5.QtCore import QThread
+    import threading
 
     app = QApplication(sys.argv)
     w = QWidget()
@@ -79,10 +64,8 @@ if __name__ == "__main__":
         label.setText(bar.decode('ascii'))
 
 
-    upd = MyDownloader("https://dkratzert.de/files/finalcif/version.txt")
-    thread = QThread()
-    upd.moveToThread(thread)
-    upd.loaded.connect(foo)
+    worker = MyDownloader("https://dkratzert.de/files/finalcif/version.txt")
+    worker.loaded.connect(foo)
+    thread = threading.Thread(target=worker.download)
     thread.start()
-    upd.download()
     sys.exit(app.exec_())
