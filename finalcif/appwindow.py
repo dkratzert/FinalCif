@@ -625,7 +625,7 @@ class AppWindow(QMainWindow):
         if left_frame <= 300:
             left_frame = 300
         self.ui.LeftFrame.setMinimumWidth(int(left_frame))
-        #QtCore.QTimer(self).singleShot(0, self.ui.cif_main_table.resizeRowsToContents)
+        QtCore.QTimer(self).singleShot(0, self.ui.cif_main_table.resizeRowsToContents)
 
     def moveEvent(self, a0: QtGui.QMoveEvent) -> None:
         """Is called when the main window moves."""
@@ -1463,8 +1463,7 @@ class AppWindow(QMainWindow):
         self.ui.datanameComboBox.blockSignals(False)
         if self.cif.is_multi_cif:
             # short after start, because window size is not finished
-            #QtCore.QTimer(self).singleShot(1000, self.ui.datanameComboBox.showPopup)
-            pass
+            QtCore.QTimer(self).singleShot(1000, self.ui.datanameComboBox.showPopup)
 
     def add_data_names_to_combobox(self) -> None:
         self.ui.datanameComboBox.clear()
@@ -1697,8 +1696,7 @@ class AppWindow(QMainWindow):
         if self.cif.res_file_data:
             self.ui.shelx_TextEdit.setPlainText(cif.as_string(self.cif.res_file_data))
         try:
-            #QtCore.QTimer(self).singleShot(0, self.view_molecule)
-            pass
+            QtCore.QTimer(self).singleShot(0, self.view_molecule)
         except Exception:
             print('Molecule view crashed!')
 
@@ -1846,7 +1844,7 @@ class AppWindow(QMainWindow):
                 txt = 'FinalCif V{} by Daniel Kratzert, Freiburg {}, https://dkratzert.de/finalcif.html'
                 strval = txt.format(VERSION, datetime.now().year)
                 self.ui.cif_main_table.setText(key=key, column=Column.DATA, txt=strval)
-                #QtCore.QTimer(self).singleShot(200, self.ui.cif_main_table.resizeRowsToContents)
+                QtCore.QTimer(self).singleShot(200, self.ui.cif_main_table.resizeRowsToContents)
             # print(key, value)
         if not self.cif.test_res_checksum():
             show_res_checksum_warning()
