@@ -894,7 +894,7 @@ class AppWindow(QMainWindow):
         try:
             self.checkcif_browser.close()
             self.ui.htmlCHeckCifGridLayout.removeWidget(self.checkcif_browser)
-            QApplication.processEvents()
+            app.processEvents()
         except Exception as e:
             if DEBUG:
                 print('Browser not removed:')
@@ -1045,7 +1045,7 @@ class AppWindow(QMainWindow):
         font = doc.defaultFont()
         font.setFamily("Courier New")
         font.setStyleHint(QtGui.QFont.Monospace)
-        QApplication.processEvents()
+        app.processEvents()
         font.setPointSize(14)
         doc.setDefaultFont(font)
 

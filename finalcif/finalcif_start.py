@@ -55,6 +55,7 @@ def main():
     file = None
     if len(sys.argv) > 1 and Path(sys.argv[1]).is_file():
         file = Path(sys.argv[1])
+    app.setQuitOnLastWindowClosed(True)
     w = AppWindow(file=file)
     app.setWindowIcon(QIcon(os.path.join(application_path, r'icon/finalcif2.png')))
     w.setWindowTitle('FinalCif v{}'.format(VERSION))
