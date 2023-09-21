@@ -18,6 +18,7 @@ from finalcif import VERSION
 from finalcif.app_path import application_path
 from finalcif.appwindow import AppWindow, DEBUG, app
 from finalcif.gui.dialogs import show_bug_found_warning
+from gui.dialogs import show_general_warning
 
 
 def my_exception_hook(exctype: Type[BaseException], value: BaseException, error_traceback: traceback,
@@ -53,8 +54,12 @@ def main():
     # windows_style = QStyleFactory.create('Fusion')
     # app.setStyle(windows_style)
     file = None
-    if len(sys.argv) > 1 and Path(sys.argv[1]).is_file():
+    if len(sys.argv) > 1:
         file = Path(sys.argv[1])
+        if not file.is_file():
+            show_general_warning(warn_text=f'The file {file.resolve().absolute()} \nyou tried to open does not exist.',
+                                 window_title='File not found')
+            file = None
     app.setQuitOnLastWindowClosed(True)
     w = AppWindow(file=file)
     app.setWindowIcon(QIcon(os.path.join(application_path, r'icon/finalcif2.png')))

@@ -92,6 +92,7 @@ def show_general_warning(warn_text: str = '', info_text: str = '', window_title=
         box.setInformativeText(info_text)
         box.setStyleSheet("QLabel{min-width:600 px; font-size: 14px;}")
     box.exec()
+    box.close()
 
 
 def show_keyword_help(parent, helptext: str, title: str = ''):
