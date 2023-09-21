@@ -625,7 +625,7 @@ class AppWindow(QMainWindow):
         if left_frame <= 300:
             left_frame = 300
         self.ui.LeftFrame.setMinimumWidth(int(left_frame))
-        QtCore.QTimer(self).singleShot(0, self.ui.cif_main_table.resizeRowsToContents)
+        threading.Thread(target=self.ui.cif_main_table.resizeRowsToContents).start()
 
     def moveEvent(self, a0: QtGui.QMoveEvent) -> None:
         """Is called when the main window moves."""
@@ -1696,7 +1696,8 @@ class AppWindow(QMainWindow):
         if self.cif.res_file_data:
             self.ui.shelx_TextEdit.setPlainText(cif.as_string(self.cif.res_file_data))
         try:
-            QtCore.QTimer(self).singleShot(0, self.view_molecule)
+            #QtCore.QTimer(self).singleShot(0, self.view_molecule)
+            threading.Thread(target=self.view_molecule).start()
         except Exception:
             print('Molecule view crashed!')
 
@@ -1844,7 +1845,7 @@ class AppWindow(QMainWindow):
                 txt = 'FinalCif V{} by Daniel Kratzert, Freiburg {}, https://dkratzert.de/finalcif.html'
                 strval = txt.format(VERSION, datetime.now().year)
                 self.ui.cif_main_table.setText(key=key, column=Column.DATA, txt=strval)
-                QtCore.QTimer(self).singleShot(200, self.ui.cif_main_table.resizeRowsToContents)
+                #threading.Thread(target=self.ui.cif_main_table.resizeRowsToContents).start()
             # print(key, value)
         if not self.cif.test_res_checksum():
             show_res_checksum_warning()

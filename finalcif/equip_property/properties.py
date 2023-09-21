@@ -1,3 +1,5 @@
+import threading
+import time
 from contextlib import suppress
 from pathlib import Path
 from typing import List, Dict
@@ -62,10 +64,14 @@ class Properties(QtCore.QObject):
             self.lb.setText(f'key {key} already exists')
             self.lb.move(self.app.ui.cifKeywordLineEdit.mapToGlobal(QtCore.QPoint(15, 25)))
             self.lb.show()
-            QtCore.QTimer(self).singleShot(4000, self.lb.hide)
+            threading.Thread(target=self.hide_label).start()
         else:
             self.app.ui.SavePropertiesButton.setEnabled(True)
             self.lb.hide()
+
+    def hide_label(self):
+        time.sleep(5)
+        self.lb.hide()
 
     def show_properties(self) -> None:
         """
