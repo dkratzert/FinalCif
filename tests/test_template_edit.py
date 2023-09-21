@@ -13,6 +13,9 @@ class EquipmentTestCase(unittest.TestCase):
         self.app.equipment.import_equipment_from_file('test-data/Crystallographer_Details.cif')
         self.app.hide()
 
+    def tearDown(self) -> None:
+        self.app.close()
+
     def equipment_edit_click(self, field: str):
         listw = self.app.ui.EquipmentTemplatesListWidget
         self.app.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)

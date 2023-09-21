@@ -136,10 +136,9 @@ class TestLongTextinField(unittest.TestCase):
         self.w.show()
 
     def tearDown(self) -> None:
-        self.table.deleteLater()
-        del self.table
-        self.w.deleteLater()
-        del self.w
+        self.w.close()
+        self.table.close()
+        app.quit()
 
     def test_long_text_in_texedit_and_gstr(self):
         txt = ('This is a much longer text, because I want to see what this method does with text '
