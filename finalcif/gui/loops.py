@@ -10,7 +10,8 @@ from contextlib import suppress
 from typing import Union, List, Any
 
 import gemmi
-import qtawesome
+with suppress(ImportError):
+    import qtawesome
 from PyQt5 import QtCore
 from PyQt5.QtCore import QAbstractTableModel, QModelIndex, Qt, QSize, QVariant, pyqtSignal, QEvent
 from PyQt5.QtGui import QColor, QCursor

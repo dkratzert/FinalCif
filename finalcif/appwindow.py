@@ -69,7 +69,8 @@ DEBUG = False
 app = QApplication.instance()
 if app is None:
     app = QApplication([])
-import qtawesome as qta
+with suppress(ImportError):
+    import qtawesome as qta
 
 
 class AppWindow(QMainWindow):
