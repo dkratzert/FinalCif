@@ -57,7 +57,7 @@ def main():
     if len(sys.argv) > 1:
         file = Path(sys.argv[1])
         if not file.is_file():
-            show_general_warning(warn_text=f'The file {file.resolve().absolute()} \nyou tried to open does not exist.',
+            show_general_warning(parent=None, warn_text=f'The file {file.resolve().absolute()} \nyou tried to open does not exist.',
                                  window_title='File not found')
             file = None
     app.setQuitOnLastWindowClosed(True)

@@ -172,7 +172,7 @@ class Properties(QtCore.QObject):
             loop = block.init_loop(cif_key, [''])
         except RuntimeError:
             # Not a valid loop key
-            show_general_warning('"{}" is not a valid cif keyword.'.format(cif_key))
+            show_general_warning(self.app, '"{}" is not a valid cif keyword.'.format(cif_key))
             return
         for value in table_data:
             if value:
@@ -186,7 +186,7 @@ class Properties(QtCore.QObject):
         except PermissionError:
             if Path(filename).is_dir():
                 return
-            show_general_warning('No permission to write file to {}'.format(Path(filename).resolve()))
+            show_general_warning(self.app, 'No permission to write file to {}'.format(Path(filename).resolve()))
 
     def selected_template_name(self) -> str:
         return self.app.ui.PropertiesTemplatesListWidget.currentIndex().data()

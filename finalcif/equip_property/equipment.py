@@ -181,11 +181,11 @@ class Equipment:
         for key, _ in table_data:
             if key not in cif_all_dict.keys():
                 if not key.startswith('_'):
-                    show_general_warning('"{}" is not a valid keyword! '
+                    show_general_warning(self.app, '"{}" is not a valid keyword! '
                                          '\nChange the name in order to save.\n'
                                          'Keys must start with an underscore.'.format(key))
                     return
-                show_general_warning('"{}" is not an official CIF keyword!'.format(key))
+                show_general_warning(self.app, '"{}" is not an official CIF keyword!'.format(key))
         self.settings.save_settings_list('equipment', self.selected_template_name(), table_data)
         self.app.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
         print('saved')
@@ -269,7 +269,7 @@ class Equipment:
         except PermissionError:
             if Path(filename).is_dir():
                 return
-            show_general_warning('No permission to write file to {}'.format(Path(filename).resolve()))
+            show_general_warning(self.app, 'No permission to write file to {}'.format(Path(filename).resolve()))
 
     def cancel_equipment_template(self) -> None:
         """

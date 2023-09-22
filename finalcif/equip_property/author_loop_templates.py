@@ -166,7 +166,7 @@ class AuthorLoops():
             if cut_row not in gemmi_loop.values:
                 gemmi_loop.add_row(cut_row)
         elif gemmi_loop.width() > len(row):
-            show_general_warning('An author loop with larger size is already in the CIF. Can not proceed.')
+            show_general_warning(self, 'An author loop with larger size is already in the CIF. Can not proceed.')
         else:
             if row not in gemmi_loop.values:
                 gemmi_loop.add_row(row)
@@ -283,7 +283,7 @@ class AuthorLoops():
         except (PermissionError, IOError):
             if Path(filename).is_dir():
                 return
-            show_general_warning('No permission to write file to {}'.format(Path(filename).resolve()))
+            show_general_warning(self, 'No permission to write file to {}'.format(Path(filename).resolve()))
 
     def put_author_in_cif_object(self, blockname: str, filename: str) -> CifContainer:
         author = self.author_loopdata(author_name=self.get_selected_loop_name())

@@ -63,7 +63,7 @@ class ShredCIF():
         """
         lines = []
         for line in hkl_data.splitlines(keepends=False):
-            if line[:1] == ')':
+            if line.startswith(')'):
                 line = ';' + line[1:]
             lines.append(line)
         return '\n'.join(lines).lstrip('\n')
@@ -90,7 +90,7 @@ class ShredCIF():
             hklfile.write_text(hkl, encoding='latin1', errors='ignore')
         except Exception as e:
             print(e)
-            show_general_warning('Unable to write files: ' + str(e))
+            show_general_warning(parent=None, warn_text='Unable to write files: ' + str(e))
             return False
         return True
 
@@ -117,6 +117,6 @@ class ShredCIF():
             resfile.write_text(reslines, encoding='latin1', errors='ignore', newline='\n')
         except Exception as e:
             print(e)
-            show_general_warning('Unable to write files: ' + str(e))
+            show_general_warning(parent=None, warn_text='Unable to write files: ' + str(e))
             return False
         return True

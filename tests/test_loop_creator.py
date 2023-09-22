@@ -6,13 +6,15 @@ from PyQt5.QtWidgets import QApplication
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.gui.loop_creator import LoopCreator
 
-app = QApplication(sys.argv)
+app = QApplication.instance()
+if app is None:
+    app = QApplication([])
 
 
 class TestLoopCreator(unittest.TestCase):
     def setUp(self) -> None:
         self.cif = CifContainer('test-data/1000006.cif')
-        self.lc = LoopCreator(cif=self.cif)
+        self.lc = LoopCreator(parent=None, cif=self.cif)
         self.lc.saveLoopPushButton.clicked.connect(self.lc.save_new_loop_to_cif)
         # For testing:
         # self.show_app()

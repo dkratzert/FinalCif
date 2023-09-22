@@ -10,6 +10,9 @@ from finalcif.gui.new_key_dialog import NewKey
 with suppress(ImportError):
     from finalcif.gui.custom_classes import MyCifTable
 
+app = QApplication.instance()
+if app is None:
+    app = QApplication([])
 
 class MyQPlainTextEdit(QPlainTextEdit):
     """

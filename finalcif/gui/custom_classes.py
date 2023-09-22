@@ -37,10 +37,9 @@ class MyCifTable(QTableWidget, ItemTextMixin):
     new_key = QtCore.pyqtSignal(str)
 
     def __init__(self, parent: QWidget = None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super().__init__(parent=parent, *args, **kwargs)
         self.parent = parent
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
-        self.setParent(parent)
         self.installEventFilter(self)
         self.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)

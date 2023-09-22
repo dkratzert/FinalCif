@@ -475,7 +475,7 @@ class AppWindow(QMainWindow):
             doc = read_document_from_cif_file(filename)
             block: gemmi.cif.Block = doc.sole_block()
         except Exception:
-            show_general_warning('This file is not readable.')
+            show_general_warning(self, 'This file is not readable.')
             return
         text_list = []
         for i in block:
@@ -500,7 +500,7 @@ class AppWindow(QMainWindow):
             loop = block.init_loop(blockname, [''])
         except RuntimeError:
             # Not a valid loop key
-            show_general_warning('"{}" is not a valid cif keyword.'.format(blockname))
+            show_general_warning(self, '"{}" is not a valid cif keyword.'.format(blockname))
             return
         for value in textlist:
             if value:
@@ -514,7 +514,7 @@ class AppWindow(QMainWindow):
         except PermissionError:
             if Path(filename).is_dir():
                 return
-            show_general_warning('No permission to write file to {}'.format(Path(filename).resolve()))
+            show_general_warning(self, 'No permission to write file to {}'.format(Path(filename).resolve()))
         self.status_bar.show_message(f'Template exported to {filename}.', timeout=10)
 
     def delete_text_template(self) -> None:
@@ -703,7 +703,7 @@ class AppWindow(QMainWindow):
             remote_version = int(content.decode('ascii', errors='ignore'))
         if remote_version > VERSION:
             print('Version {} is outdated (actual is {}).'.format(VERSION, remote_version))
-            show_update_warning(remote_version)
+            show_update_warning(self, remote_version)
         else:
             print('Version {} is up-to-date.'.format(VERSION))
 
@@ -1127,13 +1127,13 @@ class AppWindow(QMainWindow):
                 raise
             print('Unable to make report from cif file.')
             not_ok = e
-            show_general_warning("The report templates could not be found:\n" + str(not_ok))
+            show_general_warning(self, "The report templates could not be found:\n" + str(not_ok))
             return
         except PermissionError:
             if DEBUG:
                 raise
             print('Unable to open cif file')
-            show_general_warning('The report document {} could not be opened.\n'
+            show_general_warning(self, 'The report document {} could not be opened.\n'
                                  'Is the file already opened?'.format(report_filename.name))
             return
         if not self.running_inside_unit_test:
@@ -1219,7 +1219,7 @@ class AppWindow(QMainWindow):
         except Exception as e:
             print('Unable to save file:')
             print(e)
-            show_general_warning('Can not save file: ' + str(e))
+            show_general_warning(self, 'Can not save file: ' + str(e))
             return False
 
     def store_data_from_table_rows(self) -> None:
@@ -1232,7 +1232,7 @@ class AppWindow(QMainWindow):
                 changes_cif = self.get_changes_cif(self.finalcif_changes_filename)
             except Exception as e:
                 print('Unable to create changes CIF:', e)
-                unable_to_open_message(filepath=self.finalcif_changes_filename, not_ok=e)
+                unable_to_open_message(parent=self, filepath=self.finalcif_changes_filename, not_ok=e)
                 changes_cif = None
         # makes sure also the currently edited item is saved:
         self.ui.cif_main_table.setCurrentItem(None)
@@ -1360,16 +1360,16 @@ class AppWindow(QMainWindow):
         try:
             imp_cif = CifContainer(Path(filename))
         except RuntimeError as e:
-            show_general_warning('Could not import {}:\n'.format(filename) + str(e))
+            show_general_warning(self, 'Could not import {}:\n'.format(filename) + str(e))
             return
         except ValueError as e:
             warning = 'Problems parsing file: {}:\n'.format(filename) + str(e)
             if 'data_' in str(e):
                 warning = warning + "\n\nA CIF needs to start with 'data_[some_name]'."
-            show_general_warning(warning)
+            show_general_warning(self, warning)
             return
         except IOError as e:
-            show_general_warning('Unable to open file {}:\n'.format(filename) + str(e))
+            show_general_warning(self, 'Unable to open file {}:\n'.format(filename) + str(e))
             return
         self.check_cif_for_missing_values_before_really_open_it()
         try:
@@ -1377,7 +1377,7 @@ class AppWindow(QMainWindow):
             self.import_loops(imp_cif)
         except Exception as e:
             print(e)
-            unable_to_open_message(Path(self.cif.filename), e)
+            unable_to_open_message(self, Path(self.cif.filename), e)
         # I think I leave the user possibilities to change the imported values:
         # self.save_current_cif_file()
         # self.load_cif_file(str(self.cif.finalcif_file))
@@ -1450,7 +1450,7 @@ class AppWindow(QMainWindow):
             print(e)
             not_ok = e
         if not_ok:
-            unable_to_open_message(filepath, not_ok)
+            unable_to_open_message(self, filepath, not_ok)
             return
         if not self.cif.chars_ok:
             self.warn_about_bad_cif()
@@ -1487,7 +1487,7 @@ class AppWindow(QMainWindow):
             self.fill_cif_table()
         except UnicodeDecodeError:
             nums = self.cif.get_line_numbers_of_bad_characters(Path(self.cif.doc.source))
-            show_general_warning(window_title='Unable to open file',
+            show_general_warning(parent=self, window_title='Unable to open file',
                                  warn_text='Invalid characters in file!',
                                  info_text=f'The file "{Path(self.cif.doc.source)}" has invalid '
                                            f'characters in line(s)'
@@ -1516,7 +1516,7 @@ class AppWindow(QMainWindow):
                 try:
                     self.load_changes_cif()
                 except Exception as e:
-                    unable_to_open_message(filepath=self.finalcif_changes_filename, not_ok=e)
+                    unable_to_open_message(parent=self, filepath=self.finalcif_changes_filename, not_ok=e)
             if self.running_inside_unit_test and changes_exist:
                 self.load_changes_cif()
         self.make_loops_tables()
@@ -1576,9 +1576,9 @@ class AppWindow(QMainWindow):
             return
         cif2 = CifContainer(cif_file)
         if cif2.is_multi_cif:
-            show_general_warning('Can add single data CIFs only!')
+            show_general_warning(self, 'Can add single data CIFs only!')
         if cif2.block.name in [x.name for x in self.cif.doc]:
-            show_general_warning(warn_text='Duplicate block', info_text='Data block name "<b>{}</b>" already present '
+            show_general_warning(self, warn_text='Duplicate block', info_text='Data block name "<b>{}</b>" already present '
                                                                         'in current CIF!'.format(self.cif.block.name))
             return
         self.cif.doc.add_copied_block(block=cif2.block, pos=-1)
@@ -1604,7 +1604,7 @@ class AppWindow(QMainWindow):
             print(str(e))
             errlist = str(e).split(':')
             if len(errlist) > 1:
-                show_general_warning(
+                show_general_warning(self,
                     f"Attention in CIF line {errlist[1]}:\n'{errlist[2].split()[0]}' has no value.")
 
     def get_last_workdir(self):
@@ -1625,15 +1625,15 @@ class AppWindow(QMainWindow):
 
     def able_to_open(self, filepath: Path) -> bool:
         if not filepath.exists():
-            show_general_warning("The file you tried to open does not exist!")
+            show_general_warning(self, "The file you tried to open does not exist!")
             return False
         if filepath.stat().st_size == 0:
-            show_general_warning('This file has zero byte size!')
+            show_general_warning(self, 'This file has zero byte size!')
             return False
         return True
 
     def warn_about_bad_cif(self):
-        show_general_warning("You have non-ascii characters like umlauts in the SHELX file "
+        show_general_warning(self, "You have non-ascii characters like umlauts in the SHELX file "
                              "attached to this CIF.\n\n"
                              "FinalCif tries to convert them, but be warned "
                              "(they are not allowed in CIF1 files anyway).\n")
@@ -1744,7 +1744,7 @@ class AppWindow(QMainWindow):
                                or csystem == 'hexagonal' or csystem == 'cubic'):
             bad = True
         if bad:
-            bad_z_message(Z)
+            bad_z_message(self, Z)
 
     def get_data_sources(self) -> None:
         """
@@ -1848,9 +1848,9 @@ class AppWindow(QMainWindow):
                 #threading.Thread(target=self.ui.cif_main_table.resizeRowsToContents).start()
             # print(key, value)
         if not self.cif.test_res_checksum():
-            show_res_checksum_warning()
+            show_res_checksum_warning(parent=self)
         if not self.cif.test_hkl_checksum():
-            show_hkl_checksum_warning()
+            show_hkl_checksum_warning(parent=self)
         if self.cif.is_multi_cif:
             self.refresh_combo_boxes()
         else:
@@ -1904,7 +1904,7 @@ class AppWindow(QMainWindow):
         textedit.setReadOnly(True)
 
     def _go_to_new_loop_page(self):
-        self.loopcreate = LoopCreator(cif=self.cif)
+        self.loopcreate = LoopCreator(parent=self, cif=self.cif)
         self.ui.LoopsTabWidget.addTab(self.loopcreate, 'Create Loops')
         self.ui.LoopsTabWidget.setCurrentIndex(self.ui.LoopsTabWidget.count() - 1)
         self.ui.revertLoopsPushButton.hide()
