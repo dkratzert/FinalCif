@@ -18,7 +18,7 @@ from finalcif import VERSION
 from finalcif.app_path import application_path
 from finalcif.appwindow import AppWindow, DEBUG, app
 from finalcif.gui.dialogs import show_bug_found_warning
-from gui.dialogs import show_general_warning
+from finalcif.gui.dialogs import show_general_warning
 
 
 def my_exception_hook(exctype: Type[BaseException], value: BaseException, error_traceback: traceback,
