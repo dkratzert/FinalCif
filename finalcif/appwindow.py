@@ -1134,7 +1134,7 @@ class AppWindow(QMainWindow):
                 raise
             print('Unable to open cif file')
             show_general_warning(self, 'The report document {} could not be opened.\n'
-                                 'Is the file already opened?'.format(report_filename.name))
+                                       'Is the file already opened?'.format(report_filename.name))
             return
         if not self.running_inside_unit_test:
             self.open_report_document(report_filename, multi_table_document)
@@ -1578,8 +1578,9 @@ class AppWindow(QMainWindow):
         if cif2.is_multi_cif:
             show_general_warning(self, 'Can add single data CIFs only!')
         if cif2.block.name in [x.name for x in self.cif.doc]:
-            show_general_warning(self, warn_text='Duplicate block', info_text='Data block name "<b>{}</b>" already present '
-                                                                        'in current CIF!'.format(self.cif.block.name))
+            show_general_warning(self, warn_text='Duplicate block',
+                                 info_text=f'Data block name "<b>{self.cif.block.name}</b>" '
+                                           f'already present in current CIF!')
             return
         self.cif.doc.add_copied_block(block=cif2.block, pos=-1)
         self.cif.save()
@@ -1605,7 +1606,7 @@ class AppWindow(QMainWindow):
             errlist = str(e).split(':')
             if len(errlist) > 1:
                 show_general_warning(self,
-                    f"Attention in CIF line {errlist[1]}:\n'{errlist[2].split()[0]}' has no value.")
+                                     f"Attention in CIF line {errlist[1]}:\n'{errlist[2].split()[0]}' has no value.")
 
     def get_last_workdir(self):
         try:
@@ -1634,9 +1635,9 @@ class AppWindow(QMainWindow):
 
     def warn_about_bad_cif(self):
         show_general_warning(self, "You have non-ascii characters like umlauts in the SHELX file "
-                             "attached to this CIF.\n\n"
-                             "FinalCif tries to convert them, but be warned "
-                             "(they are not allowed in CIF1 files anyway).\n")
+                                   "attached to this CIF.\n\n"
+                                   "FinalCif tries to convert them, but be warned "
+                                   "(they are not allowed in CIF1 files anyway).\n")
 
     def show_residuals(self) -> None:
         """
@@ -1696,7 +1697,7 @@ class AppWindow(QMainWindow):
         if self.cif.res_file_data:
             self.ui.shelx_TextEdit.setPlainText(cif.as_string(self.cif.res_file_data))
         try:
-            #QtCore.QTimer(self).singleShot(0, self.view_molecule)
+            # QtCore.QTimer(self).singleShot(0, self.view_molecule)
             threading.Thread(target=self.view_molecule).start()
         except Exception:
             print('Molecule view crashed!')
@@ -1845,7 +1846,7 @@ class AppWindow(QMainWindow):
                 txt = 'FinalCif V{} by Daniel Kratzert, Freiburg {}, https://dkratzert.de/finalcif.html'
                 strval = txt.format(VERSION, datetime.now().year)
                 self.ui.cif_main_table.setText(key=key, column=Column.DATA, txt=strval)
-                #threading.Thread(target=self.ui.cif_main_table.resizeRowsToContents).start()
+                # threading.Thread(target=self.ui.cif_main_table.resizeRowsToContents).start()
             # print(key, value)
         if not self.cif.test_res_checksum():
             show_res_checksum_warning(parent=self)

@@ -127,7 +127,10 @@ class CifContainer():
     def _on_load(self) -> None:
         # will not ok with non-ascii characters in the res file:
         self.chars_ok = True
-        self.doc.check_for_duplicates()
+        try:
+            self.doc.check_for_duplicates()
+        except RuntimeError as e:
+            raise GemmiError(e)
         self.order = order
         self.dsr_used = DSRFind(self.res_file_data).dsr_used
         self.atomic_struct: gemmi.SmallStructure = gemmi.make_small_structure_from_block(self.block)

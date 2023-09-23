@@ -12,7 +12,6 @@ from docx.text.paragraph import Paragraph
 from docxtpl import DocxTemplate, RichText, InlineImage, Subdoc
 
 from finalcif.cif.cif_file_io import CifContainer
-from finalcif.cif.text import retranslate_delimiter
 from finalcif.report.references import SAINTReference, SHELXLReference, SadabsTwinabsReference, SHELXTReference, \
     SHELXSReference, SHELXDReference, SORTAVReference, FinalCifReference, CCDCReference, \
     CrysalisProReference, Nosphera2Reference, Olex2Reference
@@ -20,9 +19,10 @@ from finalcif.report.report_text import math_to_word, gstr, format_radiation, ge
 from finalcif.report.symm import SymmetryElement
 from finalcif.tools.misc import isnumeric, this_or_quest, timessym, angstrom, protected_space, less_or_equal, \
     halbgeviert, \
-    minus_sign, ellipsis_mid, remove_line_endings
+    minus_sign, ellipsis_mid
 from finalcif.tools.options import Options
 from finalcif.tools.space_groups import SpaceGroups
+from gui.dialogs import show_general_warning
 
 
 class BondsAndAngles():
@@ -58,7 +58,7 @@ class BondsAndAngles():
             num = symmsearch(self.cif, newsymms, num, symm2, symms)
             # Atom1 - Atom2:
             a = f'{at1}{halbgeviert}{at2}'
-            symm = '#' + str(symms[symm2]) if symm2 else ''
+            symm = f'#{str(symms[symm2])}' if symm2 else ''
             atoms = RichText(a)
             atoms.add(symm, superscript=True)
             bonds.append({'atoms': atoms, 'dist': dist})
@@ -80,8 +80,8 @@ class BondsAndAngles():
                 symm2 = None
             num = symmsearch(self.cif, newsymms, num, symm1, symms)
             num = symmsearch(self.cif, newsymms, num, symm2, symms)
-            symm1_str = '#' + str(symms[symm1]) if symm1 else ''
-            symm2_str = '#' + str(symms[symm2]) if symm2 else ''
+            symm1_str = f'#{str(symms[symm1])}' if symm1 else ''
+            symm2_str = f'#{str(symms[symm2])}' if symm2 else ''
             angle_val = ang.angle_val.replace('-', minus_sign)
             # atom1 symm1_str a symm2_str
             atoms = RichText(ang.label1)
@@ -118,7 +118,7 @@ class TorsionAngles():
         return len(self._symmlist) > 0
 
     def _get_torsion_angles_list(self, without_h: bool):
-        if not self.cif.nangles(without_h) > 0:
+        if self.cif.nangles(without_h) <= 0:
             return []
         symms = {}
         newsymms = {}
@@ -138,10 +138,10 @@ class TorsionAngles():
             num = symmsearch(self.cif, newsymms, num, symm2, symms)
             num = symmsearch(self.cif, newsymms, num, symm3, symms)
             num = symmsearch(self.cif, newsymms, num, symm4, symms)
-            symmstr1 = '#' + str(symms[symm1]) if symm1 else ''
-            symmstr2 = '#' + str(symms[symm2]) if symm2 else ''
-            symmstr3 = '#' + str(symms[symm3]) if symm3 else ''
-            symmstr4 = '#' + str(symms[symm4]) if symm4 else ''
+            symmstr1 = f'#{str(symms[symm1])}' if symm1 else ''
+            symmstr2 = f'#{str(symms[symm2])}' if symm2 else ''
+            symmstr3 = f'#{str(symms[symm3])}' if symm3 else ''
+            symmstr4 = f'#{str(symms[symm4])}' if symm4 else ''
             atoms = RichText(tors.label1)
             atoms.add(symmstr1, superscript=True)
             atoms.add(halbgeviert)
@@ -193,7 +193,7 @@ class HydrogenBonds():
             if symm in ('.', '?'):
                 symm = None
             num = symmsearch(self.cif, newsymms, num, symm, symms)
-            symmval = ('#' + str(symms[symm])) if symm else ''
+            symmval = f'#{str(symms[symm])}' if symm else ''
             a = h.label_d + halbgeviert + h.label_h + ellipsis_mid + h.label_a
             atoms = RichText(a)
             atoms.add(symmval, superscript=True)
@@ -451,7 +451,7 @@ class TemplatedReport():
         if 'OLEX' in refined.upper():
             self.literature['refinement'] = Olex2Reference()
         if ('NOSPHERA2' in refined.upper() or 'NOSPHERA2' in cif['_refine_special_details'].upper() or
-            'NOSPHERAT2' in cif['_olex2_refine_details'].upper()):
+                'NOSPHERAT2' in cif['_olex2_refine_details'].upper()):
             self.literature['refinement'] = Nosphera2Reference()
         return refined.split()[0]
 
@@ -494,8 +494,12 @@ class TemplatedReport():
         # Filter definition for {{foobar|filter}} things:
         jinja_env = jinja2.Environment()
         jinja_env.filters['inv_article'] = get_inf_article
-        tpl_doc.render(context, jinja_env=jinja_env, autoescape=True)
-        tpl_doc.save(output_filename)
+        try:
+            tpl_doc.render(context, jinja_env=jinja_env, autoescape=True)
+            tpl_doc.save(output_filename)
+        except Exception as e:
+            show_general_warning(parent=None, window_title='Warning', warn_text='Document generation failed',
+                                 info_text=str(e))
 
     def prepare_report_data(self, cif: CifContainer, options: Options, picfile: Path, template_path: Path):
         tpl_doc = DocxTemplate(template_path)
