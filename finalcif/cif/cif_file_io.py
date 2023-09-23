@@ -393,7 +393,7 @@ class CifContainer():
             return all_sadabs_items
         hkl = hkl.splitlines(keepends=False)[zero_reflection_position:]
         # html-embedded cif has ')' instead of ';':
-        hkl = [';' if x[:1] == ')' else x for x in hkl]
+        hkl = [';' if x.startswith(')') else x for x in hkl]
         # the keys have a blank char in front:
         hkl = [re.sub(r'^ _', '_', x) for x in hkl]
         hkl = 'data_hkldat\n' + '\n'.join(hkl)
