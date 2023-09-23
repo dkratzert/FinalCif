@@ -19,6 +19,9 @@ You only need them if you want to make report tables that differ from the defaul
 - [A template with everything in](https://github.com/dkratzert/FinalCif/raw/master/finalcif/template/template_text.docx)
 - [A template without the report text](https://github.com/dkratzert/FinalCif/raw/master/finalcif/template/template_without_text.docx)
 
+**Recent Changes**
+
+[See last changes in FinalCif](https://dkratzert.de/fcchangelog.html)
 
 **Some screenshots**
 
