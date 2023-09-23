@@ -255,6 +255,13 @@ class CifContainer():
             return
         self.order_cif_keys()
         print('Saving to', Path(filename).resolve())
+        """
+        # For later gemmi versions:
+        options = gemmi.cif.WriteOptions()
+        options.prefer_pairs = True
+        options.compact = False
+        options.align_pairs = 33
+        options.align_loops = 30"""
         self.doc.write_file(str(filename), gemmi.cif.Style.Indent35)
 
     def order_cif_keys(self) -> None:
