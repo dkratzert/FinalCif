@@ -503,75 +503,82 @@ class TemplatedReport():
 
     def prepare_report_data(self, cif: CifContainer, options: Options, picfile: Path, template_path: Path):
         tpl_doc = DocxTemplate(template_path)
-        ba = BondsAndAngles(cif, without_h=options.without_h)
-        t = TorsionAngles(cif, without_h=options.without_h)
-        h = HydrogenBonds(cif)
-        context = {'options'                : options,
-                   # {'without_h': True, 'atoms_table': True, 'text': True, 'bonds_table': True},
-                   'cif'                    : cif,
-                   'space_group'            : self.space_group_subdoc(tpl_doc, cif),
-                   'structure_figure'       : self.make_picture(options, picfile, tpl_doc),
-                   'crystallization_method' : self.get_crystallization_method(cif),
-                   'sum_formula'            : self.format_sum_formula(cif['_chemical_formula_sum'].replace(" ", "")),
-                   'moiety_formula'         : self.format_sum_formula(cif['_chemical_formula_moiety'].replace(" ", "")),
-                   'itnum'                  : cif['_space_group_IT_number'],
-                   'crystal_size'           : this_or_quest(cif['_exptl_crystal_size_min']) + timessym +
-                                              this_or_quest(cif['_exptl_crystal_size_mid']) + timessym +
-                                              this_or_quest(cif['_exptl_crystal_size_max']),
-                   'crystal_colour'         : this_or_quest(cif['_exptl_crystal_colour']),
-                   'crystal_shape'          : this_or_quest(cif['_exptl_crystal_description']),
-                   'radiation'              : self.get_radiation(cif),
-                   'wavelength'             : cif['_diffrn_radiation_wavelength'],
-                   'theta_range'            : self.get_from_to_theta_range(cif),
-                   'diffr_type'             : gstr(cif['_diffrn_measurement_device_type'])
-                                              or '[No measurement device type given]',
-                   'diffr_device'           : gstr(cif['_diffrn_measurement_device'])
-                                              or '[No measurement device given]',
-                   'diffr_source'           : gstr(cif['_diffrn_source']).strip('\n\r')
-                                              or '[No radiation source given]',
-                   'monochromator'          : gstr(cif['_diffrn_radiation_monochromator']) \
-                                              or '[No monochromator type given]',
-                   'detector'               : gstr(cif['_diffrn_detector_type']) \
-                                              or '[No detector type given]',
-                   'lowtemp_dev'            : MachineType._get_cooling_device(cif),
-                   'index_ranges'           : self.hkl_index_limits(cif),
-                   'indepentent_refl'       : this_or_quest(cif['_reflns_number_total']),
-                   'r_int'                  : this_or_quest(cif['_diffrn_reflns_av_R_equivalents']),
-                   'r_sigma'                : this_or_quest(cif['_diffrn_reflns_av_unetI/netI']),
-                   'completeness'           : self.get_completeness(cif),
-                   'theta_full'             : cif['_diffrn_reflns_theta_full'],
-                   'data'                   : this_or_quest(cif['_refine_ls_number_reflns']),
-                   'restraints'             : this_or_quest(cif['_refine_ls_number_restraints']),
-                   'parameters'             : this_or_quest(cif['_refine_ls_number_parameters']),
-                   'goof'                   : this_or_quest(cif['_refine_ls_goodness_of_fit_ref']),
-                   'ls_R_factor_gt'         : this_or_quest(cif['_refine_ls_R_factor_gt']),
-                   'ls_wR_factor_gt'        : this_or_quest(cif['_refine_ls_wR_factor_gt']),
-                   'ls_R_factor_all'        : this_or_quest(cif['_refine_ls_R_factor_all']),
-                   'ls_wR_factor_ref'       : this_or_quest(cif['_refine_ls_wR_factor_ref']),
-                   'diff_dens_min'          : self.get_diff_density_min(cif).replace('-', minus_sign),
-                   'diff_dens_max'          : self.get_diff_density_max(cif).replace('-', minus_sign),
-                   'exti'                   : self.get_exti(cif),
-                   'flack_x'                : self.get_flackx(cif),
-                   'integration_progr'      : self.get_integration_program(cif),
-                   'abstype'                : gstr(cif['_exptl_absorpt_correction_type']) or '??',
-                   'abs_details'            : self.get_absortion_correction_program(cif),
-                   'solution_method'        : self.solution_method(cif),
-                   'solution_program'       : self.solution_program(cif),
-                   'refinement_details'     : ' '.join(
-                       cif['_refine_special_details'].splitlines(keepends=False)).strip(),
-                   'refinement_prog'        : self.refinement_prog(cif),
-                   'atomic_coordinates'     : self.get_atomic_coordinates(cif),
-                   'displacement_parameters': self.get_displacement_parameters(cif),
-                   'bonds'                  : ba.bonds,
-                   'angles'                 : ba.angles,
-                   'ba_symminfo'            : ba.symminfo,
-                   'torsions'               : t.torsion_angles,
-                   'torsion_symminfo'       : t.symminfo,
-                   'hydrogen_bonds'         : h.hydrogen_bonds,
-                   'hydrogen_symminfo'      : h.symminfo,
-                   'literature'             : self.literature
-                   }
-        return context, tpl_doc
+        maincontext = {}
+        # TODO: This is a first idea. Let's see if this is feasible:
+        for block in cif.doc:
+            cif.load_block_by_name(block.name)
+            ba = BondsAndAngles(cif, without_h=options.without_h)
+            t = TorsionAngles(cif, without_h=options.without_h)
+            h = HydrogenBonds(cif)
+            context = {'options'                : options,
+                       # {'without_h': True, 'atoms_table': True, 'text': True, 'bonds_table': True},
+                       'cif'                    : cif,
+                       'space_group'            : self.space_group_subdoc(tpl_doc, cif),
+                       'structure_figure'       : self.make_picture(options, picfile, tpl_doc),
+                       'crystallization_method' : self.get_crystallization_method(cif),
+                       'sum_formula'            : self.format_sum_formula(
+                           cif['_chemical_formula_sum'].replace(" ", "")),
+                       'moiety_formula'         : self.format_sum_formula(
+                           cif['_chemical_formula_moiety'].replace(" ", "")),
+                       'itnum'                  : cif['_space_group_IT_number'],
+                       'crystal_size'           : this_or_quest(cif['_exptl_crystal_size_min']) + timessym +
+                                                  this_or_quest(cif['_exptl_crystal_size_mid']) + timessym +
+                                                  this_or_quest(cif['_exptl_crystal_size_max']),
+                       'crystal_colour'         : this_or_quest(cif['_exptl_crystal_colour']),
+                       'crystal_shape'          : this_or_quest(cif['_exptl_crystal_description']),
+                       'radiation'              : self.get_radiation(cif),
+                       'wavelength'             : cif['_diffrn_radiation_wavelength'],
+                       'theta_range'            : self.get_from_to_theta_range(cif),
+                       'diffr_type'             : gstr(cif['_diffrn_measurement_device_type'])
+                                                  or '[No measurement device type given]',
+                       'diffr_device'           : gstr(cif['_diffrn_measurement_device'])
+                                                  or '[No measurement device given]',
+                       'diffr_source'           : gstr(cif['_diffrn_source']).strip('\n\r')
+                                                  or '[No radiation source given]',
+                       'monochromator'          : gstr(cif['_diffrn_radiation_monochromator']) \
+                                                  or '[No monochromator type given]',
+                       'detector'               : gstr(cif['_diffrn_detector_type']) \
+                                                  or '[No detector type given]',
+                       'lowtemp_dev'            : MachineType._get_cooling_device(cif),
+                       'index_ranges'           : self.hkl_index_limits(cif),
+                       'indepentent_refl'       : this_or_quest(cif['_reflns_number_total']),
+                       'r_int'                  : this_or_quest(cif['_diffrn_reflns_av_R_equivalents']),
+                       'r_sigma'                : this_or_quest(cif['_diffrn_reflns_av_unetI/netI']),
+                       'completeness'           : self.get_completeness(cif),
+                       'theta_full'             : cif['_diffrn_reflns_theta_full'],
+                       'data'                   : this_or_quest(cif['_refine_ls_number_reflns']),
+                       'restraints'             : this_or_quest(cif['_refine_ls_number_restraints']),
+                       'parameters'             : this_or_quest(cif['_refine_ls_number_parameters']),
+                       'goof'                   : this_or_quest(cif['_refine_ls_goodness_of_fit_ref']),
+                       'ls_R_factor_gt'         : this_or_quest(cif['_refine_ls_R_factor_gt']),
+                       'ls_wR_factor_gt'        : this_or_quest(cif['_refine_ls_wR_factor_gt']),
+                       'ls_R_factor_all'        : this_or_quest(cif['_refine_ls_R_factor_all']),
+                       'ls_wR_factor_ref'       : this_or_quest(cif['_refine_ls_wR_factor_ref']),
+                       'diff_dens_min'          : self.get_diff_density_min(cif).replace('-', minus_sign),
+                       'diff_dens_max'          : self.get_diff_density_max(cif).replace('-', minus_sign),
+                       'exti'                   : self.get_exti(cif),
+                       'flack_x'                : self.get_flackx(cif),
+                       'integration_progr'      : self.get_integration_program(cif),
+                       'abstype'                : gstr(cif['_exptl_absorpt_correction_type']) or '??',
+                       'abs_details'            : self.get_absortion_correction_program(cif),
+                       'solution_method'        : self.solution_method(cif),
+                       'solution_program'       : self.solution_program(cif),
+                       'refinement_details'     : ' '.join(
+                           cif['_refine_special_details'].splitlines(keepends=False)).strip(),
+                       'refinement_prog'        : self.refinement_prog(cif),
+                       'atomic_coordinates'     : self.get_atomic_coordinates(cif),
+                       'displacement_parameters': self.get_displacement_parameters(cif),
+                       'bonds'                  : ba.bonds,
+                       'angles'                 : ba.angles,
+                       'ba_symminfo'            : ba.symminfo,
+                       'torsions'               : t.torsion_angles,
+                       'torsion_symminfo'       : t.symminfo,
+                       'hydrogen_bonds'         : h.hydrogen_bonds,
+                       'hydrogen_symminfo'      : h.symminfo,
+                       'literature'             : self.literature
+                       }
+            maincontext[block.name] = context
+        return maincontext, tpl_doc
 
 
 if __name__ == '__main__':
