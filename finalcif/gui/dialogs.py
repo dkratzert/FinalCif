@@ -3,7 +3,7 @@ import os
 import sys
 from pathlib import Path
 
-from PyQt5 import QtCore
+from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMessageBox, QMainWindow, QFileDialog, QVBoxLayout, QTextEdit, \
     QPushButton, QFrame, QApplication
@@ -169,11 +169,11 @@ def show_update_warning(parent, remote_version: int = 0) -> None:
     box.show()
 
 
-def bad_z_message(parent, z) -> None:
+def bad_z_message(parent, z: float) -> None:
     zinfo = QMessageBox(parent)
     zinfo.setIcon(QMessageBox.Information)
-    zinfo.setText('The number of formula units Z={:.0f} is probably wrong.'
-                  '\nYou may restart refinement with a correct value.'.format(z))
+    zinfo.setText(f'The number of formula units Z={z:.0f} is probably wrong.\n'
+                  f'You may restart refinement with a correct value.')
     zinfo.setModal(True)
     zinfo.show()
 
@@ -191,6 +191,7 @@ def show_bug_found_warning(logfile) -> None:
     box.setWindowTitle('Warning')
     box.setText(title)
     box.setTextInteractionFlags(Qt.TextBrowserInteraction)
+    box.setTextFormat(Qt.AutoText)
     box.setInformativeText(text)
     box.exec()
     window.show()
@@ -224,3 +225,27 @@ def cif_file_save_dialog(filename: str) -> str:
     dialog.selectFile(filename)
     filename, _ = dialog.getSaveFileName(None, 'Select file name', filename)
     return filename
+
+
+if __name__ == '__main__':
+    from PyQt5 import QtWidgets
+
+    window = QtWidgets.QMainWindow()
+    w = QtWidgets.QWidget()
+    window.setCentralWidget(w)
+    l = QtWidgets.QVBoxLayout()
+    w.setLayout(l)
+    # answer = show_yes_now_question(title='Delete templates', question='Fobar?', parent=w)
+    # bad_z_message(parent=w, z=3.0)
+    # show_update_warning(parent=w, remote_version=123)
+    # show_bug_found_warning(Path(r'C:\test.txt'))
+    # show_ok_cancel_warning(parent=w, warn_text='foobar')
+    # show_keyword_help(parent=w, helptext="This is a helptext", title='A Title')
+    # show_general_warning(parent=w, warn_text='Warning text', info_text='Info text', window_title='Title')
+    # show_hkl_checksum_warning(parent=w)
+    # show_res_checksum_warning(parent=w)
+    # unable_to_open_message(parent=w, not_ok=Exception('foo'), filepath=Path('C:/foo.txt'))
+    # do_update_program('127')
+    window.show()
+
+    app.exec_()
