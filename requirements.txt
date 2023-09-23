@@ -15,7 +15,7 @@ python-docx~=0.8
 QtAwesome
 QtPy
 requests
-urllib3~=1.26
+urllib3~=1.26  # crossrefapi needs version 1.26 (09.2023)
 docxtpl
 shelxfile
 crossrefapi
