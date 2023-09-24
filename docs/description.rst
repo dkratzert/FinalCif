@@ -74,7 +74,8 @@ Some CIF writing programs still use the 'global\_' keyword. You may circumvent t
 
 Since version 99, FinalCif supports multi-CIFs, so CIF files with multiple 'data\_' blocks can be
 opened and edited. Please note that auto-filling of missing values is disabled in multi-CIF mode.
-Some other minor details my not function as in single-CIF mode.
+Some other functions, such as renaming a data block, do not work in multi-CIF mode. It is advisable
+to complete each CIF before creating a multi-CIF.
 
 
 .. figure:: pics/multi_cif.png

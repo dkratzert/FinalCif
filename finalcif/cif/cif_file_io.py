@@ -613,8 +613,7 @@ class CifContainer():
         Renames data_ tags to the newname. Also _vrf tags are renamed accordingly.
         http://journals.iucr.org/services/cif/checking/checkfaq.html
         """
-        # Have to use ord(), because Python 3.6 has not str.isascii():
-        newname = ''.join([i for i in newname if ord(i) < 127])
+        newname = ''.join([i for i in newname if i.isascii()])
         self.block.name = newname
         for item in self.block:
             if item.pair is not None:

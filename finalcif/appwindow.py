@@ -1208,7 +1208,8 @@ class AppWindow(QMainWindow):
         if not self.cif:
             # No file is opened
             return None
-        self.cif.rename_data_name(''.join(self.ui.datanameComboBox.currentText().split(' ')))
+        if not self.cif.is_multi_cif:
+            self.cif.rename_data_name(''.join(self.ui.datanameComboBox.currentText().split(' ')))
         self.store_data_from_table_rows()
         self.save_ccdc_number()
         try:
