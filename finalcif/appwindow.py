@@ -859,9 +859,9 @@ class AppWindow(QMainWindow):
         self.ui.CheckCIFResultsTabWidget.setCurrentIndex(1)  # Index 1 is html page
         self.checkcif_browser.load(url)
         self.ui.ResponsesTabWidget.setCurrentIndex(0)
+        threading.Thread(target=self._display_structure_factor_report, args=(parser,)).run()
         # The picture file linked in the html file:
-        imageobj = self.cif.finalcif_file.with_suffix('.gif')
-        gif = parser.get_image()
+        threading.Thread(target=parser.save_image, args=(self.cif.finalcif_file.with_suffix('.gif'),)).run()
         self.ui.CheckCifLogPlainTextEdit.appendPlainText('CheckCIF Report finished.')
         forms = parser.response_forms
         # makes all gray:
@@ -881,8 +881,9 @@ class AppWindow(QMainWindow):
             item = QListWidgetItem(' No level A, B or C alerts to explain.')
             self.ui.responseFormsListWidget.addItem(iteme)
             self.ui.responseFormsListWidget.addItem(item)
-        if gif:
-            imageobj.write_bytes(gif)
+
+    def _display_structure_factor_report(self, parser: MyHTMLParser) -> None:
+        self.ui.ckf_textedit.setPlainText(parser.get_ckf())
 
     def do_html_checkcif(self) -> None:
         """

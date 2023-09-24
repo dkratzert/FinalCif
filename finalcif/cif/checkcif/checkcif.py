@@ -160,7 +160,7 @@ class MyHTMLParser(HTMLParser):
         return requests.get(self.pdf_link, timeout=10).content
 
     def handle_starttag(self, tag: str, attrs: str) -> None:
-        #if tag and tag not in ('font', 'div', 'link', 'meta', 'html', 'table', 'td') and attrs:
+        # if tag and tag not in ('font', 'div', 'link', 'meta', 'html', 'table', 'td') and attrs:
         #    # For debug:
         #    print(f'tag: {tag}, attrs: {attrs}')
         if tag == "a" and len(attrs) > 1 and attrs[1][0] == 'href' and attrs[1][1].endswith('.pdf'):
@@ -177,11 +177,20 @@ class MyHTMLParser(HTMLParser):
         if data.startswith('PLAT') and len(data) == 17:
             self.alert_levels.append(data)
 
-    def get_image(self) -> bytes:
+    def save_image(self, image_file: Path) -> None:
         try:
-            return requests.get(self.imageurl, timeout=10).content
+            image = requests.get(self.imageurl, timeout=10).content
         except MissingSchema:
-            return b''
+            print('debug: Got no image from checkcif server.')
+            image = b''
+        if image:
+            image_file.write_bytes(image)
+
+    def get_ckf(self) -> str:
+        try:
+            return requests.get(self.structure_factor_report, timeout=10).content.decode('latin1', 'ignore')
+        except MissingSchema:
+            return ''
 
     @property
     def response_forms(self) -> List[Dict[str, str]]:
