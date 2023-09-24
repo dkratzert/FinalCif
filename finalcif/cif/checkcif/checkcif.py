@@ -149,6 +149,7 @@ def fix_iucr_urls(content: str):
 class MyHTMLParser(HTMLParser):
     def __init__(self, data):
         self.pdf_link = ''
+        self.structure_factor_report = ''
         self.imageurl = ''
         super(MyHTMLParser, self).__init__()
         self.vrf = ''
@@ -159,10 +160,14 @@ class MyHTMLParser(HTMLParser):
         return requests.get(self.pdf_link, timeout=10).content
 
     def handle_starttag(self, tag: str, attrs: str) -> None:
-        if tag == "a" and len(attrs) > 1 and attrs[0][1] == '_blank' and attrs[1][1].endswith('.pdf'):
-            url = attrs[1][1]
-            self.pdf_link = url
-        if tag == "img" and len(attrs) > 1 and attrs[0][0] == 'width' and '.gif' in attrs[1][1]:
+        #if tag and tag not in ('font', 'div', 'link', 'meta', 'html', 'table', 'td') and attrs:
+        #    # For debug:
+        #    print(f'tag: {tag}, attrs: {attrs}')
+        if tag == "a" and len(attrs) > 1 and attrs[1][0] == 'href' and attrs[1][1].endswith('.pdf'):
+            self.pdf_link = attrs[1][1]
+        if tag == "a" and len(attrs) > 1 and attrs[0][0] == 'href' and attrs[0][1].endswith('ckf.html'):
+            self.structure_factor_report = attrs[0][1]
+        if tag == "img" and len(attrs) > 1 and attrs[0][0] == 'width' and attrs[1][1].endswith('.gif'):
             url = attrs[1][1]
             self.imageurl = url
 
@@ -244,18 +249,19 @@ class AlertHelp():
 
 
 if __name__ == "__main__":
-    cif = Path('test-data/1000007-finalcif.cif')
-    html = Path(r'tests/examples/work/checkcif-cu_BruecknerJK_153F40_0m-finalcif.html')
-    # ckf = CheckCif(None, cif, outfile=html)
-    # ckf.show_html_report()
-    # sys.exit()
-    # ckf.show_pdf_report()
-    # html = Path(r'D:\frames\guest\BreitPZ_R_122\BreitPZ_R_122\checkcif-BreitPZ_R_122_0m_a.html')
+    html = Path(r'tests/checkcif_results/check_html_ab.html')
+    html_pdf = Path(r'tests/checkcif_results/check_pdf_ab.html')
     parser = MyHTMLParser(html.read_text())
-    # print(parser.imageurl)
-    from pprint import pprint
+    print('html report link:', parser.structure_factor_report)
+    print('pdf link:', parser.pdf_link)
+    print('image url:', parser.imageurl)
+    print('###')
+    parser = MyHTMLParser(html_pdf.read_text())
+    print('html report link:', parser.structure_factor_report)
+    print('pdf link:', parser.pdf_link)
+    print('image url:', parser.imageurl)
 
-    pprint(parser.response_forms)
+    # pprint(parser.response_forms)
     # print(parser.alert_levels)
     # print(parser.vrf)
     # print(parser.pdf)
