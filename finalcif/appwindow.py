@@ -1841,7 +1841,7 @@ class AppWindow(QMainWindow):
                 txt = 'FinalCif V{} by Daniel Kratzert, Freiburg {}, https://dkratzert.de/finalcif.html'
                 strval = txt.format(VERSION, datetime.now().year)
                 self.ui.cif_main_table.setText(key=key, column=Column.DATA, txt=strval)
-                threading.Thread(target=self.ui.cif_main_table.resizeRowsToContents).start()
+                #QtCore.QTimer(self).singleShot(200, self.ui.cif_main_table.resizeRowsToContents)
             # print(key, value)
         if not self.cif.test_res_checksum():
             show_res_checksum_warning(parent=self)
