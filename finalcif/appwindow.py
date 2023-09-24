@@ -131,7 +131,6 @@ class AppWindow(QMainWindow):
         self.connect_signals_and_slots()
         with suppress(Exception):
             self.make_button_icons()
-        self.format_report_button()
         self.set_font_sizes()
 
     @property
@@ -203,12 +202,6 @@ class AppWindow(QMainWindow):
             self.ui.docxTemplatesListWidget.setFont(mid_font)
             self.ui.PropertiesTemplatesListWidget.setFont(mid_font)
             self.ui.depositOutputTextBrowser.setFont(mid_font)
-
-    def format_report_button(self):
-        if self.report_without_template():
-            self.ui.SaveFullReportButton.setText('Make Report')
-        else:
-            self.ui.SaveFullReportButton.setText('Make Report from Template')
 
     def set_window_size_and_position(self) -> None:
         wsettings = self.settings.load_window_position()
@@ -691,8 +684,8 @@ class AppWindow(QMainWindow):
         # parent must be None, otherwise it can't be moved to a thread:
         self.worker = MyDownloader(mainurl, parent=None)
         self.worker.loaded.connect(self.is_update_necessary)
-        self.thread = threading.Thread(target=self.worker.download)
-        self.thread.start()
+        self.thread_version = threading.Thread(target=self.worker.download)
+        self.thread_version.start()
 
     def is_update_necessary(self, content: bytes) -> None:
         """
@@ -761,8 +754,8 @@ class AppWindow(QMainWindow):
         url = 'http://www.platonsoft.nl/xraysoft/unix/platon/check.def'
         self.worker = MyDownloader(url, parent=None)
         self.worker.loaded.connect(self._save_checkdef)
-        self.thread = threading.Thread(target=self.worker.download)
-        self.thread.start()
+        self.thread_download = threading.Thread(target=self.worker.download)
+        self.thread_download.start()
 
     def _save_checkdef(self, reply: bytes) -> None:
         """
@@ -829,7 +822,6 @@ class AppWindow(QMainWindow):
         self.status_bar.show_message('')
         self.ui.TemplatesStackedWidget.setCurrentIndex(0)
         self.ui.MainStackedWidget.got_to_main_page()
-        self.format_report_button()
         self.ui.revertLoopsPushButton.show()
         self.ui.newLoopPushButton.show()
 
@@ -1474,6 +1466,7 @@ class AppWindow(QMainWindow):
 
     def _clear_state_before_block_load(self) -> None:
         self.status_bar.show_message('')
+        self.ui.ckf_textedit.clear()
         # Set to empty state before loading:
         self.missing_data = set()
         # clean table and vheader before loading:
@@ -1848,7 +1841,7 @@ class AppWindow(QMainWindow):
                 txt = 'FinalCif V{} by Daniel Kratzert, Freiburg {}, https://dkratzert.de/finalcif.html'
                 strval = txt.format(VERSION, datetime.now().year)
                 self.ui.cif_main_table.setText(key=key, column=Column.DATA, txt=strval)
-                # threading.Thread(target=self.ui.cif_main_table.resizeRowsToContents).start()
+                threading.Thread(target=self.ui.cif_main_table.resizeRowsToContents).start()
             # print(key, value)
         if not self.cif.test_res_checksum():
             show_res_checksum_warning(parent=self)
