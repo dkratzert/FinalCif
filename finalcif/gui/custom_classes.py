@@ -240,7 +240,7 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         Copies the content of a field.
         """
         row = self.currentRow()
-        print(row, self.vheaderitems[row], '#')
+        # print(row, self.vheaderitems[row], '#')
         clipboard = QApplication.clipboard()
         clipboard.setText(self.vheaderitems[row])
 
