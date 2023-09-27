@@ -26,6 +26,8 @@ class MyQPlainTextEdit(QPlainTextEdit):
     """
     templateRequested = pyqtSignal(int)
     new_key = pyqtSignal(str)
+    to_be_shortened = {'_shelx_hkl_file', '_shelx_res_file', '_shelx_fab_file', '_shelx_fcf_file',
+                       '_iucr_refine_instructions_details', '_iucr_refine_fcf_details'}
 
     def __init__(self, parent=None, *args, **kwargs):
         """
@@ -110,7 +112,7 @@ class MyQPlainTextEdit(QPlainTextEdit):
         """
         if color:
             self.setBackground(color)
-        if self.cif_key in {'_shelx_hkl_file', '_shelx_res_file'} and column == Column.CIF:
+        if self.cif_key in self.to_be_shortened and column == Column.CIF:
             self.setPlainText(f'{text[:300]} [...]')
         else:
             self.setPlainText(text)
