@@ -618,7 +618,6 @@ class AppWindow(QMainWindow):
         if left_frame <= 300:
             left_frame = 300
         self.ui.LeftFrame.setMinimumWidth(int(left_frame))
-        threading.Thread(target=self.ui.cif_main_table.resizeRowsToContents).start()
 
     def moveEvent(self, a0: QtGui.QMoveEvent) -> None:
         """Is called when the main window moves."""

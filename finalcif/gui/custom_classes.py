@@ -2,7 +2,7 @@ import re
 from enum import IntEnum
 from typing import List
 
-from PyQt5 import QtCore
+from PyQt5 import QtCore, QtGui
 from PyQt5.QtCore import QEvent, QObject, Qt
 from PyQt5.QtGui import QColor, QKeySequence, QBrush
 from PyQt5.QtWidgets import QAbstractScrollArea, QTableWidget, \
@@ -272,6 +272,10 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         hheader.setSectionResizeMode(Column.EDIT, QHeaderView.Stretch)
         hheader.setAlternatingRowColors(True)
         self.verticalHeader().setAlternatingRowColors(True)
+
+    def resizeEvent(self, e: QtGui.QResizeEvent) -> None:
+        QtCore.QTimer(self).singleShot(0, self.resizeRowsToContents)
+        super().resizeEvent(e)
 
 
 class MyTableWidgetItem(QTableWidgetItem):
