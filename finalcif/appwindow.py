@@ -1038,7 +1038,7 @@ class AppWindow(QMainWindow):
         font = doc.defaultFont()
         font.setFamily("Courier New")
         font.setStyleHint(QtGui.QFont.Monospace)
-        app.processEvents()
+        #app.processEvents()
         font.setPointSize(14)
         doc.setDefaultFont(font)
 
@@ -1372,6 +1372,7 @@ class AppWindow(QMainWindow):
         except Exception as e:
             print(e)
             unable_to_open_message(self, Path(self.cif.filename), e)
+        self.add_audit_creation_method()
         # I think I leave the user possibilities to change the imported values:
         # self.save_current_cif_file()
         # self.load_cif_file(str(self.cif.finalcif_file))
@@ -1841,9 +1842,7 @@ class AppWindow(QMainWindow):
                 value = '?'
             self.add_row(key, value)
             if key == '_audit_creation_method':
-                txt = 'FinalCif V{} by Daniel Kratzert, Freiburg {}, https://dkratzert.de/finalcif.html'
-                strval = txt.format(VERSION, datetime.now().year)
-                self.ui.cif_main_table.setText(key=key, column=Column.DATA, txt=strval)
+                self.add_audit_creation_method(key)
                 #QtCore.QTimer(self).singleShot(200, self.ui.cif_main_table.resizeRowsToContents)
             # print(key, value)
         if not self.cif.test_res_checksum():
@@ -1856,6 +1855,12 @@ class AppWindow(QMainWindow):
             self.get_data_sources()
         self.erase_disabled_items()
         self.ui.cif_main_table.setCurrentItem(None)
+
+    def add_audit_creation_method(self, key: str = '_audit_creation_method') -> None:
+        txt = 'FinalCif V{} by Daniel Kratzert, Freiburg {}, https://dkratzert.de/finalcif.html'
+        strval = txt.format(VERSION, datetime.now().year)
+        self.ui.cif_main_table.setText(key=key, column=Column.DATA, txt=strval)
+        self.ui.cif_main_table.setText(key=key, column=Column.EDIT, txt=strval)
 
     def make_loops_tables(self) -> None:
         for _ in range(self.ui.LoopsTabWidget.count()):
