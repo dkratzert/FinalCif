@@ -618,7 +618,8 @@ class AppWindow(QMainWindow):
         if left_frame <= 300:
             left_frame = 300
         self.ui.LeftFrame.setMinimumWidth(int(left_frame))
-        threading.Thread(target=self.ui.cif_main_table.resizeRowsToContents).start()
+        # threading.Thread(target=self.ui.cif_main_table.resizeRowsToContents).start()
+        QtCore.QTimer(self).singleShot(0, self.ui.cif_main_table.resizeRowsToContents)
 
     def moveEvent(self, a0: QtGui.QMoveEvent) -> None:
         """Is called when the main window moves."""
@@ -1038,7 +1039,7 @@ class AppWindow(QMainWindow):
         font = doc.defaultFont()
         font.setFamily("Courier New")
         font.setStyleHint(QtGui.QFont.Monospace)
-        #app.processEvents()
+        # app.processEvents()
         font.setPointSize(14)
         doc.setDefaultFont(font)
 
@@ -1385,6 +1386,9 @@ class AppWindow(QMainWindow):
             if self.ui.importOnlyNewDataCheckBox.isChecked() and self.cif.block.find(loop.tags):
                 # Import only new loops
                 continue
+            # TODO: Make this work:
+            #if loop.tags[0] in do_not_loop_import:
+            #    continue
             new_loop = self.cif.block.init_loop('', loop.tags)
             for row in imp_cif.block.find(loop.tags):
                 new_loop.add_row(row)
@@ -1843,7 +1847,7 @@ class AppWindow(QMainWindow):
             self.add_row(key, value)
             if key == '_audit_creation_method':
                 self.add_audit_creation_method(key)
-                #QtCore.QTimer(self).singleShot(200, self.ui.cif_main_table.resizeRowsToContents)
+                # QtCore.QTimer(self).singleShot(200, self.ui.cif_main_table.resizeRowsToContents)
             # print(key, value)
         if not self.cif.test_res_checksum():
             show_res_checksum_warning(parent=self)
@@ -1873,13 +1877,13 @@ class AppWindow(QMainWindow):
         """
         Generates a list of tables containing the cif loops.
         """
-        do_not_display = ('_diffrn_refln_index_h')
+        #do_not_display = ('_diffrn_refln_index_h')
         for num, loop in enumerate(self.cif.loops):
             tags = loop.tags
             if not tags or len(tags) < 1:
                 continue
-            if tags[0] in do_not_display:
-                continue
+            #if tags[0] in do_not_display:
+            #    continue
             self.new_loop_tab(loop, num, tags)
         if self.cif.res_file_data:
             self.add_res_file_to_loops()

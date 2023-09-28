@@ -491,6 +491,7 @@ cif_to_header_label = {
     '_exptl_oxdiff_crystal_face_indexfrac_h': 'Crystal Faces Fractional',
     '_platon_squeeze_void_nr'               : 'Platon SQUEEZE Voids',
     '_smtbx_masks_void_nr'                  : 'smtbx Solvent Mask',
+    '_refln_index_h'                        : 'hkl file',
 }
 
 """
