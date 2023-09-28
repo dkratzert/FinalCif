@@ -1,3 +1,4 @@
+import os
 import unittest
 from pathlib import Path
 
@@ -7,6 +8,7 @@ from finalcif.appwindow import AppWindow, app
 class MyTestCase(unittest.TestCase):
 
     def setUp(self) -> None:
+        os.environ["RUNNING_TEST"] = 'True'
         self.testcif = Path('tests/examples/1979688.cif').resolve()
         self.authorexport_file = Path('tests/examples/testexport_author.cif').resolve()
         self.testimport_author = Path('tests/other_templates/AATest_Author.cif').resolve()

@@ -1,3 +1,4 @@
+import os
 import unittest
 from pathlib import Path
 
@@ -11,6 +12,7 @@ class TestChangesTrackingActive(unittest.TestCase):
     """A CIF fle in a complete work folder"""
 
     def setUp(self) -> None:
+        os.environ["RUNNING_TEST"] = 'True'
         self.testcif = Path('tests/examples/work/cu_BruecknerJK_153F40_0m.cif').absolute()
         self.myapp = AppWindow(self.testcif)
         self.myapp.finalcif_changes_filename.unlink(missing_ok=True)

@@ -1,3 +1,4 @@
+import os
 import unittest
 from datetime import datetime
 from pathlib import Path
@@ -18,6 +19,7 @@ class TestFileIsOpened(unittest.TestCase):
     """A CIF fle in a complete work folder"""
 
     def setUp(self) -> None:
+        os.environ["RUNNING_TEST"] = 'True'
         self.testcif = Path('tests/examples/work/cu_BruecknerJK_153F40_0m.cif').absolute()
         self.myapp = AppWindow(self.testcif)
         self.myapp.ui.trackChangesCifCheckBox.setChecked(True)
@@ -41,6 +43,7 @@ class TestWorkfolder(unittest.TestCase):
     """A CIF fle in a complete work folder"""
 
     def setUp(self) -> None:
+        os.environ["RUNNING_TEST"] = 'True'
         self.testcif = Path('tests/examples/work/cu_BruecknerJK_153F40_0m.cif').resolve()
         # TODO: Adapt this to the bahavior with the changes file:
         Path('tests/examples/work/cu_BruecknerJK_153F40_0m-finalcif_changes.cif').unlink(missing_ok=True)
@@ -338,6 +341,7 @@ class TestWorkfolderOtherCifName(unittest.TestCase):
     """A CIF fle in a complete work folder"""
 
     def setUp(self) -> None:
+        os.environ["RUNNING_TEST"] = 'True'
         self.testcif = Path('tests/examples/work/p21c.cif').resolve()
         self.myapp = AppWindow(self.testcif)
         self.myapp.ui.trackChangesCifCheckBox.setChecked(True)

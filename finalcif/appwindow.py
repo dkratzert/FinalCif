@@ -135,7 +135,7 @@ class AppWindow(QMainWindow):
 
     @property
     def running_inside_unit_test(self):
-        if "PYTEST_CURRENT_TEST" in os.environ:
+        if "RUNNING_TEST" in os.environ:
             if DEBUG:
                 print(f'pytest process running: {os.environ["PYTEST_CURRENT_TEST"]}')
             return True
@@ -1131,8 +1131,8 @@ class AppWindow(QMainWindow):
             return
         if not self.running_inside_unit_test:
             self.open_report_document(report_filename, multi_table_document)
-        # Save report and other files to a zip file:
-        self.zip_report(report_filename)
+            # Save report and other files to a zip file:
+            self.zip_report(report_filename)
 
     def report_without_template(self) -> bool:
         """Check whether the report is generated from a template or hard-coded"""

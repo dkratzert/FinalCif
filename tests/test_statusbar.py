@@ -1,3 +1,4 @@
+import os
 import unittest
 
 from PyQt5.QtGui import QIcon
@@ -10,6 +11,7 @@ from finalcif import VERSION
 class TestStausBarWithGraphics(unittest.TestCase):
 
     def setUp(self) -> None:
+        os.environ["RUNNING_TEST"] = 'True'
         self.myapp = AppWindow()
         self.myapp.setWindowIcon(QIcon('./icon/multitable.png'))
         self.myapp.setWindowTitle('FinalCif v{}'.format(VERSION))

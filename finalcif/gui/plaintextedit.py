@@ -1,5 +1,7 @@
 from contextlib import suppress
+from enum import IntEnum
 from functools import cache
+from typing import TYPE_CHECKING
 
 from PyQt5.QtCore import pyqtSignal, Qt, QObject, QEvent, QSize
 from PyQt5.QtGui import QTextOption, QFontMetrics, QContextMenuEvent, QFont, QColor
@@ -7,12 +9,16 @@ from PyQt5.QtWidgets import QPlainTextEdit, QFrame, QApplication, QAbstractScrol
 
 from finalcif.gui.new_key_dialog import NewKey
 
-with suppress(ImportError):
+if TYPE_CHECKING:
     from finalcif.gui.custom_classes import MyCifTable
 
-app = QApplication.instance()
-if app is None:
-    app = QApplication([])
+
+class Column(IntEnum):
+    CIF = 0
+    DATA = 1
+    EDIT = 2
+    BUTTON = 3
+
 
 class MyQPlainTextEdit(QPlainTextEdit):
     """
@@ -98,13 +104,16 @@ class MyQPlainTextEdit(QPlainTextEdit):
     def setUneditable(self):
         self.setReadOnly(True)
 
-    def setText(self, text: str, color=None):
+    def setText(self, text: str, color: QColor = None, column: int = None):
         """
         Set text of a Plaintextfield with lines wrapped at newline characters.
         """
         if color:
             self.setBackground(color)
-        self.setPlainText(text)
+        if self.cif_key == '_shelx_hkl_file' and column == Column.CIF:
+            self.setPlainText('\n[Placeholder for hkl file]\n')
+        else:
+            self.setPlainText(text)
 
     def eventFilter(self, widget: QObject, event: QEvent):
         """

@@ -1,3 +1,4 @@
+import os
 import unittest
 from pathlib import Path
 
@@ -15,6 +16,7 @@ from finalcif.report.templated_report import TemplatedReport
 
 class TemplateReportTestCase(unittest.TestCase):
     def setUp(self) -> None:
+        os.environ["RUNNING_TEST"] = 'True'
         self.testcif = Path('tests/examples/1979688.cif').absolute()
         self.myapp = AppWindow(file=self.testcif)
         self.myapp.ui.HAtomsCheckBox.setChecked(False)

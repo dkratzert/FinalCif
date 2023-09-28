@@ -200,7 +200,7 @@ class MyCifTable(QTableWidget, ItemTextMixin):
             textedit.templateRequested.connect(self.goto_template_page)
             textedit.new_key.connect(lambda x: self.new_key.emit(x))
             self.setCellWidget(row, column, textedit)
-            textedit.setText(txt, color=color)
+            textedit.setText(txt, color=color, column=column)
             if (column == Column.CIF) or (column == Column.DATA):
                 textedit.setUneditable()
         if color:
