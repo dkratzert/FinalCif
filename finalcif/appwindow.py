@@ -1207,7 +1207,7 @@ class AppWindow(QMainWindow):
         self.save_ccdc_number()
         try:
             self.cif.save()
-            self.status_bar.show_message('  File Saved:  {}'.format(self.cif.finalcif_file), 10)
+            self.status_bar.show_message(f'  File Saved:  {self.cif.finalcif_file}', 10)
             print('File saved ...')
             return True
         except Exception as e:
@@ -1239,7 +1239,7 @@ class AppWindow(QMainWindow):
             if col_data and not col_edit and col_data != '?':
                 self.cif[vhead] = col_data
             if col_edit:
-                if self.cif[vhead] != col_edit and changes_cif:
+                if self.cif[vhead] != col_edit and changes_cif and vhead != '_audit_creation_method':
                     changes_cif[vhead] = col_edit
                 try:
                     self.cif[vhead] = col_edit
