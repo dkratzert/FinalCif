@@ -760,6 +760,12 @@ predefined_property_templates = [
      'values': ['_computing_data_reduction',
                 ['', 'SAINT', 'CrysalisPro', 'XDS', 'OpenHKL', 'HKL-2000', 'HKL-3000']]
      },
+    {'name'  : 'Physical properties of the material',
+     'values': ['_chemical_properties_physical',
+                ['', 'air-sensitive', 'moisture-sensitive', 'hygroscopic', 'deliquescent', 'oxygen-sensitive',
+                 'photo-sensitive', 'pyrophoric', 'semiconductor', 'ferromagnetic at low temperature',
+                 'paramagnetic and thermochromic']]
+     },
 ]
 
 celltxt = """
