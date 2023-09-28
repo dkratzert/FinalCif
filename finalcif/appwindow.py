@@ -1700,8 +1700,8 @@ class AppWindow(QMainWindow):
         if self.cif.res_file_data:
             self.ui.shelx_TextEdit.setPlainText(cif.as_string(self.cif.res_file_data))
         try:
-            # QtCore.QTimer(self).singleShot(0, self.view_molecule)
-            threading.Thread(target=self.view_molecule).start()
+            QtCore.QTimer(self).singleShot(0, self.view_molecule)
+            #threading.Thread(target=self.view_molecule).start()
         except Exception:
             print('Molecule view crashed!')
 
