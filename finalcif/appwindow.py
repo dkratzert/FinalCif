@@ -599,7 +599,7 @@ class AppWindow(QMainWindow):
         self.save_current_cif_file()
         self.load_cif_file(self.cif.finalcif_file, self.current_block, load_changes=False)
         self.deposit.cif = self.cif
-        self.ui.MainStackedWidget.setCurrentIndex(7)
+        self.ui.MainStackedWidget.got_to_cod_page()
 
     def event(self, event: QEvent) -> bool:
         if event.type() == QEvent.KeyPress:
@@ -1526,7 +1526,7 @@ class AppWindow(QMainWindow):
             self.ui.CheckcifPlaintextEdit.clear()
             self.ui.TemplatesStackedWidget.setCurrentIndex(0)
             self.authors = AuthorLoops(ui=self.ui, cif=self.cif, app=self)
-            if not self.ui.MainStackedWidget.on_checkcif_page():
+            if not (self.ui.MainStackedWidget.on_checkcif_page() or self.ui.MainStackedWidget.on_info_page()):
                 self.ui.MainStackedWidget.got_to_main_page()
             self.deposit.cif = self.cif
             # self.ui.cif_main_table.resizeRowsToContents()
@@ -1534,6 +1534,9 @@ class AppWindow(QMainWindow):
             for row_number in range(self.ui.cif_main_table.model().rowCount()):
                 vhead_key = self.get_key_by_row_number(row_number)
                 self.ui.cif_main_table.vheaderitems.insert(row_number, vhead_key)
+            if self.ui.MainStackedWidget.on_info_page():
+                self.show_residuals()
+                self.redraw_molecule()
 
     def changes_cif_has_values(self) -> bool:
         try:
