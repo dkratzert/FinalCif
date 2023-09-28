@@ -120,13 +120,16 @@ class MyQPlainTextEdit(QPlainTextEdit):
 
     def sizeHint(self) -> QSize:
         """Text field sizes are scaled to text length"""
+        max_size = QSize(100, 350)
+        if len(self.toPlainText()) > 500:
+            return max_size
         rect = self.fontmetric.boundingRect(self.contentsRect(), Qt.TextWordWrap, self.toPlainText())
         size = QSize(100, rect.height() + 14)
         if size.height() > 50:
             size = QSize(100, rect.height() + 24)
         if size.height() > 350:
             # Prevent extreme height for long text:
-            size = QSize(100, 350)
+            size = max_size
         return size
 
 
