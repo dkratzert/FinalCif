@@ -110,8 +110,8 @@ class MyQPlainTextEdit(QPlainTextEdit):
         """
         if color:
             self.setBackground(color)
-        if self.cif_key == '_shelx_hkl_file' and column == Column.CIF:
-            self.setPlainText('\n[Placeholder for hkl file]\n')
+        if self.cif_key in {'_shelx_hkl_file', '_shelx_res_file'} and column == Column.CIF:
+            self.setPlainText(f'{text[:300]} [...]')
         else:
             self.setPlainText(text)
 
