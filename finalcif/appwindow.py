@@ -43,7 +43,7 @@ from finalcif.gui.dialogs import show_update_warning, unable_to_open_message, sh
     bad_z_message, show_res_checksum_warning, show_hkl_checksum_warning, cif_file_save_dialog, show_yes_now_question
 from finalcif.gui.finalcif_gui_ui import Ui_FinalCifWindow
 from finalcif.gui.loop_creator import LoopCreator
-from finalcif.gui.loops import Loop
+from finalcif.gui.loops import Loop, LoopTableModel
 from finalcif.gui.plaintextedit import MyQPlainTextEdit
 from finalcif.gui.text_value_editor import MyTextTemplateEdit, TextEditItem
 from finalcif.gui.vrf_classes import MyVRFContainer, VREF
@@ -63,6 +63,7 @@ from finalcif.tools.shred import ShredCIF
 from finalcif.tools.space_groups import SpaceGroups
 from finalcif.tools.statusbar import StatusBar
 from finalcif.tools.sumformula import formula_str_to_dict, sum_formula_to_html
+from gui.loops import MyQTableView
 
 DEBUG = False
 app = QApplication.instance()
@@ -305,7 +306,7 @@ class AppWindow(QMainWindow):
         self.ui.BackPushButton.clicked.connect(self.back_to_main)
         self.ui.BackFromDepositPushButton.clicked.connect(self.back_to_main)
         self.ui.ExploreDirButton.clicked.connect(self.explore_current_dir)
-        self.ui.LoopsPushButton.clicked.connect(self.ui.MainStackedWidget.go_to_loops_page)
+        self.ui.LoopsPushButton.clicked.connect(self._on_go_to_loops_page)
         self.ui.LoopsPushButton.clicked.connect(
             lambda x: self.ui.LoopsTabWidget.setCurrentIndex(1) if self.ui.LoopsTabWidget.count() > 0 else None)
         self.ui.LoopsPushButton.clicked.connect(lambda x: self.ui.TemplatesStackedWidget.setCurrentIndex(1))
@@ -332,6 +333,7 @@ class AppWindow(QMainWindow):
         self.ui.CODpushButton.clicked.connect(self.open_cod_page)
         self.ui.CCDCpushButton.clicked.connect(self._ccdc_deposit)
         self.ui.newLoopPushButton.clicked.connect(self._go_to_new_loop_page)
+        self.ui.deleteLoopButton.clicked.connect(self._on_delete_current_loop)
         #
         save_shortcut = QShortcut(QtGui.QKeySequence('Ctrl+S'), self)
         save_shortcut.activated.connect(self.save_current_cif_file)
@@ -384,6 +386,10 @@ class AppWindow(QMainWindow):
     @property
     def finalcif_changes_filename(self):
         return self.cif.finalcif_file_prefixed(prefix='', suffix='-finalcif_changes.cif', force_strip=True)
+
+    def _on_go_to_loops_page(self):
+        self.make_loops_tables()
+        self.ui.MainStackedWidget.go_to_loops_page()
 
     def export_all_templates(self, filename: Path = None):
         import pickle
@@ -620,8 +626,7 @@ class AppWindow(QMainWindow):
         self.ui.LeftFrame.setMinimumWidth(int(left_frame))
         # Not necessary here, it is done in MyCifTable
         # threading.Thread(target=self.ui.cif_main_table.resizeRowsToContents).start()
-        #QtCore.QTimer(self).singleShot(0, self.ui.cif_main_table.resizeRowsToContents)
-
+        # QtCore.QTimer(self).singleShot(0, self.ui.cif_main_table.resizeRowsToContents)
 
     def moveEvent(self, a0: QtGui.QMoveEvent) -> None:
         """Is called when the main window moves."""
@@ -1389,7 +1394,7 @@ class AppWindow(QMainWindow):
                 # Import only new loops
                 continue
             # TODO: Make this work:
-            #if loop.tags[0] in do_not_loop_import:
+            # if loop.tags[0] in do_not_loop_import:
             #    continue
             new_loop = self.cif.block.init_loop('', loop.tags)
             for row in imp_cif.block.find(loop.tags):
@@ -1521,7 +1526,6 @@ class AppWindow(QMainWindow):
                     unable_to_open_message(parent=self, filepath=self.finalcif_changes_filename, not_ok=e)
             if self.running_inside_unit_test and changes_exist:
                 self.load_changes_cif()
-        self.make_loops_tables()
         if self.cif:
             self.set_shredcif_state()
             # saving current cif dir as last working directory:
@@ -1703,7 +1707,7 @@ class AppWindow(QMainWindow):
             self.ui.shelx_TextEdit.setPlainText(cif.as_string(self.cif.res_file_data))
         try:
             QtCore.QTimer(self).singleShot(0, self.view_molecule)
-            #threading.Thread(target=self.view_molecule).start()
+            # threading.Thread(target=self.view_molecule).start()
         except Exception:
             print('Molecule view crashed!')
 
@@ -1879,12 +1883,12 @@ class AppWindow(QMainWindow):
         """
         Generates a list of tables containing the cif loops.
         """
-        #do_not_display = ('_diffrn_refln_index_h')
+        # do_not_display = ('_diffrn_refln_index_h')
         for num, loop in enumerate(self.cif.loops):
             tags = loop.tags
             if not tags or len(tags) < 1:
                 continue
-            #if tags[0] in do_not_display:
+            # if tags[0] in do_not_display:
             #    continue
             self.new_loop_tab(loop, num, tags)
         if self.cif.res_file_data:
@@ -1920,6 +1924,20 @@ class AppWindow(QMainWindow):
         self.ui.revertLoopsPushButton.hide()
         self.ui.newLoopPushButton.hide()
         self.loopcreate.saveLoopPushButton.clicked.connect(self.save_new_loop_to_cif)
+
+    def _on_delete_current_loop(self):
+        current_tab_index = self.ui.LoopsTabWidget.currentIndex()
+        current_table_view: MyQTableView = self.ui.LoopsTabWidget.widget(current_tab_index)
+        try:
+            header_model: LoopTableModel = current_table_view.horizontalHeader().model()
+        except AttributeError:
+            # Not a QTableView
+            return
+        header_item = header_model._header[0]
+        loop: gemmi.cif.Loop = self.cif.block.find_loop(header_item).get_loop()
+        table: gemmi.cif.Table = self.cif.block.find(loop.tags)
+        table.erase()
+        self.ui.LoopsTabWidget.removeTab(current_tab_index)
 
     def save_new_loop_to_cif(self):
         if self.loopcreate:
