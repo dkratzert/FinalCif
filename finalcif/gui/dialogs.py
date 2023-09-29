@@ -108,7 +108,6 @@ def show_keyword_help(parent, helptext: str, title: str = ''):
     """
     nlines = len(helptext.splitlines())
     window = QMainWindow(parent=parent)
-    window.setWindowFlags(Qt.Tool)
     window.setWindowTitle(title)
 
     def close_window(event):

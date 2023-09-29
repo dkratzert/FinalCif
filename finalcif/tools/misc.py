@@ -492,6 +492,8 @@ cif_to_header_label = {
     '_platon_squeeze_void_nr'               : 'Platon SQUEEZE Voids',
     '_smtbx_masks_void_nr'                  : 'smtbx Solvent Mask',
     '_refln_index_h'                        : 'hkl file',
+    '_diffrn_refln_index_h'                 : 'hkl file',
+    '_restr_RIGU_atom_site_label_1'         : 'RIGU restraints',
 }
 
 """
