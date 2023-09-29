@@ -43,3 +43,6 @@ class MyMainStackedWidget(QStackedWidget):
 
     def on_checkcif_page(self):
         return self.current_page == 6
+
+    def on_info_page(self):
+        return self.current_page == 2

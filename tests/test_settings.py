@@ -1,3 +1,4 @@
+import os
 from unittest import TestCase
 
 from finalcif.tools.settings import FinalCifSettings
@@ -6,6 +7,7 @@ from finalcif.tools.settings import FinalCifSettings
 class TestFinalCifSettings(TestCase):
 
     def setUp(self) -> None:
+        os.environ["RUNNING_TEST"] = 'True'
         self.s = FinalCifSettings()
 
     def test_load_property_values_by_key(self):

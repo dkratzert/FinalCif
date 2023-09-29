@@ -4,6 +4,7 @@
 #   this notice you can do whatever you want with this stuff. If we meet some day,
 #   and you think this stuff is worth it, you can buy me a beer in return.
 #   ----------------------------------------------------------------------------
+import os
 import unittest
 
 import gemmi
@@ -125,6 +126,7 @@ class TestHeavyUtf8(unittest.TestCase):
 
 class TestLongTextinField(unittest.TestCase):
     def setUp(self):
+        os.environ["RUNNING_TEST"] = 'True'
         self.w = QtWidgets.QMainWindow()
         self.table = MyCifTable()
         self.w.setCentralWidget(self.table)

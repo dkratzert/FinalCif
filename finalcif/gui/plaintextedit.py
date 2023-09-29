@@ -1,5 +1,7 @@
 from contextlib import suppress
+from enum import IntEnum
 from functools import cache
+from typing import TYPE_CHECKING
 
 from PyQt5.QtCore import pyqtSignal, Qt, QObject, QEvent, QSize
 from PyQt5.QtGui import QTextOption, QFontMetrics, QContextMenuEvent, QFont, QColor
@@ -7,12 +9,16 @@ from PyQt5.QtWidgets import QPlainTextEdit, QFrame, QApplication, QAbstractScrol
 
 from finalcif.gui.new_key_dialog import NewKey
 
-with suppress(ImportError):
+if TYPE_CHECKING:
     from finalcif.gui.custom_classes import MyCifTable
 
-app = QApplication.instance()
-if app is None:
-    app = QApplication([])
+
+class Column(IntEnum):
+    CIF = 0
+    DATA = 1
+    EDIT = 2
+    BUTTON = 3
+
 
 class MyQPlainTextEdit(QPlainTextEdit):
     """
@@ -20,6 +26,8 @@ class MyQPlainTextEdit(QPlainTextEdit):
     """
     templateRequested = pyqtSignal(int)
     new_key = pyqtSignal(str)
+    to_be_shortened = {'_shelx_hkl_file', '_shelx_res_file', '_shelx_fab_file', '_shelx_fcf_file',
+                       '_iucr_refine_instructions_details', '_iucr_refine_fcf_details'}
 
     def __init__(self, parent=None, *args, **kwargs):
         """
@@ -98,13 +106,16 @@ class MyQPlainTextEdit(QPlainTextEdit):
     def setUneditable(self):
         self.setReadOnly(True)
 
-    def setText(self, text: str, color=None):
+    def setText(self, text: str, color: QColor = None, column: int = None):
         """
         Set text of a Plaintextfield with lines wrapped at newline characters.
         """
         if color:
             self.setBackground(color)
-        self.setPlainText(text)
+        if self.cif_key in self.to_be_shortened and column == Column.CIF:
+            self.setPlainText(f'{text[:300]} [...]')
+        else:
+            self.setPlainText(text)
 
     def eventFilter(self, widget: QObject, event: QEvent):
         """
@@ -120,13 +131,16 @@ class MyQPlainTextEdit(QPlainTextEdit):
 
     def sizeHint(self) -> QSize:
         """Text field sizes are scaled to text length"""
+        max_size = QSize(100, 350)
+        if len(self.toPlainText()) > 500:
+            return max_size
         rect = self.fontmetric.boundingRect(self.contentsRect(), Qt.TextWordWrap, self.toPlainText())
         size = QSize(100, rect.height() + 14)
         if size.height() > 50:
             size = QSize(100, rect.height() + 24)
         if size.height() > 350:
             # Prevent extreme height for long text:
-            size = QSize(100, 350)
+            size = max_size
         return size
 
 

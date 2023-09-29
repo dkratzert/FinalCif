@@ -491,6 +491,9 @@ cif_to_header_label = {
     '_exptl_oxdiff_crystal_face_indexfrac_h': 'Crystal Faces Fractional',
     '_platon_squeeze_void_nr'               : 'Platon SQUEEZE Voids',
     '_smtbx_masks_void_nr'                  : 'smtbx Solvent Mask',
+    '_refln_index_h'                        : 'hkl file',
+    '_diffrn_refln_index_h'                 : 'hkl file',
+    '_restr_RIGU_atom_site_label_1'         : 'RIGU restraints',
 }
 
 """
@@ -759,6 +762,12 @@ predefined_property_templates = [
     {'name'  : 'Data reduction software',
      'values': ['_computing_data_reduction',
                 ['', 'SAINT', 'CrysalisPro', 'XDS', 'OpenHKL', 'HKL-2000', 'HKL-3000']]
+     },
+    {'name'  : 'Physical properties of the material',
+     'values': ['_chemical_properties_physical',
+                ['', 'air-sensitive', 'moisture-sensitive', 'hygroscopic', 'deliquescent', 'oxygen-sensitive',
+                 'photo-sensitive', 'pyrophoric', 'semiconductor', 'ferromagnetic at low temperature',
+                 'paramagnetic and thermochromic']]
      },
 ]
 

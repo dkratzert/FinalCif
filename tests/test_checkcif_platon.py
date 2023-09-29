@@ -32,6 +32,7 @@ filenames = (
 class TestPlatonCheckCIF(unittest.TestCase):
 
     def setUp(self) -> None:
+        os.environ["RUNNING_TEST"] = 'True'
         if not get_platon_exe() or os.environ.get('NO_NETWORK'):
             self.skipTest('No PLATON executable found or no network. Skipping test!')
         self.myapp = AppWindow(Path('tests/examples/1979688.cif').resolve())
@@ -66,6 +67,7 @@ class TestPlatonCheckCIF(unittest.TestCase):
 class TestPlatonCheckCIFwithCIFwithoutHKLdata(unittest.TestCase):
 
     def setUp(self) -> None:
+        os.environ["RUNNING_TEST"] = 'True'
         if not get_platon_exe() or os.environ.get('NO_NETWORK'):
             self.skipTest('No PLATON executable found or NO_NETWORK is set. Skipping test!')
         self.myapp = AppWindow(Path('./test-data/1000007.cif').resolve())

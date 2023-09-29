@@ -1,3 +1,4 @@
+import os
 import sys
 import unittest
 
@@ -13,6 +14,7 @@ if app is None:
 
 class TestLoopCreator(unittest.TestCase):
     def setUp(self) -> None:
+        os.environ["RUNNING_TEST"] = 'True'
         self.w = QMainWindow()
         self.cif = CifContainer('test-data/1000006.cif')
         self.lc = LoopCreator(parent=self.w, cif=self.cif)

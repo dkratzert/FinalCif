@@ -1,3 +1,4 @@
+import os
 import unittest
 from datetime import datetime
 from pathlib import Path
@@ -18,6 +19,7 @@ class TestFileIsOpened(unittest.TestCase):
     """A CIF fle in a complete work folder"""
 
     def setUp(self) -> None:
+        os.environ["RUNNING_TEST"] = 'True'
         self.testcif = Path('tests/examples/work/cu_BruecknerJK_153F40_0m.cif').absolute()
         self.myapp = AppWindow(self.testcif)
         self.myapp.ui.trackChangesCifCheckBox.setChecked(True)
@@ -41,6 +43,7 @@ class TestWorkfolder(unittest.TestCase):
     """A CIF fle in a complete work folder"""
 
     def setUp(self) -> None:
+        os.environ["RUNNING_TEST"] = 'True'
         self.testcif = Path('tests/examples/work/cu_BruecknerJK_153F40_0m.cif').resolve()
         # TODO: Adapt this to the bahavior with the changes file:
         Path('tests/examples/work/cu_BruecknerJK_153F40_0m-finalcif_changes.cif').unlink(missing_ok=True)
@@ -131,19 +134,24 @@ class TestWorkfolder(unittest.TestCase):
     def test_abs_configuration_combo(self):
         self.assertEqual(6, self.key_row('_chemical_absolute_configuration'))
         self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>", self.cell_widget_class(6, Column.CIF))
-        self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>", self.cell_widget_class(6, Column.DATA))
+        self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>",
+                         self.cell_widget_class(6, Column.DATA))
         self.assertEqual("<class 'finalcif.gui.combobox.MyComboBox'>", self.cell_widget_class(6, Column.EDIT))
 
     def test_diffrn_radiation_type_combo(self):
         row = self.key_row('_diffrn_radiation_type')
-        self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>", self.cell_widget_class(row, Column.CIF))
-        self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>", self.cell_widget_class(row, Column.DATA))
+        self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>",
+                         self.cell_widget_class(row, Column.CIF))
+        self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>",
+                         self.cell_widget_class(row, Column.DATA))
         self.assertEqual("<class 'finalcif.gui.combobox.MyComboBox'>", self.cell_widget_class(row, Column.EDIT))
 
     def test_diffrn_ambient_temperature_combo(self):
         row = self.key_row('_diffrn_ambient_temperature')
-        self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>", self.cell_widget_class(row, Column.CIF))
-        self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>", self.cell_widget_class(row, Column.DATA))
+        self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>",
+                         self.cell_widget_class(row, Column.CIF))
+        self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>",
+                         self.cell_widget_class(row, Column.DATA))
         self.assertEqual("<class 'finalcif.gui.combobox.MyComboBox'>", self.cell_widget_class(row, Column.EDIT))
 
     def test_combo_items_ambient_temp(self):
@@ -253,9 +261,6 @@ class TestWorkfolder(unittest.TestCase):
         self.equipment_click('APEX2 QUAZAR')
         self.assertEqual('Oxford Cryostream 800',
                          self.cell_text('_diffrn_measurement_ambient_temperature_device_make', Column.DATA))
-
-    def test_equipment_click_machine_oxford_2(self):
-        self.equipment_click('APEX2 QUAZAR')
         self.assertEqual('Oxford Cryostream 800',
                          self.cell_text('_diffrn_measurement_ambient_temperature_device_make', Column.EDIT))
 
@@ -263,25 +268,13 @@ class TestWorkfolder(unittest.TestCase):
         # Check if click on author adds the address to second and third column:
         self.equipment_click('Crystallographer Details')
         self.assertEqual('?', self.cell_text('_audit_contact_author_address', Column.CIF))
-
-    def test_equipment_click_author_address_1(self):
-        self.equipment_click('Crystallographer Details')
         self.assertEqual(unify_line_endings(addr), self.cell_text('_audit_contact_author_address', Column.DATA))
-
-    def test_equipment_click_author_address_2(self):
-        self.equipment_click('Crystallographer Details')
         self.assertEqual(unify_line_endings(addr), self.cell_text('_audit_contact_author_address', Column.EDIT))
 
     def test_contact_author_name_0(self):
         self.equipment_click('Crystallographer Details')
         self.assertEqual('?', self.cell_text('_audit_contact_author_name', Column.CIF))
-
-    def test_contact_author_name_1(self):
-        self.equipment_click('Crystallographer Details')
         self.assertEqual('Dr. Daniel Kratzert', self.cell_text('_audit_contact_author_name', Column.DATA))
-
-    def test_contact_author_name_2(self):
-        self.equipment_click('Crystallographer Details')
         self.assertEqual('Dr. Daniel Kratzert', self.cell_text('_audit_contact_author_name', Column.EDIT))
 
     def test_contact_author_cellwidget_bevore_click(self):
@@ -293,8 +286,10 @@ class TestWorkfolder(unittest.TestCase):
         self.assertEqual(self.myapp.ui.cif_main_table.vheaderitems[5], '_audit_contact_author_name')
         self.assertEqual('Dr. Daniel Kratzert', self.myapp.ui.cif_main_table.getText(5, Column.DATA))
         self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>", self.cell_widget_class(5, Column.CIF))
-        self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>", self.cell_widget_class(5, Column.DATA))
-        self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>", self.cell_widget_class(5, Column.EDIT))
+        self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>",
+                         self.cell_widget_class(5, Column.DATA))
+        self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>",
+                         self.cell_widget_class(5, Column.EDIT))
 
     def test_addr(self):
         self.assertNotEqual(unify_line_endings(addr), self.cell_text('_audit_contact_author_address', Column.EDIT))
@@ -302,13 +297,7 @@ class TestWorkfolder(unittest.TestCase):
     def test_addr_after_author_click_0(self):
         self.equipment_click('Crystallographer Details')
         self.assertEqual(unify_line_endings(addr), self.cell_text('_audit_contact_author_address', Column.EDIT))
-
-    def test_addr_after_author_click_1(self):
-        self.equipment_click('Crystallographer Details')
         self.assertEqual(unify_line_endings(addr), self.cell_text('_audit_contact_author_address', Column.DATA))
-
-    def test_addr_after_author_click_2(self):
-        self.equipment_click('Crystallographer Details')
         self.assertEqual('?', self.cell_text('_audit_contact_author_address', Column.CIF))
 
     def test_edit_values_and_save(self):
@@ -352,6 +341,7 @@ class TestWorkfolderOtherCifName(unittest.TestCase):
     """A CIF fle in a complete work folder"""
 
     def setUp(self) -> None:
+        os.environ["RUNNING_TEST"] = 'True'
         self.testcif = Path('tests/examples/work/p21c.cif').resolve()
         self.myapp = AppWindow(self.testcif)
         self.myapp.ui.trackChangesCifCheckBox.setChecked(True)
@@ -360,18 +350,18 @@ class TestWorkfolderOtherCifName(unittest.TestCase):
         self.myapp.setWindowIcon(QIcon('./icon/multitable.png'))
         self.myapp.setWindowTitle('FinalCif v{}'.format(VERSION))
 
-    def cell_text(self, key: str, col: int) -> str:
-        return unify_line_endings(self.myapp.ui.cif_main_table.getTextFromKey(key, col))
-
-    def key_row(self, key: str) -> int:
-        return self.myapp.ui.cif_main_table.row_from_key(key)
-
     def tearDown(self) -> None:
         self.testcif.with_suffix('.ins').unlink(missing_ok=True)
         self.testcif.with_suffix('.lst').unlink(missing_ok=True)
         self.testcif.with_suffix('.2fcf').unlink(missing_ok=True)
         Path('tests/testcif_file.cif').unlink(missing_ok=True)
         self.myapp.close()
+
+    def cell_text(self, key: str, col: int) -> str:
+        return unify_line_endings(self.myapp.ui.cif_main_table.getTextFromKey(key, col))
+
+    def key_row(self, key: str) -> int:
+        return self.myapp.ui.cif_main_table.row_from_key(key)
 
     def testDataColumn(self):
         self.myapp.hide()
@@ -397,15 +387,12 @@ class TestWorkfolderOtherCifName(unittest.TestCase):
         self.assertEqual('background-color: #faf796;',
                          self.myapp.ui.cif_main_table.cellWidget(
                              self.key_row('_exptl_crystal_recrystallization_method'), 1).styleSheet())
-        self.assertEqual(
-            """Sheldrick, G.M. (2015). Acta Cryst. A71, 3-8.\nSheldrick, G.M. (2015). Acta Cryst. C71, 3-8.""",
-            self.cell_text('_publ_section_references', Column.DATA))
+        self.assertEqual("Sheldrick, G.M. (2015). Acta Cryst. A71, 3-8.\nSheldrick, "
+                         "G.M. (2015). Acta Cryst. C71, 3-8.", self.cell_text('_publ_section_references', Column.DATA))
         self.assertEqual('geom', self.cell_text('_atom_sites_solution_hydrogens', 0))
         self.assertEqual('', self.cell_text('_atom_sites_solution_hydrogens', Column.DATA))
-        self.assertEqual(
-            """FinalCif V{} by Daniel Kratzert, Freiburg {}, https://dkratzert.de/finalcif.html""".format(VERSION,
-                                                                                                          datetime.now().year),
-            self.cell_text('_audit_creation_method', Column.DATA))
+        self.assertEqual(f"FinalCif V{VERSION} by Daniel Kratzert, Freiburg {datetime.now().year}, "
+                         f"https://dkratzert.de/finalcif.html", self.cell_text('_audit_creation_method', Column.DATA))
 
 
 if __name__ == '__main__':

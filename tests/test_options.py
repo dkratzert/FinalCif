@@ -1,3 +1,4 @@
+import os
 import unittest
 from pathlib import Path
 
@@ -7,6 +8,7 @@ from finalcif import appwindow
 class TestOptions(unittest.TestCase):
 
     def setUp(self) -> None:
+        os.environ["RUNNING_TEST"] = 'True'
         self.myapp = appwindow.AppWindow(file=Path('test-data/1000006.cif'))
         self.myapp.ui.HAtomsCheckBox.setChecked(False)
         self.myapp.ui.ReportTextCheckBox.setChecked(False)

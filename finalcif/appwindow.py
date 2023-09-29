@@ -135,7 +135,7 @@ class AppWindow(QMainWindow):
 
     @property
     def running_inside_unit_test(self):
-        if "PYTEST_CURRENT_TEST" in os.environ:
+        if "RUNNING_TEST" in os.environ:
             if DEBUG:
                 print(f'pytest process running: {os.environ["PYTEST_CURRENT_TEST"]}')
             return True
@@ -599,7 +599,7 @@ class AppWindow(QMainWindow):
         self.save_current_cif_file()
         self.load_cif_file(self.cif.finalcif_file, self.current_block, load_changes=False)
         self.deposit.cif = self.cif
-        self.ui.MainStackedWidget.setCurrentIndex(7)
+        self.ui.MainStackedWidget.got_to_cod_page()
 
     def event(self, event: QEvent) -> bool:
         if event.type() == QEvent.KeyPress:
@@ -618,6 +618,10 @@ class AppWindow(QMainWindow):
         if left_frame <= 300:
             left_frame = 300
         self.ui.LeftFrame.setMinimumWidth(int(left_frame))
+        # Not necessary here, it is done in MyCifTable
+        # threading.Thread(target=self.ui.cif_main_table.resizeRowsToContents).start()
+        #QtCore.QTimer(self).singleShot(0, self.ui.cif_main_table.resizeRowsToContents)
+
 
     def moveEvent(self, a0: QtGui.QMoveEvent) -> None:
         """Is called when the main window moves."""
@@ -1037,7 +1041,7 @@ class AppWindow(QMainWindow):
         font = doc.defaultFont()
         font.setFamily("Courier New")
         font.setStyleHint(QtGui.QFont.Monospace)
-        app.processEvents()
+        # app.processEvents()
         font.setPointSize(14)
         doc.setDefaultFont(font)
 
@@ -1130,8 +1134,8 @@ class AppWindow(QMainWindow):
             return
         if not self.running_inside_unit_test:
             self.open_report_document(report_filename, multi_table_document)
-        # Save report and other files to a zip file:
-        self.zip_report(report_filename)
+            # Save report and other files to a zip file:
+            self.zip_report(report_filename)
 
     def report_without_template(self) -> bool:
         """Check whether the report is generated from a template or hard-coded"""
@@ -1206,7 +1210,7 @@ class AppWindow(QMainWindow):
         self.save_ccdc_number()
         try:
             self.cif.save()
-            self.status_bar.show_message('  File Saved:  {}'.format(self.cif.finalcif_file), 10)
+            self.status_bar.show_message(f'  File Saved:  {self.cif.finalcif_file}', 10)
             print('File saved ...')
             return True
         except Exception as e:
@@ -1238,7 +1242,7 @@ class AppWindow(QMainWindow):
             if col_data and not col_edit and col_data != '?':
                 self.cif[vhead] = col_data
             if col_edit:
-                if self.cif[vhead] != col_edit and changes_cif:
+                if self.cif[vhead] != col_edit and changes_cif and vhead != '_audit_creation_method':
                     changes_cif[vhead] = col_edit
                 try:
                     self.cif[vhead] = col_edit
@@ -1371,6 +1375,7 @@ class AppWindow(QMainWindow):
         except Exception as e:
             print(e)
             unable_to_open_message(self, Path(self.cif.filename), e)
+        self.add_audit_creation_method()
         # I think I leave the user possibilities to change the imported values:
         # self.save_current_cif_file()
         # self.load_cif_file(str(self.cif.finalcif_file))
@@ -1383,6 +1388,9 @@ class AppWindow(QMainWindow):
             if self.ui.importOnlyNewDataCheckBox.isChecked() and self.cif.block.find(loop.tags):
                 # Import only new loops
                 continue
+            # TODO: Make this work:
+            #if loop.tags[0] in do_not_loop_import:
+            #    continue
             new_loop = self.cif.block.init_loop('', loop.tags)
             for row in imp_cif.block.find(loop.tags):
                 new_loop.add_row(row)
@@ -1525,7 +1533,7 @@ class AppWindow(QMainWindow):
             self.ui.CheckcifPlaintextEdit.clear()
             self.ui.TemplatesStackedWidget.setCurrentIndex(0)
             self.authors = AuthorLoops(ui=self.ui, cif=self.cif, app=self)
-            if not self.ui.MainStackedWidget.on_checkcif_page():
+            if not (self.ui.MainStackedWidget.on_checkcif_page() or self.ui.MainStackedWidget.on_info_page()):
                 self.ui.MainStackedWidget.got_to_main_page()
             self.deposit.cif = self.cif
             # self.ui.cif_main_table.resizeRowsToContents()
@@ -1533,6 +1541,9 @@ class AppWindow(QMainWindow):
             for row_number in range(self.ui.cif_main_table.model().rowCount()):
                 vhead_key = self.get_key_by_row_number(row_number)
                 self.ui.cif_main_table.vheaderitems.insert(row_number, vhead_key)
+            if self.ui.MainStackedWidget.on_info_page():
+                self.show_residuals()
+                self.redraw_molecule()
 
     def changes_cif_has_values(self) -> bool:
         try:
@@ -1691,8 +1702,8 @@ class AppWindow(QMainWindow):
         if self.cif.res_file_data:
             self.ui.shelx_TextEdit.setPlainText(cif.as_string(self.cif.res_file_data))
         try:
-            # QtCore.QTimer(self).singleShot(0, self.view_molecule)
-            threading.Thread(target=self.view_molecule).start()
+            QtCore.QTimer(self).singleShot(0, self.view_molecule)
+            #threading.Thread(target=self.view_molecule).start()
         except Exception:
             print('Molecule view crashed!')
 
@@ -1837,10 +1848,8 @@ class AppWindow(QMainWindow):
                 value = '?'
             self.add_row(key, value)
             if key == '_audit_creation_method':
-                txt = 'FinalCif V{} by Daniel Kratzert, Freiburg {}, https://dkratzert.de/finalcif.html'
-                strval = txt.format(VERSION, datetime.now().year)
-                self.ui.cif_main_table.setText(key=key, column=Column.DATA, txt=strval)
-                #QtCore.QTimer(self).singleShot(200, self.ui.cif_main_table.resizeRowsToContents)
+                self.add_audit_creation_method(key)
+                # QtCore.QTimer(self).singleShot(200, self.ui.cif_main_table.resizeRowsToContents)
             # print(key, value)
         if not self.cif.test_res_checksum():
             show_res_checksum_warning(parent=self)
@@ -1853,6 +1862,12 @@ class AppWindow(QMainWindow):
         self.erase_disabled_items()
         self.ui.cif_main_table.setCurrentItem(None)
 
+    def add_audit_creation_method(self, key: str = '_audit_creation_method') -> None:
+        txt = 'FinalCif V{} by Daniel Kratzert, Freiburg {}, https://dkratzert.de/finalcif.html'
+        strval = txt.format(VERSION, datetime.now().year)
+        self.ui.cif_main_table.setText(key=key, column=Column.DATA, txt=strval)
+        self.ui.cif_main_table.setText(key=key, column=Column.EDIT, txt=strval)
+
     def make_loops_tables(self) -> None:
         for _ in range(self.ui.LoopsTabWidget.count()):
             # I use this, so that always the first tab stays.
@@ -1864,13 +1879,13 @@ class AppWindow(QMainWindow):
         """
         Generates a list of tables containing the cif loops.
         """
-        do_not_display = ('_diffrn_refln_index_h')
+        #do_not_display = ('_diffrn_refln_index_h')
         for num, loop in enumerate(self.cif.loops):
             tags = loop.tags
             if not tags or len(tags) < 1:
                 continue
-            if tags[0] in do_not_display:
-                continue
+            #if tags[0] in do_not_display:
+            #    continue
             self.new_loop_tab(loop, num, tags)
         if self.cif.res_file_data:
             self.add_res_file_to_loops()
