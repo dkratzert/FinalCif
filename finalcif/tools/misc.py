@@ -422,6 +422,17 @@ do_not_import_keys = (
     '_reflns_number_gt',
 )
 
+do_not_loop_import = (
+    '_atom_type_symbol',
+    '_space_group_symop_operation_xyz',
+    '_atom_site_label',
+    '_atom_site_aniso_label',
+    '_geom_bond_atom_site_label_1',
+    '_geom_angle_atom_site_label_1',
+    '_geom_torsion_atom_site_label_1',
+    '_geom_hbond_atom_site_label_D',
+)
+
 do_not_import_from_stoe_cfx = (
     '_diffrn_measured_fraction_theta_max',
     '_diffrn_measured_fraction_theta_full',
@@ -445,9 +456,6 @@ do_not_import_from_stoe_cfx = (
     '_audit_contact_author_fax',
     '_audit_contact_author_phone',
     '_audit_creation_method',
-    '',
-    '',
-    '',
 )
 
 include_equipment_imports = (

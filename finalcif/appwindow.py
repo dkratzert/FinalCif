@@ -23,6 +23,7 @@ from PyQt5.QtCore import Qt, QEvent
 from PyQt5.QtWidgets import QMainWindow, QShortcut, QCheckBox, QListWidgetItem, QApplication, \
     QPlainTextEdit, QFileDialog, QMessageBox
 from gemmi import cif
+from qtpy import QtWidgets
 from qtpy.QtGui import QDesktopServices
 
 from finalcif import VERSION
@@ -42,6 +43,7 @@ from finalcif.gui.dialogs import show_update_warning, unable_to_open_message, sh
     cif_file_open_dialog, \
     bad_z_message, show_res_checksum_warning, show_hkl_checksum_warning, cif_file_save_dialog, show_yes_now_question
 from finalcif.gui.finalcif_gui_ui import Ui_FinalCifWindow
+from finalcif.gui.import_selector_ui import Ui_importSelectMainWindow
 from finalcif.gui.loop_creator import LoopCreator
 from finalcif.gui.loops import Loop, LoopTableModel, MyQTableView
 from finalcif.gui.plaintextedit import MyQPlainTextEdit
@@ -55,7 +57,7 @@ from finalcif.tools.download import MyDownloader
 from finalcif.tools.dsrmath import my_isnumeric
 from finalcif.tools.misc import next_path, do_not_import_keys, celltxt, to_float, do_not_import_from_stoe_cfx, \
     cif_to_header_label, grouper, is_database_number, file_age_in_days, open_file, \
-    strip_finalcif_of_name
+    strip_finalcif_of_name, do_not_loop_import
 from finalcif.tools.options import Options
 from finalcif.tools.platon import PlatonRunner
 from finalcif.tools.settings import FinalCifSettings
@@ -1373,6 +1375,7 @@ class AppWindow(QMainWindow):
             show_general_warning(self, 'Unable to open file {}:\n'.format(filename) + str(e))
             return
         self.check_cif_for_missing_values_before_really_open_it()
+        do_not_import = self.show_import_window(imp_cif)
         try:
             self.import_key_value_pairs(imp_cif)
             self.import_loops(imp_cif)
@@ -1392,12 +1395,12 @@ class AppWindow(QMainWindow):
             if self.ui.importOnlyNewDataCheckBox.isChecked() and self.cif.block.find(loop.tags):
                 # Import only new loops
                 continue
-            # TODO: Make this work:
-            # if loop.tags[0] in do_not_loop_import:
-            #    continue
+            if loop.tags[0] in do_not_loop_import:
+                continue
             new_loop = self.cif.block.init_loop('', loop.tags)
             for row in imp_cif.block.find(loop.tags):
                 new_loop.add_row(row)
+
 
     def import_key_value_pairs(self, imp_cif: CifContainer) -> None:
         for item in imp_cif.block:
@@ -1420,7 +1423,7 @@ class AppWindow(QMainWindow):
             return True
         if key in do_not_import_keys:
             return True
-        if key in do_not_import_from_stoe_cfx and cif.fileobj.suffix == '.cfx':
+        if key in do_not_import_from_stoe_cfx and '.cfx' in cif.fileobj.name:
             return True
         return False
 
