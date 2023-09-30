@@ -43,6 +43,13 @@ class TestLoops(unittest.TestCase):
                 tab = -1
         return tab
 
+    def test_delete_loop(self):
+        self.assertEqual(9, len(self.myapp.cif.loops))
+        # Index 0 is the author editor
+        self.assertEqual(1, self.myapp.ui.LoopsTabWidget.currentIndex())
+        self.myapp.ui.deleteLoopButton.click()
+        self.assertEqual(8, len(self.myapp.cif.loops))
+
     def test_get_index_of_tab(self):
         self.assertEqual(2, self.get_index_of('CIF Author'))
 
@@ -83,6 +90,7 @@ class TestLoops(unittest.TestCase):
         self.assertEqual('foo bar', as_string(c.loops[3].val(0, 2)))
 
 
+# noinspection PyMissingTypeHints
 class TestLoopsMove(unittest.TestCase):
     def setUp(self) -> None:
         os.environ["RUNNING_TEST"] = 'True'

@@ -43,7 +43,7 @@ from finalcif.gui.dialogs import show_update_warning, unable_to_open_message, sh
     bad_z_message, show_res_checksum_warning, show_hkl_checksum_warning, cif_file_save_dialog, show_yes_now_question
 from finalcif.gui.finalcif_gui_ui import Ui_FinalCifWindow
 from finalcif.gui.loop_creator import LoopCreator
-from finalcif.gui.loops import Loop, LoopTableModel
+from finalcif.gui.loops import Loop, LoopTableModel, MyQTableView
 from finalcif.gui.plaintextedit import MyQPlainTextEdit
 from finalcif.gui.text_value_editor import MyTextTemplateEdit, TextEditItem
 from finalcif.gui.vrf_classes import MyVRFContainer, VREF
@@ -63,7 +63,6 @@ from finalcif.tools.shred import ShredCIF
 from finalcif.tools.space_groups import SpaceGroups
 from finalcif.tools.statusbar import StatusBar
 from finalcif.tools.sumformula import formula_str_to_dict, sum_formula_to_html
-from gui.loops import MyQTableView
 
 DEBUG = False
 app = QApplication.instance()
