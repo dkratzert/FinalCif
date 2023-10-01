@@ -1387,46 +1387,6 @@ class AppWindow(QMainWindow):
         # self.save_current_cif_file()
         # self.load_cif_file(str(self.cif.finalcif_file))
 
-    def import_loops(self, imp_cif: 'CifContainer'):
-        """
-        Import all loops from the CifContainer imp_cif to the current block.
-        """
-        for loop in imp_cif.loops:
-            if self.ui.importOnlyNewDataCheckBox.isChecked() and self.cif.block.find(loop.tags):
-                # Import only new loops
-                continue
-            if loop.tags[0] in do_not_loop_import:
-                continue
-            new_loop = self.cif.block.init_loop('', loop.tags)
-            for row in imp_cif.block.find(loop.tags):
-                new_loop.add_row(row)
-
-
-    def import_key_value_pairs(self, imp_cif: CifContainer) -> None:
-        for item in imp_cif.block:
-            if item.pair is not None:
-                key, value = item.pair
-                # leave out unit cell etc.:
-                if self.do_not_import_this_key(key, value, imp_cif):
-                    continue
-                if self.ui.importOnlyNewDataCheckBox.isChecked() and self.cif[key]:
-                    # Import only new key/values
-                    continue
-                value = cif.as_string(value)
-                if key in self.ui.cif_main_table.vheaderitems:
-                    self.ui.cif_main_table.setText(key=key, column=Column.EDIT, txt=value, color=light_green)
-                else:
-                    self.add_row(key, value)  # , column =Column.EDIT
-
-    def do_not_import_this_key(self, key: str, value: str, cif: 'CifContainer') -> bool:
-        if value == '?' or value.strip() == '':
-            return True
-        if key in do_not_import_keys:
-            return True
-        if key in do_not_import_from_stoe_cfx and '.cfx' in cif.fileobj.name:
-            return True
-        return False
-
     def load_cif_file(self, filepath: Path, block=0, load_changes: bool = True) -> None:
         """
         Opens the cif file and fills information into the main table.
