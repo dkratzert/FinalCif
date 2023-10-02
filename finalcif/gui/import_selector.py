@@ -36,9 +36,7 @@ class ImportSelector(QtWidgets.QMainWindow):
         for item in imp_cif.block:
             if item.pair is not None:
                 key, _ = item.pair
-                if key in excluded_kv:
-                    continue
-                self._add_checkbox(key, row, self.ui.importTable_keys)
+                self._add_checkbox(key, row, self.ui.importTable_keys, checked=key not in excluded_kv)
                 self.keys_to_import += 1
             else:
                 continue
@@ -47,13 +45,10 @@ class ImportSelector(QtWidgets.QMainWindow):
         row = 0
         for item in imp_cif.block:
             if item.loop is not None:
-                key = item.loop.tags[0]
-                if key in excluded_loops:
-                    # continue
-                    pass
+                first_key = item.loop.tags[0]
                 self.loops_to_import += 1
                 key = '\n'.join([x for x in item.loop.tags])
-                self._add_checkbox(key, row, self.ui.importTable_loops)
+                self._add_checkbox(key, row, self.ui.importTable_loops, checked=first_key not in excluded_loops)
             else:
                 continue
             row += 1
@@ -65,10 +60,13 @@ class ImportSelector(QtWidgets.QMainWindow):
         self._set_label()
 
     def _save_selection(self):
-        excluded_kv, excluded_loops = self._get_excluded_items()
-        self.settings.save_key_value('do_not_import_keys', excluded_kv)
-        self.settings.save_key_value('do_not_import_loops', excluded_loops)
-        print(f'Saved keys\n{excluded_kv} and loops\n{excluded_loops}\nto settings')
+        # excluded_kv, excluded_loops = self._get_excluded_items()
+        self.settings.save_key_value('do_not_import_keys', self._get_keys_to_exclude())
+        self.settings.save_key_value('do_not_import_loops', self._get_loops_to_exclude())
+
+        #self.settings.save_key_value('do_not_import_keys', [])
+        #self.settings.save_key_value('do_not_import_loops', [])
+        # print(f'Saved keys\n{excluded_kv} and loops\n{excluded_loops}\nto settings')
 
     def _get_excluded_items(self) -> Tuple[List[str], List[List[str]]]:
         excluded_kv = misc.do_not_import_keys
@@ -87,7 +85,10 @@ class ImportSelector(QtWidgets.QMainWindow):
                                         f"{len(self._get_keys_to_import()) + len(self._get_loops_to_import())} "
                                         f"are selected for import.")
 
-    def _add_checkbox(self, text: str, row: int, col: QtWidgets.QTableWidget):
+    def _add_checkbox(self, text: str,
+                      row: int,
+                      col: QtWidgets.QTableWidget,
+                      checked: bool = False):
         if col.rowCount() <= row:
             col.insertRow(row)
 
@@ -95,6 +96,7 @@ class ImportSelector(QtWidgets.QMainWindow):
         checkbox.stateChanged.connect(self._set_label)
         checkbox.setText(text)
         col.setCellWidget(row, 0, checkbox)
+        checkbox.setChecked(checked)
 
     def _get_keys_to_import(self) -> List[str]:
         keys = []
@@ -102,6 +104,15 @@ class ImportSelector(QtWidgets.QMainWindow):
         for row in range(rows):
             widget: QtWidgets.QCheckBox = self.ui.importTable_keys.cellWidget(row, 0)
             if widget and widget.isChecked():
+                keys.append(widget.text())
+        return keys
+
+    def _get_keys_to_exclude(self) -> List[str]:
+        keys = []
+        rows = self.ui.importTable_keys.rowCount()
+        for row in range(rows):
+            widget: QtWidgets.QCheckBox = self.ui.importTable_keys.cellWidget(row, 0)
+            if widget and not widget.isChecked():
                 keys.append(widget.text())
         return keys
 
@@ -115,10 +126,22 @@ class ImportSelector(QtWidgets.QMainWindow):
                 loops.append(loop)
         return loops
 
+    def _get_loops_to_exclude(self) -> List[str]:
+        loops = []
+        rows = self.ui.importTable_loops.rowCount()
+        for row in range(rows):
+            widget: QtWidgets.QCheckBox = self.ui.importTable_loops.cellWidget(row, 0)
+            if widget and not widget.isChecked():
+                loop: List[str] = widget.text().splitlines(keepends=False)
+                loops.append(loop[0])
+        print(loops)
+        return loops
+
     def import_loops(self, imp_cif: 'CifContainer'):
         """
         Import all loops from the CifContainer imp_cif to the current block.
         """
+        # TODO: read table and import loops accordingly
         for loop in imp_cif.loops:
             if self.ui.importOnlyNewDataCheckBox.isChecked() and self.cif.block.find(loop.tags):
                 # Import only new loops
@@ -130,6 +153,7 @@ class ImportSelector(QtWidgets.QMainWindow):
                 new_loop.add_row(row)
 
     def import_key_value_pairs(self, imp_cif: CifContainer) -> None:
+        # TODO: read table and import k/v accordingly
         for item in imp_cif.block:
             if item.pair is not None:
                 key, value = item.pair
@@ -139,7 +163,7 @@ class ImportSelector(QtWidgets.QMainWindow):
                 if self.ui.importOnlyNewDataCheckBox.isChecked() and self.cif[key]:
                     # Import only new key/values
                     continue
-                value = cif.as_string(value)
+                value = imp_cif.as_string(value)
                 if key in self.ui.cif_main_table.vheaderitems:
                     self.ui.cif_main_table.setText(key=key, column=Column.EDIT, txt=value, color=light_green)
                 else:
@@ -160,11 +184,17 @@ class ImportSelector(QtWidgets.QMainWindow):
         for row in range(rows):
             widget: QtWidgets.QCheckBox = self.ui.importTable_keys.cellWidget(row, 0)
             key = widget.text()
-            # leave out unit cell etc.:
-            if self.do_not_import_this_key(key):
+            if self.target_cif[key]:
+                # Import only new key/values
                 widget.setChecked(False)
                 continue
-            if self.target_cif[key]:
+            widget.setChecked(True)
+        rows = self.ui.importTable_loops.rowCount()
+        for row in range(rows):
+            widget: QtWidgets.QCheckBox = self.ui.importTable_loops.cellWidget(row, 0)
+            loop = widget.text()
+            first_key = loop.splitlines(keepends=False)[0]
+            if self.target_cif[first_key]:
                 # Import only new key/values
                 widget.setChecked(False)
                 continue
@@ -175,12 +205,12 @@ if __name__ == "__main__":
     import sys
 
     app = QtWidgets.QApplication([])
-    cif = CifContainer('test-data/1000006.cif')
+    imp_cif = CifContainer('test-data/MCK41.cfx')
     shutil.copyfile('test-data/p21c.cif', 'test-data/p21c-copy.cif')
     targetcif = CifContainer('test-data/p21c-copy.cif')
     settings = FinalCifSettings()
-    imp = ImportSelector(None, cif, targetcif, settings)
-    imp.show_import_window(cif)
+    imp = ImportSelector(None, import_cif=imp_cif, target_cif=targetcif, settings=settings)
+    imp.show_import_window(imp_cif)
     app.exec()
     Path('test-data/p21c-copy.cif').unlink(missing_ok=True)
     sys.exit()
