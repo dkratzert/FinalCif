@@ -34,7 +34,7 @@ class ImportSelector(QtWidgets.QMainWindow):
         self.ui.importSelectedPushbutton.clicked.connect(self.import_key_loop)
 
     def import_key_loop(self) -> None:
-        self.import_clicked.emit(self.get_keys_to_import(), self.get_loops_to_import())
+        self.import_clicked.emit(self.get_keys(include=True), self.get_loops(include=True))
 
     def show_import_window(self) -> None:
         row = 0
@@ -64,8 +64,8 @@ class ImportSelector(QtWidgets.QMainWindow):
         self._set_label()
 
     def _save_selection(self):
-        self.settings.save_key_value('do_not_import_keys', self._get_keys_to_exclude())
-        self.settings.save_key_value('do_not_import_loops', self._get_loops_to_exclude())
+        self.settings.save_key_value('do_not_import_keys', self.get_keys(include=False))
+        self.settings.save_key_value('do_not_import_loops', self.get_loops(include=False))
 
     def _empty_saved_selection(self):
         self.settings.save_key_value('do_not_import_keys', [])
@@ -85,7 +85,7 @@ class ImportSelector(QtWidgets.QMainWindow):
     def _set_label(self) -> None:
         self.ui.importInfoLabel.setText(f"The CIF to import contains {self.keys_to_import} keys "
                                         f"and {self.loops_to_import} loops from which "
-                                        f"{len(self.get_keys_to_import()) + len(self.get_loops_to_import())} "
+                                        f"{len(self.get_keys(include=True)) + len(self.get_loops(include=True))} "
                                         f"are selected for import.")
 
     def _add_checkbox(self, text: str, row: int, col: QtWidgets.QTableWidget, checked: bool = False):
@@ -97,42 +97,23 @@ class ImportSelector(QtWidgets.QMainWindow):
         col.setCellWidget(row, 0, checkbox)
         checkbox.setChecked(checked)
 
-    def get_keys_to_import(self) -> List[str]:
+    def get_keys(self, include: bool) -> List[str]:
         keys = []
         rows = self.ui.importTable_keys.rowCount()
         for row in range(rows):
             widget: QtWidgets.QCheckBox = self.ui.importTable_keys.cellWidget(row, 0)
-            if widget and widget.isChecked():
+            if widget and widget.isChecked() == include:
                 keys.append(widget.text())
         return keys
 
-    def _get_keys_to_exclude(self) -> List[str]:
-        keys = []
-        rows = self.ui.importTable_keys.rowCount()
-        for row in range(rows):
-            widget: QtWidgets.QCheckBox = self.ui.importTable_keys.cellWidget(row, 0)
-            if widget and not widget.isChecked():
-                keys.append(widget.text())
-        return keys
-
-    def get_loops_to_import(self) -> List[List[str]]:
+    def get_loops(self, include: bool) -> List[List[str]]:
         loops = []
         rows = self.ui.importTable_loops.rowCount()
         for row in range(rows):
             widget: QtWidgets.QCheckBox = self.ui.importTable_loops.cellWidget(row, 0)
-            if widget and widget.isChecked():
+            if widget and widget.isChecked() == include:
                 loop: List[str] = widget.text().splitlines(keepends=False)
                 loops.append(loop)
-        return loops
-
-    def _get_loops_to_exclude(self) -> List[str]:
-        loops = []
-        rows = self.ui.importTable_loops.rowCount()
-        for row in range(rows):
-            widget: QtWidgets.QCheckBox = self.ui.importTable_loops.cellWidget(row, 0)
-            if widget and not widget.isChecked():
-                loop: List[str] = widget.text().splitlines(keepends=False)
-                loops.append(loop[0])
         return loops
 
     def do_not_import_this_key(self, key: str) -> bool:

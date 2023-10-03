@@ -1312,6 +1312,7 @@ class AppWindow(QMainWindow):
             if item.pair is not None:
                 key, value = item.pair
                 value = gemmi.cif.as_string(value).strip()
+                self.add_row(key=key, value=value)
                 self.ui.cif_main_table.setText(key=key, column=Column.EDIT, color=None, txt=value)
         for loop in changes.loops:
             self.cif.add_loop_to_cif(loop_tags=loop.tags, loop_values=loop.values)
@@ -1498,7 +1499,7 @@ class AppWindow(QMainWindow):
             if self.changes_answer == QMessageBox.Yes:
                 try:
                     self.load_changes_cif()
-                except Exception as e:
+                except GemmiError as e:
                     unable_to_open_message(parent=self, filepath=self.finalcif_changes_filename, not_ok=e)
             if self.running_inside_unit_test and changes_exist:
                 self.load_changes_cif()
