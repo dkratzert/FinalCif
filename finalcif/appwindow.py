@@ -43,6 +43,7 @@ from finalcif.gui.dialogs import show_update_warning, unable_to_open_message, sh
     cif_file_open_dialog, \
     bad_z_message, show_res_checksum_warning, show_hkl_checksum_warning, cif_file_save_dialog, show_yes_now_question
 from finalcif.gui.finalcif_gui_ui import Ui_FinalCifWindow
+from finalcif.gui.import_selector import ImportSelector
 from finalcif.gui.import_selector_ui import Ui_importSelectMainWindow
 from finalcif.gui.loop_creator import LoopCreator
 from finalcif.gui.loops import Loop, LoopTableModel, MyQTableView
@@ -1365,27 +1366,47 @@ class AppWindow(QMainWindow):
         except RuntimeError as e:
             show_general_warning(self, 'Could not import {}:\n'.format(filename) + str(e))
             return
-        except ValueError as e:
+        except GemmiError as e:
             warning = 'Problems parsing file: {}:\n'.format(filename) + str(e)
             if 'data_' in str(e):
                 warning = warning + "\n\nA CIF needs to start with 'data_[some_name]'."
-            show_general_warning(self, warning)
+                show_general_warning(self, warning)
+                return
+            unable_to_open_message(self, Path(self.cif.filename), e)
             return
         except IOError as e:
             show_general_warning(self, 'Unable to open file {}:\n'.format(filename) + str(e))
             return
         self.check_cif_for_missing_values_before_really_open_it()
-        do_not_import = self.show_import_window(imp_cif)
-        try:
-            self.import_key_value_pairs(imp_cif)
-            self.import_loops(imp_cif)
-        except Exception as e:
-            print(e)
-            unable_to_open_message(self, Path(self.cif.filename), e)
+        self.import_selector = ImportSelector(self, import_cif=imp_cif, target_cif=self.cif, settings=self.settings)
+        self.import_selector.show_import_window()
+        self.import_selector.import_clicked.connect(self._do_import_cif_after_selection)
+
+    def _do_import_cif_after_selection(self, keys, loops):
+        # TODO:
+        # * Unquote text after import
+        # * Decise if at start of in order
+        # * Check loop import
+        # * Maybe make import of all as standard. It is unclear why not all is selected otherwise. But probably
+        #   still not the unitcell
+        self._import_key_value_pairs(keys)
+        self._import_loops(loops)
         self.add_audit_creation_method()
-        # I think I leave the user possibilities to change the imported values:
-        # self.save_current_cif_file()
-        # self.load_cif_file(str(self.cif.finalcif_file))
+        self.import_selector.close()
+
+    def _import_key_value_pairs(self, keys: List[str]) -> None:
+        for key in keys:
+            value = self.import_selector.import_cif[key]
+            if key in self.ui.cif_main_table.vheaderitems:
+                self.ui.cif_main_table.setText(key=key, column=Column.EDIT, txt=value, color=light_green)
+            else:
+                self.add_row(key, value, at_start=True)  # , column =Column.EDIT
+
+    def _import_loops(self, loops: List[List[str]]):
+        for loop in loops:
+            new_loop = self.cif.block.init_loop('', loop)
+            for row in self.import_selector.import_cif.block.find(loop):
+                new_loop.add_row(row)
 
     def load_cif_file(self, filepath: Path, block=0, load_changes: bool = True) -> None:
         """
@@ -1576,8 +1597,8 @@ class AppWindow(QMainWindow):
             print(str(e))
             errlist = str(e).split(':')
             if len(errlist) > 1:
-                show_general_warning(self,
-                                     f"Attention in CIF line {errlist[1]}:\n'{errlist[2].split()[0]}' has no value.")
+                show_general_warning(self, f"Attention in CIF line {errlist[1]}:\n"
+                                           f"'{errlist[2].split()[0]}' has no value.")
 
     def get_last_workdir(self):
         try:
