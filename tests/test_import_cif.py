@@ -25,7 +25,7 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(1, self.imp.loops_to_import)
 
     def test_import_methods(self):
-        self.assertEqual(['_cell_length_a', '_foo_bar', '_hello'], self.imp.get_keys_to_import())
+        self.assertEqual(['_foo_bar', '_hello'], self.imp.get_keys_to_import())
         self.assertEqual([['_my_atom_type_symbol',
                            '_my_atom_type_description',
                            '_my_atom_type_scat_dispersion_real']], self.imp.get_loops_to_import())
