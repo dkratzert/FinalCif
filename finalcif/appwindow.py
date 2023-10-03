@@ -28,7 +28,7 @@ from qtpy.QtGui import QDesktopServices
 from finalcif import VERSION
 from finalcif.cif.cif_file_io import CifContainer, GemmiError
 from finalcif.cif.cod.deposit import CODdeposit
-from finalcif.cif.text import utf8_to_str, quote, string_to_utf8
+from finalcif.cif.text import utf8_to_str, quote
 from finalcif.datafiles.bruker_data import BrukerData
 from finalcif.datafiles.ccdc_mail import CCDCMail
 from finalcif.displaymol.sdm import SDM
