@@ -1,5 +1,6 @@
 FinalCif recent changes
 -----------------------
+* v128 Added import popup-Window for the import of an additional CIF for selection of keys and loops to import.
 * v127 Fixed bug that a multi-CIF could not be created by appending another CIF. Finally fixed memory leak in tests.
 * v126 Improved handling of PLATON for local Checkcif. The output windows of PLATON is now visible, but closes automatically
        when Checkcif is finished. Fixed behavior of FinalCif when run from within ShelXle. The commandline arguments
