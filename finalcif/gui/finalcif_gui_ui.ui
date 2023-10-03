@@ -841,7 +841,7 @@
         <item row="2" column="0" colspan="13">
          <widget class="MyMainStackedWidget" name="MainStackedWidget">
           <property name="currentIndex">
-           <number>6</number>
+           <number>5</number>
           </property>
           <widget class="QWidget" name="page_MainTable">
            <layout class="QVBoxLayout" name="verticalLayout">
@@ -2871,6 +2871,13 @@ Contact authors should always also appear as regular authors.</string>
                <widget class="QPushButton" name="newLoopPushButton">
                 <property name="text">
                  <string>Add New Loop</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="4">
+               <widget class="QPushButton" name="deleteLoopButton">
+                <property name="text">
+                 <string>Delete Loop</string>
                 </property>
                </widget>
               </item>

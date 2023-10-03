@@ -42,8 +42,9 @@ from finalcif.gui.dialogs import show_update_warning, unable_to_open_message, sh
     cif_file_open_dialog, \
     bad_z_message, show_res_checksum_warning, show_hkl_checksum_warning, cif_file_save_dialog, show_yes_now_question
 from finalcif.gui.finalcif_gui_ui import Ui_FinalCifWindow
+from finalcif.gui.import_selector import ImportSelector
 from finalcif.gui.loop_creator import LoopCreator
-from finalcif.gui.loops import Loop
+from finalcif.gui.loops import Loop, LoopTableModel, MyQTableView
 from finalcif.gui.plaintextedit import MyQPlainTextEdit
 from finalcif.gui.text_value_editor import MyTextTemplateEdit, TextEditItem
 from finalcif.gui.vrf_classes import MyVRFContainer, VREF
@@ -53,8 +54,8 @@ from finalcif.report.templated_report import TemplatedReport
 from finalcif.template.templates import ReportTemplates
 from finalcif.tools.download import MyDownloader
 from finalcif.tools.dsrmath import my_isnumeric
-from finalcif.tools.misc import next_path, do_not_import_keys, celltxt, to_float, do_not_import_from_stoe_cfx, \
-    cif_to_header_label, grouper, is_database_number, file_age_in_days, open_file, \
+from finalcif.tools.misc import next_path, celltxt, to_float, cif_to_header_label, grouper, is_database_number, \
+    file_age_in_days, open_file, \
     strip_finalcif_of_name
 from finalcif.tools.options import Options
 from finalcif.tools.platon import PlatonRunner
@@ -305,7 +306,7 @@ class AppWindow(QMainWindow):
         self.ui.BackPushButton.clicked.connect(self.back_to_main)
         self.ui.BackFromDepositPushButton.clicked.connect(self.back_to_main)
         self.ui.ExploreDirButton.clicked.connect(self.explore_current_dir)
-        self.ui.LoopsPushButton.clicked.connect(self.ui.MainStackedWidget.go_to_loops_page)
+        self.ui.LoopsPushButton.clicked.connect(self._on_go_to_loops_page)
         self.ui.LoopsPushButton.clicked.connect(
             lambda x: self.ui.LoopsTabWidget.setCurrentIndex(1) if self.ui.LoopsTabWidget.count() > 0 else None)
         self.ui.LoopsPushButton.clicked.connect(lambda x: self.ui.TemplatesStackedWidget.setCurrentIndex(1))
@@ -332,6 +333,7 @@ class AppWindow(QMainWindow):
         self.ui.CODpushButton.clicked.connect(self.open_cod_page)
         self.ui.CCDCpushButton.clicked.connect(self._ccdc_deposit)
         self.ui.newLoopPushButton.clicked.connect(self._go_to_new_loop_page)
+        self.ui.deleteLoopButton.clicked.connect(self._on_delete_current_loop)
         #
         save_shortcut = QShortcut(QtGui.QKeySequence('Ctrl+S'), self)
         save_shortcut.activated.connect(self.save_current_cif_file)
@@ -384,6 +386,10 @@ class AppWindow(QMainWindow):
     @property
     def finalcif_changes_filename(self):
         return self.cif.finalcif_file_prefixed(prefix='', suffix='-finalcif_changes.cif', force_strip=True)
+
+    def _on_go_to_loops_page(self):
+        self.make_loops_tables()
+        self.ui.MainStackedWidget.go_to_loops_page()
 
     def export_all_templates(self, filename: Path = None):
         import pickle
@@ -620,7 +626,7 @@ class AppWindow(QMainWindow):
         self.ui.LeftFrame.setMinimumWidth(int(left_frame))
         # Not necessary here, it is done in MyCifTable
         # threading.Thread(target=self.ui.cif_main_table.resizeRowsToContents).start()
-        #QtCore.QTimer(self).singleShot(0, self.ui.cif_main_table.resizeRowsToContents)
+        # QtCore.QTimer(self).singleShot(0, self.ui.cif_main_table.resizeRowsToContents)
 
     def moveEvent(self, a0: QtGui.QMoveEvent) -> None:
         """Is called when the main window moves."""
@@ -1358,66 +1364,42 @@ class AppWindow(QMainWindow):
         except RuntimeError as e:
             show_general_warning(self, 'Could not import {}:\n'.format(filename) + str(e))
             return
-        except ValueError as e:
+        except GemmiError as e:
             warning = 'Problems parsing file: {}:\n'.format(filename) + str(e)
             if 'data_' in str(e):
                 warning = warning + "\n\nA CIF needs to start with 'data_[some_name]'."
-            show_general_warning(self, warning)
+                show_general_warning(self, warning)
+                return
+            unable_to_open_message(self, Path(self.cif.filename), e)
             return
         except IOError as e:
             show_general_warning(self, 'Unable to open file {}:\n'.format(filename) + str(e))
             return
         self.check_cif_for_missing_values_before_really_open_it()
-        try:
-            self.import_key_value_pairs(imp_cif)
-            self.import_loops(imp_cif)
-        except Exception as e:
-            print(e)
-            unable_to_open_message(self, Path(self.cif.filename), e)
+        self.import_selector = ImportSelector(self, import_cif=imp_cif, target_cif=self.cif, settings=self.settings)
+        self.import_selector.show_import_window()
+        self.import_selector.import_clicked.connect(self._do_import_cif_after_selection)
+
+    def _do_import_cif_after_selection(self, keys: List[str], loops: List[List[str]]) -> None:
+        self._import_key_value_pairs(keys)
+        self._import_loops(loops)
         self.add_audit_creation_method()
-        # I think I leave the user possibilities to change the imported values:
-        # self.save_current_cif_file()
-        # self.load_cif_file(str(self.cif.finalcif_file))
+        self.import_selector.deleteLater()
+        self.import_selector.close()
 
-    def import_loops(self, imp_cif: 'CifContainer'):
-        """
-        Import all loops from the CifContainer imp_cif to the current block.
-        """
-        for loop in imp_cif.loops:
-            if self.ui.importOnlyNewDataCheckBox.isChecked() and self.cif.block.find(loop.tags):
-                # Import only new loops
-                continue
-            # TODO: Make this work:
-            #if loop.tags[0] in do_not_loop_import:
-            #    continue
-            new_loop = self.cif.block.init_loop('', loop.tags)
-            for row in imp_cif.block.find(loop.tags):
+    def _import_key_value_pairs(self, keys: List[str]) -> None:
+        for key in keys:
+            value = self.import_selector.import_cif[key]
+            if key in self.ui.cif_main_table.vheaderitems:
+                self.ui.cif_main_table.setText(key=key, column=Column.EDIT, txt=value, color=light_green)
+            else:
+                self.add_row(key, value, at_start=True)
+
+    def _import_loops(self, loops: List[List[str]]):
+        for loop in loops:
+            new_loop = self.cif.block.init_loop('', loop)
+            for row in self.import_selector.import_cif.block.find(loop):
                 new_loop.add_row(row)
-
-    def import_key_value_pairs(self, imp_cif: CifContainer) -> None:
-        for item in imp_cif.block:
-            if item.pair is not None:
-                key, value = item.pair
-                # leave out unit cell etc.:
-                if self.do_not_import_this_key(key, value, imp_cif):
-                    continue
-                if self.ui.importOnlyNewDataCheckBox.isChecked() and self.cif[key]:
-                    # Import only new key/values
-                    continue
-                value = cif.as_string(value)
-                if key in self.ui.cif_main_table.vheaderitems:
-                    self.ui.cif_main_table.setText(key=key, column=Column.EDIT, txt=value, color=light_green)
-                else:
-                    self.add_row(key, value)  # , column =Column.EDIT
-
-    def do_not_import_this_key(self, key: str, value: str, cif: 'CifContainer') -> bool:
-        if value == '?' or value.strip() == '':
-            return True
-        if key in do_not_import_keys:
-            return True
-        if key in do_not_import_from_stoe_cfx and cif.fileobj.suffix == '.cfx':
-            return True
-        return False
 
     def load_cif_file(self, filepath: Path, block=0, load_changes: bool = True) -> None:
         """
@@ -1520,7 +1502,6 @@ class AppWindow(QMainWindow):
                     unable_to_open_message(parent=self, filepath=self.finalcif_changes_filename, not_ok=e)
             if self.running_inside_unit_test and changes_exist:
                 self.load_changes_cif()
-        self.make_loops_tables()
         if self.cif:
             self.set_shredcif_state()
             # saving current cif dir as last working directory:
@@ -1609,8 +1590,8 @@ class AppWindow(QMainWindow):
             print(str(e))
             errlist = str(e).split(':')
             if len(errlist) > 1:
-                show_general_warning(self,
-                                     f"Attention in CIF line {errlist[1]}:\n'{errlist[2].split()[0]}' has no value.")
+                show_general_warning(self, f"Attention in CIF line {errlist[1]}:\n"
+                                           f"'{errlist[2].split()[0]}' has no value.")
 
     def get_last_workdir(self):
         try:
@@ -1702,7 +1683,7 @@ class AppWindow(QMainWindow):
             self.ui.shelx_TextEdit.setPlainText(cif.as_string(self.cif.res_file_data))
         try:
             QtCore.QTimer(self).singleShot(0, self.view_molecule)
-            #threading.Thread(target=self.view_molecule).start()
+            # threading.Thread(target=self.view_molecule).start()
         except Exception:
             print('Molecule view crashed!')
 
@@ -1878,12 +1859,12 @@ class AppWindow(QMainWindow):
         """
         Generates a list of tables containing the cif loops.
         """
-        #do_not_display = ('_diffrn_refln_index_h')
+        # do_not_display = ('_diffrn_refln_index_h')
         for num, loop in enumerate(self.cif.loops):
             tags = loop.tags
             if not tags or len(tags) < 1:
                 continue
-            #if tags[0] in do_not_display:
+            # if tags[0] in do_not_display:
             #    continue
             self.new_loop_tab(loop, num, tags)
         if self.cif.res_file_data:
@@ -1919,6 +1900,20 @@ class AppWindow(QMainWindow):
         self.ui.revertLoopsPushButton.hide()
         self.ui.newLoopPushButton.hide()
         self.loopcreate.saveLoopPushButton.clicked.connect(self.save_new_loop_to_cif)
+
+    def _on_delete_current_loop(self):
+        current_tab_index = self.ui.LoopsTabWidget.currentIndex()
+        current_table_view: MyQTableView = self.ui.LoopsTabWidget.widget(current_tab_index)
+        try:
+            header_model: LoopTableModel = current_table_view.horizontalHeader().model()
+        except AttributeError:
+            # Not a QTableView
+            return
+        header_item = header_model._header[0]
+        loop: gemmi.cif.Loop = self.cif.block.find_loop(header_item).get_loop()
+        table: gemmi.cif.Table = self.cif.block.find(loop.tags)
+        table.erase()
+        self.ui.LoopsTabWidget.removeTab(current_tab_index)
 
     def save_new_loop_to_cif(self):
         if self.loopcreate:
