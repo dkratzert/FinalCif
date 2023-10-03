@@ -7,8 +7,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1637</width>
-    <height>803</height>
+    <width>1566</width>
+    <height>812</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -434,13 +434,6 @@
                <widget class="QPushButton" name="ImportCifPushButton">
                 <property name="text">
                  <string>Import .cif, .pcf, .cif_od, .cfx or .sqf file</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="importOnlyNewDataCheckBox">
-                <property name="text">
-                 <string>Only new data</string>
                 </property>
                </widget>
               </item>
@@ -1398,7 +1391,6 @@
                   <widget class="QLabel" name="wR2Label">
                    <property name="font">
                     <font>
-                     <weight>50</weight>
                      <italic>false</italic>
                      <bold>false</bold>
                     </font>
@@ -1422,7 +1414,6 @@
                   <widget class="QLabel" name="r1Label">
                    <property name="font">
                     <font>
-                     <weight>50</weight>
                      <italic>false</italic>
                      <bold>false</bold>
                     </font>
@@ -1480,7 +1471,6 @@
                   <widget class="QLabel" name="completeLabel">
                    <property name="font">
                     <font>
-                     <weight>50</weight>
                      <bold>false</bold>
                     </font>
                    </property>
@@ -1596,7 +1586,6 @@
                   <widget class="QLabel" name="dataReflnsLabel">
                    <property name="font">
                     <font>
-                     <weight>50</weight>
                      <bold>false</bold>
                     </font>
                    </property>
@@ -1744,7 +1733,6 @@
                   <widget class="QLabel" name="rintLabel">
                    <property name="font">
                     <font>
-                     <weight>50</weight>
                      <bold>false</bold>
                     </font>
                    </property>
@@ -1767,7 +1755,6 @@
                   <widget class="QLabel" name="rsigmaLabel">
                    <property name="font">
                     <font>
-                     <weight>50</weight>
                      <bold>false</bold>
                     </font>
                    </property>
@@ -1841,7 +1828,6 @@
                   <widget class="QLabel" name="dLabel">
                    <property name="font">
                     <font>
-                     <weight>50</weight>
                      <bold>false</bold>
                     </font>
                    </property>

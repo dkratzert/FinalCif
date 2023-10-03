@@ -8,6 +8,7 @@ from finalcif import VERSION
 from finalcif.appwindow import AppWindow
 
 
+# noinspection PyMissingTypeHints
 class TestChangesTrackingActive(unittest.TestCase):
     """A CIF fle in a complete work folder"""
 
@@ -16,7 +17,6 @@ class TestChangesTrackingActive(unittest.TestCase):
         self.testcif = Path('tests/examples/work/cu_BruecknerJK_153F40_0m.cif').absolute()
         self.myapp = AppWindow(self.testcif)
         self.myapp.finalcif_changes_filename.unlink(missing_ok=True)
-        self.myapp.hide()
         self.myapp.ui.trackChangesCifCheckBox.setChecked(True)
         self.myapp.setWindowIcon(QIcon('./icon/multitable.png'))
         self.myapp.setWindowTitle('FinalCif v{}'.format(VERSION))
