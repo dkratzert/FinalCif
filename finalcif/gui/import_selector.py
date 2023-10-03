@@ -145,7 +145,7 @@ class ImportSelector(QtWidgets.QMainWindow):
             return True
         return False
 
-    def _select_only_new(self):
+    def _select_only_new(self) -> None:
         rows = self.ui.importTable_keys.rowCount()
         for row in range(rows):
             widget: QtWidgets.QCheckBox = self.ui.importTable_keys.cellWidget(row, 0)
@@ -160,7 +160,7 @@ class ImportSelector(QtWidgets.QMainWindow):
             widget: QtWidgets.QCheckBox = self.ui.importTable_loops.cellWidget(row, 0)
             loop = widget.text()
             first_key = loop.splitlines(keepends=False)[0]
-            if self.target_cif[first_key]:
+            if self.target_cif.block.find_loop(first_key):
                 # Import only new key/values
                 widget.setChecked(False)
                 continue
@@ -171,7 +171,7 @@ if __name__ == "__main__":
     import sys
 
     app = QtWidgets.QApplication([])
-    imp_cif = CifContainer('test-data/MCK41.cfx')
+    imp_cif = CifContainer('test-data/DK_Zucker2_0m.cif')
     shutil.copyfile('test-data/p21c.cif', 'test-data/p21c-copy.cif')
     targetcif = CifContainer('test-data/p21c-copy.cif')
     settings = FinalCifSettings()
