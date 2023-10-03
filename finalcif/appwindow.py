@@ -23,13 +23,12 @@ from PyQt5.QtCore import Qt, QEvent
 from PyQt5.QtWidgets import QMainWindow, QShortcut, QCheckBox, QListWidgetItem, QApplication, \
     QPlainTextEdit, QFileDialog, QMessageBox
 from gemmi import cif
-from qtpy import QtWidgets
 from qtpy.QtGui import QDesktopServices
 
 from finalcif import VERSION
 from finalcif.cif.cif_file_io import CifContainer, GemmiError
 from finalcif.cif.cod.deposit import CODdeposit
-from finalcif.cif.text import utf8_to_str, quote
+from finalcif.cif.text import utf8_to_str, quote, string_to_utf8
 from finalcif.datafiles.bruker_data import BrukerData
 from finalcif.datafiles.ccdc_mail import CCDCMail
 from finalcif.displaymol.sdm import SDM
@@ -44,7 +43,6 @@ from finalcif.gui.dialogs import show_update_warning, unable_to_open_message, sh
     bad_z_message, show_res_checksum_warning, show_hkl_checksum_warning, cif_file_save_dialog, show_yes_now_question
 from finalcif.gui.finalcif_gui_ui import Ui_FinalCifWindow
 from finalcif.gui.import_selector import ImportSelector
-from finalcif.gui.import_selector_ui import Ui_importSelectMainWindow
 from finalcif.gui.loop_creator import LoopCreator
 from finalcif.gui.loops import Loop, LoopTableModel, MyQTableView
 from finalcif.gui.plaintextedit import MyQPlainTextEdit
@@ -56,9 +54,9 @@ from finalcif.report.templated_report import TemplatedReport
 from finalcif.template.templates import ReportTemplates
 from finalcif.tools.download import MyDownloader
 from finalcif.tools.dsrmath import my_isnumeric
-from finalcif.tools.misc import next_path, do_not_import_keys, celltxt, to_float, do_not_import_from_stoe_cfx, \
-    cif_to_header_label, grouper, is_database_number, file_age_in_days, open_file, \
-    strip_finalcif_of_name, do_not_loop_import
+from finalcif.tools.misc import next_path, celltxt, to_float, cif_to_header_label, grouper, is_database_number, \
+    file_age_in_days, open_file, \
+    strip_finalcif_of_name
 from finalcif.tools.options import Options
 from finalcif.tools.platon import PlatonRunner
 from finalcif.tools.settings import FinalCifSettings
@@ -1382,16 +1380,11 @@ class AppWindow(QMainWindow):
         self.import_selector.show_import_window()
         self.import_selector.import_clicked.connect(self._do_import_cif_after_selection)
 
-    def _do_import_cif_after_selection(self, keys, loops):
-        # TODO:
-        # * Unquote text after import
-        # * Decise if at start of in order
-        # * Check loop import
-        # * Maybe make import of all as standard. It is unclear why not all is selected otherwise. But probably
-        #   still not the unitcell
+    def _do_import_cif_after_selection(self, keys: List[str], loops: List[List[str]]) -> None:
         self._import_key_value_pairs(keys)
         self._import_loops(loops)
         self.add_audit_creation_method()
+        self.import_selector.deleteLater()
         self.import_selector.close()
 
     def _import_key_value_pairs(self, keys: List[str]) -> None:
@@ -1400,7 +1393,7 @@ class AppWindow(QMainWindow):
             if key in self.ui.cif_main_table.vheaderitems:
                 self.ui.cif_main_table.setText(key=key, column=Column.EDIT, txt=value, color=light_green)
             else:
-                self.add_row(key, value, at_start=True)  # , column =Column.EDIT
+                self.add_row(key, value, at_start=True)
 
     def _import_loops(self, loops: List[List[str]]):
         for loop in loops:
