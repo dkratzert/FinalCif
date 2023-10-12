@@ -1594,7 +1594,7 @@ class AppWindow(QMainWindow):
                 show_general_warning(self, f"Attention in CIF line {errlist[1]}:\n"
                                            f"'{errlist[2].split()[0]}' has no value.")
 
-    def get_last_workdir(self):
+    def get_last_workdir(self) -> str:
         try:
             # loading last working directory:
             last = self.settings.load_last_workdir()
