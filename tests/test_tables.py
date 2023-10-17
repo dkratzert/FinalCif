@@ -2,11 +2,13 @@ import os
 import unittest
 from pathlib import Path
 
+import docx
 from docx import Document
 from docx.enum.shape import WD_INLINE_SHAPE
 from docx.shape import InlineShapes
 from docx.shared import Cm
 from docx.table import Table
+from packaging.version import Version
 
 from finalcif import VERSION
 from finalcif.appwindow import AppWindow, app
@@ -74,6 +76,7 @@ class TablesTestCase(TablesTestMixin, unittest.TestCase):
     def test_all_paragraphs(self):
         self.myapp.ui.SaveFullReportButton.click()
         doc = Document(self.reportdoc.absolute())
+        newline = '\n' if Version(docx.__version__) < Version('1.0') else ''
         result = ('Structure Tables\n'
                   '\n'
                   '\n'
@@ -101,9 +104,7 @@ class TablesTestCase(TablesTestMixin, unittest.TestCase):
                   'charge from The Cambridge Crystallographic Data Centre via '
                   'www.ccdc.cam.ac.uk/\u200bstructures. This report and the CIF file were '
                   'generated using FinalCif.[6]\n'
-                  '\n'
-                  'Table 1. Crystal data and structure refinement for cu_BruecknerJK_153F40_0m\n'
-                  '\n'
+                  f'{newline}Table 1. Crystal data and structure refinement for cu_BruecknerJK_153F40_0m\n{newline}'
                   '\n'
                   '\n'
                   'Refinement details for cu_BruecknerJK_153F40_0m\n'
