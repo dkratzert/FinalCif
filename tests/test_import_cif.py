@@ -7,19 +7,21 @@ from finalcif.cif.cif_file_io import CifContainer
 from finalcif.gui.import_selector import ImportSelector
 from finalcif.tools.settings import FinalCifSettings
 
+data = Path('tests')
+testdata = Path('test-data')
 
 class MyTestCase(unittest.TestCase):
     def setUp(self) -> None:
-        imp_cif = CifContainer('tests/statics/import_cif.cif')
-        shutil.copyfile('test-data/p21c.cif', 'test-data/p21c-copy.cif')
-        targetcif = CifContainer('test-data/p21c-copy.cif')
+        imp_cif = CifContainer(data / 'statics/import_cif.cif')
+        shutil.copyfile(testdata / 'p21c.cif', testdata / 'p21c-copy.cif')
+        targetcif = CifContainer(testdata / 'p21c-copy.cif')
         settings = FinalCifSettings()
         self.imp = ImportSelector(None, import_cif=imp_cif, target_cif=targetcif, settings=settings)
         self.imp._empty_saved_selection()
         self.imp.show_import_window()
 
     def tearDown(self) -> None:
-        Path('test-data/p21c-copy.cif').unlink(missing_ok=True)
+        Path(testdata / 'p21c-copy.cif').unlink(missing_ok=True)
 
     def test_keys_to_import(self):
         self.assertEqual(3, self.imp.keys_to_import)

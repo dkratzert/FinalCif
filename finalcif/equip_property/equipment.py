@@ -1,5 +1,4 @@
 from bisect import bisect
-from contextlib import suppress
 from pathlib import Path
 from typing import List, Dict
 
@@ -16,7 +15,9 @@ from finalcif.tools import misc
 from finalcif.tools.misc import include_equipment_imports
 from finalcif.tools.settings import FinalCifSettings
 
-with suppress(ImportError):
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
     from finalcif.appwindow import AppWindow
 
 
@@ -182,8 +183,8 @@ class Equipment:
             if key not in cif_all_dict.keys():
                 if not key.startswith('_'):
                     show_general_warning(self.app, '"{}" is not a valid keyword! '
-                                         '\nChange the name in order to save.\n'
-                                         'Keys must start with an underscore.'.format(key))
+                                                   '\nChange the name in order to save.\n'
+                                                   'Keys must start with an underscore.'.format(key))
                     return
                 show_general_warning(self.app, '"{}" is not an official CIF keyword!'.format(key))
         self.settings.save_settings_list('equipment', self.selected_template_name(), table_data)
@@ -194,6 +195,8 @@ class Equipment:
         """
         Import an equipment entry from a cif file.
         """
+        if isinstance(filename, Path):
+            filename = str(filename)
         if not filename:
             filename = cif_file_open_dialog(filter="CIF file (*.cif  *.cif_od *.cfx)")
         if not filename:

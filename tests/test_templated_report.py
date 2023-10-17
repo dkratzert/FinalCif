@@ -9,15 +9,16 @@ from docx.shared import Cm
 from docx.table import Table
 
 from finalcif import VERSION
-from finalcif.appwindow import AppWindow, app
+from finalcif.appwindow import AppWindow
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.report.templated_report import TemplatedReport
 
+data = Path('tests')
 
 class TemplateReportTestCase(unittest.TestCase):
     def setUp(self) -> None:
-        os.environ["RUNNING_TEST"] = 'True'
-        self.testcif = Path('tests/examples/1979688.cif').absolute()
+        os.environ['RUNNING_TEST'] = 'True'
+        self.testcif = (data / 'examples/1979688.cif').absolute()
         self.myapp = AppWindow(file=self.testcif)
         self.myapp.ui.HAtomsCheckBox.setChecked(False)
         self.myapp.ui.ReportTextCheckBox.setChecked(False)
@@ -41,7 +42,6 @@ class TemplateReportTestCase(unittest.TestCase):
             self.myapp.templates.remove_current_template()
         self.myapp.ui.docxTemplatesListWidget.blockSignals(False)
         self.myapp.close()
-        app.quit()
 
     def import_templates(self):
         # blocking signals, because signal gets fired after delete and crashes: 

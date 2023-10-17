@@ -1,6 +1,9 @@
 import unittest
+from pathlib import Path
 
 from finalcif.cif.cif_file_io import CifContainer
+
+data = Path('.')
 
 
 class TestNosphera2(unittest.TestCase):
@@ -10,7 +13,7 @@ class TestNosphera2(unittest.TestCase):
     """
 
     def setUp(self) -> None:
-        self.cif = CifContainer('test-data/nospera2.cif')
+        self.cif = CifContainer(data / 'test-data/nospera2.cif')
 
     def test_atoms(self):
         self.assertEqual("Atom(label='O1', type='O', x='0.282284(16)', y='0.56940(2)', "

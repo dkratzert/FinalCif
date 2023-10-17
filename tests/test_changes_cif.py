@@ -7,6 +7,7 @@ from PyQt5.QtGui import QIcon
 from finalcif import VERSION
 from finalcif.appwindow import AppWindow
 
+data = Path('tests')
 
 # noinspection PyMissingTypeHints
 class TestChangesTrackingActive(unittest.TestCase):
@@ -14,8 +15,8 @@ class TestChangesTrackingActive(unittest.TestCase):
 
     def setUp(self) -> None:
         os.environ["RUNNING_TEST"] = 'True'
-        self.testcif = Path('tests/examples/work/cu_BruecknerJK_153F40_0m.cif').absolute()
-        self.myapp = AppWindow(self.testcif)
+        self.testcif = data / 'examples/work/cu_BruecknerJK_153F40_0m.cif'
+        self.myapp = AppWindow(file=self.testcif)
         self.myapp.finalcif_changes_filename.unlink(missing_ok=True)
         self.myapp.ui.trackChangesCifCheckBox.setChecked(True)
         self.myapp.setWindowIcon(QIcon('./icon/multitable.png'))

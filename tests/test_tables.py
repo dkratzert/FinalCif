@@ -11,21 +11,22 @@ from docx.table import Table
 from packaging.version import Version
 
 from finalcif import VERSION
-from finalcif.appwindow import AppWindow, app
+from finalcif.appwindow import AppWindow
 
+data = Path('tests')
 
 class TablesTestMixin():
 
     def setUp(self) -> None:
-        os.environ["RUNNING_TEST"] = 'True'
-        self.testcif = Path('tests/examples/1979688.cif').absolute()
+        os.environ['RUNNING_TEST'] = 'True'
+        self.testcif = (data / 'examples/1979688.cif').absolute()
         self.myapp = AppWindow(file=self.testcif)
         self.myapp.ui.HAtomsCheckBox.setChecked(False)
         self.myapp.ui.ReportTextCheckBox.setChecked(False)
         self.myapp.ui.PictureWidthDoubleSpinBox.setValue(0.0)
         # make sure to use no template:
         self.myapp.ui.docxTemplatesListWidget.setCurrentRow(0)
-        self.myapp.show()
+        #self.myapp.show()
         self.reportdoc = self.myapp.cif.finalcif_file_prefixed(prefix='report_', suffix='-finalcif.docx')
         self.report_zip = self.myapp.cif.finalcif_file_prefixed(prefix='', suffix='-finalcif.zip')
 
@@ -37,7 +38,6 @@ class TablesTestMixin():
         self.myapp.ui.HAtomsCheckBox.setChecked(False)
         self.myapp.ui.PictureWidthDoubleSpinBox.setValue(7.5)
         self.myapp.close()
-        app.quit()
 
 
 class TablesTestCase(TablesTestMixin, unittest.TestCase):

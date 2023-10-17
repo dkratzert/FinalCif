@@ -22,7 +22,7 @@ class TestCheckCifHTML(unittest.TestCase):
         os.environ["RUNNING_TEST"] = 'True'
         if os.environ.get('NO_NETWORK'):
             self.skipTest('No network available.')
-        self.myapp = AppWindow(Path('tests/examples/work/cu_BruecknerJK_153F40_0m.cif').resolve())
+        self.myapp = AppWindow(file=Path('tests/examples/work/cu_BruecknerJK_153F40_0m.cif').resolve())
         self.myapp.hide()  # For full screen view
         self.resobj = self.myapp.cif.finalcif_file_prefixed(prefix='checkcif-', suffix='-finalcif.html')
 

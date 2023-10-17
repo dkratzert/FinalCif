@@ -16,22 +16,26 @@ from finalcif.appwindow import AppWindow
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.tools.misc import unify_line_endings
 
+from pathlib import Path
+
+data = Path('tests')
+
 
 class TestLoops(unittest.TestCase):
 
     def setUp(self) -> None:
         os.environ["RUNNING_TEST"] = 'True'
-        self.testcif = Path('tests/examples/1979688.cif').resolve()
-        Path('tests/examples/1979688-finalcif_changes.cif').unlink(missing_ok=True)
-        self.myapp = AppWindow(self.testcif)
-        self.myapp.hide()  # For full screen view
+        self.testcif = (data / 'examples/1979688.cif').resolve()
+        (data / 'examples/1979688-finalcif_changes.cif').unlink(missing_ok=True)
+        self.myapp = AppWindow(file=self.testcif)
+        # self.myapp.hide()  # For full screen view
         self.myapp.ui.LoopsPushButton.click()
         self.myapp.ui.trackChangesCifCheckBox.setChecked(False)
 
     def tearDown(self) -> None:
         self.myapp.cif.finalcif_file.unlink(missing_ok=True)
         self.myapp.close()
-        Path('tests/examples/1979688-finalcif_changes.cif').unlink(missing_ok=True)
+        (data / 'examples/1979688-finalcif_changes.cif').unlink(missing_ok=True)
 
     def get_index_of(self, loopkey: str = ''):
         tabw: QTabWidget = self.myapp.ui.LoopsTabWidget
@@ -94,17 +98,17 @@ class TestLoops(unittest.TestCase):
 class TestLoopsMove(unittest.TestCase):
     def setUp(self) -> None:
         os.environ["RUNNING_TEST"] = 'True'
-        self.testcif = Path('tests/examples/1979688.cif').resolve()
+        self.testcif = (data / 'examples/1979688.cif').resolve()
         # TODO: make tests where changes file is active:
-        Path('tests/examples/1979688-finalcif_changes.cif').unlink(missing_ok=True)
-        self.myapp = AppWindow(self.testcif)
+        (data / 'examples/1979688-finalcif_changes.cif').unlink(missing_ok=True)
+        self.myapp = AppWindow(file=self.testcif)
         self.myapp.hide()  # For full screen view
         self.myapp.ui.LoopsPushButton.click()
 
     def tearDown(self) -> None:
         self.myapp.cif.finalcif_file.unlink(missing_ok=True)
         self.myapp.close()
-        Path('tests/examples/1979688-finalcif_changes.cif').unlink(missing_ok=True)
+        (data / 'examples/1979688-finalcif_changes.cif').unlink(missing_ok=True)
 
     def get_index_of(self, loopkey: str = ''):
         tabw: QTabWidget = self.myapp.ui.LoopsTabWidget

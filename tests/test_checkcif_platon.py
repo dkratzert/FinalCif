@@ -35,7 +35,7 @@ class TestPlatonCheckCIF(unittest.TestCase):
         os.environ["RUNNING_TEST"] = 'True'
         if not get_platon_exe() or os.environ.get('NO_NETWORK'):
             self.skipTest('No PLATON executable found or no network. Skipping test!')
-        self.myapp = AppWindow(Path('tests/examples/1979688.cif').resolve())
+        self.myapp = AppWindow(file=Path('tests/examples/1979688.cif').resolve())
         self.myapp.hide()
 
     def tearDown(self) -> None:
@@ -69,7 +69,7 @@ class TestPlatonCheckCIFwithCIFwithoutHKLdata(unittest.TestCase):
         os.environ["RUNNING_TEST"] = 'True'
         if not get_platon_exe() or os.environ.get('NO_NETWORK'):
             self.skipTest('No PLATON executable found or NO_NETWORK is set. Skipping test!')
-        self.myapp = AppWindow(Path('./test-data/1000007.cif').resolve())
+        self.myapp = AppWindow(file=Path('./test-data/1000007.cif').resolve())
         self.myapp.hide()
         self.myapp.ui.structfactCheckBox.setChecked(True)
 

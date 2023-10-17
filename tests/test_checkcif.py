@@ -9,6 +9,8 @@ from lxml.html import fromstring
 
 from finalcif.cif.checkcif.checkcif import MyHTMLParser, fix_iucr_urls
 
+data = Path('tests')
+
 form_choices = {'filecif'      : [],
                 'runtype'      : [],
                 'referer'      : [],
@@ -123,7 +125,7 @@ class TestCheckCif(TestCase):
 
 class TestMyHTMLParser(TestCase):
     def setUp(self) -> None:
-        htmlfile = Path('tests/examples/work/checkcif-cu_BruecknerJK_153F40_0m-test2.html')
+        htmlfile = data / 'examples/work/checkcif-cu_BruecknerJK_153F40_0m-test2.html'
         self.parser = MyHTMLParser(fix_iucr_urls(htmlfile.read_text()))
 
     def test_pdf_link_not_there(self):
@@ -147,7 +149,7 @@ class TestMyHTMLParser(TestCase):
 
 class TestMyHTMLParserPDF(TestCase):
     def setUp(self) -> None:
-        htmlfile = Path('tests/examples/work/checkcif-cu_BruecknerJK_153F40_0m-pdf-test2.html')
+        htmlfile = (data / 'examples/work/checkcif-cu_BruecknerJK_153F40_0m-pdf-test2.html').resolve().absolute()
         self.parser = MyHTMLParser(fix_iucr_urls(htmlfile.read_text()))
 
     def test_pdf_link_there(self):
@@ -160,7 +162,7 @@ class TestMyHTMLParserNew(unittest.TestCase):
 
     def test_parser_with_html(self):
         # Read the sample HTML content from file
-        html_content = Path(r'tests/checkcif_results/check_html_ab.html').read_text()
+        html_content = (data / r'checkcif_results/check_html_ab.html').read_text()
         parser = MyHTMLParser(html_content)
 
         self.assertEqual(parser.structure_factor_report,
@@ -171,7 +173,7 @@ class TestMyHTMLParserNew(unittest.TestCase):
 
     def test_parser_with_html_pdf(self):
         # Read the sample HTML PDF content from file
-        html_pdf_content = Path(r'tests/checkcif_results/check_pdf_ab.html').read_text()
+        html_pdf_content = (data / r'checkcif_results/check_pdf_ab.html').read_text()
 
         parser = MyHTMLParser(html_pdf_content)
 

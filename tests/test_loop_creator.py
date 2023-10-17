@@ -1,6 +1,7 @@
 import os
 import sys
 import unittest
+from pathlib import Path
 
 from PyQt5.QtWidgets import QApplication, QMainWindow
 
@@ -11,16 +12,18 @@ app = QApplication.instance()
 if app is None:
     app = QApplication([])
 
+data = Path('.')
+
 
 class TestLoopCreator(unittest.TestCase):
     def setUp(self) -> None:
         os.environ["RUNNING_TEST"] = 'True'
         self.w = QMainWindow()
-        self.cif = CifContainer('test-data/1000006.cif')
+        self.cif = CifContainer(data / 'test-data/1000006.cif')
         self.lc = LoopCreator(parent=self.w, cif=self.cif)
         self.lc.saveLoopPushButton.clicked.connect(self.lc.save_new_loop_to_cif)
         self.w.setCentralWidget(self.lc)
-        self.w.show()
+        #self.w.show()
         # For testing:
         # self.show_app()
 

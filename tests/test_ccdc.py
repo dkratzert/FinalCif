@@ -11,10 +11,12 @@ from pathlib import Path
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.datafiles.ccdc_mail import CCDCMail
 
+data = Path('.')
+
 
 class TestCCDC(unittest.TestCase):
     def setUp(self) -> None:
-        self.cif = CifContainer(Path('tests/examples/work/cu_BruecknerJK_153F40_0m.cif'))
+        self.cif = CifContainer(file=data / 'tests/examples/work/cu_BruecknerJK_153F40_0m.cif')
 
     def test_ccdc_num(self):
         ccdc = CCDCMail(self.cif)
@@ -24,7 +26,7 @@ class TestCCDC(unittest.TestCase):
 
 class TestCCDCnoMail(unittest.TestCase):
     def setUp(self) -> None:
-        self.cif = CifContainer(Path('test-data/DK_Zucker2_0m.cif'))
+        self.cif = CifContainer(file=data / 'test-data/DK_Zucker2_0m.cif')
 
     def test_ccdc_num(self):
         ccdc = CCDCMail(self.cif)

@@ -14,20 +14,20 @@ from finalcif.gui.custom_classes import Column
 from finalcif.tools.misc import unify_line_endings
 from tests.helpers import addr
 
+data = Path('tests')
 
 class TestFileIsOpened(unittest.TestCase):
     """A CIF fle in a complete work folder"""
 
     def setUp(self) -> None:
         os.environ["RUNNING_TEST"] = 'True'
-        self.testcif = Path('tests/examples/work/cu_BruecknerJK_153F40_0m.cif').absolute()
-        self.myapp = AppWindow(self.testcif)
+        self.testcif = (data / 'examples/work/cu_BruecknerJK_153F40_0m.cif').absolute()
+        self.myapp = AppWindow(file=self.testcif)
         self.myapp.ui.trackChangesCifCheckBox.setChecked(True)
-        self.myapp.hide()
         self.myapp.setWindowIcon(QIcon('./icon/multitable.png'))
         self.myapp.setWindowTitle('FinalCif v{}'.format(VERSION))
-        Path('tests/examples/work/foo.cif').unlink(missing_ok=True)
-        Path('tests/examples/work/cu_BruecknerJK_153F40_0m-finalcif.cif').unlink(missing_ok=True)
+        (data / 'examples/work/foo.cif').unlink(missing_ok=True)
+        (data / 'examples/work/cu_BruecknerJK_153F40_0m-finalcif.cif').unlink(missing_ok=True)
 
     def tearDown(self) -> None:
         Path('foo.cif').unlink(missing_ok=True)
@@ -36,7 +36,7 @@ class TestFileIsOpened(unittest.TestCase):
 
     def test_save_action(self):
         self.myapp.save_current_cif_file()
-        self.assertEqual(True, Path('tests/examples/work/cu_BruecknerJK_153F40_0m-finalcif.cif').exists())
+        self.assertEqual(True, (data / 'examples/work/cu_BruecknerJK_153F40_0m-finalcif.cif').exists())
 
 
 class TestWorkfolder(unittest.TestCase):
@@ -44,13 +44,12 @@ class TestWorkfolder(unittest.TestCase):
 
     def setUp(self) -> None:
         os.environ["RUNNING_TEST"] = 'True'
-        self.testcif = Path('tests/examples/work/cu_BruecknerJK_153F40_0m.cif').resolve()
+        self.testcif = (data / 'examples/work/cu_BruecknerJK_153F40_0m.cif').resolve()
         # TODO: Adapt this to the bahavior with the changes file:
-        Path('tests/examples/work/cu_BruecknerJK_153F40_0m-finalcif_changes.cif').unlink(missing_ok=True)
-        self.myapp = AppWindow(self.testcif)
+        (data / 'examples/work/cu_BruecknerJK_153F40_0m-finalcif_changes.cif').unlink(missing_ok=True)
+        self.myapp = AppWindow(file=self.testcif)
         self.myapp.ui.trackChangesCifCheckBox.setChecked(True)
-        self.myapp.equipment.import_equipment_from_file('test-data/Crystallographer_Details.cif')
-        self.myapp.hide()
+        self.myapp.equipment.import_equipment_from_file(str(data.parent / 'test-data/Crystallographer_Details.cif'))
         self.myapp.setWindowIcon(QIcon('./icon/multitable.png'))
         self.myapp.setWindowTitle('FinalCif v{}'.format(VERSION))
 
@@ -58,8 +57,8 @@ class TestWorkfolder(unittest.TestCase):
         self.testcif.with_suffix('.ins').unlink(missing_ok=True)
         self.testcif.with_suffix('.lst').unlink(missing_ok=True)
         self.testcif.with_suffix('.2fcf').unlink(missing_ok=True)
-        Path('tests/testcif_file.cif').unlink(missing_ok=True)
-        Path('tests/examples/work/cu_BruecknerJK_153F40_0m-finalcif_changes.cif').unlink(missing_ok=True)
+        (data / 'testcif_file.cif').unlink(missing_ok=True)
+        (data / 'examples/work/cu_BruecknerJK_153F40_0m-finalcif_changes.cif').unlink(missing_ok=True)
         self.myapp.close()
 
     def key_row(self, key: str) -> int:
@@ -342,11 +341,10 @@ class TestWorkfolderOtherCifName(unittest.TestCase):
 
     def setUp(self) -> None:
         os.environ["RUNNING_TEST"] = 'True'
-        self.testcif = Path('tests/examples/work/p21c.cif').resolve()
-        self.myapp = AppWindow(self.testcif)
+        self.testcif = (data / 'examples/work/p21c.cif').resolve()
+        self.myapp = AppWindow(file=self.testcif)
         self.myapp.ui.trackChangesCifCheckBox.setChecked(True)
-        self.myapp.equipment.import_equipment_from_file('test-data/Crystallographer_Details.cif')
-        self.myapp.hide()
+        self.myapp.equipment.import_equipment_from_file(data.parent / 'test-data/Crystallographer_Details.cif')
         self.myapp.setWindowIcon(QIcon('./icon/multitable.png'))
         self.myapp.setWindowTitle('FinalCif v{}'.format(VERSION))
 
@@ -354,7 +352,7 @@ class TestWorkfolderOtherCifName(unittest.TestCase):
         self.testcif.with_suffix('.ins').unlink(missing_ok=True)
         self.testcif.with_suffix('.lst').unlink(missing_ok=True)
         self.testcif.with_suffix('.2fcf').unlink(missing_ok=True)
-        Path('tests/testcif_file.cif').unlink(missing_ok=True)
+        (data / 'testcif_file.cif').unlink(missing_ok=True)
         self.myapp.close()
 
     def cell_text(self, key: str, col: int) -> str:

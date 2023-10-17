@@ -4,17 +4,18 @@ from pathlib import Path
 
 from PyQt5 import Qt, QtCore
 from PyQt5.QtTest import QTest
-
 from finalcif.appwindow import AppWindow
+
+data = Path('tests')
 
 
 class MyTestCase(unittest.TestCase):
 
     def setUp(self) -> None:
         os.environ["RUNNING_TEST"] = 'True'
-        self.testcif = Path('tests/examples/1979688.cif').resolve()
-        self.authorexport_file = Path('tests/examples/testexport_author.cif').resolve()
-        self.testimport_author = Path('tests/other_templates/AATest_Author.cif').resolve()
+        self.testcif = data / 'examples/1979688.cif'
+        self.authorexport_file = data / 'examples/testexport_author.cif'
+        self.testimport_author = data / 'other_templates/AATest_Author.cif'
         self.app = AppWindow(self.testcif)
         self.author = {'address': 'address', 'footnote': 'footnote', 'email': 'email',
                        'name'   : 'name', 'orcid': 'orcid', 'phone': 'phone', 'contact': True}
@@ -51,7 +52,8 @@ class MyTestCase(unittest.TestCase):
             if item is not None and item.text().startswith(name):
                 item_widget = listWidget.itemWidget(item)
                 if item_widget is not None:
-                    QTest.mouseClick(item_widget, QtCore.Qt.LeftButton, QtCore.Qt.NoModifier, item_widget.rect().center())
+                    QTest.mouseClick(item_widget, QtCore.Qt.LeftButton, QtCore.Qt.NoModifier,
+                                     item_widget.rect().center())
                     break
 
     def test_export_selected_author(self):
