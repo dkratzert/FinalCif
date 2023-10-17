@@ -87,7 +87,7 @@ class AppWindow(QMainWindow):
         self.cif: Optional[CifContainer] = None
         self.report_picture_path: Optional[Path] = None
         self.loopcreate: Optional[LoopCreator] = None
-        self.checkdef = []
+        self.checkdef: List[str] = []
         self.changes_answer: int = 0
         self.validation_response_forms_list = []
         self.checkdef_file: Path = Path.home().joinpath('check.def')

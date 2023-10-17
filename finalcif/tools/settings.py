@@ -189,7 +189,10 @@ class FinalCifSettings():
         directory = self.list_saved_items(property)
         if directory and item_name in directory:
             self.settings.beginGroup(property)
-            v = self.settings.value(item_name)
+            try:
+                v = self.settings.value(item_name)
+            except TypeError:
+                v = None
             self.settings.endGroup()
             return v
 

@@ -117,3 +117,4 @@ class TestMainTableFieldBehavior(unittest.TestCase):
         self.assertEqual(1, len(self.myapp.cif.doc))
         self.myapp.append_cif(Path('test-data/1000006.cif'))
         self.assertEqual(True, self.myapp.cif.is_multi_cif)
+        self.assertEqual(2, len(self.myapp.cif.doc))

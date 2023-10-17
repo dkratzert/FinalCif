@@ -2,7 +2,10 @@ import os
 import unittest
 from pathlib import Path
 
-from finalcif.appwindow import AppWindow, app
+from PyQt5 import Qt, QtCore
+from PyQt5.QtTest import QTest
+
+from finalcif.appwindow import AppWindow
 
 
 class MyTestCase(unittest.TestCase):
@@ -13,15 +16,15 @@ class MyTestCase(unittest.TestCase):
         self.authorexport_file = Path('tests/examples/testexport_author.cif').resolve()
         self.testimport_author = Path('tests/other_templates/AATest_Author.cif').resolve()
         self.app = AppWindow(self.testcif)
-        #self.app.show()
         self.author = {'address': 'address', 'footnote': 'footnote', 'email': 'email',
                        'name'   : 'name', 'orcid': 'orcid', 'phone': 'phone', 'contact': True}
         self.app.ui.authorEditTabWidget.setCurrentIndex(0)
+        self._delete_test_author()
 
     def tearDown(self) -> None:
         self.authorexport_file.unlink(missing_ok=True)
+        self._delete_test_author()
         self.app.close()
-        app.quit()
 
     def _import_testauthor(self):
         # To be used in other tests
@@ -29,10 +32,10 @@ class MyTestCase(unittest.TestCase):
         self.app.ui.LoopTemplatesListWidget.setCurrentRow(0)
 
     def test_selected_loop_without_selection(self):
-        self.assertEqual(self.app.authors.get_selected_loop_name(), '')
+        self.assertEqual('', self.app.authors.get_selected_loop_name())
 
     def test_selected_loop_with_selection(self):
-        self._delete_test_author()
+        self.assertEqual('', self.app.authors.get_selected_loop_name())
         self._import_testauthor()
         self.assertEqual('AATest Author', self.app.authors.get_selected_loop_name())
 
@@ -42,15 +45,16 @@ class MyTestCase(unittest.TestCase):
         self.assertNotEqual('AATest Author', self.app.authors.get_selected_loop_name())
 
     def _select_row_of_author(self, name):
-        listw = self.app.ui.LoopTemplatesListWidget
-        for row in range(listw.count()):
-            listw.setCurrentRow(row)
-            if listw.currentItem().text().startswith(name):
-                listw.clicked.emit(listw.model().index(row, 0))
-                break
+        listWidget = self.app.ui.LoopTemplatesListWidget
+        for row in range(listWidget.count()):
+            item = listWidget.item(row)
+            if item is not None and item.text().startswith(name):
+                item_widget = listWidget.itemWidget(item)
+                if item_widget is not None:
+                    QTest.mouseClick(item_widget, QtCore.Qt.LeftButton, QtCore.Qt.NoModifier, item_widget.rect().center())
+                    break
 
     def test_export_selected_author(self):
-        self._delete_test_author()
         self.authorexport_file.unlink(missing_ok=True)
         self._import_testauthor()
         self._select_row_of_author('AATest Author')
@@ -60,7 +64,6 @@ class MyTestCase(unittest.TestCase):
 
     def test_export_selected_author_cif(self):
         self.app.ui.authorEditTabWidget.setCurrentIndex(1)
-        self._delete_test_author()
         self.authorexport_file.unlink(missing_ok=True)
         self._import_testauthor()
         self._select_row_of_author('AATest Author')

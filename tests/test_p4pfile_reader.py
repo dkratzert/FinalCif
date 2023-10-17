@@ -12,8 +12,6 @@ from finalcif.datafiles.p4p_reader import P4PFile
 
 
 class TestBrukerFrame(unittest.TestCase):
-    def setUp(self) -> None:
-        pass
 
     def test_str(self):
         p4p = P4PFile(basename='DK_Zucker2', searchpath=Path('./test-data'))

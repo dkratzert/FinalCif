@@ -47,6 +47,9 @@ class TablesTestCase(TablesTestMixin, unittest.TestCase):
         self.myapp.ui.PictureWidthDoubleSpinBox.setValue(7.43)
         self.myapp.select_report_picture(Path('finalcif/icon/finalcif.png'))
 
+    def tearDown(self) -> None:
+        super().tearDown()
+
     def test_save_report_works(self):
         self.myapp.ui.SaveFullReportButton.click()
         self.assertEqual(True, self.reportdoc.exists())

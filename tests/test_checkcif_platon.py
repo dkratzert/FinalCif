@@ -37,7 +37,6 @@ class TestPlatonCheckCIF(unittest.TestCase):
             self.skipTest('No PLATON executable found or no network. Skipping test!')
         self.myapp = AppWindow(Path('tests/examples/1979688.cif').resolve())
         self.myapp.hide()
-        self.myapp.running_inside_unit_test = True
 
     def tearDown(self) -> None:
         for file in filenames:
