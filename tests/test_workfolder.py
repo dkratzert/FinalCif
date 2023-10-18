@@ -1,4 +1,6 @@
 import os
+
+os.environ['RUNNING_TEST'] = 'True'
 import unittest
 from datetime import datetime
 from pathlib import Path

@@ -1,4 +1,6 @@
 import os
+
+os.environ["RUNNING_TEST"] = 'True'
 import unittest
 from pathlib import Path
 
@@ -18,7 +20,6 @@ data = Path('tests')
 class TablesTestMixin():
 
     def setUp(self) -> None:
-        os.environ['RUNNING_TEST'] = 'True'
         self.testcif = (data / 'examples/1979688.cif').absolute()
         self.myapp = AppWindow(file=self.testcif)
         self.myapp.ui.HAtomsCheckBox.setChecked(False)

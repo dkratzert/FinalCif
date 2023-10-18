@@ -5,6 +5,8 @@
 #   and you think this stuff is worth it, you can buy me a beer in return.
 #   ----------------------------------------------------------------------------
 import os
+
+os.environ["RUNNING_TEST"] = 'True'
 import unittest
 from pathlib import Path
 
@@ -13,7 +15,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor
 
 from finalcif.appwindow import AppWindow
-from finalcif.gui.custom_classes import Column, MyCifTable
+from finalcif.gui.custom_classes import Column
 from finalcif.tools.misc import unify_line_endings
 
 data = Path('tests')
@@ -22,7 +24,6 @@ data = Path('tests')
 class TestMainTableFieldBehavior(unittest.TestCase):
 
     def setUp(self) -> None:
-        os.environ["RUNNING_TEST"] = 'True'
         self.testcif = (data / 'examples/1979688.cif').absolute()
         (data / '/examples/1979688-finalcif_changes.cif').unlink(missing_ok=True)
         self.myapp = AppWindow(file=self.testcif)

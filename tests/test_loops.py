@@ -5,6 +5,8 @@
 #   and you think this stuff is worth it, you can buy me a beer in return.
 #   ----------------------------------------------------------------------------
 import os
+
+os.environ["RUNNING_TEST"] = 'True'
 import unittest
 from pathlib import Path
 
@@ -16,15 +18,12 @@ from finalcif.appwindow import AppWindow
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.tools.misc import unify_line_endings
 
-from pathlib import Path
-
 data = Path('tests')
 
 
 class TestLoops(unittest.TestCase):
 
     def setUp(self) -> None:
-        os.environ["RUNNING_TEST"] = 'True'
         self.testcif = (data / 'examples/1979688.cif').resolve()
         (data / 'examples/1979688-finalcif_changes.cif').unlink(missing_ok=True)
         self.myapp = AppWindow(file=self.testcif)

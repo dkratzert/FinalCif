@@ -5,6 +5,8 @@
 #   and you think this stuff is worth it, you can buy me a beer in return.
 #   ----------------------------------------------------------------------------
 import os
+
+os.environ['RUNNING_TEST'] = 'True'
 import unittest
 
 import gemmi

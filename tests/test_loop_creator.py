@@ -1,5 +1,4 @@
 import os
-import sys
 import unittest
 from pathlib import Path
 
@@ -29,7 +28,6 @@ class TestLoopCreator(unittest.TestCase):
 
     def tearDown(self) -> None:
         self.w.close()
-        app.quit()
 
     def show_app(self):
         app.exec_()

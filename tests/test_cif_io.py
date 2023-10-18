@@ -3,7 +3,6 @@ import unittest
 from pathlib import Path
 
 from finalcif.cif.cif_file_io import CifContainer
-from finalcif.cif.text import quote
 
 data = Path('.')
 

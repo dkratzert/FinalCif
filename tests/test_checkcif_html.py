@@ -5,6 +5,8 @@
 #   and you think this stuff is worth it, you can buy me a beer in return.
 #   ----------------------------------------------------------------------------
 import os
+
+os.environ["RUNNING_TEST"] = 'True'
 import time
 import unittest
 from pathlib import Path
@@ -19,7 +21,6 @@ from finalcif.gui.custom_classes import Column
 class TestCheckCifHTML(unittest.TestCase):
 
     def setUp(self) -> None:
-        os.environ["RUNNING_TEST"] = 'True'
         if os.environ.get('NO_NETWORK'):
             self.skipTest('No network available.')
         self.myapp = AppWindow(file=Path('tests/examples/work/cu_BruecknerJK_153F40_0m.cif').resolve())

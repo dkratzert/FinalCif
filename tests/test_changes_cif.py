@@ -1,4 +1,6 @@
 import os
+
+os.environ["RUNNING_TEST"] = 'True'
 import unittest
 from pathlib import Path
 
@@ -9,12 +11,12 @@ from finalcif.appwindow import AppWindow
 
 data = Path('tests')
 
+
 # noinspection PyMissingTypeHints
 class TestChangesTrackingActive(unittest.TestCase):
     """A CIF fle in a complete work folder"""
 
     def setUp(self) -> None:
-        os.environ["RUNNING_TEST"] = 'True'
         self.testcif = data / 'examples/work/cu_BruecknerJK_153F40_0m.cif'
         self.myapp = AppWindow(file=self.testcif)
         self.myapp.finalcif_changes_filename.unlink(missing_ok=True)

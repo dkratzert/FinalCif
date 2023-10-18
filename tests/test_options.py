@@ -1,4 +1,6 @@
 import os
+
+os.environ["RUNNING_TEST"] = 'True'
 import unittest
 from pathlib import Path
 
@@ -9,7 +11,6 @@ data = Path('.')
 class TestOptions(unittest.TestCase):
 
     def setUp(self) -> None:
-        os.environ["RUNNING_TEST"] = 'True'
         self.myapp = appwindow.AppWindow(file=data / 'test-data/1000006.cif')
         self.myapp.ui.HAtomsCheckBox.setChecked(False)
         self.myapp.ui.ReportTextCheckBox.setChecked(False)
@@ -21,6 +22,7 @@ class TestOptions(unittest.TestCase):
         self.myapp.ui.ReportTextCheckBox.setChecked(False)
         self.myapp.ui.ADPTableCheckBox.setChecked(False)
         self.myapp.ui.PictureWidthDoubleSpinBox.setValue(0.0)
+        self.myapp.ui.trackChangesCifCheckBox.setChecked(False)
         self.myapp.close()
 
     def test_save_picture_with(self):

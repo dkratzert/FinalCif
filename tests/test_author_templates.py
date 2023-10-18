@@ -1,8 +1,10 @@
 import os
+
+os.environ["RUNNING_TEST"] = 'True'
 import unittest
 from pathlib import Path
 
-from PyQt5 import Qt, QtCore
+from PyQt5 import QtCore
 from PyQt5.QtTest import QTest
 from finalcif.appwindow import AppWindow
 
@@ -12,7 +14,6 @@ data = Path('tests')
 class MyTestCase(unittest.TestCase):
 
     def setUp(self) -> None:
-        os.environ["RUNNING_TEST"] = 'True'
         self.testcif = data / 'examples/1979688.cif'
         self.authorexport_file = data / 'examples/testexport_author.cif'
         self.testimport_author = data / 'other_templates/AATest_Author.cif'

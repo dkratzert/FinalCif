@@ -1,4 +1,6 @@
 import os
+
+os.environ["RUNNING_TEST"] = 'True'
 import time
 import unittest
 from pathlib import Path
@@ -32,7 +34,6 @@ filenames = (
 class TestPlatonCheckCIF(unittest.TestCase):
 
     def setUp(self) -> None:
-        os.environ["RUNNING_TEST"] = 'True'
         if not get_platon_exe() or os.environ.get('NO_NETWORK'):
             self.skipTest('No PLATON executable found or no network. Skipping test!')
         self.myapp = AppWindow(file=Path('tests/examples/1979688.cif').resolve())
@@ -53,7 +54,8 @@ class TestPlatonCheckCIF(unittest.TestCase):
         self.myapp.hide()
         self.myapp.ui.CheckcifButton.click()
         time.sleep(0.3)
-        self.assertEqual('FINALCIF V{}'.format(VERSION) in Path('tests/examples/1979688-finalcif.chk').read_text(), True)
+        self.assertEqual('FINALCIF V{}'.format(VERSION) in Path('tests/examples/1979688-finalcif.chk').read_text(),
+                         True)
         self.assertEqual('SumFormula C77 H80 O25' in Path('tests/examples/1979688-finalcif.chk').read_text(), True)
 
     def test_offline_checkcif_writes_gif(self):
@@ -83,4 +85,3 @@ class TestPlatonCheckCIFwithCIFwithoutHKLdata(unittest.TestCase):
         self.myapp.ui.CheckcifButton.click()
         timediff = int(Path('./test-data/1000007-finalcif.chk').resolve().stat().st_mtime) - int(time.time())
         self.assertLess(timediff, 5)  # .chk file was modified less than 5 seconds ago
-

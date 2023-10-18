@@ -1,7 +1,11 @@
+import os
+
+os.environ["RUNNING_TEST"] = 'True'
 import shutil
 import unittest
 from pathlib import Path
 
+# noinspection PyUnresolvedReferences
 from finalcif.appwindow import app
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.gui.import_selector import ImportSelector
@@ -9,6 +13,7 @@ from finalcif.tools.settings import FinalCifSettings
 
 data = Path('tests')
 testdata = Path('test-data')
+
 
 class MyTestCase(unittest.TestCase):
     def setUp(self) -> None:
