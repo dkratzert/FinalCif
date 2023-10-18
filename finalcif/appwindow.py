@@ -17,13 +17,12 @@ from shutil import which
 from typing import Union, Dict, Tuple, List, Optional
 
 import gemmi.cif
-import requests
+import requests  # type: ignore
 from PyQt5 import QtCore, QtGui, QtWebEngineWidgets
 from PyQt5.QtCore import Qt, QEvent
 from PyQt5.QtWidgets import QMainWindow, QShortcut, QCheckBox, QListWidgetItem, QApplication, \
     QPlainTextEdit, QFileDialog, QMessageBox
 from gemmi import cif
-from qtpy.QtGui import QDesktopServices
 
 from finalcif import VERSION
 from finalcif.cif.cif_file_io import CifContainer, GemmiError
@@ -48,9 +47,6 @@ from finalcif.gui.loops import Loop, LoopTableModel, MyQTableView
 from finalcif.gui.plaintextedit import MyQPlainTextEdit
 from finalcif.gui.text_value_editor import MyTextTemplateEdit, TextEditItem
 from finalcif.gui.vrf_classes import MyVRFContainer, VREF
-from finalcif.report.archive_report import ArchiveReport
-from finalcif.report.tables import make_report_from, make_multi_tables
-from finalcif.report.templated_report import TemplatedReport
 from finalcif.template.templates import ReportTemplates
 from finalcif.tools.download import MyDownloader
 from finalcif.tools.dsrmath import my_isnumeric
@@ -646,7 +642,7 @@ class AppWindow(QMainWindow):
         self.settings.save_window_position(QtCore.QPoint(x, y), self.size(), self.isMaximized())
 
     def show_help(self) -> None:
-        QDesktopServices.openUrl(QtCore.QUrl('https://dkratzert.de/files/finalcif/docs/'))
+        QtGui.QDesktopServices.openUrl(QtCore.QUrl('https://dkratzert.de/files/finalcif/docs/'))
 
     def do_shred_cif(self):
         shred = ShredCIF(cif=self.cif, statusbar=self.status_bar)
@@ -664,7 +660,7 @@ class AppWindow(QMainWindow):
         """
         Open the CCDC deposit web page.
         """
-        QDesktopServices.openUrl(QtCore.QUrl('https://www.ccdc.cam.ac.uk/deposit'))
+        QtGui.QDesktopServices.openUrl(QtCore.QUrl('https://www.ccdc.cam.ac.uk/deposit'))
         self.explore_current_dir()
 
     def _deleted_row(self, key: str) -> None:
@@ -1094,6 +1090,8 @@ class AppWindow(QMainWindow):
         """
         Generates a report document.
         """
+        from finalcif.report.tables import make_report_from, make_multi_tables
+        from finalcif.report.templated_report import TemplatedReport
         current_block = self.ui.datanameComboBox.currentIndex()
         if self.cif.doc[current_block].name == 'global':
             return
@@ -1148,6 +1146,7 @@ class AppWindow(QMainWindow):
             or not self.ui.docxTemplatesListWidget.currentItem()
 
     def zip_report(self, report_filename: Path) -> None:
+        from finalcif.report.archive_report import ArchiveReport
         zipfile = self.cif.finalcif_file.with_suffix('.zip')
         if zipfile.exists():
             zipname = next_path(zipfile.stem + '-%s.zip')
@@ -1525,6 +1524,8 @@ class AppWindow(QMainWindow):
             if self.ui.MainStackedWidget.on_info_page():
                 self.show_residuals()
                 self.redraw_molecule()
+            t = QtCore.QTimer(self)
+            t.singleShot(1000, self.check_cecksums)
 
     def changes_cif_has_values(self) -> bool:
         try:
@@ -1832,16 +1833,20 @@ class AppWindow(QMainWindow):
                 self.add_audit_creation_method(key)
                 # QtCore.QTimer(self).singleShot(200, self.ui.cif_main_table.resizeRowsToContents)
             # print(key, value)
-        if not self.cif.test_res_checksum():
-            show_res_checksum_warning(parent=self)
-        if not self.cif.test_hkl_checksum():
-            show_hkl_checksum_warning(parent=self)
         if self.cif.is_multi_cif:
             self.refresh_combo_boxes()
         else:
             self.get_data_sources()
         self.erase_disabled_items()
         self.ui.cif_main_table.setCurrentItem(None)
+
+    def check_cecksums(self):
+        if "RUNNING_TEST" in os.environ:
+            return
+        if not self.cif.test_res_checksum():
+            show_res_checksum_warning(parent=self)
+        if not self.cif.test_hkl_checksum():
+            show_hkl_checksum_warning(parent=self)
 
     def add_audit_creation_method(self, key: str = '_audit_creation_method') -> None:
         txt = 'FinalCif V{} by Daniel Kratzert, Freiburg {}, https://dkratzert.de/finalcif.html'
