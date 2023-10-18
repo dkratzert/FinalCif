@@ -1,3 +1,6 @@
+import os
+
+os.environ["RUNNING_TEST"] = 'True'
 import unittest
 from pathlib import Path
 
@@ -42,7 +45,8 @@ class EquipmentTestCase(unittest.TestCase):
 
 class PropertiesTestCase(unittest.TestCase):
     def setUp(self) -> None:
-        self.app = AppWindow(Path('test-data/1000006.cif'))
+        os.environ["RUNNING_TEST"] = 'True'
+        self.app = AppWindow(file=Path('test-data/1000006.cif'))
         self.app.hide()
 
     def property_edit_click(self, field: str):

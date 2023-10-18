@@ -7,8 +7,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1637</width>
-    <height>803</height>
+    <width>1566</width>
+    <height>812</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -437,13 +437,6 @@
                 </property>
                </widget>
               </item>
-              <item>
-               <widget class="QCheckBox" name="importOnlyNewDataCheckBox">
-                <property name="text">
-                 <string>Only new data</string>
-                </property>
-               </widget>
-              </item>
              </layout>
             </item>
             <item>
@@ -841,7 +834,7 @@
         <item row="2" column="0" colspan="13">
          <widget class="MyMainStackedWidget" name="MainStackedWidget">
           <property name="currentIndex">
-           <number>0</number>
+           <number>5</number>
           </property>
           <widget class="QWidget" name="page_MainTable">
            <layout class="QVBoxLayout" name="verticalLayout">
@@ -2874,6 +2867,13 @@ Contact authors should always also appear as regular authors.</string>
                 </property>
                </widget>
               </item>
+              <item row="3" column="4">
+               <widget class="QPushButton" name="deleteLoopButton">
+                <property name="text">
+                 <string>Delete Loop</string>
+                </property>
+               </widget>
+              </item>
              </layout>
             </item>
            </layout>
@@ -2889,7 +2889,7 @@ Contact authors should always also appear as regular authors.</string>
                </sizepolicy>
               </property>
               <property name="currentIndex">
-               <number>2</number>
+               <number>3</number>
               </property>
               <property name="documentMode">
                <bool>false</bool>
@@ -3111,6 +3111,41 @@ Contact authors should always also appear as regular authors.</string>
                    </size>
                   </property>
                  </spacer>
+                </item>
+               </layout>
+              </widget>
+              <widget class="QWidget" name="ckf_page">
+               <attribute name="title">
+                <string>Structure Factor Report</string>
+               </attribute>
+               <layout class="QVBoxLayout" name="verticalLayout_36">
+                <property name="leftMargin">
+                 <number>3</number>
+                </property>
+                <property name="topMargin">
+                 <number>3</number>
+                </property>
+                <property name="rightMargin">
+                 <number>3</number>
+                </property>
+                <property name="bottomMargin">
+                 <number>3</number>
+                </property>
+                <item>
+                 <widget class="QPlainTextEdit" name="ckf_textedit">
+                  <property name="font">
+                   <font>
+                    <family>Courier New</family>
+                    <pointsize>10</pointsize>
+                   </font>
+                  </property>
+                  <property name="readOnly">
+                   <bool>true</bool>
+                  </property>
+                  <property name="textInteractionFlags">
+                   <set>Qt::LinksAccessibleByKeyboard|Qt::LinksAccessibleByMouse|Qt::TextBrowserInteraction|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+                  </property>
+                 </widget>
                 </item>
                </layout>
               </widget>

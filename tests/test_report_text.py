@@ -12,6 +12,9 @@ from finalcif.report.references import ReferenceList
 from finalcif.report.report_text import Hydrogens, MachineType, Crystallization, CrystalSelection, DataCollection, \
     DataReduction, SolveRefine, CCDC, FinalCifreport, Disorder
 
+data = Path('.')
+statics = Path('tests/statics')
+
 
 class MyMock(Mock):
     def __repr__(self):
@@ -30,19 +33,19 @@ class CifMock:
 class TestMachineType(TestCase):
 
     def test__get_cooling_device_iucr(self):
-        cif = CifContainer('tests/statics/temp_device_iucr.cif')
+        cif = CifContainer(statics / 'temp_device_iucr.cif')
         self.assertEqual('Oxford Cryostream 850 ', MachineType._get_cooling_device(cif))
 
     def test__get_cooling_device_olx(self):
-        cif = CifContainer('tests/statics/temp_device_olx.cif')
+        cif = CifContainer(statics / 'temp_device_olx.cif')
         self.assertEqual('Oxford Cryostream 810 ', MachineType._get_cooling_device(cif))
 
     def test__get_cooling_device_both(self):
-        cif = CifContainer('tests/statics/temp_device_both.cif')
+        cif = CifContainer(statics / 'temp_device_both.cif')
         self.assertEqual('Oxford Cryostream 900 ', MachineType._get_cooling_device(cif))
 
     def test__get_no_cooling_device(self):
-        cif = CifContainer('tests/statics/temp_no_device.cif')
+        cif = CifContainer(statics / 'temp_no_device.cif')
         self.assertEqual('', MachineType._get_cooling_device(cif))
 
 
@@ -338,24 +341,25 @@ class TestTextParagraphs(unittest.TestCase):
     def test_finalcif_report(self):
         FinalCifreport(paragraph=self.paragraph, reflist=self.reflist)
         self.assertEqual('This report and the CIF file were generated using FinalCif.[1]', self.paragraph.text)
-        self.assertEqual(f'[0] D. Kratzert, FinalCif, V{VERSION}, https://dkratzert.de/finalcif.html.', str(self.reflist))
+        self.assertEqual(f'[0] D. Kratzert, FinalCif, V{VERSION}, https://dkratzert.de/finalcif.html.',
+                         str(self.reflist))
 
     def test_hydrogens_all_free_anis(self):
-        cif = CifContainer(Path('test-data/hydrogen/all_free_free_anisotropic.cif'))
+        cif = CifContainer(data / 'test-data/hydrogen/all_free_free_anisotropic.cif')
         # noinspection PyTypeChecker
         Hydrogens(cif, paragraph=self.paragraph)
         self.assertEqual(('The hydrogen atoms were refined freely with anisotropic displacement '
                           'parameters.'), self.paragraph.text)
 
     def test_hydrogens_all_free_iso(self):
-        cif = CifContainer(Path('test-data/hydrogen/all_free_free_isotropic.cif'))
+        cif = CifContainer(data / 'test-data/hydrogen/all_free_free_isotropic.cif')
         # noinspection PyTypeChecker
         Hydrogens(cif, paragraph=self.paragraph)
         self.assertEqual(('All hydrogen atoms were refined freely with '
                           'isotropic displacement parameters.'), self.paragraph.text)
 
     def test_hydrogens_all_iso_constr(self):
-        cif = CifContainer(Path('test-data/hydrogen/all_free_isotropic_constr.cif'))
+        cif = CifContainer(data / 'test-data/hydrogen/all_free_isotropic_constr.cif')
         # noinspection PyTypeChecker
         Hydrogens(cif, paragraph=self.paragraph)
         self.assertEqual(('All hydrogen atoms were refined freely with their Uiso values constrained to '
@@ -363,7 +367,7 @@ class TestTextParagraphs(unittest.TestCase):
                           'times for all other carbon atoms.'), self.paragraph.text)
 
     def test_hydrogens_all_riding_anis(self):
-        cif = CifContainer(Path('test-data/hydrogen/all_riding_anisotropic.cif'))
+        cif = CifContainer(data / 'test-data/hydrogen/all_riding_anisotropic.cif')
         # noinspection PyTypeChecker
         Hydrogens(cif, paragraph=self.paragraph)
         self.assertEqual(('The hydrogen atoms were refined anisotropic on calculated positions using '
@@ -372,7 +376,7 @@ class TestTextParagraphs(unittest.TestCase):
                           'other carbon atoms.'), self.paragraph.text)
 
     def test_hydrogens_all_riding_isotropic(self):
-        cif = CifContainer(Path('test-data/hydrogen/all_riding_isotropic.cif'))
+        cif = CifContainer(data / 'test-data/hydrogen/all_riding_isotropic.cif')
         # noinspection PyTypeChecker
         Hydrogens(cif, paragraph=self.paragraph)
         self.assertEqual(('All C-bound hydrogen atoms were refined isotropic on calculated positions '
@@ -381,7 +385,7 @@ class TestTextParagraphs(unittest.TestCase):
                           'other carbon atoms.'), self.paragraph.text)
 
     def test_hydrogens_some_riding_isotropic(self):
-        cif = CifContainer(Path('test-data/hydrogen/some_riding_isotropic.cif'))
+        cif = CifContainer(data / 'test-data/hydrogen/some_riding_isotropic.cif')
         # noinspection PyTypeChecker
         Hydrogens(cif, paragraph=self.paragraph)
         self.assertEqual(('All C-bound hydrogen atoms were refined with isotropic displacement '
@@ -391,7 +395,7 @@ class TestTextParagraphs(unittest.TestCase):
                           'carbon atoms.'), self.paragraph.text)
 
     def test_hydrogens_some_riding_some_isotropic(self):
-        cif = CifContainer(Path('test-data/hydrogen/some_riding_some_isotropic.cif'))
+        cif = CifContainer(data / 'test-data/hydrogen/some_riding_some_isotropic.cif')
         # noinspection PyTypeChecker
         Hydrogens(cif, paragraph=self.paragraph)
         self.assertEqual(('All C-bound hydrogen atoms were refined with isotropic displacement '

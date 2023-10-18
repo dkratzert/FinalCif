@@ -3,16 +3,11 @@ import os
 import sys
 from pathlib import Path
 
-from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMessageBox, QMainWindow, QFileDialog, QVBoxLayout, QTextEdit, \
     QPushButton, QFrame, QApplication
 
 from finalcif import VERSION
-
-app = QApplication.instance()
-if app is None:
-    app = QApplication([])
 
 
 def do_update_program(version) -> None:
@@ -108,7 +103,6 @@ def show_keyword_help(parent, helptext: str, title: str = ''):
     """
     nlines = len(helptext.splitlines())
     window = QMainWindow(parent=parent)
-    window.setWindowFlags(Qt.Tool)
     window.setWindowTitle(title)
 
     def close_window(event):
@@ -229,6 +223,10 @@ def cif_file_save_dialog(filename: str) -> str:
 
 if __name__ == '__main__':
     from PyQt5 import QtWidgets
+
+    app = QApplication.instance()
+    if app is None:
+        app = QApplication([])
 
     window = QtWidgets.QMainWindow()
     w = QtWidgets.QWidget()

@@ -60,8 +60,9 @@ other programs like ShelXle.
 For Rigaku and STOE datasets, it is not necessary for FinalCif to collect information from various files. 
 Instead, it is sufficient to import a certain CIF created during the experiment. Rigaku produces a '.cif_od' file
 and STOE a '.cfx' file for example. Also the Bruker '.pcf' file is importable. You can import any additional CIF 
-formated file with the 'Import' button on the left center.
-This will import all key/values and loops from the file except for unit cell and space group information.
+formatted file with the 'Import' button on the left center.
+This will open an import dialog where all key/values and loops from the file except for unit cell and space group information
+is pre-seleted. The seleted items are then imported with the "Import Selected" button.
 
 
 **CIF format specification**
@@ -74,7 +75,8 @@ Some CIF writing programs still use the 'global\_' keyword. You may circumvent t
 
 Since version 99, FinalCif supports multi-CIFs, so CIF files with multiple 'data\_' blocks can be
 opened and edited. Please note that auto-filling of missing values is disabled in multi-CIF mode.
-Some other minor details my not function as in single-CIF mode.
+Some other functions, such as renaming a data block, do not work in multi-CIF mode. It is advisable
+to complete each CIF before creating a multi-CIF.
 
 
 .. figure:: pics/multi_cif.png

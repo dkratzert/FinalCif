@@ -26,6 +26,7 @@ __license__ = 'MIT'
 __author__ = 'John Schember; Stephan Sokolow'
 __docformat__ = 'restructuredtext en'
 
+import os
 import sys
 from typing import Union
 
@@ -37,6 +38,8 @@ from PyQt5.QtWidgets import (QAction, QActionGroup, QApplication, QMenu,
                              QPlainTextEdit)
 
 try:
+    if "RUNNING_TEST" in os.environ:
+        raise ImportError
     import enchant
     from enchant import tokenize
     from enchant.errors import TokenizerNotFoundError

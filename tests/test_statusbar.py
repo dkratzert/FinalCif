@@ -1,3 +1,6 @@
+import os
+
+os.environ["RUNNING_TEST"] = 'True'
 import unittest
 
 from PyQt5.QtGui import QIcon

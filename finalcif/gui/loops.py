@@ -46,7 +46,7 @@ class Loop(QtCore.QObject):
     def display_help(self, header_section: int):
         from finalcif.cif.all_cif_dicts import cif_all_dict
         tag = self.tags[header_section]
-        keyword_help = cif_all_dict.get(tag, None)
+        keyword_help = cif_all_dict.get(tag, None) or 'No help text found'
         if keyword_help:
             keyword_help = retranslate_delimiter(keyword_help, no_html_unescape=True)
             show_keyword_help(self.parent, keyword_help, tag)
@@ -220,14 +220,14 @@ class LoopTableModel(QAbstractTableModel):
         # if isnumeric(value):
         #    return Qt.AlignVCenter + Qt.AlignVertical_Mask
         if role == Qt.BackgroundColorRole and \
-            (row, col) in [(x['row'], x['column']) for x in self.modified]:
+                (row, col) in [(x['row'], x['column']) for x in self.modified]:
             return QVariant(QColor("#facaca"))
         if role == Qt.EditRole:
             return retranslate_delimiter(value)
         if role == Qt.DisplayRole:
             return retranslate_delimiter(value)
 
-    def headerData(self, section, orientation, role=None):
+    def headerData(self, section, orientation: Qt.Orientation = Qt.Horizontal, role=None):
         # section is the index of the column/row.
         if role == Qt.DisplayRole and orientation == Qt.Horizontal:
             try:

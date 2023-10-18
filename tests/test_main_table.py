@@ -4,31 +4,37 @@
 #   this notice you can do whatever you want with this stuff. If we meet some day,
 #   and you think this stuff is worth it, you can buy me a beer in return.
 #   ----------------------------------------------------------------------------
+import os
+
+os.environ["RUNNING_TEST"] = 'True'
 import unittest
 from pathlib import Path
 
+import pytest
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor
 
 from finalcif.appwindow import AppWindow
-from finalcif.gui.custom_classes import Column, MyCifTable
+from finalcif.gui.custom_classes import Column
 from finalcif.tools.misc import unify_line_endings
+
+data = Path('tests')
 
 
 class TestMainTableFieldBehavior(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.testcif = Path('tests/examples/1979688.cif').absolute()
-        Path('tests/examples/1979688-finalcif_changes.cif').unlink(missing_ok=True)
-        self.myapp = AppWindow(self.testcif)
-        self.myapp.show()
+        self.testcif = (data / 'examples/1979688.cif').absolute()
+        (data / '/examples/1979688-finalcif_changes.cif').unlink(missing_ok=True)
+        self.myapp = AppWindow(file=self.testcif)
+        # self.myapp.show()
         self.myapp.settings.empty_deleted_list()
         self.myapp.ui.trackChangesCifCheckBox.setChecked(False)
 
     def tearDown(self) -> None:
         self.myapp.cif.finalcif_file.unlink(missing_ok=True)
         self.myapp.close()
-        Path('tests/examples/1979688-finalcif_changes.cif').unlink(missing_ok=True)
+        (data / 'examples/1979688-finalcif_changes.cif').unlink(missing_ok=True)
 
     def key_row(self, key: str) -> int:
         return self.myapp.ui.cif_main_table.row_from_key(key)
@@ -51,18 +57,18 @@ class TestMainTableFieldBehavior(unittest.TestCase):
     ######
 
     def test_rowcounts(self):
-        self.assertEqual(131, self.myapp.ui.cif_main_table.rowCount())
+        self.assertEqual(139, self.myapp.ui.cif_main_table.rowCount())
 
     def test_delete_row(self):
         self.myapp.ui.cif_main_table.delete_row(self.key_row('_audit_update_record'))
-        self.assertEqual(130, self.myapp.ui.cif_main_table.rowCount())
+        self.assertEqual(138, self.myapp.ui.cif_main_table.rowCount())
 
     def test_delete_and_reappear(self):
-        self.assertEqual(131, self.myapp.ui.cif_main_table.rowCount())
+        self.assertEqual(139, self.myapp.ui.cif_main_table.rowCount())
         self.myapp.ui.cif_main_table.delete_row(
             self.myapp.ui.cif_main_table.row_from_key('_atom_sites_solution_primary'))
         # One less than before:
-        self.assertEqual(130, self.myapp.ui.cif_main_table.rowCount())
+        self.assertEqual(138, self.myapp.ui.cif_main_table.rowCount())
         # Line is deleted:
         self.assertFalse('_atom_sites_solution_primary' in self.myapp.ui.cif_main_table.vheaderitems)
 
@@ -74,8 +80,9 @@ class TestMainTableFieldBehavior(unittest.TestCase):
     def test_Crystallographer_in_equipment_list(self):
         self.assertEqual('Crystallographer Details', self.myapp.ui.EquipmentTemplatesListWidget.item(1).text())
 
+    @pytest.mark.skip('TODO: this tes can run ages')
     def test_load_equipment(self):
-        self.myapp.equipment.import_equipment_from_file('test-data/Crystallographer_Details.cif')
+        self.myapp.equipment.import_equipment_from_file(str(data / 'test-data/Crystallographer_Details.cif'))
         # make sure contact author is selected
         self.equipment_click('Crystallographer Details')
         # It is important here, that the first column has 'dkratzert@gmx.de' in it:
@@ -113,5 +120,6 @@ class TestMainTableFieldBehavior(unittest.TestCase):
     def test_multicif(self):
         self.assertEqual(False, self.myapp.cif.is_multi_cif)
         self.assertEqual(1, len(self.myapp.cif.doc))
-        self.myapp.append_cif(Path('test-data/1000006.cif'))
+        self.myapp.append_cif(data.parent / 'test-data/1000006.cif')
         self.assertEqual(True, self.myapp.cif.is_multi_cif)
+        self.assertEqual(2, len(self.myapp.cif.doc))

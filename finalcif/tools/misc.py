@@ -422,6 +422,17 @@ do_not_import_keys = (
     '_reflns_number_gt',
 )
 
+do_not_loop_import = (
+    '_atom_type_symbol',
+    '_space_group_symop_operation_xyz',
+    '_atom_site_label',
+    '_atom_site_aniso_label',
+    '_geom_bond_atom_site_label_1',
+    '_geom_angle_atom_site_label_1',
+    '_geom_torsion_atom_site_label_1',
+    '_geom_hbond_atom_site_label_D',
+)
+
 do_not_import_from_stoe_cfx = (
     '_diffrn_measured_fraction_theta_max',
     '_diffrn_measured_fraction_theta_full',
@@ -433,6 +444,12 @@ do_not_import_from_stoe_cfx = (
     '_diffrn_reflns_limit_k_max',
     '_diffrn_reflns_limit_l_min',
     '_diffrn_reflns_limit_l_max',
+    '_reflns_limit_h_min',
+    '_reflns_limit_h_max',
+    '_reflns_limit_k_min',
+    '_reflns_limit_k_max',
+    '_reflns_limit_l_min',
+    '_reflns_limit_l_max',
     '_diffrn_reflns_number',
     '_diffrn_reflns_theta_min',
     '_diffrn_reflns_theta_max',
@@ -445,9 +462,6 @@ do_not_import_from_stoe_cfx = (
     '_audit_contact_author_fax',
     '_audit_contact_author_phone',
     '_audit_creation_method',
-    '',
-    '',
-    '',
 )
 
 include_equipment_imports = (
@@ -491,6 +505,9 @@ cif_to_header_label = {
     '_exptl_oxdiff_crystal_face_indexfrac_h': 'Crystal Faces Fractional',
     '_platon_squeeze_void_nr'               : 'Platon SQUEEZE Voids',
     '_smtbx_masks_void_nr'                  : 'smtbx Solvent Mask',
+    '_refln_index_h'                        : 'hkl file',
+    '_diffrn_refln_index_h'                 : 'hkl file',
+    '_restr_RIGU_atom_site_label_1'         : 'RIGU restraints',
 }
 
 """
@@ -759,6 +776,12 @@ predefined_property_templates = [
     {'name'  : 'Data reduction software',
      'values': ['_computing_data_reduction',
                 ['', 'SAINT', 'CrysalisPro', 'XDS', 'OpenHKL', 'HKL-2000', 'HKL-3000']]
+     },
+    {'name'  : 'Physical properties of the material',
+     'values': ['_chemical_properties_physical',
+                ['', 'air-sensitive', 'moisture-sensitive', 'hygroscopic', 'deliquescent', 'oxygen-sensitive',
+                 'photo-sensitive', 'pyrophoric', 'semiconductor', 'ferromagnetic at low temperature',
+                 'paramagnetic and thermochromic']]
      },
 ]
 

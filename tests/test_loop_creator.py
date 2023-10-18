@@ -1,7 +1,8 @@
-import sys
+import os
 import unittest
+from pathlib import Path
 
-from PyQt5.QtWidgets import QApplication
+from PyQt5.QtWidgets import QApplication, QMainWindow
 
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.gui.loop_creator import LoopCreator
@@ -10,17 +11,25 @@ app = QApplication.instance()
 if app is None:
     app = QApplication([])
 
+data = Path('.')
+
 
 class TestLoopCreator(unittest.TestCase):
     def setUp(self) -> None:
-        self.cif = CifContainer('test-data/1000006.cif')
-        self.lc = LoopCreator(parent=None, cif=self.cif)
+        os.environ["RUNNING_TEST"] = 'True'
+        self.w = QMainWindow()
+        self.cif = CifContainer(data / 'test-data/1000006.cif')
+        self.lc = LoopCreator(parent=self.w, cif=self.cif)
         self.lc.saveLoopPushButton.clicked.connect(self.lc.save_new_loop_to_cif)
+        self.w.setCentralWidget(self.lc)
+        #self.w.show()
         # For testing:
         # self.show_app()
 
+    def tearDown(self) -> None:
+        self.w.close()
+
     def show_app(self):
-        self.lc.show()
         app.exec_()
 
     def test_search(self):

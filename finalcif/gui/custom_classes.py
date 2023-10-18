@@ -2,7 +2,7 @@ import re
 from enum import IntEnum
 from typing import List
 
-from PyQt5 import QtCore
+from PyQt5 import QtCore, QtGui
 from PyQt5.QtCore import QEvent, QObject, Qt
 from PyQt5.QtGui import QColor, QKeySequence, QBrush
 from PyQt5.QtWidgets import QAbstractScrollArea, QTableWidget, \
@@ -200,7 +200,7 @@ class MyCifTable(QTableWidget, ItemTextMixin):
             textedit.templateRequested.connect(self.goto_template_page)
             textedit.new_key.connect(lambda x: self.new_key.emit(x))
             self.setCellWidget(row, column, textedit)
-            textedit.setText(txt, color=color)
+            textedit.setText(txt, color=color, column=column)
             if (column == Column.CIF) or (column == Column.DATA):
                 textedit.setUneditable()
         if color:
@@ -240,7 +240,7 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         Copies the content of a field.
         """
         row = self.currentRow()
-        print(row, self.vheaderitems[row], '#')
+        # print(row, self.vheaderitems[row], '#')
         clipboard = QApplication.clipboard()
         clipboard.setText(self.vheaderitems[row])
 
@@ -272,6 +272,10 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         hheader.setSectionResizeMode(Column.EDIT, QHeaderView.Stretch)
         hheader.setAlternatingRowColors(True)
         self.verticalHeader().setAlternatingRowColors(True)
+
+    def resizeEvent(self, e: QtGui.QResizeEvent) -> None:
+        QtCore.QTimer(self).singleShot(0, self.resizeRowsToContents)
+        super().resizeEvent(e)
 
 
 class MyTableWidgetItem(QTableWidgetItem):

@@ -22,7 +22,7 @@ from finalcif.tools.misc import isnumeric, this_or_quest, timessym, angstrom, pr
     minus_sign, ellipsis_mid
 from finalcif.tools.options import Options
 from finalcif.tools.space_groups import SpaceGroups
-from gui.dialogs import show_general_warning
+from finalcif.gui.dialogs import show_general_warning
 
 
 class BondsAndAngles():

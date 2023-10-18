@@ -1,27 +1,33 @@
+import os
+
+os.environ["RUNNING_TEST"] = 'True'
 import unittest
 from pathlib import Path
 
+import docx
 from docx import Document
 from docx.enum.shape import WD_INLINE_SHAPE
 from docx.shape import InlineShapes
 from docx.shared import Cm
 from docx.table import Table
+from packaging.version import Version
 
 from finalcif import VERSION
-from finalcif.appwindow import AppWindow, app
+from finalcif.appwindow import AppWindow
 
+data = Path('tests')
 
 class TablesTestMixin():
 
     def setUp(self) -> None:
-        self.testcif = Path('tests/examples/1979688.cif').absolute()
+        self.testcif = (data / 'examples/1979688.cif').absolute()
         self.myapp = AppWindow(file=self.testcif)
         self.myapp.ui.HAtomsCheckBox.setChecked(False)
         self.myapp.ui.ReportTextCheckBox.setChecked(False)
         self.myapp.ui.PictureWidthDoubleSpinBox.setValue(0.0)
         # make sure to use no template:
         self.myapp.ui.docxTemplatesListWidget.setCurrentRow(0)
-        self.myapp.show()
+        #self.myapp.show()
         self.reportdoc = self.myapp.cif.finalcif_file_prefixed(prefix='report_', suffix='-finalcif.docx')
         self.report_zip = self.myapp.cif.finalcif_file_prefixed(prefix='', suffix='-finalcif.zip')
 
@@ -33,7 +39,6 @@ class TablesTestMixin():
         self.myapp.ui.HAtomsCheckBox.setChecked(False)
         self.myapp.ui.PictureWidthDoubleSpinBox.setValue(7.5)
         self.myapp.close()
-        app.quit()
 
 
 class TablesTestCase(TablesTestMixin, unittest.TestCase):
@@ -42,6 +47,9 @@ class TablesTestCase(TablesTestMixin, unittest.TestCase):
         super().setUp()
         self.myapp.ui.PictureWidthDoubleSpinBox.setValue(7.43)
         self.myapp.select_report_picture(Path('finalcif/icon/finalcif.png'))
+
+    def tearDown(self) -> None:
+        super().tearDown()
 
     def test_save_report_works(self):
         self.myapp.ui.SaveFullReportButton.click()
@@ -72,6 +80,7 @@ class TablesTestCase(TablesTestMixin, unittest.TestCase):
     def test_all_paragraphs(self):
         self.myapp.ui.SaveFullReportButton.click()
         doc = Document(self.reportdoc.absolute())
+        newline = '\n' if Version(docx.__version__) < Version('1.0') else ''
         result = ('Structure Tables\n'
                   '\n'
                   '\n'
@@ -99,9 +108,7 @@ class TablesTestCase(TablesTestMixin, unittest.TestCase):
                   'charge from The Cambridge Crystallographic Data Centre via '
                   'www.ccdc.cam.ac.uk/\u200bstructures. This report and the CIF file were '
                   'generated using FinalCif.[6]\n'
-                  '\n'
-                  'Table 1. Crystal data and structure refinement for cu_BruecknerJK_153F40_0m\n'
-                  '\n'
+                  f'{newline}Table 1. Crystal data and structure refinement for cu_BruecknerJK_153F40_0m\n{newline}'
                   '\n'
                   '\n'
                   'Refinement details for cu_BruecknerJK_153F40_0m\n'
