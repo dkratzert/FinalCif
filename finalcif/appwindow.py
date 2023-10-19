@@ -1119,8 +1119,9 @@ class AppWindow(QMainWindow):
                 t.make_templated_report(options=self.options, cif=self.cif,
                                         output_filename=str(report_filename), picfile=picfile,
                                         template_path=Path(self.get_checked_templates_list_text()))
-            if self.cif.is_multi_cif and self.cif.doc[0].name != 'global':
-                make_multi_tables(cif=self.cif, output_filename=str(multi_table_document))
+            print('dbg> disabled temporarily!')
+            #if self.cif.is_multi_cif and self.cif.doc[0].name != 'global':
+            #    make_multi_tables(cif=self.cif, output_filename=str(multi_table_document))
         except FileNotFoundError as e:
             if DEBUG:
                 raise
@@ -1137,8 +1138,9 @@ class AppWindow(QMainWindow):
             return
         if not self.running_inside_unit_test:
             self.open_report_document(report_filename, multi_table_document)
+            print('dbg> disabled temporarily!')
             # Save report and other files to a zip file:
-            self.zip_report(report_filename)
+            #self.zip_report(report_filename)
 
     def report_without_template(self) -> bool:
         """Check whether the report is generated from a template or hard-coded"""
@@ -1165,8 +1167,9 @@ class AppWindow(QMainWindow):
             arc.zip.write(filename=multitable, arcname=multitable.name)
 
     def open_report_document(self, report_filename: Path, multi_table_document: Path) -> None:
-        if self.cif.is_multi_cif:
-            open_file(multi_table_document)
+        print('dbg> disabled temporarily!')
+        #if self.cif.is_multi_cif:
+        #    open_file(multi_table_document)
         open_file(report_filename)
 
     def save_current_recent_files_list(self, filename: Path) -> None:
