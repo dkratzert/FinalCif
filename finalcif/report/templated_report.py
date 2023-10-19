@@ -1,6 +1,7 @@
 import itertools
 import re
 from collections import namedtuple
+from copy import deepcopy
 from math import sin, radians
 from pathlib import Path
 from typing import List, Dict, Union
@@ -509,10 +510,14 @@ class TemplatedReport():
         else:
             current_block = cif.block.name
             maincontext.update(self._get_context(cif, options, picfile, tpl_doc))
+            blocks = []
             for block in cif.doc:
+                # TODO: blocks ends up with multiple times the same cif context loaded by the last load_block_by_name
                 cif.load_block_by_name(block.name)
                 context = self._get_context(cif, options, picfile, tpl_doc)
+                blocks.append(context)
                 maincontext[block.name] = context
+            maincontext['blocks'] = blocks
             cif.load_block_by_name(current_block)
         return maincontext, tpl_doc
 
