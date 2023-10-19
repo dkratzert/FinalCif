@@ -4,9 +4,11 @@ from typing import Union, List, Tuple
 
 import gemmi
 from docx import Document
+from docx.oxml.xmlchemy import BaseOxmlElement
 from docx.text.paragraph import Paragraph
 from docx.text.run import Run
 from lxml import etree
+from lxml.etree import XSLTAccessControl
 from shelxfile.atoms.atoms import Atom as SHXAtom
 
 from finalcif.app_path import application_path
@@ -19,11 +21,12 @@ from finalcif.report.references import DummyReference, SAINTReference, SORTAVRef
 from finalcif.tools.misc import protected_space, angstrom, zero_width_space, remove_line_endings, flatten
 
 
-def math_to_word(eq: str) -> str:
+def math_to_word(eq: str) -> BaseOxmlElement:
     """Transform a sympy equation to be printed in word document."""
     tree = etree.fromstring(eq)
     xslt = etree.parse(os.path.join(application_path, 'template/mathml2omml.xsl'))
-    transform = etree.XSLT(xslt)
+    acess_control = XSLTAccessControl(read_network=False, write_network=False)
+    transform = etree.XSLT(xslt, access_control=acess_control)
     new_dom = transform(tree)
     return new_dom.getroot()
 
