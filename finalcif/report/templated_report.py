@@ -509,12 +509,14 @@ class TemplatedReport():
             maincontext = self._get_context(cif, options, picfile, tpl_doc)
         else:
             current_block = cif.block.name
+            current_file = cif.fileobj
             maincontext.update(self._get_context(cif, options, picfile, tpl_doc))
             blocks = []
             for block in cif.doc:
                 # TODO: blocks ends up with multiple times the same cif context loaded by the last load_block_by_name
-                cif.load_block_by_name(block.name)
-                context = self._get_context(cif, options, picfile, tpl_doc)
+                cif2 = CifContainer(file=current_file)
+                cif2.load_block_by_name(block.name)
+                context = self._get_context(cif2, options, picfile, tpl_doc)
                 blocks.append(context)
                 maincontext[block.name] = context
             maincontext['blocks'] = blocks
@@ -528,6 +530,7 @@ class TemplatedReport():
         context = {'options'                : options,
                    # {'without_h': True, 'atoms_table': True, 'text': True, 'bonds_table': True},
                    'cif'                    : cif,
+                   'name'                   : cif.block.name,
                    'space_group'            : self.space_group_subdoc(tpl_doc, cif),
                    'structure_figure'       : self.make_picture(options, picfile, tpl_doc),
                    'crystallization_method' : self.get_crystallization_method(cif),

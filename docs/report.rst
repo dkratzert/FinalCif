@@ -106,6 +106,7 @@ Data Available for the Report
 
     'cif'                   : Gives you access to the full CIF information, use it like
                               {{ cif._exptl_crystal_density_diffrn }} or the variables in the next table.
+    'name'                  : Name of the current CIF block.
     'atomic_coordinates'    : The atomic coordinates as ('label', 'x', 'y', 'z', 'u_eq') for each atom.
     'displacement_parameters': The atomic displacement parameters as ('label', 'U11', 'U22', 'U33',
                                'U23', 'U13', 'U12') for each atom.
