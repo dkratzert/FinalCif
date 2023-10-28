@@ -490,7 +490,7 @@ class TemplatedReport():
         return None
 
     def make_templated_report(self, options: Options, cif: CifContainer, output_filename: str, picfile: Path,
-                              template_path: Path):
+                              template_path: Path) -> bool:
         tpl_doc = DocxTemplate(template_path)
         context, tpl_doc = self.prepare_report_data(cif, options, picfile, tpl_doc)
         # Filter definition for {{foobar|filter}} things:
@@ -499,9 +499,11 @@ class TemplatedReport():
         try:
             tpl_doc.render(context, jinja_env=jinja_env, autoescape=True)
             tpl_doc.save(output_filename)
+            return True
         except Exception as e:
             show_general_warning(parent=None, window_title='Warning', warn_text='Document generation failed',
                                  info_text=str(e))
+            return False
 
     def prepare_report_data(self, cif: CifContainer, options: Options, picfile: Path, tpl_doc: DocxTemplate):
         maincontext = {}
@@ -511,15 +513,16 @@ class TemplatedReport():
             current_block = cif.block.name
             current_file = cif.fileobj
             maincontext.update(self._get_context(cif, options, picfile, tpl_doc))
-            blocks = []
+            block_list = []
+            blocks = {}
             for block in cif.doc:
-                # TODO: blocks ends up with multiple times the same cif context loaded by the last load_block_by_name
                 cif2 = CifContainer(file=current_file)
                 cif2.load_block_by_name(block.name)
                 context = self._get_context(cif2, options, picfile, tpl_doc)
-                blocks.append(context)
-                maincontext[block.name] = context
-            maincontext['blocks'] = blocks
+                block_list.append(context)
+                blocks[block.name] = context
+            maincontext['blocklist'] = block_list
+            maincontext['block'] = blocks
             cif.load_block_by_name(current_block)
         return maincontext, tpl_doc
 

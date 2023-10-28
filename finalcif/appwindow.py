@@ -1116,9 +1116,11 @@ class AppWindow(QMainWindow):
             else:
                 print('Report with templates')
                 t = TemplatedReport()
-                t.make_templated_report(options=self.options, cif=self.cif,
+                ok = t.make_templated_report(options=self.options, cif=self.cif,
                                         output_filename=str(report_filename), picfile=picfile,
                                         template_path=Path(self.get_checked_templates_list_text()))
+                if not ok:
+                    return None
             print('dbg> disabled temporarily!')
             #if self.cif.is_multi_cif and self.cif.doc[0].name != 'global':
             #    make_multi_tables(cif=self.cif, output_filename=str(multi_table_document))
@@ -1448,7 +1450,9 @@ class AppWindow(QMainWindow):
         self.ui.datanameComboBox.blockSignals(False)
         if self.cif.is_multi_cif:
             # short after start, because window size is not finished
-            QtCore.QTimer(self).singleShot(1000, self.ui.datanameComboBox.showPopup)
+            #QtCore.QTimer(self).singleShot(1000, self.ui.datanameComboBox.showPopup)
+            #QtCore.QTimer(self).singleShot(1100, self.ui.datanameComboBox.hidePopup)
+            pass
 
     def add_data_names_to_combobox(self) -> None:
         self.ui.datanameComboBox.clear()

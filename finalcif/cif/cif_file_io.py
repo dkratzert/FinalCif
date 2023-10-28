@@ -757,6 +757,12 @@ class CifContainer():
             else:
                 yield bond(label1=label1, label2=label2, dist=dist, symm=self.checksymm(symm))
 
+    def bond_dist(self, pair: str) -> Union[float, None]:
+        for p in self.bonds():
+            if f'{p.label1}-{p.label2}' == pair:
+                return p.dist
+        return None
+
     def _has_publ_flag_set(self, publ_loop: gemmi.cif.Column) -> bool:
         return any([x[0].lower() == 'y' for x in list(publ_loop) if x])
 
@@ -945,7 +951,8 @@ if __name__ == '__main__':
 
     c = CifContainer('test-data/DK_Zucker2_0m.cif')
     c.load_this_block(len(c.doc) - 1)
-    pp(list(c.torsion_angles()))
+    #pp(list(c.torsion_angles()))
+    print(c.bond_dist('C1-C2'))
     # pp(c.hkl_extra_info)
     # print(c.hkl_file)
     # print(c.hkl_as_cif)
