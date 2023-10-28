@@ -1,4 +1,5 @@
 import os
+from unittest.mock import Mock
 
 os.environ['RUNNING_TEST'] = 'True'
 import unittest
@@ -16,7 +17,7 @@ from finalcif.cif.cif_file_io import CifContainer
 from finalcif.report.templated_report import TemplatedReport
 
 data = Path('tests')
-
+test_data = Path('test-data')
 
 class TemplateReportTestCase(unittest.TestCase):
     def setUp(self) -> None:
@@ -89,10 +90,34 @@ class TemplateReportTestCase(unittest.TestCase):
         self.assertEqual(WD_INLINE_SHAPE.PICTURE, shapes[0].type)
         self.assertEqual(Cm(7.43).emu, shapes[0].width)
 
+class TestReportFromMultiCif(unittest.TestCase):
+    def setUp(self):
+        self.reportdoc = Path('test.docx')
+        self.reportdoc.unlink(missing_ok=True)
+        self.docx_templ = test_data / 'templates/test_template_for_multitable_dist.docx'
+        self.multi_cif = test_data / '1000007-multi.cif'
+        self.cif = CifContainer(file=self.multi_cif)
+
+    def tearDown(self):
+        self.reportdoc.unlink(missing_ok=True)
+
+    def test_get_distance_from_atoms(self):
+        t = TemplatedReport()
+        mock = Mock()
+        mock.options.without_h = False
+        ok = t.make_templated_report(options=mock, cif=self.cif,
+                                     output_filename='test.docx', picfile=None,
+                                     template_path=self.docx_templ)
+        self.assertTrue(ok)
+        doc = Document(self.reportdoc.resolve().__str__())
+        self.assertEqual('C1-C2 in p-1 distance: 1.5123(17)', doc.paragraphs[0].text)
+        self.assertEqual('C1-C2 in p21c distance: 1.544(3)', doc.paragraphs[1].text)
+
 
 class TestData(unittest.TestCase):
 
     def setUp(self) -> None:
+        # creating a new CIF with a new block:
         self.cif = CifContainer('foo.cif', 'testblock')
 
     def test_get_integration_program_with_spaces(self):

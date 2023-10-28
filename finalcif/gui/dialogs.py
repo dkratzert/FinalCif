@@ -82,6 +82,9 @@ def show_general_warning(parent, warn_text: str = '', info_text: str = '', windo
     """
     if not warn_text:
         return None
+    if "PYTEST_CURRENT_TEST" in os.environ:
+        print(f'DBG> Running inside a pytest -> not showing error message:\n{warn_text}\n{info_text}')
+        return None
     box = QMessageBox(parent=parent)
     box.setTextFormat(Qt.AutoText)
     box.setWindowTitle(window_title)
