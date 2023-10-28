@@ -1,7 +1,6 @@
 import itertools
 import re
 from collections import namedtuple
-from copy import deepcopy
 from math import sin, radians
 from pathlib import Path
 from typing import List, Dict, Union
@@ -13,6 +12,7 @@ from docx.text.paragraph import Paragraph
 from docxtpl import DocxTemplate, RichText, InlineImage, Subdoc
 
 from finalcif.cif.cif_file_io import CifContainer
+from finalcif.gui.dialogs import show_general_warning
 from finalcif.report.references import SAINTReference, SHELXLReference, SadabsTwinabsReference, SHELXTReference, \
     SHELXSReference, SHELXDReference, SORTAVReference, FinalCifReference, CCDCReference, \
     CrysalisProReference, Nosphera2Reference, Olex2Reference
@@ -23,7 +23,6 @@ from finalcif.tools.misc import isnumeric, this_or_quest, timessym, angstrom, pr
     minus_sign, ellipsis_mid
 from finalcif.tools.options import Options
 from finalcif.tools.space_groups import SpaceGroups
-from finalcif.gui.dialogs import show_general_warning
 
 
 class BondsAndAngles():
