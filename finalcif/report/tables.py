@@ -51,7 +51,7 @@ def make_multi_tables(cif: CifContainer, output_filename: str = 'multitable.docx
     for file_group in enumerate(group_of_files):
         # page_number = file_group[0]
         cif_triple = file_group[1]
-        main_table = document.add_table(rows=0, cols=4)
+        main_table = document.add_table(rows=1, cols=4)
         populate_description_columns(main_table, cif, row_shift=1)
         for table_column in range(1, 4):  # the three columns
             if cif_triple[table_column - 1]:
@@ -281,8 +281,8 @@ def populate_description_columns(main_table: Table, cif: CifContainer, row_shift
     _r_values_cutoff(main_table)
     _r_values(main_table)
     _peaks(main_table)
-    _flack_x(cif, main_table)
-    _extinction(cif, main_table, row_shift)
+    _flack_x(main_table, cif, row_shift)
+    _extinction(main_table, cif, row_shift)
 
 
 def populate_main_table_values(main_table: Table, cif: CifContainer, column=1, row_shift=0):
@@ -293,9 +293,9 @@ def populate_main_table_values(main_table: Table, cif: CifContainer, column=1, r
     if row_shift > 0:
         main_table.cell(row, column).paragraphs[0].add_run(cif.block.name).bold = True
         row += 1
-    main_table.cell(row + row_shift, column).paragraphs[0].add_run(cif['_database_code_depnum_ccdc_archive'])
+    main_table.cell(row, column).paragraphs[0].add_run(cif['_database_code_depnum_ccdc_archive'])
     row += 1
-    formula_paragraph = main_table.cell(row + row_shift, column).paragraphs[0]
+    formula_paragraph = main_table.cell(row, column).paragraphs[0]
     sum_formula = cif['_chemical_formula_sum'].replace(" ", "")
     add_sum_formula(formula_paragraph, sum_formula)
     row += 1
@@ -305,7 +305,7 @@ def populate_main_table_values(main_table: Table, cif: CifContainer, column=1, r
     row += 1
     add_table_value(cif, main_table, '_space_group_crystal_system', row, column)
     row += 1
-    spgr_paragraph = main_table.cell(row + row_shift, column).paragraphs[0]
+    spgr_paragraph = main_table.cell(row, column).paragraphs[0]
     space_group = cif.space_group
     try:
         it_number = str(cif.spgr_number)
@@ -342,7 +342,7 @@ def populate_main_table_values(main_table: Table, cif: CifContainer, column=1, r
     crystal_size_min = cif['_exptl_crystal_size_min']
     crystal_size_mid = cif['_exptl_crystal_size_mid']
     crystal_size_max = cif['_exptl_crystal_size_max']
-    main_table.cell(row + row_shift, column).text = (f'{this_or_quest(crystal_size_max)}{timessym}'
+    main_table.cell(row, column).text = (f'{this_or_quest(crystal_size_max)}{timessym}'
                                                      f'{this_or_quest(crystal_size_mid)}{timessym}'
                                                      f'{this_or_quest(crystal_size_min)}')
     row += 1
@@ -356,7 +356,7 @@ def populate_main_table_values(main_table: Table, cif: CifContainer, column=1, r
     # radtype: ('Mo', 'K', '\\a')
     radiation_type = cif['_diffrn_radiation_type']
     radtype = format_radiation(radiation_type)
-    radrun = main_table.cell(row + row_shift, column).paragraphs[0]
+    radrun = main_table.cell(row, column).paragraphs[0]
     # radiation type e.g. Mo:
     radrun.add_run(radtype[0])
     # K line:
@@ -418,18 +418,16 @@ def populate_main_table_values(main_table: Table, cif: CifContainer, column=1, r
         main_table.cell(row, column).text = cif['_refine_ls_abs_structure_Flack'] or '?'
         row += 1
     else:
-        pass
-        #if row_shift > 0:
-        #    main_table.cell(row, column).text = '---'
-        #    row += 1
+        if row_shift > 0:
+            main_table.cell(row, column).text = '---'
+            row += 1
     exti = cif['_refine_ls_extinction_coef']
-    if exti not in ['.', "'.'", '?', '']:
-        num = len(main_table.columns[0].cells)
-        main_table.columns[column].cells[num - 1].text = exti
+    if exti:
+        main_table.cell(row, column).text = exti if exti else '---'
     row += 1
 
 
-def _absotion_correction(main_table):
+def _absotion_correction(main_table: Table) -> None:
     p = paragraph(main_table)
     p.add_run('Absorption correction\nT')
     p.add_run('min').font.subscript = True
@@ -438,34 +436,34 @@ def _absotion_correction(main_table):
     p.add_run(' (method)')
 
 
-def _extinction(cif, main_table, row_shift):
+def _extinction(main_table: Table, cif: CifContainer, row_shift: int) -> None:
     exti = cif['_refine_ls_extinction_coef']
-    if exti not in ['.', "'.'", '?', ''] or row_shift > 0:
+    if exti or row_shift > 0:
         # always the last cell
         paragraph(main_table).add_run('Extinction coefficient')
 
 
-def _flack_x(cif, main_table):
-    if not cif.is_centrosymm:
+def _flack_x(main_table: Table, cif: CifContainer, row_shift: int) -> None:
+    if not cif.is_centrosymm or row_shift > 0:
         p = paragraph(main_table)
         p.add_run('Flack X parameter')
 
 
-def _peaks(main_table):
+def _peaks(main_table: Table) -> None:
     p = paragraph(main_table)
     p.add_run(f'Largest peak/hole [e{angstrom}')
     p.add_run(minus_sign + '3').font.superscript = True
     p.add_run(']')
 
 
-def _r_values(main_table):
+def _r_values(main_table: Table) -> None:
     p = paragraph(main_table)
     p.add_run('Final ')
     p.add_run('R').font.italic = True
     p.add_run(' indexes \n[all data]')
 
 
-def _r_values_cutoff(main_table):
+def _r_values_cutoff(main_table: Table) -> None:
     p = paragraph(main_table)
     p.add_run('Final ')
     p.add_run('R').font.italic = True
@@ -476,14 +474,14 @@ def _r_values_cutoff(main_table):
     p.add_run(')]')
 
 
-def _goof(main_table):
+def _goof(main_table: Table) -> None:
     p = paragraph(main_table)
     p.add_run('Goodness-of-fit on ')
     p.add_run('F').font.italic = True
     p.add_run('2').font.superscript = True
 
 
-def _completeness(cif, main_table):
+def _completeness(cif, main_table: Table) -> None:
     p = paragraph(main_table)
     theta_full = cif['_diffrn_reflns_theta_full']
     if theta_full:
@@ -492,7 +490,7 @@ def _completeness(cif, main_table):
         p.add_run('Completeness')
 
 
-def _a_b_c(main_table):
+def _a_b_c(main_table: Table) -> None:
     p = paragraph(main_table)
     p.add_run('a').font.italic = True
     p.add_run(f' [{angstrom}]')
@@ -504,7 +502,7 @@ def _a_b_c(main_table):
     p.add_run(f' [{angstrom}]')
 
 
-def _volume(main_table):
+def _volume(main_table: Table) -> None:
     p = paragraph(main_table)
     p.add_run(f'Volume [{angstrom}')
     p.add_run('3').font.superscript = True
@@ -512,7 +510,7 @@ def _volume(main_table):
     paragraph(main_table).add_run('Z').font.italic = True
 
 
-def _rho(main_table):
+def _rho(main_table: Table) -> None:
     p = paragraph(main_table)
     p.add_run('\u03C1').font.italic = True  # rho
     p.add_run('calc').font.subscript = True
@@ -521,7 +519,7 @@ def _rho(main_table):
     p.add_run(']')
 
 
-def _mu(main_table):
+def _mu(main_table: Table) -> None:
     p = paragraph(main_table)
     p.add_run('\u03BC').font.italic = True  # mu
     p.add_run(' [mm')
@@ -529,7 +527,7 @@ def _mu(main_table):
     p.add_run(']')
 
 
-def _crystal_size(main_table):
+def _crystal_size(main_table: Table) -> None:
     p = paragraph(main_table)
     p.add_run('F').font.italic = True
     p.add_run('(000)')
@@ -539,7 +537,7 @@ def _crystal_size(main_table):
     p.add_run(']')
 
 
-def add_hkl_indices(main_table, cif, row, column):
+def add_hkl_indices(main_table: Table, cif: CifContainer, row: int, column: int) -> None:
     if all([cif['_diffrn_reflns_limit_h_min'], cif['_diffrn_reflns_limit_h_max'],
             cif['_diffrn_reflns_limit_k_min'], cif['_diffrn_reflns_limit_k_max'],
             cif['_diffrn_reflns_limit_l_min'], cif['_diffrn_reflns_limit_l_max']
