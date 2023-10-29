@@ -1117,13 +1117,12 @@ class AppWindow(QMainWindow):
                 print('Report with templates')
                 t = TemplatedReport()
                 ok = t.make_templated_report(options=self.options, cif=self.cif,
-                                        output_filename=str(report_filename), picfile=picfile,
-                                        template_path=Path(self.get_checked_templates_list_text()))
+                                             output_filename=str(report_filename), picfile=picfile,
+                                             template_path=Path(self.get_checked_templates_list_text()))
                 if not ok:
                     return None
-            print('dbg> disabled temporarily!')
-            #if self.cif.is_multi_cif and self.cif.doc[0].name != 'global':
-            #    make_multi_tables(cif=self.cif, output_filename=str(multi_table_document))
+            if self.cif.is_multi_cif and self.cif.doc[0].name != 'global':
+                make_multi_tables(cif=self.cif, output_filename=str(multi_table_document))
         except FileNotFoundError as e:
             if DEBUG:
                 raise
@@ -1142,7 +1141,7 @@ class AppWindow(QMainWindow):
             self.open_report_document(report_filename, multi_table_document)
             print('dbg> disabled temporarily!')
             # Save report and other files to a zip file:
-            #self.zip_report(report_filename)
+            # self.zip_report(report_filename)
 
     def report_without_template(self) -> bool:
         """Check whether the report is generated from a template or hard-coded"""
@@ -1169,9 +1168,8 @@ class AppWindow(QMainWindow):
             arc.zip.write(filename=multitable, arcname=multitable.name)
 
     def open_report_document(self, report_filename: Path, multi_table_document: Path) -> None:
-        print('dbg> disabled temporarily!')
-        #if self.cif.is_multi_cif:
-        #    open_file(multi_table_document)
+        if self.cif.is_multi_cif:
+            open_file(multi_table_document)
         open_file(report_filename)
 
     def save_current_recent_files_list(self, filename: Path) -> None:
@@ -1449,10 +1447,16 @@ class AppWindow(QMainWindow):
         self.ui.cif_main_table.resizeRowsToContents()
         self.ui.datanameComboBox.blockSignals(False)
         if self.cif.is_multi_cif:
-            # short after start, because window size is not finished
-            #QtCore.QTimer(self).singleShot(1000, self.ui.datanameComboBox.showPopup)
-            #QtCore.QTimer(self).singleShot(1100, self.ui.datanameComboBox.hidePopup)
-            pass
+            self._flash_block_combobox()
+
+    def _flash_block_combobox(self):
+        orig_pal = self.ui.datanameComboBox.palette()
+        pal = QtGui.QPalette()
+        pal.setColor(QtGui.QPalette.Base, light_blue)
+        self.ui.datanameComboBox.setAutoFillBackground(True)
+        # short after start, because window size is not finished before:
+        QtCore.QTimer(self).singleShot(1500, lambda: self.ui.datanameComboBox.setPalette(pal))
+        QtCore.QTimer(self).singleShot(2600, lambda: self.ui.datanameComboBox.setPalette(orig_pal))
 
     def add_data_names_to_combobox(self) -> None:
         self.ui.datanameComboBox.clear()

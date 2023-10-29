@@ -18,14 +18,14 @@ from docx.text.paragraph import Paragraph
 
 from finalcif.app_path import application_path
 from finalcif.cif.cif_file_io import CifContainer
-from finalcif.report.mtools import cif_keywords_list, format_space_group
+from finalcif.report.mtools import format_space_group
 from finalcif.report.references import ReferenceList
 from finalcif.report.report_text import format_radiation, RefinementDetails, make_report_text
 from finalcif.report.templated_report import BondsAndAngles, TorsionAngles, HydrogenBonds
 from finalcif.tools.misc import protected_space, angstrom, bequal, sigma_sm, halbgeviert, degree_sign, ellipsis_mid, \
     less_or_equal, \
     timessym, lambdasym, this_or_quest, isnumeric, minus_sign, theta_symbol, grouper, open_file, pi_symbol, \
-    ellipsis_char, medium_math_space
+    ellipsis_char, medium_math_space, alpha_symol, beta_symol, gamma_symol
 from finalcif.tools.options import Options
 from finalcif.tools.settings import FinalCifSettings
 
@@ -51,7 +51,7 @@ def make_multi_tables(cif: CifContainer, output_filename: str = 'multitable.docx
     for file_group in enumerate(group_of_files):
         # page_number = file_group[0]
         cif_triple = file_group[1]
-        main_table = document.add_table(rows=34, cols=4)
+        main_table = document.add_table(rows=0, cols=4)
         populate_description_columns(main_table, cif, row_shift=1)
         for table_column in range(1, 4):  # the three columns
             if cif_triple[table_column - 1]:
@@ -140,7 +140,7 @@ def make_report_from(options: Options, cif: CifContainer, output_filename: str =
         references.make_literature_list(document)
 
     document.save(output_filename)
-    print('\nTables finished - output file: {}'.format(output_filename))
+    print(f'\nTables finished - output file: {output_filename}')
     return cif.block.name
 
 
@@ -195,7 +195,7 @@ def make_columns_section(document, columns: str = '1'):
     section = document.add_section(WD_SECTION.CONTINUOUS)
     sectPr = section._sectPr
     cols = sectPr.xpath('./w:cols')[0]
-    cols.set(qn('w:num'), '{}'.format(columns))
+    cols.set(qn('w:num'), f'{columns}')
 
 
 def set_cell_border(cell: _Cell, **kwargs) -> None:
@@ -222,7 +222,7 @@ def set_cell_border(cell: _Cell, **kwargs) -> None:
     for edge in ('start', 'top', 'end', 'bottom', 'insideH', 'insideV'):
         edge_data = kwargs.get(edge)
         if edge_data:
-            tag = 'w:{}'.format(edge)
+            tag = f'w:{edge}'
             # check for tag existnace, if none found, then create one
             element = tcBorders.find(qn(tag))
             if element is None:
@@ -231,7 +231,7 @@ def set_cell_border(cell: _Cell, **kwargs) -> None:
             # looks like order of attributes is important
             for key in ["sz", "val", "color", "space", "shadow"]:
                 if key in edge_data:
-                    element.set(qn('w:{}'.format(key)), str(edge_data[key]))
+                    element.set(qn(f'w:{key}'), str(edge_data[key]))
 
 
 def add_residuals_table(document: Document(), cif: CifContainer, table_num: int) -> int:
@@ -244,6 +244,45 @@ def add_residuals_table(document: Document(), cif: CifContainer, table_num: int)
     # The main residuals table:
     populate_main_table_values(main_table, cif)
     return table_num
+
+
+def populate_description_columns(main_table: Table, cif: CifContainer, row_shift=0) -> None:
+    """
+    This Method adds the descriptions to the fist property table column.
+    row_shift: Moves alle cells down by this factor to allow an empty first row for the data block name.
+    """
+    # paragraph(main_table).add_run('')
+    paragraph(main_table).add_run('CCDC number')
+    paragraph(main_table).add_run('Empirical formula')
+    paragraph(main_table).add_run('Formula weight')
+    paragraph(main_table).add_run('Temperature [K]')
+    paragraph(main_table).add_run('Crystal system')
+    paragraph(main_table).add_run('Space group (number)')
+    _a_b_c(main_table)
+    paragraph(main_table).add_run(f'{alpha_symol} [{degree_sign}]')
+    paragraph(main_table).add_run(f'{beta_symol} [{degree_sign}]')
+    paragraph(main_table).add_run(f'{gamma_symol} [{degree_sign}]')
+    _volume(main_table)
+    _rho(main_table)
+    _mu(main_table)
+    _crystal_size(main_table)
+    paragraph(main_table).add_run('Crystal colour')
+    paragraph(main_table).add_run('Crystal shape')
+    paragraph(main_table).add_run('Radiation')
+    paragraph(main_table).add_run(f'2{theta_symbol} range [{degree_sign}]')
+    paragraph(main_table).add_run('Index ranges')
+    paragraph(main_table).add_run('Reflections collected')
+    paragraph(main_table).add_run('Independent reflections')
+    _completeness(cif, main_table)
+    paragraph(main_table).add_run('Data / Restraints / Parameters')
+    _absotion_correction(main_table)
+    _goof(main_table)
+    # paragraph(main_table).add_run('Weigthing Scheme')
+    _r_values_cutoff(main_table)
+    _r_values(main_table)
+    _peaks(main_table)
+    _flack_x(cif, main_table)
+    _extinction(cif, main_table, row_shift)
 
 
 def populate_main_table_values(main_table: Table, cif: CifContainer, column=1, row_shift=0):
@@ -296,17 +335,9 @@ def populate_main_table_values(main_table: Table, cif: CifContainer, column=1, r
     row += 1
     add_table_value(cif, main_table, '_exptl_crystal_F_000', row, column)
     try:
-        completeness = "{0:.1f} %".format(round(float(cif['_diffrn_measured_fraction_theta_full']) * 100, 1))
+        completeness = f"{round(float(cif['_diffrn_measured_fraction_theta_full']) * 100, 1):.1f} %"
     except ValueError:
         completeness = '?'
-    try:
-        diff_density_min = "{0:.2f}".format(round(float(cif['_refine_diff_density_min']), 2))
-    except ValueError:
-        diff_density_min = '?'
-    try:
-        diff_density_max = "{0:.2f}".format(round(float(cif['_refine_diff_density_max']), 2))
-    except ValueError:
-        diff_density_max = '?'
     row += 1
     crystal_size_min = cif['_exptl_crystal_size_min']
     crystal_size_mid = cif['_exptl_crystal_size_mid']
@@ -320,8 +351,8 @@ def populate_main_table_values(main_table: Table, cif: CifContainer, column=1, r
     add_table_value(cif, main_table, '_exptl_crystal_description', row, column)
     row += 1
     radiation_wavelength = cif['_diffrn_radiation_wavelength']
-    wavelength = str(' ({} ='.format(lambdasym) + this_or_quest(radiation_wavelength) +
-                     '{}{})'.format(protected_space, angstrom)).replace(' ', '')
+    wavelength = str(f' ({lambdasym} = {this_or_quest(radiation_wavelength)}'
+                     f'{protected_space}{angstrom})').replace(' ', '')
     # radtype: ('Mo', 'K', '\\a')
     radiation_type = cif['_diffrn_radiation_type']
     radtype = format_radiation(radiation_type)
@@ -340,9 +371,7 @@ def populate_main_table_values(main_table: Table, cif: CifContainer, column=1, r
     theta_min = cif['_diffrn_reflns_theta_min']
     theta_max = cif['_diffrn_reflns_theta_max']
     try:
-        d_max = ' ({:.2f}{}{})'.format(float(radiation_wavelength) / (2 * sin(radians(float(theta_max)))),
-                                       protected_space,
-                                       angstrom)
+        d_max = f' ({float(radiation_wavelength) / (2 * sin(radians(float(theta_max)))):.2f}{protected_space}{angstrom})'
         # 2theta range:
         main_table.cell(row,
                         column).text = f"{2 * float(theta_min):.2f} to {2 * float(theta_max):.2f}{d_max}"
@@ -365,29 +394,149 @@ def populate_main_table_values(main_table: Table, cif: CifContainer, column=1, r
                                          f'{this_or_quest(ls_number_restraints)}/'
                                          f'{this_or_quest(ls_number_parameters)}')
     row += 1
+    main_table.cell(row, column).text = (f"{cif['_exptl_absorpt_correction_T_min'] or '?'}/"
+                                         f"{cif['_exptl_absorpt_correction_T_max'] or '?'}\n"
+                                         f"({cif['_exptl_absorpt_correction_type'] or '?'})")
+    row += 1
     add_table_value(cif, main_table, '_refine_ls_goodness_of_fit_ref', row, column)
     row += 1
-    #add_table_value(cif, main_table, '_refine_ls_weighting_details', row, column)
-    #row += 1
-    r1sig_p = main_table.cell(row, column).paragraphs[0]
-    row += 1
-    rfull_p = main_table.cell(row, column).paragraphs[0]
-    add_r1sig_and_wr2full(cif, r1sig_p, rfull_p)
-    row += 1
-    main_table.cell(row, column).text = diff_density_max + '/' + diff_density_min
+    # add_table_value(cif, main_table, '_refine_ls_weighting_details', row, column)
+    # row += 1
+    add_r1sig_and_wr2full(main_table, cif, row, column)
+    row += 2
+    try:
+        diff_density_min = f"{round(float(cif['_refine_diff_density_min']), 2):.2f}".replace('-', minus_sign)
+    except ValueError:
+        diff_density_min = '?'
+    try:
+        diff_density_max = f"{round(float(cif['_refine_diff_density_max']), 2):.2f}".replace('-', minus_sign)
+    except ValueError:
+        diff_density_max = '?'
+    main_table.cell(row, column).text = f'{diff_density_max}/{diff_density_min}'
     row += 1
     if not cif.is_centrosymm:
         main_table.cell(row, column).text = cif['_refine_ls_abs_structure_Flack'] or '?'
         row += 1
     else:
-        if row_shift > 0:
-            main_table.cell(row, column).text = '---'
-            row += 1
+        pass
+        #if row_shift > 0:
+        #    main_table.cell(row, column).text = '---'
+        #    row += 1
     exti = cif['_refine_ls_extinction_coef']
     if exti not in ['.', "'.'", '?', '']:
         num = len(main_table.columns[0].cells)
         main_table.columns[column].cells[num - 1].text = exti
     row += 1
+
+
+def _absotion_correction(main_table):
+    p = paragraph(main_table)
+    p.add_run('Absorption correction\nT')
+    p.add_run('min').font.subscript = True
+    p.add_run('/T')
+    p.add_run('max').font.subscript = True
+    p.add_run(' (method)')
+
+
+def _extinction(cif, main_table, row_shift):
+    exti = cif['_refine_ls_extinction_coef']
+    if exti not in ['.', "'.'", '?', ''] or row_shift > 0:
+        # always the last cell
+        paragraph(main_table).add_run('Extinction coefficient')
+
+
+def _flack_x(cif, main_table):
+    if not cif.is_centrosymm:
+        p = paragraph(main_table)
+        p.add_run('Flack X parameter')
+
+
+def _peaks(main_table):
+    p = paragraph(main_table)
+    p.add_run(f'Largest peak/hole [e{angstrom}')
+    p.add_run(minus_sign + '3').font.superscript = True
+    p.add_run(']')
+
+
+def _r_values(main_table):
+    p = paragraph(main_table)
+    p.add_run('Final ')
+    p.add_run('R').font.italic = True
+    p.add_run(' indexes \n[all data]')
+
+
+def _r_values_cutoff(main_table):
+    p = paragraph(main_table)
+    p.add_run('Final ')
+    p.add_run('R').font.italic = True
+    p.add_run(' indexes \n[')
+    p.add_run('I').font.italic = True
+    p.add_run(f'{bequal}2{sigma_sm}(')
+    p.add_run('I').font.italic = True
+    p.add_run(')]')
+
+
+def _goof(main_table):
+    p = paragraph(main_table)
+    p.add_run('Goodness-of-fit on ')
+    p.add_run('F').font.italic = True
+    p.add_run('2').font.superscript = True
+
+
+def _completeness(cif, main_table):
+    p = paragraph(main_table)
+    theta_full = cif['_diffrn_reflns_theta_full']
+    if theta_full:
+        p.add_run(f'Completeness to \n{theta_symbol} = {theta_full}{degree_sign}')
+    else:
+        p.add_run('Completeness')
+
+
+def _a_b_c(main_table):
+    p = paragraph(main_table)
+    p.add_run('a').font.italic = True
+    p.add_run(f' [{angstrom}]')
+    p = paragraph(main_table)
+    p.add_run('b').font.italic = True
+    p.add_run(f' [{angstrom}]')
+    p = paragraph(main_table)
+    p.add_run('c').font.italic = True
+    p.add_run(f' [{angstrom}]')
+
+
+def _volume(main_table):
+    p = paragraph(main_table)
+    p.add_run(f'Volume [{angstrom}')
+    p.add_run('3').font.superscript = True
+    p.add_run(']')
+    paragraph(main_table).add_run('Z').font.italic = True
+
+
+def _rho(main_table):
+    p = paragraph(main_table)
+    p.add_run('\u03C1').font.italic = True  # rho
+    p.add_run('calc').font.subscript = True
+    p.add_run(' [gcm')
+    p.add_run(minus_sign + '3').font.superscript = True
+    p.add_run(']')
+
+
+def _mu(main_table):
+    p = paragraph(main_table)
+    p.add_run('\u03BC').font.italic = True  # mu
+    p.add_run(' [mm')
+    p.add_run(minus_sign + '1').font.superscript = True
+    p.add_run(']')
+
+
+def _crystal_size(main_table):
+    p = paragraph(main_table)
+    p.add_run('F').font.italic = True
+    p.add_run('(000)')
+    p = paragraph(main_table)
+    p.add_run('Crystal size [mm')
+    p.add_run('3').font.superscript = True
+    p.add_run(']')
 
 
 def add_hkl_indices(main_table, cif, row, column):
@@ -408,20 +557,25 @@ def add_hkl_indices(main_table, cif, row, column):
         limit_k_max = '?'
         limit_l_min = '?'
         limit_l_max = '?'
-    main_table.cell(row,
-                    column).text = f'{minus_sign if limit_h_min != "0" else ""}{limit_h_min.replace("-", "")} ' \
-                                   f'{less_or_equal} h {less_or_equal} {limit_h_max}\n' \
-                                   + f'{minus_sign if limit_k_min != "0" else ""}{limit_k_min.replace("-", "")} ' \
-                                     f'{less_or_equal} k {less_or_equal} {limit_k_max}\n' \
-                                   + f'{minus_sign if limit_l_min != "0" else ""}{limit_l_min.replace("-", "")} ' \
-                                     f'{less_or_equal} l {less_or_equal} {limit_l_max}'
+    main_table.cell(row, column).text = (f'{minus_sign if limit_h_min != "0" else ""}'
+                                         f'{limit_h_min.replace("-", "")} '
+                                         f'{less_or_equal} h {less_or_equal} {limit_h_max}\n'
+                                         f'{minus_sign if limit_k_min != "0" else ""}'
+                                         f'{limit_k_min.replace("-", "")} '
+                                         f'{less_or_equal} k {less_or_equal} {limit_k_max}\n'
+                                         f'{minus_sign if limit_l_min != "0" else ""}'
+                                         f'{limit_l_min.replace("-", "")} '
+                                         f'{less_or_equal} l {less_or_equal} {limit_l_max}')
 
 
-def add_r1sig_and_wr2full(cif: CifContainer, r2sig_p: Paragraph, rfull_p: Paragraph) -> None:
+def add_r1sig_and_wr2full(main_table: Table, cif: CifContainer, row: int, column: int) -> None:
+    r2sig_p = main_table.cell(row, column).paragraphs[0]
+    rfull_p = main_table.cell(row + 1, column).paragraphs[0]
     ls_R_factor_gt = cif['_refine_ls_R_factor_gt']
     ls_wR_factor_gt = cif['_refine_ls_wR_factor_gt']
     ls_R_factor_all = cif['_refine_ls_R_factor_all']
     ls_wR_factor_ref = cif['_refine_ls_wR_factor_ref']
+
     r2sig_p.add_run('R').font.italic = True
     r2sig_p.add_run('1').font.subscript = True
     r2sig_p.add_run(' = ' + this_or_quest(ls_R_factor_gt))
@@ -429,6 +583,7 @@ def add_r1sig_and_wr2full(cif: CifContainer, r2sig_p: Paragraph, rfull_p: Paragr
     r2sig_p.add_run('R').font.italic = True
     r2sig_p.add_run('2').font.subscript = True
     r2sig_p.add_run(' = ' + this_or_quest(ls_wR_factor_gt))
+
     rfull_p.add_run('R').font.italic = True
     rfull_p.add_run('1').font.subscript = True
     rfull_p.add_run(' = ' + this_or_quest(ls_R_factor_all))
@@ -492,9 +647,9 @@ def add_coords_table(document: Document, cif: CifContainer, table_num: int):
     h = document.add_heading(headline, 2)
     h.add_run('U').font.italic = True
     h.add_run('eq').font.subscript = True
-    h.add_run('{}[{}'.format(protected_space, angstrom))
+    h.add_run(f'{protected_space}[{angstrom}')
     h.add_run('2').font.superscript = True
-    h.add_run('] for {}'.format(cif.block.name))
+    h.add_run(f'] for {cif.block.name}')
     coords_table = document.add_table(rows=len(atoms) + 1, cols=5, style='Table Grid')
     # Atom	x	y	z	U(eq)
     head_row = coords_table.rows[0]
@@ -637,7 +792,7 @@ def add_bonds_and_angles_table(document: Document, table_num: int, data: BondsAn
     head_row = bond_angle_table.rows[0]
     head_row.cells[0].paragraphs[0].add_run(f'Atom{halbgeviert}Atom').bold = True
     p_length = head_row.cells[1].paragraphs[0]
-    p_length.add_run('Length [{}]'.format(angstrom)).bold = True
+    p_length.add_run(f'Length [{angstrom}]').bold = True
     # having a list of column cells before is *much* faster!
     col1_cells = bond_angle_table.columns[0].cells
     col2_cells = bond_angle_table.columns[1].cells
@@ -651,8 +806,8 @@ def add_bonds_and_angles_table(document: Document, table_num: int, data: BondsAn
         c1.text = str(b.get('dist'))  # bond
     ############ the angles ####################
     head_row = bond_angle_table.rows[rowidx + 1]
-    head_row.cells[0].paragraphs[0].add_run('Atom{0}Atom{0}Atom'.format(halbgeviert)).bold = True
-    head_row.cells[1].paragraphs[0].add_run('Angle [{}]'.format(degree_sign)).bold = True
+    head_row.cells[0].paragraphs[0].add_run(f'Atom{halbgeviert}Atom{halbgeviert}Atom').bold = True
+    head_row.cells[1].paragraphs[0].add_run(f'Angle [{degree_sign}]').bold = True
     set_cell_border(head_row.cells[0], bottom={"sz": 2, "color": "#000000", "val": "single"})
     set_cell_border(head_row.cells[1], bottom={"sz": 2, "color": "#000000", "val": "single"})
     rowidx += 2
@@ -681,8 +836,8 @@ def add_torsion_angles(document: Document, table_num: int, data: TorsionAngles =
     """
     torsion_table = document.add_table(rows=len(data) + 1, cols=2, style='Table Grid')
     head_row = torsion_table.rows[0]
-    head_row.cells[0].paragraphs[0].add_run('Atom{0}Atom{0}Atom{0}Atom'.format(halbgeviert)).bold = True
-    head_row.cells[1].paragraphs[0].add_run('Torsion Angle [{}]'.format(degree_sign)).bold = True
+    head_row.cells[0].paragraphs[0].add_run(f'Atom{halbgeviert}Atom{halbgeviert}Atom{halbgeviert}Atom').bold = True
+    head_row.cells[1].paragraphs[0].add_run(f'Torsion Angle [{degree_sign}]').bold = True
     col0_cells = torsion_table.columns[0].cells
     col1_cells = torsion_table.columns[1].cells
     rowidx = 1
@@ -745,97 +900,6 @@ def add_hydrogen_bonds(document: Document, table_num: int, data: HydrogenBonds =
     if data.symmetry_generated_atoms_used:
         add_last_symminfo_line(data.symminfo, document)
     return table_num
-
-
-def populate_description_columns(main_table: Table, cif: CifContainer, row_shift=0) -> None:
-    """
-    This Method adds the descriptions to the fist property table column.
-    row_shift: Moves alle cells down by this factor to allow an empty first row for the data block name.
-    """
-    # paragraph(main_table).add_run('')
-    paragraph(main_table).add_run('CCDC number')
-    paragraph(main_table).add_run('Empirical formula')
-    paragraph(main_table).add_run('Formula weight')
-    paragraph(main_table).add_run('Temperature [K]')
-    paragraph(main_table).add_run('Crystal system')
-    paragraph(main_table).add_run('Space group (number)')
-    p = paragraph(main_table)
-    p.add_run('a').font.italic = True
-    p.add_run(' [{}]'.format(angstrom))
-    p = paragraph(main_table)
-    p.add_run('b').font.italic = True
-    p.add_run(' [{}]'.format(angstrom))
-    p = paragraph(main_table)
-    p.add_run('c').font.italic = True
-    p.add_run(' [{}]'.format(angstrom))
-    paragraph(main_table).add_run('\u03B1 [{}]'.format(degree_sign))
-    paragraph(main_table).add_run('\u03B2 [{}]'.format(degree_sign))
-    paragraph(main_table).add_run('\u03B3 [{}]'.format(degree_sign))
-    p = paragraph(main_table)
-    p.add_run('Volume [{}'.format(angstrom))
-    p.add_run('3').font.superscript = True
-    p.add_run(']')
-    paragraph(main_table).add_run('Z').font.italic = True
-    p = paragraph(main_table)
-    p.add_run('\u03C1').font.italic = True
-    p.add_run('calc').font.subscript = True
-    p.add_run(' [gcm')
-    p.add_run(minus_sign + '3').font.superscript = True
-    p.add_run(']')
-    p = paragraph(main_table)
-    p.add_run('\u03BC').font.italic = True
-    p.add_run(' [mm')
-    p.add_run(minus_sign + '1').font.superscript = True
-    p.add_run(']')
-    p = paragraph(main_table)
-    p.add_run('F').font.italic = True
-    p.add_run('(000)')
-    p = paragraph(main_table)
-    p.add_run('Crystal size [mm')
-    p.add_run('3').font.superscript = True
-    p.add_run(']')
-    paragraph(main_table).add_run('Crystal colour')
-    paragraph(main_table).add_run('Crystal shape')
-    paragraph(main_table).add_run('Radiation')
-    paragraph(main_table).add_run(f'2{theta_symbol} range [{degree_sign}]')
-    paragraph(main_table).add_run('Index ranges')
-    paragraph(main_table).add_run('Reflections collected')
-    paragraph(main_table).add_run('Independent reflections')
-    p = paragraph(main_table)
-    theta_full = cif['_diffrn_reflns_theta_full']
-    if theta_full:
-        p.add_run(f'Completeness to \n{theta_symbol} = {theta_full}°')
-    else:
-        p.add_run('Completeness')
-    paragraph(main_table).add_run('Data / Restraints / Parameters')
-    p = paragraph(main_table)
-    p.add_run('Goodness-of-fit on ')
-    p.add_run('F').font.italic = True
-    p.add_run('2').font.superscript = True
-    # paragraph(main_table).add_run('Weigthing Scheme')
-    p = paragraph(main_table)
-    p.add_run('Final ')
-    p.add_run('R').font.italic = True
-    p.add_run(' indexes \n[')
-    p.add_run('I').font.italic = True
-    p.add_run('{}2{}('.format(bequal, sigma_sm))
-    p.add_run('I').font.italic = True
-    p.add_run(')]')
-    p = paragraph(main_table)
-    p.add_run('Final ')
-    p.add_run('R').font.italic = True
-    p.add_run(' indexes \n[all data]')
-    p = paragraph(main_table)
-    p.add_run('Largest peak/hole [e{}'.format(angstrom))
-    p.add_run(minus_sign + '3').font.superscript = True
-    p.add_run(']')
-    if not cif.is_centrosymm:
-        p = paragraph(main_table)
-        p.add_run('Flack X parameter')
-    exti = cif['_refine_ls_extinction_coef']
-    if exti not in ['.', "'.'", '?', ''] or row_shift > 0:
-        # always the last cell
-        paragraph(main_table).add_run('Extinction coefficient')
 
 
 def paragraph(table: Table) -> Paragraph:
