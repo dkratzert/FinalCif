@@ -19,6 +19,8 @@ from finalcif.report.templated_report import TemplatedReport
 data = Path('tests')
 test_data = Path('test-data')
 
+
+# noinspection PyMissingTypeHints
 class TemplateReportTestCase(unittest.TestCase):
     def setUp(self) -> None:
         self.testcif = (data / 'examples/1979688.cif').absolute()
@@ -75,7 +77,7 @@ class TemplateReportTestCase(unittest.TestCase):
 
     def test_ccdc_num_in_table(self):
         self.myapp.ui.SaveFullReportButton.click()
-        doc = Document(self.reportdoc.absolute())
+        doc = Document(str(self.reportdoc.absolute()))
         table: Table = doc.tables[0]
         self.assertEqual('1979688', table.cell(row_idx=0, col_idx=1).text)
 
