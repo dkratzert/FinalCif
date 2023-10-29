@@ -160,7 +160,7 @@ def create_document() -> Document:
     :return: The document instance.
     """
     try:
-        document = Document(Path(application_path).joinpath('template/template1.docx').resolve())
+        document = Document(Path(application_path).joinpath('template/template1.docx').resolve().__str__())
     except FileNotFoundError as e:
         print(e)
         document = Document()

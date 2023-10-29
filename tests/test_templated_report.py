@@ -28,11 +28,17 @@ class TemplateReportTestCase(unittest.TestCase):
         self.myapp.ui.HAtomsCheckBox.setChecked(False)
         self.myapp.ui.ReportTextCheckBox.setChecked(False)
         self.myapp.ui.PictureWidthDoubleSpinBox.setValue(7.43)
+        self.options = Mock()
+        self.options.picture_width = 7.43
+        self.options.without_h = False
+        self.text_template = Path('finalcif/template/template_text.docx').absolute()
+        self.template_without_text = Path('finalcif/template/template_without_text.docx').absolute()
         self.import_templates()
         self.myapp.ui.docxTemplatesListWidget.setCurrentRow(2)
         self.reportdoc = self.myapp.cif.finalcif_file_prefixed(prefix='report_', suffix='-finalcif.docx')
         self.report_zip = self.myapp.cif.finalcif_file_prefixed(prefix='', suffix='-finalcif.zip')
-        self.myapp.select_report_picture(Path('finalcif/icon/finalcif.png'))
+        self.report_pic = Path('finalcif/icon/finalcif.png')
+        self.myapp.select_report_picture(self.report_pic)
 
     def tearDown(self) -> None:
         self.myapp.cif.finalcif_file.unlink(missing_ok=True)
@@ -54,9 +60,8 @@ class TemplateReportTestCase(unittest.TestCase):
         for num in range(1, self.myapp.ui.docxTemplatesListWidget.count()):
             self.myapp.ui.docxTemplatesListWidget.setCurrentRow(num)
             self.myapp.templates.remove_current_template()
-        self.myapp.templates.add_new_template(str(Path('finalcif/template/template_text.docx').absolute()))
-        self.myapp.templates.add_new_template(
-            str(Path('finalcif/template/template_without_text.docx').absolute()))
+        self.myapp.templates.add_new_template(str(self.text_template))
+        self.myapp.templates.add_new_template(str(self.template_without_text))
         print('imported templates')
         self.myapp.ui.docxTemplatesListWidget.blockSignals(False)
 
@@ -76,21 +81,35 @@ class TemplateReportTestCase(unittest.TestCase):
             doc.paragraphs[-1].text)
 
     def test_ccdc_num_in_table(self):
-        self.myapp.ui.SaveFullReportButton.click()
+        t = TemplatedReport()
+        ok = t.make_templated_report(options=self.options,
+                                     cif=CifContainer(self.testcif),
+                                     output_filename=self.reportdoc,
+                                     picfile=self.report_pic,
+                                     template_path=self.text_template)
+        self.assertTrue(ok)
         doc = Document(str(self.reportdoc.absolute()))
         table: Table = doc.tables[0]
-        self.assertEqual('1979688', table.cell(row_idx=0, col_idx=1).text)
+        # This is with the 'CCDC' string, because CCDC will be deleted during CIF save in  main application:
+        self.assertEqual('CCDC 1979688', table.cell(row_idx=0, col_idx=1).text)
 
     def test_picture_has_correct_size(self):
         """
         For this test, self.myapp.set_report_picture(Path('finalcif/icon/finalcif.png'))
         has to be set correctly.
         """
-        self.myapp.ui.SaveFullReportButton.click()
+        t = TemplatedReport()
+        ok = t.make_templated_report(options=self.options,
+                                     cif=CifContainer(self.testcif),
+                                     output_filename=self.reportdoc,
+                                     picfile=self.report_pic,
+                                     template_path=self.text_template)
+        self.assertTrue(ok)
         doc = Document(self.reportdoc.absolute())
         shapes: InlineShapes = doc.inline_shapes
         self.assertEqual(WD_INLINE_SHAPE.PICTURE, shapes[0].type)
         self.assertEqual(Cm(7.43).emu, shapes[0].width)
+
 
 class TestReportFromMultiCif(unittest.TestCase):
     def setUp(self):
@@ -106,9 +125,10 @@ class TestReportFromMultiCif(unittest.TestCase):
     def test_get_distance_from_atoms(self):
         t = TemplatedReport()
         mock = Mock()
-        mock.options.without_h = False
+        mock.without_h = False
+        mock.picture_width = 7.43
         ok = t.make_templated_report(options=mock, cif=self.cif,
-                                     output_filename='test.docx', picfile=None,
+                                     output_filename='test.docx', picfile=Path(),
                                      template_path=self.docx_templ)
         self.assertTrue(ok)
         doc = Document(self.reportdoc.resolve().__str__())
@@ -116,6 +136,7 @@ class TestReportFromMultiCif(unittest.TestCase):
         self.assertEqual('C1-C2 in p21c distance: 1.544(3)', doc.paragraphs[1].text)
 
 
+# noinspection PyMissingTypeHints
 class TestData(unittest.TestCase):
 
     def setUp(self) -> None:

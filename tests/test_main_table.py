@@ -21,6 +21,7 @@ from finalcif.tools.misc import unify_line_endings
 data = Path('tests')
 
 
+# noinspection PyMissingTypeHints
 class TestMainTableFieldBehavior(unittest.TestCase):
 
     def setUp(self) -> None:
