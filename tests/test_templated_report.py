@@ -72,13 +72,23 @@ class TemplateReportTestCase(unittest.TestCase):
         doc = Document(self.reportdoc.absolute())
         self.assertEqual('The following text is only', doc.paragraphs[2].text[:26])
 
-    @unittest.skip('I am unable to access the respective paragraph, they are in w:ins')
-    def test_citations(self):
-        self.myapp.ui.SaveFullReportButton.click()
-        doc = Document(self.reportdoc.absolute())
-        self.assertEqual(
-            '[6] 	D. Kratzert, FinalCif, V{}, https://dkratzert.de/finalcif.html.'.format(VERSION),
-            doc.paragraphs[-1].text)
+
+class TemplateReportWithoutAppTestCase(unittest.TestCase):
+    def setUp(self) -> None:
+        self.testcif = (data / 'examples/1979688.cif').absolute()
+        cif = CifContainer(self.testcif)
+        self.options = Mock()
+        self.options.picture_width = 7.43
+        self.options.without_h = False
+        self.text_template = Path('finalcif/template/template_text.docx').absolute()
+        self.template_without_text = Path('finalcif/template/template_without_text.docx').absolute()
+        self.reportdoc = cif.finalcif_file_prefixed(prefix='report_', suffix='-finalcif.docx')
+        self.report_zip = cif.finalcif_file_prefixed(prefix='', suffix='-finalcif.zip')
+        self.report_pic = Path('finalcif/icon/finalcif.png')
+
+    def tearDown(self) -> None:
+        self.reportdoc.unlink(missing_ok=True)
+        self.report_zip.unlink(missing_ok=True)
 
     def test_ccdc_num_in_table(self):
         t = TemplatedReport()
@@ -109,6 +119,18 @@ class TemplateReportTestCase(unittest.TestCase):
         shapes: InlineShapes = doc.inline_shapes
         self.assertEqual(WD_INLINE_SHAPE.PICTURE, shapes[0].type)
         self.assertEqual(Cm(7.43).emu, shapes[0].width)
+
+    def test_citations(self):
+        t = TemplatedReport()
+        t.make_templated_report(options=self.options,
+                                cif=CifContainer(self.testcif),
+                                output_filename=self.reportdoc,
+                                picfile=self.report_pic,
+                                template_path=self.text_template)
+        doc = Document(self.reportdoc.absolute())
+        # for num, p in enumerate(doc.paragraphs):
+        #    print(num, p.text)
+        self.assertEqual('Bibliography', doc.paragraphs[20].text)
 
 
 class TestReportFromMultiCif(unittest.TestCase):
