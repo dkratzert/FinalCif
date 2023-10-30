@@ -1,5 +1,7 @@
 FinalCif recent changes
 -----------------------
+* v130 Improved handling of reports from templates. All CIF blocks from a multi-CIF are now accessible in a template.
+       Also, all atoms, bonds and angles are accessible. Refer to the manual for details.
 * v129 Improved program executable which can now be pinned to the taskbar. Updated updater executable.
 * v128 Added import popup-Window for the import of an additional CIF for selection of keys and loops to import.
        Loops are now deletable in the loop editor. The main table shows all entries now, even hkl file data.

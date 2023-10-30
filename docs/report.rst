@@ -107,7 +107,7 @@ Data Available for the Report
     'cif'                   : Gives you access to the full CIF information, use it like
                               {{ cif._exptl_crystal_density_diffrn }} or the variables in the next table.
     'name'                  : Name of the current CIF block.
-    'block'                 : The context of all CIF blocks of a multi-CIF usable as attribute, e.g. block.name.foo
+    'block'                 : The context of all CIF blocks of a multi-CIF usable as attribute, e.g. block.name.foo or block['name'].foo
     'blocklist'             : A list of all CIF blocks of a multi-CIF usable for iteration over blocks.
     'atomic_coordinates'    : The atomic coordinates as ('label', 'x', 'y', 'z', 'u_eq') for each atom.
     'displacement_parameters': The atomic displacement parameters as ('label', 'U11', 'U22', 'U33',
@@ -213,9 +213,11 @@ Sine version 130, it is possible to address the values of individual blocks of a
 
 prints all block names of a multi-CIF.
 
-Another way is to use the 'block' variable in the template. It contains the respective block data.
-To access the values of the block, you have to use the block name in square brackets. This prevents
-conflicts with the Jinja2 syntax.
+Another option is to utilize the 'block' variable in the template. It holds therespective block data.
+To access the values of the block, you need to use the block name in square brackets and
+enclosed in quotation marks.
+This prevents conflicts with Jinja2 syntax and potential characters in CIF blocks, such as the minus
+sign in 'p-1', which would otherwise be interpreted as variable p minus one.
 For example, the chemical formula of the block 'compound1' of a multi-CIF is:
 
 .. code-block:: jinja
@@ -231,13 +233,16 @@ multi-CIF files:
     {{ block['p-1'].cif.angle('C1-C2-C3') }}
 
 Prints out the distance between C1 and C2 as well as the angle between C1, C2 and C3.
-This can be used to render specific bond distances of a multi-CIF
+This can be used to render specific bond distances etc. of a multi-CIF
 file to a publication without the need to change the values by hand every time a refinement changes.
-Be aware that the atom labels must be given in the order they have in the respective CIF loop. When a
+Be aware that the atom labels must be given in the order they have in the respective CIF loop. When
 an atom combination is not present in a CIF loop, the value 'None' will appear.
 
-For a single-CIF, leave out the "block['block name']." part.
+For a single-CIF, leave out the "block['block name']." part:
 
+.. code-block:: jinja
+
+    {{ cif.bond_dist('C1-C2') }}
 
 
 Further information for programmers:
