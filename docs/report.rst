@@ -107,6 +107,8 @@ Data Available for the Report
     'cif'                   : Gives you access to the full CIF information, use it like
                               {{ cif._exptl_crystal_density_diffrn }} or the variables in the next table.
     'name'                  : Name of the current CIF block.
+    'block'                 : The context of all CIF blocks of a multi-CIF usable as attribute, e.g. block.name.foo
+    'blocklist'             : A list of all CIF blocks of a multi-CIF usable for iteration over blocks.
     'atomic_coordinates'    : The atomic coordinates as ('label', 'x', 'y', 'z', 'u_eq') for each atom.
     'displacement_parameters': The atomic displacement parameters as ('label', 'U11', 'U22', 'U33',
                                'U23', 'U13', 'U12') for each atom.
@@ -151,6 +153,8 @@ Data Available for the Report
     'restraints'            : The value of '_refine_ls_number_restraints'.
     'parameters'            : The value of '_refine_ls_number_parameters'.
     'goof'                  : The value of '_refine_ls_goodness_of_fit_ref'.
+    't_min'                 : The value of '_exptl_absorpt_correction_T_min'.
+    't_max'                 : The value of '_exptl_absorpt_correction_T_max'.
     'ls_R_factor_gt'        : The value of '_refine_ls_R_factor_gt'.
     'ls_wR_factor_gt'       : The value of '_refine_ls_wR_factor_gt'.
     'ls_R_factor_all'       : The value of '_refine_ls_R_factor_all'.
@@ -182,6 +186,9 @@ no real minus sign in front. The former values hav hyphens replaced with minus s
    'cif.disorder_present'       : Is true if atoms in parts are present in the structure.
    'cif.cell'                   : The unit cell as 'a', 'b', 'c', 'alpha', 'beta', 'gamma', 'volume'.
    'cif.bonds'                  : The list of bonds as 'label1', 'label2', 'dist', 'symm'.
+   'cif.bond_dist("atom1-atom2")'    : The bond distance between two atoms.
+   'cif.angle("atom1-atom2-atom3")'  : The angle between three atoms.
+   'cif.torsion("atom1-atom2-atom3-atom4")'  : The torsion angle between four atoms.
    'angles'                     : The list of angles as 'label1', 'label2', 'label3', 'angle_val',
                                   'symm1', 'symm2'.
    'torsion_angles'             : The list of torsion angles as 'label1', 'label2', 'label3', 'label4',
@@ -196,6 +203,41 @@ no real minus sign in front. The former values hav hyphens replaced with minus s
 The above is not limited to the templates of FinalCif. It is also possible to insert template tags
 into any other Word document and replace them with values from a CIF file. There are no limits to
 the imagination.
+Sine version 130, it is possible to address the values of individual blocks of a multi-CIF. For example,
+
+.. code-block:: jinja
+
+   {% for block in blocklist %}
+      {{ block.name }}
+   {% enfor %}
+
+prints all block names of a multi-CIF.
+
+Another way is to use the 'block' variable in the template. It contains the respective block data.
+To access the values of the block, you have to use the block name in square brackets. This prevents
+conflicts with the Jinja2 syntax.
+For example, the chemical formula of the block 'compound1' of a multi-CIF is:
+
+.. code-block:: jinja
+
+    {{ block['compound1']._chemical_formula_sum }}
+
+Special methods allow you to access the values of the atoms, bonds, angles, torsion angles of single- and
+multi-CIF files:
+
+.. code-block:: jinja
+
+    {{ block['p-1'].cif.bond_dist('C1-C2') }}
+    {{ block['p-1'].cif.angle('C1-C2-C3') }}
+
+Prints out the distance between C1 and C2 as well as the angle between C1, C2 and C3.
+This can be used to render specific bond distances of a multi-CIF
+file to a publication without the need to change the values by hand every time a refinement changes.
+Be aware that the atom labels must be given in the order they have in the respective CIF loop. When a
+an atom combination is not present in a CIF loop, the value 'None' will appear.
+
+For a single-CIF, leave out the "block['block name']." part.
+
 
 
 Further information for programmers:
