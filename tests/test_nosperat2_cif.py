@@ -16,7 +16,7 @@ class TestNosphera2(unittest.TestCase):
         self.cif = CifContainer(data / 'test-data/nospera2.cif')
 
     def test_atoms(self):
-        self.assertEqual("Atom(label='O1', type='O', x='0.282284(16)', y='0.56940(2)', "
+        self.assertEqual("atom(label='O1', type='O', x='0.282284(16)', y='0.56940(2)', "
                          "z='0.869432(5)', part='0', occ='1.000000', u_eq='0.02037(4)')",
                          str(list(self.cif.atoms())[0]))
 

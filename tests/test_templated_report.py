@@ -48,22 +48,23 @@ class TemplateReportTestCase(unittest.TestCase):
         self.myapp.ui.HAtomsCheckBox.setChecked(False)
         self.myapp.ui.PictureWidthDoubleSpinBox.setValue(7.5)
         self.myapp.ui.docxTemplatesListWidget.blockSignals(True)
-        for num in range(1, self.myapp.ui.docxTemplatesListWidget.count()):
-            self.myapp.ui.docxTemplatesListWidget.setCurrentRow(num)
-            self.myapp.templates.remove_current_template()
+        self._clean_templates()
         self.myapp.ui.docxTemplatesListWidget.blockSignals(False)
         self.myapp.close()
 
     def import_templates(self):
         # blocking signals, because signal gets fired after delete and crashes: 
         self.myapp.ui.docxTemplatesListWidget.blockSignals(True)
-        for num in range(1, self.myapp.ui.docxTemplatesListWidget.count()):
-            self.myapp.ui.docxTemplatesListWidget.setCurrentRow(num)
-            self.myapp.templates.remove_current_template()
+        self._clean_templates()
         self.myapp.templates.add_new_template(str(self.text_template))
         self.myapp.templates.add_new_template(str(self.template_without_text))
         print('imported templates')
         self.myapp.ui.docxTemplatesListWidget.blockSignals(False)
+
+    def _clean_templates(self):
+        for num in range(1, self.myapp.ui.docxTemplatesListWidget.count()):
+            self.myapp.ui.docxTemplatesListWidget.setCurrentRow(num)
+            self.myapp.templates.remove_current_template()
 
     def test_with_report_text(self):
         self.import_templates()
