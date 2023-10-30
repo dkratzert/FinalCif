@@ -21,6 +21,7 @@ from finalcif.tools.misc import unify_line_endings
 data = Path('tests')
 
 
+# noinspection PyMissingTypeHints
 class TestMainTableFieldBehavior(unittest.TestCase):
 
     def setUp(self) -> None:
@@ -82,7 +83,7 @@ class TestMainTableFieldBehavior(unittest.TestCase):
 
     @pytest.mark.skip('TODO: this tes can run ages')
     def test_load_equipment(self):
-        self.myapp.equipment.import_equipment_from_file(str(data / 'test-data/Crystallographer_Details.cif'))
+        self.myapp.equipment.import_equipment_from_file(str(data.parent / 'test-data/Crystallographer_Details.cif'))
         # make sure contact author is selected
         self.equipment_click('Crystallographer Details')
         # It is important here, that the first column has 'dkratzert@gmx.de' in it:

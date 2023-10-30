@@ -25,6 +25,10 @@ medium_math_space = u'\u205F'
 # angstrom = u'\u212B'  # Unicode angstrom sign (only for compatibility)
 # angstrom = 'Å'      # MSWord seems unable to render the regular letter correctly. It looks like a different font?
 angstrom = u'\u00C5'  # Latin capital A with ring above. The Unicode consortium recommends to use the regular letter
+# greek small letters:
+alpha_symol = u'\u03B1'
+beta_symol = u'\u03B2'
+gamma_symol = u'\u03B3'
 # Greek Small Letter Theta θ:
 theta_symbol = u'\u03B8'
 # Greek Small Letter Pi
@@ -213,7 +217,7 @@ def find_line(inputlist: list, regex: str) -> int:
     return 0
 
 
-def this_or_quest(value: Union[str, int, float, None]) -> Union[str, int, float]:
+def this_or_quest(value: str) -> str:
     """
     Returns the value or a question mark if the value is None.
     """

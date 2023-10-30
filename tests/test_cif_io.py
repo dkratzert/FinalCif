@@ -82,6 +82,24 @@ class CifFileTestCase(unittest.TestCase):
         self.assertEqual(True, CifContainer(data / 'test-data/1000006.cif').test_res_checksum())
         self.assertEqual(True, CifContainer(data / 'test-data/1000006.cif').test_hkl_checksum())
 
+    def test_distance_from_string(self):
+        self.assertEqual('1.527(3)', self.cif.bond_dist('C1-C2'))
+
+    def test_distance_from_false_string(self):
+        self.assertEqual(None, self.cif.bond_dist('C1-C999'))
+
+    def test_angle_from_string(self):
+        self.assertEqual('109.9', self.cif.angle('C1-C2-H2'))
+
+    def test_angle_from_false_string(self):
+        self.assertEqual(None, self.cif.angle('C1-C2-Hxx'))
+
+    def test_torsion_angle_from_string(self):
+        self.assertEqual('173.5(2)', self.cif.torsion('C1-C2-C3-C4'))
+
+    def test_torsion_angle_from_false_string(self):
+        self.assertEqual(None, self.cif.torsion('C1-C2-C3-C999'))
+
 
 class TestQuotationMark(unittest.TestCase):
     def setUp(self) -> None:

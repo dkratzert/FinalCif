@@ -1113,14 +1113,16 @@ class AppWindow(QMainWindow):
                 print('Report without templates')
                 make_report_from(options=self.options, cif=self.cif,
                                  output_filename=str(report_filename), picfile=picfile)
+                if self.cif.is_multi_cif and self.cif.doc[0].name != 'global':
+                    make_multi_tables(cif=self.cif, output_filename=str(multi_table_document))
             else:
                 print('Report with templates')
                 t = TemplatedReport()
-                t.make_templated_report(options=self.options, cif=self.cif,
-                                        output_filename=str(report_filename), picfile=picfile,
-                                        template_path=Path(self.get_checked_templates_list_text()))
-            if self.cif.is_multi_cif and self.cif.doc[0].name != 'global':
-                make_multi_tables(cif=self.cif, output_filename=str(multi_table_document))
+                ok = t.make_templated_report(options=self.options, cif=self.cif,
+                                             output_filename=str(report_filename), picfile=picfile,
+                                             template_path=Path(self.get_checked_templates_list_text()))
+                if not ok:
+                    return None
         except FileNotFoundError as e:
             if DEBUG:
                 raise
@@ -1137,8 +1139,9 @@ class AppWindow(QMainWindow):
             return
         if not self.running_inside_unit_test:
             self.open_report_document(report_filename, multi_table_document)
+            print('dbg> disabled temporarily!')
             # Save report and other files to a zip file:
-            self.zip_report(report_filename)
+            # self.zip_report(report_filename)
 
     def report_without_template(self) -> bool:
         """Check whether the report is generated from a template or hard-coded"""
@@ -1165,7 +1168,7 @@ class AppWindow(QMainWindow):
             arc.zip.write(filename=multitable, arcname=multitable.name)
 
     def open_report_document(self, report_filename: Path, multi_table_document: Path) -> None:
-        if self.cif.is_multi_cif:
+        if self.cif.is_multi_cif and self.report_without_template():
             open_file(multi_table_document)
         open_file(report_filename)
 
@@ -1444,8 +1447,16 @@ class AppWindow(QMainWindow):
         self.ui.cif_main_table.resizeRowsToContents()
         self.ui.datanameComboBox.blockSignals(False)
         if self.cif.is_multi_cif:
-            # short after start, because window size is not finished
-            QtCore.QTimer(self).singleShot(1000, self.ui.datanameComboBox.showPopup)
+            self._flash_block_combobox()
+
+    def _flash_block_combobox(self):
+        orig_pal = self.ui.datanameComboBox.palette()
+        pal = QtGui.QPalette()
+        pal.setColor(QtGui.QPalette.Base, light_blue)
+        self.ui.datanameComboBox.setAutoFillBackground(True)
+        # short after start, because window size is not finished before:
+        QtCore.QTimer(self).singleShot(1500, lambda: self.ui.datanameComboBox.setPalette(pal))
+        QtCore.QTimer(self).singleShot(2600, lambda: self.ui.datanameComboBox.setPalette(orig_pal))
 
     def add_data_names_to_combobox(self) -> None:
         self.ui.datanameComboBox.clear()
@@ -1489,7 +1500,7 @@ class AppWindow(QMainWindow):
                 self.finalcif_changes_filename.unlink(missing_ok=True)
             elif self.finalcif_changes_filename.exists() and self.changes_cif_has_values():
                 changes_exist = True
-            if changes_exist and not self.running_inside_unit_test and self.changes_answer == 0:
+            if changes_exist and not self.running_inside_unit_test and self.changes_answer == 0 and not self.cif.is_multi_cif:
                 self.changes_answer = QMessageBox.question(self, 'Previous changes found',
                                                            f'Previous changes from a former FinalCif session '
                                                            f'were found in\n{self.finalcif_changes_filename.name}.\n\n'

@@ -1,6 +1,7 @@
 import itertools
 import re
 from collections import namedtuple
+from contextlib import suppress
 from math import sin, radians
 from pathlib import Path
 from typing import List, Dict, Union
@@ -10,8 +11,10 @@ from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 from docx.shared import Cm
 from docx.text.paragraph import Paragraph
 from docxtpl import DocxTemplate, RichText, InlineImage, Subdoc
+from shelxfile.misc.dsrmath import my_isnumeric
 
 from finalcif.cif.cif_file_io import CifContainer
+from finalcif.gui.dialogs import show_general_warning
 from finalcif.report.references import SAINTReference, SHELXLReference, SadabsTwinabsReference, SHELXTReference, \
     SHELXSReference, SHELXDReference, SORTAVReference, FinalCifReference, CCDCReference, \
     CrysalisProReference, Nosphera2Reference, Olex2Reference
@@ -22,7 +25,6 @@ from finalcif.tools.misc import isnumeric, this_or_quest, timessym, angstrom, pr
     minus_sign, ellipsis_mid
 from finalcif.tools.options import Options
 from finalcif.tools.space_groups import SpaceGroups
-from finalcif.gui.dialogs import show_general_warning
 
 
 class BondsAndAngles():
@@ -480,6 +482,11 @@ class TemplatedReport():
                       U13=u13.replace('-', minus_sign),
                       U23=u23.replace('-', minus_sign))
 
+    def _tvalue(self, tval: str) -> str:
+        with suppress(ValueError):
+            return f'{float(tval):.3f}'
+        return tval
+
     def get_crystallization_method(self, cif):
         return gstr(cif['_exptl_crystal_recrystallization_method']) or '[No crystallization method given!]'
 
@@ -489,31 +496,57 @@ class TemplatedReport():
         return None
 
     def make_templated_report(self, options: Options, cif: CifContainer, output_filename: str, picfile: Path,
-                              template_path: Path):
-        context, tpl_doc = self.prepare_report_data(cif, options, picfile, template_path)
+                              template_path: Path) -> bool:
+        tpl_doc = DocxTemplate(template_path)
+        context, tpl_doc = self.prepare_report_data(cif, options, picfile, tpl_doc)
         # Filter definition for {{foobar|filter}} things:
         jinja_env = jinja2.Environment()
         jinja_env.filters['inv_article'] = get_inf_article
         try:
             tpl_doc.render(context, jinja_env=jinja_env, autoescape=True)
             tpl_doc.save(output_filename)
+            return True
         except Exception as e:
             show_general_warning(parent=None, window_title='Warning', warn_text='Document generation failed',
                                  info_text=str(e))
+            return False
 
-    def prepare_report_data(self, cif: CifContainer, options: Options, picfile: Path, template_path: Path):
-        tpl_doc = DocxTemplate(template_path)
+    def prepare_report_data(self, cif: CifContainer, options: Options, picfile: Path, tpl_doc: DocxTemplate):
+        maincontext = {}
+        if not cif.is_multi_cif:
+            maincontext = self._get_context(cif, options, picfile, tpl_doc)
+        else:
+            current_block = cif.block.name
+            current_file = cif.fileobj
+            maincontext.update(self._get_context(cif, options, picfile, tpl_doc))
+            block_list = []
+            blocks = {}
+            for block in cif.doc:
+                cif2 = CifContainer(file=current_file)
+                cif2.load_block_by_name(block.name)
+                context = self._get_context(cif2, options, picfile, tpl_doc)
+                block_list.append(context)
+                blocks[block.name] = context
+            maincontext['blocklist'] = block_list
+            maincontext['block'] = blocks
+            cif.load_block_by_name(current_block)
+        return maincontext, tpl_doc
+
+    def _get_context(self, cif: CifContainer, options: Options, picfile: Path, tpl_doc: DocxTemplate):
         ba = BondsAndAngles(cif, without_h=options.without_h)
         t = TorsionAngles(cif, without_h=options.without_h)
         h = HydrogenBonds(cif)
         context = {'options'                : options,
                    # {'without_h': True, 'atoms_table': True, 'text': True, 'bonds_table': True},
                    'cif'                    : cif,
+                   'name'                   : cif.block.name,
                    'space_group'            : self.space_group_subdoc(tpl_doc, cif),
                    'structure_figure'       : self.make_picture(options, picfile, tpl_doc),
                    'crystallization_method' : self.get_crystallization_method(cif),
-                   'sum_formula'            : self.format_sum_formula(cif['_chemical_formula_sum'].replace(" ", "")),
-                   'moiety_formula'         : self.format_sum_formula(cif['_chemical_formula_moiety'].replace(" ", "")),
+                   'sum_formula'            : self.format_sum_formula(
+                       cif['_chemical_formula_sum'].replace(" ", "")),
+                   'moiety_formula'         : self.format_sum_formula(
+                       cif['_chemical_formula_moiety'].replace(" ", "")),
                    'itnum'                  : cif['_space_group_IT_number'],
                    'crystal_size'           : this_or_quest(cif['_exptl_crystal_size_min']) + timessym +
                                               this_or_quest(cif['_exptl_crystal_size_mid']) + timessym +
@@ -544,6 +577,8 @@ class TemplatedReport():
                    'restraints'             : this_or_quest(cif['_refine_ls_number_restraints']),
                    'parameters'             : this_or_quest(cif['_refine_ls_number_parameters']),
                    'goof'                   : this_or_quest(cif['_refine_ls_goodness_of_fit_ref']),
+                   't_min'                  : self._tvalue(this_or_quest(cif['_exptl_absorpt_correction_T_min'])),
+                   't_max'                  : self._tvalue(this_or_quest(cif['_exptl_absorpt_correction_T_max'])),
                    'ls_R_factor_gt'         : this_or_quest(cif['_refine_ls_R_factor_gt']),
                    'ls_wR_factor_gt'        : this_or_quest(cif['_refine_ls_wR_factor_gt']),
                    'ls_R_factor_all'        : this_or_quest(cif['_refine_ls_R_factor_all']),
@@ -571,7 +606,7 @@ class TemplatedReport():
                    'hydrogen_symminfo'      : h.symminfo,
                    'literature'             : self.literature
                    }
-        return context, tpl_doc
+        return context
 
 
 if __name__ == '__main__':
