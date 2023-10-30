@@ -1,6 +1,7 @@
 import itertools
 import re
 from collections import namedtuple
+from contextlib import suppress
 from math import sin, radians
 from pathlib import Path
 from typing import List, Dict, Union
@@ -10,6 +11,7 @@ from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 from docx.shared import Cm
 from docx.text.paragraph import Paragraph
 from docxtpl import DocxTemplate, RichText, InlineImage, Subdoc
+from shelxfile.misc.dsrmath import my_isnumeric
 
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.gui.dialogs import show_general_warning
@@ -480,6 +482,11 @@ class TemplatedReport():
                       U13=u13.replace('-', minus_sign),
                       U23=u23.replace('-', minus_sign))
 
+    def _tvalue(self, tval: str) -> str:
+        with suppress(ValueError):
+            return f'{float(tval):.3f}'
+        return tval
+
     def get_crystallization_method(self, cif):
         return gstr(cif['_exptl_crystal_recrystallization_method']) or '[No crystallization method given!]'
 
@@ -570,6 +577,8 @@ class TemplatedReport():
                    'restraints'             : this_or_quest(cif['_refine_ls_number_restraints']),
                    'parameters'             : this_or_quest(cif['_refine_ls_number_parameters']),
                    'goof'                   : this_or_quest(cif['_refine_ls_goodness_of_fit_ref']),
+                   't_min'                  : self._tvalue(this_or_quest(cif['_exptl_absorpt_correction_T_min'])),
+                   't_max'                  : self._tvalue(this_or_quest(cif['_exptl_absorpt_correction_T_max'])),
                    'ls_R_factor_gt'         : this_or_quest(cif['_refine_ls_R_factor_gt']),
                    'ls_wR_factor_gt'        : this_or_quest(cif['_refine_ls_wR_factor_gt']),
                    'ls_R_factor_all'        : this_or_quest(cif['_refine_ls_R_factor_all']),

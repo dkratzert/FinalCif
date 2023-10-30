@@ -1113,6 +1113,8 @@ class AppWindow(QMainWindow):
                 print('Report without templates')
                 make_report_from(options=self.options, cif=self.cif,
                                  output_filename=str(report_filename), picfile=picfile)
+                if self.cif.is_multi_cif and self.cif.doc[0].name != 'global':
+                    make_multi_tables(cif=self.cif, output_filename=str(multi_table_document))
             else:
                 print('Report with templates')
                 t = TemplatedReport()
@@ -1121,8 +1123,6 @@ class AppWindow(QMainWindow):
                                              template_path=Path(self.get_checked_templates_list_text()))
                 if not ok:
                     return None
-            if self.cif.is_multi_cif and self.cif.doc[0].name != 'global':
-                make_multi_tables(cif=self.cif, output_filename=str(multi_table_document))
         except FileNotFoundError as e:
             if DEBUG:
                 raise
@@ -1168,7 +1168,7 @@ class AppWindow(QMainWindow):
             arc.zip.write(filename=multitable, arcname=multitable.name)
 
     def open_report_document(self, report_filename: Path, multi_table_document: Path) -> None:
-        if self.cif.is_multi_cif:
+        if self.cif.is_multi_cif and self.report_without_template():
             open_file(multi_table_document)
         open_file(report_filename)
 
@@ -1500,7 +1500,7 @@ class AppWindow(QMainWindow):
                 self.finalcif_changes_filename.unlink(missing_ok=True)
             elif self.finalcif_changes_filename.exists() and self.changes_cif_has_values():
                 changes_exist = True
-            if changes_exist and not self.running_inside_unit_test and self.changes_answer == 0:
+            if changes_exist and not self.running_inside_unit_test and self.changes_answer == 0 and not self.cif.is_multi_cif:
                 self.changes_answer = QMessageBox.question(self, 'Previous changes found',
                                                            f'Previous changes from a former FinalCif session '
                                                            f'were found in\n{self.finalcif_changes_filename.name}.\n\n'

@@ -234,7 +234,7 @@ def set_cell_border(cell: _Cell, **kwargs) -> None:
                     element.set(qn(f'w:{key}'), str(edge_data[key]))
 
 
-def add_residuals_table(document: Document(), cif: CifContainer, table_num: int) -> int:
+def add_residuals_table(document: Document, cif: CifContainer, table_num: int) -> int:
     main_table = document.add_table(rows=0, cols=2)
     # setup table format:
     set_column_width(main_table.columns[0], Cm(4.05))
@@ -415,7 +415,7 @@ def populate_main_table_values(main_table: Table, cif: CifContainer, column=1, r
     main_table.cell(row, column).text = f'{diff_density_max}/{diff_density_min}'
     row += 1
     if not cif.is_centrosymm:
-        main_table.cell(row, column).text = cif['_refine_ls_abs_structure_Flack'] or '?'
+        main_table.cell(row, column).text = cif['_refine_ls_abs_structure_Flack'].replace('-', minus_sign) or '?'
         row += 1
     else:
         if row_shift > 0:
@@ -423,7 +423,10 @@ def populate_main_table_values(main_table: Table, cif: CifContainer, column=1, r
             row += 1
     exti = cif['_refine_ls_extinction_coef']
     if exti:
-        main_table.cell(row, column).text = exti if exti else '---'
+        main_table.cell(row, column).text = exti
+    else:
+        if row_shift > 0:
+            main_table.cell(row, column).text = '---'
     row += 1
 
 
