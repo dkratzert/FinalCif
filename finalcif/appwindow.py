@@ -1139,9 +1139,8 @@ class AppWindow(QMainWindow):
             return
         if not self.running_inside_unit_test:
             self.open_report_document(report_filename, multi_table_document)
-            print('dbg> disabled temporarily!')
             # Save report and other files to a zip file:
-            # self.zip_report(report_filename)
+            self.zip_report(report_filename)
 
     def report_without_template(self) -> bool:
         """Check whether the report is generated from a template or hard-coded"""
@@ -1152,7 +1151,7 @@ class AppWindow(QMainWindow):
         from finalcif.report.archive_report import ArchiveReport
         zipfile = self.cif.finalcif_file.with_suffix('.zip')
         if zipfile.exists():
-            zipname = next_path(zipfile.stem + '-%s.zip')
+            zipname = next_path(str(zipfile.parent / Path(zipfile.stem + '-%s.zip')))
             zipfile = zipfile.parent.joinpath(zipname)
         with suppress(Exception):
             arc = ArchiveReport(zipfile)

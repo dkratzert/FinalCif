@@ -136,14 +136,14 @@ def next_path(path_pattern: str) -> str:
     """
     i = 1
     # First do an exponential search
-    while path.exists(path_pattern % i):
+    while os.path.exists(path_pattern % i):
         i = i * 2
     # Result lies somewhere in the interval (i/2..i]
     # We call this interval (a..b] and narrow it down until a + 1 = b
     a, b = (i // 2, i)
     while a + 1 < b:
         c = (a + b) // 2  # interval midpoint
-        a, b = (c, b) if path.exists(path_pattern % c) else (a, c)
+        a, b = (c, b) if os.path.exists(path_pattern % c) else (a, c)
     return path_pattern % b
 
 
