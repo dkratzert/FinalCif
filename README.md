@@ -18,7 +18,7 @@ For tables from multiple CIF files, you may want to use the program [multitable]
 You only need them if you want to make report tables that differ from the default ones.
 - [A template with everything in](https://github.com/dkratzert/FinalCif/raw/master/finalcif/template/template_text.docx)
 - [A template without the report text](https://github.com/dkratzert/FinalCif/raw/master/finalcif/template/template_without_text.docx)
-- [A template for a multi-CIF table](https://github.com/dkratzert/FinalCif/blob/e887e52d009632646a22f5a059a9738c1e8f4c3b/finalcif/template/template_for_multitable.docx).
+- [A template for a multi-CIF table](https://github.com/dkratzert/FinalCif/raw/master/finalcif/template/template_for_multitable.docx).
 
 **Recent Changes**
 
