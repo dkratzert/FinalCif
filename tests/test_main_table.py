@@ -81,7 +81,6 @@ class TestMainTableFieldBehavior(unittest.TestCase):
     def test_Crystallographer_in_equipment_list(self):
         self.assertEqual('Crystallographer Details', self.myapp.ui.EquipmentTemplatesListWidget.item(1).text())
 
-    @pytest.mark.skip('TODO: this tes can run ages')
     def test_load_equipment(self):
         self.myapp.equipment.import_equipment_from_file(str(data.parent / 'test-data/Crystallographer_Details.cif'))
         # make sure contact author is selected
