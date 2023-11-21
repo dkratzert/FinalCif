@@ -6,8 +6,11 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QFileDialog, QListWidgetItem
 
-with suppress(ImportError):
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
     from finalcif.appwindow import AppWindow
+
 from finalcif.tools.settings import FinalCifSettings
 
 
@@ -39,7 +42,7 @@ class ReportTemplates:
             print('This templates is already in the list.')
             return
         if not Path(templ_path).exists() or not Path(templ_path).is_file() \
-            or not Path(templ_path).name.endswith('.docx'):
+                or not Path(templ_path).name.endswith('.docx'):
             self.app.status_bar.show_message('This template does not exist or is unreadable.', 10)
             print('This template does not exist or is unreadable.', Path(templ_path).resolve())
             return

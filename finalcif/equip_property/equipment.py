@@ -191,7 +191,7 @@ class Equipment:
         self.app.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
         print('saved')
 
-    def import_equipment_from_file(self, filename='') -> None:
+    def import_equipment_from_file(self, filename: Path | str = '') -> None:
         """
         Import an equipment entry from a cif file.
         """

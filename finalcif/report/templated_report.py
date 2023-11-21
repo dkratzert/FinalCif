@@ -21,8 +21,7 @@ from finalcif.report.references import SAINTReference, SHELXLReference, SadabsTw
 from finalcif.report.report_text import math_to_word, gstr, format_radiation, get_inf_article, MachineType
 from finalcif.report.symm import SymmetryElement
 from finalcif.tools.misc import isnumeric, this_or_quest, timessym, angstrom, protected_space, less_or_equal, \
-    halbgeviert, \
-    minus_sign, ellipsis_mid
+    halbgeviert, minus_sign, ellipsis_mid
 from finalcif.tools.options import Options
 from finalcif.tools.space_groups import SpaceGroups
 

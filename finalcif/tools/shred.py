@@ -4,7 +4,6 @@ from unittest.mock import Mock
 
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.gui.dialogs import show_general_warning
-from finalcif.gui.finalcif_gui_ui import Ui_FinalCifWindow
 from finalcif.tools.statusbar import StatusBar
 
 

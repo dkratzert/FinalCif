@@ -23,7 +23,9 @@ from finalcif.gui.finalcif_gui_ui import Ui_FinalCifWindow
 from finalcif.tools.misc import grouper
 from finalcif.tools.settings import FinalCifSettings
 
-with suppress(ImportError):
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
     from finalcif.appwindow import AppWindow
 
 

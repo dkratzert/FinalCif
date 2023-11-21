@@ -16,7 +16,9 @@ from finalcif.tools.settings import FinalCifSettings
 from finalcif.tools import misc
 
 
-with suppress(ImportError):
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
     from finalcif.appwindow import AppWindow
 
 

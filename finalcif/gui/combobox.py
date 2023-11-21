@@ -5,7 +5,9 @@ from PyQt5 import QtCore
 from PyQt5.QtCore import Qt, QObject, QEvent
 from PyQt5.QtWidgets import QComboBox, QSizePolicy, QAction
 
-with suppress(ImportError):
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
     from finalcif.gui.custom_classes import MyCifTable
 
 

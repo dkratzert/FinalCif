@@ -217,7 +217,7 @@ def find_line(inputlist: list, regex: str) -> int:
     return 0
 
 
-def this_or_quest(value: str) -> str:
+def this_or_quest(value: Union[str, int, float, None]) -> Union[str, int, float]:
     """
     Returns the value or a question mark if the value is None.
     """
