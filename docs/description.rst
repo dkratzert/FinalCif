@@ -48,6 +48,7 @@ other programs like ShelXle.
 
 **Files used by FinalCif**
 
+For CIF files from Bruker data, FinalCif needs the following files in the same folder as the CIF file:
 * SADBABS .abs
 * SAINT _0m._ls, _01._ls
 * Bruker _0m.p4p
