@@ -3,10 +3,13 @@ from enum import IntEnum
 from functools import cache
 from typing import TYPE_CHECKING
 
+from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSignal, Qt, QObject, QEvent, QSize
 from PyQt5.QtGui import QTextOption, QFontMetrics, QContextMenuEvent, QFont, QColor
 from PyQt5.QtWidgets import QPlainTextEdit, QFrame, QApplication, QAbstractScrollArea
+from numpy import random
 
+from finalcif.gui.edit_button import FloatingButtonWidget
 from finalcif.gui.new_key_dialog import NewKey
 
 if TYPE_CHECKING:
@@ -17,7 +20,6 @@ class Column(IntEnum):
     CIF = 0
     DATA = 1
     EDIT = 2
-    BUTTON = 3
 
 
 class MyQPlainTextEdit(QPlainTextEdit):
@@ -33,9 +35,9 @@ class MyQPlainTextEdit(QPlainTextEdit):
         """
         Plaintext edit field for most of the table cells.
         """
-        super().__init__(parent, *args, **kwargs)
-        self.setParent(parent)
+        super().__init__(parent=parent, *args, **kwargs)
         self.cif_key = ''
+        self.edit_button = None
         font = QFont()
         font.setPointSize(self.document().defaultFont().pointSize() + 1)
         self.setFont(font)
@@ -91,7 +93,11 @@ class MyQPlainTextEdit(QPlainTextEdit):
 
     @property
     def row(self) -> int:
-        return self.parent.vheaderitems.index(self.cif_key)
+        return self.parent.indexAt(self.pos()).row()
+
+    @property
+    def column(self) -> int:
+        return self.parent.indexAt(self.pos()).column()
 
     def setBackground(self, color: QColor) -> None:
         """
@@ -125,6 +131,25 @@ class MyQPlainTextEdit(QPlainTextEdit):
             event.ignore()
             return True
         return QObject.eventFilter(self, widget, event)
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        if self.edit_button and self.column == Column.EDIT:
+            self.edit_button.update_position()
+
+    def enterEvent(self, a0):
+        super().enterEvent(a0)
+        if self.column == Column.EDIT:
+            if not self.edit_button:
+                self.edit_button = FloatingButtonWidget(parent=self)
+                self.edit_button.floatingButtonClicked.connect(self._on_create_template)
+                self.edit_button.update_position()
+            self.edit_button.show()
+
+    def leaveEvent(self, a0):
+        super().leaveEvent(a0)
+        if self.edit_button and self.column == Column.EDIT:
+            self.edit_button.hide()
 
     def getText(self):
         return self.toPlainText()
@@ -198,3 +223,30 @@ class PlainTextEditTemplate(QPlainTextEdit):
             # Prevent extreme height for long text:
             size = QSize(100, 300)
         return size
+
+
+if __name__ == '__main__':
+    import sys
+    from PyQt5.QtWidgets import QApplication, QTableWidget, QTableWidgetItem
+
+    app = QApplication(sys.argv)
+    window = QTableWidget()
+    window.setColumnCount(3)
+    window.setRowCount(10)
+    # stretch the last table colum:
+    window.horizontalHeader().setStretchLastSection(True)
+    window.setHorizontalHeaderLabels(['CIF', 'Data', 'Edit'])
+    for row in range(10):
+        for col in range(3):
+            window.setCellWidget(row, col, MyQPlainTextEdit(window))
+            w = window.cellWidget(row, col)
+            if col == 2:
+                w.setText(f'Hello World {random.randint(0, 10000)} {random.randint(0, 10000)}')
+            w.setMinimumHeight(50)
+            w.setMinimumWidth(150)
+    window.resizeRowsToContents()
+    window.resizeColumnsToContents()
+    window.show()
+    window.setMinimumSize(600, 400)
+
+    sys.exit(app.exec_())
