@@ -11,12 +11,13 @@ from PyQt5.QtWidgets import QAbstractScrollArea, QTableWidget, \
 from finalcif.cif.text import retranslate_delimiter
 from finalcif.gui.combobox import MyComboBox
 from finalcif.gui.dialogs import show_keyword_help
+from finalcif.gui.edit_button import FloatingButtonWidget
 from finalcif.gui.mixins import ItemTextMixin
 from finalcif.gui.plaintextedit import MyQPlainTextEdit
 
 white = QColor(255, 255, 255)
 light_green = QColor(217, 255, 201)
-light_blue = QColor(220, 232, 247)
+light_blue = QColor(249, 249, 249)
 blue = QColor(102, 150, 179)
 yellow = QColor(250, 247, 150)  # #faf796
 
@@ -25,7 +26,6 @@ class Column(IntEnum):
     CIF = 0
     DATA = 1
     EDIT = 2
-    BUTTON = 3
 
 
 DEBUG = False
