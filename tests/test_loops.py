@@ -101,7 +101,6 @@ class TestLoopsMove(unittest.TestCase):
         # TODO: make tests where changes file is active:
         (data / 'examples/1979688-finalcif_changes.cif').unlink(missing_ok=True)
         self.myapp = AppWindow(file=self.testcif)
-        self.myapp.hide()  # For full screen view
         self.myapp.ui.LoopsPushButton.click()
 
     def tearDown(self) -> None:

@@ -1,12 +1,10 @@
-from contextlib import suppress
 from enum import IntEnum
-from functools import cache
+from enum import IntEnum
 from typing import TYPE_CHECKING
 
-from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSignal, Qt, QObject, QEvent, QSize
 from PyQt5.QtGui import QTextOption, QFontMetrics, QContextMenuEvent, QFont, QColor
-from PyQt5.QtWidgets import QPlainTextEdit, QFrame, QApplication, QAbstractScrollArea
+from PyQt5.QtWidgets import QPlainTextEdit, QFrame, QAbstractScrollArea
 from numpy import random
 
 from finalcif.gui.edit_button import FloatingButtonWidget
@@ -55,7 +53,6 @@ class MyQPlainTextEdit(QPlainTextEdit):
         return self.toPlainText()
 
     @property
-    @cache
     def fontmetric(self):
         return QFontMetrics(self.document().defaultFont())
 
@@ -118,7 +115,9 @@ class MyQPlainTextEdit(QPlainTextEdit):
         """
         if color:
             self.setBackground(color)
-        if self.cif_key in self.to_be_shortened and column == Column.CIF:
+        if not text:
+            return
+        if column == Column.CIF and self.cif_key in self.to_be_shortened:
             self.setPlainText(f'{text[:300]} [...]')
         else:
             self.setPlainText(text)
@@ -146,7 +145,7 @@ class MyQPlainTextEdit(QPlainTextEdit):
                 self.edit_button.update_position()
             self.edit_button.show()
 
-    def leaveEvent(self, a0):
+    def leaveEvent(self, a0: QEvent) -> None:
         super().leaveEvent(a0)
         if self.edit_button and self.column == Column.EDIT:
             self.edit_button.hide()
@@ -227,7 +226,7 @@ class PlainTextEditTemplate(QPlainTextEdit):
 
 if __name__ == '__main__':
     import sys
-    from PyQt5.QtWidgets import QApplication, QTableWidget, QTableWidgetItem
+    from PyQt5.QtWidgets import QApplication, QTableWidget
 
     app = QApplication(sys.argv)
     window = QTableWidget()
