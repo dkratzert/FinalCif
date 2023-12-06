@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING
 from PyQt5.QtCore import pyqtSignal, Qt, QObject, QEvent, QSize
 from PyQt5.QtGui import QTextOption, QFontMetrics, QContextMenuEvent, QFont, QColor
 from PyQt5.QtWidgets import QPlainTextEdit, QFrame, QAbstractScrollArea
-from numpy import random
 
 from finalcif.gui.edit_button import FloatingButtonWidget
 from finalcif.gui.new_key_dialog import NewKey
@@ -226,6 +225,7 @@ class PlainTextEditTemplate(QPlainTextEdit):
 
 if __name__ == '__main__':
     import sys
+    import random
     from PyQt5.QtWidgets import QApplication, QTableWidget
 
     app = QApplication(sys.argv)
