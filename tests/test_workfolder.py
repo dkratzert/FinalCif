@@ -39,6 +39,7 @@ class TestFileIsOpened(unittest.TestCase):
     def test_save_action(self):
         self.myapp.save_current_cif_file()
         self.assertEqual(True, (data / 'examples/work/cu_BruecknerJK_153F40_0m-finalcif.cif').exists())
+        self.myapp.ui.trackChangesCifCheckBox.setChecked(False)
 
 
 class TestWorkfolder(unittest.TestCase):
@@ -61,6 +62,7 @@ class TestWorkfolder(unittest.TestCase):
         self.testcif.with_suffix('.2fcf').unlink(missing_ok=True)
         (data / 'testcif_file.cif').unlink(missing_ok=True)
         (data / 'examples/work/cu_BruecknerJK_153F40_0m-finalcif_changes.cif').unlink(missing_ok=True)
+        self.myapp.ui.trackChangesCifCheckBox.setChecked(False)
         self.myapp.close()
 
     def key_row(self, key: str) -> int:
@@ -355,6 +357,7 @@ class TestWorkfolderOtherCifName(unittest.TestCase):
         self.testcif.with_suffix('.lst').unlink(missing_ok=True)
         self.testcif.with_suffix('.2fcf').unlink(missing_ok=True)
         (data / 'testcif_file.cif').unlink(missing_ok=True)
+        self.myapp.ui.trackChangesCifCheckBox.setChecked(False)
         self.myapp.close()
 
     def cell_text(self, key: str, col: int) -> str:
