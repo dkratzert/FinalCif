@@ -57,10 +57,12 @@ class PlatonRunner(QtCore.QObject):
     def _monitor_output_log(self):
         while not self.is_stopped:
             self.tick.emit('#')
-            time.sleep(1)
+            time.sleep(0.3)
             try:
                 log_file = self.cif_file.with_suffix('.chk').read_text('latin1', errors='ignore')
                 if 'Unresolved or to be Checked Issue' in log_file:
+                    self._stop_program()
+                if '! Congratulations !' in log_file:
                     self._stop_program()
             except FileNotFoundError:
                 break
