@@ -197,6 +197,8 @@ order = [
     '_exptl_special_details',
 
     '_diffrn_ambient_temperature',
+    '_diffrn_ambient_temp',        # This is PDBx/mmCIF
+    '_diffrn_ambient_temp_esd',    # This is PDBx/mmCIF
     '_diffrn_ambient_environment',
     '_diffrn_radiation_type',
     '_diffrn_radiation_wavelength',
@@ -221,6 +223,7 @@ order = [
     '_diffrn_measurement_specimen_support',
     '_diffrn_measurement_specimen_adhesive',
     '_diffrn_measurement_details',
+    '_diffrn_measurement_bruker_total_exposure_time',
     '_diffrn_reflns_number',
     '_diffrn_reflns_av_unetI/netI',
     '_diffrn_reflns_av_R_equivalents',

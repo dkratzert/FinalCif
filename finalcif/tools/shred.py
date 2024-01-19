@@ -99,7 +99,7 @@ class ShredCIF():
         """
         if not self._cif.res_file_data:
             self._statusbar.show_message('No .res file data found!')
-        if not self._cif.hkl_file:
+        if not self._cif.hkl_file and isinstance(self._statusbar.current_message, str):
             self._statusbar.show_message(self._statusbar.current_message + '\nNo .hkl file data found!')
         if not any([self._cif.res_file_data, self._cif.hkl_file]):
             self._statusbar.show_message('No .res and .hkl file data found!')

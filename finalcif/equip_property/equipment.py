@@ -1,6 +1,7 @@
 from bisect import bisect
 from pathlib import Path
 from typing import List, Dict
+from typing import TYPE_CHECKING
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QListWidgetItem
@@ -14,8 +15,6 @@ from finalcif.gui.dialogs import show_general_warning, cif_file_open_dialog, cif
 from finalcif.tools import misc
 from finalcif.tools.misc import include_equipment_imports
 from finalcif.tools.settings import FinalCifSettings
-
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from finalcif.appwindow import AppWindow
@@ -70,14 +69,15 @@ class Equipment:
                                                              item_name=self.selected_template_name())
         if self.app.ui.cif_main_table.vheaderitems:
             for key in equipment:
+                value = equipment[key]
                 if key not in self.app.ui.cif_main_table.vheaderitems:
                     # Key is not in the main table:
-                    self.app.add_row(key, equipment[key], at_start=False,
+                    self.app.add_row(key, value, at_start=False,
                                      position=bisect(self.app.ui.cif_main_table.vheaderitems, key))
                 # Key is already there:
                 self.app.ui.cif_main_table.setText(key, Column.CIF, txt='?')
-                self.app.ui.cif_main_table.setText(key, Column.DATA, txt=equipment[key], color=light_green)
-                self.app.ui.cif_main_table.setText(key, Column.EDIT, txt=equipment[key])
+                self.app.ui.cif_main_table.setText(key, Column.DATA, txt=value, color=light_green)
+                self.app.ui.cif_main_table.setText(key, Column.EDIT, txt=value)
         else:
             print('Empty main table!')
 
