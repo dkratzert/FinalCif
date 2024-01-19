@@ -1960,7 +1960,7 @@ class AppWindow(QMainWindow):
         if value is None or value == '?':
             strval = '?'
         else:
-            strval = gemmi.cif.as_string(value).strip()
+            strval = gemmi.cif.as_string(value).strip('\n\r\t')
         if not key:
             strval = ''
         # All regular linedit fields:
