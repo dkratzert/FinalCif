@@ -1,5 +1,6 @@
 FinalCif recent changes
 -----------------------
+* v132 Startup speed improved a bit. Selection of main table rows improved.
 * v131 Added an edit button to main table text fields so that the text templates can be reached easier.
 * v130 Improved handling of reports from templates. All CIF blocks from a multi-CIF are now accessible in a template.
        Also, all atoms, bonds and angles are accessible. Refer to the manual for details.
