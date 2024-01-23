@@ -1,9 +1,10 @@
 from enum import IntEnum
 from typing import TYPE_CHECKING
 
+from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSignal, Qt, QObject, QEvent, QSize
 from PyQt5.QtGui import QTextOption, QFontMetrics, QContextMenuEvent, QFont, QColor
-from PyQt5.QtWidgets import QPlainTextEdit, QFrame, QApplication, QAbstractScrollArea
+from PyQt5.QtWidgets import QPlainTextEdit, QFrame, QAbstractScrollArea
 
 from finalcif.gui.edit_button import FloatingButtonWidget
 from finalcif.gui.new_key_dialog import NewKey
@@ -142,6 +143,11 @@ class MyQPlainTextEdit(QPlainTextEdit):
                 self.edit_button.floatingButtonClicked.connect(self._on_create_template)
                 self.edit_button.update_position()
             self.edit_button.show()
+
+    def event(self, e: QtCore.QEvent):
+        if e.type() == QtCore.QEvent.InputMethodQuery:
+            self.parent.setCurrentCell(self.row, self.column)
+        return super().event(e)
 
     def leaveEvent(self, a0: QEvent) -> None:
         super().leaveEvent(a0)
