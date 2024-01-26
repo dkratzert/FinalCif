@@ -50,9 +50,8 @@ from finalcif.gui.vrf_classes import MyVRFContainer, VREF
 from finalcif.template.templates import ReportTemplates
 from finalcif.tools.download import MyDownloader
 from finalcif.tools.dsrmath import my_isnumeric
-from finalcif.tools.misc import next_path, celltxt, to_float, cif_to_header_label, grouper, is_database_number, \
-    file_age_in_days, open_file, \
-    strip_finalcif_of_name
+from finalcif.tools.misc import (next_path, celltxt, to_float, cif_to_header_label, grouper, is_database_number,
+                                 open_file, strip_finalcif_of_name, file_age_in_days)
 from finalcif.tools.options import Options
 from finalcif.tools.platon import PlatonRunner
 from finalcif.tools.settings import FinalCifSettings
