@@ -13,9 +13,8 @@ class MyEQTableWidget(QTableWidget, ItemTextMixin):
     """
 
     def __init__(self, parent: QTableWidget = None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super().__init__(parent, *args, **kwargs)
         self.parent = parent
-        self.setParent(parent)
         self.setWordWrap(QTextOption.WrapAtWordBoundaryOrAnywhere)
 
     def eventFilter(self, widget: QObject, event: QEvent):

@@ -5,7 +5,6 @@ class MyMainStackedWidget(QStackedWidget):
     def __init__(self, parent):
         super().__init__(parent)
         self.parent = parent
-        self.setParent(parent)
 
     def got_to_main_page(self):
         self.setCurrentIndex(0)

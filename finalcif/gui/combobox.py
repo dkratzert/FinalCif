@@ -17,10 +17,9 @@ class MyComboBox(QComboBox):
     """
     textTemplate = QtCore.pyqtSignal(int)
 
-    def __init__(self, parent=None):
+    def __init__(self, parent: 'MyCifTable' = None):
         super().__init__(parent)
         self.parent: 'MyCifTable' = parent
-        self.setParent(parent)
         self.cif_key = ''
         self.setFocusPolicy(Qt.StrongFocus)
         self.setSizeAdjustPolicy(QComboBox.AdjustToMinimumContentsLength)

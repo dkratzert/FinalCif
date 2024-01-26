@@ -185,7 +185,6 @@ class PlainTextEditTemplate(QPlainTextEdit):
         :param minheight: minimum height of the widget.
         """
         super().__init__(parent, *args, **kwargs)
-        self.setParent(parent)
         self.cif_key = ''
         self.parent = parent
         self.setFocusPolicy(Qt.StrongFocus)
