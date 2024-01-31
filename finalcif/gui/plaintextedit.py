@@ -83,8 +83,9 @@ class MyQPlainTextEdit(QPlainTextEdit):
         """
         Copies the content of a field.
         """
+        from PyQt5 import QtWidgets
         if hasattr(self.parent, 'vheaderitems'):
-            clipboard = QApplication.clipboard()
+            clipboard = QtWidgets.QApplication.clipboard()
             clipboard.setText(self.cif_key)
 
     @property
