@@ -335,7 +335,7 @@ def populate_main_table_values(main_table: Table, cif: CifContainer, column=1, r
     row += 1
     add_table_value(cif, main_table, '_exptl_crystal_F_000', row, column)
     try:
-        completeness = f"{round(float(cif['_diffrn_measured_fraction_theta_full']) * 100, 1):.1f} %"
+        completeness = f"{round(float(cif['_diffrn_measured_fraction_theta_max']) * 100, 1):.1f} %"
     except ValueError:
         completeness = '?'
     row += 1
@@ -486,9 +486,9 @@ def _goof(main_table: Table) -> None:
 
 def _completeness(cif, main_table: Table) -> None:
     p = paragraph(main_table)
-    theta_full = cif['_diffrn_reflns_theta_full']
-    if theta_full:
-        p.add_run(f'Completeness to \n{theta_symbol} = {theta_full}{degree_sign}')
+    theta_max = cif['_diffrn_reflns_theta_max']
+    if theta_max:
+        p.add_run(f'Completeness to \n{theta_symbol} = {theta_max}{degree_sign}')
     else:
         p.add_run('Completeness')
 
