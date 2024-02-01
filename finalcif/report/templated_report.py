@@ -572,6 +572,7 @@ class TemplatedReport():
                    'r_sigma'                : this_or_quest(cif['_diffrn_reflns_av_unetI/netI']),
                    'completeness'           : self.get_completeness(cif),
                    'theta_full'             : cif['_diffrn_reflns_theta_full'],
+                   'theta_max'              : cif['_diffrn_reflns_theta_max'],
                    'data'                   : this_or_quest(cif['_refine_ls_number_reflns']),
                    'restraints'             : this_or_quest(cif['_refine_ls_number_restraints']),
                    'parameters'             : this_or_quest(cif['_refine_ls_number_parameters']),
