@@ -17,7 +17,7 @@ from finalcif.gui.plaintextedit import MyQPlainTextEdit
 
 white = QColor(255, 255, 255)
 light_green = QColor(217, 255, 201)
-light_blue = QColor(249, 249, 249)
+light_blue = QColor(244, 244, 249)
 blue = QColor(102, 150, 179)
 yellow = QColor(250, 247, 150)  # #faf796
 
