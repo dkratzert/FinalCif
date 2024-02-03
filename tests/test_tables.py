@@ -1,33 +1,42 @@
+import os
+from unittest.mock import Mock
+
+from finalcif.cif.cif_file_io import CifContainer
+from finalcif.report.tables import make_report_from
+
+os.environ["RUNNING_TEST"] = 'True'
 import unittest
 from pathlib import Path
 
+import docx
 from docx import Document
 from docx.enum.shape import WD_INLINE_SHAPE
 from docx.shape import InlineShapes
 from docx.shared import Cm
 from docx.table import Table
+from packaging.version import Version
 
 from finalcif import VERSION
 from finalcif.appwindow import AppWindow
-# noinspection PyUnresolvedReferences
-from finalcif.appwindow import app
+
+data = Path('tests')
 
 
-class TablesTestMixin():
+class TablesTestCase(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.testcif = Path('tests/examples/1979688.cif').absolute()
-        self.myapp = AppWindow(self.testcif, unit_test=True)
+        self.testcif = (data / 'examples/1979688.cif').absolute()
+        self.myapp = AppWindow(file=self.testcif)
         self.myapp.ui.HAtomsCheckBox.setChecked(False)
         self.myapp.ui.ReportTextCheckBox.setChecked(False)
         self.myapp.ui.PictureWidthDoubleSpinBox.setValue(0.0)
         # make sure to use no template:
         self.myapp.ui.docxTemplatesListWidget.setCurrentRow(0)
-        self.myapp.running_inside_unit_test = True
-        self.myapp.hide()
+        # self.myapp.show()
         self.reportdoc = self.myapp.cif.finalcif_file_prefixed(prefix='report_', suffix='-finalcif.docx')
         self.report_zip = self.myapp.cif.finalcif_file_prefixed(prefix='', suffix='-finalcif.zip')
-        self.myapp.hide()
+        self.myapp.ui.PictureWidthDoubleSpinBox.setValue(7.43)
+        self.myapp.select_report_picture(Path('finalcif/icon/finalcif.png'))
 
     def tearDown(self) -> None:
         self.myapp.cif.finalcif_file.unlink(missing_ok=True)
@@ -37,18 +46,6 @@ class TablesTestMixin():
         self.myapp.ui.HAtomsCheckBox.setChecked(False)
         self.myapp.ui.PictureWidthDoubleSpinBox.setValue(7.5)
         self.myapp.close()
-
-
-class TablesTestCase(TablesTestMixin, unittest.TestCase):
-
-    def setUp(self) -> None:
-        super().setUp()
-        self.myapp.ui.PictureWidthDoubleSpinBox.setValue(7.43)
-        self.myapp.select_report_picture(Path('finalcif/icon/finalcif.png'))
-
-    def test_save_report_works(self):
-        self.myapp.ui.SaveFullReportButton.click()
-        self.assertEqual(True, self.reportdoc.exists())
 
     def test_picture_has_correct_size(self):
         self.myapp.ui.SaveFullReportButton.click()
@@ -65,16 +62,36 @@ class TablesTestCase(TablesTestMixin, unittest.TestCase):
         self.assertEqual(WD_INLINE_SHAPE.PICTURE, shapes[0].type)
         self.assertEqual(Cm(7.5).emu, shapes[0].width)
 
+
+class TemplateReportWithoutAppTestCase(unittest.TestCase):
+    def setUp(self) -> None:
+        self.testcif = (data / 'examples/1979688.cif').absolute()
+        self.cif = CifContainer(self.testcif)
+        self.options = Mock()
+        self.options.picture_width = 7.43
+        self.options.without_h = False
+        self.text_template = Path('finalcif/template/template_text.docx').absolute()
+        self.template_without_text = Path('finalcif/template/template_without_text.docx').absolute()
+        self.reportdoc = self.cif.finalcif_file_prefixed(prefix='report_', suffix='-finalcif.docx')
+        self.report_zip = self.cif.finalcif_file_prefixed(prefix='', suffix='-finalcif.zip')
+        self.report_pic = Path('finalcif/icon/finalcif.png')
+
+    def tearDown(self) -> None:
+        self.reportdoc.unlink(missing_ok=True)
+        self.report_zip.unlink(missing_ok=True)
+
     def test_option_with_h(self):
-        self.myapp.ui.HAtomsCheckBox.setChecked(False)
-        self.myapp.ui.SaveFullReportButton.click()
+        make_report_from(options=self.options, cif=self.cif,
+                         output_filename=str(self.reportdoc), picfile=self.report_pic)
         doc = Document(self.reportdoc.absolute())
         table: Table = doc.tables[3]
         self.assertEqual('C1–H1', table.cell(row_idx=4, col_idx=0).text)
 
     def test_all_paragraphs(self):
-        self.myapp.ui.SaveFullReportButton.click()
+        make_report_from(options=self.options, cif=self.cif,
+                         output_filename=str(self.reportdoc), picfile=self.report_pic)
         doc = Document(self.reportdoc.absolute())
+        newline = '\n' if Version(docx.__version__) < Version('1.0') else ''
         result = ('Structure Tables\n'
                   '\n'
                   '\n'
@@ -102,9 +119,7 @@ class TablesTestCase(TablesTestMixin, unittest.TestCase):
                   'charge from The Cambridge Crystallographic Data Centre via '
                   'www.ccdc.cam.ac.uk/\u200bstructures. This report and the CIF file were '
                   'generated using FinalCif.[6]\n'
-                  '\n'
-                  'Table 1. Crystal data and structure refinement for cu_BruecknerJK_153F40_0m\n'
-                  '\n'
+                  f'{newline}Table 1. Crystal data and structure refinement for cu_BruecknerJK_153F40_0m\n{newline}'
                   '\n'
                   '\n'
                   'Refinement details for cu_BruecknerJK_153F40_0m\n'
@@ -140,20 +155,41 @@ class TablesTestCase(TablesTestMixin, unittest.TestCase):
         self.assertEqual(result, '\n'.join([x.text for x in doc.paragraphs]))
 
 
-class TablesNoPictureTestCase(TablesTestMixin, unittest.TestCase):
-
+class TablesNoPictureTestCase(unittest.TestCase):
     def setUp(self) -> None:
-        super().setUp()
+        self.testcif = (data / 'examples/1979688.cif').absolute()
+        self.cif = CifContainer(self.testcif)
+        self.options = Mock()
+        self.options.picture_width = 7.43
+        self.options.without_h = False
+        self.text_template = Path('finalcif/template/template_text.docx').absolute()
+        self.template_without_text = Path('finalcif/template/template_without_text.docx').absolute()
+        self.reportdoc = self.cif.finalcif_file_prefixed(prefix='report_', suffix='-finalcif.docx')
+        self.report_zip = self.cif.finalcif_file_prefixed(prefix='', suffix='-finalcif.zip')
+        self.report_pic = Path('finalcif/icon/finalcif.png')
+
+    def tearDown(self) -> None:
+        self.reportdoc.unlink(missing_ok=True)
+        self.report_zip.unlink(missing_ok=True)
 
     def test_save_report_works(self):
-        self.myapp.ui.SaveFullReportButton.click()
+        make_report_from(options=self.options, cif=self.cif,
+                         output_filename=str(self.reportdoc), picfile=None)
         self.assertEqual(True, self.reportdoc.exists())
 
     def test_picture_has_correct_size(self):
-        self.myapp.ui.SaveFullReportButton.click()
+        make_report_from(options=self.options, cif=self.cif,
+                         output_filename=str(self.reportdoc), picfile=None)
         doc = Document(self.reportdoc.resolve())
         shapes: InlineShapes = doc.inline_shapes
         self.assertEqual(0, len(shapes))
+
+    def test_picture_shape_exists(self):
+        make_report_from(options=self.options, cif=self.cif,
+                         output_filename=str(self.reportdoc), picfile=self.report_pic)
+        doc = Document(self.reportdoc.resolve())
+        shapes: InlineShapes = doc.inline_shapes
+        self.assertEqual(1, len(shapes))
 
 
 if __name__ == '__main__':

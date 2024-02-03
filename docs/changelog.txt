@@ -1,5 +1,16 @@
 FinalCif recent changes
 -----------------------
+* v132 Startup speed improved a bit. Selection of main table rows improved.
+* v131 Added an edit button to main table text fields so that the text templates can be reached easier.
+* v130 Improved handling of reports from templates. All CIF blocks from a multi-CIF are now accessible in a template.
+       Also, all atoms, bonds and angles are accessible. Refer to the manual for details.
+* v129 Improved program executable which can now be pinned to the taskbar. Updated updater executable.
+* v128 Added import popup-Window for the import of an additional CIF for selection of keys and loops to import.
+       Loops are now deletable in the loop editor. The main table shows all entries now, even hkl file data.
+* v127 Fixed bug that a multi-CIF could not be created by appending another CIF. Finally fixed memory leak in tests.
+* v126 Improved handling of PLATON for local Checkcif. The output windows of PLATON is now visible, but closes automatically
+       when Checkcif is finished. Fixed behavior of FinalCif when run from within ShelXle. The commandline arguments
+       are now handled correctly.
 * v125 Fixed potential crash in p4p file reader. The distribution architecture of the application was changed so that
        virus scanners should detect FinalCif as malicious software less often.
 * v124 Exchanged position of property templates and report options. Added all hard-coded properties to the

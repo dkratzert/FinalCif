@@ -4,8 +4,8 @@ from PyQt5.QtWidgets import QDialog, QFrame, QHBoxLayout, QLabel, QPushButton, Q
 
 
 class QHLine(QFrame):
-    def __init__(self):
-        super(QHLine, self).__init__()
+    def __init__(self, parent, *args, **kwargs):
+        super().__init__(parent, *args, **kwargs)
         self.setFrameShape(QFrame.HLine)
         # self.setFrameShadow(QFrame.Sunken)
         # gives a black line:
@@ -83,7 +83,7 @@ class MyVRFContainer(QWidget):
         # self.setStyleSheet('QWidget { border: 2px solid black }')
         self.mainVLayout.setContentsMargins(0, 0, 0, 0)
         self.mainVLayout.setSpacing(0)
-        self.mainVLayout.addWidget(QHLine())
+        self.mainVLayout.addWidget(QHLine(self))
         # The button to get help for the respective alert:
         self.helpbutton = QPushButton('Help')
         self.helpbutton.clicked.connect(self.show_help)

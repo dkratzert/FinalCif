@@ -4,6 +4,9 @@
 #   this notice you can do whatever you want with this stuff. If we meet some day,
 #   and you think this stuff is worth it, you can buy me a beer in return.
 #   ----------------------------------------------------------------------------
+import os
+
+os.environ['RUNNING_TEST'] = 'True'
 import unittest
 
 import gemmi
@@ -125,6 +128,7 @@ class TestHeavyUtf8(unittest.TestCase):
 
 class TestLongTextinField(unittest.TestCase):
     def setUp(self):
+        os.environ["RUNNING_TEST"] = 'True'
         self.w = QtWidgets.QMainWindow()
         self.table = MyCifTable()
         self.w.setCentralWidget(self.table)
@@ -136,10 +140,9 @@ class TestLongTextinField(unittest.TestCase):
         self.w.show()
 
     def tearDown(self) -> None:
-        self.table.deleteLater()
-        del self.table
-        self.w.deleteLater()
-        del self.w
+        self.w.close()
+        self.table.close()
+        app.quit()
 
     def test_long_text_in_texedit_and_gstr(self):
         txt = ('This is a much longer text, because I want to see what this method does with text '

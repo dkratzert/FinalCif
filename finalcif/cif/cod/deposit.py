@@ -299,7 +299,7 @@ class CODdeposit():
         data = self._enrich_upload_data(author_email, author_name, data, deposition_type, embargo_time)
         files = self._get_files_data_for_upload()
         if 'hkl' not in files and not self.cif.hkl_file \
-            and not show_ok_cancel_warning('You are attempting to upload a CIF without hkl data.\n'
+            and not show_ok_cancel_warning(self.ui.Mainwidget, 'You are attempting to upload a CIF without hkl data.\n'
                                            'Do you really want to proceed?'):
             self.ui.depositOutputTextBrowser.setText('Deposition aborted.')
             return
@@ -386,14 +386,14 @@ class CODdeposit():
             cif = CifContainer(file)
             list_code = cif['_shelx_refln_list_code']
             if list_code != '4':
-                show_general_warning('Only plain hkl or fcf (LIST 4 style) files should be uploaded.')
+                show_general_warning(self.ui.Mainwidget, 'Only plain hkl or fcf (LIST 4 style) files should be uploaded.')
                 return
             self.hkl_file = io.StringIO(Path(file).read_text())
             self.hkl_file.name = Path(file).name
         elif file == '':
             self.hkl_file = None
         else:
-            show_general_warning('Only plain hkl or fcf (LIST 4 style) files should be uploaded.')
+            show_general_warning(self.ui.Mainwidget, 'Only plain hkl or fcf (LIST 4 style) files should be uploaded.')
 
 
 if __name__ == '__main__':

@@ -8,9 +8,8 @@
 import re
 from collections import namedtuple
 from contextlib import suppress
-from functools import cache
 from pathlib import Path
-from typing import Dict, List, Tuple, Union, Generator, Type
+from typing import Dict, List, Tuple, Union, Generator
 
 import gemmi
 from gemmi.cif import as_string, Document, Loop
@@ -127,7 +126,10 @@ class CifContainer():
     def _on_load(self) -> None:
         # will not ok with non-ascii characters in the res file:
         self.chars_ok = True
-        self.doc.check_for_duplicates()
+        try:
+            self.doc.check_for_duplicates()
+        except RuntimeError as e:
+            raise GemmiError(e)
         self.order = order
         self.dsr_used = DSRFind(self.res_file_data).dsr_used
         self.atomic_struct: gemmi.SmallStructure = gemmi.make_small_structure_from_block(self.block)
@@ -138,7 +140,6 @@ class CifContainer():
         self.check_hkl_min_max()
 
     @property
-    @cache
     def hkl_extra_info(self):
         return self._abs_hkl_details()
 
@@ -255,6 +256,13 @@ class CifContainer():
             return
         self.order_cif_keys()
         print('Saving to', Path(filename).resolve())
+        """
+        # For later gemmi versions:
+        options = gemmi.cif.WriteOptions()
+        options.prefer_pairs = True
+        options.compact = False
+        options.align_pairs = 33
+        options.align_loops = 30"""
         self.doc.write_file(str(filename), gemmi.cif.Style.Indent35)
 
     def order_cif_keys(self) -> None:
@@ -386,7 +394,7 @@ class CifContainer():
             return all_sadabs_items
         hkl = hkl.splitlines(keepends=False)[zero_reflection_position:]
         # html-embedded cif has ')' instead of ';':
-        hkl = [';' if x[:1] == ')' else x for x in hkl]
+        hkl = [';' if x.startswith(')') else x for x in hkl]
         # the keys have a blank char in front:
         hkl = [re.sub(r'^ _', '_', x) for x in hkl]
         hkl = 'data_hkldat\n' + '\n'.join(hkl)
@@ -425,7 +433,10 @@ class CifContainer():
         return zero_reflection_position
 
     def is_empty(self) -> bool:
-        if len(self.keys()) + len(self.loops) == 0:
+        """
+        Checks if the currebt CIF contains data, but this works only for single-CIFs!
+        """
+        if len(self.doc) < 2 and len(self.keys()) + len(self.loops) == 0:
             return True
         return False
 
@@ -582,10 +593,10 @@ class CifContainer():
         """
         crc_sum = 0
         try:
-            input_str = input_str.encode('cp1250', 'ignore')
+            bytes_str = input_str.encode('cp1250', 'ignore')
         except Exception:
-            input_str = input_str.encode('ascii', 'ignore')
-        for char in input_str:
+            bytes_str = input_str.encode('ascii', 'ignore')
+        for char in bytes_str:
             # print(char)
             if char > 32:  # ascii 32 is space character
                 crc_sum += char
@@ -600,8 +611,7 @@ class CifContainer():
         Renames data_ tags to the newname. Also _vrf tags are renamed accordingly.
         http://journals.iucr.org/services/cif/checking/checkfaq.html
         """
-        # Have to use ord(), because Python 3.6 has not str.isascii():
-        newname = ''.join([i for i in newname if ord(i) < 127])
+        newname = ''.join([i for i in newname if i.isascii()])
         self.block.name = newname
         for item in self.block:
             if item.pair is not None:
@@ -651,7 +661,7 @@ class CifContainer():
         part = self.block.find_loop('_atom_site_disorder_group')
         occ = self.block.find_loop('_atom_site_occupancy')
         u_eq = self.block.find_loop('_atom_site_U_iso_or_equiv')
-        atom = namedtuple('Atom', ('label', 'type', 'x', 'y', 'z', 'part', 'occ', 'u_eq'))
+        atom = namedtuple('atom', ('label', 'type', 'x', 'y', 'z', 'part', 'occ', 'u_eq'))
         for label, type, x, y, z, part, occ, u_eq in zip(labels, types, x, y, z,
                                                          part if part else ('0',) * len(labels),
                                                          occ if occ else ('1.000000',) * len(labels),
@@ -670,7 +680,7 @@ class CifContainer():
 
     @property
     def atoms_orth(self) -> Generator:
-        atom = namedtuple('Atom', ('label', 'type', 'x', 'y', 'z', 'part', 'occ', 'u_eq'))
+        atom = namedtuple('atom', ('label', 'type', 'x', 'y', 'z', 'part', 'occ', 'u_eq'))
         cell = self.atomic_struct.cell
         for at in self.atomic_struct.sites:
             x, y, z = at.orth(cell)
@@ -707,10 +717,10 @@ class CifContainer():
         return False
 
     @property
-    def cell(self) -> Type['cell']:
+    def cell(self):
         c = self.atomic_struct.cell
-        nt = namedtuple('cell', 'a, b, c, alpha, beta, gamma, volume')
-        return nt(c.a, c.b, c.c, c.alpha, c.beta, c.gamma, c.volume)
+        cell = namedtuple('cell', 'a, b, c, alpha, beta, gamma, volume')
+        return cell(c.a, c.b, c.c, c.alpha, c.beta, c.gamma, c.volume)
 
     def ishydrogen(self, label: str) -> bool:
         """
@@ -737,13 +747,31 @@ class CifContainer():
         dist = self.block.find_loop('_geom_bond_distance')
         symm = self.block.find_loop('_geom_bond_site_symmetry_2')
         publ_loop = self.block.find_loop('_geom_bond_publ_flag')
-        bond = namedtuple('Bond', ('label1', 'label2', 'dist', 'symm'))
+        bond = namedtuple('bond', ('label1', 'label2', 'dist', 'symm'))
         for label1, label2, dist, symm, publ in zip(label1, label2, dist, symm, publ_loop):
             if without_h and (self.ishydrogen(label1) or self.ishydrogen(label2)) or \
                     self.yes_not_set(publ, self._has_publ_flag_set(publ_loop)):
                 continue
             else:
                 yield bond(label1=label1, label2=label2, dist=dist, symm=self.checksymm(symm))
+
+    def bond_dist(self, pair: str) -> Union[float, None]:
+        for p in self.bonds():
+            if f'{p.label1}-{p.label2}' == pair:
+                return p.dist
+        return None
+
+    def angle(self, atoms: str) -> Union[float, None]:
+        for p in self.angles():
+            if f'{p.label1}-{p.label2}-{p.label3}' == atoms:
+                return p.angle_val
+        return None
+
+    def torsion(self, atoms: str) -> Union[float, None]:
+        for p in self.torsion_angles():
+            if f'{p.label1}-{p.label2}-{p.label3}-{p.label4}' == atoms:
+                return p.torsang
+        return None
 
     def _has_publ_flag_set(self, publ_loop: gemmi.cif.Column) -> bool:
         return any([x[0].lower() == 'y' for x in list(publ_loop) if x])
@@ -756,7 +784,7 @@ class CifContainer():
         symm1 = self.block.find_loop('_geom_angle_site_symmetry_1')
         symm2 = self.block.find_loop('_geom_angle_site_symmetry_3')
         publ_loop = self.block.find_loop('_geom_angle_publ_flag')
-        angle = namedtuple('Angle', ('label1', 'label2', 'label3', 'angle_val', 'symm1', 'symm2'))
+        angle = namedtuple('angle', ('label1', 'label2', 'label3', 'angle_val', 'symm1', 'symm2'))
         for label1, label2, label3, angle_val, symm1, symm2, publ in \
                 zip(label1, label2, label3, angle_val, symm1, symm2, publ_loop):
             if without_H and (
@@ -864,11 +892,11 @@ class CifContainer():
         for item in self.block:
             if item.pair is not None:
                 key, value = item.pair
-                if key.startswith('_shelx'):
-                    # No-one should edit shelx values:
-                    continue
-                if key == '_iucr_refine_instructions_details':
-                    continue
+                # if key.startswith('_shelx'):
+                #    # No-one should edit shelx values:
+                #    continue
+                # if key == '_iucr_refine_instructions_details':
+                #    continue
                 if self._is_centrokey(key):
                     continue
                 if not value or value == '?' or value == "'?'":
@@ -932,7 +960,8 @@ if __name__ == '__main__':
 
     c = CifContainer('test-data/DK_Zucker2_0m.cif')
     c.load_this_block(len(c.doc) - 1)
-    pp(list(c.torsion_angles()))
+    # pp(list(c.torsion_angles()))
+    print(c.bond_dist('C1-C2'))
     # pp(c.hkl_extra_info)
     # print(c.hkl_file)
     # print(c.hkl_as_cif)

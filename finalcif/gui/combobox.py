@@ -5,7 +5,9 @@ from PyQt5 import QtCore
 from PyQt5.QtCore import Qt, QObject, QEvent
 from PyQt5.QtWidgets import QComboBox, QSizePolicy, QAction
 
-with suppress(ImportError):
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
     from finalcif.gui.custom_classes import MyCifTable
 
 
@@ -15,10 +17,9 @@ class MyComboBox(QComboBox):
     """
     textTemplate = QtCore.pyqtSignal(int)
 
-    def __init__(self, parent=None):
+    def __init__(self, parent: 'MyCifTable' = None):
         super().__init__(parent)
         self.parent: 'MyCifTable' = parent
-        self.setParent(parent)
         self.cif_key = ''
         self.setFocusPolicy(Qt.StrongFocus)
         self.setSizeAdjustPolicy(QComboBox.AdjustToMinimumContentsLength)

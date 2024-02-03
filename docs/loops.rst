@@ -33,7 +33,7 @@ New authors can be saved as templates for future use. The templates can be expor
 The button "Add Author to CIF Loop" creates a loop or appends to an existing with the author information
 of the currently selected author. The author type, i.e. publ- or audit-author, is controlled by the selection
 of the corresponding tab. A template can be used for any author type.
-Further authors get appended to the list of authors with the same button. The order of authors can be changed any time
+Further aut hors get appended to the list of authors with the same button. The order of authors can be changed any time
 by right-click on a table row and "Move Row up/down".
 
 .. figure:: pics/finalcif_loops.png

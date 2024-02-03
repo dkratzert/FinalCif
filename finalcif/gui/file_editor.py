@@ -9,9 +9,9 @@ from PyQt5.QtWidgets import QWidget, QPlainTextEdit, QTextEdit
 
 
 class QLineNumberArea(QWidget):
-    def __init__(self, editor):
-        super().__init__(editor)
-        self.codeEditor = editor
+    def __init__(self, parent):
+        super().__init__(parent=parent)
+        self.codeEditor = parent
 
     def sizeHint(self):
         return QSize(self.editor.line_number_area_width(), 0)
@@ -94,10 +94,13 @@ class QCodeEditor(QPlainTextEdit):
 
 
 if __name__ == '__main__':
-    import sys
     from PyQt5.QtWidgets import QApplication
+    app = QApplication.instance()
+    if app is None:
+        app = QApplication([])
+    import sys
 
-    app = QApplication(sys.argv)
     codeEditor = QCodeEditor()
+    codeEditor.setPlainText('Foo bar')
     codeEditor.show()
     sys.exit(app.exec_())

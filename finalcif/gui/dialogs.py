@@ -4,9 +4,8 @@ import sys
 from pathlib import Path
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QMessageBox, QMainWindow, QSplashScreen, QFileDialog, QVBoxLayout, QTextEdit, \
-    QPushButton, QFrame
+from PyQt5.QtWidgets import QMessageBox, QMainWindow, QFileDialog, QVBoxLayout, QTextEdit, \
+    QPushButton, QFrame, QApplication
 
 from finalcif import VERSION
 
@@ -19,14 +18,14 @@ def do_update_program(version) -> None:
     ctypes.windll.shell32.ShellExecuteW(None, "runas", updater_exe, " ".join(args), None, 1)
 
 
-def unable_to_open_message(filepath: Path, not_ok: Exception) -> None:
+def unable_to_open_message(parent, filepath: Path, not_ok: Exception) -> None:
     """
     Shows a message if the current cif file can not be opened.
     """
     if "PYTEST_CURRENT_TEST" in os.environ:
         print('DBG> Running inside a pytest -> not showing error message.')
         return
-    info = QMessageBox()
+    info = QMessageBox(parent=parent)
     info.setIcon(QMessageBox.Information)
     print('Output from gemmi:', not_ok)
     try:
@@ -42,40 +41,40 @@ def unable_to_open_message(filepath: Path, not_ok: Exception) -> None:
             info.setInformativeText(f'"{filepath.name}"\n{not_ok}')
     else:
         info.setInformativeText(f'"{filepath.name}"\n{not_ok}')
+    info.setModal(True)
     info.show()
-    info.exec()
 
 
-def show_res_checksum_warning() -> None:
+def show_res_checksum_warning(parent) -> None:
     """
     A message box to display if the checksums do not agree.
     """
     if "PYTEST_CURRENT_TEST" in os.environ:
         print('DBG> Running inside a pytest -> not showing error message.')
         return
-    info = QMessageBox()
+    info = QMessageBox(parent=parent)
     info.setIcon(QMessageBox.Warning)
     info.setText('The "_shelx_res_checksum" is not consistent with the .res file content!\n\n'
                  'This error might originate from non-ascii Characters like Umlauts in you SHELX file.')
+    info.setModal(True)
     info.show()
-    info.exec()
 
 
-def show_hkl_checksum_warning() -> None:
+def show_hkl_checksum_warning(parent) -> None:
     """
     A message box to display if the checksums do not agree.
     """
     if "PYTEST_CURRENT_TEST" in os.environ:
         print('DBG> Running inside a pytest -> not showing error message.')
         return
-    info = QMessageBox()
+    info = QMessageBox(parent=parent)
     info.setIcon(QMessageBox.Warning)
     info.setText('The "_shelx_hkl_checksum" is not\nconsistent with the .hkl file content!')
+    info.setModal(True)
     info.show()
-    info.exec()
 
 
-def show_general_warning(warn_text: str = '', info_text: str = '', window_title=' ') -> None:
+def show_general_warning(parent, warn_text: str = '', info_text: str = '', window_title=' ') -> None:
     """
     A message box to display if the checksums do not agree.
     warn_text is displayed bold.
@@ -83,15 +82,22 @@ def show_general_warning(warn_text: str = '', info_text: str = '', window_title=
     """
     if not warn_text:
         return None
-    box = QMessageBox()
+    if "PYTEST_CURRENT_TEST" in os.environ:
+        print(f'DBG> Running inside a pytest -> not showing error message:\n{warn_text}\n{info_text}')
+        return None
+    box = QMessageBox(parent=parent)
     box.setTextFormat(Qt.AutoText)
     box.setWindowTitle(window_title)
     box.setTextInteractionFlags(Qt.TextBrowserInteraction)
     box.setText(warn_text)
+    box.setModal(True)
     if info_text:
         box.setInformativeText(info_text)
         box.setStyleSheet("QLabel{min-width:600 px; font-size: 14px;}")
-    box.exec()
+    box.show()
+    if parent is None:
+        box.exec()
+        box.close()
 
 
 def show_keyword_help(parent, helptext: str, title: str = ''):
@@ -100,8 +106,13 @@ def show_keyword_help(parent, helptext: str, title: str = ''):
     """
     nlines = len(helptext.splitlines())
     window = QMainWindow(parent=parent)
-    window.setWindowFlags(Qt.Tool)
     window.setWindowTitle(title)
+
+    def close_window(event):
+        if event.key() == Qt.Key_Escape:
+            window.close()
+
+    window.keyPressEvent = close_window
     widget = QFrame()
     layout = QVBoxLayout()
     button = QPushButton('close')
@@ -119,30 +130,30 @@ def show_keyword_help(parent, helptext: str, title: str = ''):
     textedit.setMinimumHeight(max([400, height]))
     window.move(300, 100)
     window.show()
-    window.raise_()
     button.clicked.connect(window.close)
 
 
-def show_ok_cancel_warning(warn_text: str = '') -> bool:
-    box = QMessageBox()
+def show_ok_cancel_warning(parent, warn_text: str = '') -> bool:
+    box = QMessageBox(parent=parent)
     box.setTextFormat(Qt.AutoText)
     box.setWindowTitle(" ")
     box.setTextInteractionFlags(Qt.TextBrowserInteraction)
     box.setText(warn_text)
     box.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
     box.setDefaultButton(QMessageBox.Ok)
-    box.exec()
+    box.setModal(True)
+    box.show()
     return box.result() == QMessageBox.Ok
 
 
-def show_update_warning(remote_version: int = 0) -> None:
+def show_update_warning(parent, remote_version: int = 0) -> None:
     """
     A message box to display if the checksums do not agree.
     """
     warn_text = "A newer version {} of FinalCif is available under: <br>" \
                 "<a href='https://dkratzert.de/finalcif.html'>" \
                 "https://dkratzert.de/finalcif.html</a>"
-    box = QMessageBox()
+    box = QMessageBox(parent)
     box.setTextFormat(Qt.AutoText)
     box.setWindowTitle(" ")
     box.setTextInteractionFlags(Qt.TextBrowserInteraction)
@@ -151,23 +162,24 @@ def show_update_warning(remote_version: int = 0) -> None:
         update_button = box.addButton('Update Now', QMessageBox.AcceptRole)
         update_button.clicked.connect(lambda: do_update_program(str(remote_version)))
     box.setText(warn_text.format(remote_version))
-    box.exec()
+    box.setModal(True)
+    box.show()
 
 
-def bad_z_message(z) -> None:
-    zinfo = QMessageBox()
+def bad_z_message(parent, z: float) -> None:
+    zinfo = QMessageBox(parent)
     zinfo.setIcon(QMessageBox.Information)
-    zinfo.setText('The number of formula units Z={:.0f} is probably wrong.'
-                  '\nYou may restart refinement with a correct value.'.format(z))
+    zinfo.setText(f'The number of formula units Z={z:.0f} is probably wrong.\n'
+                  f'You may restart refinement with a correct value.')
+    zinfo.setModal(True)
     zinfo.show()
-    zinfo.exec()
 
 
 def show_bug_found_warning(logfile) -> None:
     window = QMainWindow()
-    title = f'Congratulations, you found a bug in FinalCif!'
+    title = 'Congratulations, you found a bug in FinalCif!'
     text = (f'<br>Please send the file <br>'
-            f'<a href=file:{os.sep * 2}{logfile.resolve()}>{logfile.resolve()}</a> '
+            f'<a href={logfile.resolve()}>{logfile.resolve()}</a> '
             f'<br>to Daniel Kratzert:  '
             f'<a href="mailto:dkratzert@gmx.de?subject=FinalCif version {VERSION} crash report">'
             f'dkratzert@gmx.de</a><br>'
@@ -175,6 +187,8 @@ def show_bug_found_warning(logfile) -> None:
     box = QMessageBox(parent=window)
     box.setWindowTitle('Warning')
     box.setText(title)
+    box.setTextInteractionFlags(Qt.TextBrowserInteraction)
+    box.setTextFormat(Qt.AutoText)
     box.setInformativeText(text)
     box.exec()
     window.show()
@@ -186,24 +200,6 @@ def show_yes_now_question(title: str, question: str, parent=None) -> bool:
         return True
     else:
         return False
-
-
-def show_splash(text: str) -> QSplashScreen:
-    splash = QSplashScreen()
-    splash_font = QFont()
-    # splashFont.setFamily("Arial")
-    splash_font.setBold(True)
-    splash_font.setPixelSize(16)
-    splash_font.setStretch(120)
-    splash.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.SplashScreen)
-    splash = QSplashScreen()
-    splash.show()
-    splash.setStyleSheet("background-color:#fcc77c;")
-    splash.setFont(splash_font)
-    splash.setMinimumWidth(400)
-    splash.setMaximumHeight(100)
-    splash.showMessage(text, alignment=Qt.AlignCenter, )
-    return splash
 
 
 def cif_file_open_dialog(filter: str = "CIF file (*.cif)", last_dir='') -> str:
@@ -226,3 +222,31 @@ def cif_file_save_dialog(filename: str) -> str:
     dialog.selectFile(filename)
     filename, _ = dialog.getSaveFileName(None, 'Select file name', filename)
     return filename
+
+
+if __name__ == '__main__':
+    from PyQt5 import QtWidgets
+
+    app = QApplication.instance()
+    if app is None:
+        app = QApplication([])
+
+    window = QtWidgets.QMainWindow()
+    w = QtWidgets.QWidget()
+    window.setCentralWidget(w)
+    l = QtWidgets.QVBoxLayout()
+    w.setLayout(l)
+    # answer = show_yes_now_question(title='Delete templates', question='Fobar?', parent=w)
+    # bad_z_message(parent=w, z=3.0)
+    # show_update_warning(parent=w, remote_version=123)
+    # show_bug_found_warning(Path(r'C:\test.txt'))
+    # show_ok_cancel_warning(parent=w, warn_text='foobar')
+    # show_keyword_help(parent=w, helptext="This is a helptext", title='A Title')
+    # show_general_warning(parent=w, warn_text='Warning text', info_text='Info text', window_title='Title')
+    # show_hkl_checksum_warning(parent=w)
+    # show_res_checksum_warning(parent=w)
+    # unable_to_open_message(parent=w, not_ok=Exception('foo'), filepath=Path('C:/foo.txt'))
+    # do_update_program('127')
+    window.show()
+
+    app.exec_()

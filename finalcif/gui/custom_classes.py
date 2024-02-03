@@ -2,7 +2,7 @@ import re
 from enum import IntEnum
 from typing import List
 
-from PyQt5 import QtCore
+from PyQt5 import QtCore, QtGui
 from PyQt5.QtCore import QEvent, QObject, Qt
 from PyQt5.QtGui import QColor, QKeySequence, QBrush
 from PyQt5.QtWidgets import QAbstractScrollArea, QTableWidget, \
@@ -11,12 +11,13 @@ from PyQt5.QtWidgets import QAbstractScrollArea, QTableWidget, \
 from finalcif.cif.text import retranslate_delimiter
 from finalcif.gui.combobox import MyComboBox
 from finalcif.gui.dialogs import show_keyword_help
+from finalcif.gui.edit_button import FloatingButtonWidget
 from finalcif.gui.mixins import ItemTextMixin
 from finalcif.gui.plaintextedit import MyQPlainTextEdit
 
 white = QColor(255, 255, 255)
 light_green = QColor(217, 255, 201)
-light_blue = QColor(220, 232, 247)
+light_blue = QColor(244, 244, 249)
 blue = QColor(102, 150, 179)
 yellow = QColor(250, 247, 150)  # #faf796
 
@@ -25,7 +26,6 @@ class Column(IntEnum):
     CIF = 0
     DATA = 1
     EDIT = 2
-    BUTTON = 3
 
 
 DEBUG = False
@@ -37,10 +37,9 @@ class MyCifTable(QTableWidget, ItemTextMixin):
     new_key = QtCore.pyqtSignal(str)
 
     def __init__(self, parent: QWidget = None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super().__init__(parent=parent, *args, **kwargs)
         self.parent = parent
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
-        self.setParent(parent)
         self.installEventFilter(self)
         self.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
@@ -59,7 +58,7 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         if (column == Column.CIF) or (column == Column.DATA):
             # noinspection PyUnresolvedReferences
             widget.setUneditable()
-        super(MyCifTable, self).setCellWidget(row, column, widget)
+        super().setCellWidget(row, column, widget)
 
     @property
     def rows_count(self):
@@ -201,7 +200,7 @@ class MyCifTable(QTableWidget, ItemTextMixin):
             textedit.templateRequested.connect(self.goto_template_page)
             textedit.new_key.connect(lambda x: self.new_key.emit(x))
             self.setCellWidget(row, column, textedit)
-            textedit.setText(txt, color=color)
+            textedit.setText(txt, color=color, column=column)
             if (column == Column.CIF) or (column == Column.DATA):
                 textedit.setUneditable()
         if color:
@@ -209,7 +208,6 @@ class MyCifTable(QTableWidget, ItemTextMixin):
 
     def goto_template_page(self, row):
         self.setCurrentCell(row, Column.EDIT)
-        self.parent.parent().go_to_text_template_page()
         self.textTemplate.emit(self.currentRow())
 
     def getText(self, row: int, col: int):
@@ -242,7 +240,7 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         Copies the content of a field.
         """
         row = self.currentRow()
-        print(row, self.vheaderitems[row], '#')
+        # print(row, self.vheaderitems[row], '#')
         clipboard = QApplication.clipboard()
         clipboard.setText(self.vheaderitems[row])
 
@@ -274,6 +272,10 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         hheader.setSectionResizeMode(Column.EDIT, QHeaderView.Stretch)
         hheader.setAlternatingRowColors(True)
         self.verticalHeader().setAlternatingRowColors(True)
+
+    def resizeEvent(self, e: QtGui.QResizeEvent) -> None:
+        QtCore.QTimer(self).singleShot(0, self.resizeRowsToContents)
+        super().resizeEvent(e)
 
 
 class MyTableWidgetItem(QTableWidgetItem):

@@ -15,8 +15,7 @@ from pathlib import Path
 from typing import List, Optional, Dict
 
 import requests
-from PyQt5.QtCore import QUrl, QThread, pyqtSignal
-from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply
+from PyQt5.QtCore import QThread, pyqtSignal
 from requests.exceptions import MissingSchema
 
 from finalcif.cif.cif_file_io import CifContainer
@@ -26,10 +25,10 @@ class CheckCif(QThread):
     progress = pyqtSignal(str)
     failed = pyqtSignal(str)
 
-    def __init__(self, cif: CifContainer, outfile: Path, hkl_upload: bool = True,
+    def __init__(self, parent, cif: CifContainer, outfile: Path, hkl_upload: bool = True,
                  pdf: bool = False, url: str = '', full_iucr: bool = False):
         # hkl == False means no hkl upload
-        super().__init__()
+        super().__init__(parent=parent)
         self.hkl_upload = hkl_upload
         self.html_out_file = outfile
         self.cif = cif
@@ -76,7 +75,7 @@ class CheckCif(QThread):
         req = self._do_the_server_request(headers, temp_cif)
         if req:
             self.progress.emit('request finished')
-            if not req.status_code == 200:
+            if req.status_code != 200:
                 self.failed.emit('Request failed with code: {}'.format(str(req.status_code)))
             else:
                 t2 = time.perf_counter()
@@ -143,13 +142,14 @@ def fix_iucr_urls(content: str):
     """
     The IuCr checkcif page suddenly contains urls where the protocol is missing.
     """
-    href = re.sub(r'\s+href\s{0,}=\s{0,}"//', ' href="https://', content)
-    return re.sub(r'\s+src\s{0,}=\s{0,}"//', ' src="https://', href)
+    href = re.sub(r'\s+href\s*=\s*"//', ' href="https://', content)
+    return re.sub(r'\s+src\s*=\s*"//', ' src="https://', href)
 
 
 class MyHTMLParser(HTMLParser):
     def __init__(self, data):
         self.pdf_link = ''
+        self.structure_factor_report = ''
         self.imageurl = ''
         super(MyHTMLParser, self).__init__()
         self.vrf = ''
@@ -160,10 +160,14 @@ class MyHTMLParser(HTMLParser):
         return requests.get(self.pdf_link, timeout=10).content
 
     def handle_starttag(self, tag: str, attrs: str) -> None:
-        if tag == "a" and len(attrs) > 1 and attrs[0][1] == '_blank' and attrs[1][1].endswith('.pdf'):
-            url = attrs[1][1]
-            self.pdf_link = url
-        if tag == "img" and len(attrs) > 1 and attrs[0][0] == 'width' and '.gif' in attrs[1][1]:
+        # if tag and tag not in ('font', 'div', 'link', 'meta', 'html', 'table', 'td') and attrs:
+        #    # For debug:
+        #    print(f'tag: {tag}, attrs: {attrs}')
+        if tag == "a" and len(attrs) > 1 and attrs[1][0] == 'href' and attrs[1][1].endswith('.pdf'):
+            self.pdf_link = attrs[1][1]
+        if tag == "a" and len(attrs) > 1 and attrs[0][0] == 'href' and attrs[0][1].endswith('ckf.html'):
+            self.structure_factor_report = attrs[0][1]
+        if tag == "img" and len(attrs) > 1 and attrs[0][0] == 'width' and attrs[1][1].endswith('.gif'):
             url = attrs[1][1]
             self.imageurl = url
 
@@ -173,11 +177,20 @@ class MyHTMLParser(HTMLParser):
         if data.startswith('PLAT') and len(data) == 17:
             self.alert_levels.append(data)
 
-    def get_image(self) -> bytes:
+    def save_image(self, image_file: Path) -> None:
         try:
-            return requests.get(self.imageurl, timeout=10).content
+            image = requests.get(self.imageurl, timeout=10).content
         except MissingSchema:
-            return b''
+            print('debug: Got no image from checkcif server.')
+            image = b''
+        if image:
+            image_file.write_bytes(image)
+
+    def get_ckf(self) -> str:
+        try:
+            return requests.get(self.structure_factor_report, timeout=10).content.decode('latin1', 'ignore')
+        except MissingSchema:
+            return ''
 
     @property
     def response_forms(self) -> List[Dict[str, str]]:
@@ -244,44 +257,20 @@ class AlertHelp():
         return ''
 
 
-class AlertHelpRemote():
-    def __init__(self, alert: str):
-        self.netman = QNetworkAccessManager()
-        self.helpurl = r'https://journals.iucr.org/services/cif/checking/' + alert + '.html'
-        print('url:', self.helpurl)
-        self.netman.finished.connect(self._parse_result)
-
-    def get_help(self) -> None:
-        url = QUrl(self.helpurl)
-        req = QNetworkRequest(url)
-        print('doing request')
-        self.netman.get(req)
-
-    def _parse_result(self, reply: QNetworkReply) -> str:
-        if reply.error():
-            print(reply.errorString())
-        print('parsing reply')
-        text = 'no help available'
-        try:
-            text = bytes(reply.readAll()).decode('ascii', 'ignore')
-        except Exception as e:
-            print(e)
-        return text
-
-
 if __name__ == "__main__":
-    cif = Path('test-data/1000007-finalcif.cif')
-    html = Path(r'tests/examples/work/checkcif-cu_BruecknerJK_153F40_0m-finalcif.html')
-    # ckf = CheckCif(None, cif, outfile=html)
-    # ckf.show_html_report()
-    # sys.exit()
-    # ckf.show_pdf_report()
-    # html = Path(r'D:\frames\guest\BreitPZ_R_122\BreitPZ_R_122\checkcif-BreitPZ_R_122_0m_a.html')
+    html = Path(r'tests/checkcif_results/check_html_ab.html')
+    html_pdf = Path(r'tests/checkcif_results/check_pdf_ab.html')
     parser = MyHTMLParser(html.read_text())
-    # print(parser.imageurl)
-    from pprint import pprint
+    print('html report link:', parser.structure_factor_report)
+    print('pdf link:', parser.pdf_link)
+    print('image url:', parser.imageurl)
+    print('###')
+    parser = MyHTMLParser(html_pdf.read_text())
+    print('html report link:', parser.structure_factor_report)
+    print('pdf link:', parser.pdf_link)
+    print('image url:', parser.imageurl)
 
-    pprint(parser.response_forms)
+    # pprint(parser.response_forms)
     # print(parser.alert_levels)
     # print(parser.vrf)
     # print(parser.pdf)

@@ -4,6 +4,9 @@
 #   this notice you can do whatever you want with this stuff. If we meet some day,
 #   and you think this stuff is worth it, you can buy me a beer in return.
 #   ----------------------------------------------------------------------------
+import os
+
+os.environ["RUNNING_TEST"] = 'True'
 import unittest
 from pathlib import Path
 
@@ -15,22 +18,23 @@ from finalcif.appwindow import AppWindow
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.tools.misc import unify_line_endings
 
+data = Path('tests')
+
 
 class TestLoops(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.testcif = Path('tests/examples/1979688.cif').resolve()
-        Path('tests/examples/1979688-finalcif_changes.cif').unlink(missing_ok=True)
-        self.myapp = AppWindow(self.testcif, unit_test=True)
-        self.myapp.running_inside_unit_test = True
-        self.myapp.hide()  # For full screen view
+        self.testcif = (data / 'examples/1979688.cif').resolve()
+        (data / 'examples/1979688-finalcif_changes.cif').unlink(missing_ok=True)
+        self.myapp = AppWindow(file=self.testcif)
+        # self.myapp.hide()  # For full screen view
         self.myapp.ui.LoopsPushButton.click()
         self.myapp.ui.trackChangesCifCheckBox.setChecked(False)
 
     def tearDown(self) -> None:
         self.myapp.cif.finalcif_file.unlink(missing_ok=True)
         self.myapp.close()
-        Path('tests/examples/1979688-finalcif_changes.cif').unlink(missing_ok=True)
+        (data / 'examples/1979688-finalcif_changes.cif').unlink(missing_ok=True)
 
     def get_index_of(self, loopkey: str = ''):
         tabw: QTabWidget = self.myapp.ui.LoopsTabWidget
@@ -41,6 +45,13 @@ class TestLoops(unittest.TestCase):
             else:
                 tab = -1
         return tab
+
+    def test_delete_loop(self):
+        self.assertEqual(9, len(self.myapp.cif.loops))
+        # Index 0 is the author editor
+        self.assertEqual(1, self.myapp.ui.LoopsTabWidget.currentIndex())
+        self.myapp.ui.deleteLoopButton.click()
+        self.assertEqual(8, len(self.myapp.cif.loops))
 
     def test_get_index_of_tab(self):
         self.assertEqual(2, self.get_index_of('CIF Author'))
@@ -82,20 +93,20 @@ class TestLoops(unittest.TestCase):
         self.assertEqual('foo bar', as_string(c.loops[3].val(0, 2)))
 
 
+# noinspection PyMissingTypeHints
 class TestLoopsMove(unittest.TestCase):
     def setUp(self) -> None:
-        self.testcif = Path('tests/examples/1979688.cif').resolve()
+        os.environ["RUNNING_TEST"] = 'True'
+        self.testcif = (data / 'examples/1979688.cif').resolve()
         # TODO: make tests where changes file is active:
-        Path('tests/examples/1979688-finalcif_changes.cif').unlink(missing_ok=True)
-        self.myapp = AppWindow(self.testcif, unit_test=True)
-        self.myapp.running_inside_unit_test = True
-        self.myapp.hide()  # For full screen view
+        (data / 'examples/1979688-finalcif_changes.cif').unlink(missing_ok=True)
+        self.myapp = AppWindow(file=self.testcif)
         self.myapp.ui.LoopsPushButton.click()
 
     def tearDown(self) -> None:
         self.myapp.cif.finalcif_file.unlink(missing_ok=True)
         self.myapp.close()
-        Path('tests/examples/1979688-finalcif_changes.cif').unlink(missing_ok=True)
+        (data / 'examples/1979688-finalcif_changes.cif').unlink(missing_ok=True)
 
     def get_index_of(self, loopkey: str = ''):
         tabw: QTabWidget = self.myapp.ui.LoopsTabWidget

@@ -1,7 +1,7 @@
 from bisect import bisect
-from contextlib import suppress
 from pathlib import Path
 from typing import List, Dict
+from typing import TYPE_CHECKING
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QListWidgetItem
@@ -16,7 +16,7 @@ from finalcif.tools import misc
 from finalcif.tools.misc import include_equipment_imports
 from finalcif.tools.settings import FinalCifSettings
 
-with suppress(ImportError):
+if TYPE_CHECKING:
     from finalcif.appwindow import AppWindow
 
 
@@ -69,14 +69,15 @@ class Equipment:
                                                              item_name=self.selected_template_name())
         if self.app.ui.cif_main_table.vheaderitems:
             for key in equipment:
+                value = equipment[key]
                 if key not in self.app.ui.cif_main_table.vheaderitems:
                     # Key is not in the main table:
-                    self.app.add_row(key, equipment[key], at_start=False,
+                    self.app.add_row(key, value, at_start=False,
                                      position=bisect(self.app.ui.cif_main_table.vheaderitems, key))
                 # Key is already there:
                 self.app.ui.cif_main_table.setText(key, Column.CIF, txt='?')
-                self.app.ui.cif_main_table.setText(key, Column.DATA, txt=equipment[key], color=light_green)
-                self.app.ui.cif_main_table.setText(key, Column.EDIT, txt=equipment[key])
+                self.app.ui.cif_main_table.setText(key, Column.DATA, txt=value, color=light_green)
+                self.app.ui.cif_main_table.setText(key, Column.EDIT, txt=value)
         else:
             print('Empty main table!')
 
@@ -181,19 +182,21 @@ class Equipment:
         for key, _ in table_data:
             if key not in cif_all_dict.keys():
                 if not key.startswith('_'):
-                    show_general_warning('"{}" is not a valid keyword! '
-                                         '\nChange the name in order to save.\n'
-                                         'Keys must start with an underscore.'.format(key))
+                    show_general_warning(self.app, '"{}" is not a valid keyword! '
+                                                   '\nChange the name in order to save.\n'
+                                                   'Keys must start with an underscore.'.format(key))
                     return
-                show_general_warning('"{}" is not an official CIF keyword!'.format(key))
+                show_general_warning(self.app, '"{}" is not an official CIF keyword!'.format(key))
         self.settings.save_settings_list('equipment', self.selected_template_name(), table_data)
         self.app.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
         print('saved')
 
-    def import_equipment_from_file(self, filename='') -> None:
+    def import_equipment_from_file(self, filename: Path | str = '') -> None:
         """
         Import an equipment entry from a cif file.
         """
+        if isinstance(filename, Path):
+            filename = str(filename)
         if not filename:
             filename = cif_file_open_dialog(filter="CIF file (*.cif  *.cif_od *.cfx)")
         if not filename:
@@ -269,7 +272,7 @@ class Equipment:
         except PermissionError:
             if Path(filename).is_dir():
                 return
-            show_general_warning('No permission to write file to {}'.format(Path(filename).resolve()))
+            show_general_warning(self.app, 'No permission to write file to {}'.format(Path(filename).resolve()))
 
     def cancel_equipment_template(self) -> None:
         """

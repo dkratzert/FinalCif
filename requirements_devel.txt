@@ -6,6 +6,4 @@
 #pyinstaller
 sphinx
 sphinx-rtd-theme
-py
-pluggy
 pytest

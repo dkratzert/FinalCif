@@ -15,7 +15,7 @@ def read_document_from_cif_file(filename: str) -> Union[gemmi.cif.Document, None
         warning = "{}\n{}".format('This CIF is invalid:', str(e))
         if 'data_' in str(e):
             warning =  f"{warning}\n\nA CIF needs to start with 'data_[some_name]'."
-        show_general_warning(warning)
+        show_general_warning(parent=None, warn_text=warning)
     except IOError as e:
-        show_general_warning(f'Unable to open file {filename}:\n{str(e)}')
+        show_general_warning(parent=None, warn_text=f'Unable to open file {filename}:\n{str(e)}')
     return doc

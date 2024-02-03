@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_FinalCifWindow(object):
     def setupUi(self, FinalCifWindow):
         FinalCifWindow.setObjectName("FinalCifWindow")
-        FinalCifWindow.resize(1637, 803)
+        FinalCifWindow.resize(1566, 812)
         self.Mainwidget = QtWidgets.QWidget(FinalCifWindow)
         self.Mainwidget.setObjectName("Mainwidget")
         self.horizontalLayout_4 = QtWidgets.QHBoxLayout(self.Mainwidget)
@@ -188,9 +188,6 @@ class Ui_FinalCifWindow(object):
         self.ImportCifPushButton = QtWidgets.QPushButton(self.page_equipment)
         self.ImportCifPushButton.setObjectName("ImportCifPushButton")
         self.horizontalLayout_13.addWidget(self.ImportCifPushButton)
-        self.importOnlyNewDataCheckBox = QtWidgets.QCheckBox(self.page_equipment)
-        self.importOnlyNewDataCheckBox.setObjectName("importOnlyNewDataCheckBox")
-        self.horizontalLayout_13.addWidget(self.importOnlyNewDataCheckBox)
         self.verticalLayout_16.addLayout(self.horizontalLayout_13)
         self.line_5 = QtWidgets.QFrame(self.page_equipment)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)

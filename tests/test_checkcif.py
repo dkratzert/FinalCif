@@ -9,6 +9,8 @@ from lxml.html import fromstring
 
 from finalcif.cif.checkcif.checkcif import MyHTMLParser, fix_iucr_urls
 
+data = Path('tests')
+
 form_choices = {'filecif'      : [],
                 'runtype'      : [],
                 'referer'      : [],
@@ -32,9 +34,11 @@ else:
     except Exception:
         request = None
 
+
 @unittest.skipIf(not request, 'Skip without network')
 class TestCheckCifInterface(TestCase):
     def setUp(self) -> None:
+        os.environ["RUNNING_TEST"] = 'True'
         if os.environ.get('NO_NETWORK'):
             self.skipTest('No network available.')
         page = fromstring(request.text)
@@ -121,7 +125,7 @@ class TestCheckCif(TestCase):
 
 class TestMyHTMLParser(TestCase):
     def setUp(self) -> None:
-        htmlfile = Path('tests/examples/work/checkcif-cu_BruecknerJK_153F40_0m-test2.html')
+        htmlfile = data / 'examples/work/checkcif-cu_BruecknerJK_153F40_0m-test2.html'
         self.parser = MyHTMLParser(fix_iucr_urls(htmlfile.read_text()))
 
     def test_pdf_link_not_there(self):
@@ -145,10 +149,39 @@ class TestMyHTMLParser(TestCase):
 
 class TestMyHTMLParserPDF(TestCase):
     def setUp(self) -> None:
-        htmlfile = Path('tests/examples/work/checkcif-cu_BruecknerJK_153F40_0m-pdf-test2.html')
+        htmlfile = (data / 'examples/work/checkcif-cu_BruecknerJK_153F40_0m-pdf-test2.html').resolve().absolute()
         self.parser = MyHTMLParser(fix_iucr_urls(htmlfile.read_text()))
 
     def test_pdf_link_there(self):
         # This html has a pdf link
         self.assertEqual('https://checkcif.iucr.org/XGW8nDLA5N4Xd/081921091639544652566/checkcif.pdf',
                          self.parser.pdf_link)
+
+
+class TestMyHTMLParserNew(unittest.TestCase):
+
+    def test_parser_with_html(self):
+        # Read the sample HTML content from file
+        html_content = (data / r'checkcif_results/check_html_ab.html').read_text()
+        parser = MyHTMLParser(html_content)
+
+        self.assertEqual(parser.structure_factor_report,
+                         "https://checkcif.iucr.org/4ocPADzJV04fN/092423121633543345593/ckf.html")
+        self.assertEqual(parser.pdf_link, "")
+        self.assertEqual(parser.imageurl,
+                         "https://checkcif.iucr.org/4ocPADzJV04fN/092423121633543345593/platon_cu_BruecknerJK_153F40_0mte.gif")
+
+    def test_parser_with_html_pdf(self):
+        # Read the sample HTML PDF content from file
+        html_pdf_content = (data / r'checkcif_results/check_pdf_ab.html').read_text()
+
+        parser = MyHTMLParser(html_pdf_content)
+
+        self.assertEqual(parser.structure_factor_report,
+                         "https://checkcif.iucr.org/A2pZY9P2WqtE7/092423121840336981715/ckf.html")
+        self.assertEqual(parser.pdf_link, "https://checkcif.iucr.org/A2pZY9P2WqtE7/092423121840336981715/checkcif.pdf")
+        self.assertEqual(parser.imageurl, "")
+
+
+if __name__ == '__main__':
+    unittest.main()
