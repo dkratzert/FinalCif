@@ -15,8 +15,8 @@ def compile_ui():
     for ui_file in ui_files:
         py_file = ui_file.with_suffix('.py')
         with open(py_file, 'w', encoding='utf-8') as pyf, open(ui_file, 'r', encoding='utf-8') as uif:
-            uic.compileUi(uifile=uif, pyfile=pyf, execute=True)
             print(f'Compiling {ui_file.name}')
+            uic.compileUi(uifile=uif, pyfile=pyf, execute=True)
         fix_comment(pyfile=py_file, uifile=ui_file)
 
 

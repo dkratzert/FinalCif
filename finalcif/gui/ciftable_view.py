@@ -122,7 +122,7 @@ class CifTableView(QtWidgets.QTableView):
     def changeEvent(self, a0: QtCore.QEvent) -> None:
         self.resizeRowsToContents()
         print('changeevent')
-        self.model().dataChanged.connect(self.on_data_changed)
+        #self.model().dataChanged.connect(self.on_data_changed)
         # self._on_data_changed()
         super().changeEvent(a0)
 
