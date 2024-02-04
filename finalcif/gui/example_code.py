@@ -3,6 +3,10 @@
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QItemDelegate, QTableView, QWidget, QApplication, QVBoxLayout, QComboBox, QPushButton
 
+from finalcif.cif.cif_file_io import CifContainer
+from finalcif.gui.ciftable_view import CifItemEditor
+from finalcif.gui.table_model import CifTableModel
+
 
 class TableModel(QtCore.QAbstractTableModel):
     """
@@ -103,8 +107,11 @@ class TableView(QTableView):
 
         # Set the delegate for column 0 of our table
         # self.setItemDelegateForColumn(0, ButtonDelegate(self))
-        self.setItemDelegateForColumn(0, ComboDelegate(self))
-        self.setItemDelegateForColumn(1, ButtonDelegate(self))
+        #self.setItemDelegateForColumn(0, ComboDelegate(self))
+        #self.setItemDelegateForColumn(1, ButtonDelegate(self))
+        delegate = CifItemEditor(self)
+        #delegate.heightChanged.connect(self.resizeRowToContents)
+        self.setItemDelegateForColumn(0, delegate)
 
 
 if __name__ == "__main__":
@@ -118,17 +125,18 @@ if __name__ == "__main__":
 
         def __init__(self, parent=None):
             super().__init__(parent)
-
             l = QVBoxLayout(self)
-            self._tm = TableModel(self)
+            c = CifContainer('tests/examples/1979688.cif')
+            data = [[key, value, ''] for key, value in c.key_value_pairs()]
+            self._tm = CifTableModel(self, data)
             self._tv = TableView(self)
             # self._tv.setGridStyle(QtCore.Qt.NoPen)
             self._tv.setShowGrid(False)
             self._tv.setAlternatingRowColors(True)
             self._tv.setModel(self._tm)
-            for row in range(0, self._tm.rowCount()):
-                self._tv.openPersistentEditor(self._tm.index(row, 0))
-                self._tv.openPersistentEditor(self._tm.index(row, 1))
+            #for row in range(0, self._tm.rowCount()):
+            #    self._tv.openPersistentEditor(self._tm.index(row, 0))
+            #    self._tv.openPersistentEditor(self._tm.index(row, 1))
 
             l.addWidget(self._tv)
 

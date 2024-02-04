@@ -111,7 +111,7 @@ class MyQPlainTextEdit(QPlainTextEdit):
     def setUneditable(self):
         self.setReadOnly(True)
 
-    def setText(self, text: str, color: QColor = None, column: int = None):
+    def setPlainText(self, text: str, color: QColor = None, column: int = None):
         """
         Set text of a Plaintextfield with lines wrapped at newline characters.
         """

@@ -16,6 +16,54 @@ textedit = MyQPlainTextEdit(self)
 """
 
 
+class CustomPlainTextEdit(QtWidgets.QPlainTextEdit):
+    to_be_shortened = {'_shelx_hkl_file', '_shelx_res_file', '_shelx_fab_file', '_shelx_fcf_file',
+                       '_iucr_refine_instructions_details', '_iucr_refine_fcf_details'}
+
+    def __init__(self, parent=None, model=None, row=0, column=0):
+        super().__init__(parent)
+        self.model = model
+        self.row = row
+        self.column = column
+        self.cif_key = self.model.headerData(self.row, Qt.Vertical)
+        self.setWordWrapMode(QTextOption.WrapAtWordBoundaryOrAnywhere)
+
+    def resizeEvent(self, event):
+        # Adjust size to content
+        self.document().setTextWidth(self.width())
+        self.setMinimumHeight(self.document().size().height())
+
+    '''    
+    def setText(self, text: str, color: QtGui.QColor = None, column: int = None):
+        """
+        Set text of a Plaintextfield with lines wrapped at newline characters.
+        """
+        if color:
+            self.setBackground(color)
+        if not text:
+            return
+        #if column == Column.CIF and
+        if self.cif_key in self.to_be_shortened:
+            self.setPlainText(f'{text[:300]} [...]')
+        else:
+            self.setPlainText(text)'''
+
+    def setText(self, text: str, color: QtGui.QColor = None, column: int = None):
+        """
+        Set text of a Plaintextfield with lines wrapped at newline characters.
+        """
+        if color:
+            self.setBackground(color)
+        if not text:
+            return
+        #if column == Column.CIF and
+        if self.cif_key in self.to_be_shortened:
+            print('bin in here')
+            self.setPlainText(f'{text[:300]} [...]')
+        else:
+            self.setPlainText(text)
+
+
 class CifItemEditor(QtWidgets.QStyledItemDelegate):
     heightChanged = pyqtSignal(int)
 
@@ -26,13 +74,13 @@ class CifItemEditor(QtWidgets.QStyledItemDelegate):
     # def createEditor(self, parent: QWidget, option: 'QStyleOptionViewItem', index: QtCore.QModelIndex) -> QWidget:
     #    return MyQPlainTextEdit(parent)
     def createEditor(self, parent: QWidget, option: 'QStyleOptionViewItem', index: QtCore.QModelIndex) -> QWidget:
-        text = index.model().data(index, Qt.EditRole)
-        #if len(text) > 20:
+        #text = index.model().data(index, Qt.EditRole)
+        # if len(text) > 20:
         self.parent = parent
-        #editor = MyQPlainTextEdit(parent)
-        editor = QtWidgets.QPlainTextEdit(parent)
-        #editor.textChanged.connect(lambda: self.text_changed.emit(index.row()))
-        editor.textChanged.connect(self.adjustHeight)
+        # editor = MyQPlainTextEdit(parent)
+        editor = CustomPlainTextEdit(parent, self.parent.model(), index.row(), index.column())
+        # editor.textChanged.connect(lambda: self.text_changed.emit(index.row()))
+        #editor.textChanged.connect(self.adjustHeight)
         return editor
 
     """def editorEvent(self, event: QtCore.QEvent, model: QtCore.QAbstractItemModel, option: 'QStyleOptionViewItem', index: QtCore.QModelIndex) -> bool:
@@ -49,12 +97,15 @@ class CifItemEditor(QtWidgets.QStyledItemDelegate):
 
     def setEditorData(self, editor, index):
         text = index.model().data(index, Qt.EditRole)
-        if isinstance(editor, QtWidgets.QPlainTextEdit):
-            editor.setPlainText(text)
+        if isinstance(editor, (QtWidgets.QPlainTextEdit, MyQPlainTextEdit, CustomPlainTextEdit)):
+            print('foo')
+            editor.setPlainText(text, column=index.column())
         else:
+            print('bar')
             super().setEditorData(editor, index)
 
     def setModelData(self, editor, model, index):
+        print('baz')
         if isinstance(editor, QtWidgets.QPlainTextEdit):
             model.setData(index, editor.toPlainText(), Qt.EditRole)
         else:
@@ -65,10 +116,11 @@ class CifItemEditor(QtWidgets.QStyledItemDelegate):
         print(editor.sizeHint())
         editor.setGeometry(option.rect)"""
 
-    # def itemEditorFactory(self) -> QItemEditorFactory:
-    #    factory = QItemEditorFactory()
-    #    factory.registerEditor(Qt.EditRole, MyQPlainTextEdit)
-    #    return factory
+    def itemEditorFactory(self) -> QtWidgets.QItemEditorFactory:
+        print('erfserg')
+        factory = QItemEditorFactory()
+        factory.registerEditor(Qt.EditRole, MyQPlainTextEdit)
+        return factory
 
     # def setEditorData(self, editor: QWidget, index: QtCore.QModelIndex) -> None:
     #    editor.setPlainText(index.data(role=Qt.EditRole))
@@ -82,8 +134,12 @@ class CifItemEditor(QtWidgets.QStyledItemDelegate):
     #    print(editor, model)
     #    pass
     def displayText(self, value, locale: QtCore.QLocale) -> str:
-        #self.parent.resizeRowToContents(self.parent.currentIndex().row())
+        # self.parent.resizeRowToContents(self.parent.currentIndex().row())
+        if len(value) > 300:
+            value = f'{value[:300]}[...]'
         return super().displayText(value, locale)
+
+
 
 class CifTableView(QtWidgets.QTableView):
     save_excel_triggered = pyqtSignal()
@@ -94,8 +150,8 @@ class CifTableView(QtWidgets.QTableView):
         delegate = CifItemEditor(self)
         delegate.heightChanged.connect(self.resizeRowToContents)
         self.setItemDelegate(delegate)
-        #delegate.text_changed.connect(lambda index: self.resizeRowToContents(index.row()))
-        #delegate.text_changed.connect(lambda row: self.resizeRowToContents(row))
+        # delegate.text_changed.connect(lambda index: self.resizeRowToContents(index.row()))
+        # delegate.text_changed.connect(lambda row: self.resizeRowToContents(row))
         # self.setContextMenuPolicy(Qt.DefaultContextMenu)
         self.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.horizontalHeader().setEnabled(True)
@@ -122,7 +178,7 @@ class CifTableView(QtWidgets.QTableView):
     def changeEvent(self, a0: QtCore.QEvent) -> None:
         self.resizeRowsToContents()
         print('changeevent')
-        #self.model().dataChanged.connect(self.on_data_changed)
+        # self.model().dataChanged.connect(self.on_data_changed)
         # self._on_data_changed()
         super().changeEvent(a0)
 
