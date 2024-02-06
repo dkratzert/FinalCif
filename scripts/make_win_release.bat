@@ -8,7 +8,7 @@ rem git restore *
 rem git switch master
 rem git pull
 
-call scripts\create_dist.bat
+call scripts\_create_dist.bat
 
 CALL venv\Scripts\activate.bat
 venv\Scripts\python.exe scripts\make_win_release.py
