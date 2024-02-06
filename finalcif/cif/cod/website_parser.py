@@ -16,8 +16,8 @@ class MyCODStructuresParser(HTMLParser):
     def __repr__(self):
         txt = ''
         for st in self.structures:
-            txt = txt + 'https://www.crystallography.net/cod/information_card.php?id={0}&CODSESSION={1}\n' \
-                .format(st['number'], self.token)
+            txt = txt + (f'https://www.crystallography.net/cod/'
+                         f'information_card.php?id={st["number"]}&CODSESSION={self.token}\n')
         return txt
 
     def init_structure(self) -> Dict[str, Union[str, None]]:

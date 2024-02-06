@@ -11,6 +11,7 @@ class CODFetcher():
     def __init__(self, main_url: str):
         self.table_html = ''
         self.main_url = main_url
+        self.authenticated = False
 
     @property
     def _url(self):
@@ -31,6 +32,8 @@ class CODFetcher():
 
     def _extract_token(self, text: str, token: str = '') -> str:
         for line in text.splitlines():
+            if "Deposited structures" in line:
+                self.authenticated = True
             if 'CODSESSION' in line and '=' in line:
                 token = line.split('=')[-1].split('"')[0]
                 break

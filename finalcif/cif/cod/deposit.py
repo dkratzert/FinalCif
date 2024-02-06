@@ -42,6 +42,7 @@ class CODdeposit():
         self.ui = ui
         self.settings = FinalCifSettings()
         self._cif = cif
+        self.token_valid = False
         self.options = options
         self._set_checkbox_states()
         self.ui.depositorUsernameLineEdit.textChanged.connect(self._set_username)
@@ -206,8 +207,10 @@ class CODdeposit():
 
     def get_structures_from_cod(self):
         f = CODFetcher(main_url=self.main_url)
-        if not self._cod_token:
+        if not self.token_valid:
             self._cod_token = f.get_token(username=self.username, password=self.password)
+            if f.authenticated:
+                self.token_valid = True
         f.get_table_data_by_token(self._cod_token)
         parser = MyCODStructuresParser()
         parser.feed(f.table_html)
@@ -360,6 +363,7 @@ class CODdeposit():
         self.username = text
 
     def _set_password(self, text: str):
+        self.token_valid = False
         # Do not store this anywhere!
         if len(text) > 4:
             self.ui.refreshDepositListPushButton.setText('Refresh List')
