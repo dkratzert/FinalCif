@@ -305,7 +305,7 @@ class AppWindow(QMainWindow):
         self.ui.LoopsPushButton.clicked.connect(
             lambda x: self.ui.LoopsTabWidget.setCurrentIndex(1) if self.ui.LoopsTabWidget.count() > 0 else None)
         self.ui.LoopsPushButton.clicked.connect(lambda x: self.ui.TemplatesStackedWidget.setCurrentIndex(1))
-        self.ui.AuthorEditPushButton.clicked.connect(self.ui.MainStackedWidget.go_to_loops_page)
+        self.ui.AuthorEditPushButton.clicked.connect(self._on_go_to_loops_page)
         self.ui.AuthorEditPushButton.clicked.connect(lambda x: self.ui.TemplatesStackedWidget.setCurrentIndex(1))
         self.ui.AuthorEditPushButton.clicked.connect(lambda x: self.ui.LoopsTabWidget.setCurrentIndex(0))
         ## checkcif
