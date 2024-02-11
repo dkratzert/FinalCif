@@ -744,7 +744,7 @@ def add_adp_table(document: Document, cif: CifContainer, table_num: int):
     h.add_run(f'{medium_math_space}]')
 
     adp_data = tuple(cif.displacement_parameters())
-    adp_table = document.add_table(rows=len(adp_data) + 3, cols=7, style='Table Grid')
+    adp_table = document.add_table(rows=len(adp_data) + 1, cols=7, style='Table Grid')
     head_row = adp_table.rows[0]
     head_row.cells[0].paragraphs[0].add_run('Atom').bold = True
     for n, u_val in enumerate(('11', '22', '33', '23', '13', '12'), 1):
