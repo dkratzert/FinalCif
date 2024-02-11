@@ -1,3 +1,4 @@
+import dataclasses
 import itertools
 import re
 from collections import namedtuple
@@ -26,14 +27,43 @@ from finalcif.tools.options import Options
 from finalcif.tools.space_groups import SpaceGroups
 
 
+@dataclasses.dataclass(frozen=True)
+class Bond():
+    atoms: str
+    symm: str
+    dist: str
+
+
+@dataclasses.dataclass(frozen=True)
+class Angle():
+    atom1: str
+    atom2: str
+    symm1: str
+    symm2: str
+    angle: str
+
+
+@dataclasses.dataclass(frozen=True)
+class Torsion():
+    atom1: str
+    atom2: str
+    atom3: str
+    atom4: str
+    symm1: str
+    symm2: str
+    symm3: str
+    symm4: str
+    angle: str
+
+
 class BondsAndAngles():
     def __init__(self, cif: CifContainer, without_h: bool):
         self.cif = cif
         self.without_h = without_h
         self._symmlist = {}
         # These can be used as strings for python-docx:
-        self.bonds_as_string: List[Dict[str:str]] = []
-        self.angles_as_string: List[Dict[str:str]] = []
+        self.bonds_as_string: List[Bond] = []
+        self.angles_as_string: List[Angle] = []
         # These can be used as Richtext for python-docx-tpl:
         self.bonds: List[dict] = self._get_bonds_list(without_h)
         self.angles: List[dict] = self._get_angles_list(without_h)
@@ -47,7 +77,7 @@ class BondsAndAngles():
     def symmetry_generated_atoms_used(self):
         return len(self._symmlist) > 0
 
-    def _get_bonds_list(self, without_h):
+    def _get_bonds_list(self, without_h: bool) -> List[Dict[str, RichText]]:
         bonds = []
         num = 1
         newsymms = {}
@@ -63,7 +93,7 @@ class BondsAndAngles():
             atoms = RichText(a)
             atoms.add(symm, superscript=True)
             bonds.append({'atoms': atoms, 'dist': dist})
-            self.bonds_as_string.append({'atoms': a, 'symm': symm, 'dist': dist})
+            self.bonds_as_string.append(Bond(atoms=a, symm=symm, dist=dist))
         self._symmlist.update(newsymms)
         return bonds
 
@@ -91,11 +121,8 @@ class BondsAndAngles():
             atoms.add(a, superscript=False)
             atoms.add(symm2_str, superscript=True)
             angles_list.append({'atoms': atoms, 'angle': angle_val})
-            self.angles_as_string.append({'atom1': ang.label1,
-                                          'atom2': a,
-                                          'symm1': symm1_str,
-                                          'symm2': symm2_str,
-                                          'angle': angle_val})
+            self.angles_as_string.append(
+                Angle(atom1=ang.label1, atom2=a, symm1=symm1_str, symm2=symm2_str, angle=angle_val))
         self._symmlist.update(newsymms)
         return angles_list
 
@@ -106,7 +133,7 @@ class TorsionAngles():
         self.cif = cif
         self.without_h = without_h
         self._symmlist = {}
-        self.torsion_angles_as_string: List[Dict[str:str]] = []
+        self.torsion_angles_as_string: List[Torsion] = []
         self.torsion_angles = self._get_torsion_angles_list(without_h)
         # The list of symmetry elements at the table end used for generated atoms:
         self.symminfo: str = get_symminfo(self._symmlist)
@@ -156,15 +183,11 @@ class TorsionAngles():
             atoms.add(symmstr4, superscript=True)
             angle = tors.torsang.replace('-', minus_sign)
             torsion_angles.append({'atoms': atoms, 'angle': angle})
-            self.torsion_angles_as_string.append({'atom1': tors.label1,
-                                                  'atom2': tors.label2,
-                                                  'atom3': tors.label3,
-                                                  'atom4': tors.label4,
-                                                  'symm1': symmstr1,
-                                                  'symm2': symmstr2,
-                                                  'symm3': symmstr3,
-                                                  'symm4': symmstr4,
-                                                  'angle': angle})
+            self.torsion_angles_as_string.append(Torsion(atom1=tors.label1, atom2=tors.label2,
+                                                         atom3=tors.label3, atom4=tors.label4,
+                                                         symm1=symmstr1, symm2=symmstr2,
+                                                         symm3=symmstr3, symm4=symmstr4,
+                                                         angle=angle))
         self._symmlist = newsymms
         return torsion_angles
 
@@ -452,7 +475,7 @@ class TemplatedReport():
         if 'OLEX' in refined.upper():
             self.literature['refinement'] = Olex2Reference()
         if ('NOSPHERA2' in refined.upper() or 'NOSPHERA2' in cif['_refine_special_details'].upper() or
-                'NOSPHERAT2' in cif['_olex2_refine_details'].upper()):
+            'NOSPHERAT2' in cif['_olex2_refine_details'].upper()):
             self.literature['refinement'] = Nosphera2Reference()
         return refined.split()[0]
 

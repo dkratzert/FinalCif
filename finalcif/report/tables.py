@@ -343,8 +343,8 @@ def populate_main_table_values(main_table: Table, cif: CifContainer, column=1, r
     crystal_size_mid = cif['_exptl_crystal_size_mid']
     crystal_size_max = cif['_exptl_crystal_size_max']
     main_table.cell(row, column).text = (f'{this_or_quest(crystal_size_max)}{timessym}'
-                                                     f'{this_or_quest(crystal_size_mid)}{timessym}'
-                                                     f'{this_or_quest(crystal_size_min)}')
+                                         f'{this_or_quest(crystal_size_mid)}{timessym}'
+                                         f'{this_or_quest(crystal_size_min)}')
     row += 1
     add_table_value(cif, main_table, '_exptl_crystal_colour', row, column)
     row += 1
@@ -802,9 +802,9 @@ def add_bonds_and_angles_table(document: Document, table_num: int, data: BondsAn
     for b in data.bonds_as_string:
         c0, c1 = col1_cells[rowidx], col2_cells[rowidx]
         rowidx += 1
-        c0.text = b.get('atoms')
-        c0.paragraphs[0].add_run(b.get('symm')).font.superscript = True
-        c1.text = str(b.get('dist'))  # bond
+        c0.text = b.atoms
+        c0.paragraphs[0].add_run(b.symm).font.superscript = True
+        c1.text = str(b.dist)  # bond
     ############ the angles ####################
     head_row = bond_angle_table.rows[rowidx + 1]
     head_row.cells[0].paragraphs[0].add_run(f'Atom{halbgeviert}Atom{halbgeviert}Atom').bold = True
@@ -816,12 +816,12 @@ def add_bonds_and_angles_table(document: Document, table_num: int, data: BondsAn
         c0, c1 = col1_cells[rowidx], col2_cells[rowidx]
         rowidx += 1
         # atom1 symm1_str atom2 symm2_str
-        c0.text = a.get('atom1')
+        c0.text = a.atom1
         cp0 = c0.paragraphs[0]
-        cp0.add_run(a.get('symm1')).font.superscript = True
-        cp0.add_run(a.get('atom2'))
-        cp0.add_run(a.get('symm2')).font.superscript = True
-        c1.text = a.get('angle')
+        cp0.add_run(a.symm1).font.superscript = True
+        cp0.add_run(a.atom2)
+        cp0.add_run(a.symm2).font.superscript = True
+        c1.text = a.angle
     set_column_width(bond_angle_table.columns[0], Cm(3.7))
     set_column_width(bond_angle_table.columns[1], Cm(2.5))
     if data.without_h:
@@ -846,18 +846,18 @@ def add_torsion_angles(document: Document, table_num: int, data: TorsionAngles =
         c0, c1 = col0_cells[rowidx], col1_cells[rowidx]
         rowidx += 1
         cp0 = c0.paragraphs[0]
-        cp0.add_run(tor.get('atom1'))
-        cp0.add_run(tor.get('symm1')).font.superscript = True
+        cp0.add_run(tor.atom1)
+        cp0.add_run(tor.symm1).font.superscript = True
         cp0.add_run(halbgeviert)
-        cp0.add_run(tor.get('atom2'))
-        cp0.add_run(tor.get('symm2')).font.superscript = True
+        cp0.add_run(tor.atom2)
+        cp0.add_run(tor.symm2).font.superscript = True
         cp0.add_run(halbgeviert)
-        cp0.add_run(tor.get('atom3'))
-        cp0.add_run(tor.get('symm3')).font.superscript = True
+        cp0.add_run(tor.atom3)
+        cp0.add_run(tor.symm3).font.superscript = True
         cp0.add_run(halbgeviert)
-        cp0.add_run(tor.get('atom4'))  # labels
-        cp0.add_run(tor.get('symm4')).font.superscript = True
-        c1.paragraphs[0].add_run(tor.get('angle'))  # torsion angle
+        cp0.add_run(tor.atom4)  # labels
+        cp0.add_run(tor.symm4).font.superscript = True
+        c1.paragraphs[0].add_run(tor.angle)  # torsion angle
     set_column_width(torsion_table.columns[0], Cm(4.2))
     set_column_width(torsion_table.columns[1], Cm(3.0))
     if data.without_h:
