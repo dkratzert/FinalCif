@@ -818,9 +818,9 @@ def add_bonds_and_angles_table(document: Document, table_num: int, data: BondsAn
         # atom1 symm1_str atom2 symm2_str
         c0.text = a.get('atom1')
         cp0 = c0.paragraphs[0]
-        cp0.add_run(a.get('symm1_str')).font.superscript = True
+        cp0.add_run(a.get('symm1')).font.superscript = True
         cp0.add_run(a.get('atom2'))
-        cp0.add_run(a.get('symm2_str')).font.superscript = True
+        cp0.add_run(a.get('symm2')).font.superscript = True
         c1.text = a.get('angle')
     set_column_width(bond_angle_table.columns[0], Cm(3.7))
     set_column_width(bond_angle_table.columns[1], Cm(2.5))
