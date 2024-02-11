@@ -56,6 +56,16 @@ class Torsion():
     angle: str
 
 
+@dataclasses.dataclass(frozen=True)
+class HydrogenBond():
+    atoms: str
+    dist_dh: str
+    dist_ha: str
+    dist_da: str
+    angle_dha: str
+    symm: str
+
+
 class BondsAndAngles():
     def __init__(self, cif: CifContainer, without_h: bool):
         self.cif = cif
@@ -196,7 +206,7 @@ class HydrogenBonds():
     def __init__(self, cif: CifContainer):
         self.cif = cif
         self._symmlist = {}
-        self.hydrogen_bonds_as_str: List[Dict[str:str]] = []
+        self.hydrogen_bonds_as_str: List[HydrogenBond] = []
         self.hydrogen_bonds = self._get_hydrogen_bonds()
         self.symminfo = get_symminfo(self._symmlist)
 
@@ -223,8 +233,9 @@ class HydrogenBonds():
             atoms.add(symmval, superscript=True)
             atoms_list.append({'atoms'  : atoms, 'dist_dh': h.dist_dh, 'dist_ha': h.dist_ha,
                                'dist_da': h.dist_da, 'angle_dha': h.angle_dha})
-            self.hydrogen_bonds_as_str.append({'atoms'  : a, 'dist_dh': h.dist_dh, 'dist_ha': h.dist_ha,
-                                               'dist_da': h.dist_da, 'angle_dha': h.angle_dha, 'symm': symmval})
+            self.hydrogen_bonds_as_str.append(HydrogenBond(atoms=a, dist_dh=h.dist_dh,
+                                                           dist_ha=h.dist_ha, dist_da=h.dist_da,
+                                                           angle_dha=h.angle_dha, symm=symmval))
         self._symmlist = newsymms
         return atoms_list
 

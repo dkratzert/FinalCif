@@ -890,12 +890,12 @@ def add_hydrogen_bonds(document: Document, table_num: int, data: HydrogenBonds =
         c0, c1, c2, c3, c4 = col0_cells[rowidx], col1_cells[rowidx], \
             col2_cells[rowidx], col3_cells[rowidx], col4_cells[rowidx]
         rowidx += 1
-        c0.text = h.get('atoms')
-        c0.paragraphs[0].add_run(h.get('symm')).font.superscript = True
-        c1.text = h.get('dist_dh')
-        c2.text = h.get('dist_ha')
-        c3.text = h.get('dist_da')
-        c4.text = h.get('angle_dha')
+        c0.text = h.atoms
+        c0.paragraphs[0].add_run(h.symm).font.superscript = True
+        c1.text = h.dist_dh
+        c2.text = h.dist_ha
+        c3.text = h.dist_da
+        c4.text = h.angle_dha
     widths = (Cm(4), Cm(2.5), Cm(2.5), Cm(2.5), Cm(2.5))
     make_table_widths(hydrogen_table, widths)
     if data.symmetry_generated_atoms_used:
