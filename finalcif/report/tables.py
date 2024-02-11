@@ -737,9 +737,9 @@ def add_adp_table(document: Document, cif: CifContainer, table_num: int):
     h.add_run('U').font.italic = True
     h.add_run('22').font.subscript = True
 
-    h.add_run(f'{medium_math_space}+{medium_math_space}{ellipsis_char}{medium_math_space}+{medium_math_space}')
-    h.add_run('2hk'
-              'a*b*U').font.italic = True
+    h.add_run(f'{medium_math_space}+{medium_math_space}{ellipsis_char}'
+              f'{medium_math_space}+{medium_math_space}')
+    h.add_run('2hka*b*U').font.italic = True
     h.add_run('12').font.subscript = True
     h.add_run(f'{medium_math_space}]')
 
