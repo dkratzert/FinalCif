@@ -1,5 +1,6 @@
 FinalCif recent changes
 -----------------------
+* v134 No symmetry codes for atoms were displayed in the table with the bond angles. This has been fixed.
 * v133 Improved handling of wrong passwords in COD deposition page. Possible crash fixed.
 * v132 Startup speed improved a bit. Selection of main table rows improved.
 * v131 Added an edit button to main table text fields so that the text templates can be reached easier.
