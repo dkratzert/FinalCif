@@ -20,6 +20,7 @@ from finalcif import VERSION
 from finalcif.appwindow import AppWindow
 
 data = Path('tests')
+test_data = Path('test-data')
 
 
 class TablesTestCase(unittest.TestCase):
@@ -86,6 +87,14 @@ class TemplateReportWithoutAppTestCase(unittest.TestCase):
         doc = Document(self.reportdoc.absolute())
         table: Table = doc.tables[3]
         self.assertEqual('C1–H1', table.cell(row_idx=4, col_idx=0).text)
+
+    def test_option_without_h(self):
+        self.options.without_h = True
+        make_report_from(options=self.options, cif=self.cif,
+                         output_filename=str(self.reportdoc), picfile=self.report_pic)
+        doc = Document(self.reportdoc.absolute())
+        table: Table = doc.tables[3]
+        self.assertEqual('O1–C13', table.cell(row_idx=4, col_idx=0).text)
 
     def test_all_paragraphs(self):
         make_report_from(options=self.options, cif=self.cif,
@@ -190,6 +199,34 @@ class TablesNoPictureTestCase(unittest.TestCase):
         doc = Document(self.reportdoc.resolve())
         shapes: InlineShapes = doc.inline_shapes
         self.assertEqual(1, len(shapes))
+
+
+class ReportWithsymmetryTestCase(unittest.TestCase):
+    def setUp(self) -> None:
+        self.testcif = (test_data / 'p31c.cif').resolve()
+        self.cif = CifContainer(self.testcif)
+        self.options = Mock()
+        self.options.without_h = False
+        self.reportdoc = self.cif.finalcif_file_prefixed(prefix='report_', suffix='-finalcif.docx')
+
+    def tearDown(self) -> None:
+        self.reportdoc.unlink(missing_ok=True)
+        self.cif.finalcif_file.unlink(missing_ok=True)
+
+    def test_symmetry_indicators(self):
+        make_report_from(options=self.options, cif=self.cif, output_filename=str(self.reportdoc), picfile=None)
+        doc = Document(self.reportdoc.absolute())
+        table: Table = doc.tables[3]
+        # Bond:
+        self.assertEqual('C2–C3#1', table.cell(row_idx=18, col_idx=0).text)
+        # Angle:
+        self.assertEqual("C3'#1–C2'–C3'", table.cell(row_idx=148, col_idx=0).text)
+        # Torsion angle:
+        table: Table = doc.tables[4]
+        self.assertEqual("C3#1–C2–C3–N1", table.cell(row_idx=6, col_idx=0).text)
+        # Hydrogen bond:
+        table: Table = doc.tables[5]
+        self.assertEqual("N1^a–H1^a⋯Cl1#1", table.cell(row_idx=1, col_idx=0).text)
 
 
 if __name__ == '__main__':
