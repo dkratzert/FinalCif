@@ -815,8 +815,7 @@ class AppWindow(QMainWindow):
         self.ui.cif_main_table.scrollToTop()
         self.ui.TemplatesStackedWidget.setCurrentIndex(0)
         self.ui.cif_main_table.resizeRowsToContents()
-        self.ui.revertLoopsPushButton.show()
-        self.ui.newLoopPushButton.show()
+        self._show_loop_buttons()
 
     def back_to_main_noload(self) -> None:
         """
@@ -825,8 +824,12 @@ class AppWindow(QMainWindow):
         self.status_bar.show_message('')
         self.ui.TemplatesStackedWidget.setCurrentIndex(0)
         self.ui.MainStackedWidget.got_to_main_page()
+        self._show_loop_buttons()
+
+    def _show_loop_buttons(self):
         self.ui.revertLoopsPushButton.show()
         self.ui.newLoopPushButton.show()
+        self.ui.deleteLoopButton.show()
 
     def _checkcif_failed(self, txt: str):
         self.ui.CheckCifLogPlainTextEdit.appendHtml('<b>{}</b>'.format(txt))
@@ -1914,6 +1917,7 @@ class AppWindow(QMainWindow):
         self.ui.LoopsTabWidget.setCurrentIndex(self.ui.LoopsTabWidget.count() - 1)
         self.ui.revertLoopsPushButton.hide()
         self.ui.newLoopPushButton.hide()
+        self.ui.deleteLoopButton.hide()
         self.loopcreate.saveLoopPushButton.clicked.connect(self.save_new_loop_to_cif)
 
     def _on_delete_current_loop(self):
