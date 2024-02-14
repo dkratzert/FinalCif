@@ -107,7 +107,7 @@ class BondsAndAngles():
         self._symmlist.update(newsymms)
         return bonds
 
-    def _get_angles_list(self, without_h):
+    def _get_angles_list(self, without_h: bool) -> List[Dict[str, RichText]]:
         angles_list = []
         newsymms = {}
         symms = {}
@@ -155,7 +155,7 @@ class TorsionAngles():
     def symmetry_generated_atoms_used(self):
         return len(self._symmlist) > 0
 
-    def _get_torsion_angles_list(self, without_h: bool):
+    def _get_torsion_angles_list(self, without_h: bool) -> List[Dict[str, RichText]]:
         if self.cif.nangles(without_h) <= 0:
             return []
         symms = {}
@@ -254,7 +254,7 @@ def get_card(cif: CifContainer, symm: str) -> Union[List[str], None]:
     return card
 
 
-def get_symminfo(newsymms: dict) -> str:
+def get_symminfo(newsymms: Dict[int, str]) -> str:
     """
     Adds text about the symmetry generators used in order to add symmetry generated atoms.
     """
@@ -273,7 +273,8 @@ def get_symminfo(newsymms: dict) -> str:
         return ''
 
 
-def symmsearch(cif: CifContainer, newsymms, num, symm, symms_list) -> int:
+def symmsearch(cif: CifContainer, newsymms: Dict[int, str], num: int,
+               symm: Union[str, None], symms_list: Dict[str, int]) -> int:
     if symm and symm not in symms_list.keys():
         symms_list[symm] = num
         card = get_card(cif, symm)
