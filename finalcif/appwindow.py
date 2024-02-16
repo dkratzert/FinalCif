@@ -1694,7 +1694,10 @@ class AppWindow(QMainWindow):
         if peak:
             self.ui.peakLineEdit.setText("{} / {}".format(peak, self.cif['_refine_diff_density_min']))
         if self.cif.res_file_data:
-            self.ui.shelx_TextEdit.setPlainText(cif.as_string(self.cif.res_file_data))
+            self.ui.shelx_TextEdit.clear()
+            if hasattr(self.cif.shx, 'restraint_errors'):
+                self.ui.shelx_TextEdit.setPlainText('\n'.join(self.cif.shx.restraint_errors) + '\n' + '-' * 60 + '\n')
+            self.ui.shelx_TextEdit.appendPlainText(cif.as_string(self.cif.res_file_data))
         try:
             QtCore.QTimer(self).singleShot(0, self.view_molecule)
             # threading.Thread(target=self.view_molecule).start()
