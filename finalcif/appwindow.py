@@ -21,7 +21,7 @@ import requests  # type: ignore
 from PyQt5 import QtCore, QtGui, QtWebEngineWidgets
 from PyQt5.QtCore import Qt, QEvent
 from PyQt5.QtWidgets import QMainWindow, QShortcut, QCheckBox, QListWidgetItem, QApplication, \
-    QPlainTextEdit, QFileDialog, QMessageBox
+    QPlainTextEdit, QFileDialog, QMessageBox, QScrollBar
 from gemmi import cif
 
 from finalcif import VERSION
@@ -1694,10 +1694,16 @@ class AppWindow(QMainWindow):
         if peak:
             self.ui.peakLineEdit.setText("{} / {}".format(peak, self.cif['_refine_diff_density_min']))
         if self.cif.res_file_data:
-            self.ui.shelx_TextEdit.clear()
-            if hasattr(self.cif.shx, 'restraint_errors'):
-                self.ui.shelx_TextEdit.setPlainText('\n'.join(self.cif.shx.restraint_errors) + '\n' + '-' * 60 + '\n')
-            self.ui.shelx_TextEdit.appendPlainText(cif.as_string(self.cif.res_file_data))
+            self.ui.shelx_warn_TextEdit.clear()
+            if hasattr(self.cif.shx, 'restraint_errors') and self.cif.shx.restraint_errors:
+                self.ui.shelx_warn_TextEdit.show()
+                self.ui.shelx_warn_TextEdit.setPlainText('Errors were found in the SHELX file:\n')
+                self.ui.shelx_warn_TextEdit.appendPlainText('\n'.join(self.cif.shx.restraint_errors))
+                vScrollBar = self.ui.shelx_warn_TextEdit.verticalScrollBar()
+                vScrollBar.triggerAction(QScrollBar.SliderToMinimum)
+            else:
+                self.ui.shelx_warn_TextEdit.hide()
+            self.ui.shelx_TextEdit.setPlainText(cif.as_string(self.cif.res_file_data))
         try:
             QtCore.QTimer(self).singleShot(0, self.view_molecule)
             # threading.Thread(target=self.view_molecule).start()

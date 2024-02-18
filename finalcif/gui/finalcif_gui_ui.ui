@@ -7,7 +7,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1566</width>
+    <width>1596</width>
     <height>812</height>
    </rect>
   </property>
@@ -834,7 +834,7 @@
         <item row="2" column="0" colspan="13">
          <widget class="MyMainStackedWidget" name="MainStackedWidget">
           <property name="currentIndex">
-           <number>5</number>
+           <number>2</number>
           </property>
           <widget class="QWidget" name="page_MainTable">
            <layout class="QVBoxLayout" name="verticalLayout">
@@ -1313,6 +1313,12 @@
               <layout class="QVBoxLayout" name="verticalLayout_41">
                <item>
                 <widget class="QPlainTextEdit" name="shelx_TextEdit">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>90</verstretch>
+                  </sizepolicy>
+                 </property>
                  <property name="font">
                   <font>
                    <family>Courier New</family>
@@ -1336,6 +1342,33 @@
                  </property>
                  <property name="plainText">
                   <string>No Shelx file available</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPlainTextEdit" name="shelx_warn_TextEdit">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>10</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <family>Courier New</family>
+                   <pointsize>11</pointsize>
+                   <weight>75</weight>
+                   <bold>true</bold>
+                  </font>
+                 </property>
+                 <property name="undoRedoEnabled">
+                  <bool>false</bool>
+                 </property>
+                 <property name="lineWrapMode">
+                  <enum>QPlainTextEdit::NoWrap</enum>
+                 </property>
+                 <property name="readOnly">
+                  <bool>true</bool>
                  </property>
                 </widget>
                </item>
