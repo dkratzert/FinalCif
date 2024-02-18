@@ -220,7 +220,10 @@ class Properties(QtCore.QObject):
                 if len(i.loop.tags) > 0:
                     loop_column_name = i.loop.tags[0]
                 for n in range(i.loop.length()):
-                    value = i.loop.val(n, 0)
+                    try:
+                        value = i.loop.val(n, 0)
+                    except AttributeError:
+                        value = i.loop[n, 0]
                     template_list.append(retranslate_delimiter(cif.as_string(value).strip("\n\r ;")))
         block_name = block.name.replace('__', ' ')
         # This is the list shown in the Main menu:

@@ -1,0 +1,14 @@
+data_Hydrogen__solution__type
+loop_
+_atom_sites_solution_hydrogens
+direct
+vecmap
+heavy
+difmap
+geom
+disper
+isomor
+notdet
+dual
+iterative
+other

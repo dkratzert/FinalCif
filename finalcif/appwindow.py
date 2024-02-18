@@ -478,7 +478,10 @@ class AppWindow(QMainWindow):
                     loop_column_name = i.loop.tags[0]
                     self.textedit.ui.cifKeyLineEdit.setText(loop_column_name)
                 for n in range(i.loop.length()):
-                    value = i.loop.val(n, 0)
+                    try:
+                        value = i.loop.val(n, 0)
+                    except AttributeError:
+                        value = i.loop[n, 0]
                     text_list.append(gemmi.cif.as_string(value))
         self.textedit.add_textfields(text_list)
 

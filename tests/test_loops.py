@@ -6,6 +6,8 @@
 #   ----------------------------------------------------------------------------
 import os
 
+import gemmi.cif
+
 os.environ["RUNNING_TEST"] = 'True'
 import unittest
 from pathlib import Path
@@ -83,14 +85,24 @@ class TestLoops(unittest.TestCase):
     def test_loop_no_edit(self):
         self.myapp.ui.SaveCifButton.click()
         c = CifContainer(self.myapp.cif.finalcif_file)
-        self.assertEqual('0.0181', c.loops[3].val(0, 2))
+        try:
+            val = c.loops[3].val(0, 2)
+        except AttributeError:
+            val = c.loops[3][0, 2]
+        self.assertEqual('0.0181', val)
 
     def test_loop_edit_one_single_field(self):
         model = self.myapp.ui.LoopsTabWidget.widget(self.get_index_of('Scattering')).model()
         model.setData(model.index(0, 2), 'foo bar', role=Qt.EditRole)
         self.myapp.ui.SaveCifButton.click()
         c = CifContainer(self.myapp.cif.finalcif_file)
-        self.assertEqual('foo bar', as_string(c.loops[3].val(0, 2)))
+        try:
+            # gemmi pre-0.6.5:
+            result = as_string(c.loops[3].val(0, 2))
+        except AttributeError:
+            # gemmi post-0.6.5:
+            result = as_string(c.loops[3][0, 2])
+        self.assertEqual('foo bar', result)
 
 
 # noinspection PyMissingTypeHints
@@ -153,9 +165,14 @@ class TestLoopsMove(unittest.TestCase):
         view._row_down(None)
         self.myapp.ui.SaveCifButton.click()
         c = CifContainer(self.myapp.cif.finalcif_file)
-        self.assertEqual('C', as_string(c.loops[3].val(0, 0)))
-        self.assertEqual('O', as_string(c.loops[3].val(1, 0)))
-        self.assertEqual('H', as_string(c.loops[3].val(2, 0)))
+        try:
+            self.assertEqual('C', as_string(c.loops[3].val(0, 0)))
+            self.assertEqual('O', as_string(c.loops[3].val(1, 0)))
+            self.assertEqual('H', as_string(c.loops[3].val(2, 0)))
+        except AttributeError:
+            self.assertEqual('C', as_string(c.loops[3][0, 0]))
+            self.assertEqual('O', as_string(c.loops[3][1, 0]))
+            self.assertEqual('H', as_string(c.loops[3][2, 0]))
 
     def test_move_row_down_from_middle_save_and_load_again_for_angles(self):
         view = self.set_current_index_to_row_col(1, 0, tab='Angles')
@@ -178,9 +195,14 @@ class TestLoopsMove(unittest.TestCase):
         view._row_down(None)
         self.myapp.ui.SaveCifButton.click()
         c = CifContainer(self.myapp.cif.finalcif_file)
-        self.assertEqual('C', as_string(c.loops[3].val(0, 0)))
-        self.assertEqual('H', as_string(c.loops[3].val(1, 0)))
-        self.assertEqual('O', as_string(c.loops[3].val(2, 0)))
+        try:
+            self.assertEqual('C', as_string(c.loops[3].val(0, 0)))
+            self.assertEqual('H', as_string(c.loops[3].val(1, 0)))
+            self.assertEqual('O', as_string(c.loops[3].val(2, 0)))
+        except AttributeError:
+            self.assertEqual('C', as_string(c.loops[3][0, 0]))
+            self.assertEqual('H', as_string(c.loops[3][1, 0]))
+            self.assertEqual('O', as_string(c.loops[3][2, 0]))
 
     def test_move_row_up_from_middle(self):
         view = self.set_current_index_to_row_col(1, 0)
@@ -194,9 +216,14 @@ class TestLoopsMove(unittest.TestCase):
         view._row_up(None)
         self.myapp.ui.SaveCifButton.click()
         c = CifContainer(self.myapp.cif.finalcif_file)
-        self.assertEqual('H', as_string(c.loops[3].val(0, 0)))
-        self.assertEqual('C', as_string(c.loops[3].val(1, 0)))
-        self.assertEqual('O', as_string(c.loops[3].val(2, 0)))
+        try:
+            self.assertEqual('H', as_string(c.loops[3].val(0, 0)))
+            self.assertEqual('C', as_string(c.loops[3].val(1, 0)))
+            self.assertEqual('O', as_string(c.loops[3].val(2, 0)))
+        except AttributeError:
+            self.assertEqual('H', as_string(c.loops[3][0, 0]))
+            self.assertEqual('C', as_string(c.loops[3][1, 0]))
+            self.assertEqual('O', as_string(c.loops[3][2, 0]))
 
     def test_move_row_up_from_start(self):
         view = self.set_current_index_to_row_col(0, 0)
@@ -210,6 +237,11 @@ class TestLoopsMove(unittest.TestCase):
         view._row_up(None)
         self.myapp.ui.SaveCifButton.click()
         c = CifContainer(self.myapp.cif.finalcif_file)
-        self.assertEqual('C', as_string(c.loops[3].val(0, 0)))
-        self.assertEqual('H', as_string(c.loops[3].val(1, 0)))
-        self.assertEqual('O', as_string(c.loops[3].val(2, 0)))
+        try:
+            self.assertEqual('C', as_string(c.loops[3].val(0, 0)))
+            self.assertEqual('H', as_string(c.loops[3].val(1, 0)))
+            self.assertEqual('O', as_string(c.loops[3].val(2, 0)))
+        except AttributeError:
+            self.assertEqual('C', as_string(c.loops[3][0, 0]))
+            self.assertEqual('H', as_string(c.loops[3][1, 0]))
+            self.assertEqual('O', as_string(c.loops[3][2, 0]))
