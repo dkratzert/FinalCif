@@ -1696,6 +1696,14 @@ class AppWindow(QMainWindow):
         peak = self.cif['_refine_diff_density_max']
         if peak:
             self.ui.peakLineEdit.setText("{} / {}".format(peak, self.cif['_refine_diff_density_min']))
+        self._show_shelx_file()
+        try:
+            QtCore.QTimer(self).singleShot(0, self.view_molecule)
+            # threading.Thread(target=self.view_molecule).start()
+        except Exception:
+            print('Molecule view crashed!')
+
+    def _show_shelx_file(self):
         if self.cif.res_file_data:
             self.ui.shelx_warn_TextEdit.clear()
             if hasattr(self.cif.shx, 'restraint_errors') and self.cif.shx.restraint_errors:
@@ -1707,11 +1715,9 @@ class AppWindow(QMainWindow):
             else:
                 self.ui.shelx_warn_TextEdit.hide()
             self.ui.shelx_TextEdit.setPlainText(cif.as_string(self.cif.res_file_data))
-        try:
-            QtCore.QTimer(self).singleShot(0, self.view_molecule)
-            # threading.Thread(target=self.view_molecule).start()
-        except Exception:
-            print('Molecule view crashed!')
+        else:
+            self.ui.shelx_TextEdit.setPlainText("No Shelx file available")
+            self.ui.shelx_warn_TextEdit.hide()
 
     def view_molecule(self) -> None:
         if self.ui.growCheckBox.isChecked():
