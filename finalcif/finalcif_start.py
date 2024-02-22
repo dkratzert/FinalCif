@@ -60,7 +60,7 @@ def main():
     app.setQuitOnLastWindowClosed(True)
     w = AppWindow(file=file)
     from PyQt5.QtGui import QIcon
-    app.setWindowIcon(QIcon(os.path.join(application_path, r'icon/finalcif2.png')))
+    app.setWindowIcon(QIcon(str(application_path / r'icon/finalcif2.png')))
     w.setWindowTitle('FinalCif v{}'.format(VERSION))
     # w.showMaximized()  # For full screen view
     w.setBaseSize(1200, 780)
