@@ -1,5 +1,6 @@
 FinalCif recent changes
 -----------------------
+* v135 Fix crash if templates are exported with no CIF loaded.
 * v134 No symmetry codes for atoms were displayed in the table with the bond angles. This has been fixed.
 * v133 Improved handling of wrong passwords in COD deposition page. Possible crash fixed.
 * v132 Startup speed improved a bit. Selection of main table rows improved.
