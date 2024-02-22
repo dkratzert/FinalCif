@@ -5,7 +5,7 @@ from pathlib import Path
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMessageBox, QMainWindow, QFileDialog, QVBoxLayout, QTextEdit, \
-    QPushButton, QFrame, QApplication
+    QPushButton, QFrame
 
 from finalcif import VERSION
 
@@ -226,6 +226,7 @@ def cif_file_save_dialog(filename: str) -> str:
 
 if __name__ == '__main__':
     from PyQt5 import QtWidgets
+    from PyQt5.QtWidgets import QApplication
 
     app = QApplication.instance()
     if app is None:

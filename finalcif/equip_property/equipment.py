@@ -1,3 +1,4 @@
+from __future__ import annotations
 from bisect import bisect
 from pathlib import Path
 from typing import List, Dict
@@ -22,7 +23,7 @@ if TYPE_CHECKING:
 
 class Equipment:
 
-    def __init__(self, app: 'AppWindow', settings: FinalCifSettings):
+    def __init__(self, app: AppWindow, settings: FinalCifSettings):
         self.app = app
         self.settings = settings
         if app:

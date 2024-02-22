@@ -5,14 +5,11 @@
 #  and you think this stuff is worth it, you can buy me a beer in return.
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
-import os
 import sys
 import time
 import traceback
 from pathlib import Path
 from typing import Type
-
-from PyQt5.QtGui import QIcon
 
 from finalcif import VERSION
 from finalcif.app_path import application_path
@@ -62,6 +59,7 @@ def main():
             file = None
     app.setQuitOnLastWindowClosed(True)
     w = AppWindow(file=file)
+    from PyQt5.QtGui import QIcon
     app.setWindowIcon(QIcon(os.path.join(application_path, r'icon/finalcif2.png')))
     w.setWindowTitle('FinalCif v{}'.format(VERSION))
     # w.showMaximized()  # For full screen view

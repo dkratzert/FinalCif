@@ -1,3 +1,4 @@
+from __future__ import annotations
 #   ----------------------------------------------------------------------------
 #   "THE BEER-WARE LICENSE" (Revision 42):
 #   Daniel Kratzert <dkratzert@gmx.de> wrote this file.  As long as you retain
@@ -5,7 +6,6 @@
 #   and you think this stuff is worth it, you can buy me a beer in return.
 #   ----------------------------------------------------------------------------
 import re
-from contextlib import suppress
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
@@ -51,7 +51,7 @@ class Author:
 
 
 class AuthorLoops():
-    def __init__(self, ui: Ui_FinalCifWindow, cif: CifContainer, app: 'AppWindow'):
+    def __init__(self, ui: Ui_FinalCifWindow, cif: CifContainer, app: AppWindow):
         self.ui = ui
         self.cif = cif
         self.app = app

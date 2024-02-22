@@ -6,8 +6,6 @@
 #   ----------------------------------------------------------------------------
 import os
 
-import gemmi.cif
-
 os.environ["RUNNING_TEST"] = 'True'
 import unittest
 from pathlib import Path

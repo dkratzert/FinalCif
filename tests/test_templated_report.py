@@ -95,7 +95,7 @@ class TemplateReportWithoutAppTestCase(unittest.TestCase):
         t = TemplatedReport()
         ok = t.make_templated_report(options=self.options,
                                      cif=CifContainer(self.testcif),
-                                     output_filename=self.reportdoc,
+                                     output_filename=str(self.reportdoc),
                                      picfile=self.report_pic,
                                      template_path=self.text_template)
         self.assertTrue(ok)

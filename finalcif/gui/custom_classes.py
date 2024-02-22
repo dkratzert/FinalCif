@@ -11,7 +11,6 @@ from PyQt5.QtWidgets import QAbstractScrollArea, QTableWidget, \
 from finalcif.cif.text import retranslate_delimiter
 from finalcif.gui.combobox import MyComboBox
 from finalcif.gui.dialogs import show_keyword_help
-from finalcif.gui.edit_button import FloatingButtonWidget
 from finalcif.gui.mixins import ItemTextMixin
 from finalcif.gui.plaintextedit import MyQPlainTextEdit
 

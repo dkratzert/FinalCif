@@ -191,7 +191,9 @@ class FinalCifSettings():
             self.settings.beginGroup(property)
             try:
                 v = self.settings.value(item_name)
-            except TypeError:
+            except TypeError as e:
+                print(f"DBG> Item name '{item_name}' could not be loaded from settings.")
+                print(e)
                 v = None
             self.settings.endGroup()
             return v

@@ -268,8 +268,8 @@ class SolveRefine():
             refineref = SHELXLReference()
         if 'OLEX' in refined.upper():
             refineref = Olex2Reference()
-        if 'NOSPHERA2' in solution_prog.upper() or 'NOSPHERA2' in cif['_refine_special_details'].upper() \
-            or 'NOSPHERA2' in cif['_olex2_refine_details'].upper():
+        if ('NOSPHERA2' in solution_prog.upper() or 'NOSPHERA2' in cif['_refine_special_details'].upper()
+                or 'NOSPHERA2' in cif['_olex2_refine_details'].upper()):
             refineref = [Olex2Reference(), Nosphera2Reference()]
         refine_coef = gstr(cif['_refine_ls_structure_factor_coef'])
         if manual_method:

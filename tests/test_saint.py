@@ -4,7 +4,6 @@
 #   this notice you can do whatever you want with this stuff. If we meet some day,
 #   and you think this stuff is worth it, you can buy me a beer in return.
 #   ----------------------------------------------------------------------------
-import os
 import unittest
 from pathlib import Path
 
@@ -12,6 +11,7 @@ from finalcif.datafiles.saint import SaintListFile
 from finalcif.tools.misc import unify_line_endings
 
 data = Path('.')
+
 
 class MyTestCase(unittest.TestCase):
 

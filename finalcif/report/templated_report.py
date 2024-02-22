@@ -444,6 +444,21 @@ class TemplatedReport():
 
     def get_absortion_correction_program(self, cif: CifContainer) -> str:
         absdetails = cif['_exptl_absorpt_process_details'].replace('-', ' ').replace(':', '')
+        bruker_scaling = cif['_computing_bruker_data_scaling'].replace('-', ' ').replace(':', '')
+        scale_prog, version = self._get_scaling_program(absdetails)
+        if not scale_prog:
+            scale_prog, version = self._get_scaling_program(bruker_scaling)
+        if 'SORTAV' in absdetails.upper():
+            scale_prog = 'SORTAV'
+            self.literature['absorption'] = SORTAVReference()
+        if 'crysalis' in absdetails.lower():
+            scale_prog = 'SCALE3 ABSPACK'
+            # see above also
+        scale_prog += " " + version
+
+        return scale_prog
+
+    def _get_scaling_program(self, absdetails: str) -> tuple[str, str]:
         scale_prog = ''
         version = ''
         if 'SADABS' in absdetails.upper() or 'TWINABS' in absdetails.upper():
@@ -456,15 +471,7 @@ class TemplatedReport():
             else:
                 scale_prog = 'TWINABS'
             self.literature['absorption'] = SadabsTwinabsReference()
-        if 'SORTAV' in absdetails.upper():
-            scale_prog = 'SORTAV'
-            self.literature['absorption'] = SORTAVReference()
-        if 'crysalis' in absdetails.lower():
-            scale_prog = 'SCALE3 ABSPACK'
-            # see above also
-        scale_prog += " " + version
-
-        return scale_prog
+        return scale_prog, version
 
     def solution_method(self, cif: CifContainer) -> str:
         solution_method = gstr(cif['_atom_sites_solution_primary']) or '??'
@@ -487,7 +494,7 @@ class TemplatedReport():
         if 'OLEX' in refined.upper():
             self.literature['refinement'] = Olex2Reference()
         if ('NOSPHERA2' in refined.upper() or 'NOSPHERA2' in cif['_refine_special_details'].upper() or
-            'NOSPHERAT2' in cif['_olex2_refine_details'].upper()):
+                'NOSPHERAT2' in cif['_olex2_refine_details'].upper()):
             self.literature['refinement'] = Nosphera2Reference()
         return refined.split()[0]
 

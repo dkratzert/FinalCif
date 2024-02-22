@@ -34,12 +34,12 @@ class TestFileIsOpened(unittest.TestCase):
     def tearDown(self) -> None:
         Path('foo.cif').unlink(missing_ok=True)
         Path('tests/examples/work/cu_BruecknerJK_153F40_0m-finalcif.cif').unlink(missing_ok=True)
+        self.myapp.ui.trackChangesCifCheckBox.setChecked(False)
         self.myapp.close()
 
     def test_save_action(self):
         self.myapp.save_current_cif_file()
         self.assertEqual(True, (data / 'examples/work/cu_BruecknerJK_153F40_0m-finalcif.cif').exists())
-        self.myapp.ui.trackChangesCifCheckBox.setChecked(False)
 
 
 class TestWorkfolder(unittest.TestCase):

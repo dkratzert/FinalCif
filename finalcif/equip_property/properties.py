@@ -1,3 +1,4 @@
+from __future__ import annotations
 import threading
 import time
 from contextlib import suppress
@@ -15,7 +16,6 @@ from finalcif.gui.plaintextedit import PlainTextEditTemplate
 from finalcif.tools.settings import FinalCifSettings
 from finalcif.tools import misc
 
-
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 
 
 class Properties(QtCore.QObject):
-    def __init__(self, parent: 'AppWindow', settings: FinalCifSettings):
+    def __init__(self, parent: AppWindow, settings: FinalCifSettings):
         super().__init__(parent=parent)
         self.app = parent
         self.settings = settings
