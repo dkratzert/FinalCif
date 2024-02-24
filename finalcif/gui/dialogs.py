@@ -3,9 +3,8 @@ import os
 import sys
 from pathlib import Path
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QMessageBox, QMainWindow, QFileDialog, QVBoxLayout, QTextEdit, \
-    QPushButton, QFrame
+from PyQt5 import QtCore
+from PyQt5.QtWidgets import QMessageBox, QMainWindow, QFileDialog, QVBoxLayout, QTextEdit, QPushButton, QFrame
 
 from finalcif import VERSION
 
@@ -86,9 +85,9 @@ def show_general_warning(parent, warn_text: str = '', info_text: str = '', windo
         print(f'DBG> Running inside a pytest -> not showing error message:\n{warn_text}\n{info_text}')
         return None
     box = QMessageBox(parent=parent)
-    box.setTextFormat(Qt.AutoText)
+    box.setTextFormat(QtCore.Qt.AutoText)
     box.setWindowTitle(window_title)
-    box.setTextInteractionFlags(Qt.TextBrowserInteraction)
+    box.setTextInteractionFlags(QtCore.Qt.TextBrowserInteraction)
     box.setText(warn_text)
     box.setModal(True)
     if info_text:
@@ -109,7 +108,7 @@ def show_keyword_help(parent, helptext: str, title: str = ''):
     window.setWindowTitle(title)
 
     def close_window(event):
-        if event.key() == Qt.Key_Escape:
+        if event.key() == QtCore.Qt.Key_Escape:
             window.close()
 
     window.keyPressEvent = close_window
@@ -135,9 +134,9 @@ def show_keyword_help(parent, helptext: str, title: str = ''):
 
 def show_ok_cancel_warning(parent, warn_text: str = '') -> bool:
     box = QMessageBox(parent=parent)
-    box.setTextFormat(Qt.AutoText)
+    box.setTextFormat(QtCore.Qt.AutoText)
     box.setWindowTitle(" ")
-    box.setTextInteractionFlags(Qt.TextBrowserInteraction)
+    box.setTextInteractionFlags(QtCore.Qt.TextBrowserInteraction)
     box.setText(warn_text)
     box.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
     box.setDefaultButton(QMessageBox.Ok)
@@ -154,9 +153,9 @@ def show_update_warning(parent, remote_version: int = 0) -> None:
                 "<a href='https://dkratzert.de/finalcif.html'>" \
                 "https://dkratzert.de/finalcif.html</a>"
     box = QMessageBox(parent)
-    box.setTextFormat(Qt.AutoText)
+    box.setTextFormat(QtCore.Qt.AutoText)
     box.setWindowTitle(" ")
-    box.setTextInteractionFlags(Qt.TextBrowserInteraction)
+    box.setTextInteractionFlags(QtCore.Qt.TextBrowserInteraction)
     if sys.platform.startswith("win"):
         warn_text += r"<br><br>Updating now will end all running FinalCIF programs!"
         update_button = box.addButton('Update Now', QMessageBox.AcceptRole)
@@ -187,9 +186,9 @@ def show_bug_found_warning(logfile) -> None:
     box = QMessageBox(parent=window)
     box.setWindowTitle('Warning')
     box.setText(title)
-    box.setTextInteractionFlags(Qt.TextBrowserInteraction)
-    box.setTextFormat(Qt.AutoText)
     box.setInformativeText(text)
+    box.setTextFormat(QtCore.Qt.RichText)
+    box.setTextInteractionFlags(QtCore.Qt.TextBrowserInteraction)
     box.exec()
     window.show()
 
@@ -240,7 +239,7 @@ if __name__ == '__main__':
     # answer = show_yes_now_question(title='Delete templates', question='Fobar?', parent=w)
     # bad_z_message(parent=w, z=3.0)
     # show_update_warning(parent=w, remote_version=123)
-    # show_bug_found_warning(Path(r'C:\test.txt'))
+    show_bug_found_warning(Path(r'test.txt'))
     # show_ok_cancel_warning(parent=w, warn_text='foobar')
     # show_keyword_help(parent=w, helptext="This is a helptext", title='A Title')
     # show_general_warning(parent=w, warn_text='Warning text', info_text='Info text', window_title='Title')
@@ -248,6 +247,6 @@ if __name__ == '__main__':
     # show_res_checksum_warning(parent=w)
     # unable_to_open_message(parent=w, not_ok=Exception('foo'), filepath=Path('C:/foo.txt'))
     # do_update_program('127')
-    window.show()
+    # window.show()
 
     app.exec_()

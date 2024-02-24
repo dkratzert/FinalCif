@@ -185,7 +185,7 @@ class AppWindow(QMainWindow):
         else:
             self.ui.CODpushButton.setEnabled(True)
 
-    def set_font_sizes(self):
+    def set_font_sizes(self) -> None:
         large_font = QtGui.QFont()
         ps = large_font.pointSize()
         large_font.setPointSize(int(ps + ps * 0.38))
