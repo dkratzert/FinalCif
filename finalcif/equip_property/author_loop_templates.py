@@ -369,7 +369,7 @@ class AuthorLoops():
         """
         Import all authors from an external file"""
         for author in authors_data:
-            if author:
+            if author and isinstance(author, Author):
                 self.general_author_save(author)
 
     def authors_list(self) -> List[str]:
