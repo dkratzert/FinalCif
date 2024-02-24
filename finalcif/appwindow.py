@@ -100,7 +100,7 @@ class AppWindow(QMainWindow):
         self.properties = Properties(parent=self, settings=self.settings)
         self.status_bar = StatusBar(ui=self.ui)
         self.status_bar.show_message('FinalCif version {}'.format(VERSION))
-        self.authors = AuthorLoops(ui=self.ui, cif=self.cif, app=self)
+        self.authors: Optional[AuthorLoops] = None
         self.set_window_size_and_position()
         self.ui.cif_main_table.installEventFilter(self)
         # Sorting desynchronized header and columns:
@@ -153,12 +153,13 @@ class AppWindow(QMainWindow):
         self.ui.ExploreDirButton.setDisabled(True)
         self.ui.DetailsPushButton.setDisabled(True)
         self.ui.SourcesPushButton.setDisabled(True)
-        self.ui.OptionsPushButton.setEnabled(True)
         self.ui.ImportCifPushButton.setDisabled(True)
         self.ui.CODpushButton.setDisabled(True)
         self.ui.CCDCpushButton.setDisabled(True)
         self.ui.ShredCifButton.setDisabled(True)
         self.ui.LoopsPushButton.setDisabled(True)
+        self.ui.OptionsPushButton.setDisabled(True)
+        self.ui.AuthorEditPushButton.setDisabled(True)
 
     def enable_buttons(self):
         self.ui.appendCifPushButton.setEnabled(True)
@@ -177,6 +178,7 @@ class AppWindow(QMainWindow):
         self.ui.CODpushButton.setEnabled(True)
         self.ui.CCDCpushButton.setEnabled(True)
         self.ui.LoopsPushButton.setEnabled(True)
+        self.ui.AuthorEditPushButton.setEnabled(True)
         if self.cif.is_multi_cif:
             self.ui.CODpushButton.setDisabled(True)
         else:
@@ -1527,6 +1529,7 @@ class AppWindow(QMainWindow):
             self.ui.CCDCNumLineEdit.setText(self.cif['_database_code_depnum_ccdc_archive'])
             self.ui.CheckcifPlaintextEdit.clear()
             self.ui.TemplatesStackedWidget.setCurrentIndex(0)
+            self.authors = AuthorLoops(ui=self.ui, cif=self.cif, app=self)
             if not (self.ui.MainStackedWidget.on_checkcif_page() or self.ui.MainStackedWidget.on_info_page()):
                 self.ui.MainStackedWidget.got_to_main_page()
             self.deposit.cif = self.cif
