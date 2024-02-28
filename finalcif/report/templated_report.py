@@ -651,4 +651,11 @@ class TemplatedReport():
 
 
 if __name__ == '__main__':
-    pass
+    from unittest import mock
+    from pprint import pprint
+    data = Path('tests')
+    testcif = (data / 'examples/1979688.cif').absolute()
+    cif = CifContainer(testcif)
+    t = TemplatedReport()
+    maincontext = t._get_context(cif, options=mock.Mock(), picfile=None, tpl_doc=mock.Mock())
+    pprint(maincontext)
