@@ -5,14 +5,13 @@ from collections import namedtuple
 from contextlib import suppress
 from math import sin, radians
 from pathlib import Path
-from typing import List, Dict, Union
+from typing import List, Dict, Union, Iterator
 
 import jinja2
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 from docx.shared import Cm
 from docx.text.paragraph import Paragraph
 from docxtpl import DocxTemplate, RichText, InlineImage, Subdoc
-from shelxfile.misc.dsrmath import my_isnumeric
 
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.gui.dialogs import show_general_warning
@@ -25,6 +24,8 @@ from finalcif.tools.misc import isnumeric, this_or_quest, timessym, angstrom, pr
     halbgeviert, minus_sign, ellipsis_mid
 from finalcif.tools.options import Options
 from finalcif.tools.space_groups import SpaceGroups
+
+AdpWithMinus = namedtuple('AdpWithMinus', ('label', 'U11', 'U22', 'U33', 'U23', 'U13', 'U12'))
 
 
 @dataclasses.dataclass(frozen=True)
@@ -75,13 +76,13 @@ class BondsAndAngles():
         self.bonds_as_string: List[Bond] = []
         self.angles_as_string: List[Angle] = []
         # These can be used as Richtext for python-docx-tpl:
-        self.bonds: List[dict] = self._get_bonds_list(without_h)
-        self.angles: List[dict] = self._get_angles_list(without_h)
+        self.bonds_richtext: List[Dict[str, RichText]] = self._get_bonds_list(without_h)
+        self.angles_richtext: List[Dict[str, RichText]] = self._get_angles_list(without_h)
         # The list of symmetry elements at the table end used for generated atoms:
         self.symminfo: str = get_symminfo(self._symmlist)
 
     def __len__(self):
-        return len(self.bonds) + len(self.angles)
+        return len(self.bonds_richtext) + len(self.angles_richtext)
 
     @property
     def symmetry_generated_atoms_used(self):
@@ -288,9 +289,8 @@ def symmsearch(cif: CifContainer, newsymms: Dict[int, str], num: int,
     return num
 
 
-class RichTextFormatter():
-
-    def __init__(self):
+class Formatter:
+    def __init__(self, options: Options) -> None:
         self.literature = {'finalcif'   : FinalCifReference(),
                            'ccdc'       : CCDCReference(),
                            'absorption' : '[no reference found]',
@@ -298,62 +298,27 @@ class RichTextFormatter():
                            'refinement' : '[no reference found]',
                            'integration': '[no reference found]',
                            }
+        self._bonds_angles = BondsAndAngles(cif, without_h=options.without_h)
+        self._torsions = TorsionAngles(cif, without_h=options.without_h)
+        self._hydrogens = HydrogenBonds(cif)
 
-    def format_sum_formula(self, sum_formula: str) -> RichText:
-        sum_formula_group = [''.join(x[1]) for x in itertools.groupby(sum_formula, lambda x: x.isalpha())]
-        richtext = RichText('')
-        if sum_formula_group:
-            for _, word in enumerate(sum_formula_group):
-                if isnumeric(word):
-                    richtext.add(word, subscript=True)
-                elif ')' in word:
-                    richtext.add(word.split(')')[0], subscript=True)
-                    richtext.add(')')
-                elif ']' in word:
-                    richtext.add(word.split(']')[0], subscript=True)
-                    richtext.add(']')
-                else:
-                    richtext.add(word)
-                    if word == ',':
-                        richtext.add(' ')
-            return richtext
-        else:
-            return RichText('no formula')
+    def get_bonds(self):
+        raise NotImplemented
 
-    @staticmethod
-    def space_group_subdoc(tpl_doc: DocxTemplate, cif: CifContainer) -> Subdoc:
-        """
-        Generates a Subdoc subdocument with the xml code for a math element in MSWord.
-        """
-        s = SpaceGroups()
-        try:
-            spgrxml = s.to_mathml(cif.space_group)
-        except KeyError:
-            spgrxml = '<math xmlns="http://www.w3.org/1998/Math/MathML">?</math>'
-        spgr_word = math_to_word(spgrxml)
-        # I have to create a subdocument in order to add the xml:
-        sd = tpl_doc.new_subdoc()
-        p: Paragraph = sd.add_paragraph()
-        p.alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
-        p._element.append(spgr_word)
-        try:
-            p.add_run(f' ({cif.spgr_number})')
-        except AttributeError:
-            pass
-        return sd
+    def get_angles(self):
+        raise NotImplemented
 
-    @staticmethod
-    def get_from_to_theta_range(cif: CifContainer) -> str:
-        theta_min = cif['_diffrn_reflns_theta_min']
-        theta_max = cif['_diffrn_reflns_theta_max']
-        radiation_wavelength = cif['_diffrn_radiation_wavelength']
-        try:
-            d_max = f' ({float(radiation_wavelength) / (2 * sin(radians(float(theta_max)))):.2f}' \
-                    f'{protected_space}{angstrom})'
-            # 2theta range:
-            return f"{2 * float(theta_min):.2f} to {2 * float(theta_max):.2f}{d_max}"
-        except ValueError:
-            return '? to ?'
+    def get_bonds_angles_symminfo(self):
+        return self._bonds_angles.symminfo
+
+    def get_torsion_symminfo(self):
+        return self._torsions.symminfo
+
+    def get_hydrogen_symminfo(self):
+        return self._hydrogens.symminfo
+
+    def get_crystallization_method(self, cif):
+        return gstr(cif['_exptl_crystal_recrystallization_method']) or '[No crystallization method given!]'
 
     @staticmethod
     def hkl_index_limits(cif: CifContainer) -> str:
@@ -371,20 +336,17 @@ class RichTextFormatter():
               f'{less_or_equal} l {less_or_equal} {limit_l_max}'
 
     @staticmethod
-    def get_radiation(cif: CifContainer) -> RichText:
-        rad_element, radtype, radline = format_radiation(cif['_diffrn_radiation_type'])
-        radiation = RichText(rad_element)
-        radiation.add(radtype, italic=True)
-        radiation.add(radline, italic=True, subscript=True)
-        return radiation
-
-    @staticmethod
-    def get_completeness(cif: CifContainer) -> str:
+    def get_from_to_theta_range(cif: CifContainer) -> str:
+        theta_min = cif['_diffrn_reflns_theta_min']
+        theta_max = cif['_diffrn_reflns_theta_max']
+        radiation_wavelength = cif['_diffrn_radiation_wavelength']
         try:
-            completeness = f"{float(cif['_diffrn_measured_fraction_theta_full']) * 100:.1f}{protected_space}%"
+            d_max = f' ({float(radiation_wavelength) / (2 * sin(radians(float(theta_max)))):.2f}' \
+                    f'{protected_space}{angstrom})'
+            # 2theta range:
+            return f"{2 * float(theta_min):.2f} to {2 * float(theta_max):.2f}{d_max}"
         except ValueError:
-            completeness = '?'
-        return completeness
+            return '? to ?'
 
     @staticmethod
     def get_diff_density_min(cif: CifContainer) -> str:
@@ -442,6 +404,21 @@ class RichTextFormatter():
             self.literature['absorption'] = CrysalisProReference(version=version, year=year)
         return integration_prog
 
+    def _get_scaling_program(self, absdetails: str) -> tuple[str, str]:
+        scale_prog = ''
+        version = ''
+        if 'SADABS' in absdetails.upper() or 'TWINABS' in absdetails.upper():
+            if len(absdetails.split()) > 1:
+                version = absdetails.split()[1]
+            else:
+                version = 'unknown version'
+            if 'SADABS' in absdetails:
+                scale_prog = 'SADABS'
+            else:
+                scale_prog = 'TWINABS'
+            self.literature['absorption'] = SadabsTwinabsReference()
+        return scale_prog, version
+
     def get_absortion_correction_program(self, cif: CifContainer) -> str:
         absdetails = cif['_exptl_absorpt_process_details'].replace('-', ' ').replace(':', '')
         bruker_scaling = cif['_computing_bruker_data_scaling'].replace('-', ' ').replace(':', '')
@@ -458,34 +435,9 @@ class RichTextFormatter():
 
         return scale_prog
 
-    def _get_scaling_program(self, absdetails: str) -> tuple[str, str]:
-        scale_prog = ''
-        version = ''
-        if 'SADABS' in absdetails.upper() or 'TWINABS' in absdetails.upper():
-            if len(absdetails.split()) > 1:
-                version = absdetails.split()[1]
-            else:
-                version = 'unknown version'
-            if 'SADABS' in absdetails:
-                scale_prog = 'SADABS'
-            else:
-                scale_prog = 'TWINABS'
-            self.literature['absorption'] = SadabsTwinabsReference()
-        return scale_prog, version
-
     def solution_method(self, cif: CifContainer) -> str:
         solution_method = gstr(cif['_atom_sites_solution_primary']) or '??'
         return solution_method.strip('\n\r')
-
-    def solution_program(self, cif: CifContainer) -> str:
-        solution_prog = gstr(cif['_computing_structure_solution']) or '??'
-        if solution_prog.upper().startswith(('SHELXT', 'XT')):
-            self.literature['solution'] = SHELXTReference()
-        if 'SHELXS' in solution_prog.upper():
-            self.literature['solution'] = SHELXSReference()
-        if 'SHELXD' in solution_prog.upper():
-            self.literature['solution'] = SHELXDReference()
-        return solution_prog.split()[0]
 
     def refinement_prog(self, cif: CifContainer) -> str:
         refined = gstr(cif['_computing_structure_refinement']) or '??'
@@ -498,7 +450,22 @@ class RichTextFormatter():
             self.literature['refinement'] = Nosphera2Reference()
         return refined.split()[0]
 
-    def get_atomic_coordinates(self, cif: CifContainer):
+    def solution_program(self, cif: CifContainer) -> str:
+        solution_prog = gstr(cif['_computing_structure_solution']) or '??'
+        if solution_prog.upper().startswith(('SHELXT', 'XT')):
+            self.literature['solution'] = SHELXTReference()
+        if 'SHELXS' in solution_prog.upper():
+            self.literature['solution'] = SHELXSReference()
+        if 'SHELXD' in solution_prog.upper():
+            self.literature['solution'] = SHELXDReference()
+        return solution_prog.split()[0]
+
+    def _tvalue(self, tval: str) -> str:
+        with suppress(ValueError):
+            return f'{float(tval):.3f}'
+        return tval
+
+    def get_atomic_coordinates(self, cif: CifContainer) -> Iterator[Dict[str:str]]:
         for at in cif.atoms(without_h=False):
             yield {'label': at.label,
                    'type' : at.type,
@@ -509,27 +476,142 @@ class RichTextFormatter():
                    'occ'  : at.occ.replace('-', minus_sign),
                    'u_eq' : at.u_eq.replace('-', minus_sign)}
 
-    def get_displacement_parameters(self, cif: CifContainer):
+    def get_displacement_parameters(self, cif: CifContainer) -> Iterator[AdpWithMinus]:
         """
         Yields the anisotropic displacement parameters. With hypehens replaced to minus signs.
         """
-        adp = namedtuple('adp', ('label', 'U11', 'U22', 'U33', 'U23', 'U13', 'U12'))
         for label, u11, u22, u33, u23, u13, u12 in cif.displacement_parameters():
-            yield adp(label=label,
-                      U11=u11.replace('-', minus_sign),
-                      U22=u22.replace('-', minus_sign),
-                      U33=u33.replace('-', minus_sign),
-                      U12=u12.replace('-', minus_sign),
-                      U13=u13.replace('-', minus_sign),
-                      U23=u23.replace('-', minus_sign))
+            yield AdpWithMinus(label=label,
+                               U11=u11.replace('-', minus_sign),
+                               U22=u22.replace('-', minus_sign),
+                               U33=u33.replace('-', minus_sign),
+                               U12=u12.replace('-', minus_sign),
+                               U13=u13.replace('-', minus_sign),
+                               U23=u23.replace('-', minus_sign))
 
-    def _tvalue(self, tval: str) -> str:
-        with suppress(ValueError):
-            return f'{float(tval):.3f}'
-        return tval
 
-    def get_crystallization_method(self, cif):
-        return gstr(cif['_exptl_crystal_recrystallization_method']) or '[No crystallization method given!]'
+class HtmlFormatter(Formatter):
+    def __init__(self, options: Options):
+        super().__init__(options)
+
+    def get_bonds_and_angles(self):
+        return self._bonds_angles.bonds_as_string
+
+    def get_bonds(self):
+        raise self._bonds_angles.bonds_as_string
+
+    def get_angles(self):
+        raise self._bonds_angles.angles_as_string
+
+    def space_group_subdoc(self, cif: CifContainer, _: None) -> str:
+        s = SpaceGroups()
+        try:
+            spgrxml = s.to_mathml(cif.space_group)
+        except KeyError:
+            spgrxml = '<math xmlns="http://www.w3.org/1998/Math/MathML">?</math>'
+        return f'{spgrxml} ({cif.spgr_number})'
+
+    def make_picture(self, options: Options, picfile: Path, _: None):
+        picture_path = ''
+        if options.report_text and picfile and picfile.exists():
+            picture_path = str(picfile.resolve())
+        return (f'<img src="{picture_path}" '
+                f'alt="Structure View" style="width:20%;height:20%;">')
+
+    def format_sum_formula(self, sum_formula: str) -> str:
+        sum_formula_group = [''.join(x[1]) for x in itertools.groupby(sum_formula, lambda x: x.isalpha())]
+        html_text = ''
+        if sum_formula_group:
+            for _, word in enumerate(sum_formula_group):
+                if isnumeric(word):
+                    html_text += f'<sub>{word}</sub>'
+                elif ')' in word:
+                    html_text += f"<sub>{word.split(')')[0]}</sub>)"
+                elif ']' in word:
+                    html_text += f"<sub>{word.split(']')[0]}</sub>)"
+                else:
+                    html_text += word
+                    if word == ',':
+                        html_text += ';&nbsp;'
+            return html_text
+        else:
+            return 'no formula'
+
+    def get_radiation(cif: CifContainer) -> str:
+        rad_element, radtype, radline = format_radiation(cif['_diffrn_radiation_type'])
+        radiation = f'{rad_element}<it>{radtype}</it><it><sub>{radline}</sub></it>'
+        return radiation
+
+
+class RichTextFormatter(Formatter):
+
+    def __init__(self):
+        super().__init__()
+
+    def get_bonds(self) -> List[Dict[str, RichText]]:
+        raise self._bonds_angles.bonds_richtext
+
+    def get_angles(self) -> List[Dict[str, RichText]]:
+        return self._bonds_angles.angles_richtext
+
+    def format_sum_formula(self, sum_formula: str) -> RichText:
+        sum_formula_group = [''.join(x[1]) for x in itertools.groupby(sum_formula, lambda x: x.isalpha())]
+        richtext = RichText('')
+        if sum_formula_group:
+            for _, word in enumerate(sum_formula_group):
+                if isnumeric(word):
+                    richtext.add(word, subscript=True)
+                elif ')' in word:
+                    richtext.add(word.split(')')[0], subscript=True)
+                    richtext.add(')')
+                elif ']' in word:
+                    richtext.add(word.split(']')[0], subscript=True)
+                    richtext.add(']')
+                else:
+                    richtext.add(word)
+                    if word == ',':
+                        richtext.add(' ')
+            return richtext
+        else:
+            return RichText('no formula')
+
+    @staticmethod
+    def space_group_subdoc(cif: CifContainer, tpl_doc: DocxTemplate) -> Subdoc:
+        """
+        Generates a Subdoc subdocument with the xml code for a math element in MSWord.
+        """
+        s = SpaceGroups()
+        try:
+            spgrxml = s.to_mathml(cif.space_group)
+        except KeyError:
+            spgrxml = '<math xmlns="http://www.w3.org/1998/Math/MathML">?</math>'
+        spgr_word = math_to_word(spgrxml)
+        # I have to create a subdocument in order to add the xml:
+        sd = tpl_doc.new_subdoc()
+        p: Paragraph = sd.add_paragraph()
+        p.alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
+        p._element.append(spgr_word)
+        try:
+            p.add_run(f' ({cif.spgr_number})')
+        except AttributeError:
+            pass
+        return sd
+
+    @staticmethod
+    def get_radiation(cif: CifContainer) -> RichText:
+        rad_element, radtype, radline = format_radiation(cif['_diffrn_radiation_type'])
+        radiation = RichText(rad_element)
+        radiation.add(radtype, italic=True)
+        radiation.add(radline, italic=True, subscript=True)
+        return radiation
+
+    @staticmethod
+    def get_completeness(cif: CifContainer) -> str:
+        try:
+            completeness = f"{float(cif['_diffrn_measured_fraction_theta_full']) * 100:.1f}{protected_space}%"
+        except ValueError:
+            completeness = '?'
+        return completeness
 
     def make_picture(self, options: Options, picfile: Path, tpl_doc: DocxTemplate):
         if options.report_text and picfile and picfile.exists():
@@ -589,20 +671,21 @@ text_factory = {
 
 
 class TemplatedReport():
+    def __init__(self, format: str):
+        self.format = format
+        self.text_formatter = text_factory[self.format]
+
     def get_context(self, cif: CifContainer, options: Options, picfile: Path, tpl_doc: DocxTemplate = None):
-        ba = BondsAndAngles(cif, without_h=options.without_h)
-        t = TorsionAngles(cif, without_h=options.without_h)
-        h = HydrogenBonds(cif)
         context = {'options'                : options,
                    # {'without_h': True, 'atoms_table': True, 'text': True, 'bonds_table': True},
                    'cif'                    : cif,
                    'name'                   : cif.block.name,
-                   'space_group'            : self.space_group_subdoc(tpl_doc, cif),
-                   'structure_figure'       : self.make_picture(options, picfile, tpl_doc),
-                   'crystallization_method' : self.get_crystallization_method(cif),
-                   'sum_formula'            : self.format_sum_formula(
+                   'space_group'            : self.text_formatter.space_group_subdoc(cif, tpl_doc),
+                   'structure_figure'       : self.text_formatter.make_picture(options, picfile, tpl_doc),
+                   'crystallization_method' : self.text_formatter.get_crystallization_method(cif),
+                   'sum_formula'            : self.text_formatter.format_sum_formula(
                        cif['_chemical_formula_sum'].replace(" ", "")),
-                   'moiety_formula'         : self.format_sum_formula(
+                   'moiety_formula'         : self.text_formatter.format_sum_formula(
                        cif['_chemical_formula_moiety'].replace(" ", "")),
                    'itnum'                  : cif['_space_group_IT_number'],
                    'crystal_size'           : this_or_quest(cif['_exptl_crystal_size_min']) + timessym +
@@ -610,9 +693,9 @@ class TemplatedReport():
                                               this_or_quest(cif['_exptl_crystal_size_max']),
                    'crystal_colour'         : this_or_quest(cif['_exptl_crystal_colour']),
                    'crystal_shape'          : this_or_quest(cif['_exptl_crystal_description']),
-                   'radiation'              : self.get_radiation(cif),
+                   'radiation'              : self.text_formatter.get_radiation(cif),
                    'wavelength'             : cif['_diffrn_radiation_wavelength'],
-                   'theta_range'            : self.get_from_to_theta_range(cif),
+                   'theta_range'            : self.text_formatter.get_from_to_theta_range(cif),
                    'diffr_type'             : gstr(cif['_diffrn_measurement_device_type'])
                                               or '[No measurement device type given]',
                    'diffr_device'           : gstr(cif['_diffrn_measurement_device'])
@@ -624,39 +707,41 @@ class TemplatedReport():
                    'detector'               : gstr(cif['_diffrn_detector_type']) \
                                               or '[No detector type given]',
                    'lowtemp_dev'            : MachineType._get_cooling_device(cif),
-                   'index_ranges'           : self.hkl_index_limits(cif),
+                   'index_ranges'           : self.text_formatter.hkl_index_limits(cif),
                    'indepentent_refl'       : this_or_quest(cif['_reflns_number_total']),
                    'r_int'                  : this_or_quest(cif['_diffrn_reflns_av_R_equivalents']),
                    'r_sigma'                : this_or_quest(cif['_diffrn_reflns_av_unetI/netI']),
-                   'completeness'           : self.get_completeness(cif),
+                   'completeness'           : self.text_formatter.get_completeness(cif),
                    'theta_full'             : cif['_diffrn_reflns_theta_full'],
                    'data'                   : this_or_quest(cif['_refine_ls_number_reflns']),
                    'restraints'             : this_or_quest(cif['_refine_ls_number_restraints']),
                    'parameters'             : this_or_quest(cif['_refine_ls_number_parameters']),
                    'goof'                   : this_or_quest(cif['_refine_ls_goodness_of_fit_ref']),
-                   't_min'                  : self._tvalue(this_or_quest(cif['_exptl_absorpt_correction_T_min'])),
-                   't_max'                  : self._tvalue(this_or_quest(cif['_exptl_absorpt_correction_T_max'])),
+                   't_min'                  : self.text_formatter._tvalue(
+                       this_or_quest(cif['_exptl_absorpt_correction_T_min'])),
+                   't_max'                  : self.text_formatter._tvalue(
+                       this_or_quest(cif['_exptl_absorpt_correction_T_max'])),
                    'ls_R_factor_gt'         : this_or_quest(cif['_refine_ls_R_factor_gt']),
                    'ls_wR_factor_gt'        : this_or_quest(cif['_refine_ls_wR_factor_gt']),
                    'ls_R_factor_all'        : this_or_quest(cif['_refine_ls_R_factor_all']),
                    'ls_wR_factor_ref'       : this_or_quest(cif['_refine_ls_wR_factor_ref']),
-                   'diff_dens_min'          : self.get_diff_density_min(cif).replace('-', minus_sign),
-                   'diff_dens_max'          : self.get_diff_density_max(cif).replace('-', minus_sign),
-                   'exti'                   : self.get_exti(cif),
-                   'flack_x'                : self.get_flackx(cif),
-                   'integration_progr'      : self.get_integration_program(cif),
+                   'diff_dens_min'          : self.text_formatter.get_diff_density_min(cif).replace('-', minus_sign),
+                   'diff_dens_max'          : self.text_formatter.get_diff_density_max(cif).replace('-', minus_sign),
+                   'exti'                   : self.text_formatter.get_exti(cif),
+                   'flack_x'                : self.text_formatter.get_flackx(cif),
+                   'integration_progr'      : self.text_formatter.get_integration_program(cif),
                    'abstype'                : gstr(cif['_exptl_absorpt_correction_type']) or '??',
-                   'abs_details'            : self.get_absortion_correction_program(cif),
-                   'solution_method'        : self.solution_method(cif),
-                   'solution_program'       : self.solution_program(cif),
+                   'abs_details'            : self.text_formatter.get_absortion_correction_program(cif),
+                   'solution_method'        : self.text_formatter.solution_method(cif),
+                   'solution_program'       : self.text_formatter.solution_program(cif),
                    'refinement_details'     : ' '.join(
                        cif['_refine_special_details'].splitlines(keepends=False)).strip(),
-                   'refinement_prog'        : self.refinement_prog(cif),
-                   'atomic_coordinates'     : self.get_atomic_coordinates(cif),
-                   'displacement_parameters': self.get_displacement_parameters(cif),
-                   'bonds'                  : ba.bonds,
-                   'angles'                 : ba.angles,
-                   'ba_symminfo'            : ba.symminfo,
+                   'refinement_prog'        : self.text_formatter.refinement_prog(cif),
+                   'atomic_coordinates'     : self.text_formatter.get_atomic_coordinates(cif),
+                   'displacement_parameters': self.text_formatter.get_displacement_parameters(cif),
+                   'bonds'                  : self.text_formatter.get_bonds(),
+                   'angles'                 : self.text_formatter.get_angles(),
+                   'ba_symminfo'            : self.text_formatter.get_bonds_angles_symminfo(),
                    'torsions'               : t.torsion_angles,
                    'torsion_symminfo'       : t.symminfo,
                    'hydrogen_bonds'         : h.hydrogen_bonds,
