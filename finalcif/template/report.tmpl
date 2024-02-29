@@ -14,7 +14,7 @@
     <img alt="" src="{{structure_figure}}">
     {%endif%}
 
-    <h1>Structure Tables</h1>
+    <h2>Structure Tables</h2>
     <p>
         A {{crystal_colour}}, {{crystal_shape}} shaped crystal was mounted on a {{ cif._diffrn_measurement_specimen_support }}
         with perfluoroether oil. The sample was crystallized {{crystallization_method}}. Data for {{cif.block.name}} were collected
@@ -36,9 +36,9 @@
         This report and the CIF file were generated using FinalCif.<sup>[6]</sup>
     </p>
 
-    <h2>
+    <h3>
         Table 1. Crystal data and structure refinement for {{ cif.block.name }}
-    </h2>
+    </h3>
     <div class="row">
         <div class="col-6">
             <table class="table table-striped">
@@ -199,27 +199,33 @@
     </div>
 
     {% if refinement_details %}
-    <h2>
+    <h3>
         Refinement details for {{ cif.block.name }}
-    </h2>
-    {{ refinement_details }}
+    </h3>
+    <p>
+        {{ refinement_details }}
+    </p>
     {% endif %}
 
+
     {% if atomic_coordinates %}
-    <h2>
+    <h3>
         Table 2. Atomic coordinates and <em>U</em><sub>eq</sub> [Å<sup>2</sup>] for {{ cif.block.name }}
-    </h2>
+    </h3>
 
     <div class="row">
         <div class="col-6">
             <table class="table table-striped">
-                <thead>
-                <th>Atom</th>
-                <th>x</th>
-                <th>y</th>
-                <th>z</th>
-                <th><em>U</em><sub>eq</sub></th>
-                </thead>
+                <caption><em>U</em><sub>eq</sub> is defined as 1/3 of the trace of the orthogonalized
+                    <em>U</em><sub>ij</sub> tensor.
+                </caption>
+                <tr>
+                    <th>Atom</th>
+                    <th>x</th>
+                    <th>y</th>
+                    <th>z</th>
+                    <th><em>U</em><sub>eq</sub></th>
+                </tr>
                 <tbody>
 
                 {% for atom in atomic_coordinates %}
@@ -235,43 +241,146 @@
             </table>
         </div>
     </div>
+    {% endif %}
 
 
-    Ueq is defined as 1/3 of the trace of the orthogonalized Uij tensor.
-    {% endif %}{% if displacement_parameters %} Table 3. Anisotropic displacement parameters (Å2) for {{ cif.block.name }}. The anisotropic displacement factor exponent takes the
-    form:
-    −2π2[ h2(a*)2U11 + k2(b*)2U22 + … + 2hka*b*U12 ]
-    Atom U11 U22 U33 U23 U13 U12
-    {% for atom in displacement_parameters %}
-    {{ atom.label }} {{ atom.U11 }} {{ atom.U22 }} {{ atom.U33 }} {{ atom.U23 }} {{ atom.U13 }} {{ atom.U12 }}
-    {% endfor %}
-    {% endif %}{% if options.bonds_table %}{%if bonds%}
-    Table 4. Bond lengths and angles for {{ cif.block.name }}
-    Atom–Atom Length [Å]
-    {% for b in bonds %}
-    {{b.atoms}} {{b.dist}}
-    {% endfor %}
+    {% if displacement_parameters %}
+    <h3>
+        Table 3. Anisotropic displacement parameters (Å2) for {{ cif.block.name }}. The anisotropic displacement factor exponent takes the
+        form:
+        −2π2[&emsp;h2(a*)2U11&emsp;+&emsp;k2(b*)2U22&emsp;+&emsp;…&emsp;+&emsp;2hka*b*U12&emsp;]
+    </h3>
 
-    Atom–Atom–Atom Angle [°]
-    {% for a in angles %}
-    {{a.atoms}} {{a.angle}}
-    {% endfor %}
-    {% if options.without_h %}Bonds and angles to hydrogen atoms were omitted.{% endif %}{%if ba_symminfo%}
-    {{ ba_symminfo}}{%endif%}{%endif%}
-    {% endif %}{%if torsions%}
-    Table 5. Torsion angles for {{ cif.block.name }}
+    <div class="row">
+        <div class="col-6">
+            <table class="table table-striped">
+                <caption><em>U</em><sub>eq</sub> is defined as 1/3 of the trace of the orthogonalized
+                    <em>U</em><sub>ij</sub> tensor.
+                </caption>
+                <tr>
+                    <th>Atom</th>
+                    <th><em>U</em><sub>11</sub></th>
+                    <th><em>U</em><sub>22</sub></th>
+                    <th><em>U</em><sub>33</sub></th>
+                    <th><em>U</em><sub>23</sub></th>
+                    <th><em>U</em><sub>13</sub></th>
+                    <th><em>U</em><sub>12</sub></th>
+                </tr>
+                <tbody>
+                {% for atom in displacement_parameters %}
+                <tr>
+                    <td>{{ atom.label }}</td>
+                    <td>{{ atom.U11 }}</td>
+                    <td>{{ atom.U22 }}</td>
+                    <td>{{ atom.U33 }}</td>
+                    <td>{{ atom.U23 }}</td>
+                    <td>{{ atom.U13 }}</td>
+                    <td>{{ atom.U12 }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
 
-    Atom–Atom–Atom–Atom Torsion Angle [°]
-    {% for t in torsions %}
-    {{t.atoms}} {{t.angle}}
-    {% endfor %}
-    {% if options.without_h %}Bonds and angles to hydrogen atoms were omitted.{% endif %}{%if torsion_symminfo%}
-    {{ torsion_symminfo}}{%endif%}{%endif%}
+
+    {% if options.bonds_table %}
+    {%if bonds%}
+    <h3>
+        Table 4. Bond lengths and angles for {{ cif.block.name }}
+    </h3>
+    <div class="row">
+        <div class="col-6">
+            <table class="table table-striped">
+                <caption>
+                    {%if ba_symminfo%}
+                    {{ ba_symminfo}}
+                    {% endif %}
+                    {% if options.without_h %}
+                    Bonds and angles to hydrogen atoms were omitted.
+                    {% endif %}
+                </caption>
+
+                <tr>
+                    <th>Atom–Atom</th>
+                    <th>Length [Å]</th>
+                </tr>
+                <tbody>
+                {% for b in bonds %}
+                <tr>
+                    <td>{{b.atoms}}</td>
+                    <td>{{b.dist}}</td>
+                </tr>
+                {% endfor %}
+                <tr>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th>
+                        Atom–Atom–Atom
+                    </th>
+                    <th>
+                        Angle [°]
+                    </th>
+                </tr>
+                {% for a in angles %}
+                <tr>
+                    <td>{{a.atom1}}{{a.symmstr1}}{{a.atom2}}{{a.symmstr2}}</td>
+                    <td>{{a.angle}}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+    {% endif %}
+
+    {%if torsions%}
+    <h3>
+        Table 5. Torsion angles for {{ cif.block.name }}
+    </h3>
+    <div class="row">
+        <div class="col-6">
+            <table class="table table-striped">
+                <caption>
+                    {%if torsion_symminfo%}
+                    {{ torsion_symminfo}}
+                    {%endif%}
+                    {% if options.without_h %}
+                    Bonds and angles to hydrogen atoms were omitted.
+                    {% endif %}
+                </caption>
+
+                <tr>
+                    <th>Atom–Atom–Atom–Atom</th>
+                    <th>Torsion Angle [°]</th>
+                </tr>
+                <tbody>
+                {% for t in torsions %}
+                <tr>
+                    <td>
+                        {{t.atom1}}{{t.symminfo1}}&ndash;{{t.atom2}}{{t.symminfo2}}&ndash;{{t.atom3}}{{t.symminfo3}}&ndash;{{t.atom4}}{{t.symminfo4}}
+                    </td>
+                    <td>
+                        {{t.angle}}
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {%endif%}
 
 
     {% if options.hydrogen_bonds and hydrogen_bonds %}
+    <h3>
     Table 6. Hydrogen bonds for {{ cif.block.name }}
-    D–H⋯A [Å] d(D–H) [Å] d(H⋯A) [Å] d(D⋯A) [Å] <(DHA) [°]
+    </h3>
+        D–H⋯A [Å] d(D–H) [Å] d(H⋯A) [Å] d(D⋯A) [Å] <(DHA) [°]
     {% for h in hydrogen_bonds %}
     {{h.atoms}} {{h.dist_dh}} {{h.dist_ha}} {{h.dist_da}} {{h.angle_dha}}
     {% endfor %}
