@@ -288,7 +288,7 @@ def symmsearch(cif: CifContainer, newsymms: Dict[int, str], num: int,
     return num
 
 
-class TemplatedReport():
+class RichTextFormatter():
 
     def __init__(self):
         self.literature = {'finalcif'   : FinalCifReference(),
@@ -536,8 +536,8 @@ class TemplatedReport():
             return InlineImage(tpl_doc, str(picfile.resolve()), width=Cm(options.picture_width))
         return None
 
-    def make_templated_report(self, options: Options, cif: CifContainer, output_filename: str, picfile: Path,
-                              template_path: Path) -> bool:
+    def make_templated_docx_report(self, options: Options, cif: CifContainer, output_filename: str, picfile: Path,
+                                   template_path: Path) -> bool:
         tpl_doc = DocxTemplate(template_path)
         context, tpl_doc = self.prepare_report_data(cif, options, picfile, tpl_doc)
         # Filter definition for {{foobar|filter}} things:
@@ -551,6 +551,13 @@ class TemplatedReport():
             show_general_warning(parent=None, window_title='Warning', warn_text='Document generation failed',
                                  info_text=str(e))
             return False
+
+    def prepare_report(self, options: Options, cif: CifContainer, output_filename: str, picfile: Path,
+                       template_path: Path) -> bool:
+        context = self._get_context(cif, options, picfile, tpl_doc)
+
+    def do_html_report(self, context: dict):
+        pass
 
     def prepare_report_data(self, cif: CifContainer, options: Options, picfile: Path, tpl_doc: DocxTemplate):
         maincontext = {}
@@ -573,7 +580,16 @@ class TemplatedReport():
             cif.load_block_by_name(current_block)
         return maincontext, tpl_doc
 
-    def _get_context(self, cif: CifContainer, options: Options, picfile: Path, tpl_doc: DocxTemplate):
+
+text_factory = {
+    richtext : RichTextFormatter(),
+    html     : HtmlFormatter(),
+    plaintext: StringFormatter(),
+}
+
+
+class TemplatedReport():
+    def get_context(self, cif: CifContainer, options: Options, picfile: Path, tpl_doc: DocxTemplate = None):
         ba = BondsAndAngles(cif, without_h=options.without_h)
         t = TorsionAngles(cif, without_h=options.without_h)
         h = HydrogenBonds(cif)
@@ -653,6 +669,7 @@ class TemplatedReport():
 if __name__ == '__main__':
     from unittest import mock
     from pprint import pprint
+
     data = Path('tests')
     testcif = (data / 'examples/1979688.cif').absolute()
     cif = CifContainer(testcif)

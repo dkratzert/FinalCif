@@ -1126,9 +1126,9 @@ class AppWindow(QMainWindow):
             else:
                 print('Report with templates')
                 t = TemplatedReport()
-                ok = t.make_templated_report(options=self.options, cif=self.cif,
-                                             output_filename=str(report_filename), picfile=picfile,
-                                             template_path=Path(self.get_checked_templates_list_text()))
+                ok = t.make_templated_docx_report(options=self.options, cif=self.cif,
+                                                  output_filename=str(report_filename), picfile=picfile,
+                                                  template_path=Path(self.get_checked_templates_list_text()))
                 if not ok:
                     return None
         except FileNotFoundError as e:

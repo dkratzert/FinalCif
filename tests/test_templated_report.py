@@ -93,11 +93,9 @@ class TemplateReportWithoutAppTestCase(unittest.TestCase):
 
     def test_ccdc_num_in_table(self):
         t = TemplatedReport()
-        ok = t.make_templated_report(options=self.options,
-                                     cif=CifContainer(self.testcif),
-                                     output_filename=str(self.reportdoc),
-                                     picfile=self.report_pic,
-                                     template_path=self.text_template)
+        ok = t.make_templated_docx_report(options=self.options, cif=CifContainer(self.testcif),
+                                          output_filename=str(self.reportdoc), picfile=self.report_pic,
+                                          template_path=self.text_template)
         self.assertTrue(ok)
         doc = Document(str(self.reportdoc.absolute()))
         table: Table = doc.tables[0]
@@ -110,11 +108,9 @@ class TemplateReportWithoutAppTestCase(unittest.TestCase):
         has to be set correctly.
         """
         t = TemplatedReport()
-        ok = t.make_templated_report(options=self.options,
-                                     cif=CifContainer(self.testcif),
-                                     output_filename=self.reportdoc,
-                                     picfile=self.report_pic,
-                                     template_path=self.text_template)
+        ok = t.make_templated_docx_report(options=self.options, cif=CifContainer(self.testcif),
+                                          output_filename=self.reportdoc, picfile=self.report_pic,
+                                          template_path=self.text_template)
         self.assertTrue(ok)
         doc = Document(self.reportdoc.absolute())
         shapes: InlineShapes = doc.inline_shapes
@@ -123,11 +119,9 @@ class TemplateReportWithoutAppTestCase(unittest.TestCase):
 
     def test_citations(self):
         t = TemplatedReport()
-        t.make_templated_report(options=self.options,
-                                cif=CifContainer(self.testcif),
-                                output_filename=self.reportdoc,
-                                picfile=self.report_pic,
-                                template_path=self.text_template)
+        t.make_templated_docx_report(options=self.options, cif=CifContainer(self.testcif),
+                                     output_filename=self.reportdoc, picfile=self.report_pic,
+                                     template_path=self.text_template)
         doc = Document(self.reportdoc.absolute())
         # for num, p in enumerate(doc.paragraphs):
         #    print(num, p.text)
@@ -150,9 +144,8 @@ class TestReportFromMultiCif(unittest.TestCase):
         mock = Mock()
         mock.without_h = False
         mock.picture_width = 7.43
-        ok = t.make_templated_report(options=mock, cif=self.cif,
-                                     output_filename='test.docx', picfile=Path(),
-                                     template_path=self.docx_templ)
+        ok = t.make_templated_docx_report(options=mock, cif=self.cif, output_filename='test.docx', picfile=Path(),
+                                          template_path=self.docx_templ)
         self.assertTrue(ok)
         doc = Document(self.reportdoc.resolve().__str__())
         self.assertEqual('C1-C2 in p-1 distance: 1.5123(17)', doc.paragraphs[0].text)
