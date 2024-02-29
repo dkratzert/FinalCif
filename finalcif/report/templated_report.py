@@ -3,6 +3,7 @@ import enum
 import itertools
 import os
 import re
+import sys
 from collections import namedtuple
 from contextlib import suppress
 from math import sin, radians
@@ -331,20 +332,8 @@ class Formatter:
     def get_radiation(self, cif: CifContainer) -> str:
         raise NotImplementedError
 
-    @staticmethod
-    def hkl_index_limits(cif: CifContainer) -> str:
-        limit_h_min = cif['_diffrn_reflns_limit_h_min']
-        limit_h_max = cif['_diffrn_reflns_limit_h_max']
-        limit_k_min = cif['_diffrn_reflns_limit_k_min']
-        limit_k_max = cif['_diffrn_reflns_limit_k_max']
-        limit_l_min = cif['_diffrn_reflns_limit_l_min']
-        limit_l_max = cif['_diffrn_reflns_limit_l_max']
-        return f'{minus_sign if limit_h_min != "0" else ""}{limit_h_min.replace("-", "")} ' \
-               f'{less_or_equal} h {less_or_equal} {limit_h_max}\n' \
-            + f'{minus_sign if limit_k_min != "0" else ""}{limit_k_min.replace("-", "")} ' \
-              f'{less_or_equal} k {less_or_equal} {limit_k_max}\n' \
-            + f'{minus_sign if limit_l_min != "0" else ""}{limit_l_min.replace("-", "")} ' \
-              f'{less_or_equal} l {less_or_equal} {limit_l_max}'
+    def hkl_index_limits(self, cif: CifContainer) -> str:
+        raise NotImplementedError
 
     @staticmethod
     def get_from_to_theta_range(cif: CifContainer) -> str:
@@ -457,7 +446,7 @@ class Formatter:
         if 'OLEX' in refined.upper():
             self.literature['refinement'] = Olex2Reference()
         if ('NOSPHERA2' in refined.upper() or 'NOSPHERA2' in cif['_refine_special_details'].upper() or
-                'NOSPHERAT2' in cif['_olex2_refine_details'].upper()):
+            'NOSPHERAT2' in cif['_olex2_refine_details'].upper()):
             self.literature['refinement'] = Nosphera2Reference()
         return refined.split()[0]
 
@@ -536,8 +525,8 @@ class HtmlFormatter(Formatter):
         picture_path = ''
         if options.report_text and picfile and picfile.exists():
             picture_path = str(picfile.resolve())
-        return (f'<img src="{picture_path}" '
-                f'alt="Structure View" style="width:20%;height:20%;">')
+        return picture_path  # (f'<img src="{picture_path}" '
+        # f'alt="Structure View" style="width:20%;height:20%;">')
 
     def format_sum_formula(self, sum_formula: str) -> str:
         sum_formula_group = [''.join(x[1]) for x in itertools.groupby(sum_formula, lambda x: x.isalpha())]
@@ -560,8 +549,22 @@ class HtmlFormatter(Formatter):
 
     def get_radiation(self, cif: CifContainer) -> str:
         rad_element, radtype, radline = format_radiation(cif['_diffrn_radiation_type'])
-        radiation = f'{rad_element}<it>{radtype}</it><it><sub>{radline}</sub></it>'
+        radiation = f'{rad_element}<em>{radtype}</em><em><sub>{radline}</sub></em>'
         return radiation
+
+    def hkl_index_limits(self, cif: CifContainer) -> str:
+        limit_h_min = cif['_diffrn_reflns_limit_h_min']
+        limit_h_max = cif['_diffrn_reflns_limit_h_max']
+        limit_k_min = cif['_diffrn_reflns_limit_k_min']
+        limit_k_max = cif['_diffrn_reflns_limit_k_max']
+        limit_l_min = cif['_diffrn_reflns_limit_l_min']
+        limit_l_max = cif['_diffrn_reflns_limit_l_max']
+        return (f'{minus_sign if limit_h_min != "0" else ""}{limit_h_min.replace("-", "")} '
+                f'{less_or_equal} h {less_or_equal} {limit_h_max}<br>'
+                f'{minus_sign if limit_k_min != "0" else ""}{limit_k_min.replace("-", "")} '
+                f'{less_or_equal} k {less_or_equal} {limit_k_max}<br>'
+                f'{minus_sign if limit_l_min != "0" else ""}{limit_l_min.replace("-", "")} '
+                f'{less_or_equal} l {less_or_equal} {limit_l_max}')
 
 
 class RichTextFormatter(Formatter):
@@ -639,6 +642,20 @@ class RichTextFormatter(Formatter):
     def prepare_report(self, options: Options, cif: CifContainer, output_filename: str, picfile: Path,
                        template_path: Path) -> bool:
         context = self._get_context(cif, options, picfile, tpl_doc)
+
+    def hkl_index_limits(self, cif: CifContainer) -> str:
+        limit_h_min = cif['_diffrn_reflns_limit_h_min']
+        limit_h_max = cif['_diffrn_reflns_limit_h_max']
+        limit_k_min = cif['_diffrn_reflns_limit_k_min']
+        limit_k_max = cif['_diffrn_reflns_limit_k_max']
+        limit_l_min = cif['_diffrn_reflns_limit_l_min']
+        limit_l_max = cif['_diffrn_reflns_limit_l_max']
+        return (f'{minus_sign if limit_h_min != "0" else ""}{limit_h_min.replace("-", "")} '
+                f'{less_or_equal} h {less_or_equal} {limit_h_max}\n'
+                f'{minus_sign if limit_k_min != "0" else ""}{limit_k_min.replace("-", "")} '
+                f'{less_or_equal} k {less_or_equal} {limit_k_max}\n'
+                f'{minus_sign if limit_l_min != "0" else ""}{limit_l_min.replace("-", "")} '
+                f'{less_or_equal} l {less_or_equal} {limit_l_max}')
 
 
 class TextFormat(enum.StrEnum):
@@ -784,8 +801,8 @@ if __name__ == '__main__':
     cif = CifContainer(testcif)
     t = TemplatedReport(format=TextFormat.HTML, options=mock.Mock(), cif=cif)
     maincontext = t.get_context(cif, options=mock.Mock(), picfile=None, tpl_doc=mock.Mock())
-    #pprint(maincontext)
-    templateLoader = jinja2.FileSystemLoader(searchpath=r"D:\_DEV\GitHub\FinalCif\finalcif\template")
+    # pprint(maincontext)
+    templateLoader = jinja2.FileSystemLoader(searchpath=r"finalcif/template")
     jinja_env = jinja2.Environment(loader=templateLoader, autoescape=False)
     jinja_env.filters['inv_article'] = get_inf_article
     TEMPLATE_FILE = "report.tmpl"
@@ -795,4 +812,8 @@ if __name__ == '__main__':
     print(outputText)
     p = Path('test.html')
     p.write_text(outputText, encoding="utf-8")
-    subprocess.Popen(['explorer', str(p.resolve())], shell=True)
+    if sys.platform == 'darwin':
+        subprocess.call(['open', str(p.resolve())])
+    else:
+        subprocess.Popen(['explorer', str(p.resolve())], shell=True)
+    print(maincontext.get(''))
