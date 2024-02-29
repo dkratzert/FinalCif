@@ -5,10 +5,11 @@
     <title>Structure Tables</title>
 </head>
 <body>
-{% if structure_figure%}
-<img alt="" src="{{structure_figure}}">
+{% if structure_figure %}
+    <img alt="" src="{{structure_figure}}">
 {%endif%}
 
+<h1>Structure Tables</h1>
 <p>
     A {{crystal_colour}}, {{crystal_shape}} shaped crystal was mounted on a {{ cif._diffrn_measurement_specimen_support }} with perfluoroether
     oil. The sample was crystallized {{crystallization_method}}. Data for {{cif.block.name}} were collected from a shock-cooled single crystal at {{cif._diffrn_ambient_temperature}} K
@@ -30,7 +31,7 @@
 <table>
     <tr>
         <td>CCDC number</td>
-        <td>{{ cif._database_code_depnum_ccdc_archive</td>
+        <td>{{ cif._database_code_depnum_ccdc_archive }}</td>
     </tr>
     <tr>
         <td>Empirical formula</td>
@@ -39,7 +40,7 @@
     Formula weight {{cif._chemical_formula_weight }}
     Temperature [K] {{cif._diffrn_ambient_temperature}}
     Crystal system {{ cif._space_group_crystal_system }}
-    Space group (number) {{p space_group}} {{ itnum }}
+    Space group (number) {{space_group}} {{ itnum }}
     a [Å] {{cif._cell_length_a }}
     b [Å] {{cif._cell_length_b }}
     c [Å] {{cif._cell_length_c }}
@@ -72,47 +73,47 @@
     [all data] R1 = {{ls_R_factor_all}}
     wR2 = {{ls_wR_factor_ref}}
     Largest peak/hole [eÅ−3] {{diff_dens_max}}/{{diff_dens_min}}
-    {%tr if exti %}
+    {% if exti %}
     Extinction coefficient {{exti}}
-    {%tr endif %}
-    {%tr if flack_x %}
+    {% endif %}
+    {% if flack_x %}
     Flack X parameter {{flack_x}}
-    {%tr endif %}
+    {% endif %}
 </table>
 {% if refinement_details %}Refinement details for {{ cif.block.name }}
 {{ refinement_details }}
 {% endif %}{% if atomic_coordinates %} Table 2. Atomic coordinates and Ueq [Å2] for {{ cif.block.name }}
 Atom x y z Ueq
-{%tr for atom in atomic_coordinates %}
+{% for atom in atomic_coordinates %}
 {{ atom.label }} {{ atom.x }} {{ atom.y }} {{ atom.z }} {{ atom.u_eq }}
-{%tr endfor %}
+{% endfor %}
 Ueq is defined as 1/3 of the trace of the orthogonalized Uij tensor.
 {% endif %}{% if displacement_parameters %} Table 3. Anisotropic displacement parameters (Å2) for {{ cif.block.name }}. The anisotropic displacement factor exponent takes the form:
 −2π2[ h2(a*)2U11 + k2(b*)2U22 + … + 2hka*b*U12 ]
 Atom U11 U22 U33 U23 U13 U12
-{%tr for atom in displacement_parameters %}
+{% for atom in displacement_parameters %}
 {{ atom.label }} {{ atom.U11 }} {{ atom.U22 }} {{ atom.U33 }} {{ atom.U23 }} {{ atom.U13 }} {{ atom.U12 }}
-{%tr endfor %}
+{% endfor %}
 {% endif %}{% if options.bonds_table %}{%if bonds%}
 Table 4. Bond lengths and angles for {{ cif.block.name }}
 Atom–Atom Length [Å]
-{%tr for b in bonds %}
+{% for b in bonds %}
 {{b.atoms}} {{b.dist}}
-{%tr endfor %}
+{% endfor %}
 
 Atom–Atom–Atom Angle [°]
-{%tr for a in angles %}
+{% for a in angles %}
 {{a.atoms}} {{a.angle}}
-{%tr endfor %}
+{% endfor %}
 {% if options.without_h %}Bonds and angles to hydrogen atoms were omitted.{% endif %}{%if ba_symminfo%}
 {{ ba_symminfo}}{%endif%}{%endif%}
 {% endif %}{%if torsions%}
 Table 5. Torsion angles for {{ cif.block.name }}
 
 Atom–Atom–Atom–Atom Torsion Angle [°]
-{%tr for t in torsions %}
+{% for t in torsions %}
 {{t.atoms}} {{t.angle}}
-{%tr endfor %}
+{% endfor %}
 {% if options.without_h %}Bonds and angles to hydrogen atoms were omitted.{% endif %}{%if torsion_symminfo%}
 {{ torsion_symminfo}}{%endif%}{%endif%}
 
@@ -120,9 +121,9 @@ Atom–Atom–Atom–Atom Torsion Angle [°]
 {% if options.hydrogen_bonds and hydrogen_bonds %}
 Table 6. Hydrogen bonds for {{ cif.block.name }}
 D–H⋯A [Å] d(D–H) [Å] d(H⋯A) [Å] d(D⋯A) [Å] <(DHA) [°]
-{%tr for h in hydrogen_bonds %}
+{% for h in hydrogen_bonds %}
 {{h.atoms}} {{h.dist_dh}} {{h.dist_ha}} {{h.dist_da}} {{h.angle_dha}}
-{%tr endfor %}
+{% endfor %}
 {%if hydrogen_symminfo%}{{hydrogen_symminfo}}{%endif%}{%endif%}
 Bibliography
 [1] {{literature.integration.richtext}}

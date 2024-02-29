@@ -1,5 +1,7 @@
 import dataclasses
+import enum
 import itertools
+import os
 import re
 from collections import namedtuple
 from contextlib import suppress
@@ -145,12 +147,12 @@ class TorsionAngles():
         self.without_h = without_h
         self._symmlist = {}
         self.torsion_angles_as_string: List[Torsion] = []
-        self.torsion_angles = self._get_torsion_angles_list(without_h)
+        self.torsion_angles_as_richtext = self._get_torsion_angles_list(without_h)
         # The list of symmetry elements at the table end used for generated atoms:
         self.symminfo: str = get_symminfo(self._symmlist)
 
     def __len__(self):
-        return len(self.torsion_angles)
+        return len(self.torsion_angles_as_richtext)
 
     @property
     def symmetry_generated_atoms_used(self):
@@ -290,7 +292,7 @@ def symmsearch(cif: CifContainer, newsymms: Dict[int, str], num: int,
 
 
 class Formatter:
-    def __init__(self, options: Options) -> None:
+    def __init__(self, options: Options, cif: CifContainer) -> None:
         self.literature = {'finalcif'   : FinalCifReference(),
                            'ccdc'       : CCDCReference(),
                            'absorption' : '[no reference found]',
@@ -303,12 +305,18 @@ class Formatter:
         self._hydrogens = HydrogenBonds(cif)
 
     def get_bonds(self):
-        raise NotImplemented
+        raise NotImplementedError
 
     def get_angles(self):
-        raise NotImplemented
+        raise NotImplementedError
 
-    def get_bonds_angles_symminfo(self):
+    def get_torsion_angles(self) -> list[dict[str, RichText]] | list[Torsion]:
+        raise NotImplementedError
+
+    def get_hydrogen_bonds(self) -> list[dict[str, RichText]] | list[HydrogenBond]:
+        raise NotImplementedError
+
+    def get_bonds_angles_symminfo(self) -> str:
         return self._bonds_angles.symminfo
 
     def get_torsion_symminfo(self):
@@ -319,6 +327,9 @@ class Formatter:
 
     def get_crystallization_method(self, cif):
         return gstr(cif['_exptl_crystal_recrystallization_method']) or '[No crystallization method given!]'
+
+    def get_radiation(self, cif: CifContainer) -> str:
+        raise NotImplementedError
 
     @staticmethod
     def hkl_index_limits(cif: CifContainer) -> str:
@@ -465,7 +476,7 @@ class Formatter:
             return f'{float(tval):.3f}'
         return tval
 
-    def get_atomic_coordinates(self, cif: CifContainer) -> Iterator[Dict[str:str]]:
+    def get_atomic_coordinates(self, cif: CifContainer) -> Iterator[dict[str, str]]:
         for at in cif.atoms(without_h=False):
             yield {'label': at.label,
                    'type' : at.type,
@@ -489,19 +500,29 @@ class Formatter:
                                U13=u13.replace('-', minus_sign),
                                U23=u23.replace('-', minus_sign))
 
+    def get_completeness(self, cif: CifContainer) -> str:
+        try:
+            completeness = f"{float(cif['_diffrn_measured_fraction_theta_full']) * 100:.1f}{protected_space}%"
+        except ValueError:
+            completeness = '?'
+        return completeness
+
 
 class HtmlFormatter(Formatter):
-    def __init__(self, options: Options):
-        super().__init__(options)
+    def __init__(self, options: Options, cif: CifContainer):
+        super().__init__(options, cif)
 
-    def get_bonds_and_angles(self):
+    def get_bonds(self) -> list[Bond]:
         return self._bonds_angles.bonds_as_string
 
-    def get_bonds(self):
-        raise self._bonds_angles.bonds_as_string
+    def get_angles(self) -> list[Angle]:
+        return self._bonds_angles.angles_as_string
 
-    def get_angles(self):
-        raise self._bonds_angles.angles_as_string
+    def get_torsion_angles(self) -> list[Torsion]:
+        return self._torsions.torsion_angles_as_string
+
+    def get_hydrogen_bonds(self) -> list[HydrogenBond]:
+        return self._hydrogens.hydrogen_bonds_as_str
 
     def space_group_subdoc(self, cif: CifContainer, _: None) -> str:
         s = SpaceGroups()
@@ -537,7 +558,7 @@ class HtmlFormatter(Formatter):
         else:
             return 'no formula'
 
-    def get_radiation(cif: CifContainer) -> str:
+    def get_radiation(self, cif: CifContainer) -> str:
         rad_element, radtype, radline = format_radiation(cif['_diffrn_radiation_type'])
         radiation = f'{rad_element}<it>{radtype}</it><it><sub>{radline}</sub></it>'
         return radiation
@@ -545,14 +566,20 @@ class HtmlFormatter(Formatter):
 
 class RichTextFormatter(Formatter):
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, options: Options, cif: CifContainer) -> None:
+        super().__init__(options, cif)
 
     def get_bonds(self) -> List[Dict[str, RichText]]:
-        raise self._bonds_angles.bonds_richtext
+        return self._bonds_angles.bonds_richtext
 
     def get_angles(self) -> List[Dict[str, RichText]]:
         return self._bonds_angles.angles_richtext
+
+    def get_torsion_angles(self) -> List[Dict[str, RichText]]:
+        return self._torsions.torsion_angles_as_richtext
+
+    def get_hydrogen_bonds(self) -> list[dict[str, RichText]]:
+        return self._hydrogens.hydrogen_bonds
 
     def format_sum_formula(self, sum_formula: str) -> RichText:
         sum_formula_group = [''.join(x[1]) for x in itertools.groupby(sum_formula, lambda x: x.isalpha())]
@@ -597,31 +624,47 @@ class RichTextFormatter(Formatter):
             pass
         return sd
 
-    @staticmethod
-    def get_radiation(cif: CifContainer) -> RichText:
+    def get_radiation(self, cif: CifContainer) -> RichText:
         rad_element, radtype, radline = format_radiation(cif['_diffrn_radiation_type'])
         radiation = RichText(rad_element)
         radiation.add(radtype, italic=True)
         radiation.add(radline, italic=True, subscript=True)
         return radiation
 
-    @staticmethod
-    def get_completeness(cif: CifContainer) -> str:
-        try:
-            completeness = f"{float(cif['_diffrn_measured_fraction_theta_full']) * 100:.1f}{protected_space}%"
-        except ValueError:
-            completeness = '?'
-        return completeness
-
     def make_picture(self, options: Options, picfile: Path, tpl_doc: DocxTemplate):
         if options.report_text and picfile and picfile.exists():
             return InlineImage(tpl_doc, str(picfile.resolve()), width=Cm(options.picture_width))
         return None
 
-    def make_templated_docx_report(self, options: Options, cif: CifContainer, output_filename: str, picfile: Path,
+    def prepare_report(self, options: Options, cif: CifContainer, output_filename: str, picfile: Path,
+                       template_path: Path) -> bool:
+        context = self._get_context(cif, options, picfile, tpl_doc)
+
+
+class TextFormat(enum.StrEnum):
+    RICHTEXT = 'richtext'
+    HTML = 'html'
+
+
+def text_factory(options: Options, cif: CifContainer) -> dict[str, Formatter]:
+    factory = {
+        TextFormat.RICHTEXT: RichTextFormatter(options, cif),
+        TextFormat.HTML    : HtmlFormatter(options, cif),
+        # 'plaintext': StringFormatter(),
+    }
+    return factory
+
+
+class TemplatedReport():
+    def __init__(self, format: str, options: Options, cif: CifContainer) -> None:
+        self.format = format
+        self.cif = cif
+        self.text_formatter = text_factory(options, cif)[self.format]
+
+    def make_templated_docx_report(self, options: Options, output_filename: str, picfile: Path,
                                    template_path: Path) -> bool:
         tpl_doc = DocxTemplate(template_path)
-        context, tpl_doc = self.prepare_report_data(cif, options, picfile, tpl_doc)
+        context, tpl_doc = self.prepare_report_data(self.cif, options, picfile, tpl_doc)
         # Filter definition for {{foobar|filter}} things:
         jinja_env = jinja2.Environment()
         jinja_env.filters['inv_article'] = get_inf_article
@@ -634,46 +677,26 @@ class RichTextFormatter(Formatter):
                                  info_text=str(e))
             return False
 
-    def prepare_report(self, options: Options, cif: CifContainer, output_filename: str, picfile: Path,
-                       template_path: Path) -> bool:
-        context = self._get_context(cif, options, picfile, tpl_doc)
-
-    def do_html_report(self, context: dict):
-        pass
-
     def prepare_report_data(self, cif: CifContainer, options: Options, picfile: Path, tpl_doc: DocxTemplate):
         maincontext = {}
         if not cif.is_multi_cif:
-            maincontext = self._get_context(cif, options, picfile, tpl_doc)
+            maincontext = self.get_context(cif, options, picfile, tpl_doc)
         else:
             current_block = cif.block.name
             current_file = cif.fileobj
-            maincontext.update(self._get_context(cif, options, picfile, tpl_doc))
+            maincontext.update(self.get_context(cif, options, picfile, tpl_doc))
             block_list = []
             blocks = {}
             for block in cif.doc:
                 cif2 = CifContainer(file=current_file)
                 cif2.load_block_by_name(block.name)
-                context = self._get_context(cif2, options, picfile, tpl_doc)
+                context = self.get_context(cif2, options, picfile, tpl_doc)
                 block_list.append(context)
                 blocks[block.name] = context
             maincontext['blocklist'] = block_list
             maincontext['block'] = blocks
             cif.load_block_by_name(current_block)
         return maincontext, tpl_doc
-
-
-text_factory = {
-    richtext : RichTextFormatter(),
-    html     : HtmlFormatter(),
-    plaintext: StringFormatter(),
-}
-
-
-class TemplatedReport():
-    def __init__(self, format: str):
-        self.format = format
-        self.text_formatter = text_factory[self.format]
 
     def get_context(self, cif: CifContainer, options: Options, picfile: Path, tpl_doc: DocxTemplate = None):
         context = {'options'                : options,
@@ -742,11 +765,11 @@ class TemplatedReport():
                    'bonds'                  : self.text_formatter.get_bonds(),
                    'angles'                 : self.text_formatter.get_angles(),
                    'ba_symminfo'            : self.text_formatter.get_bonds_angles_symminfo(),
-                   'torsions'               : t.torsion_angles,
-                   'torsion_symminfo'       : t.symminfo,
-                   'hydrogen_bonds'         : h.hydrogen_bonds,
-                   'hydrogen_symminfo'      : h.symminfo,
-                   'literature'             : self.literature
+                   'torsions'               : self.text_formatter.get_torsion_angles(),
+                   'torsion_symminfo'       : self.text_formatter.get_torsion_symminfo(),
+                   'hydrogen_bonds'         : self.text_formatter.get_hydrogen_bonds(),
+                   'hydrogen_symminfo'      : self.text_formatter.get_hydrogen_symminfo(),
+                   'literature'             : self.text_formatter.literature
                    }
         return context
 
@@ -754,10 +777,22 @@ class TemplatedReport():
 if __name__ == '__main__':
     from unittest import mock
     from pprint import pprint
+    import subprocess
 
     data = Path('tests')
     testcif = (data / 'examples/1979688.cif').absolute()
     cif = CifContainer(testcif)
-    t = TemplatedReport()
-    maincontext = t._get_context(cif, options=mock.Mock(), picfile=None, tpl_doc=mock.Mock())
-    pprint(maincontext)
+    t = TemplatedReport(format=TextFormat.HTML, options=mock.Mock(), cif=cif)
+    maincontext = t.get_context(cif, options=mock.Mock(), picfile=None, tpl_doc=mock.Mock())
+    #pprint(maincontext)
+    templateLoader = jinja2.FileSystemLoader(searchpath=r"D:\_DEV\GitHub\FinalCif\finalcif\template")
+    jinja_env = jinja2.Environment(loader=templateLoader, autoescape=False)
+    jinja_env.filters['inv_article'] = get_inf_article
+    TEMPLATE_FILE = "report.tmpl"
+    template = jinja_env.get_template(TEMPLATE_FILE)
+    outputText = template.render(maincontext)
+
+    print(outputText)
+    p = Path('test.html')
+    p.write_text(outputText, encoding="utf-8")
+    subprocess.Popen(['explorer', str(p.resolve())], shell=True)
