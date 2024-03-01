@@ -849,17 +849,31 @@ class TemplatedReport():
 if __name__ == '__main__':
     from unittest import mock
     import subprocess
-    # TODO: Add _refine.ls_weighting_details
-    #  _reflns_number_gt / _reflns_number_total were greater than %(_BAXS_sigma_cutoff
+
     data = Path('tests')
     testcif = Path(data / 'examples/1979688.cif').absolute()
-    #testcif = Path(r'test-data/p31c.cif').absolute()
+    # testcif = Path(r'test-data/p31c.cif').absolute()
     cif = CifContainer(testcif)
-    mock_mock = mock.Mock()
-    mock.without_h = ''
-    t = TemplatedReport(format=TextFormat.HTML, options=mock_mock, cif=cif)
+
+
+    class MOptions():
+        report_text = True
+        report_adp = True
+        without_h = False
+        picture_width = 7.6
+        checkcif_url = ''
+        atoms_table = True
+        bonds_table = True
+        hydrogen_bonds = True
+        current_report_template = ''
+        cod_url = ''
+        track_changes = False
+
+
+    options = MOptions()
+    t = TemplatedReport(format=TextFormat.HTML, options=options, cif=cif)
     pic = pathlib.Path("tests/examples/work/cu_BruecknerJK_153F40_0m-finalcif.png")
-    maincontext = t.get_context(cif, options=mock_mock, picfile=pic, tpl_doc=mock_mock)
+    maincontext = t.get_context(cif, options=options, picfile=pic, tpl_doc=None)
     # pprint(maincontext)
     templateLoader = jinja2.FileSystemLoader(searchpath=r"finalcif/template")
     jinja_env = jinja2.Environment(loader=templateLoader, autoescape=False, line_comment_prefix='##')
@@ -869,11 +883,10 @@ if __name__ == '__main__':
     template = jinja_env.get_template(TEMPLATE_FILE)
     outputText = template.render(maincontext)
 
-    print(outputText)
+    # print(outputText)
     p = Path('test.html')
     p.write_text(outputText, encoding="utf-8")
     if sys.platform == 'darwin':
         subprocess.call(['open', str(p.resolve())])
     else:
         subprocess.Popen(['explorer', str(p.resolve())], shell=True)
-    print(maincontext.get(''))
