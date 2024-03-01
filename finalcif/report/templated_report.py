@@ -664,10 +664,6 @@ class RichTextFormatter(Formatter):
             return InlineImage(tpl_doc, str(picfile.resolve()), width=Cm(options.picture_width))
         return None
 
-    def prepare_report(self, options: Options, cif: CifContainer, output_filename: str, picfile: Path,
-                       template_path: Path) -> bool:
-        context = self._get_context(cif, options, picfile, tpl_doc)
-
     def hkl_index_limits(self, cif: CifContainer) -> str:
         limit_h_min = cif['_diffrn_reflns_limit_h_min']
         limit_h_max = cif['_diffrn_reflns_limit_h_max']
