@@ -1,14 +1,13 @@
 import dataclasses
 import enum
 import itertools
-import os
 import re
 import sys
 from collections import namedtuple
 from contextlib import suppress
 from math import sin, radians
 from pathlib import Path
-from typing import List, Dict, Union, Iterator
+from typing import List, Dict, Union, Iterator, Protocol
 
 import jinja2
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
@@ -29,6 +28,11 @@ from finalcif.tools.options import Options
 from finalcif.tools.space_groups import SpaceGroups
 
 AdpWithMinus = namedtuple('AdpWithMinus', ('label', 'U11', 'U22', 'U33', 'U23', 'U13', 'U12'))
+
+
+class TextFormat(enum.StrEnum):
+    RICHTEXT = 'richtext'
+    HTML = 'html'
 
 
 @dataclasses.dataclass(frozen=True)
@@ -292,7 +296,7 @@ def symmsearch(cif: CifContainer, newsymms: Dict[int, str], num: int,
     return num
 
 
-class Formatter:
+class Formatter(Protocol):
     def __init__(self, options: Options, cif: CifContainer) -> None:
         self.literature = {'finalcif'   : FinalCifReference(),
                            'ccdc'       : CCDCReference(),
@@ -329,10 +333,13 @@ class Formatter:
     def get_crystallization_method(self, cif) -> str:
         return gstr(cif['_exptl_crystal_recrystallization_method']) or '[No crystallization method given!]'
 
-    def get_radiation(self, cif: CifContainer) -> str:
+    def get_radiation(self, cif: CifContainer) -> str | RichText:
         raise NotImplementedError
 
     def hkl_index_limits(self, cif: CifContainer) -> str:
+        raise NotImplementedError
+
+    def make_3d(self, cif: CifContainer, options: Options) -> str:
         raise NotImplementedError
 
     @staticmethod
@@ -498,8 +505,6 @@ class Formatter:
 
 
 class HtmlFormatter(Formatter):
-    def __init__(self, options: Options, cif: CifContainer):
-        super().__init__(options, cif)
 
     def get_bonds(self) -> list[Bond]:
         return self._bonds_angles.bonds_as_string
@@ -527,6 +532,9 @@ class HtmlFormatter(Formatter):
 
     def get_hydrogen_symminfo(self):
         return self._format_symminfo(self._hydrogens.symminfo)
+
+    def make_3d(self, cif: CifContainer, options: Options) -> str:
+        return '[3D representation of the structure in html/javascript not implemented]'
 
     def space_group_subdoc(self, cif: CifContainer, _: None) -> str:
         s = SpaceGroups()
@@ -584,9 +592,6 @@ class HtmlFormatter(Formatter):
 
 class RichTextFormatter(Formatter):
 
-    def __init__(self, options: Options, cif: CifContainer) -> None:
-        super().__init__(options, cif)
-
     def get_bonds(self) -> List[Dict[str, RichText]]:
         return self._bonds_angles.bonds_richtext
 
@@ -598,6 +603,9 @@ class RichTextFormatter(Formatter):
 
     def get_hydrogen_bonds(self) -> list[dict[str, RichText]]:
         return self._hydrogens.hydrogen_bonds
+
+    def make_3d(self, cif: CifContainer, options: Options) -> str:
+        return '[3D representation not implemented for .docx files]'
 
     def format_sum_formula(self, sum_formula: str) -> RichText:
         sum_formula_group = [''.join(x[1]) for x in itertools.groupby(sum_formula, lambda x: x.isalpha())]
@@ -673,11 +681,6 @@ class RichTextFormatter(Formatter):
                 f'{less_or_equal} l {less_or_equal} {limit_l_max}')
 
 
-class TextFormat(enum.StrEnum):
-    RICHTEXT = 'richtext'
-    HTML = 'html'
-
-
 def text_factory(options: Options, cif: CifContainer) -> dict[str, Formatter]:
     factory = {
         TextFormat.RICHTEXT: RichTextFormatter(options, cif),
@@ -737,6 +740,7 @@ class TemplatedReport():
                    'name'                   : cif.block.name,
                    'space_group'            : self.text_formatter.space_group_subdoc(cif, tpl_doc),
                    'structure_figure'       : self.text_formatter.make_picture(options, picfile, tpl_doc),
+                   '3d_structure'           : self.text_formatter.make_3d(cif, options),
                    'crystallization_method' : self.text_formatter.get_crystallization_method(cif),
                    'sum_formula'            : self.text_formatter.format_sum_formula(
                        cif['_chemical_formula_sum'].replace(" ", "")),
@@ -808,7 +812,6 @@ class TemplatedReport():
 
 if __name__ == '__main__':
     from unittest import mock
-    from pprint import pprint
     import subprocess
 
     # data = Path('tests')
