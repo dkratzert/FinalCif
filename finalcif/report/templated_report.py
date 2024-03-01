@@ -4,11 +4,12 @@ import itertools
 import pathlib
 import re
 import sys
+from abc import ABC
 from collections import namedtuple
 from contextlib import suppress
 from math import sin, radians
 from pathlib import Path
-from typing import List, Dict, Union, Iterator, Protocol, Any
+from typing import List, Dict, Union, Iterator, Any
 
 import jinja2
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
@@ -298,7 +299,7 @@ def symmsearch(cif: CifContainer, newsymms: Dict[int, str], num: int,
     return num
 
 
-class Formatter(Protocol):
+class Formatter(ABC):
     def __init__(self, options: Options, cif: CifContainer) -> None:
         self.literature = {'finalcif'   : FinalCifReference(),
                            'ccdc'       : CCDCReference(),
@@ -508,6 +509,9 @@ class Formatter(Protocol):
 
 class HtmlFormatter(Formatter):
 
+    def __init__(self, options: Options, cif: CifContainer) -> None:
+        super().__init__(options, cif)
+
     def get_bonds(self) -> list[Bond]:
         return self._bonds_angles.bonds_as_string
 
@@ -593,6 +597,9 @@ class HtmlFormatter(Formatter):
 
 
 class RichTextFormatter(Formatter):
+
+    def __init__(self, options: Options, cif: CifContainer) -> None:
+        super().__init__(options, cif)
 
     def get_bonds(self) -> List[Dict[str, RichText]]:
         return self._bonds_angles.bonds_richtext
@@ -843,7 +850,6 @@ class TemplatedReport():
 
 
 if __name__ == '__main__':
-    from unittest import mock
     import subprocess
 
     data = Path('tests')
