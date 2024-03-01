@@ -65,8 +65,8 @@ class SpaceGroups():
     def to_html(self, space_group: str) -> str:
         if not space_group:
             return ''
-        txt = self.to_html_without_body(space_group)
-        return f'<body style="">{txt} &thinsp;({self.spgrps[space_group][1].get("itnumber")})</body>'
+        txt = self._to_html_without_body(space_group)
+        return '<body style="">{} &thinsp;({})</body>'.format(txt, self.spgrps[space_group][1].get('itnumber'))
 
     def to_plain_text(self, space_group: str) -> str:
         """
@@ -76,7 +76,7 @@ class SpaceGroups():
             return ''
         return ''.join([x[0] for x in self.spgrps[space_group][0]])
 
-    def to_html_without_body(self, space_group: str) -> str:
+    def _to_html_without_body(self, space_group: str) -> str:
         """
         Uses the general format dictionary in order to output a space group as html.
         """
