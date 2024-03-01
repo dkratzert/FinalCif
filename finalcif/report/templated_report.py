@@ -21,7 +21,7 @@ from finalcif.gui.dialogs import show_general_warning
 from finalcif.report.references import SAINTReference, SHELXLReference, SadabsTwinabsReference, SHELXTReference, \
     SHELXSReference, SHELXDReference, SORTAVReference, FinalCifReference, CCDCReference, \
     CrysalisProReference, Nosphera2Reference, Olex2Reference
-from finalcif.report.report_text import math_to_word, gstr, format_radiation, get_inf_article, MachineType
+from finalcif.report.report_text import math_to_word, gstr, format_radiation, get_inf_article, MachineType, align_by_dot
 from finalcif.report.symm import SymmetryElement
 from finalcif.tools.misc import isnumeric, this_or_quest, timessym, angstrom, protected_space, less_or_equal, \
     halbgeviert, minus_sign, ellipsis_mid
@@ -796,8 +796,9 @@ if __name__ == '__main__':
     from pprint import pprint
     import subprocess
 
-    data = Path('tests')
-    testcif = (data / 'examples/1979688.cif').absolute()
+    #data = Path('tests')
+    #testcif = Path(data / 'examples/1979688.cif').absolute()
+    testcif = Path(r'test-data/p31c.cif').absolute()
     cif = CifContainer(testcif)
     t = TemplatedReport(format=TextFormat.HTML, options=mock.Mock(), cif=cif)
     maincontext = t.get_context(cif, options=mock.Mock(), picfile=None, tpl_doc=mock.Mock())
@@ -805,6 +806,7 @@ if __name__ == '__main__':
     templateLoader = jinja2.FileSystemLoader(searchpath=r"finalcif/template")
     jinja_env = jinja2.Environment(loader=templateLoader, autoescape=False)
     jinja_env.filters['inv_article'] = get_inf_article
+    jinja_env.filters['align_dot'] = align_by_dot
     TEMPLATE_FILE = "report.tmpl"
     template = jinja_env.get_template(TEMPLATE_FILE)
     outputText = template.render(maincontext)

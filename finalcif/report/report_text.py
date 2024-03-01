@@ -18,7 +18,7 @@ from finalcif.report.references import DummyReference, SAINTReference, SORTAVRef
     SHELXLReference, SHELXTReference, SHELXSReference, FinalCifReference, ShelXleReference, Olex2Reference, \
     SHELXDReference, SadabsTwinabsReference, CrysalisProReference, Nosphera2Reference, XDSReference, DSRReference2015, \
     DSRReference2018, XRedReference
-from finalcif.tools.misc import protected_space, angstrom, zero_width_space, remove_line_endings, flatten
+from finalcif.tools.misc import protected_space, angstrom, zero_width_space, remove_line_endings, flatten, minus_sign
 
 
 def math_to_word(eq: str) -> BaseOxmlElement:
@@ -522,6 +522,17 @@ def get_inf_article(next_word: str) -> str:
         return 'a'
     voc = 'aeiou'
     return 'an' if next_word[0].lower() in voc else 'a'
+
+
+def align_by_dot(number: str) -> str:
+    """
+    The intention of this filter is to align the number
+    on the dot, but this doesn't work as expected.
+    """
+    if '.' in number:
+        num, dec = number.split('.')
+        return (f'<span class="number">{num}'
+                f'<span class="decimal">.{dec}</span></span>')
 
 
 def format_radiation(radiation_type: str) -> list:
