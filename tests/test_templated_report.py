@@ -14,7 +14,7 @@ from docx.table import Table
 from finalcif import VERSION
 from finalcif.appwindow import AppWindow
 from finalcif.cif.cif_file_io import CifContainer
-from finalcif.report.templated_report import TemplatedReport
+from finalcif.report.templated_report import TemplatedReport, TextFormat
 
 data = Path('tests')
 test_data = Path('test-data')
@@ -92,12 +92,10 @@ class TemplateReportWithoutAppTestCase(unittest.TestCase):
         self.report_zip.unlink(missing_ok=True)
 
     def test_ccdc_num_in_table(self):
-        t = TemplatedReport()
-        ok = t.make_templated_report(options=self.options,
-                                     cif=CifContainer(self.testcif),
-                                     output_filename=str(self.reportdoc),
-                                     picfile=self.report_pic,
-                                     template_path=self.text_template)
+        t = TemplatedReport(cif=CifContainer(self.testcif), format=TextFormat.RICHTEXT, options=self.options)
+        ok = t.make_templated_docx_report(options=self.options,
+                                          output_filename=str(self.reportdoc), picfile=self.report_pic,
+                                          template_path=self.text_template)
         self.assertTrue(ok)
         doc = Document(str(self.reportdoc.absolute()))
         table: Table = doc.tables[0]
@@ -109,26 +107,23 @@ class TemplateReportWithoutAppTestCase(unittest.TestCase):
         For this test, self.myapp.set_report_picture(Path('finalcif/icon/finalcif.png'))
         has to be set correctly.
         """
-        t = TemplatedReport()
-        ok = t.make_templated_report(options=self.options,
-                                     cif=CifContainer(self.testcif),
-                                     output_filename=self.reportdoc,
-                                     picfile=self.report_pic,
-                                     template_path=self.text_template)
+        t = TemplatedReport(cif=CifContainer(self.testcif), format=TextFormat.RICHTEXT, options=self.options)
+        ok = t.make_templated_docx_report(options=self.options,
+                                          output_filename=str(self.reportdoc), picfile=self.report_pic,
+                                          template_path=self.text_template)
         self.assertTrue(ok)
-        doc = Document(self.reportdoc.absolute())
+        doc = Document(self.reportdoc.absolute().__str__())
         shapes: InlineShapes = doc.inline_shapes
         self.assertEqual(WD_INLINE_SHAPE.PICTURE, shapes[0].type)
         self.assertEqual(Cm(7.43).emu, shapes[0].width)
 
     def test_citations(self):
-        t = TemplatedReport()
-        t.make_templated_report(options=self.options,
-                                cif=CifContainer(self.testcif),
-                                output_filename=self.reportdoc,
-                                picfile=self.report_pic,
-                                template_path=self.text_template)
-        doc = Document(self.reportdoc.absolute())
+        t = TemplatedReport(cif=CifContainer(self.testcif), format=TextFormat.RICHTEXT, options=self.options)
+        t.make_templated_docx_report(options=self.options,
+                                     output_filename=self.reportdoc.__str__(),
+                                     picfile=self.report_pic,
+                                     template_path=self.text_template)
+        doc = Document(self.reportdoc.absolute().__str__())
         # for num, p in enumerate(doc.paragraphs):
         #    print(num, p.text)
         self.assertEqual('Bibliography', doc.paragraphs[20].text)
@@ -141,18 +136,18 @@ class TestReportFromMultiCif(unittest.TestCase):
         self.docx_templ = test_data / 'templates/test_template_for_multitable_dist.docx'
         self.multi_cif = test_data / '1000007-multi.cif'
         self.cif = CifContainer(file=self.multi_cif)
+        self.options = Mock()
+        self.options.without_h = False
+        self.options.picture_width = 7.43
 
     def tearDown(self):
         self.reportdoc.unlink(missing_ok=True)
 
     def test_get_distance_from_atoms(self):
-        t = TemplatedReport()
-        mock = Mock()
-        mock.without_h = False
-        mock.picture_width = 7.43
-        ok = t.make_templated_report(options=mock, cif=self.cif,
-                                     output_filename='test.docx', picfile=Path(),
-                                     template_path=self.docx_templ)
+        t = TemplatedReport(cif=self.cif, format=TextFormat.RICHTEXT, options=self.options)
+        ok = t.make_templated_docx_report(options=self.options,
+                                          output_filename='test.docx', picfile=Path(),
+                                          template_path=self.docx_templ)
         self.assertTrue(ok)
         doc = Document(self.reportdoc.resolve().__str__())
         self.assertEqual('C1-C2 in p-1 distance: 1.5123(17)', doc.paragraphs[0].text)
@@ -165,51 +160,55 @@ class TestData(unittest.TestCase):
     def setUp(self) -> None:
         # creating a new CIF with a new block:
         self.cif = CifContainer('foo.cif', 'testblock')
+        self.options = Mock()
+        self.options.picture_width = 7.43
+        self.options.without_h = False
 
     def test_get_integration_program_with_spaces(self):
         # Here we have the special case, that there is no space character between the version number and the bracket.
         self.cif['_computing_data_reduction'] = 'CrysAlisPro 1.171.39.20a (Rigaku OD, 2015)'
         self.assertEqual('CrysAlisPro 1.171.39.20a (Rigaku OD, 2015)', self.cif['_computing_data_reduction'])
-        r = TemplatedReport()
-        result = r.get_integration_program(self.cif)
+        r = TemplatedReport(cif=self.cif, format=TextFormat.RICHTEXT, options=self.options)
+        result = r.text_formatter.get_integration_program(self.cif)
         self.assertEqual('CrysAlisPro', result)
-        self.assertEqual('Crysalispro, 1.171.39.20a, 2015, Rigaku OD.', str(r.literature['integration']))
+        self.assertEqual('Crysalispro, 1.171.39.20a, 2015, Rigaku OD.', str(r.text_formatter.literature['integration']))
 
     def test_get_integration_program_with_line_break(self):
         # Here we have the special case, that there is no space character between the version number and the bracket.
         self.cif['_computing_data_reduction'] = "CrysAlisPro 1.171.39.20a\n" \
                                                 "(Rigaku OD, 2015)\n"
         self.assertEqual('CrysAlisPro 1.171.39.20a\n(Rigaku OD, 2015)\n', self.cif['_computing_data_reduction'])
-        r = TemplatedReport()
-        result = r.get_integration_program(self.cif)
+        r = TemplatedReport(cif=self.cif, format=TextFormat.RICHTEXT, options=self.options)
+        result = r.text_formatter.get_integration_program(self.cif)
         self.assertEqual('CrysAlisPro', result)
-        self.assertEqual('Crysalispro, 1.171.39.20a, 2015, Rigaku OD.', str(r.literature['integration']))
+        self.assertEqual('Crysalispro, 1.171.39.20a, 2015, Rigaku OD.', str(r.text_formatter.literature['integration']))
 
     def test_get_integration_program_with_missing_information(self):
         # Here we have all in one line with spaces inbetween:
         self.cif['_computing_data_reduction'] = 'CrysAlisPro 1.171.39.20a (Rigaku OD)'
         self.assertEqual('CrysAlisPro 1.171.39.20a (Rigaku OD)', self.cif['_computing_data_reduction'])
-        r = TemplatedReport()
-        result = r.get_integration_program(self.cif)
+        r = TemplatedReport(cif=self.cif, format=TextFormat.RICHTEXT, options=self.options)
+        result = r.text_formatter.get_integration_program(self.cif)
         self.assertEqual('CrysAlisPro', result)
-        self.assertEqual('Crysalispro, unknown version, Rigaku OD.', str(r.literature['integration']))
+        self.assertEqual('Crysalispro, unknown version, Rigaku OD.', str(r.text_formatter.literature['integration']))
 
     def test_get_integration_program_saint(self):
         # Here we have all in one line with spaces inbetween:
         self.cif['_computing_data_reduction'] = 'SAINT V8.40A'
-        r = TemplatedReport()
-        result = r.get_integration_program(self.cif)
+        r = TemplatedReport(cif=self.cif, format=TextFormat.RICHTEXT, options=self.options)
+        result = r.text_formatter.get_integration_program(self.cif)
         self.assertEqual('SAINT V8.40A', result)
         self.assertEqual('Bruker, SAINT, V8.40A, Bruker AXS Inc., Madison, Wisconsin, USA.',
-                         str(r.literature['integration']))
+                         str(r.text_formatter.literature['integration']))
 
     def test_get_integration_program_saint_without_version(self):
         # Here we have all in one line with spaces inbetween:
         self.cif['_computing_data_reduction'] = 'SAINT'
-        r = TemplatedReport()
-        result = r.get_integration_program(self.cif)
+        r = TemplatedReport(cif=self.cif, format=TextFormat.RICHTEXT, options=self.options)
+        result = r.text_formatter.get_integration_program(self.cif)
         self.assertEqual('SAINT', result)
-        self.assertEqual('Bruker, SAINT, Bruker AXS Inc., Madison, Wisconsin, USA.', str(r.literature['integration']))
+        self.assertEqual('Bruker, SAINT, Bruker AXS Inc., Madison, Wisconsin, USA.',
+                         str(r.text_formatter.literature['integration']))
 
 
 if __name__ == '__main__':

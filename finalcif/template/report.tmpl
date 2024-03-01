@@ -2,136 +2,505 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=0.8">
     <title>Structure Tables</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <style>
+        #bibliography {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        #report_text {
+            text-align: justify;
+        }
+
+        h2 {
+            margin-top: 4rem;
+        }
+
+        h3 {
+            margin-top: 3rem;
+        }
+
+        h4 {
+            margin-top: 3rem;
+        }
+
+        img {
+            border-radius: 5px;
+        }
+    </style>
 </head>
+
 <body>
-{% if structure_figure%}
-<img alt="" src="{{structure_figure}}">
-{%endif%}
+<div class="container">
 
-<p>
-    A {{crystal_colour}}, {{crystal_shape}} shaped crystal was mounted on a {{ cif._diffrn_measurement_specimen_support }} with perfluoroether
-    oil. The sample was crystallized {{crystallization_method}}. Data for {{cif.block.name}} were collected from a shock-cooled single crystal at {{cif._diffrn_ambient_temperature}} K
-    on {{diffr_type|inv_article}} {{diffr_type}} {{diffr_device}} with {{diffr_source|inv_article}} {{diffr_source}} using a {{monochromator}} as monochromator and
-    {{detector|inv_article}} {{detector}} detector. The diffractometer {% if lowtemp_dev %}was equipped with {{lowtemp_dev|inv_article}} {{lowtemp_dev}} low temperature device and
-    {%endif%}used {{radiation}} radiation {%if wavelength%}(λ = {{wavelength}} Å){%endif%}. All data were integrated with {{integration_progr}} and a {{abstype}} absorption correction
-    using {{abs_details}} was applied. [1,2] The structure was solved by {{solution_method}} methods with {{solution_program}} and refined by full-matrix least-squares methods against
-    F2 using {{refinement_prog}}.[3,4] All non-hydrogen atoms were refined with anisotropic displacement parameters. {%if cif.hydrogen_atoms_present%}The hydrogen atoms were refined
-    isotropically on calculated positions using a riding model with their Uiso values constrained to 1.5 times the Ueq of their pivot atoms for terminal sp3 carbon atoms and 1.2 times
-    for all other carbon atoms. {%endif%}Crystallographic data for the structures reported in this paper have been deposited with the Cambridge Crystallographic Data Centre.[5] CCDC
-    {%if cif._database_code_depnum_ccdc_archive%}{{cif._database_code_depnum_ccdc_archive}}{%else%}??????{%endif%} contain the supplementary crystallographic data for this paper. These
-    data can be obtained free of charge from The Cambridge Crystallographic Data Centre via www.ccdc.cam.ac.uk/structures. This report and the CIF file were generated using
-    FinalCif.[6]
-</p>
+    <div class="row">
+        <div class="col">
 
-<h2>
-    Table 1. Crystal data and structure refinement for {{ cif.block.name }}
-</h2>
-<table>
-    <tr>
-        <td>CCDC number</td>
-        <td>{{ cif._database_code_depnum_ccdc_archive</td>
-    </tr>
-    <tr>
-        <td>Empirical formula</td>
-        <td>{{ sum_formula }}</td>
-    </tr>
-    Formula weight {{cif._chemical_formula_weight }}
-    Temperature [K] {{cif._diffrn_ambient_temperature}}
-    Crystal system {{ cif._space_group_crystal_system }}
-    Space group (number) {{p space_group}} {{ itnum }}
-    a [Å] {{cif._cell_length_a }}
-    b [Å] {{cif._cell_length_b }}
-    c [Å] {{cif._cell_length_c }}
-    α [°] {{cif._cell_angle_alpha }}
-    β [°] {{cif._cell_angle_beta }}
-    γ [°] {{cif._cell_angle_gamma }}
-    Volume [Å3] {{cif._cell_volume}}
-    Z {{cif._cell_formula_units_Z}}
-    ρcalc [gcm−3] {{cif._exptl_crystal_density_diffrn}}
-    μ [mm−1] {{cif._exptl_absorpt_coefficient_mu}}
-    F(000) {{cif._exptl_crystal_F_000}}
-    Crystal size [mm3] {{crystal_size}}
-    Crystal colour {{crystal_colour}}
-    Crystal shape {{crystal_shape }}
-    Radiation {{radiation}}{%if wavelength%} (λ={{wavelength}} Å){%endif%}
-    2θ range [°] {{theta_range}}
-    Index ranges {{index_ranges}}
-    Reflections collected {{cif._diffrn_reflns_number}}
-    Independent reflections {{indepentent_refl}}
-    Rint = {{r_int}}
-    Rsigma = {{r_sigma}}
-    Completeness{%if theta_full%} to
-    θ = {{theta_full}}°{%endif%} {{completeness}}
-    Data / Restraints / Parameters {{data}} / {{restraints}} / {{parameters}}
-    Goodness-of-fit on F2 {{ goof }}
-    Final R indexes
-    [I≥2σ(I)] R1 = {{ls_R_factor_gt}}
-    wR2 = {{ls_wR_factor_gt}}
-    Final R indexes
-    [all data] R1 = {{ls_R_factor_all}}
-    wR2 = {{ls_wR_factor_ref}}
-    Largest peak/hole [eÅ−3] {{diff_dens_max}}/{{diff_dens_min}}
-    {%tr if exti %}
-    Extinction coefficient {{exti}}
-    {%tr endif %}
-    {%tr if flack_x %}
-    Flack X parameter {{flack_x}}
-    {%tr endif %}
-</table>
-{% if refinement_details %}Refinement details for {{ cif.block.name }}
-{{ refinement_details }}
-{% endif %}{% if atomic_coordinates %} Table 2. Atomic coordinates and Ueq [Å2] for {{ cif.block.name }}
-Atom x y z Ueq
-{%tr for atom in atomic_coordinates %}
-{{ atom.label }} {{ atom.x }} {{ atom.y }} {{ atom.z }} {{ atom.u_eq }}
-{%tr endfor %}
-Ueq is defined as 1/3 of the trace of the orthogonalized Uij tensor.
-{% endif %}{% if displacement_parameters %} Table 3. Anisotropic displacement parameters (Å2) for {{ cif.block.name }}. The anisotropic displacement factor exponent takes the form:
-−2π2[ h2(a*)2U11 + k2(b*)2U22 + … + 2hka*b*U12 ]
-Atom U11 U22 U33 U23 U13 U12
-{%tr for atom in displacement_parameters %}
-{{ atom.label }} {{ atom.U11 }} {{ atom.U22 }} {{ atom.U33 }} {{ atom.U23 }} {{ atom.U13 }} {{ atom.U12 }}
-{%tr endfor %}
-{% endif %}{% if options.bonds_table %}{%if bonds%}
-Table 4. Bond lengths and angles for {{ cif.block.name }}
-Atom–Atom Length [Å]
-{%tr for b in bonds %}
-{{b.atoms}} {{b.dist}}
-{%tr endfor %}
+            <h2>Structure Tables</h2>
 
-Atom–Atom–Atom Angle [°]
-{%tr for a in angles %}
-{{a.atoms}} {{a.angle}}
-{%tr endfor %}
-{% if options.without_h %}Bonds and angles to hydrogen atoms were omitted.{% endif %}{%if ba_symminfo%}
-{{ ba_symminfo}}{%endif%}{%endif%}
-{% endif %}{%if torsions%}
-Table 5. Torsion angles for {{ cif.block.name }}
+            {% if structure_figure %}
+                <div class="card w-90 mt-4 mb-4">
+                    <img alt="Structure Figure" src="{{ structure_figure }}" width="100%">
+                </div>
+            {% endif %}
 
-Atom–Atom–Atom–Atom Torsion Angle [°]
-{%tr for t in torsions %}
-{{t.atoms}} {{t.angle}}
-{%tr endfor %}
-{% if options.without_h %}Bonds and angles to hydrogen atoms were omitted.{% endif %}{%if torsion_symminfo%}
-{{ torsion_symminfo}}{%endif%}{%endif%}
+            <p id="report_text">
+                A {{ crystal_colour }}, {{ crystal_shape }} shaped crystal was mounted on
+                a {{ cif._diffrn_measurement_specimen_support }}
+                with perfluoroether oil. {{ crystallization_method }}. Data for {{ cif.block.name }}
+                were collected from a shock-cooled single crystal at {{ cif._diffrn_ambient_temperature }}&nbsp;K
+                on {{ diffr_type|inv_article }}
+                {{ diffr_type }} {{ diffr_device }} with {{ diffr_source|inv_article }} {{ diffr_source }}
+                using a {{ monochromator }} as monochromator and {{ detector|inv_article }} {{ detector }}
+                detector. The diffractometer
+                {% if lowtemp_dev %}was equipped with {{ lowtemp_dev|inv_article }} {{ lowtemp_dev }}
+                    low temperature device and
+                {% endif %}
+                used {{ radiation }} radiation {% if wavelength %}(λ = {{ wavelength }} Å){% endif %}.
+                All data were integrated with {{ integration_progr }} yielding {{ cif._diffrn_reflns_number }}
+                reflections of which {{ cif._reflns_number_total }} where independent and
+                {{ '%0.1f'| format((cif._reflns_number_gt|float() / cif._reflns_number_total|float()) * 100) }} %
+                were greater than 2σ(<i>F</i><sup>2</sup>). A
+                {{ abstype }} absorption correction using {{ abs_details }} was applied.<sup>[1,2]</sup>
+                The structure was solved by
+                {{ solution_method }} methods with {{ solution_program }} and refined by full-matrix
+                least-squares methods against
+                <i>F</i><sup>2</sup> using {{ refinement_prog }}.<sup>[3,4]</sup> All non-hydrogen atoms
+                were refined with anisotropic displacement parameters.
+                {% if cif.hydrogen_atoms_present %}The hydrogen atoms were refined isotropically on
+                    calculated positions using a riding model with their <i>U</i><sub>iso</sub> values
+                    constrained to 1.5 times
+                    the <i>U</i><sub>eq</sub> of their pivot atoms for terminal sp<sup>3</sup> carbon atoms
+                    and 1.2 times for all other carbon atoms.
+                {% endif %}
+                Crystallographic data for the structures reported in this paper have been deposited
+                with the Cambridge Crystallographic Data Centre.<sup>[5]</sup> CCDC
+                {% if cif._database_code_depnum_ccdc_archive %}
+                    {{ cif._database_code_depnum_ccdc_archive|replace('CCDC ', '') }}{% else %}
+                    ??????
+                {% endif %}
+                contain the supplementary crystallographic data for this paper.
+                These data can be obtained free of charge from The Cambridge Crystallographic Data
+                Centre via <a href="www.ccdc.cam.ac.uk/structures">www.ccdc.cam.ac.uk/structures</a>.
+                This report and the CIF file were generated using FinalCif.<sup>[6]</sup>
+            </p>
+            {% if refinement_details %}
+                <h4>
+                    Refinement details for {{ cif.block.name }}
+                </h4>
+                <p>
+                    {{ refinement_details }}
+                </p>
+            {% endif %}
+        </div>
+        <div class="col-1">
+            {# Just an empty column to separate the other  #}
+        </div>
+        <div class="col">
+            <h4>
+                Table 1. Crystal data and structure refinement for {{ cif.block.name }}
+            </h4>
+            <table class="table table-sm table-condensed table-hover">
+                <tbody>
+                <tr>
+                    <td>CCDC number</td>
+                    <td>{{ cif._database_code_depnum_ccdc_archive }}</td>
+                </tr>
+                <tr>
+                    <td>Empirical formula</td>
+                    <td>{{ sum_formula }}</td>
+                </tr>
+                <tr>
+                    <td>Formula weight</td>
+                    <td>{{ cif._chemical_formula_weight }}</td>
+                </tr>
+                <tr>
+                    <td>Temperature [K]</td>
+                    <td>{{ cif._diffrn_ambient_temperature }}</td>
+                </tr>
+                <tr>
+                    <td>Crystal system</td>
+                    <td>{{ cif._space_group_crystal_system }}</td>
+                </tr>
+                <tr>
+                    <td>Space group (number)</td>
+                    <td>{{ space_group }}</td>
+                </tr>
+                <tr>
+                    <td><i>a</i> [Å]</td>
+                    <td>{{ cif._cell_length_a }}</td>
+                </tr>
+                <tr>
+                    <td><i>b</i> [Å]</td>
+                    <td>{{ cif._cell_length_b }}</td>
+                </tr>
+                <tr>
+                    <td><i>c</i> [Å]</td>
+                    <td>{{ cif._cell_length_c }}</td>
+                </tr>
+                <tr>
+                    <td><i>α</i> [°]</td>
+                    <td>{{ cif._cell_angle_alpha }}</td>
+                </tr>
+                <tr>
+                    <td><i>β</i> [°]</td>
+                    <td>{{ cif._cell_angle_beta }}</td>
+                </tr>
+                <tr>
+                    <td><i>γ</i> [°]</td>
+                    <td>{{ cif._cell_angle_gamma }}</td>
+                </tr>
+                <tr>
+                    <td>Volume [Å<sup>3</sup>]</td>
+                    <td>{{ cif._cell_volume }}</td>
+                </tr>
+                <tr>
+                    <td><i>Z</i></td>
+                    <td>{{ cif._cell_formula_units_Z }}</td>
+                </tr>
+                <tr>
+                    <td><i>ρ</i><sub>calc</sub> [gcm<sup>&minus;3</sup>]</td>
+                    <td>{{ cif._exptl_crystal_density_diffrn }}</td>
+                </tr>
+                <tr>
+                    <td><i>μ</i> [mm<sup>&minus;1</sup>]</td>
+                    <td>{{ cif._exptl_absorpt_coefficient_mu }}</td>
+                </tr>
+                <tr>
+                    <td><i>F</i>(000)</td>
+                    <td>{{ cif._exptl_crystal_F_000 }}</td>
+                </tr>
+                <tr>
+                    <td>Crystal size [mm<sup>3</sup>]</td>
+                    <td>{{ crystal_size }}</td>
+                </tr>
+                <tr>
+                    <td>Crystal colour</td>
+                    <td>{{ crystal_colour }}</td>
+                </tr>
+                <tr>
+                    <td>Crystal shape</td>
+                    <td>{{ crystal_shape }}</td>
+                </tr>
+                <tr>
+                    <td>Radiation</td>
+                    <td>{{ radiation }}{% if wavelength %} (λ={{ wavelength }}&nbsp;Å){% endif %}</td>
+                </tr>
+                <tr>
+                    <td>2θ range [°]</td>
+                    <td>{{ theta_range }}</td>
+                </tr>
+                <tr>
+                    <td>Index ranges</td>
+                    <td>{{ index_ranges }}</td>
+                </tr>
+                <tr>
+                    <td>Reflections collected</td>
+                    <td>{{ cif._diffrn_reflns_number }}</td>
+                </tr>
+                <tr>
+                    <td>Independent reflections</td>
+                    <td>{{ indepentent_refl }}<br>
+                        Rint = {{ r_int }}<br>
+                        Rsigma = {{ r_sigma }}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Completeness{% if theta_full %} to
+                        θ = {{ theta_full }}°{% endif %}
+                    </td>
+                    <td>{{ completeness }}</td>
+                </tr>
+                <tr>
+                    <td>Data / Restraints / Parameters</td>
+                    <td>{{ data }} / {{ restraints }} / {{ parameters }}</td>
+                </tr>
+                <tr>
+                    <td>Absorption correction Tmin/Tmax (method)
+                    </td>
+                    <td>{{ t_min }} / {{ t_max }} {% if abstype %}({{ abstype }}){% endif %}</td>
+                </tr>
+                <tr>
+                    <td>Goodness-of-fit on <i>F</i><sup>2</sup></td>
+                    <td>{{ goof }}</td>
+                </tr>
+                <tr>
+                    <td>Final R indexes<br>
+                        [I≥2σ(I)]
+                    </td>
+                    <td><i>R</i><sub>1</sub> = {{ ls_R_factor_gt }}<br>
+                        w<i>R</i><sub>2</sub> = {{ ls_wR_factor_gt }}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Final R indexes<br>
+                        [all data]
+
+                    </td>
+                    <td><i>R</i><sub>1</sub> = {{ ls_R_factor_all }}<br>
+                        w<i>R</i><sub>2</sub> = {{ ls_wR_factor_ref }}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Largest peak/hole [eÅ<sup>&minus;3</sup>]</td>
+                    <td>{{ diff_dens_max }}/{{ diff_dens_min }}</td>
+                </tr>
+                {% if exti %}
+                    <tr>
+                        <td>Extinction coefficient</td>
+                        <td>{{ exti }}</td>
+                    </tr>
+                {% endif %}
+                {% if flack_x %}
+                    <tr>
+                        <td>Flack X parameter</td>
+                        <td>{{ flack_x }}</td>
+                    </tr>
+                {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {% if atomic_coordinates %}
+        <h4>
+            Table 2. Atomic coordinates and <i>U</i><sub>eq</sub> [Å<sup>2</sup>]
+            for {{ cif.block.name }}
+        </h4>
+
+        <div class="row">
+            <div class="col-8">
+                <table class="table table-sm table-condensed table-hover">
+                    <caption><i>U</i><sub>eq</sub> is defined as 1/3 of the trace of the orthogonalized
+                        <i>U</i><sub>ij</sub> tensor.
+                    </caption>
+                    <thead>
+                    <tr>
+                        <th>Atom</th>
+                        <th>x</th>
+                        <th>y</th>
+                        <th>z</th>
+                        <th><i>U</i><sub>eq</sub></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for atom in atomic_coordinates %}
+                        <tr>
+                            <td>{{ atom.label }}</td>
+                            <td>{{ atom.x|align_dot }}</td>
+                            <td>{{ atom.y|align_dot }}</td>
+                            <td>{{ atom.z|align_dot }}</td>
+                            <td>{{ atom.u_eq }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% endif %}
 
 
-{% if options.hydrogen_bonds and hydrogen_bonds %}
-Table 6. Hydrogen bonds for {{ cif.block.name }}
-D–H⋯A [Å] d(D–H) [Å] d(H⋯A) [Å] d(D⋯A) [Å] <(DHA) [°]
-{%tr for h in hydrogen_bonds %}
-{{h.atoms}} {{h.dist_dh}} {{h.dist_ha}} {{h.dist_da}} {{h.angle_dha}}
-{%tr endfor %}
-{%if hydrogen_symminfo%}{{hydrogen_symminfo}}{%endif%}{%endif%}
-Bibliography
-[1] {{literature.integration.richtext}}
-[2] {{literature.absorption.richtext}}
-[3] {{literature.solution.richtext}}
-[4] {{literature.refinement.richtext}}
-[5] {{literature.ccdc.richtext}}
-[6] {{literature.finalcif.richtext}}
+    {% if displacement_parameters %}
+        <h4>
+            Table 3. Anisotropic displacement parameters [Å<sup>2</sup>] for {{ cif.block.name }}.
+            The anisotropic displacement factor exponent takes the form:
+            −2π<sup>2</sup>[&thinsp;<i>h</i><sup>2</sup>(<i>a</i><sup>*</sup>)<sup>2</sup><i>U</i><sub>11</sub>&thinsp;+&thinsp;<i>k</i><sup>2</sup>(<i>b</i><sup>*</sup>)<sup>2</sup><i>U</i><sub>22</sub>&thinsp;+&thinsp;…&thinsp;+&thinsp;2<i>hka</i><sup>*</sup><i>b</i><sup>*</sup><i>U</i><sub>12</sub>&thinsp;]
+        </h4>
+
+        <div class="row">
+            <div class="col-8">
+                <table class="table table-sm table-condensed table-hover">
+                    <caption><i>U</i><sub>eq</sub> is defined as 1/3 of the trace of the orthogonalized
+                        <i>U</i><sub>ij</sub> tensor.
+                    </caption>
+                    <thead>
+                    <tr>
+                        <th>Atom</th>
+                        <th><i>U</i><sub>11</sub></th>
+                        <th><i>U</i><sub>22</sub></th>
+                        <th><i>U</i><sub>33</sub></th>
+                        <th><i>U</i><sub>23</sub></th>
+                        <th><i>U</i><sub>13</sub></th>
+                        <th><i>U</i><sub>12</sub></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for atom in displacement_parameters %}
+                        <tr>
+                            <td>{{ atom.label }}</td>
+                            <td>{{ atom.U11 }}</td>
+                            <td>{{ atom.U22 }}</td>
+                            <td>{{ atom.U33 }}</td>
+                            <td>{{ atom.U23 }}</td>
+                            <td>{{ atom.U13 }}</td>
+                            <td>{{ atom.U12 }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="row justify-content-start">
+        <div class="col-5">
+            {% if options.bonds_table %}
+                {% if bonds %}
+                    <h4>
+                        Table 4. Bond lengths and angles for {{ cif.block.name }}
+                    </h4>
+                    <table class="table table-sm table-condensed table-hover">
+                        <caption>
+                            {% if ba_symminfo %}
+                                {{ ba_symminfo }}
+                            {% endif %}
+                            {% if options.without_h %}
+                                Bonds and angles to hydrogen atoms were omitted.
+                            {% endif %}
+                        </caption>
+                        <thead>
+                        <tr>
+                            <th>Atom–Atom</th>
+                            <th>Length [Å]</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for b in bonds %}
+                            <tr>
+                                <td>{{ b.atoms }}<sup>{{ b.symm }}</sup></td>
+                                <td>{{ b.dist }}</td>
+                            </tr>
+                        {% endfor %}
+                        <tr>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <th>
+                                Atom–Atom–Atom
+                            </th>
+                            <th>
+                                Angle [°]
+                            </th>
+                        </tr>
+                        {% for a in angles %}
+                            <tr>
+                                <td>{{ a.atom1 }}<sup>{{ a.symm1 }}</sup>{{ a.atom2 }}<sup>{{ a.symm2 }}</sup>
+                                </td>
+                                <td>{{ a.angle }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+            {% endif %}
+        </div>
+        <div class="col-1">
+            {# Just an empty column to separate the other  #}
+        </div>
+        <div class="col-5">
+            {% if torsions %}
+                <h4>
+                    Table 5. Torsion angles for {{ cif.block.name }}
+                </h4>
+                <table class="table table-sm table-condensed table-hover">
+                    <caption>
+                        {% if torsion_symminfo %}
+                            {{ torsion_symminfo }}
+                        {% endif %}
+                        {% if options.without_h %}
+                            Bonds and angles to hydrogen atoms were omitted.
+                        {% endif %}
+                    </caption>
+                    <thead>
+                    <tr>
+                        <th>Atom–Atom–Atom–Atom</th>
+                        <th>Torsion Angle [°]</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for t in torsions %}
+                        <tr>
+                            <td>
+                                {{ t.atom1 }}<sup>{{ t.symm1 }}</sup>&ndash;{{ t.atom2 }}<sup>{{ t.symm2 }}</sup>&ndash;{{ t.atom3 }}<sup>{{ t.symm3 }}</sup>&ndash;{{ t.atom4 }}<sup>{{ t.symm4 }}</sup>
+                            </td>
+                            <td>
+                                {{ t.angle }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if options.hydrogen_bonds and hydrogen_bonds %}
+        <h4>
+            Table 6. Hydrogen bonds for {{ cif.block.name }}
+        </h4>
+
+        <div class="row">
+            <div class="col-9">
+                <table class="table table-sm table-condensed table-hover">
+                    <caption>
+                        {% if hydrogen_symminfo %}
+                            {{ hydrogen_symminfo }}
+                        {% endif %}
+                    </caption>
+                    <thead>
+                    <tr>
+                        <th>D–H⋯A [Å]</th>
+                        <th>d(D–H) [Å]</th>
+                        <th> d(H⋯A) [Å]</th>
+                        <th>d(D⋯A) [Å]</th>
+                        <th><(DHA) [°]</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for h in hydrogen_bonds %}
+                        <tr>
+                            <td>
+                                {{ h.atoms }}
+                            </td>
+                            <td>
+                                {{ h.dist_dh }}
+                            </td>
+                            <td>
+                                {{ h.dist_ha }}
+                            </td>
+                            <td>
+                                {{ h.dist_da }}
+                            </td>
+                            <td>
+                                {{ h.angle_dha }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% endif %}
+
+    <h4>
+        Bibliography
+    </h4>
+
+    <ol id="bibliography">
+        <li>[1] {{ literature.integration.html }}</li>
+        <li>[2] {{ literature.absorption.html }}</li>
+        <li>[3] {{ literature.solution.html }}</li>
+        <li>[4] {{ literature.refinement.html }}</li>
+        <li>[5] {{ literature.ccdc.html }}</li>
+        <li>[6] {{ literature.finalcif.html }}</li>
+    </ol>
 
 
+</div>
 </body>
 </html>
