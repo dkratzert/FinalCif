@@ -549,7 +549,7 @@ class HtmlFormatter(Formatter):
 
     def get_radiation(self, cif: CifContainer) -> str:
         rad_element, radtype, radline = format_radiation(cif['_diffrn_radiation_type'])
-        radiation = f'{rad_element}<em>{radtype}</em><em><sub>{radline}</sub></em>'
+        radiation = f'{rad_element}<i>{radtype}</i><i><sub>{radline}</sub></i>'
         return radiation
 
     def hkl_index_limits(self, cif: CifContainer) -> str:

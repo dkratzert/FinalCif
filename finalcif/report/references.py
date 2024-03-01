@@ -191,6 +191,32 @@ class ReferenceFormatter():
         return r
 
     @property
+    def html(self) -> str:
+        txt = ''
+        if self.authors:
+            txt += f'{self.authors}, '
+        if self.journal:
+            txt += f'<i>{self.journal}</i>'
+            if not self.journal.endswith('.'):
+                txt += ', '
+            else:
+                txt += ' '
+        if self.year:
+            txt += f'<b>{self.year}</b>'
+            txt += ', '
+        if self.volume:
+            txt += f'<i>{self.volume}</i>'
+            txt += ', '
+        if self.pages:
+            txt += f'{self.pages}'
+            if self.doi:
+                txt += ', '
+        if self.doi:
+            txt += f'{self.doi}'
+        if any([self.journal, self.pages, self.year, self.volume, self.doi]):
+            txt += '.'
+        return txt
+    @property
     def short_ref(self) -> RichText:
         """
         Adds a reference with (name year) instead of a number.
