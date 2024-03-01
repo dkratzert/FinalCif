@@ -320,13 +320,13 @@ class Formatter:
     def get_bonds_angles_symminfo(self) -> str:
         return self._bonds_angles.symminfo
 
-    def get_torsion_symminfo(self):
+    def get_torsion_symminfo(self) -> str:
         return self._torsions.symminfo
 
-    def get_hydrogen_symminfo(self):
+    def get_hydrogen_symminfo(self) -> str:
         return self._hydrogens.symminfo
 
-    def get_crystallization_method(self, cif):
+    def get_crystallization_method(self, cif) -> str:
         return gstr(cif['_exptl_crystal_recrystallization_method']) or '[No crystallization method given!]'
 
     def get_radiation(self, cif: CifContainer) -> str:
@@ -446,7 +446,7 @@ class Formatter:
         if 'OLEX' in refined.upper():
             self.literature['refinement'] = Olex2Reference()
         if ('NOSPHERA2' in refined.upper() or 'NOSPHERA2' in cif['_refine_special_details'].upper() or
-            'NOSPHERAT2' in cif['_olex2_refine_details'].upper()):
+                'NOSPHERAT2' in cif['_olex2_refine_details'].upper()):
             self.literature['refinement'] = Nosphera2Reference()
         return refined.split()[0]
 
@@ -512,6 +512,21 @@ class HtmlFormatter(Formatter):
 
     def get_hydrogen_bonds(self) -> list[HydrogenBond]:
         return self._hydrogens.hydrogen_bonds_as_str
+
+    def _format_symminfo(self, txt):
+        return (txt.replace('#1:', '<br>#1:')
+                .replace(', ', ',&nbsp;')
+                .replace(': ', ':&nbsp;')
+                .replace('-', minus_sign))
+
+    def get_bonds_angles_symminfo(self) -> str:
+        return self._format_symminfo(self._bonds_angles.symminfo)
+
+    def get_torsion_symminfo(self):
+        return self._format_symminfo(self._torsions.symminfo)
+
+    def get_hydrogen_symminfo(self):
+        return self._format_symminfo(self._hydrogens.symminfo)
 
     def space_group_subdoc(self, cif: CifContainer, _: None) -> str:
         s = SpaceGroups()
@@ -796,12 +811,14 @@ if __name__ == '__main__':
     from pprint import pprint
     import subprocess
 
-    #data = Path('tests')
-    #testcif = Path(data / 'examples/1979688.cif').absolute()
+    # data = Path('tests')
+    # testcif = Path(data / 'examples/1979688.cif').absolute()
     testcif = Path(r'test-data/p31c.cif').absolute()
     cif = CifContainer(testcif)
-    t = TemplatedReport(format=TextFormat.HTML, options=mock.Mock(), cif=cif)
-    maincontext = t.get_context(cif, options=mock.Mock(), picfile=None, tpl_doc=mock.Mock())
+    mock_mock = mock.Mock()
+    mock.without_h = ''
+    t = TemplatedReport(format=TextFormat.HTML, options=mock_mock, cif=cif)
+    maincontext = t.get_context(cif, options=mock_mock, picfile=None, tpl_doc=mock_mock)
     # pprint(maincontext)
     templateLoader = jinja2.FileSystemLoader(searchpath=r"finalcif/template")
     jinja_env = jinja2.Environment(loader=templateLoader, autoescape=False)

@@ -528,6 +528,7 @@ def align_by_dot(number: str) -> str:
     """
     The intention of this filter is to align the number
     on the dot, but this doesn't work as expected.
+    https://codepen.io/dominiccomtois/pen/YZdred
     """
     if '.' in number:
         num, dec = number.split('.')

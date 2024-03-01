@@ -293,7 +293,7 @@
 
     {% if displacement_parameters %}
         <h3>
-            Table 3. Anisotropic displacement parameters (Å2) for {{ cif.block.name }}.
+            Table 3. Anisotropic displacement parameters [Å<sup>2</sup>] for {{ cif.block.name }}.
             The anisotropic displacement factor exponent takes the form:
             −2π<sup>2</sup>[&thinsp;<i>h</i><sup>2</sup>(<i>a</i><sup>*</sup>)<sup>2</sup><i>U</i><sub>11</sub>&thinsp;+&thinsp;<i>k</i><sup>2</sup>(<i>b</i><sup>*</sup>)<sup>2</sup><i>U</i><sub>22</sub>&thinsp;+&thinsp;…&thinsp;+&thinsp;2<i>hka</i><sup>*</sup><i>b</i><sup>*</sup><i>U</i><sub>12</sub>&thinsp;]
         </h3>
@@ -358,7 +358,7 @@
                         <tbody>
                         {% for b in bonds %}
                             <tr>
-                                <td>{{ b.atoms }}</td>
+                                <td>{{ b.atoms }}<sup>{{ b.symm }}</sup></td>
                                 <td>{{ b.dist }}</td>
                             </tr>
                         {% endfor %}
@@ -376,7 +376,7 @@
                         </tr>
                         {% for a in angles %}
                             <tr>
-                                <td>{{ a.atom1 }}{{ a.symmstr1 }}{{ a.atom2 }}{{ a.symmstr2 }}</td>
+                                <td>{{ a.atom1 }}<sup>{{ a.symm1 }}</sup>{{ a.atom2 }}<sup>{{ a.symm2 }}</sup></td>
                                 <td>{{ a.angle }}</td>
                             </tr>
                         {% endfor %}
@@ -384,6 +384,9 @@
                     </table>
                 {% endif %}
             {% endif %}
+        </div>
+        <div class="col-1">
+
         </div>
         <div class="col-5">
             {% if torsions %}
@@ -409,7 +412,7 @@
                     {% for t in torsions %}
                         <tr>
                             <td>
-                                {{ t.atom1 }}{{ t.symminfo1 }}&ndash;{{ t.atom2 }}{{ t.symminfo2 }}&ndash;{{ t.atom3 }}{{ t.symminfo3 }}&ndash;{{ t.atom4 }}{{ t.symminfo4 }}
+                                {{ t.atom1 }}<sup>{{ t.symm1 }}</sup>&ndash;{{ t.atom2 }}<sup>{{ t.symm2 }}</sup>&ndash;{{ t.atom3 }}<sup>{{ t.symm3 }}</sup>&ndash;{{ t.atom4 }}<sup>{{ t.symm4 }}</sup>
                             </td>
                             <td>
                                 {{ t.angle }}
