@@ -32,7 +32,7 @@ from finalcif.tools.space_groups import SpaceGroups
 AdpWithMinus = namedtuple('AdpWithMinus', ('label', 'U11', 'U22', 'U33', 'U23', 'U13', 'U12'))
 
 
-class TextFormat(enum.StrEnum):
+class ReportFormat(enum.Enum):
     RICHTEXT = 'richtext'
     HTML = 'html'
 
@@ -455,7 +455,7 @@ class Formatter(Protocol):
         if 'OLEX' in refined.upper():
             self.literature['refinement'] = Olex2Reference()
         if ('NOSPHERA2' in refined.upper() or 'NOSPHERA2' in cif['_refine_special_details'].upper() or
-                'NOSPHERAT2' in cif['_olex2_refine_details'].upper()):
+            'NOSPHERAT2' in cif['_olex2_refine_details'].upper()):
             self.literature['refinement'] = Nosphera2Reference()
         return refined.split()[0]
 
@@ -679,17 +679,17 @@ class RichTextFormatter(Formatter):
                 f'{less_or_equal} l {less_or_equal} {limit_l_max}')
 
 
-def text_factory(options: Options, cif: CifContainer) -> dict[str, Formatter]:
+def text_factory(options: Options, cif: CifContainer) -> dict[ReportFormat, Formatter]:
     factory = {
-        TextFormat.RICHTEXT: RichTextFormatter(options, cif),
-        TextFormat.HTML    : HtmlFormatter(options, cif),
+        ReportFormat.RICHTEXT: RichTextFormatter(options, cif),
+        ReportFormat.HTML    : HtmlFormatter(options, cif),
         # 'plaintext': StringFormatter(),
     }
     return factory
 
 
 class TemplatedReport():
-    def __init__(self, format: str, options: Options, cif: CifContainer) -> None:
+    def __init__(self, format: ReportFormat, options: Options, cif: CifContainer) -> None:
         self.format = format
         self.cif = cif
         self.text_formatter = text_factory(options, cif)[self.format]
@@ -867,7 +867,7 @@ if __name__ == '__main__':
 
 
     options = MOptions()
-    t = TemplatedReport(format=TextFormat.HTML, options=options, cif=cif)
+    t = TemplatedReport(format=ReportFormat.HTML, options=options, cif=cif)
     pic = pathlib.Path("tests/examples/work/cu_BruecknerJK_153F40_0m-finalcif.png")
     maincontext = t.get_context(cif, options=options, picfile=pic, tpl_doc=None)
     # pprint(maincontext)
