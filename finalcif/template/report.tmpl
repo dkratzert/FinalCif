@@ -12,6 +12,10 @@
             padding-left: 0;
         }
 
+        #report_text {
+            text-align: justify;
+        }
+
         h2 {
             margin-top: 4rem;
         }
@@ -19,69 +23,87 @@
         h3 {
             margin-top: 3rem;
         }
+
+        h4 {
+            margin-top: 3rem;
+        }
+
+        img {
+            border-radius: 5px;
+        }
     </style>
 </head>
 
-<body class="p-3 m-0 border-0">
+<body>
 <div class="container">
 
     <div class="row">
         <div class="col">
 
+            <h2>Structure Tables</h2>
+
             {% if structure_figure %}
-                <img alt="" src="{{ structure_figure }}">
+                <div class="card w-90 mt-4 mb-4">
+                    <img alt="Structure Figure" src="{{ structure_figure }}" width="100%">
+                </div>
             {% endif %}
 
-            <h2>Structure Tables</h2>
-            <p>
+            <p id="report_text">
                 A {{ crystal_colour }}, {{ crystal_shape }} shaped crystal was mounted on
                 a {{ cif._diffrn_measurement_specimen_support }}
-                with perfluoroether oil. {{ crystallization_method }}. Data for {{ cif.block.name }} were collected
-                from a shock-cooled single crystal at {{ cif._diffrn_ambient_temperature }}&nbsp;K
+                with perfluoroether oil. {{ crystallization_method }}. Data for {{ cif.block.name }}
+                were collected from a shock-cooled single crystal at {{ cif._diffrn_ambient_temperature }}&nbsp;K
                 on {{ diffr_type|inv_article }}
-                {{ diffr_type }}
-                {{ diffr_device }} with {{ diffr_source|inv_article }} {{ diffr_source }} using a {{ monochromator }} as
-                monochromator
-                and
-                {{ detector|inv_article }} {{ detector }} detector. The diffractometer {% if lowtemp_dev %}was equipped
-                with
-                {{ lowtemp_dev|inv_article }} {{ lowtemp_dev }} low temperature device and {% endif %}
-                used {{ radiation }}
-                radiation
-                {% if wavelength %}(λ = {{ wavelength }} Å){% endif %}. All data were integrated
-                with {{ integration_progr }}
-                and a
-                {{ abstype }} absorption correction using {{ abs_details }} was applied.<sup>[1,2]</sup> The structure
-                was
-                solved by
-                {{ solution_method }} methods with {{ solution_program }} and refined by full-matrix least-squares
-                methods
-                against
-                <i>F</i><sup>2</sup> using {{ refinement_prog }}.<sup>[3,4]</sup> All non-hydrogen atoms were refined
-                with
-                anisotropic
-                displacement parameters. {% if cif.hydrogen_atoms_present %}The hydrogen atoms were refined
-                isotropically on
-                calculated
-                positions using a riding model with their Uiso values constrained to 1.5 times the <i>U</i><sub>eq</sub>
-                of
-                their pivot
-                atoms for terminal sp<sup>3</sup>carbon atoms and 1.2 times for all other carbon atoms.
-            {% endif %}Crystallographic data for the
-                structures reported in this paper have been deposited with the Cambridge Crystallographic Data
-                Centre.<sup>[5]</sup> CCDC
-                {% if cif._database_code_depnum_ccdc_archive %}{{ cif._database_code_depnum_ccdc_archive }}{% else %}
-                    ??????{% endif %}
+                {{ diffr_type }} {{ diffr_device }} with {{ diffr_source|inv_article }} {{ diffr_source }}
+                using a {{ monochromator }} as monochromator and {{ detector|inv_article }} {{ detector }}
+                detector. The diffractometer
+                {% if lowtemp_dev %}was equipped with {{ lowtemp_dev|inv_article }} {{ lowtemp_dev }}
+                    low temperature device and
+                {% endif %}
+                used {{ radiation }} radiation {% if wavelength %}(λ = {{ wavelength }} Å){% endif %}.
+                All data were integrated with {{ integration_progr }} yielding {{ cif._diffrn_reflns_number }}
+                reflections of which {{ cif._reflns_number_total }} where independent and
+                {{ '%0.1f'| format((cif._reflns_number_gt|float() / cif._reflns_number_total|float()) * 100) }} %
+                were greater than 2σ(<i>F</i><sup>2</sup>). A
+                {{ abstype }} absorption correction using {{ abs_details }} was applied.<sup>[1,2]</sup>
+                The structure was solved by
+                {{ solution_method }} methods with {{ solution_program }} and refined by full-matrix
+                least-squares methods against
+                <i>F</i><sup>2</sup> using {{ refinement_prog }}.<sup>[3,4]</sup> All non-hydrogen atoms
+                were refined with anisotropic displacement parameters.
+                {% if cif.hydrogen_atoms_present %}The hydrogen atoms were refined isotropically on
+                    calculated positions using a riding model with their <i>U</i><sub>iso</sub> values
+                    constrained to 1.5 times
+                    the <i>U</i><sub>eq</sub> of their pivot atoms for terminal sp<sup>3</sup> carbon atoms
+                    and 1.2 times for all other carbon atoms.
+                {% endif %}
+                Crystallographic data for the structures reported in this paper have been deposited
+                with the Cambridge Crystallographic Data Centre.<sup>[5]</sup> CCDC
+                {% if cif._database_code_depnum_ccdc_archive %}
+                    {{ cif._database_code_depnum_ccdc_archive|replace('CCDC ', '') }}{% else %}
+                    ??????
+                {% endif %}
                 contain the supplementary crystallographic data for this paper.
-                These data can be obtained free of charge from The Cambridge Crystallographic Data Centre via
-                www.ccdc.cam.ac.uk/structures.
+                These data can be obtained free of charge from The Cambridge Crystallographic Data
+                Centre via <a href="www.ccdc.cam.ac.uk/structures">www.ccdc.cam.ac.uk/structures</a>.
                 This report and the CIF file were generated using FinalCif.<sup>[6]</sup>
             </p>
+            {% if refinement_details %}
+                <h4>
+                    Refinement details for {{ cif.block.name }}
+                </h4>
+                <p>
+                    {{ refinement_details }}
+                </p>
+            {% endif %}
+        </div>
+        <div class="col-1">
+            {# Just an empty column to separate the other  #}
         </div>
         <div class="col">
-            <h3>
+            <h4>
                 Table 1. Crystal data and structure refinement for {{ cif.block.name }}
-            </h3>
+            </h4>
             <table class="table table-sm table-condensed table-hover">
                 <tbody>
                 <tr>
@@ -244,20 +266,11 @@
         </div>
     </div>
 
-    {% if refinement_details %}
-        <h3>
-            Refinement details for {{ cif.block.name }}
-        </h3>
-        <p>
-            {{ refinement_details }}
-        </p>
-    {% endif %}
-
-
     {% if atomic_coordinates %}
-        <h3>
-            Table 2. Atomic coordinates and <i>U</i><sub>eq</sub> [Å<sup>2</sup>] for {{ cif.block.name }}
-        </h3>
+        <h4>
+            Table 2. Atomic coordinates and <i>U</i><sub>eq</sub> [Å<sup>2</sup>]
+            for {{ cif.block.name }}
+        </h4>
 
         <div class="row">
             <div class="col-8">
@@ -292,11 +305,11 @@
 
 
     {% if displacement_parameters %}
-        <h3>
+        <h4>
             Table 3. Anisotropic displacement parameters [Å<sup>2</sup>] for {{ cif.block.name }}.
             The anisotropic displacement factor exponent takes the form:
             −2π<sup>2</sup>[&thinsp;<i>h</i><sup>2</sup>(<i>a</i><sup>*</sup>)<sup>2</sup><i>U</i><sub>11</sub>&thinsp;+&thinsp;<i>k</i><sup>2</sup>(<i>b</i><sup>*</sup>)<sup>2</sup><i>U</i><sub>22</sub>&thinsp;+&thinsp;…&thinsp;+&thinsp;2<i>hka</i><sup>*</sup><i>b</i><sup>*</sup><i>U</i><sub>12</sub>&thinsp;]
-        </h3>
+        </h4>
 
         <div class="row">
             <div class="col-8">
@@ -337,9 +350,9 @@
         <div class="col-5">
             {% if options.bonds_table %}
                 {% if bonds %}
-                    <h3>
+                    <h4>
                         Table 4. Bond lengths and angles for {{ cif.block.name }}
-                    </h3>
+                    </h4>
                     <table class="table table-sm table-condensed table-hover">
                         <caption>
                             {% if ba_symminfo %}
@@ -376,7 +389,8 @@
                         </tr>
                         {% for a in angles %}
                             <tr>
-                                <td>{{ a.atom1 }}<sup>{{ a.symm1 }}</sup>{{ a.atom2 }}<sup>{{ a.symm2 }}</sup></td>
+                                <td>{{ a.atom1 }}<sup>{{ a.symm1 }}</sup>{{ a.atom2 }}<sup>{{ a.symm2 }}</sup>
+                                </td>
                                 <td>{{ a.angle }}</td>
                             </tr>
                         {% endfor %}
@@ -386,13 +400,13 @@
             {% endif %}
         </div>
         <div class="col-1">
-
+            {# Just an empty column to separate the other  #}
         </div>
         <div class="col-5">
             {% if torsions %}
-                <h3>
+                <h4>
                     Table 5. Torsion angles for {{ cif.block.name }}
-                </h3>
+                </h4>
                 <table class="table table-sm table-condensed table-hover">
                     <caption>
                         {% if torsion_symminfo %}
@@ -426,9 +440,9 @@
     </div>
 
     {% if options.hydrogen_bonds and hydrogen_bonds %}
-        <h3>
+        <h4>
             Table 6. Hydrogen bonds for {{ cif.block.name }}
-        </h3>
+        </h4>
 
         <div class="row">
             <div class="col-9">
@@ -473,9 +487,9 @@
         </div>
     {% endif %}
 
-    <h3>
+    <h4>
         Bibliography
-    </h3>
+    </h4>
 
     <ol id="bibliography">
         <li>[1] {{ literature.integration.html }}</li>

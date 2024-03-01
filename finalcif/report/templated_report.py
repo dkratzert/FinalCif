@@ -1,13 +1,14 @@
 import dataclasses
 import enum
 import itertools
+import pathlib
 import re
 import sys
 from collections import namedtuple
 from contextlib import suppress
 from math import sin, radians
 from pathlib import Path
-from typing import List, Dict, Union, Iterator, Protocol
+from typing import List, Dict, Union, Iterator, Protocol, Any
 
 import jinja2
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
@@ -15,6 +16,7 @@ from docx.shared import Cm
 from docx.text.paragraph import Paragraph
 from docxtpl import DocxTemplate, RichText, InlineImage, Subdoc
 
+from finalcif import app_path
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.gui.dialogs import show_general_warning
 from finalcif.report.references import SAINTReference, SHELXLReference, SadabsTwinabsReference, SHELXTReference, \
@@ -696,7 +698,9 @@ class TemplatedReport():
         self.cif = cif
         self.text_formatter = text_factory(options, cif)[self.format]
 
-    def make_templated_docx_report(self, options: Options, output_filename: str, picfile: Path,
+    def make_templated_docx_report(self, options: Options,
+                                   output_filename: str,
+                                   picfile: Path,
                                    template_path: Path) -> bool:
         tpl_doc = DocxTemplate(template_path)
         context, tpl_doc = self.prepare_report_data(self.cif, options, picfile, tpl_doc)
@@ -712,7 +716,39 @@ class TemplatedReport():
                                  info_text=str(e))
             return False
 
-    def prepare_report_data(self, cif: CifContainer, options: Options, picfile: Path, tpl_doc: DocxTemplate):
+    def make_templated_html_report(self, options: Options,
+                                   output_filename: str = 'test.html',
+                                   picfile: Path = None,
+                                   template_file: str = "report.tmpl") -> bool:
+        maincontext = self.get_context(self.cif, options, picfile, None)
+        template_path = app_path.application_path / 'template'
+        print(template_path.resolve())
+        jinja_env = jinja2.Environment(
+            loader=jinja2.FileSystemLoader(searchpath=template_path.resolve()),
+            autoescape=False)
+        jinja_env.filters['inv_article'] = get_inf_article
+        jinja_env.filters['align_dot'] = align_by_dot
+        template = jinja_env.get_template(template_file)
+        try:
+            outputText = template.render(maincontext)
+            print(outputText)
+            p = Path(output_filename)
+            p.write_text(outputText, encoding="utf-8")
+            import subprocess
+            if sys.platform == 'darwin':
+                subprocess.call(['open', str(p.resolve())])
+            else:
+                subprocess.Popen(['explorer', str(p.resolve())], shell=True)
+            return True
+        except Exception as e:
+            show_general_warning(parent=None, window_title='Warning', warn_text='Document generation failed',
+                                 info_text=str(e))
+            return False
+
+    def prepare_report_data(self, cif: CifContainer,
+                            options: Options,
+                            picfile: Path,
+                            tpl_doc: DocxTemplate | None) -> tuple[dict[str, Any], DocxTemplate]:
         maincontext = {}
         if not cif.is_multi_cif:
             maincontext = self.get_context(cif, options, picfile, tpl_doc)
@@ -813,18 +849,20 @@ class TemplatedReport():
 if __name__ == '__main__':
     from unittest import mock
     import subprocess
-
-    # data = Path('tests')
-    # testcif = Path(data / 'examples/1979688.cif').absolute()
-    testcif = Path(r'test-data/p31c.cif').absolute()
+    # TODO: Add _refine.ls_weighting_details
+    #  _reflns_number_gt / _reflns_number_total were greater than %(_BAXS_sigma_cutoff
+    data = Path('tests')
+    testcif = Path(data / 'examples/1979688.cif').absolute()
+    #testcif = Path(r'test-data/p31c.cif').absolute()
     cif = CifContainer(testcif)
     mock_mock = mock.Mock()
     mock.without_h = ''
     t = TemplatedReport(format=TextFormat.HTML, options=mock_mock, cif=cif)
-    maincontext = t.get_context(cif, options=mock_mock, picfile=None, tpl_doc=mock_mock)
+    pic = pathlib.Path("tests/examples/work/cu_BruecknerJK_153F40_0m-finalcif.png")
+    maincontext = t.get_context(cif, options=mock_mock, picfile=pic, tpl_doc=mock_mock)
     # pprint(maincontext)
     templateLoader = jinja2.FileSystemLoader(searchpath=r"finalcif/template")
-    jinja_env = jinja2.Environment(loader=templateLoader, autoescape=False)
+    jinja_env = jinja2.Environment(loader=templateLoader, autoescape=False, line_comment_prefix='##')
     jinja_env.filters['inv_article'] = get_inf_article
     jinja_env.filters['align_dot'] = align_by_dot
     TEMPLATE_FILE = "report.tmpl"
