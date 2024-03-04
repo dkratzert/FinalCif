@@ -47,6 +47,7 @@ from finalcif.gui.loops import Loop, LoopTableModel, MyQTableView
 from finalcif.gui.plaintextedit import MyQPlainTextEdit
 from finalcif.gui.text_value_editor import MyTextTemplateEdit, TextEditItem
 from finalcif.gui.vrf_classes import MyVRFContainer, VREF
+from finalcif.report.templated_report import ReportFormat
 from finalcif.template.templates import ReportTemplates
 from finalcif.tools.download import MyDownloader
 from finalcif.tools.dsrmath import my_isnumeric
@@ -1125,10 +1126,13 @@ class AppWindow(QMainWindow):
                     make_multi_tables(cif=self.cif, output_filename=str(multi_table_document))
             else:
                 print('Report with templates')
-                t = TemplatedReport()
-                ok = t.make_templated_report(options=self.options, cif=self.cif,
-                                             output_filename=str(report_filename), picfile=picfile,
-                                             template_path=Path(self.get_checked_templates_list_text()))
+                t = TemplatedReport(format=ReportFormat.RICHTEXT, options=self.options, cif=self.cif)
+                ok = t.make_templated_docx_report(options=self.options,
+                                                  output_filename=str(report_filename),
+                                                  picfile=picfile,
+                                                  template_path=Path(self.get_checked_templates_list_text()))
+                #t = TemplatedReport(format=ReportFormat.HTML, options=self.options, cif=self.cif)
+                #t.make_templated_html_report(options=self.options, picfile=picfile)
                 if not ok:
                     return None
         except FileNotFoundError as e:

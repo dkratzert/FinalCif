@@ -18,7 +18,7 @@ from finalcif.report.references import DummyReference, SAINTReference, SORTAVRef
     SHELXLReference, SHELXTReference, SHELXSReference, FinalCifReference, ShelXleReference, Olex2Reference, \
     SHELXDReference, SadabsTwinabsReference, CrysalisProReference, Nosphera2Reference, XDSReference, DSRReference2015, \
     DSRReference2018, XRedReference
-from finalcif.tools.misc import protected_space, angstrom, zero_width_space, remove_line_endings, flatten
+from finalcif.tools.misc import protected_space, angstrom, zero_width_space, remove_line_endings, flatten, minus_sign
 
 
 def math_to_word(eq: str) -> BaseOxmlElement:

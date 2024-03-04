@@ -5,7 +5,12 @@ from finalcif.tools.settings import FinalCifSettings
 
 
 class Options:
-    def __init__(self, ui: Ui_FinalCifWindow, settings: FinalCifSettings):
+    def __init__(self, ui: Ui_FinalCifWindow = None, settings: FinalCifSettings = None):
+        """
+        :param ui: UI of FinalCif
+        :param settings: Settings of FinalCif
+        :param debug: If turned on, this object can set and get attributes without using the settings.
+        """
         self.ui = ui
         self.settings = settings
         # initial default, otherwise we have width=0.0 and no picture visible:
@@ -64,9 +69,14 @@ class Options:
         return self.settings.load_options()[item]
 
     def _get_setting(self, setting: str, default: object):
-        with suppress(KeyError):
+        try:
             return self.settings.load_options()[setting]
-        return default
+        except KeyError:
+            return default
+        except AttributeError:
+            # Be able to set op._without_h = True and get its value without having settings attribute.
+            # Only for debugging!
+            return getattr(self, f'_{setting}', default)
 
     @property
     def report_text(self) -> bool:
@@ -110,7 +120,8 @@ class Options:
 
     def set_default_checkcif_url(self):
         url = 'https://checkcif.iucr.org/cgi-bin/checkcif_hkl.pl'
-        self.ui.CheckCIFServerURLTextedit.setText(url)
+        if self.ui:
+            self.ui.CheckCIFServerURLTextedit.setText(url)
         return url
 
     @property
@@ -126,5 +137,6 @@ class Options:
 
     def set_default_cod_url(self):
         url = 'https://www.crystallography.net/cod/cgi-bin/cif-deposit.pl'
-        self.ui.CODURLTextedit.setText(url)
+        if self.ui:
+            self.ui.CODURLTextedit.setText(url)
         return url
