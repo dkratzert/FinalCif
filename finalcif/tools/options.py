@@ -5,9 +5,15 @@ from finalcif.tools.settings import FinalCifSettings
 
 
 class Options:
-    def __init__(self, ui: Ui_FinalCifWindow, settings: FinalCifSettings):
+    def __init__(self, ui: Ui_FinalCifWindow = None, settings: FinalCifSettings = None, debug: bool = False):
+        """
+        :param ui: UI of FinalCif
+        :param settings: Settings of FinalCif
+        :param debug: If turned on, this object can set and get attributes without using the settings.
+        """
         self.ui = ui
         self.settings = settings
+        self.debug = debug
         # initial default, otherwise we have width=0.0 and no picture visible:
         if ui:
             self.ui.PictureWidthDoubleSpinBox.setValue(7.5)
@@ -64,29 +70,56 @@ class Options:
         return self.settings.load_options()[item]
 
     def _get_setting(self, setting: str, default: object):
-        with suppress(KeyError):
+        try:
             return self.settings.load_options()[setting]
-        return default
+        except KeyError:
+            return default
+        except AttributeError:
+            # Be able to set op.without_h = True without having settings attribute
+            if self.debug:
+                return getattr(self, f'_{setting}', default)
+            else:
+                raise
 
     @property
     def report_text(self) -> bool:
         return self._get_setting('report_text', True)
 
+    @report_text.setter
+    def report_text(self, value: bool):
+        self._report_text = value
+
     @property
     def report_adp(self) -> bool:
         return self._get_setting('report_adp', True)
+
+    @report_adp.setter
+    def report_adp(self, value: bool):
+        self._report_adp = value
 
     @property
     def without_h(self) -> bool:
         return self._get_setting('without_h', False)
 
+    @without_h.setter
+    def without_h(self, value: bool):
+        self._without_h = value
+
     @property
     def track_changes(self) -> bool:
         return self._get_setting('track_changes', False)
 
+    @track_changes.setter
+    def track_changes(self, value: bool):
+        self._track_changes = value
+
     @property
     def current_template(self) -> int:
         return self._get_setting('current_report_template', 0)
+
+    @current_template.setter
+    def current_template(self, value: bool):
+        self._current_template = value
 
     @property
     def picture_width(self) -> float:
@@ -96,6 +129,10 @@ class Options:
             return 7.5
         else:
             return width
+
+    @picture_width.setter
+    def picture_width(self, value: bool):
+        self._picture_width = value
 
     @property
     def checkcif_url(self) -> str:
@@ -108,9 +145,14 @@ class Options:
         except KeyError:
             return self.set_default_checkcif_url()
 
+    @checkcif_url.setter
+    def checkcif_url(self, value: bool):
+        self._checkcif_url = value
+
     def set_default_checkcif_url(self):
         url = 'https://checkcif.iucr.org/cgi-bin/checkcif_hkl.pl'
-        self.ui.CheckCIFServerURLTextedit.setText(url)
+        if self.ui:
+            self.ui.CheckCIFServerURLTextedit.setText(url)
         return url
 
     @property
@@ -124,7 +166,12 @@ class Options:
         except KeyError:
             return self.set_default_cod_url()
 
+    @cod_url.setter
+    def cod_url(self, value: bool):
+        self._cod_url = value
+
     def set_default_cod_url(self):
         url = 'https://www.crystallography.net/cod/cgi-bin/cif-deposit.pl'
-        self.ui.CODURLTextedit.setText(url)
+        if self.ui:
+            self.ui.CODURLTextedit.setText(url)
         return url
