@@ -23,7 +23,7 @@ from finalcif.gui.dialogs import show_general_warning
 from finalcif.report.references import SAINTReference, SHELXLReference, SadabsTwinabsReference, SHELXTReference, \
     SHELXSReference, SHELXDReference, SORTAVReference, FinalCifReference, CCDCReference, \
     CrysalisProReference, Nosphera2Reference, Olex2Reference
-from finalcif.report.report_text import math_to_word, gstr, format_radiation, get_inf_article, MachineType, align_by_dot
+from finalcif.report.report_text import math_to_word, gstr, format_radiation, get_inf_article, MachineType
 from finalcif.report.symm import SymmetryElement
 from finalcif.tools.misc import isnumeric, this_or_quest, timessym, angstrom, protected_space, less_or_equal, \
     halbgeviert, minus_sign, ellipsis_mid
@@ -456,7 +456,7 @@ class Formatter(ABC):
         if 'OLEX' in refined.upper():
             self.literature['refinement'] = Olex2Reference()
         if ('NOSPHERA2' in refined.upper() or 'NOSPHERA2' in cif['_refine_special_details'].upper() or
-            'NOSPHERAT2' in cif['_olex2_refine_details'].upper()):
+                'NOSPHERAT2' in cif['_olex2_refine_details'].upper()):
             self.literature['refinement'] = Nosphera2Reference()
         return refined.split()[0]
 
@@ -699,6 +699,7 @@ class TemplatedReport():
     def __init__(self, format: ReportFormat, options: Options, cif: CifContainer) -> None:
         self.format = format
         self.cif = cif
+        self.options = options
         self.text_formatter = text_factory(options, cif)[self.format]
 
     def make_templated_docx_report(self, options: Options,
@@ -719,29 +720,20 @@ class TemplatedReport():
                                  info_text=str(e))
             return False
 
-    def make_templated_html_report(self, options: Options,
+    def make_templated_html_report(self,
                                    output_filename: str = 'test.html',
                                    picfile: Path = None,
+                                   template_path: Path = Path('.'),
                                    template_file: str = "report.tmpl") -> bool:
-        maincontext = self.get_context(self.cif, options, picfile, None)
-        template_path = app_path.application_path / 'template'
-        print(template_path.resolve())
-        jinja_env = jinja2.Environment(
-            loader=jinja2.FileSystemLoader(searchpath=template_path.resolve()),
-            autoescape=False)
+        context = self.get_context(self.cif, self.options, picfile, None)
+        jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(searchpath=template_path.resolve()),
+                                       autoescape=False)
         jinja_env.filters['inv_article'] = get_inf_article
-        jinja_env.filters['align_dot'] = align_by_dot
         template = jinja_env.get_template(template_file)
         try:
-            outputText = template.render(maincontext)
-            print(outputText)
-            p = Path(output_filename)
-            p.write_text(outputText, encoding="utf-8")
-            import subprocess
-            if sys.platform == 'darwin':
-                subprocess.call(['open', str(p.resolve())])
-            else:
-                subprocess.Popen(['explorer', str(p.resolve())], shell=True)
+            with open(output_filename, encoding='utf-8', mode='w+t') as f:
+                outputText = template.render(context)
+                f.write(outputText)
             return True
         except Exception as e:
             show_general_warning(parent=None, window_title='Warning', warn_text='Document generation failed',
@@ -774,7 +766,6 @@ class TemplatedReport():
 
     def get_context(self, cif: CifContainer, options: Options, picfile: Path, tpl_doc: DocxTemplate = None):
         context = {'options'                : options,
-                   # {'without_h': True, 'atoms_table': True, 'text': True, 'bonds_table': True},
                    'cif'                    : cif,
                    'name'                   : cif.block.name,
                    'space_group'            : self.text_formatter.space_group_subdoc(cif, tpl_doc),
@@ -857,38 +848,25 @@ if __name__ == '__main__':
     # testcif = Path(r'test-data/p31c.cif').absolute()
     cif = CifContainer(testcif)
 
+    pic = pathlib.Path("screenshots/finalcif_checkcif.png")
 
-    class MOptions():
-        report_text = True
-        report_adp = True
-        without_h = False
-        picture_width = 7.6
-        checkcif_url = ''
-        atoms_table = True
-        bonds_table = True
-        hydrogen_bonds = True
-        current_report_template = ''
-        cod_url = ''
-        track_changes = False
+    options = Options()
+    # Set options with leading underscore without settings parameter in Options:
+    # options._bonds_table = True
+    # options._report_adp = True
+    # options._without_h = True
+    # options._report_text = False
+    # options._hydrogen_bonds = True
 
-
-    options = MOptions()
     t = TemplatedReport(format=ReportFormat.HTML, options=options, cif=cif)
-    pic = pathlib.Path("tests/examples/work/cu_BruecknerJK_153F40_0m-finalcif.png")
-    maincontext = t.get_context(cif, options=options, picfile=pic, tpl_doc=None)
-    # pprint(maincontext)
-    templateLoader = jinja2.FileSystemLoader(searchpath=r"finalcif/template")
-    jinja_env = jinja2.Environment(loader=templateLoader, autoescape=False, line_comment_prefix='##')
-    jinja_env.filters['inv_article'] = get_inf_article
-    jinja_env.filters['align_dot'] = align_by_dot
-    TEMPLATE_FILE = "report.tmpl"
-    template = jinja_env.get_template(TEMPLATE_FILE)
-    outputText = template.render(maincontext)
-
-    # print(outputText)
-    p = Path('test.html')
-    p.write_text(outputText, encoding="utf-8")
-    if sys.platform == 'darwin':
-        subprocess.call(['open', str(p.resolve())])
+    output = 'test.html'
+    template_path = app_path.application_path / 'template'
+    ok = t.make_templated_html_report(output_filename=output, picfile=pic, template_path=template_path)
+    if ok:
+        print('HTML report successfully generated')
     else:
-        subprocess.Popen(['explorer', str(p.resolve())], shell=True)
+        print('HTML report failed')
+    if sys.platform == 'darwin':
+        subprocess.call(['open', output])
+    else:
+        subprocess.Popen(['explorer', output], shell=True)

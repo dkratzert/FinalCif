@@ -524,18 +524,6 @@ def get_inf_article(next_word: str) -> str:
     return 'an' if next_word[0].lower() in voc else 'a'
 
 
-def align_by_dot(number: str) -> str:
-    """
-    The intention of this filter is to align the number
-    on the dot, but this doesn't work as expected.
-    https://codepen.io/dominiccomtois/pen/YZdred
-    """
-    if '.' in number:
-        num, dec = number.split('.')
-        return (f'<span class="number">{num}'
-                f'<span class="decimal">.{dec}</span></span>')
-
-
 def format_radiation(radiation_type: str) -> list:
     radtype = list(radiation_type.partition("K"))
     if len(radtype) > 2:

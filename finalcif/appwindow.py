@@ -1131,10 +1131,8 @@ class AppWindow(QMainWindow):
                                                   output_filename=str(report_filename),
                                                   picfile=picfile,
                                                   template_path=Path(self.get_checked_templates_list_text()))
-                t = TemplatedReport(format=ReportFormat.HTML, options=self.options, cif=self.cif)
-                t.make_templated_html_report(
-                    options=self.options,
-                    picfile=picfile)
+                #t = TemplatedReport(format=ReportFormat.HTML, options=self.options, cif=self.cif)
+                #t.make_templated_html_report(options=self.options, picfile=picfile)
                 if not ok:
                     return None
         except FileNotFoundError as e:
