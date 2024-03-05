@@ -3,6 +3,7 @@ import enum
 import itertools
 import pathlib
 import re
+import shutil
 import sys
 from abc import ABC
 from collections import namedtuple
@@ -834,7 +835,8 @@ class TemplatedReport():
                    'torsion_symminfo'       : self.text_formatter.get_torsion_symminfo(),
                    'hydrogen_bonds'         : self.text_formatter.get_hydrogen_bonds(),
                    'hydrogen_symminfo'      : self.text_formatter.get_hydrogen_symminfo(),
-                   'literature'             : self.text_formatter.literature
+                   'literature'             : self.text_formatter.literature,
+                   'css'                    : Path('work/bootstrap.min.css').read_text(encoding='utf-8'),
                    }
         return context
 
@@ -858,9 +860,12 @@ if __name__ == '__main__':
     # options._hydrogen_bonds = True
 
     t = TemplatedReport(format=ReportFormat.HTML, options=options, cif=cif)
-    output = 'test.html'
+    work = Path('work').resolve()
+    work.mkdir(exist_ok=True)
+    shutil.copy2(Path('finalcif/template/bootstrap/bootstrap.min.css'), work)
+    output = work / 'test.html'
     template_path = app_path.application_path / 'template'
-    ok = t.make_templated_html_report(output_filename=output, picfile=pic, template_path=template_path)
+    ok = t.make_templated_html_report(output_filename=str(output), picfile=pic, template_path=template_path)
     if ok:
         print('HTML report successfully generated')
     else:
