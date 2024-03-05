@@ -15,7 +15,8 @@ from finalcif.app_path import application_path
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.cif.text import retranslate_delimiter, string_to_utf8
 from finalcif.report import references
-from finalcif.tools.misc import protected_space, angstrom, zero_width_space, remove_line_endings, flatten, minus_sign
+from finalcif.tools.misc import (protected_space, angstrom, zero_width_space, remove_line_endings,
+                                 flatten, minus_sign)
 
 
 def math_to_word(eq: str) -> BaseOxmlElement:

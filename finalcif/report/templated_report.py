@@ -20,13 +20,12 @@ from docxtpl import DocxTemplate, RichText, InlineImage, Subdoc
 from finalcif import app_path
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.gui.dialogs import show_general_warning
-from finalcif.report.references import SAINTReference, SHELXLReference, SadabsTwinabsReference, SHELXTReference, \
-    SHELXSReference, SHELXDReference, SORTAVReference, FinalCifReference, CCDCReference, \
-    CrysalisProReference, Nosphera2Reference, Olex2Reference
-from finalcif.report.report_text import math_to_word, gstr, format_radiation, get_inf_article, MachineType
+from finalcif.report import references as ref
+from finalcif.report.report_text import (math_to_word, gstr, format_radiation, get_inf_article,
+                                         MachineType)
 from finalcif.report.symm import SymmetryElement
-from finalcif.tools.misc import isnumeric, this_or_quest, timessym, angstrom, protected_space, less_or_equal, \
-    halbgeviert, minus_sign, ellipsis_mid
+from finalcif.tools.misc import (isnumeric, this_or_quest, timessym, angstrom, protected_space,
+                                 less_or_equal, halbgeviert, minus_sign, ellipsis_mid)
 from finalcif.tools.options import Options
 from finalcif.tools.space_groups import SpaceGroups
 
@@ -301,8 +300,8 @@ def symmsearch(cif: CifContainer, newsymms: Dict[int, str], num: int,
 
 class Formatter(ABC):
     def __init__(self, options: Options, cif: CifContainer) -> None:
-        self.literature = {'finalcif'   : FinalCifReference(),
-                           'ccdc'       : CCDCReference(),
+        self.literature = {'finalcif'   : ref.FinalCifReference(),
+                           'ccdc'       : ref.CCDCReference(),
                            'absorption' : '[no reference found]',
                            'solution'   : '[no reference found]',
                            'refinement' : '[no reference found]',
@@ -398,7 +397,7 @@ class Formatter(ABC):
             if len(integration.split()) > 1:
                 saintversion = integration.split()[1]
                 integration_prog += " " + saintversion
-            self.literature['integration'] = SAINTReference('SAINT', saintversion)
+            self.literature['integration'] = ref.SAINTReference('SAINT', saintversion)
         if 'CrysAlisPro'.lower() in integration.lower():
             regex = r"(CrysAlisPro)\s{0,2}(\d+\.\d+\.\d+\.\d+.*)\((.*),\s?(\d+)\)"
             year = 'unknown version'
@@ -410,8 +409,8 @@ class Formatter(ABC):
                 integration_prog = match.group(1).strip()
             else:
                 integration_prog = 'CrysAlisPro'
-            self.literature['integration'] = CrysalisProReference(version=version, year=year)
-            self.literature['absorption'] = CrysalisProReference(version=version, year=year)
+            self.literature['integration'] = ref.CrysalisProReference(version=version, year=year)
+            self.literature['absorption'] = ref.CrysalisProReference(version=version, year=year)
         return integration_prog
 
     def _get_scaling_program(self, absdetails: str) -> tuple[str, str]:
@@ -426,7 +425,7 @@ class Formatter(ABC):
                 scale_prog = 'SADABS'
             else:
                 scale_prog = 'TWINABS'
-            self.literature['absorption'] = SadabsTwinabsReference()
+            self.literature['absorption'] = ref.SadabsTwinabsReference()
         return scale_prog, version
 
     def get_absortion_correction_program(self, cif: CifContainer) -> str:
@@ -437,7 +436,7 @@ class Formatter(ABC):
             scale_prog, version = self._get_scaling_program(bruker_scaling)
         if 'SORTAV' in absdetails.upper():
             scale_prog = 'SORTAV'
-            self.literature['absorption'] = SORTAVReference()
+            self.literature['absorption'] = ref.SORTAVReference()
         if 'crysalis' in absdetails.lower():
             scale_prog = 'SCALE3 ABSPACK'
             # see above also
@@ -452,22 +451,22 @@ class Formatter(ABC):
     def refinement_prog(self, cif: CifContainer) -> str:
         refined = gstr(cif['_computing_structure_refinement']) or '??'
         if 'SHELXL' in refined.upper() or 'XL' in refined.upper():
-            self.literature['refinement'] = SHELXLReference()
+            self.literature['refinement'] = ref.SHELXLReference()
         if 'OLEX' in refined.upper():
-            self.literature['refinement'] = Olex2Reference()
+            self.literature['refinement'] = ref.Olex2Reference()
         if ('NOSPHERA2' in refined.upper() or 'NOSPHERA2' in cif['_refine_special_details'].upper() or
                 'NOSPHERAT2' in cif['_olex2_refine_details'].upper()):
-            self.literature['refinement'] = Nosphera2Reference()
+            self.literature['refinement'] = ref.Nosphera2Reference()
         return refined.split()[0]
 
     def solution_program(self, cif: CifContainer) -> str:
         solution_prog = gstr(cif['_computing_structure_solution']) or '??'
         if solution_prog.upper().startswith(('SHELXT', 'XT')):
-            self.literature['solution'] = SHELXTReference()
+            self.literature['solution'] = ref.SHELXTReference()
         if 'SHELXS' in solution_prog.upper():
-            self.literature['solution'] = SHELXSReference()
+            self.literature['solution'] = ref.SHELXSReference()
         if 'SHELXD' in solution_prog.upper():
-            self.literature['solution'] = SHELXDReference()
+            self.literature['solution'] = ref.SHELXDReference()
         return solution_prog.split()[0]
 
     def _tvalue(self, tval: str) -> str:

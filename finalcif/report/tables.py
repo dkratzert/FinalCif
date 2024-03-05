@@ -22,10 +22,11 @@ from finalcif.report.mtools import format_space_group
 from finalcif.report.references import ReferenceList
 from finalcif.report.report_text import format_radiation, RefinementDetails, make_report_text
 from finalcif.report.templated_report import BondsAndAngles, TorsionAngles, HydrogenBonds
-from finalcif.tools.misc import protected_space, angstrom, bequal, sigma_sm, halbgeviert, degree_sign, ellipsis_mid, \
-    less_or_equal, \
-    timessym, lambdasym, this_or_quest, isnumeric, minus_sign, theta_symbol, grouper, open_file, pi_symbol, \
-    ellipsis_char, medium_math_space, alpha_symol, beta_symol, gamma_symol
+from finalcif.tools.misc import (protected_space, angstrom, bequal, sigma_sm, halbgeviert, degree_sign,
+                                 ellipsis_mid, less_or_equal, timessym, lambdasym, this_or_quest,
+                                 isnumeric, minus_sign, theta_symbol, grouper, open_file, pi_symbol,
+                                 ellipsis_char, medium_math_space, alpha_symol, beta_symol,
+                                 gamma_symol)
 from finalcif.tools.options import Options
 from finalcif.tools.settings import FinalCifSettings
 
