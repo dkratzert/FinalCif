@@ -702,12 +702,12 @@ class TemplatedReport():
         self.options = options
         self.text_formatter = text_factory(options, cif)[self.format]
 
-    def make_templated_docx_report(self, options: Options,
+    def make_templated_docx_report(self,
                                    output_filename: str,
                                    picfile: Path,
                                    template_path: Path) -> bool:
         tpl_doc = DocxTemplate(template_path)
-        context, tpl_doc = self.prepare_report_data(self.cif, options, picfile, tpl_doc)
+        context, tpl_doc = self.prepare_report_data(self.cif, self.options, picfile, tpl_doc)
         # Filter definition for {{foobar|filter}} things:
         jinja_env = jinja2.Environment()
         jinja_env.filters['inv_article'] = get_inf_article
