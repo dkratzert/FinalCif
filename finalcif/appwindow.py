@@ -1127,8 +1127,7 @@ class AppWindow(QMainWindow):
             else:
                 print('Report with templates')
                 t = TemplatedReport(format=ReportFormat.RICHTEXT, options=self.options, cif=self.cif)
-                ok = t.make_templated_docx_report(options=self.options,
-                                                  output_filename=str(report_filename),
+                ok = t.make_templated_docx_report(output_filename=str(report_filename),
                                                   picfile=picfile,
                                                   template_path=Path(self.get_checked_templates_list_text()))
                 #t = TemplatedReport(format=ReportFormat.HTML, options=self.options, cif=self.cif)

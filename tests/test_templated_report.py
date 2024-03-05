@@ -93,8 +93,7 @@ class TemplateReportWithoutAppTestCase(unittest.TestCase):
 
     def test_ccdc_num_in_table(self):
         t = TemplatedReport(cif=CifContainer(self.testcif), format=ReportFormat.RICHTEXT, options=self.options)
-        ok = t.make_templated_docx_report(options=self.options,
-                                          output_filename=str(self.reportdoc), picfile=self.report_pic,
+        ok = t.make_templated_docx_report(output_filename=str(self.reportdoc), picfile=self.report_pic,
                                           template_path=self.text_template)
         self.assertTrue(ok)
         doc = Document(str(self.reportdoc.absolute()))
@@ -108,8 +107,7 @@ class TemplateReportWithoutAppTestCase(unittest.TestCase):
         has to be set correctly.
         """
         t = TemplatedReport(cif=CifContainer(self.testcif), format=ReportFormat.RICHTEXT, options=self.options)
-        ok = t.make_templated_docx_report(options=self.options,
-                                          output_filename=str(self.reportdoc), picfile=self.report_pic,
+        ok = t.make_templated_docx_report(output_filename=str(self.reportdoc), picfile=self.report_pic,
                                           template_path=self.text_template)
         self.assertTrue(ok)
         doc = Document(self.reportdoc.absolute().__str__())
@@ -119,8 +117,7 @@ class TemplateReportWithoutAppTestCase(unittest.TestCase):
 
     def test_citations(self):
         t = TemplatedReport(cif=CifContainer(self.testcif), format=ReportFormat.RICHTEXT, options=self.options)
-        t.make_templated_docx_report(options=self.options,
-                                     output_filename=self.reportdoc.__str__(),
+        t.make_templated_docx_report(output_filename=self.reportdoc.__str__(),
                                      picfile=self.report_pic,
                                      template_path=self.text_template)
         doc = Document(self.reportdoc.absolute().__str__())
@@ -145,8 +142,7 @@ class TestReportFromMultiCif(unittest.TestCase):
 
     def test_get_distance_from_atoms(self):
         t = TemplatedReport(cif=self.cif, format=ReportFormat.RICHTEXT, options=self.options)
-        ok = t.make_templated_docx_report(options=self.options,
-                                          output_filename='test.docx', picfile=Path(),
+        ok = t.make_templated_docx_report(output_filename='test.docx', picfile=Path(),
                                           template_path=self.docx_templ)
         self.assertTrue(ok)
         doc = Document(self.reportdoc.resolve().__str__())

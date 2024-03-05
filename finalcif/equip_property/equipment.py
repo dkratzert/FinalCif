@@ -283,7 +283,6 @@ class Equipment:
         table.clearContents()
         table.setRowCount(0)
         self.app.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
-        print('cancelled equipment')
 
 
 if __name__ == '__main__':

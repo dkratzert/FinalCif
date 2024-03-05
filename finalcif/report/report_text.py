@@ -14,10 +14,7 @@ from shelxfile.atoms.atoms import Atom as SHXAtom
 from finalcif.app_path import application_path
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.cif.text import retranslate_delimiter, string_to_utf8
-from finalcif.report.references import DummyReference, SAINTReference, SORTAVReference, ReferenceList, CCDCReference, \
-    SHELXLReference, SHELXTReference, SHELXSReference, FinalCifReference, ShelXleReference, Olex2Reference, \
-    SHELXDReference, SadabsTwinabsReference, CrysalisProReference, Nosphera2Reference, XDSReference, DSRReference2015, \
-    DSRReference2018, XRedReference
+from finalcif.report import references
 from finalcif.tools.misc import protected_space, angstrom, zero_width_space, remove_line_endings, flatten, minus_sign
 
 
@@ -34,12 +31,6 @@ def math_to_word(eq: str) -> BaseOxmlElement:
 def clean_string(string: str) -> str:
     """
     Removes control characters from a string.
-    >>> clean_string('This is a sentence\\nwith newline.')
-    'This is a sentence with newline'
-    >>> clean_string('')
-    ''
-    >>> clean_string('  This is  a sentence\\nwith. newline.  ')
-    'This is  a sentence with. newline'
     """
     repl = string.replace('\t', ' ') \
         .replace('\f', ' ') \
@@ -166,18 +157,18 @@ class MachineType():
 
 
 class DataReduction():
-    def __init__(self, cif: CifContainer, paragraph: Paragraph, ref: ReferenceList):
+    def __init__(self, cif: CifContainer, paragraph: Paragraph, ref: references.ReferenceList):
         integration = gstr(cif['_computing_data_reduction']) or '??'
         abstype = gstr(cif['_exptl_absorpt_correction_type']) or '??'
         abs_details = gstr(cif['_exptl_absorpt_process_details']) or '??'
-        data_reduct_ref = DummyReference()
-        absorpt_ref = DummyReference()
+        data_reduct_ref = references.DummyReference()
+        absorpt_ref = references.DummyReference()
         integration_prog = '[unknown integration program]'
         scale_prog = '[unknown program]'
         if 'SAINT' in integration:
             data_reduct_ref, integration_prog = self.add_saint_reference(integration)
         if 'XDS' in integration:
-            data_reduct_ref = XDSReference()
+            data_reduct_ref = references.XDSReference()
             integration_prog = 'XDS'
         if 'CrysAlisPro'.lower() in integration.lower():
             data_reduct_ref, absorpt_ref, integration_prog = self.add_crysalispro_reference(integration)
@@ -193,11 +184,11 @@ class DataReduction():
                 scale_prog = 'SADABS'
             else:
                 scale_prog = 'TWINABS'
-            # absorpt_ref = SAINTReference(scale_prog, version)
-            absorpt_ref = SadabsTwinabsReference()
+            # absorpt_ref = references.SAINTReference(scale_prog, version)
+            absorpt_ref = references.SadabsTwinabsReference()
         if 'SORTAV' in absdetails.upper():
             scale_prog = 'SORTAV'
-            absorpt_ref = SORTAVReference()
+            absorpt_ref = references.SORTAVReference()
         if 'crysalis' in abs_details.lower():
             scale_prog = 'SCALE3 ABSPACK'
         txt = (f'All data were integrated with {integration_prog} and {get_inf_article(abstype)} '
@@ -210,7 +201,7 @@ class DataReduction():
         if len(integration.split()) > 1:
             saintversion = integration.split()[1]
         integration_prog = 'SAINT'
-        data_reduct_ref = SAINTReference('SAINT', saintversion)
+        data_reduct_ref = references.SAINTReference('SAINT', saintversion)
         return data_reduct_ref, integration_prog
 
     def add_x_red_reference(self, integration):
@@ -218,10 +209,10 @@ class DataReduction():
         # if len(integration.split()) > 1:
         #    xredversion = integration.split()[1]
         integration_prog = 'STOE X-RED'
-        data_reduct_ref = XRedReference('X-RED', xredversion)
+        data_reduct_ref = references.XRedReference('X-RED', xredversion)
         return data_reduct_ref, integration_prog
 
-    def add_crysalispro_reference(self, integration: str) -> Tuple[CrysalisProReference, CrysalisProReference, str]:
+    def add_crysalispro_reference(self, integration: str) -> Tuple[references.CrysalisProReference, references.CrysalisProReference, str]:
         """
         CrysAlisPro, Agilent Technologies,Version 1.171.37.31h (release 21-03-2014 CrysAlis171 .NET)
             (compiled Mar 21 2014,18:13:45)
@@ -241,36 +232,36 @@ class DataReduction():
                 year = year.split('-')[-1]
             version = integration.split()[3]
         integration_prog = 'Crysalispro'
-        data_reduct_ref = CrysalisProReference(version=version, year=year, pages=pages)
-        absorpt_ref = CrysalisProReference(version=version, year=year, pages=pages)
+        data_reduct_ref = references.CrysalisProReference(version=version, year=year, pages=pages)
+        absorpt_ref = references.CrysalisProReference(version=version, year=year, pages=pages)
         return data_reduct_ref, absorpt_ref, integration_prog
 
 
 class SolveRefine():
-    def __init__(self, cif: CifContainer, paragraph: Paragraph, ref: ReferenceList):
+    def __init__(self, cif: CifContainer, paragraph: Paragraph, ref: references.ReferenceList):
         manual_method = False
-        refineref = DummyReference()
-        solveref = DummyReference()
+        refineref = references.DummyReference()
+        solveref = references.DummyReference()
         solution_prog = gstr(cif['_computing_structure_solution']) or '[No _computing_structure_solution given]'
         solution_method = gstr(cif['_atom_sites_solution_primary']).strip(
             '\n\r') or '[No _atom_sites_solution_primary given]'
         if 'isomor' in solution_method:
             manual_method = True
         if solution_prog.upper().startswith(('SHELXT', 'XT')):
-            solveref = SHELXTReference()
+            solveref = references.SHELXTReference()
         if 'SHELXS' in solution_prog.upper():
-            solveref = SHELXSReference()
+            solveref = references.SHELXSReference()
         if 'SHELXD' in solution_prog.upper():
-            solveref = SHELXDReference()
+            solveref = references.SHELXDReference()
         refined = gstr(cif['_computing_structure_refinement']).split(' ')[
                       0] or '[No _computing_structure_refinement given]'
         if refined.upper().startswith(('SHELXL', 'XL')):
-            refineref = SHELXLReference()
+            refineref = references.SHELXLReference()
         if 'OLEX' in refined.upper():
-            refineref = Olex2Reference()
+            refineref = references.Olex2Reference()
         if ('NOSPHERA2' in solution_prog.upper() or 'NOSPHERA2' in cif['_refine_special_details'].upper()
                 or 'NOSPHERA2' in cif['_olex2_refine_details'].upper()):
-            refineref = [Olex2Reference(), Nosphera2Reference()]
+            refineref = [references.Olex2Reference(), references.Nosphera2Reference()]
         refine_coef = gstr(cif['_refine_ls_structure_factor_coef'])
         if manual_method:
             methods = f"{solution_prog} "
@@ -285,10 +276,10 @@ class SolveRefine():
         gui_reference = None
         if 'shelxle' in refined.lower() or 'shelxle' in cif['_computing_molecular_graphics'].lower():
             paragraph.add_run(' using ShelXle')
-            gui_reference = ShelXleReference()
+            gui_reference = references.ShelXleReference()
         if 'olex' in refined.lower() or 'olex' in cif['_computing_molecular_graphics'].lower():
             paragraph.add_run(' using Olex2')
-            gui_reference = Olex2Reference()
+            gui_reference = references.Olex2Reference()
         paragraph.add_run('.')
         ref.append(flatten([solveref, refineref, gui_reference]))
 
@@ -428,7 +419,7 @@ class Hydrogens():
 
 
 class Disorder():
-    def __init__(self, cif: CifContainer, paragraph: Paragraph, reflist: ReferenceList):
+    def __init__(self, cif: CifContainer, paragraph: Paragraph, reflist: references.ReferenceList):
         """
         TODO: Search for SIMU, DELU, SADI, DFIX, etc in cif.shx.restraints in order to
               make the sentence1 more specific.
@@ -442,12 +433,12 @@ class Disorder():
             dsr_sentence = "Some parts of the disorder model were introduced by the " \
                            "program DSR."
             paragraph.add_run(dsr_sentence)
-            reflist.append([DSRReference2015(), DSRReference2018()])
+            reflist.append([references.DSRReference2015(), references.DSRReference2018()])
             SpaceChar(paragraph).regular()
 
 
 class Twinning():
-    def __init__(self, cif: CifContainer, paragraph: Paragraph, reflist: ReferenceList):
+    def __init__(self, cif: CifContainer, paragraph: Paragraph, reflist: references.ReferenceList):
         """ _twin_formation_mechanism         gt
             _twin_dimensionality              triperiodic
             _twin_morphology                  polysynthetic
@@ -480,7 +471,7 @@ class SpaceChar():
 
 
 class CCDC():
-    def __init__(self, cif: CifContainer, paragraph: Paragraph, ref: ReferenceList):
+    def __init__(self, cif: CifContainer, paragraph: Paragraph, ref: references.ReferenceList):
         ccdc_num = gstr(cif['_database_code_depnum_ccdc_archive']) or '??????'
         splitted_number = ccdc_num.split(' ')
         if len(splitted_number) > 1 and splitted_number[1].isdigit():
@@ -491,16 +482,16 @@ class CCDC():
                     "These data can be obtained free of charge from The Cambridge Crystallographic Data Centre " \
                     f"via www.ccdc.cam.ac.uk/{zero_width_space}structures."
         paragraph.add_run(sentence1)
-        ref.append(CCDCReference())
+        ref.append(references.CCDCReference())
         SpaceChar(paragraph).regular()
         paragraph.add_run(sentence2)
 
 
 class FinalCifreport():
-    def __init__(self, paragraph: Paragraph, reflist: ReferenceList):
+    def __init__(self, paragraph: Paragraph, reflist: references.ReferenceList):
         sentence = "This report and the CIF file were generated using FinalCif."
         paragraph.add_run(sentence)
-        reflist.append(FinalCifReference())
+        reflist.append(references.FinalCifReference())
 
 
 class RefinementDetails():
@@ -533,10 +524,10 @@ def format_radiation(radiation_type: str) -> list:
         return radtype
 
 
-def make_report_text(cif, document: Document) -> ReferenceList:
+def make_report_text(cif, document: Document) -> references.ReferenceList:
     paragr = document.add_paragraph()
     paragr.style = document.styles['fliesstext']
-    ref = ReferenceList(paragr)
+    ref = references.ReferenceList(paragr)
     # -- The main text:
     paragr.add_run('The following text is only a suggestion: ').font.bold = True
     Crystallization(cif, paragr)
