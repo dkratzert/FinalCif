@@ -4105,18 +4105,6 @@ please add a publication author:</string>
         </item>
         <item row="0" column="8">
          <widget class="QTextEdit" name="CCDCNumLineEdit">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>24</height>
-           </size>
-          </property>
           <property name="cursor" stdset="0">
            <cursorShape>IBeamCursor</cursorShape>
           </property>
@@ -4145,18 +4133,6 @@ please add a publication author:</string>
         </item>
         <item row="0" column="11">
          <widget class="QTextEdit" name="SumFormMainLineEdit">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>24</height>
-           </size>
-          </property>
           <property name="cursor" stdset="0">
            <cursorShape>IBeamCursor</cursorShape>
           </property>
@@ -4248,18 +4224,6 @@ please add a publication author:</string>
         </item>
         <item row="0" column="5">
          <widget class="QTextEdit" name="Spacegroup_top_LineEdit">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>24</height>
-           </size>
-          </property>
           <property name="cursor" stdset="0">
            <cursorShape>IBeamCursor</cursorShape>
           </property>

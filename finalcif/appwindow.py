@@ -101,7 +101,7 @@ class AppWindow(QMainWindow):
         self.properties = Properties(parent=self, settings=self.settings)
         self.status_bar = StatusBar(ui=self.ui)
         self.status_bar.show_message('FinalCif version {}'.format(VERSION))
-        self.authors = AuthorLoops(ui=self.ui, cif=self.cif, app=self)
+        self.authors: Union[AuthorLoops, None] = None
         self.set_window_size_and_position()
         self.ui.cif_main_table.installEventFilter(self)
         # Sorting desynchronized header and columns:
@@ -159,8 +159,7 @@ class AppWindow(QMainWindow):
         self.ui.CCDCpushButton.setDisabled(True)
         self.ui.ShredCifButton.setDisabled(True)
         self.ui.LoopsPushButton.setDisabled(True)
-        # Ok to be enabled:
-        # self.ui.OptionsPushButton.setDisabled(True)
+        self.ui.OptionsPushButton.setDisabled(True)
         self.ui.AuthorEditPushButton.setDisabled(True)
 
     def enable_buttons(self):
@@ -202,6 +201,7 @@ class AppWindow(QMainWindow):
             self.ui.docxTemplatesListWidget.setFont(mid_font)
             self.ui.PropertiesTemplatesListWidget.setFont(mid_font)
             self.ui.depositOutputTextBrowser.setFont(mid_font)
+        self.setTextEditSizes()
 
     def set_window_size_and_position(self) -> None:
         wsettings = self.settings.load_window_position()
@@ -629,6 +629,15 @@ class AppWindow(QMainWindow):
         # Not necessary here, it is done in MyCifTable
         # threading.Thread(target=self.ui.cif_main_table.resizeRowsToContents).start()
         # QtCore.QTimer(self).singleShot(0, self.ui.cif_main_table.resizeRowsToContents)
+        self.setTextEditSizes()
+
+    def setTextEditSizes(self):
+        for ui in [self.ui.Spacegroup_top_LineEdit, self.ui.CCDCNumLineEdit, self.ui.SumFormMainLineEdit]:
+            ui.setFixedHeight(self.ui.appendCifPushButton.height() + 6)
+            ui.setFixedHeight(self.ui.appendCifPushButton.height() + 6)
+            ui.setFixedHeight(self.ui.appendCifPushButton.height() + 6)
+            vScrollBar = ui.verticalScrollBar()
+            vScrollBar.triggerAction(QScrollBar.SliderSingleStepAdd)
 
     def moveEvent(self, a0: QtGui.QMoveEvent) -> None:
         """Is called when the main window moves."""
@@ -1130,8 +1139,8 @@ class AppWindow(QMainWindow):
                 ok = t.make_templated_docx_report(output_filename=str(report_filename),
                                                   picfile=picfile,
                                                   template_path=Path(self.get_checked_templates_list_text()))
-                #t = TemplatedReport(format=ReportFormat.HTML, options=self.options, cif=self.cif)
-                #t.make_templated_html_report(options=self.options, picfile=picfile)
+                # t = TemplatedReport(format=ReportFormat.HTML, options=self.options, cif=self.cif)
+                # t.make_templated_html_report(options=self.options, picfile=picfile)
                 if not ok:
                     return None
         except FileNotFoundError as e:
