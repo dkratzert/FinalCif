@@ -344,6 +344,15 @@ class Formatter(ABC):
     def make_3d(self, cif: CifContainer, options: Options) -> str:
         raise NotImplementedError
 
+    def space_group_subdoc(self, cif: CifContainer, tpl_doc: DocxTemplate):
+        raise NotImplementedError
+
+    def make_picture(self, options: Options, picfile: Path, tpl_doc: DocxTemplate):
+        raise NotImplementedError
+
+    def format_sum_formula(self, sum_formula: str) -> str:
+        raise NotImplementedError
+
     @staticmethod
     def get_from_to_theta_range(cif: CifContainer) -> str:
         theta_min = cif['_diffrn_reflns_theta_min']
@@ -733,11 +742,11 @@ class TemplatedReport():
             with open(output_filename, encoding='utf-8', mode='w+t') as f:
                 outputText = template.render(context)
                 f.write(outputText)
-            return True
         except Exception as e:
             show_general_warning(parent=None, window_title='Warning', warn_text='Document generation failed',
                                  info_text=str(e))
             return False
+        return True
 
     def prepare_report_data(self, cif: CifContainer,
                             options: Options,
@@ -835,7 +844,7 @@ class TemplatedReport():
                    'hydrogen_bonds'         : self.text_formatter.get_hydrogen_bonds(),
                    'hydrogen_symminfo'      : self.text_formatter.get_hydrogen_symminfo(),
                    'literature'             : self.text_formatter.literature,
-                   'css'                    : Path('finalcif/template/bootstrap/bootstrap.min.css').read_text(
+                   'bootstrap_css'          : Path('finalcif/template/bootstrap/bootstrap.min.css').read_text(
                        encoding='utf-8'),
                    }
         return context
@@ -858,11 +867,11 @@ if __name__ == '__main__':
     # options._without_h = True
     # options._report_text = False
     # options._hydrogen_bonds = True
+    # options._picture_width = '300'
 
     t = TemplatedReport(format=ReportFormat.HTML, options=options, cif=cif)
     work = Path('work').resolve()
     work.mkdir(exist_ok=True)
-    # shutil.copy2(Path('finalcif/template/bootstrap/bootstrap.min.css'), work)
     output = work / 'test.html'
     template_path = app_path.application_path / 'template'
     ok = t.make_templated_html_report(output_filename=str(output), picfile=pic, template_path=template_path)

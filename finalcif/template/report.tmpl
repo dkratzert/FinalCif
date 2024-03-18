@@ -37,7 +37,7 @@
         }
     </style>
     <style>
-        {{ css }}
+        {{ bootstrap_css }}
     </style>
 </head>
 
@@ -51,11 +51,12 @@
             <div class="col-5">
         {% endif %}
 
-        <h2>Structure Tables</h2>
+        <h2>Crystal Structure Report for {{ cif.block.name }}</h2>
         {% if options.report_text %}
 
             {% if structure_figure %}
                 <div class="card w-90 mt-4 mb-4">
+                    <!--suppress HtmlUnknownTarget -->
                     <img alt="Structure Figure" src="{{ structure_figure }}" width="100%">
                 </div>
             {% endif %}
@@ -76,8 +77,8 @@
                 All data were integrated with {{ integration_progr }} yielding {{ cif._diffrn_reflns_number }}
                 reflections of which {{ cif._reflns_number_total }} where independent and
                 {{ '%0.1f'| format((cif._reflns_number_gt|float() / cif._reflns_number_total|float()) * 100) }} %
-                were greater than 2σ(<i>F</i><sup>2</sup>). A
-                {{ abstype }} absorption correction using {{ abs_details }} was applied.<sup>[1,2]</sup>
+                were greater than 2σ(<i>F</i><sup>2</sup>).<sup>[1]</sup> A
+                {{ abstype }} absorption correction using {{ abs_details }} was applied.<sup>[2]</sup>
                 The structure was solved by
                 {{ solution_method }} methods with {{ solution_program }} and refined by full-matrix
                 least-squares methods against
