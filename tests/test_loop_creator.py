@@ -74,7 +74,8 @@ class TestLoopCreator(unittest.TestCase):
         self.assertEqual(('<pre><h2>_atom_site_Cartn_x</h2> The atom-site coordinates in angstroms '
                           'specified according to a\n'
                           ' set of orthogonal Cartesian axes related to the cell axes as\n'
-                          ' specified by the _atom_sites_Cartn_transform_axes description.</pre>'),
+                          ' specified by the _atom_sites_Cartn_transform_axes description.</pre>\n'
+                          '<br><p><h4>Type:</h4> number (int or float)</p>'),
                          self.lc.availableKeysListWidget.item(2).toolTip())
 
     def test_save_to_cif(self):
