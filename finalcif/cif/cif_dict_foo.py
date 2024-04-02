@@ -21,6 +21,15 @@ def format_definition(definition: str):
     return newdef
 
 
+formats = {
+    'char' : 'string',
+    'uchar': 'case-insensitive string',
+    'numb' : 'number (int or float)',
+    'null' : '? (unknown)' or '. (not applicable)',
+    ''     : '--'
+}
+
+
 def process_cif_dict(cdic):
     """
     Creates a dictionary with cif keywords as key and help text as value.
@@ -52,12 +61,15 @@ def process_cif_dict(cdic):
                             ["{}\n\t{}\n".format(str(x), str(y)) for x, y in zip(enumeration, enumeration_detail)])
                     enumeration = format_definition(escape(str(enumeration)))
                     definition = '{}\n\n<h3>Example:</h3>\n{}'.format(definition, enumeration)
+                type_format = item.get("_type", "")
                 if isinstance(name, list):
                     for n in name:
                         # For keys like 'atom_site_aniso_b_[]' where the name has several subnames:
-                        alldic[n] = '<pre><h2>{}</h2>{}</pre>'.format(n, format_definition(definition))
+                        alldic[n] = (f'<pre><h2>{n}</h2>{format_definition(definition)}</pre>'
+                                     f'\n<br><p><h4>Type:</h4> {formats.get(type_format, "")}</p>')
                 else:
-                    alldic[name] = '<pre><h2>{}</h2>{}</pre>'.format(name, format_definition(definition))
+                    alldic[name] = (f'<pre><h2>{name}</h2>{format_definition(definition)}</pre>'
+                                    f'\n<br><p><h4>Type:</h4> {formats.get(type_format, "")}</p>')
     return alldic
 
 

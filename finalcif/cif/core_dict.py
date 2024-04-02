@@ -9,7 +9,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                  '\n'
                                  ' The IUCr Commission on Nomenclature recommends against the use\n'
                                  ' of B for reporting atomic displacement parameters. U, being\n'
-                                 ' directly proportional to B, is preferred.</pre>',
+                                 ' directly proportional to B, is preferred.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_B_iso_or_equiv': '<pre><h2>_atom_site_B_iso_or_equiv</h2> Isotropic atomic '
                               'displacement parameter, or equivalent isotropic\n'
                               ' atomic displacement parameter, B(equiv), in angstroms squared,\n'
@@ -26,19 +27,23 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                               '\n'
                               ' The IUCr Commission on Nomenclature recommends against the use\n'
                               ' of B for reporting atomic displacement parameters. U, being\n'
-                              ' directly proportional to B, is preferred.</pre>',
+                              ' directly proportional to B, is preferred.</pre>\n'
+                              '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_Cartn_x': '<pre><h2>_atom_site_Cartn_x</h2> The atom-site coordinates in angstroms '
                        'specified according to a\n'
                        ' set of orthogonal Cartesian axes related to the cell axes as\n'
-                       ' specified by the _atom_sites_Cartn_transform_axes description.</pre>',
+                       ' specified by the _atom_sites_Cartn_transform_axes description.</pre>\n'
+                       '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_Cartn_y': '<pre><h2>_atom_site_Cartn_y</h2> The atom-site coordinates in angstroms '
                        'specified according to a\n'
                        ' set of orthogonal Cartesian axes related to the cell axes as\n'
-                       ' specified by the _atom_sites_Cartn_transform_axes description.</pre>',
+                       ' specified by the _atom_sites_Cartn_transform_axes description.</pre>\n'
+                       '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_Cartn_z': '<pre><h2>_atom_site_Cartn_z</h2> The atom-site coordinates in angstroms '
                        'specified according to a\n'
                        ' set of orthogonal Cartesian axes related to the cell axes as\n'
-                       ' specified by the _atom_sites_Cartn_transform_axes description.</pre>',
+                       ' specified by the _atom_sites_Cartn_transform_axes description.</pre>\n'
+                       '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_U_equiv_geom_mean': '<pre><h2>_atom_site_U_equiv_geom_mean</h2> Equivalent isotropic '
                                  'atomic displacement parameter, U(equiv),\n'
                                  ' in angstroms squared, calculated as the geometric mean of\n'
@@ -47,7 +52,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                  ' U(equiv) = (U~i~ U~j~ U~k~)^1/3^\n'
                                  '\n'
                                  ' U~n~  = the principal components of the orthogonalized '
-                                 'U^ij^</pre>',
+                                 'U^ij^</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_U_iso_or_equiv': '<pre><h2>_atom_site_U_iso_or_equiv</h2> Isotropic atomic '
                               'displacement parameter, or equivalent isotropic\n'
                               ' atomic  displacement parameter, U(equiv), in angstroms squared,\n'
@@ -59,10 +65,12 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                               ' a*    = the reciprocal-space cell lengths\n'
                               '\n'
                               ' Ref: Fischer, R. X. &amp; Tillmanns, E. (1988). Acta Cryst. C44,\n'
-                              '      775-776.</pre>',
+                              '      775-776.</pre>\n'
+                              '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_Wyckoff_symbol': '<pre><h2>_atom_site_Wyckoff_symbol</h2> The Wyckoff symbol (letter) '
                               'as listed in the space-group tables\n'
-                              ' of International Tables for Crystallography Vol. A (2002).</pre>',
+                              ' of International Tables for Crystallography Vol. A (2002).</pre>\n'
+                              '<br><p><h4>Type:</h4> string</p>',
  '_atom_site_adp_type': '<pre><h2>_atom_site_adp_type</h2> A standard code used to describe the '
                         'type of atomic displacement\n'
                         ' parameters used for the site.\n'
@@ -88,7 +96,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                         '\n'
                         'Bovl\n'
                         '\toverall B\n'
-                        '</pre>',
+                        '</pre>\n'
+                        '<br><p><h4>Type:</h4> string</p>',
  '_atom_site_aniso_B_11': '<pre><h2>_atom_site_aniso_B_11</h2> These are the standard anisotropic '
                           'atomic displacement\n'
                           ' components in angstroms squared which appear in the \n'
@@ -104,7 +113,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                           '\n'
                           ' The IUCr Commission on Nomenclature recommends against the use\n'
                           ' of B for reporting atomic displacement parameters. U, being\n'
-                          ' directly proportional to B, is preferred.</pre>',
+                          ' directly proportional to B, is preferred.</pre>\n'
+                          '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_aniso_B_12': '<pre><h2>_atom_site_aniso_B_12</h2> These are the standard anisotropic '
                           'atomic displacement\n'
                           ' components in angstroms squared which appear in the \n'
@@ -120,7 +130,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                           '\n'
                           ' The IUCr Commission on Nomenclature recommends against the use\n'
                           ' of B for reporting atomic displacement parameters. U, being\n'
-                          ' directly proportional to B, is preferred.</pre>',
+                          ' directly proportional to B, is preferred.</pre>\n'
+                          '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_aniso_B_13': '<pre><h2>_atom_site_aniso_B_13</h2> These are the standard anisotropic '
                           'atomic displacement\n'
                           ' components in angstroms squared which appear in the \n'
@@ -136,7 +147,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                           '\n'
                           ' The IUCr Commission on Nomenclature recommends against the use\n'
                           ' of B for reporting atomic displacement parameters. U, being\n'
-                          ' directly proportional to B, is preferred.</pre>',
+                          ' directly proportional to B, is preferred.</pre>\n'
+                          '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_aniso_B_22': '<pre><h2>_atom_site_aniso_B_22</h2> These are the standard anisotropic '
                           'atomic displacement\n'
                           ' components in angstroms squared which appear in the \n'
@@ -152,7 +164,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                           '\n'
                           ' The IUCr Commission on Nomenclature recommends against the use\n'
                           ' of B for reporting atomic displacement parameters. U, being\n'
-                          ' directly proportional to B, is preferred.</pre>',
+                          ' directly proportional to B, is preferred.</pre>\n'
+                          '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_aniso_B_23': '<pre><h2>_atom_site_aniso_B_23</h2> These are the standard anisotropic '
                           'atomic displacement\n'
                           ' components in angstroms squared which appear in the \n'
@@ -168,7 +181,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                           '\n'
                           ' The IUCr Commission on Nomenclature recommends against the use\n'
                           ' of B for reporting atomic displacement parameters. U, being\n'
-                          ' directly proportional to B, is preferred.</pre>',
+                          ' directly proportional to B, is preferred.</pre>\n'
+                          '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_aniso_B_33': '<pre><h2>_atom_site_aniso_B_33</h2> These are the standard anisotropic '
                           'atomic displacement\n'
                           ' components in angstroms squared which appear in the \n'
@@ -184,7 +198,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                           '\n'
                           ' The IUCr Commission on Nomenclature recommends against the use\n'
                           ' of B for reporting atomic displacement parameters. U, being\n'
-                          ' directly proportional to B, is preferred.</pre>',
+                          ' directly proportional to B, is preferred.</pre>\n'
+                          '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_aniso_U_11': '<pre><h2>_atom_site_aniso_U_11</h2> These are the standard anisotropic '
                           'atomic displacement\n'
                           ' components in angstroms squared which appear in the\n'
@@ -196,7 +211,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                           ' a* = the reciprocal-space cell lengths\n'
                           '\n'
                           ' The unique elements of the real symmetric matrix are\n'
-                          ' entered by row.</pre>',
+                          ' entered by row.</pre>\n'
+                          '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_aniso_U_12': '<pre><h2>_atom_site_aniso_U_12</h2> These are the standard anisotropic '
                           'atomic displacement\n'
                           ' components in angstroms squared which appear in the\n'
@@ -208,7 +224,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                           ' a* = the reciprocal-space cell lengths\n'
                           '\n'
                           ' The unique elements of the real symmetric matrix are\n'
-                          ' entered by row.</pre>',
+                          ' entered by row.</pre>\n'
+                          '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_aniso_U_13': '<pre><h2>_atom_site_aniso_U_13</h2> These are the standard anisotropic '
                           'atomic displacement\n'
                           ' components in angstroms squared which appear in the\n'
@@ -220,7 +237,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                           ' a* = the reciprocal-space cell lengths\n'
                           '\n'
                           ' The unique elements of the real symmetric matrix are\n'
-                          ' entered by row.</pre>',
+                          ' entered by row.</pre>\n'
+                          '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_aniso_U_22': '<pre><h2>_atom_site_aniso_U_22</h2> These are the standard anisotropic '
                           'atomic displacement\n'
                           ' components in angstroms squared which appear in the\n'
@@ -232,7 +250,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                           ' a* = the reciprocal-space cell lengths\n'
                           '\n'
                           ' The unique elements of the real symmetric matrix are\n'
-                          ' entered by row.</pre>',
+                          ' entered by row.</pre>\n'
+                          '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_aniso_U_23': '<pre><h2>_atom_site_aniso_U_23</h2> These are the standard anisotropic '
                           'atomic displacement\n'
                           ' components in angstroms squared which appear in the\n'
@@ -244,7 +263,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                           ' a* = the reciprocal-space cell lengths\n'
                           '\n'
                           ' The unique elements of the real symmetric matrix are\n'
-                          ' entered by row.</pre>',
+                          ' entered by row.</pre>\n'
+                          '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_aniso_U_33': '<pre><h2>_atom_site_aniso_U_33</h2> These are the standard anisotropic '
                           'atomic displacement\n'
                           ' components in angstroms squared which appear in the\n'
@@ -256,21 +276,25 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                           ' a* = the reciprocal-space cell lengths\n'
                           '\n'
                           ' The unique elements of the real symmetric matrix are\n'
-                          ' entered by row.</pre>',
+                          ' entered by row.</pre>\n'
+                          '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_aniso_label': '<pre><h2>_atom_site_aniso_label</h2> Anisotropic atomic displacement '
                            'parameters are usually looped in\n'
                            ' a separate list. If this is the case, this code must match the\n'
                            ' _atom_site_label of the associated atom in the atom coordinate\n'
                            ' list and conform with the same rules described in\n'
-                           ' _atom_site_label.</pre>',
+                           ' _atom_site_label.</pre>\n'
+                           '<br><p><h4>Type:</h4> string</p>',
  '_atom_site_aniso_ratio': '<pre><h2>_atom_site_aniso_ratio</h2> Ratio of the maximum to minimum '
                            'principal axes of\n'
-                           ' displacement (thermal) ellipsoids.</pre>',
+                           ' displacement (thermal) ellipsoids.</pre>\n'
+                           '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_aniso_type_symbol': '<pre><h2>_atom_site_aniso_type_symbol</h2> This '
                                  '_atom_type_symbol code links the anisotropic atom\n'
                                  ' parameters to the atom-type data associated with this site and\n'
                                  ' must match one of the _atom_type_symbol codes in this '
-                                 'list.</pre>',
+                                 'list.</pre>\n'
+                                 '<br><p><h4>Type:</h4> string</p>',
  '_atom_site_attached_hydrogens': '<pre><h2>_atom_site_attached_hydrogens</h2> The number of '
                                   'hydrogen atoms attached to the atom at this site\n'
                                   ' excluding any hydrogen atoms for which coordinates (measured '
@@ -280,10 +304,12 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                   '<h3>Example:</h3>\n'
                                   '2\n'
                                   '1\n'
-                                  '4</pre>',
+                                  '4</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_calc_attached_atom': '<pre><h2>_atom_site_calc_attached_atom</h2> The '
                                   "_atom_site_label of the atom site to which the 'geometry-\n"
-                                  " calculated' atom site is attached.</pre>",
+                                  " calculated' atom site is attached.</pre>\n"
+                                  '<br><p><h4>Type:</h4> string</p>',
  '_atom_site_calc_flag': '<pre><h2>_atom_site_calc_flag</h2> A standard code to signal whether the '
                          'site coordinates have been\n'
                          ' determined from the intensities or calculated from the geometry\n'
@@ -302,24 +328,28 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                          '\n'
                          'dum\n'
                          '\tdummy site with meaningless coordinates\n'
-                         '</pre>',
+                         '</pre>\n'
+                         '<br><p><h4>Type:</h4> string</p>',
  '_atom_site_chemical_conn_number': '<pre><h2>_atom_site_chemical_conn_number</h2> This number '
                                     'links an atom site to the chemical connectivity list.\n'
                                     ' It must match a number specified by '
-                                    '_chemical_conn_atom_number.</pre>',
+                                    '_chemical_conn_atom_number.</pre>\n'
+                                    '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_constraints': '<pre><h2>_atom_site_constraints</h2> A description of the constraints '
                            'applied to parameters at this\n'
                            ' site during refinement. See also _atom_site_refinement_flags\n'
                            ' and _refine_ls_number_constraints.\n'
                            '\n'
                            '<h3>Example:</h3>\n'
-                           'pop=1.0-pop(Zn3)</pre>',
+                           'pop=1.0-pop(Zn3)</pre>\n'
+                           '<br><p><h4>Type:</h4> string</p>',
  '_atom_site_description': '<pre><h2>_atom_site_description</h2> A description of special aspects '
                            'of this site. See also\n'
                            ' _atom_site_refinement_flags.\n'
                            '\n'
                            '<h3>Example:</h3>\n'
-                           'Ag/Si disordered</pre>',
+                           'Ag/Si disordered</pre>\n'
+                           '<br><p><h4>Type:</h4> string</p>',
  '_atom_site_disorder_assembly': '<pre><h2>_atom_site_disorder_assembly</h2> A code which '
                                  'identifies a cluster of atoms that show long-range\n'
                                  ' positional disorder but are locally ordered. Within each such\n'
@@ -332,7 +362,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                  '<h3>Example:</h3>\n'
                                  'A\n'
                                  'B\n'
-                                 'S</pre>',
+                                 'S</pre>\n'
+                                 '<br><p><h4>Type:</h4> string</p>',
  '_atom_site_disorder_group': '<pre><h2>_atom_site_disorder_group</h2> A code which identifies a '
                               'group of positionally disordered atom\n'
                               ' sites that are locally simultaneously occupied. Atoms that are\n'
@@ -346,13 +377,17 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                               '<h3>Example:</h3>\n'
                               '1\n'
                               '2\n'
-                              '-1</pre>',
+                              '-1</pre>\n'
+                              '<br><p><h4>Type:</h4> string</p>',
  '_atom_site_fract_x': '<pre><h2>_atom_site_fract_x</h2> Atom-site coordinates as fractions of the '
-                       '_cell_length_ values.</pre>',
+                       '_cell_length_ values.</pre>\n'
+                       '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_fract_y': '<pre><h2>_atom_site_fract_y</h2> Atom-site coordinates as fractions of the '
-                       '_cell_length_ values.</pre>',
+                       '_cell_length_ values.</pre>\n'
+                       '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_fract_z': '<pre><h2>_atom_site_fract_z</h2> Atom-site coordinates as fractions of the '
-                       '_cell_length_ values.</pre>',
+                       '_cell_length_ values.</pre>\n'
+                       '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_label': '<pre><h2>_atom_site_label</h2> The _atom_site_label is a unique identifier '
                      'for a particular site\n'
                      ' in the crystal. This code is made up of a sequence of up to seven\n'
@@ -379,7 +414,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                      'H*251\n'
                      'boron2a\n'
                      'C_a_phe_83_a_0\n'
-                     'Zn_Zn_301_A_0</pre>',
+                     'Zn_Zn_301_A_0</pre>\n'
+                     '<br><p><h4>Type:</h4> string</p>',
  '_atom_site_label_component_0': '<pre><h2>_atom_site_label_component_0</h2> Component 0 is '
                                  'normally a code which matches identically with\n'
                                  ' one of the _atom_type_symbol codes. If this is the case, then '
@@ -400,7 +436,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                  ' Components 2 to 6 contain the identifier, residue, sequence,\n'
                                  ' asymmetry identifier and alternate codes, respectively. These\n'
                                  ' codes may be composed of any characters except an '
-                                 'underscore.</pre>',
+                                 'underscore.</pre>\n'
+                                 '<br><p><h4>Type:</h4> string</p>',
  '_atom_site_label_component_1': '<pre><h2>_atom_site_label_component_1</h2> Component 0 is '
                                  'normally a code which matches identically with\n'
                                  ' one of the _atom_type_symbol codes. If this is the case, then '
@@ -421,7 +458,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                  ' Components 2 to 6 contain the identifier, residue, sequence,\n'
                                  ' asymmetry identifier and alternate codes, respectively. These\n'
                                  ' codes may be composed of any characters except an '
-                                 'underscore.</pre>',
+                                 'underscore.</pre>\n'
+                                 '<br><p><h4>Type:</h4> string</p>',
  '_atom_site_label_component_2': '<pre><h2>_atom_site_label_component_2</h2> Component 0 is '
                                  'normally a code which matches identically with\n'
                                  ' one of the _atom_type_symbol codes. If this is the case, then '
@@ -442,7 +480,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                  ' Components 2 to 6 contain the identifier, residue, sequence,\n'
                                  ' asymmetry identifier and alternate codes, respectively. These\n'
                                  ' codes may be composed of any characters except an '
-                                 'underscore.</pre>',
+                                 'underscore.</pre>\n'
+                                 '<br><p><h4>Type:</h4> string</p>',
  '_atom_site_label_component_3': '<pre><h2>_atom_site_label_component_3</h2> Component 0 is '
                                  'normally a code which matches identically with\n'
                                  ' one of the _atom_type_symbol codes. If this is the case, then '
@@ -463,7 +502,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                  ' Components 2 to 6 contain the identifier, residue, sequence,\n'
                                  ' asymmetry identifier and alternate codes, respectively. These\n'
                                  ' codes may be composed of any characters except an '
-                                 'underscore.</pre>',
+                                 'underscore.</pre>\n'
+                                 '<br><p><h4>Type:</h4> string</p>',
  '_atom_site_label_component_4': '<pre><h2>_atom_site_label_component_4</h2> Component 0 is '
                                  'normally a code which matches identically with\n'
                                  ' one of the _atom_type_symbol codes. If this is the case, then '
@@ -484,7 +524,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                  ' Components 2 to 6 contain the identifier, residue, sequence,\n'
                                  ' asymmetry identifier and alternate codes, respectively. These\n'
                                  ' codes may be composed of any characters except an '
-                                 'underscore.</pre>',
+                                 'underscore.</pre>\n'
+                                 '<br><p><h4>Type:</h4> string</p>',
  '_atom_site_label_component_5': '<pre><h2>_atom_site_label_component_5</h2> Component 0 is '
                                  'normally a code which matches identically with\n'
                                  ' one of the _atom_type_symbol codes. If this is the case, then '
@@ -505,7 +546,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                  ' Components 2 to 6 contain the identifier, residue, sequence,\n'
                                  ' asymmetry identifier and alternate codes, respectively. These\n'
                                  ' codes may be composed of any characters except an '
-                                 'underscore.</pre>',
+                                 'underscore.</pre>\n'
+                                 '<br><p><h4>Type:</h4> string</p>',
  '_atom_site_label_component_6': '<pre><h2>_atom_site_label_component_6</h2> Component 0 is '
                                  'normally a code which matches identically with\n'
                                  ' one of the _atom_type_symbol codes. If this is the case, then '
@@ -526,7 +568,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                  ' Components 2 to 6 contain the identifier, residue, sequence,\n'
                                  ' asymmetry identifier and alternate codes, respectively. These\n'
                                  ' codes may be composed of any characters except an '
-                                 'underscore.</pre>',
+                                 'underscore.</pre>\n'
+                                 '<br><p><h4>Type:</h4> string</p>',
  '_atom_site_occupancy': '<pre><h2>_atom_site_occupancy</h2> The fraction of the atom type present '
                          'at this site.\n'
                          ' The sum of the occupancies of all the atom types at this site\n'
@@ -534,7 +577,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                          ' value must lie in the 99.97% Gaussian confidence interval\n'
                          ' -3u =&lt; x =&lt; 1 + 3u. The _enumeration_range of 0.0:1.0 is thus\n'
                          ' correctly interpreted as meaning (0.0 - 3u) =&lt; x =&lt; (1.0 + '
-                         '3u).</pre>',
+                         '3u).</pre>\n'
+                         '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_refinement_flags': '<pre><h2>_atom_site_refinement_flags</h2>           A '
                                 'concatenated series of single-letter codes which indicate the\n'
                                 '            refinement restraints or constraints applied to this '
@@ -570,7 +614,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                 '\n'
                                 'P\n'
                                 '\tpartial occupancy constraint\n'
-                                '</pre>',
+                                '</pre>\n'
+                                '<br><p><h4>Type:</h4> string</p>',
  '_atom_site_refinement_flags_adp': '<pre><h2>_atom_site_refinement_flags_adp</h2> A code which '
                                     'indicates the refinement restraints or constraints\n'
                                     ' applied to the atomic displacement parameters of this site.\n'
@@ -588,7 +633,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                     '\n'
                                     'TU\n'
                                     '\tboth constraints applied\n'
-                                    '</pre>',
+                                    '</pre>\n'
+                                    '<br><p><h4>Type:</h4> string</p>',
  '_atom_site_refinement_flags_occupancy': '<pre><h2>_atom_site_refinement_flags_occupancy</h2> A '
                                           'code which indicates that refinement restraints or\n'
                                           ' constraints were applied to the occupancy of this '
@@ -600,7 +646,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                           '\n'
                                           'P\n'
                                           '\tsite-occupancy constraint\n'
-                                          '</pre>',
+                                          '</pre>\n'
+                                          '<br><p><h4>Type:</h4> string</p>',
  '_atom_site_refinement_flags_posn': '<pre><h2>_atom_site_refinement_flags_posn</h2> A code which '
                                      'indicates the refinement restraints or constraints\n'
                                      ' applied to the positional coordinates of this site.\n'
@@ -653,14 +700,16 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                      '\n'
                                      'DGRS\n'
                                      '\tcombination of the above constraints\n'
-                                     '</pre>',
+                                     '</pre>\n'
+                                     '<br><p><h4>Type:</h4> string</p>',
  '_atom_site_restraints': '<pre><h2>_atom_site_restraints</h2> A description of restraints applied '
                           'to specific parameters at\n'
                           ' this site during refinement. See also _atom_site_refinement_flags\n'
                           ' and _refine_ls_number_restraints.\n'
                           '\n'
                           '<h3>Example:</h3>\n'
-                          'restrained to planar ring</pre>',
+                          'restrained to planar ring</pre>\n'
+                          '<br><p><h4>Type:</h4> string</p>',
  '_atom_site_site_symmetry_multiplicity': '<pre><h2>_atom_site_site_symmetry_multiplicity</h2> The '
                                           'number of different sites that are generated by the\n'
                                           ' application of the space-group symmetry to the\n'
@@ -671,7 +720,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                           ' It is equal to the multiplicity of the general '
                                           'position\n'
                                           ' divided by the order of the site symmetry given in\n'
-                                          ' _atom_site_site_symmetry_order.</pre>',
+                                          ' _atom_site_site_symmetry_order.</pre>\n'
+                                          '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_site_symmetry_order': '<pre><h2>_atom_site_site_symmetry_order</h2> The order of the '
                                    'site symmetry of the site identified by\n'
                                    ' _atom_site_label.\n'
@@ -686,7 +736,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                    '                multiplicity of this site\n'
                                    '\n'
                                    "  where 'multiplicity of this site' is\n"
-                                   '  given in _atom_site_site_symmetry_multiplicity.</pre>',
+                                   '  given in _atom_site_site_symmetry_multiplicity.</pre>\n'
+                                   '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_symmetry_multiplicity': '<pre><h2>_atom_site_symmetry_multiplicity</h2> The '
                                      'multiplicity of a site due to the space-group symmetry as\n'
                                      ' given in International Tables for Crystallography Vol. A '
@@ -700,7 +751,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                      ' using the data name _atom_site_site_symmetry_multiplicity.\n'
                                      ' In the historic archive some CIFs use this item to give '
                                      'values\n'
-                                     ' that belong in _atom_site_site_symmetry_order.</pre>',
+                                     ' that belong in _atom_site_site_symmetry_order.</pre>\n'
+                                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_thermal_displace_type': '<pre><h2>_atom_site_thermal_displace_type</h2> A standard '
                                      'code used to describe the type of atomic displacement\n'
                                      ' parameters used for the site.\n'
@@ -726,7 +778,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                      '\n'
                                      'Bovl\n'
                                      '\toverall B\n'
-                                     '</pre>',
+                                     '</pre>\n'
+                                     '<br><p><h4>Type:</h4> string</p>',
  '_atom_site_type_symbol': '<pre><h2>_atom_site_type_symbol</h2> A code to identify the atom '
                            'species (singular or plural)\n'
                            ' occupying this site.\n'
@@ -741,7 +794,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                            'Fe3+Ni2+\n'
                            'S-\n'
                            'H*\n'
-                           'H(SDS)</pre>',
+                           'H(SDS)</pre>\n'
+                           '<br><p><h4>Type:</h4> string</p>',
  '_atom_sites_Cartn_tran_matrix_11': '<pre><h2>_atom_sites_Cartn_tran_matrix_11</h2> Matrix '
                                      'elements used to transform fractional coordinates in\n'
                                      ' the ATOM_SITE category to Cartesian  coordinates. The '
@@ -754,7 +808,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                      " ( y' ) Cartesian   =   |21 22 23|    ( y ) fractional  +  | "
                                      '2 |\n'
                                      "   z'                   |31 32 33|      z                  | "
-                                     '3 |</pre>',
+                                     '3 |</pre>\n'
+                                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_sites_Cartn_tran_matrix_12': '<pre><h2>_atom_sites_Cartn_tran_matrix_12</h2> Matrix '
                                      'elements used to transform fractional coordinates in\n'
                                      ' the ATOM_SITE category to Cartesian  coordinates. The '
@@ -767,7 +822,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                      " ( y' ) Cartesian   =   |21 22 23|    ( y ) fractional  +  | "
                                      '2 |\n'
                                      "   z'                   |31 32 33|      z                  | "
-                                     '3 |</pre>',
+                                     '3 |</pre>\n'
+                                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_sites_Cartn_tran_matrix_13': '<pre><h2>_atom_sites_Cartn_tran_matrix_13</h2> Matrix '
                                      'elements used to transform fractional coordinates in\n'
                                      ' the ATOM_SITE category to Cartesian  coordinates. The '
@@ -780,7 +836,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                      " ( y' ) Cartesian   =   |21 22 23|    ( y ) fractional  +  | "
                                      '2 |\n'
                                      "   z'                   |31 32 33|      z                  | "
-                                     '3 |</pre>',
+                                     '3 |</pre>\n'
+                                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_sites_Cartn_tran_matrix_21': '<pre><h2>_atom_sites_Cartn_tran_matrix_21</h2> Matrix '
                                      'elements used to transform fractional coordinates in\n'
                                      ' the ATOM_SITE category to Cartesian  coordinates. The '
@@ -793,7 +850,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                      " ( y' ) Cartesian   =   |21 22 23|    ( y ) fractional  +  | "
                                      '2 |\n'
                                      "   z'                   |31 32 33|      z                  | "
-                                     '3 |</pre>',
+                                     '3 |</pre>\n'
+                                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_sites_Cartn_tran_matrix_22': '<pre><h2>_atom_sites_Cartn_tran_matrix_22</h2> Matrix '
                                      'elements used to transform fractional coordinates in\n'
                                      ' the ATOM_SITE category to Cartesian  coordinates. The '
@@ -806,7 +864,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                      " ( y' ) Cartesian   =   |21 22 23|    ( y ) fractional  +  | "
                                      '2 |\n'
                                      "   z'                   |31 32 33|      z                  | "
-                                     '3 |</pre>',
+                                     '3 |</pre>\n'
+                                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_sites_Cartn_tran_matrix_23': '<pre><h2>_atom_sites_Cartn_tran_matrix_23</h2> Matrix '
                                      'elements used to transform fractional coordinates in\n'
                                      ' the ATOM_SITE category to Cartesian  coordinates. The '
@@ -819,7 +878,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                      " ( y' ) Cartesian   =   |21 22 23|    ( y ) fractional  +  | "
                                      '2 |\n'
                                      "   z'                   |31 32 33|      z                  | "
-                                     '3 |</pre>',
+                                     '3 |</pre>\n'
+                                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_sites_Cartn_tran_matrix_31': '<pre><h2>_atom_sites_Cartn_tran_matrix_31</h2> Matrix '
                                      'elements used to transform fractional coordinates in\n'
                                      ' the ATOM_SITE category to Cartesian  coordinates. The '
@@ -832,7 +892,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                      " ( y' ) Cartesian   =   |21 22 23|    ( y ) fractional  +  | "
                                      '2 |\n'
                                      "   z'                   |31 32 33|      z                  | "
-                                     '3 |</pre>',
+                                     '3 |</pre>\n'
+                                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_sites_Cartn_tran_matrix_32': '<pre><h2>_atom_sites_Cartn_tran_matrix_32</h2> Matrix '
                                      'elements used to transform fractional coordinates in\n'
                                      ' the ATOM_SITE category to Cartesian  coordinates. The '
@@ -845,7 +906,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                      " ( y' ) Cartesian   =   |21 22 23|    ( y ) fractional  +  | "
                                      '2 |\n'
                                      "   z'                   |31 32 33|      z                  | "
-                                     '3 |</pre>',
+                                     '3 |</pre>\n'
+                                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_sites_Cartn_tran_matrix_33': '<pre><h2>_atom_sites_Cartn_tran_matrix_33</h2> Matrix '
                                      'elements used to transform fractional coordinates in\n'
                                      ' the ATOM_SITE category to Cartesian  coordinates. The '
@@ -858,7 +920,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                      " ( y' ) Cartesian   =   |21 22 23|    ( y ) fractional  +  | "
                                      '2 |\n'
                                      "   z'                   |31 32 33|      z                  | "
-                                     '3 |</pre>',
+                                     '3 |</pre>\n'
+                                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_sites_Cartn_tran_vector_1': '<pre><h2>_atom_sites_Cartn_tran_vector_1</h2> Elements of a 3 '
                                     'x 1 translation vector used in the\n'
                                     ' transformation of fractional coordinates in the\n'
@@ -870,7 +933,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                     " ( y' ) Cartesian   =   |21 22 23|    ( y ) fractional  +  | "
                                     '2 |\n'
                                     "   z'                   |31 32 33|      z                  | "
-                                    '3 |</pre>',
+                                    '3 |</pre>\n'
+                                    '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_sites_Cartn_tran_vector_2': '<pre><h2>_atom_sites_Cartn_tran_vector_2</h2> Elements of a 3 '
                                     'x 1 translation vector used in the\n'
                                     ' transformation of fractional coordinates in the\n'
@@ -882,7 +946,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                     " ( y' ) Cartesian   =   |21 22 23|    ( y ) fractional  +  | "
                                     '2 |\n'
                                     "   z'                   |31 32 33|      z                  | "
-                                    '3 |</pre>',
+                                    '3 |</pre>\n'
+                                    '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_sites_Cartn_tran_vector_3': '<pre><h2>_atom_sites_Cartn_tran_vector_3</h2> Elements of a 3 '
                                     'x 1 translation vector used in the\n'
                                     ' transformation of fractional coordinates in the\n'
@@ -894,14 +959,16 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                     " ( y' ) Cartesian   =   |21 22 23|    ( y ) fractional  +  | "
                                     '2 |\n'
                                     "   z'                   |31 32 33|      z                  | "
-                                    '3 |</pre>',
+                                    '3 |</pre>\n'
+                                    '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_sites_Cartn_transform_axes': '<pre><h2>_atom_sites_Cartn_transform_axes</h2> A description '
                                      'of the relative alignment of the crystal cell\n'
                                      ' axes to the  Cartesian orthogonal axes as applied in the\n'
                                      ' transformation matrix _atom_sites_Cartn_tran_matrix_.\n'
                                      '\n'
                                      '<h3>Example:</h3>\n'
-                                     'a parallel to x; b in the plane of y and z</pre>',
+                                     'a parallel to x; b in the plane of y and z</pre>\n'
+                                     '<br><p><h4>Type:</h4> string</p>',
  '_atom_sites_fract_tran_matrix_11': '<pre><h2>_atom_sites_fract_tran_matrix_11</h2> Matrix '
                                      'elements used to transform Cartesian coordinates in\n'
                                      ' the ATOM_SITE category to fractional coordinates. The '
@@ -914,7 +981,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                      " ( y' ) fractional  =   |21 22 23|    ( y ) Cartesian  +  | "
                                      '2 |\n'
                                      "   z'                   |31 32 33|      z                 | "
-                                     '3 |</pre>',
+                                     '3 |</pre>\n'
+                                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_sites_fract_tran_matrix_12': '<pre><h2>_atom_sites_fract_tran_matrix_12</h2> Matrix '
                                      'elements used to transform Cartesian coordinates in\n'
                                      ' the ATOM_SITE category to fractional coordinates. The '
@@ -927,7 +995,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                      " ( y' ) fractional  =   |21 22 23|    ( y ) Cartesian  +  | "
                                      '2 |\n'
                                      "   z'                   |31 32 33|      z                 | "
-                                     '3 |</pre>',
+                                     '3 |</pre>\n'
+                                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_sites_fract_tran_matrix_13': '<pre><h2>_atom_sites_fract_tran_matrix_13</h2> Matrix '
                                      'elements used to transform Cartesian coordinates in\n'
                                      ' the ATOM_SITE category to fractional coordinates. The '
@@ -940,7 +1009,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                      " ( y' ) fractional  =   |21 22 23|    ( y ) Cartesian  +  | "
                                      '2 |\n'
                                      "   z'                   |31 32 33|      z                 | "
-                                     '3 |</pre>',
+                                     '3 |</pre>\n'
+                                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_sites_fract_tran_matrix_21': '<pre><h2>_atom_sites_fract_tran_matrix_21</h2> Matrix '
                                      'elements used to transform Cartesian coordinates in\n'
                                      ' the ATOM_SITE category to fractional coordinates. The '
@@ -953,7 +1023,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                      " ( y' ) fractional  =   |21 22 23|    ( y ) Cartesian  +  | "
                                      '2 |\n'
                                      "   z'                   |31 32 33|      z                 | "
-                                     '3 |</pre>',
+                                     '3 |</pre>\n'
+                                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_sites_fract_tran_matrix_22': '<pre><h2>_atom_sites_fract_tran_matrix_22</h2> Matrix '
                                      'elements used to transform Cartesian coordinates in\n'
                                      ' the ATOM_SITE category to fractional coordinates. The '
@@ -966,7 +1037,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                      " ( y' ) fractional  =   |21 22 23|    ( y ) Cartesian  +  | "
                                      '2 |\n'
                                      "   z'                   |31 32 33|      z                 | "
-                                     '3 |</pre>',
+                                     '3 |</pre>\n'
+                                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_sites_fract_tran_matrix_23': '<pre><h2>_atom_sites_fract_tran_matrix_23</h2> Matrix '
                                      'elements used to transform Cartesian coordinates in\n'
                                      ' the ATOM_SITE category to fractional coordinates. The '
@@ -979,7 +1051,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                      " ( y' ) fractional  =   |21 22 23|    ( y ) Cartesian  +  | "
                                      '2 |\n'
                                      "   z'                   |31 32 33|      z                 | "
-                                     '3 |</pre>',
+                                     '3 |</pre>\n'
+                                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_sites_fract_tran_matrix_31': '<pre><h2>_atom_sites_fract_tran_matrix_31</h2> Matrix '
                                      'elements used to transform Cartesian coordinates in\n'
                                      ' the ATOM_SITE category to fractional coordinates. The '
@@ -992,7 +1065,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                      " ( y' ) fractional  =   |21 22 23|    ( y ) Cartesian  +  | "
                                      '2 |\n'
                                      "   z'                   |31 32 33|      z                 | "
-                                     '3 |</pre>',
+                                     '3 |</pre>\n'
+                                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_sites_fract_tran_matrix_32': '<pre><h2>_atom_sites_fract_tran_matrix_32</h2> Matrix '
                                      'elements used to transform Cartesian coordinates in\n'
                                      ' the ATOM_SITE category to fractional coordinates. The '
@@ -1005,7 +1079,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                      " ( y' ) fractional  =   |21 22 23|    ( y ) Cartesian  +  | "
                                      '2 |\n'
                                      "   z'                   |31 32 33|      z                 | "
-                                     '3 |</pre>',
+                                     '3 |</pre>\n'
+                                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_sites_fract_tran_matrix_33': '<pre><h2>_atom_sites_fract_tran_matrix_33</h2> Matrix '
                                      'elements used to transform Cartesian coordinates in\n'
                                      ' the ATOM_SITE category to fractional coordinates. The '
@@ -1018,7 +1093,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                      " ( y' ) fractional  =   |21 22 23|    ( y ) Cartesian  +  | "
                                      '2 |\n'
                                      "   z'                   |31 32 33|      z                 | "
-                                     '3 |</pre>',
+                                     '3 |</pre>\n'
+                                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_sites_fract_tran_vector_1': '<pre><h2>_atom_sites_fract_tran_vector_1</h2> Elements of a 3 '
                                     'x 1 translation vector used in the\n'
                                     ' transformation of Cartesian coordinates in the\n'
@@ -1030,7 +1106,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                     " ( y' ) fractional  =   |21 22 23|    ( y ) Cartesian  +  | 2 "
                                     '|\n'
                                     "   z'                   |31 32 33|      z                 | 3 "
-                                    '|</pre>',
+                                    '|</pre>\n'
+                                    '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_sites_fract_tran_vector_2': '<pre><h2>_atom_sites_fract_tran_vector_2</h2> Elements of a 3 '
                                     'x 1 translation vector used in the\n'
                                     ' transformation of Cartesian coordinates in the\n'
@@ -1042,7 +1119,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                     " ( y' ) fractional  =   |21 22 23|    ( y ) Cartesian  +  | 2 "
                                     '|\n'
                                     "   z'                   |31 32 33|      z                 | 3 "
-                                    '|</pre>',
+                                    '|</pre>\n'
+                                    '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_sites_fract_tran_vector_3': '<pre><h2>_atom_sites_fract_tran_vector_3</h2> Elements of a 3 '
                                     'x 1 translation vector used in the\n'
                                     ' transformation of Cartesian coordinates in the\n'
@@ -1054,7 +1132,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                     " ( y' ) fractional  =   |21 22 23|    ( y ) Cartesian  +  | 2 "
                                     '|\n'
                                     "   z'                   |31 32 33|      z                 | 3 "
-                                    '|</pre>',
+                                    '|</pre>\n'
+                                    '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_sites_solution_hydrogens': '<pre><h2>_atom_sites_solution_hydrogens</h2> Codes which '
                                    'identify the methods used to locate the initial\n'
                                    ' atom sites. The *_primary code identifies how the first\n'
@@ -1108,7 +1187,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                    '\n'
                                    'other\n'
                                    '\ta method not included elsewhere in this list\n'
-                                   '</pre>',
+                                   '</pre>\n'
+                                   '<br><p><h4>Type:</h4> string</p>',
  '_atom_sites_solution_primary': '<pre><h2>_atom_sites_solution_primary</h2> Codes which identify '
                                  'the methods used to locate the initial\n'
                                  ' atom sites. The *_primary code identifies how the first\n'
@@ -1159,7 +1239,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                  '\n'
                                  'other\n'
                                  '\ta method not included elsewhere in this list\n'
-                                 '</pre>',
+                                 '</pre>\n'
+                                 '<br><p><h4>Type:</h4> string</p>',
  '_atom_sites_solution_secondary': '<pre><h2>_atom_sites_solution_secondary</h2> Codes which '
                                    'identify the methods used to locate the initial\n'
                                    ' atom sites. The *_primary code identifies how the first\n'
@@ -1210,12 +1291,15 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                    '\n'
                                    'other\n'
                                    '\ta method not included elsewhere in this list\n'
-                                   '</pre>',
+                                   '</pre>\n'
+                                   '<br><p><h4>Type:</h4> string</p>',
  '_atom_sites_special_details': '<pre><h2>_atom_sites_special_details</h2> Additional information '
                                 'about the atomic coordinates not coded\n'
-                                ' elsewhere in the CIF.</pre>',
+                                ' elsewhere in the CIF.</pre>\n'
+                                '<br><p><h4>Type:</h4> string</p>',
  '_atom_type_analytical_mass_%': '<pre><h2>_atom_type_analytical_mass_%</h2> Mass percentage of '
-                                 'this atom type derived from chemical analysis.</pre>',
+                                 'this atom type derived from chemical analysis.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_type_description': '<pre><h2>_atom_type_description</h2> A description of the atom(s) '
                            'designated by this atom type. In\n'
                            ' most cases, this will be the element name and oxidation state of\n'
@@ -1224,17 +1308,22 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                            '\n'
                            '<h3>Example:</h3>\n'
                            'deuterium\n'
-                           '0.34Fe+0.66Ni</pre>',
+                           '0.34Fe+0.66Ni</pre>\n'
+                           '<br><p><h4>Type:</h4> string</p>',
  '_atom_type_number_in_cell': '<pre><h2>_atom_type_number_in_cell</h2> Total number of atoms of '
-                              'this atom type in the unit cell.</pre>',
+                              'this atom type in the unit cell.</pre>\n'
+                              '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_type_oxidation_number': '<pre><h2>_atom_type_oxidation_number</h2> Formal oxidation state '
-                                'of this atom type in the structure.</pre>',
+                                'of this atom type in the structure.</pre>\n'
+                                '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_type_radius_bond': '<pre><h2>_atom_type_radius_bond</h2> The effective intra- and '
                            'intermolecular bonding radii in\n'
-                           ' angstroms of this atom type.</pre>',
+                           ' angstroms of this atom type.</pre>\n'
+                           '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_type_radius_contact': '<pre><h2>_atom_type_radius_contact</h2> The effective intra- and '
                               'intermolecular bonding radii in\n'
-                              ' angstroms of this atom type.</pre>',
+                              ' angstroms of this atom type.</pre>\n'
+                              '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_type_scat_Cromer_Mann_a1': '<pre><h2>_atom_type_scat_Cromer_Mann_a1</h2> The Cromer-Mann '
                                    'scattering-factor coefficients used to calculate\n'
                                    ' the scattering factors for this atom type.\n'
@@ -1243,7 +1332,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                    '       Vol. IV, Table 2.2B\n'
                                    ' or   International Tables for Crystallography (2004). Vol. '
                                    'C,\n'
-                                   '      Tables 6.1.1.4 and 6.1.1.5</pre>',
+                                   '      Tables 6.1.1.4 and 6.1.1.5</pre>\n'
+                                   '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_type_scat_Cromer_Mann_a2': '<pre><h2>_atom_type_scat_Cromer_Mann_a2</h2> The Cromer-Mann '
                                    'scattering-factor coefficients used to calculate\n'
                                    ' the scattering factors for this atom type.\n'
@@ -1252,7 +1342,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                    '       Vol. IV, Table 2.2B\n'
                                    ' or   International Tables for Crystallography (2004). Vol. '
                                    'C,\n'
-                                   '      Tables 6.1.1.4 and 6.1.1.5</pre>',
+                                   '      Tables 6.1.1.4 and 6.1.1.5</pre>\n'
+                                   '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_type_scat_Cromer_Mann_a3': '<pre><h2>_atom_type_scat_Cromer_Mann_a3</h2> The Cromer-Mann '
                                    'scattering-factor coefficients used to calculate\n'
                                    ' the scattering factors for this atom type.\n'
@@ -1261,7 +1352,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                    '       Vol. IV, Table 2.2B\n'
                                    ' or   International Tables for Crystallography (2004). Vol. '
                                    'C,\n'
-                                   '      Tables 6.1.1.4 and 6.1.1.5</pre>',
+                                   '      Tables 6.1.1.4 and 6.1.1.5</pre>\n'
+                                   '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_type_scat_Cromer_Mann_a4': '<pre><h2>_atom_type_scat_Cromer_Mann_a4</h2> The Cromer-Mann '
                                    'scattering-factor coefficients used to calculate\n'
                                    ' the scattering factors for this atom type.\n'
@@ -1270,7 +1362,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                    '       Vol. IV, Table 2.2B\n'
                                    ' or   International Tables for Crystallography (2004). Vol. '
                                    'C,\n'
-                                   '      Tables 6.1.1.4 and 6.1.1.5</pre>',
+                                   '      Tables 6.1.1.4 and 6.1.1.5</pre>\n'
+                                   '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_type_scat_Cromer_Mann_b1': '<pre><h2>_atom_type_scat_Cromer_Mann_b1</h2> The Cromer-Mann '
                                    'scattering-factor coefficients used to calculate\n'
                                    ' the scattering factors for this atom type.\n'
@@ -1279,7 +1372,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                    '       Vol. IV, Table 2.2B\n'
                                    ' or   International Tables for Crystallography (2004). Vol. '
                                    'C,\n'
-                                   '      Tables 6.1.1.4 and 6.1.1.5</pre>',
+                                   '      Tables 6.1.1.4 and 6.1.1.5</pre>\n'
+                                   '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_type_scat_Cromer_Mann_b2': '<pre><h2>_atom_type_scat_Cromer_Mann_b2</h2> The Cromer-Mann '
                                    'scattering-factor coefficients used to calculate\n'
                                    ' the scattering factors for this atom type.\n'
@@ -1288,7 +1382,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                    '       Vol. IV, Table 2.2B\n'
                                    ' or   International Tables for Crystallography (2004). Vol. '
                                    'C,\n'
-                                   '      Tables 6.1.1.4 and 6.1.1.5</pre>',
+                                   '      Tables 6.1.1.4 and 6.1.1.5</pre>\n'
+                                   '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_type_scat_Cromer_Mann_b3': '<pre><h2>_atom_type_scat_Cromer_Mann_b3</h2> The Cromer-Mann '
                                    'scattering-factor coefficients used to calculate\n'
                                    ' the scattering factors for this atom type.\n'
@@ -1297,7 +1392,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                    '       Vol. IV, Table 2.2B\n'
                                    ' or   International Tables for Crystallography (2004). Vol. '
                                    'C,\n'
-                                   '      Tables 6.1.1.4 and 6.1.1.5</pre>',
+                                   '      Tables 6.1.1.4 and 6.1.1.5</pre>\n'
+                                   '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_type_scat_Cromer_Mann_b4': '<pre><h2>_atom_type_scat_Cromer_Mann_b4</h2> The Cromer-Mann '
                                    'scattering-factor coefficients used to calculate\n'
                                    ' the scattering factors for this atom type.\n'
@@ -1306,7 +1402,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                    '       Vol. IV, Table 2.2B\n'
                                    ' or   International Tables for Crystallography (2004). Vol. '
                                    'C,\n'
-                                   '      Tables 6.1.1.4 and 6.1.1.5</pre>',
+                                   '      Tables 6.1.1.4 and 6.1.1.5</pre>\n'
+                                   '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_type_scat_Cromer_Mann_c': '<pre><h2>_atom_type_scat_Cromer_Mann_c</h2> The Cromer-Mann '
                                   'scattering-factor coefficients used to calculate\n'
                                   ' the scattering factors for this atom type.\n'
@@ -1314,43 +1411,50 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                   ' Ref: International Tables for X-ray Crystallography (1974). \n'
                                   '       Vol. IV, Table 2.2B\n'
                                   ' or   International Tables for Crystallography (2004). Vol. C,\n'
-                                  '      Tables 6.1.1.4 and 6.1.1.5</pre>',
+                                  '      Tables 6.1.1.4 and 6.1.1.5</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_type_scat_dispersion_imag': '<pre><h2>_atom_type_scat_dispersion_imag</h2> The imaginary '
                                     'and real components of the anomalous-dispersion\n'
                                     " scattering factor, f'' and f', in electrons for this atom "
                                     'type\n'
                                     ' and the radiation given in '
-                                    '_diffrn_radiation_wavelength.</pre>',
+                                    '_diffrn_radiation_wavelength.</pre>\n'
+                                    '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_type_scat_dispersion_real': '<pre><h2>_atom_type_scat_dispersion_real</h2> The imaginary '
                                     'and real components of the anomalous-dispersion\n'
                                     " scattering factor, f'' and f', in electrons for this atom "
                                     'type\n'
                                     ' and the radiation given in '
-                                    '_diffrn_radiation_wavelength.</pre>',
+                                    '_diffrn_radiation_wavelength.</pre>\n'
+                                    '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_type_scat_dispersion_source': '<pre><h2>_atom_type_scat_dispersion_source</h2> Reference '
                                       'to source of real and imaginary dispersion\n'
                                       ' corrections for scattering factors used for this atom '
                                       'type.\n'
                                       '\n'
                                       '<h3>Example:</h3>\n'
-                                      'International Tables Vol. IV Table 2.3.1</pre>',
+                                      'International Tables Vol. IV Table 2.3.1</pre>\n'
+                                      '<br><p><h4>Type:</h4> string</p>',
  '_atom_type_scat_length_neutron': '<pre><h2>_atom_type_scat_length_neutron</h2> The bound '
                                    'coherent scattering length in femtometres for the\n'
                                    ' atom type at the isotopic composition used for the '
                                    'diffraction\n'
-                                   ' experiment.</pre>',
+                                   ' experiment.</pre>\n'
+                                   '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_type_scat_source': '<pre><h2>_atom_type_scat_source</h2> Reference to source of scattering '
                            'factors or scattering lengths\n'
                            ' used for this atom type.\n'
                            '\n'
                            '<h3>Example:</h3>\n'
-                           'International Tables Vol. IV Table 2.4.6B</pre>',
+                           'International Tables Vol. IV Table 2.4.6B</pre>\n'
+                           '<br><p><h4>Type:</h4> string</p>',
  '_atom_type_scat_versus_stol_list': '<pre><h2>_atom_type_scat_versus_stol_list</h2> A table of '
                                      'scattering factors as a function of sin theta over\n'
                                      ' lambda. This table should be well commented to indicate '
                                      'the\n'
                                      ' items present. Regularly formatted lists are strongly\n'
-                                     ' recommended.</pre>',
+                                     ' recommended.</pre>\n'
+                                     '<br><p><h4>Type:</h4> string</p>',
  '_atom_type_symbol': '<pre><h2>_atom_type_symbol</h2> The code used to identify the atom species '
                       '(singular or plural)\n'
                       ' representing this atom type. Normally this code is the element\n'
@@ -1363,7 +1467,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                       'Cu2+\n'
                       'H(SDS)\n'
                       'dummy\n'
-                      'FeNi</pre>',
+                      'FeNi</pre>\n'
+                      '<br><p><h4>Type:</h4> string</p>',
  '_audit_author_address': '<pre><h2>_audit_author_address</h2> The address of an author of this '
                           'data block. If there are\n'
                           ' multiple authors, _audit_author_address is looped with\n'
@@ -1374,7 +1479,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                           '          Institute\n'
                           '          Street\n'
                           '          City and postcode\n'
-                          '          COUNTRY</pre>',
+                          '          COUNTRY</pre>\n'
+                          '<br><p><h4>Type:</h4> string</p>',
  '_audit_author_name': '<pre><h2>_audit_author_name</h2> The name of an author of this data block. '
                        'If there are multiple\n'
                        ' authors, _audit_author_name is looped with _audit_author_address.\n'
@@ -1388,12 +1494,14 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                        'Yang, D.-L.\n'
                        'Simonov, Yu.A.\n'
                        'M\\"uller, H.A.\n'
-                       'Ross II, C.R.</pre>',
+                       'Ross II, C.R.</pre>\n'
+                       '<br><p><h4>Type:</h4> string</p>',
  '_audit_block_code': '<pre><h2>_audit_block_code</h2> A code intended to identify uniquely the '
                       'current data block.\n'
                       '\n'
                       '<h3>Example:</h3>\n'
-                      'TOZ_1991-03-20</pre>',
+                      'TOZ_1991-03-20</pre>\n'
+                      '<br><p><h4>Type:</h4> string</p>',
  '_audit_block_doi': '<pre><h2>_audit_block_doi</h2> The digital object identifier (DOI) '
                      'registered to identify\n'
                      ' the data set publication represented by the current\n'
@@ -1415,16 +1523,20 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                      ' http://www.doi.org).\n'
                      '\n'
                      '<h3>Example:</h3>\n'
-                     '10.5517/CC6V9DQ</pre>',
+                     '10.5517/CC6V9DQ</pre>\n'
+                     '<br><p><h4>Type:</h4> string</p>',
  '_audit_conform_dict_location': '<pre><h2>_audit_conform_dict_location</h2> A file name or '
                                  'uniform resource locator (URL) for the\n'
-                                 ' dictionary to which the current data block conforms.</pre>',
+                                 ' dictionary to which the current data block conforms.</pre>\n'
+                                 '<br><p><h4>Type:</h4> string</p>',
  '_audit_conform_dict_name': '<pre><h2>_audit_conform_dict_name</h2> The string identifying the '
                              'highest-level dictionary defining\n'
-                             ' data names used in this file.</pre>',
+                             ' data names used in this file.</pre>\n'
+                             '<br><p><h4>Type:</h4> string</p>',
  '_audit_conform_dict_version': '<pre><h2>_audit_conform_dict_version</h2> The version number of '
                                 'the dictionary to which the\n'
-                                ' current data block conforms.</pre>',
+                                ' current data block conforms.</pre>\n'
+                                '<br><p><h4>Type:</h4> string</p>',
  '_audit_contact_author_address': '<pre><h2>_audit_contact_author_address</h2> The mailing address '
                                   'of the author of the data block to whom\n'
                                   ' correspondence should be addressed.\n'
@@ -1434,7 +1546,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                   '          Institute\n'
                                   '          Street\n'
                                   '          City and postcode\n'
-                                  '          COUNTRY</pre>',
+                                  '          COUNTRY</pre>\n'
+                                  '<br><p><h4>Type:</h4> string</p>',
  '_audit_contact_author_email': '<pre><h2>_audit_contact_author_email</h2> The electronic mail '
                                 'address of the author of the data block\n'
                                 ' to whom correspondence should be addressed, in a form\n'
@@ -1445,7 +1558,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                 '\n'
                                 '<h3>Example:</h3>\n'
                                 'name@host.domain.country\n'
-                                'bm@iucr.org</pre>',
+                                'bm@iucr.org</pre>\n'
+                                '<br><p><h4>Type:</h4> string</p>',
  '_audit_contact_author_fax': '<pre><h2>_audit_contact_author_fax</h2> The facsimile telephone '
                               'number of the author of the data\n'
                               ' block to whom correspondence should be addressed.\n'
@@ -1456,7 +1570,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                               '\n'
                               '<h3>Example:</h3>\n'
                               '12(34)9477334\n'
-                              '12()349477334</pre>',
+                              '12()349477334</pre>\n'
+                              '<br><p><h4>Type:</h4> string</p>',
  '_audit_contact_author_name': '<pre><h2>_audit_contact_author_name</h2> The name of the author of '
                                'the data block to whom correspondence\n'
                                ' should be addressed.\n'
@@ -1471,7 +1586,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                'Yang, D.-L.\n'
                                'Simonov, Yu.A.\n'
                                'M\\"uller, H.A.\n'
-                               'Ross II, C.R.</pre>',
+                               'Ross II, C.R.</pre>\n'
+                               '<br><p><h4>Type:</h4> string</p>',
  '_audit_contact_author_phone': '<pre><h2>_audit_contact_author_phone</h2> The telephone number of '
                                 'the author of the data block to whom\n'
                                 ' correspondence should be addressed.\n'
@@ -1485,26 +1601,31 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                 '<h3>Example:</h3>\n'
                                 '12(34)9477330\n'
                                 '12()349477330\n'
-                                '12(34)9477330x5543</pre>',
+                                '12(34)9477330x5543</pre>\n'
+                                '<br><p><h4>Type:</h4> string</p>',
  '_audit_creation_date': '<pre><h2>_audit_creation_date</h2> The date that the data block was '
                          'created. The date format\n'
                          ' is yyyy-mm-dd.\n'
                          '\n'
                          '<h3>Example:</h3>\n'
-                         '1990-07-12</pre>',
+                         '1990-07-12</pre>\n'
+                         '<br><p><h4>Type:</h4> string</p>',
  '_audit_creation_method': '<pre><h2>_audit_creation_method</h2> A description of how data were '
                            'entered into the data block.\n'
                            '\n'
                            '<h3>Example:</h3>\n'
-                           'spawned by the program QBEE</pre>',
+                           'spawned by the program QBEE</pre>\n'
+                           '<br><p><h4>Type:</h4> string</p>',
  '_audit_link_block_code': '<pre><h2>_audit_link_block_code</h2> The value of _audit_block_code '
                            'associated with a data block\n'
                            ' in the current file related to the current data block. The\n'
                            " special value '.' may be used to refer to the current data\n"
-                           ' block for completeness.</pre>',
+                           ' block for completeness.</pre>\n'
+                           '<br><p><h4>Type:</h4> string</p>',
  '_audit_link_block_description': '<pre><h2>_audit_link_block_description</h2> A textual '
                                   'description of the relationship of the referenced\n'
-                                  ' data block to the current one.</pre>',
+                                  ' data block to the current one.</pre>\n'
+                                  '<br><p><h4>Type:</h4> string</p>',
  '_audit_update_record': '<pre><h2>_audit_update_record</h2> A record of any changes to the data '
                          'block. The update format\n'
                          ' is a date (yyyy-mm-dd) followed by a description of the\n'
@@ -1512,7 +1633,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                          ' this record.\n'
                          '\n'
                          '<h3>Example:</h3>\n'
-                         '1990-07-15   Updated by the Co-editor</pre>',
+                         '1990-07-15   Updated by the Co-editor</pre>\n'
+                         '<br><p><h4>Type:</h4> string</p>',
  '_cell_angle_alpha': '<pre><h2>_cell_angle_alpha</h2> Unit-cell angles of the reported structure '
                       'in degrees.\n'
                       ' The values of _refln_index_h, *_k, *_l must correspond to the\n'
@@ -1520,7 +1642,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                       ' The values of _diffrn_refln_index_h, *_k, *_l may not correspond\n'
                       ' to these values if a cell transformation took place following\n'
                       ' the measurement of the diffraction intensities. See also\n'
-                      ' _diffrn_reflns_transf_matrix_.</pre>',
+                      ' _diffrn_reflns_transf_matrix_.</pre>\n'
+                      '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_angle_beta': '<pre><h2>_cell_angle_beta</h2> Unit-cell angles of the reported structure in '
                      'degrees.\n'
                      ' The values of _refln_index_h, *_k, *_l must correspond to the\n'
@@ -1528,7 +1651,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                      ' The values of _diffrn_refln_index_h, *_k, *_l may not correspond\n'
                      ' to these values if a cell transformation took place following\n'
                      ' the measurement of the diffraction intensities. See also\n'
-                     ' _diffrn_reflns_transf_matrix_.</pre>',
+                     ' _diffrn_reflns_transf_matrix_.</pre>\n'
+                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_angle_gamma': '<pre><h2>_cell_angle_gamma</h2> Unit-cell angles of the reported structure '
                       'in degrees.\n'
                       ' The values of _refln_index_h, *_k, *_l must correspond to the\n'
@@ -1536,11 +1660,13 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                       ' The values of _diffrn_refln_index_h, *_k, *_l may not correspond\n'
                       ' to these values if a cell transformation took place following\n'
                       ' the measurement of the diffraction intensities. See also\n'
-                      ' _diffrn_reflns_transf_matrix_.</pre>',
+                      ' _diffrn_reflns_transf_matrix_.</pre>\n'
+                      '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_formula_units_Z': '<pre><h2>_cell_formula_units_Z</h2> The number of the formula units in '
                           'the unit cell as specified\n'
                           ' by _chemical_formula_structural, _chemical_formula_moiety or\n'
-                          ' _chemical_formula_sum.</pre>',
+                          ' _chemical_formula_sum.</pre>\n'
+                          '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_length_a': '<pre><h2>_cell_length_a</h2> Unit-cell lengths in angstroms corresponding to '
                    'the structure\n'
                    ' reported. The values of _refln_index_h, *_k, *_l must\n'
@@ -1548,7 +1674,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                    ' values. The values of _diffrn_refln_index_h, *_k, *_l may not\n'
                    ' correspond to these values if a cell transformation took place\n'
                    ' following the measurement of the diffraction intensities. See\n'
-                   ' also _diffrn_reflns_transf_matrix_.</pre>',
+                   ' also _diffrn_reflns_transf_matrix_.</pre>\n'
+                   '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_length_b': '<pre><h2>_cell_length_b</h2> Unit-cell lengths in angstroms corresponding to '
                    'the structure\n'
                    ' reported. The values of _refln_index_h, *_k, *_l must\n'
@@ -1556,7 +1683,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                    ' values. The values of _diffrn_refln_index_h, *_k, *_l may not\n'
                    ' correspond to these values if a cell transformation took place\n'
                    ' following the measurement of the diffraction intensities. See\n'
-                   ' also _diffrn_reflns_transf_matrix_.</pre>',
+                   ' also _diffrn_reflns_transf_matrix_.</pre>\n'
+                   '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_length_c': '<pre><h2>_cell_length_c</h2> Unit-cell lengths in angstroms corresponding to '
                    'the structure\n'
                    ' reported. The values of _refln_index_h, *_k, *_l must\n'
@@ -1564,11 +1692,13 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                    ' values. The values of _diffrn_refln_index_h, *_k, *_l may not\n'
                    ' correspond to these values if a cell transformation took place\n'
                    ' following the measurement of the diffraction intensities. See\n'
-                   ' also _diffrn_reflns_transf_matrix_.</pre>',
+                   ' also _diffrn_reflns_transf_matrix_.</pre>\n'
+                   '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_measurement_pressure': '<pre><h2>_cell_measurement_pressure</h2> The pressure in '
                                'kilopascals at which the unit-cell parameters\n'
                                ' were measured (not the pressure at which the sample was\n'
-                               ' synthesized).</pre>',
+                               ' synthesized).</pre>\n'
+                               '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_measurement_radiation': '<pre><h2>_cell_measurement_radiation</h2> Description of the '
                                 'radiation used to measure the unit-cell data.\n'
                                 ' See also  _cell_measurement_wavelength.\n'
@@ -1576,39 +1706,49 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                 '<h3>Example:</h3>\n'
                                 'neutron\n'
                                 'Cu K\\a\n'
-                                'synchrotron</pre>',
+                                'synchrotron</pre>\n'
+                                '<br><p><h4>Type:</h4> string</p>',
  '_cell_measurement_refln_index_h': '<pre><h2>_cell_measurement_refln_index_h</h2> Miller indices '
                                     'of a reflection used for measurement of\n'
-                                    ' the unit cell.</pre>',
+                                    ' the unit cell.</pre>\n'
+                                    '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_measurement_refln_index_k': '<pre><h2>_cell_measurement_refln_index_k</h2> Miller indices '
                                     'of a reflection used for measurement of\n'
-                                    ' the unit cell.</pre>',
+                                    ' the unit cell.</pre>\n'
+                                    '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_measurement_refln_index_l': '<pre><h2>_cell_measurement_refln_index_l</h2> Miller indices '
                                     'of a reflection used for measurement of\n'
-                                    ' the unit cell.</pre>',
+                                    ' the unit cell.</pre>\n'
+                                    '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_measurement_refln_theta': '<pre><h2>_cell_measurement_refln_theta</h2> Theta angle in '
                                   'degrees for the reflection used for\n'
                                   ' measurement of the unit cell with the indices\n'
-                                  ' _cell_measurement_refln_index_.</pre>',
+                                  ' _cell_measurement_refln_index_.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_measurement_reflns_used': '<pre><h2>_cell_measurement_reflns_used</h2> The total number of '
                                   'reflections used to determine the unit cell.\n'
                                   ' These reflections may be specified as '
                                   '_cell_measurement_refln_\n'
-                                  ' data items.</pre>',
+                                  ' data items.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_measurement_temperature': '<pre><h2>_cell_measurement_temperature</h2> The temperature in '
                                   'kelvins at which the unit-cell parameters\n'
-                                  ' were measured (not the temperature of synthesis).</pre>',
+                                  ' were measured (not the temperature of synthesis).</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_measurement_theta_max': '<pre><h2>_cell_measurement_theta_max</h2> The maximum and minimum '
                                 'theta angles of reflections\n'
-                                ' used to measure the unit cell in degrees.</pre>',
+                                ' used to measure the unit cell in degrees.</pre>\n'
+                                '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_measurement_theta_min': '<pre><h2>_cell_measurement_theta_min</h2> The maximum and minimum '
                                 'theta angles of reflections\n'
-                                ' used to measure the unit cell in degrees.</pre>',
+                                ' used to measure the unit cell in degrees.</pre>\n'
+                                '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_measurement_wavelength': '<pre><h2>_cell_measurement_wavelength</h2> The wavelength in '
                                  'angstroms of the radiation used to measure\n'
                                  ' the unit cell. If this is not specified, the wavelength is\n'
                                  ' assumed to be the same as that given in\n'
-                                 ' _diffrn_radiation_wavelength.</pre>',
+                                 ' _diffrn_radiation_wavelength.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_reciprocal_angle_alpha': '<pre><h2>_cell_reciprocal_angle_alpha</h2> The angles defining '
                                  'the reciprocal cell in degrees. These\n'
                                  ' are related to those in the real cell by:\n'
@@ -1626,7 +1766,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                  'cos(gamma)]/[sin(alpha)*sin(beta)]\n'
                                  '\n'
                                  ' Ref: Buerger, M. J. (1942). X-ray Crystallography, p. 360.\n'
-                                 '         New York: John Wiley &amp; Sons Inc.</pre>',
+                                 '         New York: John Wiley &amp; Sons Inc.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_reciprocal_angle_beta': '<pre><h2>_cell_reciprocal_angle_beta</h2> The angles defining the '
                                 'reciprocal cell in degrees. These\n'
                                 ' are related to those in the real cell by:\n'
@@ -1644,7 +1785,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                 'cos(gamma)]/[sin(alpha)*sin(beta)]\n'
                                 '\n'
                                 ' Ref: Buerger, M. J. (1942). X-ray Crystallography, p. 360.\n'
-                                '         New York: John Wiley &amp; Sons Inc.</pre>',
+                                '         New York: John Wiley &amp; Sons Inc.</pre>\n'
+                                '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_reciprocal_angle_gamma': '<pre><h2>_cell_reciprocal_angle_gamma</h2> The angles defining '
                                  'the reciprocal cell in degrees. These\n'
                                  ' are related to those in the real cell by:\n'
@@ -1662,7 +1804,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                  'cos(gamma)]/[sin(alpha)*sin(beta)]\n'
                                  '\n'
                                  ' Ref: Buerger, M. J. (1942). X-ray Crystallography, p. 360.\n'
-                                 '         New York: John Wiley &amp; Sons Inc.</pre>',
+                                 '         New York: John Wiley &amp; Sons Inc.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_reciprocal_length_a': '<pre><h2>_cell_reciprocal_length_a</h2> The reciprocal-cell lengths '
                               'in inverse angstroms.  These are\n'
                               ' related to the real cell by:\n'
@@ -1676,7 +1819,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                               ' where V is the cell volume.\n'
                               '\n'
                               ' Ref: Buerger, M. J. (1942). X-ray Crystallography, p. 360.\n'
-                              '         New York: John Wiley &amp; Sons Inc.</pre>',
+                              '         New York: John Wiley &amp; Sons Inc.</pre>\n'
+                              '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_reciprocal_length_b': '<pre><h2>_cell_reciprocal_length_b</h2> The reciprocal-cell lengths '
                               'in inverse angstroms.  These are\n'
                               ' related to the real cell by:\n'
@@ -1690,7 +1834,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                               ' where V is the cell volume.\n'
                               '\n'
                               ' Ref: Buerger, M. J. (1942). X-ray Crystallography, p. 360.\n'
-                              '         New York: John Wiley &amp; Sons Inc.</pre>',
+                              '         New York: John Wiley &amp; Sons Inc.</pre>\n'
+                              '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_reciprocal_length_c': '<pre><h2>_cell_reciprocal_length_c</h2> The reciprocal-cell lengths '
                               'in inverse angstroms.  These are\n'
                               ' related to the real cell by:\n'
@@ -1704,14 +1849,16 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                               ' where V is the cell volume.\n'
                               '\n'
                               ' Ref: Buerger, M. J. (1942). X-ray Crystallography, p. 360.\n'
-                              '         New York: John Wiley &amp; Sons Inc.</pre>',
+                              '         New York: John Wiley &amp; Sons Inc.</pre>\n'
+                              '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_special_details': '<pre><h2>_cell_special_details</h2> A description of special aspects of '
                           'the cell choice, noting\n'
                           ' possible alternative settings.\n'
                           '\n'
                           '<h3>Example:</h3>\n'
                           'pseudo-orthorhombic\n'
-                          'standard setting from 45 deg rotation around c</pre>',
+                          'standard setting from 45 deg rotation around c</pre>\n'
+                          '<br><p><h4>Type:</h4> string</p>',
  '_cell_volume': '<pre><h2>_cell_volume</h2> Cell volume V in angstroms cubed.\n'
                  '\n'
                  ' V = a b c [1 - cos^2^(alpha) - cos^2^(beta) - cos^2^(gamma)\n'
@@ -1722,7 +1869,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                  ' c     = _cell_length_c\n'
                  ' alpha = _cell_angle_alpha\n'
                  ' beta  = _cell_angle_beta\n'
-                 ' gamma = _cell_angle_gamma</pre>',
+                 ' gamma = _cell_angle_gamma</pre>\n'
+                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_chemical_absolute_configuration': '<pre><h2>_chemical_absolute_configuration</h2> Necessary '
                                      'conditions for the assignment of\n'
                                      ' _chemical_absolute_configuration are given by H. D. Flack '
@@ -1781,7 +1929,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                      '\n'
                                      'None\n'
                                      '\tInapplicable.\n'
-                                     '</pre>',
+                                     '</pre>\n'
+                                     '<br><p><h4>Type:</h4> string</p>',
  '_chemical_compound_source': '<pre><h2>_chemical_compound_source</h2> Description of the source '
                               'of the compound under study, or of the\n'
                               ' parent  molecule if a simple derivative is studied. This includes\n'
@@ -1790,22 +1939,26 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                               '\n'
                               '<h3>Example:</h3>\n'
                               'From Norilsk (USSR)\n'
-                              'Extracted from the bark of Cinchona Naturalis</pre>',
+                              'Extracted from the bark of Cinchona Naturalis</pre>\n'
+                              '<br><p><h4>Type:</h4> string</p>',
  '_chemical_conn_atom_NCA': '<pre><h2>_chemical_conn_atom_NCA</h2> The number of connected atoms '
-                            'excluding terminal hydrogen atoms.</pre>',
+                            'excluding terminal hydrogen atoms.</pre>\n'
+                            '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_chemical_conn_atom_NH': '<pre><h2>_chemical_conn_atom_NH</h2> The total number of hydrogen '
                            'atoms attached to this atom,\n'
                            ' regardless of whether they are included in the refinement or\n'
                            ' the _atom_site_ list. This number will be the same as\n'
                            ' _atom_site_attached_hydrogens only if none of the hydrogen\n'
-                           ' atoms appear in the _atom_site_ list.</pre>',
+                           ' atoms appear in the _atom_site_ list.</pre>\n'
+                           '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_chemical_conn_atom_charge': '<pre><h2>_chemical_conn_atom_charge</h2>  The net integer charge '
                                'assigned to this atom. This is the\n'
                                ' formal charge assignment normally found in chemical diagrams.\n'
                                '\n'
                                '<h3>Example:</h3>\n'
                                '1\n'
-                               '-1</pre>',
+                               '-1</pre>\n'
+                               '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_chemical_conn_atom_display_x': '<pre><h2>_chemical_conn_atom_display_x</h2> The 2D Cartesian '
                                   'coordinates (x,y) of the position of this atom\n'
                                   ' in a recognizable chemical diagram. The coordinate origin is '
@@ -1815,7 +1968,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                   ' vertical. The coordinates must lie in the range 0.0 to 1.0. '
                                   'These\n'
                                   ' coordinates can be obtained from projections of a suitable\n'
-                                  ' uncluttered view of the molecular structure.</pre>',
+                                  ' uncluttered view of the molecular structure.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_chemical_conn_atom_display_y': '<pre><h2>_chemical_conn_atom_display_y</h2> The 2D Cartesian '
                                   'coordinates (x,y) of the position of this atom\n'
                                   ' in a recognizable chemical diagram. The coordinate origin is '
@@ -1825,21 +1979,26 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                   ' vertical. The coordinates must lie in the range 0.0 to 1.0. '
                                   'These\n'
                                   ' coordinates can be obtained from projections of a suitable\n'
-                                  ' uncluttered view of the molecular structure.</pre>',
+                                  ' uncluttered view of the molecular structure.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_chemical_conn_atom_number': '<pre><h2>_chemical_conn_atom_number</h2> The chemical sequence '
-                               'number to be associated with this atom.</pre>',
+                               'number to be associated with this atom.</pre>\n'
+                               '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_chemical_conn_atom_type_symbol': '<pre><h2>_chemical_conn_atom_type_symbol</h2> A code '
                                     'identifying the atom type. This code must match an\n'
                                     ' _atom_type_symbol code in the _atom_type_ list or be a\n'
-                                    ' recognizable element symbol.</pre>',
+                                    ' recognizable element symbol.</pre>\n'
+                                    '<br><p><h4>Type:</h4> string</p>',
  '_chemical_conn_bond_atom_1': '<pre><h2>_chemical_conn_bond_atom_1</h2> Atom numbers which must '
                                'match with chemical sequence numbers\n'
                                ' specified as _chemical_conn_atom_number values. These link the\n'
-                               ' bond connection to the chemical numbering and atom sites.</pre>',
+                               ' bond connection to the chemical numbering and atom sites.</pre>\n'
+                               '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_chemical_conn_bond_atom_2': '<pre><h2>_chemical_conn_bond_atom_2</h2> Atom numbers which must '
                                'match with chemical sequence numbers\n'
                                ' specified as _chemical_conn_atom_number values. These link the\n'
-                               ' bond connection to the chemical numbering and atom sites.</pre>',
+                               ' bond connection to the chemical numbering and atom sites.</pre>\n'
+                               '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_chemical_conn_bond_type': '<pre><h2>_chemical_conn_bond_type</h2> The chemical bond type '
                              'associated with the connection between\n'
                              ' the two sites _chemical_conn_bond_atom_1 and *_2.\n'
@@ -1868,7 +2027,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                              '\n'
                              'pi\n'
                              '\tpi bond\n'
-                             '</pre>',
+                             '</pre>\n'
+                             '<br><p><h4>Type:</h4> string</p>',
  '_chemical_enantioexcess_bulk': '<pre><h2>_chemical_enantioexcess_bulk</h2> The enantioexcess of '
                                  'the bulk material from which the \n'
                                  ' crystals were grown. A value of 0.0 indicates the\n'
@@ -1881,7 +2041,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                  '\n'
                                  ' Ref: Moss G. P. et al. (1996). Basic Terminology of\n'
                                  '      Stereochemistry. Pure Appl. Chem., 68, 2193-2222.\n'
-                                 '      http://www.chem.qmul.ac.uk/iupac/stereo/index.html </pre>',
+                                 '      http://www.chem.qmul.ac.uk/iupac/stereo/index.html </pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_chemical_enantioexcess_bulk_technique': '<pre><h2>_chemical_enantioexcess_bulk_technique</h2> '
                                            'The experimental technique used to determine the\n'
                                            ' enantioexcess of the bulk compound.\n'
@@ -1908,7 +2069,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                            '          Enantioexcess determined by \n'
                                            '          a technique not included elsewhere\n'
                                            '          in this list.\n'
-                                           '</pre>',
+                                           '</pre>\n'
+                                           '<br><p><h4>Type:</h4> string</p>',
  '_chemical_enantioexcess_crystal': '<pre><h2>_chemical_enantioexcess_crystal</h2> The '
                                     'enantioexcess of the crystal used for the diffraction\n'
                                     ' study. A value of 0.0 indicates the racemate. A value of\n'
@@ -1920,7 +2082,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                     ' Ref: Moss G. P. et al. (1996). Basic Terminology of\n'
                                     '      Stereochemistry. Pure Appl. Chem., 68, 2193-2222.\n'
                                     '      http://www.chem.qmul.ac.uk/iupac/stereo/index.html '
-                                    '</pre>',
+                                    '</pre>\n'
+                                    '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_chemical_enantioexcess_crystal_technique': '<pre><h2>_chemical_enantioexcess_crystal_technique</h2> '
                                               'The experimental technique used to determine the\n'
                                               ' enantioexcess of the crystal.\n'
@@ -1941,7 +2104,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                               '          Enantioexcess determined by \n'
                                               '          a technique not included elsewhere\n'
                                               '          in this list.\n'
-                                              '</pre>',
+                                              '</pre>\n'
+                                              '<br><p><h4>Type:</h4> string</p>',
  '_chemical_formula_analytical': '<pre><h2>_chemical_formula_analytical</h2> Formula determined by '
                                  'standard chemical analysis including trace\n'
                                  ' elements. See the _chemical_formula_[] category description '
@@ -1951,7 +2115,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                  " for standard uncertainties (e.s.d.'s).\n"
                                  '\n'
                                  '<h3>Example:</h3>\n'
-                                 'Fe2.45(2)  Ni1.60(3)  S4</pre>',
+                                 'Fe2.45(2)  Ni1.60(3)  S4</pre>\n'
+                                 '<br><p><h4>Type:</h4> string</p>',
  '_chemical_formula_iupac': '<pre><h2>_chemical_formula_iupac</h2> Formula expressed in '
                             'conformance with IUPAC rules for inorganic\n'
                             ' and metal-organic compounds where these conflict with the rules\n'
@@ -1964,7 +2129,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                             '      Oxford: Blackwell Scientific Publications.\n'
                             '\n'
                             '<h3>Example:</h3>\n'
-                            '[Co Re (C12 H22 P)2 (C O)6].0.5C H3 O H</pre>',
+                            '[Co Re (C12 H22 P)2 (C O)6].0.5C H3 O H</pre>\n'
+                            '<br><p><h4>Type:</h4> string</p>',
  '_chemical_formula_moiety': '<pre><h2>_chemical_formula_moiety</h2> Formula with each discrete '
                              'bonded residue or ion shown as a\n'
                              ' separate moiety. See the _chemical_formula_[] category \n'
@@ -1985,7 +2151,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                              'C7 H4 Cl Hg N O3 S\n'
                              'C12 H17 N4 O S 1+, C6 H2 N3 O7 1-\n'
                              'C12 H16 N2 O6, 5(H2 O1)\n'
-                             '(Cd 2+)3, (C6 N6 Cr 3-)2, 2(H2 O)</pre>',
+                             '(Cd 2+)3, (C6 N6 Cr 3-)2, 2(H2 O)</pre>\n'
+                             '<br><p><h4>Type:</h4> string</p>',
  '_chemical_formula_structural': '<pre><h2>_chemical_formula_structural</h2> See the '
                                  '_chemical_formula_[] category description for the rules \n'
                                  ' for writing chemical formulae for inorganics, '
@@ -2002,7 +2169,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                  '\n'
                                  '<h3>Example:</h3>\n'
                                  'Ca ((Cl O3)2 O)2 (H2 O)6\n'
-                                 '(Pt (N H3)2 (C5 H7 N3 O)2) (Cl O4)2</pre>',
+                                 '(Pt (N H3)2 (C5 H7 N3 O)2) (Cl O4)2</pre>\n'
+                                 '<br><p><h4>Type:</h4> string</p>',
  '_chemical_formula_sum': '<pre><h2>_chemical_formula_sum</h2> See the _chemical_formula_[] '
                           'category description for the rules \n'
                           ' for writing chemical formulae in which all discrete bonded \n'
@@ -2012,15 +2180,18 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                           ' normally used.\n'
                           '\n'
                           '<h3>Example:</h3>\n'
-                          'C18 H19 N7 O8 S</pre>',
+                          'C18 H19 N7 O8 S</pre>\n'
+                          '<br><p><h4>Type:</h4> string</p>',
  '_chemical_formula_weight': '<pre><h2>_chemical_formula_weight</h2> Formula mass in daltons. This '
                              'mass should correspond to the\n'
                              ' formulae given under _chemical_formula_structural, *_iupac,\n'
                              ' *_moiety or *_sum and, together with the Z value and cell\n'
                              ' parameters, should yield the density given as\n'
-                             ' _exptl_crystal_density_diffrn.</pre>',
+                             ' _exptl_crystal_density_diffrn.</pre>\n'
+                             '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_chemical_formula_weight_meas': '<pre><h2>_chemical_formula_weight_meas</h2> Formula mass in '
-                                  'daltons measured by a non-diffraction experiment.</pre>',
+                                  'daltons measured by a non-diffraction experiment.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_chemical_identifier_inchi': '<pre><h2>_chemical_identifier_inchi</h2> The IUPAC International '
                                'Chemical Identifier (InChI) is\n'
                                ' a textual identifier  for chemical substances, designed \n'
@@ -2033,7 +2204,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                '      http://www.iupac.org/inchi/\n'
                                '\n'
                                '<h3>Example:</h3>\n'
-                               'InChI=1/C10H8/c1-2-6-10-8-4-3-7-9(10)5-1/h1-8H</pre>',
+                               'InChI=1/C10H8/c1-2-6-10-8-4-3-7-9(10)5-1/h1-8H</pre>\n'
+                               '<br><p><h4>Type:</h4> string</p>',
  '_chemical_identifier_inchi_key': '<pre><h2>_chemical_identifier_inchi_key</h2> The InChIKey is a '
                                    'compact hashed version of the full InChI\n'
                                    ' (IUPAC International Chemical Identifier), designed to allow\n'
@@ -2041,16 +2213,19 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                    ' http://www.iupac.org/inchi/\n'
                                    '\n'
                                    '<h3>Example:</h3>\n'
-                                   'InChIKey=OROGSEYTTFOCAN-DNJOTXNNBG</pre>',
+                                   'InChIKey=OROGSEYTTFOCAN-DNJOTXNNBG</pre>\n'
+                                   '<br><p><h4>Type:</h4> string</p>',
  '_chemical_identifier_inchi_version': '<pre><h2>_chemical_identifier_inchi_version</h2> The '
                                        'version number of the InChI standard to which the\n'
                                        ' associated chemical identifier string applies.\n'
                                        '\n'
                                        '<h3>Example:</h3>\n'
-                                       '1.03</pre>',
+                                       '1.03</pre>\n'
+                                       '<br><p><h4>Type:</h4> string</p>',
  '_chemical_melting_point': '<pre><h2>_chemical_melting_point</h2> The temperature in kelvins at '
                             'which the crystalline solid changes\n'
-                            ' to a liquid.</pre>',
+                            ' to a liquid.</pre>\n'
+                            '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_chemical_melting_point_gt': '<pre><h2>_chemical_melting_point_gt</h2> A temperature in kelvins '
                                'below which (*_lt) or above\n'
                                ' which (*_gt) the melting point (the temperature at which the\n'
@@ -2058,7 +2233,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                ' range of temperatures to be given.\n'
                                '\n'
                                ' _chemical_melting_point should always be used in preference\n'
-                               ' to these items whenever possible.</pre>',
+                               ' to these items whenever possible.</pre>\n'
+                               '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_chemical_melting_point_lt': '<pre><h2>_chemical_melting_point_lt</h2> A temperature in kelvins '
                                'below which (*_lt) or above\n'
                                ' which (*_gt) the melting point (the temperature at which the\n'
@@ -2066,19 +2242,22 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                ' range of temperatures to be given.\n'
                                '\n'
                                ' _chemical_melting_point should always be used in preference\n'
-                               ' to these items whenever possible.</pre>',
+                               ' to these items whenever possible.</pre>\n'
+                               '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_chemical_name_common': '<pre><h2>_chemical_name_common</h2> Trivial name by which the compound '
                           'is commonly known.\n'
                           '\n'
                           '<h3>Example:</h3>\n'
-                          '1-bromoestradiol</pre>',
+                          '1-bromoestradiol</pre>\n'
+                          '<br><p><h4>Type:</h4> string</p>',
  '_chemical_name_mineral': '<pre><h2>_chemical_name_mineral</h2> Mineral name accepted by the '
                            'International Mineralogical\n'
                            ' Association. Use only for natural minerals. See also\n'
                            ' _chemical_compound_source.\n'
                            '\n'
                            '<h3>Example:</h3>\n'
-                           'chalcopyrite</pre>',
+                           'chalcopyrite</pre>\n'
+                           '<br><p><h4>Type:</h4> string</p>',
  '_chemical_name_structure_type': '<pre><h2>_chemical_name_structure_type</h2> Commonly used '
                                   'structure-type name. Usually only applied to\n'
                                   ' minerals or inorganic compounds.\n'
@@ -2086,12 +2265,14 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                   '<h3>Example:</h3>\n'
                                   'perovskite\n'
                                   'sphalerite\n'
-                                  'A15</pre>',
+                                  'A15</pre>\n'
+                                  '<br><p><h4>Type:</h4> string</p>',
  '_chemical_name_systematic': '<pre><h2>_chemical_name_systematic</h2> IUPAC or Chemical Abstracts '
                               'full name of the compound.\n'
                               '\n'
                               '<h3>Example:</h3>\n'
-                              '1-bromoestra-1,3,5(10)-triene-3,17\\b-diol</pre>',
+                              '1-bromoestra-1,3,5(10)-triene-3,17\\b-diol</pre>\n'
+                              '<br><p><h4>Type:</h4> string</p>',
  '_chemical_optical_rotation': '<pre><h2>_chemical_optical_rotation</h2> The optical rotation in '
                                'solution of the compound is\n'
                                ' specified in the following format:\n'
@@ -2110,7 +2291,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                '   SOLV is the chemical formula of the solvent.\n'
                                '\n'
                                '<h3>Example:</h3>\n'
-                               '[\\a]^25^~D~ = +108 (c = 3.42, CHCl~3~)</pre>',
+                               '[\\a]^25^~D~ = +108 (c = 3.42, CHCl~3~)</pre>\n'
+                               '<br><p><h4>Type:</h4> string</p>',
  '_chemical_properties_biological': '<pre><h2>_chemical_properties_biological</h2> A free-text '
                                     'description of the biological properties of the\n'
                                     ' material.\n'
@@ -2128,7 +2310,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                     'weakly potent lipoxygenase nonredox inhibitor\n'
                                     'no influenza A virus sialidase inhibitory and\n'
                                     ' plaque reduction activities\n'
-                                    'low toxicity against Drosophila melanogaster</pre>',
+                                    'low toxicity against Drosophila melanogaster</pre>\n'
+                                    '<br><p><h4>Type:</h4> string</p>',
  '_chemical_properties_physical': '<pre><h2>_chemical_properties_physical</h2> A free-text '
                                   'description of the physical properties of the\n'
                                   ' material.\n'
@@ -2143,12 +2326,14 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                   'pyrophoric\n'
                                   'semiconductor\n'
                                   'ferromagnetic at low temperature\n'
-                                  'paramagnetic and thermochromic</pre>',
+                                  'paramagnetic and thermochromic</pre>\n'
+                                  '<br><p><h4>Type:</h4> string</p>',
  '_chemical_temperature_decomposition': '<pre><h2>_chemical_temperature_decomposition</h2> The '
                                         'temperature in kelvins at which the solid decomposes.\n'
                                         '\n'
                                         '<h3>Example:</h3>\n'
-                                        '350</pre>',
+                                        '350</pre>\n'
+                                        '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_chemical_temperature_decomposition_gt': '<pre><h2>_chemical_temperature_decomposition_gt</h2> A '
                                            'temperature in kelvins below which (*_lt) or above '
                                            'which\n'
@@ -2161,7 +2346,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                            ' preference to these items whenever possible.\n'
                                            '\n'
                                            '<h3>Example:</h3>\n'
-                                           '350</pre>',
+                                           '350</pre>\n'
+                                           '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_chemical_temperature_decomposition_lt': '<pre><h2>_chemical_temperature_decomposition_lt</h2> A '
                                            'temperature in kelvins below which (*_lt) or above '
                                            'which\n'
@@ -2174,12 +2360,14 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                            ' preference to these items whenever possible.\n'
                                            '\n'
                                            '<h3>Example:</h3>\n'
-                                           '350</pre>',
+                                           '350</pre>\n'
+                                           '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_chemical_temperature_sublimation': '<pre><h2>_chemical_temperature_sublimation</h2> The '
                                       'temperature in kelvins at which the solid sublimes.\n'
                                       '\n'
                                       '<h3>Example:</h3>\n'
-                                      '350</pre>',
+                                      '350</pre>\n'
+                                      '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_chemical_temperature_sublimation_gt': '<pre><h2>_chemical_temperature_sublimation_gt</h2>A '
                                          'temperature in kelvins below which (*_lt) or above '
                                          'which\n'
@@ -2192,7 +2380,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                          'preference to these items whenever possible.\n'
                                          '\n'
                                          '<h3>Example:</h3>\n'
-                                         '350</pre>',
+                                         '350</pre>\n'
+                                         '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_chemical_temperature_sublimation_lt': '<pre><h2>_chemical_temperature_sublimation_lt</h2>A '
                                          'temperature in kelvins below which (*_lt) or above '
                                          'which\n'
@@ -2205,18 +2394,22 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                          'preference to these items whenever possible.\n'
                                          '\n'
                                          '<h3>Example:</h3>\n'
-                                         '350</pre>',
+                                         '350</pre>\n'
+                                         '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_citation_abstract': '<pre><h2>_citation_abstract</h2> Abstract for the citation. This is used '
                        'most when the\n'
                        ' citation is extracted from a bibliographic database that\n'
-                       ' contains full text or abstract information.</pre>',
+                       ' contains full text or abstract information.</pre>\n'
+                       '<br><p><h4>Type:</h4> string</p>',
  '_citation_abstract_id_CAS': '<pre><h2>_citation_abstract_id_CAS</h2> The Chemical Abstracts '
                               'Service (CAS) abstract identifier;\n'
-                              ' relevant for journal articles.</pre>',
+                              ' relevant for journal articles.</pre>\n'
+                              '<br><p><h4>Type:</h4> string</p>',
  '_citation_author_citation_id': '<pre><h2>_citation_author_citation_id</h2> The value of '
                                  '_citation_author_citation_id must match an\n'
                                  ' identifier specified by _citation_id in the _citation_ '
-                                 'list.</pre>',
+                                 'list.</pre>\n'
+                                 '<br><p><h4>Type:</h4> string</p>',
  '_citation_author_name': '<pre><h2>_citation_author_name</h2> Name of an author of the citation; '
                           'relevant for journal\n'
                           ' articles, books and book chapters.\n'
@@ -2231,28 +2424,34 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                           'Yang, D.-L.\n'
                           'Simonov, Yu.A.\n'
                           'M\\"uller, H.A.\n'
-                          'Ross II, C.R.</pre>',
+                          'Ross II, C.R.</pre>\n'
+                          '<br><p><h4>Type:</h4> string</p>',
  '_citation_author_ordinal': '<pre><h2>_citation_author_ordinal</h2> This data name defines the '
                              "order of the author's name in the\n"
-                             ' list of authors of a citation.</pre>',
+                             ' list of authors of a citation.</pre>\n'
+                             '<br><p><h4>Type:</h4> string</p>',
  '_citation_book_id_ISBN': '<pre><h2>_citation_book_id_ISBN</h2> The International Standard Book '
                            'Number (ISBN) code assigned to\n'
-                           ' the book cited;  relevant for books or book chapters.</pre>',
+                           ' the book cited;  relevant for books or book chapters.</pre>\n'
+                           '<br><p><h4>Type:</h4> string</p>',
  '_citation_book_publisher': '<pre><h2>_citation_book_publisher</h2> The name of the publisher of '
                              'the citation; relevant\n'
                              ' for books or book chapters.\n'
                              '\n'
                              '<h3>Example:</h3>\n'
-                             'John Wiley</pre>',
+                             'John Wiley</pre>\n'
+                             '<br><p><h4>Type:</h4> string</p>',
  '_citation_book_publisher_city': '<pre><h2>_citation_book_publisher_city</h2> The location of the '
                                   'publisher of the citation; relevant\n'
                                   ' for books or book chapters.\n'
                                   '\n'
                                   '<h3>Example:</h3>\n'
-                                  'New York</pre>',
+                                  'New York</pre>\n'
+                                  '<br><p><h4>Type:</h4> string</p>',
  '_citation_book_title': '<pre><h2>_citation_book_title</h2> The title of the book in which the '
                          'citation appeared;  relevant\n'
-                         ' for books or book chapters.</pre>',
+                         ' for books or book chapters.</pre>\n'
+                         '<br><p><h4>Type:</h4> string</p>',
  '_citation_coordinate_linkage': '<pre><h2>_citation_coordinate_linkage</h2> '
                                  '_citation_coordinate_linkage states whether or not this '
                                  'citation\n'
@@ -2278,23 +2477,27 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                  '\n'
                                  'y\n'
                                  '\tabbreviation for "yes"\n'
-                                 '</pre>',
+                                 '</pre>\n'
+                                 '<br><p><h4>Type:</h4> string</p>',
  '_citation_country': '<pre><h2>_citation_country</h2> The country of publication;  relevant for '
                       'books and book\n'
-                      ' chapters.</pre>',
+                      ' chapters.</pre>\n'
+                      '<br><p><h4>Type:</h4> string</p>',
  '_citation_database_id_CSD': '<pre><h2>_citation_database_id_CSD</h2>           Identifier '
                               "('refcode') of the database record in the Cambridge\n"
                               '            Structural Database that contains details of the cited '
                               'structure.\n'
                               '\n'
                               '<h3>Example:</h3>\n'
-                              'LEKKUH</pre>',
+                              'LEKKUH</pre>\n'
+                              '<br><p><h4>Type:</h4> string</p>',
  '_citation_database_id_Medline': '<pre><h2>_citation_database_id_Medline</h2> Accession number '
                                   'used by Medline to categorize a specific\n'
                                   ' bibliographic entry.\n'
                                   '\n'
                                   '<h3>Example:</h3>\n'
-                                  '89064067</pre>',
+                                  '89064067</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_citation_doi': '<pre><h2>_citation_doi</h2> The Digital Object Identifier (DOI) of the cited '
                   'work.\n'
                   '\n'
@@ -2309,11 +2512,13 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                   ' http://www.doi.org).\n'
                   '\n'
                   '<h3>Example:</h3>\n'
-                  '10.5517/CC6V9DQ</pre>',
+                  '10.5517/CC6V9DQ</pre>\n'
+                  '<br><p><h4>Type:</h4> string</p>',
  '_citation_editor_citation_id': '<pre><h2>_citation_editor_citation_id</h2> The value of '
                                  '_citation_editor_citation_id must match an\n'
                                  ' identifier specified by _citation_id in the _citation_ '
-                                 'list.</pre>',
+                                 'list.</pre>\n'
+                                 '<br><p><h4>Type:</h4> string</p>',
  '_citation_editor_name': '<pre><h2>_citation_editor_name</h2> Name of an editor of the citation;  '
                           'relevant for books and\n'
                           ' book chapters.\n'
@@ -2328,10 +2533,12 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                           'Yang, D.-L.\n'
                           'Simonov, Yu.A.\n'
                           'M\\"uller, H.A.\n'
-                          'Ross II, C.R.</pre>',
+                          'Ross II, C.R.</pre>\n'
+                          '<br><p><h4>Type:</h4> string</p>',
  '_citation_editor_ordinal': '<pre><h2>_citation_editor_ordinal</h2> This data name defines the '
                              "order of the editor's name in the\n"
-                             ' list of editors of a citation.</pre>',
+                             ' list of editors of a citation.</pre>\n'
+                             '<br><p><h4>Type:</h4> string</p>',
  '_citation_id': '<pre><h2>_citation_id</h2> The value of _citation_id must uniquely identify a '
                  'record in the\n'
                  ' _citation_ list.\n'
@@ -2347,56 +2554,67 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                  'primary\n'
                  '1\n'
                  '2\n'
-                 '3</pre>',
+                 '3</pre>\n'
+                 '<br><p><h4>Type:</h4> string</p>',
  '_citation_journal_abbrev': '<pre><h2>_citation_journal_abbrev</h2> Abbreviated name of the '
                              'journal cited as given in the Chemical\n'
                              ' Abstracts Service Source Index.\n'
                              '\n'
                              '<h3>Example:</h3>\n'
-                             'J. Mol. Biol.</pre>',
+                             'J. Mol. Biol.</pre>\n'
+                             '<br><p><h4>Type:</h4> string</p>',
  '_citation_journal_full': '<pre><h2>_citation_journal_full</h2> Full name of the journal cited; '
                            'relevant for journal articles.\n'
                            '\n'
                            '<h3>Example:</h3>\n'
-                           'Journal of Molecular Biology</pre>',
+                           'Journal of Molecular Biology</pre>\n'
+                           '<br><p><h4>Type:</h4> string</p>',
  '_citation_journal_id_ASTM': '<pre><h2>_citation_journal_id_ASTM</h2> The American Society for '
                               'Testing and Materials (ASTM) code\n'
                               ' assigned to the journal cited (also referred to as the CODEN\n'
                               ' designator of the Chemical Abstracts Service); relevant for\n'
-                              ' journal articles.</pre>',
+                              ' journal articles.</pre>\n'
+                              '<br><p><h4>Type:</h4> string</p>',
  '_citation_journal_id_CSD': '<pre><h2>_citation_journal_id_CSD</h2> The Cambridge Structural '
                              'Database (CSD) code assigned to the\n'
                              ' journal cited; relevant for journal articles. This is also the\n'
                              ' system used at the Protein Data Bank (PDB).\n'
                              '\n'
                              '<h3>Example:</h3>\n'
-                             '0070</pre>',
+                             '0070</pre>\n'
+                             '<br><p><h4>Type:</h4> string</p>',
  '_citation_journal_id_ISSN': '<pre><h2>_citation_journal_id_ISSN</h2> The International Standard '
                               'Serial Number (ISSN) code assigned to\n'
-                              ' the journal cited;  relevant for journal articles.</pre>',
+                              ' the journal cited;  relevant for journal articles.</pre>\n'
+                              '<br><p><h4>Type:</h4> string</p>',
  '_citation_journal_issue': '<pre><h2>_citation_journal_issue</h2> Issue number of the journal '
                             'cited;  relevant for journal\n'
                             ' articles.\n'
                             '\n'
                             '<h3>Example:</h3>\n'
-                            '2</pre>',
+                            '2</pre>\n'
+                            '<br><p><h4>Type:</h4> string</p>',
  '_citation_journal_volume': '<pre><h2>_citation_journal_volume</h2> Volume number of the journal '
                              'cited;  relevant for journal\n'
                              ' articles.\n'
                              '\n'
                              '<h3>Example:</h3>\n'
-                             '174</pre>',
+                             '174</pre>\n'
+                             '<br><p><h4>Type:</h4> string</p>',
  '_citation_language': '<pre><h2>_citation_language</h2> Language in which the cited article is '
                        'written.\n'
                        '\n'
                        '<h3>Example:</h3>\n'
-                       'German</pre>',
+                       'German</pre>\n'
+                       '<br><p><h4>Type:</h4> string</p>',
  '_citation_page_first': '<pre><h2>_citation_page_first</h2> The first and last pages of the '
                          'citation;  relevant for\n'
-                         ' journal articles, books and book chapters.</pre>',
+                         ' journal articles, books and book chapters.</pre>\n'
+                         '<br><p><h4>Type:</h4> string</p>',
  '_citation_page_last': '<pre><h2>_citation_page_last</h2> The first and last pages of the '
                         'citation;  relevant for\n'
-                        ' journal articles, books and book chapters.</pre>',
+                        ' journal articles, books and book chapters.</pre>\n'
+                        '<br><p><h4>Type:</h4> string</p>',
  '_citation_publisher': '<pre><h2>_citation_publisher</h2> The name of the publisher of the cited '
                         'work. This\n'
                         ' should be used for citations of journal articles or\n'
@@ -2405,7 +2623,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                         ' _citation_book_publisher.\n'
                         '\n'
                         '<h3>Example:</h3>\n'
-                        'Cambridge Crystallographic Data Centre</pre>',
+                        'Cambridge Crystallographic Data Centre</pre>\n'
+                        '<br><p><h4>Type:</h4> string</p>',
  '_citation_special_details': '<pre><h2>_citation_special_details</h2> A description of special '
                               'aspects of the relationship\n'
                               ' of the contents of the data block to the literature item cited.\n'
@@ -2414,20 +2633,23 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                               '          citation relates to this precise coordinate set\n'
                               '         citation relates to earlier low-resolution structure\n'
                               '         citation relates to further refinement of structure\n'
-                              '          reported in citation 2</pre>',
+                              '          reported in citation 2</pre>\n'
+                              '<br><p><h4>Type:</h4> string</p>',
  '_citation_title': '<pre><h2>_citation_title</h2> The title of the citation;  relevant for '
                     'journal articles, books\n'
                     ' and book chapters.\n'
                     '\n'
                     '<h3>Example:</h3>\n'
                     '          Structure of diferric duck ovotransferrin at 2.35 \\%A\n'
-                    '          resolution.</pre>',
+                    '          resolution.</pre>\n'
+                    '<br><p><h4>Type:</h4> string</p>',
  '_citation_year': '<pre><h2>_citation_year</h2> The year of the citation;  relevant for journal '
                    'articles, books\n'
                    ' and book chapters.\n'
                    '\n'
                    '<h3>Example:</h3>\n'
-                   '1984</pre>',
+                   '1984</pre>\n'
+                   '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_computing_cell_refinement': '<pre><h2>_computing_cell_refinement</h2> Software used in the '
                                'processing of the data. Give the program\n'
                                ' or package name and a brief reference.\n'
@@ -2437,7 +2659,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                'DIFDAT, SORTRF, ADDREF (Hall &amp; Stewart, 1990)\n'
                                'FRODO (Jones, 1986), ORTEP (Johnson, 1965)\n'
                                'CRYSTALS (Watkin, 1988)\n'
-                               'SHELX85 (Sheldrick, 1985)</pre>',
+                               'SHELX85 (Sheldrick, 1985)</pre>\n'
+                               '<br><p><h4>Type:</h4> string</p>',
  '_computing_data_collection': '<pre><h2>_computing_data_collection</h2> Software used in the '
                                'processing of the data. Give the program\n'
                                ' or package name and a brief reference.\n'
@@ -2447,7 +2670,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                'DIFDAT, SORTRF, ADDREF (Hall &amp; Stewart, 1990)\n'
                                'FRODO (Jones, 1986), ORTEP (Johnson, 1965)\n'
                                'CRYSTALS (Watkin, 1988)\n'
-                               'SHELX85 (Sheldrick, 1985)</pre>',
+                               'SHELX85 (Sheldrick, 1985)</pre>\n'
+                               '<br><p><h4>Type:</h4> string</p>',
  '_computing_data_reduction': '<pre><h2>_computing_data_reduction</h2> Software used in the '
                               'processing of the data. Give the program\n'
                               ' or package name and a brief reference.\n'
@@ -2457,7 +2681,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                               'DIFDAT, SORTRF, ADDREF (Hall &amp; Stewart, 1990)\n'
                               'FRODO (Jones, 1986), ORTEP (Johnson, 1965)\n'
                               'CRYSTALS (Watkin, 1988)\n'
-                              'SHELX85 (Sheldrick, 1985)</pre>',
+                              'SHELX85 (Sheldrick, 1985)</pre>\n'
+                              '<br><p><h4>Type:</h4> string</p>',
  '_computing_molecular_graphics': '<pre><h2>_computing_molecular_graphics</h2> Software used in '
                                   'the processing of the data. Give the program\n'
                                   ' or package name and a brief reference.\n'
@@ -2467,7 +2692,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                   'DIFDAT, SORTRF, ADDREF (Hall &amp; Stewart, 1990)\n'
                                   'FRODO (Jones, 1986), ORTEP (Johnson, 1965)\n'
                                   'CRYSTALS (Watkin, 1988)\n'
-                                  'SHELX85 (Sheldrick, 1985)</pre>',
+                                  'SHELX85 (Sheldrick, 1985)</pre>\n'
+                                  '<br><p><h4>Type:</h4> string</p>',
  '_computing_publication_material': '<pre><h2>_computing_publication_material</h2> Software used '
                                     'in the processing of the data. Give the program\n'
                                     ' or package name and a brief reference.\n'
@@ -2477,7 +2703,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                     'DIFDAT, SORTRF, ADDREF (Hall &amp; Stewart, 1990)\n'
                                     'FRODO (Jones, 1986), ORTEP (Johnson, 1965)\n'
                                     'CRYSTALS (Watkin, 1988)\n'
-                                    'SHELX85 (Sheldrick, 1985)</pre>',
+                                    'SHELX85 (Sheldrick, 1985)</pre>\n'
+                                    '<br><p><h4>Type:</h4> string</p>',
  '_computing_structure_refinement': '<pre><h2>_computing_structure_refinement</h2> Software used '
                                     'in the processing of the data. Give the program\n'
                                     ' or package name and a brief reference.\n'
@@ -2487,7 +2714,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                     'DIFDAT, SORTRF, ADDREF (Hall &amp; Stewart, 1990)\n'
                                     'FRODO (Jones, 1986), ORTEP (Johnson, 1965)\n'
                                     'CRYSTALS (Watkin, 1988)\n'
-                                    'SHELX85 (Sheldrick, 1985)</pre>',
+                                    'SHELX85 (Sheldrick, 1985)</pre>\n'
+                                    '<br><p><h4>Type:</h4> string</p>',
  '_computing_structure_solution': '<pre><h2>_computing_structure_solution</h2> Software used in '
                                   'the processing of the data. Give the program\n'
                                   ' or package name and a brief reference.\n'
@@ -2497,11 +2725,13 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                   'DIFDAT, SORTRF, ADDREF (Hall &amp; Stewart, 1990)\n'
                                   'FRODO (Jones, 1986), ORTEP (Johnson, 1965)\n'
                                   'CRYSTALS (Watkin, 1988)\n'
-                                  'SHELX85 (Sheldrick, 1985)</pre>',
+                                  'SHELX85 (Sheldrick, 1985)</pre>\n'
+                                  '<br><p><h4>Type:</h4> string</p>',
  '_database_CSD_history': '<pre><h2>_database_CSD_history</h2> A history of changes made by the '
                           'Cambridge Crystallographic Data\n'
                           ' Centre and incorporated into the Cambridge Structural Database\n'
-                          ' (CSD).</pre>',
+                          ' (CSD).</pre>\n'
+                          '<br><p><h4>Type:</h4> string</p>',
  '_database_code_CAS': '<pre><h2>_database_code_CAS</h2> The codes are assigned by databases: '
                        'Chemical Abstracts;\n'
                        ' Crystallography Open Database (COD);\n'
@@ -2509,7 +2739,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                        ' compounds); Inorganic Crystal Structure Database; Metals\n'
                        ' Data File (metal structures); NBS (NIST) Crystal Data\n'
                        ' Database (lattice parameters); Protein Data Bank; and the\n'
-                       ' Powder Diffraction File (JCPDS/ICDD).</pre>',
+                       ' Powder Diffraction File (JCPDS/ICDD).</pre>\n'
+                       '<br><p><h4>Type:</h4> string</p>',
  '_database_code_COD': '<pre><h2>_database_code_COD</h2> The codes are assigned by databases: '
                        'Chemical Abstracts;\n'
                        ' Crystallography Open Database (COD);\n'
@@ -2517,7 +2748,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                        ' compounds); Inorganic Crystal Structure Database; Metals\n'
                        ' Data File (metal structures); NBS (NIST) Crystal Data\n'
                        ' Database (lattice parameters); Protein Data Bank; and the\n'
-                       ' Powder Diffraction File (JCPDS/ICDD).</pre>',
+                       ' Powder Diffraction File (JCPDS/ICDD).</pre>\n'
+                       '<br><p><h4>Type:</h4> string</p>',
  '_database_code_CSD': '<pre><h2>_database_code_CSD</h2> The codes are assigned by databases: '
                        'Chemical Abstracts;\n'
                        ' Crystallography Open Database (COD);\n'
@@ -2525,7 +2757,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                        ' compounds); Inorganic Crystal Structure Database; Metals\n'
                        ' Data File (metal structures); NBS (NIST) Crystal Data\n'
                        ' Database (lattice parameters); Protein Data Bank; and the\n'
-                       ' Powder Diffraction File (JCPDS/ICDD).</pre>',
+                       ' Powder Diffraction File (JCPDS/ICDD).</pre>\n'
+                       '<br><p><h4>Type:</h4> string</p>',
  '_database_code_ICSD': '<pre><h2>_database_code_ICSD</h2> The codes are assigned by databases: '
                         'Chemical Abstracts;\n'
                         ' Crystallography Open Database (COD);\n'
@@ -2533,7 +2766,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                         ' compounds); Inorganic Crystal Structure Database; Metals\n'
                         ' Data File (metal structures); NBS (NIST) Crystal Data\n'
                         ' Database (lattice parameters); Protein Data Bank; and the\n'
-                        ' Powder Diffraction File (JCPDS/ICDD).</pre>',
+                        ' Powder Diffraction File (JCPDS/ICDD).</pre>\n'
+                        '<br><p><h4>Type:</h4> string</p>',
  '_database_code_MDF': '<pre><h2>_database_code_MDF</h2> The codes are assigned by databases: '
                        'Chemical Abstracts;\n'
                        ' Crystallography Open Database (COD);\n'
@@ -2541,7 +2775,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                        ' compounds); Inorganic Crystal Structure Database; Metals\n'
                        ' Data File (metal structures); NBS (NIST) Crystal Data\n'
                        ' Database (lattice parameters); Protein Data Bank; and the\n'
-                       ' Powder Diffraction File (JCPDS/ICDD).</pre>',
+                       ' Powder Diffraction File (JCPDS/ICDD).</pre>\n'
+                       '<br><p><h4>Type:</h4> string</p>',
  '_database_code_NBS': '<pre><h2>_database_code_NBS</h2> The codes are assigned by databases: '
                        'Chemical Abstracts;\n'
                        ' Crystallography Open Database (COD);\n'
@@ -2549,7 +2784,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                        ' compounds); Inorganic Crystal Structure Database; Metals\n'
                        ' Data File (metal structures); NBS (NIST) Crystal Data\n'
                        ' Database (lattice parameters); Protein Data Bank; and the\n'
-                       ' Powder Diffraction File (JCPDS/ICDD).</pre>',
+                       ' Powder Diffraction File (JCPDS/ICDD).</pre>\n'
+                       '<br><p><h4>Type:</h4> string</p>',
  '_database_code_PDB': '<pre><h2>_database_code_PDB</h2> The codes are assigned by databases: '
                        'Chemical Abstracts;\n'
                        ' Crystallography Open Database (COD);\n'
@@ -2557,7 +2793,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                        ' compounds); Inorganic Crystal Structure Database; Metals\n'
                        ' Data File (metal structures); NBS (NIST) Crystal Data\n'
                        ' Database (lattice parameters); Protein Data Bank; and the\n'
-                       ' Powder Diffraction File (JCPDS/ICDD).</pre>',
+                       ' Powder Diffraction File (JCPDS/ICDD).</pre>\n'
+                       '<br><p><h4>Type:</h4> string</p>',
  '_database_code_PDF': '<pre><h2>_database_code_PDF</h2> The codes are assigned by databases: '
                        'Chemical Abstracts;\n'
                        ' Crystallography Open Database (COD);\n'
@@ -2565,23 +2802,27 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                        ' compounds); Inorganic Crystal Structure Database; Metals\n'
                        ' Data File (metal structures); NBS (NIST) Crystal Data\n'
                        ' Database (lattice parameters); Protein Data Bank; and the\n'
-                       ' Powder Diffraction File (JCPDS/ICDD).</pre>',
+                       ' Powder Diffraction File (JCPDS/ICDD).</pre>\n'
+                       '<br><p><h4>Type:</h4> string</p>',
  '_database_code_depnum_ccdc_archive': '<pre><h2>_database_code_depnum_ccdc_archive</h2> '
                                        'Deposition numbers assigned by the Cambridge '
                                        'Crystallographic\n'
                                        ' Data Centre (CCDC) to files containing structural '
                                        'information\n'
-                                       ' archived by the CCDC.</pre>',
+                                       ' archived by the CCDC.</pre>\n'
+                                       '<br><p><h4>Type:</h4> string</p>',
  '_database_code_depnum_ccdc_fiz': '<pre><h2>_database_code_depnum_ccdc_fiz</h2> Deposition '
                                    'numbers assigned by the Fachinformationszentrum\n'
                                    ' Karlsruhe (FIZ) to files containing structural information\n'
                                    ' archived by the Cambridge Crystallographic Data Centre '
-                                   '(CCDC).</pre>',
+                                   '(CCDC).</pre>\n'
+                                   '<br><p><h4>Type:</h4> string</p>',
  '_database_code_depnum_ccdc_journal': '<pre><h2>_database_code_depnum_ccdc_journal</h2> '
                                        'Deposition numbers assigned by various journals to files\n'
                                        ' containing structural information archived by the '
                                        'Cambridge\n'
-                                       ' Crystallographic Data Centre (CCDC).</pre>',
+                                       ' Crystallographic Data Centre (CCDC).</pre>\n'
+                                       '<br><p><h4>Type:</h4> string</p>',
  '_database_dataset_doi': '<pre><h2>_database_dataset_doi</h2> The digital object identifier (DOI) '
                           'registered to identify\n'
                           ' a data set publication associated with the structure\n'
@@ -2600,44 +2841,52 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                           ' http://www.doi.org).\n'
                           '\n'
                           '<h3>Example:</h3>\n'
-                          '10.2210/pdb4hhb/pdb</pre>',
+                          '10.2210/pdb4hhb/pdb</pre>\n'
+                          '<br><p><h4>Type:</h4> string</p>',
  '_database_journal_ASTM': '<pre><h2>_database_journal_ASTM</h2> The ASTM CODEN designator for a '
                            'journal as given in the\n'
                            ' Chemical Source List maintained by the Chemical Abstracts\n'
                            ' Service, and the journal code used in the Cambridge Structural\n'
-                           ' Database.</pre>',
+                           ' Database.</pre>\n'
+                           '<br><p><h4>Type:</h4> string</p>',
  '_database_journal_CSD': '<pre><h2>_database_journal_CSD</h2> The ASTM CODEN designator for a '
                           'journal as given in the\n'
                           ' Chemical Source List maintained by the Chemical Abstracts\n'
                           ' Service, and the journal code used in the Cambridge Structural\n'
-                          ' Database.</pre>',
+                          ' Database.</pre>\n'
+                          '<br><p><h4>Type:</h4> string</p>',
  '_diffrn_ambient_environment': '<pre><h2>_diffrn_ambient_environment</h2> The gas or liquid '
                                 'surrounding the sample, if not air.\n'
                                 '\n'
                                 '<h3>Example:</h3>\n'
                                 'He\n'
                                 'vacuum\n'
-                                'mother liquor</pre>',
+                                'mother liquor</pre>\n'
+                                '<br><p><h4>Type:</h4> string</p>',
  '_diffrn_ambient_pressure': '<pre><h2>_diffrn_ambient_pressure</h2> The mean hydrostatic pressure '
                              'in kilopascals at which the\n'
-                             ' intensities were measured.</pre>',
+                             ' intensities were measured.</pre>\n'
+                             '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_ambient_pressure_gt': '<pre><h2>_diffrn_ambient_pressure_gt</h2> The mean hydrostatic '
                                 'pressure in kilopascals above which (*_gt)\n'
                                 ' or below which (*_lt) the intensities were measured. These\n'
                                 ' items allow for a pressure range to be given.\n'
                                 '\n'
                                 ' _diffrn_ambient_pressure should always be used in\n'
-                                ' preference to these items whenever possible.</pre>',
+                                ' preference to these items whenever possible.</pre>\n'
+                                '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_ambient_pressure_lt': '<pre><h2>_diffrn_ambient_pressure_lt</h2> The mean hydrostatic '
                                 'pressure in kilopascals above which (*_gt)\n'
                                 ' or below which (*_lt) the intensities were measured. These\n'
                                 ' items allow for a pressure range to be given.\n'
                                 '\n'
                                 ' _diffrn_ambient_pressure should always be used in\n'
-                                ' preference to these items whenever possible.</pre>',
+                                ' preference to these items whenever possible.</pre>\n'
+                                '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_ambient_temperature': '<pre><h2>_diffrn_ambient_temperature</h2>The mean temperature in '
                                 'kelvins at which the intensities\n'
-                                'were measured.</pre>',
+                                'were measured.</pre>\n'
+                                '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_ambient_temperature_gt': '<pre><h2>_diffrn_ambient_temperature_gt</h2>The mean '
                                    'temperature in kelvins above which (*_gt) or below\n'
                                    'which (*_lt) the intensities were measured.  These items '
@@ -2646,7 +2895,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                    '\n'
                                    '_diffrn_ambient_temperature should always be used in '
                                    'preference\n'
-                                   'to these items whenever possible.</pre>',
+                                   'to these items whenever possible.</pre>\n'
+                                   '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_ambient_temperature_lt': '<pre><h2>_diffrn_ambient_temperature_lt</h2>The mean '
                                    'temperature in kelvins above which (*_gt) or below\n'
                                    'which (*_lt) the intensities were measured.  These items '
@@ -2655,18 +2905,22 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                    '\n'
                                    '_diffrn_ambient_temperature should always be used in '
                                    'preference\n'
-                                   'to these items whenever possible.</pre>',
+                                   'to these items whenever possible.</pre>\n'
+                                   '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_attenuator_code': '<pre><h2>_diffrn_attenuator_code</h2> A code associated with a '
                             'particular attenuator setting. This code\n'
                             ' is referenced by the _diffrn_refln_attenuator_code which is\n'
-                            ' stored with the intensities. See _diffrn_attenuator_scale.</pre>',
+                            ' stored with the intensities. See _diffrn_attenuator_scale.</pre>\n'
+                            '<br><p><h4>Type:</h4> string</p>',
  '_diffrn_attenuator_material': '<pre><h2>_diffrn_attenuator_material</h2> Material from which the '
-                                'attenuator is made.</pre>',
+                                'attenuator is made.</pre>\n'
+                                '<br><p><h4>Type:</h4> string</p>',
  '_diffrn_attenuator_scale': '<pre><h2>_diffrn_attenuator_scale</h2>  The scale factor applied '
                              'when an intensity measurement is\n'
                              '  reduced by an attenuator identified by _diffrn_attenuator_code.\n'
                              '  The measured intensity must be multiplied by this scale to\n'
-                             '  convert it to the same scale as unattenuated intensities.</pre>',
+                             '  convert it to the same scale as unattenuated intensities.</pre>\n'
+                             '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_crystal_treatment': '<pre><h2>_diffrn_crystal_treatment</h2> Remarks about how the '
                               'crystal was treated prior to the intensity\n'
                               ' measurements. Particularly relevant when intensities were\n'
@@ -2675,36 +2929,45 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                               '<h3>Example:</h3>\n'
                               'equilibrated in hutch for 24 hours\n'
                               'flash frozen in liquid nitrogen\n'
-                              'slow cooled with direct air stream</pre>',
+                              'slow cooled with direct air stream</pre>\n'
+                              '<br><p><h4>Type:</h4> string</p>',
  '_diffrn_detector': '<pre><h2>_diffrn_detector</h2> The general class of the radiation detector.\n'
                      '\n'
                      '<h3>Example:</h3>\n'
                      'photographic film\n'
                      'scintillation counter\n'
                      'CCD plate\n'
-                     'BF~3~ counter</pre>',
+                     'BF~3~ counter</pre>\n'
+                     '<br><p><h4>Type:</h4> string</p>',
  '_diffrn_detector_area_resol_mean': '<pre><h2>_diffrn_detector_area_resol_mean</h2> The '
-                                     'resolution of an area detector, in pixels/mm.</pre>',
+                                     'resolution of an area detector, in pixels/mm.</pre>\n'
+                                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_detector_details': '<pre><h2>_diffrn_detector_details</h2> A description of special '
-                             'aspects of the radiation detector.</pre>',
+                             'aspects of the radiation detector.</pre>\n'
+                             '<br><p><h4>Type:</h4> string</p>',
  '_diffrn_detector_dtime': '<pre><h2>_diffrn_detector_dtime</h2> The deadtime in microseconds of '
                            'the detector used to measure\n'
-                           ' the diffraction intensities.</pre>',
+                           ' the diffraction intensities.</pre>\n'
+                           '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_detector_type': '<pre><h2>_diffrn_detector_type</h2> The make, model or name of the '
-                          'detector device used.</pre>',
+                          'detector device used.</pre>\n'
+                          '<br><p><h4>Type:</h4> string</p>',
  '_diffrn_measured_fraction_theta_full': '<pre><h2>_diffrn_measured_fraction_theta_full</h2>         '
                                          'Fraction of unique (symmetry-independent) reflections '
                                          'measured\n'
-                                         '          out to _diffrn_reflns_theta_full.</pre>',
+                                         '          out to _diffrn_reflns_theta_full.</pre>\n'
+                                         '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_measured_fraction_theta_max': '<pre><h2>_diffrn_measured_fraction_theta_max</h2>         '
                                         'Fraction of unique (symmetry-independent) reflections '
                                         'measured\n'
-                                        '          out to _diffrn_reflns_theta_max.</pre>',
+                                        '          out to _diffrn_reflns_theta_max.</pre>\n'
+                                        '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_measurement_details': '<pre><h2>_diffrn_measurement_details</h2> A description of '
                                 'special aspects of the intensity measurement.\n'
                                 '\n'
                                 '<h3>Example:</h3>\n'
-                                '440 frames of 0.25\\%</pre>',
+                                '440 frames of 0.25\\%</pre>\n'
+                                '<br><p><h4>Type:</h4> string</p>',
  '_diffrn_measurement_device': '<pre><h2>_diffrn_measurement_device</h2> The general class of '
                                'goniometer or device used to support\n'
                                ' and orient the specimen.\n'
@@ -2714,7 +2977,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                'four-circle diffractometer\n'
                                '\\k-geometry diffractometer\n'
                                'oscillation camera\n'
-                               'precession camera</pre>',
+                               'precession camera</pre>\n'
+                               '<br><p><h4>Type:</h4> string</p>',
  '_diffrn_measurement_device_details': '<pre><h2>_diffrn_measurement_device_details</h2> A '
                                        'description of special aspects of the device used to '
                                        'measure\n'
@@ -2722,15 +2986,18 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                        '\n'
                                        '<h3>Example:</h3>\n'
                                        '     commercial goniometer modified locally to\n'
-                                       '     allow for 90\\% \\t arc</pre>',
+                                       '     allow for 90\\% \\t arc</pre>\n'
+                                       '<br><p><h4>Type:</h4> string</p>',
  '_diffrn_measurement_device_type': '<pre><h2>_diffrn_measurement_device_type</h2> The make, model '
                                     'or name of the measurement device\n'
-                                    ' (goniometer) used.</pre>',
+                                    ' (goniometer) used.</pre>\n'
+                                    '<br><p><h4>Type:</h4> string</p>',
  '_diffrn_measurement_method': '<pre><h2>_diffrn_measurement_method</h2> Method used to measure '
                                'the intensities.\n'
                                '\n'
                                '<h3>Example:</h3>\n'
-                               'profile data from \\q/2\\q scans</pre>',
+                               'profile data from \\q/2\\q scans</pre>\n'
+                               '<br><p><h4>Type:</h4> string</p>',
  '_diffrn_measurement_specimen_support': '<pre><h2>_diffrn_measurement_specimen_support</h2> The '
                                          'physical device used to support the crystal during data\n'
                                          ' collection.\n'
@@ -2739,121 +3006,146 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                          'glass capillary\n'
                                          'quartz capillary\n'
                                          'fiber\n'
-                                         'metal loop</pre>',
+                                         'metal loop</pre>\n'
+                                         '<br><p><h4>Type:</h4> string</p>',
  '_diffrn_orient_matrix_UB_11': '<pre><h2>_diffrn_orient_matrix_UB_11</h2> The elements of the '
                                 'diffractometer orientation matrix. These\n'
                                 ' define the dimensions of the reciprocal cell and its '
                                 'orientation\n'
                                 ' to the local diffractometer axes. See '
-                                '_diffrn_orient_matrix_type.</pre>',
+                                '_diffrn_orient_matrix_type.</pre>\n'
+                                '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_orient_matrix_UB_12': '<pre><h2>_diffrn_orient_matrix_UB_12</h2> The elements of the '
                                 'diffractometer orientation matrix. These\n'
                                 ' define the dimensions of the reciprocal cell and its '
                                 'orientation\n'
                                 ' to the local diffractometer axes. See '
-                                '_diffrn_orient_matrix_type.</pre>',
+                                '_diffrn_orient_matrix_type.</pre>\n'
+                                '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_orient_matrix_UB_13': '<pre><h2>_diffrn_orient_matrix_UB_13</h2> The elements of the '
                                 'diffractometer orientation matrix. These\n'
                                 ' define the dimensions of the reciprocal cell and its '
                                 'orientation\n'
                                 ' to the local diffractometer axes. See '
-                                '_diffrn_orient_matrix_type.</pre>',
+                                '_diffrn_orient_matrix_type.</pre>\n'
+                                '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_orient_matrix_UB_21': '<pre><h2>_diffrn_orient_matrix_UB_21</h2> The elements of the '
                                 'diffractometer orientation matrix. These\n'
                                 ' define the dimensions of the reciprocal cell and its '
                                 'orientation\n'
                                 ' to the local diffractometer axes. See '
-                                '_diffrn_orient_matrix_type.</pre>',
+                                '_diffrn_orient_matrix_type.</pre>\n'
+                                '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_orient_matrix_UB_22': '<pre><h2>_diffrn_orient_matrix_UB_22</h2> The elements of the '
                                 'diffractometer orientation matrix. These\n'
                                 ' define the dimensions of the reciprocal cell and its '
                                 'orientation\n'
                                 ' to the local diffractometer axes. See '
-                                '_diffrn_orient_matrix_type.</pre>',
+                                '_diffrn_orient_matrix_type.</pre>\n'
+                                '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_orient_matrix_UB_23': '<pre><h2>_diffrn_orient_matrix_UB_23</h2> The elements of the '
                                 'diffractometer orientation matrix. These\n'
                                 ' define the dimensions of the reciprocal cell and its '
                                 'orientation\n'
                                 ' to the local diffractometer axes. See '
-                                '_diffrn_orient_matrix_type.</pre>',
+                                '_diffrn_orient_matrix_type.</pre>\n'
+                                '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_orient_matrix_UB_31': '<pre><h2>_diffrn_orient_matrix_UB_31</h2> The elements of the '
                                 'diffractometer orientation matrix. These\n'
                                 ' define the dimensions of the reciprocal cell and its '
                                 'orientation\n'
                                 ' to the local diffractometer axes. See '
-                                '_diffrn_orient_matrix_type.</pre>',
+                                '_diffrn_orient_matrix_type.</pre>\n'
+                                '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_orient_matrix_UB_32': '<pre><h2>_diffrn_orient_matrix_UB_32</h2> The elements of the '
                                 'diffractometer orientation matrix. These\n'
                                 ' define the dimensions of the reciprocal cell and its '
                                 'orientation\n'
                                 ' to the local diffractometer axes. See '
-                                '_diffrn_orient_matrix_type.</pre>',
+                                '_diffrn_orient_matrix_type.</pre>\n'
+                                '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_orient_matrix_UB_33': '<pre><h2>_diffrn_orient_matrix_UB_33</h2> The elements of the '
                                 'diffractometer orientation matrix. These\n'
                                 ' define the dimensions of the reciprocal cell and its '
                                 'orientation\n'
                                 ' to the local diffractometer axes. See '
-                                '_diffrn_orient_matrix_type.</pre>',
+                                '_diffrn_orient_matrix_type.</pre>\n'
+                                '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_orient_matrix_type': '<pre><h2>_diffrn_orient_matrix_type</h2> A description of the '
                                'orientation matrix type and how it should\n'
                                ' be applied to define the orientation of the crystal precisely\n'
-                               ' with respect to the diffractometer axes.</pre>',
+                               ' with respect to the diffractometer axes.</pre>\n'
+                               '<br><p><h4>Type:</h4> string</p>',
  '_diffrn_orient_refln_angle_chi': '<pre><h2>_diffrn_orient_refln_angle_chi</h2> Diffractometer '
                                    'angles of a reflection used to define\n'
                                    ' the orientation matrix in degrees. See\n'
                                    ' _diffrn_orient_matrix_UB_ and\n'
-                                   ' _diffrn_orient_refln_index_h, *_k and *_l.</pre>',
+                                   ' _diffrn_orient_refln_index_h, *_k and *_l.</pre>\n'
+                                   '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_orient_refln_angle_kappa': '<pre><h2>_diffrn_orient_refln_angle_kappa</h2> '
                                      'Diffractometer angles of a reflection used to define\n'
                                      ' the orientation matrix in degrees. See\n'
                                      ' _diffrn_orient_matrix_UB_ and\n'
-                                     ' _diffrn_orient_refln_index_h, *_k and *_l.</pre>',
+                                     ' _diffrn_orient_refln_index_h, *_k and *_l.</pre>\n'
+                                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_orient_refln_angle_omega': '<pre><h2>_diffrn_orient_refln_angle_omega</h2> '
                                      'Diffractometer angles of a reflection used to define\n'
                                      ' the orientation matrix in degrees. See\n'
                                      ' _diffrn_orient_matrix_UB_ and\n'
-                                     ' _diffrn_orient_refln_index_h, *_k and *_l.</pre>',
+                                     ' _diffrn_orient_refln_index_h, *_k and *_l.</pre>\n'
+                                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_orient_refln_angle_phi': '<pre><h2>_diffrn_orient_refln_angle_phi</h2> Diffractometer '
                                    'angles of a reflection used to define\n'
                                    ' the orientation matrix in degrees. See\n'
                                    ' _diffrn_orient_matrix_UB_ and\n'
-                                   ' _diffrn_orient_refln_index_h, *_k and *_l.</pre>',
+                                   ' _diffrn_orient_refln_index_h, *_k and *_l.</pre>\n'
+                                   '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_orient_refln_angle_psi': '<pre><h2>_diffrn_orient_refln_angle_psi</h2> Diffractometer '
                                    'angles of a reflection used to define\n'
                                    ' the orientation matrix in degrees. See\n'
                                    ' _diffrn_orient_matrix_UB_ and\n'
-                                   ' _diffrn_orient_refln_index_h, *_k and *_l.</pre>',
+                                   ' _diffrn_orient_refln_index_h, *_k and *_l.</pre>\n'
+                                   '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_orient_refln_angle_theta': '<pre><h2>_diffrn_orient_refln_angle_theta</h2> '
                                      'Diffractometer angles of a reflection used to define\n'
                                      ' the orientation matrix in degrees. See\n'
                                      ' _diffrn_orient_matrix_UB_ and\n'
-                                     ' _diffrn_orient_refln_index_h, *_k and *_l.</pre>',
+                                     ' _diffrn_orient_refln_index_h, *_k and *_l.</pre>\n'
+                                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_orient_refln_index_h': '<pre><h2>_diffrn_orient_refln_index_h</h2> The indices of a '
                                  'reflection used to define the orientation\n'
-                                 ' matrix. See _diffrn_orient_matrix_.</pre>',
+                                 ' matrix. See _diffrn_orient_matrix_.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_orient_refln_index_k': '<pre><h2>_diffrn_orient_refln_index_k</h2> The indices of a '
                                  'reflection used to define the orientation\n'
-                                 ' matrix. See _diffrn_orient_matrix_.</pre>',
+                                 ' matrix. See _diffrn_orient_matrix_.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_orient_refln_index_l': '<pre><h2>_diffrn_orient_refln_index_l</h2> The indices of a '
                                  'reflection used to define the orientation\n'
-                                 ' matrix. See _diffrn_orient_matrix_.</pre>',
+                                 ' matrix. See _diffrn_orient_matrix_.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_radiation_collimation': '<pre><h2>_diffrn_radiation_collimation</h2> The collimation or '
                                   'focusing applied to the radiation.\n'
                                   '\n'
                                   '<h3>Example:</h3>\n'
                                   '0.3 mm double-pinhole\n'
                                   '0.5 mm\n'
-                                  'focusing mirrors</pre>',
+                                  'focusing mirrors</pre>\n'
+                                  '<br><p><h4>Type:</h4> string</p>',
  '_diffrn_radiation_detector': '<pre><h2>_diffrn_radiation_detector</h2> The detector used to '
-                               'measure the diffraction intensities.</pre>',
+                               'measure the diffraction intensities.</pre>\n'
+                               '<br><p><h4>Type:</h4> string</p>',
  '_diffrn_radiation_detector_dtime': '<pre><h2>_diffrn_radiation_detector_dtime</h2> The deadtime '
                                      'in microseconds of the detector used to measure\n'
-                                     ' the diffraction intensities.</pre>',
+                                     ' the diffraction intensities.</pre>\n'
+                                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_radiation_filter_edge': '<pre><h2>_diffrn_radiation_filter_edge</h2> Absorption edge in '
-                                  'angstroms of the radiation filter used.</pre>',
+                                  'angstroms of the radiation filter used.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_radiation_inhomogeneity': '<pre><h2>_diffrn_radiation_inhomogeneity</h2> Half-width in '
                                     'millimetres of the incident beam in the\n'
-                                    ' direction perpendicular to the diffraction plane.</pre>',
+                                    ' direction perpendicular to the diffraction plane.</pre>\n'
+                                    '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_radiation_monochromator': '<pre><h2>_diffrn_radiation_monochromator</h2> The method used '
                                     'to obtain monochromatic radiation. If a mono-\n'
                                     ' chromator crystal is used, the material and the indices of '
@@ -2864,12 +3156,14 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                     'Zr filter\n'
                                     'Ge 220\n'
                                     'none\n'
-                                    'equatorial mounted graphite</pre>',
+                                    'equatorial mounted graphite</pre>\n'
+                                    '<br><p><h4>Type:</h4> string</p>',
  '_diffrn_radiation_polarisn_norm': '<pre><h2>_diffrn_radiation_polarisn_norm</h2> The angle in '
                                     'degrees, as viewed from the specimen, between the\n'
                                     ' perpendicular component of the polarization and the '
                                     'diffraction\n'
-                                    ' plane. See _diffrn_radiation_polarisn_ratio.</pre>',
+                                    ' plane. See _diffrn_radiation_polarisn_ratio.</pre>\n'
+                                    '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_radiation_polarisn_ratio': '<pre><h2>_diffrn_radiation_polarisn_ratio</h2> Polarization '
                                      'ratio of the diffraction beam incident on the\n'
                                      ' crystal. It is the ratio of the perpendicularly polarized '
@@ -2880,7 +3174,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                      'to\n'
                                      ' the normal to the diffraction plane of the sample (i.e. the '
                                      'plane\n'
-                                     ' containing the incident and reflected beams).</pre>',
+                                     ' containing the incident and reflected beams).</pre>\n'
+                                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_radiation_probe': '<pre><h2>_diffrn_radiation_probe</h2>The nature of the radiation used '
                             '(i.e. the name of the\n'
                             'subatomic particle or the region of the electromagnetic\n'
@@ -2891,9 +3186,11 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                             'x-ray\n'
                             'neutron\n'
                             'electron\n'
-                            'gamma</pre>',
+                            'gamma</pre>\n'
+                            '<br><p><h4>Type:</h4> string</p>',
  '_diffrn_radiation_source': '<pre><h2>_diffrn_radiation_source</h2> The source of '
-                             'radiation.</pre>',
+                             'radiation.</pre>\n'
+                             '<br><p><h4>Type:</h4> string</p>',
  '_diffrn_radiation_type': '<pre><h2>_diffrn_radiation_type</h2> The type of the radiation. This '
                            'is used to give a more\n'
                            ' detailed description than _diffrn_radiation_probe and is\n'
@@ -2904,14 +3201,17 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                            'Cu K\\a\n'
                            'Cu K\\a~1~\n'
                            'Cu K-L~2,3~\n'
-                           'white-beam</pre>',
+                           'white-beam</pre>\n'
+                           '<br><p><h4>Type:</h4> string</p>',
  '_diffrn_radiation_wavelength': '<pre><h2>_diffrn_radiation_wavelength</h2> The radiation '
-                                 'wavelength in angstroms.</pre>',
+                                 'wavelength in angstroms.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_radiation_wavelength_details': '<pre><h2>_diffrn_radiation_wavelength_details</h2> '
                                          'Information about the determination of the radiation\n'
                                          ' wavelength that is not conveyed completely by an\n'
                                          ' enumerated value of '
-                                         '_diffrn_radiation_wavelength_determination.</pre>',
+                                         '_diffrn_radiation_wavelength_determination.</pre>\n'
+                                         '<br><p><h4>Type:</h4> string</p>',
  '_diffrn_radiation_wavelength_determination': '<pre><h2>_diffrn_radiation_wavelength_determination</h2> '
                                                'The method of determination of incident '
                                                'wavelength. \n'
@@ -2930,7 +3230,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                                'refined\n'
                                                '             Based on refinement using a standard\n'
                                                '             material with known cell parameters.\n'
-                                               '</pre>',
+                                               '</pre>\n'
+                                               '<br><p><h4>Type:</h4> string</p>',
  '_diffrn_radiation_wavelength_id': '<pre><h2>_diffrn_radiation_wavelength_id</h2> An arbitrary '
                                     'code identifying each value of\n'
                                     ' _diffrn_radiation_wavelength. Items in the DIFFRN_RADIATION\n'
@@ -2942,11 +3243,13 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                     '<h3>Example:</h3>\n'
                                     'x1\n'
                                     'x2\n'
-                                    'neut</pre>',
+                                    'neut</pre>\n'
+                                    '<br><p><h4>Type:</h4> string</p>',
  '_diffrn_radiation_wavelength_wt': '<pre><h2>_diffrn_radiation_wavelength_wt</h2> The relative '
                                     'weight of a wavelength identified by the code\n'
                                     ' _diffrn_radiation_wavelength_id in the list of '
-                                    'wavelengths.</pre>',
+                                    'wavelengths.</pre>\n'
+                                    '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_radiation_xray_symbol': '<pre><h2>_diffrn_radiation_xray_symbol</h2> The IUPAC symbol '
                                   'for the X-ray wavelength for the probe\n'
                                   ' radiation.\n'
@@ -2963,35 +3266,43 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                   '\n'
                                   'K-L~2,3~\n'
                                   '\tuse where K-L~3~ and K-L~2~ are not resolved\n'
-                                  '</pre>',
+                                  '</pre>\n'
+                                  '<br><p><h4>Type:</h4> string</p>',
  '_diffrn_refln_angle_chi': '<pre><h2>_diffrn_refln_angle_chi</h2> The diffractometer angles of a '
                             'reflection in degrees. These\n'
                             ' correspond to the specified orientation matrix and the original\n'
-                            ' measured cell before any subsequent cell transformations.</pre>',
+                            ' measured cell before any subsequent cell transformations.</pre>\n'
+                            '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_refln_angle_kappa': '<pre><h2>_diffrn_refln_angle_kappa</h2> The diffractometer angles '
                               'of a reflection in degrees. These\n'
                               ' correspond to the specified orientation matrix and the original\n'
-                              ' measured cell before any subsequent cell transformations.</pre>',
+                              ' measured cell before any subsequent cell transformations.</pre>\n'
+                              '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_refln_angle_omega': '<pre><h2>_diffrn_refln_angle_omega</h2> The diffractometer angles '
                               'of a reflection in degrees. These\n'
                               ' correspond to the specified orientation matrix and the original\n'
-                              ' measured cell before any subsequent cell transformations.</pre>',
+                              ' measured cell before any subsequent cell transformations.</pre>\n'
+                              '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_refln_angle_phi': '<pre><h2>_diffrn_refln_angle_phi</h2> The diffractometer angles of a '
                             'reflection in degrees. These\n'
                             ' correspond to the specified orientation matrix and the original\n'
-                            ' measured cell before any subsequent cell transformations.</pre>',
+                            ' measured cell before any subsequent cell transformations.</pre>\n'
+                            '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_refln_angle_psi': '<pre><h2>_diffrn_refln_angle_psi</h2> The diffractometer angles of a '
                             'reflection in degrees. These\n'
                             ' correspond to the specified orientation matrix and the original\n'
-                            ' measured cell before any subsequent cell transformations.</pre>',
+                            ' measured cell before any subsequent cell transformations.</pre>\n'
+                            '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_refln_angle_theta': '<pre><h2>_diffrn_refln_angle_theta</h2> The diffractometer angles '
                               'of a reflection in degrees. These\n'
                               ' correspond to the specified orientation matrix and the original\n'
-                              ' measured cell before any subsequent cell transformations.</pre>',
+                              ' measured cell before any subsequent cell transformations.</pre>\n'
+                              '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_refln_attenuator_code': '<pre><h2>_diffrn_refln_attenuator_code</h2> The code '
                                   'identifying the attenuator setting for this reflection.\n'
                                   ' This code must match one of the _diffrn_attenuator_code '
-                                  'values.</pre>',
+                                  'values.</pre>\n'
+                                  '<br><p><h4>Type:</h4> string</p>',
  '_diffrn_refln_class_code': '<pre><h2>_diffrn_refln_class_code</h2> The code identifying the '
                              'class to which this reflection has\n'
                              ' been assigned. This code must match a value of\n'
@@ -3000,81 +3311,98 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                              ' structures each reflection class may be defined by the\n'
                              ' number m=sum|m~i~|, where the m~i~ are the integer coefficients\n'
                              ' that, in addition to h,k,l, index the corresponding diffraction\n'
-                             ' vector in the basis defined for the reciprocal lattice.</pre>',
+                             ' vector in the basis defined for the reciprocal lattice.</pre>\n'
+                             '<br><p><h4>Type:</h4> string</p>',
  '_diffrn_refln_counts_bg_1': '<pre><h2>_diffrn_refln_counts_bg_1</h2> The diffractometer counts '
                               'for the measurements: background\n'
                               ' before the peak, background after the peak, net counts after\n'
                               ' background removed, counts for peak scan or position, and the\n'
-                              ' total counts (background plus peak).</pre>',
+                              ' total counts (background plus peak).</pre>\n'
+                              '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_refln_counts_bg_2': '<pre><h2>_diffrn_refln_counts_bg_2</h2> The diffractometer counts '
                               'for the measurements: background\n'
                               ' before the peak, background after the peak, net counts after\n'
                               ' background removed, counts for peak scan or position, and the\n'
-                              ' total counts (background plus peak).</pre>',
+                              ' total counts (background plus peak).</pre>\n'
+                              '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_refln_counts_net': '<pre><h2>_diffrn_refln_counts_net</h2> The diffractometer counts for '
                              'the measurements: background\n'
                              ' before the peak, background after the peak, net counts after\n'
                              ' background removed, counts for peak scan or position, and the\n'
-                             ' total counts (background plus peak).</pre>',
+                             ' total counts (background plus peak).</pre>\n'
+                             '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_refln_counts_peak': '<pre><h2>_diffrn_refln_counts_peak</h2> The diffractometer counts '
                               'for the measurements: background\n'
                               ' before the peak, background after the peak, net counts after\n'
                               ' background removed, counts for peak scan or position, and the\n'
-                              ' total counts (background plus peak).</pre>',
+                              ' total counts (background plus peak).</pre>\n'
+                              '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_refln_counts_total': '<pre><h2>_diffrn_refln_counts_total</h2> The diffractometer counts '
                                'for the measurements: background\n'
                                ' before the peak, background after the peak, net counts after\n'
                                ' background removed, counts for peak scan or position, and the\n'
-                               ' total counts (background plus peak).</pre>',
+                               ' total counts (background plus peak).</pre>\n'
+                               '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_refln_crystal_id': '<pre><h2>_diffrn_refln_crystal_id</h2> Code identifying each crystal '
                              'if multiple crystals are used. Is\n'
                              ' used to link with _exptl_crystal_id in the _exptl_crystal_ '
-                             'list.</pre>',
+                             'list.</pre>\n'
+                             '<br><p><h4>Type:</h4> string</p>',
  '_diffrn_refln_detect_slit_horiz': '<pre><h2>_diffrn_refln_detect_slit_horiz</h2> Total slit '
                                     'apertures in degrees in the diffraction plane\n'
                                     ' (*_horiz) and perpendicular to the diffraction plane '
-                                    '(*_vert).</pre>',
+                                    '(*_vert).</pre>\n'
+                                    '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_refln_detect_slit_vert': '<pre><h2>_diffrn_refln_detect_slit_vert</h2> Total slit '
                                    'apertures in degrees in the diffraction plane\n'
                                    ' (*_horiz) and perpendicular to the diffraction plane '
-                                   '(*_vert).</pre>',
+                                   '(*_vert).</pre>\n'
+                                   '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_refln_elapsed_time': '<pre><h2>_diffrn_refln_elapsed_time</h2> Elapsed time in minutes '
                                'from the start of the diffraction\n'
-                               ' experiment to the measurement of this intensity.</pre>',
+                               ' experiment to the measurement of this intensity.</pre>\n'
+                               '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_refln_index_h': '<pre><h2>_diffrn_refln_index_h</h2> Miller indices of a measured '
                           'reflection. These need not match\n'
                           ' the _refln_index_h, *_k, *_l values if a transformation of the\n'
                           ' original measured cell has taken place. Details of the cell\n'
                           ' transformation are given in _diffrn_reflns_reduction_process.\n'
-                          ' See also _diffrn_reflns_transf_matrix_.</pre>',
+                          ' See also _diffrn_reflns_transf_matrix_.</pre>\n'
+                          '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_refln_index_k': '<pre><h2>_diffrn_refln_index_k</h2> Miller indices of a measured '
                           'reflection. These need not match\n'
                           ' the _refln_index_h, *_k, *_l values if a transformation of the\n'
                           ' original measured cell has taken place. Details of the cell\n'
                           ' transformation are given in _diffrn_reflns_reduction_process.\n'
-                          ' See also _diffrn_reflns_transf_matrix_.</pre>',
+                          ' See also _diffrn_reflns_transf_matrix_.</pre>\n'
+                          '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_refln_index_l': '<pre><h2>_diffrn_refln_index_l</h2> Miller indices of a measured '
                           'reflection. These need not match\n'
                           ' the _refln_index_h, *_k, *_l values if a transformation of the\n'
                           ' original measured cell has taken place. Details of the cell\n'
                           ' transformation are given in _diffrn_reflns_reduction_process.\n'
-                          ' See also _diffrn_reflns_transf_matrix_.</pre>',
+                          ' See also _diffrn_reflns_transf_matrix_.</pre>\n'
+                          '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_refln_intensity_net': '<pre><h2>_diffrn_refln_intensity_net</h2> Net intensity '
                                 'calculated from the diffraction counts after\n'
-                                ' the attenuator and standard scales have been applied.</pre>',
+                                ' the attenuator and standard scales have been applied.</pre>\n'
+                                '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_refln_intensity_sigma': '<pre><h2>_diffrn_refln_intensity_sigma</h2> Standard '
                                   'uncertainty (e.s.d.) of the net intensity calculated\n'
                                   ' from the diffraction counts after the attenuator and standard\n'
-                                  ' scales have been applied.</pre>',
+                                  ' scales have been applied.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_refln_intensity_u': '<pre><h2>_diffrn_refln_intensity_u</h2> Standard uncertainty of the '
                               'net intensity calculated from\n'
                               ' the diffraction counts after the attenuator and standard\n'
-                              ' scales have been applied.</pre>',
+                              ' scales have been applied.</pre>\n'
+                              '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_refln_scale_group_code': '<pre><h2>_diffrn_refln_scale_group_code</h2> The code '
                                    'identifying the scale applicable to this reflection.\n'
                                    ' This code must match with a specified '
                                    '_diffrn_scale_group_code\n'
-                                   ' value.</pre>',
+                                   ' value.</pre>\n'
+                                   '<br><p><h4>Type:</h4> string</p>',
  '_diffrn_refln_scan_mode': '<pre><h2>_diffrn_refln_scan_mode</h2> The code identifying the mode '
                             'of scanning for measurements\n'
                             ' using a diffractometer. See _diffrn_refln_scan_width and\n'
@@ -3089,7 +3417,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                             '\n'
                             'q\n'
                             '\tQ scans (arbitrary reciprocal directions)\n'
-                            '</pre>',
+                            '</pre>\n'
+                            '<br><p><h4>Type:</h4> string</p>',
  '_diffrn_refln_scan_mode_backgd': '<pre><h2>_diffrn_refln_scan_mode_backgd</h2> The code '
                                    'identifying the mode of scanning a reflection to measure\n'
                                    ' the background intensity.\n'
@@ -3100,18 +3429,23 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                    '\n'
                                    'mo\n'
                                    '\tmoving counter background\n'
-                                   '</pre>',
+                                   '</pre>\n'
+                                   '<br><p><h4>Type:</h4> string</p>',
  '_diffrn_refln_scan_rate': '<pre><h2>_diffrn_refln_scan_rate</h2> The rate of scanning a '
                             'reflection in\n'
-                            ' degrees per minute to measure the intensity.</pre>',
+                            ' degrees per minute to measure the intensity.</pre>\n'
+                            '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_refln_scan_time_backgd': '<pre><h2>_diffrn_refln_scan_time_backgd</h2> The time spent '
-                                   'measuring each background in seconds.</pre>',
+                                   'measuring each background in seconds.</pre>\n'
+                                   '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_refln_scan_width': '<pre><h2>_diffrn_refln_scan_width</h2> The scan width in degrees of '
                              'the scan mode defined by the code\n'
-                             ' _diffrn_refln_scan_mode.</pre>',
+                             ' _diffrn_refln_scan_mode.</pre>\n'
+                             '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_refln_sint/lambda': '<pre><h2>_diffrn_refln_sint/lambda</h2> The (sin theta)/lambda '
                               'value in reciprocal angstroms for\n'
-                              ' this reflection.</pre>',
+                              ' this reflection.</pre>\n'
+                              '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_refln_standard_code': '<pre><h2>_diffrn_refln_standard_code</h2> A code indicating that '
                                 'this reflection was measured as a\n'
                                 " standard reflection. The value must be '.' or match one of\n"
@@ -3126,19 +3460,22 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                 's3\n'
                                 'A\n'
                                 'B\n'
-                                'C</pre>',
+                                'C</pre>\n'
+                                '<br><p><h4>Type:</h4> string</p>',
  '_diffrn_refln_wavelength': '<pre><h2>_diffrn_refln_wavelength</h2> The mean wavelength in '
                              'angstroms of the radiation used to measure\n'
                              ' the intensity of this reflection. This is an important parameter\n'
                              ' for reflections measured using energy-dispersive detectors or the\n'
-                             ' Laue method.</pre>',
+                             ' Laue method.</pre>\n'
+                             '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_refln_wavelength_id': '<pre><h2>_diffrn_refln_wavelength_id</h2> Code identifying the '
                                 'wavelength in the _diffrn_radiation_ list.\n'
                                 '\n'
                                 '<h3>Example:</h3>\n'
                                 'x1\n'
                                 'x2\n'
-                                'neut</pre>',
+                                'neut</pre>\n'
+                                '<br><p><h4>Type:</h4> string</p>',
  '_diffrn_reflns_Laue_measured_fraction_full': '<pre><h2>_diffrn_reflns_Laue_measured_fraction_full</h2> '
                                                'Fraction of Laue unique reflections '
                                                '(symmetry-independent in\n'
@@ -3157,7 +3494,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                                ' the fraction of reflections measured in the part '
                                                'of the\n'
                                                ' diffraction pattern that is essentially '
-                                               'complete.</pre>',
+                                               'complete.</pre>\n'
+                                               '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_reflns_Laue_measured_fraction_max': '<pre><h2>_diffrn_reflns_Laue_measured_fraction_max</h2> '
                                               'Fraction of Laue unique reflections '
                                               '(symmetry-independent in\n'
@@ -3170,79 +3508,98 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                               ' reflection h,k,l is always equivalent to the '
                                               'reflection -h,-k,-l\n'
                                               ' even in space groups without a centre of '
-                                              'symmetry.</pre>',
+                                              'symmetry.</pre>\n'
+                                              '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_reflns_av_R_equivalents': '<pre><h2>_diffrn_reflns_av_R_equivalents</h2> The residual '
                                     '[sum av|del(I)| / sum |av(I)|] for\n'
                                     ' symmetry-equivalent reflections used to calculate the\n'
                                     ' average intensity av(I). The av|del(I)| term is the\n'
                                     ' average absolute difference between av(I) and the\n'
-                                    ' individual symmetry-equivalent intensities.</pre>',
+                                    ' individual symmetry-equivalent intensities.</pre>\n'
+                                    '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_reflns_av_sigmaI/netI': '<pre><h2>_diffrn_reflns_av_sigmaI/netI</h2> Measure [sum |u(net '
-                                  'I)|/sum|net I|] for all measured reflections.</pre>',
+                                  'I)|/sum|net I|] for all measured reflections.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_reflns_av_unetI/netI': '<pre><h2>_diffrn_reflns_av_unetI/netI</h2> Measure [sum |u(net '
-                                 'I)|/sum|net I|] for all measured reflections.</pre>',
+                                 'I)|/sum|net I|] for all measured reflections.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_reflns_class_av_R_eq': '<pre><h2>_diffrn_reflns_class_av_R_eq</h2> For each reflection '
                                  'class, the residual\n'
                                  ' [sum av|del(I)|/sum|av(I)|] for symmetry-equivalent '
                                  'reflections\n'
                                  ' used to calculate the average intensity av(I). The av|del(I)|\n'
                                  ' term is the average absolute difference between av(I) and the\n'
-                                 ' individual intensities.</pre>',
+                                 ' individual intensities.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_reflns_class_av_sgI/I': '<pre><h2>_diffrn_reflns_class_av_sgI/I</h2> Measure [sum|u(net '
                                   'I)|/sum|net I|] for all measured intensities\n'
-                                  ' in a reflection class.</pre>',
+                                  ' in a reflection class.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_reflns_class_av_uI/I': '<pre><h2>_diffrn_reflns_class_av_uI/I</h2> Measure [sum|u(net '
                                  'I)|/sum|net I|] for all measured intensities\n'
-                                 ' in a reflection class.</pre>',
+                                 ' in a reflection class.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_reflns_class_code': '<pre><h2>_diffrn_reflns_class_code</h2> The code identifying a '
                               'certain reflection class.\n'
                               '\n'
                               '<h3>Example:</h3>\n'
                               '1\n'
                               'm1\n'
-                              's2</pre>',
+                              's2</pre>\n'
+                              '<br><p><h4>Type:</h4> string</p>',
  '_diffrn_reflns_class_d_res_high': '<pre><h2>_diffrn_reflns_class_d_res_high</h2> The smallest '
                                     'value in angstroms of the interplanar\n'
                                     ' spacings of the reflections in each reflection class.\n'
                                     ' This is called the highest resolution for this reflection '
-                                    'class.</pre>',
+                                    'class.</pre>\n'
+                                    '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_reflns_class_d_res_low': '<pre><h2>_diffrn_reflns_class_d_res_low</h2> The highest value '
                                    'in angstroms of the interplanar\n'
                                    ' spacings of the reflections in each reflection class.\n'
                                    ' This is called the lowest resolution for this reflection '
-                                   'class.</pre>',
+                                   'class.</pre>\n'
+                                   '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_reflns_class_description': '<pre><h2>_diffrn_reflns_class_description</h2> Description '
                                      'of each reflection class.\n'
                                      '\n'
                                      '<h3>Example:</h3>\n'
                                      'm=1 first order satellites\n'
-                                     'H0L0 common projection reflections</pre>',
+                                     'H0L0 common projection reflections</pre>\n'
+                                     '<br><p><h4>Type:</h4> string</p>',
  '_diffrn_reflns_class_number': '<pre><h2>_diffrn_reflns_class_number</h2> The total number of '
                                 'measured intensities for each reflection\n'
                                 ' class, excluding the systematic absences arising from\n'
-                                ' centring translations.</pre>',
+                                ' centring translations.</pre>\n'
+                                '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_reflns_limit_h_max': '<pre><h2>_diffrn_reflns_limit_h_max</h2> The limits on the Miller '
                                'indices of the intensities specified\n'
-                               ' by _diffrn_refln_index_h, *_k, *_l.</pre>',
+                               ' by _diffrn_refln_index_h, *_k, *_l.</pre>\n'
+                               '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_reflns_limit_h_min': '<pre><h2>_diffrn_reflns_limit_h_min</h2> The limits on the Miller '
                                'indices of the intensities specified\n'
-                               ' by _diffrn_refln_index_h, *_k, *_l.</pre>',
+                               ' by _diffrn_refln_index_h, *_k, *_l.</pre>\n'
+                               '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_reflns_limit_k_max': '<pre><h2>_diffrn_reflns_limit_k_max</h2> The limits on the Miller '
                                'indices of the intensities specified\n'
-                               ' by _diffrn_refln_index_h, *_k, *_l.</pre>',
+                               ' by _diffrn_refln_index_h, *_k, *_l.</pre>\n'
+                               '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_reflns_limit_k_min': '<pre><h2>_diffrn_reflns_limit_k_min</h2> The limits on the Miller '
                                'indices of the intensities specified\n'
-                               ' by _diffrn_refln_index_h, *_k, *_l.</pre>',
+                               ' by _diffrn_refln_index_h, *_k, *_l.</pre>\n'
+                               '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_reflns_limit_l_max': '<pre><h2>_diffrn_reflns_limit_l_max</h2> The limits on the Miller '
                                'indices of the intensities specified\n'
-                               ' by _diffrn_refln_index_h, *_k, *_l.</pre>',
+                               ' by _diffrn_refln_index_h, *_k, *_l.</pre>\n'
+                               '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_reflns_limit_l_min': '<pre><h2>_diffrn_reflns_limit_l_min</h2> The limits on the Miller '
                                'indices of the intensities specified\n'
-                               ' by _diffrn_refln_index_h, *_k, *_l.</pre>',
+                               ' by _diffrn_refln_index_h, *_k, *_l.</pre>\n'
+                               '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_reflns_number': '<pre><h2>_diffrn_reflns_number</h2> The total number of measured '
                           'intensities, excluding\n'
                           ' reflections that are classed as systematically absent arising\n'
-                          ' from translational symmetry in the crystal unit cell.</pre>',
+                          ' from translational symmetry in the crystal unit cell.</pre>\n'
+                          '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_reflns_point_group_measured_fraction_full': '<pre><h2>_diffrn_reflns_point_group_measured_fraction_full</h2> '
                                                       'Fraction of crystal point-group unique '
                                                       'reflections (i.e.\n'
@@ -3260,7 +3617,9 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                                       'fraction of reflections\n'
                                                       ' measured in the part of the diffraction '
                                                       'pattern that is\n'
-                                                      ' essentially complete.</pre>',
+                                                      ' essentially complete.</pre>\n'
+                                                      '<br><p><h4>Type:</h4> number (int or '
+                                                      'float)</p>',
  '_diffrn_reflns_point_group_measured_fraction_max': '<pre><h2>_diffrn_reflns_point_group_measured_fraction_max</h2> '
                                                      'Fraction of crystal point-group unique '
                                                      'reflections (i.e.\n'
@@ -3272,102 +3631,120 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                                      'groups that do not\n'
                                                      ' contain a centre of symmetry the '
                                                      'reflections h,k,l and\n'
-                                                     ' -h,-k,-l are independent.</pre>',
+                                                     ' -h,-k,-l are independent.</pre>\n'
+                                                     '<br><p><h4>Type:</h4> number (int or '
+                                                     'float)</p>',
  '_diffrn_reflns_reduction_process': '<pre><h2>_diffrn_reflns_reduction_process</h2> A description '
                                      'of the process used to reduce the intensities\n'
                                      ' into structure-factor magnitudes.\n'
                                      '\n'
                                      '<h3>Example:</h3>\n'
-                                     'data averaged using Fisher test</pre>',
+                                     'data averaged using Fisher test</pre>\n'
+                                     '<br><p><h4>Type:</h4> string</p>',
  '_diffrn_reflns_resolution_full': '<pre><h2>_diffrn_reflns_resolution_full</h2> The resolution in '
                                    'reciprocal angstroms at which the measured\n'
                                    ' reflection count is close to complete. The fraction of '
                                    'unique\n'
                                    ' reflections measured out to this angle is given by\n'
-                                   ' _diffrn_measured_fraction_theta_full.</pre>',
+                                   ' _diffrn_measured_fraction_theta_full.</pre>\n'
+                                   '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_reflns_resolution_max': '<pre><h2>_diffrn_reflns_resolution_max</h2> Maximum resolution '
                                   'in reciprocal angstroms of the measured\n'
                                   ' diffraction pattern. The fraction of unique reflections\n'
                                   ' measured out to this angle is given by\n'
-                                  ' _diffrn_measured_fraction_theta_max</pre>',
+                                  ' _diffrn_measured_fraction_theta_max</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_reflns_theta_full': '<pre><h2>_diffrn_reflns_theta_full</h2> The theta angle (in '
                               'degrees) at which the measured reflection\n'
                               ' count is close to complete. The fraction of unique reflections\n'
                               ' measured out to this angle is given by\n'
-                              ' _diffrn_measured_fraction_theta_full.</pre>',
+                              ' _diffrn_measured_fraction_theta_full.</pre>\n'
+                              '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_reflns_theta_max': '<pre><h2>_diffrn_reflns_theta_max</h2> Maximum theta angle in '
                              'degrees for the measured intensities.\n'
                              ' The fraction of unique reflections measured out to this angle\n'
-                             ' is given by _diffrn_measured_fraction_theta_max</pre>',
+                             ' is given by _diffrn_measured_fraction_theta_max</pre>\n'
+                             '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_reflns_theta_min': '<pre><h2>_diffrn_reflns_theta_min</h2> Minimum theta angle in '
-                             'degrees for the measured intensities.</pre>',
+                             'degrees for the measured intensities.</pre>\n'
+                             '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_reflns_transf_matrix_11': '<pre><h2>_diffrn_reflns_transf_matrix_11</h2> Elements of the '
                                     'matrix used to transform the diffraction\n'
                                     ' reflection indices _diffrn_refln_index_h, *_k, *_l into the\n'
                                     ' _refln_index_h, *_k, *_l indices.\n'
                                     '                            |11 12 13|\n'
                                     "       (h k l) diffraction  |21 22 23|  =  (h' k' l')\n"
-                                    '                            |31 32 33|</pre>',
+                                    '                            |31 32 33|</pre>\n'
+                                    '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_reflns_transf_matrix_12': '<pre><h2>_diffrn_reflns_transf_matrix_12</h2> Elements of the '
                                     'matrix used to transform the diffraction\n'
                                     ' reflection indices _diffrn_refln_index_h, *_k, *_l into the\n'
                                     ' _refln_index_h, *_k, *_l indices.\n'
                                     '                            |11 12 13|\n'
                                     "       (h k l) diffraction  |21 22 23|  =  (h' k' l')\n"
-                                    '                            |31 32 33|</pre>',
+                                    '                            |31 32 33|</pre>\n'
+                                    '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_reflns_transf_matrix_13': '<pre><h2>_diffrn_reflns_transf_matrix_13</h2> Elements of the '
                                     'matrix used to transform the diffraction\n'
                                     ' reflection indices _diffrn_refln_index_h, *_k, *_l into the\n'
                                     ' _refln_index_h, *_k, *_l indices.\n'
                                     '                            |11 12 13|\n'
                                     "       (h k l) diffraction  |21 22 23|  =  (h' k' l')\n"
-                                    '                            |31 32 33|</pre>',
+                                    '                            |31 32 33|</pre>\n'
+                                    '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_reflns_transf_matrix_21': '<pre><h2>_diffrn_reflns_transf_matrix_21</h2> Elements of the '
                                     'matrix used to transform the diffraction\n'
                                     ' reflection indices _diffrn_refln_index_h, *_k, *_l into the\n'
                                     ' _refln_index_h, *_k, *_l indices.\n'
                                     '                            |11 12 13|\n'
                                     "       (h k l) diffraction  |21 22 23|  =  (h' k' l')\n"
-                                    '                            |31 32 33|</pre>',
+                                    '                            |31 32 33|</pre>\n'
+                                    '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_reflns_transf_matrix_22': '<pre><h2>_diffrn_reflns_transf_matrix_22</h2> Elements of the '
                                     'matrix used to transform the diffraction\n'
                                     ' reflection indices _diffrn_refln_index_h, *_k, *_l into the\n'
                                     ' _refln_index_h, *_k, *_l indices.\n'
                                     '                            |11 12 13|\n'
                                     "       (h k l) diffraction  |21 22 23|  =  (h' k' l')\n"
-                                    '                            |31 32 33|</pre>',
+                                    '                            |31 32 33|</pre>\n'
+                                    '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_reflns_transf_matrix_23': '<pre><h2>_diffrn_reflns_transf_matrix_23</h2> Elements of the '
                                     'matrix used to transform the diffraction\n'
                                     ' reflection indices _diffrn_refln_index_h, *_k, *_l into the\n'
                                     ' _refln_index_h, *_k, *_l indices.\n'
                                     '                            |11 12 13|\n'
                                     "       (h k l) diffraction  |21 22 23|  =  (h' k' l')\n"
-                                    '                            |31 32 33|</pre>',
+                                    '                            |31 32 33|</pre>\n'
+                                    '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_reflns_transf_matrix_31': '<pre><h2>_diffrn_reflns_transf_matrix_31</h2> Elements of the '
                                     'matrix used to transform the diffraction\n'
                                     ' reflection indices _diffrn_refln_index_h, *_k, *_l into the\n'
                                     ' _refln_index_h, *_k, *_l indices.\n'
                                     '                            |11 12 13|\n'
                                     "       (h k l) diffraction  |21 22 23|  =  (h' k' l')\n"
-                                    '                            |31 32 33|</pre>',
+                                    '                            |31 32 33|</pre>\n'
+                                    '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_reflns_transf_matrix_32': '<pre><h2>_diffrn_reflns_transf_matrix_32</h2> Elements of the '
                                     'matrix used to transform the diffraction\n'
                                     ' reflection indices _diffrn_refln_index_h, *_k, *_l into the\n'
                                     ' _refln_index_h, *_k, *_l indices.\n'
                                     '                            |11 12 13|\n'
                                     "       (h k l) diffraction  |21 22 23|  =  (h' k' l')\n"
-                                    '                            |31 32 33|</pre>',
+                                    '                            |31 32 33|</pre>\n'
+                                    '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_reflns_transf_matrix_33': '<pre><h2>_diffrn_reflns_transf_matrix_33</h2> Elements of the '
                                     'matrix used to transform the diffraction\n'
                                     ' reflection indices _diffrn_refln_index_h, *_k, *_l into the\n'
                                     ' _refln_index_h, *_k, *_l indices.\n'
                                     '                            |11 12 13|\n'
                                     "       (h k l) diffraction  |21 22 23|  =  (h' k' l')\n"
-                                    '                            |31 32 33|</pre>',
+                                    '                            |31 32 33|</pre>\n'
+                                    '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_scale_group_I_net': '<pre><h2>_diffrn_scale_group_I_net</h2> The scale for a specific '
                               'measurement group which is to be\n'
                               ' multiplied with the net intensity to place all intensities\n'
-                              ' in the _diffrn_refln_ or _refln_ list on a common scale.</pre>',
+                              ' in the _diffrn_refln_ or _refln_ list on a common scale.</pre>\n'
+                              '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_scale_group_code': '<pre><h2>_diffrn_scale_group_code</h2> The code identifying a '
                              'specific measurement group (e.g. for\n'
                              ' multi-film or multi-crystal data). The code must match a\n'
@@ -3382,7 +3759,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                              'B\n'
                              'c1\n'
                              'c2\n'
-                             'c3</pre>',
+                             'c3</pre>\n'
+                             '<br><p><h4>Type:</h4> string</p>',
  '_diffrn_source': '<pre><h2>_diffrn_source</h2> The general class of the source of radiation.\n'
                    '\n'
                    '<h3>Example:</h3>\n'
@@ -3391,28 +3769,34 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                    'spallation source\n'
                    'electron microscope\n'
                    'rotating-anode X-ray tube\n'
-                   'synchrotron</pre>',
+                   'synchrotron</pre>\n'
+                   '<br><p><h4>Type:</h4> string</p>',
  '_diffrn_source_current': '<pre><h2>_diffrn_source_current</h2> The current in milliamperes at '
                            'which the radiation source was\n'
-                           ' operated.</pre>',
+                           ' operated.</pre>\n'
+                           '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_source_details': '<pre><h2>_diffrn_source_details</h2> A description of special aspects '
-                           'of the source.</pre>',
+                           'of the source.</pre>\n'
+                           '<br><p><h4>Type:</h4> string</p>',
  '_diffrn_source_power': '<pre><h2>_diffrn_source_power</h2> The power in kilowatts at which the '
                          'radiation source was\n'
-                         ' operated.</pre>',
+                         ' operated.</pre>\n'
+                         '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_source_size': '<pre><h2>_diffrn_source_size</h2> The dimensions of the source as viewed '
                         'from the sample.\n'
                         '\n'
                         '<h3>Example:</h3>\n'
                         '8mm x 0.4 mm fine-focus\n'
-                        'broad focus</pre>',
+                        'broad focus</pre>\n'
+                        '<br><p><h4>Type:</h4> string</p>',
  '_diffrn_source_take-off_angle': '<pre><h2>_diffrn_source_take-off_angle</h2> The complement of '
                                   'the angle in degrees between the normal\n'
                                   ' to the surface of the X-ray tube target and the primary\n'
                                   ' X-ray beam for beams generated by traditional X-ray tubes.\n'
                                   '\n'
                                   '<h3>Example:</h3>\n'
-                                  '1.53</pre>',
+                                  '1.53</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_source_target': '<pre><h2>_diffrn_source_target</h2> The chemical element symbol for the '
                           'X-ray target\n'
                           ' (usually the anode) used to generate X-rays.\n'
@@ -3521,16 +3905,19 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                           'Fm\n'
                           'Md\n'
                           'No\n'
-                          'Lr</pre>',
+                          'Lr</pre>\n'
+                          '<br><p><h4>Type:</h4> string</p>',
  '_diffrn_source_type': '<pre><h2>_diffrn_source_type</h2> The make, model or name of the source '
                         'of radiation.\n'
                         '\n'
                         '<h3>Example:</h3>\n'
                         'NSLS beamline X8C\n'
-                        'Rigaku RU200</pre>',
+                        'Rigaku RU200</pre>\n'
+                        '<br><p><h4>Type:</h4> string</p>',
  '_diffrn_source_voltage': '<pre><h2>_diffrn_source_voltage</h2> The voltage in kilovolts at which '
                            'the radiation source was\n'
-                           ' operated.</pre>',
+                           ' operated.</pre>\n'
+                           '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_special_details': '<pre><h2>_diffrn_special_details</h2> Special details of the '
                             'intensity-measurement process. Should\n'
                             ' include information about source instability, crystal motion,\n'
@@ -3539,7 +3926,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                             '<h3>Example:</h3>\n'
                             ' The results may not be entirely reliable\n'
                             ' as the measurement was made during a heat\n'
-                            ' wave when the air-conditioning had failed.</pre>',
+                            ' wave when the air-conditioning had failed.</pre>\n'
+                            '<br><p><h4>Type:</h4> string</p>',
  '_diffrn_standard_refln_code': '<pre><h2>_diffrn_standard_refln_code</h2> The code identifying a '
                                 'reflection measured as a standard\n'
                                 ' reflection with the indices _diffrn_standard_refln_index_.\n'
@@ -3552,16 +3940,20 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                 '3\n'
                                 's1\n'
                                 'A\n'
-                                'B</pre>',
+                                'B</pre>\n'
+                                '<br><p><h4>Type:</h4> string</p>',
  '_diffrn_standard_refln_index_h': '<pre><h2>_diffrn_standard_refln_index_h</h2> Miller indices of '
                                    'standard reflections used in the diffraction\n'
-                                   ' measurement process.</pre>',
+                                   ' measurement process.</pre>\n'
+                                   '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_standard_refln_index_k': '<pre><h2>_diffrn_standard_refln_index_k</h2> Miller indices of '
                                    'standard reflections used in the diffraction\n'
-                                   ' measurement process.</pre>',
+                                   ' measurement process.</pre>\n'
+                                   '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_standard_refln_index_l': '<pre><h2>_diffrn_standard_refln_index_l</h2> Miller indices of '
                                    'standard reflections used in the diffraction\n'
-                                   ' measurement process.</pre>',
+                                   ' measurement process.</pre>\n'
+                                   '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_standards_decay_%': '<pre><h2>_diffrn_standards_decay_%</h2> The percentage decrease in '
                               'the mean\n'
                               ' intensity of the set of standard reflections measured at the\n'
@@ -3579,33 +3971,41 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                               '<h3>Example:</h3>\n'
                               '0.5(1)\n'
                               '-1(1)\n'
-                              '0.0(2)</pre>',
+                              '0.0(2)</pre>\n'
+                              '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_standards_interval_count': '<pre><h2>_diffrn_standards_interval_count</h2> The number of '
                                      'reflection intensities, or the time in minutes,\n'
                                      ' between the measurement of standard reflection '
-                                     'intensities.</pre>',
+                                     'intensities.</pre>\n'
+                                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_standards_interval_time': '<pre><h2>_diffrn_standards_interval_time</h2> The number of '
                                     'reflection intensities, or the time in minutes,\n'
                                     ' between the measurement of standard reflection '
-                                    'intensities.</pre>',
+                                    'intensities.</pre>\n'
+                                    '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_standards_number': '<pre><h2>_diffrn_standards_number</h2> The number of unique standard '
                              'reflections used during the\n'
-                             ' measurement of the diffraction intensities.</pre>',
+                             ' measurement of the diffraction intensities.</pre>\n'
+                             '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_standards_scale_sigma': '<pre><h2>_diffrn_standards_scale_sigma</h2> The standard '
                                   'uncertainty (e.s.d.) of the individual mean\n'
-                                  ' standard scales applied to the intensity data.</pre>',
+                                  ' standard scales applied to the intensity data.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_standards_scale_u': '<pre><h2>_diffrn_standards_scale_u</h2> The standard uncertainty of '
                               'the individual mean\n'
-                              ' standard scales applied to the intensity data.</pre>',
+                              ' standard scales applied to the intensity data.</pre>\n'
+                              '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_symmetry_description': '<pre><h2>_diffrn_symmetry_description</h2> Observed diffraction '
                                  'point symmetry, systematic absences and\n'
                                  ' possible space group(s) or superspace group(s) compatible with\n'
-                                 ' these.</pre>',
+                                 ' these.</pre>\n'
+                                 '<br><p><h4>Type:</h4> string</p>',
  '_exptl_absorpt_coefficient_mu': '<pre><h2>_exptl_absorpt_coefficient_mu</h2> The absorption '
                                   'coefficient mu in reciprocal millimetres\n'
                                   ' calculated from the atomic content of the cell, the density '
                                   'and\n'
-                                  ' the radiation wavelength.</pre>',
+                                  ' the radiation wavelength.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_exptl_absorpt_correction_T_max': '<pre><h2>_exptl_absorpt_correction_T_max</h2> The maximum and '
                                     'minimum transmission factors applied to the\n'
                                     ' diffraction pattern measured in this experiment. These\n'
@@ -3613,7 +4013,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                     ' A or 1/A*. As this value is the one that is applied to\n'
                                     ' the measured intensities, it includes the correction for\n'
                                     ' absorption by the specimen mount and diffractometer as well\n'
-                                    ' as by the specimen itself.</pre>',
+                                    ' as by the specimen itself.</pre>\n'
+                                    '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_exptl_absorpt_correction_T_min': '<pre><h2>_exptl_absorpt_correction_T_min</h2> The maximum and '
                                     'minimum transmission factors applied to the\n'
                                     ' diffraction pattern measured in this experiment. These\n'
@@ -3621,7 +4022,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                     ' A or 1/A*. As this value is the one that is applied to\n'
                                     ' the measured intensities, it includes the correction for\n'
                                     ' absorption by the specimen mount and diffractometer as well\n'
-                                    ' as by the specimen itself.</pre>',
+                                    ' as by the specimen itself.</pre>\n'
+                                    '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_exptl_absorpt_correction_type': '<pre><h2>_exptl_absorpt_correction_type</h2> The '
                                    "absorption-correction type and method. The value 'empirical'\n"
                                    ' should NOT be used unless more detailed information is not\n'
@@ -3660,7 +4062,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                    '\n'
                                    'sphere\n'
                                    '\tspherical\n'
-                                   '</pre>',
+                                   '</pre>\n'
+                                   '<br><p><h4>Type:</h4> string</p>',
  '_exptl_absorpt_process_details': '<pre><h2>_exptl_absorpt_process_details</h2> Description of '
                                    'the absorption process applied to the\n'
                                    ' intensities. A literature reference should be supplied\n'
@@ -3669,7 +4072,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                    '<h3>Example:</h3>\n'
                                    'Tompa analytical\n'
                                    'MolEN (Fair, 1990)\n'
-                                   '(North, Phillips &amp; Mathews, 1968)</pre>',
+                                   '(North, Phillips &amp; Mathews, 1968)</pre>\n'
+                                   '<br><p><h4>Type:</h4> string</p>',
  '_exptl_crystal_F_000': '<pre><h2>_exptl_crystal_F_000</h2> The expression for a structure factor '
                          'evaluated in the\n'
                          ' zeroth-order case h = k = l = 0, F(000). This may contain\n'
@@ -3686,11 +4090,13 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                          ' and counts the effective number of electrons in the unit cell;\n'
                          ' for neutrons, non-dispersive F(000) (which may be negative)\n'
                          ' counts the total nuclear scattering power in the unit cell. See\n'
-                         '    http://reference.iucr.org/dictionary/F(000)</pre>',
+                         '    http://reference.iucr.org/dictionary/F(000)</pre>\n'
+                         '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_exptl_crystal_colour': '<pre><h2>_exptl_crystal_colour</h2> The colour of the crystal.\n'
                           '\n'
                           '<h3>Example:</h3>\n'
-                          'dark green</pre>',
+                          'dark green</pre>\n'
+                          '<br><p><h4>Type:</h4> string</p>',
  '_exptl_crystal_colour_lustre': '<pre><h2>_exptl_crystal_colour_lustre</h2>The enumeration list '
                                  'of standardized names developed for the\n'
                                  'International Centre for Diffraction Data.\n'
@@ -3703,7 +4109,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                  '<h3>Example:</h3>\n'
                                  'metallic\n'
                                  'dull\n'
-                                 'clear</pre>',
+                                 'clear</pre>\n'
+                                 '<br><p><h4>Type:</h4> string</p>',
  '_exptl_crystal_colour_modifier': '<pre><h2>_exptl_crystal_colour_modifier</h2>The enumeration '
                                    'list of standardized names developed for the\n'
                                    'International Centre for Diffraction Data.\n'
@@ -3725,7 +4132,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                    'orangish\n'
                                    'yellowish\n'
                                    'greenish\n'
-                                   'bluish</pre>',
+                                   'bluish</pre>\n'
+                                   '<br><p><h4>Type:</h4> string</p>',
  '_exptl_crystal_colour_primary': '<pre><h2>_exptl_crystal_colour_primary</h2>The enumeration list '
                                   'of standardized names developed for the\n'
                                   'International Centre for Diffraction Data.\n'
@@ -3747,15 +4155,18 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                   'yellow\n'
                                   'green\n'
                                   'blue\n'
-                                  'violet</pre>',
+                                  'violet</pre>\n'
+                                  '<br><p><h4>Type:</h4> string</p>',
  '_exptl_crystal_density_diffrn': '<pre><h2>_exptl_crystal_density_diffrn</h2> Density values '
                                   'calculated from the crystal cell and contents. The\n'
                                   ' units are megagrams per cubic metre (grams per cubic '
-                                  'centimetre).</pre>',
+                                  'centimetre).</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_exptl_crystal_density_meas': '<pre><h2>_exptl_crystal_density_meas</h2> Density values measured '
                                 'using standard chemical and physical\n'
                                 ' methods. The units are megagrams per cubic metre (grams per\n'
-                                ' cubic centimetre).</pre>',
+                                ' cubic centimetre).</pre>\n'
+                                '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_exptl_crystal_density_meas_gt': '<pre><h2>_exptl_crystal_density_meas_gt</h2> The value above '
                                    'which the density measured using standard\n'
                                    ' chemical and physical methods lies. The units are megagrams\n'
@@ -3769,7 +4180,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                    ' reported under _exptl_crystal_density_meas.\n'
                                    '\n'
                                    '<h3>Example:</h3>\n'
-                                   '2.5</pre>',
+                                   '2.5</pre>\n'
+                                   '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_exptl_crystal_density_meas_lt': '<pre><h2>_exptl_crystal_density_meas_lt</h2> The value below '
                                    'which the density measured using standard\n'
                                    ' chemical and physical methods lies. The units are megagrams\n'
@@ -3784,10 +4196,12 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                    '\n'
                                    '<h3>Example:</h3>\n'
                                    '1.0\n'
-                                   '5.0</pre>',
+                                   '5.0</pre>\n'
+                                   '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_exptl_crystal_density_meas_temp': '<pre><h2>_exptl_crystal_density_meas_temp</h2> Temperature '
                                      'in kelvins at which _exptl_crystal_density_meas\n'
-                                     ' was determined.</pre>',
+                                     ' was determined.</pre>\n'
+                                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_exptl_crystal_density_meas_temp_gt': '<pre><h2>_exptl_crystal_density_meas_temp_gt</h2> '
                                         'Temperature in kelvins above which '
                                         '_exptl_crystal_density_meas\n'
@@ -3800,7 +4214,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                         'for\n'
                                         ' use in reporting information stored in databases\n'
                                         ' or archives which would be misleading if reported under\n'
-                                        ' _exptl_crystal_density_meas_temp.</pre>',
+                                        ' _exptl_crystal_density_meas_temp.</pre>\n'
+                                        '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_exptl_crystal_density_meas_temp_lt': '<pre><h2>_exptl_crystal_density_meas_temp_lt</h2> '
                                         'Temperature in kelvins below which '
                                         '_exptl_crystal_density_meas\n'
@@ -3816,73 +4231,87 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                         ' _exptl_crystal_density_meas_temp.\n'
                                         '\n'
                                         '<h3>Example:</h3>\n'
-                                        '300</pre>',
+                                        '300</pre>\n'
+                                        '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_exptl_crystal_density_method': '<pre><h2>_exptl_crystal_density_method</h2> The method used to '
                                   'measure _exptl_crystal_density_meas.\n'
                                   '\n'
                                   '<h3>Example:</h3>\n'
                                   'flotation in aqueous KI\n'
                                   'not measured\n'
-                                  'Berman density torsion balance</pre>',
+                                  'Berman density torsion balance</pre>\n'
+                                  '<br><p><h4>Type:</h4> string</p>',
  '_exptl_crystal_description': '<pre><h2>_exptl_crystal_description</h2> A description of the '
                                'quality and habit of the crystal.\n'
                                ' The crystal dimensions should not normally be reported here;\n'
                                ' use instead _exptl_crystal_size_ for the gross dimensions of\n'
                                ' the crystal and _exptl_crystal_face_ to describe the\n'
-                               ' relationship between individual faces.</pre>',
+                               ' relationship between individual faces.</pre>\n'
+                               '<br><p><h4>Type:</h4> string</p>',
  '_exptl_crystal_face_diffr_chi': '<pre><h2>_exptl_crystal_face_diffr_chi</h2> The goniometer '
                                   'angle settings in degrees when the perpendicular\n'
                                   ' to the specified crystal face is aligned along a specified\n'
                                   ' direction (e.g. the bisector of the incident and reflected '
                                   'beams\n'
                                   ' in an optical goniometer).\n'
-                                  '</pre>',
+                                  '</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_exptl_crystal_face_diffr_kappa': '<pre><h2>_exptl_crystal_face_diffr_kappa</h2> The goniometer '
                                     'angle settings in degrees when the perpendicular\n'
                                     ' to the specified crystal face is aligned along a specified\n'
                                     ' direction (e.g. the bisector of the incident and reflected '
                                     'beams\n'
                                     ' in an optical goniometer).\n'
-                                    '</pre>',
+                                    '</pre>\n'
+                                    '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_exptl_crystal_face_diffr_phi': '<pre><h2>_exptl_crystal_face_diffr_phi</h2> The goniometer '
                                   'angle settings in degrees when the perpendicular\n'
                                   ' to the specified crystal face is aligned along a specified\n'
                                   ' direction (e.g. the bisector of the incident and reflected '
                                   'beams\n'
                                   ' in an optical goniometer).\n'
-                                  '</pre>',
+                                  '</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_exptl_crystal_face_diffr_psi': '<pre><h2>_exptl_crystal_face_diffr_psi</h2> The goniometer '
                                   'angle settings in degrees when the perpendicular\n'
                                   ' to the specified crystal face is aligned along a specified\n'
                                   ' direction (e.g. the bisector of the incident and reflected '
                                   'beams\n'
                                   ' in an optical goniometer).\n'
-                                  '</pre>',
+                                  '</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_exptl_crystal_face_index_h': '<pre><h2>_exptl_crystal_face_index_h</h2> Miller indices of the '
                                 'crystal face associated with the value\n'
-                                ' _exptl_crystal_face_perp_dist.</pre>',
+                                ' _exptl_crystal_face_perp_dist.</pre>\n'
+                                '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_exptl_crystal_face_index_k': '<pre><h2>_exptl_crystal_face_index_k</h2> Miller indices of the '
                                 'crystal face associated with the value\n'
-                                ' _exptl_crystal_face_perp_dist.</pre>',
+                                ' _exptl_crystal_face_perp_dist.</pre>\n'
+                                '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_exptl_crystal_face_index_l': '<pre><h2>_exptl_crystal_face_index_l</h2> Miller indices of the '
                                 'crystal face associated with the value\n'
-                                ' _exptl_crystal_face_perp_dist.</pre>',
+                                ' _exptl_crystal_face_perp_dist.</pre>\n'
+                                '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_exptl_crystal_face_perp_dist': '<pre><h2>_exptl_crystal_face_perp_dist</h2> The perpendicular '
                                   'distance in millimetres from the face to the\n'
-                                  ' centre of rotation of the crystal.</pre>',
+                                  ' centre of rotation of the crystal.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_exptl_crystal_id': '<pre><h2>_exptl_crystal_id</h2> Code identifying each crystal if multiple '
                       'crystals are used. It\n'
                       ' is used to link with _diffrn_refln_crystal_id in the intensity\n'
-                      ' measurements and with _refln_crystal_id in the _refln_ list.</pre>',
+                      ' measurements and with _refln_crystal_id in the _refln_ list.</pre>\n'
+                      '<br><p><h4>Type:</h4> string</p>',
  '_exptl_crystal_preparation': '<pre><h2>_exptl_crystal_preparation</h2> Details of crystal growth '
                                'and preparation of the crystal (e.g.\n'
                                ' mounting) prior to the intensity measurements.\n'
                                '\n'
                                '<h3>Example:</h3>\n'
-                               'mounted in an argon-filled quartz capillary</pre>',
+                               'mounted in an argon-filled quartz capillary</pre>\n'
+                               '<br><p><h4>Type:</h4> string</p>',
  '_exptl_crystal_pressure_history': '<pre><h2>_exptl_crystal_pressure_history</h2> Relevant '
                                     'details concerning the pressure history of the\n'
-                                    ' sample.</pre>',
+                                    ' sample.</pre>\n'
+                                    '<br><p><h4>Type:</h4> string</p>',
  '_exptl_crystal_recrystallization_method': '<pre><h2>_exptl_crystal_recrystallization_method</h2> '
                                             'Describes the method used to recrystallize the '
                                             'sample.\n'
@@ -3893,86 +4322,101 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                             ' well as details of the solvent, flux or carrier gas '
                                             'with\n'
                                             ' concentrations or pressures and ambient '
-                                            'atmosphere.</pre>',
+                                            'atmosphere.</pre>\n'
+                                            '<br><p><h4>Type:</h4> string</p>',
  '_exptl_crystal_size_length': '<pre><h2>_exptl_crystal_size_length</h2> The maximum, medial and '
                                'minimum dimensions in millimetres of\n'
                                ' the crystal. If the crystal is a sphere, then the *_rad item is\n'
                                ' its radius. If the crystal is a cylinder, then the *_rad item\n'
                                ' is its radius and the *_length item is its length. These may\n'
                                ' appear in a list with _exptl_crystal_id if multiple crystals\n'
-                               ' are used in the experiment.</pre>',
+                               ' are used in the experiment.</pre>\n'
+                               '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_exptl_crystal_size_max': '<pre><h2>_exptl_crystal_size_max</h2> The maximum, medial and minimum '
                             'dimensions in millimetres of\n'
                             ' the crystal. If the crystal is a sphere, then the *_rad item is\n'
                             ' its radius. If the crystal is a cylinder, then the *_rad item\n'
                             ' is its radius and the *_length item is its length. These may\n'
                             ' appear in a list with _exptl_crystal_id if multiple crystals\n'
-                            ' are used in the experiment.</pre>',
+                            ' are used in the experiment.</pre>\n'
+                            '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_exptl_crystal_size_mid': '<pre><h2>_exptl_crystal_size_mid</h2> The maximum, medial and minimum '
                             'dimensions in millimetres of\n'
                             ' the crystal. If the crystal is a sphere, then the *_rad item is\n'
                             ' its radius. If the crystal is a cylinder, then the *_rad item\n'
                             ' is its radius and the *_length item is its length. These may\n'
                             ' appear in a list with _exptl_crystal_id if multiple crystals\n'
-                            ' are used in the experiment.</pre>',
+                            ' are used in the experiment.</pre>\n'
+                            '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_exptl_crystal_size_min': '<pre><h2>_exptl_crystal_size_min</h2> The maximum, medial and minimum '
                             'dimensions in millimetres of\n'
                             ' the crystal. If the crystal is a sphere, then the *_rad item is\n'
                             ' its radius. If the crystal is a cylinder, then the *_rad item\n'
                             ' is its radius and the *_length item is its length. These may\n'
                             ' appear in a list with _exptl_crystal_id if multiple crystals\n'
-                            ' are used in the experiment.</pre>',
+                            ' are used in the experiment.</pre>\n'
+                            '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_exptl_crystal_size_rad': '<pre><h2>_exptl_crystal_size_rad</h2> The maximum, medial and minimum '
                             'dimensions in millimetres of\n'
                             ' the crystal. If the crystal is a sphere, then the *_rad item is\n'
                             ' its radius. If the crystal is a cylinder, then the *_rad item\n'
                             ' is its radius and the *_length item is its length. These may\n'
                             ' appear in a list with _exptl_crystal_id if multiple crystals\n'
-                            ' are used in the experiment.</pre>',
+                            ' are used in the experiment.</pre>\n'
+                            '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_exptl_crystal_thermal_history': '<pre><h2>_exptl_crystal_thermal_history</h2> Relevant details '
                                    'concerning the thermal history of the\n'
-                                   ' sample.</pre>',
+                                   ' sample.</pre>\n'
+                                   '<br><p><h4>Type:</h4> string</p>',
  '_exptl_crystals_number': '<pre><h2>_exptl_crystals_number</h2> The total number of crystals used '
                            'for the measurement of\n'
-                           ' intensities.</pre>',
+                           ' intensities.</pre>\n'
+                           '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_exptl_special_details': '<pre><h2>_exptl_special_details</h2> Any special information about the '
                            'experimental work prior to the\n'
-                           ' intensity measurements. See also _exptl_crystal_preparation.</pre>',
+                           ' intensity measurements. See also _exptl_crystal_preparation.</pre>\n'
+                           '<br><p><h4>Type:</h4> string</p>',
  '_exptl_transmission_factor_max': '<pre><h2>_exptl_transmission_factor_max</h2> The calculated '
                                    'maximum value of the transmission factor for\n'
                                    ' the specimen. Its value does not include the effects of\n'
                                    ' absorption in the specimen mount. The presence of this\n'
                                    ' item does not imply that the structure factors have been\n'
                                    ' corrected for absorption. The applied correction should be \n'
-                                   ' given by _exptl_absorpt_correction_T_max.</pre>',
+                                   ' given by _exptl_absorpt_correction_T_max.</pre>\n'
+                                   '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_exptl_transmission_factor_min': '<pre><h2>_exptl_transmission_factor_min</h2> The calculated '
                                    'minimum value of the transmission factor for\n'
                                    ' the specimen. Its value does not include the effects of\n'
                                    ' absorption in the specimen mount. The presence of this\n'
                                    ' item does not imply that the structure factors have been\n'
                                    ' corrected for absorption. The applied correction should be \n'
-                                   ' given by _exptl_absorpt_correction_T_min.</pre>',
+                                   ' given by _exptl_absorpt_correction_T_min.</pre>\n'
+                                   '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_geom_angle': '<pre><h2>_geom_angle</h2> Angle in degrees defined by the three sites\n'
                 ' _geom_angle_atom_site_label_1, *_2 and *_3. The site at *_2\n'
-                ' is at the apex of the angle.</pre>',
+                ' is at the apex of the angle.</pre>\n'
+                '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_geom_angle_atom_site_label_1': '<pre><h2>_geom_angle_atom_site_label_1</h2> The labels of the '
                                   'three atom sites which define the angle\n'
                                   ' given by _geom_angle. These must match labels specified as\n'
                                   ' _atom_site_label in the atom list. Label 2 identifies the site '
                                   'at\n'
-                                  ' the apex of the angle.</pre>',
+                                  ' the apex of the angle.</pre>\n'
+                                  '<br><p><h4>Type:</h4> string</p>',
  '_geom_angle_atom_site_label_2': '<pre><h2>_geom_angle_atom_site_label_2</h2> The labels of the '
                                   'three atom sites which define the angle\n'
                                   ' given by _geom_angle. These must match labels specified as\n'
                                   ' _atom_site_label in the atom list. Label 2 identifies the site '
                                   'at\n'
-                                  ' the apex of the angle.</pre>',
+                                  ' the apex of the angle.</pre>\n'
+                                  '<br><p><h4>Type:</h4> string</p>',
  '_geom_angle_atom_site_label_3': '<pre><h2>_geom_angle_atom_site_label_3</h2> The labels of the '
                                   'three atom sites which define the angle\n'
                                   ' given by _geom_angle. These must match labels specified as\n'
                                   ' _atom_site_label in the atom list. Label 2 identifies the site '
                                   'at\n'
-                                  ' the apex of the angle.</pre>',
+                                  ' the apex of the angle.</pre>\n'
+                                  '<br><p><h4>Type:</h4> string</p>',
  '_geom_angle_publ_flag': '<pre><h2>_geom_angle_publ_flag</h2> This code signals whether the angle '
                           'is referred to in a\n'
                           ' publication or should be placed in a table of significant\n'
@@ -3990,7 +4434,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                           '\n'
                           'y\n'
                           '\tabbreviation for "yes"\n'
-                          '</pre>',
+                          '</pre>\n'
+                          '<br><p><h4>Type:</h4> string</p>',
  '_geom_angle_site_symmetry_1': '<pre><h2>_geom_angle_site_symmetry_1</h2> The symmetry code of '
                                 'each atom site as the symmetry-equivalent\n'
                                 " position number 'n' and the cell translation number 'klm'.\n"
@@ -4015,7 +4460,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                 '<h3>Example:</h3>\n'
                                 'None\n'
                                 '4\n'
-                                '7_645</pre>',
+                                '7_645</pre>\n'
+                                '<br><p><h4>Type:</h4> string</p>',
  '_geom_angle_site_symmetry_2': '<pre><h2>_geom_angle_site_symmetry_2</h2> The symmetry code of '
                                 'each atom site as the symmetry-equivalent\n'
                                 " position number 'n' and the cell translation number 'klm'.\n"
@@ -4040,7 +4486,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                 '<h3>Example:</h3>\n'
                                 'None\n'
                                 '4\n'
-                                '7_645</pre>',
+                                '7_645</pre>\n'
+                                '<br><p><h4>Type:</h4> string</p>',
  '_geom_angle_site_symmetry_3': '<pre><h2>_geom_angle_site_symmetry_3</h2> The symmetry code of '
                                 'each atom site as the symmetry-equivalent\n'
                                 " position number 'n' and the cell translation number 'klm'.\n"
@@ -4065,21 +4512,26 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                 '<h3>Example:</h3>\n'
                                 'None\n'
                                 '4\n'
-                                '7_645</pre>',
+                                '7_645</pre>\n'
+                                '<br><p><h4>Type:</h4> string</p>',
  '_geom_bond_atom_site_label_1': '<pre><h2>_geom_bond_atom_site_label_1</h2> The labels of two '
                                  'atom sites that form a bond. These must match\n'
-                                 ' labels specified as _atom_site_label in the atom list.</pre>',
+                                 ' labels specified as _atom_site_label in the atom list.</pre>\n'
+                                 '<br><p><h4>Type:</h4> string</p>',
  '_geom_bond_atom_site_label_2': '<pre><h2>_geom_bond_atom_site_label_2</h2> The labels of two '
                                  'atom sites that form a bond. These must match\n'
-                                 ' labels specified as _atom_site_label in the atom list.</pre>',
+                                 ' labels specified as _atom_site_label in the atom list.</pre>\n'
+                                 '<br><p><h4>Type:</h4> string</p>',
  '_geom_bond_distance': '<pre><h2>_geom_bond_distance</h2> The intramolecular bond distance in '
-                        'angstroms.</pre>',
+                        'angstroms.</pre>\n'
+                        '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_geom_bond_multiplicity': '<pre><h2>_geom_bond_multiplicity</h2> The number of times the given '
                             'bond appears in the environment\n'
                             ' of the atoms labelled _geom_bond_atom_site_label_1. In cases\n'
                             ' where the full list of bonds is given, one of the series of\n'
                             ' equivalent bonds may be assigned the appropriate multiplicity\n'
-                            ' while the others are assigned a value of 0.</pre>',
+                            ' while the others are assigned a value of 0.</pre>\n'
+                            '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_geom_bond_publ_flag': '<pre><h2>_geom_bond_publ_flag</h2> This code signals whether the bond '
                          'distance is referred to in a\n'
                          ' publication or should be placed in a list of significant bond\n'
@@ -4097,7 +4549,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                          '\n'
                          'y\n'
                          '\tabbreviation for "yes"\n'
-                         '</pre>',
+                         '</pre>\n'
+                         '<br><p><h4>Type:</h4> string</p>',
  '_geom_bond_site_symmetry_1': '<pre><h2>_geom_bond_site_symmetry_1</h2> The symmetry code of each '
                                'atom site as the symmetry-equivalent\n'
                                " position number 'n' and the cell translation number 'klm'.\n"
@@ -4122,7 +4575,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                '<h3>Example:</h3>\n'
                                'None\n'
                                '4\n'
-                               '7_645</pre>',
+                               '7_645</pre>\n'
+                               '<br><p><h4>Type:</h4> string</p>',
  '_geom_bond_site_symmetry_2': '<pre><h2>_geom_bond_site_symmetry_2</h2> The symmetry code of each '
                                'atom site as the symmetry-equivalent\n'
                                " position number 'n' and the cell translation number 'klm'.\n"
@@ -4147,19 +4601,24 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                '<h3>Example:</h3>\n'
                                'None\n'
                                '4\n'
-                               '7_645</pre>',
+                               '7_645</pre>\n'
+                               '<br><p><h4>Type:</h4> string</p>',
  '_geom_bond_valence': '<pre><h2>_geom_bond_valence</h2> The bond valence calculated from '
-                       '_geom_bond_distance.</pre>',
+                       '_geom_bond_distance.</pre>\n'
+                       '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_geom_contact_atom_site_label_1': '<pre><h2>_geom_contact_atom_site_label_1</h2> The labels of '
                                     'two atom sites that are within contact distance.\n'
                                     ' The labels must match _atom_site_label codes in the atom '
-                                    'list.</pre>',
+                                    'list.</pre>\n'
+                                    '<br><p><h4>Type:</h4> string</p>',
  '_geom_contact_atom_site_label_2': '<pre><h2>_geom_contact_atom_site_label_2</h2> The labels of '
                                     'two atom sites that are within contact distance.\n'
                                     ' The labels must match _atom_site_label codes in the atom '
-                                    'list.</pre>',
+                                    'list.</pre>\n'
+                                    '<br><p><h4>Type:</h4> string</p>',
  '_geom_contact_distance': '<pre><h2>_geom_contact_distance</h2> The interatomic contact distance '
-                           'in angstroms.</pre>',
+                           'in angstroms.</pre>\n'
+                           '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_geom_contact_publ_flag': '<pre><h2>_geom_contact_publ_flag</h2> This code signals whether the '
                             'contact distance is referred to\n'
                             ' in a publication or should be placed in a list of significant\n'
@@ -4177,7 +4636,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                             '\n'
                             'y\n'
                             '\tabbreviation for "yes"\n'
-                            '</pre>',
+                            '</pre>\n'
+                            '<br><p><h4>Type:</h4> string</p>',
  '_geom_contact_site_symmetry_1': '<pre><h2>_geom_contact_site_symmetry_1</h2> The symmetry code '
                                   'of each atom site as the symmetry-equivalent\n'
                                   " position number 'n' and the cell translation number 'klm'.\n"
@@ -4202,7 +4662,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                   '<h3>Example:</h3>\n'
                                   'None\n'
                                   '4\n'
-                                  '7_645</pre>',
+                                  '7_645</pre>\n'
+                                  '<br><p><h4>Type:</h4> string</p>',
  '_geom_contact_site_symmetry_2': '<pre><h2>_geom_contact_site_symmetry_2</h2> The symmetry code '
                                   'of each atom site as the symmetry-equivalent\n'
                                   " position number 'n' and the cell translation number 'klm'.\n"
@@ -4227,39 +4688,47 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                   '<h3>Example:</h3>\n'
                                   'None\n'
                                   '4\n'
-                                  '7_645</pre>',
+                                  '7_645</pre>\n'
+                                  '<br><p><h4>Type:</h4> string</p>',
  '_geom_hbond_angle_DHA': '<pre><h2>_geom_hbond_angle_DHA</h2> Angle in degrees defined by the '
                           'three sites\n'
                           ' _geom_hbond_atom_site_label_D, *_H and *_A. The site at *_H\n'
                           ' (the hydrogen atom participating in the interaction) is at\n'
-                          ' the apex of the angle.</pre>',
+                          ' the apex of the angle.</pre>\n'
+                          '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_geom_hbond_atom_site_label_A': '<pre><h2>_geom_hbond_atom_site_label_A</h2> The labels of three '
                                   'atom sites (respectively, the donor atom,\n'
                                   ' hydrogen atom and acceptor atom) participating in a hydrogen\n'
                                   ' bond. These must match labels specified as _atom_site_label\n'
-                                  ' in the atom list.</pre>',
+                                  ' in the atom list.</pre>\n'
+                                  '<br><p><h4>Type:</h4> string</p>',
  '_geom_hbond_atom_site_label_D': '<pre><h2>_geom_hbond_atom_site_label_D</h2> The labels of three '
                                   'atom sites (respectively, the donor atom,\n'
                                   ' hydrogen atom and acceptor atom) participating in a hydrogen\n'
                                   ' bond. These must match labels specified as _atom_site_label\n'
-                                  ' in the atom list.</pre>',
+                                  ' in the atom list.</pre>\n'
+                                  '<br><p><h4>Type:</h4> string</p>',
  '_geom_hbond_atom_site_label_H': '<pre><h2>_geom_hbond_atom_site_label_H</h2> The labels of three '
                                   'atom sites (respectively, the donor atom,\n'
                                   ' hydrogen atom and acceptor atom) participating in a hydrogen\n'
                                   ' bond. These must match labels specified as _atom_site_label\n'
-                                  ' in the atom list.</pre>',
+                                  ' in the atom list.</pre>\n'
+                                  '<br><p><h4>Type:</h4> string</p>',
  '_geom_hbond_distance_DA': '<pre><h2>_geom_hbond_distance_DA</h2> Distances in angstroms between '
                             'the donor and hydrogen (*_DH),\n'
                             ' hydrogen and acceptor (*_HA) and donor and acceptor (*_DA)\n'
-                            ' sites in a hydrogen bond.</pre>',
+                            ' sites in a hydrogen bond.</pre>\n'
+                            '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_geom_hbond_distance_DH': '<pre><h2>_geom_hbond_distance_DH</h2> Distances in angstroms between '
                             'the donor and hydrogen (*_DH),\n'
                             ' hydrogen and acceptor (*_HA) and donor and acceptor (*_DA)\n'
-                            ' sites in a hydrogen bond.</pre>',
+                            ' sites in a hydrogen bond.</pre>\n'
+                            '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_geom_hbond_distance_HA': '<pre><h2>_geom_hbond_distance_HA</h2> Distances in angstroms between '
                             'the donor and hydrogen (*_DH),\n'
                             ' hydrogen and acceptor (*_HA) and donor and acceptor (*_DA)\n'
-                            ' sites in a hydrogen bond.</pre>',
+                            ' sites in a hydrogen bond.</pre>\n'
+                            '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_geom_hbond_publ_flag': '<pre><h2>_geom_hbond_publ_flag</h2> This code signals whether the '
                           'hydrogen-bond information\n'
                           ' is referred to in a publication or should be placed in a\n'
@@ -4277,7 +4746,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                           '\n'
                           'y\n'
                           '\tabbreviation for "yes"\n'
-                          '</pre>',
+                          '</pre>\n'
+                          '<br><p><h4>Type:</h4> string</p>',
  '_geom_hbond_site_symmetry_A': '<pre><h2>_geom_hbond_site_symmetry_A</h2> The symmetry code of '
                                 'each atom site as the symmetry-equivalent\n'
                                 " position number 'n' and the cell translation number 'klm'.\n"
@@ -4302,7 +4772,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                 '<h3>Example:</h3>\n'
                                 'None\n'
                                 '4\n'
-                                '7_645</pre>',
+                                '7_645</pre>\n'
+                                '<br><p><h4>Type:</h4> string</p>',
  '_geom_hbond_site_symmetry_D': '<pre><h2>_geom_hbond_site_symmetry_D</h2> The symmetry code of '
                                 'each atom site as the symmetry-equivalent\n'
                                 " position number 'n' and the cell translation number 'klm'.\n"
@@ -4327,7 +4798,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                 '<h3>Example:</h3>\n'
                                 'None\n'
                                 '4\n'
-                                '7_645</pre>',
+                                '7_645</pre>\n'
+                                '<br><p><h4>Type:</h4> string</p>',
  '_geom_hbond_site_symmetry_H': '<pre><h2>_geom_hbond_site_symmetry_H</h2> The symmetry code of '
                                 'each atom site as the symmetry-equivalent\n'
                                 " position number 'n' and the cell translation number 'klm'.\n"
@@ -4352,18 +4824,21 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                 '<h3>Example:</h3>\n'
                                 'None\n'
                                 '4\n'
-                                '7_645</pre>',
+                                '7_645</pre>\n'
+                                '<br><p><h4>Type:</h4> string</p>',
  '_geom_special_details': '<pre><h2>_geom_special_details</h2> The description of geometrical '
                           'information not covered by the\n'
                           ' existing data names in the geometry categories, such as\n'
-                          ' least-squares planes.</pre>',
+                          ' least-squares planes.</pre>\n'
+                          '<br><p><h4>Type:</h4> string</p>',
  '_geom_torsion': '<pre><h2>_geom_torsion</h2> The torsion angle in degrees bounded by the four '
                   'atom sites\n'
                   ' identified by the _geom_torsion_atom_site_label_ codes. These\n'
                   ' must match labels specified as _atom_site_label in the atom list.\n'
                   ' The torsion-angle definition should be that of Klyne and Prelog.\n'
                   '\n'
-                  ' Ref: Klyne, W. &amp; Prelog, V. (1960). Experientia, 16, 521-523.</pre>',
+                  ' Ref: Klyne, W. &amp; Prelog, V. (1960). Experientia, 16, 521-523.</pre>\n'
+                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_geom_torsion_atom_site_label_1': '<pre><h2>_geom_torsion_atom_site_label_1</h2> The labels of '
                                     'the four atom sites which define the torsion angle\n'
                                     ' specified by _geom_torsion. These must match codes specified '
@@ -4380,7 +4855,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                     ' torsions are positive, anticlockwise torsions are negative.\n'
                                     '\n'
                                     ' Ref: Klyne, W. &amp; Prelog, V. (1960). Experientia, 16, '
-                                    '521-523.</pre>',
+                                    '521-523.</pre>\n'
+                                    '<br><p><h4>Type:</h4> string</p>',
  '_geom_torsion_atom_site_label_2': '<pre><h2>_geom_torsion_atom_site_label_2</h2> The labels of '
                                     'the four atom sites which define the torsion angle\n'
                                     ' specified by _geom_torsion. These must match codes specified '
@@ -4397,7 +4873,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                     ' torsions are positive, anticlockwise torsions are negative.\n'
                                     '\n'
                                     ' Ref: Klyne, W. &amp; Prelog, V. (1960). Experientia, 16, '
-                                    '521-523.</pre>',
+                                    '521-523.</pre>\n'
+                                    '<br><p><h4>Type:</h4> string</p>',
  '_geom_torsion_atom_site_label_3': '<pre><h2>_geom_torsion_atom_site_label_3</h2> The labels of '
                                     'the four atom sites which define the torsion angle\n'
                                     ' specified by _geom_torsion. These must match codes specified '
@@ -4414,7 +4891,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                     ' torsions are positive, anticlockwise torsions are negative.\n'
                                     '\n'
                                     ' Ref: Klyne, W. &amp; Prelog, V. (1960). Experientia, 16, '
-                                    '521-523.</pre>',
+                                    '521-523.</pre>\n'
+                                    '<br><p><h4>Type:</h4> string</p>',
  '_geom_torsion_atom_site_label_4': '<pre><h2>_geom_torsion_atom_site_label_4</h2> The labels of '
                                     'the four atom sites which define the torsion angle\n'
                                     ' specified by _geom_torsion. These must match codes specified '
@@ -4431,7 +4909,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                     ' torsions are positive, anticlockwise torsions are negative.\n'
                                     '\n'
                                     ' Ref: Klyne, W. &amp; Prelog, V. (1960). Experientia, 16, '
-                                    '521-523.</pre>',
+                                    '521-523.</pre>\n'
+                                    '<br><p><h4>Type:</h4> string</p>',
  '_geom_torsion_publ_flag': '<pre><h2>_geom_torsion_publ_flag</h2> This code signals whether the '
                             'torsion angle is referred to in a\n'
                             ' publication or should be placed in a table of significant\n'
@@ -4449,7 +4928,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                             '\n'
                             'y\n'
                             '\tabbreviation for "yes"\n'
-                            '</pre>',
+                            '</pre>\n'
+                            '<br><p><h4>Type:</h4> string</p>',
  '_geom_torsion_site_symmetry_1': '<pre><h2>_geom_torsion_site_symmetry_1</h2> The symmetry code '
                                   'of each atom site as the symmetry-equivalent\n'
                                   " position number 'n' and the cell translation number 'klm'.\n"
@@ -4474,7 +4954,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                   '<h3>Example:</h3>\n'
                                   'None\n'
                                   '4\n'
-                                  '7_645</pre>',
+                                  '7_645</pre>\n'
+                                  '<br><p><h4>Type:</h4> string</p>',
  '_geom_torsion_site_symmetry_2': '<pre><h2>_geom_torsion_site_symmetry_2</h2> The symmetry code '
                                   'of each atom site as the symmetry-equivalent\n'
                                   " position number 'n' and the cell translation number 'klm'.\n"
@@ -4499,7 +4980,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                   '<h3>Example:</h3>\n'
                                   'None\n'
                                   '4\n'
-                                  '7_645</pre>',
+                                  '7_645</pre>\n'
+                                  '<br><p><h4>Type:</h4> string</p>',
  '_geom_torsion_site_symmetry_3': '<pre><h2>_geom_torsion_site_symmetry_3</h2> The symmetry code '
                                   'of each atom site as the symmetry-equivalent\n'
                                   " position number 'n' and the cell translation number 'klm'.\n"
@@ -4524,7 +5006,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                   '<h3>Example:</h3>\n'
                                   'None\n'
                                   '4\n'
-                                  '7_645</pre>',
+                                  '7_645</pre>\n'
+                                  '<br><p><h4>Type:</h4> string</p>',
  '_geom_torsion_site_symmetry_4': '<pre><h2>_geom_torsion_site_symmetry_4</h2> The symmetry code '
                                   'of each atom site as the symmetry-equivalent\n'
                                   " position number 'n' and the cell translation number 'klm'.\n"
@@ -4549,87 +5032,129 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                   '<h3>Example:</h3>\n'
                                   'None\n'
                                   '4\n'
-                                  '7_645</pre>',
+                                  '7_645</pre>\n'
+                                  '<br><p><h4>Type:</h4> string</p>',
  '_journal_coden_ASTM': '<pre><h2>_journal_coden_ASTM</h2> Data items specified by the journal '
-                        'staff.</pre>',
+                        'staff.</pre>\n'
+                        '<br><p><h4>Type:</h4> string</p>',
  '_journal_coden_Cambridge': '<pre><h2>_journal_coden_Cambridge</h2> Data items specified by the '
-                             'journal staff.</pre>',
+                             'journal staff.</pre>\n'
+                             '<br><p><h4>Type:</h4> string</p>',
  '_journal_coeditor_address': '<pre><h2>_journal_coeditor_address</h2> Data items specified by the '
-                              'journal staff.</pre>',
+                              'journal staff.</pre>\n'
+                              '<br><p><h4>Type:</h4> string</p>',
  '_journal_coeditor_code': '<pre><h2>_journal_coeditor_code</h2> Data items specified by the '
-                           'journal staff.</pre>',
+                           'journal staff.</pre>\n'
+                           '<br><p><h4>Type:</h4> string</p>',
  '_journal_coeditor_email': '<pre><h2>_journal_coeditor_email</h2> Data items specified by the '
-                            'journal staff.</pre>',
+                            'journal staff.</pre>\n'
+                            '<br><p><h4>Type:</h4> string</p>',
  '_journal_coeditor_fax': '<pre><h2>_journal_coeditor_fax</h2> Data items specified by the journal '
-                          'staff.</pre>',
+                          'staff.</pre>\n'
+                          '<br><p><h4>Type:</h4> string</p>',
  '_journal_coeditor_name': '<pre><h2>_journal_coeditor_name</h2> Data items specified by the '
-                           'journal staff.</pre>',
+                           'journal staff.</pre>\n'
+                           '<br><p><h4>Type:</h4> string</p>',
  '_journal_coeditor_notes': '<pre><h2>_journal_coeditor_notes</h2> Data items specified by the '
-                            'journal staff.</pre>',
+                            'journal staff.</pre>\n'
+                            '<br><p><h4>Type:</h4> string</p>',
  '_journal_coeditor_phone': '<pre><h2>_journal_coeditor_phone</h2> Data items specified by the '
-                            'journal staff.</pre>',
+                            'journal staff.</pre>\n'
+                            '<br><p><h4>Type:</h4> string</p>',
  '_journal_data_validation_number': '<pre><h2>_journal_data_validation_number</h2> Data items '
-                                    'specified by the journal staff.</pre>',
+                                    'specified by the journal staff.</pre>\n'
+                                    '<br><p><h4>Type:</h4> string</p>',
  '_journal_date_accepted': '<pre><h2>_journal_date_accepted</h2> Data items specified by the '
-                           'journal staff.</pre>',
+                           'journal staff.</pre>\n'
+                           '<br><p><h4>Type:</h4> string</p>',
  '_journal_date_from_coeditor': '<pre><h2>_journal_date_from_coeditor</h2> Data items specified by '
-                                'the journal staff.</pre>',
+                                'the journal staff.</pre>\n'
+                                '<br><p><h4>Type:</h4> string</p>',
  '_journal_date_printers_final': '<pre><h2>_journal_date_printers_final</h2> Data items specified '
-                                 'by the journal staff.</pre>',
+                                 'by the journal staff.</pre>\n'
+                                 '<br><p><h4>Type:</h4> string</p>',
  '_journal_date_printers_first': '<pre><h2>_journal_date_printers_first</h2> Data items specified '
-                                 'by the journal staff.</pre>',
+                                 'by the journal staff.</pre>\n'
+                                 '<br><p><h4>Type:</h4> string</p>',
  '_journal_date_proofs_in': '<pre><h2>_journal_date_proofs_in</h2> Data items specified by the '
-                            'journal staff.</pre>',
+                            'journal staff.</pre>\n'
+                            '<br><p><h4>Type:</h4> string</p>',
  '_journal_date_proofs_out': '<pre><h2>_journal_date_proofs_out</h2> Data items specified by the '
-                             'journal staff.</pre>',
+                             'journal staff.</pre>\n'
+                             '<br><p><h4>Type:</h4> string</p>',
  '_journal_date_recd_copyright': '<pre><h2>_journal_date_recd_copyright</h2> Data items specified '
-                                 'by the journal staff.</pre>',
+                                 'by the journal staff.</pre>\n'
+                                 '<br><p><h4>Type:</h4> string</p>',
  '_journal_date_recd_electronic': '<pre><h2>_journal_date_recd_electronic</h2> Data items '
-                                  'specified by the journal staff.</pre>',
+                                  'specified by the journal staff.</pre>\n'
+                                  '<br><p><h4>Type:</h4> string</p>',
  '_journal_date_recd_hard_copy': '<pre><h2>_journal_date_recd_hard_copy</h2> Data items specified '
-                                 'by the journal staff.</pre>',
+                                 'by the journal staff.</pre>\n'
+                                 '<br><p><h4>Type:</h4> string</p>',
  '_journal_date_to_coeditor': '<pre><h2>_journal_date_to_coeditor</h2> Data items specified by the '
-                              'journal staff.</pre>',
+                              'journal staff.</pre>\n'
+                              '<br><p><h4>Type:</h4> string</p>',
  '_journal_index_subterm': '<pre><h2>_journal_index_subterm</h2>Indexing terms supplied by the '
-                           'journal staff.</pre>',
+                           'journal staff.</pre>\n'
+                           '<br><p><h4>Type:</h4> string</p>',
  '_journal_index_term': '<pre><h2>_journal_index_term</h2>Indexing terms supplied by the journal '
-                        'staff.</pre>',
+                        'staff.</pre>\n'
+                        '<br><p><h4>Type:</h4> string</p>',
  '_journal_index_type': '<pre><h2>_journal_index_type</h2>Indexing terms supplied by the journal '
-                        'staff.</pre>',
- '_journal_issue': '<pre><h2>_journal_issue</h2> Data items specified by the journal staff.</pre>',
+                        'staff.</pre>\n'
+                        '<br><p><h4>Type:</h4> string</p>',
+ '_journal_issue': '<pre><h2>_journal_issue</h2> Data items specified by the journal staff.</pre>\n'
+                   '<br><p><h4>Type:</h4> string</p>',
  '_journal_language': '<pre><h2>_journal_language</h2> Data items specified by the journal '
-                      'staff.</pre>',
+                      'staff.</pre>\n'
+                      '<br><p><h4>Type:</h4> string</p>',
  '_journal_name_full': '<pre><h2>_journal_name_full</h2> Data items specified by the journal '
-                       'staff.</pre>',
+                       'staff.</pre>\n'
+                       '<br><p><h4>Type:</h4> string</p>',
  '_journal_page_first': '<pre><h2>_journal_page_first</h2> Data items specified by the journal '
-                        'staff.</pre>',
+                        'staff.</pre>\n'
+                        '<br><p><h4>Type:</h4> string</p>',
  '_journal_page_last': '<pre><h2>_journal_page_last</h2> Data items specified by the journal '
-                       'staff.</pre>',
+                       'staff.</pre>\n'
+                       '<br><p><h4>Type:</h4> string</p>',
  '_journal_paper_category': '<pre><h2>_journal_paper_category</h2> Data items specified by the '
-                            'journal staff.</pre>',
+                            'journal staff.</pre>\n'
+                            '<br><p><h4>Type:</h4> string</p>',
  '_journal_paper_doi': '<pre><h2>_journal_paper_doi</h2> Data items specified by the journal '
-                       'staff.</pre>',
+                       'staff.</pre>\n'
+                       '<br><p><h4>Type:</h4> string</p>',
  '_journal_suppl_publ_number': '<pre><h2>_journal_suppl_publ_number</h2> Data items specified by '
-                               'the journal staff.</pre>',
+                               'the journal staff.</pre>\n'
+                               '<br><p><h4>Type:</h4> string</p>',
  '_journal_suppl_publ_pages': '<pre><h2>_journal_suppl_publ_pages</h2> Data items specified by the '
-                              'journal staff.</pre>',
+                              'journal staff.</pre>\n'
+                              '<br><p><h4>Type:</h4> string</p>',
  '_journal_techeditor_address': '<pre><h2>_journal_techeditor_address</h2> Data items specified by '
-                                'the journal staff.</pre>',
+                                'the journal staff.</pre>\n'
+                                '<br><p><h4>Type:</h4> string</p>',
  '_journal_techeditor_code': '<pre><h2>_journal_techeditor_code</h2> Data items specified by the '
-                             'journal staff.</pre>',
+                             'journal staff.</pre>\n'
+                             '<br><p><h4>Type:</h4> string</p>',
  '_journal_techeditor_email': '<pre><h2>_journal_techeditor_email</h2> Data items specified by the '
-                              'journal staff.</pre>',
+                              'journal staff.</pre>\n'
+                              '<br><p><h4>Type:</h4> string</p>',
  '_journal_techeditor_fax': '<pre><h2>_journal_techeditor_fax</h2> Data items specified by the '
-                            'journal staff.</pre>',
+                            'journal staff.</pre>\n'
+                            '<br><p><h4>Type:</h4> string</p>',
  '_journal_techeditor_name': '<pre><h2>_journal_techeditor_name</h2> Data items specified by the '
-                             'journal staff.</pre>',
+                             'journal staff.</pre>\n'
+                             '<br><p><h4>Type:</h4> string</p>',
  '_journal_techeditor_notes': '<pre><h2>_journal_techeditor_notes</h2> Data items specified by the '
-                              'journal staff.</pre>',
+                              'journal staff.</pre>\n'
+                              '<br><p><h4>Type:</h4> string</p>',
  '_journal_techeditor_phone': '<pre><h2>_journal_techeditor_phone</h2> Data items specified by the '
-                              'journal staff.</pre>',
+                              'journal staff.</pre>\n'
+                              '<br><p><h4>Type:</h4> string</p>',
  '_journal_volume': '<pre><h2>_journal_volume</h2> Data items specified by the journal '
-                    'staff.</pre>',
- '_journal_year': '<pre><h2>_journal_year</h2> Data items specified by the journal staff.</pre>',
+                    'staff.</pre>\n'
+                    '<br><p><h4>Type:</h4> string</p>',
+ '_journal_year': '<pre><h2>_journal_year</h2> Data items specified by the journal staff.</pre>\n'
+                  '<br><p><h4>Type:</h4> string</p>',
  '_publ_author_address': '<pre><h2>_publ_author_address</h2> The address of a publication author. '
                          'If there is more than one\n'
                          ' author, this will be looped with _publ_author_name.\n'
@@ -4639,7 +5164,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                          '          Institute\n'
                          '          Street\n'
                          '          City and postcode\n'
-                         '          COUNTRY</pre>',
+                         '          COUNTRY</pre>\n'
+                         '<br><p><h4>Type:</h4> string</p>',
  '_publ_author_email': '<pre><h2>_publ_author_email</h2> The e-mail address of a publication '
                        'author. If there is more \n'
                        ' than one author, this will be looped with _publ_author_name.\n'
@@ -4649,7 +5175,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                        '\n'
                        '<h3>Example:</h3>\n'
                        'name@host.domain.country\n'
-                       'bm@iucr.org</pre>',
+                       'bm@iucr.org</pre>\n'
+                       '<br><p><h4>Type:</h4> string</p>',
  '_publ_author_footnote': "<pre><h2>_publ_author_footnote</h2> A footnote accompanying an author's "
                           'name in the list of authors\n'
                           ' of a paper. Typically indicates sabbatical address, additional\n'
@@ -4657,14 +5184,16 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                           '\n'
                           '<h3>Example:</h3>\n'
                           'On leave from U. Western Australia\n'
-                          'Also at Department of Biophysics</pre>',
+                          'Also at Department of Biophysics</pre>\n'
+                          '<br><p><h4>Type:</h4> string</p>',
  '_publ_author_id_iucr': '<pre><h2>_publ_author_id_iucr</h2> Identifier in the IUCr contact '
                          'database of a publication\n'
                          ' author.  This identifier may be available from the World\n'
                          ' Directory of Crystallographers (http://wdc.iucr.org).\n'
                          '\n'
                          '<h3>Example:</h3>\n'
-                         '2985</pre>',
+                         '2985</pre>\n'
+                         '<br><p><h4>Type:</h4> string</p>',
  '_publ_author_id_orcid': '<pre><h2>_publ_author_id_orcid</h2> Identifier in the ORCID Registry of '
                           'a publication\n'
                           ' author. ORCID is an open, non-profit, community-driven\n'
@@ -4672,7 +5201,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                           ' identifiers (http://orcid.org).\n'
                           '\n'
                           '<h3>Example:</h3>\n'
-                          '0000-0003-0391-0002</pre>',
+                          '0000-0003-0391-0002</pre>\n'
+                          '<br><p><h4>Type:</h4> string</p>',
  '_publ_author_name': '<pre><h2>_publ_author_name</h2> The name of a publication author. If there '
                       'are multiple authors,\n'
                       ' this will be looped with _publ_author_address. The family\n'
@@ -4686,8 +5216,10 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                       'Yang, D.-L.\n'
                       'Simonov, Yu.A.\n'
                       'M\\"uller, H.A.\n'
-                      'Ross II, C.R.</pre>',
- '_publ_body_contents': '<pre><h2>_publ_body_contents</h2> A text section of a paper.</pre>',
+                      'Ross II, C.R.</pre>\n'
+                      '<br><p><h4>Type:</h4> string</p>',
+ '_publ_body_contents': '<pre><h2>_publ_body_contents</h2> A text section of a paper.</pre>\n'
+                        '<br><p><h4>Type:</h4> string</p>',
  '_publ_body_element': '<pre><h2>_publ_body_element</h2> The functional role of the associated '
                        'text section.\n'
                        '\n'
@@ -4696,7 +5228,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                        'subsection\n'
                        'subsubsection\n'
                        'appendix\n'
-                       'footnote</pre>',
+                       'footnote</pre>\n'
+                       '<br><p><h4>Type:</h4> string</p>',
  '_publ_body_format': '<pre><h2>_publ_body_format</h2> Code indicating the appropriate typesetting '
                       'conventions\n'
                       ' for accented characters and special symbols in the text\n'
@@ -4723,7 +5256,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                       '\n'
                       'troff\n'
                       '\ttroff or nroff\n'
-                      '</pre>',
+                      '</pre>\n'
+                      '<br><p><h4>Type:</h4> string</p>',
  '_publ_body_label': '<pre><h2>_publ_body_label</h2> Code identifying the section of text. The '
                      'combination of this\n'
                      ' with _publ_body_element must be unique.\n'
@@ -4731,9 +5265,11 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                      '<h3>Example:</h3>\n'
                      '1\n'
                      '1.1\n'
-                     '2.1.3</pre>',
+                     '2.1.3</pre>\n'
+                     '<br><p><h4>Type:</h4> string</p>',
  '_publ_body_title': '<pre><h2>_publ_body_title</h2> Title of the associated section of '
-                     'text.</pre>',
+                     'text.</pre>\n'
+                     '<br><p><h4>Type:</h4> string</p>',
  '_publ_contact_author': '<pre><h2>_publ_contact_author</h2> The name and address of the author '
                          'submitting the manuscript and\n'
                          ' data block. This is the person contacted by the journal\n'
@@ -4746,7 +5282,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                          '          University of Guelph\n'
                          '          Ontario\n'
                          '          Canada\n'
-                         '          N1G 2W1</pre>',
+                         '          N1G 2W1</pre>\n'
+                         '<br><p><h4>Type:</h4> string</p>',
  '_publ_contact_author_address': '<pre><h2>_publ_contact_author_address</h2> The address of the '
                                  'author submitting the manuscript and\n'
                                  ' data block. This is the person contacted by the journal\n'
@@ -4757,7 +5294,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                  '          University of Guelph\n'
                                  '          Ontario\n'
                                  '          Canada\n'
-                                 '          N1G 2W1</pre>',
+                                 '          N1G 2W1</pre>\n'
+                                 '<br><p><h4>Type:</h4> string</p>',
  '_publ_contact_author_email': '<pre><h2>_publ_contact_author_email</h2> E-mail address in a form '
                                'recognizable to international networks.\n'
                                ' The format of e-mail addresses is given in Section 3.4, Address \n'
@@ -4767,7 +5305,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                '\n'
                                '<h3>Example:</h3>\n'
                                'name@host.domain.country\n'
-                               'bm@iucr.org</pre>',
+                               'bm@iucr.org</pre>\n'
+                               '<br><p><h4>Type:</h4> string</p>',
  '_publ_contact_author_fax': '<pre><h2>_publ_contact_author_fax</h2> Facsimile telephone number of '
                              'the author submitting the\n'
                              ' manuscript and data block.\n'
@@ -4780,7 +5319,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                              '\n'
                              '<h3>Example:</h3>\n'
                              '12(34)9477334\n'
-                             '12()349477334</pre>',
+                             '12()349477334</pre>\n'
+                             '<br><p><h4>Type:</h4> string</p>',
  '_publ_contact_author_id_iucr': '<pre><h2>_publ_contact_author_id_iucr</h2> Identifier in the '
                                  'IUCr contact database of the author\n'
                                  ' submitting the manuscript and data block. This identifier may\n'
@@ -4788,7 +5328,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                  ' (http://wdc.iucr.org).\n'
                                  '\n'
                                  '<h3>Example:</h3>\n'
-                                 '2985</pre>',
+                                 '2985</pre>\n'
+                                 '<br><p><h4>Type:</h4> string</p>',
  '_publ_contact_author_id_orcid': '<pre><h2>_publ_contact_author_id_orcid</h2> Identifier in the '
                                   'ORCID Registry of the author submitting\n'
                                   ' the manuscript and data block. ORCID is an open, non-profit,\n'
@@ -4796,14 +5337,16 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                   ' researcher identifiers (http://orcid.org).\n'
                                   '\n'
                                   '<h3>Example:</h3>\n'
-                                  '0000-0003-0391-0002</pre>',
+                                  '0000-0003-0391-0002</pre>\n'
+                                  '<br><p><h4>Type:</h4> string</p>',
  '_publ_contact_author_name': '<pre><h2>_publ_contact_author_name</h2> The name of the author '
                               'submitting the manuscript and\n'
                               ' data block. This is the person contacted by the journal\n'
                               ' editorial staff.\n'
                               '\n'
                               '<h3>Example:</h3>\n'
-                              'Professor George Ferguson</pre>',
+                              'Professor George Ferguson</pre>\n'
+                              '<br><p><h4>Type:</h4> string</p>',
  '_publ_contact_author_phone': '<pre><h2>_publ_contact_author_phone</h2> Telephone number of the '
                                'author submitting the manuscript and\n'
                                ' data block.\n'
@@ -4819,16 +5362,19 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                '<h3>Example:</h3>\n'
                                '12(34)9477330\n'
                                '12()349477330\n'
-                               '12(34)9477330x5543</pre>',
+                               '12(34)9477330x5543</pre>\n'
+                               '<br><p><h4>Type:</h4> string</p>',
  '_publ_contact_letter': '<pre><h2>_publ_contact_letter</h2> A letter submitted to the journal '
-                         'editor by the contact author.</pre>',
+                         'editor by the contact author.</pre>\n'
+                         '<br><p><h4>Type:</h4> string</p>',
  '_publ_manuscript_creation': '<pre><h2>_publ_manuscript_creation</h2> A description of the '
                               'word-processor package and computer used to\n'
                               ' create the word-processed manuscript stored as\n'
                               ' _publ_manuscript_processed.\n'
                               '\n'
                               '<h3>Example:</h3>\n'
-                              'Tex file created by FrameMaker on a Sun 3/280</pre>',
+                              'Tex file created by FrameMaker on a Sun 3/280</pre>\n'
+                              '<br><p><h4>Type:</h4> string</p>',
  '_publ_manuscript_incl_extra_defn': '<pre><h2>_publ_manuscript_incl_extra_defn</h2> Flags whether '
                                      'the corresponding data item marked for inclusion\n'
                                      ' in a journal request list is a standard CIF definition or '
@@ -4846,12 +5392,14 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                      '\n'
                                      'y\n'
                                      '\tabbreviation for "yes"\n'
-                                     '</pre>',
+                                     '</pre>\n'
+                                     '<br><p><h4>Type:</h4> string</p>',
  '_publ_manuscript_incl_extra_info': '<pre><h2>_publ_manuscript_incl_extra_info</h2> A short note '
                                      'indicating the reason why the author wishes the\n'
                                      ' corresponding data item marked for inclusion in the '
                                      'journal\n'
-                                     ' request list to be published.</pre>',
+                                     ' request list to be published.</pre>\n'
+                                     '<br><p><h4>Type:</h4> string</p>',
  '_publ_manuscript_incl_extra_item': '<pre><h2>_publ_manuscript_incl_extra_item</h2> Specifies the '
                                      'inclusion of specific data into a manuscript\n'
                                      ' which are not normally requested by the journal. The '
@@ -4859,16 +5407,19 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                      ' of this item are the extra data names (which MUST be '
                                      'enclosed\n'
                                      ' in single quotes) that will be added to the journal request '
-                                     'list.</pre>',
+                                     'list.</pre>\n'
+                                     '<br><p><h4>Type:</h4> string</p>',
  '_publ_manuscript_processed': '<pre><h2>_publ_manuscript_processed</h2> The full manuscript of a '
                                'paper (excluding possibly the figures\n'
                                ' and the tables) output in ASCII characters from a word '
                                'processor.\n'
                                ' Information about the generation of this data item must be\n'
-                               ' specified in the data item _publ_manuscript_creation.</pre>',
+                               ' specified in the data item _publ_manuscript_creation.</pre>\n'
+                               '<br><p><h4>Type:</h4> string</p>',
  '_publ_manuscript_text': '<pre><h2>_publ_manuscript_text</h2> The full manuscript of a paper '
                           '(excluding figures and possibly\n'
-                          ' the tables) output as standard ASCII text.</pre>',
+                          ' the tables) output as standard ASCII text.</pre>\n'
+                          '<br><p><h4>Type:</h4> string</p>',
  '_publ_requested_category': '<pre><h2>_publ_requested_category</h2> The category of paper '
                              'submitted. For submission to Acta\n'
                              ' Crystallographica Section C or Acta Crystallographica\n'
@@ -4938,13 +5489,16 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                              '\n'
                              'SC\n'
                              '\tShort communication\n'
-                             '</pre>',
+                             '</pre>\n'
+                             '<br><p><h4>Type:</h4> string</p>',
  '_publ_requested_coeditor_name': '<pre><h2>_publ_requested_coeditor_name</h2> The name of the '
                                   'co-editor whom the authors would like to\n'
-                                  ' handle the submitted manuscript.</pre>',
+                                  ' handle the submitted manuscript.</pre>\n'
+                                  '<br><p><h4>Type:</h4> string</p>',
  '_publ_requested_journal': '<pre><h2>_publ_requested_journal</h2> The name of the journal to '
                             'which the manuscript is being\n'
-                            ' submitted.</pre>',
+                            ' submitted.</pre>\n'
+                            '<br><p><h4>Type:</h4> string</p>',
  '_publ_section_abstract': '<pre><h2>_publ_section_abstract</h2> The sections of a manuscript if '
                            'submitted in parts. As\n'
                            ' an alternative, see _publ_manuscript_text and\n'
@@ -4953,7 +5507,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                            ' The _publ_section_exptl_prep, _publ_section_exptl_refinement\n'
                            ' and _publ_section_exptl_solution items are preferred for\n'
                            ' separating the chemical preparation, refinement and structure\n'
-                           ' solution aspects of the experimental description.</pre>',
+                           ' solution aspects of the experimental description.</pre>\n'
+                           '<br><p><h4>Type:</h4> string</p>',
  '_publ_section_acknowledgements': '<pre><h2>_publ_section_acknowledgements</h2> The sections of a '
                                    'manuscript if submitted in parts. As\n'
                                    ' an alternative, see _publ_manuscript_text and\n'
@@ -4963,7 +5518,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                    ' and _publ_section_exptl_solution items are preferred for\n'
                                    ' separating the chemical preparation, refinement and '
                                    'structure\n'
-                                   ' solution aspects of the experimental description.</pre>',
+                                   ' solution aspects of the experimental description.</pre>\n'
+                                   '<br><p><h4>Type:</h4> string</p>',
  '_publ_section_comment': '<pre><h2>_publ_section_comment</h2> The sections of a manuscript if '
                           'submitted in parts. As\n'
                           ' an alternative, see _publ_manuscript_text and\n'
@@ -4972,7 +5528,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                           ' The _publ_section_exptl_prep, _publ_section_exptl_refinement\n'
                           ' and _publ_section_exptl_solution items are preferred for\n'
                           ' separating the chemical preparation, refinement and structure\n'
-                          ' solution aspects of the experimental description.</pre>',
+                          ' solution aspects of the experimental description.</pre>\n'
+                          '<br><p><h4>Type:</h4> string</p>',
  '_publ_section_discussion': '<pre><h2>_publ_section_discussion</h2> The sections of a manuscript '
                              'if submitted in parts. As\n'
                              ' an alternative, see _publ_manuscript_text and\n'
@@ -4981,7 +5538,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                              ' The _publ_section_exptl_prep, _publ_section_exptl_refinement\n'
                              ' and _publ_section_exptl_solution items are preferred for\n'
                              ' separating the chemical preparation, refinement and structure\n'
-                             ' solution aspects of the experimental description.</pre>',
+                             ' solution aspects of the experimental description.</pre>\n'
+                             '<br><p><h4>Type:</h4> string</p>',
  '_publ_section_experimental': '<pre><h2>_publ_section_experimental</h2> The sections of a '
                                'manuscript if submitted in parts. As\n'
                                ' an alternative, see _publ_manuscript_text and\n'
@@ -4990,7 +5548,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                ' The _publ_section_exptl_prep, _publ_section_exptl_refinement\n'
                                ' and _publ_section_exptl_solution items are preferred for\n'
                                ' separating the chemical preparation, refinement and structure\n'
-                               ' solution aspects of the experimental description.</pre>',
+                               ' solution aspects of the experimental description.</pre>\n'
+                               '<br><p><h4>Type:</h4> string</p>',
  '_publ_section_exptl_prep': '<pre><h2>_publ_section_exptl_prep</h2> The sections of a manuscript '
                              'if submitted in parts. As\n'
                              ' an alternative, see _publ_manuscript_text and\n'
@@ -4999,7 +5558,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                              ' The _publ_section_exptl_prep, _publ_section_exptl_refinement\n'
                              ' and _publ_section_exptl_solution items are preferred for\n'
                              ' separating the chemical preparation, refinement and structure\n'
-                             ' solution aspects of the experimental description.</pre>',
+                             ' solution aspects of the experimental description.</pre>\n'
+                             '<br><p><h4>Type:</h4> string</p>',
  '_publ_section_exptl_refinement': '<pre><h2>_publ_section_exptl_refinement</h2> The sections of a '
                                    'manuscript if submitted in parts. As\n'
                                    ' an alternative, see _publ_manuscript_text and\n'
@@ -5009,7 +5569,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                    ' and _publ_section_exptl_solution items are preferred for\n'
                                    ' separating the chemical preparation, refinement and '
                                    'structure\n'
-                                   ' solution aspects of the experimental description.</pre>',
+                                   ' solution aspects of the experimental description.</pre>\n'
+                                   '<br><p><h4>Type:</h4> string</p>',
  '_publ_section_exptl_solution': '<pre><h2>_publ_section_exptl_solution</h2> The sections of a '
                                  'manuscript if submitted in parts. As\n'
                                  ' an alternative, see _publ_manuscript_text and\n'
@@ -5018,7 +5579,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                  ' The _publ_section_exptl_prep, _publ_section_exptl_refinement\n'
                                  ' and _publ_section_exptl_solution items are preferred for\n'
                                  ' separating the chemical preparation, refinement and structure\n'
-                                 ' solution aspects of the experimental description.</pre>',
+                                 ' solution aspects of the experimental description.</pre>\n'
+                                 '<br><p><h4>Type:</h4> string</p>',
  '_publ_section_figure_captions': '<pre><h2>_publ_section_figure_captions</h2> The sections of a '
                                   'manuscript if submitted in parts. As\n'
                                   ' an alternative, see _publ_manuscript_text and\n'
@@ -5027,7 +5589,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                   ' The _publ_section_exptl_prep, _publ_section_exptl_refinement\n'
                                   ' and _publ_section_exptl_solution items are preferred for\n'
                                   ' separating the chemical preparation, refinement and structure\n'
-                                  ' solution aspects of the experimental description.</pre>',
+                                  ' solution aspects of the experimental description.</pre>\n'
+                                  '<br><p><h4>Type:</h4> string</p>',
  '_publ_section_introduction': '<pre><h2>_publ_section_introduction</h2> The sections of a '
                                'manuscript if submitted in parts. As\n'
                                ' an alternative, see _publ_manuscript_text and\n'
@@ -5036,7 +5599,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                ' The _publ_section_exptl_prep, _publ_section_exptl_refinement\n'
                                ' and _publ_section_exptl_solution items are preferred for\n'
                                ' separating the chemical preparation, refinement and structure\n'
-                               ' solution aspects of the experimental description.</pre>',
+                               ' solution aspects of the experimental description.</pre>\n'
+                               '<br><p><h4>Type:</h4> string</p>',
  '_publ_section_keywords': '<pre><h2>_publ_section_keywords</h2> The sections of a manuscript if '
                            'submitted in parts. As\n'
                            ' an alternative, see _publ_manuscript_text and\n'
@@ -5045,7 +5609,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                            ' The _publ_section_exptl_prep, _publ_section_exptl_refinement\n'
                            ' and _publ_section_exptl_solution items are preferred for\n'
                            ' separating the chemical preparation, refinement and structure\n'
-                           ' solution aspects of the experimental description.</pre>',
+                           ' solution aspects of the experimental description.</pre>\n'
+                           '<br><p><h4>Type:</h4> string</p>',
  '_publ_section_references': '<pre><h2>_publ_section_references</h2> The sections of a manuscript '
                              'if submitted in parts. As\n'
                              ' an alternative, see _publ_manuscript_text and\n'
@@ -5054,7 +5619,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                              ' The _publ_section_exptl_prep, _publ_section_exptl_refinement\n'
                              ' and _publ_section_exptl_solution items are preferred for\n'
                              ' separating the chemical preparation, refinement and structure\n'
-                             ' solution aspects of the experimental description.</pre>',
+                             ' solution aspects of the experimental description.</pre>\n'
+                             '<br><p><h4>Type:</h4> string</p>',
  '_publ_section_related_literature': '<pre><h2>_publ_section_related_literature</h2> The sections '
                                      'of a manuscript if submitted in parts. As\n'
                                      ' an alternative, see _publ_manuscript_text and\n'
@@ -5065,7 +5631,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                      ' and _publ_section_exptl_solution items are preferred for\n'
                                      ' separating the chemical preparation, refinement and '
                                      'structure\n'
-                                     ' solution aspects of the experimental description.</pre>',
+                                     ' solution aspects of the experimental description.</pre>\n'
+                                     '<br><p><h4>Type:</h4> string</p>',
  '_publ_section_synopsis': '<pre><h2>_publ_section_synopsis</h2> The sections of a manuscript if '
                            'submitted in parts. As\n'
                            ' an alternative, see _publ_manuscript_text and\n'
@@ -5074,7 +5641,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                            ' The _publ_section_exptl_prep, _publ_section_exptl_refinement\n'
                            ' and _publ_section_exptl_solution items are preferred for\n'
                            ' separating the chemical preparation, refinement and structure\n'
-                           ' solution aspects of the experimental description.</pre>',
+                           ' solution aspects of the experimental description.</pre>\n'
+                           '<br><p><h4>Type:</h4> string</p>',
  '_publ_section_table_legends': '<pre><h2>_publ_section_table_legends</h2> The sections of a '
                                 'manuscript if submitted in parts. As\n'
                                 ' an alternative, see _publ_manuscript_text and\n'
@@ -5083,7 +5651,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                 ' The _publ_section_exptl_prep, _publ_section_exptl_refinement\n'
                                 ' and _publ_section_exptl_solution items are preferred for\n'
                                 ' separating the chemical preparation, refinement and structure\n'
-                                ' solution aspects of the experimental description.</pre>',
+                                ' solution aspects of the experimental description.</pre>\n'
+                                '<br><p><h4>Type:</h4> string</p>',
  '_publ_section_title': '<pre><h2>_publ_section_title</h2> The sections of a manuscript if '
                         'submitted in parts. As\n'
                         ' an alternative, see _publ_manuscript_text and\n'
@@ -5092,7 +5661,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                         ' The _publ_section_exptl_prep, _publ_section_exptl_refinement\n'
                         ' and _publ_section_exptl_solution items are preferred for\n'
                         ' separating the chemical preparation, refinement and structure\n'
-                        ' solution aspects of the experimental description.</pre>',
+                        ' solution aspects of the experimental description.</pre>\n'
+                        '<br><p><h4>Type:</h4> string</p>',
  '_publ_section_title_footnote': '<pre><h2>_publ_section_title_footnote</h2> The sections of a '
                                  'manuscript if submitted in parts. As\n'
                                  ' an alternative, see _publ_manuscript_text and\n'
@@ -5101,7 +5671,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                  ' The _publ_section_exptl_prep, _publ_section_exptl_refinement\n'
                                  ' and _publ_section_exptl_solution items are preferred for\n'
                                  ' separating the chemical preparation, refinement and structure\n'
-                                 ' solution aspects of the experimental description.</pre>',
+                                 ' solution aspects of the experimental description.</pre>\n'
+                                 '<br><p><h4>Type:</h4> string</p>',
  '_refine_diff_density_max': '<pre><h2>_refine_diff_density_max</h2> The largest and smallest '
                              'values and the root-mean-square\n'
                              ' deviation, in electrons per angstrom cubed, of the final\n'
@@ -5110,7 +5681,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                              ' summations over each grid point in the asymmetric unit of\n'
                              ' the cell. This quantity is useful for assessing the\n'
                              ' significance of *_min and *_max values, and also for\n'
-                             ' defining suitable contour levels.</pre>',
+                             ' defining suitable contour levels.</pre>\n'
+                             '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refine_diff_density_min': '<pre><h2>_refine_diff_density_min</h2> The largest and smallest '
                              'values and the root-mean-square\n'
                              ' deviation, in electrons per angstrom cubed, of the final\n'
@@ -5119,7 +5691,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                              ' summations over each grid point in the asymmetric unit of\n'
                              ' the cell. This quantity is useful for assessing the\n'
                              ' significance of *_min and *_max values, and also for\n'
-                             ' defining suitable contour levels.</pre>',
+                             ' defining suitable contour levels.</pre>\n'
+                             '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refine_diff_density_rms': '<pre><h2>_refine_diff_density_rms</h2> The largest and smallest '
                              'values and the root-mean-square\n'
                              ' deviation, in electrons per angstrom cubed, of the final\n'
@@ -5128,7 +5701,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                              ' summations over each grid point in the asymmetric unit of\n'
                              ' the cell. This quantity is useful for assessing the\n'
                              ' significance of *_min and *_max values, and also for\n'
-                             ' defining suitable contour levels.</pre>',
+                             ' defining suitable contour levels.</pre>\n'
+                             '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refine_ls_F_calc_details': '<pre><h2>_refine_ls_F_calc_details</h2> Details concerning the '
                               'evaluation of the structure\n'
                               ' factors using the expression given in\n'
@@ -5138,16 +5712,19 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                               'Gaussian integration using 16 points\n'
                               '    Bessel functions expansion up to 5th order.\n'
                               '     Bessel functions estimated accuracy: better\n'
-                              '     than 0.001 electrons.</pre>',
+                              '     than 0.001 electrons.</pre>\n'
+                              '<br><p><h4>Type:</h4> string</p>',
  '_refine_ls_F_calc_formula': '<pre><h2>_refine_ls_F_calc_formula</h2> Analytical expression used '
-                              'to calculate the structure factors.  </pre>',
+                              'to calculate the structure factors.  </pre>\n'
+                              '<br><p><h4>Type:</h4> string</p>',
  '_refine_ls_F_calc_precision': '<pre><h2>_refine_ls_F_calc_precision</h2> This item gives an '
                                 'estimate of the precision resulting\n'
                                 ' from the numerical approximations made during the evaluation\n'
                                 ' of the structure factors using the expression given in\n'
                                 ' _refine_ls_F_calc_formula following the method outlined\n'
                                 ' in _refine_ls_F_calc_details.  For X-ray diffraction the\n'
-                                ' result is given in electrons.</pre>',
+                                ' result is given in electrons.</pre>\n'
+                                '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refine_ls_R_Fsqd_factor': '<pre><h2>_refine_ls_R_Fsqd_factor</h2> Residual factor R(Fsqd), '
                              'calculated on the squared amplitudes\n'
                              ' of the observed and calculated structure factors, for\n'
@@ -5165,7 +5742,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                              ' F(calc)^2^ = squares of the calculated structure-factor\n'
                              '              amplitudes\n'
                              '\n'
-                             ' and the sum is taken over the specified reflections</pre>',
+                             ' and the sum is taken over the specified reflections</pre>\n'
+                             '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refine_ls_R_I_factor': '<pre><h2>_refine_ls_R_I_factor</h2> Residual factor R(I) for '
                           'significantly intense reflections\n'
                           ' (satisfying _reflns_threshold_expression) and included in\n'
@@ -5181,7 +5759,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                           ' I(obs)  = the net observed intensities\n'
                           ' I(calc) = the net calculated intensities\n'
                           '\n'
-                          ' and the sum is taken over the specified reflections</pre>',
+                          ' and the sum is taken over the specified reflections</pre>\n'
+                          '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refine_ls_R_factor_all': '<pre><h2>_refine_ls_R_factor_all</h2> Residual factor for all '
                             'reflections satisfying the\n'
                             ' resolution limits established by _refine_ls_d_res_high and\n'
@@ -5195,7 +5774,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                             ' F(obs)  = the observed structure-factor amplitudes\n'
                             ' F(calc) = the calculated structure-factor amplitudes\n'
                             '\n'
-                            ' and the sum is taken over the specified reflections</pre>',
+                            ' and the sum is taken over the specified reflections</pre>\n'
+                            '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refine_ls_R_factor_gt': '<pre><h2>_refine_ls_R_factor_gt</h2> Residual factor for the '
                            'reflections (with number given by\n'
                            ' _reflns_number_gt) judged significantly intense (i.e. satisfying\n'
@@ -5212,7 +5792,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                            ' F(obs)  = the observed structure-factor amplitudes\n'
                            ' F(calc) = the calculated structure-factor amplitudes\n'
                            '\n'
-                           ' and the sum is taken over the specified reflections</pre>',
+                           ' and the sum is taken over the specified reflections</pre>\n'
+                           '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refine_ls_R_factor_obs': '<pre><h2>_refine_ls_R_factor_obs</h2> Residual factor for the '
                             "reflections classified as 'observed'\n"
                             ' (see _reflns_observed_criterion) and included in the\n'
@@ -5228,7 +5809,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                             ' F(obs)  = the observed structure-factor amplitudes\n'
                             ' F(calc) = the calculated structure-factor amplitudes\n'
                             '\n'
-                            ' and the sum is taken over the specified reflections</pre>',
+                            ' and the sum is taken over the specified reflections</pre>\n'
+                            '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refine_ls_abs_structure_Flack': '<pre><h2>_refine_ls_abs_structure_Flack</h2> The measure of '
                                    'absolute structure as defined by Flack (1983).\n'
                                    '\n'
@@ -5244,7 +5826,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                    ' _enumeration_range of 0.0:1.0 is correctly interpreted as\n'
                                    ' meaning (0.0 - 3u) =&lt; x =&lt; (1.0 + 3u).\n'
                                    '\n'
-                                   ' Ref: Flack, H. D. (1983). Acta Cryst. A39, 876-881.</pre>',
+                                   ' Ref: Flack, H. D. (1983). Acta Cryst. A39, 876-881.</pre>\n'
+                                   '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refine_ls_abs_structure_Rogers': '<pre><h2>_refine_ls_abs_structure_Rogers</h2> The measure of '
                                     'absolute structure as defined by Rogers (1981).\n'
                                     '\n'
@@ -5257,9 +5840,11 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                     ' interpreted as meaning (-1.0 - 3u) =&lt; \\h =&lt; (1.0 + '
                                     '3u).\n'
                                     '\n'
-                                    ' Ref: Rogers, D. (1981). Acta Cryst. A37, 734-741.</pre>',
+                                    ' Ref: Rogers, D. (1981). Acta Cryst. A37, 734-741.</pre>\n'
+                                    '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refine_ls_abs_structure_details': '<pre><h2>_refine_ls_abs_structure_details</h2> The nature of '
-                                     'the absolute structure and how it was determined.</pre>',
+                                     'the absolute structure and how it was determined.</pre>\n'
+                                     '<br><p><h4>Type:</h4> string</p>',
  '_refine_ls_class_R_Fsqd_factor': '<pre><h2>_refine_ls_class_R_Fsqd_factor</h2> For each '
                                    'reflection class, the residual factor R(F^2^) calculated\n'
                                    ' on the squared amplitudes of the observed and calculated\n'
@@ -5283,7 +5868,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                    '              amplitudes\n'
                                    '\n'
                                    ' and the sum is taken over the reflections of this '
-                                   'class.</pre>',
+                                   'class.</pre>\n'
+                                   '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refine_ls_class_R_I_factor': '<pre><h2>_refine_ls_class_R_I_factor</h2> For each reflection '
                                 'class, the residual factor R(I) for the\n'
                                 ' reflections judged significantly intense (i.e. satisfying the\n'
@@ -5301,7 +5887,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                 ' I(obs)  = the net observed intensities\n'
                                 ' I(calc) = the net calculated intensities\n'
                                 '\n'
-                                ' and the sum is taken over the reflections of this class.</pre>',
+                                ' and the sum is taken over the reflections of this class.</pre>\n'
+                                '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refine_ls_class_R_factor_all': '<pre><h2>_refine_ls_class_R_factor_all</h2> For each reflection '
                                   'class, the residual factors for all\n'
                                   ' reflections, and for significantly intense reflections (see\n'
@@ -5320,7 +5907,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                   '\n'
                                   ' and the sum is taken over the reflections of this class. See '
                                   'also\n'
-                                  ' _refine_ls_class_wR_factor_all definitions.</pre>',
+                                  ' _refine_ls_class_wR_factor_all definitions.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refine_ls_class_R_factor_gt': '<pre><h2>_refine_ls_class_R_factor_gt</h2> For each reflection '
                                  'class, the residual factors for all\n'
                                  ' reflections, and for significantly intense reflections (see\n'
@@ -5339,7 +5927,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                  '\n'
                                  ' and the sum is taken over the reflections of this class. See '
                                  'also\n'
-                                 ' _refine_ls_class_wR_factor_all definitions.</pre>',
+                                 ' _refine_ls_class_wR_factor_all definitions.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refine_ls_class_code': '<pre><h2>_refine_ls_class_code</h2> The code identifying a certain '
                           'reflection class. This code must\n'
                           ' match a _reflns_class_code.\n'
@@ -5347,15 +5936,18 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                           '<h3>Example:</h3>\n'
                           '1\n'
                           'm1\n'
-                          's2</pre>',
+                          's2</pre>\n'
+                          '<br><p><h4>Type:</h4> string</p>',
  '_refine_ls_class_d_res_high': '<pre><h2>_refine_ls_class_d_res_high</h2> For each reflection '
                                 'class, the highest resolution in angstroms\n'
                                 ' for the reflections used in the refinement. This is\n'
-                                ' the lowest d value in a reflection class.</pre>',
+                                ' the lowest d value in a reflection class.</pre>\n'
+                                '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refine_ls_class_d_res_low': '<pre><h2>_refine_ls_class_d_res_low</h2> For each reflection '
                                'class, the lowest resolution in angstroms\n'
                                ' for the reflections used in the refinement. This is\n'
-                               ' the highest d value in a reflection class.</pre>',
+                               ' the highest d value in a reflection class.</pre>\n'
+                               '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refine_ls_class_wR_factor_all': '<pre><h2>_refine_ls_class_wR_factor_all</h2> For each '
                                    'reflection class, the weighted residual factors for all\n'
                                    ' reflections included in the refinement. The reflections also\n'
@@ -5373,15 +5965,18 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                    ' w       = the least-squares weights\n'
                                    '\n'
                                    ' and the sum is taken over the reflections of this class. See\n'
-                                   ' also _refine_ls_class_R_factor_ definitions.</pre>',
+                                   ' also _refine_ls_class_R_factor_ definitions.</pre>\n'
+                                   '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refine_ls_d_res_high': '<pre><h2>_refine_ls_d_res_high</h2> The smallest value in angstroms of '
                           'the interplanar spacings\n'
                           ' of the reflections used in the refinement. This is called\n'
-                          ' the highest resolution.</pre>',
+                          ' the highest resolution.</pre>\n'
+                          '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refine_ls_d_res_low': '<pre><h2>_refine_ls_d_res_low</h2> The largest value in angstroms of the '
                          'interplanar spacings\n'
                          ' of the reflections used in the refinement. This is called\n'
-                         ' the lowest resolution.</pre>',
+                         ' the lowest resolution.</pre>\n'
+                         '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refine_ls_extinction_coef': '<pre><h2>_refine_ls_extinction_coef</h2> The extinction '
                                'coefficient used to calculate the correction\n'
                                ' factor applied to the structure-factor data. The nature of the\n'
@@ -5401,7 +5996,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                '       Larson, A. C. (1967). Acta Cryst. 23, 664-665.\n'
                                '\n'
                                '<h3>Example:</h3>\n'
-                               '3472(52)</pre>',
+                               '3472(52)</pre>\n'
+                               '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refine_ls_extinction_expression': '<pre><h2>_refine_ls_extinction_expression</h2> A description '
                                      'of or reference to the extinction-correction\n'
                                      ' equation used to apply the data item '
@@ -5413,7 +6009,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                      '<h3>Example:</h3>\n'
                                      ' Larson, A. C. (1970). "Crystallographic Computing",\n'
                                      ' edited by F. R. Ahmed. Eq. (22), p. 292.\n'
-                                     ' Copenhagen: Munksgaard.</pre>',
+                                     ' Copenhagen: Munksgaard.</pre>\n'
+                                     '<br><p><h4>Type:</h4> string</p>',
  '_refine_ls_extinction_method': '<pre><h2>_refine_ls_extinction_method</h2> A description of the '
                                  'extinction-correction method applied.\n'
                                  ' This description should\n'
@@ -5445,7 +6042,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                  '\n'
                                  '<h3>Example:</h3>\n'
                                  'B-C type 2 Gaussian isotropic\n'
-                                 'none</pre>',
+                                 'none</pre>\n'
+                                 '<br><p><h4>Type:</h4> string</p>',
  '_refine_ls_goodness_of_fit_all': '<pre><h2>_refine_ls_goodness_of_fit_all</h2> The least-squares '
                                    'goodness-of-fit parameter S for all\n'
                                    ' reflections after the final cycle of refinement.\n'
@@ -5468,7 +6066,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                    ' Nref   = the number of reflections used in the refinement\n'
                                    ' Nparam = the number of refined parameters\n'
                                    '\n'
-                                   ' and the sum is taken over the specified reflections</pre>',
+                                   ' and the sum is taken over the specified reflections</pre>\n'
+                                   '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refine_ls_goodness_of_fit_gt': '<pre><h2>_refine_ls_goodness_of_fit_gt</h2> The least-squares '
                                   'goodness-of-fit parameter S for\n'
                                   ' significantly intense reflections (see\n'
@@ -5492,7 +6091,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                   ' Nref   = the number of reflections used in the refinement\n'
                                   ' Nparam = the number of refined parameters\n'
                                   '\n'
-                                  ' and the sum is taken over the specified reflections</pre>',
+                                  ' and the sum is taken over the specified reflections</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refine_ls_goodness_of_fit_obs': '<pre><h2>_refine_ls_goodness_of_fit_obs</h2> The least-squares '
                                    'goodness-of-fit parameter S for observed\n'
                                    ' reflections (see _reflns_observed_criterion) after the final\n'
@@ -5516,7 +6116,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                    ' Nref   = the number of reflections used in the refinement\n'
                                    ' Nparam = the number of refined parameters\n'
                                    '\n'
-                                   ' and the sum is taken over the specified reflections</pre>',
+                                   ' and the sum is taken over the specified reflections</pre>\n'
+                                   '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refine_ls_goodness_of_fit_ref': '<pre><h2>_refine_ls_goodness_of_fit_ref</h2> The least-squares '
                                    'goodness-of-fit parameter S for all\n'
                                    ' reflections included in the refinement after the final cycle\n'
@@ -5540,7 +6141,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                    ' Nref   = the number of reflections used in the refinement\n'
                                    ' Nparam = the number of refined parameters\n'
                                    '\n'
-                                   ' and the sum is taken over the specified reflections</pre>',
+                                   ' and the sum is taken over the specified reflections</pre>\n'
+                                   '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refine_ls_hydrogen_treatment': '<pre><h2>_refine_ls_hydrogen_treatment</h2> Treatment of '
                                   'hydrogen atoms in the least-squares refinement.\n'
                                   '\n'
@@ -5609,7 +6211,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                   '\n'
                                   'undef\n'
                                   '\tH-atom parameters not defined\n'
-                                  '</pre>',
+                                  '</pre>\n'
+                                  '<br><p><h4>Type:</h4> string</p>',
  '_refine_ls_matrix_type': '<pre><h2>_refine_ls_matrix_type</h2> Type of matrix used to accumulate '
                            'the least-squares derivatives.\n'
                            '\n'
@@ -5631,7 +6234,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                            '\n'
                            'sparse\n'
                            '\tselected elements only\n'
-                           '</pre>',
+                           '</pre>\n'
+                           '<br><p><h4>Type:</h4> string</p>',
  '_refine_ls_number_constraints': '<pre><h2>_refine_ls_number_constraints</h2> The number of '
                                   'constrained (non-refined or dependent) parameters\n'
                                   ' in the least-squares process. These may be due to symmetry or '
@@ -5641,7 +6245,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                   ' _atom_site_constraints and _atom_site_refinement_flags. A '
                                   'general\n'
                                   ' description of constraints may appear in '
-                                  '_refine_special_details.</pre>',
+                                  '_refine_special_details.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refine_ls_number_parameters': '<pre><h2>_refine_ls_number_parameters</h2> The number of '
                                  'parameters refined in the least-squares process.\n'
                                  ' If possible, this number should include some contribution from\n'
@@ -5651,10 +6256,12 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                  ' another). Least-squares restraints often depend on geometry or\n'
                                  ' energy considerations and this makes their direct contribution\n'
                                  ' to this number, and to the goodness-of-fit calculation,\n'
-                                 ' difficult to assess.</pre>',
+                                 ' difficult to assess.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refine_ls_number_reflns': '<pre><h2>_refine_ls_number_reflns</h2> The number of unique '
                              'reflections contributing to the\n'
-                             ' least-squares refinement calculation.</pre>',
+                             ' least-squares refinement calculation.</pre>\n'
+                             '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refine_ls_number_restraints': '<pre><h2>_refine_ls_number_restraints</h2> The number of '
                                  'restrained parameters. These are parameters which\n'
                                  ' are not directly dependent on another refined parameter.\n'
@@ -5663,7 +6270,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                  ' See also _atom_site_constraints and '
                                  '_atom_site_refinement_flags.\n'
                                  ' A general description of refinement constraints may appear in\n'
-                                 ' _refine_special_details.</pre>',
+                                 ' _refine_special_details.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refine_ls_restrained_S_all': '<pre><h2>_refine_ls_restrained_S_all</h2> The least-squares '
                                 "goodness-of-fit parameter S' for all\n"
                                 ' reflections after the final cycle of least-squares refinement.\n'
@@ -5697,7 +6305,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                 '          (see _refine_ls_number_parameters)\n'
                                 '\n'
                                 ' sum     is taken over the specified reflections\n'
-                                ' sum~r~  is taken over the restraints</pre>',
+                                ' sum~r~  is taken over the restraints</pre>\n'
+                                '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refine_ls_restrained_S_gt': '<pre><h2>_refine_ls_restrained_S_gt</h2> The least-squares '
                                "goodness-of-fit parameter S' for\n"
                                ' significantly intense reflections (satisfying\n'
@@ -5730,7 +6339,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                '          (see _refine_ls_number_parameters)\n'
                                '\n'
                                ' sum     is taken over the specified reflections\n'
-                               ' sum~r~  is taken over the restraints</pre>',
+                               ' sum~r~  is taken over the restraints</pre>\n'
+                               '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refine_ls_restrained_S_obs': '<pre><h2>_refine_ls_restrained_S_obs</h2> The least-squares '
                                 "goodness-of-fit parameter S' for observed\n"
                                 ' reflections after the final cycle of least-squares refinement.\n'
@@ -5764,33 +6374,41 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                 '          (see _refine_ls_number_parameters)\n'
                                 '\n'
                                 ' sum     is taken over the specified reflections\n'
-                                ' sum~r~  is taken over the restraints</pre>',
+                                ' sum~r~  is taken over the restraints</pre>\n'
+                                '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refine_ls_shift/esd_max': '<pre><h2>_refine_ls_shift/esd_max</h2> The largest ratio of the '
                              'final least-squares parameter\n'
                              ' shift to the final standard uncertainty (s.u.,\n'
-                             ' formerly described as estimated standard deviation, e.s.d.).</pre>',
+                             ' formerly described as estimated standard deviation, e.s.d.).</pre>\n'
+                             '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refine_ls_shift/esd_mean': '<pre><h2>_refine_ls_shift/esd_mean</h2> The average ratio of the '
                               'final least-squares parameter\n'
                               ' shift to the final standard uncertainty (s.u.,\n'
-                              ' formerly described as estimated standard deviation, e.s.d.).</pre>',
+                              ' formerly described as estimated standard deviation, '
+                              'e.s.d.).</pre>\n'
+                              '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refine_ls_shift/su_max': '<pre><h2>_refine_ls_shift/su_max</h2> The largest ratio of the final '
                             'least-squares parameter\n'
-                            ' shift to the final standard uncertainty.</pre>',
+                            ' shift to the final standard uncertainty.</pre>\n'
+                            '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refine_ls_shift/su_max_lt': '<pre><h2>_refine_ls_shift/su_max_lt</h2> An upper limit for the '
                                'largest ratio of the final\n'
                                ' least-squares parameter shift to the final\n'
                                ' standard uncertainty.  This item is used when the largest\n'
                                ' value of the shift divided by the final standard uncertainty\n'
-                               ' is too small to measure.</pre>',
+                               ' is too small to measure.</pre>\n'
+                               '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refine_ls_shift/su_mean': '<pre><h2>_refine_ls_shift/su_mean</h2> The average ratio of the '
                              'final least-squares parameter\n'
-                             ' shift to the final standard uncertainty.</pre>',
+                             ' shift to the final standard uncertainty.</pre>\n'
+                             '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refine_ls_shift/su_mean_lt': '<pre><h2>_refine_ls_shift/su_mean_lt</h2> An upper limit for the '
                                 'average ratio of the final\n'
                                 ' least-squares parameter shift to the\n'
                                 ' final standard uncertainty.  This\n'
                                 ' item is used when the average value of the shift divided by\n'
-                                ' the final standard uncertainty is too small to measure.</pre>',
+                                ' the final standard uncertainty is too small to measure.</pre>\n'
+                                '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refine_ls_structure_factor_coef': '<pre><h2>_refine_ls_structure_factor_coef</h2> '
                                      'Structure-factor coefficient |F|, F^2^ or I used in the\n'
                                      ' least-squares refinement process.\n'
@@ -5804,7 +6422,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                      '\n'
                                      'Inet\n'
                                      '\tnet intensity\n'
-                                     '</pre>',
+                                     '</pre>\n'
+                                     '<br><p><h4>Type:</h4> string</p>',
  '_refine_ls_wR_factor_all': '<pre><h2>_refine_ls_wR_factor_all</h2> Weighted residual factors for '
                              'all reflections.\n'
                              ' The reflections also satisfy the resolution limits established\n'
@@ -5821,7 +6440,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                              '           _refine_ls_structure_factor_coef\n'
                              ' w       = the least-squares weight\n'
                              '\n'
-                             ' and the sum is taken over the specified reflections</pre>',
+                             ' and the sum is taken over the specified reflections</pre>\n'
+                             '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refine_ls_wR_factor_gt': '<pre><h2>_refine_ls_wR_factor_gt</h2> Weighted residual factors for '
                             'significantly intense reflections\n'
                             ' (satisfying _reflns_threshold_expression) included in the\n'
@@ -5840,7 +6460,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                             '           _refine_ls_structure_factor_coef\n'
                             ' w       = the least-squares weight\n'
                             '\n'
-                            ' and the sum is taken over the specified reflections</pre>',
+                            ' and the sum is taken over the specified reflections</pre>\n'
+                            '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refine_ls_wR_factor_obs': '<pre><h2>_refine_ls_wR_factor_obs</h2> Weighted residual factors for '
                              'the reflections classified as\n'
                              " 'observed' (see _reflns_observed_criterion) and included\n"
@@ -5859,7 +6480,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                              '           _refine_ls_structure_factor_coef\n'
                              ' w       = the least-squares weight\n'
                              '\n'
-                             ' and the sum is taken over the specified reflections</pre>',
+                             ' and the sum is taken over the specified reflections</pre>\n'
+                             '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refine_ls_wR_factor_ref': '<pre><h2>_refine_ls_wR_factor_ref</h2> Weighted residual factors for '
                              'all reflections included in the\n'
                              ' refinement.  The reflections also satisfy the resolution\n'
@@ -5877,7 +6499,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                              '           _refine_ls_structure_factor_coef\n'
                              ' w       = the least-squares weight\n'
                              '\n'
-                             ' and the sum is taken over the specified reflections</pre>',
+                             ' and the sum is taken over the specified reflections</pre>\n'
+                             '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refine_ls_weighting_details': '<pre><h2>_refine_ls_weighting_details</h2> A description of '
                                  'special aspects of the weighting scheme used\n'
                                  ' in the least-squares refinement. Used to describe the '
@@ -5890,7 +6513,9 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                  '     Sigdel = Afsig +  Bfsig*(sin(\\q)/\\l - 1/6)\n'
                                  '     Afsig = 22.0, Bfsig = 150.0 at the beginning of '
                                  'refinement.\n'
-                                 '     Afsig = 16.0, Bfsig =  60.0 at the end of refinement.</pre>',
+                                 '     Afsig = 16.0, Bfsig =  60.0 at the end of '
+                                 'refinement.</pre>\n'
+                                 '<br><p><h4>Type:</h4> string</p>',
  '_refine_ls_weighting_scheme': '<pre><h2>_refine_ls_weighting_scheme</h2> The weighting scheme '
                                 'applied in the least-squares process. The\n'
                                 ' standard code may be followed by a description of the weight\n'
@@ -5906,53 +6531,65 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                 '\n'
                                 'calc\n'
                                 '\tcalculated weights applied\n'
-                                '</pre>',
+                                '</pre>\n'
+                                '<br><p><h4>Type:</h4> string</p>',
  '_refine_special_details': '<pre><h2>_refine_special_details</h2> Description of special aspects '
-                            'of the refinement process.</pre>',
+                            'of the refinement process.</pre>\n'
+                            '<br><p><h4>Type:</h4> string</p>',
  '_refln_A_calc': '<pre><h2>_refln_A_calc</h2> The calculated and measured structure-factor '
                   'component A\n'
                   ' (in electrons for X-ray diffraction).\n'
                   '\n'
-                  ' A =|F|cos(phase)</pre>',
+                  ' A =|F|cos(phase)</pre>\n'
+                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refln_A_meas': '<pre><h2>_refln_A_meas</h2> The calculated and measured structure-factor '
                   'component A\n'
                   ' (in electrons for X-ray diffraction).\n'
                   '\n'
-                  ' A =|F|cos(phase)</pre>',
+                  ' A =|F|cos(phase)</pre>\n'
+                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refln_B_calc': '<pre><h2>_refln_B_calc</h2> The calculated and measured structure-factor '
                   'component B\n'
                   ' (in electrons for X-ray diffraction).\n'
                   '\n'
-                  ' B =|F|sin(phase)</pre>',
+                  ' B =|F|sin(phase)</pre>\n'
+                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refln_B_meas': '<pre><h2>_refln_B_meas</h2> The calculated and measured structure-factor '
                   'component B\n'
                   ' (in electrons for X-ray diffraction).\n'
                   '\n'
-                  ' B =|F|sin(phase)</pre>',
+                  ' B =|F|sin(phase)</pre>\n'
+                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refln_F_calc': '<pre><h2>_refln_F_calc</h2> The calculated, measured and standard uncertainty '
                   '(derived from\n'
                   ' measurement) of the structure factors (in electrons for\n'
-                  ' X-ray diffraction).</pre>',
+                  ' X-ray diffraction).</pre>\n'
+                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refln_F_meas': '<pre><h2>_refln_F_meas</h2> The calculated, measured and standard uncertainty '
                   '(derived from\n'
                   ' measurement) of the structure factors (in electrons for\n'
-                  ' X-ray diffraction).</pre>',
+                  ' X-ray diffraction).</pre>\n'
+                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refln_F_sigma': '<pre><h2>_refln_F_sigma</h2> The calculated, measured and standard uncertainty '
                    '(derived from\n'
                    ' measurement) of the structure factors (in electrons for\n'
-                   ' X-ray diffraction).</pre>',
+                   ' X-ray diffraction).</pre>\n'
+                   '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refln_F_squared_calc': '<pre><h2>_refln_F_squared_calc</h2> Calculated, measured and estimated '
                           'standard uncertainty (derived\n'
                           ' from measurement) of the squared structure factors (in electrons\n'
-                          ' squared for X-ray diffraction).</pre>',
+                          ' squared for X-ray diffraction).</pre>\n'
+                          '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refln_F_squared_meas': '<pre><h2>_refln_F_squared_meas</h2> Calculated, measured and estimated '
                           'standard uncertainty (derived\n'
                           ' from measurement) of the squared structure factors (in electrons\n'
-                          ' squared for X-ray diffraction).</pre>',
+                          ' squared for X-ray diffraction).</pre>\n'
+                          '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refln_F_squared_sigma': '<pre><h2>_refln_F_squared_sigma</h2> Calculated, measured and '
                            'estimated standard uncertainty (derived\n'
                            ' from measurement) of the squared structure factors (in electrons\n'
-                           ' squared for X-ray diffraction).</pre>',
+                           ' squared for X-ray diffraction).</pre>\n'
+                           '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refln_class_code': '<pre><h2>_refln_class_code</h2> The code identifying the class to which '
                       'this reflection has been\n'
                       ' assigned. This code must match a value of _reflns_class_code.\n'
@@ -5961,14 +6598,17 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                       ' class may be defined by the number m=sum|m~i~|, where the m~i~\n'
                       ' are the integer coefficients that, in addition to h,k,l, index\n'
                       ' the corresponding diffraction vector in the basis defined\n'
-                      ' for the reciprocal lattice.</pre>',
+                      ' for the reciprocal lattice.</pre>\n'
+                      '<br><p><h4>Type:</h4> string</p>',
  '_refln_crystal_id': '<pre><h2>_refln_crystal_id</h2> Code identifying each crystal if multiple '
                       'crystals are used. Is\n'
-                      ' used to link with _exptl_crystal_id in the _exptl_crystal_ list.</pre>',
+                      ' used to link with _exptl_crystal_id in the _exptl_crystal_ list.</pre>\n'
+                      '<br><p><h4>Type:</h4> string</p>',
  '_refln_d_spacing': '<pre><h2>_refln_d_spacing</h2> The d spacing in angstroms for this '
                      'reflection. This is related\n'
                      ' to the (sin theta)/lambda value by the expression\n'
-                     '      _refln_d_spacing = 2/(_refln_sint/lambda)</pre>',
+                     '      _refln_d_spacing = 2/(_refln_sint/lambda)</pre>\n'
+                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refln_include_status': '<pre><h2>_refln_include_status</h2> Classification of a reflection '
                           'indicating its status with\n'
                           ' respect to inclusion in the refinement and the calculation\n'
@@ -5998,34 +6638,42 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                           '\n'
                           'l\n'
                           '\tdoes not satisfy _refine_ls_d_res_low\n'
-                          '</pre>',
+                          '</pre>\n'
+                          '<br><p><h4>Type:</h4> string</p>',
  '_refln_index_h': '<pre><h2>_refln_index_h</h2> Miller indices of the reflection. The values of '
                    'the Miller\n'
                    ' indices in the REFLN category must correspond to the cell\n'
-                   ' defined by the cell lengths and cell angles in the CELL category.</pre>',
+                   ' defined by the cell lengths and cell angles in the CELL category.</pre>\n'
+                   '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refln_index_k': '<pre><h2>_refln_index_k</h2> Miller indices of the reflection. The values of '
                    'the Miller\n'
                    ' indices in the REFLN category must correspond to the cell\n'
-                   ' defined by the cell lengths and cell angles in the CELL category.</pre>',
+                   ' defined by the cell lengths and cell angles in the CELL category.</pre>\n'
+                   '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refln_index_l': '<pre><h2>_refln_index_l</h2> Miller indices of the reflection. The values of '
                    'the Miller\n'
                    ' indices in the REFLN category must correspond to the cell\n'
-                   ' defined by the cell lengths and cell angles in the CELL category.</pre>',
+                   ' defined by the cell lengths and cell angles in the CELL category.</pre>\n'
+                   '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refln_intensity_calc': '<pre><h2>_refln_intensity_calc</h2> The calculated, measured and '
                           'standard uncertainty (derived from\n'
                           ' measurement) of the intensity, all in the same arbitrary units\n'
-                          ' as _refln_intensity_meas.</pre>',
+                          ' as _refln_intensity_meas.</pre>\n'
+                          '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refln_intensity_meas': '<pre><h2>_refln_intensity_meas</h2> The calculated, measured and '
                           'standard uncertainty (derived from\n'
                           ' measurement) of the intensity, all in the same arbitrary units\n'
-                          ' as _refln_intensity_meas.</pre>',
+                          ' as _refln_intensity_meas.</pre>\n'
+                          '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refln_intensity_sigma': '<pre><h2>_refln_intensity_sigma</h2> The calculated, measured and '
                            'standard uncertainty (derived from\n'
                            ' measurement) of the intensity, all in the same arbitrary units\n'
-                           ' as _refln_intensity_meas.</pre>',
+                           ' as _refln_intensity_meas.</pre>\n'
+                           '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refln_mean_path_length_tbar': '<pre><h2>_refln_mean_path_length_tbar</h2> Mean path length in '
                                  'millimetres through the crystal for this\n'
-                                 ' reflection.</pre>',
+                                 ' reflection.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refln_observed_status': '<pre><h2>_refln_observed_status</h2> Classification of a reflection '
                            'indicating its status with\n'
                            ' respect to inclusion in the refinement and the calculation\n'
@@ -6053,11 +6701,14 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                            '\n'
                            'l\n'
                            '\tdoes not satisfy _refine_ls_d_res_low\n'
-                           '</pre>',
+                           '</pre>\n'
+                           '<br><p><h4>Type:</h4> string</p>',
  '_refln_phase_calc': '<pre><h2>_refln_phase_calc</h2> The calculated structure-factor phase in '
-                      'degrees.</pre>',
+                      'degrees.</pre>\n'
+                      '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refln_phase_meas': '<pre><h2>_refln_phase_meas</h2> The measured structure-factor phase in '
-                      'degrees.</pre>',
+                      'degrees.</pre>\n'
+                      '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refln_refinement_status': '<pre><h2>_refln_refinement_status</h2> Status of a reflection in the '
                              'structure-refinement process.\n'
                              '\n'
@@ -6070,7 +6721,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                              '\n'
                              'extn\n'
                              '\texcluded due to extinction\n'
-                             '</pre>',
+                             '</pre>\n'
+                             '<br><p><h4>Type:</h4> string</p>',
  '_refln_scale_group_code': '<pre><h2>_refln_scale_group_code</h2> Code identifying the '
                             'structure-factor scale. This code must\n'
                             ' correspond to one of the _reflns_scale_group_code values.\n'
@@ -6084,28 +6736,35 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                             'B\n'
                             'c1\n'
                             'c2\n'
-                            'c3</pre>',
+                            'c3</pre>\n'
+                            '<br><p><h4>Type:</h4> string</p>',
  '_refln_sint/lambda': '<pre><h2>_refln_sint/lambda</h2> The (sin theta)/lambda value in '
                        'reciprocal angstroms for this\n'
-                       ' reflection.</pre>',
+                       ' reflection.</pre>\n'
+                       '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refln_symmetry_epsilon': '<pre><h2>_refln_symmetry_epsilon</h2> The symmetry reinforcement '
                             'factor corresponding to the number of\n'
                             ' times the reflection indices are generated identically from the\n'
-                            ' space-group symmetry operations.</pre>',
+                            ' space-group symmetry operations.</pre>\n'
+                            '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refln_symmetry_multiplicity': '<pre><h2>_refln_symmetry_multiplicity</h2> The number of '
                                  'reflections symmetry-equivalent under the Laue\n'
                                  ' symmetry to the present reflection. In the Laue symmetry, '
                                  'Friedel\n'
                                  ' opposites (h k l and -h -k -l) are equivalent. Tables of\n'
                                  ' symmetry-equivalent reflections are available in International\n'
-                                 ' Tables for Crystallography Volume A (2002), Chapter 10.1.</pre>',
+                                 ' Tables for Crystallography Volume A (2002), Chapter '
+                                 '10.1.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refln_wavelength': '<pre><h2>_refln_wavelength</h2> The mean wavelength in angstroms of the '
                       'radiation used to measure\n'
                       ' this reflection. This is an important parameter for data\n'
-                      ' collected using energy-dispersive detectors or the Laue method.</pre>',
+                      ' collected using energy-dispersive detectors or the Laue method.</pre>\n'
+                      '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refln_wavelength_id': '<pre><h2>_refln_wavelength_id</h2> Code identifying the wavelength in '
                          'the _diffrn_radiation_ list.\n'
-                         ' See _diffrn_radiation_wavelength_id.</pre>',
+                         ' See _diffrn_radiation_wavelength_id.</pre>\n'
+                         '<br><p><h4>Type:</h4> string</p>',
  '_reflns_Friedel_coverage': '<pre><h2>_reflns_Friedel_coverage</h2> The proportion of '
                              'Friedel-related reflections present in\n'
                              " the number of 'independent' reflections specified by\n"
@@ -6140,7 +6799,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                              '       two inequivalent octants h &gt;= 0, k &gt;=0, l lead to the\n'
                              '       same value as in (c), whereas measurements of the\n'
                              '       two equivalent octants h &gt;= 0, k, l &gt;= 0 will lead to\n'
-                             '       a value of zero for _reflns_Friedel_coverage.</pre>',
+                             '       a value of zero for _reflns_Friedel_coverage.</pre>\n'
+                             '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_Friedel_fraction_full': '<pre><h2>_reflns_Friedel_fraction_full</h2> The number of '
                                   'Friedel pairs measured out to\n'
                                   ' _diffrn_reflns_theta_full. divided by the\n'
@@ -6151,7 +6811,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                   ' non-centrosymmetric space group, and so one can see at\n'
                                   ' a glance how completely the Friedel pairs have been\n'
                                   ' measured. For centrosymmetric space groups the value\n'
-                                  " would be 0/0 and so would be given as '.'.</pre>",
+                                  " would be 0/0 and so would be given as '.'.</pre>\n"
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_Friedel_fraction_max': '<pre><h2>_reflns_Friedel_fraction_max</h2> The number of Friedel '
                                  'pairs measured out to\n'
                                  ' _diffrn_reflns_theta_max. divided by the\n'
@@ -6162,7 +6823,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                  ' non-centrosymmetric space group, and so one can see at\n'
                                  ' a glance how completely the Friedel pairs have been\n'
                                  ' measured. For centrosymmetric space groups the value\n'
-                                 " would be 0/0 and so would be given as '.'.</pre>",
+                                 " would be 0/0 and so would be given as '.'.</pre>\n"
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_class_R_Fsqd_factor': '<pre><h2>_reflns_class_R_Fsqd_factor</h2> For each reflection '
                                 'class, the residual factor R(F^2^) calculated\n'
                                 ' on the squared amplitudes of the observed and calculated\n'
@@ -6182,7 +6844,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                 ' F(calc)^2^ = squares of the calculated structure-factor\n'
                                 '              amplitudes\n'
                                 '\n'
-                                ' and the sum is taken over the reflections of this class.</pre>',
+                                ' and the sum is taken over the reflections of this class.</pre>\n'
+                                '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_class_R_I_factor': '<pre><h2>_reflns_class_R_I_factor</h2> For each reflection class, '
                              'the residual factor R(I) for the\n'
                              ' reflections judged significantly intense (i.e. satisfying the\n'
@@ -6199,7 +6862,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                              ' I(obs)  = the net observed intensities\n'
                              ' I(calc) = the net calculated intensities\n'
                              '\n'
-                             ' and the sum is taken over the reflections of this class.</pre>',
+                             ' and the sum is taken over the reflections of this class.</pre>\n'
+                             '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_class_R_factor_all': '<pre><h2>_reflns_class_R_factor_all</h2> For each reflection '
                                'class, the residual factors for all\n'
                                ' reflections, and for significantly intense reflections (see\n'
@@ -6218,7 +6882,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                '\n'
                                ' and the sum is taken over the reflections of this class. See '
                                'also\n'
-                               ' _reflns_class_wR_factor_all definitions.</pre>',
+                               ' _reflns_class_wR_factor_all definitions.</pre>\n'
+                               '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_class_R_factor_gt': '<pre><h2>_reflns_class_R_factor_gt</h2> For each reflection class, '
                               'the residual factors for all\n'
                               ' reflections, and for significantly intense reflections (see\n'
@@ -6235,28 +6900,33 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                               ' F(calc) = the calculated structure-factor amplitudes\n'
                               '\n'
                               ' and the sum is taken over the reflections of this class. See also\n'
-                              ' _reflns_class_wR_factor_all definitions.</pre>',
+                              ' _reflns_class_wR_factor_all definitions.</pre>\n'
+                              '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_class_code': '<pre><h2>_reflns_class_code</h2> The code identifying a certain reflection '
                        'class.\n'
                        '\n'
                        '<h3>Example:</h3>\n'
                        '1\n'
                        'm1\n'
-                       's2</pre>',
+                       's2</pre>\n'
+                       '<br><p><h4>Type:</h4> string</p>',
  '_reflns_class_d_res_high': '<pre><h2>_reflns_class_d_res_high</h2> For each reflection class, '
                              'the highest resolution in angstroms\n'
                              ' for the reflections used in the refinement. This is the smallest\n'
-                             ' d value.</pre>',
+                             ' d value.</pre>\n'
+                             '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_class_d_res_low': '<pre><h2>_reflns_class_d_res_low</h2> For each reflection class, the '
                             'lowest resolution in angstroms\n'
                             ' for the reflections used in the refinement. This is the largest\n'
-                            ' d value.</pre>',
+                            ' d value.</pre>\n'
+                            '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_class_description': '<pre><h2>_reflns_class_description</h2> Description of each '
                               'reflection class.\n'
                               '\n'
                               '<h3>Example:</h3>\n'
                               'm=1 first order satellites\n'
-                              'H0L0 common projection reflections</pre>',
+                              'H0L0 common projection reflections</pre>\n'
+                              '<br><p><h4>Type:</h4> string</p>',
  '_reflns_class_number_gt': '<pre><h2>_reflns_class_number_gt</h2> For each reflection class, the '
                             'number of significantly intense\n'
                             ' reflections (see _reflns_threshold_expression) in the _refln_\n'
@@ -6266,7 +6936,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                             ' class)  according to the nature of the structure and the\n'
                             ' procedures used. Special characteristics of the reflections\n'
                             ' included in the _refln_ list should be given in the item\n'
-                            ' _reflns_special_details.</pre>',
+                            ' _reflns_special_details.</pre>\n'
+                            '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_class_number_total': '<pre><h2>_reflns_class_number_total</h2> For each reflection '
                                'class, the total number of reflections\n'
                                ' in the _refln_ list (not the _diffrn_refln_ list). This may\n'
@@ -6275,7 +6946,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                ' under the crystal class) according to the nature of the\n'
                                ' structure and the procedures used. Special characteristics\n'
                                ' of the reflections included in the _refln_ list should be given\n'
-                               ' in the item _reflns_special_details.</pre>',
+                               ' in the item _reflns_special_details.</pre>\n'
+                               '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_class_wR_factor_all': '<pre><h2>_reflns_class_wR_factor_all</h2> For each reflection '
                                 'class, the weighted residual factors for all\n'
                                 ' reflections included in the refinement. The reflections also\n'
@@ -6293,31 +6965,40 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                 ' w       = the least-squares weights\n'
                                 '\n'
                                 ' and the sum is taken over the reflections of this class. See\n'
-                                ' also _reflns_class_R_factor_ definitions.</pre>',
+                                ' also _reflns_class_R_factor_ definitions.</pre>\n'
+                                '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_d_resolution_high': '<pre><h2>_reflns_d_resolution_high</h2> The highest and lowest '
                               'resolution in angstroms for the\n'
-                              ' reflections. These are the smallest and largest d values.</pre>',
+                              ' reflections. These are the smallest and largest d values.</pre>\n'
+                              '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_d_resolution_low': '<pre><h2>_reflns_d_resolution_low</h2> The highest and lowest '
                              'resolution in angstroms for the\n'
-                             ' reflections. These are the smallest and largest d values.</pre>',
+                             ' reflections. These are the smallest and largest d values.</pre>\n'
+                             '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_limit_h_max': '<pre><h2>_reflns_limit_h_max</h2> Miller indices limits for the reported '
                         'reflections. These need\n'
-                        ' not be the same as the _diffrn_reflns_limit_ values.</pre>',
+                        ' not be the same as the _diffrn_reflns_limit_ values.</pre>\n'
+                        '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_limit_h_min': '<pre><h2>_reflns_limit_h_min</h2> Miller indices limits for the reported '
                         'reflections. These need\n'
-                        ' not be the same as the _diffrn_reflns_limit_ values.</pre>',
+                        ' not be the same as the _diffrn_reflns_limit_ values.</pre>\n'
+                        '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_limit_k_max': '<pre><h2>_reflns_limit_k_max</h2> Miller indices limits for the reported '
                         'reflections. These need\n'
-                        ' not be the same as the _diffrn_reflns_limit_ values.</pre>',
+                        ' not be the same as the _diffrn_reflns_limit_ values.</pre>\n'
+                        '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_limit_k_min': '<pre><h2>_reflns_limit_k_min</h2> Miller indices limits for the reported '
                         'reflections. These need\n'
-                        ' not be the same as the _diffrn_reflns_limit_ values.</pre>',
+                        ' not be the same as the _diffrn_reflns_limit_ values.</pre>\n'
+                        '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_limit_l_max': '<pre><h2>_reflns_limit_l_max</h2> Miller indices limits for the reported '
                         'reflections. These need\n'
-                        ' not be the same as the _diffrn_reflns_limit_ values.</pre>',
+                        ' not be the same as the _diffrn_reflns_limit_ values.</pre>\n'
+                        '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_limit_l_min': '<pre><h2>_reflns_limit_l_min</h2> Miller indices limits for the reported '
                         'reflections. These need\n'
-                        ' not be the same as the _diffrn_reflns_limit_ values.</pre>',
+                        ' not be the same as the _diffrn_reflns_limit_ values.</pre>\n'
+                        '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_number_gt': '<pre><h2>_reflns_number_gt</h2> The number of reflections in the _refln_ '
                       'list (not the\n'
                       ' _diffrn_refln_ list) that are significantly intense, satisfying\n'
@@ -6327,7 +7008,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                       ' under the crystal class) according to the nature of the\n'
                       ' structure and the procedures used. Special characteristics\n'
                       ' of the reflections included in the _refln_ list should be given\n'
-                      ' in the item _reflns_special_details.</pre>',
+                      ' in the item _reflns_special_details.</pre>\n'
+                      '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_number_observed': "<pre><h2>_reflns_number_observed</h2> The number of 'observed' "
                             'reflections in the _refln_ list (not\n'
                             ' the _diffrn_refln_ list). The observed reflections satisfy the\n'
@@ -6336,7 +7018,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                             ' include Friedel-equivalent reflections according to the nature\n'
                             ' of the structure and the procedures used. Special characteristics\n'
                             ' of the reflections included in the _refln_ list should be given\n'
-                            ' in the item _reflns_special_details.</pre>',
+                            ' in the item _reflns_special_details.</pre>\n'
+                            '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_number_total': '<pre><h2>_reflns_number_total</h2> The total number of reflections in '
                          'the _refln_ list (not the\n'
                          '  _diffrn_refln_ list). This may include Friedel-equivalent\n'
@@ -6345,7 +7028,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                          ' according to the nature of the structure and the procedures\n'
                          ' used. Special characteristics of the reflections included\n'
                          ' in the _refln_ list should be given in the item\n'
-                         ' _reflns_special_details.</pre>',
+                         ' _reflns_special_details.</pre>\n'
+                         '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_observed_criterion': '<pre><h2>_reflns_observed_criterion</h2> The criterion used to '
                                "classify a reflection as 'observed'. This\n"
                                ' criterion is usually expressed in terms of a sigma(I) or '
@@ -6353,18 +7037,23 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                ' threshold.\n'
                                '\n'
                                '<h3>Example:</h3>\n'
-                               'I&gt;2u(I)</pre>',
+                               'I&gt;2u(I)</pre>\n'
+                               '<br><p><h4>Type:</h4> string</p>',
  '_reflns_scale_group_code': '<pre><h2>_reflns_scale_group_code</h2> The code identifying a scale '
                              '_reflns_scale_meas_. These are\n'
                              ' linked to the _refln_ list by the _refln_scale_group_code. These\n'
                              ' codes need not correspond to those in the _diffrn_scale_ '
-                             'list.</pre>',
+                             'list.</pre>\n'
+                             '<br><p><h4>Type:</h4> string</p>',
  '_reflns_scale_meas_F': '<pre><h2>_reflns_scale_meas_F</h2> Scales associated with '
-                         '_reflns_scale_group_code.</pre>',
+                         '_reflns_scale_group_code.</pre>\n'
+                         '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_scale_meas_F_squared': '<pre><h2>_reflns_scale_meas_F_squared</h2> Scales associated '
-                                 'with _reflns_scale_group_code.</pre>',
+                                 'with _reflns_scale_group_code.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_scale_meas_intensity': '<pre><h2>_reflns_scale_meas_intensity</h2> Scales associated '
-                                 'with _reflns_scale_group_code.</pre>',
+                                 'with _reflns_scale_group_code.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_shell_Rmerge_F_all': '<pre><h2>_reflns_shell_Rmerge_F_all</h2> The value of Rmerge(F) '
                                'for all reflections in a given shell.\n'
                                '\n'
@@ -6377,7 +7066,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                '        reflection i\n'
                                '\n'
                                ' sum~i~ is taken over all reflections\n'
-                               ' sum~j~ is taken over all observations of each reflection.</pre>',
+                               ' sum~j~ is taken over all observations of each reflection.</pre>\n'
+                               '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_shell_Rmerge_F_gt': '<pre><h2>_reflns_shell_Rmerge_F_gt</h2> The value of Rmerge(F) for '
                               'significantly intense reflections\n'
                               ' (see _reflns_threshold_expression) in a given shell.\n'
@@ -6391,7 +7081,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                               '        reflection i\n'
                               '\n'
                               ' sum~i~ is taken over all reflections\n'
-                              ' sum~j~ is taken over all observations of each reflection.</pre>',
+                              ' sum~j~ is taken over all observations of each reflection.</pre>\n'
+                              '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_shell_Rmerge_F_obs': '<pre><h2>_reflns_shell_Rmerge_F_obs</h2> The value of Rmerge(F) '
                                "for reflections classified as 'observed'\n"
                                ' (see _reflns_observed_criterion) in a given shell.\n'
@@ -6405,7 +7096,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                '        reflection i\n'
                                '\n'
                                ' sum~i~ is taken over all reflections\n'
-                               ' sum~j~ is taken over all observations of each reflection.</pre>',
+                               ' sum~j~ is taken over all observations of each reflection.</pre>\n'
+                               '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_shell_Rmerge_I_all': '<pre><h2>_reflns_shell_Rmerge_I_all</h2> The value of Rmerge(I) '
                                'for all reflections in a given shell.\n'
                                '\n'
@@ -6418,7 +7110,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                '        reflection i\n'
                                '\n'
                                ' sum~i~ is taken over all reflections\n'
-                               ' sum~j~ is taken over all observations of each reflection.</pre>',
+                               ' sum~j~ is taken over all observations of each reflection.</pre>\n'
+                               '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_shell_Rmerge_I_gt': '<pre><h2>_reflns_shell_Rmerge_I_gt</h2> The value of Rmerge(I) for '
                               'significantly intense reflections\n'
                               ' (see _reflns_threshold_expression) in a given shell.\n'
@@ -6432,7 +7125,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                               '        reflection i\n'
                               '\n'
                               ' sum~i~ is taken over all reflections\n'
-                              ' sum~j~ is taken over all observations of each reflection.</pre>',
+                              ' sum~j~ is taken over all observations of each reflection.</pre>\n'
+                              '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_shell_Rmerge_I_obs': '<pre><h2>_reflns_shell_Rmerge_I_obs</h2> The value of Rmerge(I) '
                                "for reflections classified as 'observed'\n"
                                ' (see _reflns_observed_criterion) in a given shell.\n'
@@ -6446,19 +7140,23 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                '        reflection i\n'
                                '\n'
                                ' sum~i~ is taken over all reflections\n'
-                               ' sum~j~ is taken over all observations of each reflection.</pre>',
+                               ' sum~j~ is taken over all observations of each reflection.</pre>\n'
+                               '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_shell_d_res_high': '<pre><h2>_reflns_shell_d_res_high</h2> The highest resolution in '
                              'angstroms for the reflections in\n'
-                             ' this shell. This is the smallest d value.</pre>',
+                             ' this shell. This is the smallest d value.</pre>\n'
+                             '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_shell_d_res_low': '<pre><h2>_reflns_shell_d_res_low</h2> The lowest resolution in '
                             'angstroms for the\n'
-                            ' reflections in this shell. This is the largest d value.</pre>',
+                            ' reflections in this shell. This is the largest d value.</pre>\n'
+                            '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_shell_meanI_over_sigI_all': '<pre><h2>_reflns_shell_meanI_over_sigI_all</h2> The ratio '
                                       'of the mean of the intensities of all reflections\n'
                                       ' in this shell to the mean of the standard uncertainties of '
                                       'the\n'
                                       ' intensities of all reflections in the resolution '
-                                      'shell.</pre>',
+                                      'shell.</pre>\n'
+                                      '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_shell_meanI_over_sigI_gt': '<pre><h2>_reflns_shell_meanI_over_sigI_gt</h2> The ratio of '
                                      'the mean of the intensities of the significantly\n'
                                      ' intense reflections (see _reflns_threshold_expression) in\n'
@@ -6466,7 +7164,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                      'the\n'
                                      ' intensities of the significantly intense reflections in '
                                      'the\n'
-                                     ' resolution shell.</pre>',
+                                     ' resolution shell.</pre>\n'
+                                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_shell_meanI_over_sigI_obs': '<pre><h2>_reflns_shell_meanI_over_sigI_obs</h2> The ratio '
                                       'of the mean of the intensities of the reflections\n'
                                       " classified as 'observed' (see _reflns_observed_criterion) "
@@ -6475,66 +7174,80 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                       'the\n'
                                       " intensities of the 'observed' reflections in the "
                                       'resolution\n'
-                                      ' shell.</pre>',
+                                      ' shell.</pre>\n'
+                                      '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_shell_meanI_over_uI_all': '<pre><h2>_reflns_shell_meanI_over_uI_all</h2> The ratio of '
                                     'the mean of the intensities of all reflections\n'
                                     ' in this shell to the mean of the standard uncertainties of '
                                     'the\n'
                                     ' intensities of all reflections in the resolution '
-                                    'shell.</pre>',
+                                    'shell.</pre>\n'
+                                    '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_shell_meanI_over_uI_gt': '<pre><h2>_reflns_shell_meanI_over_uI_gt</h2> The ratio of the '
                                    'mean of the intensities of the significantly\n'
                                    ' intense reflections (see _reflns_threshold_expression) in\n'
                                    ' this shell to the mean of the standard uncertainties of the\n'
                                    ' intensities of the significantly intense reflections in the\n'
-                                   ' resolution shell.</pre>',
+                                   ' resolution shell.</pre>\n'
+                                   '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_shell_number_measured_all': '<pre><h2>_reflns_shell_number_measured_all</h2> The total '
                                       'number of reflections measured for this\n'
-                                      ' resolution shell.</pre>',
+                                      ' resolution shell.</pre>\n'
+                                      '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_shell_number_measured_gt': '<pre><h2>_reflns_shell_number_measured_gt</h2> The number of '
                                      'significantly intense reflections\n'
                                      ' (see _reflns_threshold_expression) measured for this\n'
-                                     ' resolution shell.</pre>',
+                                     ' resolution shell.</pre>\n'
+                                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_shell_number_measured_obs': '<pre><h2>_reflns_shell_number_measured_obs</h2> The number '
                                       "of reflections classified as 'observed'\n"
                                       ' (see _reflns_observed_criterion) measured for this\n'
-                                      ' resolution shell.</pre>',
+                                      ' resolution shell.</pre>\n'
+                                      '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_shell_number_possible': '<pre><h2>_reflns_shell_number_possible</h2> The number of '
                                   'unique reflections it is possible to measure in\n'
-                                  ' this reflection shell.</pre>',
+                                  ' this reflection shell.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_shell_number_unique_all': '<pre><h2>_reflns_shell_number_unique_all</h2> The total '
                                     'number of measured reflections resulting from\n'
                                     ' merging measured symmetry-equivalent reflections for this\n'
-                                    ' resolution shell.</pre>',
+                                    ' resolution shell.</pre>\n'
+                                    '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_shell_number_unique_gt': '<pre><h2>_reflns_shell_number_unique_gt</h2> The total number '
                                    'of significantly intense reflections\n'
                                    ' (see _reflns_threshold_expression) resulting from merging\n'
                                    ' measured symmetry-equivalent reflections for this resolution\n'
-                                   ' shell.</pre>',
+                                   ' shell.</pre>\n'
+                                   '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_shell_number_unique_obs': '<pre><h2>_reflns_shell_number_unique_obs</h2> The total '
                                     'number of reflections classified as\n'
                                     " 'observed' (see _reflns_observed_criterion) resulting from\n"
                                     ' merging measured symmetry-equivalent reflections for this\n'
-                                    ' resolution shell.</pre>',
+                                    ' resolution shell.</pre>\n'
+                                    '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_shell_percent_possible_all': '<pre><h2>_reflns_shell_percent_possible_all</h2> The '
                                        'percentage of geometrically possible reflections\n'
                                        ' represented by all reflections measured for this\n'
-                                       ' resolution shell.</pre>',
+                                       ' resolution shell.</pre>\n'
+                                       '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_shell_percent_possible_gt': '<pre><h2>_reflns_shell_percent_possible_gt</h2> The '
                                       'percentage of geometrically possible reflections\n'
                                       ' represented by significantly intense reflections\n'
                                       ' (see _reflns_threshold_expression) measured for this\n'
-                                      ' resolution shell.</pre>',
+                                      ' resolution shell.</pre>\n'
+                                      '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_shell_percent_possible_obs': '<pre><h2>_reflns_shell_percent_possible_obs</h2> The '
                                        'percentage of geometrically possible reflections\n'
                                        " represented by reflections classified as 'observed'\n"
                                        ' (see _reflns_observed_criterion) measured for this\n'
-                                       ' resolution shell.</pre>',
+                                       ' resolution shell.</pre>\n'
+                                       '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_special_details': '<pre><h2>_reflns_special_details</h2> Description of the properties '
                             'of the reported reflection list\n'
                             ' that are not given in other data items.  In particular, this\n'
                             ' should include information about the averaging (or not) of\n'
-                            ' symmetry-equivalent reflections including Friedel pairs.</pre>',
+                            ' symmetry-equivalent reflections including Friedel pairs.</pre>\n'
+                            '<br><p><h4>Type:</h4> string</p>',
  '_reflns_threshold_expression': '<pre><h2>_reflns_threshold_expression</h2> The threshold, '
                                  'usually based on multiples of u(I), u(F^2^)\n'
                                  ' or u(F), that serves to identify significantly intense\n'
@@ -6544,14 +7257,16 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                  ' _refine_ls_R_factor_gt.\n'
                                  '\n'
                                  '<h3>Example:</h3>\n'
-                                 'I&gt;2u(I)</pre>',
+                                 'I&gt;2u(I)</pre>\n'
+                                 '<br><p><h4>Type:</h4> string</p>',
  '_space_group_IT_number': '<pre><h2>_space_group_IT_number</h2> The number as assigned in '
                            'International Tables for\n'
                            ' Crystallography Vol. A, specifying the proper affine class (i.e.\n'
                            ' the orientation-preserving affine class) of space groups\n'
                            ' (crystallographic space-group type) to which the space group\n'
                            ' belongs.  This number defines the space-group type but not\n'
-                           ' the coordinate system in which it is expressed.</pre>',
+                           ' the coordinate system in which it is expressed.</pre>\n'
+                           '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_space_group_crystal_system': '<pre><h2>_space_group_crystal_system</h2> The name of the system '
                                 'of geometric crystal classes of space\n'
                                 ' groups (crystal system) to which the space group belongs.\n'
@@ -6565,9 +7280,11 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                 'tetragonal\n'
                                 'trigonal\n'
                                 'hexagonal\n'
-                                'cubic</pre>',
+                                'cubic</pre>\n'
+                                '<br><p><h4>Type:</h4> string</p>',
  '_space_group_id': '<pre><h2>_space_group_id</h2> This is an identifier needed if _space_group_ '
-                    'items are looped.</pre>',
+                    'items are looped.</pre>\n'
+                    '<br><p><h4>Type:</h4> string</p>',
  '_space_group_name_H-M_alt': '<pre><h2>_space_group_name_H-M_alt</h2> _space_group_name_H-M_alt '
                               'allows any Hermann-Mauguin symbol\n'
                               ' to be given. The way in which this item is used is determined\n'
@@ -6602,7 +7319,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                               '       _space_group_name_H-M_alt\n'
                               "        1    'C m c m'\n"
                               "        2    'C 2/c 2/m 21/m'\n"
-                              "        3    'A m a m'</pre>",
+                              "        3    'A m a m'</pre>\n"
+                              '<br><p><h4>Type:</h4> string</p>',
  '_space_group_name_Hall': '<pre><h2>_space_group_name_Hall</h2> Space-group symbol defined by '
                            'Hall.\n'
                            '\n'
@@ -6622,7 +7340,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                            '\n'
                            '<h3>Example:</h3>\n'
                            'P 2c -2ac\n'
-                           '-I 4bd 2ab 3</pre>',
+                           '-I 4bd 2ab 3</pre>\n'
+                           '<br><p><h4>Type:</h4> string</p>',
  '_space_group_symop_id': '<pre><h2>_space_group_symop_id</h2> An arbitrary identifier that '
                           'uniquely labels each symmetry\n'
                           ' operation in the list.\n'
@@ -6633,7 +7352,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                           ' _space_group_symop_operation_xyz or\n'
                           ' _symmetry_equiv_pos_as_xyz set to x,y,z; \n'
                           ' i.e. the operation labelled 1 should be the identity\n'
-                          ' operation.</pre>',
+                          ' operation.</pre>\n'
+                          '<br><p><h4>Type:</h4> string</p>',
  '_space_group_symop_operation_xyz': '<pre><h2>_space_group_symop_operation_xyz</h2>  A parsable '
                                      'string giving one of the symmetry operations of the\n'
                                      '  space group in algebraic form.  If W is a matrix '
@@ -6678,14 +7398,17 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                      ' operation.\n'
                                      '\n'
                                      '<h3>Example:</h3>\n'
-                                     'x,1/2-y,1/2+z</pre>',
+                                     'x,1/2-y,1/2+z</pre>\n'
+                                     '<br><p><h4>Type:</h4> string</p>',
  '_space_group_symop_sg_id': '<pre><h2>_space_group_symop_sg_id</h2> This must match a particular '
                              'value of _space_group_id, allowing\n'
                              ' the symmetry operation to be identified with a particular space\n'
-                             ' group.</pre>',
+                             ' group.</pre>\n'
+                             '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_symmetry_Int_Tables_number': '<pre><h2>_symmetry_Int_Tables_number</h2> Space-group number from '
                                 'International Tables for Crystallography\n'
-                                ' Vol. A (2002).</pre>',
+                                ' Vol. A (2002).</pre>\n'
+                                '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_symmetry_cell_setting': '<pre><h2>_symmetry_cell_setting</h2> The cell settings for this '
                            'space-group symmetry.\n'
                            '\n'
@@ -6697,7 +7420,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                            'rhombohedral\n'
                            'trigonal\n'
                            'hexagonal\n'
-                           'cubic</pre>',
+                           'cubic</pre>\n'
+                           '<br><p><h4>Type:</h4> string</p>',
  '_symmetry_equiv_pos_as_xyz': '<pre><h2>_symmetry_equiv_pos_as_xyz</h2> Symmetry-equivalent '
                                "position in the 'xyz' representation. Except\n"
                                ' for the space group P1, these data will be repeated in a loop.\n'
@@ -6715,7 +7439,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                ' operation.\n'
                                '\n'
                                '<h3>Example:</h3>\n'
-                               '-y+x,-y,1/3+z</pre>',
+                               '-y+x,-y,1/3+z</pre>\n'
+                               '<br><p><h4>Type:</h4> string</p>',
  '_symmetry_equiv_pos_site_id': '<pre><h2>_symmetry_equiv_pos_site_id</h2> A code identifying each '
                                 'entry in the _symmetry_equiv_pos_as_xyz\n'
                                 ' list. It is normally the sequence number of the entry in that\n'
@@ -6728,7 +7453,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                 ' _space_group_symop_operation_xyz or\n'
                                 ' _symmetry_equiv_pos_as_xyz set to x,y,z; \n'
                                 ' i.e. the operation labelled 1 should be the identity\n'
-                                ' operation.</pre>',
+                                ' operation.</pre>\n'
+                                '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_symmetry_space_group_name_H-M': '<pre><h2>_symmetry_space_group_name_H-M</h2>Hermann-Mauguin '
                                    'space-group symbol. Note that the Hermann-Mauguin\n'
                                    'symbol does not necessarily contain complete information\n'
@@ -6746,7 +7472,8 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                    '<h3>Example:</h3>\n'
                                    'P 1 21/m 1\n'
                                    'P 2/n 2/n 2/n (origin at -1)\n'
-                                   'R -3 2/m</pre>',
+                                   'R -3 2/m</pre>\n'
+                                   '<br><p><h4>Type:</h4> string</p>',
  '_symmetry_space_group_name_Hall': '<pre><h2>_symmetry_space_group_name_Hall</h2> Space-group '
                                     'symbol as described by Hall. This symbol gives the\n'
                                     ' space-group setting explicitly. Leave spaces between the '
@@ -6759,43 +7486,55 @@ cif_core = {'_atom_site_B_equiv_geom_mean': '<pre><h2>_atom_site_B_equiv_geom_me
                                     '<h3>Example:</h3>\n'
                                     '-P 2ac 2n\n'
                                     '-R 3 2"\n'
-                                    'P 61 2 2 (0 0 -1)</pre>',
+                                    'P 61 2 2 (0 0 -1)</pre>\n'
+                                    '<br><p><h4>Type:</h4> string</p>',
  '_valence_param_B': '<pre><h2>_valence_param_B</h2> The bond-valence parameter B used in the '
                      'expression\n'
                      '\n'
                      '       s = exp[(Ro - R)/B]\n'
                      '\n'
-                     ' where s is the valence of a bond of length R.</pre>',
+                     ' where s is the valence of a bond of length R.</pre>\n'
+                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_valence_param_Ro': '<pre><h2>_valence_param_Ro</h2> The bond-valence parameter Ro used in the '
                       'expression\n'
                       '\n'
                       '       s = exp[(Ro - R)/B]\n'
                       '\n'
-                      ' where s is the valence of a bond of length R.</pre>',
+                      ' where s is the valence of a bond of length R.</pre>\n'
+                      '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_valence_param_atom_1': '<pre><h2>_valence_param_atom_1</h2> The element symbol of the first '
                           'atom forming the bond whose\n'
-                          ' bond-valence parameters are given in this category.</pre>',
+                          ' bond-valence parameters are given in this category.</pre>\n'
+                          '<br><p><h4>Type:</h4> string</p>',
  '_valence_param_atom_1_valence': '<pre><h2>_valence_param_atom_1_valence</h2> The valence (formal '
                                   'charge) of the first atom whose\n'
-                                  ' bond-valence parameters are given in this category.</pre>',
+                                  ' bond-valence parameters are given in this category.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_valence_param_atom_2': '<pre><h2>_valence_param_atom_2</h2> The element symbol of the second '
                           'atom forming the bond whose\n'
-                          ' bond-valence parameters are given in this category.</pre>',
+                          ' bond-valence parameters are given in this category.</pre>\n'
+                          '<br><p><h4>Type:</h4> string</p>',
  '_valence_param_atom_2_valence': '<pre><h2>_valence_param_atom_2_valence</h2> The valence (formal '
                                   'charge) of the second atom whose\n'
-                                  ' bond-valence parameters are given in this category.</pre>',
+                                  ' bond-valence parameters are given in this category.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_valence_param_details': '<pre><h2>_valence_param_details</h2> Details of or comments on the '
-                           'bond-valence parameters.</pre>',
+                           'bond-valence parameters.</pre>\n'
+                           '<br><p><h4>Type:</h4> string</p>',
  '_valence_param_id': '<pre><h2>_valence_param_id</h2> An identifier for the valence parameters of '
                       'a bond between\n'
-                      ' the given atoms.</pre>',
+                      ' the given atoms.</pre>\n'
+                      '<br><p><h4>Type:</h4> string</p>',
  '_valence_param_ref_id': '<pre><h2>_valence_param_ref_id</h2> An identifier which links to the '
                           'reference to the source\n'
                           ' from which the bond-valence parameters are taken. A child\n'
-                          ' of _valence_ref_id, which it must match.</pre>',
+                          ' of _valence_ref_id, which it must match.</pre>\n'
+                          '<br><p><h4>Type:</h4> string</p>',
  '_valence_ref_id': '<pre><h2>_valence_ref_id</h2> An identifier for items in this category. '
                     'Parent of\n'
-                    ' _valence_param_ref_id, which must have the same value.</pre>',
+                    ' _valence_param_ref_id, which must have the same value.</pre>\n'
+                    '<br><p><h4>Type:</h4> string</p>',
  '_valence_ref_reference': '<pre><h2>_valence_ref_reference</h2> Literature reference from which '
                            'the valence parameters\n'
-                           ' identified by _valence_param_id were taken.</pre>'}
+                           ' identified by _valence_param_id were taken.</pre>\n'
+                           '<br><p><h4>Type:</h4> string</p>'}

@@ -1,24 +1,31 @@
 restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_site_label</h2> Label of the atom '
                                  'whose atomic displacement parameters\n'
-                                 ' are restrained.</pre>',
+                                 ' are restrained.</pre>\n'
+                                 '<br><p><h4>Type:</h4> string</p>',
  '_restr_U_iso_weight_param': '<pre><h2>_restr_U_iso_weight_param</h2> The expectation value of '
                               'the difference between\n'
                               ' the refined and the isotropic equivalent of the\n'
                               ' anisotropic atomic displacement parameters.\n'
-                              ' The default value of zero indicates a constraint.</pre>',
+                              ' The default value of zero indicates a constraint.</pre>\n'
+                              '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_restr_U_rigid_U_parallel': '<pre><h2>_restr_U_rigid_U_parallel</h2> The average value of the '
                               'components parallel to the bond\n'
                               ' of the atomic displacement parameters of the two atoms\n'
-                              ' that define the bond.</pre>',
+                              ' that define the bond.</pre>\n'
+                              '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_restr_U_rigid_atom_site_label_1': '<pre><h2>_restr_U_rigid_atom_site_label_1</h2> The atom-site '
-                                     'labels of the two atoms that define the rigid bond.</pre>',
+                                     'labels of the two atoms that define the rigid bond.</pre>\n'
+                                     '<br><p><h4>Type:</h4> string</p>',
  '_restr_U_rigid_atom_site_label_2': '<pre><h2>_restr_U_rigid_atom_site_label_2</h2> The atom-site '
-                                     'labels of the two atoms that define the rigid bond.</pre>',
+                                     'labels of the two atoms that define the rigid bond.</pre>\n'
+                                     '<br><p><h4>Type:</h4> string</p>',
  '_restr_U_rigid_details': '<pre><h2>_restr_U_rigid_details</h2> Free-text information about the '
-                           'rigid-bond restraint.</pre>',
+                           'rigid-bond restraint.</pre>\n'
+                           '<br><p><h4>Type:</h4> string</p>',
  '_restr_U_rigid_diff': '<pre><h2>_restr_U_rigid_diff</h2> The difference between the components '
                         'along the bond direction\n'
-                        ' of the atomic displacement parameters, U, of the two atoms.</pre>',
+                        ' of the atomic displacement parameters, U, of the two atoms.</pre>\n'
+                        '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_restr_U_rigid_site_symmetry_1': '<pre><h2>_restr_U_rigid_site_symmetry_1</h2> The site '
                                    'symmetries of the two atoms that define the rigid bond.\n'
                                    '\n'
@@ -49,7 +56,8 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                    '<h3>Example:</h3>\n'
                                    'None\n'
                                    '4\n'
-                                   '7_645</pre>',
+                                   '7_645</pre>\n'
+                                   '<br><p><h4>Type:</h4> string</p>',
  '_restr_U_rigid_site_symmetry_2': '<pre><h2>_restr_U_rigid_site_symmetry_2</h2> The site '
                                    'symmetries of the two atoms that define the rigid bond.\n'
                                    '\n'
@@ -80,7 +88,8 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                    '<h3>Example:</h3>\n'
                                    'None\n'
                                    '4\n'
-                                   '7_645</pre>',
+                                   '7_645</pre>\n'
+                                   '<br><p><h4>Type:</h4> string</p>',
  '_restr_U_rigid_target_weight_param': '<pre><h2>_restr_U_rigid_target_weight_param</h2>        '
                                        'The weighting parameter = sqrt(1/weight).\n'
                                        '         The expectation value of the difference between '
@@ -92,7 +101,8 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                        'refinement.\n'
                                        '         A value of zero causes the restraint to become a '
                                        'constraint.\n'
-                                       '         This item has a default value of zero.</pre>',
+                                       '         This item has a default value of zero.</pre>\n'
+                                       '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_restr_U_similar_atom_site_label_1': '<pre><h2>_restr_U_similar_atom_site_label_1</h2> '
                                        '_restr_U_similar_atom_site_label_1 is the atom-site label '
                                        'of  \n'
@@ -102,7 +112,8 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                        '\t       atom-site label of the atom whose atomic '
                                        'displacement \n'
                                        '\t       parameters are restrained to be the same as atom '
-                                       '1.</pre>',
+                                       '1.</pre>\n'
+                                       '<br><p><h4>Type:</h4> string</p>',
  '_restr_U_similar_atom_site_label_2': '<pre><h2>_restr_U_similar_atom_site_label_2</h2> '
                                        '_restr_U_similar_atom_site_label_1 is the atom-site label '
                                        'of  \n'
@@ -112,25 +123,32 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                        '\t       atom-site label of the atom whose atomic '
                                        'displacement \n'
                                        '\t       parameters are restrained to be the same as atom '
-                                       '1.</pre>',
+                                       '1.</pre>\n'
+                                       '<br><p><h4>Type:</h4> string</p>',
  '_restr_U_similar_weight_param': '<pre><h2>_restr_U_similar_weight_param</h2> The expectation '
                                   'value of the difference between the\n'
                                   ' anisotropic atomic displacement parameters\n'
                                   ' of the two atoms.\n'
-                                  ' The default value of zero represents a constraint.</pre>',
+                                  ' The default value of zero represents a constraint.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_restr_angle_atom_site_label_1': '<pre><h2>_restr_angle_atom_site_label_1</h2> The atom-site '
                                    'labels used to define the angle. Atom 2\n'
-                                   ' is at the apex of the angle.</pre>',
+                                   ' is at the apex of the angle.</pre>\n'
+                                   '<br><p><h4>Type:</h4> string</p>',
  '_restr_angle_atom_site_label_2': '<pre><h2>_restr_angle_atom_site_label_2</h2> The atom-site '
                                    'labels used to define the angle. Atom 2\n'
-                                   ' is at the apex of the angle.</pre>',
+                                   ' is at the apex of the angle.</pre>\n'
+                                   '<br><p><h4>Type:</h4> string</p>',
  '_restr_angle_atom_site_label_3': '<pre><h2>_restr_angle_atom_site_label_3</h2> The atom-site '
                                    'labels used to define the angle. Atom 2\n'
-                                   ' is at the apex of the angle.</pre>',
+                                   ' is at the apex of the angle.</pre>\n'
+                                   '<br><p><h4>Type:</h4> string</p>',
  '_restr_angle_details': '<pre><h2>_restr_angle_details</h2> A free-text description of the '
-                         'restraint.</pre>',
+                         'restraint.</pre>\n'
+                         '<br><p><h4>Type:</h4> string</p>',
  '_restr_angle_diff': '<pre><h2>_restr_angle_diff</h2> The difference between the target and the '
-                      'refined angle.</pre>',
+                      'refined angle.</pre>\n'
+                      '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_restr_angle_site_symmetry_1': '<pre><h2>_restr_angle_site_symmetry_1</h2> The symmetry '
                                  'transformation needed to generate the coordinates\n'
                                  ' of the three atoms that define the angle.\n'
@@ -159,7 +177,8 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                  '<h3>Example:</h3>\n'
                                  'None\n'
                                  '4\n'
-                                 '7_645</pre>',
+                                 '7_645</pre>\n'
+                                 '<br><p><h4>Type:</h4> string</p>',
  '_restr_angle_site_symmetry_2': '<pre><h2>_restr_angle_site_symmetry_2</h2> The symmetry '
                                  'transformation needed to generate the coordinates\n'
                                  ' of the three atoms that define the angle.\n'
@@ -188,7 +207,8 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                  '<h3>Example:</h3>\n'
                                  'None\n'
                                  '4\n'
-                                 '7_645</pre>',
+                                 '7_645</pre>\n'
+                                 '<br><p><h4>Type:</h4> string</p>',
  '_restr_angle_site_symmetry_3': '<pre><h2>_restr_angle_site_symmetry_3</h2> The symmetry '
                                  'transformation needed to generate the coordinates\n'
                                  ' of the three atoms that define the angle.\n'
@@ -217,10 +237,12 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                  '<h3>Example:</h3>\n'
                                  'None\n'
                                  '4\n'
-                                 '7_645</pre>',
+                                 '7_645</pre>\n'
+                                 '<br><p><h4>Type:</h4> string</p>',
  '_restr_angle_target': '<pre><h2>_restr_angle_target</h2> The expectation angle defined by the '
                         'three atoms.\n'
-                        ' This is the target angle for the restrained refinement.</pre>',
+                        ' This is the target angle for the restrained refinement.</pre>\n'
+                        '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_restr_angle_target_weight_param': '<pre><h2>_restr_angle_target_weight_param</h2> Weighting '
                                      'parameter = sqrt(1/weight).\n'
                                      ' It is the expectation value of the difference between\n'
@@ -229,17 +251,22 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                      'constrained\n'
                                      ' to refine to the target value.\n'
                                      ' If this item is absent, its value will be taken as zero\n'
-                                     ' and the distance will be constrained.</pre>',
+                                     ' and the distance will be constrained.</pre>\n'
+                                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_restr_distance_atom_site_label_1': '<pre><h2>_restr_distance_atom_site_label_1</h2> The '
                                       'atom-site labels of the two atoms defining\n'
-                                      ' the distance restrained.</pre>',
+                                      ' the distance restrained.</pre>\n'
+                                      '<br><p><h4>Type:</h4> string</p>',
  '_restr_distance_atom_site_label_2': '<pre><h2>_restr_distance_atom_site_label_2</h2> The '
                                       'atom-site labels of the two atoms defining\n'
-                                      ' the distance restrained.</pre>',
+                                      ' the distance restrained.</pre>\n'
+                                      '<br><p><h4>Type:</h4> string</p>',
  '_restr_distance_details': '<pre><h2>_restr_distance_details</h2> A free-text description of the '
-                            'restraint.</pre>',
+                            'restraint.</pre>\n'
+                            '<br><p><h4>Type:</h4> string</p>',
  '_restr_distance_diff': '<pre><h2>_restr_distance_diff</h2> The difference between the target and '
-                         'the refined distance.</pre>',
+                         'the refined distance.</pre>\n'
+                         '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_restr_distance_min_A': '<pre><h2>_restr_distance_min_A</h2> The weight associated with the '
                           'difference between the\n'
                           ' refined distance D and the prescribed minimum distance\n'
@@ -257,7 +284,8 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                           ' F=prescribed minimum distance and G=0.  In this case G\n'
                           ' (combined with a non-zero E) should be treated as a flag\n'
                           ' indicating a hard-sphere interaction with a target distance\n'
-                          ' of F so as to avoid division by zero.</pre>',
+                          ' of F so as to avoid division by zero.</pre>\n'
+                          '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_restr_distance_min_B': '<pre><h2>_restr_distance_min_B</h2> The weight associated with the '
                           'difference between the\n'
                           ' refined distance D and the prescribed minimum distance\n'
@@ -275,7 +303,8 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                           ' F=prescribed minimum distance and G=0. In this case G\n'
                           ' (combined with a non-zero E) should be treated as a flag\n'
                           ' indicating a hard-sphere interaction with a target\n'
-                          ' distance of F so as to avoid division by zero.</pre>',
+                          ' distance of F so as to avoid division by zero.</pre>\n'
+                          '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_restr_distance_min_C': '<pre><h2>_restr_distance_min_C</h2> The weight associated with the '
                           'difference between the\n'
                           ' refined distance D and the prescribed minimum distance\n'
@@ -293,7 +322,8 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                           ' F=prescribed minimum distance and G=0.  In this case G\n'
                           ' (combined with a non-zero E) should be treated as a flag\n'
                           ' indicating a hard-sphere interaction with a target\n'
-                          ' distance of F so as to avoid division by zero.</pre>',
+                          ' distance of F so as to avoid division by zero.</pre>\n'
+                          '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_restr_distance_min_E': '<pre><h2>_restr_distance_min_E</h2> The weight associated with the '
                           'difference between the\n'
                           ' refined distance D and the prescribed minimum distance\n'
@@ -311,7 +341,8 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                           ' F=prescribed minimum distance and G=0.  In this case G\n'
                           ' (combined with a non-zero E) should be treated as a flag\n'
                           ' indicating a hard-sphere interaction with a target\n'
-                          ' distance of F so as to avoid division by zero.</pre>',
+                          ' distance of F so as to avoid division by zero.</pre>\n'
+                          '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_restr_distance_min_F': '<pre><h2>_restr_distance_min_F</h2> The weight associated with the '
                           'difference between the\n'
                           ' refined distance D and the prescribed minimum distance\n'
@@ -329,7 +360,8 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                           ' F=prescribed minimum distance and G=0.  In this case G\n'
                           ' (combined with a non-zero E) should be treated as a flag\n'
                           ' indicating a hard-sphere interaction with a target\n'
-                          ' distance of F so as to avoid division by zero.</pre>',
+                          ' distance of F so as to avoid division by zero.</pre>\n'
+                          '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_restr_distance_min_G': '<pre><h2>_restr_distance_min_G</h2> The weight associated with the '
                           'difference between\n'
                           ' the refined distance D and the prescribed minimum\n'
@@ -347,23 +379,29 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                           ' F=prescribed minimum distance and G=0.  In this case G\n'
                           ' (combined with a non-zero E) should be treated as a flag\n'
                           ' indicating a hard-sphere interaction with a target\n'
-                          ' distance of F so as to avoid division by zero.</pre>',
+                          ' distance of F so as to avoid division by zero.</pre>\n'
+                          '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_restr_distance_min_atom_site_label_1': '<pre><h2>_restr_distance_min_atom_site_label_1</h2> The '
                                           'atom-site labels for the two atoms that are kept '
-                                          'apart.</pre>',
+                                          'apart.</pre>\n'
+                                          '<br><p><h4>Type:</h4> string</p>',
  '_restr_distance_min_atom_site_label_2': '<pre><h2>_restr_distance_min_atom_site_label_2</h2> The '
                                           'atom-site labels for the two atoms that are kept '
-                                          'apart.</pre>',
+                                          'apart.</pre>\n'
+                                          '<br><p><h4>Type:</h4> string</p>',
  '_restr_distance_min_details': '<pre><h2>_restr_distance_min_details</h2> A text description of '
                                 'the restraint giving details not\n'
-                                ' given elsewhere.</pre>',
+                                ' given elsewhere.</pre>\n'
+                                '<br><p><h4>Type:</h4> string</p>',
  '_restr_distance_min_difference': '<pre><h2>_restr_distance_min_difference</h2> The difference in '
                                    'angstroms between the refined distance\n'
                                    ' of approach of the two atoms and the target distance B or F:\n'
                                    '\n'
-                                   ' difference = D - B or D - F</pre>',
+                                   ' difference = D - B or D - F</pre>\n'
+                                   '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_restr_distance_min_distance': '<pre><h2>_restr_distance_min_distance</h2> The refined distance, '
-                                 'D, between the two atoms.</pre>',
+                                 'D, between the two atoms.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_restr_distance_min_site_symmetry_1': '<pre><h2>_restr_distance_min_site_symmetry_1</h2> The '
                                         'site symmetries of the two atoms kept apart.\n'
                                         '\n'
@@ -395,7 +433,8 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                         '      m = 5 + z\n'
                                         ' By adding 5 to the translations, the use of negative '
                                         'numbers\n'
-                                        ' is avoided.</pre>',
+                                        ' is avoided.</pre>\n'
+                                        '<br><p><h4>Type:</h4> string</p>',
  '_restr_distance_min_site_symmetry_2': '<pre><h2>_restr_distance_min_site_symmetry_2</h2> The '
                                         'site symmetries of the two atoms kept apart.\n'
                                         '\n'
@@ -427,7 +466,8 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                         '      m = 5 + z\n'
                                         ' By adding 5 to the translations, the use of negative '
                                         'numbers\n'
-                                        ' is avoided.</pre>',
+                                        ' is avoided.</pre>\n'
+                                        '<br><p><h4>Type:</h4> string</p>',
  '_restr_distance_site_symmetry_1': '<pre><h2>_restr_distance_site_symmetry_1</h2> The symmetry '
                                     'transformation needed to generate the coordinates\n'
                                     ' of the two atoms that define the distance.\n'
@@ -463,7 +503,8 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                     '<h3>Example:</h3>\n'
                                     'None\n'
                                     '4\n'
-                                    '7_645</pre>',
+                                    '7_645</pre>\n'
+                                    '<br><p><h4>Type:</h4> string</p>',
  '_restr_distance_site_symmetry_2': '<pre><h2>_restr_distance_site_symmetry_2</h2> The symmetry '
                                     'transformation needed to generate the coordinates\n'
                                     ' of the two atoms that define the distance.\n'
@@ -499,10 +540,12 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                     '<h3>Example:</h3>\n'
                                     'None\n'
                                     '4\n'
-                                    '7_645</pre>',
+                                    '7_645</pre>\n'
+                                    '<br><p><h4>Type:</h4> string</p>',
  '_restr_distance_target': '<pre><h2>_restr_distance_target</h2> The expectation distance between '
                            'the two atoms.\n'
-                           ' This is the target distance for the restrained refinement.</pre>',
+                           ' This is the target distance for the restrained refinement.</pre>\n'
+                           '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_restr_distance_target_weight_param': '<pre><h2>_restr_distance_target_weight_param</h2> '
                                         'Weighting parameter = sqrt(1/weight).\n'
                                         ' It is the expectation value of the difference between\n'
@@ -510,39 +553,49 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                         ' If this parameter is set to zero, the distance will be\n'
                                         ' constrained to refine to the target value.\n'
                                         ' If this item is absent, its value will be taken as zero\n'
-                                        ' and the distance will be constrained.</pre>',
+                                        ' and the distance will be constrained.</pre>\n'
+                                        '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_restr_equal_angle_atom_site_label_1': '<pre><h2>_restr_equal_angle_atom_site_label_1</h2> The '
                                          'atom-site labels of the three atoms that define one of\n'
                                          ' the angles restrained to be equal to other angles in\n'
-                                         ' the same class.</pre>',
+                                         ' the same class.</pre>\n'
+                                         '<br><p><h4>Type:</h4> string</p>',
  '_restr_equal_angle_atom_site_label_2': '<pre><h2>_restr_equal_angle_atom_site_label_2</h2> The '
                                          'atom-site labels of the three atoms that define one of\n'
                                          ' the angles restrained to be equal to other angles in\n'
-                                         ' the same class.</pre>',
+                                         ' the same class.</pre>\n'
+                                         '<br><p><h4>Type:</h4> string</p>',
  '_restr_equal_angle_atom_site_label_3': '<pre><h2>_restr_equal_angle_atom_site_label_3</h2> The '
                                          'atom-site labels of the three atoms that define one of\n'
                                          ' the angles restrained to be equal to other angles in\n'
-                                         ' the same class.</pre>',
+                                         ' the same class.</pre>\n'
+                                         '<br><p><h4>Type:</h4> string</p>',
  '_restr_equal_angle_class_average': '<pre><h2>_restr_equal_angle_class_average</h2> The average '
                                      'angle in the class of angles restrained to\n'
-                                     ' be the same after refinement.</pre>',
+                                     ' be the same after refinement.</pre>\n'
+                                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_restr_equal_angle_class_class_id': '<pre><h2>_restr_equal_angle_class_class_id</h2> A character '
                                       'string that identifies the class of angles\n'
-                                      ' whose properties are described.</pre>',
+                                      ' whose properties are described.</pre>\n'
+                                      '<br><p><h4>Type:</h4> string</p>',
  '_restr_equal_angle_class_detail': '<pre><h2>_restr_equal_angle_class_detail</h2> A text '
                                     'description giving details of the class of angles that\n'
-                                    ' are restrained to be equal.</pre>',
+                                    ' are restrained to be equal.</pre>\n'
+                                    '<br><p><h4>Type:</h4> string</p>',
  '_restr_equal_angle_class_diff_max': '<pre><h2>_restr_equal_angle_class_diff_max</h2> The maximum '
                                       'deviation of an angle in the class from the\n'
-                                      ' class average after refinement.</pre>',
+                                      ' class average after refinement.</pre>\n'
+                                      '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_restr_equal_angle_class_esd': '<pre><h2>_restr_equal_angle_class_esd</h2> The actual estimated '
                                  'standard deviation of the angles in the\n'
                                  ' class from their average after refinement.\n'
                                  ' This number is expected to be similar to the value set for\n'
-                                 ' _restr_equal_angle_class_target_weight_param.</pre>',
+                                 ' _restr_equal_angle_class_target_weight_param.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_restr_equal_angle_class_id': '<pre><h2>_restr_equal_angle_class_id</h2> A character string '
                                 'identifying the class of equal angles\n'
-                                ' to which this angle belongs.</pre>',
+                                ' to which this angle belongs.</pre>\n'
+                                '<br><p><h4>Type:</h4> string</p>',
  '_restr_equal_angle_class_target_weight_param': '<pre><h2>_restr_equal_angle_class_target_weight_param</h2> '
                                                  'The weighting parameter = sqrt(1/weight).\n'
                                                  ' The expectation value of the estimated standard '
@@ -553,10 +606,12 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                                  'the restraint.\n'
                                                  ' If it is zero the angles are constrained to be '
                                                  'equal.\n'
-                                                 ' The default value is zero.</pre>',
+                                                 ' The default value is zero.</pre>\n'
+                                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_restr_equal_angle_detail': '<pre><h2>_restr_equal_angle_detail</h2> A text description giving '
                               'details of an angle in\n'
-                              ' a class of angles that are restrained to be equal.</pre>',
+                              ' a class of angles that are restrained to be equal.</pre>\n'
+                              '<br><p><h4>Type:</h4> string</p>',
  '_restr_equal_angle_site_symmetry_1': '<pre><h2>_restr_equal_angle_site_symmetry_1</h2> The site '
                                        'symmetries of the three atoms that define an angle\n'
                                        ' restrained to be equal to other angles in the same '
@@ -596,7 +651,8 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                        '<h3>Example:</h3>\n'
                                        'None\n'
                                        '4\n'
-                                       '7_645</pre>',
+                                       '7_645</pre>\n'
+                                       '<br><p><h4>Type:</h4> string</p>',
  '_restr_equal_angle_site_symmetry_2': '<pre><h2>_restr_equal_angle_site_symmetry_2</h2> The site '
                                        'symmetries of the three atoms that define an angle\n'
                                        ' restrained to be equal to other angles in the same '
@@ -636,7 +692,8 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                        '<h3>Example:</h3>\n'
                                        'None\n'
                                        '4\n'
-                                       '7_645</pre>',
+                                       '7_645</pre>\n'
+                                       '<br><p><h4>Type:</h4> string</p>',
  '_restr_equal_angle_site_symmetry_3': '<pre><h2>_restr_equal_angle_site_symmetry_3</h2> The site '
                                        'symmetries of the three atoms that define an angle\n'
                                        ' restrained to be equal to other angles in the same '
@@ -676,40 +733,49 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                        '<h3>Example:</h3>\n'
                                        'None\n'
                                        '4\n'
-                                       '7_645</pre>',
+                                       '7_645</pre>\n'
+                                       '<br><p><h4>Type:</h4> string</p>',
  '_restr_equal_distance_atom_site_label_1': '<pre><h2>_restr_equal_distance_atom_site_label_1</h2> '
                                             'The atom-site labels of the two atoms that define one '
                                             'of the\n'
                                             ' distances restrained to be equal to other distances '
                                             'in\n'
-                                            ' the same class.</pre>',
+                                            ' the same class.</pre>\n'
+                                            '<br><p><h4>Type:</h4> string</p>',
  '_restr_equal_distance_atom_site_label_2': '<pre><h2>_restr_equal_distance_atom_site_label_2</h2> '
                                             'The atom-site labels of the two atoms that define one '
                                             'of the\n'
                                             ' distances restrained to be equal to other distances '
                                             'in\n'
-                                            ' the same class.</pre>',
+                                            ' the same class.</pre>\n'
+                                            '<br><p><h4>Type:</h4> string</p>',
  '_restr_equal_distance_class_average': '<pre><h2>_restr_equal_distance_class_average</h2> The '
                                         'average distance in the class of distances restrained to\n'
-                                        ' be the same after refinement.</pre>',
+                                        ' be the same after refinement.</pre>\n'
+                                        '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_restr_equal_distance_class_class_id': '<pre><h2>_restr_equal_distance_class_class_id</h2> A '
                                          'character string that identifies the class of distances\n'
-                                         ' whose properties are described.</pre>',
+                                         ' whose properties are described.</pre>\n'
+                                         '<br><p><h4>Type:</h4> string</p>',
  '_restr_equal_distance_class_details': '<pre><h2>_restr_equal_distance_class_details</h2> A text '
                                         'description giving details of the class of distances '
                                         'that\n'
-                                        ' are restrained to be equal.</pre>',
+                                        ' are restrained to be equal.</pre>\n'
+                                        '<br><p><h4>Type:</h4> string</p>',
  '_restr_equal_distance_class_diff_max': '<pre><h2>_restr_equal_distance_class_diff_max</h2> The '
                                          'maximum deviation of a distance in the class from the\n'
-                                         ' class average after refinement.</pre>',
+                                         ' class average after refinement.</pre>\n'
+                                         '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_restr_equal_distance_class_esd': '<pre><h2>_restr_equal_distance_class_esd</h2> The actual '
                                     'estimated standard deviation of the distances in the\n'
                                     ' class from their average after refinement.\n'
                                     ' This number is expected to be similar to the value set for\n'
-                                    ' _restr_equal_distance_class_target_weight_param.</pre>',
+                                    ' _restr_equal_distance_class_target_weight_param.</pre>\n'
+                                    '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_restr_equal_distance_class_id': '<pre><h2>_restr_equal_distance_class_id</h2> A character '
                                    'string identifying the class of equal distances\n'
-                                   ' to which this distance belongs.</pre>',
+                                   ' to which this distance belongs.</pre>\n'
+                                   '<br><p><h4>Type:</h4> string</p>',
  '_restr_equal_distance_class_target_weight_param': '<pre><h2>_restr_equal_distance_class_target_weight_param</h2> '
                                                     'The weighting parameter = sqrt(1/weight).\n'
                                                     ' The expectation value of the estimated '
@@ -720,10 +786,13 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                                     'the restraint.\n'
                                                     ' If it is zero the distances are constrained '
                                                     'to be equal.\n'
-                                                    ' The default value is zero.</pre>',
+                                                    ' The default value is zero.</pre>\n'
+                                                    '<br><p><h4>Type:</h4> number (int or '
+                                                    'float)</p>',
  '_restr_equal_distance_details': '<pre><h2>_restr_equal_distance_details</h2> A text description '
                                   'giving details of a distance in\n'
-                                  ' a class of distances that are restrained to be equal.</pre>',
+                                  ' a class of distances that are restrained to be equal.</pre>\n'
+                                  '<br><p><h4>Type:</h4> string</p>',
  '_restr_equal_distance_site_symmetry_1': '<pre><h2>_restr_equal_distance_site_symmetry_1</h2> The '
                                           'site symmetries of the two atoms that define a '
                                           'distance\n'
@@ -765,7 +834,8 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                           '<h3>Example:</h3>\n'
                                           'None\n'
                                           '4\n'
-                                          '7_645</pre>',
+                                          '7_645</pre>\n'
+                                          '<br><p><h4>Type:</h4> string</p>',
  '_restr_equal_distance_site_symmetry_2': '<pre><h2>_restr_equal_distance_site_symmetry_2</h2> The '
                                           'site symmetries of the two atoms that define a '
                                           'distance\n'
@@ -807,7 +877,8 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                           '<h3>Example:</h3>\n'
                                           'None\n'
                                           '4\n'
-                                          '7_645</pre>',
+                                          '7_645</pre>\n'
+                                          '<br><p><h4>Type:</h4> string</p>',
  '_restr_equal_torsion_atom_site_label_1': '<pre><h2>_restr_equal_torsion_atom_site_label_1</h2> '
                                            'The atom-site labels of the four atoms that define one '
                                            'of the\n'
@@ -817,7 +888,8 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                            'dihedral\n'
                                            ' angle between the plane defined by atoms 1, 2 and 3, '
                                            'and\n'
-                                           ' the plane defined by atoms 2, 3 and 4.</pre>',
+                                           ' the plane defined by atoms 2, 3 and 4.</pre>\n'
+                                           '<br><p><h4>Type:</h4> string</p>',
  '_restr_equal_torsion_atom_site_label_2': '<pre><h2>_restr_equal_torsion_atom_site_label_2</h2> '
                                            'The atom-site labels of the four atoms that define one '
                                            'of the\n'
@@ -827,7 +899,8 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                            'dihedral\n'
                                            ' angle between the plane defined by atoms 1, 2 and 3, '
                                            'and\n'
-                                           ' the plane defined by atoms 2, 3 and 4.</pre>',
+                                           ' the plane defined by atoms 2, 3 and 4.</pre>\n'
+                                           '<br><p><h4>Type:</h4> string</p>',
  '_restr_equal_torsion_atom_site_label_3': '<pre><h2>_restr_equal_torsion_atom_site_label_3</h2> '
                                            'The atom-site labels of the four atoms that define one '
                                            'of the\n'
@@ -837,7 +910,8 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                            'dihedral\n'
                                            ' angle between the plane defined by atoms 1, 2 and 3, '
                                            'and\n'
-                                           ' the plane defined by atoms 2, 3 and 4.</pre>',
+                                           ' the plane defined by atoms 2, 3 and 4.</pre>\n'
+                                           '<br><p><h4>Type:</h4> string</p>',
  '_restr_equal_torsion_atom_site_label_4': '<pre><h2>_restr_equal_torsion_atom_site_label_4</h2> '
                                            'The atom-site labels of the four atoms that define one '
                                            'of the\n'
@@ -847,27 +921,34 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                            'dihedral\n'
                                            ' angle between the plane defined by atoms 1, 2 and 3, '
                                            'and\n'
-                                           ' the plane defined by atoms 2, 3 and 4.</pre>',
+                                           ' the plane defined by atoms 2, 3 and 4.</pre>\n'
+                                           '<br><p><h4>Type:</h4> string</p>',
  '_restr_equal_torsion_class_average': '<pre><h2>_restr_equal_torsion_class_average</h2> The '
                                        'average torsion angle in the class of torsion angles\n'
-                                       ' restrained to be the same after refinement.</pre>',
+                                       ' restrained to be the same after refinement.</pre>\n'
+                                       '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_restr_equal_torsion_class_class_id': '<pre><h2>_restr_equal_torsion_class_class_id</h2> A '
                                         'character string that identifies the class of torsion\n'
-                                        ' angles whose properties are described.</pre>',
+                                        ' angles whose properties are described.</pre>\n'
+                                        '<br><p><h4>Type:</h4> string</p>',
  '_restr_equal_torsion_class_details': '<pre><h2>_restr_equal_torsion_class_details</h2> A text '
                                        'description giving details of the class of torsion\n'
-                                       ' angles that are restrained to be equal.</pre>',
+                                       ' angles that are restrained to be equal.</pre>\n'
+                                       '<br><p><h4>Type:</h4> string</p>',
  '_restr_equal_torsion_class_diff_max': '<pre><h2>_restr_equal_torsion_class_diff_max</h2> The '
                                         'maximum deviation of a torsion angle in the class\n'
-                                        ' from the class average after refinement.</pre>',
+                                        ' from the class average after refinement.</pre>\n'
+                                        '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_restr_equal_torsion_class_esd': '<pre><h2>_restr_equal_torsion_class_esd</h2> The actual '
                                    'estimated standard deviation of the torsion\n'
                                    ' angles in the class from their average after refinement.\n'
                                    ' This number is expected to be similar to the value set for\n'
-                                   ' _restr_equal_torsion_class_target_weight_param.</pre>',
+                                   ' _restr_equal_torsion_class_target_weight_param.</pre>\n'
+                                   '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_restr_equal_torsion_class_id': '<pre><h2>_restr_equal_torsion_class_id</h2> A character string '
                                   'identifying the class of equal torsion\n'
-                                  ' angles to which this torsion angle belongs.</pre>',
+                                  ' angles to which this torsion angle belongs.</pre>\n'
+                                  '<br><p><h4>Type:</h4> string</p>',
  '_restr_equal_torsion_class_target_weight_param': '<pre><h2>_restr_equal_torsion_class_target_weight_param</h2> '
                                                    'The weighting parameter = sqrt(1/weight).\n'
                                                    ' This is the expectation value of the '
@@ -881,11 +962,14 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                                    'the target.\n'
                                                    ' If it is zero the torsion angles are '
                                                    'constrained to be equal.\n'
-                                                   ' The default value is zero.</pre>',
+                                                   ' The default value is zero.</pre>\n'
+                                                   '<br><p><h4>Type:</h4> number (int or '
+                                                   'float)</p>',
  '_restr_equal_torsion_details': '<pre><h2>_restr_equal_torsion_details</h2> A text description '
                                  'giving details of a torsion angle in\n'
                                  ' a class of torsion angles that are restrained to be '
-                                 'equal.</pre>',
+                                 'equal.</pre>\n'
+                                 '<br><p><h4>Type:</h4> string</p>',
  '_restr_equal_torsion_site_symmetry_1': '<pre><h2>_restr_equal_torsion_site_symmetry_1</h2> The '
                                          'site symmetries of the four atoms that define a torsion '
                                          'angle\n'
@@ -927,7 +1011,8 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                          '<h3>Example:</h3>\n'
                                          'None\n'
                                          '4\n'
-                                         '7_645</pre>',
+                                         '7_645</pre>\n'
+                                         '<br><p><h4>Type:</h4> string</p>',
  '_restr_equal_torsion_site_symmetry_2': '<pre><h2>_restr_equal_torsion_site_symmetry_2</h2> The '
                                          'site symmetries of the four atoms that define a torsion '
                                          'angle\n'
@@ -969,7 +1054,8 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                          '<h3>Example:</h3>\n'
                                          'None\n'
                                          '4\n'
-                                         '7_645</pre>',
+                                         '7_645</pre>\n'
+                                         '<br><p><h4>Type:</h4> string</p>',
  '_restr_equal_torsion_site_symmetry_3': '<pre><h2>_restr_equal_torsion_site_symmetry_3</h2> The '
                                          'site symmetries of the four atoms that define a torsion '
                                          'angle\n'
@@ -1011,7 +1097,8 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                          '<h3>Example:</h3>\n'
                                          'None\n'
                                          '4\n'
-                                         '7_645</pre>',
+                                         '7_645</pre>\n'
+                                         '<br><p><h4>Type:</h4> string</p>',
  '_restr_equal_torsion_site_symmetry_4': '<pre><h2>_restr_equal_torsion_site_symmetry_4</h2> The '
                                          'site symmetries of the four atoms that define a torsion '
                                          'angle\n'
@@ -1053,19 +1140,25 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                          '<h3>Example:</h3>\n'
                                          'None\n'
                                          '4\n'
-                                         '7_645</pre>',
+                                         '7_645</pre>\n'
+                                         '<br><p><h4>Type:</h4> string</p>',
  '_restr_parameter_atom_coefficient': '<pre><h2>_restr_parameter_atom_coefficient</h2> A parameter '
                                       'that scales the quantity being restrained.\n'
                                       ' It can be used to convert a constraint on occupancy to\n'
-                                      ' a constraint on ionic charge.</pre>',
+                                      ' a constraint on ionic charge.</pre>\n'
+                                      '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_restr_parameter_atom_site_label': '<pre><h2>_restr_parameter_atom_site_label</h2> The atom-site '
-                                     'label for an atom in this class.</pre>',
+                                     'label for an atom in this class.</pre>\n'
+                                     '<br><p><h4>Type:</h4> string</p>',
  '_restr_parameter_class_class_id': '<pre><h2>_restr_parameter_class_class_id</h2> The class ID of '
-                                    'the restraint described in this category.</pre>',
+                                    'the restraint described in this category.</pre>\n'
+                                    '<br><p><h4>Type:</h4> string</p>',
  '_restr_parameter_class_details': '<pre><h2>_restr_parameter_class_details</h2> A text '
-                                   'description of the restraint.</pre>',
+                                   'description of the restraint.</pre>\n'
+                                   '<br><p><h4>Type:</h4> string</p>',
  '_restr_parameter_class_id': '<pre><h2>_restr_parameter_class_id</h2> The identifier of the class '
-                              'of restraint applied to the atoms.</pre>',
+                              'of restraint applied to the atoms.</pre>\n'
+                              '<br><p><h4>Type:</h4> string</p>',
  '_restr_parameter_class_parameter_type': '<pre><h2>_restr_parameter_class_parameter_type</h2> A '
                                           'flag that indicates the nature of the value\n'
                                           ' that is being restrained.\n'
@@ -1082,10 +1175,13 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                           '\n'
                                           'position_z\n'
                                           '\t_atom_site_fract_z\n'
-                                          '</pre>',
+                                          '</pre>\n'
+                                          '<br><p><h4>Type:</h4> string</p>',
  '_restr_parameter_class_target': '<pre><h2>_restr_parameter_class_target</h2> The target value '
                                   'for the sum of values of the appropriate\n'
-                                  ' parameter type multiplied by the _*_target_weight_param.</pre>',
+                                  ' parameter type multiplied by the '
+                                  '_*_target_weight_param.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_restr_parameter_class_target_weight_param': '<pre><h2>_restr_parameter_class_target_weight_param</h2> '
                                                'Weighting parameter = sqrt(1/weight).\n'
                                                ' It is the expectation value of the difference '
@@ -1098,27 +1194,35 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                                ' to refine to the target value.\n'
                                                ' If this item is absent, its value will be taken '
                                                'as zero\n'
-                                               ' and the distance will be constrained.</pre>',
+                                               ' and the distance will be constrained.</pre>\n'
+                                               '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_restr_parameter_id': '<pre><h2>_restr_parameter_id</h2> A unique identifier for each line in a '
-                        'loop.</pre>',
+                        'loop.</pre>\n'
+                        '<br><p><h4>Type:</h4> string</p>',
  '_restr_plane_atom_site_label': '<pre><h2>_restr_plane_atom_site_label</h2> An atom-site label of '
-                                 'one of the atoms that form the plane.</pre>',
+                                 'one of the atoms that form the plane.</pre>\n'
+                                 '<br><p><h4>Type:</h4> string</p>',
  '_restr_plane_class_class_id': '<pre><h2>_restr_plane_class_class_id</h2>       The class '
-                                'identifier for the plane whose properties are described.</pre>',
+                                'identifier for the plane whose properties are described.</pre>\n'
+                                '<br><p><h4>Type:</h4> string</p>',
  '_restr_plane_class_details': '<pre><h2>_restr_plane_class_details</h2>        Text describing '
-                               'any special features of the restraint.</pre>',
+                               'any special features of the restraint.</pre>\n'
+                               '<br><p><h4>Type:</h4> string</p>',
  '_restr_plane_class_displacement_esd': '<pre><h2>_restr_plane_class_displacement_esd</h2> The '
                                         'observed estimated standard deviation of the\n'
-                                        ' atoms from this plane.</pre>',
+                                        ' atoms from this plane.</pre>\n'
+                                        '<br><p><h4>Type:</h4> string</p>',
  '_restr_plane_class_displacement_max': '<pre><h2>_restr_plane_class_displacement_max</h2> The '
                                         'distance in angstroms from the plane to the atom '
                                         'furthest\n'
-                                        ' removed from the plane.</pre>',
+                                        ' removed from the plane.</pre>\n'
+                                        '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_restr_plane_class_displacement_max_atom_site_label': '<pre><h2>_restr_plane_class_displacement_max_atom_site_label</h2> '
                                                         'The atom-site label of the atom that lies '
                                                         'furthest\n'
                                                         ' from the plane defined by this '
-                                                        'class.</pre>',
+                                                        'class.</pre>\n'
+                                                        '<br><p><h4>Type:</h4> string</p>',
  '_restr_plane_class_displacement_max_site_symmetry': '<pre><h2>_restr_plane_class_displacement_max_site_symmetry</h2> '
                                                       'The site symmetry of the atom lying '
                                                       'furthest from the plane\n'
@@ -1161,17 +1265,22 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                                       '<h3>Example:</h3>\n'
                                                       'None\n'
                                                       '4\n'
-                                                      '7_645</pre>',
+                                                      '7_645</pre>\n'
+                                                      '<br><p><h4>Type:</h4> string</p>',
  '_restr_plane_class_id': '<pre><h2>_restr_plane_class_id</h2> A character string that identifies '
                           'the plane\n'
-                          ' to which this atom is constrained.</pre>',
+                          ' to which this atom is constrained.</pre>\n'
+                          '<br><p><h4>Type:</h4> string</p>',
  '_restr_plane_details': '<pre><h2>_restr_plane_details</h2> A text string giving details not '
-                         'described elsewhere.</pre>',
+                         'described elsewhere.</pre>\n'
+                         '<br><p><h4>Type:</h4> string</p>',
  '_restr_plane_displacement': '<pre><h2>_restr_plane_displacement</h2> The distance between this '
                               'atom and the best plane through\n'
-                              ' all the atoms.</pre>',
+                              ' all the atoms.</pre>\n'
+                              '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_restr_plane_id': '<pre><h2>_restr_plane_id</h2> A unique identifier for each line in the '
-                    'list.</pre>',
+                    'list.</pre>\n'
+                    '<br><p><h4>Type:</h4> string</p>',
  '_restr_plane_site_symmetry': '<pre><h2>_restr_plane_site_symmetry</h2> The site symmetry of the '
                                'atom that helps to define the plane\n'
                                ' to which it is restrained.\n'
@@ -1200,28 +1309,36 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                '<h3>Example:</h3>\n'
                                'None\n'
                                '4\n'
-                               '7_645</pre>',
+                               '7_645</pre>\n'
+                               '<br><p><h4>Type:</h4> string</p>',
  '_restr_plane_target_weight_param': '<pre><h2>_restr_plane_target_weight_param</h2> The weighting '
                                      'parameter = sqrt(1/weight).\n'
                                      ' The expectation value of the distance in angstroms\n'
                                      ' between this atom and the best plane through all\n'
-                                     ' the atoms of the class.</pre>',
+                                     ' the atoms of the class.</pre>\n'
+                                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_restr_rigid_body_atom_site_label': '<pre><h2>_restr_rigid_body_atom_site_label</h2> The '
-                                      'atom-site labels of an atom in a rigid body.</pre>',
+                                      'atom-site labels of an atom in a rigid body.</pre>\n'
+                                      '<br><p><h4>Type:</h4> string</p>',
  '_restr_rigid_body_class_class_id': '<pre><h2>_restr_rigid_body_class_class_id</h2> A character '
                                      'string that identifies the rigid body.\n'
                                      ' It must match one of the values of '
-                                     '_restr_rigid_body_class_id.</pre>',
+                                     '_restr_rigid_body_class_id.</pre>\n'
+                                     '<br><p><h4>Type:</h4> string</p>',
  '_restr_rigid_body_class_details': '<pre><h2>_restr_rigid_body_class_details</h2> A text '
-                                    'description giving details of a rigid body.</pre>',
+                                    'description giving details of a rigid body.</pre>\n'
+                                    '<br><p><h4>Type:</h4> string</p>',
  '_restr_rigid_body_class_id': '<pre><h2>_restr_rigid_body_class_id</h2> A character string '
-                               'identifying a rigid body.</pre>',
+                               'identifying a rigid body.</pre>\n'
+                               '<br><p><h4>Type:</h4> string</p>',
  '_restr_rigid_body_details': '<pre><h2>_restr_rigid_body_details</h2> A text description giving '
                               'details of a rigid body in\n'
-                              ' a class of rigid bodies that are constrained to be equal.</pre>',
+                              ' a class of rigid bodies that are constrained to be equal.</pre>\n'
+                              '<br><p><h4>Type:</h4> string</p>',
  '_restr_rigid_body_id': '<pre><h2>_restr_rigid_body_id</h2> A unique identifier for each atom in '
                          'the list of atoms in the\n'
-                         ' RESTR_RIGID_BODY category.</pre>',
+                         ' RESTR_RIGID_BODY category.</pre>\n'
+                         '<br><p><h4>Type:</h4> string</p>',
  '_restr_rigid_body_site_symmetry': '<pre><h2>_restr_rigid_body_site_symmetry</h2> The site '
                                     'symmetry of an atom in a rigid body.\n'
                                     '\n'
@@ -1256,37 +1373,46 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                     '<h3>Example:</h3>\n'
                                     'None\n'
                                     '4\n'
-                                    '7_645</pre>',
+                                    '7_645</pre>\n'
+                                    '<br><p><h4>Type:</h4> string</p>',
  '_restr_special_details': '<pre><h2>_restr_special_details</h2> Text describing any restraint or '
                            'constraint that cannot be\n'
                            ' described using any of the the other restraint items.\n'
-                           ' See also _atom_site_restraints.</pre>',
+                           ' See also _atom_site_restraints.</pre>\n'
+                           '<br><p><h4>Type:</h4> string</p>',
  '_restr_torsion_angle_target': '<pre><h2>_restr_torsion_angle_target</h2> The angle in degrees to '
                                 'which the torsion angle is restrained.\n'
                                 ' The torsion angle is the dihedral angle between the plane '
                                 'defined\n'
                                 ' by atoms 1, 2 and 3, and the plane defined by atoms 2, 3 and '
-                                '4.</pre>',
+                                '4.</pre>\n'
+                                '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_restr_torsion_atom_site_label_1': '<pre><h2>_restr_torsion_atom_site_label_1</h2> The atom-site '
                                      'labels of the atoms in the sequence in which\n'
                                      ' they are linked by the bonds whose torsion angle is to\n'
-                                     ' be restrained.</pre>',
+                                     ' be restrained.</pre>\n'
+                                     '<br><p><h4>Type:</h4> string</p>',
  '_restr_torsion_atom_site_label_2': '<pre><h2>_restr_torsion_atom_site_label_2</h2> The atom-site '
                                      'labels of the atoms in the sequence in which\n'
                                      ' they are linked by the bonds whose torsion angle is to\n'
-                                     ' be restrained.</pre>',
+                                     ' be restrained.</pre>\n'
+                                     '<br><p><h4>Type:</h4> string</p>',
  '_restr_torsion_atom_site_label_3': '<pre><h2>_restr_torsion_atom_site_label_3</h2> The atom-site '
                                      'labels of the atoms in the sequence in which\n'
                                      ' they are linked by the bonds whose torsion angle is to\n'
-                                     ' be restrained.</pre>',
+                                     ' be restrained.</pre>\n'
+                                     '<br><p><h4>Type:</h4> string</p>',
  '_restr_torsion_atom_site_label_4': '<pre><h2>_restr_torsion_atom_site_label_4</h2> The atom-site '
                                      'labels of the atoms in the sequence in which\n'
                                      ' they are linked by the bonds whose torsion angle is to\n'
-                                     ' be restrained.</pre>',
+                                     ' be restrained.</pre>\n'
+                                     '<br><p><h4>Type:</h4> string</p>',
  '_restr_torsion_details': '<pre><h2>_restr_torsion_details</h2> A free-text description of the '
-                           'restraint.</pre>',
+                           'restraint.</pre>\n'
+                           '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_restr_torsion_diff': '<pre><h2>_restr_torsion_diff</h2> The difference between the target and '
-                        'the refined torsion angle.</pre>',
+                        'the refined torsion angle.</pre>\n'
+                        '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_restr_torsion_site_symmetry_1': '<pre><h2>_restr_torsion_site_symmetry_1</h2> The symmetry '
                                    'transformations needed to generate the coordinates\n'
                                    ' of the four atoms that define the torsion angle.\n'
@@ -1317,7 +1443,8 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                    '<h3>Example:</h3>\n'
                                    'None\n'
                                    '4\n'
-                                   '7_645</pre>',
+                                   '7_645</pre>\n'
+                                   '<br><p><h4>Type:</h4> string</p>',
  '_restr_torsion_site_symmetry_2': '<pre><h2>_restr_torsion_site_symmetry_2</h2> The symmetry '
                                    'transformations needed to generate the coordinates\n'
                                    ' of the four atoms that define the torsion angle.\n'
@@ -1348,7 +1475,8 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                    '<h3>Example:</h3>\n'
                                    'None\n'
                                    '4\n'
-                                   '7_645</pre>',
+                                   '7_645</pre>\n'
+                                   '<br><p><h4>Type:</h4> string</p>',
  '_restr_torsion_site_symmetry_3': '<pre><h2>_restr_torsion_site_symmetry_3</h2> The symmetry '
                                    'transformations needed to generate the coordinates\n'
                                    ' of the four atoms that define the torsion angle.\n'
@@ -1379,7 +1507,8 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                    '<h3>Example:</h3>\n'
                                    'None\n'
                                    '4\n'
-                                   '7_645</pre>',
+                                   '7_645</pre>\n'
+                                   '<br><p><h4>Type:</h4> string</p>',
  '_restr_torsion_site_symmetry_4': '<pre><h2>_restr_torsion_site_symmetry_4</h2> The symmetry '
                                    'transformations needed to generate the coordinates\n'
                                    ' of the four atoms that define the torsion angle.\n'
@@ -1410,7 +1539,8 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                    '<h3>Example:</h3>\n'
                                    'None\n'
                                    '4\n'
-                                   '7_645</pre>',
+                                   '7_645</pre>\n'
+                                   '<br><p><h4>Type:</h4> string</p>',
  '_restr_torsion_weight_param': '<pre><h2>_restr_torsion_weight_param</h2> Weighting parameter = '
                                 'sqrt(1/weight).\n'
                                 ' It is the expectation value of the difference between\n'
@@ -1418,4 +1548,5 @@ restraints_dict = {'_restr_U_iso_atom_site_label': '<pre><h2>_restr_U_iso_atom_s
                                 ' If this parameter is set to zero, the angle will be constrained\n'
                                 ' to refine to the target value.\n'
                                 ' If this item is absent, its value will be taken as zero\n'
-                                ' and the angle will be constrained.</pre>'}
+                                ' and the angle will be constrained.</pre>\n'
+                                '<br><p><h4>Type:</h4> number (int or float)</p>'}

@@ -6,10 +6,12 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                                ' functions.\n'
                                                '\n'
                                                '<h3>Example:</h3>\n'
-                                               'q(4)=q(1)+q(2)</pre>',
+                                               'q(4)=q(1)+q(2)</pre>\n'
+                                               '<br><p><h4>Type:</h4> string</p>',
  '_atom_site_Fourier_wave_vector_seq_id': '<pre><h2>_atom_site_Fourier_wave_vector_seq_id</h2> A '
                                           'numeric code identifying the wave vectors defined in\n'
-                                          ' _atom_site_Fourier_wave_vector_.</pre>',
+                                          ' _atom_site_Fourier_wave_vector_.</pre>\n'
+                                          '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_Fourier_wave_vector_x': '<pre><h2>_atom_site_Fourier_wave_vector_x</h2> Wave vectors '
                                      'of the Fourier terms used in the structural model\n'
                                      ' to describe the atomic modulation functions, expressed '
@@ -28,7 +30,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                      ' described in a single data block, these wave vectors are\n'
                                      ' expressed with respect to the three-dimensional reciprocal\n'
                                      ' basis of each subsystem (see '
-                                     '_cell_subsystem_matrix_W_).</pre>',
+                                     '_cell_subsystem_matrix_W_).</pre>\n'
+                                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_Fourier_wave_vector_y': '<pre><h2>_atom_site_Fourier_wave_vector_y</h2> Wave vectors '
                                      'of the Fourier terms used in the structural model\n'
                                      ' to describe the atomic modulation functions, expressed '
@@ -47,7 +50,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                      ' described in a single data block, these wave vectors are\n'
                                      ' expressed with respect to the three-dimensional reciprocal\n'
                                      ' basis of each subsystem (see '
-                                     '_cell_subsystem_matrix_W_).</pre>',
+                                     '_cell_subsystem_matrix_W_).</pre>\n'
+                                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_Fourier_wave_vector_z': '<pre><h2>_atom_site_Fourier_wave_vector_z</h2> Wave vectors '
                                      'of the Fourier terms used in the structural model\n'
                                      ' to describe the atomic modulation functions, expressed '
@@ -66,7 +70,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                      ' described in a single data block, these wave vectors are\n'
                                      ' expressed with respect to the three-dimensional reciprocal\n'
                                      ' basis of each subsystem (see '
-                                     '_cell_subsystem_matrix_W_).</pre>',
+                                     '_cell_subsystem_matrix_W_).</pre>\n'
+                                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_U_Fourier_atom_site_label': '<pre><h2>_atom_site_U_Fourier_atom_site_label</h2> '
                                          'Modulation parameters are usually looped in separate '
                                          'lists.\n'
@@ -89,10 +94,12 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                          ' match the _atom_site_label of the associated coordinate '
                                          'list\n'
                                          ' and conform to the rules described in '
-                                         '_atom_site_label.</pre>',
+                                         '_atom_site_label.</pre>\n'
+                                         '<br><p><h4>Type:</h4> string</p>',
  '_atom_site_U_Fourier_id': '<pre><h2>_atom_site_U_Fourier_id</h2> A code identifying each Fourier '
                             'component used to describe the\n'
-                            ' modulation of the atomic thermal parameters.</pre>',
+                            ' modulation of the atomic thermal parameters.</pre>\n'
+                            '<br><p><h4>Type:</h4> string</p>',
  '_atom_site_U_Fourier_param_cos': '<pre><h2>_atom_site_U_Fourier_param_cos</h2> The modulation of '
                                    'the atomic thermal parameters is usually\n'
                                    ' parameterized by Fourier series. Each term of the series\n'
@@ -109,13 +116,15 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                    ' the Fourier term defined by\n'
                                    ' _atom_site_U_Fourier_atom_site_label,\n'
                                    ' _atom_site_U_Fourier_tens_elem and\n'
-                                   ' _atom_site_U_Fourier_wave_vector_seq_id.</pre>',
+                                   ' _atom_site_U_Fourier_wave_vector_seq_id.</pre>\n'
+                                   '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_U_Fourier_param_id': '<pre><h2>_atom_site_U_Fourier_param_id</h2> A code identifying '
                                   'the (in general complex) coefficient of each\n'
                                   ' term present in the Fourier series describing the modulation '
                                   'of\n'
                                   ' the atomic thermal parameters. This code must match\n'
-                                  ' _atom_site_U_Fourier_id.</pre>',
+                                  ' _atom_site_U_Fourier_id.</pre>\n'
+                                  '<br><p><h4>Type:</h4> string</p>',
  '_atom_site_U_Fourier_param_modulus': '<pre><h2>_atom_site_U_Fourier_param_modulus</h2> The '
                                        'modulation of the atomic thermal parameters is usually\n'
                                        ' parameterized by Fourier series. Each term of the series\n'
@@ -133,7 +142,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                        ' amplitudes corresponding to the Fourier term defined by\n'
                                        ' _atom_site_U_Fourier_atom_site_label,\n'
                                        ' _atom_site_U_Fourier_tens_elem and\n'
-                                       ' _atom_site_U_Fourier_wave_vector_seq_id.</pre>',
+                                       ' _atom_site_U_Fourier_wave_vector_seq_id.</pre>\n'
+                                       '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_U_Fourier_param_phase': '<pre><h2>_atom_site_U_Fourier_param_phase</h2> The '
                                      'modulation of the atomic thermal parameters is usually\n'
                                      ' parameterized by Fourier series. Each term of the series\n'
@@ -151,7 +161,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                      ' the Fourier term defined by '
                                      '_atom_site_U_Fourier_atom_site_label,\n'
                                      ' _atom_site_U_Fourier_tens_elem and\n'
-                                     ' _atom_site_U_Fourier_wave_vector_seq_id.</pre>',
+                                     ' _atom_site_U_Fourier_wave_vector_seq_id.</pre>\n'
+                                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_U_Fourier_param_sin': '<pre><h2>_atom_site_U_Fourier_param_sin</h2> The modulation of '
                                    'the atomic thermal parameters is usually\n'
                                    ' parameterized by Fourier series. Each term of the series\n'
@@ -167,7 +178,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                    ' the Fourier term defined by\n'
                                    ' _atom_site_U_Fourier_atom_site_label,\n'
                                    ' _atom_site_U_Fourier_tens_elem\n'
-                                   ' and _atom_site_U_Fourier_wave_vector_seq_id.</pre>',
+                                   ' and _atom_site_U_Fourier_wave_vector_seq_id.</pre>\n'
+                                   '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_U_Fourier_tens_elem': '<pre><h2>_atom_site_U_Fourier_tens_elem</h2> A label '
                                    'identifying the temperature tensor element U(ij) of a\n'
                                    ' given atom or rigid group whose modulation is being '
@@ -195,7 +207,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                    '\n'
                                    'Uiso\n'
                                    '\tmodulation of U~isotropic~\n'
-                                   '</pre>',
+                                   '</pre>\n'
+                                   '<br><p><h4>Type:</h4> string</p>',
  '_atom_site_U_Fourier_wave_vector_seq_id': '<pre><h2>_atom_site_U_Fourier_wave_vector_seq_id</h2> '
                                             'A numeric code identifying the wave vectors of the '
                                             'Fourier terms\n'
@@ -203,7 +216,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                             'corresponding to the\n'
                                             ' temperature factors of an atom or rigid group. This '
                                             'code must\n'
-                                            ' match _atom_site_Fourier_wave_vector_seq_id.</pre>',
+                                            ' match _atom_site_Fourier_wave_vector_seq_id.</pre>\n'
+                                            '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_U_modulation_flag': '<pre><h2>_atom_site_U_modulation_flag</h2> A code that signals '
                                  'whether the structural model includes the\n'
                                  ' modulation of the thermal parameters of a given atom\n'
@@ -221,14 +235,16 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  '\n'
                                  'n\n'
                                  '\tabbreviation for "no"\n'
-                                 '</pre>',
+                                 '</pre>\n'
+                                 '<br><p><h4>Type:</h4> string</p>',
  '_atom_site_[ms]': '<pre><h2>_atom_site_[ms]</h2> Data items in the ATOM_SITE category record '
                     'details about\n'
                     ' the atom sites in a crystal structure, such as the positional\n'
                     ' coordinates, atomic displacement parameters, and magnetic moments\n'
                     ' and directions. This category exists in the core CIF dictionary\n'
                     ' but is extended in this dictionary by the addition of some items\n'
-                    ' that may appear in the main looped list of atom-site information.</pre>',
+                    ' that may appear in the main looped list of atom-site information.</pre>\n'
+                    '<br><p><h4>Type:</h4> ? (unknown)</p>',
  '_atom_site_displace_Fourier_atom_site_label': '<pre><h2>_atom_site_displace_Fourier_atom_site_label</h2> '
                                                 'Modulation parameters are usually looped in '
                                                 'separate lists.\n'
@@ -260,7 +276,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                                 ' the _atom_site_label of the associated '
                                                 'coordinate list and\n'
                                                 ' conform to the rules described in '
-                                                '_atom_site_label.</pre>',
+                                                '_atom_site_label.</pre>\n'
+                                                '<br><p><h4>Type:</h4> string</p>',
  '_atom_site_displace_Fourier_axis': '<pre><h2>_atom_site_displace_Fourier_axis</h2> A label '
                                      'identifying the displacement component of a given atom\n'
                                      ' or rigid group that is being parameterized by Fourier '
@@ -290,14 +307,16 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                      '\n'
                                      'a3\n'
                                      '\tdisplacement along an arbitrary a3 axis\n'
-                                     '</pre>',
+                                     '</pre>\n'
+                                     '<br><p><h4>Type:</h4> string</p>',
  '_atom_site_displace_Fourier_id': '<pre><h2>_atom_site_displace_Fourier_id</h2> A code '
                                    'identifying each component of the displacive modulation of\n'
                                    ' a given atom or rigid group when the modulation is expressed '
                                    'in\n'
                                    ' terms of Fourier series. In the case of a rigid group, it\n'
                                    ' applies only to the translational part of the '
-                                   'distortion.</pre>',
+                                   'distortion.</pre>\n'
+                                   '<br><p><h4>Type:</h4> string</p>',
  '_atom_site_displace_Fourier_param_cos': '<pre><h2>_atom_site_displace_Fourier_param_cos</h2> The '
                                           'displacive distortion of a given atom or rigid group '
                                           '(see\n'
@@ -324,7 +343,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                           ' cell or in angstroms if the modulations are referred '
                                           'to some\n'
                                           ' special axes defined by\n'
-                                          ' _atom_sites_displace_Fourier_axes_description.</pre>',
+                                          ' _atom_sites_displace_Fourier_axes_description.</pre>\n'
+                                          '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_displace_Fourier_param_id': '<pre><h2>_atom_site_displace_Fourier_param_id</h2> A '
                                          'code identifying the (in general complex) coefficient of '
                                          'each\n'
@@ -335,7 +355,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                          ' group, it applies only to the translational part of '
                                          'the\n'
                                          ' distortion. This code must match '
-                                         '_atom_site_displace_Fourier_id.</pre>',
+                                         '_atom_site_displace_Fourier_id.</pre>\n'
+                                         '<br><p><h4>Type:</h4> string</p>',
  '_atom_site_displace_Fourier_param_modulus': '<pre><h2>_atom_site_displace_Fourier_param_modulus</h2> '
                                               'The displacive distortion of a given atom or rigid '
                                               'group (see\n'
@@ -365,7 +386,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                               'referred to some\n'
                                               ' special axes defined by\n'
                                               ' '
-                                              '_atom_sites_displace_Fourier_axes_description.</pre>',
+                                              '_atom_sites_displace_Fourier_axes_description.</pre>\n'
+                                              '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_displace_Fourier_param_phase': '<pre><h2>_atom_site_displace_Fourier_param_phase</h2> '
                                             'The displacive distortion of a given atom or rigid '
                                             'group (see\n'
@@ -387,7 +409,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                             ' _atom_site_displace_Fourier_atom_site_label,\n'
                                             ' _atom_site_displace_Fourier_axis and\n'
                                             ' '
-                                            '_atom_site_displace_Fourier_wave_vector_seq_id.</pre>',
+                                            '_atom_site_displace_Fourier_wave_vector_seq_id.</pre>\n'
+                                            '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_displace_Fourier_param_sin': '<pre><h2>_atom_site_displace_Fourier_param_sin</h2> The '
                                           'displacive distortion of a given atom or rigid group '
                                           '(see\n'
@@ -414,7 +437,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                           ' cell or in angstroms if the modulations are referred '
                                           'to some\n'
                                           ' special axes defined by\n'
-                                          ' _atom_sites_displace_Fourier_axes_description.</pre>',
+                                          ' _atom_sites_displace_Fourier_axes_description.</pre>\n'
+                                          '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_displace_Fourier_wave_vector_seq_id': '<pre><h2>_atom_site_displace_Fourier_wave_vector_seq_id</h2> '
                                                    'A numeric code identifying the wave vectors of '
                                                    'the Fourier terms\n'
@@ -425,7 +449,9 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                                    ' group, it applies only to the translational '
                                                    'part of the\n'
                                                    ' distortion. This code must match\n'
-                                                   ' _atom_site_Fourier_wave_vector_seq_id.</pre>',
+                                                   ' _atom_site_Fourier_wave_vector_seq_id.</pre>\n'
+                                                   '<br><p><h4>Type:</h4> number (int or '
+                                                   'float)</p>',
  '_atom_site_displace_modulation_flag': '<pre><h2>_atom_site_displace_modulation_flag</h2> A code '
                                         'that signals whether the structural model includes the\n'
                                         ' modulation of the positional coordinates of a given '
@@ -444,7 +470,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                         '\n'
                                         'n\n'
                                         '\tabbreviation for "no"\n'
-                                        '</pre>',
+                                        '</pre>\n'
+                                        '<br><p><h4>Type:</h4> string</p>',
  '_atom_site_displace_special_func_atom_site_label': '<pre><h2>_atom_site_displace_special_func_atom_site_label</h2> '
                                                      'The code that identifies an atom in a loop '
                                                      'in which the special\n'
@@ -454,7 +481,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                                      '_atom_site_label of the\n'
                                                      ' associated coordinate list and conform to '
                                                      'the rules described in\n'
-                                                     ' _atom_site_label.</pre>',
+                                                     ' _atom_site_label.</pre>\n'
+                                                     '<br><p><h4>Type:</h4> string</p>',
  '_atom_site_displace_special_func_sawtooth_ax': '<pre><h2>_atom_site_displace_special_func_sawtooth_ax</h2>  '
                                                  '_atom_site_displace_special_func_sawtooth_ items '
                                                  'are the\n'
@@ -490,7 +518,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                                  '  crystallographic computing system. Institute '
                                                  'of Physics, Prague,\n'
                                                  '  Czech Republic.\n'
-                                                 '</pre>',
+                                                 '</pre>\n'
+                                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_displace_special_func_sawtooth_ay': '<pre><h2>_atom_site_displace_special_func_sawtooth_ay</h2>  '
                                                  '_atom_site_displace_special_func_sawtooth_ items '
                                                  'are the\n'
@@ -526,7 +555,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                                  '  crystallographic computing system. Institute '
                                                  'of Physics, Prague,\n'
                                                  '  Czech Republic.\n'
-                                                 '</pre>',
+                                                 '</pre>\n'
+                                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_displace_special_func_sawtooth_az': '<pre><h2>_atom_site_displace_special_func_sawtooth_az</h2>  '
                                                  '_atom_site_displace_special_func_sawtooth_ items '
                                                  'are the\n'
@@ -562,7 +592,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                                  '  crystallographic computing system. Institute '
                                                  'of Physics, Prague,\n'
                                                  '  Czech Republic.\n'
-                                                 '</pre>',
+                                                 '</pre>\n'
+                                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_displace_special_func_sawtooth_c': '<pre><h2>_atom_site_displace_special_func_sawtooth_c</h2>  '
                                                 '_atom_site_displace_special_func_sawtooth_ items '
                                                 'are the\n'
@@ -598,7 +629,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                                 '  crystallographic computing system. Institute of '
                                                 'Physics, Prague,\n'
                                                 '  Czech Republic.\n'
-                                                '</pre>',
+                                                '</pre>\n'
+                                                '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_displace_special_func_sawtooth_w': '<pre><h2>_atom_site_displace_special_func_sawtooth_w</h2>  '
                                                 '_atom_site_displace_special_func_sawtooth_ items '
                                                 'are the\n'
@@ -634,7 +666,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                                 '  crystallographic computing system. Institute of '
                                                 'Physics, Prague,\n'
                                                 '  Czech Republic.\n'
-                                                '</pre>',
+                                                '</pre>\n'
+                                                '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_occ_Fourier_atom_site_label': '<pre><h2>_atom_site_occ_Fourier_atom_site_label</h2> '
                                            'Modulation parameters are usually looped in separate '
                                            'lists.\n'
@@ -657,11 +690,13 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                            ' match the _atom_site_label of the associated '
                                            'coordinate list and\n'
                                            ' conform to the rules described in '
-                                           '_atom_site_label.</pre>',
+                                           '_atom_site_label.</pre>\n'
+                                           '<br><p><h4>Type:</h4> string</p>',
  '_atom_site_occ_Fourier_id': '<pre><h2>_atom_site_occ_Fourier_id</h2> A code identifying each '
                               'component of the occupational modulation\n'
                               ' of a given atom or rigid group when the modulation is\n'
-                              ' expressed in terms of Fourier series.</pre>',
+                              ' expressed in terms of Fourier series.</pre>\n'
+                              '<br><p><h4>Type:</h4> string</p>',
  '_atom_site_occ_Fourier_param_cos': '<pre><h2>_atom_site_occ_Fourier_param_cos</h2> The '
                                      'occupational distortion of a given atom or rigid group is\n'
                                      ' usually parameterized by Fourier series. Each term of the '
@@ -678,14 +713,16 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                      ' coefficient (Pc) corresponding to the Fourier term defined '
                                      'by\n'
                                      ' _atom_site_occ_Fourier_atom_site_label and\n'
-                                     ' _atom_site_occ_Fourier_wave_vector_seq_id.</pre>',
+                                     ' _atom_site_occ_Fourier_wave_vector_seq_id.</pre>\n'
+                                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_occ_Fourier_param_id': '<pre><h2>_atom_site_occ_Fourier_param_id</h2> A code '
                                     'identifying the (in general complex) coefficient of each\n'
                                     ' term present in the Fourier series describing the '
                                     'occupational\n'
                                     ' modulation of a given atom or rigid group. This code must '
                                     'match\n'
-                                    ' _atom_site_occ_Fourier_id.</pre>',
+                                    ' _atom_site_occ_Fourier_id.</pre>\n'
+                                    '<br><p><h4>Type:</h4> string</p>',
  '_atom_site_occ_Fourier_param_modulus': '<pre><h2>_atom_site_occ_Fourier_param_modulus</h2> The '
                                          'occupational distortion of a given atom or rigid group '
                                          'is\n'
@@ -705,7 +742,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                          'the\n'
                                          ' Fourier term defined by '
                                          '_atom_site_occ_Fourier_atom_site_label\n'
-                                         ' and _atom_site_occ_Fourier_wave_vector_seq_id.</pre>',
+                                         ' and _atom_site_occ_Fourier_wave_vector_seq_id.</pre>\n'
+                                         '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_occ_Fourier_param_phase': '<pre><h2>_atom_site_occ_Fourier_param_phase</h2> The '
                                        'occupational distortion of a given atom or rigid group is\n'
                                        ' usually parameterized by Fourier series. Each term of the '
@@ -723,7 +761,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                        ' (\\d/2\\p) in cycles corresponding to the Fourier term '
                                        'defined by\n'
                                        ' _atom_site_occ_Fourier_atom_site_label and\n'
-                                       ' _atom_site_occ_Fourier_wave_vector_seq_id.</pre>',
+                                       ' _atom_site_occ_Fourier_wave_vector_seq_id.</pre>\n'
+                                       '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_occ_Fourier_param_sin': '<pre><h2>_atom_site_occ_Fourier_param_sin</h2> The '
                                      'occupational distortion of a given atom or rigid group is\n'
                                      ' usually parameterized by Fourier series. Each term of the '
@@ -740,7 +779,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                      ' coefficient (Ps) corresponding to the Fourier term defined '
                                      'by\n'
                                      ' _atom_site_occ_Fourier_atom_site_label and\n'
-                                     ' _atom_site_occ_Fourier_wave_vector_seq_id.</pre>',
+                                     ' _atom_site_occ_Fourier_wave_vector_seq_id.</pre>\n'
+                                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_occ_Fourier_wave_vector_seq_id': '<pre><h2>_atom_site_occ_Fourier_wave_vector_seq_id</h2> '
                                               'A numeric code identifying the wave vectors of the '
                                               'Fourier terms\n'
@@ -749,7 +789,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                               ' corresponding to the occupational part of the '
                                               'distortion. This\n'
                                               ' code must match '
-                                              '_atom_site_Fourier_wave_vector_seq_id.</pre>',
+                                              '_atom_site_Fourier_wave_vector_seq_id.</pre>\n'
+                                              '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_occ_modulation_flag': '<pre><h2>_atom_site_occ_modulation_flag</h2> A code that '
                                    'signals whether the structural model includes the\n'
                                    ' modulation of the occupation of a given atom site.\n'
@@ -766,7 +807,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                    '\n'
                                    'n\n'
                                    '\tabbreviation for "no"\n'
-                                   '</pre>',
+                                   '</pre>\n'
+                                   '<br><p><h4>Type:</h4> string</p>',
  '_atom_site_occ_special_func_atom_site_label': '<pre><h2>_atom_site_occ_special_func_atom_site_label</h2> '
                                                 'The code that identifies an atom or rigid group '
                                                 'in a loop in\n'
@@ -777,7 +819,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                                 ' the _atom_site_label of the associated '
                                                 'coordinate list and\n'
                                                 ' conform to the rules described in '
-                                                '_atom_site_label.</pre>',
+                                                '_atom_site_label.</pre>\n'
+                                                '<br><p><h4>Type:</h4> string</p>',
  '_atom_site_occ_special_func_crenel_c': '<pre><h2>_atom_site_occ_special_func_crenel_c</h2>  '
                                          '_atom_site_occ_special_func_crenel_ items are the '
                                          'adjustable\n'
@@ -805,7 +848,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                          'JANA2000. The\n'
                                          '  crystallographic computing system. Institute of '
                                          'Physics, Prague,\n'
-                                         '  Czech Republic.</pre>',
+                                         '  Czech Republic.</pre>\n'
+                                         '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_occ_special_func_crenel_w': '<pre><h2>_atom_site_occ_special_func_crenel_w</h2>  '
                                          '_atom_site_occ_special_func_crenel_ items are the '
                                          'adjustable\n'
@@ -833,7 +877,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                          'JANA2000. The\n'
                                          '  crystallographic computing system. Institute of '
                                          'Physics, Prague,\n'
-                                         '  Czech Republic.</pre>',
+                                         '  Czech Republic.</pre>\n'
+                                         '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_phason_atom_site_label': '<pre><h2>_atom_site_phason_atom_site_label</h2> The code '
                                       'that identifies an atom or rigid group in a loop in\n'
                                       ' which the phason coefficients are listed. Although this '
@@ -849,7 +894,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                       'must\n'
                                       ' match the _atom_site_label of the associated coordinate '
                                       'list and\n'
-                                      ' conform to the rules described in _atom_site_label.</pre>',
+                                      ' conform to the rules described in _atom_site_label.</pre>\n'
+                                      '<br><p><h4>Type:</h4> string</p>',
  '_atom_site_phason_coeff': '<pre><h2>_atom_site_phason_coeff</h2> The phason coefficient used to '
                             'calculate (with the appropriate\n'
                             ' expression given in _atom_site_phason_formula) the atomic phason\n'
@@ -857,7 +903,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                             ' overall, some refinement programs (for example, JANA2000) allow\n'
                             ' an independent phason correction for each atom or rigid group. In\n'
                             ' this case, _atom_site_phason_formula and _atom_site_phason_coeff\n'
-                            ' should be used (see also _refine_ls_mod_overall_phason_).</pre>',
+                            ' should be used (see also _refine_ls_mod_overall_phason_).</pre>\n'
+                            '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_phason_formula': '<pre><h2>_atom_site_phason_formula</h2> The formula used for the '
                               'phason correction. Although both kinds\n'
                               ' of corrections are intended to be overall, some refinement\n'
@@ -872,7 +919,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                               '\n'
                               'Ovr\n'
                               '\tOverhauser, A. W. (1971). Phys. Rev. B, 3, 3173-3182.\n'
-                              '</pre>',
+                              '</pre>\n'
+                              '<br><p><h4>Type:</h4> string</p>',
  '_atom_site_rot_Fourier_atom_site_label': '<pre><h2>_atom_site_rot_Fourier_atom_site_label</h2> '
                                            'Modulation parameters are usually looped in separate '
                                            'lists.\n'
@@ -900,7 +948,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                            'associated\n'
                                            ' coordinate list and conform to the rules described '
                                            'in\n'
-                                           ' _atom_site_label.</pre>',
+                                           ' _atom_site_label.</pre>\n'
+                                           '<br><p><h4>Type:</h4> string</p>',
  '_atom_site_rot_Fourier_axis': '<pre><h2>_atom_site_rot_Fourier_axis</h2> A label identifying the '
                                 'rotation component around a fixed point\n'
                                 ' of a given rigid group whose modulation is being parameterized '
@@ -928,11 +977,13 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                 '\n'
                                 'a3\n'
                                 '\trotation around an arbitrary a3 axis\n'
-                                '</pre>',
+                                '</pre>\n'
+                                '<br><p><h4>Type:</h4> string</p>',
  '_atom_site_rot_Fourier_id': '<pre><h2>_atom_site_rot_Fourier_id</h2> A code identifying each '
                               'component of the rotational modulation of\n'
                               ' a given rigid group when the modulation is expressed in terms of\n'
-                              ' Fourier series.</pre>',
+                              ' Fourier series.</pre>\n'
+                              '<br><p><h4>Type:</h4> string</p>',
  '_atom_site_rot_Fourier_param_cos': '<pre><h2>_atom_site_rot_Fourier_param_cos</h2> The '
                                      'displacive distortion of a given rigid group is not\n'
                                      ' completely described by _atom_site_displace_Fourier_. The '
@@ -955,14 +1006,16 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                      'term\n'
                                      ' defined by _atom_site_rot_Fourier_atom_site_label,\n'
                                      ' _atom_site_rot_Fourier_axis and\n'
-                                     ' _atom_site_rot_Fourier_wave_vector_seq_id.</pre>',
+                                     ' _atom_site_rot_Fourier_wave_vector_seq_id.</pre>\n'
+                                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_rot_Fourier_param_id': '<pre><h2>_atom_site_rot_Fourier_param_id</h2> A code '
                                     'identifying the (in general complex) coefficient of each\n'
                                     ' term present in the Fourier series describing the rotational '
                                     'part\n'
                                     ' of the displacive modulation of a given rigid group. This '
                                     'code\n'
-                                    ' must match _atom_site_rot_Fourier_id.</pre>',
+                                    ' must match _atom_site_rot_Fourier_id.</pre>\n'
+                                    '<br><p><h4>Type:</h4> string</p>',
  '_atom_site_rot_Fourier_param_modulus': '<pre><h2>_atom_site_rot_Fourier_param_modulus</h2> The '
                                          'displacive distortion of a given rigid group is not\n'
                                          ' completely described by _atom_site_displace_Fourier_. '
@@ -988,7 +1041,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                          ' to the Fourier term defined by\n'
                                          ' _atom_site_rot_Fourier_atom_site_label,\n'
                                          ' _atom_site_rot_Fourier_axis and\n'
-                                         ' _atom_site_rot_Fourier_wave_vector_seq_id.</pre>',
+                                         ' _atom_site_rot_Fourier_wave_vector_seq_id.</pre>\n'
+                                         '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_rot_Fourier_param_phase': '<pre><h2>_atom_site_rot_Fourier_param_phase</h2> The '
                                        'displacive distortion of a given rigid group is not\n'
                                        ' completely described by _atom_site_displace_Fourier_. The '
@@ -1013,7 +1067,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                        ' Fourier term defined by '
                                        '_atom_site_rot_Fourier_atom_site_label,\n'
                                        ' _atom_site_rot_Fourier_axis and\n'
-                                       ' _atom_site_rot_Fourier_wave_vector_seq_id.</pre>',
+                                       ' _atom_site_rot_Fourier_wave_vector_seq_id.</pre>\n'
+                                       '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_rot_Fourier_param_sin': '<pre><h2>_atom_site_rot_Fourier_param_sin</h2> The '
                                      'displacive distortion of a given rigid group is not\n'
                                      ' completely described by _atom_site_displace_Fourier_. The '
@@ -1036,7 +1091,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                      'term\n'
                                      ' defined by _atom_site_rot_Fourier_atom_site_label,\n'
                                      ' _atom_site_rot_Fourier_axis and\n'
-                                     ' _atom_site_rot_Fourier_wave_vector_seq_id.</pre>',
+                                     ' _atom_site_rot_Fourier_wave_vector_seq_id.</pre>\n'
+                                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_rot_Fourier_wave_vector_seq_id': '<pre><h2>_atom_site_rot_Fourier_wave_vector_seq_id</h2> '
                                               'A numeric code identifying the wave vectors of the '
                                               'Fourier terms\n'
@@ -1045,14 +1101,16 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                               ' corresponding to the rotational distortion of a '
                                               'rigid group. This\n'
                                               ' code must match '
-                                              '_atom_site_Fourier_wave_vector_seq_id.</pre>',
+                                              '_atom_site_Fourier_wave_vector_seq_id.</pre>\n'
+                                              '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_site_subsystem_code': '<pre><h2>_atom_site_subsystem_code</h2> A code that links a given '
                               'atom or rigid-group site to one of the\n'
                               ' subsystems present in a composite. This code provides an\n'
                               ' alternative description for composites which is less explicit\n'
                               ' than that based on linked data blocks (see the description in\n'
                               ' this dictionary of _audit_link_[ms]). It must match one of\n'
-                              ' the labels specified for _cell_subsystem_code.</pre>',
+                              ' the labels specified for _cell_subsystem_code.</pre>\n'
+                              '<br><p><h4>Type:</h4> string</p>',
  '_atom_sites_displace_Fourier_axes_description': '<pre><h2>_atom_sites_displace_Fourier_axes_description</h2> '
                                                   'The definition of the axes used for describing '
                                                   'the displacive\n'
@@ -1064,7 +1122,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                                   ' a1 and a2 are respectively the long molecular '
                                                   'axis\n'
                                                   ' and the axis normal to the mean molecular '
-                                                  'plane.</pre>',
+                                                  'plane.</pre>\n'
+                                                  '<br><p><h4>Type:</h4> string</p>',
  '_atom_sites_modulation_global_phase_t_1': '<pre><h2>_atom_sites_modulation_global_phase_t_1</h2> '
                                             'The initial phases, in cycles, of the modulation '
                                             'waves. For\n'
@@ -1092,7 +1151,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                             'J. &amp; Garcia\n'
                                             ' Arribas, A. (1987). Acta Cryst. A43, 216-226. '
                                             'Smaalen, S. van\n'
-                                            ' (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                            ' (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                            '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_sites_modulation_global_phase_t_2': '<pre><h2>_atom_sites_modulation_global_phase_t_2</h2> '
                                             'The initial phases, in cycles, of the modulation '
                                             'waves. For\n'
@@ -1120,7 +1180,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                             'J. &amp; Garcia\n'
                                             ' Arribas, A. (1987). Acta Cryst. A43, 216-226. '
                                             'Smaalen, S. van\n'
-                                            ' (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                            ' (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                            '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_sites_modulation_global_phase_t_3': '<pre><h2>_atom_sites_modulation_global_phase_t_3</h2> '
                                             'The initial phases, in cycles, of the modulation '
                                             'waves. For\n'
@@ -1148,7 +1209,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                             'J. &amp; Garcia\n'
                                             ' Arribas, A. (1987). Acta Cryst. A43, 216-226. '
                                             'Smaalen, S. van\n'
-                                            ' (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                            ' (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                            '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_sites_modulation_global_phase_t_4': '<pre><h2>_atom_sites_modulation_global_phase_t_4</h2> '
                                             'The initial phases, in cycles, of the modulation '
                                             'waves. For\n'
@@ -1176,7 +1238,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                             'J. &amp; Garcia\n'
                                             ' Arribas, A. (1987). Acta Cryst. A43, 216-226. '
                                             'Smaalen, S. van\n'
-                                            ' (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                            ' (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                            '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_sites_modulation_global_phase_t_5': '<pre><h2>_atom_sites_modulation_global_phase_t_5</h2> '
                                             'The initial phases, in cycles, of the modulation '
                                             'waves. For\n'
@@ -1204,7 +1267,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                             'J. &amp; Garcia\n'
                                             ' Arribas, A. (1987). Acta Cryst. A43, 216-226. '
                                             'Smaalen, S. van\n'
-                                            ' (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                            ' (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                            '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_sites_modulation_global_phase_t_6': '<pre><h2>_atom_sites_modulation_global_phase_t_6</h2> '
                                             'The initial phases, in cycles, of the modulation '
                                             'waves. For\n'
@@ -1232,7 +1296,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                             'J. &amp; Garcia\n'
                                             ' Arribas, A. (1987). Acta Cryst. A43, 216-226. '
                                             'Smaalen, S. van\n'
-                                            ' (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                            ' (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                            '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_sites_modulation_global_phase_t_7': '<pre><h2>_atom_sites_modulation_global_phase_t_7</h2> '
                                             'The initial phases, in cycles, of the modulation '
                                             'waves. For\n'
@@ -1260,7 +1325,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                             'J. &amp; Garcia\n'
                                             ' Arribas, A. (1987). Acta Cryst. A43, 216-226. '
                                             'Smaalen, S. van\n'
-                                            ' (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                            ' (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                            '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_sites_modulation_global_phase_t_8': '<pre><h2>_atom_sites_modulation_global_phase_t_8</h2> '
                                             'The initial phases, in cycles, of the modulation '
                                             'waves. For\n'
@@ -1288,7 +1354,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                             'J. &amp; Garcia\n'
                                             ' Arribas, A. (1987). Acta Cryst. A43, 216-226. '
                                             'Smaalen, S. van\n'
-                                            ' (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                            ' (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                            '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_atom_sites_rot_Fourier_axes_description': '<pre><h2>_atom_sites_rot_Fourier_axes_description</h2> '
                                              'The definition of the axes used for describing the '
                                              'rotational\n'
@@ -1301,7 +1368,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                              '<h3>Example:</h3>\n'
                                              ' a1 and a2 are respectively the long molecular axis\n'
                                              ' and the axis normal to the mean molecular '
-                                             'plane.</pre>',
+                                             'plane.</pre>\n'
+                                             '<br><p><h4>Type:</h4> string</p>',
  '_audit_link_[ms]': '<pre><h2>_audit_link_[ms]</h2> This category description does NOT introduce '
                      'a new category;\n'
                      ' instead, it describes the recommended practice for using\n'
@@ -1358,15 +1426,18 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                      "       K2SEO4_REFRNCE  'reference structure'\n"
                      "       K2SEO4_MOD      'modulated structure'\n"
                      '\n'
-                     "    _audit_link_block_code      'PbSVS2_MOD_VS2'</pre>",
+                     "    _audit_link_block_code      'PbSVS2_MOD_VS2'</pre>\n"
+                     '<br><p><h4>Type:</h4> ? (unknown)</p>',
  '_cell_[ms]': '<pre><h2>_cell_[ms]</h2> Data items in the CELL category record details about\n'
                ' the crystallographic cell parameters and their measurement.\n'
                ' This category is already defined in the core CIF dictionary\n'
                ' but is extended in this dictionary by the addition of some items\n'
-               ' that are specific for modulated and composite structures.</pre>',
+               ' that are specific for modulated and composite structures.</pre>\n'
+               '<br><p><h4>Type:</h4> ? (unknown)</p>',
  '_cell_modulation_dimension': '<pre><h2>_cell_modulation_dimension</h2> Number of additional '
                                'reciprocal vectors needed to index the\n'
-                               ' whole diffraction pattern using integer Miller indices.</pre>',
+                               ' whole diffraction pattern using integer Miller indices.</pre>\n'
+                               '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_reciprocal_basis_description': '<pre><h2>_cell_reciprocal_basis_description</h2> '
                                        'Definition of the higher-dimensional basis with respect to '
                                        'which\n'
@@ -1385,7 +1456,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                        ' a*~3~=a*~13~, a*~4~=a*~21~. a*~1j~ (j=1,2,3) index the\n'
                                        ' main reflections of the 1st subsystem. a*~21~ is '
                                        'incommensurate\n'
-                                       ' with a*~11~.</pre>',
+                                       ' with a*~11~.</pre>\n'
+                                       '<br><p><h4>Type:</h4> string</p>',
  '_cell_subsystem_[ms]': '<pre><h2>_cell_subsystem_[ms]</h2> Data items in the CELL_SUBSYSTEM '
                          'category record details about\n'
                          ' the crystallographic cell parameters of each subsystem present in\n'
@@ -1404,21 +1476,24 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                          '         _cell_subsystem_matrix_W_4_1\n'
                          '         _cell_subsystem_matrix_W_4_4\n'
                          "   NbS2            '1st subsystem'  1 0 1 1 0 1\n"
-                         "   LaS             '2nd subsystem'  0 1 1 1 1 0</pre>",
+                         "   LaS             '2nd subsystem'  0 1 1 1 1 0</pre>\n"
+                         '<br><p><h4>Type:</h4> ? (unknown)</p>',
  '_cell_subsystem_code': '<pre><h2>_cell_subsystem_code</h2> The code identifying uniquely a '
                          'certain composite subsystem.\n'
                          ' This code is used to identify the data blocks that contain\n'
                          ' the structural information associated with the subsystem.\n'
                          '\n'
                          '<h3>Example:</h3>\n'
-                         'NbS2</pre>',
+                         'NbS2</pre>\n'
+                         '<br><p><h4>Type:</h4> string</p>',
  '_cell_subsystem_description': '<pre><h2>_cell_subsystem_description</h2> Description of each '
                                 'subsystem defining a composite structurally.\n'
                                 ' The number of definitions must match the number given in\n'
                                 ' _cell_subsystems_number.\n'
                                 '\n'
                                 '<h3>Example:</h3>\n'
-                                'NbS2 part of the layer compound (LaS)~1.14~NbS~2~</pre>',
+                                'NbS2 part of the layer compound (LaS)~1.14~NbS~2~</pre>\n'
+                                '<br><p><h4>Type:</h4> string</p>',
  '_cell_subsystem_matrix_W_10_1': '<pre><h2>_cell_subsystem_matrix_W_10_1</h2> In the case of '
                                   'composites, for each subsystem the matrix W as\n'
                                   ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -1508,7 +1583,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                   ' composite.\n'
                                   '\n'
                                   ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_10_10': '<pre><h2>_cell_subsystem_matrix_W_10_10</h2> In the case of '
                                    'composites, for each subsystem the matrix W as\n'
                                    ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -1603,7 +1679,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                    ' composite.\n'
                                    '\n'
                                    ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                   ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                   ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                   '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_10_11': '<pre><h2>_cell_subsystem_matrix_W_10_11</h2> In the case of '
                                    'composites, for each subsystem the matrix W as\n'
                                    ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -1698,7 +1775,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                    ' composite.\n'
                                    '\n'
                                    ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                   ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                   ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                   '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_10_2': '<pre><h2>_cell_subsystem_matrix_W_10_2</h2> In the case of '
                                   'composites, for each subsystem the matrix W as\n'
                                   ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -1788,7 +1866,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                   ' composite.\n'
                                   '\n'
                                   ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_10_3': '<pre><h2>_cell_subsystem_matrix_W_10_3</h2> In the case of '
                                   'composites, for each subsystem the matrix W as\n'
                                   ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -1878,7 +1957,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                   ' composite.\n'
                                   '\n'
                                   ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_10_4': '<pre><h2>_cell_subsystem_matrix_W_10_4</h2> In the case of '
                                   'composites, for each subsystem the matrix W as\n'
                                   ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -1968,7 +2048,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                   ' composite.\n'
                                   '\n'
                                   ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_10_5': '<pre><h2>_cell_subsystem_matrix_W_10_5</h2> In the case of '
                                   'composites, for each subsystem the matrix W as\n'
                                   ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -2058,7 +2139,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                   ' composite.\n'
                                   '\n'
                                   ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_10_6': '<pre><h2>_cell_subsystem_matrix_W_10_6</h2> In the case of '
                                   'composites, for each subsystem the matrix W as\n'
                                   ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -2148,7 +2230,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                   ' composite.\n'
                                   '\n'
                                   ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_10_7': '<pre><h2>_cell_subsystem_matrix_W_10_7</h2> In the case of '
                                   'composites, for each subsystem the matrix W as\n'
                                   ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -2238,7 +2321,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                   ' composite.\n'
                                   '\n'
                                   ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_10_8': '<pre><h2>_cell_subsystem_matrix_W_10_8</h2> In the case of '
                                   'composites, for each subsystem the matrix W as\n'
                                   ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -2328,7 +2412,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                   ' composite.\n'
                                   '\n'
                                   ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_10_9': '<pre><h2>_cell_subsystem_matrix_W_10_9</h2> In the case of '
                                   'composites, for each subsystem the matrix W as\n'
                                   ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -2418,7 +2503,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                   ' composite.\n'
                                   '\n'
                                   ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_11_1': '<pre><h2>_cell_subsystem_matrix_W_11_1</h2> In the case of '
                                   'composites, for each subsystem the matrix W as\n'
                                   ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -2508,7 +2594,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                   ' composite.\n'
                                   '\n'
                                   ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_11_10': '<pre><h2>_cell_subsystem_matrix_W_11_10</h2> In the case of '
                                    'composites, for each subsystem the matrix W as\n'
                                    ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -2603,7 +2690,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                    ' composite.\n'
                                    '\n'
                                    ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                   ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                   ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                   '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_11_11': '<pre><h2>_cell_subsystem_matrix_W_11_11</h2> In the case of '
                                    'composites, for each subsystem the matrix W as\n'
                                    ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -2698,7 +2786,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                    ' composite.\n'
                                    '\n'
                                    ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                   ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                   ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                   '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_11_2': '<pre><h2>_cell_subsystem_matrix_W_11_2</h2> In the case of '
                                   'composites, for each subsystem the matrix W as\n'
                                   ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -2788,7 +2877,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                   ' composite.\n'
                                   '\n'
                                   ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_11_3': '<pre><h2>_cell_subsystem_matrix_W_11_3</h2> In the case of '
                                   'composites, for each subsystem the matrix W as\n'
                                   ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -2878,7 +2968,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                   ' composite.\n'
                                   '\n'
                                   ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_11_4': '<pre><h2>_cell_subsystem_matrix_W_11_4</h2> In the case of '
                                   'composites, for each subsystem the matrix W as\n'
                                   ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -2968,7 +3059,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                   ' composite.\n'
                                   '\n'
                                   ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_11_5': '<pre><h2>_cell_subsystem_matrix_W_11_5</h2> In the case of '
                                   'composites, for each subsystem the matrix W as\n'
                                   ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -3058,7 +3150,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                   ' composite.\n'
                                   '\n'
                                   ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_11_6': '<pre><h2>_cell_subsystem_matrix_W_11_6</h2> In the case of '
                                   'composites, for each subsystem the matrix W as\n'
                                   ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -3148,7 +3241,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                   ' composite.\n'
                                   '\n'
                                   ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_11_7': '<pre><h2>_cell_subsystem_matrix_W_11_7</h2> In the case of '
                                   'composites, for each subsystem the matrix W as\n'
                                   ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -3238,7 +3332,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                   ' composite.\n'
                                   '\n'
                                   ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_11_8': '<pre><h2>_cell_subsystem_matrix_W_11_8</h2> In the case of '
                                   'composites, for each subsystem the matrix W as\n'
                                   ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -3328,7 +3423,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                   ' composite.\n'
                                   '\n'
                                   ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_11_9': '<pre><h2>_cell_subsystem_matrix_W_11_9</h2> In the case of '
                                   'composites, for each subsystem the matrix W as\n'
                                   ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -3418,7 +3514,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                   ' composite.\n'
                                   '\n'
                                   ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_1_1': '<pre><h2>_cell_subsystem_matrix_W_1_1</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -3501,7 +3598,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_1_10': '<pre><h2>_cell_subsystem_matrix_W_1_10</h2> In the case of '
                                   'composites, for each subsystem the matrix W as\n'
                                   ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -3591,7 +3689,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                   ' composite.\n'
                                   '\n'
                                   ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_1_11': '<pre><h2>_cell_subsystem_matrix_W_1_11</h2> In the case of '
                                   'composites, for each subsystem the matrix W as\n'
                                   ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -3681,7 +3780,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                   ' composite.\n'
                                   '\n'
                                   ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_1_2': '<pre><h2>_cell_subsystem_matrix_W_1_2</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -3764,7 +3864,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_1_3': '<pre><h2>_cell_subsystem_matrix_W_1_3</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -3847,7 +3948,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_1_4': '<pre><h2>_cell_subsystem_matrix_W_1_4</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -3930,7 +4032,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_1_5': '<pre><h2>_cell_subsystem_matrix_W_1_5</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -4013,7 +4116,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_1_6': '<pre><h2>_cell_subsystem_matrix_W_1_6</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -4096,7 +4200,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_1_7': '<pre><h2>_cell_subsystem_matrix_W_1_7</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -4179,7 +4284,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_1_8': '<pre><h2>_cell_subsystem_matrix_W_1_8</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -4262,7 +4368,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_1_9': '<pre><h2>_cell_subsystem_matrix_W_1_9</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -4345,7 +4452,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_2_1': '<pre><h2>_cell_subsystem_matrix_W_2_1</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -4428,7 +4536,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_2_10': '<pre><h2>_cell_subsystem_matrix_W_2_10</h2> In the case of '
                                   'composites, for each subsystem the matrix W as\n'
                                   ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -4518,7 +4627,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                   ' composite.\n'
                                   '\n'
                                   ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_2_11': '<pre><h2>_cell_subsystem_matrix_W_2_11</h2> In the case of '
                                   'composites, for each subsystem the matrix W as\n'
                                   ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -4608,7 +4718,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                   ' composite.\n'
                                   '\n'
                                   ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_2_2': '<pre><h2>_cell_subsystem_matrix_W_2_2</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -4691,7 +4802,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_2_3': '<pre><h2>_cell_subsystem_matrix_W_2_3</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -4774,7 +4886,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_2_4': '<pre><h2>_cell_subsystem_matrix_W_2_4</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -4857,7 +4970,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_2_5': '<pre><h2>_cell_subsystem_matrix_W_2_5</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -4940,7 +5054,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_2_6': '<pre><h2>_cell_subsystem_matrix_W_2_6</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -5023,7 +5138,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_2_7': '<pre><h2>_cell_subsystem_matrix_W_2_7</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -5106,7 +5222,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_2_8': '<pre><h2>_cell_subsystem_matrix_W_2_8</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -5189,7 +5306,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_2_9': '<pre><h2>_cell_subsystem_matrix_W_2_9</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -5272,7 +5390,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_3_1': '<pre><h2>_cell_subsystem_matrix_W_3_1</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -5355,7 +5474,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_3_10': '<pre><h2>_cell_subsystem_matrix_W_3_10</h2> In the case of '
                                   'composites, for each subsystem the matrix W as\n'
                                   ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -5445,7 +5565,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                   ' composite.\n'
                                   '\n'
                                   ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_3_11': '<pre><h2>_cell_subsystem_matrix_W_3_11</h2> In the case of '
                                   'composites, for each subsystem the matrix W as\n'
                                   ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -5535,7 +5656,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                   ' composite.\n'
                                   '\n'
                                   ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_3_2': '<pre><h2>_cell_subsystem_matrix_W_3_2</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -5618,7 +5740,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_3_3': '<pre><h2>_cell_subsystem_matrix_W_3_3</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -5701,7 +5824,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_3_4': '<pre><h2>_cell_subsystem_matrix_W_3_4</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -5784,7 +5908,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_3_5': '<pre><h2>_cell_subsystem_matrix_W_3_5</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -5867,7 +5992,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_3_6': '<pre><h2>_cell_subsystem_matrix_W_3_6</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -5950,7 +6076,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_3_7': '<pre><h2>_cell_subsystem_matrix_W_3_7</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -6033,7 +6160,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_3_8': '<pre><h2>_cell_subsystem_matrix_W_3_8</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -6116,7 +6244,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_3_9': '<pre><h2>_cell_subsystem_matrix_W_3_9</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -6199,7 +6328,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_4_1': '<pre><h2>_cell_subsystem_matrix_W_4_1</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -6282,7 +6412,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_4_10': '<pre><h2>_cell_subsystem_matrix_W_4_10</h2> In the case of '
                                   'composites, for each subsystem the matrix W as\n'
                                   ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -6372,7 +6503,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                   ' composite.\n'
                                   '\n'
                                   ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_4_11': '<pre><h2>_cell_subsystem_matrix_W_4_11</h2> In the case of '
                                   'composites, for each subsystem the matrix W as\n'
                                   ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -6462,7 +6594,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                   ' composite.\n'
                                   '\n'
                                   ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_4_2': '<pre><h2>_cell_subsystem_matrix_W_4_2</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -6545,7 +6678,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_4_3': '<pre><h2>_cell_subsystem_matrix_W_4_3</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -6628,7 +6762,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_4_4': '<pre><h2>_cell_subsystem_matrix_W_4_4</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -6711,7 +6846,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_4_5': '<pre><h2>_cell_subsystem_matrix_W_4_5</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -6794,7 +6930,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_4_6': '<pre><h2>_cell_subsystem_matrix_W_4_6</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -6877,7 +7014,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_4_7': '<pre><h2>_cell_subsystem_matrix_W_4_7</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -6960,7 +7098,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_4_8': '<pre><h2>_cell_subsystem_matrix_W_4_8</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -7043,7 +7182,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_4_9': '<pre><h2>_cell_subsystem_matrix_W_4_9</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -7126,7 +7266,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_5_1': '<pre><h2>_cell_subsystem_matrix_W_5_1</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -7209,7 +7350,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_5_10': '<pre><h2>_cell_subsystem_matrix_W_5_10</h2> In the case of '
                                   'composites, for each subsystem the matrix W as\n'
                                   ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -7299,7 +7441,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                   ' composite.\n'
                                   '\n'
                                   ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_5_11': '<pre><h2>_cell_subsystem_matrix_W_5_11</h2> In the case of '
                                   'composites, for each subsystem the matrix W as\n'
                                   ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -7389,7 +7532,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                   ' composite.\n'
                                   '\n'
                                   ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_5_2': '<pre><h2>_cell_subsystem_matrix_W_5_2</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -7472,7 +7616,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_5_3': '<pre><h2>_cell_subsystem_matrix_W_5_3</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -7555,7 +7700,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_5_4': '<pre><h2>_cell_subsystem_matrix_W_5_4</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -7638,7 +7784,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_5_5': '<pre><h2>_cell_subsystem_matrix_W_5_5</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -7721,7 +7868,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_5_6': '<pre><h2>_cell_subsystem_matrix_W_5_6</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -7804,7 +7952,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_5_7': '<pre><h2>_cell_subsystem_matrix_W_5_7</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -7887,7 +8036,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_5_8': '<pre><h2>_cell_subsystem_matrix_W_5_8</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -7970,7 +8120,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_5_9': '<pre><h2>_cell_subsystem_matrix_W_5_9</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -8053,7 +8204,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_6_1': '<pre><h2>_cell_subsystem_matrix_W_6_1</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -8136,7 +8288,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_6_10': '<pre><h2>_cell_subsystem_matrix_W_6_10</h2> In the case of '
                                   'composites, for each subsystem the matrix W as\n'
                                   ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -8226,7 +8379,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                   ' composite.\n'
                                   '\n'
                                   ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_6_11': '<pre><h2>_cell_subsystem_matrix_W_6_11</h2> In the case of '
                                   'composites, for each subsystem the matrix W as\n'
                                   ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -8316,7 +8470,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                   ' composite.\n'
                                   '\n'
                                   ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_6_2': '<pre><h2>_cell_subsystem_matrix_W_6_2</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -8399,7 +8554,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_6_3': '<pre><h2>_cell_subsystem_matrix_W_6_3</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -8482,7 +8638,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_6_4': '<pre><h2>_cell_subsystem_matrix_W_6_4</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -8565,7 +8722,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_6_5': '<pre><h2>_cell_subsystem_matrix_W_6_5</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -8648,7 +8806,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_6_6': '<pre><h2>_cell_subsystem_matrix_W_6_6</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -8731,7 +8890,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_6_7': '<pre><h2>_cell_subsystem_matrix_W_6_7</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -8814,7 +8974,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_6_8': '<pre><h2>_cell_subsystem_matrix_W_6_8</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -8897,7 +9058,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_6_9': '<pre><h2>_cell_subsystem_matrix_W_6_9</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -8980,7 +9142,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_7_1': '<pre><h2>_cell_subsystem_matrix_W_7_1</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -9063,7 +9226,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_7_10': '<pre><h2>_cell_subsystem_matrix_W_7_10</h2> In the case of '
                                   'composites, for each subsystem the matrix W as\n'
                                   ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -9153,7 +9317,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                   ' composite.\n'
                                   '\n'
                                   ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_7_11': '<pre><h2>_cell_subsystem_matrix_W_7_11</h2> In the case of '
                                   'composites, for each subsystem the matrix W as\n'
                                   ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -9243,7 +9408,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                   ' composite.\n'
                                   '\n'
                                   ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_7_2': '<pre><h2>_cell_subsystem_matrix_W_7_2</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -9326,7 +9492,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_7_3': '<pre><h2>_cell_subsystem_matrix_W_7_3</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -9409,7 +9576,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_7_4': '<pre><h2>_cell_subsystem_matrix_W_7_4</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -9492,7 +9660,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_7_5': '<pre><h2>_cell_subsystem_matrix_W_7_5</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -9575,7 +9744,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_7_6': '<pre><h2>_cell_subsystem_matrix_W_7_6</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -9658,7 +9828,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_7_7': '<pre><h2>_cell_subsystem_matrix_W_7_7</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -9741,7 +9912,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_7_8': '<pre><h2>_cell_subsystem_matrix_W_7_8</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -9824,7 +9996,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_7_9': '<pre><h2>_cell_subsystem_matrix_W_7_9</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -9907,7 +10080,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_8_1': '<pre><h2>_cell_subsystem_matrix_W_8_1</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -9990,7 +10164,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_8_10': '<pre><h2>_cell_subsystem_matrix_W_8_10</h2> In the case of '
                                   'composites, for each subsystem the matrix W as\n'
                                   ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -10080,7 +10255,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                   ' composite.\n'
                                   '\n'
                                   ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_8_11': '<pre><h2>_cell_subsystem_matrix_W_8_11</h2> In the case of '
                                   'composites, for each subsystem the matrix W as\n'
                                   ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -10170,7 +10346,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                   ' composite.\n'
                                   '\n'
                                   ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_8_2': '<pre><h2>_cell_subsystem_matrix_W_8_2</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -10253,7 +10430,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_8_3': '<pre><h2>_cell_subsystem_matrix_W_8_3</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -10336,7 +10514,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_8_4': '<pre><h2>_cell_subsystem_matrix_W_8_4</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -10419,7 +10598,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_8_5': '<pre><h2>_cell_subsystem_matrix_W_8_5</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -10502,7 +10682,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_8_6': '<pre><h2>_cell_subsystem_matrix_W_8_6</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -10585,7 +10766,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_8_7': '<pre><h2>_cell_subsystem_matrix_W_8_7</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -10668,7 +10850,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_8_8': '<pre><h2>_cell_subsystem_matrix_W_8_8</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -10751,7 +10934,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_8_9': '<pre><h2>_cell_subsystem_matrix_W_8_9</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -10834,7 +11018,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_9_1': '<pre><h2>_cell_subsystem_matrix_W_9_1</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -10917,7 +11102,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_9_10': '<pre><h2>_cell_subsystem_matrix_W_9_10</h2> In the case of '
                                   'composites, for each subsystem the matrix W as\n'
                                   ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -11007,7 +11193,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                   ' composite.\n'
                                   '\n'
                                   ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_9_11': '<pre><h2>_cell_subsystem_matrix_W_9_11</h2> In the case of '
                                   'composites, for each subsystem the matrix W as\n'
                                   ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -11097,7 +11284,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                   ' composite.\n'
                                   '\n'
                                   ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                  ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_9_2': '<pre><h2>_cell_subsystem_matrix_W_9_2</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -11180,7 +11368,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_9_3': '<pre><h2>_cell_subsystem_matrix_W_9_3</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -11263,7 +11452,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_9_4': '<pre><h2>_cell_subsystem_matrix_W_9_4</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -11346,7 +11536,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_9_5': '<pre><h2>_cell_subsystem_matrix_W_9_5</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -11429,7 +11620,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_9_6': '<pre><h2>_cell_subsystem_matrix_W_9_6</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -11512,7 +11704,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_9_7': '<pre><h2>_cell_subsystem_matrix_W_9_7</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -11595,7 +11788,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_9_8': '<pre><h2>_cell_subsystem_matrix_W_9_8</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -11678,7 +11872,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystem_matrix_W_9_9': '<pre><h2>_cell_subsystem_matrix_W_9_9</h2> In the case of '
                                  'composites, for each subsystem the matrix W as\n'
                                  ' defined in van Smaalen (1991); see also van Smaalen (1995).\n'
@@ -11761,17 +11956,20 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' composite.\n'
                                  '\n'
                                  ' Ref: Smaalen, S. van (1991). Phys. Rev. B, 43, 11330-11341.\n'
-                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>',
+                                 ' Smaalen, S. van (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_subsystems_[ms]': '<pre><h2>_cell_subsystems_[ms]</h2> Data items in the CELL_SUBSYSTEMS '
                           'category describe the gross\n'
                           ' structure of the subsystems present in a composite.\n'
                           '\n'
                           '<h3>Example:</h3>\n'
                           '\n'
-                          '     _cell_subsystems_number                  2</pre>',
+                          '     _cell_subsystems_number                  2</pre>\n'
+                          '<br><p><h4>Type:</h4> ? (unknown)</p>',
  '_cell_subsystems_number': '<pre><h2>_cell_subsystems_number</h2> The number of subsystems used '
                             'to define the structural model of\n'
-                            ' a composite structure.</pre>',
+                            ' a composite structure.</pre>\n'
+                            '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_wave_vector_[ms]': '<pre><h2>_cell_wave_vector_[ms]</h2> Data items in the '
                            'CELL_WAVE_VECTOR category list the\n'
                            ' independent modulation wave vectors q~i~. The diffraction\n'
@@ -11785,12 +11983,14 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                            '     loop_\n'
                            '         _cell_wave_vector_seq_id\n'
                            '         _cell_wave_vector_x\n'
-                           '  1       0.318(5)</pre>',
+                           '  1       0.318(5)</pre>\n'
+                           '<br><p><h4>Type:</h4> ? (unknown)</p>',
  '_cell_wave_vector_seq_id': '<pre><h2>_cell_wave_vector_seq_id</h2> A numeric code to identify '
                              'each independent wave vector. These\n'
                              ' codes define uniquely the reciprocal basis and, therefore,\n'
                              ' force the order of the Miller indices assigned to\n'
-                             ' intensities, crystal faces etc.</pre>',
+                             ' intensities, crystal faces etc.</pre>\n'
+                             '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_wave_vector_x': '<pre><h2>_cell_wave_vector_x</h2> Independent modulation wave vector(s) '
                         'with which the whole\n'
                         ' diffraction pattern is indexed, expressed as fractions of the\n'
@@ -11808,7 +12008,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                         ' the wave vectors used to describe the modulation of each\n'
                         ' subsystem are referred to their own reciprocal basis via the W\n'
                         ' matrices (for details see _cell_subsystem_matrix_W_ and\n'
-                        ' _atom_site_Fourier_wave_vector_).</pre>',
+                        ' _atom_site_Fourier_wave_vector_).</pre>\n'
+                        '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_wave_vector_y': '<pre><h2>_cell_wave_vector_y</h2> Independent modulation wave vector(s) '
                         'with which the whole\n'
                         ' diffraction pattern is indexed, expressed as fractions of the\n'
@@ -11826,7 +12027,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                         ' the wave vectors used to describe the modulation of each\n'
                         ' subsystem are referred to their own reciprocal basis via the W\n'
                         ' matrices (for details see _cell_subsystem_matrix_W_ and\n'
-                        ' _atom_site_Fourier_wave_vector_).</pre>',
+                        ' _atom_site_Fourier_wave_vector_).</pre>\n'
+                        '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_wave_vector_z': '<pre><h2>_cell_wave_vector_z</h2> Independent modulation wave vector(s) '
                         'with which the whole\n'
                         ' diffraction pattern is indexed, expressed as fractions of the\n'
@@ -11844,7 +12046,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                         ' the wave vectors used to describe the modulation of each\n'
                         ' subsystem are referred to their own reciprocal basis via the W\n'
                         ' matrices (for details see _cell_subsystem_matrix_W_ and\n'
-                        ' _atom_site_Fourier_wave_vector_).</pre>',
+                        ' _atom_site_Fourier_wave_vector_).</pre>\n'
+                        '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_wave_vectors_[ms]': '<pre><h2>_cell_wave_vectors_[ms]</h2> Data items in the '
                             'CELL_WAVE_VECTORS category record details\n'
                             ' about the set of independent modulation wave vectors q~i~ and\n'
@@ -11856,30 +12059,36 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                             '<h3>Example:</h3>\n'
                             '\n'
                             "     _cell_wave_vectors_meas_details          'Determined from "
-                            "profiles along q'</pre>",
+                            "profiles along q'</pre>\n"
+                            '<br><p><h4>Type:</h4> ? (unknown)</p>',
  '_cell_wave_vectors_meas_details': '<pre><h2>_cell_wave_vectors_meas_details</h2> Details about '
                                     'the method used to determine the independent\n'
-                                    ' modulation wave vector(s).</pre>',
+                                    ' modulation wave vector(s).</pre>\n'
+                                    '<br><p><h4>Type:</h4> string</p>',
  '_cell_wave_vectors_pressure_max': '<pre><h2>_cell_wave_vectors_pressure_max</h2> The maximum and '
                                     'minimum values of the pressure in kilopascals\n'
                                     ' defining the interval within which the modulation wave '
                                     'vector(s)\n'
-                                    ' were measured.</pre>',
+                                    ' were measured.</pre>\n'
+                                    '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_wave_vectors_pressure_min': '<pre><h2>_cell_wave_vectors_pressure_min</h2> The maximum and '
                                     'minimum values of the pressure in kilopascals\n'
                                     ' defining the interval within which the modulation wave '
                                     'vector(s)\n'
-                                    ' were measured.</pre>',
+                                    ' were measured.</pre>\n'
+                                    '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_wave_vectors_temp_max': '<pre><h2>_cell_wave_vectors_temp_max</h2> The maximum and minimum '
                                 'values of the temperature in kelvins\n'
                                 ' defining the interval within which the modulation wave '
                                 'vector(s)\n'
-                                ' were measured.</pre>',
+                                ' were measured.</pre>\n'
+                                '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_wave_vectors_temp_min': '<pre><h2>_cell_wave_vectors_temp_min</h2> The maximum and minimum '
                                 'values of the temperature in kelvins\n'
                                 ' defining the interval within which the modulation wave '
                                 'vector(s)\n'
-                                ' were measured.</pre>',
+                                ' were measured.</pre>\n'
+                                '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_cell_wave_vectors_variation': '<pre><h2>_cell_wave_vectors_variation</h2> Details concerning '
                                  'the behaviour (and its experimental\n'
                                  ' detection) of the wave vector(s) with temperature and/or\n'
@@ -11887,7 +12096,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  ' _cell_wave_vectors_pressure_max, '
                                  '_cell_wave_vectors_pressure_min,\n'
                                  ' _cell_wave_vectors_temp_max and '
-                                 '_cell_wave_vectors_temp_min.</pre>',
+                                 '_cell_wave_vectors_temp_min.</pre>\n'
+                                 '<br><p><h4>Type:</h4> string</p>',
  '_diffrn_refln_[ms]': '<pre><h2>_diffrn_refln_[ms]</h2> Data items in the DIFFRN_REFLN category '
                        'record details about\n'
                        ' the intensities measured in the diffraction experiment. The\n'
@@ -11897,7 +12107,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                        ' to all intensity measurements. The DIFFRN_REFLNS data items\n'
                        ' are not looped.) Data items in this category are extensions\n'
                        ' of the core CIF dictionary definitions to the indexing of\n'
-                       ' diffraction intensities by higher-dimensional components.</pre>',
+                       ' diffraction intensities by higher-dimensional components.</pre>\n'
+                       '<br><p><h4>Type:</h4> ? (unknown)</p>',
  '_diffrn_refln_index_m_1': '<pre><h2>_diffrn_refln_index_m_1</h2> Additional Miller indices '
                             'needed to write the reciprocal vector\n'
                             ' of a certain reflection in the basis described in\n'
@@ -11912,7 +12123,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                             ' additional indices must be consistent with the codes given in\n'
                             ' _cell_wave_vector_seq_id. These indices need not match\n'
                             ' _refln_index_m_ values if a transformation of the original\n'
-                            ' measured cell has occurred.</pre>',
+                            ' measured cell has occurred.</pre>\n'
+                            '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_refln_index_m_2': '<pre><h2>_diffrn_refln_index_m_2</h2> Additional Miller indices '
                             'needed to write the reciprocal vector\n'
                             ' of a certain reflection in the basis described in\n'
@@ -11927,7 +12139,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                             ' additional indices must be consistent with the codes given in\n'
                             ' _cell_wave_vector_seq_id. These indices need not match\n'
                             ' _refln_index_m_ values if a transformation of the original\n'
-                            ' measured cell has occurred.</pre>',
+                            ' measured cell has occurred.</pre>\n'
+                            '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_refln_index_m_3': '<pre><h2>_diffrn_refln_index_m_3</h2> Additional Miller indices '
                             'needed to write the reciprocal vector\n'
                             ' of a certain reflection in the basis described in\n'
@@ -11942,7 +12155,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                             ' additional indices must be consistent with the codes given in\n'
                             ' _cell_wave_vector_seq_id. These indices need not match\n'
                             ' _refln_index_m_ values if a transformation of the original\n'
-                            ' measured cell has occurred.</pre>',
+                            ' measured cell has occurred.</pre>\n'
+                            '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_refln_index_m_4': '<pre><h2>_diffrn_refln_index_m_4</h2> Additional Miller indices '
                             'needed to write the reciprocal vector\n'
                             ' of a certain reflection in the basis described in\n'
@@ -11957,7 +12171,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                             ' additional indices must be consistent with the codes given in\n'
                             ' _cell_wave_vector_seq_id. These indices need not match\n'
                             ' _refln_index_m_ values if a transformation of the original\n'
-                            ' measured cell has occurred.</pre>',
+                            ' measured cell has occurred.</pre>\n'
+                            '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_refln_index_m_5': '<pre><h2>_diffrn_refln_index_m_5</h2> Additional Miller indices '
                             'needed to write the reciprocal vector\n'
                             ' of a certain reflection in the basis described in\n'
@@ -11972,7 +12187,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                             ' additional indices must be consistent with the codes given in\n'
                             ' _cell_wave_vector_seq_id. These indices need not match\n'
                             ' _refln_index_m_ values if a transformation of the original\n'
-                            ' measured cell has occurred.</pre>',
+                            ' measured cell has occurred.</pre>\n'
+                            '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_refln_index_m_6': '<pre><h2>_diffrn_refln_index_m_6</h2> Additional Miller indices '
                             'needed to write the reciprocal vector\n'
                             ' of a certain reflection in the basis described in\n'
@@ -11987,7 +12203,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                             ' additional indices must be consistent with the codes given in\n'
                             ' _cell_wave_vector_seq_id. These indices need not match\n'
                             ' _refln_index_m_ values if a transformation of the original\n'
-                            ' measured cell has occurred.</pre>',
+                            ' measured cell has occurred.</pre>\n'
+                            '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_refln_index_m_7': '<pre><h2>_diffrn_refln_index_m_7</h2> Additional Miller indices '
                             'needed to write the reciprocal vector\n'
                             ' of a certain reflection in the basis described in\n'
@@ -12002,7 +12219,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                             ' additional indices must be consistent with the codes given in\n'
                             ' _cell_wave_vector_seq_id. These indices need not match\n'
                             ' _refln_index_m_ values if a transformation of the original\n'
-                            ' measured cell has occurred.</pre>',
+                            ' measured cell has occurred.</pre>\n'
+                            '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_refln_index_m_8': '<pre><h2>_diffrn_refln_index_m_8</h2> Additional Miller indices '
                             'needed to write the reciprocal vector\n'
                             ' of a certain reflection in the basis described in\n'
@@ -12017,7 +12235,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                             ' additional indices must be consistent with the codes given in\n'
                             ' _cell_wave_vector_seq_id. These indices need not match\n'
                             ' _refln_index_m_ values if a transformation of the original\n'
-                            ' measured cell has occurred.</pre>',
+                            ' measured cell has occurred.</pre>\n'
+                            '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_reflns_[ms]': '<pre><h2>_diffrn_reflns_[ms]</h2> Data items in the DIFFRN_REFLNS '
                         'category record details about\n'
                         ' the set of intensities measured in the diffraction experiment.\n'
@@ -12028,7 +12247,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                         ' Data items in this category extend the core CIF dictionary\n'
                         ' definitions providing independent checks on the range of values\n'
                         ' recorded for each of the additional Miller indices given in\n'
-                        ' the DIFFRN_REFLN category.</pre>',
+                        ' the DIFFRN_REFLN category.</pre>\n'
+                        '<br><p><h4>Type:</h4> ? (unknown)</p>',
  '_diffrn_reflns_limit_index_m_1_max': '<pre><h2>_diffrn_reflns_limit_index_m_1_max</h2> Maximum '
                                        'and minimum values of the additional Miller indices\n'
                                        ' appearing in _diffrn_refln_index_m_. The number of ranges '
@@ -12036,7 +12256,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                        ' match _cell_modulation_dimension. The order of the '
                                        'additional\n'
                                        ' indices must be consistent with the codes given in\n'
-                                       ' _cell_wave_vector_seq_id.</pre>',
+                                       ' _cell_wave_vector_seq_id.</pre>\n'
+                                       '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_reflns_limit_index_m_1_min': '<pre><h2>_diffrn_reflns_limit_index_m_1_min</h2> Maximum '
                                        'and minimum values of the additional Miller indices\n'
                                        ' appearing in _diffrn_refln_index_m_. The number of ranges '
@@ -12044,7 +12265,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                        ' match _cell_modulation_dimension. The order of the '
                                        'additional\n'
                                        ' indices must be consistent with the codes given in\n'
-                                       ' _cell_wave_vector_seq_id.</pre>',
+                                       ' _cell_wave_vector_seq_id.</pre>\n'
+                                       '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_reflns_limit_index_m_2_max': '<pre><h2>_diffrn_reflns_limit_index_m_2_max</h2> Maximum '
                                        'and minimum values of the additional Miller indices\n'
                                        ' appearing in _diffrn_refln_index_m_. The number of ranges '
@@ -12052,7 +12274,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                        ' match _cell_modulation_dimension. The order of the '
                                        'additional\n'
                                        ' indices must be consistent with the codes given in\n'
-                                       ' _cell_wave_vector_seq_id.</pre>',
+                                       ' _cell_wave_vector_seq_id.</pre>\n'
+                                       '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_reflns_limit_index_m_2_min': '<pre><h2>_diffrn_reflns_limit_index_m_2_min</h2> Maximum '
                                        'and minimum values of the additional Miller indices\n'
                                        ' appearing in _diffrn_refln_index_m_. The number of ranges '
@@ -12060,7 +12283,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                        ' match _cell_modulation_dimension. The order of the '
                                        'additional\n'
                                        ' indices must be consistent with the codes given in\n'
-                                       ' _cell_wave_vector_seq_id.</pre>',
+                                       ' _cell_wave_vector_seq_id.</pre>\n'
+                                       '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_reflns_limit_index_m_3_max': '<pre><h2>_diffrn_reflns_limit_index_m_3_max</h2> Maximum '
                                        'and minimum values of the additional Miller indices\n'
                                        ' appearing in _diffrn_refln_index_m_. The number of ranges '
@@ -12068,7 +12292,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                        ' match _cell_modulation_dimension. The order of the '
                                        'additional\n'
                                        ' indices must be consistent with the codes given in\n'
-                                       ' _cell_wave_vector_seq_id.</pre>',
+                                       ' _cell_wave_vector_seq_id.</pre>\n'
+                                       '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_reflns_limit_index_m_3_min': '<pre><h2>_diffrn_reflns_limit_index_m_3_min</h2> Maximum '
                                        'and minimum values of the additional Miller indices\n'
                                        ' appearing in _diffrn_refln_index_m_. The number of ranges '
@@ -12076,7 +12301,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                        ' match _cell_modulation_dimension. The order of the '
                                        'additional\n'
                                        ' indices must be consistent with the codes given in\n'
-                                       ' _cell_wave_vector_seq_id.</pre>',
+                                       ' _cell_wave_vector_seq_id.</pre>\n'
+                                       '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_reflns_limit_index_m_4_max': '<pre><h2>_diffrn_reflns_limit_index_m_4_max</h2> Maximum '
                                        'and minimum values of the additional Miller indices\n'
                                        ' appearing in _diffrn_refln_index_m_. The number of ranges '
@@ -12084,7 +12310,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                        ' match _cell_modulation_dimension. The order of the '
                                        'additional\n'
                                        ' indices must be consistent with the codes given in\n'
-                                       ' _cell_wave_vector_seq_id.</pre>',
+                                       ' _cell_wave_vector_seq_id.</pre>\n'
+                                       '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_reflns_limit_index_m_4_min': '<pre><h2>_diffrn_reflns_limit_index_m_4_min</h2> Maximum '
                                        'and minimum values of the additional Miller indices\n'
                                        ' appearing in _diffrn_refln_index_m_. The number of ranges '
@@ -12092,7 +12319,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                        ' match _cell_modulation_dimension. The order of the '
                                        'additional\n'
                                        ' indices must be consistent with the codes given in\n'
-                                       ' _cell_wave_vector_seq_id.</pre>',
+                                       ' _cell_wave_vector_seq_id.</pre>\n'
+                                       '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_reflns_limit_index_m_5_max': '<pre><h2>_diffrn_reflns_limit_index_m_5_max</h2> Maximum '
                                        'and minimum values of the additional Miller indices\n'
                                        ' appearing in _diffrn_refln_index_m_. The number of ranges '
@@ -12100,7 +12328,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                        ' match _cell_modulation_dimension. The order of the '
                                        'additional\n'
                                        ' indices must be consistent with the codes given in\n'
-                                       ' _cell_wave_vector_seq_id.</pre>',
+                                       ' _cell_wave_vector_seq_id.</pre>\n'
+                                       '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_reflns_limit_index_m_5_min': '<pre><h2>_diffrn_reflns_limit_index_m_5_min</h2> Maximum '
                                        'and minimum values of the additional Miller indices\n'
                                        ' appearing in _diffrn_refln_index_m_. The number of ranges '
@@ -12108,7 +12337,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                        ' match _cell_modulation_dimension. The order of the '
                                        'additional\n'
                                        ' indices must be consistent with the codes given in\n'
-                                       ' _cell_wave_vector_seq_id.</pre>',
+                                       ' _cell_wave_vector_seq_id.</pre>\n'
+                                       '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_reflns_limit_index_m_6_max': '<pre><h2>_diffrn_reflns_limit_index_m_6_max</h2> Maximum '
                                        'and minimum values of the additional Miller indices\n'
                                        ' appearing in _diffrn_refln_index_m_. The number of ranges '
@@ -12116,7 +12346,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                        ' match _cell_modulation_dimension. The order of the '
                                        'additional\n'
                                        ' indices must be consistent with the codes given in\n'
-                                       ' _cell_wave_vector_seq_id.</pre>',
+                                       ' _cell_wave_vector_seq_id.</pre>\n'
+                                       '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_reflns_limit_index_m_6_min': '<pre><h2>_diffrn_reflns_limit_index_m_6_min</h2> Maximum '
                                        'and minimum values of the additional Miller indices\n'
                                        ' appearing in _diffrn_refln_index_m_. The number of ranges '
@@ -12124,7 +12355,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                        ' match _cell_modulation_dimension. The order of the '
                                        'additional\n'
                                        ' indices must be consistent with the codes given in\n'
-                                       ' _cell_wave_vector_seq_id.</pre>',
+                                       ' _cell_wave_vector_seq_id.</pre>\n'
+                                       '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_reflns_limit_index_m_7_max': '<pre><h2>_diffrn_reflns_limit_index_m_7_max</h2> Maximum '
                                        'and minimum values of the additional Miller indices\n'
                                        ' appearing in _diffrn_refln_index_m_. The number of ranges '
@@ -12132,7 +12364,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                        ' match _cell_modulation_dimension. The order of the '
                                        'additional\n'
                                        ' indices must be consistent with the codes given in\n'
-                                       ' _cell_wave_vector_seq_id.</pre>',
+                                       ' _cell_wave_vector_seq_id.</pre>\n'
+                                       '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_reflns_limit_index_m_7_min': '<pre><h2>_diffrn_reflns_limit_index_m_7_min</h2> Maximum '
                                        'and minimum values of the additional Miller indices\n'
                                        ' appearing in _diffrn_refln_index_m_. The number of ranges '
@@ -12140,7 +12373,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                        ' match _cell_modulation_dimension. The order of the '
                                        'additional\n'
                                        ' indices must be consistent with the codes given in\n'
-                                       ' _cell_wave_vector_seq_id.</pre>',
+                                       ' _cell_wave_vector_seq_id.</pre>\n'
+                                       '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_reflns_limit_index_m_8_max': '<pre><h2>_diffrn_reflns_limit_index_m_8_max</h2> Maximum '
                                        'and minimum values of the additional Miller indices\n'
                                        ' appearing in _diffrn_refln_index_m_. The number of ranges '
@@ -12148,7 +12382,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                        ' match _cell_modulation_dimension. The order of the '
                                        'additional\n'
                                        ' indices must be consistent with the codes given in\n'
-                                       ' _cell_wave_vector_seq_id.</pre>',
+                                       ' _cell_wave_vector_seq_id.</pre>\n'
+                                       '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_reflns_limit_index_m_8_min': '<pre><h2>_diffrn_reflns_limit_index_m_8_min</h2> Maximum '
                                        'and minimum values of the additional Miller indices\n'
                                        ' appearing in _diffrn_refln_index_m_. The number of ranges '
@@ -12156,9 +12391,11 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                        ' match _cell_modulation_dimension. The order of the '
                                        'additional\n'
                                        ' indices must be consistent with the codes given in\n'
-                                       ' _cell_wave_vector_seq_id.</pre>',
+                                       ' _cell_wave_vector_seq_id.</pre>\n'
+                                       '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_reflns_satellite_order_max': '<pre><h2>_diffrn_reflns_satellite_order_max</h2> Maximum '
-                                       'order of observed satellites.</pre>',
+                                       'order of observed satellites.</pre>\n'
+                                       '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_standard_refln_[ms]': '<pre><h2>_diffrn_standard_refln_[ms]</h2> Data items in the '
                                 'DIFFRN_STANDARD_REFLN category record\n'
                                 ' details about the reflections treated as standards during the\n'
@@ -12168,7 +12405,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                 ' of the standard reflections. Data items in this category are\n'
                                 ' extensions of  the core CIF dictionary definitions\n'
                                 ' to the indexing of standard reflections by\n'
-                                ' higher-dimensional components.</pre>',
+                                ' higher-dimensional components.</pre>\n'
+                                '<br><p><h4>Type:</h4> ? (unknown)</p>',
  '_diffrn_standard_refln_index_m_1': '<pre><h2>_diffrn_standard_refln_index_m_1</h2> Additional '
                                      'Miller indices needed to write the reciprocal vectors\n'
                                      ' of the standard intensities used in the diffraction '
@@ -12180,7 +12418,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                      ' (_cell_modulation_dimension + 3) and the order of the\n'
                                      ' additional indices must be consistent with the codes given '
                                      'in\n'
-                                     ' _cell_wave_vector_seq_id.</pre>',
+                                     ' _cell_wave_vector_seq_id.</pre>\n'
+                                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_standard_refln_index_m_2': '<pre><h2>_diffrn_standard_refln_index_m_2</h2> Additional '
                                      'Miller indices needed to write the reciprocal vectors\n'
                                      ' of the standard intensities used in the diffraction '
@@ -12192,7 +12431,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                      ' (_cell_modulation_dimension + 3) and the order of the\n'
                                      ' additional indices must be consistent with the codes given '
                                      'in\n'
-                                     ' _cell_wave_vector_seq_id.</pre>',
+                                     ' _cell_wave_vector_seq_id.</pre>\n'
+                                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_standard_refln_index_m_3': '<pre><h2>_diffrn_standard_refln_index_m_3</h2> Additional '
                                      'Miller indices needed to write the reciprocal vectors\n'
                                      ' of the standard intensities used in the diffraction '
@@ -12204,7 +12444,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                      ' (_cell_modulation_dimension + 3) and the order of the\n'
                                      ' additional indices must be consistent with the codes given '
                                      'in\n'
-                                     ' _cell_wave_vector_seq_id.</pre>',
+                                     ' _cell_wave_vector_seq_id.</pre>\n'
+                                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_standard_refln_index_m_4': '<pre><h2>_diffrn_standard_refln_index_m_4</h2> Additional '
                                      'Miller indices needed to write the reciprocal vectors\n'
                                      ' of the standard intensities used in the diffraction '
@@ -12216,7 +12457,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                      ' (_cell_modulation_dimension + 3) and the order of the\n'
                                      ' additional indices must be consistent with the codes given '
                                      'in\n'
-                                     ' _cell_wave_vector_seq_id.</pre>',
+                                     ' _cell_wave_vector_seq_id.</pre>\n'
+                                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_standard_refln_index_m_5': '<pre><h2>_diffrn_standard_refln_index_m_5</h2> Additional '
                                      'Miller indices needed to write the reciprocal vectors\n'
                                      ' of the standard intensities used in the diffraction '
@@ -12228,7 +12470,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                      ' (_cell_modulation_dimension + 3) and the order of the\n'
                                      ' additional indices must be consistent with the codes given '
                                      'in\n'
-                                     ' _cell_wave_vector_seq_id.</pre>',
+                                     ' _cell_wave_vector_seq_id.</pre>\n'
+                                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_standard_refln_index_m_6': '<pre><h2>_diffrn_standard_refln_index_m_6</h2> Additional '
                                      'Miller indices needed to write the reciprocal vectors\n'
                                      ' of the standard intensities used in the diffraction '
@@ -12240,7 +12483,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                      ' (_cell_modulation_dimension + 3) and the order of the\n'
                                      ' additional indices must be consistent with the codes given '
                                      'in\n'
-                                     ' _cell_wave_vector_seq_id.</pre>',
+                                     ' _cell_wave_vector_seq_id.</pre>\n'
+                                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_standard_refln_index_m_7': '<pre><h2>_diffrn_standard_refln_index_m_7</h2> Additional '
                                      'Miller indices needed to write the reciprocal vectors\n'
                                      ' of the standard intensities used in the diffraction '
@@ -12252,7 +12496,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                      ' (_cell_modulation_dimension + 3) and the order of the\n'
                                      ' additional indices must be consistent with the codes given '
                                      'in\n'
-                                     ' _cell_wave_vector_seq_id.</pre>',
+                                     ' _cell_wave_vector_seq_id.</pre>\n'
+                                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_diffrn_standard_refln_index_m_8': '<pre><h2>_diffrn_standard_refln_index_m_8</h2> Additional '
                                      'Miller indices needed to write the reciprocal vectors\n'
                                      ' of the standard intensities used in the diffraction '
@@ -12264,18 +12509,21 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                      ' (_cell_modulation_dimension + 3) and the order of the\n'
                                      ' additional indices must be consistent with the codes given '
                                      'in\n'
-                                     ' _cell_wave_vector_seq_id.</pre>',
+                                     ' _cell_wave_vector_seq_id.</pre>\n'
+                                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_exptl_crystal_[ms]': '<pre><h2>_exptl_crystal_[ms]</h2> Data items in the EXPTL_CRYSTAL '
                         'category record\n'
                         ' details about experimental measurements on the crystal or\n'
                         ' crystals used, such as shape, size and density. The new\n'
                         ' data item added to this category specifies whether the structure\n'
-                        ' is crystalline, modulated or composite.</pre>',
+                        ' is crystalline, modulated or composite.</pre>\n'
+                        '<br><p><h4>Type:</h4> ? (unknown)</p>',
  '_exptl_crystal_face_[ms]': '<pre><h2>_exptl_crystal_face_[ms]</h2> Data items in the '
                              'EXPTL_CRYSTAL_FACE category record\n'
                              ' details of the crystal faces. Data items in this category are\n'
                              ' extensions of the core CIF dictionary definitions to the\n'
-                             ' indexing of crystal faces by higher-dimensional components.</pre>',
+                             ' indexing of crystal faces by higher-dimensional components.</pre>\n'
+                             '<br><p><h4>Type:</h4> ? (unknown)</p>',
  '_exptl_crystal_face_index_m_1': '<pre><h2>_exptl_crystal_face_index_m_1</h2> Additional Miller '
                                   'indices of the crystal face associated with the\n'
                                   ' value _exptl_crystal_face_perp_dist when the face is indexed\n'
@@ -12284,7 +12532,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                   ' match (_cell_modulation_dimension + 3). The order of the '
                                   'indices\n'
                                   ' must be consistent with the codes given in\n'
-                                  ' _cell_wave_vector_seq_id.</pre>',
+                                  ' _cell_wave_vector_seq_id.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_exptl_crystal_face_index_m_2': '<pre><h2>_exptl_crystal_face_index_m_2</h2> Additional Miller '
                                   'indices of the crystal face associated with the\n'
                                   ' value _exptl_crystal_face_perp_dist when the face is indexed\n'
@@ -12293,7 +12542,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                   ' match (_cell_modulation_dimension + 3). The order of the '
                                   'indices\n'
                                   ' must be consistent with the codes given in\n'
-                                  ' _cell_wave_vector_seq_id.</pre>',
+                                  ' _cell_wave_vector_seq_id.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_exptl_crystal_face_index_m_3': '<pre><h2>_exptl_crystal_face_index_m_3</h2> Additional Miller '
                                   'indices of the crystal face associated with the\n'
                                   ' value _exptl_crystal_face_perp_dist when the face is indexed\n'
@@ -12302,7 +12552,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                   ' match (_cell_modulation_dimension + 3). The order of the '
                                   'indices\n'
                                   ' must be consistent with the codes given in\n'
-                                  ' _cell_wave_vector_seq_id.</pre>',
+                                  ' _cell_wave_vector_seq_id.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_exptl_crystal_face_index_m_4': '<pre><h2>_exptl_crystal_face_index_m_4</h2> Additional Miller '
                                   'indices of the crystal face associated with the\n'
                                   ' value _exptl_crystal_face_perp_dist when the face is indexed\n'
@@ -12311,7 +12562,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                   ' match (_cell_modulation_dimension + 3). The order of the '
                                   'indices\n'
                                   ' must be consistent with the codes given in\n'
-                                  ' _cell_wave_vector_seq_id.</pre>',
+                                  ' _cell_wave_vector_seq_id.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_exptl_crystal_face_index_m_5': '<pre><h2>_exptl_crystal_face_index_m_5</h2> Additional Miller '
                                   'indices of the crystal face associated with the\n'
                                   ' value _exptl_crystal_face_perp_dist when the face is indexed\n'
@@ -12320,7 +12572,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                   ' match (_cell_modulation_dimension + 3). The order of the '
                                   'indices\n'
                                   ' must be consistent with the codes given in\n'
-                                  ' _cell_wave_vector_seq_id.</pre>',
+                                  ' _cell_wave_vector_seq_id.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_exptl_crystal_face_index_m_6': '<pre><h2>_exptl_crystal_face_index_m_6</h2> Additional Miller '
                                   'indices of the crystal face associated with the\n'
                                   ' value _exptl_crystal_face_perp_dist when the face is indexed\n'
@@ -12329,7 +12582,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                   ' match (_cell_modulation_dimension + 3). The order of the '
                                   'indices\n'
                                   ' must be consistent with the codes given in\n'
-                                  ' _cell_wave_vector_seq_id.</pre>',
+                                  ' _cell_wave_vector_seq_id.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_exptl_crystal_face_index_m_7': '<pre><h2>_exptl_crystal_face_index_m_7</h2> Additional Miller '
                                   'indices of the crystal face associated with the\n'
                                   ' value _exptl_crystal_face_perp_dist when the face is indexed\n'
@@ -12338,7 +12592,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                   ' match (_cell_modulation_dimension + 3). The order of the '
                                   'indices\n'
                                   ' must be consistent with the codes given in\n'
-                                  ' _cell_wave_vector_seq_id.</pre>',
+                                  ' _cell_wave_vector_seq_id.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_exptl_crystal_face_index_m_8': '<pre><h2>_exptl_crystal_face_index_m_8</h2> Additional Miller '
                                   'indices of the crystal face associated with the\n'
                                   ' value _exptl_crystal_face_perp_dist when the face is indexed\n'
@@ -12347,7 +12602,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                   ' match (_cell_modulation_dimension + 3). The order of the '
                                   'indices\n'
                                   ' must be consistent with the codes given in\n'
-                                  ' _cell_wave_vector_seq_id.</pre>',
+                                  ' _cell_wave_vector_seq_id.</pre>\n'
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_exptl_crystal_type_of_structure': '<pre><h2>_exptl_crystal_type_of_structure</h2>       The '
                                      'type of structure. This is used to check the consistency of '
                                      'a\n'
@@ -12367,26 +12623,31 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                      '\n'
                                      'comp\n'
                                      '\tcomposite (misfit) structure\n'
-                                     '</pre>',
+                                     '</pre>\n'
+                                     '<br><p><h4>Type:</h4> string</p>',
  '_geom_angle_[ms]': '<pre><h2>_geom_angle_[ms]</h2> Data items in the GEOM_ANGLE category record\n'
                      ' details about the bond angles, as calculated from the\n'
                      ' ATOM, CELL and SYMMETRY data. These extensions\n'
                      ' to the core CIF dictionary definitions record the maximum,\n'
                      ' minimum and average values of angles and extend the\n'
                      ' symmetry-operation code used in angle listings to the\n'
-                     ' higher-dimensional superspace form.</pre>',
+                     ' higher-dimensional superspace form.</pre>\n'
+                     '<br><p><h4>Type:</h4> ? (unknown)</p>',
  '_geom_angle_av': '<pre><h2>_geom_angle_av</h2> Maximum, minimum and average angles in degrees '
                    'bounded by\n'
                    ' _geom_angle_atom_site_label_1, *_2, and *_3. The site at *_2\n'
-                   ' is at the apex of the angle.</pre>',
+                   ' is at the apex of the angle.</pre>\n'
+                   '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_geom_angle_max': '<pre><h2>_geom_angle_max</h2> Maximum, minimum and average angles in degrees '
                     'bounded by\n'
                     ' _geom_angle_atom_site_label_1, *_2, and *_3. The site at *_2\n'
-                    ' is at the apex of the angle.</pre>',
+                    ' is at the apex of the angle.</pre>\n'
+                    '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_geom_angle_min': '<pre><h2>_geom_angle_min</h2> Maximum, minimum and average angles in degrees '
                     'bounded by\n'
                     ' _geom_angle_atom_site_label_1, *_2, and *_3. The site at *_2\n'
-                    ' is at the apex of the angle.</pre>',
+                    ' is at the apex of the angle.</pre>\n'
+                    '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_geom_angle_site_ssg_symmetry_1': '<pre><h2>_geom_angle_site_ssg_symmetry_1</h2> The symmetry '
                                     'code of each atom site as the symmetry operation\n'
                                     " number 'n' and the higher-dimensional translation "
@@ -12416,7 +12677,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                     '<h3>Example:</h3>\n'
                                     'None\n'
                                     '4\n'
-                                    '7_6455</pre>',
+                                    '7_6455</pre>\n'
+                                    '<br><p><h4>Type:</h4> string</p>',
  '_geom_angle_site_ssg_symmetry_2': '<pre><h2>_geom_angle_site_ssg_symmetry_2</h2> The symmetry '
                                     'code of each atom site as the symmetry operation\n'
                                     " number 'n' and the higher-dimensional translation "
@@ -12446,7 +12708,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                     '<h3>Example:</h3>\n'
                                     'None\n'
                                     '4\n'
-                                    '7_6455</pre>',
+                                    '7_6455</pre>\n'
+                                    '<br><p><h4>Type:</h4> string</p>',
  '_geom_angle_site_ssg_symmetry_3': '<pre><h2>_geom_angle_site_ssg_symmetry_3</h2> The symmetry '
                                     'code of each atom site as the symmetry operation\n'
                                     " number 'n' and the higher-dimensional translation "
@@ -12476,23 +12739,28 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                     '<h3>Example:</h3>\n'
                                     'None\n'
                                     '4\n'
-                                    '7_6455</pre>',
+                                    '7_6455</pre>\n'
+                                    '<br><p><h4>Type:</h4> string</p>',
  '_geom_bond_[ms]': '<pre><h2>_geom_bond_[ms]</h2> Data items in the GEOM_BOND category record\n'
                     ' details about bonds, as calculated from the\n'
                     ' ATOM, CELL and SYMMETRY data. These extensions\n'
                     ' to the core CIF dictionary definitions record the maximum,\n'
                     ' minimum and average lengths of bonds and extend the\n'
                     ' symmetry-operation code used in bond listings to the\n'
-                    ' higher-dimensional superspace form.</pre>',
+                    ' higher-dimensional superspace form.</pre>\n'
+                    '<br><p><h4>Type:</h4> ? (unknown)</p>',
  '_geom_bond_distance_av': '<pre><h2>_geom_bond_distance_av</h2> Maximum, minimum and average '
                            'values of the intramolecular bond\n'
-                           ' distance in angstroms.</pre>',
+                           ' distance in angstroms.</pre>\n'
+                           '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_geom_bond_distance_max': '<pre><h2>_geom_bond_distance_max</h2> Maximum, minimum and average '
                             'values of the intramolecular bond\n'
-                            ' distance in angstroms.</pre>',
+                            ' distance in angstroms.</pre>\n'
+                            '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_geom_bond_distance_min': '<pre><h2>_geom_bond_distance_min</h2> Maximum, minimum and average '
                             'values of the intramolecular bond\n'
-                            ' distance in angstroms.</pre>',
+                            ' distance in angstroms.</pre>\n'
+                            '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_geom_bond_site_ssg_symmetry_1': '<pre><h2>_geom_bond_site_ssg_symmetry_1</h2> The symmetry code '
                                    'of each atom site as the symmetry operation\n'
                                    " number 'n' and the higher-dimensional translation 'm1...mp'.\n"
@@ -12521,7 +12789,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                    '<h3>Example:</h3>\n'
                                    'None\n'
                                    '4\n'
-                                   '7_6455</pre>',
+                                   '7_6455</pre>\n'
+                                   '<br><p><h4>Type:</h4> string</p>',
  '_geom_bond_site_ssg_symmetry_2': '<pre><h2>_geom_bond_site_ssg_symmetry_2</h2> The symmetry code '
                                    'of each atom site as the symmetry operation\n'
                                    " number 'n' and the higher-dimensional translation 'm1...mp'.\n"
@@ -12550,7 +12819,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                    '<h3>Example:</h3>\n'
                                    'None\n'
                                    '4\n'
-                                   '7_6455</pre>',
+                                   '7_6455</pre>\n'
+                                   '<br><p><h4>Type:</h4> string</p>',
  '_geom_contact_[ms]': '<pre><h2>_geom_contact_[ms]</h2> Data items in the GEOM_CONTACT category '
                        'record\n'
                        ' details about interatomic contacts, as calculated from the\n'
@@ -12558,16 +12828,20 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                        ' to the core CIF dictionary definitions record the maximum,\n'
                        ' minimum and average values of contact distances and extend the\n'
                        ' symmetry-operation code used in contact-distance listings to the\n'
-                       ' higher-dimensional superspace form.</pre>',
+                       ' higher-dimensional superspace form.</pre>\n'
+                       '<br><p><h4>Type:</h4> ? (unknown)</p>',
  '_geom_contact_distance_av': '<pre><h2>_geom_contact_distance_av</h2> Maximum, minimum and '
                               'average values of the interatomic contact\n'
-                              ' distance in angstroms.</pre>',
+                              ' distance in angstroms.</pre>\n'
+                              '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_geom_contact_distance_max': '<pre><h2>_geom_contact_distance_max</h2> Maximum, minimum and '
                                'average values of the interatomic contact\n'
-                               ' distance in angstroms.</pre>',
+                               ' distance in angstroms.</pre>\n'
+                               '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_geom_contact_distance_min': '<pre><h2>_geom_contact_distance_min</h2> Maximum, minimum and '
                                'average values of the interatomic contact\n'
-                               ' distance in angstroms.</pre>',
+                               ' distance in angstroms.</pre>\n'
+                               '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_geom_contact_site_ssg_symmetry_1': '<pre><h2>_geom_contact_site_ssg_symmetry_1</h2> The '
                                       'symmetry code of each atom site as the symmetry operation\n'
                                       " number 'n' and the higher-dimensional translation "
@@ -12601,7 +12875,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                       '<h3>Example:</h3>\n'
                                       'None\n'
                                       '4\n'
-                                      '7_6455</pre>',
+                                      '7_6455</pre>\n'
+                                      '<br><p><h4>Type:</h4> string</p>',
  '_geom_contact_site_ssg_symmetry_2': '<pre><h2>_geom_contact_site_ssg_symmetry_2</h2> The '
                                       'symmetry code of each atom site as the symmetry operation\n'
                                       " number 'n' and the higher-dimensional translation "
@@ -12635,7 +12910,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                       '<h3>Example:</h3>\n'
                                       'None\n'
                                       '4\n'
-                                      '7_6455</pre>',
+                                      '7_6455</pre>\n'
+                                      '<br><p><h4>Type:</h4> string</p>',
  '_geom_torsion_[ms]': '<pre><h2>_geom_torsion_[ms]</h2> Data items in the GEOM_TORSION category '
                        'record\n'
                        ' details about torsion angles, as calculated from the\n'
@@ -12643,7 +12919,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                        ' to the core CIF dictionary definitions record the maximum,\n'
                        ' minimum and average values of torsion angles and extend the\n'
                        ' symmetry-operation code used in torsion-angle listings to the\n'
-                       ' higher-dimensional superspace form.</pre>',
+                       ' higher-dimensional superspace form.</pre>\n'
+                       '<br><p><h4>Type:</h4> ? (unknown)</p>',
  '_geom_torsion_av': '<pre><h2>_geom_torsion_av</h2> Maximum, minimum and average torsion angles '
                      'in degrees bounded\n'
                      ' by the four atom sites identified by the\n'
@@ -12651,7 +12928,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                      ' specified as _atom_site_label in the atom list. The torsion-\n'
                      ' angle definition should be that of Klyne and Prelog (1960).\n'
                      '\n'
-                     ' Ref: Klyne, W. &amp; Prelog, V. (1960). Experientia, 16, 521-523.</pre>',
+                     ' Ref: Klyne, W. &amp; Prelog, V. (1960). Experientia, 16, 521-523.</pre>\n'
+                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_geom_torsion_max': '<pre><h2>_geom_torsion_max</h2> Maximum, minimum and average torsion angles '
                       'in degrees bounded\n'
                       ' by the four atom sites identified by the\n'
@@ -12659,7 +12937,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                       ' specified as _atom_site_label in the atom list. The torsion-\n'
                       ' angle definition should be that of Klyne and Prelog (1960).\n'
                       '\n'
-                      ' Ref: Klyne, W. &amp; Prelog, V. (1960). Experientia, 16, 521-523.</pre>',
+                      ' Ref: Klyne, W. &amp; Prelog, V. (1960). Experientia, 16, 521-523.</pre>\n'
+                      '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_geom_torsion_min': '<pre><h2>_geom_torsion_min</h2> Maximum, minimum and average torsion angles '
                       'in degrees bounded\n'
                       ' by the four atom sites identified by the\n'
@@ -12667,7 +12946,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                       ' specified as _atom_site_label in the atom list. The torsion-\n'
                       ' angle definition should be that of Klyne and Prelog (1960).\n'
                       '\n'
-                      ' Ref: Klyne, W. &amp; Prelog, V. (1960). Experientia, 16, 521-523.</pre>',
+                      ' Ref: Klyne, W. &amp; Prelog, V. (1960). Experientia, 16, 521-523.</pre>\n'
+                      '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_geom_torsion_site_ssg_symmetry_1': '<pre><h2>_geom_torsion_site_ssg_symmetry_1</h2> The '
                                       'symmetry code of each atom site as the symmetry operation\n'
                                       " number 'n' and the higher-dimensional translation "
@@ -12699,7 +12979,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                       '<h3>Example:</h3>\n'
                                       'None\n'
                                       '4\n'
-                                      '7_6455</pre>',
+                                      '7_6455</pre>\n'
+                                      '<br><p><h4>Type:</h4> string</p>',
  '_geom_torsion_site_ssg_symmetry_2': '<pre><h2>_geom_torsion_site_ssg_symmetry_2</h2> The '
                                       'symmetry code of each atom site as the symmetry operation\n'
                                       " number 'n' and the higher-dimensional translation "
@@ -12731,7 +13012,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                       '<h3>Example:</h3>\n'
                                       'None\n'
                                       '4\n'
-                                      '7_6455</pre>',
+                                      '7_6455</pre>\n'
+                                      '<br><p><h4>Type:</h4> string</p>',
  '_geom_torsion_site_ssg_symmetry_3': '<pre><h2>_geom_torsion_site_ssg_symmetry_3</h2> The '
                                       'symmetry code of each atom site as the symmetry operation\n'
                                       " number 'n' and the higher-dimensional translation "
@@ -12763,7 +13045,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                       '<h3>Example:</h3>\n'
                                       'None\n'
                                       '4\n'
-                                      '7_6455</pre>',
+                                      '7_6455</pre>\n'
+                                      '<br><p><h4>Type:</h4> string</p>',
  '_geom_torsion_site_ssg_symmetry_4': '<pre><h2>_geom_torsion_site_ssg_symmetry_4</h2> The '
                                       'symmetry code of each atom site as the symmetry operation\n'
                                       " number 'n' and the higher-dimensional translation "
@@ -12795,12 +13078,14 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                       '<h3>Example:</h3>\n'
                                       'None\n'
                                       '4\n'
-                                      '7_6455</pre>',
+                                      '7_6455</pre>\n'
+                                      '<br><p><h4>Type:</h4> string</p>',
  '_refine_[ms]': '<pre><h2>_refine_[ms]</h2> Data items in the REFINE category record\n'
                  ' details about the structure refinement parameters. The\n'
                  ' new items in this category extend those of the core CIF\n'
                  ' dictionary and are specific to the refinement of\n'
-                 ' modulated structures.</pre>',
+                 ' modulated structures.</pre>\n'
+                 '<br><p><h4>Type:</h4> ? (unknown)</p>',
  '_refine_ls_mod_func_description': '<pre><h2>_refine_ls_mod_func_description</h2> Types of '
                                     'modulation present in the structural model and their\n'
                                     ' parameterization.\n'
@@ -12808,7 +13093,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                     '<h3>Example:</h3>\n'
                                     'Only displacive modulation. Fourier series.\n'
                                     'Modulation of atom S(1) described by a non-standard\n'
-                                    ' linear sawtooth function</pre>',
+                                    ' linear sawtooth function</pre>\n'
+                                    '<br><p><h4>Type:</h4> string</p>',
  '_refine_ls_mod_hydrogen_treatment': '<pre><h2>_refine_ls_mod_hydrogen_treatment</h2> Treatment '
                                       'of hydrogen-atom modulation parameters in the\n'
                                       ' refinement.\n'
@@ -12830,10 +13116,12 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                       '\n'
                                       'nomod\n'
                                       '\tno modulation of H-atom parameters\n'
-                                      '</pre>',
+                                      '</pre>\n'
+                                      '<br><p><h4>Type:</h4> string</p>',
  '_refine_ls_mod_overall_phason_coeff': '<pre><h2>_refine_ls_mod_overall_phason_coeff</h2> The '
                                         'phason coefficient used to calculate the overall phason\n'
-                                        ' correction.</pre>',
+                                        ' correction.</pre>\n'
+                                        '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refine_ls_mod_overall_phason_formula': '<pre><h2>_refine_ls_mod_overall_phason_formula</h2> The '
                                           'expression for the overall phason correction, if used.\n'
                                           '\n'
@@ -12844,7 +13132,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                           'Ovr\n'
                                           '\tOverhauser, A. W. (1971). Phys. Rev. B, 3, '
                                           '3173-3182.\n'
-                                          '</pre>',
+                                          '</pre>\n'
+                                          '<br><p><h4>Type:</h4> string</p>',
  '_refln_[ms]': '<pre><h2>_refln_[ms]</h2> Data items in the REFLN category record details about '
                 'the\n'
                 ' reflections used to determine the ATOM_SITE data items.\n'
@@ -12854,55 +13143,64 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                 ' REFLNS data items are not looped. Data items in this category\n'
                 ' are extensions of the core CIF dictionary definitions to the\n'
                 ' indexing of reflections used in the refinement by\n'
-                ' higher-dimensional components.</pre>',
+                ' higher-dimensional components.</pre>\n'
+                '<br><p><h4>Type:</h4> ? (unknown)</p>',
  '_refln_index_m_1': '<pre><h2>_refln_index_m_1</h2> Additional Miller indices of a particular '
                      'reflection in the basis\n'
                      ' described in _cell_reciprocal_basis_description. The total number\n'
                      ' of indices must match (_cell_modulation_dimension + 3). The\n'
                      ' order of the additional indices must be consistent with the codes\n'
-                     ' given in _cell_wave_vector_seq_id.</pre>',
+                     ' given in _cell_wave_vector_seq_id.</pre>\n'
+                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refln_index_m_2': '<pre><h2>_refln_index_m_2</h2> Additional Miller indices of a particular '
                      'reflection in the basis\n'
                      ' described in _cell_reciprocal_basis_description. The total number\n'
                      ' of indices must match (_cell_modulation_dimension + 3). The\n'
                      ' order of the additional indices must be consistent with the codes\n'
-                     ' given in _cell_wave_vector_seq_id.</pre>',
+                     ' given in _cell_wave_vector_seq_id.</pre>\n'
+                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refln_index_m_3': '<pre><h2>_refln_index_m_3</h2> Additional Miller indices of a particular '
                      'reflection in the basis\n'
                      ' described in _cell_reciprocal_basis_description. The total number\n'
                      ' of indices must match (_cell_modulation_dimension + 3). The\n'
                      ' order of the additional indices must be consistent with the codes\n'
-                     ' given in _cell_wave_vector_seq_id.</pre>',
+                     ' given in _cell_wave_vector_seq_id.</pre>\n'
+                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refln_index_m_4': '<pre><h2>_refln_index_m_4</h2> Additional Miller indices of a particular '
                      'reflection in the basis\n'
                      ' described in _cell_reciprocal_basis_description. The total number\n'
                      ' of indices must match (_cell_modulation_dimension + 3). The\n'
                      ' order of the additional indices must be consistent with the codes\n'
-                     ' given in _cell_wave_vector_seq_id.</pre>',
+                     ' given in _cell_wave_vector_seq_id.</pre>\n'
+                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refln_index_m_5': '<pre><h2>_refln_index_m_5</h2> Additional Miller indices of a particular '
                      'reflection in the basis\n'
                      ' described in _cell_reciprocal_basis_description. The total number\n'
                      ' of indices must match (_cell_modulation_dimension + 3). The\n'
                      ' order of the additional indices must be consistent with the codes\n'
-                     ' given in _cell_wave_vector_seq_id.</pre>',
+                     ' given in _cell_wave_vector_seq_id.</pre>\n'
+                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refln_index_m_6': '<pre><h2>_refln_index_m_6</h2> Additional Miller indices of a particular '
                      'reflection in the basis\n'
                      ' described in _cell_reciprocal_basis_description. The total number\n'
                      ' of indices must match (_cell_modulation_dimension + 3). The\n'
                      ' order of the additional indices must be consistent with the codes\n'
-                     ' given in _cell_wave_vector_seq_id.</pre>',
+                     ' given in _cell_wave_vector_seq_id.</pre>\n'
+                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refln_index_m_7': '<pre><h2>_refln_index_m_7</h2> Additional Miller indices of a particular '
                      'reflection in the basis\n'
                      ' described in _cell_reciprocal_basis_description. The total number\n'
                      ' of indices must match (_cell_modulation_dimension + 3). The\n'
                      ' order of the additional indices must be consistent with the codes\n'
-                     ' given in _cell_wave_vector_seq_id.</pre>',
+                     ' given in _cell_wave_vector_seq_id.</pre>\n'
+                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_refln_index_m_8': '<pre><h2>_refln_index_m_8</h2> Additional Miller indices of a particular '
                      'reflection in the basis\n'
                      ' described in _cell_reciprocal_basis_description. The total number\n'
                      ' of indices must match (_cell_modulation_dimension + 3). The\n'
                      ' order of the additional indices must be consistent with the codes\n'
-                     ' given in _cell_wave_vector_seq_id.</pre>',
+                     ' given in _cell_wave_vector_seq_id.</pre>\n'
+                     '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_[ms]': '<pre><h2>_reflns_[ms]</h2> Data items in the REFLNS category record details '
                  'about the\n'
                  ' reflections used to determine the ATOM_SITE data items.\n'
@@ -12912,132 +13210,151 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                  ' REFLNS data items are not looped. Data items in this category\n'
                  ' extend the core CIF dictionary definitions providing independent\n'
                  ' checks on the range of values recorded for each of the\n'
-                 ' additional Miller indices given in the REFLN category.</pre>',
+                 ' additional Miller indices given in the REFLN category.</pre>\n'
+                 '<br><p><h4>Type:</h4> ? (unknown)</p>',
  '_reflns_limit_index_m_1_max': '<pre><h2>_reflns_limit_index_m_1_max</h2> Maximum and minimum '
                                 'values of the additional Miller indices\n'
                                 ' appearing in _refln_index_m_. The number of ranges must match\n'
                                 ' _cell_modulation_dimension. The order of the additional indices\n'
                                 ' must be consistent with the codes given in\n'
                                 ' _cell_wave_vector_seq_id. These need not be the same as\n'
-                                ' the _diffrn_reflns_limit_index_m_.</pre>',
+                                ' the _diffrn_reflns_limit_index_m_.</pre>\n'
+                                '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_limit_index_m_1_min': '<pre><h2>_reflns_limit_index_m_1_min</h2> Maximum and minimum '
                                 'values of the additional Miller indices\n'
                                 ' appearing in _refln_index_m_. The number of ranges must match\n'
                                 ' _cell_modulation_dimension. The order of the additional indices\n'
                                 ' must be consistent with the codes given in\n'
                                 ' _cell_wave_vector_seq_id. These need not be the same as\n'
-                                ' the _diffrn_reflns_limit_index_m_.</pre>',
+                                ' the _diffrn_reflns_limit_index_m_.</pre>\n'
+                                '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_limit_index_m_2_max': '<pre><h2>_reflns_limit_index_m_2_max</h2> Maximum and minimum '
                                 'values of the additional Miller indices\n'
                                 ' appearing in _refln_index_m_. The number of ranges must match\n'
                                 ' _cell_modulation_dimension. The order of the additional indices\n'
                                 ' must be consistent with the codes given in\n'
                                 ' _cell_wave_vector_seq_id. These need not be the same as\n'
-                                ' the _diffrn_reflns_limit_index_m_.</pre>',
+                                ' the _diffrn_reflns_limit_index_m_.</pre>\n'
+                                '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_limit_index_m_2_min': '<pre><h2>_reflns_limit_index_m_2_min</h2> Maximum and minimum '
                                 'values of the additional Miller indices\n'
                                 ' appearing in _refln_index_m_. The number of ranges must match\n'
                                 ' _cell_modulation_dimension. The order of the additional indices\n'
                                 ' must be consistent with the codes given in\n'
                                 ' _cell_wave_vector_seq_id. These need not be the same as\n'
-                                ' the _diffrn_reflns_limit_index_m_.</pre>',
+                                ' the _diffrn_reflns_limit_index_m_.</pre>\n'
+                                '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_limit_index_m_3_max': '<pre><h2>_reflns_limit_index_m_3_max</h2> Maximum and minimum '
                                 'values of the additional Miller indices\n'
                                 ' appearing in _refln_index_m_. The number of ranges must match\n'
                                 ' _cell_modulation_dimension. The order of the additional indices\n'
                                 ' must be consistent with the codes given in\n'
                                 ' _cell_wave_vector_seq_id. These need not be the same as\n'
-                                ' the _diffrn_reflns_limit_index_m_.</pre>',
+                                ' the _diffrn_reflns_limit_index_m_.</pre>\n'
+                                '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_limit_index_m_3_min': '<pre><h2>_reflns_limit_index_m_3_min</h2> Maximum and minimum '
                                 'values of the additional Miller indices\n'
                                 ' appearing in _refln_index_m_. The number of ranges must match\n'
                                 ' _cell_modulation_dimension. The order of the additional indices\n'
                                 ' must be consistent with the codes given in\n'
                                 ' _cell_wave_vector_seq_id. These need not be the same as\n'
-                                ' the _diffrn_reflns_limit_index_m_.</pre>',
+                                ' the _diffrn_reflns_limit_index_m_.</pre>\n'
+                                '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_limit_index_m_4_max': '<pre><h2>_reflns_limit_index_m_4_max</h2> Maximum and minimum '
                                 'values of the additional Miller indices\n'
                                 ' appearing in _refln_index_m_. The number of ranges must match\n'
                                 ' _cell_modulation_dimension. The order of the additional indices\n'
                                 ' must be consistent with the codes given in\n'
                                 ' _cell_wave_vector_seq_id. These need not be the same as\n'
-                                ' the _diffrn_reflns_limit_index_m_.</pre>',
+                                ' the _diffrn_reflns_limit_index_m_.</pre>\n'
+                                '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_limit_index_m_4_min': '<pre><h2>_reflns_limit_index_m_4_min</h2> Maximum and minimum '
                                 'values of the additional Miller indices\n'
                                 ' appearing in _refln_index_m_. The number of ranges must match\n'
                                 ' _cell_modulation_dimension. The order of the additional indices\n'
                                 ' must be consistent with the codes given in\n'
                                 ' _cell_wave_vector_seq_id. These need not be the same as\n'
-                                ' the _diffrn_reflns_limit_index_m_.</pre>',
+                                ' the _diffrn_reflns_limit_index_m_.</pre>\n'
+                                '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_limit_index_m_5_max': '<pre><h2>_reflns_limit_index_m_5_max</h2> Maximum and minimum '
                                 'values of the additional Miller indices\n'
                                 ' appearing in _refln_index_m_. The number of ranges must match\n'
                                 ' _cell_modulation_dimension. The order of the additional indices\n'
                                 ' must be consistent with the codes given in\n'
                                 ' _cell_wave_vector_seq_id. These need not be the same as\n'
-                                ' the _diffrn_reflns_limit_index_m_.</pre>',
+                                ' the _diffrn_reflns_limit_index_m_.</pre>\n'
+                                '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_limit_index_m_5_min': '<pre><h2>_reflns_limit_index_m_5_min</h2> Maximum and minimum '
                                 'values of the additional Miller indices\n'
                                 ' appearing in _refln_index_m_. The number of ranges must match\n'
                                 ' _cell_modulation_dimension. The order of the additional indices\n'
                                 ' must be consistent with the codes given in\n'
                                 ' _cell_wave_vector_seq_id. These need not be the same as\n'
-                                ' the _diffrn_reflns_limit_index_m_.</pre>',
+                                ' the _diffrn_reflns_limit_index_m_.</pre>\n'
+                                '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_limit_index_m_6_max': '<pre><h2>_reflns_limit_index_m_6_max</h2> Maximum and minimum '
                                 'values of the additional Miller indices\n'
                                 ' appearing in _refln_index_m_. The number of ranges must match\n'
                                 ' _cell_modulation_dimension. The order of the additional indices\n'
                                 ' must be consistent with the codes given in\n'
                                 ' _cell_wave_vector_seq_id. These need not be the same as\n'
-                                ' the _diffrn_reflns_limit_index_m_.</pre>',
+                                ' the _diffrn_reflns_limit_index_m_.</pre>\n'
+                                '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_limit_index_m_6_min': '<pre><h2>_reflns_limit_index_m_6_min</h2> Maximum and minimum '
                                 'values of the additional Miller indices\n'
                                 ' appearing in _refln_index_m_. The number of ranges must match\n'
                                 ' _cell_modulation_dimension. The order of the additional indices\n'
                                 ' must be consistent with the codes given in\n'
                                 ' _cell_wave_vector_seq_id. These need not be the same as\n'
-                                ' the _diffrn_reflns_limit_index_m_.</pre>',
+                                ' the _diffrn_reflns_limit_index_m_.</pre>\n'
+                                '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_limit_index_m_7_max': '<pre><h2>_reflns_limit_index_m_7_max</h2> Maximum and minimum '
                                 'values of the additional Miller indices\n'
                                 ' appearing in _refln_index_m_. The number of ranges must match\n'
                                 ' _cell_modulation_dimension. The order of the additional indices\n'
                                 ' must be consistent with the codes given in\n'
                                 ' _cell_wave_vector_seq_id. These need not be the same as\n'
-                                ' the _diffrn_reflns_limit_index_m_.</pre>',
+                                ' the _diffrn_reflns_limit_index_m_.</pre>\n'
+                                '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_limit_index_m_7_min': '<pre><h2>_reflns_limit_index_m_7_min</h2> Maximum and minimum '
                                 'values of the additional Miller indices\n'
                                 ' appearing in _refln_index_m_. The number of ranges must match\n'
                                 ' _cell_modulation_dimension. The order of the additional indices\n'
                                 ' must be consistent with the codes given in\n'
                                 ' _cell_wave_vector_seq_id. These need not be the same as\n'
-                                ' the _diffrn_reflns_limit_index_m_.</pre>',
+                                ' the _diffrn_reflns_limit_index_m_.</pre>\n'
+                                '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_limit_index_m_8_max': '<pre><h2>_reflns_limit_index_m_8_max</h2> Maximum and minimum '
                                 'values of the additional Miller indices\n'
                                 ' appearing in _refln_index_m_. The number of ranges must match\n'
                                 ' _cell_modulation_dimension. The order of the additional indices\n'
                                 ' must be consistent with the codes given in\n'
                                 ' _cell_wave_vector_seq_id. These need not be the same as\n'
-                                ' the _diffrn_reflns_limit_index_m_.</pre>',
+                                ' the _diffrn_reflns_limit_index_m_.</pre>\n'
+                                '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_reflns_limit_index_m_8_min': '<pre><h2>_reflns_limit_index_m_8_min</h2> Maximum and minimum '
                                 'values of the additional Miller indices\n'
                                 ' appearing in _refln_index_m_. The number of ranges must match\n'
                                 ' _cell_modulation_dimension. The order of the additional indices\n'
                                 ' must be consistent with the codes given in\n'
                                 ' _cell_wave_vector_seq_id. These need not be the same as\n'
-                                ' the _diffrn_reflns_limit_index_m_.</pre>',
+                                ' the _diffrn_reflns_limit_index_m_.</pre>\n'
+                                '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_space_group_[ms]': '<pre><h2>_space_group_[ms]</h2> The SPACE_GROUP category introduced in the '
                       'symmetry CIF\n'
                       ' dictionary (cif_sym.dic) is intended to replace the original\n'
                       ' core SYMMETRY category. For modulated structures, superspace-\n'
                       ' group descriptions may be included in the same category, but\n'
-                      ' include the _ssg_ flag to indicate their dimensionality of &gt; 3.</pre>',
+                      ' include the _ssg_ flag to indicate their dimensionality of &gt; 3.</pre>\n'
+                      '<br><p><h4>Type:</h4> ? (unknown)</p>',
  '_space_group_ssg_IT_number': '<pre><h2>_space_group_ssg_IT_number</h2> Superspace-group number '
                                'from International Tables for\n'
                                ' Crystallography, Vol. C (2004). Valid only for one-dimensional\n'
                                ' modulated structures.\n'
                                '\n'
                                ' Ref: International Tables for Crystallography (2004). Vol. C,\n'
-                               '      Chapter 9.8. Dordrecht: Kluwer Academic Publishers.</pre>',
+                               '      Chapter 9.8. Dordrecht: Kluwer Academic Publishers.</pre>\n'
+                               '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_space_group_ssg_WJJ_code': '<pre><h2>_space_group_ssg_WJJ_code</h2> Superspace-group code as '
                               'given by de Wolff, Janssen &amp; Janner\n'
                               ' (1981). Valid only for one-dimensional modulated structures.\n'
@@ -13046,7 +13363,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                               '      Acta Cryst. A37, 625-636.\n'
                               '\n'
                               '<h3>Example:</h3>\n'
-                              '28a.10.1/2</pre>',
+                              '28a.10.1/2</pre>\n'
+                              '<br><p><h4>Type:</h4> string</p>',
  '_space_group_ssg_name': '<pre><h2>_space_group_ssg_name</h2> Superspace-group symbol conforming '
                           'to an alternative definition\n'
                           ' from that given in _space_group_ssg_name_IT and\n'
@@ -13065,7 +13383,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                           ' appropriate W matrices.\n'
                           '\n'
                           '<h3>Example:</h3>\n'
-                          "Hall's notation W:-P -2xb -2ya:q q</pre>",
+                          "Hall's notation W:-P -2xb -2ya:q q</pre>\n"
+                          '<br><p><h4>Type:</h4> string</p>',
  '_space_group_ssg_name_IT': '<pre><h2>_space_group_ssg_name_IT</h2> Superspace-group symbol as '
                              'given in International Tables for\n'
                              ' Crystallography, Vol. C (2004). Valid only for one-dimensional\n'
@@ -13087,7 +13406,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                              '      Chapter 9.8. Dordrecht: Kluwer Academic Publishers.\n'
                              '\n'
                              '<h3>Example:</h3>\n'
-                             'P n m a (0 0 \\g) 0 s 0</pre>',
+                             'P n m a (0 0 \\g) 0 s 0</pre>\n'
+                             '<br><p><h4>Type:</h4> string</p>',
  '_space_group_ssg_name_WJJ': '<pre><h2>_space_group_ssg_name_WJJ</h2> Superspace-group symbol as '
                               'given by de Wolff, Janssen &amp; Janner\n'
                               ' (1981). Valid only for one-dimensional modulated structures.\n'
@@ -13107,7 +13427,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                               '      Acta Cryst. A37, 625-636.\n'
                               '\n'
                               '<h3>Example:</h3>\n'
-                              'P:P c m n:s s -1</pre>',
+                              'P:P c m n:s s -1</pre>\n'
+                              '<br><p><h4>Type:</h4> string</p>',
  '_space_group_symop_[ms]': '<pre><h2>_space_group_symop_[ms]</h2> The SPACE_GROUP_SYMOP category '
                             'introduced in the symmetry CIF\n'
                             ' dictionary (cif_sym.dic) is intended to replace the original\n'
@@ -13129,10 +13450,12 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                             '  5                       -x1,-x2,-x3,-x4\n'
                             '  6                       1/2-x1,1/2+x2,1/2+x3,-x4\n'
                             '  7                       1/2+x1,1/2-x2,x3,1/2+x4\n'
-                            '  8                       x1,x2,1/2-x3,1/2+x4</pre>',
+                            '  8                       x1,x2,1/2-x3,1/2+x4</pre>\n'
+                            '<br><p><h4>Type:</h4> ? (unknown)</p>',
  '_space_group_symop_ssg_id': '<pre><h2>_space_group_symop_ssg_id</h2> A numeric code identifying '
                               'each entry in the\n'
-                              ' _space_group_symop_ssg_operation_algebraic list.</pre>',
+                              ' _space_group_symop_ssg_operation_algebraic list.</pre>\n'
+                              '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_space_group_symop_ssg_operation_algebraic': '<pre><h2>_space_group_symop_ssg_operation_algebraic</h2> '
                                                'A parsable string giving one of the symmetry '
                                                'operations of the\n'
@@ -13156,4 +13479,5 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                                ' in a CIF corresponding to a modulated structure.\n'
                                                '\n'
                                                '<h3>Example:</h3>\n'
-                                               'x1,-x2,x3,1/2+x4</pre>'}
+                                               'x1,-x2,x3,1/2+x4</pre>\n'
+                                               '<br><p><h4>Type:</h4> string</p>'}

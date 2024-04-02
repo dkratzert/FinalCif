@@ -16,7 +16,8 @@ twinning_dict = {'_twin_dimensionality': '<pre><h2>_twin_dimensionality</h2>\n'
                          '\n'
                          'monoperiodic\n'
                          '\tcommon lattice in one dimension\n'
-                         '</pre>',
+                         '</pre>\n'
+                         '<br><p><h4>Type:</h4> string</p>',
  '_twin_formation_mechanism': '<pre><h2>_twin_formation_mechanism</h2>\n'
                               '     A description of the method of twin formation.\n'
                               '\n'
@@ -29,18 +30,21 @@ twinning_dict = {'_twin_dimensionality': '<pre><h2>_twin_dimensionality</h2>\n'
                               '\n'
                               'mt\n'
                               '\tmechanical twin formed as a result of mechanical action\n'
-                              '</pre>',
+                              '</pre>\n'
+                              '<br><p><h4>Type:</h4> string</p>',
  '_twin_individual_id': '<pre><h2>_twin_individual_id</h2>\n'
                         '      The unique identifier for this twin individual. \n'
                         '      The twin for which _twin_individual_twin_matrix_\n'
                         '      is the identity matrix is called the reference twin.  \n'
-                        "      It is recommended that the reference twin be labelled '1'. </pre>",
+                        "      It is recommended that the reference twin be labelled '1'. </pre>\n"
+                        '<br><p><h4>Type:</h4> string</p>',
  '_twin_individual_mass_fraction_refined': '<pre><h2>_twin_individual_mass_fraction_refined</h2>\n'
                                            '      The refined mass fraction of this twin '
                                            'individual; the sum\n'
                                            '      of all mass fractions must equal unity within '
                                            'the limits of \n'
-                                           '      experimental uncertainty.</pre>',
+                                           '      experimental uncertainty.</pre>\n'
+                                           '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_twin_individual_twin_lattice_type': '<pre><h2>_twin_individual_twin_lattice_type</h2>\n'
                                        '       Identification of the symmetry relationships '
                                        'between the \n'
@@ -74,7 +78,8 @@ twinning_dict = {'_twin_dimensionality': '<pre><h2>_twin_dimensionality</h2>\n'
                                        '\n'
                                        'nmt\n'
                                        '\tnon-merohedral\n'
-                                       '</pre>',
+                                       '</pre>\n'
+                                       '<br><p><h4>Type:</h4> string</p>',
  '_twin_individual_twin_matrix_11': '<pre><h2>_twin_individual_twin_matrix_11</h2>\n'
                                     '     Elements of the matrix U that multiplies the Miller '
                                     'indices h,k,l \n'
@@ -85,7 +90,8 @@ twinning_dict = {'_twin_dimensionality': '<pre><h2>_twin_dimensionality</h2>\n'
                                     "           (h' k' l') = U (h k l )\n"
                                     '\n'
                                     '     It follows that the reference twin must have U = I, the '
-                                    'identity matrix. </pre>',
+                                    'identity matrix. </pre>\n'
+                                    '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_twin_individual_twin_matrix_12': '<pre><h2>_twin_individual_twin_matrix_12</h2>\n'
                                     '     Elements of the matrix U that multiplies the Miller '
                                     'indices h,k,l \n'
@@ -96,7 +102,8 @@ twinning_dict = {'_twin_dimensionality': '<pre><h2>_twin_dimensionality</h2>\n'
                                     "           (h' k' l') = U (h k l )\n"
                                     '\n'
                                     '     It follows that the reference twin must have U = I, the '
-                                    'identity matrix. </pre>',
+                                    'identity matrix. </pre>\n'
+                                    '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_twin_individual_twin_matrix_13': '<pre><h2>_twin_individual_twin_matrix_13</h2>\n'
                                     '     Elements of the matrix U that multiplies the Miller '
                                     'indices h,k,l \n'
@@ -107,7 +114,8 @@ twinning_dict = {'_twin_dimensionality': '<pre><h2>_twin_dimensionality</h2>\n'
                                     "           (h' k' l') = U (h k l )\n"
                                     '\n'
                                     '     It follows that the reference twin must have U = I, the '
-                                    'identity matrix. </pre>',
+                                    'identity matrix. </pre>\n'
+                                    '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_twin_individual_twin_matrix_21': '<pre><h2>_twin_individual_twin_matrix_21</h2>\n'
                                     '     Elements of the matrix U that multiplies the Miller '
                                     'indices h,k,l \n'
@@ -118,7 +126,8 @@ twinning_dict = {'_twin_dimensionality': '<pre><h2>_twin_dimensionality</h2>\n'
                                     "           (h' k' l') = U (h k l )\n"
                                     '\n'
                                     '     It follows that the reference twin must have U = I, the '
-                                    'identity matrix. </pre>',
+                                    'identity matrix. </pre>\n'
+                                    '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_twin_individual_twin_matrix_22': '<pre><h2>_twin_individual_twin_matrix_22</h2>\n'
                                     '     Elements of the matrix U that multiplies the Miller '
                                     'indices h,k,l \n'
@@ -129,7 +138,8 @@ twinning_dict = {'_twin_dimensionality': '<pre><h2>_twin_dimensionality</h2>\n'
                                     "           (h' k' l') = U (h k l )\n"
                                     '\n'
                                     '     It follows that the reference twin must have U = I, the '
-                                    'identity matrix. </pre>',
+                                    'identity matrix. </pre>\n'
+                                    '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_twin_individual_twin_matrix_23': '<pre><h2>_twin_individual_twin_matrix_23</h2>\n'
                                     '     Elements of the matrix U that multiplies the Miller '
                                     'indices h,k,l \n'
@@ -140,7 +150,8 @@ twinning_dict = {'_twin_dimensionality': '<pre><h2>_twin_dimensionality</h2>\n'
                                     "           (h' k' l') = U (h k l )\n"
                                     '\n'
                                     '     It follows that the reference twin must have U = I, the '
-                                    'identity matrix. </pre>',
+                                    'identity matrix. </pre>\n'
+                                    '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_twin_individual_twin_matrix_31': '<pre><h2>_twin_individual_twin_matrix_31</h2>\n'
                                     '     Elements of the matrix U that multiplies the Miller '
                                     'indices h,k,l \n'
@@ -151,7 +162,8 @@ twinning_dict = {'_twin_dimensionality': '<pre><h2>_twin_dimensionality</h2>\n'
                                     "           (h' k' l') = U (h k l )\n"
                                     '\n'
                                     '     It follows that the reference twin must have U = I, the '
-                                    'identity matrix. </pre>',
+                                    'identity matrix. </pre>\n'
+                                    '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_twin_individual_twin_matrix_32': '<pre><h2>_twin_individual_twin_matrix_32</h2>\n'
                                     '     Elements of the matrix U that multiplies the Miller '
                                     'indices h,k,l \n'
@@ -162,7 +174,8 @@ twinning_dict = {'_twin_dimensionality': '<pre><h2>_twin_dimensionality</h2>\n'
                                     "           (h' k' l') = U (h k l )\n"
                                     '\n'
                                     '     It follows that the reference twin must have U = I, the '
-                                    'identity matrix. </pre>',
+                                    'identity matrix. </pre>\n'
+                                    '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_twin_individual_twin_matrix_33': '<pre><h2>_twin_individual_twin_matrix_33</h2>\n'
                                     '     Elements of the matrix U that multiplies the Miller '
                                     'indices h,k,l \n'
@@ -173,7 +186,8 @@ twinning_dict = {'_twin_dimensionality': '<pre><h2>_twin_dimensionality</h2>\n'
                                     "           (h' k' l') = U (h k l )\n"
                                     '\n'
                                     '     It follows that the reference twin must have U = I, the '
-                                    'identity matrix. </pre>',
+                                    'identity matrix. </pre>\n'
+                                    '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_twin_morphology': '<pre><h2>_twin_morphology</h2>\n'
                      ' The physical relationship of the different twins to one another.\n'
                      '\n'
@@ -192,7 +206,8 @@ twinning_dict = {'_twin_dimensionality': '<pre><h2>_twin_dimensionality</h2>\n'
                      '\n'
                      'cyclic\n'
                      '\tindividuals repeat in closed edifice\n'
-                     '</pre>',
+                     '</pre>\n'
+                     '<br><p><h4>Type:</h4> string</p>',
  '_twin_refln_F_squared_calc': '<pre><h2>_twin_refln_F_squared_calc</h2> \n'
                                '\n'
                                '        Calculated value for the overall squared structure factors '
@@ -218,7 +233,8 @@ twinning_dict = {'_twin_dimensionality': '<pre><h2>_twin_dimensionality</h2>\n'
                                '\n'
                                '        Reference: Pratt, C. S., Coyle, B. A. &amp; Ibers, J. A. '
                                '(1971).\n'
-                               '        J. Chem. Soc. A, pp. 2146-2151.</pre>',
+                               '        J. Chem. Soc. A, pp. 2146-2151.</pre>\n'
+                               '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_twin_refln_F_squared_calc_individual': '<pre><h2>_twin_refln_F_squared_calc_individual</h2> \n'
                                           '\n'
                                           '        Contribution of the twin identified by '
@@ -232,16 +248,19 @@ twinning_dict = {'_twin_dimensionality': '<pre><h2>_twin_dimensionality</h2>\n'
                                           'the mass factor.\n'
                                           '        For X-ray diffraction the units are electrons '
                                           'squared.\n'
-                                          '</pre>',
+                                          '</pre>\n'
+                                          '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_twin_refln_F_squared_meas': '<pre><h2>_twin_refln_F_squared_meas</h2>\n'
                                '         The observed value F^2^ of the peak referenced by \n'
                                '         _twin_refln_datum_id. This is typically the observed '
                                'peak\n'
                                '         intensity after Lorentz and polarization '
-                               'corrections.</pre>',
+                               'corrections.</pre>\n'
+                               '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_twin_refln_F_squared_sigma': '<pre><h2>_twin_refln_F_squared_sigma</h2>\n'
                                 '            Standard uncertainty of '
-                                '_twin_refln_F_squared_meas</pre>',
+                                '_twin_refln_F_squared_meas</pre>\n'
+                                '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_twin_refln_datum_id': '<pre><h2>_twin_refln_datum_id</h2>\n'
                          '     This item serves to identify an observed diffraction peak. \n'
                          '     It may include contributions from one or more twin components\n'
@@ -256,7 +275,8 @@ twinning_dict = {'_twin_dimensionality': '<pre><h2>_twin_dimensionality</h2>\n'
                          '     \n'
                          '     The list reference includes both _twin_refln_datum_id and \n'
                          '     _twin_refln_individual_id.  The combination of these two items \n'
-                         '     may only appear once in a list. </pre>',
+                         '     may only appear once in a list. </pre>\n'
+                         '<br><p><h4>Type:</h4> string</p>',
  '_twin_refln_include_status': '<pre><h2>_twin_refln_include_status</h2>\n'
                                '    A symbol indicating how the reflection is treated during '
                                'refinement.\n'
@@ -287,22 +307,26 @@ twinning_dict = {'_twin_dimensionality': '<pre><h2>_twin_dimensionality</h2>\n'
                                '\n'
                                'l\n'
                                '\tdoes not satisfy _refine_ls_d_res_low\n'
-                               '</pre>',
+                               '</pre>\n'
+                               '<br><p><h4>Type:</h4> string</p>',
  '_twin_refln_index_h': '<pre><h2>_twin_refln_index_h</h2>\n'
                         '     Miller indices of a reflection from the twin component \n'
                         '     labelled by _twin_refln_individual_id. \n'
                         '     The values of the Miller indices must correspond \n'
-                        '     to the cell defined for this twin component.  </pre>',
+                        '     to the cell defined for this twin component.  </pre>\n'
+                        '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_twin_refln_index_k': '<pre><h2>_twin_refln_index_k</h2>\n'
                         '     Miller indices of a reflection from the twin component \n'
                         '     labelled by _twin_refln_individual_id. \n'
                         '     The values of the Miller indices must correspond \n'
-                        '     to the cell defined for this twin component.  </pre>',
+                        '     to the cell defined for this twin component.  </pre>\n'
+                        '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_twin_refln_index_l': '<pre><h2>_twin_refln_index_l</h2>\n'
                         '     Miller indices of a reflection from the twin component \n'
                         '     labelled by _twin_refln_individual_id. \n'
                         '     The values of the Miller indices must correspond \n'
-                        '     to the cell defined for this twin component.  </pre>',
+                        '     to the cell defined for this twin component.  </pre>\n'
+                        '<br><p><h4>Type:</h4> number (int or float)</p>',
  '_twin_refln_individual_id': '<pre><h2>_twin_refln_individual_id</h2>\n'
                               '      The unique identifier of the twin individual \n'
                               '      whose Miller indices are given in _twin_refln_index_.  \n'
@@ -312,7 +336,8 @@ twinning_dict = {'_twin_dimensionality': '<pre><h2>_twin_dimensionality</h2>\n'
                               '     The list reference includes both _twin_refln_datum_id and \n'
                               '     _twin_refln_individual_id.  The combination of these two '
                               'items \n'
-                              '     may only appear once in a list. </pre>',
+                              '     may only appear once in a list. </pre>\n'
+                              '<br><p><h4>Type:</h4> string</p>',
  '_twin_special_details': '<pre><h2>_twin_special_details</h2>\n'
                           '    Information about twinning in the sample not contained in other '
                           'data items.\n'
@@ -320,4 +345,5 @@ twinning_dict = {'_twin_dimensionality': '<pre><h2>_twin_dimensionality</h2>\n'
                           '<h3>Example:</h3>\n'
                           '   Individuals 3 and 4 arise from form (I) following an\n'
                           '    enantiotropic phase transition by sudden cooling in\n'
-                          '    a cryostat to 173K. </pre>'}
+                          '    a cryostat to 173K. </pre>\n'
+                          '<br><p><h4>Type:</h4> string</p>'}
