@@ -132,7 +132,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                            ' If an observed pattern is included, _pd_calc_intensity_\n'
                            ' should be looped with either _pd_proc_intensity_net,\n'
                            ' _pd_meas_counts_ or _pd_meas_intensity_.</pre>\n'
-                           '<br><p><h4>Type:</h4> number (int or float)</p>',
+                           '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                           '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_calc_intensity_total': '<pre><h2>_pd_calc_intensity_total</h2> Intensity values for a '
                              'computed diffractogram at\n'
                              ' each angle setting. Values should be computed at the\n'
@@ -155,7 +156,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                              ' If an observed pattern is included, _pd_calc_intensity_\n'
                              ' should be looped with either _pd_proc_intensity_net,\n'
                              ' _pd_meas_counts_ or _pd_meas_intensity_.</pre>\n'
-                             '<br><p><h4>Type:</h4> number (int or float)</p>',
+                             '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                             '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_calc_method': '<pre><h2>_pd_calc_method</h2> A description of the method used for the '
                     'calculation of\n'
                     ' the intensities in _pd_calc_intensity_. If the pattern was\n'
@@ -184,7 +186,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                              ' specified as _pd_calib_2theta_off_point. Alternatively, a\n'
                              ' range where the offset is applicable can be specified using\n'
                              ' _pd_calib_2theta_off_min and _pd_calib_2theta_off_max.</pre>\n'
-                             '<br><p><h4>Type:</h4> number (int or float)</p>',
+                             '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                             '<br><p><h4>Limits:</h4> -180.0:180.0 </p>',
  '_pd_calib_2theta_off_min': '<pre><h2>_pd_calib_2theta_off_min</h2> _pd_calib_2theta_offset '
                              'defines an offset angle (in degrees)\n'
                              ' used to calibrate 2\\q (as defined in _pd_meas_2theta_).\n'
@@ -199,7 +202,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                              ' specified as _pd_calib_2theta_off_point. Alternatively, a\n'
                              ' range where the offset is applicable can be specified using\n'
                              ' _pd_calib_2theta_off_min and _pd_calib_2theta_off_max.</pre>\n'
-                             '<br><p><h4>Type:</h4> number (int or float)</p>',
+                             '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                             '<br><p><h4>Limits:</h4> -180.0:180.0 </p>',
  '_pd_calib_2theta_off_point': '<pre><h2>_pd_calib_2theta_off_point</h2> _pd_calib_2theta_offset '
                                'defines an offset angle (in degrees)\n'
                                ' used to calibrate 2\\q (as defined in _pd_meas_2theta_).\n'
@@ -214,7 +218,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                                ' specified as _pd_calib_2theta_off_point. Alternatively, a\n'
                                ' range where the offset is applicable can be specified using\n'
                                ' _pd_calib_2theta_off_min and _pd_calib_2theta_off_max.</pre>\n'
-                               '<br><p><h4>Type:</h4> number (int or float)</p>',
+                               '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                               '<br><p><h4>Limits:</h4> -180.0:180.0 </p>',
  '_pd_calib_2theta_offset': '<pre><h2>_pd_calib_2theta_offset</h2> _pd_calib_2theta_offset defines '
                             'an offset angle (in degrees)\n'
                             ' used to calibrate 2\\q (as defined in _pd_meas_2theta_).\n'
@@ -229,7 +234,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                             ' specified as _pd_calib_2theta_off_point. Alternatively, a\n'
                             ' range where the offset is applicable can be specified using\n'
                             ' _pd_calib_2theta_off_min and _pd_calib_2theta_off_max.</pre>\n'
-                            '<br><p><h4>Type:</h4> number (int or float)</p>',
+                            '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                            '<br><p><h4>Limits:</h4> -180.0:180.0 </p>',
  '_pd_calib_[pd]': '<pre><h2>_pd_calib_[pd]</h2> This section defines the parameters used for the '
                    'calibration \n'
                    ' of the instrument that are used directly or indirectly in the \n'
@@ -263,7 +269,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                                 ' detector. This can compensate for differences in electronics,\n'
                                 ' size and collimation. Usually, one detector or the mean for\n'
                                 ' all detectors will be assigned the value of 1.</pre>\n'
-                                '<br><p><h4>Type:</h4> number (int or float)</p>',
+                                '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                                '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_calib_std_external_block_id': '<pre><h2>_pd_calib_std_external_block_id</h2> Identifies the '
                                     'data set used as an external standard for\n'
                                     ' the diffraction angle or the intensity calibrations.\n'
@@ -285,7 +292,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                                   ' data item _pd_calib_std_internal_name expressed as 100 times\n'
                                   ' the ratio of the amount of standard added to the original\n'
                                   ' sample mass.</pre>\n'
-                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                                  '<br><p><h4>Limits:</h4> 0.0:100.0 </p>',
  '_pd_calib_std_internal_name': '<pre><h2>_pd_calib_std_internal_name</h2> Identity of material(s) '
                                 'used as an internal intensity standard.\n'
                                 '\n'
@@ -335,7 +343,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                                 ' Note that _pd_char_atten_coef_mu_calc will differ from\n'
                                 ' _exptl_absorpt_coefficient_mu if the packing density is\n'
                                 ' not unity.</pre>\n'
-                                '<br><p><h4>Type:</h4> number (int or float)</p>',
+                                '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                                '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_char_atten_coef_mu_obs': '<pre><h2>_pd_char_atten_coef_mu_obs</h2> The observed and '
                                'calculated linear attenuation coefficient,\n'
                                ' \\m, in units of inverse millimetres. Note that this quantity\n'
@@ -351,7 +360,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                                ' Note that _pd_char_atten_coef_mu_calc will differ from\n'
                                ' _exptl_absorpt_coefficient_mu if the packing density is\n'
                                ' not unity.</pre>\n'
-                               '<br><p><h4>Type:</h4> number (int or float)</p>',
+                               '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                               '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_char_colour': '<pre><h2>_pd_char_colour</h2> The colour of the material used for the '
                     'measurement.\n'
                     ' To facilitate more standardized use of names, the\n'
@@ -473,12 +483,14 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                                   'a pre-specimen or post-specimen\n'
                                   ' monochromator (see _pd_instr_monochr_pre_spec and\n'
                                   ' _pd_instr_monochr_post_spec).</pre>\n'
-                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                                  '<br><p><h4>Limits:</h4> -180.0:180.0 </p>',
  '_pd_instr_2theta_monochr_pre': '<pre><h2>_pd_instr_2theta_monochr_pre</h2> The 2\\q angle for a '
                                  'pre-specimen or post-specimen\n'
                                  ' monochromator (see _pd_instr_monochr_pre_spec and\n'
                                  ' _pd_instr_monochr_post_spec).</pre>\n'
-                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                                 '<br><p><h4>Limits:</h4> -180.0:180.0 </p>',
  '_pd_instr_[pd]': '<pre><h2>_pd_instr_[pd]</h2> This section contains information relevant to the '
                    'instrument\n'
                    ' used for the diffraction measurement. For most laboratories,\n'
@@ -534,13 +546,15 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                            ' at the specimen position (in millimetres).\n'
                            ' The perpendicular to the plane containing the incident\n'
                            ' and scattered beam is the axial (*_ax) direction.</pre>\n'
-                           '<br><p><h4>Type:</h4> number (int or float)</p>',
+                           '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                           '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_instr_beam_size_eq': '<pre><h2>_pd_instr_beam_size_eq</h2> Axial and equatorial dimensions '
                            'of the radiation beam\n'
                            ' at the specimen position (in millimetres).\n'
                            ' The perpendicular to the plane containing the incident\n'
                            ' and scattered beam is the axial (*_ax) direction.</pre>\n'
-                           '<br><p><h4>Type:</h4> number (int or float)</p>',
+                           '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                           '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_instr_cons_illum_flag': "<pre><h2>_pd_instr_cons_illum_flag</h2> Use 'yes' for instruments "
                               'where the divergence slit is\n'
                               ' \\q-compensated to yield a constant illumination length\n'
@@ -567,7 +581,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                              ' the illuminated length of the specimen has been \n'
                              ' characterized as a function of 2\\q, most commonly true\n'
                              ' with a fixed divergence slit.</pre>\n'
-                             '<br><p><h4>Type:</h4> number (int or float)</p>',
+                             '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                             '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_instr_dist_anal/detc': '<pre><h2>_pd_instr_dist_anal/detc</h2> Specifies distances in '
                              'millimetres for the instrument geometry:\n'
                              '   *_src/mono, the distance from the radiation source\n'
@@ -587,7 +602,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                              ' *_mono/spec if there is no monochromator in use, and \n'
                              ' *_spec/detc is used in place of *_spec/anal and *_anal/detc \n'
                              ' if there is no analyser in use.</pre>\n'
-                             '<br><p><h4>Type:</h4> number (int or float)</p>',
+                             '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                             '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_instr_dist_mono/spec': '<pre><h2>_pd_instr_dist_mono/spec</h2> Specifies distances in '
                              'millimetres for the instrument geometry:\n'
                              '   *_src/mono, the distance from the radiation source\n'
@@ -607,7 +623,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                              ' *_mono/spec if there is no monochromator in use, and \n'
                              ' *_spec/detc is used in place of *_spec/anal and *_anal/detc \n'
                              ' if there is no analyser in use.</pre>\n'
-                             '<br><p><h4>Type:</h4> number (int or float)</p>',
+                             '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                             '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_instr_dist_spec/anal': '<pre><h2>_pd_instr_dist_spec/anal</h2> Specifies distances in '
                              'millimetres for the instrument geometry:\n'
                              '   *_src/mono, the distance from the radiation source\n'
@@ -627,7 +644,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                              ' *_mono/spec if there is no monochromator in use, and \n'
                              ' *_spec/detc is used in place of *_spec/anal and *_anal/detc \n'
                              ' if there is no analyser in use.</pre>\n'
-                             '<br><p><h4>Type:</h4> number (int or float)</p>',
+                             '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                             '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_instr_dist_spec/detc': '<pre><h2>_pd_instr_dist_spec/detc</h2> Specifies distances in '
                              'millimetres for the instrument geometry:\n'
                              '   *_src/mono, the distance from the radiation source\n'
@@ -647,7 +665,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                              ' *_mono/spec if there is no monochromator in use, and \n'
                              ' *_spec/detc is used in place of *_spec/anal and *_anal/detc \n'
                              ' if there is no analyser in use.</pre>\n'
-                             '<br><p><h4>Type:</h4> number (int or float)</p>',
+                             '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                             '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_instr_dist_src/mono': '<pre><h2>_pd_instr_dist_src/mono</h2> Specifies distances in '
                             'millimetres for the instrument geometry:\n'
                             '   *_src/mono, the distance from the radiation source\n'
@@ -667,7 +686,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                             ' *_mono/spec if there is no monochromator in use, and \n'
                             ' *_spec/detc is used in place of *_spec/anal and *_anal/detc \n'
                             ' if there is no analyser in use.</pre>\n'
-                            '<br><p><h4>Type:</h4> number (int or float)</p>',
+                            '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                            '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_instr_dist_src/spec': '<pre><h2>_pd_instr_dist_src/spec</h2> Specifies distances in '
                             'millimetres for the instrument geometry:\n'
                             '   *_src/mono, the distance from the radiation source\n'
@@ -687,7 +707,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                             ' *_mono/spec if there is no monochromator in use, and \n'
                             ' *_spec/detc is used in place of *_spec/anal and *_anal/detc \n'
                             ' if there is no analyser in use.</pre>\n'
-                            '<br><p><h4>Type:</h4> number (int or float)</p>',
+                            '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                            '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_instr_divg_ax_anal/detc': '<pre><h2>_pd_instr_divg_ax_anal/detc</h2> Describes collimation '
                                 'in the axial direction\n'
                                 ' (perpendicular to the plane containing the incident\n'
@@ -712,7 +733,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                                 ' *_mono/spec if there is no monochromator in use, and \n'
                                 ' *_spec/detc is used in place of *_spec/anal and *_anal/detc \n'
                                 ' if there is no analyser in use.</pre>\n'
-                                '<br><p><h4>Type:</h4> number (int or float)</p>',
+                                '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                                '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_instr_divg_ax_mono/spec': '<pre><h2>_pd_instr_divg_ax_mono/spec</h2> Describes collimation '
                                 'in the axial direction\n'
                                 ' (perpendicular to the plane containing the incident\n'
@@ -737,7 +759,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                                 ' *_mono/spec if there is no monochromator in use, and \n'
                                 ' *_spec/detc is used in place of *_spec/anal and *_anal/detc \n'
                                 ' if there is no analyser in use.</pre>\n'
-                                '<br><p><h4>Type:</h4> number (int or float)</p>',
+                                '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                                '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_instr_divg_ax_spec/anal': '<pre><h2>_pd_instr_divg_ax_spec/anal</h2> Describes collimation '
                                 'in the axial direction\n'
                                 ' (perpendicular to the plane containing the incident\n'
@@ -762,7 +785,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                                 ' *_mono/spec if there is no monochromator in use, and \n'
                                 ' *_spec/detc is used in place of *_spec/anal and *_anal/detc \n'
                                 ' if there is no analyser in use.</pre>\n'
-                                '<br><p><h4>Type:</h4> number (int or float)</p>',
+                                '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                                '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_instr_divg_ax_spec/detc': '<pre><h2>_pd_instr_divg_ax_spec/detc</h2> Describes collimation '
                                 'in the axial direction\n'
                                 ' (perpendicular to the plane containing the incident\n'
@@ -787,7 +811,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                                 ' *_mono/spec if there is no monochromator in use, and \n'
                                 ' *_spec/detc is used in place of *_spec/anal and *_anal/detc \n'
                                 ' if there is no analyser in use.</pre>\n'
-                                '<br><p><h4>Type:</h4> number (int or float)</p>',
+                                '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                                '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_instr_divg_ax_src/mono': '<pre><h2>_pd_instr_divg_ax_src/mono</h2> Describes collimation in '
                                'the axial direction\n'
                                ' (perpendicular to the plane containing the incident\n'
@@ -812,7 +837,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                                ' *_mono/spec if there is no monochromator in use, and \n'
                                ' *_spec/detc is used in place of *_spec/anal and *_anal/detc \n'
                                ' if there is no analyser in use.</pre>\n'
-                               '<br><p><h4>Type:</h4> number (int or float)</p>',
+                               '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                               '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_instr_divg_ax_src/spec': '<pre><h2>_pd_instr_divg_ax_src/spec</h2> Describes collimation in '
                                'the axial direction\n'
                                ' (perpendicular to the plane containing the incident\n'
@@ -837,7 +863,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                                ' *_mono/spec if there is no monochromator in use, and \n'
                                ' *_spec/detc is used in place of *_spec/anal and *_anal/detc \n'
                                ' if there is no analyser in use.</pre>\n'
-                               '<br><p><h4>Type:</h4> number (int or float)</p>',
+                               '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                               '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_instr_divg_eq_anal/detc': '<pre><h2>_pd_instr_divg_eq_anal/detc</h2> Describes collimation '
                                 'in the equatorial plane (the plane\n'
                                 ' containing the incident and diffracted beams) for\n'
@@ -861,7 +888,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                                 ' *_mono/spec if there is no monochromator in use, and \n'
                                 ' *_spec/detc is used in place of *_spec/anal and *_anal/detc \n'
                                 ' if there is no analyser in use.</pre>\n'
-                                '<br><p><h4>Type:</h4> number (int or float)</p>',
+                                '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                                '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_instr_divg_eq_mono/spec': '<pre><h2>_pd_instr_divg_eq_mono/spec</h2> Describes collimation '
                                 'in the equatorial plane (the plane\n'
                                 ' containing the incident and diffracted beams) for\n'
@@ -885,7 +913,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                                 ' *_mono/spec if there is no monochromator in use, and \n'
                                 ' *_spec/detc is used in place of *_spec/anal and *_anal/detc \n'
                                 ' if there is no analyser in use.</pre>\n'
-                                '<br><p><h4>Type:</h4> number (int or float)</p>',
+                                '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                                '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_instr_divg_eq_spec/anal': '<pre><h2>_pd_instr_divg_eq_spec/anal</h2> Describes collimation '
                                 'in the equatorial plane (the plane\n'
                                 ' containing the incident and diffracted beams) for\n'
@@ -909,7 +938,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                                 ' *_mono/spec if there is no monochromator in use, and \n'
                                 ' *_spec/detc is used in place of *_spec/anal and *_anal/detc \n'
                                 ' if there is no analyser in use.</pre>\n'
-                                '<br><p><h4>Type:</h4> number (int or float)</p>',
+                                '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                                '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_instr_divg_eq_spec/detc': '<pre><h2>_pd_instr_divg_eq_spec/detc</h2> Describes collimation '
                                 'in the equatorial plane (the plane\n'
                                 ' containing the incident and diffracted beams) for\n'
@@ -933,7 +963,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                                 ' *_mono/spec if there is no monochromator in use, and \n'
                                 ' *_spec/detc is used in place of *_spec/anal and *_anal/detc \n'
                                 ' if there is no analyser in use.</pre>\n'
-                                '<br><p><h4>Type:</h4> number (int or float)</p>',
+                                '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                                '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_instr_divg_eq_src/mono': '<pre><h2>_pd_instr_divg_eq_src/mono</h2> Describes collimation in '
                                'the equatorial plane (the plane\n'
                                ' containing the incident and diffracted beams) for\n'
@@ -957,7 +988,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                                ' *_mono/spec if there is no monochromator in use, and \n'
                                ' *_spec/detc is used in place of *_spec/anal and *_anal/detc \n'
                                ' if there is no analyser in use.</pre>\n'
-                               '<br><p><h4>Type:</h4> number (int or float)</p>',
+                               '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                               '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_instr_divg_eq_src/spec': '<pre><h2>_pd_instr_divg_eq_src/spec</h2> Describes collimation in '
                                'the equatorial plane (the plane\n'
                                ' containing the incident and diffracted beams) for\n'
@@ -981,7 +1013,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                                ' *_mono/spec if there is no monochromator in use, and \n'
                                ' *_spec/detc is used in place of *_spec/anal and *_anal/detc \n'
                                ' if there is no analyser in use.</pre>\n'
-                               '<br><p><h4>Type:</h4> number (int or float)</p>',
+                               '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                               '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_instr_geometry': '<pre><h2>_pd_instr_geometry</h2> A description of the diffractometer type '
                        'or geometry.\n'
                        '\n'
@@ -1084,7 +1117,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                                 ' *_mono/spec if there is no monochromator in use, and \n'
                                 ' *_spec/detc is used in place of *_spec/anal and *_anal/detc \n'
                                 ' if there is no analyser in use.</pre>\n'
-                                '<br><p><h4>Type:</h4> number (int or float)</p>',
+                                '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                                '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_instr_slit_ax_mono/spec': '<pre><h2>_pd_instr_slit_ax_mono/spec</h2> Describes collimation '
                                 'in the axial direction\n'
                                 ' (perpendicular to the plane containing the incident\n'
@@ -1108,7 +1142,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                                 ' *_mono/spec if there is no monochromator in use, and \n'
                                 ' *_spec/detc is used in place of *_spec/anal and *_anal/detc \n'
                                 ' if there is no analyser in use.</pre>\n'
-                                '<br><p><h4>Type:</h4> number (int or float)</p>',
+                                '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                                '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_instr_slit_ax_spec/anal': '<pre><h2>_pd_instr_slit_ax_spec/anal</h2> Describes collimation '
                                 'in the axial direction\n'
                                 ' (perpendicular to the plane containing the incident\n'
@@ -1132,7 +1167,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                                 ' *_mono/spec if there is no monochromator in use, and \n'
                                 ' *_spec/detc is used in place of *_spec/anal and *_anal/detc \n'
                                 ' if there is no analyser in use.</pre>\n'
-                                '<br><p><h4>Type:</h4> number (int or float)</p>',
+                                '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                                '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_instr_slit_ax_spec/detc': '<pre><h2>_pd_instr_slit_ax_spec/detc</h2> Describes collimation '
                                 'in the axial direction\n'
                                 ' (perpendicular to the plane containing the incident\n'
@@ -1156,7 +1192,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                                 ' *_mono/spec if there is no monochromator in use, and \n'
                                 ' *_spec/detc is used in place of *_spec/anal and *_anal/detc \n'
                                 ' if there is no analyser in use.</pre>\n'
-                                '<br><p><h4>Type:</h4> number (int or float)</p>',
+                                '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                                '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_instr_slit_ax_src/mono': '<pre><h2>_pd_instr_slit_ax_src/mono</h2> Describes collimation in '
                                'the axial direction\n'
                                ' (perpendicular to the plane containing the incident\n'
@@ -1180,7 +1217,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                                ' *_mono/spec if there is no monochromator in use, and \n'
                                ' *_spec/detc is used in place of *_spec/anal and *_anal/detc \n'
                                ' if there is no analyser in use.</pre>\n'
-                               '<br><p><h4>Type:</h4> number (int or float)</p>',
+                               '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                               '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_instr_slit_ax_src/spec': '<pre><h2>_pd_instr_slit_ax_src/spec</h2> Describes collimation in '
                                'the axial direction\n'
                                ' (perpendicular to the plane containing the incident\n'
@@ -1204,7 +1242,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                                ' *_mono/spec if there is no monochromator in use, and \n'
                                ' *_spec/detc is used in place of *_spec/anal and *_anal/detc \n'
                                ' if there is no analyser in use.</pre>\n'
-                               '<br><p><h4>Type:</h4> number (int or float)</p>',
+                               '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                               '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_instr_slit_eq_anal/detc': '<pre><h2>_pd_instr_slit_eq_anal/detc</h2> Describes collimation '
                                 'in the equatorial plane (the plane\n'
                                 ' containing the incident and diffracted beams) for the\n'
@@ -1227,7 +1266,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                                 ' *_mono/spec if there is no monochromator in use, and \n'
                                 ' *_spec/detc is used in place of *_spec/anal and \n'
                                 ' *_anal/detc if there is no analyser in use.</pre>\n'
-                                '<br><p><h4>Type:</h4> number (int or float)</p>',
+                                '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                                '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_instr_slit_eq_mono/spec': '<pre><h2>_pd_instr_slit_eq_mono/spec</h2> Describes collimation '
                                 'in the equatorial plane (the plane\n'
                                 ' containing the incident and diffracted beams) for the\n'
@@ -1250,7 +1290,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                                 ' *_mono/spec if there is no monochromator in use, and \n'
                                 ' *_spec/detc is used in place of *_spec/anal and \n'
                                 ' *_anal/detc if there is no analyser in use.</pre>\n'
-                                '<br><p><h4>Type:</h4> number (int or float)</p>',
+                                '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                                '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_instr_slit_eq_spec/anal': '<pre><h2>_pd_instr_slit_eq_spec/anal</h2> Describes collimation '
                                 'in the equatorial plane (the plane\n'
                                 ' containing the incident and diffracted beams) for the\n'
@@ -1273,7 +1314,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                                 ' *_mono/spec if there is no monochromator in use, and \n'
                                 ' *_spec/detc is used in place of *_spec/anal and \n'
                                 ' *_anal/detc if there is no analyser in use.</pre>\n'
-                                '<br><p><h4>Type:</h4> number (int or float)</p>',
+                                '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                                '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_instr_slit_eq_spec/detc': '<pre><h2>_pd_instr_slit_eq_spec/detc</h2> Describes collimation '
                                 'in the equatorial plane (the plane\n'
                                 ' containing the incident and diffracted beams) for the\n'
@@ -1296,7 +1338,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                                 ' *_mono/spec if there is no monochromator in use, and \n'
                                 ' *_spec/detc is used in place of *_spec/anal and \n'
                                 ' *_anal/detc if there is no analyser in use.</pre>\n'
-                                '<br><p><h4>Type:</h4> number (int or float)</p>',
+                                '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                                '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_instr_slit_eq_src/mono': '<pre><h2>_pd_instr_slit_eq_src/mono</h2> Describes collimation in '
                                'the equatorial plane (the plane\n'
                                ' containing the incident and diffracted beams) for the\n'
@@ -1319,7 +1362,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                                ' *_mono/spec if there is no monochromator in use, and \n'
                                ' *_spec/detc is used in place of *_spec/anal and \n'
                                ' *_anal/detc if there is no analyser in use.</pre>\n'
-                               '<br><p><h4>Type:</h4> number (int or float)</p>',
+                               '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                               '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_instr_slit_eq_src/spec': '<pre><h2>_pd_instr_slit_eq_src/spec</h2> Describes collimation in '
                                'the equatorial plane (the plane\n'
                                ' containing the incident and diffracted beams) for the\n'
@@ -1342,7 +1386,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                                ' *_mono/spec if there is no monochromator in use, and \n'
                                ' *_spec/detc is used in place of *_spec/anal and \n'
                                ' *_anal/detc if there is no analyser in use.</pre>\n'
-                               '<br><p><h4>Type:</h4> number (int or float)</p>',
+                               '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                               '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_instr_soller_ax_anal/detc': '<pre><h2>_pd_instr_soller_ax_anal/detc</h2> Describes '
                                   'collimation in the axial direction\n'
                                   ' (perpendicular to the plane containing the incident\n'
@@ -1366,7 +1411,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                                   ' *_mono/spec if there is no monochromator in use, and \n'
                                   ' *_spec/detc is used in place of *_spec/anal and \n'
                                   ' *_anal/detc if there is no analyser in use.</pre>\n'
-                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                                  '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_instr_soller_ax_mono/spec': '<pre><h2>_pd_instr_soller_ax_mono/spec</h2> Describes '
                                   'collimation in the axial direction\n'
                                   ' (perpendicular to the plane containing the incident\n'
@@ -1390,7 +1436,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                                   ' *_mono/spec if there is no monochromator in use, and \n'
                                   ' *_spec/detc is used in place of *_spec/anal and \n'
                                   ' *_anal/detc if there is no analyser in use.</pre>\n'
-                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                                  '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_instr_soller_ax_spec/anal': '<pre><h2>_pd_instr_soller_ax_spec/anal</h2> Describes '
                                   'collimation in the axial direction\n'
                                   ' (perpendicular to the plane containing the incident\n'
@@ -1414,7 +1461,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                                   ' *_mono/spec if there is no monochromator in use, and \n'
                                   ' *_spec/detc is used in place of *_spec/anal and \n'
                                   ' *_anal/detc if there is no analyser in use.</pre>\n'
-                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                                  '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_instr_soller_ax_spec/detc': '<pre><h2>_pd_instr_soller_ax_spec/detc</h2> Describes '
                                   'collimation in the axial direction\n'
                                   ' (perpendicular to the plane containing the incident\n'
@@ -1438,7 +1486,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                                   ' *_mono/spec if there is no monochromator in use, and \n'
                                   ' *_spec/detc is used in place of *_spec/anal and \n'
                                   ' *_anal/detc if there is no analyser in use.</pre>\n'
-                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                                  '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_instr_soller_ax_src/mono': '<pre><h2>_pd_instr_soller_ax_src/mono</h2> Describes collimation '
                                  'in the axial direction\n'
                                  ' (perpendicular to the plane containing the incident\n'
@@ -1462,7 +1511,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                                  ' *_mono/spec if there is no monochromator in use, and \n'
                                  ' *_spec/detc is used in place of *_spec/anal and \n'
                                  ' *_anal/detc if there is no analyser in use.</pre>\n'
-                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                                 '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_instr_soller_ax_src/spec': '<pre><h2>_pd_instr_soller_ax_src/spec</h2> Describes collimation '
                                  'in the axial direction\n'
                                  ' (perpendicular to the plane containing the incident\n'
@@ -1486,7 +1536,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                                  ' *_mono/spec if there is no monochromator in use, and \n'
                                  ' *_spec/detc is used in place of *_spec/anal and \n'
                                  ' *_anal/detc if there is no analyser in use.</pre>\n'
-                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                                 '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_instr_soller_eq_anal/detc': '<pre><h2>_pd_instr_soller_eq_anal/detc</h2> Describes '
                                   'collimation in the equatorial plane (the plane\n'
                                   ' containing the incident and diffracted beams) for\n'
@@ -1509,7 +1560,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                                   ' *_mono/spec if there is no monochromator in use, and \n'
                                   ' *_spec/detc is used in place of *_spec/anal and \n'
                                   ' *_anal/detc if there is no analyser in use.</pre>\n'
-                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                                  '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_instr_soller_eq_mono/spec': '<pre><h2>_pd_instr_soller_eq_mono/spec</h2> Describes '
                                   'collimation in the equatorial plane (the plane\n'
                                   ' containing the incident and diffracted beams) for\n'
@@ -1532,7 +1584,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                                   ' *_mono/spec if there is no monochromator in use, and \n'
                                   ' *_spec/detc is used in place of *_spec/anal and \n'
                                   ' *_anal/detc if there is no analyser in use.</pre>\n'
-                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                                  '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_instr_soller_eq_spec/anal': '<pre><h2>_pd_instr_soller_eq_spec/anal</h2> Describes '
                                   'collimation in the equatorial plane (the plane\n'
                                   ' containing the incident and diffracted beams) for\n'
@@ -1555,7 +1608,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                                   ' *_mono/spec if there is no monochromator in use, and \n'
                                   ' *_spec/detc is used in place of *_spec/anal and \n'
                                   ' *_anal/detc if there is no analyser in use.</pre>\n'
-                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                                  '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_instr_soller_eq_spec/detc': '<pre><h2>_pd_instr_soller_eq_spec/detc</h2> Describes '
                                   'collimation in the equatorial plane (the plane\n'
                                   ' containing the incident and diffracted beams) for\n'
@@ -1578,7 +1632,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                                   ' *_mono/spec if there is no monochromator in use, and \n'
                                   ' *_spec/detc is used in place of *_spec/anal and \n'
                                   ' *_anal/detc if there is no analyser in use.</pre>\n'
-                                  '<br><p><h4>Type:</h4> number (int or float)</p>',
+                                  '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                                  '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_instr_soller_eq_src/mono': '<pre><h2>_pd_instr_soller_eq_src/mono</h2> Describes collimation '
                                  'in the equatorial plane (the plane\n'
                                  ' containing the incident and diffracted beams) for\n'
@@ -1601,7 +1656,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                                  ' *_mono/spec if there is no monochromator in use, and \n'
                                  ' *_spec/detc is used in place of *_spec/anal and \n'
                                  ' *_anal/detc if there is no analyser in use.</pre>\n'
-                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                                 '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_instr_soller_eq_src/spec': '<pre><h2>_pd_instr_soller_eq_src/spec</h2> Describes collimation '
                                  'in the equatorial plane (the plane\n'
                                  ' containing the incident and diffracted beams) for\n'
@@ -1624,19 +1680,22 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                                  ' *_mono/spec if there is no monochromator in use, and \n'
                                  ' *_spec/detc is used in place of *_spec/anal and \n'
                                  ' *_anal/detc if there is no analyser in use.</pre>\n'
-                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                                 '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_instr_source_size_ax': '<pre><h2>_pd_instr_source_size_ax</h2> Axial and equatorial '
                              'intrinsic dimensions\n'
                              ' of the radiation source (in millimetres).\n'
                              ' The perpendicular to the plane containing the incident\n'
                              ' and scattered beam is the axial (*_ax) direction.</pre>\n'
-                             '<br><p><h4>Type:</h4> number (int or float)</p>',
+                             '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                             '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_instr_source_size_eq': '<pre><h2>_pd_instr_source_size_eq</h2> Axial and equatorial '
                              'intrinsic dimensions\n'
                              ' of the radiation source (in millimetres).\n'
                              ' The perpendicular to the plane containing the incident\n'
                              ' and scattered beam is the axial (*_ax) direction.</pre>\n'
-                             '<br><p><h4>Type:</h4> number (int or float)</p>',
+                             '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                             '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_instr_special_details': '<pre><h2>_pd_instr_special_details</h2> A brief description of the '
                               'instrument giving\n'
                               ' details that cannot be given in other\n'
@@ -1653,31 +1712,36 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                             ' See _pd_instr_cons_illum_len for instruments where\n'
                             ' the divergence slit is \\q-compensated to yield a\n'
                             ' constant illumination length.</pre>\n'
-                            '<br><p><h4>Type:</h4> number (int or float)</p>',
+                            '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                            '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_meas_2theta_fixed': '<pre><h2>_pd_meas_2theta_fixed</h2> The 2\\q diffraction angle in '
                           'degrees for measurements\n'
                           ' in a white-beam fixed-angle experiment. For measurements\n'
                           ' where 2\\q is scanned, see _pd_meas_2theta_scan or\n'
                           ' _pd_meas_2theta_range_.</pre>\n'
-                          '<br><p><h4>Type:</h4> number (int or float)</p>',
+                          '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                          '<br><p><h4>Limits:</h4> -180.0:360.0 </p>',
  '_pd_meas_2theta_range_inc': '<pre><h2>_pd_meas_2theta_range_inc</h2> The range of 2\\q '
                               'diffraction angles in degrees for the\n'
                               ' measurement of intensities. These may be used in place of the\n'
                               ' _pd_meas_2theta_scan values for data sets measured with a\n'
                               ' constant step size.</pre>\n'
-                              '<br><p><h4>Type:</h4> number (int or float)</p>',
+                              '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                              '<br><p><h4>Limits:</h4> -180.0:360.0 </p>',
  '_pd_meas_2theta_range_max': '<pre><h2>_pd_meas_2theta_range_max</h2> The range of 2\\q '
                               'diffraction angles in degrees for the\n'
                               ' measurement of intensities. These may be used in place of the\n'
                               ' _pd_meas_2theta_scan values for data sets measured with a\n'
                               ' constant step size.</pre>\n'
-                              '<br><p><h4>Type:</h4> number (int or float)</p>',
+                              '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                              '<br><p><h4>Limits:</h4> -180.0:360.0 </p>',
  '_pd_meas_2theta_range_min': '<pre><h2>_pd_meas_2theta_range_min</h2> The range of 2\\q '
                               'diffraction angles in degrees for the\n'
                               ' measurement of intensities. These may be used in place of the\n'
                               ' _pd_meas_2theta_scan values for data sets measured with a\n'
                               ' constant step size.</pre>\n'
-                              '<br><p><h4>Type:</h4> number (int or float)</p>',
+                              '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                              '<br><p><h4>Limits:</h4> -180.0:360.0 </p>',
  '_pd_meas_2theta_scan': '<pre><h2>_pd_meas_2theta_scan</h2> 2\\q diffraction angle (in degrees) '
                          'for intensity\n'
                          ' points measured in a scanning method. The scan method used\n'
@@ -1695,7 +1759,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                          ' Note that for data sets collected with constant step size,\n'
                          ' _pd_meas_2theta_range_ (*_min, *_max and *_inc) may be\n'
                          ' used instead of _pd_meas_2theta_scan.</pre>\n'
-                         '<br><p><h4>Type:</h4> number (int or float)</p>',
+                         '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                         '<br><p><h4>Limits:</h4> -180.0:360.0 </p>',
  '_pd_meas_[pd]': '<pre><h2>_pd_meas_[pd]</h2> This section contains the measured diffractogram '
                   'and information\n'
                   ' about the conditions used for the measurement of the diffraction \n'
@@ -1736,25 +1801,29 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                           ' Euler circle. The definitions for these angles follow the\n'
                           ' convention of International Tables for X-ray Crystallography\n'
                           ' (1974), Vol. IV, p. 276.</pre>\n'
-                          '<br><p><h4>Type:</h4> number (int or float)</p>',
+                          '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                          '<br><p><h4>Limits:</h4> -180.0:360.0 </p>',
  '_pd_meas_angle_chi': '<pre><h2>_pd_meas_angle_chi</h2> The diffractometer angles in degrees for '
                        'an instrument with a\n'
                        ' Euler circle. The definitions for these angles follow the\n'
                        ' convention of International Tables for X-ray Crystallography\n'
                        ' (1974), Vol. IV, p. 276.</pre>\n'
-                       '<br><p><h4>Type:</h4> number (int or float)</p>',
+                       '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                       '<br><p><h4>Limits:</h4> -180.0:360.0 </p>',
  '_pd_meas_angle_omega': '<pre><h2>_pd_meas_angle_omega</h2> The diffractometer angles in degrees '
                          'for an instrument with a\n'
                          ' Euler circle. The definitions for these angles follow the\n'
                          ' convention of International Tables for X-ray Crystallography\n'
                          ' (1974), Vol. IV, p. 276.</pre>\n'
-                         '<br><p><h4>Type:</h4> number (int or float)</p>',
+                         '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                         '<br><p><h4>Limits:</h4> -180.0:360.0 </p>',
  '_pd_meas_angle_phi': '<pre><h2>_pd_meas_angle_phi</h2> The diffractometer angles in degrees for '
                        'an instrument with a\n'
                        ' Euler circle. The definitions for these angles follow the\n'
                        ' convention of International Tables for X-ray Crystallography\n'
                        ' (1974), Vol. IV, p. 276.</pre>\n'
-                       '<br><p><h4>Type:</h4> number (int or float)</p>',
+                       '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                       '<br><p><h4>Limits:</h4> -180.0:360.0 </p>',
  '_pd_meas_counts_background': '<pre><h2>_pd_meas_counts_background</h2> Counts measured at the '
                                'measurement point as a function of\n'
                                ' angle, time, channel or some other variable (see\n'
@@ -1785,7 +1854,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                                ' Standard uncertainties should not be quoted for these values.\n'
                                ' If the standard uncertainties differ from the square root of\n'
                                ' the number of counts, _pd_meas_intensity_ should be used.</pre>\n'
-                               '<br><p><h4>Type:</h4> number (int or float)</p>',
+                               '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                               '<br><p><h4>Limits:</h4> 0:∞ </p>',
  '_pd_meas_counts_container': '<pre><h2>_pd_meas_counts_container</h2> Counts measured at the '
                               'measurement point as a function of\n'
                               ' angle, time, channel or some other variable (see\n'
@@ -1816,7 +1886,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                               ' Standard uncertainties should not be quoted for these values.\n'
                               ' If the standard uncertainties differ from the square root of\n'
                               ' the number of counts, _pd_meas_intensity_ should be used.</pre>\n'
-                              '<br><p><h4>Type:</h4> number (int or float)</p>',
+                              '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                              '<br><p><h4>Limits:</h4> 0:∞ </p>',
  '_pd_meas_counts_monitor': '<pre><h2>_pd_meas_counts_monitor</h2> Counts measured at the '
                             'measurement point as a function of\n'
                             ' angle, time, channel or some other variable (see\n'
@@ -1847,7 +1918,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                             ' Standard uncertainties should not be quoted for these values.\n'
                             ' If the standard uncertainties differ from the square root of\n'
                             ' the number of counts, _pd_meas_intensity_ should be used.</pre>\n'
-                            '<br><p><h4>Type:</h4> number (int or float)</p>',
+                            '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                            '<br><p><h4>Limits:</h4> 0:∞ </p>',
  '_pd_meas_counts_total': '<pre><h2>_pd_meas_counts_total</h2> Counts measured at the measurement '
                           'point as a function of\n'
                           ' angle, time, channel or some other variable (see\n'
@@ -1878,7 +1950,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                           ' Standard uncertainties should not be quoted for these values.\n'
                           ' If the standard uncertainties differ from the square root of\n'
                           ' the number of counts, _pd_meas_intensity_ should be used.</pre>\n'
-                          '<br><p><h4>Type:</h4> number (int or float)</p>',
+                          '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                          '<br><p><h4>Limits:</h4> 0:∞ </p>',
  '_pd_meas_datetime_initiated': '<pre><h2>_pd_meas_datetime_initiated</h2> The date and time of '
                                 'the data-set measurement. Entries follow\n'
                                 " the standard CIF format 'yyyy-mm-ddThh:mm:ss+zz'. Use\n"
@@ -2051,7 +2124,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
  '_pd_meas_number_of_points': '<pre><h2>_pd_meas_number_of_points</h2> The total number of points '
                               'in the measured\n'
                               ' diffractogram.</pre>\n'
-                              '<br><p><h4>Type:</h4> number (int or float)</p>',
+                              '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                              '<br><p><h4>Limits:</h4> 1:∞ </p>',
  '_pd_meas_point_id': '<pre><h2>_pd_meas_point_id</h2> Arbitrary label identifying a measured data '
                       'point. Used to\n'
                       ' identify a specific entry in a list of measured intensities.\n'
@@ -2082,7 +2156,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                            'through which a sample is rotated\n'
                            ' or oscillated during a measurement step\n'
                            ' (see _pd_meas_rocking_axis).</pre>\n'
-                           '<br><p><h4>Type:</h4> number (int or float)</p>',
+                           '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                           '<br><p><h4>Limits:</h4> 0:360.0 </p>',
  '_pd_meas_rocking_axis': '<pre><h2>_pd_meas_rocking_axis</h2> Description of the axis (or axes) '
                           'used to rotate or rock the\n'
                           ' specimen for better randomization of crystallites\n'
@@ -2129,12 +2204,14 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                              ' then this item will be placed in the loop with the\n'
                              ' diffraction measurements. If a single fixed value is used,\n'
                              ' it may be recorded outside the loop.</pre>\n'
-                             '<br><p><h4>Type:</h4> number (int or float)</p>',
+                             '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                             '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_meas_time_of_flight': '<pre><h2>_pd_meas_time_of_flight</h2> Measured time in microseconds '
                             'for time-of-flight neutron\n'
                             ' measurements. Note that the flight distance may be\n'
                             ' specified using _pd_instr_dist_ values.</pre>\n'
-                            '<br><p><h4>Type:</h4> number (int or float)</p>',
+                            '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                            '<br><p><h4>Limits:</h4> 0:∞ </p>',
  '_pd_meas_units_of_intensity': '<pre><h2>_pd_meas_units_of_intensity</h2> Units for intensity '
                                 'measurements when _pd_meas_intensity_\n'
                                 " is used. Note that use of 'counts' or 'counts per second'\n"
@@ -2150,11 +2227,13 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
  '_pd_peak_2theta_centroid': '<pre><h2>_pd_peak_2theta_centroid</h2> Position of the centroid and '
                              'maximum of a peak as a\n'
                              ' 2\\q angle in degrees.</pre>\n'
-                             '<br><p><h4>Type:</h4> number (int or float)</p>',
+                             '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                             '<br><p><h4>Limits:</h4> 0.0:180.0 </p>',
  '_pd_peak_2theta_maximum': '<pre><h2>_pd_peak_2theta_maximum</h2> Position of the centroid and '
                             'maximum of a peak as a\n'
                             ' 2\\q angle in degrees.</pre>\n'
-                            '<br><p><h4>Type:</h4> number (int or float)</p>',
+                            '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                            '<br><p><h4>Limits:</h4> 0.0:180.0 </p>',
  '_pd_peak_[pd]': '<pre><h2>_pd_peak_[pd]</h2> This section contains peak information extracted '
                   'from the\n'
                   ' measured or, if present, the processed diffractogram. Each\n'
@@ -2169,7 +2248,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                   '<br><p><h4>Type:</h4> ? (unknown)</p>',
  '_pd_peak_d_spacing': '<pre><h2>_pd_peak_d_spacing</h2> Peak position as a d-spacing in '
                        'angstroms.</pre>\n'
-                       '<br><p><h4>Type:</h4> number (int or float)</p>',
+                       '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                       '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_peak_id': '<pre><h2>_pd_peak_id</h2> An arbitrary code is assigned to each peak. Used to '
                 'link with\n'
                 ' _pd_refln_peak_id so that multiple hkl and/or phase\n'
@@ -2184,13 +2264,15 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                        'same scaling as\n'
                        ' the _pd_proc_intensity_ values. It is good practice to\n'
                        " include s.u.'s for these values.</pre>\n"
-                       '<br><p><h4>Type:</h4> number (int or float)</p>',
+                       '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                       '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_peak_pk_height': '<pre><h2>_pd_peak_pk_height</h2> The maximum intensity of the peak, either '
                        'extrapolated\n'
                        ' or the highest observed intensity value. The same\n'
                        ' scaling is used for the _pd_proc_intensity_ values.\n'
                        " It is good practice to include s.u.'s for these values.</pre>\n"
-                       '<br><p><h4>Type:</h4> number (int or float)</p>',
+                       '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                       '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_peak_special_details': '<pre><h2>_pd_peak_special_details</h2> Detailed description of any '
                              'non-routine processing steps\n'
                              ' used for peak determination or other comments\n'
@@ -2210,11 +2292,13 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
  '_pd_peak_width_2theta': '<pre><h2>_pd_peak_width_2theta</h2> Peak width as full-width at '
                           'half-maximum expressed as\n'
                           ' a 2\\q value in degrees.</pre>\n'
-                          '<br><p><h4>Type:</h4> number (int or float)</p>',
+                          '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                          '<br><p><h4>Limits:</h4> 0.0:180.0 </p>',
  '_pd_peak_width_d_spacing': '<pre><h2>_pd_peak_width_d_spacing</h2> Peak width as full-width at '
                              'half-maximum expressed as\n'
                              ' a d-spacing in angstroms.</pre>\n'
-                             '<br><p><h4>Type:</h4> number (int or float)</p>',
+                             '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                             '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_phase_[pd]': '<pre><h2>_pd_phase_[pd]</h2> This section contains a description of the '
                    'crystalline phases\n'
                    ' contributing to the powder diffraction data set. Note that if\n'
@@ -2241,7 +2325,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                      'phase\n'
                      ' expressed as the total mass of the component\n'
                      ' with respect to the total mass of the specimen.</pre>\n'
-                     '<br><p><h4>Type:</h4> number (int or float)</p>',
+                     '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                     '<br><p><h4>Limits:</h4> 0.0:100.0 </p>',
  '_pd_phase_name': '<pre><h2>_pd_phase_name</h2> The name of the crystal phase identified by '
                    '_pd_phase_id.\n'
                    ' It may be designated as unknown or by a structure type etc.</pre>\n'
@@ -2259,17 +2344,20 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                        ' at high temperatures. If the cooling rate is not linear\n'
                        ' or is unknown (e.g. quenched samples), it should be\n'
                        ' described in _pd_prep_conditions instead.</pre>\n'
-                       '<br><p><h4>Type:</h4> number (int or float)</p>',
+                       '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                       '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_prep_pressure': '<pre><h2>_pd_prep_pressure</h2> Preparation pressure of the sample in '
                       'kilopascals. This\n'
                       ' is particularly important for materials which are metastable\n'
                       ' at the measurement pressure, _diffrn_ambient_pressure.</pre>\n'
-                      '<br><p><h4>Type:</h4> number (int or float)</p>',
+                      '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                      '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_prep_temperature': '<pre><h2>_pd_prep_temperature</h2> Preparation temperature of the sample '
                          'in kelvins. This is\n'
                          ' particularly important for materials which are metastable\n'
                          ' at the measurement temperature, _diffrn_ambient_temperature.</pre>\n'
-                         '<br><p><h4>Type:</h4> number (int or float)</p>',
+                         '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                         '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_proc_2theta_corrected': '<pre><h2>_pd_proc_2theta_corrected</h2> The 2\\q diffraction angle '
                               'in degrees of an intensity\n'
                               ' measurement where 2\\q is not constant. Used if\n'
@@ -2279,25 +2367,29 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                               ' are evenly spaced, _pd_proc_2theta_range_min,\n'
                               ' _pd_proc_2theta_range_max and _pd_proc_2theta_range_inc\n'
                               ' may be used to specify the 2\\q values.</pre>\n'
-                              '<br><p><h4>Type:</h4> number (int or float)</p>',
+                              '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                              '<br><p><h4>Limits:</h4> -180.0:180.0 </p>',
  '_pd_proc_2theta_range_inc': '<pre><h2>_pd_proc_2theta_range_inc</h2> The range of 2\\q '
                               'diffraction angles in degrees for the\n'
                               ' measurement of intensities. These may be used in place of the\n'
                               ' _pd_proc_2theta_corrected values, or in the case of white-beam\n'
                               ' experiments it will define the fixed 2\\q value.</pre>\n'
-                              '<br><p><h4>Type:</h4> number (int or float)</p>',
+                              '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                              '<br><p><h4>Limits:</h4> -180.0:180.0 </p>',
  '_pd_proc_2theta_range_max': '<pre><h2>_pd_proc_2theta_range_max</h2> The range of 2\\q '
                               'diffraction angles in degrees for the\n'
                               ' measurement of intensities. These may be used in place of the\n'
                               ' _pd_proc_2theta_corrected values, or in the case of white-beam\n'
                               ' experiments it will define the fixed 2\\q value.</pre>\n'
-                              '<br><p><h4>Type:</h4> number (int or float)</p>',
+                              '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                              '<br><p><h4>Limits:</h4> -180.0:180.0 </p>',
  '_pd_proc_2theta_range_min': '<pre><h2>_pd_proc_2theta_range_min</h2> The range of 2\\q '
                               'diffraction angles in degrees for the\n'
                               ' measurement of intensities. These may be used in place of the\n'
                               ' _pd_proc_2theta_corrected values, or in the case of white-beam\n'
                               ' experiments it will define the fixed 2\\q value.</pre>\n'
-                              '<br><p><h4>Type:</h4> number (int or float)</p>',
+                              '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                              '<br><p><h4>Limits:</h4> -180.0:180.0 </p>',
  '_pd_proc_[pd]': '<pre><h2>_pd_proc_[pd]</h2> This section contains the diffraction data set '
                   'after processing\n'
                   ' and application of correction terms. If the data set is\n'
@@ -2307,7 +2399,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
  '_pd_proc_d_spacing': '<pre><h2>_pd_proc_d_spacing</h2> d-spacing corresponding to an intensity '
                        'point\n'
                        " from Bragg's law, d = \\l/(2 sin\\q), in units of angstroms.</pre>\n"
-                       '<br><p><h4>Type:</h4> number (int or float)</p>',
+                       '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                       '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_proc_energy_detection': '<pre><h2>_pd_proc_energy_detection</h2> Incident energy in '
                               'electronvolts of the source computed\n'
                               ' from secondary calibration information (time-of-flight\n'
@@ -2317,7 +2410,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                               ' energy-dispersive data). This may be a single value or may \n'
                               ' vary for each data point (triple-axis and time-of-flight '
                               'data).</pre>\n'
-                              '<br><p><h4>Type:</h4> number (int or float)</p>',
+                              '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                              '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_proc_energy_incident': '<pre><h2>_pd_proc_energy_incident</h2> Incident energy in '
                              'electronvolts of the source computed\n'
                              ' from secondary calibration information (time-of-flight\n'
@@ -2327,7 +2421,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                              ' energy-dispersive data). This may be a single value or may \n'
                              ' vary for each data point (triple-axis and time-of-flight '
                              'data).</pre>\n'
-                             '<br><p><h4>Type:</h4> number (int or float)</p>',
+                             '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                             '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_proc_info_author_address': '<pre><h2>_pd_proc_info_author_address</h2>  The address of the '
                                  'person who processed the data.\n'
                                  '  If there is more than one person, this will be looped with\n'
@@ -2443,7 +2538,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                                 ' counting time) may be specified in _pd_proc_intensity_norm.\n'
                                 ' The function should be specified as the one used to divide the\n'
                                 ' measured intensities.</pre>\n'
-                                '<br><p><h4>Type:</h4> number (int or float)</p>',
+                                '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                                '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_proc_intensity_bkg_fix': '<pre><h2>_pd_proc_intensity_bkg_fix</h2> _pd_proc_intensity_net '
                                'contains intensity values for the\n'
                                ' processed diffractogram for each data point (see\n'
@@ -2497,7 +2593,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                                ' counting time) may be specified in _pd_proc_intensity_norm.\n'
                                ' The function should be specified as the one used to divide the\n'
                                ' measured intensities.</pre>\n'
-                               '<br><p><h4>Type:</h4> number (int or float)</p>',
+                               '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                               '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_proc_intensity_incident': '<pre><h2>_pd_proc_intensity_incident</h2> _pd_proc_intensity_net '
                                 'contains intensity values for the\n'
                                 ' processed diffractogram for each data point (see\n'
@@ -2551,7 +2648,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                                 ' counting time) may be specified in _pd_proc_intensity_norm.\n'
                                 ' The function should be specified as the one used to divide the\n'
                                 ' measured intensities.</pre>\n'
-                                '<br><p><h4>Type:</h4> number (int or float)</p>',
+                                '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                                '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_proc_intensity_net': '<pre><h2>_pd_proc_intensity_net</h2> _pd_proc_intensity_net contains '
                            'intensity values for the\n'
                            ' processed diffractogram for each data point (see\n'
@@ -2604,7 +2702,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                            ' counting time) may be specified in _pd_proc_intensity_norm.\n'
                            ' The function should be specified as the one used to divide the\n'
                            ' measured intensities.</pre>\n'
-                           '<br><p><h4>Type:</h4> number (int or float)</p>',
+                           '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                           '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_proc_intensity_norm': '<pre><h2>_pd_proc_intensity_norm</h2> _pd_proc_intensity_net contains '
                             'intensity values for the\n'
                             ' processed diffractogram for each data point (see\n'
@@ -2657,7 +2756,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                             ' counting time) may be specified in _pd_proc_intensity_norm.\n'
                             ' The function should be specified as the one used to divide the\n'
                             ' measured intensities.</pre>\n'
-                            '<br><p><h4>Type:</h4> number (int or float)</p>',
+                            '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                            '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_proc_intensity_total': '<pre><h2>_pd_proc_intensity_total</h2> _pd_proc_intensity_net '
                              'contains intensity values for the\n'
                              ' processed diffractogram for each data point (see\n'
@@ -2710,7 +2810,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                              ' counting time) may be specified in _pd_proc_intensity_norm.\n'
                              ' The function should be specified as the one used to divide the\n'
                              ' measured intensities.</pre>\n'
-                             '<br><p><h4>Type:</h4> number (int or float)</p>',
+                             '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                             '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_proc_ls_[pd]': '<pre><h2>_pd_proc_ls_[pd]</h2> This section is used to define parameters '
                      'relevant to a\n'
                      ' least-squares fit to a powder diffractogram, using a Rietveld\n'
@@ -2825,7 +2926,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                               '          _pd_proc_number_of_points) less the number of\n'
                               '          data points excluded from the refinement.\n'
                               '     p is the total number of refined parameters.</pre>\n'
-                              '<br><p><h4>Type:</h4> number (int or float)</p>',
+                              '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                              '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_proc_ls_prof_wR_expected': '<pre><h2>_pd_proc_ls_prof_wR_expected</h2> Rietveld/profile fit '
                                  'R factors.\n'
                                  '\n'
@@ -2881,7 +2983,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                                  '          _pd_proc_number_of_points) less the number of\n'
                                  '          data points excluded from the refinement.\n'
                                  '     p is the total number of refined parameters.</pre>\n'
-                                 '<br><p><h4>Type:</h4> number (int or float)</p>',
+                                 '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                                 '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_proc_ls_prof_wR_factor': '<pre><h2>_pd_proc_ls_prof_wR_factor</h2> Rietveld/profile fit R '
                                'factors.\n'
                                '\n'
@@ -2936,7 +3039,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                                '          _pd_proc_number_of_points) less the number of\n'
                                '          data points excluded from the refinement.\n'
                                '     p is the total number of refined parameters.</pre>\n'
-                               '<br><p><h4>Type:</h4> number (int or float)</p>',
+                               '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                               '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_proc_ls_profile_function': '<pre><h2>_pd_proc_ls_profile_function</h2> Description of the '
                                  'profile function used to\n'
                                  ' fit the data set. If a function form is used, it is\n'
@@ -2958,10 +3062,12 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                        ' A weight value of zero is used to indicate a data\n'
                        ' point not used for refinement (see\n'
                        ' _pd_proc_info_excluded_regions).</pre>\n'
-                       '<br><p><h4>Type:</h4> number (int or float)</p>',
+                       '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                       '<br><p><h4>Limits:</h4> 0:∞ </p>',
  '_pd_proc_number_of_points': '<pre><h2>_pd_proc_number_of_points</h2> The total number of data '
                               'points in the processed diffractogram.</pre>\n'
-                              '<br><p><h4>Type:</h4> number (int or float)</p>',
+                              '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                              '<br><p><h4>Limits:</h4> 1:∞ </p>',
  '_pd_proc_point_id': '<pre><h2>_pd_proc_point_id</h2> Arbitrary label identifying a processed '
                       'data point. Used to\n'
                       ' identify a specific entry in a list of processed intensities.\n'
@@ -2974,7 +3080,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
  '_pd_proc_recip_len_Q': '<pre><h2>_pd_proc_recip_len_Q</h2> Length in reciprocal space (|Q|= '
                          '2\\p/d) corresponding to\n'
                          ' an intensity point. Units are inverse angstroms.</pre>\n'
-                         '<br><p><h4>Type:</h4> number (int or float)</p>',
+                         '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                         '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_proc_wavelength': '<pre><h2>_pd_proc_wavelength</h2> Wavelength in angstroms for the '
                         'incident radiation as\n'
                         ' computed from secondary calibration information. This will\n'
@@ -2983,7 +3090,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                         ' continuous-wavelength methods or may vary for each data point\n'
                         ' and be looped with the intensity values for energy-dispersive\n'
                         ' measurements.</pre>\n'
-                        '<br><p><h4>Type:</h4> number (int or float)</p>',
+                        '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                        '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_refln_[pd]': '<pre><h2>_pd_refln_[pd]</h2> This section provides a mechanism to identify '
                    'each peak in the\n'
                    ' peak-table section (_pd_peak_) with the phase(s) (_pd_phase_id)\n'
@@ -3089,7 +3197,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                         ' to *_equat and in reflection geometry the scattering vector is\n'
                         ' parallel to *_thick.\n'
                         '</pre>\n'
-                        '<br><p><h4>Type:</h4> number (int or float)</p>',
+                        '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                        '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_spec_size_equat': '<pre><h2>_pd_spec_size_equat</h2> The size of the specimen in three '
                         'mutually perpendicular\n'
                         ' directions in millimetres.\n'
@@ -3099,7 +3208,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                         ' to *_equat and in reflection geometry the scattering vector is\n'
                         ' parallel to *_thick.\n'
                         '</pre>\n'
-                        '<br><p><h4>Type:</h4> number (int or float)</p>',
+                        '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                        '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_spec_size_thick': '<pre><h2>_pd_spec_size_thick</h2> The size of the specimen in three '
                         'mutually perpendicular\n'
                         ' directions in millimetres.\n'
@@ -3109,7 +3219,8 @@ powder_dict = {'_pd_block_[pd]': '<pre><h2>_pd_block_[pd]</h2> _pd_block_id is u
                         ' to *_equat and in reflection geometry the scattering vector is\n'
                         ' parallel to *_thick.\n'
                         '</pre>\n'
-                        '<br><p><h4>Type:</h4> number (int or float)</p>',
+                        '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                        '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_pd_spec_special_details': '<pre><h2>_pd_spec_special_details</h2> Descriptive information about '
                              'the specimen that cannot be\n'
                              ' included in other data items.</pre>\n'

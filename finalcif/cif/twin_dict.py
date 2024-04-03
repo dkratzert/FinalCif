@@ -44,7 +44,8 @@ twinning_dict = {'_twin_dimensionality': '<pre><h2>_twin_dimensionality</h2>\n'
                                            '      of all mass fractions must equal unity within '
                                            'the limits of \n'
                                            '      experimental uncertainty.</pre>\n'
-                                           '<br><p><h4>Type:</h4> number (int or float)</p>',
+                                           '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                                           '<br><p><h4>Limits:</h4> 0:1.0 </p>',
  '_twin_individual_twin_lattice_type': '<pre><h2>_twin_individual_twin_lattice_type</h2>\n'
                                        '       Identification of the symmetry relationships '
                                        'between the \n'
@@ -308,7 +309,8 @@ twinning_dict = {'_twin_dimensionality': '<pre><h2>_twin_dimensionality</h2>\n'
                                'l\n'
                                '\tdoes not satisfy _refine_ls_d_res_low\n'
                                '</pre>\n'
-                               '<br><p><h4>Type:</h4> string</p>',
+                               '<br><p><h4>Type:</h4> string</p>\n'
+                               '<br><p><h4>Default:</h4> o </p>',
  '_twin_refln_index_h': '<pre><h2>_twin_refln_index_h</h2>\n'
                         '     Miller indices of a reflection from the twin component \n'
                         '     labelled by _twin_refln_individual_id. \n'

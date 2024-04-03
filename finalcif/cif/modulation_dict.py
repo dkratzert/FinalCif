@@ -143,7 +143,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                        ' _atom_site_U_Fourier_atom_site_label,\n'
                                        ' _atom_site_U_Fourier_tens_elem and\n'
                                        ' _atom_site_U_Fourier_wave_vector_seq_id.</pre>\n'
-                                       '<br><p><h4>Type:</h4> number (int or float)</p>',
+                                       '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                                       '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_atom_site_U_Fourier_param_phase': '<pre><h2>_atom_site_U_Fourier_param_phase</h2> The '
                                      'modulation of the atomic thermal parameters is usually\n'
                                      ' parameterized by Fourier series. Each term of the series\n'
@@ -162,7 +163,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                      '_atom_site_U_Fourier_atom_site_label,\n'
                                      ' _atom_site_U_Fourier_tens_elem and\n'
                                      ' _atom_site_U_Fourier_wave_vector_seq_id.</pre>\n'
-                                     '<br><p><h4>Type:</h4> number (int or float)</p>',
+                                     '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                                     '<br><p><h4>Limits:</h4> -1.0:1.0 </p>',
  '_atom_site_U_Fourier_param_sin': '<pre><h2>_atom_site_U_Fourier_param_sin</h2> The modulation of '
                                    'the atomic thermal parameters is usually\n'
                                    ' parameterized by Fourier series. Each term of the series\n'
@@ -236,7 +238,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                  'n\n'
                                  '\tabbreviation for "no"\n'
                                  '</pre>\n'
-                                 '<br><p><h4>Type:</h4> string</p>',
+                                 '<br><p><h4>Type:</h4> string</p>\n'
+                                 '<br><p><h4>Default:</h4> no </p>',
  '_atom_site_[ms]': '<pre><h2>_atom_site_[ms]</h2> Data items in the ATOM_SITE category record '
                     'details about\n'
                     ' the atom sites in a crystal structure, such as the positional\n'
@@ -387,7 +390,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                               ' special axes defined by\n'
                                               ' '
                                               '_atom_sites_displace_Fourier_axes_description.</pre>\n'
-                                              '<br><p><h4>Type:</h4> number (int or float)</p>',
+                                              '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                                              '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_atom_site_displace_Fourier_param_phase': '<pre><h2>_atom_site_displace_Fourier_param_phase</h2> '
                                             'The displacive distortion of a given atom or rigid '
                                             'group (see\n'
@@ -410,7 +414,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                             ' _atom_site_displace_Fourier_axis and\n'
                                             ' '
                                             '_atom_site_displace_Fourier_wave_vector_seq_id.</pre>\n'
-                                            '<br><p><h4>Type:</h4> number (int or float)</p>',
+                                            '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                                            '<br><p><h4>Limits:</h4> -1.0:1.0 </p>',
  '_atom_site_displace_Fourier_param_sin': '<pre><h2>_atom_site_displace_Fourier_param_sin</h2> The '
                                           'displacive distortion of a given atom or rigid group '
                                           '(see\n'
@@ -471,7 +476,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                         'n\n'
                                         '\tabbreviation for "no"\n'
                                         '</pre>\n'
-                                        '<br><p><h4>Type:</h4> string</p>',
+                                        '<br><p><h4>Type:</h4> string</p>\n'
+                                        '<br><p><h4>Default:</h4> no </p>',
  '_atom_site_displace_special_func_atom_site_label': '<pre><h2>_atom_site_displace_special_func_atom_site_label</h2> '
                                                      'The code that identifies an atom in a loop '
                                                      'in which the special\n'
@@ -743,7 +749,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                          ' Fourier term defined by '
                                          '_atom_site_occ_Fourier_atom_site_label\n'
                                          ' and _atom_site_occ_Fourier_wave_vector_seq_id.</pre>\n'
-                                         '<br><p><h4>Type:</h4> number (int or float)</p>',
+                                         '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                                         '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_atom_site_occ_Fourier_param_phase': '<pre><h2>_atom_site_occ_Fourier_param_phase</h2> The '
                                        'occupational distortion of a given atom or rigid group is\n'
                                        ' usually parameterized by Fourier series. Each term of the '
@@ -762,7 +769,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                        'defined by\n'
                                        ' _atom_site_occ_Fourier_atom_site_label and\n'
                                        ' _atom_site_occ_Fourier_wave_vector_seq_id.</pre>\n'
-                                       '<br><p><h4>Type:</h4> number (int or float)</p>',
+                                       '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                                       '<br><p><h4>Limits:</h4> -1.0:1.0 </p>',
  '_atom_site_occ_Fourier_param_sin': '<pre><h2>_atom_site_occ_Fourier_param_sin</h2> The '
                                      'occupational distortion of a given atom or rigid group is\n'
                                      ' usually parameterized by Fourier series. Each term of the '
@@ -808,7 +816,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                    'n\n'
                                    '\tabbreviation for "no"\n'
                                    '</pre>\n'
-                                   '<br><p><h4>Type:</h4> string</p>',
+                                   '<br><p><h4>Type:</h4> string</p>\n'
+                                   '<br><p><h4>Default:</h4> no </p>',
  '_atom_site_occ_special_func_atom_site_label': '<pre><h2>_atom_site_occ_special_func_atom_site_label</h2> '
                                                 'The code that identifies an atom or rigid group '
                                                 'in a loop in\n'
@@ -904,7 +913,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                             ' an independent phason correction for each atom or rigid group. In\n'
                             ' this case, _atom_site_phason_formula and _atom_site_phason_coeff\n'
                             ' should be used (see also _refine_ls_mod_overall_phason_).</pre>\n'
-                            '<br><p><h4>Type:</h4> number (int or float)</p>',
+                            '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                            '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_atom_site_phason_formula': '<pre><h2>_atom_site_phason_formula</h2> The formula used for the '
                               'phason correction. Although both kinds\n'
                               ' of corrections are intended to be overall, some refinement\n'
@@ -1042,7 +1052,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                          ' _atom_site_rot_Fourier_atom_site_label,\n'
                                          ' _atom_site_rot_Fourier_axis and\n'
                                          ' _atom_site_rot_Fourier_wave_vector_seq_id.</pre>\n'
-                                         '<br><p><h4>Type:</h4> number (int or float)</p>',
+                                         '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                                         '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_atom_site_rot_Fourier_param_phase': '<pre><h2>_atom_site_rot_Fourier_param_phase</h2> The '
                                        'displacive distortion of a given rigid group is not\n'
                                        ' completely described by _atom_site_displace_Fourier_. The '
@@ -1068,7 +1079,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                        '_atom_site_rot_Fourier_atom_site_label,\n'
                                        ' _atom_site_rot_Fourier_axis and\n'
                                        ' _atom_site_rot_Fourier_wave_vector_seq_id.</pre>\n'
-                                       '<br><p><h4>Type:</h4> number (int or float)</p>',
+                                       '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                                       '<br><p><h4>Limits:</h4> -1.0:1.0 </p>',
  '_atom_site_rot_Fourier_param_sin': '<pre><h2>_atom_site_rot_Fourier_param_sin</h2> The '
                                      'displacive distortion of a given rigid group is not\n'
                                      ' completely described by _atom_site_displace_Fourier_. The '
@@ -1152,7 +1164,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                             ' Arribas, A. (1987). Acta Cryst. A43, 216-226. '
                                             'Smaalen, S. van\n'
                                             ' (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
-                                            '<br><p><h4>Type:</h4> number (int or float)</p>',
+                                            '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                                            '<br><p><h4>Limits:</h4> -1.0:1.0 </p>',
  '_atom_sites_modulation_global_phase_t_2': '<pre><h2>_atom_sites_modulation_global_phase_t_2</h2> '
                                             'The initial phases, in cycles, of the modulation '
                                             'waves. For\n'
@@ -1181,7 +1194,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                             ' Arribas, A. (1987). Acta Cryst. A43, 216-226. '
                                             'Smaalen, S. van\n'
                                             ' (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
-                                            '<br><p><h4>Type:</h4> number (int or float)</p>',
+                                            '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                                            '<br><p><h4>Limits:</h4> -1.0:1.0 </p>',
  '_atom_sites_modulation_global_phase_t_3': '<pre><h2>_atom_sites_modulation_global_phase_t_3</h2> '
                                             'The initial phases, in cycles, of the modulation '
                                             'waves. For\n'
@@ -1210,7 +1224,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                             ' Arribas, A. (1987). Acta Cryst. A43, 216-226. '
                                             'Smaalen, S. van\n'
                                             ' (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
-                                            '<br><p><h4>Type:</h4> number (int or float)</p>',
+                                            '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                                            '<br><p><h4>Limits:</h4> -1.0:1.0 </p>',
  '_atom_sites_modulation_global_phase_t_4': '<pre><h2>_atom_sites_modulation_global_phase_t_4</h2> '
                                             'The initial phases, in cycles, of the modulation '
                                             'waves. For\n'
@@ -1239,7 +1254,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                             ' Arribas, A. (1987). Acta Cryst. A43, 216-226. '
                                             'Smaalen, S. van\n'
                                             ' (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
-                                            '<br><p><h4>Type:</h4> number (int or float)</p>',
+                                            '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                                            '<br><p><h4>Limits:</h4> -1.0:1.0 </p>',
  '_atom_sites_modulation_global_phase_t_5': '<pre><h2>_atom_sites_modulation_global_phase_t_5</h2> '
                                             'The initial phases, in cycles, of the modulation '
                                             'waves. For\n'
@@ -1268,7 +1284,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                             ' Arribas, A. (1987). Acta Cryst. A43, 216-226. '
                                             'Smaalen, S. van\n'
                                             ' (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
-                                            '<br><p><h4>Type:</h4> number (int or float)</p>',
+                                            '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                                            '<br><p><h4>Limits:</h4> -1.0:1.0 </p>',
  '_atom_sites_modulation_global_phase_t_6': '<pre><h2>_atom_sites_modulation_global_phase_t_6</h2> '
                                             'The initial phases, in cycles, of the modulation '
                                             'waves. For\n'
@@ -1297,7 +1314,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                             ' Arribas, A. (1987). Acta Cryst. A43, 216-226. '
                                             'Smaalen, S. van\n'
                                             ' (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
-                                            '<br><p><h4>Type:</h4> number (int or float)</p>',
+                                            '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                                            '<br><p><h4>Limits:</h4> -1.0:1.0 </p>',
  '_atom_sites_modulation_global_phase_t_7': '<pre><h2>_atom_sites_modulation_global_phase_t_7</h2> '
                                             'The initial phases, in cycles, of the modulation '
                                             'waves. For\n'
@@ -1326,7 +1344,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                             ' Arribas, A. (1987). Acta Cryst. A43, 216-226. '
                                             'Smaalen, S. van\n'
                                             ' (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
-                                            '<br><p><h4>Type:</h4> number (int or float)</p>',
+                                            '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                                            '<br><p><h4>Limits:</h4> -1.0:1.0 </p>',
  '_atom_sites_modulation_global_phase_t_8': '<pre><h2>_atom_sites_modulation_global_phase_t_8</h2> '
                                             'The initial phases, in cycles, of the modulation '
                                             'waves. For\n'
@@ -1355,7 +1374,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                             ' Arribas, A. (1987). Acta Cryst. A43, 216-226. '
                                             'Smaalen, S. van\n'
                                             ' (1995). Crystallogr. Rev. 4, 79-202.</pre>\n'
-                                            '<br><p><h4>Type:</h4> number (int or float)</p>',
+                                            '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                                            '<br><p><h4>Limits:</h4> -1.0:1.0 </p>',
  '_atom_sites_rot_Fourier_axes_description': '<pre><h2>_atom_sites_rot_Fourier_axes_description</h2> '
                                              'The definition of the axes used for describing the '
                                              'rotational\n'
@@ -1437,7 +1457,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
  '_cell_modulation_dimension': '<pre><h2>_cell_modulation_dimension</h2> Number of additional '
                                'reciprocal vectors needed to index the\n'
                                ' whole diffraction pattern using integer Miller indices.</pre>\n'
-                               '<br><p><h4>Type:</h4> number (int or float)</p>',
+                               '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                               '<br><p><h4>Limits:</h4> 1:8 </p>',
  '_cell_reciprocal_basis_description': '<pre><h2>_cell_reciprocal_basis_description</h2> '
                                        'Definition of the higher-dimensional basis with respect to '
                                        'which\n'
@@ -11969,7 +11990,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
  '_cell_subsystems_number': '<pre><h2>_cell_subsystems_number</h2> The number of subsystems used '
                             'to define the structural model of\n'
                             ' a composite structure.</pre>\n'
-                            '<br><p><h4>Type:</h4> number (int or float)</p>',
+                            '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                            '<br><p><h4>Limits:</h4> 2:∞ </p>',
  '_cell_wave_vector_[ms]': '<pre><h2>_cell_wave_vector_[ms]</h2> Data items in the '
                            'CELL_WAVE_VECTOR category list the\n'
                            ' independent modulation wave vectors q~i~. The diffraction\n'
@@ -12070,25 +12092,29 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                     ' defining the interval within which the modulation wave '
                                     'vector(s)\n'
                                     ' were measured.</pre>\n'
-                                    '<br><p><h4>Type:</h4> number (int or float)</p>',
+                                    '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                                    '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_cell_wave_vectors_pressure_min': '<pre><h2>_cell_wave_vectors_pressure_min</h2> The maximum and '
                                     'minimum values of the pressure in kilopascals\n'
                                     ' defining the interval within which the modulation wave '
                                     'vector(s)\n'
                                     ' were measured.</pre>\n'
-                                    '<br><p><h4>Type:</h4> number (int or float)</p>',
+                                    '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                                    '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_cell_wave_vectors_temp_max': '<pre><h2>_cell_wave_vectors_temp_max</h2> The maximum and minimum '
                                 'values of the temperature in kelvins\n'
                                 ' defining the interval within which the modulation wave '
                                 'vector(s)\n'
                                 ' were measured.</pre>\n'
-                                '<br><p><h4>Type:</h4> number (int or float)</p>',
+                                '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                                '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_cell_wave_vectors_temp_min': '<pre><h2>_cell_wave_vectors_temp_min</h2> The maximum and minimum '
                                 'values of the temperature in kelvins\n'
                                 ' defining the interval within which the modulation wave '
                                 'vector(s)\n'
                                 ' were measured.</pre>\n'
-                                '<br><p><h4>Type:</h4> number (int or float)</p>',
+                                '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                                '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_cell_wave_vectors_variation': '<pre><h2>_cell_wave_vectors_variation</h2> Details concerning '
                                  'the behaviour (and its experimental\n'
                                  ' detection) of the wave vector(s) with temperature and/or\n'
@@ -12624,7 +12650,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                      'comp\n'
                                      '\tcomposite (misfit) structure\n'
                                      '</pre>\n'
-                                     '<br><p><h4>Type:</h4> string</p>',
+                                     '<br><p><h4>Type:</h4> string</p>\n'
+                                     '<br><p><h4>Default:</h4> cryst </p>',
  '_geom_angle_[ms]': '<pre><h2>_geom_angle_[ms]</h2> Data items in the GEOM_ANGLE category record\n'
                      ' details about the bond angles, as calculated from the\n'
                      ' ATOM, CELL and SYMMETRY data. These extensions\n'
@@ -12752,15 +12779,18 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
  '_geom_bond_distance_av': '<pre><h2>_geom_bond_distance_av</h2> Maximum, minimum and average '
                            'values of the intramolecular bond\n'
                            ' distance in angstroms.</pre>\n'
-                           '<br><p><h4>Type:</h4> number (int or float)</p>',
+                           '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                           '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_geom_bond_distance_max': '<pre><h2>_geom_bond_distance_max</h2> Maximum, minimum and average '
                             'values of the intramolecular bond\n'
                             ' distance in angstroms.</pre>\n'
-                            '<br><p><h4>Type:</h4> number (int or float)</p>',
+                            '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                            '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_geom_bond_distance_min': '<pre><h2>_geom_bond_distance_min</h2> Maximum, minimum and average '
                             'values of the intramolecular bond\n'
                             ' distance in angstroms.</pre>\n'
-                            '<br><p><h4>Type:</h4> number (int or float)</p>',
+                            '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                            '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_geom_bond_site_ssg_symmetry_1': '<pre><h2>_geom_bond_site_ssg_symmetry_1</h2> The symmetry code '
                                    'of each atom site as the symmetry operation\n'
                                    " number 'n' and the higher-dimensional translation 'm1...mp'.\n"
@@ -12833,15 +12863,18 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
  '_geom_contact_distance_av': '<pre><h2>_geom_contact_distance_av</h2> Maximum, minimum and '
                               'average values of the interatomic contact\n'
                               ' distance in angstroms.</pre>\n'
-                              '<br><p><h4>Type:</h4> number (int or float)</p>',
+                              '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                              '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_geom_contact_distance_max': '<pre><h2>_geom_contact_distance_max</h2> Maximum, minimum and '
                                'average values of the interatomic contact\n'
                                ' distance in angstroms.</pre>\n'
-                               '<br><p><h4>Type:</h4> number (int or float)</p>',
+                               '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                               '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_geom_contact_distance_min': '<pre><h2>_geom_contact_distance_min</h2> Maximum, minimum and '
                                'average values of the interatomic contact\n'
                                ' distance in angstroms.</pre>\n'
-                               '<br><p><h4>Type:</h4> number (int or float)</p>',
+                               '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                               '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_geom_contact_site_ssg_symmetry_1': '<pre><h2>_geom_contact_site_ssg_symmetry_1</h2> The '
                                       'symmetry code of each atom site as the symmetry operation\n'
                                       " number 'n' and the higher-dimensional translation "
@@ -13117,11 +13150,13 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                       'nomod\n'
                                       '\tno modulation of H-atom parameters\n'
                                       '</pre>\n'
-                                      '<br><p><h4>Type:</h4> string</p>',
+                                      '<br><p><h4>Type:</h4> string</p>\n'
+                                      '<br><p><h4>Default:</h4> nomod </p>',
  '_refine_ls_mod_overall_phason_coeff': '<pre><h2>_refine_ls_mod_overall_phason_coeff</h2> The '
                                         'phason coefficient used to calculate the overall phason\n'
                                         ' correction.</pre>\n'
-                                        '<br><p><h4>Type:</h4> number (int or float)</p>',
+                                        '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                                        '<br><p><h4>Limits:</h4> 0.0:∞ </p>',
  '_refine_ls_mod_overall_phason_formula': '<pre><h2>_refine_ls_mod_overall_phason_formula</h2> The '
                                           'expression for the overall phason correction, if used.\n'
                                           '\n'
@@ -13354,7 +13389,8 @@ modulation_dict = {'_atom_site_Fourier_wave_vector_description': '<pre><h2>_atom
                                '\n'
                                ' Ref: International Tables for Crystallography (2004). Vol. C,\n'
                                '      Chapter 9.8. Dordrecht: Kluwer Academic Publishers.</pre>\n'
-                               '<br><p><h4>Type:</h4> number (int or float)</p>',
+                               '<br><p><h4>Type:</h4> number (int or float)</p>\n'
+                               '<br><p><h4>Limits:</h4> 1.1:∞ </p>',
  '_space_group_ssg_WJJ_code': '<pre><h2>_space_group_ssg_WJJ_code</h2> Superspace-group code as '
                               'given by de Wolff, Janssen &amp; Janner\n'
                               ' (1981). Valid only for one-dimensional modulated structures.\n'

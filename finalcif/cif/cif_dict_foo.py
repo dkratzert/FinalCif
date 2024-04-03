@@ -45,6 +45,7 @@ def process_cif_dict(cdic):
                 example_detail = item.get('_example_detail', '')
                 enumeration = item.get('_enumeration', '')
                 enumeration_detail = item.get('_enumeration_detail', '')
+                default = item.get('_enumeration_default', '')
                 if example:
                     if isinstance(example, list) and not enumeration_detail:
                         example = '\n'.join([str(x) for x in example])
@@ -62,15 +63,26 @@ def process_cif_dict(cdic):
                     enumeration = format_definition(escape(str(enumeration)))
                     definition = '{}\n\n<h3>Example:</h3>\n{}'.format(definition, enumeration)
                 type_format = item.get("_type", "")
+                enum_range = item.get('_enumeration_range', '')
                 if isinstance(name, list):
                     for n in name:
                         # For keys like 'atom_site_aniso_b_[]' where the name has several subnames:
-                        alldic[n] = (f'<pre><h2>{n}</h2>{format_definition(definition)}</pre>'
-                                     f'\n<br><p><h4>Type:</h4> {formats.get(type_format, "")}</p>')
+                        alldic[n] = help_text(definition, n, type_format, enum_range, default)
                 else:
-                    alldic[name] = (f'<pre><h2>{name}</h2>{format_definition(definition)}</pre>'
-                                    f'\n<br><p><h4>Type:</h4> {formats.get(type_format, "")}</p>')
+                    alldic[name] = help_text(definition, name, type_format, enum_range, default)
     return alldic
+
+
+def help_text(definition: str, name: str, type_format: str, enum_range: str, enum_default) -> str:
+    if enum_range.endswith(':'):
+        enum_range = enum_range + '∞'
+    limits = f'\n<br><p><h4>Limits:</h4> {enum_range} </p>'
+    default = f'\n<br><p><h4>Default:</h4> {enum_default} </p>'
+    return (f'<pre><h2>{name}</h2>{format_definition(definition)}</pre>'
+            f'\n<br><p><h4>Type:</h4> {formats.get(type_format, "")}</p>'
+            f'{limits if enum_range else ""}'
+            f'{default if enum_default else ""}'
+            )
 
 
 def load_cif_as_dictionary(link, path_to_cif):
