@@ -28,11 +28,11 @@ class MyQPlainTextEdit(QPlainTextEdit):
     to_be_shortened = {'_shelx_hkl_file', '_shelx_res_file', '_shelx_fab_file', '_shelx_fcf_file',
                        '_iucr_refine_instructions_details', '_iucr_refine_fcf_details'}
 
-    def __init__(self, parent=None, *args, **kwargs):
+    def __init__(self, parent=None, *args):
         """
         Plaintext edit field for most of the table cells.
         """
-        super().__init__(parent=parent, *args, **kwargs)
+        super().__init__(*args, parent)
         self.cif_key = ''
         self.edit_button = None
         font = QFont()
