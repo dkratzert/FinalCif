@@ -5,8 +5,9 @@ from contextlib import suppress
 from pathlib import Path
 from typing import List, Dict
 
+from PyQt6 import QtCore
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QListWidgetItem, QTableWidget, QStackedWidget
+from PyQt6.QtWidgets import QListWidgetItem, QTableWidget, QStackedWidget, QLabel
 
 from gemmi import cif
 

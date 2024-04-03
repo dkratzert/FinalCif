@@ -3,7 +3,7 @@
 # The file dialog is opened by pressing the button.
 # The button should be placed above the QTextedit widget and appear on mouse over.
 
-from PyQt5 import QtWidgets, QtCore, QtGui
+from PyQt6 import QtWidgets, QtCore, QtGui
 import os
 import sys
 

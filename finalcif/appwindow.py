@@ -23,7 +23,7 @@ from PyQt6 import QtCore, QtGui
 from PyQt6.QtCore import QThread, QTimer, Qt, QEvent
 from PyQt6.QtGui import QShortcut
 from PyQt6.QtWidgets import QMainWindow, QCheckBox, QListWidgetItem, QApplication, \
-    QPlainTextEdit, QFileDialog, QMessageBox
+    QPlainTextEdit, QFileDialog, QMessageBox, QScrollBar
 from gemmi import cif
 from qtpy import QtWebEngineWidgets
 from qtpy.QtGui import QDesktopServices

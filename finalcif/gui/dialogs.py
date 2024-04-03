@@ -3,6 +3,7 @@ import os
 import sys
 from pathlib import Path
 
+from PyQt6 import QtCore
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QFont
 from PyQt6.QtWidgets import QMessageBox, QMainWindow, QSplashScreen, QFileDialog, QVBoxLayout, QTextEdit, \

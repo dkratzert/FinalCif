@@ -30,11 +30,10 @@ import os
 import sys
 from typing import Union
 
-from PyQt5.Qt import Qt
-from PyQt5.QtCore import QEvent, QPoint
-from PyQt5.QtGui import (QFocusEvent, QSyntaxHighlighter, QTextBlockUserData, QTextCharFormat, QTextCursor,
+from PyQt6.QtCore import QEvent, QPoint
+from PyQt6.QtGui import (QFocusEvent, QSyntaxHighlighter, QTextBlockUserData, QTextCharFormat, QTextCursor,
                          QContextMenuEvent)
-from PyQt5.QtWidgets import (QAction, QActionGroup, QApplication, QMenu,
+from PyQt6.QtWidgets import (QApplication, QMenu,
                              QPlainTextEdit)
 
 try:

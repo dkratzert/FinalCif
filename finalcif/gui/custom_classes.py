@@ -2,7 +2,7 @@ import re
 from enum import IntEnum
 from typing import List
 
-from PyQt6 import QtCore
+from PyQt6 import QtCore, QtGui
 from PyQt6.QtCore import QEvent, QObject, Qt
 from PyQt6.QtGui import QColor, QKeySequence, QBrush, QShortcut
 from PyQt6.QtWidgets import QAbstractScrollArea, QTableWidget, \
