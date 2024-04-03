@@ -17,6 +17,9 @@ class LoopCreator(QWidget, Ui_LoopCreator):
         self.rightPushButton.clicked.connect(self.move_selected_key_to_right)
         self.searchLineEdit.textChanged.connect(self.search)
         self.availableKeysListWidget.addItems(all_cif_dicts.cif_all_dict.keys())
+        self.add_help_texts()
+
+    def add_help_texts(self):
         for num in range(self.availableKeysListWidget.count()):
             item = self.availableKeysListWidget.item(num)
             helptext = all_cif_dicts.cif_all_dict.get(item.text())

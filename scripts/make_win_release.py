@@ -6,10 +6,6 @@
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
 
-# .\venv\Scripts\pyinstaller.exe scripts\Finalcif.spec -D     # one dir
-
-# .\venv\Scripts\pyinstaller.exe scripts\Finalcif.spec -F     # one file
-# copy dist\FinalCif.exe W:\htdocs\finalcif
 import os
 import subprocess
 import sys
@@ -28,15 +24,14 @@ from finalcif import VERSION
 
 def disable_debug(filepath: str):
     pth = Path(filepath)
-    file = pth.read_text(encoding="UTF-8", errors='ignore').split("\n")
-    for num, line in enumerate(file):
+    file_lst = pth.read_text(encoding="UTF-8", errors='ignore').split("\n")
+    for num, line in enumerate(file_lst):
         if line.startswith("DEBUG") or line.startswith("PROFILE"):
             l = line.split()
             print("DEBUG/PROFILE.. {}, {}".format(l[2], filepath))
             l[2] = '{}'.format("False")
-            file[num] = " ".join(l)
-    iss_file = "\n".join(file)
-    pth.write_text(iss_file, encoding="UTF-8")
+            file_lst[num] = " ".join(l)
+    pth.write_text("\n".join(file_lst), encoding="UTF-8")
 
 
 def make_shasum(filename):
@@ -47,49 +42,34 @@ def make_shasum(filename):
     print("SHA512: {}".format(sha))
 
 
-def process_iss(filepath):
-    pth = Path(filepath)
-    iss_file = pth.read_text(encoding="UTF-8").split("\n")
-    for num, line in enumerate(iss_file):
-        if line.startswith("#define MyAppVersion"):
-            l = line.split()
-            l[2] = '"{}"'.format(VERSION)
-            iss_file[num] = " ".join(l)
-            break
-    iss_file = "\n".join(iss_file)
-    print("windows... {}, {}".format(VERSION, filepath))
-    pth.write_text(iss_file, encoding="UTF-8")
+def make_installer(iss_file: str):
+    innosetup_compiler = r'D:\Programme\Inno Setup 6/ISCC.exe'
+    innosetup_compiler2 = r'C:\Program Files (x86)\Inno Setup 6/ISCC.exe'
+    if not Path(innosetup_compiler).exists():
+        innosetup_compiler = innosetup_compiler2
+    subprocess.run([innosetup_compiler, '/Qp', f'/dMyAppVersion={VERSION}', iss_file])
 
 
-def make_executable():
-    pyin = subprocess.run("venv/Scripts/pyinstaller.exe Finalcif_installer_win.spec --clean -y".split())
-    if pyin.returncode != 0:
-        print('Pyinstaller failed with exit code', pyin.returncode)
-        sys.exit()
-
-
-def make_installer():
-    innosetup_compiler = r'C:/Program Files (x86)/Inno Setup 6/ISCC.exe'
-    subprocess.run([innosetup_compiler, iss_file, ])
-    make_shasum("scripts/Output/FinalCif-setup-x64-v{}.exe".format(VERSION))
-    print('Created version: {}'.format(VERSION))
-    print(datetime.now().strftime("%d.%m.%Y %H:%M:%S"))
+def compile_python_files():
+    import compileall
+    compileall.compile_dir(dir='dist', workers=2, force=True, quiet=True)
+    compileall.compile_dir(dir='finalcif', workers=2, force=True, quiet=True)
 
 
 if __name__ == '__main__':
     iss_file = 'scripts/finalcif-install_win64.iss'
 
     compile_ui()
-
+    compile_python_files()
     disable_debug('finalcif/appwindow.py')
 
     os.chdir(application_path)
 
-    process_iss(iss_file)
+    make_installer(iss_file)
 
-    # create executable
-    make_executable()
-    # Run 64bit Inno setup compiler
-    make_installer()
+    make_shasum("scripts/Output/FinalCif-setup-x64-v{}.exe".format(VERSION))
+
+    print('Created version: {}'.format(VERSION))
+    print(datetime.now().strftime("%d.%m.%Y %H:%M:%S"))
 
     subprocess.call("scripts/Output/FinalCif-setup-x64-v{}.exe".format(VERSION))

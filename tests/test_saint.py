@@ -4,12 +4,13 @@
 #   this notice you can do whatever you want with this stuff. If we meet some day,
 #   and you think this stuff is worth it, you can buy me a beer in return.
 #   ----------------------------------------------------------------------------
-import os
 import unittest
 from pathlib import Path
 
 from finalcif.datafiles.saint import SaintListFile
 from finalcif.tools.misc import unify_line_endings
+
+data = Path('.')
 
 
 class MyTestCase(unittest.TestCase):
@@ -23,7 +24,7 @@ class MyTestCase(unittest.TestCase):
                  'min 2 theta: 4.660\n' \
                  'max 2 theta: 54.727\n' \
                  'Twin integration False\n'
-        saint = SaintListFile(name_patt='TB_fs20_v1_0m._ls', directory=Path('test-data'))
+        saint = SaintListFile(name_patt='TB_fs20_v1_0m._ls', directory=data / 'test-data')
         self.assertEqual(unify_line_endings(output), unify_line_endings(str(saint)))
 
 

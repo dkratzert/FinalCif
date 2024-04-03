@@ -1,3 +1,4 @@
+from __future__ import annotations
 #   ----------------------------------------------------------------------------
 #   "THE BEER-WARE LICENSE" (Revision 42):
 #   Daniel Kratzert <dkratzert@gmx.de> wrote this file.  As long as you retain
@@ -5,7 +6,6 @@
 #   and you think this stuff is worth it, you can buy me a beer in return.
 #   ----------------------------------------------------------------------------
 import re
-from contextlib import suppress
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
@@ -24,7 +24,9 @@ from finalcif.gui.finalcif_gui_ui import Ui_FinalCifWindow
 from finalcif.tools.misc import grouper
 from finalcif.tools.settings import FinalCifSettings
 
-with suppress(ImportError):
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
     from finalcif.appwindow import AppWindow
 
 
@@ -50,7 +52,7 @@ class Author:
 
 
 class AuthorLoops():
-    def __init__(self, ui: Ui_FinalCifWindow, cif: CifContainer, app: 'AppWindow'):
+    def __init__(self, ui: Ui_FinalCifWindow, cif: CifContainer, app: AppWindow):
         self.ui = ui
         self.cif = cif
         self.app = app
@@ -167,7 +169,7 @@ class AuthorLoops():
             if cut_row not in gemmi_loop.values:
                 gemmi_loop.add_row(cut_row)
         elif gemmi_loop.width() > len(row):
-            show_general_warning('An author loop with larger size is already in the CIF. Can not proceed.')
+            show_general_warning(self, 'An author loop with larger size is already in the CIF. Can not proceed.')
         else:
             if row not in gemmi_loop.values:
                 gemmi_loop.add_row(row)
@@ -221,13 +223,13 @@ class AuthorLoops():
             getattr(self.ui, f'EMailLineEdit{author_type}').setText(retranslate_delimiter(as_string(author.email)))
         if author.footnote and author.author_type == AuthorType.publ:
             # Audit authors have no footnote:
-            getattr(self.ui, f'FootNoteLineEdit').setText(retranslate_delimiter(as_string(author.footnote)))
+            getattr(self.ui, 'FootNoteLineEdit').setText(retranslate_delimiter(as_string(author.footnote)))
         if author.orcid and author.author_type == AuthorType.publ:
             # Audit authors have no ORCID:
-            getattr(self.ui, f'ORCIDLineEdit').setText(retranslate_delimiter(as_string(author.orcid)))
+            getattr(self.ui, 'ORCIDLineEdit').setText(retranslate_delimiter(as_string(author.orcid)))
         if author.iucr_id and author.author_type == AuthorType.publ:
             # Audit authors have no IUCrID:
-            getattr(self.ui, f'IUCRIDLineEdit').setText(retranslate_delimiter(as_string(author.iucr_id)))
+            getattr(self.ui, 'IUCRIDLineEdit').setText(retranslate_delimiter(as_string(author.iucr_id)))
         if author.phone:
             getattr(self.ui, f'PhoneLineEdit{author_type}').setText(retranslate_delimiter(as_string(author.phone)))
 
@@ -284,7 +286,7 @@ class AuthorLoops():
         except (PermissionError, IOError):
             if Path(filename).is_dir():
                 return
-            show_general_warning('No permission to write file to {}'.format(Path(filename).resolve()))
+            show_general_warning(self, 'No permission to write file to {}'.format(Path(filename).resolve()))
 
     def put_author_in_cif_object(self, blockname: str, filename: str) -> CifContainer:
         author = self.author_loopdata(author_name=self.get_selected_loop_name())
@@ -368,7 +370,7 @@ class AuthorLoops():
         """
         Import all authors from an external file"""
         for author in authors_data:
-            if author:
+            if author and isinstance(author, Author):
                 self.general_author_save(author)
 
     def authors_list(self) -> List[str]:

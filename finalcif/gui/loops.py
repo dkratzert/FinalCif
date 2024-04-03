@@ -10,11 +10,14 @@ from contextlib import suppress
 from typing import Union, List, Any
 
 import gemmi
-import qtawesome
 from PyQt6 import QtCore
 from PyQt6.QtCore import QAbstractTableModel, QModelIndex, Qt, QSize, QVariant, pyqtSignal, QEvent
 from PyQt6.QtGui import QColor, QCursor
 from PyQt6.QtWidgets import QTableView, QHeaderView, QMenu
+
+with suppress(ImportError):
+    import qtawesome
+
 from gemmi import cif
 from gemmi.cif import as_string, is_null
 from packaging import version
@@ -44,7 +47,7 @@ class Loop(QtCore.QObject):
     def display_help(self, header_section: int):
         from finalcif.cif.all_cif_dicts import cif_all_dict
         tag = self.tags[header_section]
-        keyword_help = cif_all_dict.get(tag, None)
+        keyword_help = cif_all_dict.get(tag, None) or 'No help text found'
         if keyword_help:
             keyword_help = retranslate_delimiter(keyword_help, no_html_unescape=True)
             show_keyword_help(self.parent, keyword_help, tag)
@@ -137,10 +140,11 @@ class MyQTableView(QTableView):
         del_action.triggered.connect(lambda: self._delete_row(event))
         up_action.triggered.connect(lambda: self._row_up(event))
         down_action.triggered.connect(lambda: self._row_down(event))
-        up_action.setIcon(qtawesome.icon('mdi.arrow-up'))
-        down_action.setIcon(qtawesome.icon('mdi.arrow-down'))
-        del_action.setIcon(qtawesome.icon('mdi.trash-can-outline'))
-        add_action.setIcon(qtawesome.icon('mdi.table-row-plus-after'))
+        with suppress(Exception):
+            up_action.setIcon(qtawesome.icon('mdi.arrow-up'))
+            down_action.setIcon(qtawesome.icon('mdi.arrow-down'))
+            del_action.setIcon(qtawesome.icon('mdi.trash-can-outline'))
+            add_action.setIcon(qtawesome.icon('mdi.table-row-plus-after'))
         self.menu.addAction(add_action)
         self.menu.addAction(del_action)
         self.menu.addSeparator()
@@ -224,7 +228,7 @@ class LoopTableModel(QAbstractTableModel):
         if role == Qt.DisplayRole:
             return retranslate_delimiter(value)
 
-    def headerData(self, section, orientation, role=None):
+    def headerData(self, section, orientation: Qt.Orientation = Qt.Horizontal, role=None):
         # section is the index of the column/row.
         if role == Qt.DisplayRole and orientation == Qt.Horizontal:
             try:
@@ -252,7 +256,8 @@ class LoopTableModel(QAbstractTableModel):
 
     def flags(self, index: QModelIndex) -> Qt.ItemFlag:
         if index.isValid():
-            return QAbstractTableModel.flags(self, index) | Qt.ItemFlag.ItemIsEditable | Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable
+            return QAbstractTableModel.flags(self,
+                                             index) | Qt.ItemFlag.ItemIsEditable | Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable
 
     def setData(self, index: QModelIndex, value: Any, role: int = None) -> bool:
         row, col = index.row(), index.column()

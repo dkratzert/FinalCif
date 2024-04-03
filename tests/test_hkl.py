@@ -1,13 +1,16 @@
+from pathlib import Path
 from unittest import TestCase
 
 from finalcif.cif.cif_file_io import CifContainer
+
+data = Path('tests')
 
 
 class TestHKL(TestCase):
 
     def setUp(self) -> None:
-        self.cif1 = CifContainer('tests/examples/1979688.cif')
-        self.cif2 = CifContainer('tests/examples/work/cu_BruecknerJK_153F40_0m.cif')
+        self.cif1 = CifContainer(data / 'examples/1979688.cif')
+        self.cif2 = CifContainer(data / 'examples/work/cu_BruecknerJK_153F40_0m.cif')
         self.first_result = """data_cu_BruecknerJK_153F40_0m
 loop_
 _refln_index_h

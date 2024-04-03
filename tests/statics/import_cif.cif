@@ -1,0 +1,12 @@
+data_title
+
+_cell_length_a                   19.678(3)
+_foo_bar baz
+_hello 12.3
+
+loop_
+ _my_atom_type_symbol
+ _my_atom_type_description
+ _my_atom_type_scat_dispersion_real
+ 'C'  'C'   0.0033
+ 'Al'  'Al'   0.0034

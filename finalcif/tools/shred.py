@@ -1,9 +1,9 @@
 from pathlib import Path
 from typing import Union
+from unittest.mock import Mock
 
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.gui.dialogs import show_general_warning
-from finalcif.gui.finalcif_gui_ui import Ui_FinalCifWindow
 from finalcif.tools.statusbar import StatusBar
 
 
@@ -12,9 +12,9 @@ class ShredCIF():
     This class extracts the .res and .hkl file content from a cif file.
     """
 
-    def __init__(self, cif: CifContainer, ui: Union[Ui_FinalCifWindow, None]):
+    def __init__(self, cif: CifContainer, statusbar: Union[StatusBar, None]):
         self._cif = cif
-        self._statusbar = StatusBar(ui)
+        self._statusbar = statusbar or Mock()
 
     def shred_cif(self) -> None:
         """
@@ -61,11 +61,11 @@ class ShredCIF():
         would interfere with the CIF syntax.
         """
         lines = []
-        for num, line in enumerate(hkl_data.splitlines(keepends=False)):
-            if line[:1] == ')':
+        for line in hkl_data.splitlines(keepends=False):
+            if line.startswith(')'):
                 line = ';' + line[1:]
             lines.append(line)
-        return '\n'.join(lines)
+        return '\n'.join(lines).lstrip('\n')
 
     def _show_info(self, resname: Path, hklname: Path, resdata: Union[str, None], hkldata: Union[str, None]) -> None:
         if resdata and not hkldata:
@@ -89,7 +89,7 @@ class ShredCIF():
             hklfile.write_text(hkl, encoding='latin1', errors='ignore')
         except Exception as e:
             print(e)
-            show_general_warning('Unable to write files: ' + str(e))
+            show_general_warning(parent=None, warn_text='Unable to write files: ' + str(e))
             return False
         return True
 
@@ -99,7 +99,7 @@ class ShredCIF():
         """
         if not self._cif.res_file_data:
             self._statusbar.show_message('No .res file data found!')
-        if not self._cif.hkl_file:
+        if not self._cif.hkl_file and isinstance(self._statusbar.current_message, str):
             self._statusbar.show_message(self._statusbar.current_message + '\nNo .hkl file data found!')
         if not any([self._cif.res_file_data, self._cif.hkl_file]):
             self._statusbar.show_message('No .res and .hkl file data found!')
@@ -116,6 +116,6 @@ class ShredCIF():
             resfile.write_text(reslines, encoding='latin1', errors='ignore', newline='\n')
         except Exception as e:
             print(e)
-            show_general_warning('Unable to write files: ' + str(e))
+            show_general_warning(parent=None, warn_text='Unable to write files: ' + str(e))
             return False
         return True

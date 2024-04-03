@@ -1,32 +1,40 @@
+from __future__ import annotations
+import threading
+import time
 from contextlib import suppress
 from pathlib import Path
 from typing import List, Dict
 
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QListWidgetItem, QTableWidget, QStackedWidget
+
 from gemmi import cif
 
 from finalcif.cif.text import retranslate_delimiter, utf8_to_str
 from finalcif.equip_property.tools import read_document_from_cif_file
 from finalcif.gui.dialogs import cif_file_open_dialog, show_general_warning, cif_file_save_dialog
 from finalcif.gui.plaintextedit import PlainTextEditTemplate
-from finalcif.tools.misc import predef_prop_templ
 from finalcif.tools.settings import FinalCifSettings
+from finalcif.tools import misc
 
-with suppress(ImportError):
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
     from finalcif.appwindow import AppWindow
 
 
-class Properties:
-    def __init__(self, app: 'AppWindow', settings: FinalCifSettings):
-        self.app = app
+class Properties(QtCore.QObject):
+    def __init__(self, parent: AppWindow, settings: FinalCifSettings):
+        super().__init__(parent=parent)
+        self.app = parent
         self.settings = settings
-        if app:
+        if parent:
             self.signals_and_slots()
             self.app.ui.PropertiesTemplatesStackedWidget.setCurrentIndex(0)
             self.app.ui.PropertiesEditTableWidget.verticalHeader().hide()
             self.store_predefined_templates()
             self.show_properties()
+            self.lb = QLabel(self.app)
 
     def signals_and_slots(self):
         ## properties
@@ -47,6 +55,27 @@ class Properties:
         self.app.ui.NewPropertyTemplateButton.clicked.connect(self.new_property)
         self.app.ui.ImportPropertyTemplateButton.clicked.connect(self.import_property_from_file)
         self.app.ui.ExportPropertyButton.clicked.connect(self.export_property_template)
+        self.app.ui.cifKeywordLineEdit.textChanged.connect(self.check_for_duplicates)
+
+    def check_for_duplicates(self):
+        key = self.app.ui.cifKeywordLineEdit.text()
+        props = self.export_raw_data()
+        keys = [x['cif_key'] for x in props]
+        names = [x['name'] for x in props]
+        if key in keys and self.selected_template_name() not in names:
+            self.app.ui.SavePropertiesButton.setDisabled(True)
+            self.lb.setWindowFlags(QtCore.Qt.ToolTip)
+            self.lb.setText(f'key {key} already exists')
+            self.lb.move(self.app.ui.cifKeywordLineEdit.mapToGlobal(QtCore.QPoint(15, 25)))
+            self.lb.show()
+            threading.Thread(target=self.hide_label).start()
+        else:
+            self.app.ui.SavePropertiesButton.setEnabled(True)
+            self.lb.hide()
+
+    def hide_label(self):
+        time.sleep(5)
+        self.lb.hide()
 
     def show_properties(self) -> None:
         """
@@ -63,7 +92,7 @@ class Properties:
         item = QListWidgetItem('')
         self.app.ui.PropertiesTemplatesListWidget.addItem(item)
         self.app.ui.PropertiesTemplatesListWidget.setCurrentItem(item)
-        item.setFlags(Qt.ItemIsEditable | Qt.ItemIsEnabled | Qt.ItemIsSelectable)
+        item.setFlags(QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
         self.app.ui.PropertiesTemplatesListWidget.editItem(item)
         self.app.ui.cifKeywordLineEdit.clear()
 
@@ -105,7 +134,7 @@ class Properties:
         """
         Edit the Property table.
         """
-        # make sure the current item doesnt get lost:
+        # make sure the current item doesn't get lost:
         it = self.app.ui.PropertiesTemplatesListWidget.currentItem()
         self.app.ui.PropertiesTemplatesListWidget.setCurrentItem(None)
         self.app.ui.PropertiesTemplatesListWidget.setCurrentItem(it)
@@ -121,7 +150,7 @@ class Properties:
 
     def store_predefined_templates(self) -> None:
         property_list = self.settings.get_properties_list() or []
-        for item in predef_prop_templ:
+        for item in misc.predefined_property_templates:
             if item['name'] not in property_list:
                 self.settings.save_settings_list('property', item['name'], item['values'])
 
@@ -147,7 +176,7 @@ class Properties:
             loop = block.init_loop(cif_key, [''])
         except RuntimeError:
             # Not a valid loop key
-            show_general_warning('"{}" is not a valid cif keyword.'.format(cif_key))
+            show_general_warning(self.app, '"{}" is not a valid cif keyword.'.format(cif_key))
             return
         for value in table_data:
             if value:
@@ -161,9 +190,9 @@ class Properties:
         except PermissionError:
             if Path(filename).is_dir():
                 return
-            show_general_warning('No permission to write file to {}'.format(Path(filename).resolve()))
+            show_general_warning(self.app, 'No permission to write file to {}'.format(Path(filename).resolve()))
 
-    def selected_template_name(self):
+    def selected_template_name(self) -> str:
         return self.app.ui.PropertiesTemplatesListWidget.currentIndex().data()
 
     def import_property_from_file(self, filename: str = '') -> None:
@@ -192,7 +221,10 @@ class Properties:
                 if len(i.loop.tags) > 0:
                     loop_column_name = i.loop.tags[0]
                 for n in range(i.loop.length()):
-                    value = i.loop.val(n, 0)
+                    try:
+                        value = i.loop.val(n, 0)
+                    except AttributeError:
+                        value = i.loop[n, 0]
                     template_list.append(retranslate_delimiter(cif.as_string(value).strip("\n\r ;")))
         block_name = block.name.replace('__', ' ')
         # This is the list shown in the Main menu:
@@ -244,7 +276,7 @@ class Properties:
         properties_list = []
         for property_name in self.settings.get_properties_list():
             if property_name:
-                property_cif_key, property_data  = self.settings.load_settings_list('property', item_name=property_name)
+                property_cif_key, property_data = self.settings.load_settings_list('property', item_name=property_name)
                 properties_list.append({'name': property_name, 'cif_key': property_cif_key, 'data': property_data})
         return properties_list
 
@@ -310,3 +342,4 @@ if __name__ == '__main__':
     l = Properties(None, FinalCifSettings())
     for line in l.export_raw_data():
         print(f"{line}")
+    print(l.export_raw_data())

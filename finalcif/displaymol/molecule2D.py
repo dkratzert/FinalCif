@@ -88,7 +88,7 @@ class MoleculeWidget(QtWidgets.QWidget):
             self.painter.setFont(font)
             try:
                 self.draw()
-            except ValueError as e:
+            except (ValueError, IndexError) as e:
                 print(f'Draw structure crashed: {e}')
                 self.painter.end()
 

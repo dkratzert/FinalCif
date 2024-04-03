@@ -100,7 +100,7 @@ class SaintListFile():
                 Frames were acquired with BIS 2018.9.0.3/05-Dec-2018 && APEX3_2018.7-2
                     Rescan threshold is 95% of A/D conversion range
                 """
-                self.aquire_software = 'Bruker ' + ' '.join(line.split()[4:])
+                self.aquire_software = 'Bruker ' + ' '.join(line.split()[4:]).replace('&&', 'and')
 
     @property
     def cell_res_min_theta(self):

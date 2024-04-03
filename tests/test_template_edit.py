@@ -1,4 +1,8 @@
+import os
+
+os.environ["RUNNING_TEST"] = 'True'
 import unittest
+from pathlib import Path
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtTest import QTest
@@ -8,10 +12,12 @@ from finalcif.appwindow import AppWindow
 
 class EquipmentTestCase(unittest.TestCase):
     def setUp(self) -> None:
-        self.app = AppWindow(unit_test=True)
-        self.app.running_inside_unit_test = True
+        self.app = AppWindow(Path('test-data/1000006.cif'))
         self.app.equipment.import_equipment_from_file('test-data/Crystallographer_Details.cif')
         self.app.hide()
+
+    def tearDown(self) -> None:
+        self.app.close()
 
     def equipment_edit_click(self, field: str):
         listw = self.app.ui.EquipmentTemplatesListWidget
@@ -39,8 +45,8 @@ class EquipmentTestCase(unittest.TestCase):
 
 class PropertiesTestCase(unittest.TestCase):
     def setUp(self) -> None:
-        self.app = AppWindow(unit_test=True)
-        self.app.running_inside_unit_test = True
+        os.environ["RUNNING_TEST"] = 'True'
+        self.app = AppWindow(file=Path('test-data/1000006.cif'))
         self.app.hide()
 
     def property_edit_click(self, field: str):

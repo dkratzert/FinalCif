@@ -1,14 +1,21 @@
-from contextlib import suppress
-from functools import cache
+from enum import IntEnum
+from typing import TYPE_CHECKING
 
 from PyQt6.QtCore import pyqtSignal, Qt, QObject, QEvent, QSize
 from PyQt6.QtGui import QTextOption, QFontMetrics, QContextMenuEvent, QFont
-from PyQt6.QtWidgets import QPlainTextEdit, QFrame, QApplication, QAbstractScrollArea
+from PyQt6.QtWidgets import QPlainTextEdit, QFrame, QAbstractScrollArea
 
+from finalcif.gui.edit_button import FloatingButtonWidget
 from finalcif.gui.new_key_dialog import NewKey
 
-with suppress(ImportError):
+if TYPE_CHECKING:
     from finalcif.gui.custom_classes import MyCifTable
+
+
+class Column(IntEnum):
+    CIF = 0
+    DATA = 1
+    EDIT = 2
 
 
 class MyQPlainTextEdit(QPlainTextEdit):
@@ -17,16 +24,16 @@ class MyQPlainTextEdit(QPlainTextEdit):
     """
     templateRequested = pyqtSignal(int)
     new_key = pyqtSignal(str)
+    to_be_shortened = {'_shelx_hkl_file', '_shelx_res_file', '_shelx_fab_file', '_shelx_fcf_file',
+                       '_iucr_refine_instructions_details', '_iucr_refine_fcf_details'}
 
-    def __init__(self, parent=None, *args, **kwargs):
+    def __init__(self, parent=None, *args):
         """
         Plaintext edit field for most of the table cells.
-        :param parent:
-        :param minheight: minimum height of the widget.
         """
-        super().__init__(parent, *args, **kwargs)
-        self.setParent(parent)
+        super().__init__(*args, parent)
         self.cif_key = ''
+        self.edit_button = None
         font = QFont()
         font.setPointSize(self.document().defaultFont().pointSize() + 1)
         self.setFont(font)
@@ -44,7 +51,6 @@ class MyQPlainTextEdit(QPlainTextEdit):
         return self.toPlainText()
 
     @property
-    @cache
     def fontmetric(self):
         return QFontMetrics(self.document().defaultFont())
 
@@ -59,7 +65,7 @@ class MyQPlainTextEdit(QPlainTextEdit):
         action_template.triggered.connect(self._on_create_template)
         deleterow.triggered.connect(self._delete_row)
         new_key.triggered.connect(self._add_cif_keys)
-        choosed_action = menu.exec(event.globalPos())
+        menu.exec(event.globalPos())
 
     def _add_cif_keys(self):
         new_key = NewKey(self)
@@ -76,20 +82,25 @@ class MyQPlainTextEdit(QPlainTextEdit):
         """
         Copies the content of a field.
         """
+        from PyQt5 import QtWidgets
         if hasattr(self.parent, 'vheaderitems'):
-            clipboard = QApplication.clipboard()
+            clipboard = QtWidgets.QApplication.clipboard()
             clipboard.setText(self.cif_key)
 
     @property
     def row(self) -> int:
-        return self.parent.vheaderitems.index(self.cif_key)
+        return self.parent.indexAt(self.pos()).row()
 
-    def setBackground(self, color):
+    @property
+    def column(self) -> int:
+        return self.parent.indexAt(self.pos()).column()
+
+    def setBackground(self, color: QColor) -> None:
         """
         Set background color of the text field.
         """
         self.setStyleSheet("background-color: {};".format(str(color.name())))
-        # No idea why tis does not work
+        # No idea why this does not work
         # pal = self.palette()
         # pal.setColor(QPalette.Base, color)
         # self.setPalette(pal)
@@ -97,13 +108,18 @@ class MyQPlainTextEdit(QPlainTextEdit):
     def setUneditable(self):
         self.setReadOnly(True)
 
-    def setText(self, text: str, color=None):
+    def setText(self, text: str, color: QColor = None, column: int = None):
         """
         Set text of a Plaintextfield with lines wrapped at newline characters.
         """
         if color:
             self.setBackground(color)
-        self.setPlainText(text)
+        if not text:
+            return
+        if column == Column.CIF and self.cif_key in self.to_be_shortened:
+            self.setPlainText(f'{text[:300]} [...]')
+        else:
+            self.setPlainText(text)
 
     def eventFilter(self, widget: QObject, event: QEvent):
         """
@@ -114,18 +130,45 @@ class MyQPlainTextEdit(QPlainTextEdit):
             return True
         return QObject.eventFilter(self, widget, event)
 
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        if self.edit_button and self.column == Column.EDIT:
+            self.edit_button.update_position()
+
+    def enterEvent(self, a0):
+        super().enterEvent(a0)
+        if self.column == Column.EDIT:
+            if not self.edit_button:
+                self.edit_button = FloatingButtonWidget(parent=self)
+                self.edit_button.floatingButtonClicked.connect(self._on_create_template)
+                self.edit_button.update_position()
+            self.edit_button.show()
+
+    def event(self, e: QtCore.QEvent):
+        if e.type() == QtCore.QEvent.InputMethodQuery:
+            self.parent.setCurrentCell(self.row, self.column)
+        return super().event(e)
+
+    def leaveEvent(self, a0: QEvent) -> None:
+        super().leaveEvent(a0)
+        if self.edit_button and self.column == Column.EDIT:
+            self.edit_button.hide()
+
     def getText(self):
         return self.toPlainText()
 
     def sizeHint(self) -> QSize:
         """Text field sizes are scaled to text length"""
+        max_size = QSize(100, 350)
+        if len(self.toPlainText()) > 500:
+            return max_size
         rect = self.fontmetric.boundingRect(self.contentsRect(), Qt.TextWordWrap, self.toPlainText())
         size = QSize(100, rect.height() + 14)
         if size.height() > 50:
             size = QSize(100, rect.height() + 24)
         if size.height() > 350:
             # Prevent extreme height for long text:
-            size = QSize(100, 350)
+            size = max_size
         return size
 
 
@@ -142,7 +185,6 @@ class PlainTextEditTemplate(QPlainTextEdit):
         :param minheight: minimum height of the widget.
         """
         super().__init__(parent, *args, **kwargs)
-        self.setParent(parent)
         self.cif_key = ''
         self.parent = parent
         self.setFocusPolicy(Qt.StrongFocus)
@@ -183,3 +225,31 @@ class PlainTextEditTemplate(QPlainTextEdit):
             # Prevent extreme height for long text:
             size = QSize(100, 300)
         return size
+
+
+if __name__ == '__main__':
+    import sys
+    import random
+    from PyQt5.QtWidgets import QApplication, QTableWidget
+
+    app = QApplication(sys.argv)
+    window = QTableWidget()
+    window.setColumnCount(3)
+    window.setRowCount(10)
+    # stretch the last table colum:
+    window.horizontalHeader().setStretchLastSection(True)
+    window.setHorizontalHeaderLabels(['CIF', 'Data', 'Edit'])
+    for row in range(10):
+        for col in range(3):
+            window.setCellWidget(row, col, MyQPlainTextEdit(window))
+            w = window.cellWidget(row, col)
+            if col == 2:
+                w.setText(f'Hello World {random.randint(0, 10000)} {random.randint(0, 10000)}')
+            w.setMinimumHeight(50)
+            w.setMinimumWidth(150)
+    window.resizeRowsToContents()
+    window.resizeColumnsToContents()
+    window.show()
+    window.setMinimumSize(600, 400)
+
+    sys.exit(app.exec_())

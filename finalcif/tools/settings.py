@@ -83,7 +83,7 @@ class FinalCifSettings():
                 pass
         return keylist
 
-    def load_cif_keys_of_properties(self):
+    def load_cif_keys_of_properties(self) -> List[str]:
         property_keys = [x[0] for x in self.load_property_keys_and_values()]
         return property_keys
 
@@ -189,7 +189,12 @@ class FinalCifSettings():
         directory = self.list_saved_items(property)
         if directory and item_name in directory:
             self.settings.beginGroup(property)
-            v = self.settings.value(item_name)
+            try:
+                v = self.settings.value(item_name)
+            except TypeError as e:
+                print(f"DBG> Item name '{item_name}' could not be loaded from settings.")
+                print(e)
+                v = None
             self.settings.endGroup()
             return v
 

@@ -6,7 +6,9 @@ from PyQt6.QtCore import Qt, QObject, QEvent
 from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QComboBox, QSizePolicy
 
-with suppress(ImportError):
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
     from finalcif.gui.custom_classes import MyCifTable
 
 
@@ -16,10 +18,9 @@ class MyComboBox(QComboBox):
     """
     textTemplate = QtCore.pyqtSignal(int)
 
-    def __init__(self, parent=None):
+    def __init__(self, parent: 'MyCifTable' = None):
         super().__init__(parent)
         self.parent: 'MyCifTable' = parent
-        self.setParent(parent)
         self.cif_key = ''
         self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
         self.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLengthWithIcon)
@@ -30,9 +31,9 @@ class MyComboBox(QComboBox):
         self.setContextMenuPolicy(Qt.ContextMenuPolicy.ActionsContextMenu)
         self.addAction(self.actionDelete)
         self.actionDelete.triggered.connect(self._delete_row)
-        #action_template = QAction("Text Template", self)
-        #self.addAction(action_template)
-        #action_template.triggered.connect(self._on_create_template)
+        action_template = QAction("Text Template", self)
+        self.addAction(action_template)
+        action_template.triggered.connect(lambda: self.textTemplate.emit(self.row))
 
     def __str__(self):
         return self.currentText()
@@ -61,8 +62,8 @@ class MyComboBox(QComboBox):
         self.setFlags(self.flags() ^ Qt.ItemIsEditable)
 
     def setText(self, txt: str):
-        self.setEditText('\n'.join(wrap(txt, width=30)))
+        self.setEditText('\n'.join(wrap(txt, width=80)))
 
     def addItem(self, *__args):
-        text = '\n'.join(wrap(__args[0], width=60))
+        text = '\n'.join(wrap(__args[0], width=80))
         super().addItem(text, __args[1])

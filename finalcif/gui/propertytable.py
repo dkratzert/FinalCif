@@ -8,10 +8,9 @@ class MyPropTableWidget(QTableWidget):
     A table widget for the properties table.
     """
 
-    def __init__(self, parent: MyQPlainTextEdit, *args, **kwargs):
-        super().__init__(parent, *args, **kwargs)
+    def __init__(self, parent: QWidget, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.parent = parent
-        self.setParent(parent)
 
     def delete_row(self, row: int = None):
         if not row:

@@ -2,15 +2,10 @@ import sys
 from typing import Tuple, List, Union
 
 from PyQt6.QtCore import QSize, Qt, pyqtSignal
-from PyQt6.QtWidgets import QWidget, QHBoxLayout, QCheckBox, QApplication, QPlainTextEdit, \
-    QListWidgetItem, QVBoxLayout, QLabel
+from PyQt6.QtWidgets import QWidget, QHBoxLayout, QCheckBox, QListWidgetItem, QVBoxLayout, QLabel
 
 from finalcif.gui import text_templates_ui
-
-
-# print('Compiling textedit ui ...')
-# application_path = Path(os.path.abspath(__file__)).parent.parent
-# uic.compileUiDir(os.path.join(application_path, 'gui'))
+from finalcif.gui.spell_check_edit import SpellTextEdit
 
 
 class TextEditItem(QWidget):
@@ -28,7 +23,7 @@ class TextEditItem(QWidget):
         self.checkbox = QCheckBox()
         self.number_label = QLabel()
         self.vlayout.addWidget(self.number_label)
-        self.textfield = QPlainTextEdit(self)
+        self.textfield = SpellTextEdit(self)
         font = self.textfield.font()
         font.setPixelSize(12)
         self.textfield.setFont(font)
@@ -112,7 +107,11 @@ class MyTextTemplateEdit(QWidget):
 
 
 if __name__ == "__main__":
-    app = QApplication(sys.argv)
+    from PyQt5.QtWidgets import QApplication
+
+    app = QApplication.instance()
+    if app is None:
+        app = QApplication([])
     window = MyTextTemplateEdit()
     # window.add_textfields(txts)
     window.show()

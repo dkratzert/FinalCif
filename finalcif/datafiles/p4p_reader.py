@@ -71,6 +71,8 @@ class P4PFile():
     def parse_p4p(self):
         for line in self.p4plist:
             spline = line.split()
+            if len(spline) < 2:
+                continue
             card = spline[0]
             if card == "CELL" and len(spline) > 5:
                 self.cell = [float(x) for x in spline[1:7]]

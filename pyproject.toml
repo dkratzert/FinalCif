@@ -1,0 +1,47 @@
+[build-system]
+requires = ["hatchling", "hatch-requirements-txt"]
+build-backend = "hatchling.build"
+
+[tool.hatch.metadata.hooks.requirements_txt]
+files = ["requirements.txt"]
+
+[project]
+name = "finalcif"
+dynamic = ["version", "dependencies"]
+authors = [
+    { name = "Daniel Kratzert", email = "dkratzert@gmx.de" },
+]
+description = "CIF file editor"
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering :: Chemistry",
+    "Development Status :: 5 - Production/Stable",
+    "Programming Language :: Python :: 3",
+]
+
+[project.urls]
+"Homepage" = "https://dkratzert.de/finalcif.html"
+"Bug Tracker" = "https://github.com/dkratzert/FinalCif/issues"
+
+[tool.hatch.version]
+path = "finalcif/__init__.py"
+pattern = "VERSION\\s*=\\s*(?P<version>\\d+\\.{0,1}\\d{0,1})"
+
+[tool.hatch.build.targets.sdist]
+exclude = [
+    "/.github",
+    "/test-data",
+    "/scripts",
+    "/setup",
+    "/tests",
+    "/docs",
+    "/make_release.sh",
+    "/venv*",
+]
+
+[project.scripts]
+finalcif = "finalcif.finalcif_start:main"

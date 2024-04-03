@@ -1,6 +1,7 @@
 ![Lates Release](https://img.shields.io/github/v/tag/dkratzert/FinalCif?label=Release)
 [![Unit Tests](https://github.com/dkratzert/FinalCif/actions/workflows/python-app_windows.yml/badge.svg?branch=master)](https://github.com/dkratzert/FinalCif/actions/workflows/python-app_windows.yml)
 ![Contributions](https://img.shields.io/badge/contributions-welcome-blue)
+[![PyPI package](https://repology.org/badge/version-for-repo/pypi/python:finalcif.svg)](https://repology.org/project/python:finalcif/versions)
 <a href="https://repology.org/project/finalcif/versions">
     <img src="https://repology.org/badge/vertical-allrepos/finalcif.svg" alt="Packaging status" align="right">
 </a>
@@ -17,7 +18,11 @@ For tables from multiple CIF files, you may want to use the program [multitable]
 You only need them if you want to make report tables that differ from the default ones.
 - [A template with everything in](https://github.com/dkratzert/FinalCif/raw/master/finalcif/template/template_text.docx)
 - [A template without the report text](https://github.com/dkratzert/FinalCif/raw/master/finalcif/template/template_without_text.docx)
+- [A template for a multi-CIF table](https://github.com/dkratzert/FinalCif/raw/master/finalcif/template/template_for_multitable.docx).
 
+**Recent Changes**
+
+[See last changes in FinalCif](https://dkratzert.de/fcchangelog.html)
 
 **Some screenshots**
 

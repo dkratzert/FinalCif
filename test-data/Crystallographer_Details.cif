@@ -3,8 +3,8 @@ _audit_contact_author_name        'Dr. Daniel Kratzert'
 _audit_contact_author_email       dkratzert@gmx.de
 _audit_contact_author_address
 ;
-Albert-Ludwigs-Universita\"t Freiburg
-Institut fu\"r Anorganische und Analytische Chemie
+Albert-Ludwigs-Universit\"at Freiburg
+Institut f\"ur Anorganische und Analytische Chemie
 Albertstra\&se 21
 Freiburg i. Br.
 79104

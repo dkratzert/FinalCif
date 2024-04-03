@@ -1,3 +1,6 @@
+import os
+
+os.environ["RUNNING_TEST"] = 'True'
 import unittest
 from pathlib import Path
 
@@ -6,16 +9,17 @@ from PyQt5.QtGui import QIcon
 from finalcif import VERSION
 from finalcif.appwindow import AppWindow
 
+data = Path('tests')
 
+
+# noinspection PyMissingTypeHints
 class TestChangesTrackingActive(unittest.TestCase):
     """A CIF fle in a complete work folder"""
 
     def setUp(self) -> None:
-        self.testcif = Path('tests/examples/work/cu_BruecknerJK_153F40_0m.cif').absolute()
-        self.myapp = AppWindow(self.testcif, unit_test=True)
+        self.testcif = data / 'examples/work/cu_BruecknerJK_153F40_0m.cif'
+        self.myapp = AppWindow(file=self.testcif)
         self.myapp.finalcif_changes_filename.unlink(missing_ok=True)
-        self.myapp.running_inside_unit_test = True
-        self.myapp.hide()
         self.myapp.ui.trackChangesCifCheckBox.setChecked(True)
         self.myapp.setWindowIcon(QIcon('./icon/multitable.png'))
         self.myapp.setWindowTitle('FinalCif v{}'.format(VERSION))

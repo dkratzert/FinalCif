@@ -1,24 +1,35 @@
-import sys
+import os
 import unittest
+from pathlib import Path
 
-from PyQt5.QtWidgets import QApplication
+from PyQt5.QtWidgets import QApplication, QMainWindow
 
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.gui.loop_creator import LoopCreator
 
-app = QApplication(sys.argv)
+app = QApplication.instance()
+if app is None:
+    app = QApplication([])
+
+data = Path('.')
 
 
 class TestLoopCreator(unittest.TestCase):
     def setUp(self) -> None:
-        self.cif = CifContainer('test-data/1000006.cif')
-        self.lc = LoopCreator(cif=self.cif)
+        os.environ["RUNNING_TEST"] = 'True'
+        self.w = QMainWindow()
+        self.cif = CifContainer(data / 'test-data/1000006.cif')
+        self.lc = LoopCreator(parent=self.w, cif=self.cif)
         self.lc.saveLoopPushButton.clicked.connect(self.lc.save_new_loop_to_cif)
+        self.w.setCentralWidget(self.lc)
+        #self.w.show()
         # For testing:
         # self.show_app()
 
+    def tearDown(self) -> None:
+        self.w.close()
+
     def show_app(self):
-        self.lc.show()
         app.exec_()
 
     def test_search(self):
@@ -63,7 +74,8 @@ class TestLoopCreator(unittest.TestCase):
         self.assertEqual(('<pre><h2>_atom_site_Cartn_x</h2> The atom-site coordinates in angstroms '
                           'specified according to a\n'
                           ' set of orthogonal Cartesian axes related to the cell axes as\n'
-                          ' specified by the _atom_sites_Cartn_transform_axes description.</pre>'),
+                          ' specified by the _atom_sites_Cartn_transform_axes description.</pre>\n'
+                          '<br><p><h4>Type:</h4> number (int or float)</p>'),
                          self.lc.availableKeysListWidget.item(2).toolTip())
 
     def test_save_to_cif(self):
