@@ -61,6 +61,8 @@ from finalcif.tools.space_groups import SpaceGroups
 from finalcif.tools.statusbar import StatusBar
 from finalcif.tools.sumformula import formula_str_to_dict, sum_formula_to_html
 
+# QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
+
 DEBUG = False
 app = QApplication.instance()
 if app is None:
@@ -633,10 +635,9 @@ class AppWindow(QMainWindow):
 
     def setTextEditSizes(self):
         for ui in [self.ui.Spacegroup_top_LineEdit, self.ui.CCDCNumLineEdit, self.ui.SumFormMainLineEdit]:
-            ui.setFixedHeight(self.ui.appendCifPushButton.height() + 6)
-            ui.setFixedHeight(self.ui.appendCifPushButton.height() + 6)
-            ui.setFixedHeight(self.ui.appendCifPushButton.height() + 6)
+            ui.setFixedHeight(self.ui.datanameComboBox.height() + 6)
             vScrollBar = ui.verticalScrollBar()
+            # Scroll down a bit, or text will not be in the vertical center:
             vScrollBar.triggerAction(QScrollBar.SliderSingleStepAdd)
 
     def moveEvent(self, a0: QtGui.QMoveEvent) -> None:
