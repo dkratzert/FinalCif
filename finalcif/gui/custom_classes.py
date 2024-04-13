@@ -179,6 +179,7 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         """
         Set text in current table cell regardless of the containing item.
         """
+        self.color = color
         txt = retranslate_delimiter(txt)
         if row is None and key in self.vheaderitems:
             row = self.vheaderitems.index(key)
@@ -195,6 +196,7 @@ class MyCifTable(QTableWidget, ItemTextMixin):
             widget.cif_key = key
         else:
             textedit = MyQPlainTextEdit(self)
+            textedit.color = self.color
             textedit.cif_key = key
             textedit.templateRequested.connect(self.goto_template_page)
             textedit.new_key.connect(lambda x: self.new_key.emit(x))

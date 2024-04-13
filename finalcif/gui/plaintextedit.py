@@ -1,7 +1,7 @@
 from enum import IntEnum
 from typing import TYPE_CHECKING
 
-from PyQt5 import QtCore
+from PyQt5 import QtCore, QtGui
 from PyQt5.QtCore import pyqtSignal, Qt, QObject, QEvent, QSize
 from PyQt5.QtGui import QTextOption, QFontMetrics, QContextMenuEvent, QFont, QColor
 from PyQt5.QtWidgets import QPlainTextEdit, QFrame, QAbstractScrollArea
@@ -17,6 +17,15 @@ class Column(IntEnum):
     CIF = 0
     DATA = 1
     EDIT = 2
+
+
+def correct_length(text):
+    return len(text) > 5
+
+
+validators = {
+    '_chemical_melting_point': correct_length,
+}
 
 
 class MyQPlainTextEdit(QPlainTextEdit):
@@ -149,6 +158,21 @@ class MyQPlainTextEdit(QPlainTextEdit):
         if e.type() == QtCore.QEvent.InputMethodQuery:
             self.parent.setCurrentCell(self.row, self.column)
         return super().event(e)
+
+    def keyPressEvent(self, event: QtGui.QKeyEvent):
+        super().keyPressEvent(event)
+        if self.column == Column.EDIT:
+            self.validate_text(self.toPlainText())
+
+    def validate_text(self, text: str):
+        validator = validators.get(self.cif_key, None)
+        if validator and validator(text):
+            self.setBackground(rgb(240, 88, 70))
+        else:
+            if self.color:
+                self.setBackground(self.color)
+            else:
+                self.setBackground(QColor(255, 255, 255))
 
     def leaveEvent(self, a0: QEvent) -> None:
         super().leaveEvent(a0)
