@@ -167,7 +167,7 @@ class MyQPlainTextEdit(QPlainTextEdit):
     def validate_text(self, text: str):
         validator = validators.get(self.cif_key, None)
         if validator and validator(text):
-            self.setBackground(rgb(240, 88, 70))
+            self.setBackground(QColor(240, 88, 70))
         else:
             if self.color:
                 self.setBackground(self.color)
