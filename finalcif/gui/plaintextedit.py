@@ -1,5 +1,6 @@
+import dataclasses
 from enum import IntEnum
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Union
 
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtCore import pyqtSignal, Qt, QObject, QEvent, QSize
@@ -19,12 +20,36 @@ class Column(IntEnum):
     EDIT = 2
 
 
-def correct_length(text):
-    return len(text) > 5
+class BaseLimits:
+    upper: Union[int, float, str]
+    lower: Union[int, float, str]
+    valid: callable
+    value_type: Union[int, float, str]
 
 
-validators = {
-    '_chemical_melting_point': correct_length,
+@dataclasses.dataclass(frozen=True)
+class Integerlimits(BaseLimits):
+    upper: int
+    lower: int
+    valid: callable
+    value_type = int
+
+
+def validate_cif_key(value, limits: Integerlimits):
+    valid = False
+    if value in ('', '?', '.'):
+        return True
+    try:
+        value = limits.value_type(value)
+    except Exception:
+        return False
+    if value >= limits.lower and value <= limits.upper:
+        valid = True
+    return valid
+
+
+validators: dict[str, BaseLimits] = {
+    '_chemical_melting_point': Integerlimits(lower=0, upper=99999999, valid=validate_cif_key),
 }
 
 
@@ -166,7 +191,7 @@ class MyQPlainTextEdit(QPlainTextEdit):
 
     def validate_text(self, text: str):
         validator = validators.get(self.cif_key, None)
-        if validator and validator(text):
+        if validator and not validator.valid(text, validator):
             self.setBackground(QColor(240, 88, 70))
         else:
             if self.color:
