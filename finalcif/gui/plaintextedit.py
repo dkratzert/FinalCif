@@ -9,6 +9,7 @@ from PyQt5.QtWidgets import QPlainTextEdit, QFrame, QAbstractScrollArea
 
 from finalcif.gui.edit_button import FloatingButtonWidget
 from finalcif.gui.new_key_dialog import NewKey
+from finalcif.gui.validators import validators
 
 if TYPE_CHECKING:
     from finalcif.gui.custom_classes import MyCifTable
@@ -20,37 +21,6 @@ class Column(IntEnum):
     EDIT = 2
 
 
-class BaseLimits:
-    upper: Union[int, float, str]
-    lower: Union[int, float, str]
-    valid: callable
-    value_type: Union[int, float, str]
-
-
-@dataclasses.dataclass(frozen=True)
-class Integerlimits(BaseLimits):
-    upper: int
-    lower: int
-    valid: callable
-    value_type = int
-
-
-def validate_cif_key(value, limits: Integerlimits):
-    valid = False
-    if value in ('', '?', '.'):
-        return True
-    try:
-        value = limits.value_type(value)
-    except Exception:
-        return False
-    if value >= limits.lower and value <= limits.upper:
-        valid = True
-    return valid
-
-
-validators: dict[str, BaseLimits] = {
-    '_chemical_melting_point': Integerlimits(lower=0, upper=99999999, valid=validate_cif_key),
-}
 
 
 class MyQPlainTextEdit(QPlainTextEdit):
@@ -67,6 +37,7 @@ class MyQPlainTextEdit(QPlainTextEdit):
         Plaintext edit field for most of the table cells.
         """
         super().__init__(*args, parent)
+        self.color = None
         self.cif_key = ''
         self.edit_button = None
         font = QFont()
@@ -191,7 +162,7 @@ class MyQPlainTextEdit(QPlainTextEdit):
 
     def validate_text(self, text: str):
         validator = validators.get(self.cif_key, None)
-        if validator and not validator.valid(text, validator):
+        if validator and not validator.valid(text):
             self.setBackground(QColor(240, 88, 70))
         else:
             if self.color:
