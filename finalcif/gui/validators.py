@@ -1,8 +1,7 @@
-import dataclasses
-from typing import Union, Callable, Type
+from math import inf
+from typing import Union, Type
 
 
-@dataclasses.dataclass(frozen=False)
 class BaseLimits:
     upper: Union[int, float, str]
     lower: Union[int, float, str]
@@ -15,7 +14,11 @@ class BaseLimits:
         self.upper = upper
         self.valid = self.validate_cif_key
 
-    def validate_cif_key(self, value):
+    def __repr__(self):
+        return (f"<{self.__class__.__name__}(lower bound: {self.lower}, upper bound: {self.upper}, "
+                f"type: {self.value_type})> )>")
+
+    def validate_cif_key(self, value: str):
         valid = False
         if value in ('', '?', '.'):
             return True
@@ -28,15 +31,19 @@ class BaseLimits:
         return valid
 
 
-@dataclasses.dataclass(frozen=False)
 class Integerlimits(BaseLimits):
     value_type = int
 
     def __init__(self, lower: int, upper: int):
         super().__init__(lower, upper)
 
+    def validate_cif_key(self, value: str):
+        valid = super().validate_cif_key(value)
+        if not value.replace('-', '').isdigit() and value not in ('', '?', '.'):
+            valid = False
+        return valid
 
-@dataclasses.dataclass(frozen=False)
+
 class Floatlimits(BaseLimits):
     value_type = float
 
@@ -45,7 +52,10 @@ class Floatlimits(BaseLimits):
 
 
 validators: dict[str, BaseLimits] = {
-    '_chemical_melting_point': Floatlimits(lower=0.0, upper=99999999.9),
+    '_cell_measurement_reflns_used': Integerlimits(lower=0, upper=10 ** 12),
+    '_chemical_melting_point'      : Floatlimits(lower=0.0, upper=1.0 * 10 ** 12),
+    '_diffrn_reflns_number'        : Integerlimits(lower=0, upper=10 ** 12),
+
 }
 
 if __name__ == '__main__':
