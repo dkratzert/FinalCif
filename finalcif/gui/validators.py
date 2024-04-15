@@ -42,7 +42,7 @@ class BaseLimits:
 class Integerlimits(BaseLimits):
     value_type = int
 
-    def __init__(self, lower: Union[int, inf], upper: Union[int, inf], help_text: str = None):
+    def __init__(self, lower: int, upper: int, help_text: str = None):
         if not help_text:
             help_text = (f'Must be a {"negative" if lower < 0 else "positive"} '
                          f'integer number between {lower} and {upper}.')
@@ -59,7 +59,7 @@ class Integerlimits(BaseLimits):
 class Floatlimits(BaseLimits):
     value_type = float
 
-    def __init__(self, lower: Union[float, inf], upper: Union[float, inf], help_text: str = None):
+    def __init__(self, lower: float, upper: float, help_text: str = None):
         if not help_text:
             help_text = (f'Must be a {"negative" if lower < 0 else "positive"} '
                          f'decimal number between {lower} and {upper}.')
