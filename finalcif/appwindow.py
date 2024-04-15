@@ -18,7 +18,7 @@ from typing import Union, Dict, Tuple, List, Optional
 
 import gemmi.cif
 import requests  # type: ignore
-from PyQt5 import QtCore, QtGui, QtWebEngineWidgets
+from PyQt5 import QtCore, QtGui, QtWebEngineWidgets, QtWidgets
 from PyQt5.QtCore import Qt, QEvent
 from PyQt5.QtWidgets import QMainWindow, QShortcut, QCheckBox, QListWidgetItem, QApplication, \
     QPlainTextEdit, QFileDialog, QMessageBox, QScrollBar
