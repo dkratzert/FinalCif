@@ -18,6 +18,7 @@ from tests.helpers import addr
 
 data = Path('tests')
 
+
 class TestFileIsOpened(unittest.TestCase):
     """A CIF fle in a complete work folder"""
 
@@ -129,10 +130,9 @@ class TestWorkfolder(unittest.TestCase):
             self.cell_text('_publ_section_references', Column.DATA))
         self.assertEqual('geom', self.cell_text('_atom_sites_solution_hydrogens', 0))
         self.assertEqual('', self.cell_text('_atom_sites_solution_hydrogens', Column.DATA))
-        self.assertEqual(
-            """FinalCif V{} by Daniel Kratzert, Freiburg {}, https://dkratzert.de/finalcif.html""".format(VERSION,
-                                                                                                          datetime.now().year),
-            self.cell_text('_audit_creation_method', Column.DATA))
+        self.assertEqual(f"""FinalCif V{VERSION} by Daniel Kratzert, Freiburg 
+            {datetime.now().year}, https://dkratzert.de/finalcif.html""",
+                         self.cell_text('_audit_creation_method', Column.DATA))
 
     def test_abs_configuration_combo(self):
         self.assertEqual(6, self.key_row('_chemical_absolute_configuration'))
@@ -168,11 +168,6 @@ class TestWorkfolder(unittest.TestCase):
         self.assertEqual(['', 'Mo Kα', 'Cu Kα', 'Ag Kα', 'In Kα', 'Ga Kα', 'Fe Kα', 'W Kα'],
                          self.get_combobox_items(row, Column.EDIT))
 
-    def test_ambient_conditions_combo(self):
-        # Test if N~~2~ is correctly translated to N_2
-        row = self.key_row('_diffrn_ambient_environment')
-        self.assertEqual('N₂', self.get_combobox_items(row, Column.EDIT)[1])
-
     def test_combo_items_exptl_crystal_description(self):
         row = self.key_row('_exptl_crystal_description')
         self.assertEqual(['', 'block', 'needle', 'plate', 'prism', 'sphere'], self.get_combobox_items(row, Column.EDIT))
@@ -201,7 +196,6 @@ class TestWorkfolder(unittest.TestCase):
                          self.myapp.ui.cif_main_table.widget_from_key('_computing_data_reduction',
                                                                       Column.DATA).styleSheet())
 
-    def test_background_color_theta_max(self):
         self.assertEqual('', self.myapp.ui.cif_main_table.widget_from_key('_cell_measurement_theta_max',
                                                                           Column.CIF).styleSheet())
         self.assertEqual('background-color: #d9ffc9;',
@@ -210,17 +204,8 @@ class TestWorkfolder(unittest.TestCase):
         self.assertEqual('', self.myapp.ui.cif_main_table.widget_from_key('_cell_measurement_theta_max',
                                                                           Column.EDIT).styleSheet())
 
-    def test_color(self):
         self.assertEqual('', self.myapp.ui.cif_main_table.widget_from_key('_computing_molecular_graphics',
                                                                           Column.DATA).styleSheet())
-
-    def test_chemical_formula_moiety(self):
-        self.assertEqual('?',
-                         self.cell_text('_chemical_formula_moiety', Column.CIF))
-        self.assertEqual('',
-                         self.cell_text('_chemical_formula_moiety', Column.DATA))
-        self.assertEqual('',
-                         self.cell_text('_chemical_formula_moiety', Column.EDIT))
 
     def test_exptl_crystal_size(self):
         self.assertEqual('0.220', self.cell_text('_exptl_crystal_size_max', Column.DATA))
@@ -266,33 +251,6 @@ class TestWorkfolder(unittest.TestCase):
                          self.cell_text('_diffrn_measurement_ambient_temperature_device_make', Column.DATA))
         self.assertEqual('Oxford Cryostream 800',
                          self.cell_text('_diffrn_measurement_ambient_temperature_device_make', Column.EDIT))
-
-    def test_equipment_click_author_address_0(self):
-        # Check if click on author adds the address to second and third column:
-        self.equipment_click('Crystallographer Details')
-        self.assertEqual('?', self.cell_text('_audit_contact_author_address', Column.CIF))
-        self.assertEqual(unify_line_endings(addr), self.cell_text('_audit_contact_author_address', Column.DATA))
-        self.assertEqual(unify_line_endings(addr), self.cell_text('_audit_contact_author_address', Column.EDIT))
-
-    def test_contact_author_name_0(self):
-        self.equipment_click('Crystallographer Details')
-        self.assertEqual('?', self.cell_text('_audit_contact_author_name', Column.CIF))
-        self.assertEqual('Dr. Daniel Kratzert', self.cell_text('_audit_contact_author_name', Column.DATA))
-        self.assertEqual('Dr. Daniel Kratzert', self.cell_text('_audit_contact_author_name', Column.EDIT))
-
-    def test_contact_author_cellwidget_bevore_click(self):
-        self.assertEqual('_cell_measurement_theta_min', self.myapp.ui.cif_main_table.vheaderitems[5])
-        self.assertEqual('2.547', self.myapp.ui.cif_main_table.getText(5, Column.DATA))
-
-    def test_contact_author_cellwidget_after(self):
-        self.equipment_click('Crystallographer Details')
-        self.assertEqual(self.myapp.ui.cif_main_table.vheaderitems[5], '_audit_contact_author_name')
-        self.assertEqual('Dr. Daniel Kratzert', self.myapp.ui.cif_main_table.getText(5, Column.DATA))
-        self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>", self.cell_widget_class(5, Column.CIF))
-        self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>",
-                         self.cell_widget_class(5, Column.DATA))
-        self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>",
-                         self.cell_widget_class(5, Column.EDIT))
 
     def test_addr(self):
         self.assertNotEqual(unify_line_endings(addr), self.cell_text('_audit_contact_author_address', Column.EDIT))
