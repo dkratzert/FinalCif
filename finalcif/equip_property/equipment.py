@@ -138,7 +138,6 @@ class Equipment:
                 if item.pair is not None:
                     key, value = item.pair
                     pairs.append([key, gemmi.cif.as_string(value)])
-                    print(key, value)
             entry['items'] = pairs
             equipment_templates.append(entry)
         return equipment_templates
@@ -154,14 +153,6 @@ class Equipment:
         equipment_list = self.settings.get_equipment_list() or []
         if item['name'] not in equipment_list:
             self.settings.save_settings_list('equipment', item['name'], item['items'])
-
-    """
-    def store_predefined_templates(self):
-        equipment_list = self.settings.get_equipment_list() or []
-        for item in misc.predefined_equipment_templates:
-            if item['name'] not in equipment_list:
-                self.settings.save_settings_list('equipment', item['name'], item['items'])
-    """
 
     def edit_equipment_template(self) -> None:
         """Gets called when 'edit equipment' button was clicked."""
