@@ -260,6 +260,8 @@ def make_numbered(items):
 
 # '_space_group_centring_type',  # seems to be used nowere
 # '_exptl_absorpt_special_details',   # This is not official?!?
+
+# These keywords will end up in the CIF in any case:
 essential_keys = (
     # '_atom_sites_solution_secondary'
     # '_diffrn_measurement_specimen_adhesive'
@@ -298,10 +300,10 @@ essential_keys = (
     '_computing_data_collection',
     '_computing_data_reduction',
     '_computing_molecular_graphics',
-    '_computing_publication_material',
+    #'_computing_publication_material',
     '_computing_structure_refinement',
     '_computing_structure_solution',
-    '_diffrn_ambient_environment',
+    #'_diffrn_ambient_environment',
     '_diffrn_ambient_temperature',
     '_diffrn_detector',
     '_diffrn_detector_area_resol_mean',

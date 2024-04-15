@@ -1,6 +1,7 @@
 import sys
 from typing import Tuple, List, Union
 
+from PyQt5 import QtGui
 from PyQt5.QtCore import QSize, Qt, pyqtSignal
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QCheckBox, QListWidgetItem, QVBoxLayout, QLabel
 
@@ -24,15 +25,18 @@ class TextEditItem(QWidget):
         self.number_label = QLabel()
         self.vlayout.addWidget(self.number_label)
         self.textfield = SpellTextEdit(self)
-        font = self.textfield.font()
-        font.setPixelSize(12)
-        self.textfield.setFont(font)
+        self.set_font_size()
         self.vlayout.addWidget(self.checkbox)
         layout.addLayout(self.vlayout)
         layout.addWidget(self.textfield)
         layout.setContentsMargins(12, 8, 30, 8)
         self.setAutoFillBackground(False)
         self.checkbox.clicked.connect(self.on_checkbox_clicked)
+
+    def set_font_size(self):
+        font: QtGui.QFont = self.textfield.font()
+        font.setPointSize(font.pointSize() + 2)
+        self.textfield.setFont(font)
 
     @property
     def text(self) -> str:
@@ -65,6 +69,15 @@ class MyTextTemplateEdit(QWidget):
         self.ui.cancelTextPushButton.clicked.connect(self._on_backbutton_clicked)
         if not self.ui.templatesListWidget.count():
             self.add_more_fiels()
+        self.set_font_size()
+
+    def set_font_size(self):
+        textedit_font: QtGui.QFont = self.ui.plainTextEdit.font()
+        textedit_font.setPointSize(textedit_font.pointSize() + 3)
+        self.ui.plainTextEdit.setFont(textedit_font)
+        cif_key_font = self.ui.cifKeyLineEdit.font()
+        cif_key_font.setPointSize(textedit_font.pointSize())
+        self.ui.cifKeyLineEdit.setFont(cif_key_font)
 
     def _on_backbutton_clicked(self) -> None:
         self.ui.templatesListWidget.clear()

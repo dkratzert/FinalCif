@@ -1,0 +1,16 @@
+data_D8__VENTURE
+_diffrn_ambient_environment       N~2~
+_diffrn_radiation_monochromator   'mirror optics'
+_diffrn_measurement_ambient_temperature_device_make 'Oxford Cryostream 800'
+_diffrn_radiation_probe           x-ray
+_diffrn_source                    'microfocus sealed X-ray tube'
+_diffrn_source_type               'Incoatec I\ms'
+_diffrn_source_voltage            50
+_diffrn_source_current            1.40
+_diffrn_detector                  CPAD
+_diffrn_detector_type             'Bruker PHOTON III'
+_diffrn_detector_area_resol_mean  7.41
+_diffrn_measurement_device        'three-circle diffractometer'
+_diffrn_measurement_device_type   'Bruker D8 VENTURE dual wavelength Mo/Cu'
+_diffrn_measurement_method        '\w and \f scans'
+_diffrn_measurement_specimen_support 'MiTeGen micromount'

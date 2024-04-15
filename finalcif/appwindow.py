@@ -18,7 +18,7 @@ from typing import Union, Dict, Tuple, List, Optional
 
 import gemmi.cif
 import requests  # type: ignore
-from PyQt5 import QtCore, QtGui, QtWebEngineWidgets
+from PyQt5 import QtCore, QtGui, QtWebEngineWidgets, QtWidgets
 from PyQt5.QtCore import Qt, QEvent
 from PyQt5.QtWidgets import QMainWindow, QShortcut, QCheckBox, QListWidgetItem, QApplication, \
     QPlainTextEdit, QFileDialog, QMessageBox, QScrollBar
@@ -1136,12 +1136,20 @@ class AppWindow(QMainWindow):
                     make_multi_tables(cif=self.cif, output_filename=str(multi_table_document))
             else:
                 print('Report with templates')
-                t = TemplatedReport(format=ReportFormat.RICHTEXT, options=self.options, cif=self.cif)
-                ok = t.make_templated_docx_report(output_filename=str(report_filename),
-                                                  picfile=picfile,
-                                                  template_path=Path(self.get_checked_templates_list_text()))
-                # t = TemplatedReport(format=ReportFormat.HTML, options=self.options, cif=self.cif)
-                # t.make_templated_html_report(options=self.options, picfile=picfile)
+                template_path = Path(self.get_checked_templates_list_text())
+                ok = False
+                if template_path.suffix in ('.docx',):
+                    t = TemplatedReport(format=ReportFormat.RICHTEXT, options=self.options, cif=self.cif)
+                    ok = t.make_templated_docx_report(output_filename=str(report_filename),
+                                                      picfile=picfile,
+                                                      template_path=Path(self.get_checked_templates_list_text()))
+                elif template_path.suffix in ('.html', '.tmpl'):
+                    t = TemplatedReport(format=ReportFormat.HTML, options=self.options, cif=self.cif)
+                    report_filename = report_filename.with_suffix('.html')
+                    ok = t.make_templated_html_report(output_filename=str(report_filename),
+                                                      picfile=picfile,
+                                                      template_path=template_path.parent,
+                                                      template_file=template_path.name)
                 if not ok:
                     return None
         except FileNotFoundError as e:
@@ -1514,6 +1522,7 @@ class AppWindow(QMainWindow):
             raise
             # unable_to_open_message(Path(self.cif.filename), not_ok)
         self.load_recent_cifs_list()
+        self.set_vertical_header_width()
         if self.options.track_changes and load_changes:
             changes_exist = False
             if self.changes_cif_has_zero_size():
@@ -1557,6 +1566,16 @@ class AppWindow(QMainWindow):
                 self.redraw_molecule()
             t = QtCore.QTimer(self)
             t.singleShot(1000, self.check_cecksums)
+
+    def set_vertical_header_width(self):
+        """
+        Sets the width of the vertical header to the length of the longest string in the list.
+        """
+        vheader: QtWidgets.QHeaderView = self.ui.cif_main_table.verticalHeader()
+        fm = QtGui.QFontMetrics(vheader.font(), self)
+        # noinspection PyTypeChecker
+        longest_string: str = max(self.ui.cif_main_table.vheaderitems, key=len)
+        vheader.setMaximumWidth(fm.width(longest_string + 'O'))
 
     def changes_cif_has_values(self) -> bool:
         try:

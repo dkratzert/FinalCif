@@ -1,5 +1,6 @@
+import dataclasses
 from enum import IntEnum
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Union
 
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtCore import pyqtSignal, Qt, QObject, QEvent, QSize
@@ -8,6 +9,7 @@ from PyQt5.QtWidgets import QPlainTextEdit, QFrame, QAbstractScrollArea
 
 from finalcif.gui.edit_button import FloatingButtonWidget
 from finalcif.gui.new_key_dialog import NewKey
+from finalcif.gui.validators import validators
 
 if TYPE_CHECKING:
     from finalcif.gui.custom_classes import MyCifTable
@@ -17,15 +19,6 @@ class Column(IntEnum):
     CIF = 0
     DATA = 1
     EDIT = 2
-
-
-def correct_length(text):
-    return len(text) > 5
-
-
-validators = {
-    '_chemical_melting_point': correct_length,
-}
 
 
 class MyQPlainTextEdit(QPlainTextEdit):
@@ -42,6 +35,7 @@ class MyQPlainTextEdit(QPlainTextEdit):
         Plaintext edit field for most of the table cells.
         """
         super().__init__(*args, parent)
+        self.color = None
         self.cif_key = ''
         self.edit_button = None
         font = QFont()
@@ -110,10 +104,6 @@ class MyQPlainTextEdit(QPlainTextEdit):
         Set background color of the text field.
         """
         self.setStyleSheet("background-color: {};".format(str(color.name())))
-        # No idea why this does not work
-        # pal = self.palette()
-        # pal.setColor(QPalette.Base, color)
-        # self.setPalette(pal)
 
     def setUneditable(self):
         self.setReadOnly(True)
@@ -166,13 +156,15 @@ class MyQPlainTextEdit(QPlainTextEdit):
 
     def validate_text(self, text: str):
         validator = validators.get(self.cif_key, None)
-        if validator and validator(text):
-            self.setBackground(QColor(240, 88, 70))
+        if validator and not validator.valid(text):
+            self.setBackground(QColor(254, 191, 189))
+            self.setToolTip(validator.help_text)
         else:
+            self.setToolTip('')
             if self.color:
                 self.setBackground(self.color)
             else:
-                self.setBackground(QColor(255, 255, 255))
+                self.setStyleSheet("")
 
     def leaveEvent(self, a0: QEvent) -> None:
         super().leaveEvent(a0)

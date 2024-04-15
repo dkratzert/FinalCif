@@ -94,7 +94,7 @@ class CifContainer():
         The suffix needs '-finalcif' in order to contain the finalcif ending.
         "foo/bar/baz-finalcif.cif"
 
-        :param forece_strip: Forces to strip the filename also after the '-finalcif' string.
+        :param force_strip: Forces to strip the filename also after the '-finalcif' string.
         """
         file_witout_finalcif = strip_finalcif_of_name(Path(self.filename).stem, till_name_ends=force_strip)
         filename = self.path_base.joinpath(Path(prefix + file_witout_finalcif + suffix))

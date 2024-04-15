@@ -9,7 +9,6 @@ class Options:
         """
         :param ui: UI of FinalCif
         :param settings: Settings of FinalCif
-        :param debug: If turned on, this object can set and get attributes without using the settings.
         """
         self.ui = ui
         self.settings = settings

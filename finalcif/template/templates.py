@@ -1,17 +1,16 @@
+from __future__ import annotations
 from contextlib import suppress
 from pathlib import Path
 from typing import List
+from typing import TYPE_CHECKING
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QFileDialog, QListWidgetItem
 
-from typing import TYPE_CHECKING
-
 if TYPE_CHECKING:
     from finalcif.appwindow import AppWindow
-
-from finalcif.tools.settings import FinalCifSettings
+    from finalcif.tools.settings import FinalCifSettings
 
 
 class ReportTemplates:
@@ -19,7 +18,7 @@ class ReportTemplates:
     Displays the list of report templates in the options menu.
     """
 
-    def __init__(self, app: 'AppWindow', settings: FinalCifSettings):
+    def __init__(self, app: AppWindow, settings: FinalCifSettings):
         self.app = app
         self.settings = settings
         self.lw = self.app.ui.docxTemplatesListWidget
@@ -33,16 +32,17 @@ class ReportTemplates:
 
     def add_new_template(self, templ_path: str = '') -> None:
         if not templ_path:
-            templ_path, _ = QFileDialog.getOpenFileName(filter="DOCX file (*.docx)", initialFilter="DOCX file (*.docx)",
-                                                        caption='Open a Report Template File')
+            templ_path, _ = QFileDialog.getOpenFileName(filter="DOCX file (*.docx);; html file (*.html *.tmpl)",
+                                                        initialFilter="DOCX file (*.docx)",
+                                                        caption='Open a Report Template File', parent=self.app)
         itemslist = self.get_templates_list_from_widget()
         self.app.status_bar.show_message('')
         if templ_path in itemslist:
             self.app.status_bar.show_message('This templates is already in the list.', 10)
             print('This templates is already in the list.')
             return
-        if not Path(templ_path).exists() or not Path(templ_path).is_file() \
-                or not Path(templ_path).name.endswith('.docx'):
+        if (not Path(templ_path).exists() or not Path(templ_path).is_file()
+                or not Path(templ_path).suffix in ('.docx', '.html', '.tmpl')):
             self.app.status_bar.show_message('This template does not exist or is unreadable.', 10)
             print('This template does not exist or is unreadable.', Path(templ_path).resolve())
             return

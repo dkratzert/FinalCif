@@ -38,13 +38,7 @@
       </layout>
      </item>
      <item>
-      <widget class="QListWidget" name="availableKeysListWidget">
-       <property name="font">
-        <font>
-         <pointsize>13</pointsize>
-        </font>
-       </property>
-      </widget>
+      <widget class="QListWidget" name="availableKeysListWidget"/>
      </item>
     </layout>
    </item>
@@ -112,13 +106,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QListWidget" name="newLoopKeysListWidget">
-       <property name="font">
-        <font>
-         <pointsize>13</pointsize>
-        </font>
-       </property>
-      </widget>
+      <widget class="QListWidget" name="newLoopKeysListWidget"/>
      </item>
      <item>
       <widget class="QPushButton" name="saveLoopPushButton">
