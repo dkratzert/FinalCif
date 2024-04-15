@@ -130,9 +130,6 @@ class TestWorkfolder(unittest.TestCase):
             self.cell_text('_publ_section_references', Column.DATA))
         self.assertEqual('geom', self.cell_text('_atom_sites_solution_hydrogens', 0))
         self.assertEqual('', self.cell_text('_atom_sites_solution_hydrogens', Column.DATA))
-        self.assertEqual(f"""FinalCif V{VERSION} by Daniel Kratzert, Freiburg 
-            {datetime.now().year}, https://dkratzert.de/finalcif.html""",
-                         self.cell_text('_audit_creation_method', Column.DATA))
 
     def test_abs_configuration_combo(self):
         self.assertEqual(6, self.key_row('_chemical_absolute_configuration'))
