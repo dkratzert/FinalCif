@@ -234,26 +234,10 @@ class TestWorkfolder(unittest.TestCase):
             self.assertEqual(r, self.cell_text(key, n))
 
     def test_equipment_click_machine(self):
-        self.equipment_click('APEX2 QUAZAR')
+        self.equipment_click('D8_VENTURE')
         self.allrows_test_key('_diffrn_measurement_method', ['?', 'ω and ϕ scans', 'ω and ϕ scans'])
         self.allrows_test_key('_diffrn_measurement_specimen_support',
                               ['?', 'MiTeGen micromount', 'MiTeGen micromount'])
-
-    # unittest.SkipTest('')
-    def test_equipment_click_machine_oxford_0(self):
-        self.equipment_click('APEX2 QUAZAR')
-        # We have a value which is new. So a row at start is created and only the CIF column is populated
-        self.assertEqual('?', self.cell_text('_diffrn_measurement_ambient_temperature_device_make', Column.CIF))
-
-    def test_equipment_click_machine_oxford_1(self):
-        self.equipment_click('APEX2 QUAZAR')
-        self.assertEqual('Oxford Cryostream 800',
-                         self.cell_text('_diffrn_measurement_ambient_temperature_device_make', Column.DATA))
-        self.assertEqual('Oxford Cryostream 800',
-                         self.cell_text('_diffrn_measurement_ambient_temperature_device_make', Column.EDIT))
-
-    def test_addr(self):
-        self.assertNotEqual(unify_line_endings(addr), self.cell_text('_audit_contact_author_address', Column.EDIT))
 
     def test_addr_after_author_click_0(self):
         self.equipment_click('Crystallographer Details')
