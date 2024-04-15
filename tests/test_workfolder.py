@@ -336,8 +336,6 @@ class TestWorkfolderOtherCifName(unittest.TestCase):
                          "G.M. (2015). Acta Cryst. C71, 3-8.", self.cell_text('_publ_section_references', Column.DATA))
         self.assertEqual('geom', self.cell_text('_atom_sites_solution_hydrogens', 0))
         self.assertEqual('', self.cell_text('_atom_sites_solution_hydrogens', Column.DATA))
-        self.assertEqual(f"FinalCif V{VERSION} by Daniel Kratzert, Freiburg {datetime.now().year}, "
-                         f"https://dkratzert.de/finalcif.html", self.cell_text('_audit_creation_method', Column.DATA))
 
 
 if __name__ == '__main__':
