@@ -104,10 +104,6 @@ class MyQPlainTextEdit(QPlainTextEdit):
         Set background color of the text field.
         """
         self.setStyleSheet("background-color: {};".format(str(color.name())))
-        # No idea why this does not work
-        # pal = self.palette()
-        # pal.setColor(QPalette.Base, color)
-        # self.setPalette(pal)
 
     def setUneditable(self):
         self.setReadOnly(True)
@@ -161,12 +157,14 @@ class MyQPlainTextEdit(QPlainTextEdit):
     def validate_text(self, text: str):
         validator = validators.get(self.cif_key, None)
         if validator and not validator.valid(text):
-            self.setBackground(QColor(240, 88, 70))
+            self.setBackground(QColor(254, 191, 189))
+            self.setToolTip(validator.help_text)
         else:
+            self.setToolTip('')
             if self.color:
                 self.setBackground(self.color)
             else:
-                self.setBackground(QColor(255, 255, 255))
+                self.setStyleSheet("")
 
     def leaveEvent(self, a0: QEvent) -> None:
         super().leaveEvent(a0)
