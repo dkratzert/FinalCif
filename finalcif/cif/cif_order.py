@@ -17,6 +17,13 @@ special_keys = ['_iucr_refine_instructions_details',
                 ]
 
 order = [
+    '_audit_update_record',
+    '_audit_contact_author',
+    '_audit_contact_author_name',
+    '_audit_contact_author_phone',
+    '_audit_contact_author_email',
+    '_audit_contact_author_fax',
+    '_audit_contact_author_address',
     '_audit_author_id',
     '_audit_author_id_audit',
     '_audit_author_name',
@@ -127,7 +134,6 @@ order = [
     '_publ_contact_author_id_iucr',
     '_publ_contact_author_id_orcid',
     '_publ_contact_author_footnote',
-
 
     '_shelx_SHELXL_version_number',
     '_chemical_name_systematic',
@@ -341,4 +347,17 @@ order = [
     '_geom_details',
     '_geom_special_details',
 
+    '_bruker_diffrn_runs_wavelength',
+    '_bruker_diffrn_runs_temperature',
+    '_bruker_diffrn_runs_current',
+    '_bruker_diffrn_runs_voltage',
+    '_bruker_diffrn_runs_images',
+    '_bruker_diffrn_runs_time',
+    '_bruker_diffrn_runs_width',
+    '_bruker_diffrn_runs_axis',
+    '_bruker_diffrn_runs_chi',
+    '_bruker_diffrn_runs_phi',
+    '_bruker_diffrn_runs_omega',
+    '_bruker_diffrn_runs_theta',
+    '_bruker_diffrn_runs_distance',
 ]
