@@ -4,10 +4,12 @@ from pathlib import Path
 from typing import List, Dict
 from typing import TYPE_CHECKING
 
+import gemmi
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QListWidgetItem
 from gemmi import cif
 
+from finalcif.app_path import application_path
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.cif.text import retranslate_delimiter, string_to_utf8
 from finalcif.equip_property.tools import read_document_from_cif_file
@@ -123,11 +125,43 @@ class Equipment:
         self.store_predefined_templates()
         self.show_equipment()
 
+    def load_equipment_files(self):
+        template_path = Path(application_path).joinpath('template/machines').resolve()
+        files = template_path.glob('*.cif')
+        equipment_templates = []
+        for file in files:
+            doc = read_document_from_cif_file(file.__str__())
+            block = doc.sole_block()
+            entry = {'name': f'{file.stem}', 'items': []}
+            pairs = []
+            for item in block:
+                if item.pair is not None:
+                    key, value = item.pair
+                    pairs.append([key, gemmi.cif.as_string(value)])
+                    print(key, value)
+            entry['items'] = pairs
+            equipment_templates.append(entry)
+        return equipment_templates
+
+    def store_predefined_templates(self):
+        try:
+            for item in self.load_equipment_files():
+                self.store_equipment_item(item)
+        except Exception as e:
+            print(f'DBG> Could not load equipment templates: {e.__str__()}')
+
+    def store_equipment_item(self, item: list[dict[str:str | str:list[list[str]]]]):
+        equipment_list = self.settings.get_equipment_list() or []
+        if item['name'] not in equipment_list:
+            self.settings.save_settings_list('equipment', item['name'], item['items'])
+
+    """
     def store_predefined_templates(self):
         equipment_list = self.settings.get_equipment_list() or []
         for item in misc.predefined_equipment_templates:
             if item['name'] not in equipment_list:
                 self.settings.save_settings_list('equipment', item['name'], item['items'])
+    """
 
     def edit_equipment_template(self) -> None:
         """Gets called when 'edit equipment' button was clicked."""
@@ -183,9 +217,10 @@ class Equipment:
         for key, _ in table_data:
             if key not in cif_all_dict.keys():
                 if not key.startswith('_'):
-                    show_general_warning(self.app, '"{}" is not a valid keyword! '
-                                                   '\nChange the name in order to save.\n'
-                                                   'Keys must start with an underscore.'.format(key))
+                    show_general_warning(self.app,
+                                         f'"{key}" is not a valid keyword! \n'
+                                         f'Change the name in order to save.\n'
+                                         f'Keys must start with an underscore.')
                     return
                 show_general_warning(self.app, '"{}" is not an official CIF keyword!'.format(key))
         self.settings.save_settings_list('equipment', self.selected_template_name(), table_data)
@@ -199,7 +234,7 @@ class Equipment:
         if isinstance(filename, Path):
             filename = str(filename)
         if not filename:
-            filename = cif_file_open_dialog(filter="CIF file (*.cif  *.cif_od *.cfx)")
+            filename = cif_file_open_dialog(filter="CIF file (*.pcf *.cif  *.cif_od *.cfx)")
         if not filename:
             print('No file given')
             return
@@ -219,6 +254,8 @@ class Equipment:
                     continue
                 table_data.append([key, retranslate_delimiter(cif.as_string(value).strip('\n\r ;'))])
         if filename.endswith('.cif_od'):
+            name = Path(filename).stem
+        elif filename.endswith('.pcf'):
             name = Path(filename).stem
         else:
             name = block.name.replace('__', ' ')

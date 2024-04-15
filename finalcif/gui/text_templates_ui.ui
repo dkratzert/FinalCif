@@ -51,7 +51,6 @@
        </property>
        <property name="font">
         <font>
-         <pointsize>12</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
@@ -173,11 +172,6 @@
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
           </property>
           <property name="frameShadow">
            <enum>QFrame::Plain</enum>

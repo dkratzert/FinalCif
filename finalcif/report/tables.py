@@ -70,8 +70,6 @@ def make_multi_tables(cif: CifContainer, output_filename: str = 'multitable.docx
 def make_report_from(options: Options, cif: CifContainer, output_filename: str = None, picfile: Path = None) -> str:
     """
     Creates a tabular cif report.
-    :param file_obj: Input cif file.
-    :param output_filename: the table is saved to this file.
     """
     document = create_document()
     references: Union[ReferenceList, None] = None

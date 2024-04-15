@@ -21,8 +21,6 @@ class Column(IntEnum):
     EDIT = 2
 
 
-
-
 class MyQPlainTextEdit(QPlainTextEdit):
     """
     A special plaintextedit with convenient methods to set the background color and other things.
