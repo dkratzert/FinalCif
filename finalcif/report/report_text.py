@@ -500,7 +500,10 @@ class RefinementDetails():
         ph = document.add_paragraph(style='Heading 2')
         ph.add_run(text=fr"Refinement details for {cif.block.name}")
         p = document.add_paragraph()
-        p.style = document.styles['fliesstext']
+        try:
+            p.style = document.styles['fliesstext']
+        except KeyError:
+            print('DBG> Text style not found')
         text = ' '.join(cif['_refine_special_details'].splitlines(keepends=False))
         if cif['_olex2_refine_details']:
             text += ' '.join(cif['_olex2_refine_details'].splitlines(keepends=False))
@@ -527,7 +530,10 @@ def format_radiation(radiation_type: str) -> list:
 
 def make_report_text(cif, document: Document) -> references.ReferenceList:
     paragr = document.add_paragraph()
-    paragr.style = document.styles['fliesstext']
+    try:
+        paragr.style = document.styles['fliesstext']
+    except KeyError:
+        print('DBG> Text style not found')
     ref = references.ReferenceList(paragr)
     # -- The main text:
     paragr.add_run('The following text is only a suggestion: ').font.bold = True
