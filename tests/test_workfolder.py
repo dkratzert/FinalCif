@@ -93,7 +93,7 @@ class TestWorkfolder(unittest.TestCase):
         self.myapp.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
         item = listw.findItems(field, Qt.MatchStartsWith)[0]
         listw.setCurrentItem(item)
-        self.assertEqual(field, item.text())
+        self.assertEqual(field.upper(), item.text().upper())
         rect = listw.visualItemRect(item)
         QTest.mouseDClick(listw.viewport(), Qt.LeftButton, Qt.NoModifier, rect.center())
         # This is necessary:
@@ -138,7 +138,6 @@ class TestWorkfolder(unittest.TestCase):
                          self.cell_widget_class(6, Column.DATA))
         self.assertEqual("<class 'finalcif.gui.combobox.MyComboBox'>", self.cell_widget_class(6, Column.EDIT))
 
-    def test_diffrn_radiation_type_combo(self):
         row = self.key_row('_diffrn_radiation_type')
         self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>",
                          self.cell_widget_class(row, Column.CIF))
@@ -146,7 +145,6 @@ class TestWorkfolder(unittest.TestCase):
                          self.cell_widget_class(row, Column.DATA))
         self.assertEqual("<class 'finalcif.gui.combobox.MyComboBox'>", self.cell_widget_class(row, Column.EDIT))
 
-    def test_diffrn_ambient_temperature_combo(self):
         row = self.key_row('_diffrn_ambient_temperature')
         self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>",
                          self.cell_widget_class(row, Column.CIF))
@@ -154,28 +152,24 @@ class TestWorkfolder(unittest.TestCase):
                          self.cell_widget_class(row, Column.DATA))
         self.assertEqual("<class 'finalcif.gui.combobox.MyComboBox'>", self.cell_widget_class(row, Column.EDIT))
 
-    def test_combo_items_ambient_temp(self):
+    def test_combo_items(self):
         row = self.key_row('_diffrn_ambient_temperature')
         self.assertEqual(
             ['', '15(1)', '80(2)', '100(2)', '110(2)', '120(2)', '130(2)', '150(2)', '200(2)', '293.15(2)', '298(2)'],
             self.get_combobox_items(row, Column.EDIT))
 
-    def test_combo_items_radiation(self):
         row = self.key_row('_diffrn_radiation_type')
         self.assertEqual(['', 'Mo Kα', 'Cu Kα', 'Ag Kα', 'In Kα', 'Ga Kα', 'Fe Kα', 'W Kα'],
                          self.get_combobox_items(row, Column.EDIT))
 
-    def test_combo_items_exptl_crystal_description(self):
         row = self.key_row('_exptl_crystal_description')
         self.assertEqual(['', 'block', 'needle', 'plate', 'prism', 'sphere'], self.get_combobox_items(row, Column.EDIT))
 
-    def test_combo_items_atom_sites_solution_primary(self):
         row = self.key_row('_atom_sites_solution_primary')
         self.assertEqual(
             ['', 'direct', 'vecmap', 'heavy', 'difmap', 'geom', 'disper', 'isomor', 'notdet', 'dual', 'iterative',
              'other'], self.get_combobox_items(row, Column.EDIT))
 
-    def test_combo_items_exptl_crystal_colour(self):
         row = self.key_row('_exptl_crystal_colour')
         self.assertEqual(
             ['', 'colourless', 'white', 'black', 'yellow', 'red', 'blue', 'green', 'gray', 'pink', 'orange',

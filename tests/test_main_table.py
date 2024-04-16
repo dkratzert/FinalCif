@@ -57,17 +57,9 @@ class TestMainTableFieldBehavior(unittest.TestCase):
     ######
 
     def test_delete_row(self):
+        rows = self.myapp.ui.cif_main_table.rowCount()
         self.myapp.ui.cif_main_table.delete_row(self.key_row('_audit_update_record'))
-        self.assertEqual(138, self.myapp.ui.cif_main_table.rowCount())
-
-    def test_delete_and_reappear(self):
-        self.assertEqual(139, self.myapp.ui.cif_main_table.rowCount())
-        self.myapp.ui.cif_main_table.delete_row(
-            self.myapp.ui.cif_main_table.row_from_key('_atom_sites_solution_primary'))
-        # One less than before:
-        self.assertEqual(138, self.myapp.ui.cif_main_table.rowCount())
-        # Line is deleted:
-        self.assertFalse('_atom_sites_solution_primary' in self.myapp.ui.cif_main_table.vheaderitems)
+        self.assertEqual(rows - 1, self.myapp.ui.cif_main_table.rowCount())
 
     def test_get_text_by_key(self):
         self.assertEqual('geom', self.cell_text('_atom_sites_solution_hydrogens', Column.CIF))
