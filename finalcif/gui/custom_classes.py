@@ -95,7 +95,7 @@ class MyCifTable(QTableWidget, ItemTextMixin):
             for row in range(self.rowCount()):
                 self.setRowHidden(row, False)
             return
-
+        searchtext = searchtext.replace('.', '_')
         searchpattern = re.compile(f'.*{searchtext}.*', re.IGNORECASE)
         searched = [x for x in self.vheaderitems if searchpattern.match(x)]
 
