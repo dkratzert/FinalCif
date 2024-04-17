@@ -164,8 +164,8 @@ class DataReduction():
         abs_details = gstr(cif['_exptl_absorpt_process_details']) or '??'
         data_reduct_ref = references.DummyReference()
         absorpt_ref = references.DummyReference()
-        integration_prog = '[unknown integration program]'
-        scale_prog = '[unknown program]'
+        integration_prog = '[No _computing_data_reduction given]'
+        scale_prog = '[Unknown scaling program]'
         if 'SAINT' in integration:
             data_reduct_ref, integration_prog = self.add_saint_reference(integration)
         if 'XDS' in integration:
@@ -176,6 +176,7 @@ class DataReduction():
         if 'STOE X-RED'.lower() in integration.lower():
             data_reduct_ref, integration_prog = self.add_x_red_reference(integration)
         absdetails = cif['_exptl_absorpt_process_details'].replace('-', ' ')
+        absdetails += cif['_computing_bruker_data_scaling'].replace('-', ' ').replace(':', '')
         if 'SADABS' in absdetails.upper() or 'TWINABS' in absdetails.upper():
             # if len(absdetails.split()) > 1:
             #    version = absdetails.split()[1]
@@ -213,7 +214,8 @@ class DataReduction():
         data_reduct_ref = references.XRedReference('X-RED', xredversion)
         return data_reduct_ref, integration_prog
 
-    def add_crysalispro_reference(self, integration: str) -> Tuple[references.CrysalisProReference, references.CrysalisProReference, str]:
+    def add_crysalispro_reference(self, integration: str) -> Tuple[
+        references.CrysalisProReference, references.CrysalisProReference, str]:
         """
         CrysAlisPro, Agilent Technologies,Version 1.171.37.31h (release 21-03-2014 CrysAlis171 .NET)
             (compiled Mar 21 2014,18:13:45)
