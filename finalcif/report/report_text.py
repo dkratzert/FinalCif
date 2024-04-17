@@ -176,7 +176,6 @@ class DataReduction():
         if 'STOE X-RED'.lower() in integration.lower():
             data_reduct_ref, integration_prog = self.add_x_red_reference(integration)
         absdetails = cif['_exptl_absorpt_process_details'].replace('-', ' ')
-        absdetails += cif['_computing_bruker_data_scaling'].replace('-', ' ').replace(':', '')
         if 'SADABS' in absdetails.upper() or 'TWINABS' in absdetails.upper():
             # if len(absdetails.split()) > 1:
             #    version = absdetails.split()[1]
