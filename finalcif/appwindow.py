@@ -635,7 +635,7 @@ class AppWindow(QMainWindow):
 
     def setTextEditSizes(self):
         for ui in [self.ui.Spacegroup_top_LineEdit, self.ui.CCDCNumLineEdit, self.ui.SumFormMainLineEdit]:
-            ui.setFixedHeight(self.ui.datanameComboBox.height() + 6)
+            ui.setFixedHeight(self.ui.appendCifPushButton.height())
             vScrollBar = ui.verticalScrollBar()
             # Scroll down a bit, or text will not be in the vertical center:
             vScrollBar.triggerAction(QScrollBar.SliderSingleStepAdd)
