@@ -212,8 +212,9 @@ class TestTextParagraphs(unittest.TestCase):
         }
         # noinspection PyTypeChecker
         DataReduction(cif, paragraph=self.paragraph, ref=self.reflist)
-        self.assertEqual(('All data were integrated with [unknown integration program] and a ?? '
-                          'absorption correction using [unknown program] was applied.[1,2]'), self.paragraph.text)
+        self.assertEqual(('All data were integrated with [No _computing_data_reduction given] and a ?? '
+                          'absorption correction using [Unknown scaling program] was applied.[1,2]'),
+                         self.paragraph.text)
         self.assertEqual(('[0] Unknown Reference, please add.\n'
                           '[1] Unknown Reference, please add.'), str(self.reflist))
 
