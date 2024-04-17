@@ -225,7 +225,7 @@ class TestWorkfolder(unittest.TestCase):
             self.assertEqual(r, self.cell_text(key, n))
 
     def test_equipment_click_machine(self):
-        self.equipment_click('D8_VENTURE')
+        self.equipment_click('D8 VENTURE')
         self.allrows_test_key('_diffrn_measurement_method', ['?', 'ω and ϕ scans', 'ω and ϕ scans'])
         self.allrows_test_key('_diffrn_measurement_specimen_support',
                               ['?', 'MiTeGen micromount', 'MiTeGen micromount'])
