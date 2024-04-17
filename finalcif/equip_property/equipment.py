@@ -122,32 +122,22 @@ class Equipment:
         self.show_equipment()
 
     def load_default_equipment(self):
-        self.store_predefined_templates()
+        self.load_equipment_files()
         self.show_equipment()
 
     def load_equipment_files(self):
         template_path = Path(application_path).joinpath('template/machines').resolve()
         files = template_path.glob('*.cif')
-        equipment_templates = []
         for file in files:
-            doc = read_document_from_cif_file(file.__str__())
-            block = doc.sole_block()
-            entry = {'name': f'{file.stem}', 'items': []}
-            pairs = []
-            for item in block:
-                if item.pair is not None:
-                    key, value = item.pair
-                    pairs.append([key, gemmi.cif.as_string(value)])
-            entry['items'] = pairs
-            equipment_templates.append(entry)
-        return equipment_templates
-
-    def store_predefined_templates(self):
-        try:
-            for item in self.load_equipment_files():
-                self.store_equipment_item(item)
-        except Exception as e:
-            print(f'DBG> Could not load equipment templates: {e.__str__()}')
+            try:
+                doc = read_document_from_cif_file(file.__str__())
+                block = doc.sole_block()
+            except Exception as e:
+                print(f'DBG> Could not load equipment templates: {e.__str__()}')
+                continue
+            if file.stem.replace('_', ' ') in self.settings.deleted_equipment:
+                continue
+            self._import_block(block, filename=str(file.resolve()))
 
     def store_equipment_item(self, item: list[dict[str:str | str:list[list[str]]]]):
         equipment_list = self.settings.get_equipment_list() or []
@@ -216,7 +206,7 @@ class Equipment:
                 show_general_warning(self.app, '"{}" is not an official CIF keyword!'.format(key))
         self.settings.save_settings_list('equipment', self.selected_template_name(), table_data)
         self.app.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
-        print('saved')
+        self.load_default_equipment()
 
     def import_equipment_from_file(self, filename: Path | str = '') -> None:
         """
@@ -234,7 +224,7 @@ class Equipment:
             return
         for block in doc:
             self._import_block(block, filename)
-        self.show_equipment()
+        self.load_default_equipment()
 
     def _import_block(self, block: cif.Block, filename: str) -> None:
         table_data = []
@@ -247,7 +237,9 @@ class Equipment:
         if filename.endswith('.cif_od'):
             name = Path(filename).stem
         elif filename.endswith('.pcf'):
-            name = Path(filename).stem
+            name = Path(filename).stem.replace('_', ' ')
+        elif block.name == 'site_settings':
+            name = Path(filename).stem.replace('_', ' ')
         else:
             name = block.name.replace('__', ' ')
         self.undelete_equipment(equipment_name=name)
@@ -311,6 +303,7 @@ class Equipment:
         table.clearContents()
         table.setRowCount(0)
         self.app.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
+        self.load_default_equipment()
 
 
 if __name__ == '__main__':
