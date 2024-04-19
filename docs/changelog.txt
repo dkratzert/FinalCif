@@ -1,5 +1,7 @@
 FinalCif recent changes
 -----------------------
+* v137 Validators for manually inserted numerical values were added. HTML templates are now possible for reports.
+       Local CheckCif does not crash FinalCif anymore if the platon executable isn't found.
 * v136 Fix crash when adding authors to the CIF.
 * v135 Fix crash if templates are exported with no CIF loaded.
 * v134 No symmetry codes for atoms were displayed in the table with the bond angles. This has been fixed.
