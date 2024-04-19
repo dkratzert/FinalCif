@@ -5,6 +5,7 @@ import threading
 import time
 from contextlib import suppress
 from pathlib import Path
+from shutil import which
 
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QWidget, QLabel, \
@@ -30,7 +31,7 @@ class PlatonRunner(QtCore.QObject):
 
     def run_process(self):
         self._origdir = os.curdir
-        #os.chdir(self.cif_file.parent)
+        # os.chdir(self.cif_file.parent)
         self.formula_moiety = ''
         self.Z = ''
         self.process = QtCore.QProcess()
@@ -44,7 +45,7 @@ class PlatonRunner(QtCore.QObject):
 
     def _onfinished(self):
         self._on_ready_read()
-        #os.chdir(self._origdir)
+        # os.chdir(self._origdir)
         self._parse_chk_file()
         self.output_widget.setPlainText(self.chk_file_text)
         self.finished.emit(True)
@@ -69,7 +70,7 @@ class PlatonRunner(QtCore.QObject):
 
     def _stop_program(self):
         self.is_stopped = True
-        #if self.process and self.process.state() == QProcess.Running:
+        # if self.process and self.process.state() == QProcess.Running:
         self.process.terminate()
         self.finished.emit(True)
 
@@ -87,13 +88,15 @@ class PlatonRunner(QtCore.QObject):
                 self.Z = line[19:24].strip(' ')
 
     @property
-    def platon_exe(self):
+    def platon_exe(self) -> str:
         if sys.platform.startswith('win'):
             in_pwt = r'C:\pwt\platon.exe'
         else:
             in_pwt = 'platon'
         if Path(in_pwt).exists():
             return in_pwt
+        elif which('platon'):
+            return which('platon')
         else:
             return 'platon'
 
