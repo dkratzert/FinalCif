@@ -4,7 +4,6 @@ from pathlib import Path
 from typing import List, Dict
 from typing import TYPE_CHECKING
 
-import gemmi
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QListWidgetItem
 from gemmi import cif
@@ -122,7 +121,7 @@ class Equipment:
         self.show_equipment()
 
     def load_default_equipment(self):
-        self.load_equipment_files()
+        self.store_predefined_templates()
         self.show_equipment()
 
     def load_equipment_files(self):
@@ -139,10 +138,11 @@ class Equipment:
                 continue
             self._import_block(block, filename=str(file.resolve()))
 
-    def store_equipment_item(self, item: list[dict[str:str | str:list[list[str]]]]):
+    def store_predefined_templates(self):
         equipment_list = self.settings.get_equipment_list() or []
-        if item['name'] not in equipment_list:
-            self.settings.save_settings_list('equipment', item['name'], item['items'])
+        for item in misc.predefined_equipment_templates:
+            if item['name'] not in equipment_list:
+                self.settings.save_settings_list('equipment', item['name'], item['items'])
 
     def edit_equipment_template(self) -> None:
         """Gets called when 'edit equipment' button was clicked."""
