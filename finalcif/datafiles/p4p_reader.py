@@ -46,7 +46,7 @@ class P4PFile():
         self.source = None
         self.volume = None
         self.ortmatrix = None
-        self._temperature = 0.0
+        self._temperature = None
         self.crystal_color = ''
         self.crystal_size = ['', '', '']
         self.morphology = ''

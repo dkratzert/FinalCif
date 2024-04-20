@@ -70,7 +70,7 @@ class BrukerData(WorkDataMixin):
         try:
             temp1 = self.frame_header.temperature
         except (AttributeError, KeyError, FileNotFoundError):
-            temp1 = 293
+            temp1 = None
         try:
             kilovolt = self.frame_header.kilovolts
         except (AttributeError, KeyError, FileNotFoundError):
@@ -110,7 +110,12 @@ class BrukerData(WorkDataMixin):
             rint = (self.sadabs.Rint, self.sadabs.filename.name)
             self.sources['_diffrn_reflns_av_R_equivalents'] = rint
         temp2 = self.p4p.temperature
-        temperature = round(min([temp1, temp2]), 1)
+        if temp1 is not None and temp2 is not None:
+            temperature = round(min([temp1, temp2]), 1)
+        elif temp1:
+            temperature = temp1
+        else:
+            temperature = temp2
         if temperature < 0.01:
             temperature = ''
         if (self.cif['_diffrn_ambient_temperature'].split('(')[0] or
@@ -120,20 +125,17 @@ class BrukerData(WorkDataMixin):
                                            'of &minus;173.15 °C into the SHELX instruction file.<br>'
                                            'A temperature of 0 K is likely to be wrong.')
         try:
-            if abs(int(self.cif['_diffrn_ambient_temperature'].split('(')[0]) - int(temperature)) >= 2 and \
-                    not self.app.temperature_warning_displayed:
+            if (abs(int(self.cif['_diffrn_ambient_temperature'].split('(')[0]) - int(temperature)) >= 2 and
+                not self.app.temperature_warning_displayed):
                 self.app.temperature_warning_displayed = True
-                show_general_warning(self.app, '<b>Warning</b>: The temperature from the measurement and '
-                                               'from SHELX differ. Please double-check for correctness.<br><br>'
-                                               'SHELX says: {} K<br>'
-                                               'The P4P file says: {} K<br>'
-                                               'Frame header says: {} K<br><br>'
-                                               'You may add a '
-                                               '<a href="http://shelx.uni-goettingen.de/shelxl_html.php#TEMP">TEMP</a> '
-                                               'instruction to your SHELX file (in °C).'
-                                     .format(self.cif['_diffrn_ambient_temperature'].split('(')[0],
-                                             round(temp2, 1),
-                                             round(temp1, 1)))
+                show_general_warning(self.app,
+                                     f'<b>Warning</b>: The temperature from the measurement and from SHELX '
+                                     f'differ. Please double-check for correctness.'
+                                     f'<br><br>SHELX says: {self.cif["_diffrn_ambient_temperature"].split("(")[0]} K'
+                                     f'<br>The P4P file says: {round(temp2, 1)} K<br>Frame header says: '
+                                     f'{round(temp1, 1)} K<br><br>You may add a '
+                                     f'<a href="http://shelx.uni-goettingen.de/shelxl_html.php#TEMP">TEMP</a> '
+                                     f'instruction to your SHELX file (in °C).')
         except ValueError:
             # most probably one value is '?'
             pass
