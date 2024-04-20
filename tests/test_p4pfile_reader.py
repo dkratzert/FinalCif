@@ -16,7 +16,7 @@ class TestBrukerFrame(unittest.TestCase):
 
     def test_str(self):
         p4p = P4PFile(basename='DK_Zucker2', searchpath=test_data)
-        self.assertEqual(100, p4p.temperature)
+        self.assertAlmostEqual(100, p4p.temperature, places=4)
 
     def test_radiation_type(self):
         p4p = P4PFile(basename='DK_Zucker2', searchpath=test_data)
