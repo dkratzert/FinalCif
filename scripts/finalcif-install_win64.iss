@@ -64,19 +64,18 @@ Source: "..\vc_redist.x64.exe";     DestDir: "{app}"; Flags: ignoreversion
 ;Name: "{app}\displaymol"; Permissions: everyone-full
 ;Name: "{app}\gui"; Permissions: everyone-full
 
-
-[UninstallDelete]
-Type: files; Name: "{app}\*.pyc"
-Type: files; Name: "{app}\template\*.*"
-; too dangerous:
-;Type: filesandordirs; Name: "{app}\*"
-
-
 [Run]
 Filename: "{app}\vc_redist.x64.exe"; WorkingDir: "{app}"; Parameters: "/passive /norestart"
 
 
 [InstallDelete]
+;Type: filesandordirs; Name: "{app}\*"
+
+
+[UninstallDelete]
+Type: files; Name: "{app}\*.pyc"
+Type: files; Name: "{app}\template\*.*"
+; too dangerous:
 ;Type: filesandordirs; Name: "{app}\*"
 
 
@@ -87,15 +86,12 @@ Filename: "{app}\vc_redist.x64.exe"; WorkingDir: "{app}"; Parameters: "/passive 
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 
-
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\finalcif.exe"; WorkingDir: "{app}"; IconFilename: "{app}\finalcif\icon\finalcif2.ico"; Check: IsWin64
 Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"; IconFilename: "{app}\finalcif\icon\finalcif2.ico"
 
 
-
 [Tasks]
-
 
 
 
