@@ -116,8 +116,8 @@ class BrukerData(WorkDataMixin):
             temperature = temp1
         else:
             temperature = temp2
-        if temperature < 0.01:
-            temperature = ''
+        if temperature is None:
+            temperature = '?'
         if (self.cif['_diffrn_ambient_temperature'].split('(')[0] or
             self.cif['_cell_measurement_temperature']).split('(')[0] == '0':
             show_general_warning(self.app, '<b>Warning of impossible temperature specification</b>:<br>'
@@ -125,20 +125,19 @@ class BrukerData(WorkDataMixin):
                                            'of &minus;173.15 °C into the SHELX instruction file.<br>'
                                            'A temperature of 0 K is likely to be wrong.')
         try:
-            if (abs(int(self.cif['_diffrn_ambient_temperature'].split('(')[0]) - int(temperature)) >= 2 and
-                not self.app.temperature_warning_displayed):
-                self.app.temperature_warning_displayed = True
-                show_general_warning(self.app,
-                                     f'<b>Warning</b>: The temperature from the measurement and from SHELX '
-                                     f'differ. Please double-check for correctness.'
-                                     f'<br><br>SHELX says: {self.cif["_diffrn_ambient_temperature"].split("(")[0]} K'
-                                     f'<br>The P4P file says: {round(temp2, 1)} K<br>Frame header says: '
-                                     f'{round(temp1, 1)} K<br><br>You may add a '
-                                     f'<a href="http://shelx.uni-goettingen.de/shelxl_html.php#TEMP">TEMP</a> '
-                                     f'instruction to your SHELX file (in °C).')
+            temperature_diff = abs(int(self.cif['_diffrn_ambient_temperature'].split('(')[0]) - int(temperature)) >= 2
         except ValueError:
-            # most probably one value is '?'
-            pass
+            temperature_diff = False
+        if (temperature_diff and not self.app.temperature_warning_displayed):
+            self.app.temperature_warning_displayed = True
+            show_general_warning(self.app,
+                                 f'<b>Warning</b>: The temperature from the measurement and from SHELX '
+                                 f'differ. Please double-check for correctness.'
+                                 f'<br><br>SHELX says: {self.cif["_diffrn_ambient_temperature"].split("(")[0]} K'
+                                 f'<br>The P4P file says: {temp2} {"K" if temp2 else ""}<br>Frame header says: '
+                                 f'{temp1} {"K" if temp2 else ""}<br><br>You may add a '
+                                 f'<a href="http://shelx.uni-goettingen.de/shelxl_html.php#TEMP">TEMP</a> '
+                                 f'instruction to your SHELX file (in °C).')
         if not self.cif['_space_group_name_H-M_alt']:
             try:
                 self.sources['_space_group_name_H-M_alt'] = (

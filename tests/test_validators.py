@@ -27,15 +27,21 @@ class TestValidators(unittest.TestCase):
     def test_refine_ls_number_restraints(self):
         v = validators['_refine_ls_number_restraints']
         self.assertFalse(v.valid('-5'))
-        self.assertEqual(v.help_text, "Must be a positive integer number between 0 and inf.")
+        self.assertEqual("Must be a positive integer number between 0 and inf.", v.help_text)
+
+    def test_atom_type_scat_dispersion_real(self):
+        v = validators['_atom_type_scat_dispersion_real']
+        self.assertTrue(v.valid('-5'))
+        self.assertTrue(v.valid('5'))
+        self.assertEqual('Must be a decimal number between -inf and inf.', v.help_text)
 
     def test_space_group_crystal_system(self):
         v = validators['_space_group_crystal_system']
         self.assertTrue(v.valid('Triclinic'))
         self.assertFalse(v.valid('Tsdsfgf'))
         self.assertEqual('Textlimits', v.__class__.__name__)
-        self.assertEqual(v.help_text, "Must be one of: triclinic, monoclinic, orthorhombic, "
-                                      "tetragonal, trigonal, hexagonal, cubic.")
+        self.assertEqual("Must be one of: triclinic, monoclinic, orthorhombic, "
+                         "tetragonal, trigonal, hexagonal, cubic.", v.help_text)
 
 
 if __name__ == '__main__':

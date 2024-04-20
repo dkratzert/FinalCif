@@ -118,7 +118,7 @@ class P4PFile():
 
     @property
     def temperature(self):
-        return round(self._temperature, 2)
+        return self._temperature
 
 
 if __name__ == '__main__':
