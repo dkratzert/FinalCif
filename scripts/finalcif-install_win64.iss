@@ -43,7 +43,6 @@ DisableProgramGroupPage=yes
 AppendDefaultGroupName=True
 AppContact=dkratzert@gmx.de
 AppCopyright=Daniel Kratzert
-AppSupportPhone=+49 761 203 6156
 VersionInfoProductName={#MyAppName}
 AlwaysShowComponentsList=False
 ShowComponentSizes=False
@@ -51,28 +50,6 @@ SetupIconFile="..\finalcif\icon\finalcif2.ico"
 UninstallDisplayIcon={app}\{#MyAppName}.exe
 SignTool=sign_sha256
 ArchitecturesInstallIn64BitMode=x64
-
-[UninstallRun]
-
-
-[Languages]
-Name: "english"; MessagesFile: "compiler:Default.isl"
-
-
-[Run]
-Filename: "{app}\vc_redist.x64.exe"; WorkingDir: "{app}"; Parameters: "/passive /norestart"
-
-[Icons]
-Name: "{group}\{#MyAppName}"; Filename: "{app}\finalcif.exe"; WorkingDir: "{app}"; IconFilename: "{app}\finalcif\icon\finalcif2.ico"; Check: IsWin64
-Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"; IconFilename: "{app}\finalcif\icon\finalcif2.ico"
-
-
-[UninstallDelete]
-Type: files; Name: "{app}\*.pyc"
-Type: files; Name: "{app}\*.*"
-Type: filesandordirs; Name: "{app}\*"
-
-[Tasks]
 
 [Files]
 ;Excludes: "*.pyc"
@@ -87,8 +64,40 @@ Source: "..\vc_redist.x64.exe";     DestDir: "{app}"; Flags: ignoreversion
 ;Name: "{app}\displaymol"; Permissions: everyone-full
 ;Name: "{app}\gui"; Permissions: everyone-full
 
+
+[UninstallDelete]
+Type: files; Name: "{app}\*.pyc"
+Type: files; Name: "{app}\template\*.*"
+; too dangerous:
+;Type: filesandordirs; Name: "{app}\*"
+
+
+[Run]
+Filename: "{app}\vc_redist.x64.exe"; WorkingDir: "{app}"; Parameters: "/passive /norestart"
+
+
 [InstallDelete]
 Type: filesandordirs; Name: "{app}\*"
+
+
+[UninstallRun]
+
+
+[Languages]
+Name: "english"; MessagesFile: "compiler:Default.isl"
+
+
+
+[Icons]
+Name: "{group}\{#MyAppName}"; Filename: "{app}\finalcif.exe"; WorkingDir: "{app}"; IconFilename: "{app}\finalcif\icon\finalcif2.ico"; Check: IsWin64
+Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"; IconFilename: "{app}\finalcif\icon\finalcif2.ico"
+
+
+
+[Tasks]
+
+
+
 
 [Code]
 procedure CurStepChanged(CurStep: TSetupStep);
