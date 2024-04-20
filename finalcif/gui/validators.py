@@ -2,6 +2,7 @@ from math import inf
 from typing import Union, Type
 
 
+
 class BaseLimits:
     upper: Union[int, float, str]
     lower: Union[int, float, str]
@@ -61,9 +62,28 @@ class Floatlimits(BaseLimits):
 
     def __init__(self, lower: float, upper: float, help_text: str = None):
         if not help_text:
-            help_text = (f'Must be a {"negative" if lower < 0 else "positive"} '
+            if lower < 0 and upper <= 0:
+                limit = 'negative '
+            elif lower < 0 < upper:
+                limit = ''
+            else:
+                limit = 'positive '
+            help_text = (f'Must be a {limit}'
                          f'decimal number between {lower} and {upper}.')
         super().__init__(lower, upper, help_text)
+
+
+class Stringlimits():
+    def __init__(self, help_text: str = None):
+        self.valid = self.validate_cif_key
+        self.help_text = 'Must be letters'
+        if help_text:
+            self.help_text = help_text
+
+    def validate_cif_key(self, value: str):
+        if value.isalpha():
+            return True
+        return False
 
 
 class Textlimits:
@@ -75,7 +95,7 @@ class Textlimits:
             self.help_text = help_text
 
     def validate_cif_key(self, value: str):
-        if value.lower() in ('', '?', '.') or value.lower() in self.options:
+        if value in ('', '?', '.') or value.lower() in (x.lower() for x in self.options if x is not None):
             return True
         return False
 
@@ -176,6 +196,41 @@ validators: dict[str, BaseLimits] = {
                                                                 'trigonal',
                                                                 'hexagonal',
                                                                 'cubic', ]),
+    # '_atom_type_description'              : Stringlimits(help_text='Must be an atom type'),
+    '_atom_type_scat_dispersion_real'     : Floatlimits(lower=-inf, upper=inf),
+    '_atom_type_scat_dispersion_imag'     : Floatlimits(lower=-inf, upper=inf),
+    '_atom_site_fract_x'                  : Floatlimits(lower=-inf, upper=inf),
+    '_atom_site_fract_y'                  : Floatlimits(lower=-inf, upper=inf),
+    '_atom_site_fract_z'                  : Floatlimits(lower=-inf, upper=inf),
+    '_atom_site_U_iso_or_equiv'           : Floatlimits(lower=0, upper=inf),
+    '_atom_site_adp_type'                 : Textlimits(options=['Uani',
+                                                                'Uiso',
+                                                                'Uovl',
+                                                                'Umpe',
+                                                                'Bani',
+                                                                'Biso',
+                                                                'Bovl'
+                                                                ]),
+    '_atom_site_occupancy'                : Floatlimits(lower=0.0, upper=1.0),
+    '_atom_site_site_symmetry_order'      : Floatlimits(lower=-inf, upper=inf),
+    '_atom_site_calc_flag'                : Textlimits(options=['d', 'calc', 'c', 'dum']),
+    '_atom_site_refinement_flags_posn'    : Textlimits(options=['None',
+                                                                'D',
+                                                                'G',
+                                                                'R',
+                                                                'S',
+                                                                'DG',
+                                                                'DR',
+                                                                'DS',
+                                                                'GR',
+                                                                'GS',
+                                                                'RS',
+                                                                'DGR',
+                                                                'DGS',
+                                                                'DRS',
+                                                                'GRS',
+                                                                'DGRS']),
+    '_atom_site_refinement_flags_adp'     : Textlimits(options=['T', 'U', 'TU']),
 
 }
 

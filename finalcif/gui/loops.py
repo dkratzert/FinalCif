@@ -11,11 +11,15 @@ from typing import Union, List, Any
 
 import gemmi
 
+from finalcif.gui.custom_classes import light_blue
+from finalcif.gui.plaintextedit import MyQPlainTextEdit
+from finalcif.gui.validators import validators
+
 with suppress(ImportError):
     import qtawesome
-from PyQt5 import QtCore
+from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import QAbstractTableModel, QModelIndex, Qt, QSize, QVariant, pyqtSignal, QEvent
-from PyQt5.QtGui import QColor, QCursor
+from PyQt5.QtGui import QCursor, QColor
 from PyQt5.QtWidgets import QTableView, QHeaderView, QMenu, QAction
 from gemmi import cif
 from gemmi.cif import as_string, is_null
@@ -128,6 +132,7 @@ class MyQTableView(QTableView):
 
     def __init__(self, parent):
         super().__init__(parent=parent)
+        # self.setItemDelegate(LoopItemDelegate(self))
 
     def contextMenuEvent(self, event):
         self.menu = QMenu(self)
@@ -195,6 +200,27 @@ class MyQTableView(QTableView):
                 self.rowChanged.emit(self.model()._header, self.model()._data)
 
 
+class LoopItemDelegate(QtWidgets.QStyledItemDelegate):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.parent = parent
+        self.color = None
+
+    def createEditor(self, parent, option, index):
+        editor = QtWidgets.QPlainTextEdit(self.parent)
+        editor.color = self.color
+        editor.cif_key = ''
+        return editor
+
+    def setEditorData(self, editor: MyQPlainTextEdit, index):
+        value = index.model().data(index, Qt.EditRole)
+        editor.setText(str(value))
+
+    def setModelData(self, editor: MyQPlainTextEdit, model, index):
+        value = editor.getText()
+        model.setData(index, value, Qt.EditRole)
+
+
 class LoopTableModel(QAbstractTableModel):
     modelChanged = pyqtSignal(int, int, 'PyQt_PyObject', list)
     rowDeleted = pyqtSignal(list, int)
@@ -219,13 +245,21 @@ class LoopTableModel(QAbstractTableModel):
         #    pass
         # if isnumeric(value):
         #    return Qt.AlignVCenter + Qt.AlignVertical_Mask
-        if role == Qt.BackgroundColorRole and \
-                (row, col) in [(x['row'], x['column']) for x in self.modified]:
-            return QVariant(QColor("#facaca"))
+        if (role == Qt.BackgroundColorRole and
+            (row, col) in [(x['row'], x['column']) for x in self.modified] and self.validate_text(value, col)):
+            return QVariant(light_blue)
+        elif role == Qt.BackgroundColorRole and not self.validate_text(value, col):
+            return QVariant(QColor(254, 191, 189))
+        else:
+            QVariant(QColor(255, 255, 255))
         if role == Qt.EditRole:
             return retranslate_delimiter(value)
         if role == Qt.DisplayRole:
             return retranslate_delimiter(value)
+        if role == Qt.ToolTipRole:
+            key = self._header[col]
+            if validators.get(key):
+                return validators.get(key, None).help_text
 
     def headerData(self, section, orientation: Qt.Orientation = Qt.Horizontal, role=None):
         # section is the index of the column/row.
@@ -268,6 +302,13 @@ class LoopTableModel(QAbstractTableModel):
             self.modelChanged.emit(row, col, utf8_to_str(value), self._header)
             return True
         return False
+
+    def validate_text(self, text: str, col: int) -> bool:
+        validator = validators.get(self._header[col], None)
+        if validator and not validator.valid(text):
+            return False
+        else:
+            return True
 
     def removeRow(self, row: int, parent: QModelIndex = None) -> bool:
         if len(self._data) > 0:

@@ -20,6 +20,8 @@ translated into the CIF ascii format.
 Please let me know if a character does not work. Also the length of text lines are no concern,
 finalCif handles the maximum line length according to the CIF format definition automatically.
 
+Many input fields in the main table are checked by validators and their fields turn red if they are identified as invalid.
+
 Various possibilities of Checkcif are available, online with html or pdf result and offline.
 The button "save cif file" saves the current file under 'name'-finalcif.cif. FinalCif will never make Changes to the
 original CIF file. 

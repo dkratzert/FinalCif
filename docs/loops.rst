@@ -7,7 +7,7 @@ General Loop Editor
 
 FinalCif is also able to edit loop data from a CIF file by clicking the "Edit Loops" button.
 Each loop has its own tab where the loop data is represented as a table. All fields changed by the user
-will turn pale red to indicate modifications and these are saved during the next file save.
+will turn pale blue to indicate modifications and these are saved during the next file save.
 
 Rows can be appended and deleted with a right click on a table.
 The right-click menu also allows to change the ordering of loop rows by moving a row up or down.
@@ -18,6 +18,9 @@ The "revert changes" button reverts all changes done to the current loop, except
    :width: 700
 
    Atomic coordinates table (loop)
+
+Most loop values are also checked by validators and their fields turn red if they are identified as invalid.
+(Previous versions of FinalCif marked changed values in red!)
 
 Author Editor
 =============
