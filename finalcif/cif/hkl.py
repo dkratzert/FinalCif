@@ -26,13 +26,16 @@ class HKL():
         self._doc: Document = gemmi.cif.Document()
         self._doc.add_new_block(block_name)
         self.block = self._doc.sole_block()
-        self._get_hkl_as_block()
+        self._add_hkl_as_loop()
 
     @property
     def hkl_as_cif(self) -> str:
         return self._doc.as_string(style=Style.Simple)
 
-    def _get_hkl_as_block(self):
+    def _add_hkl_as_loop(self) -> None:
+        """
+        Adds the hkl data from a SHELX hkl file as local loop.
+        """
         hkl_width = self._get_hkl_width()
         loop_header = ['index_h',
                        'index_k',

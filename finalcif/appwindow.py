@@ -1316,7 +1316,7 @@ class AppWindow(QMainWindow):
                 previous_values.append(loop2.values)
             for loop in self.cif.loops:
                 if loop.values not in previous_values:
-                    changes_cif.add_loop_to_cif(loop_tags=loop.tags, loop_values=loop.values)
+                    changes_cif.add_loop_to_cif(loop_tags=loop.tags, row_values=loop.values)
             changes_cif.save(filename=self.finalcif_changes_filename)
 
     def get_changes_cif(self, finalcif_changes_filename: Path) -> CifContainer:
@@ -1344,7 +1344,7 @@ class AppWindow(QMainWindow):
                 self.add_row(key=key, value=value)
                 self.ui.cif_main_table.setText(key=key, column=Column.EDIT, color=None, txt=value)
         for loop in changes.loops:
-            self.cif.add_loop_to_cif(loop_tags=loop.tags, loop_values=loop.values)
+            self.cif.add_loop_to_cif(loop_tags=loop.tags, row_values=loop.values)
         return True
 
     def is_row_a_cif_item(self, vhead: str) -> bool:

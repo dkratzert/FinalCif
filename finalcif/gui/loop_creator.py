@@ -30,7 +30,7 @@ class LoopCreator(QWidget, Ui_LoopCreator):
         return self.get_itemtexts_from_new_loop()
 
     def save_new_loop_to_cif(self):
-        loop = self.cif.add_loop_to_cif(loop_tags=self.tags, loop_values=('?',) * len(self.tags))
+        loop = self.cif.add_loop_to_cif(loop_tags=self.tags, row_values=('?',) * len(self.tags))
         if not self.parent():
             self.cif.save()
         return loop

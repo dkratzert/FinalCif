@@ -13,6 +13,7 @@ from typing import Dict, List, Tuple, Union, Generator
 
 import gemmi
 from gemmi.cif import as_string, Document, Loop
+from packaging.version import Version
 from shelxfile import Shelxfile
 
 from finalcif.cif.cif_order import order, special_keys
@@ -255,15 +256,17 @@ class CifContainer():
             print(f'File {filename} is empty.')
             return
         self.order_cif_keys()
-        print('Saving to', Path(filename).resolve())
-        """
-        # For later gemmi versions:
-        options = gemmi.cif.WriteOptions()
-        options.prefer_pairs = True
-        options.compact = False
-        options.align_pairs = 33
-        options.align_loops = 30"""
-        self.doc.write_file(str(filename), gemmi.cif.Style.Indent35)
+        print('Saving CIF to', Path(filename).resolve())
+        if Version(gemmi.__version__) > Version('0.6.3'):
+            options = gemmi.cif.WriteOptions()
+            options.prefer_pairs = False
+            options.compact = False
+            options.align_pairs = 33
+            options.align_loops = 15
+            options.misuse_hash = False
+            self.doc.write_file(str(filename), options=options)
+        else:
+            self.doc.write_file(str(filename), gemmi.cif.Style.Indent35)
 
     def order_cif_keys(self) -> None:
         """
@@ -333,7 +336,7 @@ class CifContainer():
             return ''
 
     @property
-    def hkl_as_cif(self):
+    def hkl_as_cif(self) -> str:
         return HKL(self.hkl_file, self.block.name, hklf_type=self.hklf_number).hkl_as_cif
 
     @property
@@ -362,7 +365,7 @@ class CifContainer():
             return self.hkl_file
 
     @staticmethod
-    def _find_line_of_000(lines: str):
+    def _find_line_of_000(lines: str) -> int:
         pattern = re.compile(r'^\s+0\s+0\s+0\s+0.*')
         for num, line in enumerate(lines.splitlines(keepends=False)):
             found = pattern.match(line)
@@ -411,7 +414,7 @@ class CifContainer():
                 all_sadabs_items[key] = gemmi.cif.as_string(val).strip()
         return all_sadabs_items
 
-    def normal_search(self, hkl):
+    def normal_search(self, hkl) -> int:
         pattern = re.compile(r'\s+0\s+0\s+0\s+0')
         found = pattern.search(hkl)
         if found:
@@ -420,7 +423,7 @@ class CifContainer():
             zero_reflection_position = 0
         return zero_reflection_position
 
-    def reversed_search(self, hkl_splitted: List):
+    def reversed_search(self, hkl_splitted: List[str]) -> int:
         pattern = re.compile(r'\s+0\s+0\s+0\s+0')
         zero_reflection_position = 0
         for num, line in enumerate(reversed(hkl_splitted)):
@@ -463,14 +466,20 @@ class CifContainer():
                 loops.append(b.loop)
         return loops
 
-    def add_loop_to_cif(self, loop_tags: List[str], loop_values: Union[list, tuple]) -> gemmi.cif.Loop:
+    def add_loop_to_cif(self, loop_tags: List[str], row_values: Union[List[str], Tuple[str]]) -> gemmi.cif.Loop:
         gemmi_loop = self.init_loop(loop_tags)
-        for row in list(grouper(loop_values, len(loop_tags))):
+        for row in list(grouper(row_values, len(loop_tags))):
             gemmi_loop.add_row(row)
         return gemmi_loop
 
+    def add_loop_from_columns(self, loop_tags: List[str],
+                              column_values: Union[List[List[str]], Tuple[Tuple[str]]]) -> gemmi.cif.Loop:
+        gemmi_loop = self.init_loop(loop_tags)
+        gemmi_loop.set_all_values(column_values)
+        return gemmi_loop
+
     @property
-    def n_loops(self):
+    def n_loops(self) -> int:
         return len(self.loops)
 
     def get_loop(self, key_in_loop: str) -> gemmi.cif.Loop:
@@ -483,7 +492,7 @@ class CifContainer():
         return self.block.init_loop('', loop_keywords)
 
     @property
-    def z_value(self):
+    def z_value(self) -> float:
         return self.atomic_struct.cell.volume / self.atomic_struct.cell.volume_per_image()
 
     @property
@@ -750,7 +759,7 @@ class CifContainer():
         bond = namedtuple('bond', ('label1', 'label2', 'dist', 'symm'))
         for label1, label2, dist, symm, publ in zip(label1, label2, dist, symm, publ_loop):
             if without_h and (self.ishydrogen(label1) or self.ishydrogen(label2)) or \
-                    self.yes_not_set(publ, self._has_publ_flag_set(publ_loop)):
+                self.yes_not_set(publ, self._has_publ_flag_set(publ_loop)):
                 continue
             else:
                 yield bond(label1=label1, label2=label2, dist=dist, symm=self.checksymm(symm))
@@ -786,10 +795,10 @@ class CifContainer():
         publ_loop = self.block.find_loop('_geom_angle_publ_flag')
         angle = namedtuple('angle', ('label1', 'label2', 'label3', 'angle_val', 'symm1', 'symm2'))
         for label1, label2, label3, angle_val, symm1, symm2, publ in \
-                zip(label1, label2, label3, angle_val, symm1, symm2, publ_loop):
+            zip(label1, label2, label3, angle_val, symm1, symm2, publ_loop):
             if without_H and (
-                    self.ishydrogen(label1) or self.ishydrogen(label2) or self.ishydrogen(label3)) or \
-                    self.yes_not_set(publ, self._has_publ_flag_set(publ_loop)):
+                self.ishydrogen(label1) or self.ishydrogen(label2) or self.ishydrogen(label3)) or \
+                self.yes_not_set(publ, self._has_publ_flag_set(publ_loop)):
                 continue
             else:
                 yield angle(label1=label1, label2=label2, label3=label3, angle_val=angle_val,
@@ -839,7 +848,7 @@ class CifContainer():
                                                                                              symm4, publ_loop):
             if without_h and (self.ishydrogen(label1) or self.ishydrogen(label2)
                               or self.ishydrogen(label3) or self.ishydrogen(label3)) or \
-                    self.yes_not_set(publ, self._has_publ_flag_set(publ_loop)):
+                self.yes_not_set(publ, self._has_publ_flag_set(publ_loop)):
                 continue
             yield tors(label1=label1, label2=label2, label3=label3, label4=label4, torsang=torsang,
                        symm1=self.checksymm(symm1),
@@ -860,7 +869,7 @@ class CifContainer():
         hydr = namedtuple('HydrogenBond', ('label_d', 'label_h', 'label_a', 'dist_dh', 'dist_ha', 'dist_da',
                                            'angle_dha', 'symm'))
         for label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm, publ in \
-                zip(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm, publ_loop):
+            zip(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm, publ_loop):
             if self.yes_not_set(publ, self._has_publ_flag_set(publ_loop)):
                 continue
             yield hydr(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, self.checksymm(symm))
@@ -957,7 +966,6 @@ class CifContainer():
 if __name__ == '__main__':
     # c = CifContainer('../41467_2015.cif')
     # c = CifContainer('test-data/p21c.cif')
-    from pprint import pp
 
     c = CifContainer('test-data/DK_Zucker2_0m.cif')
     c.load_this_block(len(c.doc) - 1)

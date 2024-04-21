@@ -58,7 +58,7 @@ class TestChangesTrackingActive(unittest.TestCase):
         self.assertEqual([], changes.values())
 
     def test_save_with_loop(self):
-        self.myapp.cif.add_loop_to_cif(loop_tags=['_foo', '_bar'], loop_values=['fooval', 'barval'])
+        self.myapp.cif.add_loop_to_cif(loop_tags=['_foo', '_bar'], row_values=['fooval', 'barval'])
         self.myapp.ui.SaveCifButton.click()
         changes = self.myapp.get_changes_cif(self.myapp.finalcif_changes_filename)
         self.assertEqual(['fooval', 'barval'], changes.loops[0].values)
