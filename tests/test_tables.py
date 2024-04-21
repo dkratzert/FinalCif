@@ -26,7 +26,7 @@ test_data = Path('test-data')
 class TablesTestCase(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.testcif = (data / 'examples/1979688.cif').absolute()
+        self.testcif = (data / 'examples/1979688_small.cif').absolute()
         self.myapp = AppWindow(file=self.testcif)
         self.myapp.ui.HAtomsCheckBox.setChecked(False)
         self.myapp.ui.ReportTextCheckBox.setChecked(False)

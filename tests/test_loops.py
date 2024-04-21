@@ -24,7 +24,7 @@ data = Path('tests')
 class TestLoops(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.testcif = (data / 'examples/1979688.cif').resolve()
+        self.testcif = (data / 'examples/1979688_small.cif').resolve()
         (data / 'examples/1979688-finalcif_changes.cif').unlink(missing_ok=True)
         self.myapp = AppWindow(file=self.testcif)
         # self.myapp.hide()  # For full screen view
@@ -107,7 +107,7 @@ class TestLoops(unittest.TestCase):
 class TestLoopsMove(unittest.TestCase):
     def setUp(self) -> None:
         os.environ["RUNNING_TEST"] = 'True'
-        self.testcif = (data / 'examples/1979688.cif').resolve()
+        self.testcif = (data / 'examples/1979688_small.cif').resolve()
         # TODO: make tests where changes file is active:
         (data / 'examples/1979688-finalcif_changes.cif').unlink(missing_ok=True)
         self.myapp = AppWindow(file=self.testcif)
