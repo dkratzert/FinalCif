@@ -296,7 +296,7 @@ class LoopTableModel(QAbstractTableModel):
         previous = self._original[row][col]
         if not index:
             return False
-        if index.isValid() and role == Qt.EditRole and value != previous:
+        if index.isValid() and role == Qt.EditRole:
             self._data[row][col] = value
             self.modified.append({'row': row, 'column': col, 'previous': previous})
             self.modelChanged.emit(row, col, utf8_to_str(value), self._header)
