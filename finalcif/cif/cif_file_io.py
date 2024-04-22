@@ -199,8 +199,8 @@ class CifContainer():
         """
         This method returns an empty string when the item value is '?'
         """
-        if self.block.find_value(item):
-            return as_string(self.block.find_value(item))
+        if value := self.block.find_value(item):
+            return as_string(value)
         else:
             return ''
 
