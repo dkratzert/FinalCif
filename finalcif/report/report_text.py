@@ -125,12 +125,12 @@ class MachineType():
                         or '[No _diffrn_detector_type given]'
         if detector_type:
             self.detector_type = " and a {} detector".format(detector_type)
-        sentence1 = "on {0} {1} {2} with {3} {4} using a {5} as monochromator{6}. " \
-                    "The diffractometer was equipped with {7} {8}low temperature device and used "
         sentence2 = " radiation (λ = {}" + protected_space + "{}). ".format(angstrom)
-        txt = sentence1.format(get_inf_article(self.difftype), self.difftype, self.device,
-                               get_inf_article(self.source), self.source, self.monochrom,
-                               self.detector_type, get_inf_article(self.cooling), self.cooling)
+        txt = (f"on {get_inf_article(self.difftype)} {self.difftype} {self.device} with "
+               f"{get_inf_article(self.source)} {self.source} using a {self.monochrom} as "
+               f"monochromator{self.detector_type}. The diffractometer was equipped "
+               f"with {get_inf_article(self.cooling)} {self.cooling+' ' if self.cooling else ''}"
+               f"low temperature device and used ")
         paragraph.add_run(retranslate_delimiter(txt))
         # radiation type e.g. Mo:
         paragraph.add_run(retranslate_delimiter(radtype[0]))
@@ -176,7 +176,6 @@ class DataReduction():
         if 'STOE X-RED'.lower() in integration.lower():
             data_reduct_ref, integration_prog = self.add_x_red_reference(integration)
         absdetails = cif['_exptl_absorpt_process_details'].replace('-', ' ')
-        absdetails += cif['_computing_bruker_data_scaling'].replace('-', ' ').replace(':', '')
         if 'SADABS' in absdetails.upper() or 'TWINABS' in absdetails.upper():
             # if len(absdetails.split()) > 1:
             #    version = absdetails.split()[1]

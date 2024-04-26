@@ -16,8 +16,11 @@ from pathlib import Path, WindowsPath
 from typing import Union, Dict, Tuple, List, Optional
 
 import gemmi.cif
-import requests  # type: ignore
-from PyQt5 import QtCore, QtGui, QtWebEngineWidgets, QtWidgets
+import requests
+from PyQt5 import QtCore
+
+QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_ShareOpenGLContexts)
+from PyQt5 import QtGui, QtWebEngineWidgets, QtWidgets
 from PyQt5.QtCore import Qt, QEvent
 from PyQt5.QtWidgets import QMainWindow, QShortcut, QCheckBox, QListWidgetItem, QApplication, \
     QPlainTextEdit, QFileDialog, QMessageBox, QScrollBar
@@ -61,6 +64,7 @@ from finalcif.tools.statusbar import StatusBar
 from finalcif.tools.sumformula import formula_str_to_dict, sum_formula_to_html
 
 # QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
+# QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_ShareOpenGLContexts)
 
 DEBUG = False
 app = QApplication.instance()

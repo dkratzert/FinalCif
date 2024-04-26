@@ -13,7 +13,6 @@ from docx.shape import InlineShapes
 from docx.shared import Cm
 from docx.table import Table
 
-from finalcif import VERSION
 from finalcif.appwindow import AppWindow
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.report.templated_report import TemplatedReport, ReportFormat
@@ -73,7 +72,7 @@ class TemplateReportTestCase(unittest.TestCase):
         self.myapp.ui.docxTemplatesListWidget.setCurrentRow(2)
         self.myapp.ui.SaveFullReportButton.click()
         doc = Document(self.reportdoc.absolute())
-        self.assertEqual('The following text is only', doc.paragraphs[2].text[:26])
+        self.assertEqual('A colourless, plate-shaped', doc.paragraphs[2].text[:26])
 
 
 class TemplateReportWithoutAppTestCase(unittest.TestCase):
@@ -104,7 +103,7 @@ class TemplateReportWithoutAppTestCase(unittest.TestCase):
         doc = Document(str(self.reportdoc.absolute()))
         table: Table = doc.tables[0]
         # This is with the 'CCDC' string, because CCDC will be deleted during CIF save in  main application:
-        self.assertEqual('CCDC 1979688', table.cell(row_idx=0, col_idx=1).text)
+        self.assertEqual('1979688', table.cell(row_idx=0, col_idx=1).text)
 
     def test_picture_has_correct_size(self):
         """
@@ -131,9 +130,9 @@ class TemplateReportWithoutAppTestCase(unittest.TestCase):
                                      picfile=self.report_pic,
                                      template_path=self.text_template)
         doc = Document(self.reportdoc.absolute())
-        #for num, p in enumerate(doc.paragraphs):
+        # for num, p in enumerate(doc.paragraphs):
         #    print(num, p.text)
-        self.assertEqual('Bibliography', doc.paragraphs[17].text)
+        self.assertEqual('Bibliography', doc.paragraphs[20].text)
 
 
 class TestReportFromMultiCif(unittest.TestCase):
@@ -179,7 +178,8 @@ class TestData(unittest.TestCase):
         self.assertEqual('CrysAlisPro 1.171.39.20a (Rigaku OD, 2015)', self.cif['_computing_data_reduction'])
         result = self.t.text_formatter.get_integration_program(self.cif)
         self.assertEqual('CrysAlisPro', result)
-        self.assertEqual('Crysalispro, 1.171.39.20a, 2015, Rigaku OD.', str(self.t.text_formatter.literature['integration']))
+        self.assertEqual('Crysalispro, 1.171.39.20a, 2015, Rigaku OD.',
+                         str(self.t.text_formatter.literature['integration']))
 
     def test_get_integration_program_with_line_break(self):
         # Here we have the special case, that there is no space character between the version number and the bracket.
@@ -188,7 +188,8 @@ class TestData(unittest.TestCase):
         self.assertEqual('CrysAlisPro 1.171.39.20a\n(Rigaku OD, 2015)\n', self.cif['_computing_data_reduction'])
         result = self.t.text_formatter.get_integration_program(self.cif)
         self.assertEqual('CrysAlisPro', result)
-        self.assertEqual('Crysalispro, 1.171.39.20a, 2015, Rigaku OD.', str(self.t.text_formatter.literature['integration']))
+        self.assertEqual('Crysalispro, 1.171.39.20a, 2015, Rigaku OD.',
+                         str(self.t.text_formatter.literature['integration']))
 
     def test_get_integration_program_with_missing_information(self):
         # Here we have all in one line with spaces inbetween:
@@ -196,7 +197,8 @@ class TestData(unittest.TestCase):
         self.assertEqual('CrysAlisPro 1.171.39.20a (Rigaku OD)', self.cif['_computing_data_reduction'])
         result = self.t.text_formatter.get_integration_program(self.cif)
         self.assertEqual('CrysAlisPro', result)
-        self.assertEqual('Crysalispro, unknown version, Rigaku OD.', str(self.t.text_formatter.literature['integration']))
+        self.assertEqual('Crysalispro, unknown version, Rigaku OD.',
+                         str(self.t.text_formatter.literature['integration']))
 
     def test_get_integration_program_saint(self):
         # Here we have all in one line with spaces inbetween:
@@ -211,7 +213,8 @@ class TestData(unittest.TestCase):
         self.cif['_computing_data_reduction'] = 'SAINT'
         result = self.t.text_formatter.get_integration_program(self.cif)
         self.assertEqual('SAINT', result)
-        self.assertEqual('Bruker, SAINT, Bruker AXS Inc., Madison, Wisconsin, USA.', str(self.t.text_formatter.literature['integration']))
+        self.assertEqual('Bruker, SAINT, Bruker AXS Inc., Madison, Wisconsin, USA.',
+                         str(self.t.text_formatter.literature['integration']))
 
 
 if __name__ == '__main__':
