@@ -148,11 +148,11 @@ class MachineType():
         olx = gstr(cif['_olex2_diffrn_ambient_temperature_device'])
         iucr = gstr(cif['_diffrn_measurement_ambient_temperature_device_make'])
         if olx and iucr:
-            return iucr + ' '
+            return iucr
         if olx:
-            return olx + ' '
+            return olx
         elif iucr:
-            return iucr + ' '
+            return iucr
         else:
             return ''
 
