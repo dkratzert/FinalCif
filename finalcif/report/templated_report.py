@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import dataclasses
 import enum
 import itertools
@@ -629,6 +631,15 @@ class RichTextFormatter(Formatter):
 
     def get_hydrogen_bonds(self) -> list[dict[str, RichText]]:
         return self._hydrogens.hydrogen_bonds
+
+    def get_bonds_angles_symminfo(self) -> RichText:
+        return RichText(self._bonds_angles.symminfo.replace('\n', '\a'), style='table foot')
+
+    def get_torsion_symminfo(self) -> RichText:
+        return RichText(self._torsions.symminfo.replace('\n', '\a'), style='table foot')
+
+    def get_hydrogen_symminfo(self) -> RichText:
+        return RichText(self._hydrogens.symminfo.replace('\n', '\a'), style='table foot')
 
     def make_3d(self, cif: CifContainer, options: Options) -> str:
         return '[3D representation not implemented for .docx files]'
