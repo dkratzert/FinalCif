@@ -11,6 +11,12 @@ from math import sin, radians
 from pathlib import Path
 from typing import List, Dict, Union, Iterator, Any
 
+from PyQt5.QtWidgets import QApplication
+
+app = QApplication.instance()
+if app is None:
+    app = QApplication([])
+
 import jinja2
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 from docx.shared import Cm
@@ -21,6 +27,7 @@ from finalcif import app_path
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.gui.dialogs import show_general_warning
 from finalcif.report import references as ref
+from finalcif.report.references import Reference
 from finalcif.report.report_text import (math_to_word, gstr, format_radiation, get_inf_article,
                                          MachineType)
 from finalcif.report.symm import SymmetryElement
@@ -302,10 +309,10 @@ class Formatter(ABC):
     def __init__(self, options: Options, cif: CifContainer) -> None:
         self.literature = {'finalcif'   : ref.FinalCifReference(),
                            'ccdc'       : ref.CCDCReference(),
-                           'absorption' : '[no reference found]',
-                           'solution'   : '[no reference found]',
-                           'refinement' : '[no reference found]',
-                           'integration': '[no reference found]',
+                           'absorption' : ref.DummyReference(),
+                           'solution'   : ref.DummyReference(),
+                           'refinement' : ref.DummyReference(),
+                           'integration': ref.DummyReference(),
                            }
         self._bonds_angles = BondsAndAngles(cif, without_h=options.without_h)
         self._torsions = TorsionAngles(cif, without_h=options.without_h)
@@ -333,7 +340,7 @@ class Formatter(ABC):
         return self._hydrogens.symminfo
 
     def get_crystallization_method(self, cif) -> str:
-        return gstr(cif['_exptl_crystal_recrystallization_method']) or '[No crystallization method given!]'
+        return gstr(cif['_exptl_crystal_recrystallization_method'])
 
     def get_radiation(self, cif: CifContainer) -> str | RichText:
         raise NotImplementedError
@@ -457,14 +464,14 @@ class Formatter(ABC):
         solution_method = gstr(cif['_atom_sites_solution_primary']) or '??'
         return solution_method.strip('\n\r')
 
-    def refinement_prog(self, cif: CifContainer) -> str:
+    def refinement_prog(self, cif: CifContainer) -> Reference | str:
         refined = gstr(cif['_computing_structure_refinement']) or '??'
         if 'SHELXL' in refined.upper() or 'XL' in refined.upper():
             self.literature['refinement'] = ref.SHELXLReference()
         if 'OLEX' in refined.upper():
             self.literature['refinement'] = ref.Olex2Reference()
         if ('NOSPHERA2' in refined.upper() or 'NOSPHERA2' in cif['_refine_special_details'].upper() or
-            'NOSPHERAT2' in cif['_olex2_refine_details'].upper()):
+                'NOSPHERAT2' in cif['_olex2_refine_details'].upper()):
             self.literature['refinement'] = ref.Nosphera2Reference()
         return refined.split()[0]
 
@@ -645,8 +652,7 @@ class RichTextFormatter(Formatter):
         else:
             return RichText('no formula')
 
-    @staticmethod
-    def space_group_subdoc(cif: CifContainer, tpl_doc: DocxTemplate) -> Subdoc:
+    def space_group_subdoc(self, cif: CifContainer, tpl_doc: DocxTemplate) -> Subdoc:
         """
         Generates a Subdoc subdocument with the xml code for a math element in MSWord.
         """
@@ -718,7 +724,16 @@ class TemplatedReport():
             count = 1
         self.references[count] = ref
         ref.count = count
-        return ref
+        return count
+
+    def reference_long(self, ref):
+        return ref.richtext
+
+    def reference_short(self, ref: Reference):
+        return ref.short_ref
+
+    def reference_text(self, ref: Reference):
+        return ref.text
 
     def make_templated_docx_report(self,
                                    output_filename: str,
@@ -728,8 +743,16 @@ class TemplatedReport():
         context, tpl_doc = self.prepare_report_data(self.cif, self.options, picfile, tpl_doc)
         # Filter definition for {{foobar|filter}} things:
         jinja_env = jinja2.Environment()
+        jinja_env.globals.update(strip=str.strip)
         jinja_env.filters['inv_article'] = get_inf_article
-        jinja_env.filters['ref'] = self.count_reference
+        # foo[1,2] bar[3]:
+        jinja_env.filters['ref_num'] = self.count_reference
+        # foo(Kratzert, 2015):
+        jinja_env.filters['ref_short'] = self.reference_short
+        # richtext formatted full reference:
+        jinja_env.filters['ref_long'] = self.reference_long
+        # plain text full reference:
+        jinja_env.filters['ref_txt'] = self.reference_text
         try:
             tpl_doc.render(context, jinja_env=jinja_env, autoescape=True)
             tpl_doc.save(output_filename)
@@ -855,7 +878,8 @@ class TemplatedReport():
                    'hydrogen_bonds'         : self.text_formatter.get_hydrogen_bonds(),
                    'hydrogen_symminfo'      : self.text_formatter.get_hydrogen_symminfo(),
                    'literature'             : self.text_formatter.literature,
-                   'refs'                   : self.references,
+                   'references'             : self.references,
+                   # 'bibliography'           : self.get_bibliography(),
                    'bootstrap_css'          : Path('finalcif/template/bootstrap/bootstrap.min.css').read_text(
                        encoding='utf-8'),
                    }
@@ -863,11 +887,7 @@ class TemplatedReport():
 
 
 if __name__ == '__main__':
-    from PyQt5.QtWidgets import QApplication
 
-    app = QApplication.instance()
-    if app is None:
-        app = QApplication([])
     import subprocess
 
     data = Path('tests')
@@ -893,7 +913,7 @@ if __name__ == '__main__':
     output = work / 'test.docx'
     template_path = app_path.application_path / 'template'
     # ok = t.make_templated_html_report(output_filename=str(output), picfile=pic, template_path=template_path)
-    ok = t.make_templated_docx_report(template_path=Path('finalcif/template/template_text.docx'),
+    ok = t.make_templated_docx_report(template_path=Path('finalcif/template/template_text_unfinished.docx'),
                                       output_filename=output,
                                       picfile=pic,
                                       )
