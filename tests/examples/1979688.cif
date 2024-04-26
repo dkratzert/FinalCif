@@ -14,7 +14,7 @@
 #######################################################################
 
 data_cu_BruecknerJK_153F40_0m
-_database_code_depnum_ccdc_archive 'CCDC 1979688'
+_database_code_depnum_ccdc_archive 1979688
 loop_
 _citation_id
 _citation_doi
@@ -97,7 +97,7 @@ _cell_measurement_theta_max      78.8605
 _exptl_crystal_description       plate
 _exptl_crystal_colour            colourless
 _exptl_crystal_recrystallization_method 
-'The compund was crystallized fromhot methanol by cooling'
+'The compound was crystallized from hot methanol by cooling'
 _exptl_crystal_density_meas      ?
 _exptl_crystal_density_method    ?
 _exptl_crystal_density_diffrn    1.343
