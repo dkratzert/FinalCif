@@ -176,6 +176,7 @@ class DataReduction():
         if 'STOE X-RED'.lower() in integration.lower():
             data_reduct_ref, integration_prog = self.add_x_red_reference(integration)
         absdetails = cif['_exptl_absorpt_process_details'].replace('-', ' ')
+        absdetails += cif['_computing_bruker_data_scaling'].replace('-', ' ').replace(':', '')
         if 'SADABS' in absdetails.upper() or 'TWINABS' in absdetails.upper():
             # if len(absdetails.split()) > 1:
             #    version = absdetails.split()[1]
@@ -458,7 +459,7 @@ class Twinning():
         """
         twining = cif['_twin_individual_id']
         if twining:
-            sentence = f''
+            sentence = ''
 
 
 class SpaceChar():
@@ -520,6 +521,19 @@ def get_inf_article(next_word: str) -> str:
     return 'an' if next_word[0].lower() in voc else 'a'
 
 
+def format_float_with_decimal_places(number: float, places=2) -> str:
+    try:
+        fnum = float(number)
+        return f'{fnum:.{places}f}'
+    except ValueError:
+        return f'{number}'
+
+
+def utf8(text: str) -> str:
+    """A Jinja2 filter for CIF to utf8"""
+    return string_to_utf8(text)
+
+
 def format_radiation(radiation_type: str) -> list:
     radtype = list(radiation_type.partition("K"))
     if len(radtype) > 2:
@@ -537,7 +551,7 @@ def make_report_text(cif, document: Document) -> references.ReferenceList:
         print('DBG> Text style not found')
     ref = references.ReferenceList(paragr)
     # -- The main text:
-    paragr.add_run('The following text is only a suggestion: ').font.bold = True
+    # paragr.add_run('The following text is only a suggestion: ').font.bold = True
     Crystallization(cif, paragr)
     CrystalSelection(cif, paragr)
     DataCollection(cif, paragr)

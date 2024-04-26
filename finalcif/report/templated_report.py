@@ -13,9 +13,12 @@ from typing import List, Dict, Union, Iterator, Any
 
 from PyQt5.QtWidgets import QApplication
 
+# This is necessary, because if jinja crashes, we show an error dialog:
 app = QApplication.instance()
 if app is None:
     app = QApplication([])
+
+from jinja2 import select_autoescape
 
 import jinja2
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
@@ -26,10 +29,9 @@ from docxtpl import DocxTemplate, RichText, InlineImage, Subdoc
 from finalcif import app_path
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.gui.dialogs import show_general_warning
-from finalcif.report import references as ref
+from finalcif.report import references as ref, report_text
 from finalcif.report.references import Reference
-from finalcif.report.report_text import (math_to_word, gstr, format_radiation, get_inf_article,
-                                         MachineType)
+from finalcif.report.report_text import (math_to_word, gstr, format_radiation, MachineType)
 from finalcif.report.symm import SymmetryElement
 from finalcif.tools.misc import (isnumeric, this_or_quest, timessym, angstrom, protected_space,
                                  less_or_equal, halbgeviert, minus_sign, ellipsis_mid)
@@ -516,9 +518,9 @@ class Formatter(ABC):
 
     def get_completeness(self, cif: CifContainer) -> str:
         try:
-            completeness = f"{float(cif['_diffrn_measured_fraction_theta_full']) * 100:.1f}{protected_space}%"
+            completeness = f"{float(cif['_diffrn_measured_fraction_theta_full']) * 100:.1f}"
         except ValueError:
-            completeness = '?'
+            completeness = cif['_diffrn_measured_fraction_theta_full']
         return completeness
 
 
@@ -744,7 +746,8 @@ class TemplatedReport():
         # Filter definition for {{foobar|filter}} things:
         jinja_env = jinja2.Environment()
         jinja_env.globals.update(strip=str.strip)
-        jinja_env.filters['inv_article'] = get_inf_article
+        jinja_env.filters['inv_article'] = report_text.get_inf_article
+        jinja_env.filters['float_num'] = report_text.format_float_with_decimal_places
         # foo[1,2] bar[3]:
         jinja_env.filters['ref_num'] = self.count_reference
         # foo(Kratzert, 2015):
@@ -769,8 +772,12 @@ class TemplatedReport():
                                    template_file: str = "report.tmpl") -> bool:
         context = self.get_context(self.cif, self.options, picfile, None)
         jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(searchpath=template_path.resolve()),
-                                       autoescape=False)
-        jinja_env.filters['inv_article'] = get_inf_article
+                                       autoescape=select_autoescape(['html', 'htm', 'xml']))
+        # Add zip() method to global namespace of the template:
+        jinja_env.globals.update(zip=zip)
+        jinja_env.filters['inv_article'] = report_text.get_inf_article
+        jinja_env.filters['utf8'] = report_text.utf8
+        jinja_env.filters['float_num'] = report_text.format_float_with_decimal_places
         template = jinja_env.get_template(template_file)
         try:
             with open(output_filename, encoding='utf-8', mode='w+t') as f:
@@ -879,7 +886,6 @@ class TemplatedReport():
                    'hydrogen_symminfo'      : self.text_formatter.get_hydrogen_symminfo(),
                    'literature'             : self.text_formatter.literature,
                    'references'             : self.references,
-                   # 'bibliography'           : self.get_bibliography(),
                    'bootstrap_css'          : Path('finalcif/template/bootstrap/bootstrap.min.css').read_text(
                        encoding='utf-8'),
                    }
@@ -899,11 +905,11 @@ if __name__ == '__main__':
 
     options = Options()
     # Set options with leading underscore without settings parameter in Options:
-    # options._bonds_table = True
+    options._bonds_table = True
     # options._report_adp = True
-    # options._without_h = True
+    options._without_h = False
     # options._report_text = False
-    # options._hydrogen_bonds = True
+    options._hydrogen_bonds = True
     # options._picture_width = '300'
 
     t = TemplatedReport(format=ReportFormat.RICHTEXT, options=options, cif=cif)
@@ -913,7 +919,7 @@ if __name__ == '__main__':
     output = work / 'test.docx'
     template_path = app_path.application_path / 'template'
     # ok = t.make_templated_html_report(output_filename=str(output), picfile=pic, template_path=template_path)
-    ok = t.make_templated_docx_report(template_path=Path('finalcif/template/template_text_unfinished.docx'),
+    ok = t.make_templated_docx_report(template_path=Path('finalcif/template/template_text.docx'),
                                       output_filename=output,
                                       picfile=pic,
                                       )
