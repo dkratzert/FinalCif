@@ -406,7 +406,7 @@ class Formatter(ABC):
 
     def get_integration_program(self, cif: CifContainer) -> str:
         integration = gstr(cif['_computing_data_reduction']) or '??'
-        integration_prog = '[unknown integration program]'
+        integration_prog = '[No _computing_data_reduction given]'
         if 'SAINT' in integration:
             saintversion = ''
             integration_prog = 'SAINT'
@@ -823,20 +823,20 @@ class TemplatedReport():
                                               this_or_quest(cif['_exptl_crystal_size_mid']) + timessym +
                                               this_or_quest(cif['_exptl_crystal_size_max']),
                    'crystal_colour'         : this_or_quest(cif['_exptl_crystal_colour']),
-                   'crystal_shape'          : this_or_quest(cif['_exptl_crystal_description']),
+                   'crystal_shape'          : cif['_exptl_crystal_description'],
                    'radiation'              : self.text_formatter.get_radiation(cif),
                    'wavelength'             : cif['_diffrn_radiation_wavelength'],
                    'theta_range'            : self.text_formatter.get_from_to_theta_range(cif),
                    'diffr_type'             : gstr(cif['_diffrn_measurement_device_type'])
-                                              or '[No measurement device type given]',
+                                              or '[No _diffrn_measurement_device_type given]',
                    'diffr_device'           : gstr(cif['_diffrn_measurement_device'])
-                                              or '[No measurement device given]',
+                                              or '[No _diffrn_measurement_device given]',
                    'diffr_source'           : gstr(cif['_diffrn_source']).strip('\n\r')
-                                              or '[No radiation source given]',
+                                              or '[No _diffrn_source given]',
                    'monochromator'          : gstr(cif['_diffrn_radiation_monochromator']) \
-                                              or '[No monochromator type given]',
+                                              or '[No _diffrn_radiation_monochromator given]',
                    'detector'               : gstr(cif['_diffrn_detector_type']) \
-                                              or '[No detector type given]',
+                                              or '[No _diffrn_detector_type given]',
                    'lowtemp_dev'            : MachineType._get_cooling_device(cif),
                    'index_ranges'           : self.text_formatter.hkl_index_limits(cif),
                    'indepentent_refl'       : this_or_quest(cif['_reflns_number_total']),
@@ -892,7 +892,7 @@ if __name__ == '__main__':
 
     data = Path('tests')
     testcif = Path(data / 'examples/1979688.cif').absolute()
-    # testcif = Path(r'test-data/p31c.cif').absolute()
+    testcif = Path(r'test-data/p31c.cif').absolute()
     cif = CifContainer(testcif)
 
     pic = pathlib.Path("screenshots/finalcif_checkcif.png")
