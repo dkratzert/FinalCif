@@ -925,9 +925,10 @@ if __name__ == '__main__':
                                       )
     if ok:
         print('HTML report successfully generated')
+        if sys.platform == 'darwin':
+            subprocess.call(['open', output])
+        else:
+            subprocess.Popen(['explorer', output], shell=True)
     else:
         print('HTML report failed')
-    if sys.platform == 'darwin':
-        subprocess.call(['open', output])
-    else:
-        subprocess.Popen(['explorer', output], shell=True)
+
