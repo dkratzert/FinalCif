@@ -464,7 +464,7 @@ class Formatter(ABC):
         if 'OLEX' in refined.upper():
             self.literature['refinement'] = ref.Olex2Reference()
         if ('NOSPHERA2' in refined.upper() or 'NOSPHERA2' in cif['_refine_special_details'].upper() or
-                'NOSPHERAT2' in cif['_olex2_refine_details'].upper()):
+            'NOSPHERAT2' in cif['_olex2_refine_details'].upper()):
             self.literature['refinement'] = ref.Nosphera2Reference()
         return refined.split()[0]
 
@@ -709,6 +709,16 @@ class TemplatedReport():
         self.cif = cif
         self.options = options
         self.text_formatter = text_factory(options, cif)[self.format]
+        self.references = {}
+
+    def count_reference(self, ref):
+        if self.references:
+            count = max(self.references.keys()) + 1
+        else:
+            count = 1
+        self.references[count] = ref
+        ref.count = count
+        return ref
 
     def make_templated_docx_report(self,
                                    output_filename: str,
@@ -719,6 +729,7 @@ class TemplatedReport():
         # Filter definition for {{foobar|filter}} things:
         jinja_env = jinja2.Environment()
         jinja_env.filters['inv_article'] = get_inf_article
+        jinja_env.filters['ref'] = self.count_reference
         try:
             tpl_doc.render(context, jinja_env=jinja_env, autoescape=True)
             tpl_doc.save(output_filename)
@@ -844,6 +855,7 @@ class TemplatedReport():
                    'hydrogen_bonds'         : self.text_formatter.get_hydrogen_bonds(),
                    'hydrogen_symminfo'      : self.text_formatter.get_hydrogen_symminfo(),
                    'literature'             : self.text_formatter.literature,
+                   'refs'                   : self.references,
                    'bootstrap_css'          : Path('finalcif/template/bootstrap/bootstrap.min.css').read_text(
                        encoding='utf-8'),
                    }
@@ -851,6 +863,11 @@ class TemplatedReport():
 
 
 if __name__ == '__main__':
+    from PyQt5.QtWidgets import QApplication
+
+    app = QApplication.instance()
+    if app is None:
+        app = QApplication([])
     import subprocess
 
     data = Path('tests')
@@ -869,12 +886,17 @@ if __name__ == '__main__':
     # options._hydrogen_bonds = True
     # options._picture_width = '300'
 
-    t = TemplatedReport(format=ReportFormat.HTML, options=options, cif=cif)
+    t = TemplatedReport(format=ReportFormat.RICHTEXT, options=options, cif=cif)
     work = Path('work').resolve()
     work.mkdir(exist_ok=True)
     output = work / 'test.html'
+    output = work / 'test.docx'
     template_path = app_path.application_path / 'template'
-    ok = t.make_templated_html_report(output_filename=str(output), picfile=pic, template_path=template_path)
+    # ok = t.make_templated_html_report(output_filename=str(output), picfile=pic, template_path=template_path)
+    ok = t.make_templated_docx_report(template_path=Path('finalcif/template/template_text.docx'),
+                                      output_filename=output,
+                                      picfile=pic,
+                                      )
     if ok:
         print('HTML report successfully generated')
     else:

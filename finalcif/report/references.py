@@ -136,6 +136,7 @@ class ReferenceFormatter():
         self.pages = ''
         self.doi = ''
         self.program = ''
+        self.count = 0
 
     def add_reference(self, p: Paragraph) -> None:
         if self.authors:
