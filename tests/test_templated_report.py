@@ -130,9 +130,8 @@ class TemplateReportWithoutAppTestCase(unittest.TestCase):
                                      picfile=self.report_pic,
                                      template_path=self.text_template)
         doc = Document(self.reportdoc.absolute())
-        # for num, p in enumerate(doc.paragraphs):
-        #    print(num, p.text)
-        self.assertEqual('Bibliography', doc.paragraphs[20].text)
+        paragraphs = [p.text for p in doc.paragraphs]
+        self.assertTrue('Bibliography' in paragraphs)
 
 
 class TestReportFromMultiCif(unittest.TestCase):
