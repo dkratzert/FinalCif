@@ -774,6 +774,7 @@ class TemplatedReport():
         except Exception as e:
             show_general_warning(parent=None, window_title='Warning', warn_text='Document generation failed',
                                  info_text=str(e))
+            print(e)
             return False
 
     def make_templated_html_report(self,
@@ -862,6 +863,8 @@ class TemplatedReport():
                    'r_sigma'                : this_or_quest(cif['_diffrn_reflns_av_unetI/netI']),
                    'completeness'           : self.text_formatter.get_completeness(cif),
                    'theta_full'             : cif['_diffrn_reflns_theta_full'],
+                   'resolution_angstrom'    : self.text_formatter.get_angstrom_resolution(cif),
+                   'redundancy'             : self.text_formatter.get_redundancy(cif),
                    'data'                   : this_or_quest(cif['_refine_ls_number_reflns']),
                    'restraints'             : this_or_quest(cif['_refine_ls_number_restraints']),
                    'parameters'             : this_or_quest(cif['_refine_ls_number_parameters']),
@@ -896,6 +899,7 @@ class TemplatedReport():
                    'hydrogen_bonds'         : self.text_formatter.get_hydrogen_bonds(),
                    'hydrogen_symminfo'      : self.text_formatter.get_hydrogen_symminfo(),
                    'literature'             : self.text_formatter.literature,
+                   'number_of_images'       : self.text_formatter.get_number_of_collected_images(cif),
                    'references'             : self.references,
                    'bootstrap_css'          : Path('finalcif/template/bootstrap/bootstrap.min.css').read_text(
                        encoding='utf-8'),
