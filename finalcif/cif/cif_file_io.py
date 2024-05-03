@@ -40,6 +40,8 @@ class CifContainer():
             new_block: Create a new block (new file) if a name is given. Otherwise, just
                        the existing document is opened.
         """
+        self._hkl_file: str = ''
+        self._abs_hkl_details: Dict[str, str] = {}
         if isinstance(file, str):
             self.fileobj = Path(file)
         elif isinstance(file, Path):
@@ -142,7 +144,9 @@ class CifContainer():
 
     @property
     def hkl_extra_info(self):
-        return self._abs_hkl_details()
+        if not self._abs_hkl_details:
+            self._abs_hkl_details = self._sadabs_hkl_details()
+        return self._abs_hkl_details
 
     def check_hkl_min_max(self) -> None:
         if not all([self['_diffrn_reflns_limit_h_min'], self['_diffrn_reflns_limit_h_max'],
@@ -307,10 +311,14 @@ class CifContainer():
     def hkl_file(self) -> str:
         hkl_loop: Loop = self.get_loop('_diffrn_refln_index_h')
         if hkl_loop and hkl_loop.width() > 4:
-            return self._hkl_from_cif_format(hkl_loop)
+            if not self._hkl_file:
+                self._hkl_file = self._hkl_from_cif_format(hkl_loop)
+            return self._hkl_file
         else:
             # returns an empty string if no cif hkl was found:
-            return self._hkl_from_shelx()
+            if not self._hkl_file:
+                self._hkl_file = self._hkl_from_shelx()
+            return self._hkl_file
 
     def _hkl_from_cif_format(self, hkl_loop: Loop) -> str:
         hkl_list = []
@@ -373,7 +381,7 @@ class CifContainer():
                 return num
         return 0
 
-    def _abs_hkl_details(self) -> Dict[str, str]:
+    def _sadabs_hkl_details(self) -> Dict[str, str]:
         """
         This method tries to determine the information witten at the end of a cif hkl file by sadabs.
         """
@@ -759,7 +767,7 @@ class CifContainer():
         bond = namedtuple('bond', ('label1', 'label2', 'dist', 'symm'))
         for label1, label2, dist, symm, publ in zip(label1, label2, dist, symm, publ_loop):
             if without_h and (self.ishydrogen(label1) or self.ishydrogen(label2)) or \
-                self.yes_not_set(publ, self._has_publ_flag_set(publ_loop)):
+                    self.yes_not_set(publ, self._has_publ_flag_set(publ_loop)):
                 continue
             else:
                 yield bond(label1=label1, label2=label2, dist=dist, symm=self.checksymm(symm))
@@ -795,10 +803,10 @@ class CifContainer():
         publ_loop = self.block.find_loop('_geom_angle_publ_flag')
         angle = namedtuple('angle', ('label1', 'label2', 'label3', 'angle_val', 'symm1', 'symm2'))
         for label1, label2, label3, angle_val, symm1, symm2, publ in \
-            zip(label1, label2, label3, angle_val, symm1, symm2, publ_loop):
+                zip(label1, label2, label3, angle_val, symm1, symm2, publ_loop):
             if without_H and (
-                self.ishydrogen(label1) or self.ishydrogen(label2) or self.ishydrogen(label3)) or \
-                self.yes_not_set(publ, self._has_publ_flag_set(publ_loop)):
+                    self.ishydrogen(label1) or self.ishydrogen(label2) or self.ishydrogen(label3)) or \
+                    self.yes_not_set(publ, self._has_publ_flag_set(publ_loop)):
                 continue
             else:
                 yield angle(label1=label1, label2=label2, label3=label3, angle_val=angle_val,
@@ -848,7 +856,7 @@ class CifContainer():
                                                                                              symm4, publ_loop):
             if without_h and (self.ishydrogen(label1) or self.ishydrogen(label2)
                               or self.ishydrogen(label3) or self.ishydrogen(label3)) or \
-                self.yes_not_set(publ, self._has_publ_flag_set(publ_loop)):
+                    self.yes_not_set(publ, self._has_publ_flag_set(publ_loop)):
                 continue
             yield tors(label1=label1, label2=label2, label3=label3, label4=label4, torsang=torsang,
                        symm1=self.checksymm(symm1),
@@ -869,7 +877,7 @@ class CifContainer():
         hydr = namedtuple('HydrogenBond', ('label_d', 'label_h', 'label_a', 'dist_dh', 'dist_ha', 'dist_da',
                                            'angle_dha', 'symm'))
         for label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm, publ in \
-            zip(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm, publ_loop):
+                zip(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm, publ_loop):
             if self.yes_not_set(publ, self._has_publ_flag_set(publ_loop)):
                 continue
             yield hydr(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, self.checksymm(symm))
