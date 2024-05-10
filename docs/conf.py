@@ -19,7 +19,7 @@ sys.path.insert(0, os.path.abspath('..'))
 from finalcif import VERSION
 
 project = 'FinalCif'
-copyright = '2022, Daniel Kratzert'
+copyright = '2024, Daniel Kratzert'
 author = 'Daniel Kratzert'
 
 # The full version, including alpha/beta/rc tags
