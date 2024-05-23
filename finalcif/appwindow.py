@@ -17,16 +17,16 @@ from typing import Union, Dict, Tuple, List, Optional
 
 import gemmi.cif
 import requests
-from PyQt5 import QtCore
-
-QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_ShareOpenGLContexts)
-from PyQt5 import QtGui, QtWebEngineWidgets, QtWidgets
+from PyQt5 import QtCore, QtGui, QtWebEngineWidgets, QtWidgets
 from PyQt5.QtCore import Qt, QEvent
-from PyQt5.QtWidgets import QMainWindow, QShortcut, QCheckBox, QListWidgetItem, QApplication, \
-    QPlainTextEdit, QFileDialog, QMessageBox, QScrollBar
+from PyQt5.QtWidgets import (QMainWindow, QShortcut, QCheckBox, QListWidgetItem, QApplication,
+                             QPlainTextEdit, QFileDialog, QMessageBox, QScrollBar)
 from gemmi import cif
 
 from finalcif import VERSION
+# QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
+# QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_ShareOpenGLContexts)
+from finalcif.cif.checkcif.checkcif import MyHTMLParser, AlertHelp, CheckCif
 from finalcif.cif.cif_file_io import CifContainer, GemmiError
 from finalcif.cif.cod.deposit import CODdeposit
 from finalcif.cif.text import utf8_to_str, quote
@@ -63,16 +63,12 @@ from finalcif.tools.space_groups import SpaceGroups
 from finalcif.tools.statusbar import StatusBar
 from finalcif.tools.sumformula import formula_str_to_dict, sum_formula_to_html
 
-# QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
-# QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_ShareOpenGLContexts)
-
 DEBUG = False
 app = QApplication.instance()
 if app is None:
     app = QApplication([])
 with suppress(ImportError):
     import qtawesome as qta
-from finalcif.cif.checkcif.checkcif import MyHTMLParser, AlertHelp, CheckCif
 
 
 class AppWindow(QMainWindow):

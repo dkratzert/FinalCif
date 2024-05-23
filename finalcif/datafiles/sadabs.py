@@ -39,7 +39,7 @@ class Dataset():
         self.numerical: bool = False
 
     def __repr__(self):
-        out = f''
+        out = ''
         out += f'written refl.:\t{self.written_reflections}\n'
         out += f'transmission:\t{self.transmission}\n'
         out += f'Mu*r:\t\t\t{self.mu_r}\n'
