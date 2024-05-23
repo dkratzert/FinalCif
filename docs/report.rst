@@ -170,6 +170,12 @@ Data Available for the Report
     'solution_program'      : The name of the structure solution program.
     'refinement_prog'       : The name of the refinement program.
     'refinement_details'    : The text of '_refine_special_details'.
+    'resolution_angstrom'   : The resolution of the experiment in Å.
+    'redundancy'            : The value of _diffrn_reflns_number / _reflns_number_total
+    'bootstrap_css'         : Bootstrap CSS library used for a html report: https://getbootstrap.com/.
+    'references'            : A list of references used in the document. Each reference can be accessed by its number.
+                              Each reference can be accessed as html, richtext or text.
+
 
 
 **This information from the 'cif' variable can also be useful:**
