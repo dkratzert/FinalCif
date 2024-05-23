@@ -311,13 +311,13 @@ def symmsearch(cif: CifContainer, newsymms: Dict[int, str], num: int,
 
 class Formatter(ABC):
     def __init__(self, options: Options, cif: CifContainer) -> None:
-        self.literature = {'finalcif'   : ref.FinalCifReference(),
-                           'ccdc'       : ref.CCDCReference(),
-                           'absorption' : ref.DummyReference(),
-                           'solution'   : ref.DummyReference(),
-                           'refinement' : ref.DummyReference(),
-                           'integration': ref.DummyReference(),
-                           }
+        self.literature: dict[str, Reference] = {'finalcif'   : ref.FinalCifReference(),
+                                                 'ccdc'       : ref.CCDCReference(),
+                                                 'absorption' : ref.DummyReference(),
+                                                 'solution'   : ref.DummyReference(),
+                                                 'refinement' : ref.DummyReference(),
+                                                 'integration': ref.DummyReference(),
+                                                 }
         self._bonds_angles = BondsAndAngles(cif, without_h=options.without_h)
         self._torsions = TorsionAngles(cif, without_h=options.without_h)
         self._hydrogens = HydrogenBonds(cif)
@@ -475,7 +475,7 @@ class Formatter(ABC):
         if 'OLEX' in refined.upper():
             self.literature['refinement'] = ref.Olex2Reference()
         if ('NOSPHERA2' in refined.upper() or 'NOSPHERA2' in cif['_refine_special_details'].upper() or
-                'NOSPHERAT2' in cif['_olex2_refine_details'].upper()):
+            'NOSPHERAT2' in cif['_olex2_refine_details'].upper()):
             self.literature['refinement'] = ref.Nosphera2Reference()
         return refined.split()[0]
 
