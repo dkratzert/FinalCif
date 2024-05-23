@@ -775,6 +775,9 @@ class TemplatedReport():
     def reference_text(self, ref: Reference):
         return ref.text
 
+    def reference_html(self, ref: Reference):
+        return ref.html
+
     def make_templated_docx_report(self,
                                    output_filename: str,
                                    picfile: Path,
@@ -816,6 +819,15 @@ class TemplatedReport():
         jinja_env.filters['inv_article'] = report_text.get_inf_article
         jinja_env.filters['utf8'] = report_text.utf8
         jinja_env.filters['float_num'] = report_text.format_float_with_decimal_places
+        jinja_env.filters['ref_num'] = self.count_reference
+        # foo(Kratzert, 2015):
+        jinja_env.filters['ref_short'] = self.reference_short
+        # richtext formatted full reference:
+        jinja_env.filters['ref_long'] = self.reference_long
+        # plain text full reference:
+        jinja_env.filters['ref_txt'] = self.reference_text
+        # html reference:
+        jinja_env.filters['ref_html'] = self.reference_html
         template = jinja_env.get_template(template_file)
         try:
             with open(output_filename, encoding='utf-8', mode='w+t') as f:
@@ -952,7 +964,7 @@ if __name__ == '__main__':
 
     import subprocess
 
-    html = False
+    html = True
 
     data = Path('tests')
     testcif = Path(data / 'examples/1979688.cif').absolute()
