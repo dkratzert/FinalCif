@@ -525,6 +525,33 @@ class Formatter(ABC):
             completeness = cif['_diffrn_measured_fraction_theta_full']
         return completeness
 
+    def get_angstrom_resolution(self, cif: CifContainer):
+        wavelen = cif['_diffrn_radiation_wavelength']
+        thetamax = cif['_diffrn_reflns_theta_max']
+        try:
+            d = float(wavelen) / (2 * sin(radians(float(thetamax))))
+        except(ZeroDivisionError, TypeError, ValueError):
+            return ''
+        return f'{d:.2f}'
+
+    def get_redundancy(self, cif):
+        n_refl = cif['_diffrn_reflns_number']
+        n_all = cif['_reflns_number_total']
+        try:
+            redundancy = float(n_refl) / float(n_all)
+        except(ZeroDivisionError, TypeError, ValueError):
+            return ''
+        return f'{redundancy:.2f}'
+
+    def get_data_to_param(self, cif):
+        n_refl = cif['_refine_ls_number_reflns']
+        n_param = cif['_refine_ls_number_parameters']
+        try:
+            redundancy = float(n_refl) / float(n_param)
+        except(ZeroDivisionError, TypeError, ValueError):
+            return ''
+        return f'{redundancy:.2f}'
+
 
 class HtmlFormatter(Formatter):
 
@@ -802,7 +829,7 @@ class TemplatedReport():
 
     def prepare_report_data(self, cif: CifContainer,
                             options: Options,
-                            picfile: Path,
+                            picfile: Path | None,
                             tpl_doc: DocxTemplate | None) -> tuple[dict[str, Any], DocxTemplate]:
         maincontext = {}
         if not cif.is_multi_cif:
@@ -862,6 +889,8 @@ class TemplatedReport():
                    'r_sigma'                : this_or_quest(cif['_diffrn_reflns_av_unetI/netI']),
                    'completeness'           : self.text_formatter.get_completeness(cif),
                    'theta_full'             : cif['_diffrn_reflns_theta_full'],
+                   'resolution_angstrom'    : self.text_formatter.get_angstrom_resolution(cif),
+                   'redundancy'             : self.text_formatter.get_redundancy(cif),
                    'data'                   : this_or_quest(cif['_refine_ls_number_reflns']),
                    'restraints'             : this_or_quest(cif['_refine_ls_number_restraints']),
                    'parameters'             : this_or_quest(cif['_refine_ls_number_parameters']),
@@ -903,9 +932,27 @@ class TemplatedReport():
         return context
 
 
+def save_docx_to_pdf(docx_file: Path):
+    import win32com.client
+    word = win32com.client.Dispatch("Word.Application")
+    doc = word.Documents.Open(str(docx_file))
+    try:
+        doc.SaveAs(str(docx_file.with_suffix('.pdf')), FileFormat=17)
+    except Exception:
+        raise
+    finally:
+        pass
+        # closes the Word document previously opened by subprocess:
+        # doc.Close(0)
+    # Quits all word applications!
+    # word.Quit()
+
+
 if __name__ == '__main__':
 
     import subprocess
+
+    html = False
 
     data = Path('tests')
     testcif = Path(data / 'examples/1979688.cif').absolute()
@@ -923,23 +970,25 @@ if __name__ == '__main__':
     options._hydrogen_bonds = True
     # options._picture_width = '300'
 
-    t = TemplatedReport(format=ReportFormat.RICHTEXT, options=options, cif=cif)
     work = Path('work').resolve()
     work.mkdir(exist_ok=True)
-    output = work / 'test.html'
-    output = work / 'test.docx'
     template_path = app_path.application_path / 'template'
-    # ok = t.make_templated_html_report(output_filename=str(output), picfile=pic, template_path=template_path)
-    ok = t.make_templated_docx_report(template_path=Path('finalcif/template/template_text.docx'),
-                                      output_filename=output,
-                                      picfile=pic,
-                                      )
+
+    if html:
+        output = work / 'test.html'
+        t = TemplatedReport(format=ReportFormat.HTML, options=options, cif=cif)
+        ok = t.make_templated_html_report(output_filename=str(output), picfile=pic, template_path=template_path)
+    else:
+        output = work / 'test.docx'
+        t = TemplatedReport(format=ReportFormat.RICHTEXT, options=options, cif=cif)
+        ok = t.make_templated_docx_report(template_path=Path('finalcif/template/template_text.docx'),
+                                          output_filename=str(output), picfile=pic)
     if ok:
-        print('HTML report successfully generated')
+        print('DOCX report successfully generated')
         if sys.platform == 'darwin':
             subprocess.call(['open', output])
         else:
             subprocess.Popen(['explorer', output], shell=True)
+            # save_docx_to_pdf(output)
     else:
         print('HTML report failed')
-
