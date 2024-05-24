@@ -78,8 +78,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <TargetName>$(SolutionName)</TargetName>
-    <IncludePath>D:\tools\Python\Python311\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\tools\Python\Python311\libs;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\tools\Python\Python312\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\tools\Python\Python312\libs;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
