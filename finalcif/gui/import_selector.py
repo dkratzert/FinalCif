@@ -16,7 +16,6 @@ class ImportSelector(QtWidgets.QMainWindow):
 
     def __init__(self, parent, import_cif: CifContainer, target_cif: CifContainer, settings: FinalCifSettings):
         super().__init__(parent)
-        self.parent = parent
         self.import_cif = import_cif
         self.target_cif = target_cif
         self.settings = settings

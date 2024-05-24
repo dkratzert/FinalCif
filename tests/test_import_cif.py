@@ -1,18 +1,23 @@
 import os
 
+from PyQt5.QtWidgets import QApplication
+app = QApplication.instance()
+if app is None:
+    app = QApplication([])
+
 os.environ["RUNNING_TEST"] = 'True'
 import shutil
 import unittest
 from pathlib import Path
 
-# noinspection PyUnresolvedReferences
-from finalcif.appwindow import app
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.gui.import_selector import ImportSelector
 from finalcif.tools.settings import FinalCifSettings
 
 data = Path('tests')
 testdata = Path('test-data')
+
+
 
 
 class MyTestCase(unittest.TestCase):
@@ -27,6 +32,8 @@ class MyTestCase(unittest.TestCase):
 
     def tearDown(self) -> None:
         Path(testdata / 'p21c-copy.cif').unlink(missing_ok=True)
+        self.imp.deleteLater()
+        self.imp.close()
 
     def test_keys_to_import(self):
         self.assertEqual(3, self.imp.keys_to_import)
