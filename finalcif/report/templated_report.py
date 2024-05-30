@@ -938,7 +938,8 @@ class TemplatedReport():
                    'hydrogen_symminfo'      : self.text_formatter.get_hydrogen_symminfo(),
                    'literature'             : self.text_formatter.literature,
                    'references'             : self.references,
-                   'bootstrap_css'          : Path('finalcif/template/bootstrap/bootstrap.min.css').read_text(
+                   'bootstrap_css'          : (app_path.application_path /
+                                               'template/bootstrap/bootstrap.min.css').read_text(
                        encoding='utf-8'),
                    }
         return context
