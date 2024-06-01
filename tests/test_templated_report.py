@@ -72,6 +72,8 @@ class TemplateReportTestCase(unittest.TestCase):
         self.myapp.ui.docxTemplatesListWidget.setCurrentRow(2)
         self.myapp.ui.SaveFullReportButton.click()
         doc = Document(self.reportdoc.absolute())
+        #for n, p in enumerate(doc.paragraphs):
+        #    print(n, p.text)
         self.assertEqual('A colourless, plate-shaped', doc.paragraphs[2].text[:26])
 
 

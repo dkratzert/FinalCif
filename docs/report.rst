@@ -173,8 +173,8 @@ Data Available for the Report
     'resolution_angstrom'   : The resolution of the experiment in Å.
     'redundancy'            : The value of _diffrn_reflns_number / _reflns_number_total
     'bootstrap_css'         : Bootstrap CSS library used for a html report: https://getbootstrap.com/.
-    'references'            : A list of references used in the document. Each reference can be accessed by its number.
-                              Each reference can be accessed as html, richtext or text.
+    'references'            : A list of references used in the document. Each reference can be accessed by its number, where
+                              it can be accessed as html, richtext or text.
 
 
 
