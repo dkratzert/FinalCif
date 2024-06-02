@@ -86,11 +86,8 @@
                 using {{ refinement_prog }}.&NoBreak;<sup>[{{ literature.solution|ref_num }},{{ literature.refinement|ref_num }}]</sup>
                 All non-hydrogen atoms
                 were refined with anisotropic displacement parameters.
-                {% if cif.hydrogen_atoms_present %}The hydrogen atoms were refined isotropically on
-                calculated positions using a riding model with their <i>U</i><sub>iso</sub> values
-                constrained to 1.5 times
-                the <i>U</i><sub>eq</sub> of their pivot atoms for terminal sp<sup>3</sup> carbon atoms
-                and 1.2 times for all other carbon atoms.
+                {% if cif.hydrogen_atoms_present %}
+                {{ hydrogen_atoms }}
                 {% endif %}
                 Crystallographic data for the structures reported in this paper have been deposited
                 with the Cambridge Crystallographic Data Centre.<sup>[{{ literature.ccdc|ref_num }}]</sup> CCDC
