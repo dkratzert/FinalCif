@@ -393,7 +393,7 @@ class Hydrogens():
                 paragraph.add_run(sentence_12)
         else:
             paragraph.add_run(f"{number} hydrogen atoms were refined with {utype} displacement parameters. ")
-            riding = f"Some were refined {sentence_free_pos} and some {sentence_riding}"
+            riding = f"Some of their coordinates were refined {sentence_free_pos} and some {sentence_riding}"
             paragraph.add_run(riding)
             self.u_iso(paragraph)
             paragraph.add_run(sentence_15)

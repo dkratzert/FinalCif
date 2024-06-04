@@ -3,37 +3,35 @@
 
     <xsl:template match="/">
         <html>
-            <body>
-                <p>
-                    <xsl:apply-templates/>
-                </p>
-            </body>
+            <xsl:apply-templates/>
         </html>
     </xsl:template>
 
     <xsl:template match="w:r">
-        <xsl:apply-templates/>
+        <xsl:choose>
+            <xsl:when test="w:rPr/w:i">
+                <i>
+                    <xsl:apply-templates select="w:t"/>
+                </i>
+            </xsl:when>
+            <xsl:when test="w:rPr/w:vertAlign[@w:val='subscript']">
+                <sub>
+                    <xsl:apply-templates select="w:t"/>
+                </sub>
+            </xsl:when>
+            <xsl:when test="w:rPr/w:vertAlign[@w:val='superscript']">
+                <sup>
+                    <xsl:apply-templates select="w:t"/>
+                </sup>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:apply-templates/>
+            </xsl:otherwise>
+        </xsl:choose>
     </xsl:template>
 
     <xsl:template match="w:t">
         <xsl:value-of select="."/>
     </xsl:template>
 
-    <xsl:template match="w:rPr/w:i">
-        <i>
-            <xsl:apply-templates select="../following-sibling::w:t"/>
-        </i>
-    </xsl:template>
-
-    <xsl:template match="w:rPr/w:vertAlign[@w:val='subscript']">
-        <sub>
-            <xsl:apply-templates select="../following-sibling::w:t"/>
-        </sub>
-    </xsl:template>
-
-    <xsl:template match="w:rPr/w:vertAlign[@w:val='superscript']">
-        <sup>
-            <xsl:apply-templates select="../following-sibling::w:t"/>
-        </sup>
-    </xsl:template>
 </xsl:stylesheet>

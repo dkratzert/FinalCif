@@ -14,6 +14,9 @@ from pathlib import Path
 from typing import List, Dict, Union, Iterator, Any
 
 from PyQt5.QtWidgets import QApplication
+from lxml import etree
+
+from finalcif.app_path import application_path
 
 # This is necessary, because if jinja crashes, we show an error dialog:
 app = QApplication.instance()
@@ -379,7 +382,7 @@ class Hydrogens():
                 rt.add(sentence_12)
         else:
             rt.add(f"{number} hydrogen atoms were refined with {utype} displacement parameters. ")
-            riding = f"Some were refined {sentence_free_pos} and some {sentence_riding}"
+            riding = f"Some of their coordinates were refined {sentence_free_pos} and some {sentence_riding}"
             rt.add(riding)
             self.u_iso(rt)
             rt.add(sentence_15)
@@ -408,6 +411,27 @@ class Hydrogens():
 
     def richtext(self) -> RichText:
         return self.rt
+
+    def html(self):
+        """
+        Transforms XML to HTML using XSLT.
+        """
+        xslt_file = application_path / 'template/xsl/xmltohtml.xsl'
+        xml_string = (fr'''
+        <w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+            {self.rt}
+        </w:document>
+        ''')
+
+        with open(xslt_file, 'rb') as f:
+            xslt_data = f.read()
+
+        xml_doc = etree.fromstring(xml_string)
+        xslt_doc = etree.fromstring(xslt_data)
+
+        transform = etree.XSLT(xslt_doc)
+        result = str(transform(xml_doc)).splitlines()
+        return ''.join(result[1:-1]).strip()
 
 
 class Formatter(ABC):
@@ -727,15 +751,10 @@ class HtmlFormatter(Formatter):
             return 'no formula'
 
     def hydrogen_atoms(self, cif):
-        '''return """
-        The hydrogen atoms were refined isotropically on
-        calculated positions using a riding model with their <i>U</i><sub>iso</sub> values
-        constrained to 1.5 times
-        the <i>U</i><sub>eq</sub> of their pivot atoms for terminal sp<sup>3</sup> carbon atoms
-        and 1.2 times for all other carbon atoms.
-        """'''
-        h = Hydrogens(cif)
-        return h.richtext().__html__()
+        """
+        Returns the text describing the refinment of hydrogen atoms.
+        """
+        return Hydrogens(cif).html()
 
     def get_radiation(self, cif: CifContainer) -> str:
         rad_element, radtype, radline = format_radiation(cif['_diffrn_radiation_type'])
@@ -808,8 +827,7 @@ class RichTextFormatter(Formatter):
             return RichText('no formula')
 
     def hydrogen_atoms(self, cif: CifContainer) -> RichText:
-        h = Hydrogens(cif)
-        return h.richtext()
+        return Hydrogens(cif).richtext()
 
     def space_group_subdoc(self, cif: CifContainer, tpl_doc: DocxTemplate) -> Subdoc:
         """
@@ -1085,7 +1103,7 @@ if __name__ == '__main__':
 
     import subprocess
 
-    html = False
+    html = True
 
     data = Path('tests')
     testcif = Path(data / 'examples/1979688.cif').absolute()
