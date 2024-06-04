@@ -117,6 +117,7 @@ Data Available for the Report
     'ba_symminfo'           : The symmetry operations used to generate equivalent atoms in the angles list.
     'torsions'              : The torsion angles as ('atoms', 'angle') for each atom quartet.
     'torsion_symminfo'      : The symmetry operations used to generate equivalent atoms in the torsion angles list.
+    'hydrogen_atoms'        : Automatic text describing the refinement of hydrogen atoms.
     'hydrogen_bonds'        : The hydrogen bonds (in case there are some defined with HTAB) as
                                ('atoms', 'dist_dh', 'dist_ha', 'dist_da', 'angle_dha').
     'hydrogen_symminfo'     : The symmetry operations used to generate equivalent atoms in the hydrogen bonds list
