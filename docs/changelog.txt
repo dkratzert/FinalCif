@@ -1,5 +1,6 @@
 FinalCif recent changes
 -----------------------
+* v139 Fixed crash on Mac with report template. New report template attribute for hydrogen atoms available.
 * v138 Validators for loop values were added. Incorrect loop values turn the input field red and changed values are gray now.
        Faster loading of large CIF files. The warning about inconsistent temperatures from different files was improved.
        Empty loop values could not be overwritten by a dot. This has been fixed. Loops in the saved CIF are now aligned.

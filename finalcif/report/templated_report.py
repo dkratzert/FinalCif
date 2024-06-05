@@ -15,6 +15,8 @@ from typing import List, Dict, Union, Iterator, Any
 
 from PyQt5.QtWidgets import QApplication
 
+from finalcif.template.xsl.convert import xml_to_html
+
 # This is necessary, because if jinja crashes, we show an error dialog:
 app = QApplication.instance()
 if app is None:
@@ -27,6 +29,7 @@ from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 from docx.shared import Cm
 from docx.text.paragraph import Paragraph
 from docxtpl import DocxTemplate, RichText, InlineImage, Subdoc
+from shelxfile.atoms.atoms import Atom as SHXAtom
 
 from finalcif import app_path
 from finalcif.cif.cif_file_io import CifContainer
@@ -309,6 +312,112 @@ def symmsearch(cif: CifContainer, newsymms: Dict[int, str], num: int,
     return num
 
 
+class Hydrogens():
+    def __init__(self, cif: CifContainer):
+        """
+        The hydrogen atoms were refined isotropically on calculated positions using
+        a riding model with their Uiso values constrained to 1.5 times the Ueq of
+        their pivot atoms for terminal sp3 carbon atoms and 1.2 times for all other
+        carbon atoms.
+        """
+        rt = RichText()
+        hatoms: List[SHXAtom] = [x for x in cif.shx.atoms.all_atoms if x.is_hydrogen]
+        n_hatoms = len(hatoms)
+        n_anisotropic_h = len([x for x in hatoms if sum([abs(y) for y in x.uvals[1:]]) > 0.0001])
+        n_constr_h = len([x for x in hatoms if x.uvals[0] < -1.0])
+        riding_atoms = [x for x in hatoms if x.afix]
+        pivot_atoms = self.get_hydrogen_pivot_atoms(riding_atoms)
+        n_riding = len(riding_atoms)
+        n_non_riding = len(hatoms) - n_riding
+
+        atom_type = "carbon"
+        number = "The"
+        sentence_isotropic = "isotropic"
+        sentence_anisotropic = "anisotropic"
+
+        if n_anisotropic_h == n_hatoms:
+            # number = "All"
+            utype = sentence_anisotropic
+        elif n_anisotropic_h > 0 and n_anisotropic_h < n_hatoms:
+            number = "Some"
+            utype = sentence_isotropic + " and some with anisotropic "
+        else:
+            if all(self.pivot_atom_types(pivot_atoms)):
+                number = "All"
+            elif any(self.pivot_atom_types(pivot_atoms)):
+                number = "All C-bound"
+            else:
+                number = "The heteroatom-bound"
+            utype = sentence_isotropic
+        sentence_riding = "on calculated positions using a riding model with their "
+        sentence_free_pos = "freely"
+        sentence_15 = " values constrained to 1.5 times the "  # Ueq
+        sentence_pivot = " of their pivot atoms for terminal sp"  # 3
+        sentence_12 = f" {atom_type} atoms and 1.2 times for all other {atom_type} atoms."
+
+        if n_riding == n_hatoms:
+            rt.add(f"{number} hydrogen atoms were refined {utype} ")
+            riding = sentence_riding
+            rt.add(riding)
+            self.u_iso(rt)
+            rt.add(sentence_15)
+            self.u_eq(rt)
+            rt.add(sentence_pivot)
+            rt.add('3', superscript=True)
+            rt.add(sentence_12)
+        elif n_non_riding == n_hatoms:
+            if n_constr_h == n_hatoms:
+                rt.add(f"{number} hydrogen atoms were refined {sentence_free_pos}"
+                       f" with their ")
+            else:
+                rt.add(f"{number} hydrogen atoms were refined {sentence_free_pos}"
+                       f" with {utype} displacement parameters.")
+            if n_constr_h == n_hatoms:
+                self.u_iso(rt)
+                rt.add(sentence_15)
+                self.u_eq(rt)
+                rt.add(sentence_pivot)
+                rt.add('3', superscript=True)
+                rt.add(sentence_12)
+        else:
+            rt.add(f"{number} hydrogen atoms were refined with {utype} displacement parameters. ")
+            riding = f"Some of their coordinates were refined {sentence_free_pos} and some {sentence_riding}"
+            rt.add(riding)
+            self.u_iso(rt)
+            rt.add(sentence_15)
+            self.u_eq(rt)
+            rt.add(sentence_pivot)
+            rt.add('3', superscript=True)
+            rt.add(sentence_12)
+        self.rt = rt
+
+    def pivot_atom_types(self, pivot_atoms):
+        return [x.element == 'C' for x in pivot_atoms]
+
+    def get_hydrogen_pivot_atoms(self, riding_atoms):
+        pivot_atoms = []
+        for at in riding_atoms:
+            pivot_atoms.extend(at.find_atoms_around(dist=1.2))
+        return pivot_atoms
+
+    def u_eq(self, rt: RichText):
+        rt.add('U', italic=True)
+        rt.add('eq', subscript=True)
+
+    def u_iso(self, rt: RichText):
+        rt.add('U', italic=True)
+        rt.add('iso', subscript=True)
+
+    def richtext(self) -> RichText:
+        return self.rt
+
+    def html(self):
+        """
+        Transforms XML to HTML using XSLT.
+        """
+        return xml_to_html(self.rt)
+
+
 class Formatter(ABC):
     def __init__(self, options: Options, cif: CifContainer) -> None:
         self.literature: dict[str, Reference] = {'finalcif'   : ref.FinalCifReference(),
@@ -362,6 +471,9 @@ class Formatter(ABC):
         raise NotImplementedError
 
     def format_sum_formula(self, sum_formula: str) -> str:
+        raise NotImplementedError
+
+    def hydrogen_atoms(self, cif):
         raise NotImplementedError
 
     @staticmethod
@@ -475,7 +587,7 @@ class Formatter(ABC):
         if 'OLEX' in refined.upper():
             self.literature['refinement'] = ref.Olex2Reference()
         if ('NOSPHERA2' in refined.upper() or 'NOSPHERA2' in cif['_refine_special_details'].upper() or
-            'NOSPHERAT2' in cif['_olex2_refine_details'].upper()):
+                'NOSPHERAT2' in cif['_olex2_refine_details'].upper()):
             self.literature['refinement'] = ref.Nosphera2Reference()
         return refined.split()[0]
 
@@ -622,6 +734,12 @@ class HtmlFormatter(Formatter):
         else:
             return 'no formula'
 
+    def hydrogen_atoms(self, cif):
+        """
+        Returns the text describing the refinment of hydrogen atoms.
+        """
+        return Hydrogens(cif).html()
+
     def get_radiation(self, cif: CifContainer) -> str:
         rad_element, radtype, radline = format_radiation(cif['_diffrn_radiation_type'])
         radiation = f'{rad_element}<i>{radtype}</i><i><sub>{radline}</sub></i>'
@@ -691,6 +809,9 @@ class RichTextFormatter(Formatter):
             return richtext
         else:
             return RichText('no formula')
+
+    def hydrogen_atoms(self, cif: CifContainer) -> RichText:
+        return Hydrogens(cif).richtext()
 
     def space_group_subdoc(self, cif: CifContainer, tpl_doc: DocxTemplate) -> Subdoc:
         """
@@ -780,7 +901,7 @@ class TemplatedReport():
 
     def make_templated_docx_report(self,
                                    output_filename: str,
-                                   picfile: Path,
+                                   picfile: Path | None,
                                    template_path: Path) -> bool:
         tpl_doc = DocxTemplate(template_path)
         context, tpl_doc = self.prepare_report_data(self.cif, self.options, picfile, tpl_doc)
@@ -804,6 +925,7 @@ class TemplatedReport():
         except Exception as e:
             show_general_warning(parent=None, window_title='Warning', warn_text='Document generation failed',
                                  info_text=str(e))
+            print(e)
             return False
 
     def make_templated_html_report(self,
@@ -929,6 +1051,7 @@ class TemplatedReport():
                    'refinement_prog'        : self.text_formatter.refinement_prog(cif),
                    'atomic_coordinates'     : self.text_formatter.get_atomic_coordinates(cif),
                    'displacement_parameters': self.text_formatter.get_displacement_parameters(cif),
+                   'hydrogen_atoms'         : self.text_formatter.hydrogen_atoms(cif),
                    'bonds'                  : self.text_formatter.get_bonds(),
                    'angles'                 : self.text_formatter.get_angles(),
                    'ba_symminfo'            : self.text_formatter.get_bonds_angles_symminfo(),

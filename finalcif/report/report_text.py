@@ -16,7 +16,7 @@ from finalcif.cif.cif_file_io import CifContainer
 from finalcif.cif.text import retranslate_delimiter, string_to_utf8
 from finalcif.report import references
 from finalcif.tools.misc import (protected_space, angstrom, zero_width_space, remove_line_endings,
-                                 flatten, minus_sign)
+                                 flatten)
 
 
 def math_to_word(eq: str) -> BaseOxmlElement:
@@ -129,7 +129,7 @@ class MachineType():
         txt = (f"on {get_inf_article(self.difftype)} {self.difftype} {self.device} with "
                f"{get_inf_article(self.source)} {self.source} using a {self.monochrom} as "
                f"monochromator{self.detector_type}. The diffractometer was equipped "
-               f"with {get_inf_article(self.cooling)} {self.cooling+' ' if self.cooling else ''}"
+               f"with {get_inf_article(self.cooling)} {self.cooling + ' ' if self.cooling else ''}"
                f"low temperature device and used ")
         paragraph.add_run(retranslate_delimiter(txt))
         # radiation type e.g. Mo:
@@ -262,7 +262,7 @@ class SolveRefine():
         if 'OLEX' in refined.upper():
             refineref = references.Olex2Reference()
         if ('NOSPHERA2' in solution_prog.upper() or 'NOSPHERA2' in cif['_refine_special_details'].upper()
-                or 'NOSPHERA2' in cif['_olex2_refine_details'].upper()):
+            or 'NOSPHERA2' in cif['_olex2_refine_details'].upper()):
             refineref = [references.Olex2Reference(), references.Nosphera2Reference()]
         refine_coef = gstr(cif['_refine_ls_structure_factor_coef'])
         if manual_method:
@@ -393,7 +393,7 @@ class Hydrogens():
                 paragraph.add_run(sentence_12)
         else:
             paragraph.add_run(f"{number} hydrogen atoms were refined with {utype} displacement parameters. ")
-            riding = f"Some were refined {sentence_free_pos} and some {sentence_riding}"
+            riding = f"Some of their coordinates were refined {sentence_free_pos} and some {sentence_riding}"
             paragraph.add_run(riding)
             self.u_iso(paragraph)
             paragraph.add_run(sentence_15)

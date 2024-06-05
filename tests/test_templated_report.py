@@ -15,7 +15,7 @@ from docx.table import Table
 
 from finalcif.appwindow import AppWindow
 from finalcif.cif.cif_file_io import CifContainer
-from finalcif.report.templated_report import TemplatedReport, ReportFormat
+from finalcif.report.templated_report import TemplatedReport, ReportFormat, Hydrogens
 
 data = Path('tests')
 test_data = Path('test-data')
@@ -72,7 +72,7 @@ class TemplateReportTestCase(unittest.TestCase):
         self.myapp.ui.docxTemplatesListWidget.setCurrentRow(2)
         self.myapp.ui.SaveFullReportButton.click()
         doc = Document(self.reportdoc.absolute())
-        #for n, p in enumerate(doc.paragraphs):
+        # for n, p in enumerate(doc.paragraphs):
         #    print(n, p.text)
         self.assertEqual('A colourless, plate-shaped', doc.paragraphs[2].text[:26])
 
@@ -216,6 +216,35 @@ class TestData(unittest.TestCase):
         self.assertEqual('SAINT', result)
         self.assertEqual('Bruker, SAINT, Bruker AXS Inc., Madison, Wisconsin, USA.',
                          str(self.t.text_formatter.literature['integration']))
+
+
+class TestHydrogenText(unittest.TestCase):
+    def setUp(self) -> None:
+        self.cif = CifContainer('test-data/p21c.cif')
+        self.h = Hydrogens(self.cif)
+
+    def test_hydrogen_text_html(self):
+        result = ('All hydrogen atoms were refined isotropic on calculated positions using a '
+                  'riding model with their <i>U</i><sub>iso</sub> values constrained to 1.5 '
+                  'times the <i>U</i><sub>eq</sub> of their pivot atoms for terminal '
+                  'sp<sup>3</sup> carbon atoms and 1.2 times for all other carbon atoms.')
+        self.assertEqual(result, self.h.html())
+
+    def test_hydrogen_text_richtext(self):
+        result = ('<w:r><w:t xml:space="preserve">All hydrogen atoms were refined isotropic '
+                  '</w:t></w:r><w:r><w:t xml:space="preserve">on calculated positions using a '
+                  'riding model with their </w:t></w:r><w:r><w:rPr><w:i/></w:rPr><w:t '
+                  'xml:space="preserve">U</w:t></w:r><w:r><w:rPr><w:vertAlign '
+                  'w:val="subscript"/></w:rPr><w:t '
+                  'xml:space="preserve">iso</w:t></w:r><w:r><w:t xml:space="preserve"> values '
+                  'constrained to 1.5 times the </w:t></w:r><w:r><w:rPr><w:i/></w:rPr><w:t '
+                  'xml:space="preserve">U</w:t></w:r><w:r><w:rPr><w:vertAlign '
+                  'w:val="subscript"/></w:rPr><w:t xml:space="preserve">eq</w:t></w:r><w:r><w:t '
+                  'xml:space="preserve"> of their pivot atoms for terminal '
+                  'sp</w:t></w:r><w:r><w:rPr><w:vertAlign w:val="superscript"/></w:rPr><w:t '
+                  'xml:space="preserve">3</w:t></w:r><w:r><w:t xml:space="preserve"> carbon '
+                  'atoms and 1.2 times for all other carbon atoms.</w:t></w:r>')
+        self.assertEqual(result, self.h.richtext().xml)
 
 
 if __name__ == '__main__':
