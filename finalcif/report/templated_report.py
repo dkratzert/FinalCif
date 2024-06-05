@@ -901,7 +901,7 @@ class TemplatedReport():
 
     def make_templated_docx_report(self,
                                    output_filename: str,
-                                   picfile: Path,
+                                   picfile: Path | None,
                                    template_path: Path) -> bool:
         tpl_doc = DocxTemplate(template_path)
         context, tpl_doc = self.prepare_report_data(self.cif, self.options, picfile, tpl_doc)
@@ -925,6 +925,7 @@ class TemplatedReport():
         except Exception as e:
             show_general_warning(parent=None, window_title='Warning', warn_text='Document generation failed',
                                  info_text=str(e))
+            print(e)
             return False
 
     def make_templated_html_report(self,
