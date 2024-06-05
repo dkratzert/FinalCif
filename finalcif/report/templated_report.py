@@ -14,9 +14,8 @@ from pathlib import Path
 from typing import List, Dict, Union, Iterator, Any
 
 from PyQt5.QtWidgets import QApplication
-from lxml import etree
 
-from finalcif.app_path import application_path
+from finalcif.template.xsl.convert import xml_to_html
 
 # This is necessary, because if jinja crashes, we show an error dialog:
 app = QApplication.instance()
@@ -416,22 +415,7 @@ class Hydrogens():
         """
         Transforms XML to HTML using XSLT.
         """
-        xslt_file = application_path / 'template/xsl/xmltohtml.xsl'
-        xml_string = (fr'''
-        <w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
-            {self.rt}
-        </w:document>
-        ''')
-
-        with open(xslt_file, 'rb') as f:
-            xslt_data = f.read()
-
-        xml_doc = etree.fromstring(xml_string)
-        xslt_doc = etree.fromstring(xslt_data)
-
-        transform = etree.XSLT(xslt_doc)
-        result = str(transform(xml_doc)).splitlines()
-        return ''.join(result[1:-1]).strip()
+        return xml_to_html(self.rt)
 
 
 class Formatter(ABC):
@@ -603,7 +587,7 @@ class Formatter(ABC):
         if 'OLEX' in refined.upper():
             self.literature['refinement'] = ref.Olex2Reference()
         if ('NOSPHERA2' in refined.upper() or 'NOSPHERA2' in cif['_refine_special_details'].upper() or
-            'NOSPHERAT2' in cif['_olex2_refine_details'].upper()):
+                'NOSPHERAT2' in cif['_olex2_refine_details'].upper()):
             self.literature['refinement'] = ref.Nosphera2Reference()
         return refined.split()[0]
 
