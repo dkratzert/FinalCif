@@ -545,6 +545,21 @@ class Formatter(ABC):
             self.literature['absorption'] = ref.CrysalisProReference(version=version, year=year)
         return integration_prog
 
+    def get_refinement_gui(self, cif: CifContainer) -> str:
+        refined = gstr(cif['_computing_structure_refinement'])
+        gui_reference = ref.DummyReference()
+        refinement_gui = ''
+        if 'shelxle' in refined.lower() or 'shelxle' in cif['_computing_molecular_graphics'].lower():
+            gui_reference = ref.ShelXleReference()
+            refinement_gui = 'ShelXle'
+        elif 'olex' in refined.lower() or 'olex' in cif['_computing_molecular_graphics'].lower():
+            gui_reference = ref.Olex2Reference()
+            refinement_gui = 'Olex2'
+        else:
+            refinement_gui = '[Unknown program in _computing_structure_refinement]'
+        self.literature['gui'] = gui_reference
+        return refinement_gui
+
     def _get_scaling_program(self, absdetails: str) -> tuple[str, str]:
         scale_prog = ''
         version = ''
@@ -1046,6 +1061,7 @@ class TemplatedReport():
                    'abs_details'            : self.text_formatter.get_absortion_correction_program(cif),
                    'solution_method'        : self.text_formatter.solution_method(cif),
                    'solution_program'       : self.text_formatter.solution_program(cif),
+                   'refinement_gui'         : self.text_formatter.get_refinement_gui(cif),
                    'refinement_details'     : ' '.join(
                        cif['_refine_special_details'].splitlines(keepends=False)).strip(),
                    'refinement_prog'        : self.text_formatter.refinement_prog(cif),

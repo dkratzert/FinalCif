@@ -170,6 +170,7 @@ Data Available for the Report
     'solution_method'       : The structure solution method used.
     'solution_program'      : The name of the structure solution program.
     'refinement_prog'       : The name of the refinement program.
+    'refinement_gui'        : The name of the graphical user interface used for model building and refienement.
     'refinement_details'    : The text of '_refine_special_details'.
     'resolution_angstrom'   : The resolution of the experiment in Å.
     'redundancy'            : The value of _diffrn_reflns_number / _reflns_number_total
@@ -252,5 +253,6 @@ For a single-CIF, leave out the "block['block name']." part:
     {{ cif.bond_dist('C1-C2') }}
 
 
-Further information for programmers:
+Further information how to make templates for MS Office or Openoffice:
 `https://docxtpl.readthedocs.io/en/latest/ <https://docxtpl.readthedocs.io/en/latest/>`_
+`https://jinja.palletsprojects.com/en/3.1.x/ <https://jinja.palletsprojects.com/en/3.1.x/>`_

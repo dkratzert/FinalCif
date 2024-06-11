@@ -255,8 +255,8 @@ class SolveRefine():
             solveref = references.SHELXSReference()
         if 'SHELXD' in solution_prog.upper():
             solveref = references.SHELXDReference()
-        refined = gstr(cif['_computing_structure_refinement']).split(' ')[
-                      0] or '[No _computing_structure_refinement given]'
+        refined = (gstr(cif['_computing_structure_refinement']).split(' ')[0]
+                   or '[No _computing_structure_refinement given]')
         if refined.upper().startswith(('SHELXL', 'XL')):
             refineref = references.SHELXLReference()
         if 'OLEX' in refined.upper():
