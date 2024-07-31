@@ -6,6 +6,7 @@
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
 #
+import sys
 from contextlib import suppress
 from pathlib import Path
 
@@ -13,7 +14,7 @@ from finalcif.datafiles.utils import get_file_to_parse
 
 
 class SaintListFile():
-    def __init__(self, name_patt: str, directory: Path = None):
+    def __init__(self, name_patt: str, directory: Path = None, file_to_parse: Path = None):
         self.cell_reflections = ''
         self.cell_res_min_2t = 0.0
         self.cell_res_max_2t = 0.0
@@ -24,7 +25,9 @@ class SaintListFile():
         self.nsamples = 1
         self.components_firstsample = 1
         self.filename = Path('')
-        if directory:
+        if file_to_parse:
+            self._fileobj = file_to_parse
+        elif directory:
             self._fileobj = get_file_to_parse(name_pattern=name_patt, base_directory=directory)
         else:
             self._fileobj = get_file_to_parse(name_pattern=name_patt, base_directory=Path('.'))
@@ -68,7 +71,7 @@ class SaintListFile():
                     self.cell_reflections = summary[3] or 0
                     self.cell_res_min_2t = summary[6] or 0.0
                     self.cell_res_max_2t = summary[7] or 0.0
-                summary = False
+                # summary = False
             # This is the twin case:
             if summary and line.lstrip().startswith('All'):
                 summary = line.split()
@@ -131,19 +134,19 @@ class SaintListFile():
 
 
 if __name__ == "__main__":
-    saint = SaintListFile(name_patt='*._ls', directory='test-data/TB_fs20_v1_0m._ls')
+    saint = SaintListFile(name_patt='*._ls', directory=Path(r"D:\frames\finalcif_twin_bug"))
     print(saint)
 
     print('#####')
-    s = SaintListFile('*._ls', directory='test-data/Esser_JW316_01._ls')
+    s = SaintListFile('*._ls', file_to_parse=Path('test-data/Esser_JW316_01._ls'))
     print(s)
 
     print('#####')
-    s = SaintListFile('*._ls', directory='test-data/test766_0m._ls')
+    s = SaintListFile('*._ls', file_to_parse=Path('test-data/test766_0m._ls'))
     print(s)
 
     print('#####')
-    s = SaintListFile('*_0[?]m._ls', directory=r'D:\GitHub\FinalCif\test-data\DK_Zucker2_0m._ls')
+    s = SaintListFile('*_0[?]m._ls', file_to_parse=Path(r'test-data/DK_Zucker2_0m._ls'))
     print(s)
 
     paths = Path(r'D:\frames').rglob('*_0*m._ls')

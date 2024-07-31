@@ -37,6 +37,7 @@ class Dataset():
         self.filetype: Optional[int] = 4
         self.domain: str = '1'
         self.numerical: bool = False
+        self.rint1 = None
 
     def __repr__(self):
         out = ''
@@ -67,6 +68,7 @@ class Sadabs():
         self.version = ''
         self.twin_components = 1
         self.Rint = None
+        self.wR2int = None
         self.observations = None
         self.Rint_3sig = None
         self.observations_3sig = None
@@ -74,7 +76,9 @@ class Sadabs():
         self.datasets = []
         self.batch_input = None
         self.filename = Path('')
-        if basename:
+        if fileobj:
+            self._fileobj = fileobj
+        elif basename:
             self._fileobj = get_file_to_parse(name_pattern=basename, base_directory=searchpath)
         else:
             self._fileobj = get_file_to_parse(fileobj=fileobj)
@@ -102,7 +106,10 @@ class Sadabs():
                 self.input_files.append(spline[-1])
                 self.batch_input = spline[2]
             if line.startswith(' wR2(int)'):
-                self.Rint = to_float(spline[2])
+                if self.is_twinabs:
+                    self.wR2int = to_float(spline[2])
+                else:
+                    self.Rint = to_float(spline[2])
             if line.startswith(' Crystal faces:'):
                 self.faces = True
             if 'SADABS' in line or 'TWINABS' in line:
@@ -114,7 +121,7 @@ class Sadabs():
                 self.dataset(n).point_group_merge = spline[-1]
             if line.startswith(' HKLF 5 dataset constructed'):
                 # This can be before "Corrected reflections written" in case of hklf5 files
-                if self.version.startswith('TWINABS'):
+                if self.is_twinabs:
                     hklf5 = True
                     self.datasets.append(Dataset())
                 self.dataset(n).filetype = to_int(spline[1])
@@ -143,6 +150,10 @@ class Sadabs():
             # if line.startswith(' Unique HKLF'):
             #    n += 1
 
+    @property
+    def is_twinabs(self):
+        return self.version.startswith('TWINABS')
+
     def __iter__(self):
         return iter(x for x in self.datasets)
 
@@ -163,6 +174,7 @@ class Sadabs():
         out += f'raw input File:\t{" ".join(self.input_files)}\n'
         out += f'Input Batch:\t{self.batch_input}\n'
         out += f'Rint:\t\t\t{self.Rint}\n'
+        out += f'wR2int:\t\t\t{self.wR2int}\n'
         out += f'Rint-3sig:\t\t{self.Rint_3sig}\n'
         out += f'components:\t\t{self.twin_components}\n'
         out += '\n'
@@ -172,7 +184,8 @@ class Sadabs():
 if __name__ == '__main__':
     print('###############\n\n')
     # s = Sadabs(fileobj=Path(r'tests/statics/1163_67_1_rint_matt.abs'))
-    s = Sadabs(fileobj=Path(r'tests/examples/work/cu_BruecknerJK_153F40.abs'))
+    # s = Sadabs(fileobj=Path(r'tests/examples/work/cu_BruecknerJK_153F40.abs'))
+    s = Sadabs(basename='NS_DAMT_nitramines.abs', fileobj=Path(r'D:\frames\finalcif_twin_bug\NS_DAMT_nitramines.abs'))
     print(s)
     for dat in s:
         print(dat)
