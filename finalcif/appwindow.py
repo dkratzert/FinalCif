@@ -1806,16 +1806,13 @@ class AppWindow(QMainWindow):
         self.sources = BrukerData(self, self.cif).sources
         if self.sources:
             # Add the CCDC number in case we have a deposition mail lying around:
-            ccdc = CCDCMail(self.cif)
-            if ccdc.depnum > 0:
-                # The next line is necessary, otherwise reopening of a cif would not add the CCDC number:
-                if '_database_code_depnum_ccdc_archive' not in self.ui.cif_main_table.vheaderitems:
-                    # self.ui.cif_main_table.vheaderitems.insert(0, '_database_code_depnum_ccdc_archive')
-                    self.add_row('_database_code_depnum_ccdc_archive', '', at_start=True)
-                txt = self.ui.cif_main_table.getTextFromKey('_database_code_depnum_ccdc_archive', Column.EDIT).strip()
-                if not txt or (txt == '?'):
-                    self.sources['_database_code_depnum_ccdc_archive'] = (str(ccdc.depnum), str(ccdc.emlfile.name))
-                    self.missing_data.add('_database_code_depnum_ccdc_archive')
+            self.add_ccdc_number()
+            if self.cif.shx and self.cif.shx.abin and not self.cif['_platon_squeeze_void_probe_radius']:
+                show_general_warning(self, f"A SQUEEZE refinement was detected.\n"
+                                           f"Please import the "
+                                           f"corresponding .sqf file from PLATON and\n"
+                                           f"complete the _platon_squeeze_void_content information"
+                                           f"in the 'Platon SQUEEZE voids' loop.")
         vheadlist = []
         for row_number in range(self.ui.cif_main_table.model().rowCount()):
             vheadlist.append(self.ui.cif_main_table.model().headerData(row_number, QtCore.Qt.Vertical))
@@ -1848,6 +1845,18 @@ class AppWindow(QMainWindow):
                 # TypeError my originate from incomplete self.missing_data list!
                 # print(e, '##', miss_key)
                 pass
+
+    def add_ccdc_number(self):
+        ccdc = CCDCMail(self.cif)
+        if ccdc.depnum > 0:
+            # The next line is necessary, otherwise reopening of a cif would not add the CCDC number:
+            if '_database_code_depnum_ccdc_archive' not in self.ui.cif_main_table.vheaderitems:
+                # self.ui.cif_main_table.vheaderitems.insert(0, '_database_code_depnum_ccdc_archive')
+                self.add_row('_database_code_depnum_ccdc_archive', '', at_start=True)
+            txt = self.ui.cif_main_table.getTextFromKey('_database_code_depnum_ccdc_archive', Column.EDIT).strip()
+            if not txt or (txt == '?'):
+                self.sources['_database_code_depnum_ccdc_archive'] = (str(ccdc.depnum), str(ccdc.emlfile.name))
+                self.missing_data.add('_database_code_depnum_ccdc_archive')
 
     def refresh_combo_boxes(self) -> None:
         combos_from_settings = self.settings.load_cif_keys_of_properties()
