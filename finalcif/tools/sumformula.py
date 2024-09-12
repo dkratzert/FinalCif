@@ -4,19 +4,13 @@ from finalcif.tools import chemparse
 
 
 def formula_str_to_dict(sumform: Union[str, bytes]) -> Dict[str, float]:
-    """
-    converts an atom name like C12 to the element symbol C
-    Use this code to find the atoms while going through the character astream of a sumformula
-    e.g. C12H6O3Mn7
-    Find two-char atoms, them one-char, and see if numbers are in between.
-    """
     chemical_formula = chemparse.parse_formula(sumform.replace(" ", ""))
     return chemical_formula
 
 
 def sum_formula_to_html(sumform: Dict[str, float | int], break_after: int = 99) -> str:
     """
-    Makes html formatted sum formula from dictionary.
+    Makes html formatted sum formula from a dictionary.
     """
     if not sumform:
         return ''
