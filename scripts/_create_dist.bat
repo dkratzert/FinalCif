@@ -69,4 +69,6 @@ if %errorlevel% neq 0 (
 
 cd %SCRIPT_DIR%\..
 
-python -m compile -q .
+echo - compiling python packages
+%PACKAGE_DIR%\python.exe -m compileall -q .
+echo - finished!
