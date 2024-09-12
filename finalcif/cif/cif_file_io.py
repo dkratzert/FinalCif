@@ -126,6 +126,10 @@ class CifContainer():
         self.current_block = self.block.name
         self._on_load()
 
+    def delete_block(self, index: int) -> None:
+        del self.doc[index]
+        self.block: gemmi.cif.Block = self.doc[0]
+
     def _on_load(self) -> None:
         # will not ok with non-ascii characters in the res file:
         self.chars_ok = True

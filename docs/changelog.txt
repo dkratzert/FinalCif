@@ -1,5 +1,6 @@
 FinalCif recent changes
 -----------------------
+* v141 Added feature to delete the currently selected block of a multi-CIF by right-click on the dropbox.
 * v140 Improved support for SQUEEZEd structures. New 'refinement_gui' keyword for report templates available.
        Fixed sum formula parsing. Some forulae were displayed incorrectly.
 * v139 Fixed crash on Mac with report template. New report template attribute for hydrogen atoms available.

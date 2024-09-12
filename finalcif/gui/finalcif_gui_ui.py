@@ -1741,7 +1741,7 @@ class Ui_FinalCifWindow(object):
         self.verticalLayout_33.setObjectName("verticalLayout_33")
         self.MainStackedWidget.addWidget(self.page_textTemplate)
         self.gridLayout_6.addWidget(self.MainStackedWidget, 2, 0, 1, 13)
-        self.datanameComboBox = QtWidgets.QComboBox(self.CifDataItemsFrame)
+        self.datanameComboBox = ComboBoxWithContextMenu(self.CifDataItemsFrame)
         self.datanameComboBox.setEditable(True)
         self.datanameComboBox.setMaxVisibleItems(20)
         self.datanameComboBox.setInsertPolicy(QtWidgets.QComboBox.InsertAtCurrent)
@@ -2181,6 +2181,7 @@ class Ui_FinalCifWindow(object):
         self.SumFormMainLabel.setText(_translate("FinalCifWindow", "Sum Formula"))
         self.appendCifPushButton.setText(_translate("FinalCifWindow", "Append CIF"))
 from finalcif.displaymol.molecule2D import MoleculeWidget
+from finalcif.gui.block_combobox import ComboBoxWithContextMenu
 from finalcif.gui.custom_classes import MyCifTable
 from finalcif.gui.equipmenttable import MyEQTableWidget
 from finalcif.gui.file_editor import QCodeEditor

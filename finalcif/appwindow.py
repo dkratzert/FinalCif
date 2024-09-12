@@ -302,6 +302,7 @@ class AppWindow(QMainWindow):
         this method connects all signals to slots. Only a few mighjt be defined elsewere.
         """
         self.ui.datanameComboBox.currentIndexChanged.connect(self._load_block)
+        self.ui.datanameComboBox.delete_signal.connect(self._delete_current_block)
         ## main
         self.ui.BackPushButton.clicked.connect(self.back_to_main)
         self.ui.BackFromDepositPushButton.clicked.connect(self.back_to_main)
@@ -1566,6 +1567,11 @@ class AppWindow(QMainWindow):
             t = QtCore.QTimer(self)
             t.singleShot(1000, self.check_cecksums)
 
+    def _delete_current_block(self, index):
+        self.cif.delete_block(index)
+        self.ui.datanameComboBox.setCurrentIndex(0)
+        self.add_data_names_to_combobox()
+
     def set_vertical_header_width(self):
         """
         Sets the width of the vertical header to the length of the longest string in the list.
@@ -1808,11 +1814,11 @@ class AppWindow(QMainWindow):
             # Add the CCDC number in case we have a deposition mail lying around:
             self.add_ccdc_number()
             if self.cif.shx and self.cif.shx.abin and not self.cif['_platon_squeeze_void_probe_radius']:
-                show_general_warning(self, f"A SQUEEZE refinement was detected.\n"
-                                           f"Please import the "
-                                           f"corresponding .sqf file from PLATON and\n"
-                                           f"complete the _platon_squeeze_void_content information"
-                                           f"in the 'Platon SQUEEZE voids' loop.")
+                show_general_warning(self, "A SQUEEZE refinement was detected.\n"
+                                           "Please import the "
+                                           "corresponding .sqf file from PLATON and\n"
+                                           "complete the _platon_squeeze_void_content information"
+                                           "in the 'Platon SQUEEZE voids' loop.")
         vheadlist = []
         for row_number in range(self.ui.cif_main_table.model().rowCount()):
             vheadlist.append(self.ui.cif_main_table.model().headerData(row_number, QtCore.Qt.Vertical))

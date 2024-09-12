@@ -17,6 +17,11 @@ class MyGemmiTestsForAPI(unittest.TestCase):
         if version.parse(gemmi.__version__) > version.parse('0.5.7'):
             self.assertTrue('block2' in self.doc)
 
+    def test_delete_block(self):
+        self.assertEqual(2, len(self.doc))
+        del self.doc[1]
+        self.assertEqual(1, len(self.doc))
+
 
 if __name__ == '__main__':
     unittest.main()
