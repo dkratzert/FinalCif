@@ -104,7 +104,7 @@ class P4PFile():
                 self.crystal_size = spline[1:4]
                 try:
                     # in Kelvin:
-                    self._temperature = float(spline[-1]) + 273.15
+                    self._temperature = round(float(spline[-1]) + 273.15, 6)
                 except ValueError:
                     pass
 

@@ -1569,8 +1569,8 @@ class AppWindow(QMainWindow):
 
     def _delete_current_block(self, index):
         self.cif.delete_block(index)
-        self.ui.datanameComboBox.setCurrentIndex(0)
         self.add_data_names_to_combobox()
+        self.ui.datanameComboBox.setCurrentIndex(0)
 
     def set_vertical_header_width(self):
         """
@@ -1610,8 +1610,6 @@ class AppWindow(QMainWindow):
             self.ui.ShredCifButton.setDisabled(True)
 
     def append_cif(self, cif_file: Path):
-        self.cif.save()
-        self.load_cif_file(filepath=self.cif.finalcif_file, load_changes=False)
         if not cif_file:
             cif_file = self.get_file_from_dialog()
         if not cif_file:
@@ -1619,11 +1617,14 @@ class AppWindow(QMainWindow):
         cif2 = CifContainer(cif_file)
         if cif2.is_multi_cif:
             show_general_warning(self, 'Can add single data CIFs only!')
+            return
         if cif2.block.name in [x.name for x in self.cif.doc]:
             show_general_warning(self, warn_text='Duplicate block',
-                                 info_text=f'Data block name "<b>{self.cif.block.name}</b>" '
+                                 info_text=f'Data block name "<b>{cif2.block.name}</b>" '
                                            f'already present in current CIF!')
             return
+        self.cif.save()
+        self.load_cif_file(filepath=self.cif.finalcif_file, load_changes=False)
         self.cif.doc.add_copied_block(block=cif2.block, pos=-1)
         self.cif.save()
         self.load_cif_file(filepath=self.cif.fileobj, load_changes=False)
