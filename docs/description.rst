@@ -81,6 +81,9 @@ opened and edited. Please note that auto-filling of missing values is disabled i
 Some other functions, such as renaming a data block, do not work in multi-CIF mode. It is advisable
 to complete each CIF before creating a multi-CIF.
 
+A data block can be removed from a multi-CIF by selecting the corresponding block and right-clicking
+on the data block selector. A menu then opens for the function to delete the block.
+
 
 .. figure:: pics/multi_cif.png
    :width: 500
