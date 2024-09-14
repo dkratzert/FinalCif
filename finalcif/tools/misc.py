@@ -13,10 +13,11 @@ import re
 import subprocess
 import sys
 from datetime import datetime
-from math import sqrt
 from os import path
 from pathlib import Path
 from typing import Union, Tuple, List
+
+from math import sqrt
 
 # protected space character:
 protected_space = u'\u00A0'
@@ -96,6 +97,45 @@ def grouper(inputs, n, fillvalue=None):
     return it.zip_longest(*iters, fillvalue=fillvalue)
 
 
+def angstrom_to_pm(value: str) -> str:
+    """
+    Calculates pm from angstrom string value with an esd like '1.714(10)'.
+    """
+    try:
+        value = value.replace(" ", "").rstrip(")")
+    except AttributeError:
+        return f'{float(value) * 100}'
+
+    if "(" in value:
+        vval, err = value.split("(")
+        length = _get_decimal_length(vval)
+        # Convert both the value and the error, keeping the correct decimal places
+        if '.' not in vval.rstrip('.'):
+            return f'{float(vval) * 100:g}({float(err) * 100:g})'
+        else:
+            return f'{float(vval) * 100:.{length}f}({err})'
+    else:
+        # If no error term, just convert the value
+        length = _get_decimal_length(value)
+        return f'{float(value.strip(")")) * 100:.{length}f}'
+
+
+def _get_decimal_length(vval):
+    """
+    Determine how many decimal places should be used in output formatting.
+    """
+    vsplit = vval.split('.')
+    if len(vsplit) > 1:
+        suffix = vsplit[1]
+        if not suffix:
+            length = 0
+        else:
+            length = int(len(suffix) - 2)
+    else:
+        length = vval.lstrip('0').count('0')
+    return length
+
+
 def get_error_from_value(value: str) -> Tuple[float, float]:
     """
     Returns the error value from a number string.
@@ -150,7 +190,6 @@ def next_path(path_pattern: str) -> str:
 def file_modification_time(file_path: Path) -> float:
     """
     """
-    from os import path
     return path.getmtime(file_path.resolve())
 
 
@@ -300,10 +339,10 @@ essential_keys = (
     '_computing_data_collection',
     '_computing_data_reduction',
     '_computing_molecular_graphics',
-    #'_computing_publication_material',
+    # '_computing_publication_material',
     '_computing_structure_refinement',
     '_computing_structure_solution',
-    #'_diffrn_ambient_environment',
+    # '_diffrn_ambient_environment',
     '_diffrn_ambient_temperature',
     '_diffrn_detector',
     '_diffrn_detector_area_resol_mean',

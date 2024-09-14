@@ -2,9 +2,11 @@ import unittest
 from pathlib import Path
 from unittest import TestCase
 
+import pytest
+
 from finalcif.tools.misc import to_int, to_float, this_or_quest, flatten, strip_finalcif_of_name, next_path, \
     get_error_from_value, grouper, distance, sha512_checksum_of_file, isnumeric, \
-    is_database_number
+    is_database_number, angstrom_to_pm
 
 
 class TestMisc(unittest.TestCase):
@@ -56,8 +58,10 @@ class TestMisc(unittest.TestCase):
 
     def test_strip_finalcif_till_end(self):
         self.assertEqual('cu_BruecknerJK_153F40_0m', strip_finalcif_of_name('cu_BruecknerJK_153F40_0m-finalcif'))
-        self.assertEqual('cu_BruecknerJK_153F40_0m-finalcif_changes', strip_finalcif_of_name('cu_BruecknerJK_153F40_0m-finalcif_changes'))
-        self.assertEqual('cu_BruecknerJK_153F40_0m', strip_finalcif_of_name('cu_BruecknerJK_153F40_0m-finalcif_changes', till_name_ends=True))
+        self.assertEqual('cu_BruecknerJK_153F40_0m-finalcif_changes',
+                         strip_finalcif_of_name('cu_BruecknerJK_153F40_0m-finalcif_changes'))
+        self.assertEqual('cu_BruecknerJK_153F40_0m',
+                         strip_finalcif_of_name('cu_BruecknerJK_153F40_0m-finalcif_changes', till_name_ends=True))
 
     def test_isnumeric_true(self):
         self.assertEqual(True, isnumeric('1.234'))
@@ -149,3 +153,73 @@ class TestDatabaseNumber(TestCase):
 
     def test_is_database_number_int_false(self):
         self.assertEqual(False, is_database_number(123456))
+
+
+def test_angstrom_to_pm():
+    assert angstrom_to_pm('1.714(10)') == '171.4(10)'
+
+
+def test_angstrom_to_p1():
+    assert angstrom_to_pm('1.723(9)') == '172.3(9)'
+
+
+def test_angstrom_to_pm2():
+    assert angstrom_to_pm('1.7236(17)') == '172.36(17)'
+
+
+def test_angstrom_to_pm3():
+    assert angstrom_to_pm('0.9800') == '98.00'
+
+
+def test_angstrom_to_pm4():
+    assert angstrom_to_pm('98(2)') == '9800(200)'
+
+
+def test_angstrom_to_pm5():
+    assert angstrom_to_pm('1.329(12)') == '132.9(12)'
+
+
+def test_angstrom_to_pm6():
+    assert angstrom_to_pm('1.330(12)') == '133.0(12)'
+
+
+def test_angstrom_to_pm7():
+    assert angstrom_to_pm('0.98(2)') == '98(2)'
+
+
+def test_angstrom_to_pm8():
+    assert angstrom_to_pm('3003(20)') == '300300(2000)'
+
+
+def test_angstrom_to_pm9():
+    assert angstrom_to_pm('3003(20)') == '300300(2000)'
+
+
+def test_angstrom_to_pm10():
+    assert angstrom_to_pm("0.0123 (23)") == '1.23(23)'
+
+
+def test_angstrom_to_pm11():
+    assert angstrom_to_pm("0.0123()") == '1.23()'
+
+
+def test_angstrom_to_pm12():
+    assert angstrom_to_pm("0.0123)") == '1.23'
+
+
+def test_angstrom_to_pm13():
+    assert angstrom_to_pm("1.23(") == '123()'
+
+
+def test_angstrom_to_pm14():
+    with pytest.raises(ValueError):
+        angstrom_to_pm("foo")
+
+
+def test_angstrom_to_pm15():
+    with pytest.raises(TypeError):
+        angstrom_to_pm(None)
+
+
+def test_angstrom_to_pm16():
+    assert angstrom_to_pm(True) == '100.0'

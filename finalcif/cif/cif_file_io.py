@@ -770,7 +770,7 @@ class CifContainer():
         publ_loop = self.block.find_loop('_geom_bond_publ_flag')
         bond = namedtuple('bond', ('label1', 'label2', 'dist', 'symm'))
         for label1, label2, dist, symm, publ in zip(label1, label2, dist, symm, publ_loop):
-            if (without_h and (self.ishydrogen(label1) or self.ishydrogen(label2)) or self.yes_not_set(publ)):
+            if without_h and (self.ishydrogen(label1) or self.ishydrogen(label2)) or self.yes_not_set(publ):
                 continue
             else:
                 yield bond(label1=label1, label2=label2, dist=dist, symm=self.checksymm(symm))
