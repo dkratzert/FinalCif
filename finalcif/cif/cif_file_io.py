@@ -20,7 +20,8 @@ from finalcif.cif.cif_order import order, special_keys
 from finalcif.cif.hkl import HKL, Limit
 from finalcif.cif.text import utf8_to_str, quote, retranslate_delimiter
 from finalcif.datafiles.utils import DSRFind
-from finalcif.tools.misc import essential_keys, non_centrosymm_keys, isnumeric, grouper, strip_finalcif_of_name
+from finalcif.tools.misc import essential_keys, non_centrosymm_keys, isnumeric, grouper, strip_finalcif_of_name, \
+    angstrom_to_pm
 
 
 class GemmiError(Exception):
@@ -40,6 +41,7 @@ class CifContainer():
             new_block: Create a new block (new file) if a name is given. Otherwise, just
                        the existing document is opened.
         """
+        self.picometer: bool = False
         self._hkl_file: str = ''
         self._abs_hkl_details: Dict[str, str] = {}
         if isinstance(file, str):
@@ -773,21 +775,26 @@ class CifContainer():
             if without_h and (self.ishydrogen(label1) or self.ishydrogen(label2)) or self.yes_not_set(publ):
                 continue
             else:
+                if self.picometer:
+                    dist = angstrom_to_pm(dist)
                 yield bond(label1=label1, label2=label2, dist=dist, symm=self.checksymm(symm))
 
-    def bond_dist(self, pair: str) -> Union[float, None]:
+    def bond_dist(self, pair: str) -> Union[str, None]:
         for p in self.bonds():
             if f'{p.label1}-{p.label2}' == pair:
-                return p.dist
+                if self.picometer:
+                    return angstrom_to_pm(p.dist)
+                else:
+                    return p.dist
         return None
 
-    def angle(self, atoms: str) -> Union[float, None]:
+    def angle(self, atoms: str) -> Union[str, None]:
         for p in self.angles():
             if f'{p.label1}-{p.label2}-{p.label3}' == atoms:
                 return p.angle_val
         return None
 
-    def torsion(self, atoms: str) -> Union[float, None]:
+    def torsion(self, atoms: str) -> Union[str, None]:
         for p in self.torsion_angles():
             if f'{p.label1}-{p.label2}-{p.label3}-{p.label4}' == atoms:
                 return p.torsang
@@ -803,9 +810,9 @@ class CifContainer():
         publ_loop = self.block.find_loop('_geom_angle_publ_flag')
         angle = namedtuple('angle', ('label1', 'label2', 'label3', 'angle_val', 'symm1', 'symm2'))
         for label1, label2, label3, angle_val, symm1, symm2, publ in \
-                zip(label1, label2, label3, angle_val, symm1, symm2, publ_loop):
+            zip(label1, label2, label3, angle_val, symm1, symm2, publ_loop):
             if (without_H and (self.ishydrogen(label1) or self.ishydrogen(label2) or
-                              self.ishydrogen(label3)) or (self.yes_not_set(publ))):
+                               self.ishydrogen(label3)) or (self.yes_not_set(publ))):
                 continue
             else:
                 yield angle(label1=label1, label2=label2, label3=label3, angle_val=angle_val,
@@ -854,7 +861,7 @@ class CifContainer():
                                                                                              symm3,
                                                                                              symm4, publ_loop):
             if (without_h and (self.ishydrogen(label1) or self.ishydrogen(label2)
-                              or self.ishydrogen(label3) or self.ishydrogen(label3)) or self.yes_not_set(publ)):
+                               or self.ishydrogen(label3) or self.ishydrogen(label3)) or self.yes_not_set(publ)):
                 continue
             yield tors(label1=label1, label2=label2, label3=label3, label4=label4, torsang=torsang,
                        symm1=self.checksymm(symm1),
@@ -875,9 +882,13 @@ class CifContainer():
         hydr = namedtuple('HydrogenBond', ('label_d', 'label_h', 'label_a', 'dist_dh', 'dist_ha', 'dist_da',
                                            'angle_dha', 'symm'))
         for label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm, publ in (
-                zip(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm, publ_loop)):
+            zip(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm, publ_loop)):
             if self.yes_not_set(publ):
                 continue
+            if self.picometer:
+                dist_dh = angstrom_to_pm(dist_dh)
+                dist_ha = angstrom_to_pm(dist_ha)
+                dist_da = angstrom_to_pm(dist_da)
             yield hydr(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, self.checksymm(symm))
 
     def yes_not_set(self, publ: str):
