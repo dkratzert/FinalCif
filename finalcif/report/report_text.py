@@ -520,6 +520,13 @@ def get_inf_article(next_word: str) -> str:
     return 'an' if next_word[0].lower() in voc else 'a'
 
 
+def get_distance_unit(picometers: bool) -> str:
+    if picometers:
+        return 'pm'
+    else:
+        return angstrom
+
+
 def format_float_with_decimal_places(number: float, places=2) -> str:
     try:
         fnum = float(number)
