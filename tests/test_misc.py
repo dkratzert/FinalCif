@@ -223,3 +223,11 @@ def test_angstrom_to_pm15():
 
 def test_angstrom_to_pm16():
     assert angstrom_to_pm(True) == '100.0'
+
+
+def test_angstrom_to_pm_squared():
+    assert angstrom_to_pm('0.00757(7)', squared=True) == '75.7(7)'
+
+
+def test_angstrom_to_pm_squared2():
+    assert angstrom_to_pm('0.008', squared=True) == '80.0'

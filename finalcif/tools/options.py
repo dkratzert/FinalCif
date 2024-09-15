@@ -26,6 +26,7 @@ class Options:
         self.ui.CODURLTextedit.textChanged.connect(self._state_changed)
         self.ui.ADPTableCheckBox.stateChanged.connect(self._state_changed)
         self.ui.trackChangesCifCheckBox.stateChanged.connect(self._state_changed)
+        self.ui.UsePicometersCheckBox.stateChanged.connect(self._state_changed)
 
     def show_options(self):
         """
@@ -39,6 +40,7 @@ class Options:
         self.ui.CODURLTextedit.setText(self.cod_url)
         self.ui.ADPTableCheckBox.setChecked(self.report_adp)
         self.ui.trackChangesCifCheckBox.setChecked(self.track_changes)
+        self.ui.UsePicometersCheckBox.setChecked(self.use_picometers)
         #
         self.ui.MainStackedWidget.go_to_options_page()
 
@@ -56,6 +58,7 @@ class Options:
             'current_report_template': lw.row(lw.currentItem()),
             'cod_url'                : self.ui.CODURLTextedit.text(),
             'track_changes'          : self.ui.trackChangesCifCheckBox.isChecked(),
+            'use_picometers'          : self.ui.UsePicometersCheckBox.isChecked(),
         }
         # print('saving:', self._options)
         self.settings.save_options(self._options)
@@ -92,6 +95,10 @@ class Options:
     @property
     def track_changes(self) -> bool:
         return self._get_setting('track_changes', False)
+
+    @property
+    def use_picometers(self) -> bool:
+        return self._get_setting('use_picometers', False)
 
     @property
     def current_template(self) -> int:

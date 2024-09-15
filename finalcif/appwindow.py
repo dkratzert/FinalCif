@@ -1122,6 +1122,7 @@ class AppWindow(QMainWindow):
         self.load_cif_file(self.cif.finalcif_file, block=current_block, load_changes=False)
         report_filename = self.cif.finalcif_file_prefixed(prefix='report_', suffix='-finalcif.docx')
         multi_table_document = self.cif.finalcif_file_prefixed(prefix='', suffix='-multitable.docx')
+        self.cif.picometer = self.options.use_picometers
         # The picture after the header:
         if self.report_picture_path:
             picfile = self.report_picture_path

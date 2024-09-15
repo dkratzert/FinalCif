@@ -97,30 +97,31 @@ def grouper(inputs, n, fillvalue=None):
     return it.zip_longest(*iters, fillvalue=fillvalue)
 
 
-def angstrom_to_pm(value: str) -> str:
+def angstrom_to_pm(value: str, squared: bool = False) -> str:
     """
     Calculates pm from angstrom string value with an esd like '1.714(10)'.
     """
+    factor = 100 if not squared else 100 ** 2
     try:
         value = value.replace(" ", "").rstrip(")")
     except AttributeError:
-        return f'{float(value) * 100}'
+        return f'{float(value) * factor}'
 
     if "(" in value:
         vval, err = value.split("(")
-        length = _get_decimal_length(vval)
+        length = _get_decimal_length(vval, factor)
         # Convert both the value and the error, keeping the correct decimal places
         if '.' not in vval.rstrip('.'):
-            return f'{float(vval) * 100:g}({float(err) * 100:g})'
+            return f'{float(vval) * factor:g}({float(err) * factor:g})'
         else:
-            return f'{float(vval) * 100:.{length}f}({err})'
+            return f'{float(vval) * factor:.{length}f}({err})'
     else:
         # If no error term, just convert the value
-        length = _get_decimal_length(value)
-        return f'{float(value.strip(")")) * 100:.{length}f}'
+        length = _get_decimal_length(value, factor)
+        return f'{float(value.strip(")")) * factor:.{length}f}'
 
 
-def _get_decimal_length(vval):
+def _get_decimal_length(vval, factor=100):
     """
     Determine how many decimal places should be used in output formatting.
     """
@@ -130,7 +131,7 @@ def _get_decimal_length(vval):
         if not suffix:
             length = 0
         else:
-            length = int(len(suffix) - 2)
+            length = abs(int(len(suffix) - str(factor).count('0')))
     else:
         length = vval.lstrip('0').count('0')
     return length

@@ -667,10 +667,7 @@ class CifContainer():
             # Do not crash without symmops
             return False
         ops = gemmi.GroupOps([gemmi.Op(o) for o in self.symmops])
-        try:
-            return ops.is_centric()
-        except AttributeError:
-            return ops.is_centrosymmetric()
+        return ops.is_centrosymmetric()
 
     def atoms(self, without_h: bool = False) -> Generator:
         """
@@ -691,6 +688,8 @@ class CifContainer():
                                                          u_eq):
             if without_h and self.ishydrogen(label):
                 continue
+            if self.picometer:
+                u_eq = angstrom_to_pm(u_eq, squared=True)
             #         0    1   2  3  4   5   6     7
             # yield label, type, x, y, z, part, occ, ueq
             yield atom(label=label, type=type, x=x, y=y, z=z, part=part, occ=occ, u_eq=u_eq)
@@ -723,6 +722,13 @@ class CifContainer():
         u12 = self.block.find_loop('_atom_site_aniso_U_12')
         adp = namedtuple('adp', ('label', 'U11', 'U22', 'U33', 'U23', 'U13', 'U12'))
         for label, u11, u22, u33, u23, u13, u12 in zip(labels, u11, u22, u33, u23, u13, u12):
+            if self.picometer:
+                u11 = angstrom_to_pm(u11, squared=True)
+                u22 = angstrom_to_pm(u22, squared=True)
+                u33 = angstrom_to_pm(u33, squared=True)
+                u23 = angstrom_to_pm(u23, squared=True)
+                u13 = angstrom_to_pm(u13, squared=True)
+                u12 = angstrom_to_pm(u12, squared=True)
             yield adp(label=label, U11=u11, U22=u22, U33=u33, U12=u12, U13=u13, U23=u23)
 
     @property

@@ -8,7 +8,7 @@
     <x>0</x>
     <y>0</y>
     <width>1596</width>
-    <height>812</height>
+    <height>860</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -551,6 +551,13 @@
                   <widget class="QCheckBox" name="HAtomsCheckBox">
                    <property name="text">
                     <string>No bonds and angles to hydrogen atoms</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="1">
+                  <widget class="QCheckBox" name="UsePicometersCheckBox">
+                   <property name="text">
+                    <string>Use picometers</string>
                    </property>
                   </widget>
                  </item>
@@ -1357,7 +1364,6 @@
                   <font>
                    <family>Courier New</family>
                    <pointsize>11</pointsize>
-                   <weight>75</weight>
                    <bold>true</bold>
                   </font>
                  </property>
@@ -1424,7 +1430,6 @@
                   <widget class="QLabel" name="wR2Label">
                    <property name="font">
                     <font>
-                     <weight>50</weight>
                      <italic>false</italic>
                      <bold>false</bold>
                     </font>
@@ -1448,7 +1453,6 @@
                   <widget class="QLabel" name="r1Label">
                    <property name="font">
                     <font>
-                     <weight>50</weight>
                      <italic>false</italic>
                      <bold>false</bold>
                     </font>
@@ -1506,7 +1510,6 @@
                   <widget class="QLabel" name="completeLabel">
                    <property name="font">
                     <font>
-                     <weight>50</weight>
                      <bold>false</bold>
                     </font>
                    </property>
@@ -1622,7 +1625,6 @@
                   <widget class="QLabel" name="dataReflnsLabel">
                    <property name="font">
                     <font>
-                     <weight>50</weight>
                      <bold>false</bold>
                     </font>
                    </property>
@@ -1770,7 +1772,6 @@
                   <widget class="QLabel" name="rintLabel">
                    <property name="font">
                     <font>
-                     <weight>50</weight>
                      <bold>false</bold>
                     </font>
                    </property>
@@ -1793,7 +1794,6 @@
                   <widget class="QLabel" name="rsigmaLabel">
                    <property name="font">
                     <font>
-                     <weight>50</weight>
                      <bold>false</bold>
                     </font>
                    </property>
@@ -1867,7 +1867,6 @@
                   <widget class="QLabel" name="dLabel">
                    <property name="font">
                     <font>
-                     <weight>50</weight>
                      <bold>false</bold>
                     </font>
                    </property>
@@ -4294,7 +4293,7 @@ please add a publication author:</string>
    <extends>QPlainTextEdit</extends>
    <header>finalcif.gui.file_editor.h</header>
   </customwidget>
- <customwidget>
+  <customwidget>
    <class>ComboBoxWithContextMenu</class>
    <extends>QComboBox</extends>
    <header>finalcif.gui.block_combobox.h</header>
