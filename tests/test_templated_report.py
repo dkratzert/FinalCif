@@ -32,6 +32,7 @@ class TemplateReportTestCase(unittest.TestCase):
         self.options = Mock()
         self.options.picture_width = 7.43
         self.options.without_h = False
+        self.options.use_picometers = False
         self.text_template = Path('finalcif/template/template_text.docx').absolute()
         self.template_without_text = Path('finalcif/template/template_without_text.docx').absolute()
         self.import_templates()
