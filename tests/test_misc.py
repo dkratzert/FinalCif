@@ -6,7 +6,7 @@ import pytest
 
 from finalcif.tools.misc import to_int, to_float, this_or_quest, flatten, strip_finalcif_of_name, next_path, \
     get_error_from_value, grouper, distance, sha512_checksum_of_file, isnumeric, \
-    is_database_number, angstrom_to_pm
+    is_database_number, angstrom_to_x
 
 
 class TestMisc(unittest.TestCase):
@@ -156,78 +156,84 @@ class TestDatabaseNumber(TestCase):
 
 
 def test_angstrom_to_pm():
-    assert angstrom_to_pm('1.714(10)') == '171.4(10)'
+    assert angstrom_to_x('1.714(10)') == '171.4(10)'
 
 
 def test_angstrom_to_p1():
-    assert angstrom_to_pm('1.723(9)') == '172.3(9)'
+    assert angstrom_to_x('1.723(9)') == '172.3(9)'
 
 
 def test_angstrom_to_pm2():
-    assert angstrom_to_pm('1.7236(17)') == '172.36(17)'
+    assert angstrom_to_x('1.7236(17)') == '172.36(17)'
 
 
 def test_angstrom_to_pm3():
-    assert angstrom_to_pm('0.9800') == '98.00'
+    assert angstrom_to_x('0.9800') == '98.00'
 
 
 def test_angstrom_to_pm4():
-    assert angstrom_to_pm('98(2)') == '9800(200)'
+    assert angstrom_to_x('98(2)') == '9800(200)'
 
 
 def test_angstrom_to_pm5():
-    assert angstrom_to_pm('1.329(12)') == '132.9(12)'
+    assert angstrom_to_x('1.329(12)') == '132.9(12)'
 
 
 def test_angstrom_to_pm6():
-    assert angstrom_to_pm('1.330(12)') == '133.0(12)'
+    assert angstrom_to_x('1.330(12)') == '133.0(12)'
 
 
 def test_angstrom_to_pm7():
-    assert angstrom_to_pm('0.98(2)') == '98(2)'
+    assert angstrom_to_x('0.98(2)') == '98(2)'
 
 
 def test_angstrom_to_pm8():
-    assert angstrom_to_pm('3003(20)') == '300300(2000)'
+    assert angstrom_to_x('3003(20)') == '300300(2000)'
 
 
 def test_angstrom_to_pm9():
-    assert angstrom_to_pm('3003(20)') == '300300(2000)'
+    assert angstrom_to_x('3003(20)') == '300300(2000)'
+    assert angstrom_to_x('8870(3)') == '887000(300)'
 
 
 def test_angstrom_to_pm10():
-    assert angstrom_to_pm("0.0123 (23)") == '1.23(23)'
+    assert angstrom_to_x("0.0123 (23)") == '1.23(23)'
 
 
 def test_angstrom_to_pm11():
-    assert angstrom_to_pm("0.0123()") == '1.23()'
+    assert angstrom_to_x("0.0123()") == '1.23()'
 
 
 def test_angstrom_to_pm12():
-    assert angstrom_to_pm("0.0123)") == '1.23'
+    assert angstrom_to_x("0.0123)") == '1.23'
 
 
 def test_angstrom_to_pm13():
-    assert angstrom_to_pm("1.23(") == '123()'
+    assert angstrom_to_x("1.23(") == '123()'
 
 
 def test_angstrom_to_pm14():
     with pytest.raises(ValueError):
-        angstrom_to_pm("foo")
+        angstrom_to_x("foo")
 
 
 def test_angstrom_to_pm15():
     with pytest.raises(TypeError):
-        angstrom_to_pm(None)
+        angstrom_to_x(None)
 
 
 def test_angstrom_to_pm16():
-    assert angstrom_to_pm(True) == '100.0'
+    assert angstrom_to_x(True) == '100.0'
 
 
 def test_angstrom_to_pm_squared():
-    assert angstrom_to_pm('0.00757(7)', squared=True) == '75.7(7)'
+    assert angstrom_to_x('0.00757(7)', factor=100 ** 2) == '75.7(7)'
 
 
 def test_angstrom_to_pm_squared2():
-    assert angstrom_to_pm('0.008', squared=True) == '80.0'
+    assert angstrom_to_x('0.008', factor=100 ** 2) == '80.0'
+
+
+def test_angstrom_to_nanometers():
+    assert angstrom_to_x('8870(3)', factor=0.001) == '8.870(3)'
+    assert angstrom_to_x('8871(3)', factor=0.001) == '8.871(3)'

@@ -39,7 +39,7 @@ from finalcif.report.references import Reference
 from finalcif.report.report_text import (math_to_word, gstr, format_radiation, MachineType)
 from finalcif.report.symm import SymmetryElement
 from finalcif.tools.misc import (isnumeric, this_or_quest, timessym, angstrom, protected_space,
-                                 less_or_equal, halbgeviert, minus_sign, ellipsis_mid, angstrom_to_pm)
+                                 less_or_equal, halbgeviert, minus_sign, ellipsis_mid, angstrom_to_x)
 from finalcif.tools.options import Options
 from finalcif.tools.space_groups import SpaceGroups
 
@@ -924,7 +924,8 @@ class TemplatedReport():
         jinja_env = jinja2.Environment()
         jinja_env.globals.update(strip=str.strip)
         jinja_env.filters['inv_article'] = report_text.get_inf_article
-        jinja_env.filters['to_pm'] = angstrom_to_pm
+        jinja_env.filters['to_pm'] = angstrom_to_x
+        jinja_env.filters['to_nm'] = angstrom_to_x
         jinja_env.filters['float_num'] = report_text.format_float_with_decimal_places
         # foo[1,2] bar[3]:
         jinja_env.filters['ref_num'] = self.count_reference
@@ -954,7 +955,7 @@ class TemplatedReport():
                                        autoescape=select_autoescape(['html', 'htm', 'xml']))
         # Add zip() method to global namespace of the template:
         jinja_env.globals.update(zip=zip)
-        jinja_env.filters['to_pm'] = angstrom_to_pm
+        jinja_env.filters['to_pm'] = angstrom_to_x
         jinja_env.filters['inv_article'] = report_text.get_inf_article
         jinja_env.filters['utf8'] = report_text.utf8
         jinja_env.filters['float_num'] = report_text.format_float_with_decimal_places
