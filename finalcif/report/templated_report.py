@@ -491,7 +491,6 @@ class Formatter(ABC):
             # 2theta range:
             return f"{2 * float(theta_min):.2f} to {2 * float(theta_max):.2f}{d_max}"
         except ValueError:
-            raise
             return '? to ?'
 
     @staticmethod
