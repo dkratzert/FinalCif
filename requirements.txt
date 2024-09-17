@@ -1,5 +1,4 @@
 wheel
-altgraph
 certifi
 chardet
 gemmi~=0.6
