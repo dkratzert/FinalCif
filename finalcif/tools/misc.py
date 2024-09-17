@@ -97,7 +97,19 @@ def grouper(inputs, n, fillvalue=None):
     return it.zip_longest(*iters, fillvalue=fillvalue)
 
 
-def angstrom_to_x(value: str, factor = 100) -> str:
+def angstrom_to_pm(angstrom: str) -> str:
+    return _angstrom_to_x(angstrom, factor=100)
+
+
+def angstrom_to_pm_squared(angstrom: str) -> str:
+    return _angstrom_to_x(angstrom, factor=100 ** 2)
+
+
+def angstrom_to_nanometers(angstrom: str) -> str:
+    return _angstrom_to_x(angstrom, factor=0.001)
+
+
+def _angstrom_to_x(value: str, factor: float = 100) -> str:
     """
     Calculates pm from angstrom string value with an esd like '1.714(10)'.
     factor 100   -> picometers
@@ -123,7 +135,7 @@ def angstrom_to_x(value: str, factor = 100) -> str:
         return f'{float(value.strip(")")) * factor:.{length}f}'
 
 
-def _get_decimal_length(vval, factor=100):
+def _get_decimal_length(vval, factor: float = 100):
     """
     Determine how many decimal places should be used in output formatting.
     """

@@ -21,7 +21,7 @@ from finalcif.cif.hkl import HKL, Limit
 from finalcif.cif.text import utf8_to_str, quote, retranslate_delimiter
 from finalcif.datafiles.utils import DSRFind
 from finalcif.tools.misc import essential_keys, non_centrosymm_keys, isnumeric, grouper, strip_finalcif_of_name, \
-    angstrom_to_x
+    _angstrom_to_x
 
 
 class GemmiError(Exception):
@@ -689,7 +689,7 @@ class CifContainer():
             if without_h and self.ishydrogen(label):
                 continue
             if self.picometer:
-                u_eq = angstrom_to_x(u_eq, squared=True)
+                u_eq = _angstrom_to_x(u_eq, factor=100 ** 2)
             #         0    1   2  3  4   5   6     7
             # yield label, type, x, y, z, part, occ, ueq
             yield atom(label=label, type=type, x=x, y=y, z=z, part=part, occ=occ, u_eq=u_eq)
@@ -723,12 +723,12 @@ class CifContainer():
         adp = namedtuple('adp', ('label', 'U11', 'U22', 'U33', 'U23', 'U13', 'U12'))
         for label, u11, u22, u33, u23, u13, u12 in zip(labels, u11, u22, u33, u23, u13, u12):
             if self.picometer:
-                u11 = angstrom_to_x(u11, squared=True)
-                u22 = angstrom_to_x(u22, squared=True)
-                u33 = angstrom_to_x(u33, squared=True)
-                u23 = angstrom_to_x(u23, squared=True)
-                u13 = angstrom_to_x(u13, squared=True)
-                u12 = angstrom_to_x(u12, squared=True)
+                u11 = _angstrom_to_x(u11, factor=100 ** 2)
+                u22 = _angstrom_to_x(u22, factor=100 ** 2)
+                u33 = _angstrom_to_x(u33, factor=100 ** 2)
+                u23 = _angstrom_to_x(u23, factor=100 ** 2)
+                u13 = _angstrom_to_x(u13, factor=100 ** 2)
+                u12 = _angstrom_to_x(u12, factor=100 ** 2)
             yield adp(label=label, U11=u11, U22=u22, U33=u33, U12=u12, U13=u13, U23=u23)
 
     @property
@@ -782,14 +782,14 @@ class CifContainer():
                 continue
             else:
                 if self.picometer:
-                    dist = angstrom_to_x(dist)
+                    dist = _angstrom_to_x(dist)
                 yield bond(label1=label1, label2=label2, dist=dist, symm=self.checksymm(symm))
 
     def bond_dist(self, pair: str) -> Union[str, None]:
         for p in self.bonds():
             if f'{p.label1}-{p.label2}' == pair:
                 if self.picometer:
-                    return angstrom_to_x(p.dist)
+                    return _angstrom_to_x(p.dist)
                 else:
                     return p.dist
         return None
@@ -892,9 +892,9 @@ class CifContainer():
             if self.yes_not_set(publ):
                 continue
             if self.picometer:
-                dist_dh = angstrom_to_x(dist_dh)
-                dist_ha = angstrom_to_x(dist_ha)
-                dist_da = angstrom_to_x(dist_da)
+                dist_dh = _angstrom_to_x(dist_dh)
+                dist_ha = _angstrom_to_x(dist_ha)
+                dist_da = _angstrom_to_x(dist_da)
             yield hydr(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, self.checksymm(symm))
 
     def yes_not_set(self, publ: str):

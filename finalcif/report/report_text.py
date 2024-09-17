@@ -262,7 +262,7 @@ class SolveRefine():
         if 'OLEX' in refined.upper():
             refineref = references.Olex2Reference()
         if ('NOSPHERA2' in solution_prog.upper() or 'NOSPHERA2' in cif['_refine_special_details'].upper()
-            or 'NOSPHERA2' in cif['_olex2_refine_details'].upper()):
+                or 'NOSPHERA2' in cif['_olex2_refine_details'].upper()):
             refineref = [references.Olex2Reference(), references.Nosphera2Reference()]
         refine_coef = gstr(cif['_refine_ls_structure_factor_coef'])
         if manual_method:
@@ -523,6 +523,13 @@ def get_inf_article(next_word: str) -> str:
 def get_distance_unit(picometers: bool) -> str:
     if picometers:
         return 'pm'
+    else:
+        return angstrom
+
+
+def get_volume_unit(picometers: bool) -> str:
+    if picometers:
+        return 'nm'
     else:
         return angstrom
 

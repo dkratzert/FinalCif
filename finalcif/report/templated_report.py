@@ -39,7 +39,8 @@ from finalcif.report.references import Reference
 from finalcif.report.report_text import (math_to_word, gstr, format_radiation, MachineType)
 from finalcif.report.symm import SymmetryElement
 from finalcif.tools.misc import (isnumeric, this_or_quest, timessym, angstrom, protected_space,
-                                 less_or_equal, halbgeviert, minus_sign, ellipsis_mid, angstrom_to_x)
+                                 less_or_equal, halbgeviert, minus_sign, ellipsis_mid, _angstrom_to_x, angstrom_to_pm,
+                                 angstrom_to_nanometers)
 from finalcif.tools.options import Options
 from finalcif.tools.space_groups import SpaceGroups
 
@@ -482,11 +483,15 @@ class Formatter(ABC):
         theta_max = cif['_diffrn_reflns_theta_max']
         radiation_wavelength = cif['_diffrn_radiation_wavelength']
         try:
-            d_max = f' ({float(radiation_wavelength) / (2 * sin(radians(float(theta_max)))):.2f}' \
-                    f'{protected_space}{angstrom})'
+            resolution_angst = float(radiation_wavelength) / (2 * sin(radians(float(theta_max))))
+            if not cif.picometer:
+                d_max = f' ({resolution_angst:.2f}{protected_space}{angstrom})'
+            else:
+                d_max = f' ({angstrom_to_pm(str(resolution_angst)):.2}{protected_space}pm)'
             # 2theta range:
             return f"{2 * float(theta_min):.2f} to {2 * float(theta_max):.2f}{d_max}"
         except ValueError:
+            raise
             return '? to ?'
 
     @staticmethod
@@ -924,8 +929,8 @@ class TemplatedReport():
         jinja_env = jinja2.Environment()
         jinja_env.globals.update(strip=str.strip)
         jinja_env.filters['inv_article'] = report_text.get_inf_article
-        jinja_env.filters['to_pm'] = angstrom_to_x
-        jinja_env.filters['to_nm'] = angstrom_to_x
+        jinja_env.filters['to_pm'] = angstrom_to_pm
+        jinja_env.filters['to_nm'] = angstrom_to_nanometers
         jinja_env.filters['float_num'] = report_text.format_float_with_decimal_places
         # foo[1,2] bar[3]:
         jinja_env.filters['ref_num'] = self.count_reference
@@ -955,7 +960,7 @@ class TemplatedReport():
                                        autoescape=select_autoescape(['html', 'htm', 'xml']))
         # Add zip() method to global namespace of the template:
         jinja_env.globals.update(zip=zip)
-        jinja_env.filters['to_pm'] = angstrom_to_x
+        jinja_env.filters['to_pm'] = _angstrom_to_x
         jinja_env.filters['inv_article'] = report_text.get_inf_article
         jinja_env.filters['utf8'] = report_text.utf8
         jinja_env.filters['float_num'] = report_text.format_float_with_decimal_places
@@ -1022,7 +1027,8 @@ class TemplatedReport():
                    'crystal_colour'         : this_or_quest(cif['_exptl_crystal_colour']),
                    'crystal_shape'          : cif['_exptl_crystal_description'],
                    'radiation'              : self.text_formatter.get_radiation(cif),
-                   'wavelength'             : cif['_diffrn_radiation_wavelength'],
+                   'wavelength'             : cif['_diffrn_radiation_wavelength'] if not self.cif.picometer else
+                   angstrom_to_pm(cif['_diffrn_radiation_wavelength']),
                    'theta_range'            : self.text_formatter.get_from_to_theta_range(cif),
                    'diffr_type'             : gstr(cif['_diffrn_measurement_device_type'])
                                               or '[No _diffrn_measurement_device_type given]',
@@ -1072,6 +1078,7 @@ class TemplatedReport():
                    'displacement_parameters': self.text_formatter.get_displacement_parameters(cif),
                    'hydrogen_atoms'         : self.text_formatter.hydrogen_atoms(cif),
                    'dist_unit'              : report_text.get_distance_unit(self.cif.picometer),
+                   'vol_unit'               : report_text.get_distance_unit(self.cif.picometer),
                    'bonds'                  : self.text_formatter.get_bonds(),
                    'angles'                 : self.text_formatter.get_angles(),
                    'ba_symminfo'            : self.text_formatter.get_bonds_angles_symminfo(),
