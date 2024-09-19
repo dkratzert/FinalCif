@@ -1966,7 +1966,7 @@ class Ui_FinalCifWindow(object):
         self.EquipmentTemplatesListWidget.setToolTip(_translate("FinalCifWindow", "<html><head/><body><p>Each entry can have a list of key/value pairs. For example a Diffractometer model can have a list of features.</p></body></html>"))
         self.NewEquipmentTemplateButton.setText(_translate("FinalCifWindow", "New Template"))
         self.EditEquipmentTemplateButton.setText(_translate("FinalCifWindow", "Edit Template"))
-        self.ImportEquipmentTemplateButton.setText(_translate("FinalCifWindow", "Import"))
+        self.ImportEquipmentTemplateButton.setText(_translate("FinalCifWindow", "Import Template"))
         self.EquipmentEditTableWidget.setSortingEnabled(True)
         item = self.EquipmentEditTableWidget.horizontalHeaderItem(0)
         item.setText(_translate("FinalCifWindow", "key"))

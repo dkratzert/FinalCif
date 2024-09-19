@@ -282,7 +282,7 @@
                      <item>
                       <widget class="QPushButton" name="ImportEquipmentTemplateButton">
                        <property name="text">
-                        <string>Import</string>
+                        <string>Import Template</string>
                        </property>
                       </widget>
                      </item>
