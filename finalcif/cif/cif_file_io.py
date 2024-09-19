@@ -149,6 +149,13 @@ class CifContainer():
         self.check_hkl_min_max()
 
     @property
+    def is_valid_structure_cif(self):
+        """
+        Checkl wether this CIF contains a structure or just metadata.
+        """
+        return len(self.atomic_struct.sites) > 0 and self.cell.a
+
+    @property
     def hkl_extra_info(self):
         if not self._abs_hkl_details:
             self._abs_hkl_details = self._sadabs_hkl_details()

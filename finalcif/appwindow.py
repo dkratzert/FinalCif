@@ -1438,8 +1438,6 @@ class AppWindow(QMainWindow):
         Opens the cif file and fills information into the main table.
         """
         self.ui.datanameComboBox.blockSignals(True)
-        # Is also done in block load method
-        self._clear_state_before_block_load()
         if not filepath:
             filepath = Path(cif_file_open_dialog(last_dir=self.get_last_workdir()))
             if not filepath.is_file():
@@ -1465,7 +1463,11 @@ class AppWindow(QMainWindow):
             not_ok = e
         if not_ok:
             unable_to_open_message(self, filepath, not_ok)
-            return
+            return None
+        if not self.cif.is_valid_structure_cif:
+            show_general_warning(self, "The CIF file you are about to open contains no structure.\n\n"
+                                       "Use the Import button below to import metadata.")
+            return None
         if not self.cif.chars_ok:
             self.warn_about_bad_cif()
         # Do this only when sure we can load the file:
