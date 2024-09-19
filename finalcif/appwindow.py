@@ -1479,6 +1479,16 @@ class AppWindow(QMainWindow):
         self.ui.datanameComboBox.blockSignals(False)
         if self.cif.is_multi_cif:
             self._flash_block_combobox()
+        # Enable to find widgets without parent:
+        # QtCore.QTimer(self).singleShot(1000, self.find_widgets_without_parent)
+
+    def find_widgets_without_parent(self) -> None:
+        print('Finding parents...')
+        all_widgets = app.allWidgets()
+        no_parent_widgets = [widget for widget in all_widgets if widget.parent is None]
+        print(f"Found {len(no_parent_widgets)} widget(s) out of {len(all_widgets)} without parent:")
+        for widget in no_parent_widgets:
+            print(widget, widget.objectName())
 
     def _flash_block_combobox(self):
         orig_pal = self.ui.datanameComboBox.palette()
