@@ -180,9 +180,9 @@ Data Available for the Report
 
 
 
-**This information from the 'cif' variable can also be useful:**
-The cif variable contains values from the CIF directly and thus negative values have a hyphen and
-no real minus sign in front. The former values hav hyphens replaced with minus signs.
+**Other useful information in the 'cif' variable:**
+The cif variable contains values from the CIF directly. Be aware that negative values have a hyphen and
+no real minus sign in front. The former listed values have hyphens replaced with minus signs.
 
 .. code-block:: text
 
