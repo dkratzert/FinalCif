@@ -70,8 +70,8 @@ So you can use them with MS Word, Openoffice or Libre Office and other Office Op
 FinalCif uses the Jinja2 template language to exchange specific instructions in the templates with
 precalculated information and direct values from the CIF file.
 Be careful with the 'Track Changes' feature of MS Word. It tends to create incompatible
-template documents, but it can be fixed with the 'accept all changes' option in Word. It accepts all
-changes and the template document is 'normal' again.
+template documents, but it can be fixed with the 'accept all changes' option in Word. This accepts all
+changes and the template document is behaving 'normal' again.
 
 In the templates, you have two different types of information to add:
 
@@ -98,6 +98,10 @@ The second possibility for blocks is to iterate over the values of a Python dict
 
 Produces a list of all atom names in a CIF.
 If you need a table, :code:`{%tr foo %}` is used to generate table rows.
+
+This was only a brief introduction to what is possible with the Jinja template language.
+The links at the end of this chapter go far mor into details.
+
 
 Data Available for the Report
 -----------------------------
@@ -181,8 +185,6 @@ Data Available for the Report
 
 
 **Other useful information in the 'cif' variable:**
-The cif variable contains values from the CIF directly. Be aware that negative values have a hyphen and
-no real minus sign in front. The former listed values have hyphens replaced with minus signs.
 
 .. code-block:: text
 
@@ -208,31 +210,10 @@ no real minus sign in front. The former listed values have hyphens replaced with
    'test_hkl_checksum'          : True if the checksum of the SHELX .hkl file fits to the file content.
 
 
-The above is not limited to the templates of FinalCif. It is also possible to insert template tags
-into any other Word document and replace them with values from a CIF file. There are no limits to
-the imagination.
-Sine version 130, it is possible to address the values of individual blocks of a multi-CIF. For example,
+The cif variable contains values from the CIF in ascii format directly. Be aware that negative values have a hyphen and
+no real minus sign in front. The former listed values have hyphens replaced with minus signs.
 
-.. code-block:: jinja
-
-   {% for block in blocklist %}
-      {{ block.name }}
-   {% enfor %}
-
-prints all block names of a multi-CIF.
-
-Another option is to utilize the 'block' variable in the template. It holds therespective block data.
-To access the values of the block, you need to use the block name in square brackets and
-enclosed in quotation marks.
-This prevents conflicts with Jinja2 syntax and potential characters in CIF blocks, such as the minus
-sign in 'p-1', which would otherwise be interpreted as variable p minus one.
-For example, the chemical formula of the block 'compound1' of a multi-CIF is:
-
-.. code-block:: jinja
-
-    {{ block['compound1']._chemical_formula_sum }}
-
-Special methods allow you to access the values of the atoms, bonds, angles, torsion angles of single- and
+The special methods listed above, allows you to access the values of the atoms, bonds, angles, torsion angles of single- and
 multi-CIF files:
 
 .. code-block:: jinja
@@ -251,6 +232,32 @@ For a single-CIF, leave out the "block['block name']." part:
 .. code-block:: jinja
 
     {{ cif.bond_dist('C1-C2') }}
+
+
+The procedures in this chapter are not limited to the templates of FinalCif. It is also possible to insert template tags
+into any other Word document and replace them with values from a CIF file. There are no limits to
+the imagination.
+Sine version 130, it is possible to address the values of individual blocks of a multi-CIF. For example,
+
+.. code-block:: jinja
+
+   {% for block in blocklist %}
+      {{ block.name }}
+   {% enfor %}
+
+prints all block names of a multi-CIF.
+
+
+Another option is to utilize the 'block' variable in the template. It holds the respective block data.
+To access the values of the block, you need to use the block name in square brackets and
+enclosed in quotation marks.
+This prevents conflicts with Jinja2 syntax and potential characters in CIF blocks, such as the minus
+sign in 'p-1', which would otherwise be interpreted as variable p minus one.
+For example, the chemical formula of the block 'compound1' of a multi-CIF is:
+
+.. code-block:: jinja
+
+    {{ block['compound1']._chemical_formula_sum }}
 
 
 Further information how to make templates for MS Office or Openoffice:
