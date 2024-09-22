@@ -313,6 +313,55 @@ def symmsearch(cif: CifContainer, newsymms: Dict[int, str], num: int,
     return num
 
 
+class Atoms():
+    def __init__(self, cif: CifContainer):
+        """
+        Text for non-hydrogen atoms.
+        """
+        self.rt = RichText()
+        self.cif = cif
+        self.n_isotropic = self.number_of_isotropic_atoms(without_h=True)
+        self.n_isotropic_with_h = self.number_of_isotropic_atoms(without_h=False)
+        number = 'All'
+        parameter_type = 'anisotropic'
+        if 0 < self.n_isotropic < self.cif.natoms(without_h=True):
+            number = (f'Some atoms ({self.n_isotropic}) were refined using isotropic displacement parameters. '
+                      f'All other')
+        if self.n_isotropic > 0 and self.n_isotropic > self.cif.natoms(without_h=True):
+            number = (f'Most atoms ({self.n_isotropic}) were refined using isotropic displacement parameters. '
+                      f'All other')
+        if self.n_isotropic == self.cif.natoms(without_h=True):
+            number = 'All'
+            parameter_type = 'isotropic'
+        non_h = 'non-hydrogen '
+        sentence1 = (f"{number} {non_h if self.n_isotropic_with_h > 0 else ''}atoms were refined with {parameter_type} "
+                     f"displacement parameters. ")
+        self.rt.add(sentence1)
+
+    def richtext(self) -> RichText:
+        return self.rt
+
+    def html(self):
+        """
+        Transforms XML to HTML using XSLT.
+        """
+        return xml_to_html(self.rt)
+
+    def number_of_isotropic_atoms(self, without_h: bool = True) -> Union[float, int]:
+        isotropic_count = 0
+        for site in self.cif.atomic_struct.sites:
+            if self.atom_is_isotropic(site, without_h):
+                isotropic_count += 1
+        return isotropic_count
+
+    @staticmethod
+    def atom_is_isotropic(site, without_h: bool):
+        if without_h:
+            return not site.aniso.nonzero() and not site.element.is_hydrogen
+        else:
+            return not site.aniso.nonzero()
+
+
 class Hydrogens():
     def __init__(self, cif: CifContainer):
         """
@@ -354,7 +403,8 @@ class Hydrogens():
         sentence_free_pos = "freely"
         sentence_15 = " values constrained to 1.5 times the "  # Ueq
         sentence_pivot = " of their pivot atoms for terminal sp"  # 3
-        sentence_12 = f" {atom_type} atoms and 1.2 times for all other {atom_type} atoms."
+        # Adding dot later:
+        sentence_12 = f" {atom_type} atoms and 1.2 times for all other {atom_type} atoms"
 
         if n_riding == n_hatoms:
             rt.add(f"{number} hydrogen atoms were refined {utype} ")
@@ -390,6 +440,7 @@ class Hydrogens():
             rt.add(sentence_pivot)
             rt.add('3', superscript=True)
             rt.add(sentence_12)
+        rt.add('. ')  # End of paragraph
         self.rt = rt
 
     def pivot_atom_types(self, pivot_atoms):
@@ -419,6 +470,28 @@ class Hydrogens():
         return xml_to_html(self.rt)
 
 
+class Disorder():
+    def __init__(self, cif: CifContainer):
+        self.rt = RichText()
+        self.dsr_sentence = ''
+        sentence1 = ("Disordered moieties were refined using bond lengths "
+                     "restraints and displacement parameter restraints. ")
+        self.rt.add(sentence1)
+        if cif.dsr_used:
+            dsr_sentence = "Some parts of the disorder model were introduced by the program DSR."
+            self.rt.add(dsr_sentence)
+            # reflist.append([references.DSRReference2015(), references.DSRReference2018()])
+
+    def richtext(self) -> RichText:
+        return self.rt
+
+    def html(self):
+        """
+        Transforms XML to HTML using XSLT.
+        """
+        return xml_to_html(self.rt)
+
+
 class Formatter(ABC):
     def __init__(self, options: Options, cif: CifContainer) -> None:
         self.literature: dict[str, Reference] = {'finalcif'   : ref.FinalCifReference(),
@@ -427,6 +500,7 @@ class Formatter(ABC):
                                                  'solution'   : ref.DummyReference(),
                                                  'refinement' : ref.DummyReference(),
                                                  'integration': ref.DummyReference(),
+                                                 'dsr'        : ref.DummyReference(),
                                                  }
         self._bonds_angles = BondsAndAngles(cif, without_h=options.without_h)
         self._torsions = TorsionAngles(cif, without_h=options.without_h)
@@ -474,7 +548,19 @@ class Formatter(ABC):
     def format_sum_formula(self, sum_formula: str) -> str:
         raise NotImplementedError
 
-    def hydrogen_atoms(self, cif):
+    def hydrogen_atoms_refinement(self, cif: CifContainer) -> RichText | str:
+        """
+        Returns the text describing the refinement of hydrogen atoms.
+        """
+        raise NotImplementedError
+
+    def atoms_refinement(self, cif: CifContainer) -> RichText | str:
+        """
+        Returns the text describing the refinement of all non-hydrogen atoms.
+        """
+        raise NotImplementedError
+
+    def disorder_description(self, cif: CifContainer) -> str:
         raise NotImplementedError
 
     @staticmethod
@@ -606,7 +692,7 @@ class Formatter(ABC):
         if 'OLEX' in refined.upper():
             self.literature['refinement'] = ref.Olex2Reference()
         if ('NOSPHERA2' in refined.upper() or 'NOSPHERA2' in cif['_refine_special_details'].upper() or
-                'NOSPHERAT2' in cif['_olex2_refine_details'].upper()):
+            'NOSPHERAT2' in cif['_olex2_refine_details'].upper()):
             self.literature['refinement'] = ref.Nosphera2Reference()
         return refined.split()[0]
 
@@ -753,11 +839,15 @@ class HtmlFormatter(Formatter):
         else:
             return 'no formula'
 
-    def hydrogen_atoms(self, cif):
-        """
-        Returns the text describing the refinment of hydrogen atoms.
-        """
+    def hydrogen_atoms_refinement(self, cif: CifContainer) -> str:
         return Hydrogens(cif).html()
+
+    def atoms_refinement(self, cif: CifContainer) -> str:
+        return Atoms(cif).html()
+
+    def disorder_description(self, cif: CifContainer) -> str:
+        self.literature['dsr'] = ref.DSRReference2018()
+        return Disorder(cif).html()
 
     def get_radiation(self, cif: CifContainer) -> str:
         rad_element, radtype, radline = format_radiation(cif['_diffrn_radiation_type'])
@@ -829,8 +919,15 @@ class RichTextFormatter(Formatter):
         else:
             return RichText('no formula')
 
-    def hydrogen_atoms(self, cif: CifContainer) -> RichText:
+    def hydrogen_atoms_refinement(self, cif: CifContainer) -> RichText:
         return Hydrogens(cif).richtext()
+
+    def atoms_refinement(self, cif: CifContainer) -> RichText:
+        return Atoms(cif).richtext()
+
+    def disorder_description(self, cif: CifContainer) -> RichText:
+        self.literature['dsr'] = ref.DSRReference2018()
+        return Disorder(cif).richtext()
 
     def space_group_subdoc(self, cif: CifContainer, tpl_doc: DocxTemplate) -> Subdoc:
         """
@@ -1065,7 +1162,7 @@ class TemplatedReport():
                    'exti'                   : self.text_formatter.get_exti(cif),
                    'flack_x'                : self.text_formatter.get_flackx(cif),
                    'integration_progr'      : self.text_formatter.get_integration_program(cif),
-                   'abstype'                : gstr(cif['_exptl_absorpt_correction_type']) or '??',
+                   'abstype'                : gstr(cif['_exptl_absorpt_correction_type']) or 'Not applied',
                    'abs_details'            : self.text_formatter.get_absortion_correction_program(cif),
                    'solution_method'        : self.text_formatter.solution_method(cif),
                    'solution_program'       : self.text_formatter.solution_program(cif),
@@ -1075,7 +1172,9 @@ class TemplatedReport():
                    'refinement_prog'        : self.text_formatter.refinement_prog(cif),
                    'atomic_coordinates'     : self.text_formatter.get_atomic_coordinates(cif),
                    'displacement_parameters': self.text_formatter.get_displacement_parameters(cif),
-                   'hydrogen_atoms'         : self.text_formatter.hydrogen_atoms(cif),
+                   'hydrogen_atoms'         : self.text_formatter.hydrogen_atoms_refinement(cif),
+                   'atoms_refinement'       : self.text_formatter.atoms_refinement(cif),
+                   'disorder_descr'         : self.text_formatter.disorder_description(cif),
                    'dist_unit'              : report_text.get_distance_unit(self.cif.picometer),
                    'vol_unit'               : report_text.get_distance_unit(self.cif.picometer),
                    'bonds'                  : self.text_formatter.get_bonds(),
