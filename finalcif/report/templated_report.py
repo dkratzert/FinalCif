@@ -36,7 +36,7 @@ from finalcif.cif.cif_file_io import CifContainer
 from finalcif.gui.dialogs import show_general_warning
 from finalcif.report import references as ref, report_text
 from finalcif.report.references import Reference
-from finalcif.report.report_text import (math_to_word, gstr, format_radiation, MachineType)
+from finalcif.report.report_text import (math_to_word, gstr, format_radiation, _get_cooling_device)
 from finalcif.report.symm import SymmetryElement
 from finalcif.tools.misc import (isnumeric, this_or_quest, timessym, angstrom, protected_space,
                                  less_or_equal, halbgeviert, minus_sign, ellipsis_mid, _angstrom_to_x, angstrom_to_pm,
@@ -1145,7 +1145,7 @@ class TemplatedReport():
                                               or '[No _diffrn_radiation_monochromator given]',
                    'detector'               : gstr(cif['_diffrn_detector_type']) \
                                               or '[No _diffrn_detector_type given]',
-                   'lowtemp_dev'            : MachineType._get_cooling_device(cif),
+                   'lowtemp_dev'            : _get_cooling_device(cif),
                    'index_ranges'           : self.text_formatter.hkl_index_limits(cif),
                    'indepentent_refl'       : this_or_quest(cif['_reflns_number_total']),
                    'r_int'                  : this_or_quest(cif['_diffrn_reflns_av_R_equivalents']),

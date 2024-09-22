@@ -42,7 +42,7 @@ class ReportTemplates:
             print('This templates is already in the list.')
             return
         if (not Path(templ_path).exists() or not Path(templ_path).is_file()
-                or not Path(templ_path).suffix in ('.docx', '.html', '.tmpl')):
+                or Path(templ_path).suffix not in ('.docx', '.html', '.tmpl')):
             self.app.status_bar.show_message('This template does not exist or is unreadable.', 10)
             print('This template does not exist or is unreadable.', Path(templ_path).resolve())
             return
@@ -97,3 +97,8 @@ class ReportTemplates:
     def uncheck_all_templates(self):
         for num in range(self.lw.count()):
             self.lw.item(num).setCheckState(Qt.Unchecked)
+
+    def report_from_default_template(self) -> bool:
+        """Check whether the report is generated from a template or hard-coded"""
+        return (self.lw.item(0).checkState() == Qt.CheckState.Checked
+                or not self.lw.currentItem())

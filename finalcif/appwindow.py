@@ -1103,7 +1103,10 @@ class AppWindow(QMainWindow):
         for index in range(self.ui.docxTemplatesListWidget.count()):
             item = self.ui.docxTemplatesListWidget.item(index)
             if item.checkState() == Qt.Checked:
-                return item.text()
+                if self.templates.report_from_default_template():
+                    return 'finalcif/template/report_default.docx'
+                else:
+                    return item.text()
 
     def make_report_tables(self) -> None:
         """
@@ -1129,30 +1132,25 @@ class AppWindow(QMainWindow):
         else:
             picfile = self.cif.finalcif_file.with_suffix('.gif')
         try:
-            if self.report_without_template():
-                print('Report without templates')
-                make_report_from(options=self.options, cif=self.cif,
-                                 output_filename=str(report_filename), picfile=picfile)
+            print('Report with templates')
+            template_path = Path(self.get_checked_templates_list_text())
+            ok = False
+            if template_path.suffix in ('.docx',):
+                t = TemplatedReport(format=ReportFormat.RICHTEXT, options=self.options, cif=self.cif)
+                ok = t.make_templated_docx_report(output_filename=str(report_filename),
+                                                  picfile=picfile,
+                                                  template_path=Path(self.get_checked_templates_list_text()))
                 if self.cif.is_multi_cif and self.cif.doc[0].name != 'global':
                     make_multi_tables(cif=self.cif, output_filename=str(multi_table_document))
-            else:
-                print('Report with templates')
-                template_path = Path(self.get_checked_templates_list_text())
-                ok = False
-                if template_path.suffix in ('.docx',):
-                    t = TemplatedReport(format=ReportFormat.RICHTEXT, options=self.options, cif=self.cif)
-                    ok = t.make_templated_docx_report(output_filename=str(report_filename),
-                                                      picfile=picfile,
-                                                      template_path=Path(self.get_checked_templates_list_text()))
-                elif template_path.suffix in ('.html', '.tmpl'):
-                    t = TemplatedReport(format=ReportFormat.HTML, options=self.options, cif=self.cif)
-                    report_filename = report_filename.with_suffix('.html')
-                    ok = t.make_templated_html_report(output_filename=str(report_filename),
-                                                      picfile=picfile,
-                                                      template_path=template_path.parent,
-                                                      template_file=template_path.name)
-                if not ok:
-                    return None
+            elif template_path.suffix in ('.html', '.tmpl'):
+                t = TemplatedReport(format=ReportFormat.HTML, options=self.options, cif=self.cif)
+                report_filename = report_filename.with_suffix('.html')
+                ok = t.make_templated_html_report(output_filename=str(report_filename),
+                                                  picfile=picfile,
+                                                  template_path=template_path.parent,
+                                                  template_file=template_path.name)
+            if not ok:
+                return None
         except FileNotFoundError as e:
             if DEBUG:
                 raise
@@ -1171,11 +1169,6 @@ class AppWindow(QMainWindow):
             self.open_report_document(report_filename, multi_table_document)
             # Save report and other files to a zip file:
             self.zip_report(report_filename)
-
-    def report_without_template(self) -> bool:
-        """Check whether the report is generated from a template or hard-coded"""
-        return self.ui.docxTemplatesListWidget.item(0).checkState() == Qt.CheckState.Checked \
-            or not self.ui.docxTemplatesListWidget.currentItem()
 
     def zip_report(self, report_filename: Path) -> None:
         from finalcif.report.archive_report import ArchiveReport
@@ -1197,7 +1190,7 @@ class AppWindow(QMainWindow):
             arc.zip.write(filename=multitable, arcname=multitable.name)
 
     def open_report_document(self, report_filename: Path, multi_table_document: Path) -> None:
-        if self.cif.is_multi_cif and self.report_without_template():
+        if self.cif.is_multi_cif:
             open_file(multi_table_document)
         open_file(report_filename)
 
