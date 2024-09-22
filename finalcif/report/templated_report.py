@@ -611,7 +611,7 @@ class Formatter(ABC):
             return ''
 
     def get_integration_program(self, cif: CifContainer) -> str:
-        integration = gstr(cif['_computing_data_reduction']) or '??'
+        integration = gstr(cif['_computing_data_reduction']) or ''
         integration_prog = '[No _computing_data_reduction given]'
         if 'SAINT' in integration:
             saintversion = ''
@@ -633,6 +633,12 @@ class Formatter(ABC):
                 integration_prog = 'CrysAlisPro'
             self.literature['integration'] = ref.CrysalisProReference(version=version, year=year)
             self.literature['absorption'] = ref.CrysalisProReference(version=version, year=year)
+        if 'XDS' in integration:
+            self.literature['integration'] = ref.XDSReference()
+            integration_prog = 'XDS'
+        if 'STOE X-RED'.lower() in integration.lower():
+            integration_prog = 'STOE X-RED'
+            self.literature['integration'] = ref.XRedReference('X-RED', '[unknown version]')
         return integration_prog
 
     def get_refinement_gui(self, cif: CifContainer) -> str:
@@ -677,8 +683,11 @@ class Formatter(ABC):
         if 'crysalis' in absdetails.lower():
             scale_prog = 'SCALE3 ABSPACK'
             # see above also
+        if 'STOE X-RED'.lower() in scale_prog.lower():
+            version = 'unknown version'
+            scale_prog = 'STOE X-RED'
+            self.literature['absorption'] = ref.XRedReference('X-RED', 'unknown version')
         scale_prog += " " + version
-
         return scale_prog
 
     def solution_method(self, cif: CifContainer) -> str:
