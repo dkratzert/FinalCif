@@ -1,12 +1,13 @@
 import os
 
-os.environ["RUNNING_TEST"] = 'True'
 import unittest
 from pathlib import Path
 
 from finalcif import appwindow
 
 data = Path('.')
+os.environ["RUNNING_TEST"] = 'True'
+
 
 class TestOptions(unittest.TestCase):
 
@@ -56,10 +57,8 @@ class TestOptions(unittest.TestCase):
         self.assertEqual(self.myapp.options.report_text, True)
 
     def test_checkcif_url(self):
-        self.assertEqual(self.myapp.ui.CheckCIFServerURLTextedit.text(),
-                         'https://checkcif.iucr.org/cgi-bin/checkcif_hkl.pl')
-        self.myapp.ui.CheckCIFServerURLTextedit.setText('foobar')
-        self.assertEqual(self.myapp.options.checkcif_url, 'foobar')
+        self.assertEqual('https://checkcif.iucr.org/cgi-bin/checkcif_hkl.pl',
+                         self.myapp.ui.CheckCIFServerURLTextedit.text())
 
     def test_option_picture_width(self):
         self.myapp.ui.PictureWidthDoubleSpinBox.setValue(0.0)

@@ -1,12 +1,7 @@
 import os
-from unittest.mock import Mock
-
-from finalcif.cif.cif_file_io import CifContainer
-from finalcif.report.tables import make_report_from
-
-os.environ["RUNNING_TEST"] = 'True'
 import unittest
 from pathlib import Path
+from unittest.mock import Mock
 
 import docx
 from docx import Document
@@ -16,9 +11,11 @@ from docx.shared import Cm
 from docx.table import Table
 from packaging.version import Version
 
-from finalcif import VERSION
 from finalcif.appwindow import AppWindow
+from finalcif.cif.cif_file_io import CifContainer
+from finalcif.report.tables import make_report_from
 
+os.environ["RUNNING_TEST"] = 'True'
 data = Path('tests')
 test_data = Path('test-data')
 
@@ -104,30 +101,7 @@ class TemplateReportWithoutAppTestCase(unittest.TestCase):
         result = ('Structure Tables\n'
                   '\n'
                   '\n'
-                  'The compound was crystallized from hot methanol by cooling. '
-                  'A colourless, plate-shaped crystal of '
-                  'cu_BruecknerJK_153F40_0m was mounted on a MiTeGen micromount with '
-                  'perfluoroether oil. Data were collected from a shock-cooled single crystal '
-                  'at 102(2)\xa0K on a Bruker D8 VENTURE dual wavelength Mo/Cu three-circle '
-                  'diffractometer with a microfocus sealed X-ray tube using a mirror optics as '
-                  'monochromator and a Bruker PHOTON III detector. The diffractometer was '
-                  'equipped with an Oxford Cryostream 800 low temperature device and used CuKα '
-                  'radiation (λ = 1.54178\xa0Å). All data were integrated with SAINT and a '
-                  'multi-scan absorption correction using SADABS was applied.[1,2] The '
-                  'structure was solved by direct methods using SHELXT and refined by '
-                  'full-matrix least-squares methods against F2 by SHELXL-2018/3.[3,4] All '
-                  'non-hydrogen atoms were refined with anisotropic displacement parameters. '
-                  'All hydrogen atoms were refined isotropic on calculated positions using a '
-                  'riding model with their Uiso values constrained to 1.5 times the Ueq of '
-                  'their pivot atoms for terminal sp3 carbon atoms and 1.2 times for all other '
-                  'carbon atoms. Disordered moieties were refined using bond lengths restraints '
-                  'and displacement parameter restraints. Crystallographic data for the '
-                  'structures reported here have been deposited with the Cambridge '
-                  'Crystallographic Data Centre.[5] CCDC 1979688 contain the supplementary '
-                  'crystallographic data for this paper. These data can be obtained free of '
-                  'charge from The Cambridge Crystallographic Data Centre via '
-                  'www.ccdc.cam.ac.uk/\u200bstructures. This report and the CIF file were '
-                  'generated using FinalCif.[6]\n'
+                  '\n'
                   f'{newline}Table 1. Crystal data and structure refinement for cu_BruecknerJK_153F40_0m\n{newline}'
                   '\n'
                   '\n'
@@ -149,17 +123,8 @@ class TemplateReportWithoutAppTestCase(unittest.TestCase):
                   '\n'
                   '\n'
                   '\n'
-                  'Bibliography\n'
-                  '[1] \tBruker, SAINT, V8.40A, Bruker AXS Inc., Madison, Wisconsin, USA.\n'
-                  '[2] \tL. Krause, R. Herbst-Irmer, G. M. Sheldrick, D. Stalke, J. Appl. '
-                  'Cryst. 2015, 48, 3–10, doi:10.1107/S1600576714022985.\n'
-                  '[3] \tG. M. Sheldrick, Acta Cryst. 2015, A71, 3–8, '
-                  'doi:10.1107/S2053273314026370.\n'
-                  '[4] \tG. M. Sheldrick, Acta Cryst. 2015, C71, 3–8, '
-                  'doi:10.1107/S2053229614024218.\n'
-                  '[5] \tC. R. Groom, I. J. Bruno, M. P. Lightfoot, S. C. Ward, Acta Cryst. '
-                  '2016, B72, 171–179, doi:10.1107/S2052520616003954.\n'
-                  f'[6] \tD. Kratzert, FinalCif, V{VERSION}, https://dkratzert.de/finalcif.html.')
+                  'Bibliography'
+                  )
 
         self.assertEqual(result, '\n'.join([x.text for x in doc.paragraphs]))
 

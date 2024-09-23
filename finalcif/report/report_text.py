@@ -147,10 +147,4 @@ def make_report_text(cif, document: Document) -> references.ReferenceList:
     except KeyError:
         print('DBG> Text style not found')
     ref = references.ReferenceList(paragr)
-    # -- The main text:
-    # paragr.add_run('The following text is only a suggestion: ').font.bold = True
-
-    CCDC(cif, paragr, ref)
-    SpaceChar(paragr).regular()
-    FinalCifreport(paragr, ref)
     return ref

@@ -533,6 +533,13 @@ class Formatter(ABC):
     def get_radiation(self, cif: CifContainer) -> str | RichText:
         raise NotImplementedError
 
+    def get_wavelength(self, cif: CifContainer) -> str:
+        try:
+            return cif['_diffrn_radiation_wavelength'] if not cif.picometer else angstrom_to_pm(
+                cif['_diffrn_radiation_wavelength'])
+        except ValueError:
+            return ''
+
     def hkl_index_limits(self, cif: CifContainer) -> str:
         raise NotImplementedError
 
@@ -1132,8 +1139,7 @@ class TemplatedReport():
                    'crystal_colour'         : this_or_quest(cif['_exptl_crystal_colour']),
                    'crystal_shape'          : cif['_exptl_crystal_description'],
                    'radiation'              : self.text_formatter.get_radiation(cif),
-                   'wavelength'             : cif['_diffrn_radiation_wavelength'] if not self.cif.picometer else
-                   angstrom_to_pm(cif['_diffrn_radiation_wavelength']),
+                   'wavelength'             : self.text_formatter.get_wavelength(cif),
                    'theta_range'            : self.text_formatter.get_from_to_theta_range(cif),
                    'diffr_type'             : gstr(cif['_diffrn_measurement_device_type'])
                                               or '[No _diffrn_measurement_device_type given]',
@@ -1185,7 +1191,7 @@ class TemplatedReport():
                    'atoms_refinement'       : self.text_formatter.atoms_refinement(cif),
                    'disorder_descr'         : self.text_formatter.disorder_description(cif),
                    'dist_unit'              : report_text.get_distance_unit(self.cif.picometer),
-                   'vol_unit'               : report_text.get_distance_unit(self.cif.picometer),
+                   'vol_unit'               : report_text.get_volume_unit(self.cif.picometer),
                    'bonds'                  : self.text_formatter.get_bonds(),
                    'angles'                 : self.text_formatter.get_angles(),
                    'ba_symminfo'            : self.text_formatter.get_bonds_angles_symminfo(),

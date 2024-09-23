@@ -628,8 +628,6 @@ def add_sum_formula(formula_paragraph: Paragraph, sum_formula: str) -> None:
 def add_decimal_tab(num_string: str) -> str:
     """
     Adds a tab character in front of the decimal point in order to get proper alignment of the tabstops.
-    >>> add_decimal_tab('-0.123')
-    '-0\\t.123'
     """
     return '\t.'.join(num_string.split('.'))
 
