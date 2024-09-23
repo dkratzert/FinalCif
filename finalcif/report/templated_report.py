@@ -724,7 +724,7 @@ class Formatter(ABC):
 
     def _tvalue(self, tval: str) -> str:
         with suppress(ValueError):
-            return f'{float(tval):.3f}'
+            return f'{float(tval):.4f}'
         return tval
 
     def get_atomic_coordinates(self, cif: CifContainer) -> Iterator[dict[str, str]]:
