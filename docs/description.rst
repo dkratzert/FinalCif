@@ -1,33 +1,22 @@
 Introduction
 ============
 
-CIF files from SHELXL miss a lot of information that should be added prior to publication. Editting CIF files with
-text editors is a tedious task and often leads to errors. Therefore, FinalCif tries to help you with this task.
-Essentially, you must have the corresponding CIF file for FinalCif in its original 'work' folder, which contains
-all other files such as SAINT list files, SADABS list file, SHELX list files, etc. that led to this cif file.
-The main table of FinalCif has three columns. The most left contains the information from the .cif file. Data from
-other sources like the .p4p file is displayed in the middle column and user information can be put into the right-most
-column. The data typed by the user always rules out the other information. The two different templates on the left
-can be used to fill in author information or machine models (top) as well as to create dropdown menus for specific
-CIF keywords (bottom). Any keyword not already in the CIF file will be added by the template. In the dropdown menus,
-you can be creative to specify the crystallization conditions with a template.
+CIF files from SHELXL often lack key details needed for publication. Editing these files manually can lead to errors.
+FinalCif helps by pulling information from the corresponding ‘work’ folder, which contains files like
+SAINT, SADABS, and SHELX list files.
 
-The CIF keywords with a question mark as value are at the beginning of the man table in FinalCif and the keywords with
-values are below.
+FinalCif's main table displays the .cif file data in three columns: the left shows the original CIF data, the middle
+displays data from other sources (like the .p4p file), and the right allows user input, which overrides all other values.
+Templates make it easy to add author info, machine models, or create dropdowns for specific CIF keywords.
 
-Each input field in FinalCif accepts Unicode characters like "ω" or "ä". They are automatically
-translated into the CIF ascii format.
-Please let me know if a character does not work. Also the length of text lines are no concern,
-finalCif handles the maximum line length according to the CIF format definition automatically.
+Fields marked with a question mark require attention and appear at the top of the table.
+Each input field supports Unicode characters like umlauts, which are automatically converted to CIF-compliant ASCII format.
+Input fields are also validated, turning red if invalid data is entered.
 
-Many input fields in the main table are checked by validators and their fields turn red if they are identified as invalid.
+You can run CheckCif online (HTML/PDF) or offline from within FinalCif to check the result. The button "save cif file" saves
+under ‘name’-finalcif.cif, leaving the original file unchanged.
+The FinalCif executable also accepts file names as arguments to open .cif files from other programs like ShelXle.
 
-Various possibilities of Checkcif are available, online with html or pdf result and offline.
-The button "save cif file" saves the current file under 'name'-finalcif.cif. FinalCif will never make Changes to the
-original CIF file. 
-
-The FinalCif executable accepts a file name as first argument in order to open .cif files from
-other programs like ShelXle.
 
 .. figure:: pics/finalcif_main.png
    :width: 700

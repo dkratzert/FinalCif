@@ -121,7 +121,6 @@ class ReferenceList():
             paragraph_reflist = document.add_paragraph('', template)
             paragraph_reflist.add_run(f'[{str(num)}] \t')
             ref.add_reference(paragraph_reflist)
-            # paragraph_reflist.add_run('\n')
 
     def __repr__(self):
         return '\n'.join([f'[{num}] {x}' for num, x in enumerate(self._references)])

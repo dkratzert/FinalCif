@@ -1,20 +1,17 @@
-from contextlib import suppress
-
 from finalcif.gui.finalcif_gui_ui import Ui_FinalCifWindow
 from finalcif.tools.settings import FinalCifSettings
 
 
 class Options:
     def __init__(self, ui: Ui_FinalCifWindow = None, settings: FinalCifSettings = None):
-        """
-        :param ui: UI of FinalCif
-        :param settings: Settings of FinalCif
-        """
         self.ui = ui
         self.settings = settings
         # initial default, otherwise we have width=0.0 and no picture visible:
         if ui:
             self.ui.PictureWidthDoubleSpinBox.setValue(7.5)
+            # Loading state here, because connected signals would trigger the saving of settings when
+            # state of checkbox changes during loading:
+            self.load_state()
             self._connect_signal_and_slots()
         self._options = {}
 
@@ -26,11 +23,19 @@ class Options:
         self.ui.CODURLTextedit.textChanged.connect(self._state_changed)
         self.ui.ADPTableCheckBox.stateChanged.connect(self._state_changed)
         self.ui.trackChangesCifCheckBox.stateChanged.connect(self._state_changed)
+        self.ui.UsePicometersCheckBox.stateChanged.connect(self._state_changed)
 
     def show_options(self):
         """
         This method is called in order to show the options page.
         It also sets the state of the options widgets.
+        """
+        self.load_state()
+        self.ui.MainStackedWidget.go_to_options_page()
+
+    def load_state(self):
+        """
+        Load the current checkbox etc state from the settings.
         """
         self.ui.HAtomsCheckBox.setChecked(self.without_h)
         self.ui.ReportTextCheckBox.setChecked(not self.report_text)
@@ -39,8 +44,7 @@ class Options:
         self.ui.CODURLTextedit.setText(self.cod_url)
         self.ui.ADPTableCheckBox.setChecked(self.report_adp)
         self.ui.trackChangesCifCheckBox.setChecked(self.track_changes)
-        #
-        self.ui.MainStackedWidget.go_to_options_page()
+        self.ui.UsePicometersCheckBox.setChecked(self.use_picometers)
 
     def _state_changed(self):
         lw = self.ui.docxTemplatesListWidget
@@ -56,6 +60,7 @@ class Options:
             'current_report_template': lw.row(lw.currentItem()),
             'cod_url'                : self.ui.CODURLTextedit.text(),
             'track_changes'          : self.ui.trackChangesCifCheckBox.isChecked(),
+            'use_picometers'         : self.ui.UsePicometersCheckBox.isChecked(),
         }
         # print('saving:', self._options)
         self.settings.save_options(self._options)
@@ -92,6 +97,10 @@ class Options:
     @property
     def track_changes(self) -> bool:
         return self._get_setting('track_changes', False)
+
+    @property
+    def use_picometers(self) -> bool:
+        return self._get_setting('use_picometers', False)
 
     @property
     def current_template(self) -> int:

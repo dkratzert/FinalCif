@@ -32,7 +32,8 @@ class TemplateReportTestCase(unittest.TestCase):
         self.options = Mock()
         self.options.picture_width = 7.43
         self.options.without_h = False
-        self.text_template = Path('finalcif/template/template_text.docx').absolute()
+        self.options.use_picometers = False
+        self.text_template = Path('finalcif/template/report_default.docx').absolute()
         self.template_without_text = Path('finalcif/template/template_without_text.docx').absolute()
         self.import_templates()
         self.myapp.ui.docxTemplatesListWidget.setCurrentRow(2)
@@ -74,7 +75,7 @@ class TemplateReportTestCase(unittest.TestCase):
         doc = Document(self.reportdoc.absolute())
         # for n, p in enumerate(doc.paragraphs):
         #    print(n, p.text)
-        self.assertEqual('A colourless, plate-shaped', doc.paragraphs[2].text[:26])
+        self.assertEqual('The compound was crystalli', doc.paragraphs[2].text[:26])
 
 
 class TemplateReportWithoutAppTestCase(unittest.TestCase):
@@ -84,7 +85,7 @@ class TemplateReportWithoutAppTestCase(unittest.TestCase):
         self.options = Options()
         self.options._picture_width = 7.43
         self.options._without_h = False
-        self.text_template = Path('finalcif/template/template_text.docx').absolute()
+        self.text_template = Path('finalcif/template/report_default.docx').absolute()
         self.template_without_text = Path('finalcif/template/template_without_text.docx').absolute()
         self.reportdoc = cif.finalcif_file_prefixed(prefix='report_', suffix='-finalcif.docx')
         self.report_zip = cif.finalcif_file_prefixed(prefix='', suffix='-finalcif.zip')
@@ -243,7 +244,8 @@ class TestHydrogenText(unittest.TestCase):
                   'xml:space="preserve"> of their pivot atoms for terminal '
                   'sp</w:t></w:r><w:r><w:rPr><w:vertAlign w:val="superscript"/></w:rPr><w:t '
                   'xml:space="preserve">3</w:t></w:r><w:r><w:t xml:space="preserve"> carbon '
-                  'atoms and 1.2 times for all other carbon atoms.</w:t></w:r>')
+                  'atoms and 1.2 times for all other carbon atoms</w:t></w:r><w:r><w:t xml:space="preserve">'
+                  '. </w:t></w:r>')
         self.assertEqual(result, self.h.richtext().xml)
 
 
