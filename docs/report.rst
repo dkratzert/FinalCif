@@ -116,20 +116,25 @@ Data Available for the Report
     'atomic_coordinates'    : The atomic coordinates as ('label', 'x', 'y', 'z', 'u_eq') for each atom.
     'displacement_parameters': The atomic displacement parameters as ('label', 'U11', 'U22', 'U33',
                                'U23', 'U13', 'U12') for each atom.
+    'dist_unit'             : Unit for bond lengths (Angstrom or picometers).
+    'vol_unit'              : Unit for unit cel volume (Angstrom^3 or namometers^3).
     'bonds'                 : The bonds with lengths as ('atoms', 'dist') for each atom pair.
     'angles'                : The bond angles as ('atoms', 'angle') for each atom triple.
     'ba_symminfo'           : The symmetry operations used to generate equivalent atoms in the angles list.
     'torsions'              : The torsion angles as ('atoms', 'angle') for each atom quartet.
     'torsion_symminfo'      : The symmetry operations used to generate equivalent atoms in the torsion angles list.
-    'hydrogen_atoms'        : Automatic text describing the refinement of hydrogen atoms.
+    'atoms_refinement'      : Automatic text describing the modelling and refinement of heavy atoms.
+    'disorder_descr'        : Automatic text describing the modelling and refinement of disorder.
+    'hydrogen_atoms'        : Automatic text describing the modelling and refinement of hydrogen atoms.
     'hydrogen_bonds'        : The hydrogen bonds (in case there are some defined with HTAB) as
                                ('atoms', 'dist_dh', 'dist_ha', 'dist_da', 'angle_dha').
     'hydrogen_symminfo'     : The symmetry operations used to generate equivalent atoms in the hydrogen bonds list
     'literature'            : A list of citations to the above used programs, e.g. literature.integration.richtext.
                               The richtext attribute formats the citation. Available literature:
-                              ('integration', 'absorption', 'solution', 'refinement', 'ccdc', 'finalcif')
+                              ('integration', 'absorption', 'solution', 'refinement', 'ccdc', 'finalcif', 'dsr')
     'options'               : A dictionary with {'without_h': True/False, 'atoms_table': True/False,
-                              'text': True/False, 'bonds_table': True/False},
+                              'report_text': True/False, 'report_adp': True/False, 'bonds_table': True/False,
+                              'use_picometers': True/False},
     'space_group'           : The space group formatted as formula object.
     'structure_figure'      : A picture selected with the 'Picture for Report' button.
     'crystallization_method': The value of '_exptl_crystal_recrystallization_method'

@@ -1,5 +1,8 @@
 FinalCif recent changes
 -----------------------
+* v142 Added new option to make a report with picometers instead of angstroms for all distances. The default report
+       was moved to a template and the hard-coded report was discarded (only important for programmers).
+       Saving/loading of options fixed. Improved documentation.
 * v141 Added feature to delete the currently selected block of a multi-CIF by right-click on the dropbox.
 * v140 Improved support for SQUEEZEd structures. New 'refinement_gui' keyword for report templates available.
        Fixed sum formula parsing. Some forulae were displayed incorrectly.
