@@ -24,6 +24,7 @@ from PyQt5.QtWidgets import (QMainWindow, QShortcut, QCheckBox, QListWidgetItem,
 from gemmi import cif
 
 from finalcif import VERSION
+from finalcif.app_path import application_path
 # QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
 # QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_ShareOpenGLContexts)
 from finalcif.cif.checkcif.checkcif import MyHTMLParser, AlertHelp, CheckCif
@@ -1104,7 +1105,7 @@ class AppWindow(QMainWindow):
             item = self.ui.docxTemplatesListWidget.item(index)
             if item.checkState() == Qt.Checked:
                 if self.templates.report_from_default_template():
-                    return 'finalcif/template/report_default.docx'
+                    return str(application_path / 'template/report_default.docx')
                 else:
                     return item.text()
 

@@ -98,15 +98,28 @@ def grouper(inputs, n, fillvalue=None):
 
 
 def angstrom_to_pm(angstrom: str) -> str:
-    return _angstrom_to_x(angstrom, factor=100)
+    try:
+        return _angstrom_to_x(angstrom, factor=100)
+    except ValueError:
+        return '?'
 
 
 def angstrom_to_pm_squared(angstrom: str) -> str:
-    return _angstrom_to_x(angstrom, factor=100 ** 2)
+    try:
+        return _angstrom_to_x(angstrom, factor=100 ** 2)
+    except ValueError:
+        return '?'
 
 
 def angstrom_to_nanometers(angstrom: str) -> str:
-    return _angstrom_to_x(angstrom, factor=0.001)
+    try:
+        return _angstrom_to_x(angstrom, factor=0.001)
+    except ValueError:
+        return '?'
+
+
+def do_nothing(value: str) -> str:
+    return value
 
 
 def _angstrom_to_x(value: str, factor: float = 100) -> str:

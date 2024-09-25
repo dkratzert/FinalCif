@@ -40,7 +40,7 @@ from finalcif.report.report_text import (math_to_word, gstr, format_radiation, _
 from finalcif.report.symm import SymmetryElement
 from finalcif.tools.misc import (isnumeric, this_or_quest, timessym, angstrom, protected_space,
                                  less_or_equal, halbgeviert, minus_sign, ellipsis_mid, _angstrom_to_x, angstrom_to_pm,
-                                 angstrom_to_nanometers)
+                                 angstrom_to_nanometers, do_nothing)
 from finalcif.tools.options import Options
 from finalcif.tools.space_groups import SpaceGroups
 
@@ -577,10 +577,10 @@ class Formatter(ABC):
         radiation_wavelength = cif['_diffrn_radiation_wavelength']
         try:
             resolution_angst = float(radiation_wavelength) / (2 * sin(radians(float(theta_max))))
-            if not cif.picometer:
-                d_max = f' ({resolution_angst:.2f}{protected_space}{angstrom})'
-            else:
+            if cif.picometer:
                 d_max = f' ({angstrom_to_pm(str(resolution_angst)):.2}{protected_space}pm)'
+            else:
+                d_max = f' ({resolution_angst:.2f}{protected_space}{angstrom})'
             # 2theta range:
             return f"{2 * float(theta_min):.2f} to {2 * float(theta_max):.2f}{d_max}"
         except ValueError:
@@ -1041,8 +1041,8 @@ class TemplatedReport():
         jinja_env = jinja2.Environment()
         jinja_env.globals.update(strip=str.strip)
         jinja_env.filters['inv_article'] = report_text.get_inf_article
-        jinja_env.filters['to_pm'] = angstrom_to_pm
-        jinja_env.filters['to_nm'] = angstrom_to_nanometers
+        jinja_env.filters['to_pm'] = angstrom_to_pm if self.options.use_picometers else do_nothing
+        jinja_env.filters['to_nm'] = angstrom_to_nanometers if self.options.use_picometers else do_nothing
         jinja_env.filters['float_num'] = report_text.format_float_with_decimal_places
         # foo[1,2] bar[3]:
         jinja_env.filters['ref_num'] = self.count_reference
