@@ -7,7 +7,7 @@ from typing import List, Union
 import numpy as np
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPainter, QPen, QBrush, QColor, QMouseEvent, QPalette, QImage, QResizeEvent
+from PyQt5.QtGui import QPainter, QPen, QBrush, QColor, QMouseEvent, QPalette, QImage, QResizeEvent, QWheelEvent
 
 from finalcif.cif.atoms import get_radius_from_element, element2color
 from finalcif.cif.cif_file_io import CifContainer
@@ -29,6 +29,7 @@ class MoleculeWidget(QtWidgets.QWidget):
         super().__init__(parent=parent)
         self.factor = 1.0
         self.atoms_size = 12
+        self.fontsize = 13
         self.bond_width = 2
         self.labels = False
         self.molecule_center = np.array([0, 0, 0])
@@ -55,6 +56,12 @@ class MoleculeWidget(QtWidgets.QWidget):
                                            [0, 1, 0]], dtype=np.float32)
         self.projected_points = []
         self.zoom = 1.1
+
+    def setLabelFont(self, font_size: int):
+        if font_size < 0:
+            font_size = 1
+        self.fontsize = font_size
+        self.update()
 
     def clear(self):
         self.open_molecule(atoms=[])
@@ -84,7 +91,7 @@ class MoleculeWidget(QtWidgets.QWidget):
             self.painter = QPainter(self)
             self.painter.setRenderHint(QPainter.Antialiasing)
             font = self.painter.font()
-            font.setPixelSize(13)
+            font.setPixelSize(self.fontsize)
             self.painter.setFont(font)
             try:
                 self.draw()
@@ -94,6 +101,12 @@ class MoleculeWidget(QtWidgets.QWidget):
 
     def mousePressEvent(self, event: QMouseEvent) -> None:
         self.lastPos = event.pos()
+
+    def wheelEvent(self, event: QWheelEvent):
+        if event.angleDelta().y() > 0:
+            self.setLabelFont(self.fontsize + 2)
+        elif event.angleDelta().y() < 0:
+            self.setLabelFont(self.fontsize - 2)
 
     def save_image(self, filename: Path, image_scale=1.5):
         image = QImage(self.size() * image_scale, QImage.Format_RGB32)
@@ -285,6 +298,7 @@ def display(atoms: List[Atomtuple]):
     render_widget = MoleculeWidget(None)
     t1 = time.perf_counter()
     render_widget.open_molecule(atoms, labels=False)
+    render_widget.labels = True
     print(f'Time to display molecule: {time.perf_counter() - t1:5.4} s')
     # add and show
     window.setCentralWidget(render_widget)
