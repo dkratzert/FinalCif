@@ -357,6 +357,12 @@ class CifContainer():
             return ''
 
     @property
+    def fab_file(self):
+        if self['_shelx_fab_file']:
+            return self['_shelx_fab_file']
+        return ''
+
+    @property
     def hkl_as_cif(self) -> str:
         return HKL(self.hkl_file, self.block.name, hklf_type=self.hklf_number).hkl_as_cif
 
@@ -823,7 +829,7 @@ class CifContainer():
         publ_loop = self.block.find_loop('_geom_angle_publ_flag')
         angle = namedtuple('angle', ('label1', 'label2', 'label3', 'angle_val', 'symm1', 'symm2'))
         for label1, label2, label3, angle_val, symm1, symm2, publ in \
-            zip(label1, label2, label3, angle_val, symm1, symm2, publ_loop):
+                zip(label1, label2, label3, angle_val, symm1, symm2, publ_loop):
             if (without_H and (self.ishydrogen(label1) or self.ishydrogen(label2) or
                                self.ishydrogen(label3)) or (self.yes_not_set(publ))):
                 continue
@@ -895,7 +901,7 @@ class CifContainer():
         hydr = namedtuple('HydrogenBond', ('label_d', 'label_h', 'label_a', 'dist_dh', 'dist_ha', 'dist_da',
                                            'angle_dha', 'symm'))
         for label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm, publ in (
-            zip(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm, publ_loop)):
+                zip(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm, publ_loop)):
             if self.yes_not_set(publ):
                 continue
             if self.picometer:

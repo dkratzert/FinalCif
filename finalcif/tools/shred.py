@@ -26,9 +26,12 @@ class ShredCIF():
                                                             suffix='_' + self._cif.block.name + '-finalcif.res')
             hklfile_path = self._cif.finalcif_file_prefixed(prefix='',
                                                             suffix='_' + self._cif.block.name + '-finalcif.hkl')
+            fabfile_path = self._cif.finalcif_file_prefixed(prefix='',
+                                                            suffix='_' + self._cif.block.name + '-finalcif.fab')
         else:
             resfile_path = self._cif.finalcif_file.with_suffix('.res')
             hklfile_path = self._cif.finalcif_file.with_suffix('.hkl')
+            fabfile_path = self._cif.finalcif_file.with_suffix('.fab')
         res_data = None
         hkl_data = None
         if not self._cif:
@@ -51,6 +54,8 @@ class ShredCIF():
             hkl_data = self.format_hkl_data(hkl_data)
             if not self._write_hkl_file(hklfile_path, hkl_data):
                 return None
+        if fab_data := self._cif.fab_file:
+            self._write_hkl_file(fabfile_path, fab_data)
         self._show_info(resfile_path, hklfile_path, res_data, hkl_data)
 
     @staticmethod
