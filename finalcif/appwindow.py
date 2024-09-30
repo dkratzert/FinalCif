@@ -1823,9 +1823,8 @@ class AppWindow(QMainWindow):
             self.add_ccdc_number()
             if self.cif.shx and self.cif.shx.abin and not self.cif['_platon_squeeze_void_probe_radius']:
                 show_general_warning(self, "A SQUEEZE refinement was detected.\n"
-                                           "Please import the "
-                                           "corresponding .sqf file from PLATON and\n"
-                                           "complete the _platon_squeeze_void_content information"
+                                           "Please import the corresponding .sqf file\n"
+                                           "from PLATON and complete the _platon_squeeze_void_content information "
                                            "in the 'Platon SQUEEZE voids' loop.")
         vheadlist = []
         for row_number in range(self.ui.cif_main_table.model().rowCount()):
