@@ -1,5 +1,6 @@
 FinalCif recent changes
 -----------------------
+* v144 Also write .fab files when extracting CIF contents.
 * v143 A few dimensions were not in picometers if report in picometers was enabled.
 * v142 Added new option to make a report with picometers instead of angstroms for all distances. The default report
        was moved to a template and the hard-coded report was discarded (only important for programmers).
