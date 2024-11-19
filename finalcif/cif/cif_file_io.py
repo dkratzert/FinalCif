@@ -272,6 +272,8 @@ class CifContainer():
         if self.is_empty():
             print(f'File {filename} is empty.')
             return
+        if not self.is_writable(filename):
+            raise PermissionError(f'Failed to open {filename.resolve()} for writing: Operation not permitted')
         self.order_cif_keys()
         print('Saving CIF to', Path(filename).resolve())
         if Version(gemmi.__version__) > Version('0.6.3'):
@@ -284,6 +286,18 @@ class CifContainer():
             self.doc.write_file(str(filename), options=options)
         else:
             self.doc.write_file(str(filename), gemmi.cif.Style.Indent35)
+
+    def is_writable(self, filepath: Union[Path, str]) -> bool:
+        filepath = Path(filepath)
+        try:
+            exist = filepath.exists()
+            with open(filepath, 'wb+') as f:
+                f.write(b'')
+            if not exist:
+                Path(filepath).unlink(missing_ok=True)
+            return True
+        except Exception:
+            return False
 
     def order_cif_keys(self) -> None:
         """
@@ -829,7 +843,7 @@ class CifContainer():
         publ_loop = self.block.find_loop('_geom_angle_publ_flag')
         angle = namedtuple('angle', ('label1', 'label2', 'label3', 'angle_val', 'symm1', 'symm2'))
         for label1, label2, label3, angle_val, symm1, symm2, publ in \
-                zip(label1, label2, label3, angle_val, symm1, symm2, publ_loop):
+            zip(label1, label2, label3, angle_val, symm1, symm2, publ_loop):
             if (without_H and (self.ishydrogen(label1) or self.ishydrogen(label2) or
                                self.ishydrogen(label3)) or (self.yes_not_set(publ))):
                 continue
@@ -901,7 +915,7 @@ class CifContainer():
         hydr = namedtuple('HydrogenBond', ('label_d', 'label_h', 'label_a', 'dist_dh', 'dist_ha', 'dist_da',
                                            'angle_dha', 'symm'))
         for label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm, publ in (
-                zip(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm, publ_loop)):
+            zip(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm, publ_loop)):
             if self.yes_not_set(publ):
                 continue
             if self.picometer:

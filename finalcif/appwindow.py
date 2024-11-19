@@ -1113,7 +1113,7 @@ class AppWindow(QMainWindow):
         """
         Generates a report document.
         """
-        from finalcif.report.tables import make_report_from, make_multi_tables
+        from finalcif.report.tables import make_multi_tables
         from finalcif.report.templated_report import TemplatedReport
         current_block = self.ui.datanameComboBox.currentIndex()
         if self.cif.doc[current_block].name == 'global':
