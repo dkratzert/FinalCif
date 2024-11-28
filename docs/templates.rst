@@ -3,7 +3,8 @@ Templates
 
 FinalCif uses three different kinds of templates to simplify recurring tasks:
 
-* Large text templates
+Large text templates
+--------------------
     Each editable text field in the main table can hold text snippets as templates for reoccurring texts.
     The text template editor opens with the tiny 'edit' button that appears as long as the mouse cursor
     hovers over the field. Also a right-click in the main table on "Text Template" opens the editor.
@@ -29,7 +30,8 @@ The template editor for large text snippets.
     template collection for validation responses with checkCIF.
 
 
-* Equipment templates
+Equipment templates
+-------------------
     They are useful for definitions of parameters like the properties of a measurement device
     or the name and address of the crystallographer. Apply template by double-clicking the respective row.
 
@@ -42,7 +44,8 @@ The templates selection.
 The equipment templates editor.
 
 
-* Property templates
+Property templates
+------------------
     Property templates define possible dropdown-menus for common CIF keywords like _cell_measurement_temperature.
     After saving the respective template, its values are accessible as a dropdown menu behind the respective
     key in the main table of FinalCif.
