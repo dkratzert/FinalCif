@@ -18,7 +18,7 @@ urllib3
 docxtpl
 shelxfile
 crossrefapi
-numpy<2.0
+numpy
 pyenchant
 
 # Upgrade gemmi to Git master:
