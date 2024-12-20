@@ -34,7 +34,7 @@ class MyQPlainTextEdit(QPlainTextEdit):
         """
         Plaintext edit field for most of the table cells.
         """
-        super().__init__(*args, parent)
+        super().__init__(parent, *args)
         self.color = None
         self.cif_key = ''
         self.edit_button = None
