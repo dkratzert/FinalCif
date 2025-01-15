@@ -13,11 +13,15 @@ def fix_comment(pyfile: Path, uifile: Path):
 def compile_ui():
     ui_files = Path(__file__).parent.parent.rglob('*.ui')
     for ui_file in ui_files:
-        py_file = ui_file.with_suffix('.py')
-        with open(py_file, 'w', encoding='utf-8') as pyf, open(ui_file, 'r', encoding='utf-8') as uif:
-            uic.compileUi(uifile=uif, pyfile=pyf, execute=True)
-            print(f'Compiling {ui_file.name}')
-        fix_comment(pyfile=py_file, uifile=ui_file)
+        compile_ui_file(ui_file)
+
+
+def compile_ui_file(ui_file: Path) -> None:
+    py_file = ui_file.with_suffix('.py')
+    with open(py_file, 'w', encoding='utf-8') as pyf, open(ui_file, 'r', encoding='utf-8') as uif:
+        uic.compileUi(uifile=uif, pyfile=pyf, execute=True)
+        print(f'Compiling {ui_file.name}')
+    fix_comment(pyfile=py_file, uifile=ui_file)
 
 
 if __name__ == '__main__':
