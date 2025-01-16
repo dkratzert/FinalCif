@@ -3,7 +3,7 @@ import sys
 from pathlib import Path
 from typing import List
 
-from PyQt5 import QtGui, QtWidgets, QtCore
+from PyQt5 import QtWidgets, QtCore
 
 from finalcif.cif import cif_order
 from finalcif.cif.cif_file_io import CifContainer
@@ -11,13 +11,14 @@ from finalcif.cif_order.order_ui import Ui_CifOrderForm
 from finalcif.gui import dialogs
 from finalcif.gui.custom_classes import MyTableWidgetItem
 
+
 class Column(enum.IntEnum):
     key = 0
     essential = 1
 
 
 class CifOrder(QtWidgets.QWidget):
-    def __init__(self, parent, cif_file:Path=None):
+    def __init__(self, parent, cif_file: Path = None):
         super().__init__(parent)
         self.ui = Ui_CifOrderForm()
         self.ui.setupUi(self)
@@ -31,11 +32,19 @@ class CifOrder(QtWidgets.QWidget):
     def connect_signals_and_slots(self):
         self.ui.importCifPushButton.clicked.connect(self.import_cif)
 
+    @property
+    def order_keys(self):
+        keys = []
+        for row in range(self.ui.cifOrderTableWidget.rowCount()):
+            key = self.ui.cifOrderTableWidget.item(row, Column.key).text()
+            keys.append(key)
+        return keys
+
     def set_keys_from_cif(self, cif_file):
         self.cif = CifContainer(cif_file)
         self.set_keys(self.cif.keys())
 
-    def set_keys(self, keys: List[str]=None):
+    def set_keys(self, keys: List[str] = None):
         self.ui.cifOrderTableWidget.setRowCount(0)
         row = 0
         for key in keys:
@@ -58,7 +67,7 @@ class CifOrder(QtWidgets.QWidget):
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
-    #form = CifOrder(parent=None, cif_file=Path('test-data/1000007.cif').resolve())
+    # form = CifOrder(parent=None, cif_file=Path('test-data/1000007.cif').resolve())
     form = CifOrder(parent=None)
     form.show()
     form.raise_()
