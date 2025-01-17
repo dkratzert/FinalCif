@@ -29,6 +29,7 @@ from finalcif.app_path import application_path
 # QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_ShareOpenGLContexts)
 from finalcif.cif.checkcif.checkcif import MyHTMLParser, AlertHelp, CheckCif
 from finalcif.cif.cif_file_io import CifContainer, GemmiError
+from finalcif.cif import cif_order
 from finalcif.cif.cod.deposit import CODdeposit
 from finalcif.cif.text import utf8_to_str, quote
 from finalcif.datafiles.bruker_data import BrukerData
@@ -98,6 +99,7 @@ class AppWindow(QMainWindow):
         self.ui.page_MainTable.setParent(self.ui.MainStackedWidget)
         self.settings = FinalCifSettings()
         self.options = Options(self.ui, self.settings)
+        cif_order.order = self.ui.cifOrderWidget.order_keys
         self.deposit = CODdeposit(self.ui, self.cif, self.options)
         self.equipment = Equipment(app=self, settings=self.settings)
         self.properties = Properties(parent=self, settings=self.settings)

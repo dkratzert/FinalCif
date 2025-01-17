@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <comment>Python: from finalcif.gui.custom_classes import MyPropTableWidget</comment>
+ <comment>Python: from finalcif.ciforder.order import CifOrder</comment>
  <class>FinalCifWindow</class>
  <widget class="QMainWindow" name="FinalCifWindow">
   <property name="geometry">
@@ -841,7 +842,7 @@
         <item row="2" column="0" colspan="13">
          <widget class="MyMainStackedWidget" name="MainStackedWidget">
           <property name="currentIndex">
-           <number>2</number>
+           <number>4</number>
           </property>
           <widget class="QWidget" name="page_MainTable">
            <layout class="QVBoxLayout" name="verticalLayout">
@@ -2032,39 +2033,17 @@ The data source will be ignored until next program restart.</string>
           </widget>
           <widget class="QWidget" name="page_options">
            <layout class="QGridLayout" name="gridLayout_12">
-            <item row="2" column="1">
-             <widget class="QGroupBox" name="groupBox_COD">
-              <property name="title">
-               <string>Crystallography Open Database Server</string>
+            <item row="7" column="0">
+             <widget class="QPushButton" name="BackFromOptionspPushButton">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
               </property>
-              <layout class="QFormLayout" name="formLayout_6">
-               <item row="0" column="0" colspan="2">
-                <widget class="QLabel" name="label_7">
-                 <property name="text">
-                  <string>COD deposit URL:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0" colspan="2">
-                <widget class="QLineEdit" name="CODURLTextedit">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="minimumSize">
-                  <size>
-                   <width>300</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                 <property name="text">
-                  <string>https://www.crystallography.net/cod/cgi-bin/cif-deposit.pl</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
+              <property name="text">
+               <string>Back to Main Table</string>
+              </property>
              </widget>
             </item>
             <item row="2" column="0">
@@ -2102,102 +2081,7 @@ The data source will be ignored until next program restart.</string>
               </layout>
              </widget>
             </item>
-            <item row="7" column="0">
-             <widget class="QPushButton" name="BackFromOptionspPushButton">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>Back to Main Table</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="0">
-             <widget class="QGroupBox" name="groupBox_8">
-              <property name="title">
-               <string>Export</string>
-              </property>
-              <layout class="QVBoxLayout" name="verticalLayout_34">
-               <item alignment="Qt::AlignLeft">
-                <widget class="QPushButton" name="ExportAllTemplatesPushButton">
-                 <property name="text">
-                  <string>Export all Templates</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="label_18">
-                 <property name="text">
-                  <string>Exports all templates from Equipment, Properties, Authors and Text snippets to a single file.</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <spacer name="verticalSpacer">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                 <property name="sizeType">
-                  <enum>QSizePolicy::Fixed</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>20</width>
-                   <height>10</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item alignment="Qt::AlignLeft">
-                <widget class="QPushButton" name="ImportAllTemplatesPushButton">
-                 <property name="text">
-                  <string>Import all Templates</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="label_17">
-                 <property name="text">
-                  <string>Imports all templates from a template file.</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="4" column="0" rowspan="2">
-             <widget class="QGroupBox" name="groupBox_10">
-              <property name="title">
-               <string>General Options</string>
-              </property>
-              <layout class="QVBoxLayout" name="verticalLayout_37">
-               <item>
-                <widget class="QCheckBox" name="trackChangesCifCheckBox">
-                 <property name="text">
-                  <string>Track CIF changes in separate file &quot;[name]-finalcif_changes.cif&quot;.</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <spacer name="verticalSpacer_14">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>20</width>
-                   <height>40</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="3" column="1" rowspan="3">
+            <item row="3" column="2" rowspan="3">
              <widget class="QGroupBox" name="PropertiesGroupBox">
               <property name="title">
                <string>Property Templates</string>
@@ -2394,6 +2278,133 @@ The data source will be ignored until next program restart.</string>
                 </widget>
                </item>
               </layout>
+             </widget>
+            </item>
+            <item row="3" column="0">
+             <widget class="QGroupBox" name="groupBox_8">
+              <property name="title">
+               <string>Export</string>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_34">
+               <item alignment="Qt::AlignLeft">
+                <widget class="QPushButton" name="ExportAllTemplatesPushButton">
+                 <property name="text">
+                  <string>Export all Templates</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_18">
+                 <property name="text">
+                  <string>Exports all templates from Equipment, Properties, Authors and Text snippets to a single file.</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <spacer name="verticalSpacer">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeType">
+                  <enum>QSizePolicy::Fixed</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>10</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item alignment="Qt::AlignLeft">
+                <widget class="QPushButton" name="ImportAllTemplatesPushButton">
+                 <property name="text">
+                  <string>Import all Templates</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_17">
+                 <property name="text">
+                  <string>Imports all templates from a template file.</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="2" column="2">
+             <widget class="QGroupBox" name="groupBox_COD">
+              <property name="title">
+               <string>Crystallography Open Database Server</string>
+              </property>
+              <layout class="QFormLayout" name="formLayout_6">
+               <item row="0" column="0" colspan="2">
+                <widget class="QLabel" name="label_7">
+                 <property name="text">
+                  <string>COD deposit URL:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0" colspan="2">
+                <widget class="QLineEdit" name="CODURLTextedit">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>300</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>https://www.crystallography.net/cod/cgi-bin/cif-deposit.pl</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="3" column="1">
+             <widget class="QGroupBox" name="groupBox_10">
+              <property name="title">
+               <string>General Options</string>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_37">
+               <item>
+                <widget class="QCheckBox" name="trackChangesCifCheckBox">
+                 <property name="text">
+                  <string>Track CIF changes in separate file &quot;[name]-finalcif_changes.cif&quot;.</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <spacer name="verticalSpacer_14">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="4" column="0" colspan="2">
+             <widget class="CifOrder" name="cifOrderWidget" native="true">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>1</verstretch>
+               </sizepolicy>
+              </property>
              </widget>
             </item>
            </layout>
@@ -4267,6 +4278,11 @@ please add a publication author:</string>
    <header>finalcif.gui.custom_classes.h</header>
   </customwidget>
   <customwidget>
+   <class>CifOrder</class>
+   <extends>QWidget</extends>
+   <header>finalcif.ciforder.order.h</header>
+  </customwidget>
+  <customwidget>
    <class>MyEQTableWidget</class>
    <extends>QTableWidget</extends>
    <header>finalcif.gui.equipmenttable.h</header>
@@ -4442,6 +4458,7 @@ please add a publication author:</string>
  </tabstops>
  <includes>
   <include location="local">finalcif.gui.custom_classes.h</include>
+  <include location="local">finalcif.ciforder.order.h</include>
  </includes>
  <resources/>
  <connections/>

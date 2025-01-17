@@ -7,7 +7,7 @@ from PyQt5 import QtWidgets, QtCore
 
 from finalcif.cif import cif_order
 from finalcif.cif.cif_file_io import CifContainer
-from finalcif.cif_order.order_ui import Ui_CifOrderForm
+from finalcif.ciforder.order_ui import Ui_CifOrderForm
 from finalcif.gui import dialogs
 from finalcif.gui.custom_classes import MyTableWidgetItem
 
