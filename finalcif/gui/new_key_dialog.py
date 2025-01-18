@@ -1,7 +1,7 @@
 import re
 
-from PyQt5 import QtWidgets
-from PyQt5.QtCore import pyqtSignal
+from PyQt5 import QtWidgets, QtGui
+from PyQt5.QtCore import pyqtSignal, Qt
 
 from finalcif.cif import all_cif_dicts
 from finalcif.gui.new_key_dialog_ui import Ui_AddKeyWindow
@@ -16,15 +16,25 @@ class NewKey(QtWidgets.QMainWindow, Ui_AddKeyWindow):
         self.searchLineEdit.textChanged.connect(self.search)
         self.addKeyPushButton.clicked.connect(self.add_keys)
         self.cancelPushButton.clicked.connect(lambda: self.close())
-        self.keysListWidget.addItems(all_cif_dicts.cif_all_dict.keys())
+        self.keysListWidget.addItems([''] + list(all_cif_dicts.cif_all_dict.keys()))
+        self.keysListWidget.item(0).setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled | Qt.ItemIsEditable)
+        self.keysListWidget.item(0).setText('Double-click to add custom key.')
+        self.keysListWidget.item(0).setForeground(QtGui.QBrush(QtGui.QColor("gray")))
+        self.keysListWidget.itemDoubleClicked.connect(self.item_clicked)
         for num in range(self.keysListWidget.count()):
             item = self.keysListWidget.item(num)
             helptext = all_cif_dicts.cif_all_dict.get(item.text())
             item.setToolTip(helptext)
 
+    def item_clicked(self, item: QtWidgets.QListWidgetItem):
+        if self.keysListWidget.row(item) == 0:
+            self.keysListWidget.item(0).setText('')
+            self.keysListWidget.item(0).setForeground(QtGui.QBrush(QtGui.QColor("black")))
+
     def add_keys(self):
         for item in self.keysListWidget.selectedItems():
-            self.new_key_added.emit(item.text())
+            if item.text() and item.text().startswith('_') and len(item.text()) > 2:
+                self.new_key_added.emit(item.text())
 
     def search(self, searchtext: str):
         self.keysListWidget.clear()

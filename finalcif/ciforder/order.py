@@ -48,19 +48,20 @@ class CifOrder(QtWidgets.QGroupBox):
         self.ui.restoreDefaultPushButton.clicked.connect(self.restore_default)
         self.ui.addKeyPushButton.clicked.connect(self.open_add_cif_key)
         self.ui.saveSettingPushButton.clicked.connect(self.save_setting)
+        self.ui.deleteKeyPushButton.clicked.connect(self.delete_keys)
 
     def move_row_up(self):
         current_row = self.ui.cifOrderTableWidget.currentRow()
         if current_row > 0:
             self.swap_rows(current_row, current_row - 1)
-            self.ui.cifOrderTableWidget.setCurrentCell(current_row - 1, self.ui.cifOrderTableWidget.currentColumn())
+            self.ui.cifOrderTableWidget.setCurrentCell(current_row - 1, Column.key)
 
     def move_row_down(self):
         table = self.ui.cifOrderTableWidget
         current_row = table.currentRow()
         if current_row < table.rowCount() - 1:
             self.swap_rows(current_row, current_row + 1)
-            table.setCurrentCell(current_row + 1, table.currentColumn())
+            table.setCurrentCell(current_row + 1, Column.key)
 
     def swap_rows(self, row1, row2):
         table = self.ui.cifOrderTableWidget
@@ -149,6 +150,11 @@ class CifOrder(QtWidgets.QGroupBox):
     def save_setting(self):
         self.settings.save_settings_list('cif_order', 'order', self.order_keys)
         self.settings.save_settings_list('cif_order', 'essentials', self.order_essentials)
+
+    def delete_keys(self):
+        items = self.ui.cifOrderTableWidget.selectedItems()
+        for item in items:
+            self.ui.cifOrderTableWidget.removeRow(item.row())
 
 
 if __name__ == "__main__":
