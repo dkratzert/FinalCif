@@ -16,11 +16,11 @@ from gemmi.cif import as_string, Document, Loop
 from packaging.version import Version
 from shelxfile import Shelxfile
 
-from finalcif.cif.cif_order import order, special_keys
+from finalcif.cif.cif_order import order, special_keys, essential_keys, non_centrosymm_keys
 from finalcif.cif.hkl import HKL, Limit
 from finalcif.cif.text import utf8_to_str, quote, retranslate_delimiter
 from finalcif.datafiles.utils import DSRFind
-from finalcif.tools.misc import essential_keys, non_centrosymm_keys, isnumeric, grouper, strip_finalcif_of_name, \
+from finalcif.tools.misc import isnumeric, grouper, strip_finalcif_of_name, \
     _angstrom_to_x
 
 
@@ -67,7 +67,16 @@ class CifContainer():
         self.shx = Shelxfile(verbose=True)
         self.shx.read_string(self.res_file_data[1:-1])
         self._on_load()
-        self.order = order
+        self.order = []
+        self.essential_keys = []
+        self.set_order_keys(order)
+        self.set_essential_keys(essential_keys)
+
+    def set_order_keys(self, keys: List[str]) -> None:
+        self.order = keys
+
+    def set_essential_keys(self, keys: List[str]) -> None:
+        self.essential_keys = keys
 
     @property
     def path_base(self) -> Path:
@@ -971,7 +980,7 @@ class CifContainer():
         """
         Check if there are keys not in the cif but in essential_keys and append them if so.
         """
-        for key in essential_keys:
+        for key in self.essential_keys:
             if key not in all_keys:
                 if self._is_centrokey(key):
                     continue
