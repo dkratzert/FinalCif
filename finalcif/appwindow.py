@@ -99,7 +99,6 @@ class AppWindow(QMainWindow):
         self.ui.page_MainTable.setParent(self.ui.MainStackedWidget)
         self.settings = FinalCifSettings()
         self.options = Options(self.ui, self.settings)
-        cif_order.order = self.ui.cifOrderWidget.order_keys
         self.deposit = CODdeposit(self.ui, self.cif, self.options)
         self.equipment = Equipment(app=self, settings=self.settings)
         self.properties = Properties(parent=self, settings=self.settings)
@@ -1240,6 +1239,7 @@ class AppWindow(QMainWindow):
             self.cif.rename_data_name(''.join(self.ui.datanameComboBox.currentText().split(' ')))
         self.store_data_from_table_rows()
         self.save_ccdc_number()
+        self.cif.order = self.ui.cifOrderWidget.order_keys
         try:
             self.cif.save()
             self.status_bar.show_message(f'  File Saved:  {self.cif.finalcif_file}', 10)
@@ -1475,6 +1475,7 @@ class AppWindow(QMainWindow):
         self.ui.datanameComboBox.blockSignals(False)
         if self.cif.is_multi_cif:
             self._flash_block_combobox()
+        self.cif.order = self.ui.cifOrderWidget.order_keys
         # Enable to find widgets without parent:
         # QtCore.QTimer(self).singleShot(1000, self.find_widgets_without_parent)
 
