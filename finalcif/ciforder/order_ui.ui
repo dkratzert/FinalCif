@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>772</width>
+    <width>679</width>
     <height>589</height>
    </rect>
   </property>
@@ -105,26 +105,6 @@
      </item>
     </layout>
    </item>
-   <item row="1" column="0">
-    <widget class="QLabel" name="helpTextLabel">
-     <property name="text">
-      <string>Order of CIF keys in output file:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="1" rowspan="2">
-    <spacer name="verticalSpacer_3">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
    <item row="3" column="1">
     <spacer name="verticalSpacer_4">
      <property name="orientation">
@@ -158,6 +138,9 @@
      <property name="horizontalScrollMode">
       <enum>QAbstractItemView::ScrollPerPixel</enum>
      </property>
+     <attribute name="horizontalHeaderStretchLastSection">
+      <bool>true</bool>
+     </attribute>
      <attribute name="verticalHeaderVisible">
       <bool>false</bool>
      </attribute>
@@ -166,11 +149,13 @@
        <string>CIF key</string>
       </property>
      </column>
-     <column>
-      <property name="text">
-       <string>essential</string>
-      </property>
-     </column>
+    </widget>
+   </item>
+   <item row="1" column="0" colspan="2">
+    <widget class="QLabel" name="helpTextLabel">
+     <property name="text">
+      <string>Order of CIF keys in the output file. Enabled forces them to remain in the output CIF.</string>
+     </property>
     </widget>
    </item>
   </layout>

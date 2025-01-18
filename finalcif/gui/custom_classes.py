@@ -290,3 +290,17 @@ class MyTableWidgetItem(QTableWidgetItem):
         self.setFlags(self.flags() ^ Qt.ItemIsEditable)
         # noinspection PyTypeChecker
         self.setFlags(self.flags() | Qt.ItemIsSelectable)
+
+class CifOrderItem(MyTableWidgetItem):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.setUneditable()
+
+    def isEssential(self):
+        return self.checkState() == Qt.Checked
+
+    def setEssential(self, state: bool):
+        if state is True:
+            self.setCheckState(Qt.Checked)
+        else:
+            self.setCheckState(Qt.Unchecked)

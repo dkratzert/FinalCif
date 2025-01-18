@@ -9,7 +9,7 @@ from finalcif.cif import cif_order
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.ciforder.order_ui import Ui_CifOrderForm
 from finalcif.gui import dialogs
-from finalcif.gui.custom_classes import MyTableWidgetItem
+from finalcif.gui.custom_classes import CifOrderItem
 
 
 class Column(enum.IntEnum):
@@ -17,7 +17,7 @@ class Column(enum.IntEnum):
     essential = 1
 
 
-class CifOrder(QtWidgets.QWidget):
+class CifOrder(QtWidgets.QGroupBox):
     def __init__(self, parent, cif_file: Path = None):
         super().__init__(parent)
         self.ui = Ui_CifOrderForm()
@@ -26,7 +26,7 @@ class CifOrder(QtWidgets.QWidget):
         if cif_file is not None:
             self.set_keys_from_cif(cif_file)
         else:
-            QtCore.QTimer(self).singleShot(0, lambda: self.set_keys(cif_order.order))
+            QtCore.QTimer(self).singleShot(0, lambda: self.set_keys(cif_order.order, cif_order.essential_keys))
         self.connect_signals_and_slots()
 
     def connect_signals_and_slots(self):
@@ -44,17 +44,23 @@ class CifOrder(QtWidgets.QWidget):
         self.cif = CifContainer(cif_file)
         self.set_keys(self.cif.keys())
 
-    def set_keys(self, keys: List[str] = None):
+    def set_keys(self, order_keys: List[str] = None, essential_keys: List[str] = None):
         self.ui.cifOrderTableWidget.setRowCount(0)
         row = 0
-        for key in keys:
-            if not key:
+        for key_text in order_keys:
+            if not key_text:
                 continue
             self.ui.cifOrderTableWidget.insertRow(row)
-            item1 = MyTableWidgetItem(key)
+            item1 = CifOrderItem(key_text)
+            item1.setFlags(item1.flags() | QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
+            item1.setText(key_text)
+            if key_text in essential_keys:
+                item1.setEssential(True)
+            else:
+                item1.setEssential(False)
             self.ui.cifOrderTableWidget.setItem(row, Column.key, item1)
             row += 1
-        self.ui.cifOrderTableWidget.resizeColumnsToContents()
+        #self.ui.cifOrderTableWidget.resizeColumnsToContents()
 
     def import_cif(self):
         cif_file = dialogs.cif_file_open_dialog()
