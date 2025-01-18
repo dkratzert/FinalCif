@@ -49,7 +49,7 @@ class Ui_AddKeyWindow(object):
 
     def retranslateUi(self, AddKeyWindow):
         _translate = QtCore.QCoreApplication.translate
-        AddKeyWindow.setWindowTitle(_translate("AddKeyWindow", "MainWindow"))
+        AddKeyWindow.setWindowTitle(_translate("AddKeyWindow", "Add CIF Keyword"))
         self.searchLabel.setText(_translate("AddKeyWindow", "Search"))
         self.addKeyPushButton.setText(_translate("AddKeyWindow", "Add Key(s)"))
         self.cancelPushButton.setText(_translate("AddKeyWindow", "Close"))
