@@ -300,6 +300,14 @@ class AppWindow(QMainWindow):
             self.ui.AddThisAuthorToLoopPushButton.setIcon(qta.icon('mdi.file-table-outline'))
         with suppress(Exception):
             self.ui.DeleteLoopAuthorTemplateButton.setIcon(qta.icon('mdi.delete-forever-outline'))
+        with suppress(Exception):
+            self.ui.cifOrderWidget.ui.deleteKeyPushButton.setIcon(qta.icon('mdi.delete-forever-outline'))
+        with suppress(Exception):
+            self.ui.cifOrderWidget.ui.moveUpPushButton.setIcon(qta.icon('mdi.chevron-up'))
+            self.ui.cifOrderWidget.ui.moveDownPushButton.setIcon(qta.icon('mdi.chevron-down'))
+            self.ui.cifOrderWidget.ui.saveSettingPushButton.setIcon(qta.icon('mdi.content-save'))
+            self.ui.cifOrderWidget.ui.addKeyPushButton.setIcon(qta.icon('mdi.plus'))
+
 
     def connect_signals_and_slots(self) -> None:
         """
