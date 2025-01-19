@@ -39,6 +39,9 @@ class Ui_CifOrderForm(object):
         self.saveSettingPushButton = QtWidgets.QPushButton(CifOrderForm)
         self.saveSettingPushButton.setObjectName("saveSettingPushButton")
         self.verticalLayout.addWidget(self.saveSettingPushButton)
+        self.exportToCifPushButton = QtWidgets.QPushButton(CifOrderForm)
+        self.exportToCifPushButton.setObjectName("exportToCifPushButton")
+        self.verticalLayout.addWidget(self.exportToCifPushButton)
         self.restoreDefaultPushButton = QtWidgets.QPushButton(CifOrderForm)
         self.restoreDefaultPushButton.setObjectName("restoreDefaultPushButton")
         self.verticalLayout.addWidget(self.restoreDefaultPushButton)
@@ -82,11 +85,12 @@ class Ui_CifOrderForm(object):
         self.importCifPushButton.setWhatsThis(_translate("CifOrderForm", "<html><head/><body><p>The order of CIF keywords in the imported CIF defines the order in the list and therefore the order in the output CIF of FinalCif.</p></body></html>"))
         self.importCifPushButton.setText(_translate("CifOrderForm", "Import order from CIF "))
         self.saveSettingPushButton.setText(_translate("CifOrderForm", "Save permanently"))
+        self.exportToCifPushButton.setText(_translate("CifOrderForm", "Export order to CIF"))
         self.restoreDefaultPushButton.setText(_translate("CifOrderForm", "Restore default"))
         self.deleteKeyPushButton.setText(_translate("CifOrderForm", "Delete selected key"))
         item = self.cifOrderTableWidget.horizontalHeaderItem(0)
         item.setText(_translate("CifOrderForm", "CIF key"))
-        self.helpTextLabel.setText(_translate("CifOrderForm", "Order of CIF keys in the output file. Enabled forces them to remain in the output CIF."))
+        self.helpTextLabel.setText(_translate("CifOrderForm", "Order of CIF keys in the output file. Enabled means they will be forced to remain in the output CIF."))
 
 
 if __name__ == "__main__":

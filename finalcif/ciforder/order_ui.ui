@@ -97,6 +97,13 @@
       </widget>
      </item>
      <item>
+      <widget class="QPushButton" name="exportToCifPushButton">
+       <property name="text">
+        <string>Export order to CIF</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QPushButton" name="restoreDefaultPushButton">
        <property name="text">
         <string>Restore default</string>
@@ -174,7 +181,7 @@
    <item row="1" column="0" colspan="2">
     <widget class="QLabel" name="helpTextLabel">
      <property name="text">
-      <string>Order of CIF keys in the output file. Enabled forces them to remain in the output CIF.</string>
+      <string>Order of CIF keys in the output file. Enabled means they will be forced to remain in the output CIF.</string>
      </property>
     </widget>
    </item>

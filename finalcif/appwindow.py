@@ -105,6 +105,8 @@ class AppWindow(QMainWindow):
         self.status_bar = StatusBar(ui=self.ui)
         self.status_bar.show_message('FinalCif version {}'.format(VERSION))
         self.authors: Union[AuthorLoops, None] = None
+        self.ui.cifOrderWidget.settings = self.settings
+        self.ui.cifOrderWidget.set_order_from_settings(self.settings)
         self.set_window_size_and_position()
         self.ui.cif_main_table.installEventFilter(self)
         # Sorting desynchronized header and columns:
@@ -1913,6 +1915,7 @@ class AppWindow(QMainWindow):
         """
         Adds the cif content to the main table. also add reference to FinalCif.
         """
+        self.cif.set_essential_keys(self.ui.cifOrderWidget.essential_keys)
         for key, value in self.cif.key_value_pairs():
             if not value or value == '?' or value == "'?'":
                 self.missing_data.add(key)

@@ -4,13 +4,14 @@ import sys
 from pathlib import Path
 from typing import List, TYPE_CHECKING
 
+import gemmi
 from PyQt5 import QtWidgets, QtCore
 
 from finalcif.cif import cif_order
-from finalcif.cif.cif_file_io import CifContainer
 from finalcif.ciforder.order_ui import Ui_CifOrderForm
 from finalcif.gui import dialogs
 from finalcif.gui.custom_classes import CifOrderItem
+from finalcif.gui.dialogs import cif_file_save_dialog, show_general_warning
 from finalcif.gui.new_key_dialog import NewKey
 
 if TYPE_CHECKING:
@@ -22,24 +23,26 @@ class Column(enum.IntEnum):
 
 
 class CifOrder(QtWidgets.QGroupBox):
-    def __init__(self, parent, cif_file: Path = None, settings: FinalCifSettings = None):
+    def __init__(self, parent, cif_file: Path = None):
         super().__init__(parent)
         self.ui = Ui_CifOrderForm()
         self.ui.setupUi(self)
         self.cif = None
-        self.settings = settings
+        self.settings = None
+        self.essential_keys = cif_order.essential_keys
+        self.set_keys(cif_order.order)
         if cif_file is not None:
             self.set_keys_from_cif(cif_file)
-        elif settings is not None:
-            order = self.settings.load_settings_list('cif_order', 'order')
-            essentials = self.settings.load_settings_list('cif_order', 'essentials')
+        self.connect_signals_and_slots()
+
+    def set_order_from_settings(self, settings: FinalCifSettings = None):
+        self.settings = settings
+        if settings is not None:
+            order = settings.load_settings_list('cif_order', 'order')
+            essentials = settings.load_settings_list('cif_order', 'essentials')
             if order:
                 self.essential_keys = essentials
                 self.set_keys(order)
-            else:
-                self.essential_keys = cif_order.essential_keys
-                self.set_keys(cif_order.order)
-        self.connect_signals_and_slots()
 
     def connect_signals_and_slots(self):
         self.ui.importCifPushButton.clicked.connect(self.import_cif)
@@ -49,6 +52,7 @@ class CifOrder(QtWidgets.QGroupBox):
         self.ui.addKeyPushButton.clicked.connect(self.open_add_cif_key)
         self.ui.saveSettingPushButton.clicked.connect(self.save_setting)
         self.ui.deleteKeyPushButton.clicked.connect(self.delete_keys)
+        self.ui.exportToCifPushButton.clicked.connect(self.export_cif)
 
     def move_row_up(self):
         current_row = self.ui.cifOrderTableWidget.currentRow()
@@ -95,9 +99,20 @@ class CifOrder(QtWidgets.QGroupBox):
                 essentials.append(item.text())
         return essentials
 
-    def set_keys_from_cif(self, cif_file):
-        self.cif = CifContainer(cif_file)
-        self.set_keys(self.cif.keys())
+    def set_keys_from_cif(self, cif_file) -> None:
+        try:
+            self.cif = gemmi.cif.read_file(cif_file)
+            block = self.cif.sole_block()
+        except Exception:
+            show_general_warning(self, 'Unable to load file')
+            return
+        keys = [x.pair[0] for x in block if x.pair is not None]
+        essentials = [x.pair[0] for x in block if x.pair is not None and x.pair[1] == 'True']
+        self.set_essentials(essentials)
+        self.set_keys(keys)
+
+    def set_essentials(self, essentials):
+        self.essential_keys = essentials
 
     def set_keys(self, order_keys: List[str] = None):
         self.ui.cifOrderTableWidget.setRowCount(0)
@@ -150,19 +165,37 @@ class CifOrder(QtWidgets.QGroupBox):
     def save_setting(self):
         self.settings.save_settings_list('cif_order', 'order', self.order_keys)
         self.settings.save_settings_list('cif_order', 'essentials', self.order_essentials)
+        self.essential_keys = self.order_essentials
 
     def delete_keys(self):
         items = self.ui.cifOrderTableWidget.selectedItems()
         for item in items:
             self.ui.cifOrderTableWidget.removeRow(item.row())
 
+    def export_cif(self):
+        doc = gemmi.cif.Document()
+        blockname = 'FinalCif_keys_order'
+        block = doc.add_new_block(blockname)
+        for key in self.order_keys:
+            value = 'True' if key in self.order_essentials else 'False'
+            block.set_pair(key, value)
+        filename = cif_file_save_dialog(blockname.lower() + '.cif')
+        if not filename.strip():
+            return
+        try:
+            doc.write_file(filename, style=gemmi.cif.Style.Indent35)
+        except PermissionError:
+            if Path(filename).is_dir():
+                return
+            show_general_warning(self, 'No permission to write file to {}'.format(Path(filename).resolve()))
 
 if __name__ == "__main__":
     from finalcif.tools.settings import FinalCifSettings
     app = QtWidgets.QApplication(sys.argv)
     # form = CifOrder(parent=None, cif_file=Path('test-data/1000007.cif').resolve())
     settings = FinalCifSettings()
-    form = CifOrder(parent=None, settings=settings)
+    form = CifOrder(parent=None)
+    form.set_order_from_settings(settings)
     form.show()
     form.raise_()
     sys.exit(app.exec_())
