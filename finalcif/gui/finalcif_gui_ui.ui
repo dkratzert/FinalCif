@@ -2306,7 +2306,7 @@ The data source will be ignored until next program restart.</string>
              <widget class="QGroupBox" name="groupBox_8">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                <horstretch>10</horstretch>
+                <horstretch>15</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
               </property>
@@ -2366,7 +2366,7 @@ The data source will be ignored until next program restart.</string>
              <widget class="QGroupBox" name="groupBox_10">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                <horstretch>10</horstretch>
+                <horstretch>15</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
               </property>
@@ -2402,7 +2402,7 @@ The data source will be ignored until next program restart.</string>
              <widget class="CifOrder" name="cifOrderWidget" native="true">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-                <horstretch>0</horstretch>
+                <horstretch>30</horstretch>
                 <verstretch>2</verstretch>
                </sizepolicy>
               </property>
