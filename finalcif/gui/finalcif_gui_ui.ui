@@ -2045,43 +2045,14 @@ The data source will be ignored until next program restart.</string>
               </property>
              </widget>
             </item>
-            <item row="2" column="0">
-             <widget class="QGroupBox" name="groupBox_7">
-              <property name="title">
-               <string>CheckCIF Server</string>
-              </property>
-              <layout class="QFormLayout" name="formLayout_4">
-               <item row="0" column="0" colspan="2">
-                <widget class="QLabel" name="label_4">
-                 <property name="text">
-                  <string>Change this URL if the CheckCIF server URL changes:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0" colspan="2">
-                <widget class="QLineEdit" name="CheckCIFServerURLTextedit">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="minimumSize">
-                  <size>
-                   <width>300</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                 <property name="text">
-                  <string>https://checkcif.iucr.org/cgi-bin/checkcif_hkl.pl</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
             <item row="3" column="0">
              <widget class="QGroupBox" name="groupBox_8">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>10</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
               <property name="title">
                <string>Export</string>
               </property>
@@ -2096,7 +2067,8 @@ The data source will be ignored until next program restart.</string>
                <item>
                 <widget class="QLabel" name="label_18">
                  <property name="text">
-                  <string>Exports all templates from Equipment, Properties, Authors and Text snippets to a single file.</string>
+                  <string>Exports all templates from Equipment, Properties,
+ Authors and Text snippets to a single file.</string>
                  </property>
                 </widget>
                </item>
@@ -2135,6 +2107,12 @@ The data source will be ignored until next program restart.</string>
             </item>
             <item row="2" column="2">
              <widget class="QGroupBox" name="groupBox_COD">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>50</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
               <property name="title">
                <string>Crystallography Open Database Server</string>
               </property>
@@ -2170,6 +2148,12 @@ The data source will be ignored until next program restart.</string>
             </item>
             <item row="3" column="1">
              <widget class="QGroupBox" name="groupBox_10">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>10</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
               <property name="title">
                <string>General Options</string>
               </property>
@@ -2201,7 +2185,7 @@ The data source will be ignored until next program restart.</string>
              <widget class="CifOrder" name="cifOrderWidget" native="true">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                <horstretch>0</horstretch>
+                <horstretch>20</horstretch>
                 <verstretch>1</verstretch>
                </sizepolicy>
               </property>
@@ -2209,6 +2193,12 @@ The data source will be ignored until next program restart.</string>
             </item>
             <item row="3" column="2" rowspan="2">
              <widget class="QGroupBox" name="PropertiesGroupBox">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>50</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
               <property name="title">
                <string>Property Templates</string>
               </property>
@@ -2401,6 +2391,47 @@ The data source will be ignored until next program restart.</string>
                    </item>
                   </layout>
                  </widget>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="2" column="0" colspan="2">
+             <widget class="QGroupBox" name="groupBox_7">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>20</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="title">
+               <string>CheckCIF Server</string>
+              </property>
+              <layout class="QFormLayout" name="formLayout_4">
+               <item row="0" column="0" colspan="2">
+                <widget class="QLabel" name="label_4">
+                 <property name="text">
+                  <string>Change this URL if the CheckCIF server URL changes:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0" colspan="2">
+                <widget class="QLineEdit" name="CheckCIFServerURLTextedit">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>300</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>https://checkcif.iucr.org/cgi-bin/checkcif_hkl.pl</string>
+                 </property>
                 </widget>
                </item>
               </layout>
