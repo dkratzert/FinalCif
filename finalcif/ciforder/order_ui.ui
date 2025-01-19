@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>679</width>
-    <height>589</height>
+    <height>729</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -77,6 +77,13 @@
       </widget>
      </item>
      <item>
+      <widget class="QPushButton" name="exportToCifPushButton">
+       <property name="text">
+        <string>Export order to CIF</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <spacer name="verticalSpacer_5">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
@@ -97,16 +104,9 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="exportToCifPushButton">
-       <property name="text">
-        <string>Export order to CIF</string>
-       </property>
-      </widget>
-     </item>
-     <item>
       <widget class="QPushButton" name="restoreDefaultPushButton">
        <property name="text">
-        <string>Restore default</string>
+        <string>Restore default order</string>
        </property>
       </widget>
      </item>
