@@ -1,6 +1,7 @@
 FinalCif recent changes
 -----------------------
 
+* v145 Added user interface to control the order of CIF keywords in the output CIF.
 * v144 Also write .fab files when extracting CIF contents.
 * v143 A few dimensions were not in picometers if report in picometers was enabled.
 * v142 Added new option to make a report with picometers instead of angstroms for all distances. The default report
