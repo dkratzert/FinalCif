@@ -22,22 +22,23 @@ class TestSpaceGroups(unittest.TestCase):
         self.assertEqual('I2/a', self.s.to_plain_text('I 1 2/a 1'))
 
     def test_to_html(self):
-        self.assertEqual('<body style=""><i>P</i>1 &thinsp;(1)</body>', self.s.to_html('P 1'))
+        self.assertEqual('<i>P</i>1', self.s.to_html('P 1'))
 
     def test_to_html2(self):
-        self.assertEqual('<body style=""><i>I</i>2/<i>a</i> &thinsp;(15)</body>', self.s.to_html('I 1 2/a 1'))
+        self.assertEqual('<i>I</i>2/<i>a</i>', self.s.to_html('I 1 2/a 1'))
 
     def test_to_html_overline(self):
-        self.assertEqual('<body style=""><i>R</i><span style=" text-decoration: overline;">3</span><i>c</i>:'
-                         '<i>H</i> &thinsp;(167)</body>', self.s.to_html('R -3 c:H'))
+        self.assertEqual('<i>R</i><span style=" text-decoration: overline;">3</span><i>c</i>:<i>H</i>',
+                         self.s.to_html('R -3 c:H'))
 
     def test_to_mathml(self):
         self.assertEqual('''<math xmlns="http://www.w3.org/1998/Math/MathML">\n<mi>P</mi>\n<mn>1</mn>\n</math>\n''',
                          self.s.to_mathml('P 1'))
 
     def test_to_mathml_21(self):
-        self.assertEqual('''<math xmlns="http://www.w3.org/1998/Math/MathML">\n<mi>P</mi>\n<msub>\n<mn>2</mn>\n<mn>1</mn>\n</msub>\n</math>\n''',
-                         self.s.to_mathml('P 1 21 1'))
+        self.assertEqual(
+            '''<math xmlns="http://www.w3.org/1998/Math/MathML">\n<mi>P</mi>\n<msub>\n<mn>2</mn>\n<mn>1</mn>\n</msub>\n</math>\n''',
+            self.s.to_mathml('P 1 21 1'))
 
     def test_to_mathml_overline(self):
         self.assertEqual('<math xmlns="http://www.w3.org/1998/Math/MathML">\n<mi>R</mi>\n<mover>\n<mn>3</mn>\n'

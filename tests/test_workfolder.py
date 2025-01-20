@@ -107,7 +107,7 @@ class TestWorkfolder(unittest.TestCase):
         # test of ccdc number added from email during load:
         self.assertEqual('1979688', self.cell_text('_database_code_depnum_ccdc_archive', Column.DATA))
         # '_computing_structure_solution:'
-        self.assertEqual('SHELXT (G. Sheldrick)', self.cell_text('_computing_structure_solution', Column.DATA))
+        self.assertEqual('SHELXT 2018/2', self.cell_text('_computing_structure_solution', Column.DATA))
         self.assertEqual('direct', self.cell_text('_atom_sites_solution_primary', Column.DATA))
         self.assertEqual('9624', self.cell_text('_cell_measurement_reflns_used', Column.DATA))
         self.assertEqual('78.8605', self.cell_text('_cell_measurement_theta_max', Column.DATA))
@@ -116,7 +116,6 @@ class TestWorkfolder(unittest.TestCase):
         self.assertEqual('SAINT V8.40A', self.cell_text('_computing_cell_refinement', Column.DATA))
         self.assertEqual('?', self.cell_text('_computing_cell_refinement', Column.CIF))
         self.assertEqual('Bruker BIS V6.2.12/2019-08-12', self.cell_text('_computing_data_collection', Column.DATA))
-        self.assertEqual('SHELXT (G. Sheldrick)', self.cell_text('_computing_structure_solution', Column.DATA))
         self.assertEqual('1.1', self.cell_text('_diffrn_source_current', Column.DATA))
         self.assertEqual('50.0', self.cell_text('_diffrn_source_voltage', Column.DATA))
         self.assertEqual('colourless', self.cell_text('_exptl_crystal_colour', Column.DATA))
