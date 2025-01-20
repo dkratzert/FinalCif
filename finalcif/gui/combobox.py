@@ -76,7 +76,7 @@ class MyComboBox(QComboBox):
     def setBadStyle(self) -> None:
         self.setStyleSheet(f"""
         QComboBox {{
-            border: 3px solid {light_red};
+            border: 3px solid 'red';
         }}
         """)
 
