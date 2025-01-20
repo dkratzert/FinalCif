@@ -15,6 +15,7 @@ from typing import List, Dict, Union, Iterator, Any
 
 from PyQt5.QtWidgets import QApplication
 
+from finalcif.cif.text import string_to_utf8
 from finalcif.template.xsl.convert import xml_to_html
 
 # This is necessary, because if jinja crashes, we show an error dialog:
@@ -527,8 +528,8 @@ class Formatter(ABC):
     def get_hydrogen_symminfo(self) -> str:
         return self._hydrogens.symminfo
 
-    def get_crystallization_method(self, cif) -> str:
-        return gstr(cif['_exptl_crystal_recrystallization_method'])
+    def get_crystallization_method(self, cif: CifContainer) -> str:
+        return string_to_utf8(gstr(cif['_exptl_crystal_recrystallization_method']))
 
     def get_radiation(self, cif: CifContainer) -> str | RichText:
         raise NotImplementedError
@@ -546,7 +547,7 @@ class Formatter(ABC):
     def make_3d(self, cif: CifContainer, options: Options) -> str:
         raise NotImplementedError
 
-    def space_group_subdoc(self, cif: CifContainer, tpl_doc: DocxTemplate):
+    def space_group_formatted(self, cif: CifContainer, tpl_doc: DocxTemplate):
         raise NotImplementedError
 
     def make_picture(self, options: Options, picfile: Path, tpl_doc: DocxTemplate):
@@ -661,7 +662,7 @@ class Formatter(ABC):
         else:
             refinement_gui = '[Unknown program in _computing_structure_refinement]'
         self.literature['gui'] = gui_reference
-        return refinement_gui
+        return string_to_utf8(refinement_gui)
 
     def _get_scaling_program(self, absdetails: str) -> tuple[str, str]:
         scale_prog = ''
@@ -695,11 +696,11 @@ class Formatter(ABC):
             scale_prog = 'STOE X-RED'
             self.literature['absorption'] = ref.XRedReference('X-RED', 'unknown version')
         scale_prog += " " + version
-        return scale_prog
+        return string_to_utf8(scale_prog)
 
     def solution_method(self, cif: CifContainer) -> str:
         solution_method = gstr(cif['_atom_sites_solution_primary']) or '??'
-        return solution_method.strip('\n\r')
+        return solution_method.strip('\n\r').strip()
 
     def refinement_prog(self, cif: CifContainer) -> Reference | str:
         refined = gstr(cif['_computing_structure_refinement']) or '??'
@@ -768,7 +769,10 @@ class Formatter(ABC):
         return f'{d:.2f}'
 
     def get_redundancy(self, cif):
-        n_refl = cif['_diffrn_reflns_number']
+        if twinabs := cif['_diffrn_reflns_bruker_twinabs_number']:
+            n_refl = twinabs
+        else:
+            n_refl = cif['_diffrn_reflns_number']
         n_all = cif['_reflns_number_total']
         try:
             redundancy = float(n_refl) / float(n_all)
@@ -784,6 +788,10 @@ class Formatter(ABC):
         except(ZeroDivisionError, TypeError, ValueError):
             return ''
         return f'{redundancy:.2f}'
+
+    def refinement_details(self, cif):
+        details = ' '.join(cif['_refine_special_details'].splitlines(keepends=False)).strip()
+        return string_to_utf8(details)
 
 
 class HtmlFormatter(Formatter):
@@ -812,19 +820,21 @@ class HtmlFormatter(Formatter):
     def get_bonds_angles_symminfo(self) -> str:
         return self._format_symminfo(self._bonds_angles.symminfo)
 
-    def get_torsion_symminfo(self):
+    def get_torsion_symminfo(self) -> str:
         return self._format_symminfo(self._torsions.symminfo)
 
-    def get_hydrogen_symminfo(self):
+    def get_hydrogen_symminfo(self) -> str:
         return self._format_symminfo(self._hydrogens.symminfo)
 
     def make_3d(self, cif: CifContainer, options: Options) -> str:
         return '[3D representation of the structure in html/javascript not implemented]'
 
-    def space_group_subdoc(self, cif: CifContainer, _: None) -> str:
+    def space_group_formatted(self, cif: CifContainer, _: None) -> str:
         s = SpaceGroups()
         try:
-            spgrxml = s.to_mathml(cif.space_group)
+            spgrxml = s.to_html(cif.space_group)
+            # Mathml doesn't work well in pyQt
+            # spgrxml = s.to_mathml(cif.space_group)
         except KeyError:
             spgrxml = '<math xmlns="http://www.w3.org/1998/Math/MathML">?</math>'
         return f'{spgrxml} ({cif.spgr_number})'
@@ -945,7 +955,7 @@ class RichTextFormatter(Formatter):
         self.literature['dsr'] = ref.DSRReference2018()
         return Disorder(cif).richtext()
 
-    def space_group_subdoc(self, cif: CifContainer, tpl_doc: DocxTemplate) -> Subdoc:
+    def space_group_formatted(self, cif: CifContainer, tpl_doc: DocxTemplate) -> Subdoc:
         """
         Generates a Subdoc subdocument with the xml code for a math element in MSWord.
         """
@@ -1056,6 +1066,12 @@ class TemplatedReport():
             tpl_doc.render(context, jinja_env=jinja_env, autoescape=True)
             tpl_doc.save(output_filename)
             return True
+        except PermissionError:
+            #raise
+            show_general_warning(parent=None, window_title='Warning',
+                                 warn_text=f'The document {output_filename} could not be opened to write the report.\n'
+                                           f'Is the file already opened?')
+            return False
         except Exception as e:
             show_general_warning(parent=None, window_title='Warning', warn_text='Document generation failed',
                                  info_text=str(e))
@@ -1124,7 +1140,7 @@ class TemplatedReport():
         context = {'options'                : options,
                    'cif'                    : cif,
                    'name'                   : cif.block.name,
-                   'space_group'            : self.text_formatter.space_group_subdoc(cif, tpl_doc),
+                   'space_group'            : self.text_formatter.space_group_formatted(cif, tpl_doc),
                    'structure_figure'       : self.text_formatter.make_picture(options, picfile, tpl_doc),
                    '3d_structure'           : self.text_formatter.make_3d(cif, options),
                    'crystallization_method' : self.text_formatter.get_crystallization_method(cif),

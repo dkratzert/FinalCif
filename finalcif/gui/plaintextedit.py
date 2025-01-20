@@ -12,7 +12,7 @@ from finalcif.gui.new_key_dialog import NewKey
 from finalcif.gui.validators import validators
 
 if TYPE_CHECKING:
-    from finalcif.gui.custom_classes import MyCifTable
+    from finalcif.gui.custom_classes import MyCifTable, light_red
 
 
 class Column(IntEnum):
@@ -157,7 +157,7 @@ class MyQPlainTextEdit(QPlainTextEdit):
     def validate_text(self, text: str):
         validator = validators.get(self.cif_key, None)
         if validator and not validator.valid(text):
-            self.setBackground(QColor(254, 191, 189))
+            self.setBackground(light_red)
             self.setToolTip(validator.help_text)
         else:
             self.setToolTip('')

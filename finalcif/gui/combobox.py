@@ -1,11 +1,14 @@
-from contextlib import suppress
 from textwrap import wrap
+from typing import TYPE_CHECKING
 
-from PyQt5 import QtCore
+from PyQt5 import QtCore, QtGui
 from PyQt5.QtCore import Qt, QObject, QEvent
 from PyQt5.QtWidgets import QComboBox, QSizePolicy, QAction
 
-from typing import TYPE_CHECKING
+from finalcif.gui.validators import validators
+
+light_red = QtGui.QColor(254, 191, 189)
+white = QtGui.QColor(255, 255, 255)
 
 if TYPE_CHECKING:
     from finalcif.gui.custom_classes import MyCifTable
@@ -21,6 +24,7 @@ class MyComboBox(QComboBox):
         super().__init__(parent)
         self.parent: 'MyCifTable' = parent
         self.cif_key = ''
+        self.color = white
         self.setFocusPolicy(Qt.StrongFocus)
         self.setSizeAdjustPolicy(QComboBox.AdjustToMinimumContentsLength)
         self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
@@ -55,6 +59,29 @@ class MyComboBox(QComboBox):
             event.ignore()
             return True
         return QObject.eventFilter(self, widget, event)
+
+    def keyPressEvent(self, event: QtGui.QKeyEvent):
+        super().keyPressEvent(event)
+        self.validate_text(self.currentText())
+
+    def validate_text(self, text: str):
+        validator = validators.get(self.cif_key, None)
+        if validator and not validator.valid(text):
+            self.setBadStyle()
+            self.setToolTip(validator.help_text)
+        else:
+            self.setToolTip('')
+            self.setRegularStyle()
+
+    def setBadStyle(self) -> None:
+        self.setStyleSheet(f"""
+        QComboBox {{
+            border: 3px solid {light_red};
+        }}
+        """)
+
+    def setRegularStyle(self) -> None:
+        self.setStyleSheet('')
 
     def setUneditable(self):
         # noinspection PyUnresolvedReferences

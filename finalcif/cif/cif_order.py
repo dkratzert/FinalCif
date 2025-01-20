@@ -212,6 +212,8 @@ order = [
     '_diffrn_radiation_monochromator',
     '_diffrn_radiation_polarisn_norm',
     '_diffrn_radiation_collimation',
+    '_bruker_diffrn_measurement_temperature_device',
+    '_bruker_diffrn_measurement_temperature_device_make',
     '_olex2_diffrn_ambient_temperature_device',
     '_diffrn_measurement_ambient_temperature_device_make',
     '_diffrn_radiation_probe',

@@ -19,6 +19,7 @@ light_green = QColor(217, 255, 201)
 light_blue = QColor(244, 244, 249)
 blue = QColor(102, 150, 179)
 yellow = QColor(250, 247, 150)  # #faf796
+light_red = QColor(254, 191, 189)
 
 
 class Column(IntEnum):

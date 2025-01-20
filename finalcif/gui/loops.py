@@ -11,7 +11,7 @@ from typing import Union, List, Any
 
 import gemmi
 
-from finalcif.gui.custom_classes import light_blue
+from finalcif.gui.custom_classes import light_blue, light_red
 from finalcif.gui.plaintextedit import MyQPlainTextEdit
 from finalcif.gui.validators import validators
 
@@ -249,7 +249,7 @@ class LoopTableModel(QAbstractTableModel):
             (row, col) in [(x['row'], x['column']) for x in self.modified] and self.validate_text(value, col)):
             return QVariant(light_blue)
         elif role == Qt.BackgroundColorRole and not self.validate_text(value, col):
-            return QVariant(QColor(254, 191, 189))
+            return QVariant(light_red)
         else:
             QVariant(QColor(255, 255, 255))
         if role == Qt.EditRole:

@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 import enum
 import sys
 from pathlib import Path
@@ -23,7 +24,7 @@ class Column(enum.IntEnum):
 
 
 class CifOrder(QtWidgets.QGroupBox):
-    def __init__(self, parent, cif_file: Path = None):
+    def __init__(self, parent=None, cif_file: Path = None):
         super().__init__(parent)
         self.ui = Ui_CifOrderForm()
         self.ui.setupUi(self)
@@ -123,7 +124,7 @@ class CifOrder(QtWidgets.QGroupBox):
             self.ui.cifOrderTableWidget.insertRow(row)
             self.set_row_text(key_text, row)
             row += 1
-        #self.ui.cifOrderTableWidget.resizeColumnsToContents()
+        # self.ui.cifOrderTableWidget.resizeColumnsToContents()
 
     def set_row_text(self, key_text: str, row: int) -> None:
         item1 = CifOrderItem(key_text)
@@ -189,8 +190,10 @@ class CifOrder(QtWidgets.QGroupBox):
                 return
             show_general_warning(self, 'No permission to write file to {}'.format(Path(filename).resolve()))
 
+
 if __name__ == "__main__":
     from finalcif.tools.settings import FinalCifSettings
+
     app = QtWidgets.QApplication(sys.argv)
     # form = CifOrder(parent=None, cif_file=Path('test-data/1000007.cif').resolve())
     settings = FinalCifSettings()

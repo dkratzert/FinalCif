@@ -62,6 +62,7 @@ from finalcif.tools.platon import PlatonRunner
 from finalcif.tools.settings import FinalCifSettings
 from finalcif.tools.shred import ShredCIF
 from finalcif.tools.space_groups import SpaceGroups
+from finalcif.tools.spgr_format import spgrps
 from finalcif.tools.statusbar import StatusBar
 from finalcif.tools.sumformula import formula_str_to_dict, sum_formula_to_html
 
@@ -1200,6 +1201,10 @@ class AppWindow(QMainWindow):
         with suppress(Exception):
             multitable = self.cif.finalcif_file_prefixed(prefix='', suffix='-multitable.docx')
             arc.zip.write(filename=multitable, arcname=multitable.name)
+        with suppress(Exception):
+            prp_list = self.cif.finalcif_file.parent.glob('*.prp')
+            sorted_prp = sorted(prp_list, key=lambda x: x.stat().st_mtime)
+            arc.zip.write(filename=sorted_prp[-1], arcname=sorted_prp[-1].name)
 
     def open_report_document(self, report_filename: Path, multi_table_document: Path) -> None:
         if self.cif.is_multi_cif:
@@ -1253,7 +1258,8 @@ class AppWindow(QMainWindow):
         try:
             self.cif.save()
             self.status_bar.show_message(f'  File Saved:  {self.cif.finalcif_file}', 10)
-            print('File saved ...')
+            if DEBUG:
+                print('File saved ...')
             return True
         except Exception as e:
             print('Unable to save file:')
@@ -1617,8 +1623,9 @@ class AppWindow(QMainWindow):
 
     def fill_space_group_lineedit(self) -> None:
         try:
-            self.ui.Spacegroup_top_LineEdit.setText(
-                SpaceGroups().to_html(self.cif.space_group))
+            txt = (f'<body style="">{SpaceGroups().to_html(self.cif.space_group)} '
+                   f'&thinsp;({spgrps[self.cif.space_group][1].get("itnumber")})</body>')
+            self.ui.Spacegroup_top_LineEdit.setText(txt)
         except Exception as e:
             print('Space group error:', str(e))
             self.ui.Spacegroup_top_LineEdit.setText(self.cif.space_group)

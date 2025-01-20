@@ -66,7 +66,7 @@ class SpaceGroups():
         if not space_group:
             return ''
         txt = self.to_html_without_body(space_group)
-        return f'<body style="">{txt} &thinsp;({self.spgrps[space_group][1].get("itnumber")})</body>'
+        return txt
 
     def to_plain_text(self, space_group: str) -> str:
         """
