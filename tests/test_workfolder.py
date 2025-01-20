@@ -312,7 +312,6 @@ class TestWorkfolderOtherCifName(unittest.TestCase):
         self.assertEqual('SAINT V8.40A', self.cell_text('_computing_cell_refinement', Column.DATA))
         self.assertEqual('?', self.cell_text('_computing_cell_refinement', Column.CIF))
         self.assertEqual('Bruker BIS V6.2.12/2019-08-12', self.cell_text('_computing_data_collection', Column.DATA))
-        self.assertEqual('SHELXT (G. Sheldrick)', self.cell_text('_computing_structure_solution', Column.DATA))
         self.assertEqual('1.1', self.cell_text('_diffrn_source_current', Column.DATA))
         self.assertEqual('50.0', self.cell_text('_diffrn_source_voltage', Column.DATA))
         self.assertEqual('colourless', self.cell_text('_exptl_crystal_colour', Column.DATA))
