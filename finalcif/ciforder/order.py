@@ -47,13 +47,38 @@ class CifOrder(QtWidgets.QGroupBox):
 
     def connect_signals_and_slots(self):
         self.ui.importCifPushButton.clicked.connect(self.import_cif)
-        self.ui.moveUpPushButton.clicked.connect(self.move_row_up)
-        self.ui.moveDownPushButton.clicked.connect(self.move_row_down)
         self.ui.restoreDefaultPushButton.clicked.connect(self.restore_default)
         self.ui.addKeyPushButton.clicked.connect(self.open_add_cif_key)
         self.ui.saveSettingPushButton.clicked.connect(self.save_setting)
         self.ui.deleteKeyPushButton.clicked.connect(self.delete_keys)
         self.ui.exportToCifPushButton.clicked.connect(self.export_cif)
+        # Connect signals for moveUpPushButton
+        self.ui.moveUpPushButton.pressed.connect(lambda: self.start_repeated_action(self.move_row_up))
+        self.ui.moveUpPushButton.released.connect(self.stop_repeated_action)
+        # Connect signals for moveDownPushButton
+        self.ui.moveDownPushButton.pressed.connect(lambda: self.start_repeated_action(self.move_row_down))
+        self.ui.moveDownPushButton.released.connect(self.stop_repeated_action)
+        # Timer for repeated actions
+        self.timer = QtCore.QTimer(self)
+        self.timer.setInterval(200)
+        self.timer.timeout.connect(self.perform_repeated_action)
+        self.current_action = None
+
+    def start_repeated_action(self, action):
+        """Start the timer with the given action."""
+        self.current_action = action
+        action()  # Perform the action immediately
+        self.timer.start()
+
+    def stop_repeated_action(self):
+        """Stop the timer and reset the current action."""
+        self.timer.stop()
+        self.current_action = None
+
+    def perform_repeated_action(self):
+        """Perform the currently set action."""
+        if self.current_action:
+            self.current_action()
 
     def move_row_up(self):
         current_row = self.ui.cifOrderTableWidget.currentRow()
