@@ -1,6 +1,5 @@
-import dataclasses
 from enum import IntEnum
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING
 
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtCore import pyqtSignal, Qt, QObject, QEvent, QSize
@@ -12,7 +11,9 @@ from finalcif.gui.new_key_dialog import NewKey
 from finalcif.gui.validators import validators
 
 if TYPE_CHECKING:
-    from finalcif.gui.custom_classes import MyCifTable, light_red
+    from finalcif.gui.custom_classes import MyCifTable
+    
+light_red = QColor(254, 191, 189)
 
 
 class Column(IntEnum):
