@@ -74,14 +74,16 @@ class MyComboBox(QComboBox):
             self.setRegularStyle()
 
     def setBadStyle(self) -> None:
-        self.setStyleSheet(f"""
-        QComboBox {{
-            border: 3px solid 'red';
-        }}
-        """)
+        palette = self.palette()
+        palette.setColor(QtGui.QPalette.Base, light_red)  # Background color
+        palette.setColor(QtGui.QPalette.Text, Qt.black)  # Text color (optional)
+        self.setPalette(palette)
 
     def setRegularStyle(self) -> None:
-        self.setStyleSheet('')
+        palette = self.palette()
+        palette.setColor(QtGui.QPalette.Base, white)  # Reset to default background color
+        palette.setColor(QtGui.QPalette.Text, Qt.black)  # Reset text color (optional)
+        self.setPalette(palette)
 
     def setUneditable(self):
         # noinspection PyUnresolvedReferences
