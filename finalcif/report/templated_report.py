@@ -17,6 +17,7 @@ from PyQt5.QtWidgets import QApplication
 
 from finalcif.cif.text import string_to_utf8
 from finalcif.template.xsl.convert import xml_to_html
+from finalcif.tools.dsrmath import my_isnumeric
 
 # This is necessary, because if jinja crashes, we show an error dialog:
 app = QApplication.instance()
@@ -40,12 +41,16 @@ from finalcif.report.references import Reference
 from finalcif.report.report_text import (math_to_word, gstr, format_radiation, _get_cooling_device)
 from finalcif.report.symm import SymmetryElement
 from finalcif.tools.misc import (isnumeric, this_or_quest, timessym, angstrom, protected_space,
-                                 less_or_equal, halbgeviert, minus_sign, ellipsis_mid, _angstrom_to_x, angstrom_to_pm,
+                                 less_or_equal, halbgeviert, minus_sign, ellipsis_mid, angstrom_to_pm,
                                  angstrom_to_nanometers, do_nothing)
 from finalcif.tools.options import Options
 from finalcif.tools.space_groups import SpaceGroups
 
 AdpWithMinus = namedtuple('AdpWithMinus', ('label', 'U11', 'U22', 'U33', 'U23', 'U13', 'U12'))
+
+experiment_table_columns = ['axis', 'distance', 'theta', 'omega', 'phi', 'chi', 'width', 'images', 'time',
+                            'wavelength', 'voltage', 'current', 'temperature']
+TableRow = namedtuple('TableRow', experiment_table_columns)
 
 
 class ReportFormat(enum.Enum):
@@ -709,9 +714,9 @@ class Formatter(ABC):
         if 'OLEX' in refined.upper():
             self.literature['refinement'] = ref.Olex2Reference()
         if ('NOSPHERA2' in refined.upper() or 'NOSPHERA2' in cif['_refine_special_details'].upper() or
-            'NOSPHERAT2' in cif['_olex2_refine_details'].upper()):
+                'NOSPHERAT2' in cif['_olex2_refine_details'].upper()):
             self.literature['refinement'] = ref.Nosphera2Reference()
-        return refined.split()[0]
+        return string_to_utf8(refined.split('(')[0]).strip()
 
     def solution_program(self, cif: CifContainer) -> str:
         solution_prog = gstr(cif['_computing_structure_solution']) or '??'
@@ -721,7 +726,7 @@ class Formatter(ABC):
             self.literature['solution'] = ref.SHELXSReference()
         if 'SHELXD' in solution_prog.upper():
             self.literature['solution'] = ref.SHELXDReference()
-        return solution_prog.split()[0]
+        return string_to_utf8(solution_prog.split('(')[0]).strip()
 
     def _tvalue(self, tval: str) -> str:
         with suppress(ValueError):
@@ -758,6 +763,57 @@ class Formatter(ABC):
         except ValueError:
             completeness = cif['_diffrn_measured_fraction_theta_full']
         return completeness
+
+    def format_experiment_table(self, cif: CifContainer):
+        result = []
+        table = cif.block.find('_bruker_diffrn_runs_', experiment_table_columns)
+        for row in table:
+            result.append(TableRow(axis=row['axis'] if not row['axis'] == '?' else minus_sign,
+                                   distance=self._value_format(row['distance'], '{:.2f}'),
+                                   theta=self._value_format(row['theta'], '{:.2f}', multiply=True),
+                                   omega=self._value_format(row['omega'], '{:.2f}'),
+                                   phi=self._value_format(row['phi'], '{:.2f}'),
+                                   chi=self._value_format(row['chi'], '{:.2f}'),
+                                   width=self._value_format(row['width'], '{:.2f}'),
+                                   images=row['images'],
+                                   time=self._value_format(row['time'], '{:.2f}'),
+                                   wavelength=self._value_format(row['wavelength'], '{:.5f}'),
+                                   voltage=self._value_format(row['voltage'], '{:.0f}'),
+                                   current=self._value_format(row['current'], '{:.1f}'),
+                                   temperature=self._value_format(row['temperature'], '{:.1f}'),
+                                   )
+                          )
+        return result
+
+    def _value_format(self, value: str, string_format: str, multiply: bool = False) -> str:
+        if value is None:
+            value = 0.0
+        if my_isnumeric(value):
+            value = float(value)
+            if multiply:
+                value *= 2
+            return string_format.format(value).replace('-', minus_sign)
+        else:
+            return str(value).replace('-', minus_sign)
+
+    def get_number_of_collected_images(self, cif: CifContainer) -> str:
+        try:
+            return str(sum([int(x) for x in cif.block.find_values('_bruker_diffrn_runs_images')]))
+        except (ValueError, SyntaxError):
+            return 'n/a'
+
+    def get_experiment_time(self, cif: CifContainer) -> str:
+        if exptime := cif['cif._diffrn_measurement_bruker_total_exposure_time']:
+            with suppress(ValueError):
+                return f'{float(exptime) / 3600.0:.2f}'
+        images = cif.block.find_values('_bruker_diffrn_runs_images')
+        times = cif.block.find_values('_bruker_diffrn_runs_time')
+        axes = cif.block.find_values('_bruker_diffrn_runs_axis')
+        seconds = sum([(images is not None and time is not None and int(images) * float(time)) or 0.0
+                       for axis, images, time in zip(axes, images, times, strict=False) if axis], 0.0)
+        if seconds:
+            return f'{seconds / 3600.0:.2f}'
+        return 'n/a'
 
     def get_angstrom_resolution(self, cif: CifContainer):
         wavelen = cif['_diffrn_radiation_wavelength']
@@ -1067,7 +1123,7 @@ class TemplatedReport():
             tpl_doc.save(output_filename)
             return True
         except PermissionError:
-            #raise
+            # raise
             show_general_warning(parent=None, window_title='Warning',
                                  warn_text=f'The document {output_filename} could not be opened to write the report.\n'
                                            f'Is the file already opened?')
@@ -1142,8 +1198,9 @@ class TemplatedReport():
                    'cif'                    : cif,
                    'name'                   : cif.block.name,
                    'space_group'            : self.text_formatter.space_group_formatted(cif, tpl_doc),
-                   'structure_figure'       : self.text_formatter.make_picture(options, picfile, tpl_doc),
-                   '3d_structure'           : self.text_formatter.make_3d(cif, options),
+                   'structure_figure'       : self.text_formatter.make_picture(options, picfile,
+                                                                               tpl_doc) if options else '',
+                   '3d_structure'           : self.text_formatter.make_3d(cif, options) if options else '',
                    'crystallization_method' : self.text_formatter.get_crystallization_method(cif),
                    'sum_formula'            : self.text_formatter.format_sum_formula(
                        cif['_chemical_formula_sum'].replace(" ", "")),
@@ -1153,15 +1210,15 @@ class TemplatedReport():
                    'crystal_size'           : this_or_quest(cif['_exptl_crystal_size_min']) + timessym +
                                               this_or_quest(cif['_exptl_crystal_size_mid']) + timessym +
                                               this_or_quest(cif['_exptl_crystal_size_max']),
-                   'crystal_colour'         : this_or_quest(cif['_exptl_crystal_colour']),
-                   'crystal_shape'          : cif['_exptl_crystal_description'],
+                   'crystal_colour'         : string_to_utf8(this_or_quest(cif['_exptl_crystal_colour'])),
+                   'crystal_shape'          : string_to_utf8(cif['_exptl_crystal_description']),
                    'radiation'              : self.text_formatter.get_radiation(cif),
                    'wavelength'             : self.text_formatter.get_wavelength(cif),
                    'theta_range'            : self.text_formatter.get_from_to_theta_range(cif),
                    'diffr_type'             : gstr(cif['_diffrn_measurement_device_type'])
                                               or '[No _diffrn_measurement_device_type given]',
-                   'diffr_device'           : gstr(cif['_diffrn_measurement_device'])
-                                              or '[No _diffrn_measurement_device given]',
+                   'diffr_device'           : string_to_utf8(gstr(cif['_diffrn_measurement_device'])
+                                                             or '[No _diffrn_measurement_device given]'),
                    'diffr_source'           : gstr(cif['_diffrn_source']).strip('\n\r')
                                               or '[No _diffrn_source given]',
                    'monochromator'          : gstr(cif['_diffrn_radiation_monochromator']) \
@@ -1193,15 +1250,14 @@ class TemplatedReport():
                    'diff_dens_max'          : self.text_formatter.get_diff_density_max(cif).replace('-', minus_sign),
                    'exti'                   : self.text_formatter.get_exti(cif),
                    'flack_x'                : self.text_formatter.get_flackx(cif),
-                   'integration_progr'      : self.text_formatter.get_integration_program(cif),
+                   'integration_progr'      : string_to_utf8(self.text_formatter.get_integration_program(cif)),
                    'abstype'                : gstr(cif['_exptl_absorpt_correction_type']) or 'Not applied',
                    'abs_details'            : self.text_formatter.get_absortion_correction_program(cif),
                    'solution_method'        : self.text_formatter.solution_method(cif),
                    'solution_program'       : self.text_formatter.solution_program(cif),
-                   'refinement_gui'         : self.text_formatter.get_refinement_gui(cif),
-                   'refinement_details'     : ' '.join(
-                       cif['_refine_special_details'].splitlines(keepends=False)).strip(),
+                   'refinement_details'     : self.text_formatter.refinement_details(cif),
                    'refinement_prog'        : self.text_formatter.refinement_prog(cif),
+                   'refinement_gui'         : self.text_formatter.get_refinement_gui(cif),
                    'atomic_coordinates'     : self.text_formatter.get_atomic_coordinates(cif),
                    'displacement_parameters': self.text_formatter.get_displacement_parameters(cif),
                    'hydrogen_atoms'         : self.text_formatter.hydrogen_atoms_refinement(cif),
@@ -1217,10 +1273,13 @@ class TemplatedReport():
                    'hydrogen_bonds'         : self.text_formatter.get_hydrogen_bonds(),
                    'hydrogen_symminfo'      : self.text_formatter.get_hydrogen_symminfo(),
                    'literature'             : self.text_formatter.literature,
+                   'number_of_images'       : self.text_formatter.get_number_of_collected_images(cif),
                    'references'             : self.references,
+                   'experiment_table'       : self.text_formatter.format_experiment_table(cif),
+                   'experiment_time'        : self.text_formatter.get_experiment_time(cif),
                    'bootstrap_css'          : (app_path.application_path /
-                                               'template/bootstrap/bootstrap.min.css').read_text(
-                       encoding='utf-8'),
+                                               'template/bootstrap/bootstrap.min.css').read_text(encoding='utf-8'),
+
                    }
         return context
 
