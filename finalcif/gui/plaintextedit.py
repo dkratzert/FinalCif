@@ -12,7 +12,7 @@ from finalcif.gui.validators import validators
 
 if TYPE_CHECKING:
     from finalcif.gui.custom_classes import MyCifTable
-    
+
 light_red = QColor(254, 191, 189)
 
 
@@ -39,6 +39,7 @@ class MyQPlainTextEdit(QPlainTextEdit):
         self.color = None
         self.cif_key = ''
         self.edit_button = None
+        self.default_palette = self.palette()
         font = QFont()
         font.setPointSize(self.document().defaultFont().pointSize() + 1)
         self.setFont(font)
@@ -104,7 +105,11 @@ class MyQPlainTextEdit(QPlainTextEdit):
         """
         Set background color of the text field.
         """
-        self.setStyleSheet("background-color: {};".format(str(color.name())))
+        # self.setStyleSheet("background-color: {};".format(str(color.name())))
+        palette = self.palette()
+        palette.setColor(QtGui.QPalette.Base, color)
+        self.setPalette(palette)
+        self.default_palette = palette
 
     def setUneditable(self):
         self.setReadOnly(True)
@@ -158,14 +163,19 @@ class MyQPlainTextEdit(QPlainTextEdit):
     def validate_text(self, text: str):
         validator = validators.get(self.cif_key, None)
         if validator and not validator.valid(text):
-            self.setBackground(light_red)
+            self.setBadStyle()
             self.setToolTip(validator.help_text)
         else:
             self.setToolTip('')
-            if self.color:
-                self.setBackground(self.color)
-            else:
-                self.setStyleSheet("")
+            self.setRegularStyle()
+
+    def setBadStyle(self) -> None:
+        palette = self.palette()
+        palette.setColor(QtGui.QPalette.Base, light_red)
+        self.setPalette(palette)
+
+    def setRegularStyle(self) -> None:
+        self.setPalette(self.default_palette)
 
     def leaveEvent(self, a0: QEvent) -> None:
         super().leaveEvent(a0)

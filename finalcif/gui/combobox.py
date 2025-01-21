@@ -25,6 +25,7 @@ class MyComboBox(QComboBox):
         self.parent: 'MyCifTable' = parent
         self.cif_key = ''
         self.color = white
+        self.default_palette = self.palette()
         self.setFocusPolicy(Qt.StrongFocus)
         self.setSizeAdjustPolicy(QComboBox.AdjustToMinimumContentsLength)
         self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
@@ -75,15 +76,11 @@ class MyComboBox(QComboBox):
 
     def setBadStyle(self) -> None:
         palette = self.palette()
-        palette.setColor(QtGui.QPalette.Base, light_red)  # Background color
-        palette.setColor(QtGui.QPalette.Text, Qt.black)  # Text color (optional)
+        palette.setColor(self.backgroundRole(), light_red)
         self.setPalette(palette)
 
     def setRegularStyle(self) -> None:
-        palette = self.palette()
-        palette.setColor(QtGui.QPalette.Base, white)  # Reset to default background color
-        palette.setColor(QtGui.QPalette.Text, Qt.black)  # Reset text color (optional)
-        self.setPalette(palette)
+        self.setPalette(self.default_palette)
 
     def setUneditable(self):
         # noinspection PyUnresolvedReferences
