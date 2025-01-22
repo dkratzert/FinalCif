@@ -176,26 +176,26 @@ class TestWorkfolder(unittest.TestCase):
              'brown'], self.get_combobox_items(row, Column.EDIT))
 
     def test_background_color_data(self):
-        self.assertEqual('background-color: #d9ffc9;',
+        self.assertEqual('#d9ffc9',
                          self.myapp.ui.cif_main_table.widget_from_key('_computing_cell_refinement',
-                                                                      Column.DATA).styleSheet())
-        self.assertEqual('background-color: #d9ffc9;',
+                                                                      Column.DATA).getBackgroundColor().name())
+        self.assertEqual('#d9ffc9',
                          self.myapp.ui.cif_main_table.widget_from_key('_computing_data_collection',
-                                                                      Column.DATA).styleSheet())
-        self.assertEqual('background-color: #d9ffc9;',
+                                                                      Column.DATA).getBackgroundColor().name())
+        self.assertEqual('#d9ffc9',
                          self.myapp.ui.cif_main_table.widget_from_key('_computing_data_reduction',
-                                                                      Column.DATA).styleSheet())
+                                                                      Column.DATA).getBackgroundColor().name())
 
-        self.assertEqual('', self.myapp.ui.cif_main_table.widget_from_key('_cell_measurement_theta_max',
-                                                                          Column.CIF).styleSheet())
-        self.assertEqual('background-color: #d9ffc9;',
+        self.assertEqual('#ffffff', self.myapp.ui.cif_main_table.widget_from_key('_cell_measurement_theta_max',
+                                                                          Column.CIF).getBackgroundColor().name())
+        self.assertEqual('#d9ffc9',
                          self.myapp.ui.cif_main_table.widget_from_key('_cell_measurement_theta_max',
-                                                                      Column.DATA).styleSheet())
-        self.assertEqual('', self.myapp.ui.cif_main_table.widget_from_key('_cell_measurement_theta_max',
-                                                                          Column.EDIT).styleSheet())
+                                                                      Column.DATA).getBackgroundColor().name())
+        self.assertEqual('#ffffff', self.myapp.ui.cif_main_table.widget_from_key('_cell_measurement_theta_max',
+                                                                          Column.EDIT).getBackgroundColor().name())
 
-        self.assertEqual('', self.myapp.ui.cif_main_table.widget_from_key('_computing_molecular_graphics',
-                                                                          Column.DATA).styleSheet())
+        self.assertEqual('#ffffff', self.myapp.ui.cif_main_table.widget_from_key('_computing_molecular_graphics',
+                                                                          Column.DATA).getBackgroundColor().name())
 
     def test_exptl_crystal_size(self):
         self.assertEqual('0.220', self.cell_text('_exptl_crystal_size_max', Column.DATA))
@@ -212,9 +212,9 @@ class TestWorkfolder(unittest.TestCase):
         self.assertEqual('?', self.cell_text('_chemical_absolute_configuration', Column.CIF))
         self.assertEqual('', self.cell_text('_chemical_absolute_configuration', Column.DATA))
         self.assertEqual('', self.cell_text('_chemical_absolute_configuration', Column.EDIT))
-        self.assertIn('background-color: #faf796;',
+        self.assertIn('#faf796',
                       self.myapp.ui.cif_main_table.widget_from_key('_chemical_absolute_configuration',
-                                                                   1).styleSheet())
+                                                                   1).getBackgroundColor().name())
 
     def allrows_test_key(self, key: str = '', results: list = None):
         # The results list is a list with three items for each data column in the main table.
@@ -318,9 +318,12 @@ class TestWorkfolderOtherCifName(unittest.TestCase):
         self.assertEqual('plate', self.cell_text('_exptl_crystal_description', Column.DATA))
         # _exptl_crystal_recrystallization_method Yellow:
         self.assertEqual('', self.cell_text('_exptl_crystal_recrystallization_method', Column.DATA))
-        self.assertEqual('background-color: #faf796;',
+        self.assertEqual('',
                          self.myapp.ui.cif_main_table.cellWidget(
-                             self.key_row('_exptl_crystal_recrystallization_method'), 1).styleSheet())
+                             self.key_row('_exptl_crystal_recrystallization_method'), Column.DATA).styleSheet())
+        self.assertEqual('#faf796',
+                         self.myapp.ui.cif_main_table.cellWidget(
+                             self.key_row('_exptl_crystal_recrystallization_method'), Column.DATA).getBackgroundColor().name())
         self.assertEqual("Sheldrick, G.M. (2015). Acta Cryst. A71, 3-8.\nSheldrick, "
                          "G.M. (2015). Acta Cryst. C71, 3-8.", self.cell_text('_publ_section_references', Column.DATA))
         self.assertEqual('geom', self.cell_text('_atom_sites_solution_hydrogens', 0))

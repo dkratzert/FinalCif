@@ -82,6 +82,11 @@ class MyComboBox(QComboBox):
     def setRegularStyle(self) -> None:
         self.setPalette(self.default_palette)
 
+    def getBackgroundColor(self) -> QtGui.QColor:
+        palette = self.palette()
+        background_color = palette.color(QtGui.QPalette.Base)
+        return background_color
+
     def setUneditable(self):
         # noinspection PyUnresolvedReferences
         self.setFlags(self.flags() ^ Qt.ItemIsEditable)

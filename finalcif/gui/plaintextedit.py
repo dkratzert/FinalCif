@@ -111,6 +111,11 @@ class MyQPlainTextEdit(QPlainTextEdit):
         self.setPalette(palette)
         self.default_palette = palette
 
+    def getBackgroundColor(self) -> QtGui.QColor:
+        palette = self.palette()
+        background_color = palette.color(QtGui.QPalette.Base)
+        return background_color
+
     def setUneditable(self):
         self.setReadOnly(True)
 
