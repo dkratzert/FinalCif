@@ -60,7 +60,7 @@ class CifOrder(QtWidgets.QGroupBox):
         self.ui.moveDownPushButton.released.connect(self.stop_repeated_action)
         # Timer for repeated actions
         self.timer = QtCore.QTimer(self)
-        self.timer.setInterval(200)
+        self.timer.setInterval(170)
         self.timer.timeout.connect(self.perform_repeated_action)
         self.current_action = None
 
