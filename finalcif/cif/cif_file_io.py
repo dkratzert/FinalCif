@@ -42,7 +42,6 @@ class CifContainer():
                        the existing document is opened.
         """
         self.picometer: bool = False
-        self._hkl_file: str = ''
         self._abs_hkl_details: Dict[str, str] = {}
         if isinstance(file, str):
             self.fileobj = Path(file)
@@ -347,14 +346,10 @@ class CifContainer():
     def hkl_file(self) -> str:
         hkl_loop: Loop = self.get_loop('_diffrn_refln_index_h')
         if hkl_loop and hkl_loop.width() > 4:
-            if not self._hkl_file:
-                self._hkl_file = self._hkl_from_cif_format(hkl_loop)
-            return self._hkl_file
+            return self._hkl_from_cif_format(hkl_loop)
         else:
             # returns an empty string if no cif hkl was found:
-            if not self._hkl_file:
-                self._hkl_file = self._hkl_from_shelx()
-            return self._hkl_file
+            return self._hkl_from_shelx()
 
     def _hkl_from_cif_format(self, hkl_loop: Loop) -> str:
         hkl_list = []
