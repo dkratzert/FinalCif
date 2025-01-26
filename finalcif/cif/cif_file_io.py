@@ -395,7 +395,7 @@ class CifContainer():
         return HKL(self.hkl_file, self.block.name, hklf_type=self.hklf_number).get_hkl_min_max()
 
     def _hklf_number_from_shelxl_file(self) -> int:
-        if self.shx.hklf:
+        if self.shx and self.shx.hklf:
             return self.shx.hklf.n if self.shx.hklf.n != 0 else 4
         else:
             return 4
@@ -519,8 +519,11 @@ class CifContainer():
 
     def add_loop_from_columns(self, loop_tags: List[str],
                               column_values: Union[List[List[str]], Tuple[Tuple[str]]]) -> gemmi.cif.Loop:
-        gemmi_loop = self.init_loop(loop_tags)
-        gemmi_loop.set_all_values(column_values)
+        try:
+            gemmi_loop = self.init_loop(loop_tags)
+            gemmi_loop.set_all_values(column_values)
+        except RuntimeError as err:
+            raise Exception('Gemmi raised an exception') from err
         return gemmi_loop
 
     @property
