@@ -1,6 +1,7 @@
 FinalCif recent changes
 -----------------------
 
+* v147 An incorrect message about an invalid checksum for the hkl data was issued for multi-CIFs. This has been fixed.
 * v146 Coloring of validated input fields improved. Support for Bruker CIF keys for run list information.
 * v145 Added user interface to control the order of CIF keywords in the output CIF.
 * v144 Also write .fab files when extracting CIF contents.
