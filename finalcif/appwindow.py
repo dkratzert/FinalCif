@@ -1604,8 +1604,11 @@ class AppWindow(QMainWindow):
         """
         vheader: QtWidgets.QHeaderView = self.ui.cif_main_table.verticalHeader()
         fm = QtGui.QFontMetrics(vheader.font(), self)
-        # noinspection PyTypeChecker
-        longest_string: str = max(self.ui.cif_main_table.vheaderitems, key=len)
+        try:
+            # noinspection PyTypeChecker
+            longest_string: str = max(self.ui.cif_main_table.vheaderitems, key=len)
+        except ValueError:
+            longest_string = '_chemical_formula_sum_foo'
         vheader.setMaximumWidth(fm.width(longest_string + 'O'))
 
     def changes_cif_has_values(self) -> bool:
