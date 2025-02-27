@@ -1105,7 +1105,9 @@ class TemplatedReport():
         context, tpl_doc = self.prepare_report_data(self.cif, self.options, picfile, tpl_doc)
         # Filter definition for {{foobar|filter}} things:
         jinja_env = jinja2.Environment()
+        jinja_env.globals.update(zip=zip)
         jinja_env.globals.update(strip=str.strip)
+        jinja_env.filters['utf8'] = report_text.utf8
         jinja_env.filters['inv_article'] = report_text.get_inf_article
         jinja_env.filters['to_pm'] = angstrom_to_pm if self.options.use_picometers else do_nothing
         jinja_env.filters['to_nm'] = angstrom_to_nanometers if self.options.use_picometers else do_nothing
@@ -1144,6 +1146,7 @@ class TemplatedReport():
                                        autoescape=select_autoescape(['html', 'htm', 'xml']))
         # Add zip() method to global namespace of the template:
         jinja_env.globals.update(zip=zip)
+        jinja_env.globals.update(strip=str.strip)
         jinja_env.filters['to_pm'] = angstrom_to_pm if self.options.use_picometers else do_nothing
         jinja_env.filters['to_nm'] = angstrom_to_nanometers if self.options.use_picometers else do_nothing
         jinja_env.filters['inv_article'] = report_text.get_inf_article
