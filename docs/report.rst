@@ -99,8 +99,22 @@ The second possibility for blocks is to iterate over the values of a Python dict
 Produces a list of all atom names in a CIF.
 If you need a table, :code:`{%tr foo %}` is used to generate table rows.
 
+The information of the regular table loop can be extended by utilizing the Python zip function:
+
+.. code-block:: jinja
+
+    Atom	  x  	y	  z	   Ueq	  ADP type
+    {%tr for atom, adp_type in zip(atomic_coordinates, cif.block.find_loop('_atom_site_adp_type')) %}
+        {{atom.label}}	{{ atom.x }}	{{ atom.y }}	{{ atom.z }}	{{ atom.u_eq }}	  {{ adp_type }}
+    {%tr endfor %}
+
+That way, it is possible to access any column from the _atom_site loop.
+
+
 This was only a brief introduction to what is possible with the Jinja template language.
 The links at the end of this chapter go far mor into details.
+
+
 
 
 Data Available for the Report
@@ -113,7 +127,7 @@ Data Available for the Report
     'name'                  : Name of the current CIF block.
     'block'                 : The context of all CIF blocks of a multi-CIF usable as attribute, e.g. block.name.foo or block['name'].foo
     'blocklist'             : A list of all CIF blocks of a multi-CIF usable for iteration over blocks.
-    'atomic_coordinates'    : The atomic coordinates as ('label', 'x', 'y', 'z', 'u_eq') for each atom.
+    'atomic_coordinates'    : The atomic coordinates as ('label', 'type', 'x', 'y', 'z', 'u_eq', 'part', 'occ') for each atom.
     'displacement_parameters': The atomic displacement parameters as ('label', 'U11', 'U22', 'U33',
                                'U23', 'U13', 'U12') for each atom.
     'dist_unit'             : Unit for bond lengths (Angstrom or picometers).
