@@ -14,8 +14,7 @@ from typing import Type
 from finalcif import VERSION
 from finalcif.app_path import application_path
 from finalcif.appwindow import AppWindow, DEBUG, app
-from finalcif.gui.dialogs import show_bug_found_warning
-from finalcif.gui.dialogs import show_general_warning
+from finalcif.gui.dialogs import show_bug_found_warning, show_general_warning
 
 
 def my_exception_hook(exctype: Type[BaseException], value: BaseException, error_traceback: traceback,
@@ -30,10 +29,26 @@ def my_exception_hook(exctype: Type[BaseException], value: BaseException, error_
                  f'Date: {time.asctime(time.localtime(time.time()))}\n'
                  f'Finalcif crashed during the following operation:\n\n'
                  f'{"-" * 120}\n'
-                 f'{"".join(traceback.format_tb(error_traceback))}\n'
-                 f'{str(exctype.__name__)}: '
-                 f'{str(value)} \n'
-                 f'{"-" * 120}\n')
+                 # f'{"".join(traceback.format_tb(error_traceback))}\n'
+                 # f'{str(exctype.__name__)}: '
+                 # f'{str(value)} \n'
+                 # f'{"-" * 120}\n'
+                 )
+
+    # Walk through the traceback and extract local variables
+    for frame, _ in traceback.walk_tb(error_traceback):
+        errortext += (f'File "{frame.f_code.co_filename}", line {frame.f_lineno}, in '
+                      f'{frame.f_code.co_qualname}(...):\n')
+        newline = '\n'
+        errortext += f'  Locals: \n    '
+        errortext += "    ".join(
+            [f"  {k}:{newline}          {'          '.join([x + newline for x in repr(v).splitlines()])}" for k, v in
+             frame.f_locals.items()]) + '\n\n'
+
+    errortext += f'{"-" * 120}\n'
+    errortext += f'{str(exctype.__name__)}: {str(value)} \n'
+    errortext += f'{"-" * 120}\n'
+
     logfile = Path.home().joinpath(Path(r'finalcif-crash.txt'))
     try:
         logfile.write_text(errortext)
