@@ -1,6 +1,7 @@
 FinalCif recent changes
 -----------------------
 
+* v149 Minor bugfix for syntax check of included SHELXL file.
 * v148 Fixed crash when a CIF without keywords is loaded. Added zip() as supported function of report templates.
        Updated documentation about available report data.
 * v147 An incorrect message about an invalid checksum for the hkl data was issued for multi-CIFs. This has been fixed.
