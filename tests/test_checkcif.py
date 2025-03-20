@@ -13,6 +13,7 @@ data = Path('tests')
 
 form_choices = {'filecif'      : [],
                 'runtype'      : [],
+                'from_index'   : [],
                 'referer'      : [],
                 'outputtype'   : ['HTML', 'PDF', 'PDFEMAIL'],
                 'Qemailaddress': [],
@@ -91,7 +92,7 @@ class TestCheckCifInterface(TestCase):
         fields = self.form.fields.keys()
         fields.sort()
         self.assertEqual(
-            ['Qemailaddress', 'UPLOAD', 'filecif', 'outputtype', 'referer', 'runtype', 'validtype', 'valout'],
+            ['Qemailaddress', 'UPLOAD', 'filecif', 'from_index', 'outputtype', 'referer', 'runtype', 'validtype', 'valout'],
             fields
         )
 
