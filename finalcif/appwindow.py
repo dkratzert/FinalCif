@@ -1476,7 +1476,7 @@ class AppWindow(QMainWindow):
         if not_ok:
             unable_to_open_message(self, filepath, not_ok)
             return None
-        if not self.cif.is_valid_structure_cif:
+        if not self.cif.is_valid_structure_cif and not self.cif.doc.find_block('global'):
             show_general_warning(self, "The CIF file you are about to open contains no structure.\n\n"
                                        "Use the Import button below to import metadata.")
             return None
