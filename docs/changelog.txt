@@ -1,6 +1,8 @@
 FinalCif recent changes
 -----------------------
 
+* v150 CIF files with _global block can now be opened again, even though _global is forbidden in CIF-1.1:
+       https://www.iucr.org/resources/cif/spec/version1.1/cifsyntax Point 33
 * v149 Minor bugfix for syntax check of included SHELXL file.
 * v148 Fixed crash when a CIF without keywords is loaded. Added zip() as supported function of report templates.
        Updated documentation about available report data.
