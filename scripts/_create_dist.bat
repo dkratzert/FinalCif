@@ -3,7 +3,7 @@
 REM This script builds a working Python environment into ..\dist of the current file location.
 
 REM Set the Python version here:
-set PYTHON_VERSION=3.12.8
+set PYTHON_VERSION=3.12.9
 
 set PYTHON_URL=https://www.python.org/ftp/python/%PYTHON_VERSION%/python-%PYTHON_VERSION%-embed-amd64.zip
 
