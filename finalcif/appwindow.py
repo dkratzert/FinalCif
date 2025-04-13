@@ -404,9 +404,9 @@ class AppWindow(QMainWindow):
     def export_all_templates(self, filename: Path = None):
         import pickle
         if not filename:
-            filename, _ = QFileDialog.getSaveFileName(directory=str(Path(self.get_last_workdir()).joinpath(
+            filename, _ = QFileDialog.getSaveFileName(dir=str(Path(self.get_last_workdir()).joinpath(
                 f'finalcif_templates_{time.strftime("%Y-%m-%d")}.dat')),
-                initialFilter="Template File (*.dat)",
+                selectedFilter="Template File (*.dat)",
                 filter="Template File (*.dat)",
                 caption='Save templates')
         if not filename:
@@ -424,8 +424,8 @@ class AppWindow(QMainWindow):
     def import_all_templates(self, filename: Path = None):
         import pickle
         if not filename:
-            filename, _ = QFileDialog.getOpenFileName(directory=self.get_last_workdir(),
-                                                      initialFilter="Template File (*.dat)",
+            filename, _ = QFileDialog.getOpenFileName(dir=self.get_last_workdir(),
+                                                      selectedFilter="Template File (*.dat)",
                                                       filter="Template File (*.dat)",
                                                       caption='Save templates')
         if not filename:
@@ -1056,9 +1056,9 @@ class AppWindow(QMainWindow):
             self.ui.cif_main_table.setText(key='_chemical_formula_moiety', txt=formula_moiety, column=Column.EDIT)
 
     def append_to_ciflog_without_newline(self, text: str = '') -> None:
-        self.ui.CheckCifLogPlainTextEdit.moveCursor(QtGui.QTextCursor.End)
+        self.ui.CheckCifLogPlainTextEdit.moveCursor(QtGui.QTextCursor.MoveOperation.End)
         self.ui.CheckCifLogPlainTextEdit.insertPlainText(text)
-        self.ui.CheckCifLogPlainTextEdit.moveCursor(QtGui.QTextCursor.End)
+        self.ui.CheckCifLogPlainTextEdit.moveCursor(QtGui.QTextCursor.MoveOperation.End)
         self.ui.CheckCifLogPlainTextEdit.unsetCursor()
 
     def set_checkcif_output_font(self, ccpe: 'QPlainTextEdit') -> None:
@@ -1104,14 +1104,15 @@ class AppWindow(QMainWindow):
         except Exception:
             pass
 
-    def get_checked_templates_list_text(self) -> str:
+    def get_checked_templates_list_text(self) -> str | None:
         for index in range(self.ui.docxTemplatesListWidget.count()):
             item = self.ui.docxTemplatesListWidget.item(index)
-            if item.checkState() == Qt.Checked:
+            if item.checkState() == Qt.CheckState.Checked:
                 if self.templates.report_from_default_template():
                     return str(application_path / 'template/report_default.docx')
                 else:
                     return item.text()
+        return None
 
     def make_report_tables(self) -> None:
         """
@@ -1435,7 +1436,7 @@ class AppWindow(QMainWindow):
         for loop in loops:
             new_loop = self.cif.block.init_loop('', loop)
             for row in self.import_selector.import_cif.block.find(loop):
-                new_loop.add_row(row)
+                new_loop.add_row(list(row))
 
     def load_cif_file(self, filepath: Path, block=0, load_changes: bool = True) -> None:
         """

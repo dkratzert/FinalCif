@@ -25,7 +25,7 @@ def unable_to_open_message(parent, filepath: Path, not_ok: Exception) -> None:
         print('DBG> Running inside a pytest -> not showing error message.')
         return
     info = QMessageBox(parent=parent)
-    info.setIcon(QMessageBox.Information)
+    info.setIcon(QMessageBox.Icon.Information)
     print('Output from gemmi:', not_ok)
     try:
         line = str(not_ok)[4:].split(':')[1]
@@ -52,7 +52,7 @@ def show_res_checksum_warning(parent) -> None:
         print('DBG> Running inside a pytest -> not showing error message.')
         return
     info = QMessageBox(parent=parent)
-    info.setIcon(QMessageBox.Warning)
+    info.setIcon(QMessageBox.Icon.Warning)
     info.setText('The "_shelx_res_checksum" is not consistent with the .res file content!\n\n'
                  'This error might originate from non-ascii Characters like Umlauts in you SHELX file.')
     info.setModal(True)
@@ -67,7 +67,7 @@ def show_hkl_checksum_warning(parent) -> None:
         print('DBG> Running inside a pytest -> not showing error message.')
         return
     info = QMessageBox(parent=parent)
-    info.setIcon(QMessageBox.Warning)
+    info.setIcon(QMessageBox.Icon.Warning)
     info.setText('The "_shelx_hkl_checksum" is not\nconsistent with the .hkl file content!')
     info.setModal(True)
     info.show()
@@ -85,9 +85,9 @@ def show_general_warning(parent, warn_text: str = '', info_text: str = '', windo
         print(f'DBG> Running inside a pytest -> not showing error message:\n{warn_text}\n{info_text}')
         return None
     box = QMessageBox(parent=parent)
-    box.setTextFormat(QtCore.Qt.AutoText)
+    box.setTextFormat(QtCore.Qt.TextFormat.AutoText)
     box.setWindowTitle(window_title)
-    box.setTextInteractionFlags(QtCore.Qt.TextBrowserInteraction)
+    box.setTextInteractionFlags(QtCore.Qt.TextInteractionFlag.TextBrowserInteraction)
     box.setText(warn_text)
     box.setModal(True)
     if info_text:
@@ -123,8 +123,8 @@ def show_keyword_help(parent, helptext: str, title: str = ''):
     layout.addWidget(button)
     widget.setLayout(layout)
     window.setCentralWidget(widget)
-    width = textedit.fontMetrics().width('X' * 70)
-    height = textedit.fontMetrics().width('X' * nlines)
+    width = textedit.fontMetrics().horizontalAdvance('X' * 70)
+    height = textedit.fontMetrics().horizontalAdvance('X' * nlines)
     textedit.setMinimumWidth(max([600, width]))
     textedit.setMinimumHeight(max([400, height]))
     window.move(300, 100)
@@ -134,15 +134,15 @@ def show_keyword_help(parent, helptext: str, title: str = ''):
 
 def show_ok_cancel_warning(parent, warn_text: str = '') -> bool:
     box = QMessageBox(parent=parent)
-    box.setTextFormat(QtCore.Qt.AutoText)
+    box.setTextFormat(QtCore.Qt.TextFormat.AutoText)
     box.setWindowTitle(" ")
-    box.setTextInteractionFlags(QtCore.Qt.TextBrowserInteraction)
+    box.setTextInteractionFlags(QtCore.Qt.TextInteractionFlag.TextBrowserInteraction)
     box.setText(warn_text)
-    box.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
-    box.setDefaultButton(QMessageBox.Ok)
+    box.setStandardButtons(QMessageBox.StandardButton.Ok | QMessageBox.StandardButton.Cancel)
+    box.setDefaultButton(QMessageBox.StandardButton.Ok)
     box.setModal(True)
     box.show()
-    return box.result() == QMessageBox.Ok
+    return box.result() == QMessageBox.StandardButton.Ok
 
 
 def show_update_warning(parent, remote_version: int = 0) -> None:
@@ -153,12 +153,12 @@ def show_update_warning(parent, remote_version: int = 0) -> None:
                 "<a href='https://dkratzert.de/finalcif.html'>" \
                 "https://dkratzert.de/finalcif.html</a>"
     box = QMessageBox(parent)
-    box.setTextFormat(QtCore.Qt.AutoText)
+    box.setTextFormat(QtCore.Qt.TextFormat.AutoText)
     box.setWindowTitle(" ")
-    box.setTextInteractionFlags(QtCore.Qt.TextBrowserInteraction)
+    box.setTextInteractionFlags(QtCore.Qt.TextInteractionFlag.TextBrowserInteraction)
     if sys.platform.startswith("win"):
         warn_text += r"<br><br>Updating now will end all running FinalCIF programs!"
-        update_button = box.addButton('Update Now', QMessageBox.AcceptRole)
+        update_button = box.addButton('Update Now', QMessageBox.ButtonRole.AcceptRole)
         update_button.clicked.connect(lambda: do_update_program(str(remote_version)))
     box.setText(warn_text.format(remote_version))
     box.setModal(True)
@@ -167,7 +167,7 @@ def show_update_warning(parent, remote_version: int = 0) -> None:
 
 def bad_z_message(parent, z: float) -> None:
     zinfo = QMessageBox(parent)
-    zinfo.setIcon(QMessageBox.Information)
+    zinfo.setIcon(QMessageBox.Icon.Information)
     zinfo.setText(f'The number of formula units Z={z:.0f} is probably wrong.\n'
                   f'You may restart refinement with a correct value.')
     zinfo.setModal(True)
@@ -187,15 +187,17 @@ def show_bug_found_warning(logfile) -> None:
     box.setWindowTitle('Warning')
     box.setText(title)
     box.setInformativeText(text)
-    box.setTextFormat(QtCore.Qt.RichText)
-    box.setTextInteractionFlags(QtCore.Qt.TextBrowserInteraction)
+    box.setTextFormat(QtCore.Qt.TextFormat.RichText)
+    box.setTextInteractionFlags(QtCore.Qt.TextInteractionFlag.TextBrowserInteraction)
     box.exec()
     window.show()
 
 
 def show_yes_now_question(title: str, question: str, parent=None) -> bool:
-    response = QMessageBox.question(parent, title, question, QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
-    if response == QMessageBox.Yes:
+    response = QMessageBox.question(parent, title, question,
+                                    QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                                    QMessageBox.StandardButton.No)
+    if response == QMessageBox.ButtonRole.YesRole:
         return True
     else:
         return False
@@ -206,8 +208,8 @@ def cif_file_open_dialog(filter: str = "CIF file (*.cif)", last_dir='') -> str:
     Returns a cif file name from a file dialog.
     """
     filename, _ = QFileDialog.getOpenFileName(filter=filter,
-                                              directory=last_dir,
-                                              initialFilter=filter,
+                                              dir=last_dir,
+                                              selectedFilter=filter,
                                               caption='Open a .cif File')
     return filename
 
@@ -239,14 +241,14 @@ if __name__ == '__main__':
     # answer = show_yes_now_question(title='Delete templates', question='Fobar?', parent=w)
     # bad_z_message(parent=w, z=3.0)
     # show_update_warning(parent=w, remote_version=123)
-    show_bug_found_warning(Path(r'test.txt'))
+    # show_bug_found_warning(Path(r'test.txt'))
     # show_ok_cancel_warning(parent=w, warn_text='foobar')
     # show_keyword_help(parent=w, helptext="This is a helptext", title='A Title')
     # show_general_warning(parent=w, warn_text='Warning text', info_text='Info text', window_title='Title')
     # show_hkl_checksum_warning(parent=w)
     # show_res_checksum_warning(parent=w)
     # unable_to_open_message(parent=w, not_ok=Exception('foo'), filepath=Path('C:/foo.txt'))
-    # do_update_program('127')
+    #do_update_program('127')
     # window.show()
 
     app.exec()

@@ -1,3 +1,4 @@
+from PySide6 import QtCore
 from PySide6.QtCore import QSize, Qt
 from PySide6.QtWidgets import QDialog, QFrame, QHBoxLayout, QLabel, QPushButton, QSizePolicy, QSpacerItem, QTextEdit, \
     QVBoxLayout, QWidget
@@ -6,11 +7,11 @@ from PySide6.QtWidgets import QDialog, QFrame, QHBoxLayout, QLabel, QPushButton,
 class QHLine(QFrame):
     def __init__(self, parent, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
-        self.setFrameShape(QFrame.HLine)
+        self.setFrameShape(QFrame.Shape.HLine)
         # self.setFrameShadow(QFrame.Sunken)
         # gives a black line:
         # self.setFrameShadow(QFrame.Plain)
-        self.setFrameShadow(QFrame.Raised)
+        self.setFrameShadow(QFrame.Shadow.Raised)
 
 
 class VREF():
@@ -148,7 +149,7 @@ class MyVRFContainer(QWidget):
                 'opacity: 230;' \
                 '}}'.format(color)
         label.setStyleSheet(style)
-        spacerItem = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        spacerItem = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
         hlayout.addItem(spacerItem)
         hlayout.addWidget(self.helpbutton)
         self.mainVLayout.addWidget(frame)
@@ -179,7 +180,7 @@ class MyVRFContainer(QWidget):
         hlayout.addWidget(resp_label, 0, QtCore.Qt.AlignmentFlag.AlignTop)
         resp_label.setText('Response: ')
         resp_label.setStyleSheet('QLabel { font-size: 12px; font-weight: bold }')
-        self.response_text_edit.setFocusPolicy(Qt.StrongFocus)
+        self.response_text_edit.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
         hlayout.addWidget(self.response_text_edit)
         self.mainVLayout.addWidget(frame)
 
