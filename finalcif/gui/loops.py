@@ -222,7 +222,7 @@ class LoopItemDelegate(QtWidgets.QStyledItemDelegate):
 
 
 class LoopTableModel(QAbstractTableModel):
-    modelChanged = Signal(int, int, 'PyQt_PyObject', list)
+    modelChanged = Signal(int, int, object, list)
     rowDeleted = Signal(list, int)
 
     def __init__(self, header, data):
@@ -239,19 +239,19 @@ class LoopTableModel(QAbstractTableModel):
     def data(self, index: QModelIndex, role: int = None):
         row, col = index.row(), index.column()
         value = self._data[row][col]
-        if role == Qt.SizeHintRole:
+        if role == Qt.ItemDataRole.SizeHintRole:
             return QSize(120, 50)
         # if role == Qt.TextAlignmentRole:
         #    pass
         # if isnumeric(value):
         #    return QtCore.Qt.AlignmentFlag.AlignVCenter + Qt.AlignVertical_Mask
-        if (role == Qt.BackgroundColorRole and
+        if (role == Qt.ItemDataRole.BackgroundRole and
             (row, col) in [(x['row'], x['column']) for x in self.modified] and self.validate_text(value, col)):
-            return QVariant(light_blue)
-        elif role == Qt.BackgroundColorRole and not self.validate_text(value, col):
-            return QVariant(light_red)
+            return light_blue
+        elif role == Qt.ItemDataRole.BackgroundRole and not self.validate_text(value, col):
+            return light_red
         else:
-            QVariant(QColor(255, 255, 255))
+            QColor(255, 255, 255)
         if role == QtCore.Qt.ItemDataRole.EditRole:
             return retranslate_delimiter(value)
         if role == QtCore.Qt.ItemDataRole.DisplayRole:

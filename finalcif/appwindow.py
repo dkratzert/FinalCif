@@ -18,8 +18,6 @@ from typing import Union, Dict, Tuple, List, Optional
 import gemmi.cif
 import requests
 from PySide6 import QtCore, QtGui, QtWebEngineWidgets, QtWidgets
-
-QtCore.QCoreApplication.setAttribute(QtCore.Qt.ApplicationAttribute.AA_EnableHighDpiScaling)
 from PySide6.QtCore import Qt, QEvent
 from PySide6.QtWidgets import (QMainWindow, QCheckBox, QListWidgetItem, QApplication,
                                QPlainTextEdit, QFileDialog, QMessageBox, QScrollBar)
@@ -27,7 +25,6 @@ from gemmi import cif
 
 from finalcif import VERSION
 from finalcif.app_path import application_path
-
 from finalcif.cif.checkcif.checkcif import MyHTMLParser, AlertHelp, CheckCif
 from finalcif.cif.cif_file_io import CifContainer, GemmiError
 from finalcif.cif.cod.deposit import CODdeposit
