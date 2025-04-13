@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import List, TYPE_CHECKING
 
 import gemmi
-from PyQt5 import QtWidgets, QtCore
+from PySide6 import QtWidgets, QtCore
 
 from finalcif.cif import cif_order
 from finalcif.ciforder.order_ui import Ui_CifOrderForm
@@ -153,7 +153,7 @@ class CifOrder(QtWidgets.QGroupBox):
 
     def set_row_text(self, key_text: str, row: int) -> None:
         item1 = CifOrderItem(key_text)
-        item1.setFlags(item1.flags() | QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
+        item1.setFlags(item1.flags() | QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemFlag.ItemIsEnabled)
         item1.setText(key_text)
         if key_text in self.essential_keys:
             item1.setEssential(True)
@@ -226,4 +226,4 @@ if __name__ == "__main__":
     form.set_order_from_settings(settings)
     form.show()
     form.raise_()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

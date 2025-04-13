@@ -17,10 +17,10 @@ from finalcif.gui.validators import validators
 
 with suppress(ImportError):
     import qtawesome
-from PyQt5 import QtCore, QtWidgets
-from PyQt5.QtCore import QAbstractTableModel, QModelIndex, Qt, QSize, QVariant, pyqtSignal, QEvent
-from PyQt5.QtGui import QCursor, QColor
-from PyQt5.QtWidgets import QTableView, QHeaderView, QMenu, QAction
+from PySide6 import QtCore, QtWidgets, QtGui
+from PySide6.QtCore import QAbstractTableModel, QModelIndex, Qt, QSize, Signal, QEvent
+from PySide6.QtGui import QCursor, QColor
+from PySide6.QtWidgets import QTableView, QHeaderView, QMenu
 from gemmi import cif
 from gemmi.cif import as_string, is_null
 from packaging import version
@@ -46,7 +46,7 @@ class Loop(QtCore.QObject):
         self.tableview.row_moved.connect(self.move_row)
         self.model.rowDeleted.connect(self.delete_row)
 
-    @QtCore.pyqtSlot(int)
+    @QtCore.Slot(int)
     def display_help(self, header_section: int):
         from finalcif.cif.all_cif_dicts import cif_all_dict
         tag = self.tags[header_section]
@@ -110,9 +110,9 @@ class Loop(QtCore.QObject):
         header = self.tableview.horizontalHeader()
         # Format the header sizes:
         for column in range(header.count()):
-            header.setSectionResizeMode(column, QHeaderView.ResizeToContents)
+            header.setSectionResizeMode(column, QHeaderView.ResizeMode.ResizeToContents)
             width = header.sectionSize(column) + 15
-            header.setSectionResizeMode(column, QHeaderView.Interactive)
+            header.setSectionResizeMode(column, QHeaderView.ResizeMode.Interactive)
             header.resizeSection(column, width)
 
     def get_string_values(self, values: List[List[str]]) -> List[List[str]]:
@@ -127,8 +127,8 @@ class Loop(QtCore.QObject):
 
 
 class MyQTableView(QTableView):
-    rowChanged = pyqtSignal(list, list)
-    row_moved = pyqtSignal(list, int, int)
+    rowChanged = Signal(list, list)
+    row_moved = Signal(list, int, int)
 
     def __init__(self, parent):
         super().__init__(parent=parent)
@@ -136,10 +136,10 @@ class MyQTableView(QTableView):
 
     def contextMenuEvent(self, event):
         self.menu = QMenu(self)
-        add_action = QAction('Add Row', self)
-        del_action = QAction('Delete Row', self)
-        down_action = QAction('Move row down', self)
-        up_action = QAction('Move row up', self)
+        add_action = QtGui.QAction('Add Row', self)
+        del_action = QtGui.QAction('Delete Row', self)
+        down_action = QtGui.QAction('Move row down', self)
+        up_action = QtGui.QAction('Move row up', self)
         add_action.triggered.connect(lambda: self._add_row(event))
         del_action.triggered.connect(lambda: self._delete_row(event))
         up_action.triggered.connect(lambda: self._row_up(event))
@@ -213,17 +213,17 @@ class LoopItemDelegate(QtWidgets.QStyledItemDelegate):
         return editor
 
     def setEditorData(self, editor: MyQPlainTextEdit, index):
-        value = index.model().data(index, Qt.EditRole)
+        value = index.model().data(index, QtCore.Qt.ItemDataRole.EditRole)
         editor.setText(str(value))
 
     def setModelData(self, editor: MyQPlainTextEdit, model, index):
         value = editor.getText()
-        model.setData(index, value, Qt.EditRole)
+        model.setData(index, value, QtCore.Qt.ItemDataRole.EditRole)
 
 
 class LoopTableModel(QAbstractTableModel):
-    modelChanged = pyqtSignal(int, int, 'PyQt_PyObject', list)
-    rowDeleted = pyqtSignal(list, int)
+    modelChanged = Signal(int, int, 'PyQt_PyObject', list)
+    rowDeleted = Signal(list, int)
 
     def __init__(self, header, data):
         super(LoopTableModel, self).__init__()
@@ -244,7 +244,7 @@ class LoopTableModel(QAbstractTableModel):
         # if role == Qt.TextAlignmentRole:
         #    pass
         # if isnumeric(value):
-        #    return Qt.AlignVCenter + Qt.AlignVertical_Mask
+        #    return QtCore.Qt.AlignmentFlag.AlignVCenter + Qt.AlignVertical_Mask
         if (role == Qt.BackgroundColorRole and
             (row, col) in [(x['row'], x['column']) for x in self.modified] and self.validate_text(value, col)):
             return QVariant(light_blue)
@@ -252,24 +252,24 @@ class LoopTableModel(QAbstractTableModel):
             return QVariant(light_red)
         else:
             QVariant(QColor(255, 255, 255))
-        if role == Qt.EditRole:
+        if role == QtCore.Qt.ItemDataRole.EditRole:
             return retranslate_delimiter(value)
-        if role == Qt.DisplayRole:
+        if role == QtCore.Qt.ItemDataRole.DisplayRole:
             return retranslate_delimiter(value)
-        if role == Qt.ToolTipRole:
+        if role == Qt.ItemDataRole.ToolTipRole:
             key = self._header[col]
             if validators.get(key):
                 return validators.get(key, None).help_text
 
-    def headerData(self, section, orientation: Qt.Orientation = Qt.Horizontal, role=None):
+    def headerData(self, section, orientation: Qt.Orientation = QtCore.Qt.Orientation.Horizontal, role=None):
         # section is the index of the column/row.
-        if role == Qt.DisplayRole and orientation == Qt.Horizontal:
+        if role == QtCore.Qt.ItemDataRole.DisplayRole and orientation == QtCore.Qt.Orientation.Horizontal:
             try:
                 return str(self._header[section])
             except IndexError:
                 return ''
-        if role == Qt.TextAlignmentRole:
-            return Qt.AlignVCenter + Qt.AlignLeft
+        if role == Qt.ItemDataRole.TextAlignmentRole:
+            return QtCore.Qt.AlignmentFlag.AlignVCenter + QtCore.Qt.AlignmentFlag.AlignLeft
 
     def rowCount(self, parent=None, *args, **kwargs):
         """
@@ -287,16 +287,17 @@ class LoopTableModel(QAbstractTableModel):
         else:
             return 0
 
-    def flags(self, index: QModelIndex) -> Qt.ItemFlags:
+    def flags(self, index: QModelIndex) -> Qt.ItemFlag | None:
         if index.isValid():
-            return QAbstractTableModel.flags(self, index) | Qt.ItemIsEditable | Qt.ItemIsEnabled | Qt.ItemIsSelectable
+            return (QAbstractTableModel.flags(self, index) | QtCore.Qt.ItemFlag.ItemIsEditable |
+                    QtCore.Qt.ItemFlag.ItemIsEnabled | QtCore.Qt.ItemFlag.ItemIsSelectable)
 
     def setData(self, index: QModelIndex, value: Any, role: int = None) -> bool:
         row, col = index.row(), index.column()
         previous = self._original[row][col]
         if not index:
             return False
-        if index.isValid() and role == Qt.EditRole:
+        if index.isValid() and role == QtCore.Qt.ItemDataRole.EditRole:
             self._data[row][col] = value
             self.modified.append({'row': row, 'column': col, 'previous': previous})
             self.modelChanged.emit(row, col, utf8_to_str(value), self._header)

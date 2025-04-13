@@ -2,11 +2,11 @@ import re
 from enum import IntEnum
 from typing import List
 
-from PyQt5 import QtCore, QtGui
-from PyQt5.QtCore import QEvent, QObject, Qt
-from PyQt5.QtGui import QColor, QKeySequence, QBrush
-from PyQt5.QtWidgets import QAbstractScrollArea, QTableWidget, \
-    QTableWidgetItem, QWidget, QApplication, QShortcut, QHeaderView
+from PySide6 import QtCore, QtGui
+from PySide6.QtCore import QEvent, QObject, Qt
+from PySide6.QtGui import QColor, QKeySequence, QBrush
+from PySide6.QtWidgets import QAbstractScrollArea, QTableWidget, \
+    QTableWidgetItem, QWidget, QApplication, QHeaderView
 
 from finalcif.cif.text import retranslate_delimiter
 from finalcif.gui.combobox import MyComboBox
@@ -32,21 +32,21 @@ DEBUG = False
 
 
 class MyCifTable(QTableWidget, ItemTextMixin):
-    row_deleted = QtCore.pyqtSignal(str)
-    textTemplate = QtCore.pyqtSignal(int)
-    new_key = QtCore.pyqtSignal(str)
+    row_deleted = QtCore.Signal(str)
+    textTemplate = QtCore.Signal(int)
+    new_key = QtCore.Signal(str)
 
     def __init__(self, parent: QWidget = None, *args, **kwargs):
         super().__init__(parent=parent, *args, **kwargs)
         self.parent = parent
-        self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+        self.setAttribute(QtCore.Qt.WidgetAttribute.WA_DeleteOnClose)
         self.installEventFilter(self)
-        self.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
-        self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.setSizeAdjustPolicy(QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
         # item = MyTableWidgetItem()
         # self.setItemPrototype(item)
-        del_shortcut = QShortcut(QKeySequence('Ctrl+Del'), self)
+        del_shortcut = QtGui.QShortcut(QKeySequence('Ctrl+Del'), self)
         del_shortcut.activated.connect(self.delete_row)
         self.vheaderitems: List[str] = []
         vheader = self.verticalHeader()
@@ -145,7 +145,7 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         item2 = MyTableWidgetItem('')
         item3 = MyTableWidgetItem('')
         diag = QBrush(blue)
-        diag.setStyle(Qt.DiagCrossPattern)
+        diag.setStyle(Qt.BrushStyle.DiagCrossPattern)
         item_vhead.setBackground(diag)
         item1.setBackground(diag)
         item1.setUneditable()
@@ -163,12 +163,12 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         """
         Event filter for tab down on third column.
         """
-        if event.type() == QEvent.KeyRelease and event.key() == Qt.Key_Backtab:
+        if event.type() == QEvent.KeyRelease and event.key() == QtCore.Qt.Key.Key_Backtab:
             row = self.currentRow()
             if row > 0:
                 self.setCurrentCell(row - 1, 2)
             return True
-        if event.type() == QEvent.KeyRelease and event.key() == Qt.Key_Tab:
+        if event.type() == QEvent.KeyRelease and event.key() == QtCore.Qt.Key.Key_Tab:
             row = self.currentRow()
             self.setCurrentCell(row, 2)
             return True
@@ -264,14 +264,14 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         self.row_deleted.emit(key)
 
     def vheader_text(self, row: int) -> str:
-        vhead = self.model().headerData(row, Qt.Vertical)
+        vhead = self.model().headerData(row, QtCore.Qt.Orientation.Vertical)
         return str(vhead)
 
     def distribute_cif_main_table_columns_evenly(self) -> None:
         hheader = self.horizontalHeader()
-        hheader.setSectionResizeMode(Column.CIF, QHeaderView.Stretch)
-        hheader.setSectionResizeMode(Column.DATA, QHeaderView.Stretch)
-        hheader.setSectionResizeMode(Column.EDIT, QHeaderView.Stretch)
+        hheader.setSectionResizeMode(Column.CIF, QHeaderView.ResizeMode.Stretch)
+        hheader.setSectionResizeMode(Column.DATA, QHeaderView.ResizeMode.Stretch)
+        hheader.setSectionResizeMode(Column.EDIT, QHeaderView.ResizeMode.Stretch)
         hheader.setAlternatingRowColors(True)
         self.verticalHeader().setAlternatingRowColors(True)
 
@@ -288,9 +288,9 @@ class MyTableWidgetItem(QTableWidgetItem):
 
     def setUneditable(self) -> None:
         # noinspection PyTypeChecker
-        self.setFlags(self.flags() ^ Qt.ItemIsEditable)
+        self.setFlags(self.flags() ^ QtCore.Qt.ItemFlag.ItemIsEditable)
         # noinspection PyTypeChecker
-        self.setFlags(self.flags() | Qt.ItemIsSelectable)
+        self.setFlags(self.flags() | QtCore.Qt.ItemFlag.ItemIsSelectable)
 
 class CifOrderItem(MyTableWidgetItem):
     def __init__(self, *args, **kwargs):

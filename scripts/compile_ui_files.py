@@ -1,6 +1,6 @@
+import subprocess
 from pathlib import Path
 
-from qtpy import uic
 
 def fix_comment(pyfile: Path, uifile: Path):
     txt = pyfile.read_text()
@@ -18,10 +18,13 @@ def compile_ui():
 
 def compile_ui_file(ui_file: Path) -> None:
     py_file = ui_file.with_suffix('.py')
-    with open(py_file, 'w', encoding='utf-8') as pyf, open(ui_file, 'r', encoding='utf-8') as uif:
+    out = subprocess.check_output(['pyside6-uic', ui_file])
+    py_file.write_bytes(out)
+    print(py_file, 'finished')
+    """with open(py_file, 'w', encoding='utf-8') as pyf, open(ui_file, 'r', encoding='utf-8') as uif:
         uic.compileUi(uifile=uif, pyfile=pyf, execute=True)
         print(f'Compiling {ui_file.name}')
-    fix_comment(pyfile=py_file, uifile=ui_file)
+    fix_comment(pyfile=py_file, uifile=ui_file)"""
 
 
 if __name__ == '__main__':

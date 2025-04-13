@@ -1,8 +1,8 @@
 import sys
 
 import vtk
-from PyQt5 import QtWidgets, QtCore
-from PyQt5.QtGui import QSurfaceFormat
+from PySide6 import QtWidgets, QtCore
+from PySide6.QtGui import QSurfaceFormat
 from vtkmodules.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 from vtkmodules.vtkDomainsChemistry import vtkPeriodicTable
 
@@ -24,7 +24,7 @@ class MoleculeWidget(QtWidgets.QWidget):
         vtk.vtkObject.GlobalWarningDisplayOff()
         self.initialized = False
         QSurfaceFormat.defaultFormat().setProfile(QSurfaceFormat.CompatibilityProfile)
-        self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+        self.setAttribute(QtCore.Qt.WidgetAttribute.WA_DeleteOnClose
         self.vlayout = QtWidgets.QVBoxLayout(self)
         self.vlayout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(self.vlayout)
@@ -111,4 +111,4 @@ if __name__ == "__main__":
     window.show()
     window.raise_()
     # render_widget.redraw(CifContainer('tests/examples/1979688.cif'))
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

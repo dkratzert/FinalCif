@@ -15,15 +15,15 @@ from pathlib import Path
 from typing import List, Optional, Dict
 
 import requests
-from PyQt5.QtCore import QThread, pyqtSignal
+from PySide6.QtCore import QThread, Signal
 from requests.exceptions import MissingSchema
 
 from finalcif.cif.cif_file_io import CifContainer
 
 
 class CheckCif(QThread):
-    progress = pyqtSignal(str)
-    failed = pyqtSignal(str)
+    progress = Signal(str)
+    failed = Signal(str)
 
     def __init__(self, parent, cif: CifContainer, outfile: Path, hkl_upload: bool = True,
                  pdf: bool = False, url: str = '', full_iucr: bool = False):

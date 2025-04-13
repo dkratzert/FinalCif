@@ -7,7 +7,7 @@
 #  ----------------------------------------------------------------------------
 from typing import List, Dict, Union, Tuple, Iterable, TYPE_CHECKING
 
-from PyQt5.QtCore import QPoint, QSettings, QSize
+from PySide6.QtCore import QPoint, QSettings, QSize
 
 if TYPE_CHECKING:
     pass

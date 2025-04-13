@@ -1,5 +1,5 @@
-from PyQt5.QtCore import QSize, Qt
-from PyQt5.QtWidgets import QDialog, QFrame, QHBoxLayout, QLabel, QPushButton, QSizePolicy, QSpacerItem, QTextEdit, \
+from PySide6.QtCore import QSize, Qt
+from PySide6.QtWidgets import QDialog, QFrame, QHBoxLayout, QLabel, QPushButton, QSizePolicy, QSpacerItem, QTextEdit, \
     QVBoxLayout, QWidget
 
 
@@ -159,14 +159,14 @@ class MyVRFContainer(QWidget):
         hlayout.setContentsMargins(4, 4, 4, 4)
         frame.setLayout(hlayout)
         p_label = QLabel()
-        hlayout.addWidget(p_label, 0, Qt.AlignTop)
+        hlayout.addWidget(p_label, 0, QtCore.Qt.AlignmentFlag.AlignTop)
         p_label.setText('Problem:   ')
-        p_label.setAlignment(Qt.AlignLeft)
+        p_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
         p_label.setStyleSheet('QLabel { font-size: 12px; font-weight: bold; }')
         p_text_label = QLabel()
-        p_text_label.setAlignment(Qt.AlignLeft)
+        p_text_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
         hlayout.addWidget(p_text_label)
-        hlayout.setAlignment(Qt.AlignLeft)
+        hlayout.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
         p_text_label.setText(self.form['problem'])
         self.mainVLayout.addWidget(frame)
 
@@ -176,7 +176,7 @@ class MyVRFContainer(QWidget):
         hlayout.setContentsMargins(4, 8, 4, 12)
         frame.setLayout(hlayout)
         resp_label = QLabel()
-        hlayout.addWidget(resp_label, 0, Qt.AlignTop)
+        hlayout.addWidget(resp_label, 0, QtCore.Qt.AlignmentFlag.AlignTop)
         resp_label.setText('Response: ')
         resp_label.setStyleSheet('QLabel { font-size: 12px; font-weight: bold }')
         self.response_text_edit.setFocusPolicy(Qt.StrongFocus)
@@ -185,7 +185,7 @@ class MyVRFContainer(QWidget):
 
 
 if __name__ == '__main__':
-    from PyQt5.QtWidgets import QApplication
+    from PySide6.QtWidgets import QApplication
     import sys
 
     app = QApplication(sys.argv)
@@ -196,7 +196,7 @@ if __name__ == '__main__':
                          '!  ',
             'alert_num': 'PLAT035'}
     web = MyVRFContainer(form, help='helptext', parent=None, is_multi_cif=True)
-    app.exec_()
+    app.exec()
     web.raise_()
 
     v = VREF()

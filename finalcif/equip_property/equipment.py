@@ -4,8 +4,8 @@ from pathlib import Path
 from typing import List, Dict
 from typing import TYPE_CHECKING
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QListWidgetItem
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QListWidgetItem
 from gemmi import cif
 
 from finalcif.app_path import application_path
@@ -87,7 +87,7 @@ class Equipment:
         item = QListWidgetItem('')
         self.app.ui.EquipmentTemplatesListWidget.addItem(item)
         self.app.ui.EquipmentTemplatesListWidget.setCurrentItem(item)
-        item.setFlags(Qt.ItemIsEditable | Qt.ItemIsEnabled | Qt.ItemIsSelectable)
+        item.setFlags(QtCore.Qt.ItemFlag.ItemIsEditable | QtCore.Qt.ItemFlag.ItemIsEnabled | QtCore.Qt.ItemFlag.ItemIsSelectable)
         self.app.ui.EquipmentTemplatesListWidget.editItem(item)
 
     def delete_equipment(self) -> None:

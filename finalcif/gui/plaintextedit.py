@@ -1,10 +1,10 @@
 from enum import IntEnum
 from typing import TYPE_CHECKING
 
-from PyQt5 import QtCore, QtGui
-from PyQt5.QtCore import pyqtSignal, Qt, QObject, QEvent, QSize
-from PyQt5.QtGui import QTextOption, QFontMetrics, QContextMenuEvent, QFont, QColor
-from PyQt5.QtWidgets import QPlainTextEdit, QFrame, QAbstractScrollArea
+from PySide6 import QtCore, QtGui
+from PySide6.QtCore import Signal, Qt, QObject, QEvent, QSize
+from PySide6.QtGui import QTextOption, QFontMetrics, QContextMenuEvent, QFont, QColor
+from PySide6.QtWidgets import QPlainTextEdit, QFrame, QAbstractScrollArea
 
 from finalcif.gui.edit_button import FloatingButtonWidget
 from finalcif.gui.new_key_dialog import NewKey
@@ -26,8 +26,8 @@ class MyQPlainTextEdit(QPlainTextEdit):
     """
     A special plaintextedit with convenient methods to set the background color and other things.
     """
-    templateRequested = pyqtSignal(int)
-    new_key = pyqtSignal(str)
+    templateRequested = Signal(int)
+    new_key = Signal(str)
     to_be_shortened = {'_shelx_hkl_file', '_shelx_res_file', '_shelx_fab_file', '_shelx_fcf_file',
                        '_iucr_refine_instructions_details', '_iucr_refine_fcf_details'}
 
@@ -88,7 +88,7 @@ class MyQPlainTextEdit(QPlainTextEdit):
         """
         Copies the content of a field.
         """
-        from PyQt5 import QtWidgets
+        from PySide6 import QtWidgets
         if hasattr(self.parent, 'vheaderitems'):
             clipboard = QtWidgets.QApplication.clipboard()
             clipboard.setText(self.cif_key)
@@ -107,13 +107,13 @@ class MyQPlainTextEdit(QPlainTextEdit):
         """
         # self.setStyleSheet("background-color: {};".format(str(color.name())))
         palette = self.palette()
-        palette.setColor(QtGui.QPalette.Base, color)
+        palette.setColor(QtGui.QPalette.ColorRole.Base, color)
         self.setPalette(palette)
         self.default_palette = palette
 
     def getBackgroundColor(self) -> QtGui.QColor:
         palette = self.palette()
-        background_color = palette.color(QtGui.QPalette.Base)
+        background_color = palette.color(QtGui.QPalette.ColorRole.Base)
         return background_color
 
     def setUneditable(self):
@@ -176,7 +176,7 @@ class MyQPlainTextEdit(QPlainTextEdit):
 
     def setBadStyle(self) -> None:
         palette = self.palette()
-        palette.setColor(QtGui.QPalette.Base, light_red)
+        palette.setColor(QtGui.QPalette.ColorRole.Base, light_red)
         self.setPalette(palette)
 
     def setRegularStyle(self) -> None:
@@ -209,7 +209,7 @@ class PlainTextEditTemplate(QPlainTextEdit):
     """
     A special plaintextedit for equipment and properties.
     """
-    templateRequested = pyqtSignal(int)
+    templateRequested = Signal(int)
 
     def __init__(self, parent=None, *args, **kwargs):
         """
@@ -263,7 +263,7 @@ class PlainTextEditTemplate(QPlainTextEdit):
 if __name__ == '__main__':
     import sys
     import random
-    from PyQt5.QtWidgets import QApplication, QTableWidget
+    from PySide6.QtWidgets import QApplication, QTableWidget
 
     app = QApplication(sys.argv)
     window = QTableWidget()
@@ -285,4 +285,4 @@ if __name__ == '__main__':
     window.show()
     window.setMinimumSize(600, 400)
 
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

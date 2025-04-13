@@ -17,19 +17,19 @@ from typing import Union, Dict, Tuple, List, Optional
 
 import gemmi.cif
 import requests
-from PyQt5 import QtCore, QtGui, QtWebEngineWidgets, QtWidgets
-from PyQt5.QtCore import Qt, QEvent
-from PyQt5.QtWidgets import (QMainWindow, QShortcut, QCheckBox, QListWidgetItem, QApplication,
-                             QPlainTextEdit, QFileDialog, QMessageBox, QScrollBar)
+from PySide6 import QtCore, QtGui, QtWebEngineWidgets, QtWidgets
+
+QtCore.QCoreApplication.setAttribute(QtCore.Qt.ApplicationAttribute.AA_EnableHighDpiScaling)
+from PySide6.QtCore import Qt, QEvent
+from PySide6.QtWidgets import (QMainWindow, QCheckBox, QListWidgetItem, QApplication,
+                               QPlainTextEdit, QFileDialog, QMessageBox, QScrollBar)
 from gemmi import cif
 
 from finalcif import VERSION
 from finalcif.app_path import application_path
-# QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
-# QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_ShareOpenGLContexts)
+
 from finalcif.cif.checkcif.checkcif import MyHTMLParser, AlertHelp, CheckCif
 from finalcif.cif.cif_file_io import CifContainer, GemmiError
-from finalcif.cif import cif_order
 from finalcif.cif.cod.deposit import CODdeposit
 from finalcif.cif.text import utf8_to_str, quote
 from finalcif.datafiles.bruker_data import BrukerData
@@ -78,7 +78,7 @@ class AppWindow(QMainWindow):
 
     def __init__(self, file: Optional[Path] = None):
         super().__init__()
-        self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+        self.setAttribute(QtCore.Qt.WidgetAttribute.WA_DeleteOnClose)
         # This prevents some things to happen during unit tests:
         # Open of target dir of shred cif,
         # open report doc,
@@ -309,7 +309,6 @@ class AppWindow(QMainWindow):
             self.ui.cifOrderWidget.ui.saveSettingPushButton.setIcon(qta.icon('mdi.content-save'))
             self.ui.cifOrderWidget.ui.addKeyPushButton.setIcon(qta.icon('mdi.plus'))
 
-
     def connect_signals_and_slots(self) -> None:
         """
         this method connects all signals to slots. Only a few mighjt be defined elsewere.
@@ -349,11 +348,11 @@ class AppWindow(QMainWindow):
         self.ui.newLoopPushButton.clicked.connect(self._go_to_new_loop_page)
         self.ui.deleteLoopButton.clicked.connect(self._on_delete_current_loop)
         #
-        save_shortcut = QShortcut(QtGui.QKeySequence('Ctrl+S'), self)
+        save_shortcut = QtGui.QShortcut(QtGui.QKeySequence('Ctrl+S'), self)
         save_shortcut.activated.connect(self.save_current_cif_file)
-        save_shortcut = QShortcut(QtGui.QKeySequence('Ctrl+H'), self)
+        save_shortcut = QtGui.QShortcut(QtGui.QKeySequence('Ctrl+H'), self)
         save_shortcut.activated.connect(self.do_html_checkcif)
-        save_shortcut = QShortcut(QtGui.QKeySequence('Ctrl+P'), self)
+        save_shortcut = QtGui.QShortcut(QtGui.QKeySequence('Ctrl+P'), self)
         save_shortcut.activated.connect(self.do_pdf_checkcif)
         #
         self.ui.DetailsPushButton.clicked.connect(self.show_residuals)
@@ -497,10 +496,7 @@ class AppWindow(QMainWindow):
                     loop_column_name = i.loop.tags[0]
                     self.textedit.ui.cifKeyLineEdit.setText(loop_column_name)
                 for n in range(i.loop.length()):
-                    try:
-                        value = i.loop.val(n, 0)
-                    except AttributeError:
-                        value = i.loop[n, 0]
+                    value = i.loop[n, 0]
                     text_list.append(gemmi.cif.as_string(value))
         self.textedit.add_textfields(text_list)
 
@@ -624,10 +620,9 @@ class AppWindow(QMainWindow):
         self.deposit.cif = self.cif
         self.ui.MainStackedWidget.got_to_cod_page()
 
-    def event(self, event: QEvent) -> bool:
-        if event.type() == QEvent.KeyPress:
-            key = event.key()
-            if key == Qt.Key_Escape and self.ui.searchMainTableLineEdit.hasFocus():
+    def event(self, event: QtCore.QEvent) -> bool:
+        if event.type() == QEvent.Type.KeyPress:
+            if event.type() == QtCore.Qt.Key.Key_Escape and self.ui.searchMainTableLineEdit.hasFocus():
                 self.ui.searchMainTableLineEdit.clear()
         return super().event(event)
 
@@ -661,7 +656,7 @@ class AppWindow(QMainWindow):
 
     def changeEvent(self, event: QtCore.QEvent) -> None:
         """Is called when the main window changes its state."""
-        if event.type() == QtCore.QEvent.WindowStateChange:
+        if event.type() == QtCore.QEvent.Type.WindowStateChange:
             with suppress(AttributeError):
                 self._savesize()
 
@@ -1073,7 +1068,7 @@ class AppWindow(QMainWindow):
         doc = ccpe.document()
         font = doc.defaultFont()
         font.setFamily("Courier New")
-        font.setStyleHint(QtGui.QFont.Monospace)
+        font.setStyleHint(QtGui.QFont.StyleHint.Monospace)
         # app.processEvents()
         font.setPointSize(14)
         doc.setDefaultFont(font)
@@ -1386,7 +1381,7 @@ class AppWindow(QMainWindow):
         doc = final_textedit.document()
         font = doc.defaultFont()
         font.setFamily("Courier New")
-        font.setStyleHint(QtGui.QFont.Monospace)
+        font.setStyleHint(QtGui.QFont.StyleHint.Monospace)
         # increases the pont size every time a bit more :)
         # size = font.pointSize()
         font.setPointSize(14)
@@ -1506,7 +1501,7 @@ class AppWindow(QMainWindow):
     def _flash_block_combobox(self):
         orig_pal = self.ui.datanameComboBox.palette()
         pal = QtGui.QPalette()
-        pal.setColor(QtGui.QPalette.Base, light_blue)
+        pal.setColor(QtGui.QPalette.ColorRole.Base, light_blue)
         self.ui.datanameComboBox.setAutoFillBackground(True)
         # short after start, because window size is not finished before:
         QtCore.QTimer(self).singleShot(1500, lambda: self.ui.datanameComboBox.setPalette(pal))
@@ -1851,7 +1846,7 @@ class AppWindow(QMainWindow):
                                            "in the 'Platon SQUEEZE voids' loop.")
         vheadlist = []
         for row_number in range(self.ui.cif_main_table.model().rowCount()):
-            vheadlist.append(self.ui.cif_main_table.model().headerData(row_number, QtCore.Qt.Vertical))
+            vheadlist.append(self.ui.cif_main_table.model().headerData(row_number, QtCore.Qt.Orientation.Vertical))
         for src in self.sources:
             if not self.sources[src]:
                 continue
@@ -1917,7 +1912,7 @@ class AppWindow(QMainWindow):
                     widget.setBackground(white)
 
     def get_key_by_row_number(self, row_number: int) -> str:
-        vhead_key = self.ui.cif_main_table.model().headerData(row_number, QtCore.Qt.Vertical)
+        vhead_key = self.ui.cif_main_table.model().headerData(row_number, QtCore.Qt.Orientation.Vertical)
         return vhead_key
 
     def add_combobox(self, row: int, vhead_key: str) -> None:
@@ -2003,7 +1998,7 @@ class AppWindow(QMainWindow):
         doc = textedit.document()
         font = doc.defaultFont()
         font.setFamily("Courier New")
-        font.setStyleHint(QtGui.QFont.Monospace)
+        font.setStyleHint(QtGui.QFont.StyleHint.Monospace)
         font.setPointSize(14)
         doc.setDefaultFont(font)
         textedit.setLineWrapMode(QPlainTextEdit.NoWrap)

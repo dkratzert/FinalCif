@@ -3,8 +3,8 @@ import os
 import sys
 from pathlib import Path
 
-from PyQt5 import QtCore
-from PyQt5.QtWidgets import QMessageBox, QMainWindow, QFileDialog, QVBoxLayout, QTextEdit, QPushButton, QFrame
+from PySide6 import QtCore
+from PySide6.QtWidgets import QMessageBox, QMainWindow, QFileDialog, QVBoxLayout, QTextEdit, QPushButton, QFrame
 
 from finalcif import VERSION
 
@@ -108,7 +108,7 @@ def show_keyword_help(parent, helptext: str, title: str = ''):
     window.setWindowTitle(title)
 
     def close_window(event):
-        if event.key() == QtCore.Qt.Key_Escape:
+        if event.key() == QtCore.Qt.Key.Key_Escape:
             window.close()
 
     window.keyPressEvent = close_window
@@ -224,8 +224,8 @@ def cif_file_save_dialog(filename: str) -> str:
 
 
 if __name__ == '__main__':
-    from PyQt5 import QtWidgets
-    from PyQt5.QtWidgets import QApplication
+    from PySide6 import QtWidgets
+    from PySide6.QtWidgets import QApplication
 
     app = QApplication.instance()
     if app is None:
@@ -249,4 +249,4 @@ if __name__ == '__main__':
     # do_update_program('127')
     # window.show()
 
-    app.exec_()
+    app.exec()

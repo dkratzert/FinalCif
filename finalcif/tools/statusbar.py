@@ -27,7 +27,7 @@ class StatusBar():
     def _set_message(self, message: Union[str, list], timeout: int = 0):
         self._message = self.message_to_string(message)
         if self.graphics:
-            self.ui.statusBar.showMessage(self._message, msecs=timeout)
+            self.ui.statusBar.showMessage(self._message, timeout)
         else:
             print(self._message)
 

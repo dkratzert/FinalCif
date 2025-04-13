@@ -4,9 +4,9 @@ from pathlib import Path
 from typing import List
 from typing import TYPE_CHECKING
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QColor
-from PyQt5.QtWidgets import QFileDialog, QListWidgetItem
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QColor
+from PySide6.QtWidgets import QFileDialog, QListWidgetItem
 
 if TYPE_CHECKING:
     from finalcif.appwindow import AppWindow

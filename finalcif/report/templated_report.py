@@ -13,7 +13,7 @@ from math import sin, radians
 from pathlib import Path
 from typing import List, Dict, Union, Iterator, Any
 
-from PyQt5.QtWidgets import QApplication
+from PySide6.QtWidgets import QApplication
 
 from finalcif.cif.text import string_to_utf8
 from finalcif.template.xsl.convert import xml_to_html

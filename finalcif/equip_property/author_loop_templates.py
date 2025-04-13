@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Dict, Union, List
 
 import gemmi.cif
-from PyQt5.QtWidgets import QListWidgetItem
+from PySide6.QtWidgets import QListWidgetItem
 from gemmi.cif import Loop, as_string
 
 from finalcif.cif.cif_file_io import CifContainer

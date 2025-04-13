@@ -5,8 +5,8 @@ from contextlib import suppress
 from pathlib import Path
 from typing import List, Dict
 
-from PyQt5 import QtCore
-from PyQt5.QtWidgets import QListWidgetItem, QTableWidget, QStackedWidget, QLabel
+from PySide6 import QtCore
+from PySide6.QtWidgets import QListWidgetItem, QTableWidget, QStackedWidget, QLabel
 from gemmi import cif
 
 from finalcif.cif.text import retranslate_delimiter, utf8_to_str
@@ -63,7 +63,7 @@ class Properties(QtCore.QObject):
         names = [x['name'] for x in props]
         if key in keys and self.selected_template_name() not in names:
             self.app.ui.SavePropertiesButton.setDisabled(True)
-            self.lb.setWindowFlags(QtCore.Qt.ToolTip)
+            self.lb.setWindowFlags(QtCore.Qt.WindowType.ToolTip)
             self.lb.setText(f'key {key} already exists')
             self.lb.move(self.app.ui.cifKeywordLineEdit.mapToGlobal(QtCore.QPoint(15, 25)))
             self.lb.show()
@@ -91,7 +91,7 @@ class Properties(QtCore.QObject):
         item = QListWidgetItem('')
         self.app.ui.PropertiesTemplatesListWidget.addItem(item)
         self.app.ui.PropertiesTemplatesListWidget.setCurrentItem(item)
-        item.setFlags(QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
+        item.setFlags(QtCore.Qt.ItemFlag.ItemIsEditable | QtCore.Qt.ItemFlag.ItemIsEnabled | QtCore.Qt.ItemFlag.ItemIsSelectable)
         self.app.ui.PropertiesTemplatesListWidget.editItem(item)
         self.app.ui.cifKeywordLineEdit.clear()
 

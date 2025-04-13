@@ -3,13 +3,13 @@
 # The file dialog is opened by pressing the button.
 # The button should be placed above the QTextedit widget and appear on mouse over.
 
-from PyQt5 import QtWidgets, QtCore, QtGui
+from PySide6 import QtWidgets, QtCore, QtGui
 import os
 import sys
 
 
 class FloatingButtonWidget(QtWidgets.QPushButton):
-    floatingButtonClicked = QtCore.pyqtSignal()
+    floatingButtonClicked = QtCore.Signal()
 
     def __init__(self, parent=None, *args, **kwargs):
         super().__init__(parent=parent, *args, **kwargs)
@@ -63,4 +63,4 @@ if __name__ == '__main__':
     window = OverlayTestEdit()
     window.resize(130, 30)
     window.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

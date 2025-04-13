@@ -1,6 +1,6 @@
-from PyQt5.QtCore import QObject, QEvent
-from PyQt5.QtGui import QTextOption
-from PyQt5.QtWidgets import QTableWidget
+from PySide6.QtCore import QObject, QEvent
+from PySide6.QtGui import QTextOption
+from PySide6.QtWidgets import QTableWidget
 
 from finalcif.cif.text import retranslate_delimiter
 from finalcif.gui.mixins import ItemTextMixin
@@ -15,7 +15,8 @@ class MyEQTableWidget(QTableWidget, ItemTextMixin):
     def __init__(self, parent: QTableWidget = None, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
         self.parent = parent
-        self.setWordWrap(QTextOption.WrapAtWordBoundaryOrAnywhere)
+        self.setWordWrap(True)
+        print('TODO: set QTextOption.WrapMode.WrapAtWordBoundaryOrAnywhere')
 
     def eventFilter(self, widget: QObject, event: QEvent):
         """

@@ -1,7 +1,7 @@
 import re
 from typing import List
 
-from PyQt5.QtWidgets import QWidget
+from PySide6.QtWidgets import QWidget
 
 from finalcif.cif import all_cif_dicts
 from finalcif.cif.cif_file_io import CifContainer
@@ -74,11 +74,11 @@ class LoopCreator(QWidget, Ui_LoopCreator):
 
 if __name__ == '__main__':
     import sys
-    from PyQt5.QtWidgets import QApplication
+    from PySide6.QtWidgets import QApplication
 
     app = QApplication(sys.argv)
     cif = CifContainer('test-data/1000006.cif')
     lc = LoopCreator(cif=cif)
     lc.saveLoopPushButton.clicked.connect(lc.save_new_loop_to_cif)
     lc.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

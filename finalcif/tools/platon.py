@@ -7,15 +7,15 @@ from contextlib import suppress
 from pathlib import Path
 from shutil import which
 
-from PyQt5 import QtCore
-from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QWidget, QLabel, \
+from PySide6 import QtCore
+from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QWidget, QLabel, \
     QPlainTextEdit
 
 
 class PlatonRunner(QtCore.QObject):
-    finished = QtCore.pyqtSignal(bool)
-    formula = QtCore.pyqtSignal(str)
-    tick = QtCore.pyqtSignal(str)
+    finished = QtCore.Signal(bool)
+    formula = QtCore.Signal(str)
+    tick = QtCore.Signal(str)
 
     def __init__(self, parent, output_widget: QPlainTextEdit, log_widget: QPlainTextEdit, cif_file: Path):
         super().__init__(parent)
@@ -165,4 +165,4 @@ if __name__ == '__main__':
 
     window.show()
 
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

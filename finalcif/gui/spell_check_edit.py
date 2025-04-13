@@ -30,12 +30,10 @@ import os
 import sys
 from typing import Union
 
-from PyQt5.Qt import Qt
-from PyQt5.QtCore import QEvent, QPoint
-from PyQt5.QtGui import (QFocusEvent, QSyntaxHighlighter, QTextBlockUserData, QTextCharFormat, QTextCursor,
-                         QContextMenuEvent)
-from PyQt5.QtWidgets import (QAction, QActionGroup, QApplication, QMenu,
-                             QPlainTextEdit)
+from PySide6.QtCore import QEvent, QPoint
+from PySide6.QtGui import (QFocusEvent, QSyntaxHighlighter, QTextBlockUserData, QTextCharFormat, QTextCursor,
+                           QContextMenuEvent)
+from PySide6.QtWidgets import (QApplication, QMenu, QPlainTextEdit)
 
 try:
     if "RUNNING_TEST" in os.environ:
@@ -64,7 +62,7 @@ try:
         def contextMenuEvent(self, event: QContextMenuEvent) -> None:
             """Custom context menu handler to add a spelling suggestions submenu"""
             popup_menu = self.create_spellcheck_context_menu(event.pos())
-            popup_menu.exec_(event.globalPos())
+            popup_menu.exec(event.globalPos())
 
             # Fix bug observed in Qt 5.2.1 on *buntu 14.04 LTS where:
             # 1. The cursor remains invisible after closing the context menu
@@ -240,7 +238,7 @@ try:
         # XXX: Does QSyntaxHighlighter.setFormat handle keeping this from
         #      clobbering styles set in the data itself?
         err_format = QTextCharFormat()
-        err_format.setUnderlineColor(Qt.red)
+        err_format.setUnderlineColor(QtCore.Qt.GlobalColor.red)
         # err_format.setUnderlineStyle(QTextCharFormat.SpellCheckUnderline)
         err_format.setUnderlineStyle(QTextCharFormat.WaveUnderline)
 
@@ -306,4 +304,4 @@ if __name__ == '__main__':
     spellEdit.show()
     spellEdit.setPlainText('This is somee missspelled texawt with errorsd.')
 
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
