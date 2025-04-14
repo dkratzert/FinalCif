@@ -4,6 +4,7 @@ import vtk
 from PySide6 import QtWidgets, QtCore
 from PySide6.QtGui import QSurfaceFormat
 from vtkmodules.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
+from vtkmodules.vtkCommonCore import vtkLookupTable
 from vtkmodules.vtkDomainsChemistry import vtkPeriodicTable
 
 from finalcif.cif.atoms import element2num, get_radius_from_element, num2rgb
@@ -19,16 +20,17 @@ class MoleculeWidget(QtWidgets.QWidget):
     """
     This widget is currently unused in FinalCif.
     """
+
     def __init__(self, parent):
         super().__init__(parent=parent)
         vtk.vtkObject.GlobalWarningDisplayOff()
         self.initialized = False
-        QSurfaceFormat.defaultFormat().setProfile(QSurfaceFormat.CompatibilityProfile)
-        self.setAttribute(QtCore.Qt.WidgetAttribute.WA_DeleteOnClose
+        QSurfaceFormat.defaultFormat().setProfile(QSurfaceFormat.OpenGLContextProfile.CompatibilityProfile)
+        self.setAttribute(QtCore.Qt.WidgetAttribute.WA_DeleteOnClose)
         self.vlayout = QtWidgets.QVBoxLayout(self)
         self.vlayout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(self.vlayout)
-        self.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        self.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
         istyle = vtk.vtkInteractorStyleSwitch()
         istyle.SetCurrentStyleToTrackballCamera()
         self.vtkWidget = QVTKRenderWindowInteractor(self)
@@ -53,7 +55,7 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.renderer.SetLayer(0)
         self.vtkWidget.GetRenderWindow().AddRenderer(self.renderer)
 
-    def _modify_color_lookup_table(self):
+    def _modify_color_lookup_table(self) -> vtkLookupTable:
         lut = vtk.vtkLookupTable()
         vtkPeriodicTable().GetDefaultLUT(lut)
         # Replace existing lut with own table:
@@ -61,14 +63,14 @@ class MoleculeWidget(QtWidgets.QWidget):
             lut.SetTableValue(num, *color)
         return lut
 
-    def _add_atoms(self, atoms):
+    def _add_atoms(self, atoms: list):
         molecule = vtk.vtkMolecule()
         for atom in atoms:
             molecule.AppendAtom(element2num[atom.type], atom.x, atom.y, atom.z)
         self._make_bonds(molecule, list(atoms))
         return molecule
 
-    def draw(self, atoms):
+    def draw(self, atoms: list):
         """
         Loads a different molecule.
         """
@@ -104,11 +106,11 @@ if __name__ == "__main__":
     cif = CifContainer('test-data/p21c.cif')
 
     render_widget = MoleculeWidget(None)
-    render_widget.draw(atoms=[x for x in cif.atoms_orth])
+    render_widget.draw(atoms=list(cif.atoms_orth))
 
     window.setCentralWidget(render_widget)
     window.setMinimumSize(500, 500)
     window.show()
-    window.raise_()
-    # render_widget.redraw(CifContainer('tests/examples/1979688.cif'))
+    # window.raise_()
+    # render_widget.draw(CifContainer('tests/examples/1979688.cif').atoms_orth)
     sys.exit(app.exec())

@@ -1343,7 +1343,7 @@ if __name__ == '__main__':
         ok = t.make_templated_docx_report(template_path=Path('finalcif/template/template_text.docx'),
                                           output_filename=str(output), picfile=pic)
     if ok:
-        print('DOCX report successfully generated')
+        print('report successfully generated')
         if sys.platform == 'darwin':
             subprocess.call(['open', output])
         else:

@@ -1,5 +1,4 @@
 import re
-from typing import List
 
 from PySide6.QtWidgets import QWidget
 
@@ -55,7 +54,7 @@ class LoopCreator(QWidget, Ui_LoopCreator):
             if row <= self.availableKeysListWidget.count():
                 self.availableKeysListWidget.setCurrentRow(row + 1)
 
-    def get_itemtexts_from_new_loop(self) -> List[str]:
+    def get_itemtexts_from_new_loop(self) -> list[str]:
         itemtexts = []
         for num in range(self.newLoopKeysListWidget.count()):
             itemtext = self.newLoopKeysListWidget.item(num).text()

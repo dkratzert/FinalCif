@@ -1,6 +1,5 @@
 import shutil
 from pathlib import Path
-from typing import List, Tuple
 
 from qtpy import QtWidgets, QtCore
 
@@ -51,7 +50,7 @@ class ImportSelector(QtWidgets.QMainWindow):
             if item.loop is not None:
                 first_key = item.loop.tags[0]
                 self.loops_to_import += 1
-                key = '\n'.join([x for x in item.loop.tags])
+                key = '\n'.join(list(item.loop.tags))
                 self._add_checkbox(key, row, self.ui.importTable_loops, checked=first_key not in excluded_loops)
             else:
                 continue
@@ -62,7 +61,7 @@ class ImportSelector(QtWidgets.QMainWindow):
         self.ui.importTable_loops.resizeRowsToContents()
         self._set_label()
 
-    def _save_selection(self):
+    def _save_selection(self) -> None:
         self.settings.save_key_value('do_not_import_keys', self.get_keys(include=False))
         self.settings.save_key_value('do_not_import_loops', self.get_loops(include=False))
 
@@ -70,7 +69,7 @@ class ImportSelector(QtWidgets.QMainWindow):
         self.settings.save_key_value('do_not_import_keys', [])
         self.settings.save_key_value('do_not_import_loops', [])
 
-    def _get_excluded_items(self) -> Tuple[List[str], List[List[str]]]:
+    def _get_excluded_items(self) -> tuple[list[str], list[list[str]]]:
         excluded_kv = misc.do_not_import_keys
         excluded_loops = misc.do_not_loop_import
         exclude_kv_from_settings = self.settings.load_value_of_key('do_not_import_keys')
@@ -88,7 +87,7 @@ class ImportSelector(QtWidgets.QMainWindow):
                                         f"{len(self.get_keys(include=True)) + len(self.get_loops(include=True))} "
                                         f"are selected for import.")
 
-    def _add_checkbox(self, text: str, row: int, col: QtWidgets.QTableWidget, checked: bool = False):
+    def _add_checkbox(self, text: str, row: int, col: QtWidgets.QTableWidget, checked: bool = False) -> None:
         if col.rowCount() <= row:
             col.insertRow(row)
         checkbox = QtWidgets.QCheckBox(col)
@@ -97,7 +96,7 @@ class ImportSelector(QtWidgets.QMainWindow):
         col.setCellWidget(row, 0, checkbox)
         checkbox.setChecked(checked)
 
-    def get_keys(self, include: bool) -> List[str]:
+    def get_keys(self, include: bool) -> list[str]:
         keys = []
         rows = self.ui.importTable_keys.rowCount()
         for row in range(rows):
@@ -106,13 +105,13 @@ class ImportSelector(QtWidgets.QMainWindow):
                 keys.append(widget.text())
         return keys
 
-    def get_loops(self, include: bool) -> List[List[str]]:
+    def get_loops(self, include: bool) -> list[list[str]]:
         loops = []
         rows = self.ui.importTable_loops.rowCount()
         for row in range(rows):
             widget: QtWidgets.QCheckBox = self.ui.importTable_loops.cellWidget(row, 0)
             if widget and widget.isChecked() == include:
-                loop: List[str] = widget.text().splitlines(keepends=False)
+                loop: list[str] = widget.text().splitlines(keepends=False)
                 loops.append(loop)
         return loops
 

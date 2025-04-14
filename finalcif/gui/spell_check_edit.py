@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """QPlainTextEdit With Inline Spell Check
 Original PyQt4 Version:
     https://nachtimwald.com/2009/08/22/qplaintextedit-with-in-line-spell-check/
@@ -112,7 +111,7 @@ try:
             personal_dictionary.add(misspelled_word)
             self.highlighter.rehighlight()
 
-        def create_corrections_menu(self, cursor, parent=None) -> Union[QMenu, None]:
+        def create_corrections_menu(self, cursor, parent=None) -> QMenu | None:
             """Create and return a menu for correcting the selected word."""
             if not cursor:
                 return None
@@ -224,7 +223,7 @@ try:
             'wingx',
         )
 
-        def _skip(self, word):
+        def _skip(self, word) -> bool:
             if word.lower() in self.words_to_skip:
                 return True
             return False

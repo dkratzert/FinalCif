@@ -1,3 +1,4 @@
+from __future__ import annotations
 #  ----------------------------------------------------------------------------
 #  "THE BEER-WARE LICENSE" (Revision 42):
 #  dkratzert@gmx.de> wrote this file.  As long as you retain
@@ -7,7 +8,7 @@
 #  ----------------------------------------------------------------------------
 import copy
 from contextlib import suppress
-from typing import Union, List, Any
+from typing import Any
 
 import gemmi
 
@@ -31,14 +32,14 @@ from finalcif.tools.dsrmath import my_isnumeric
 
 
 class Loop(QtCore.QObject):
-    def __init__(self, tags: List[str], values: List[List[str]], parent, block):
-        super(Loop, self).__init__(parent=parent)
+    def __init__(self, tags: list[str], values: list[list[str]], parent, block):
+        super().__init__(parent=parent)
         self.parent = parent
         self.block = block
         self.tableview = MyQTableView(parent)
-        self._values: List[List[str]] = self.get_string_values(values)
+        self._values: list[list[str]] = self.get_string_values(values)
         self.tags = tags
-        self.model: Union[LoopTableModel, None] = None
+        self.model: LoopTableModel | None = None
         self.make_model()
         self.tableview.horizontalHeader().sectionClicked.connect(self.display_help)
         self.model.modelChanged.connect(self.save_new_cell_value_to_cif_block)
@@ -55,12 +56,12 @@ class Loop(QtCore.QObject):
             keyword_help = retranslate_delimiter(keyword_help, no_html_unescape=True)
             show_keyword_help(self.parent, keyword_help, tag)
 
-    def set_or_update_model(self, values: List[List[str]]):
+    def set_or_update_model(self, values: list[list[str]]):
         self.values = values
         self.model = LoopTableModel(self.tags, self.values)
         self.tableview.setModel(self.model)
 
-    def save_new_cell_value_to_cif_block(self, row: int, col: int, value: Union[str, int, float], header: list):
+    def save_new_cell_value_to_cif_block(self, row: int, col: int, value: str | int | float, header: list):
         """
         Save values of new table rows into cif loops.
         """
@@ -73,17 +74,17 @@ class Loop(QtCore.QObject):
                 column = self.block.find_values(header[col])
             column[row] = value if my_isnumeric(value) else quote(value)
 
-    def delete_row(self, header: List[str], row: int):
+    def delete_row(self, header: list[str], row: int):
         table: cif.Table = self.block.find(header)
         with suppress(IndexError):
             table.remove_row(row)
 
-    def move_row(self, header: List[str], pos1: int, pos2: int):
+    def move_row(self, header: list[str], pos1: int, pos2: int):
         """Moves table row from pos1 to pos2"""
         table: cif.Table = self.block.find(header)
         table.move_row(pos1, pos2)
 
-    def save_new_row_to_cif_block(self, header: List[str], data: list):
+    def save_new_row_to_cif_block(self, header: list[str], data: list):
         """
         Save values of new table rows into cif loops.
         """
@@ -99,7 +100,7 @@ class Loop(QtCore.QObject):
         return self._values
 
     @values.setter
-    def values(self, values):
+    def values(self, values) -> None:
         self._values = self.get_string_values(values)
 
     def make_model(self) -> None:
@@ -115,7 +116,7 @@ class Loop(QtCore.QObject):
             header.setSectionResizeMode(column, QHeaderView.ResizeMode.Interactive)
             header.resizeSection(column, width)
 
-    def get_string_values(self, values: List[List[str]]) -> List[List[str]]:
+    def get_string_values(self, values: list[list[str]]) -> list[list[str]]:
         """
         Get data for a loop by tags
         """
@@ -157,11 +158,11 @@ class MyQTableView(QTableView):
         # add other required actions
         self.menu.popup(QCursor.pos())
 
-    def _delete_row(self, event: QEvent):
+    def _delete_row(self, event: QEvent) -> None:
         self.model().removeRow(self.currentIndex().row())
         self.model().modelReset.emit()
 
-    def _add_row(self, event: QEvent):
+    def _add_row(self, event: QEvent) -> None:
         if len(self.model()._data) > 0:
             rowlen = len(self.model()._data[0])
             self.model()._data.append(['', ] * rowlen)
@@ -226,17 +227,17 @@ class LoopTableModel(QAbstractTableModel):
     rowDeleted = Signal(list, int)
 
     def __init__(self, header, data):
-        super(LoopTableModel, self).__init__()
+        super().__init__()
         self._data = data
         self._original = copy.deepcopy(data)
         self._header = header
         self.modified = []  # a list of modified table items
 
     @property
-    def loop_data(self) -> List[List[str]]:
+    def loop_data(self) -> list[list[str]]:
         return self._data
 
-    def data(self, index: QModelIndex, role: int = None):
+    def data(self, index: QModelIndex, role: int | None = None):
         row, col = index.row(), index.column()
         value = self._data[row][col]
         if role == Qt.ItemDataRole.SizeHintRole:
@@ -246,7 +247,7 @@ class LoopTableModel(QAbstractTableModel):
         # if isnumeric(value):
         #    return QtCore.Qt.AlignmentFlag.AlignVCenter + Qt.AlignVertical_Mask
         if (role == Qt.ItemDataRole.BackgroundRole and
-            (row, col) in [(x['row'], x['column']) for x in self.modified] and self.validate_text(value, col)):
+                (row, col) in [(x['row'], x['column']) for x in self.modified] and self.validate_text(value, col)):
             return light_blue
         elif role == Qt.ItemDataRole.BackgroundRole and not self.validate_text(value, col):
             return light_red
@@ -292,7 +293,7 @@ class LoopTableModel(QAbstractTableModel):
             return (QAbstractTableModel.flags(self, index) | QtCore.Qt.ItemFlag.ItemIsEditable |
                     QtCore.Qt.ItemFlag.ItemIsEnabled | QtCore.Qt.ItemFlag.ItemIsSelectable)
 
-    def setData(self, index: QModelIndex, value: Any, role: int = None) -> bool:
+    def setData(self, index: QModelIndex, value: str | int | float, role: int | None = None) -> bool:
         row, col = index.row(), index.column()
         previous = self._original[row][col]
         if not index:

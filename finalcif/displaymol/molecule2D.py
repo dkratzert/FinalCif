@@ -1,8 +1,8 @@
+from __future__ import annotations
 import sys
 from collections import namedtuple
 from math import sqrt, cos, sin, dist
 from pathlib import Path
-from typing import Union
 
 import numpy as np
 from PySide6 import QtWidgets, QtCore, QtGui
@@ -67,7 +67,7 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.labels = value
         self.update()
 
-    def open_molecule(self, atoms: list['Atomtuple'], labels=False):
+    def open_molecule(self, atoms: list[Atomtuple], labels=False):
         self.labels = labels
         self.atoms.clear()
         for at in atoms:
@@ -217,17 +217,17 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.molecule_center = np.array(c, dtype=np.float32)
         self.molecule_radius = r or 10
 
-    def draw_bond(self, at1: 'Atom', at2: 'Atom', offset: int):
+    def draw_bond(self, at1: Atom, at2: Atom, offset: int):
         self.painter.setPen(QPen(QtCore.Qt.GlobalColor.darkGray, self.bond_width, Qt.PenStyle.SolidLine))
         self.painter.drawLine(at1.screenx + offset, at1.screeny + offset,
                               at2.screenx + offset, at2.screeny + offset)
 
-    def draw_atom(self, atom: 'Atom'):
+    def draw_atom(self, atom: Atom):
         self.painter.setPen(QPen(QtCore.Qt.GlobalColor.black, 1, Qt.PenStyle.SolidLine))
         self.painter.setBrush(QBrush(atom.color, Qt.BrushStyle.SolidPattern))
         self.painter.drawEllipse(int(atom.screenx), int(atom.screeny), int(self.atoms_size), int(self.atoms_size))
 
-    def draw_label(self, atom: 'Atom'):
+    def draw_label(self, atom: Atom):
         self.painter.setPen(QPen(QColor(100, 50, 5), 2, Qt.PenStyle.SolidLine))
         self.painter.drawText(atom.screenx + 18, atom.screeny - 4, atom.name)
 

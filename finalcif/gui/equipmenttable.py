@@ -1,5 +1,4 @@
 from PySide6.QtCore import QObject, QEvent
-from PySide6.QtGui import QTextOption
 from PySide6.QtWidgets import QTableWidget
 
 from finalcif.cif.text import retranslate_delimiter
@@ -16,7 +15,7 @@ class MyEQTableWidget(QTableWidget, ItemTextMixin):
         super().__init__(parent, *args, **kwargs)
         self.parent = parent
         self.setWordWrap(True)
-        #self.setWordWrap(QTextOption.WrapMode.WrapAtWordBoundaryOrAnywhere)
+        # self.setWordWrap(QTextOption.WrapMode.WrapAtWordBoundaryOrAnywhere)
 
     def eventFilter(self, widget: QObject, event: QEvent):
         """
@@ -30,7 +29,7 @@ class MyEQTableWidget(QTableWidget, ItemTextMixin):
             key = ''
             try:
                 key = self.text(row, 0)
-            except (AttributeError, TypeError) as e:
+            except (AttributeError, TypeError):
                 pass
                 # print(e)
             if key:  # don't count empty key rows
@@ -60,7 +59,7 @@ class MyEQTableWidget(QTableWidget, ItemTextMixin):
         tab_item.setPlainText(retranslate_delimiter(value_text))
         self.setCellWidget(row_num, 1, tab_item)
 
-    def delete_row(self, row: int = None):
+    def delete_row(self, row: int | None = None):
         if not row:
             row = self.currentRow()
         self.removeRow(row)

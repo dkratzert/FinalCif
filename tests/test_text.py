@@ -10,7 +10,7 @@ os.environ['RUNNING_TEST'] = 'True'
 import unittest
 
 import gemmi
-from PyQt5 import QtWidgets
+from PySide6 import QtWidgets
 from packaging.version import Version
 
 # noinspection PyUnresolvedReferences

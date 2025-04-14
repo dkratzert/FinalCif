@@ -1,12 +1,11 @@
 from math import inf
-from typing import Union, Type
 
 
 class BaseLimits:
-    upper: Union[int, float, str]
-    lower: Union[int, float, str]
+    upper: int | float | str
+    lower: int | float | str
     valid: callable
-    value_type: Type[Union[int, float, str]]
+    value_type: type[int | float | str]
     help_text: str
 
     def __init__(self, lower, upper, help_text: str = ''):
@@ -42,7 +41,7 @@ class BaseLimits:
 class Integerlimits(BaseLimits):
     value_type = int
 
-    def __init__(self, lower: int, upper: int, help_text: str = None):
+    def __init__(self, lower: int, upper: int, help_text: str | None = None):
         if not help_text:
             help_text = (f'Must be a {"negative" if lower < 0 else "positive"} '
                          f'integer number between {lower} and {upper}.')
@@ -59,7 +58,7 @@ class Integerlimits(BaseLimits):
 class Floatlimits(BaseLimits):
     value_type = float
 
-    def __init__(self, lower: float = -inf, upper: float = inf, help_text: str = None):
+    def __init__(self, lower: float = -inf, upper: float = inf, help_text: str | None = None):
         if not help_text:
             if lower < 0 and upper <= 0:
                 limit = 'negative '
@@ -72,8 +71,8 @@ class Floatlimits(BaseLimits):
         super().__init__(lower, upper, help_text)
 
 
-class Stringlimits():
-    def __init__(self, help_text: str = None):
+class Stringlimits:
+    def __init__(self, help_text: str | None = None):
         self.valid = self.validate_cif_key
         self.help_text = 'Must be letters'
         if help_text:
@@ -86,7 +85,7 @@ class Stringlimits():
 
 
 class Textlimits:
-    def __init__(self, options: list[str], help_text: str = None):
+    def __init__(self, options: list[str], help_text: str | None= None):
         self.valid = self.validate_cif_key
         self.options = options
         self.help_text = f'Must be one of: {", ".join(options)}.'

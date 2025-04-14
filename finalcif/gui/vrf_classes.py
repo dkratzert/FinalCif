@@ -14,7 +14,7 @@ class QHLine(QFrame):
         self.setFrameShadow(QFrame.Shadow.Raised)
 
 
-class VREF():
+class VREF:
     """
     _vrf_PLAT699_DK_zucker2_0m
     ;
@@ -38,7 +38,7 @@ class VREF():
         return self._response
 
     @response.setter
-    def response(self, txt):
+    def response(self, txt) -> None:
         self._response = self.response + txt
 
     @property
@@ -46,13 +46,13 @@ class VREF():
         return self._problem
 
     @problem.setter
-    def problem(self, txt):
+    def problem(self, txt) -> None:
         self._problem = self.problem + txt
 
     def __repr__(self):
         txt = (
-            "{}\n"
-            "{}\n".format(self.problem, self.response)
+            f"{self.problem}\n"
+            f"{self.response}\n"
         )
         return txt
 
@@ -94,7 +94,6 @@ class MyVRFContainer(QWidget):
         self.response_label_box()
         self.setAutoFillBackground(False)
         self.help = help
-        #
         self.show()
 
     def show_help(self):
@@ -122,32 +121,32 @@ class MyVRFContainer(QWidget):
         label = QLabel()
         hlayout.addWidget(label)
         level = self.form['level']
-        type = level[-1] if len(level) > 1 else 'General A  Alert'
+        atype = level[-1] if len(level) > 1 else 'General A  Alert'
         color = 'lightgray'
-        if type == 'A':
+        if atype == 'A':
             color = 'rgb(240, 88, 70)'  # 'red'
-        elif type == 'B':
+        elif atype == 'B':
             color = 'rgb(252, 119, 20)'
-        elif type == 'C':
+        elif atype == 'C':
             color = 'yellow'
-        elif type == 'G':
+        elif atype == 'G':
             color = 'green'
-        if len(type) == 1:
-            type = type + '  Alert'
+        if len(atype) == 1:
+            atype = atype + '  Alert'
         num = self.form['alert_num'] if 'alert_num' in self.form else ''
         if self.is_multi_cif:
             name = "  --> {}".format(self.form['data_name'])
         else:
             name = ''
-        label.setText("{} {} {}".format(type, num, name))
-        style = 'QLabel {{ font-size: 12px; background-color: {:s}; ' \
+        label.setText(f"{atype} {num} {name}")
+        style = f'QLabel {{ font-size: 12px; background-color: {color:s}; ' \
                 'font-weight: bold;' \
                 'border: 1px solid gray;' \
                 'border-radius: 5px; ' \
                 'margin: 0px;' \
                 'padding: 4px;' \
                 'opacity: 230;' \
-                '}}'.format(color)
+                '}'
         label.setStyleSheet(style)
         spacerItem = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
         hlayout.addItem(spacerItem)

@@ -1,7 +1,7 @@
 import re
 
 from PySide6 import QtWidgets, QtGui, QtCore
-from PySide6.QtCore import Signal, Qt
+from PySide6.QtCore import Signal
 
 from finalcif.cif import all_cif_dicts
 from finalcif.gui.new_key_dialog_ui import Ui_AddKeyWindow

@@ -107,7 +107,7 @@ def show_keyword_help(parent, helptext: str, title: str = ''):
     window = QMainWindow(parent=parent)
     window.setWindowTitle(title)
 
-    def close_window(event):
+    def close_window(event) -> None:
         if event.key() == QtCore.Qt.Key.Key_Escape:
             window.close()
 
@@ -197,7 +197,7 @@ def show_yes_now_question(title: str, question: str, parent=None) -> bool:
     response = QMessageBox.question(parent, title, question,
                                     QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
                                     QMessageBox.StandardButton.No)
-    if response == QMessageBox.ButtonRole.YesRole:
+    if response == QMessageBox.StandardButton.Yes:
         return True
     else:
         return False

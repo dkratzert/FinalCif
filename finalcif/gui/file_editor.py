@@ -1,20 +1,19 @@
-#!/usr/bin/python3
+from __future__ import annotations
 # QcodeEditor.py by acbetter.
-# -*- coding: utf-8 -*-
 # Taken from: https://stackoverflow.com/questions/40386194/create-text-area-textedit-with-line-number-in-pyqt
 from PySide6 import QtCore, QtGui
-from PySide6.QtCore import Qt, QRect, QSize
-from PySide6.QtGui import QColor, QPainter, QTextFormat, QFont
+from PySide6.QtCore import QRect, QSize
+from PySide6.QtGui import QColor, QPainter, QTextFormat
 from PySide6.QtWidgets import QWidget, QPlainTextEdit, QTextEdit
 
 
 class QLineNumberArea(QWidget):
-    def __init__(self, parent):
+    def __init__(self, parent: QCodeEditor):
         super().__init__(parent=parent)
         self.codeEditor = parent
 
     def sizeHint(self):
-        return QSize(self.editor.line_number_area_width(), 0)
+        return QSize(self.codeEditor.line_number_area_width(), 0)
 
     def paintEvent(self, event):
         self.codeEditor.line_number_area_paint_event(event)

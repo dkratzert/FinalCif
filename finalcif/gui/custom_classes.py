@@ -1,6 +1,7 @@
+from __future__ import annotations
+
 import re
 from enum import IntEnum
-from typing import List
 
 from PySide6 import QtCore, QtGui
 from PySide6.QtCore import QEvent, QObject, Qt
@@ -48,14 +49,14 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         # self.setItemPrototype(item)
         del_shortcut = QtGui.QShortcut(QKeySequence('Ctrl+Del'), self)
         del_shortcut.activated.connect(self.delete_row)
-        self.vheaderitems: List[str] = []
+        self.vheaderitems: list[str] = []
         vheader = self.verticalHeader()
         vheader.setSectionsClickable(True)
         vheader.sectionClicked.connect(self.vheader_section_click)
 
     def setCellWidget(self, row: int, column: int, widget) -> None:
         widget.cif_key = self.vheaderitems[row]
-        if (column == Column.CIF) or (column == Column.DATA):
+        if column in (Column.CIF, Column.DATA):
             # noinspection PyUnresolvedReferences
             widget.setUneditable()
         super().setCellWidget(row, column, widget)
@@ -68,7 +69,7 @@ class MyCifTable(QTableWidget, ItemTextMixin):
     def columns_count(self):
         return self.model().columnCount()
 
-    def add_property_combobox(self, data: List, row_num: int, key: str) -> None:
+    def add_property_combobox(self, data: list, row_num: int, key: str) -> None:
         """
         Adds a QComboBox to the cif_main_table with the content of special_fields or property templates.
         """
@@ -77,7 +78,7 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         combobox.textTemplate.connect(self.goto_template_page)
         # print('special:', row_num, miss_data)
         self.setCellWidget(row_num, Column.EDIT, combobox)
-        self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         for num, value in data:
             try:
                 combobox.addItem(retranslate_delimiter(value), num)
@@ -163,20 +164,20 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         """
         Event filter for tab down on third column.
         """
-        if event.type() == QEvent.KeyRelease and event.key() == QtCore.Qt.Key.Key_Backtab:
+        if event.type() == QEvent.Type.KeyRelease and event.key() == QtCore.Qt.Key.Key_Backtab:
             row = self.currentRow()
             if row > 0:
                 self.setCurrentCell(row - 1, 2)
             return True
-        if event.type() == QEvent.KeyRelease and event.key() == QtCore.Qt.Key.Key_Tab:
+        if event.type() == QEvent.Type.KeyRelease and event.key() == QtCore.Qt.Key.Key_Tab:
             row = self.currentRow()
             self.setCurrentCell(row, 2)
             return True
-        if event.type() == QEvent.Wheel:
+        if event.type() == QEvent.Type.Wheel:
             pass
         return QObject.eventFilter(self, widget, event)
 
-    def setText(self, key: str, column: int, txt: str, row: int = None, color=None):
+    def setText(self, key: str, column: int, txt: str, row: int | None = None, color=None):
         """
         Set text in current table cell regardless of the containing item.
         """
@@ -203,7 +204,7 @@ class MyCifTable(QTableWidget, ItemTextMixin):
             textedit.new_key.connect(lambda x: self.new_key.emit(x))
             self.setCellWidget(row, column, textedit)
             textedit.setText(txt, color=color, column=column)
-            if (column == Column.CIF) or (column == Column.DATA):
+            if column in (Column.CIF, Column.DATA):
                 textedit.setUneditable()
         if color:
             self.cellWidget(row, column).setBackground(color)
@@ -254,7 +255,7 @@ class MyCifTable(QTableWidget, ItemTextMixin):
         clipboard = QApplication.clipboard()
         clipboard.setText(text)
 
-    def delete_row(self, row: int = None):
+    def delete_row(self, row: int | None = None):
         """
         Deletes the current row, but gemmi can not delete items from the block at the moment!
         """
@@ -291,6 +292,7 @@ class MyTableWidgetItem(QTableWidgetItem):
         self.setFlags(self.flags() ^ QtCore.Qt.ItemFlag.ItemIsEditable)
         # noinspection PyTypeChecker
         self.setFlags(self.flags() | QtCore.Qt.ItemFlag.ItemIsSelectable)
+
 
 class CifOrderItem(MyTableWidgetItem):
     def __init__(self, *args, **kwargs):

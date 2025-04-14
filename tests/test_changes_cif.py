@@ -4,7 +4,7 @@ os.environ["RUNNING_TEST"] = 'True'
 import unittest
 from pathlib import Path
 
-from PyQt5.QtGui import QIcon
+from PySide6.QtGui import QIcon
 
 from finalcif import VERSION
 from finalcif.appwindow import AppWindow
@@ -22,7 +22,7 @@ class TestChangesTrackingActive(unittest.TestCase):
         self.myapp.finalcif_changes_filename.unlink(missing_ok=True)
         self.myapp.ui.trackChangesCifCheckBox.setChecked(True)
         self.myapp.setWindowIcon(QIcon('./icon/multitable.png'))
-        self.myapp.setWindowTitle('FinalCif v{}'.format(VERSION))
+        self.myapp.setWindowTitle(f'FinalCif v{VERSION}')
         self.myapp.cif.finalcif_file.unlink(missing_ok=True)
 
     def test_filanames(self):

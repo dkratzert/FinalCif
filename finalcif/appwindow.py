@@ -13,7 +13,6 @@ from contextlib import suppress
 from datetime import datetime
 from math import sin, radians
 from pathlib import Path, WindowsPath
-from typing import Union, Dict, Tuple, List, Optional
 
 import gemmi.cif
 import requests
@@ -67,6 +66,7 @@ DEBUG = False
 app = QApplication.instance()
 if app is None:
     app = QApplication([])
+app.setStyle("windowsvista")
 with suppress(ImportError):
     import qtawesome as qta
 
@@ -609,13 +609,14 @@ class AppWindow(QMainWindow):
 
     def event(self, event: QtCore.QEvent) -> bool:
         if event.type() == QEvent.Type.KeyPress:
-            if event.type() == QtCore.Qt.Key.Key_Escape and self.ui.searchMainTableLineEdit.hasFocus():
+            event: QtGui.QKeyEvent
+            if event.key() == QtCore.Qt.Key.Key_Escape and self.ui.searchMainTableLineEdit.hasFocus():
                 self.ui.searchMainTableLineEdit.clear()
         return super().event(event)
 
     def resizeEvent(self, a0: QtGui.QResizeEvent) -> None:
         """It called when the main window resizes."""
-        super(AppWindow, self).resizeEvent(a0)
+        super().resizeEvent(a0)
         with suppress(AttributeError):
             self._savesize()
         main_width = self.ui.Mainwidget.width()
@@ -632,11 +633,11 @@ class AppWindow(QMainWindow):
             ui.setFixedHeight(self.ui.appendCifPushButton.height())
             vScrollBar = ui.verticalScrollBar()
             # Scroll down a bit, or text will not be in the vertical center:
-            vScrollBar.triggerAction(QScrollBar.SliderSingleStepAdd)
+            vScrollBar.triggerAction(QScrollBar.SliderAction.SliderSingleStepAdd)
 
     def moveEvent(self, a0: QtGui.QMoveEvent) -> None:
         """Is called when the main window moves."""
-        super(AppWindow, self).moveEvent(a0)
+        super().moveEvent(a0)
         with suppress(AttributeError):
             self._savesize()
 
@@ -679,7 +680,7 @@ class AppWindow(QMainWindow):
         """
         del self.cif[key]
         # Only delete from changes cif if changes were loaded:
-        if self.options.track_changes and self.changes_answer == QMessageBox.Yes:
+        if self.options.track_changes and self.changes_answer == QMessageBox.StandardButton.Yes:
             self.delete_key_from_changes_cif(key)
 
     def delete_key_from_changes_cif(self, key):
@@ -794,7 +795,7 @@ class AppWindow(QMainWindow):
         if sys.platform == 'linux':
             subprocess.call(['xdg-open', curdir])
 
-    def dragEnterEvent(self, e: QtCore.QEvent):
+    def dragEnterEvent(self, e: QtGui.QDragEnterEvent):
         """
         Allow drag of files to the main window
         """
@@ -803,7 +804,7 @@ class AppWindow(QMainWindow):
         else:
             e.ignore()
 
-    def dropEvent(self, e: QtCore.QEvent):
+    def dropEvent(self, e: QtGui.QDropEvent):
         """
         Handles drop events.
         """
@@ -837,18 +838,18 @@ class AppWindow(QMainWindow):
         self.ui.MainStackedWidget.got_to_main_page()
         self._show_loop_buttons()
 
-    def _show_loop_buttons(self):
+    def _show_loop_buttons(self) -> None:
         self.ui.revertLoopsPushButton.show()
         self.ui.newLoopPushButton.show()
         self.ui.deleteLoopButton.show()
 
-    def _checkcif_failed(self, txt: str):
+    def _checkcif_failed(self, txt: str) -> None:
         self.ui.CheckCifLogPlainTextEdit.appendHtml(f'<b>{txt}</b>')
 
-    def _ckf_progress(self, txt: str):
+    def _ckf_progress(self, txt: str) -> None:
         self.ui.CheckCifLogPlainTextEdit.appendPlainText(txt)
 
-    def _checkcif_finished(self):
+    def _checkcif_finished(self) -> None:
         """
         Loads the html checkcif results and displays them in a checkcif_browser window.
         """
@@ -933,7 +934,7 @@ class AppWindow(QMainWindow):
         self.ui.CheckcifPDFOnlineButton.setDisabled(True)
         self.ckf.start()
 
-    def _get_check_def(self):
+    def _get_check_def(self) -> None:
         if self.checkdef_file.exists() and file_age_in_days(self.checkdef_file) < 60:
             self.checkdef = self.checkdef_file.read_text().splitlines(keepends=False)
         else:
@@ -1372,7 +1373,7 @@ class AppWindow(QMainWindow):
         # size = font.pointSize()
         font.setPointSize(14)
         doc.setDefaultFont(font)
-        final_textedit.setLineWrapMode(QPlainTextEdit.NoWrap)
+        final_textedit.setLineWrapMode(QPlainTextEdit.LineWrapMode.NoWrap)
         final_textedit.setPlainText(self.cif.finalcif_file.read_text(encoding='utf-8', errors='ignore'))
 
     def import_additional_cif(self, filename: str):
@@ -1420,7 +1421,7 @@ class AppWindow(QMainWindow):
             else:
                 self.add_row(key, value, at_start=True)
 
-    def _import_loops(self, loops: list[list[str]]):
+    def _import_loops(self, loops: list[list[str]]) -> None:
         for loop in loops:
             new_loop = self.cif.block.init_loop('', loop)
             for row in self.import_selector.import_cif.block.find(loop):
@@ -1484,7 +1485,7 @@ class AppWindow(QMainWindow):
         for widget in no_parent_widgets:
             print(widget, widget.objectName())
 
-    def _flash_block_combobox(self):
+    def _flash_block_combobox(self) -> None:
         orig_pal = self.ui.datanameComboBox.palette()
         pal = QtGui.QPalette()
         pal.setColor(QtGui.QPalette.ColorRole.Base, light_blue)
@@ -1541,8 +1542,8 @@ class AppWindow(QMainWindow):
                                                            f'Previous changes from a former FinalCif session '
                                                            f'were found in\n{self.finalcif_changes_filename.name}.\n\n'
                                                            'Do you wish to reload them?',
-                                                           QMessageBox.Yes | QMessageBox.No)
-            if self.changes_answer == QMessageBox.Yes:
+                                                           QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+            if self.changes_answer == QMessageBox.StandardButton.Yes:
                 try:
                     self.load_changes_cif()
                 except GemmiError as e:
@@ -1574,7 +1575,7 @@ class AppWindow(QMainWindow):
             t = QtCore.QTimer(self)
             t.singleShot(1000, self.check_cecksums)
 
-    def _delete_current_block(self, index):
+    def _delete_current_block(self, index: int) -> None:
         self.cif.delete_block(index)
         self.add_data_names_to_combobox()
         self.ui.datanameComboBox.setCurrentIndex(0)
@@ -1590,7 +1591,7 @@ class AppWindow(QMainWindow):
             longest_string: str = max(self.ui.cif_main_table.vheaderitems, key=len)
         except ValueError:
             longest_string = '_chemical_formula_sum_foo'
-        vheader.setMaximumWidth(fm.width(longest_string + 'O'))
+        vheader.setMaximumWidth(fm.horizontalAdvance(longest_string + 'O'))
 
     def changes_cif_has_values(self) -> bool:
         try:
@@ -1915,7 +1916,7 @@ class AppWindow(QMainWindow):
         """
         self.cif.set_essential_keys(self.ui.cifOrderWidget.essential_keys)
         for key, value in self.cif.key_value_pairs():
-            if not value or value == '?' or value == "'?'":
+            if not value or value in {'?', "'?'"}:
                 self.missing_data.add(key)
                 value = '?'
             self.add_row(key, value)

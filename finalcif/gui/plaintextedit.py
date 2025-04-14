@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 from PySide6 import QtCore, QtGui
 from PySide6.QtCore import Signal, Qt, QObject, QEvent, QSize
 from PySide6.QtGui import QTextOption, QFontMetrics, QContextMenuEvent, QFont, QColor
-from PySide6.QtWidgets import QPlainTextEdit, QFrame, QAbstractScrollArea
+from PySide6.QtWidgets import QPlainTextEdit, QFrame, QAbstractScrollArea, QWidget
 
 from finalcif.gui.edit_button import FloatingButtonWidget
 from finalcif.gui.new_key_dialog import NewKey
@@ -43,14 +43,14 @@ class MyQPlainTextEdit(QPlainTextEdit):
         font = QFont()
         font.setPointSize(self.document().defaultFont().pointSize() + 1)
         self.setFont(font)
-        self.parent: 'MyCifTable' = parent
-        self.setFocusPolicy(Qt.StrongFocus)
-        self.setFrameShape(QFrame.NoFrame)
+        self.parent: MyCifTable = parent
+        self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
+        self.setFrameShape(QFrame.Shape.NoFrame)
         self.setTabChangesFocus(True)
-        self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.setWordWrapMode(QTextOption.WordWrap)
-        self.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.setWordWrapMode(QTextOption.WrapMode.WordWrap)
+        self.setSizeAdjustPolicy(QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
         self.textChanged.connect(lambda: self.parent.resizeRowToContents(self.row))
 
     def __str__(self):
@@ -73,15 +73,15 @@ class MyQPlainTextEdit(QPlainTextEdit):
         new_key.triggered.connect(self._add_cif_keys)
         menu.exec(event.globalPos())
 
-    def _add_cif_keys(self):
+    def _add_cif_keys(self) -> None:
         new_key = NewKey(self)
         new_key.show()
         new_key.new_key_added.connect(lambda x: self.new_key.emit(x))
 
-    def _on_create_template(self):
+    def _on_create_template(self) -> None:
         self.templateRequested.emit(self.row)
 
-    def _delete_row(self):
+    def _delete_row(self) -> None:
         self.parent.delete_row(self.row)
 
     def copy_vhead_item(self, row):
@@ -108,6 +108,7 @@ class MyQPlainTextEdit(QPlainTextEdit):
         # self.setStyleSheet("background-color: {};".format(str(color.name())))
         palette = self.palette()
         palette.setColor(QtGui.QPalette.ColorRole.Base, color)
+        #palette.setColor(QtGui.QPalette.ColorRole.AlternateBase, color)
         self.setPalette(palette)
         self.default_palette = palette
 
@@ -119,7 +120,7 @@ class MyQPlainTextEdit(QPlainTextEdit):
     def setUneditable(self):
         self.setReadOnly(True)
 
-    def setText(self, text: str, color: QColor = None, column: int = None):
+    def setText(self, text: str, color: QColor = None, column: int | None = None):
         """
         Set text of a Plaintextfield with lines wrapped at newline characters.
         """
@@ -132,11 +133,11 @@ class MyQPlainTextEdit(QPlainTextEdit):
         else:
             self.setPlainText(text)
 
-    def eventFilter(self, widget: QObject, event: QEvent):
+    def eventFilter(self, widget: QWidget, event: QEvent):
         """
         Event filter to ignore wheel events in comboboxes to prevent accidental changes to them.
         """
-        if event.type() == QEvent.Wheel and widget and not widget.hasFocus():
+        if event.type() == QEvent.Type.Wheel and widget and not widget.hasFocus():
             event.ignore()
             return True
         return QObject.eventFilter(self, widget, event)
@@ -156,7 +157,7 @@ class MyQPlainTextEdit(QPlainTextEdit):
             self.edit_button.show()
 
     def event(self, e: QtCore.QEvent):
-        if e.type() == QtCore.QEvent.InputMethodQuery:
+        if e.type() == QtCore.QEvent.Type.InputMethodQuery:
             self.parent.setCurrentCell(self.row, self.column)
         return super().event(e)
 
@@ -195,7 +196,7 @@ class MyQPlainTextEdit(QPlainTextEdit):
         max_size = QSize(100, 350)
         if len(self.toPlainText()) > 500:
             return max_size
-        rect = self.fontmetric.boundingRect(self.contentsRect(), Qt.TextWordWrap, self.toPlainText())
+        rect = self.fontmetric.boundingRect(self.contentsRect(), Qt.TextFlag.TextWordWrap, self.toPlainText())
         size = QSize(100, rect.height() + 14)
         if size.height() > 50:
             size = QSize(100, rect.height() + 24)
@@ -220,14 +221,14 @@ class PlainTextEditTemplate(QPlainTextEdit):
         super().__init__(parent, *args, **kwargs)
         self.cif_key = ''
         self.parent = parent
-        self.setFocusPolicy(Qt.StrongFocus)
-        self.setFrameShape(QFrame.NoFrame)
+        self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
+        self.setFrameShape(QFrame.Shape.NoFrame)
         self.setTabChangesFocus(True)
-        self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.setWordWrapMode(QTextOption.WordWrap)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.setWordWrapMode(QTextOption.WrapMode.WordWrap)
         self.fontmetric = QFontMetrics(self.document().defaultFont())
-        self.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
+        self.setSizeAdjustPolicy(QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
         self.textChanged.connect(lambda: self.parent.resizeRowsToContents())
 
     def setText(self, text: str, color=None):
@@ -238,11 +239,11 @@ class PlainTextEditTemplate(QPlainTextEdit):
             self.setBackground(color)
         self.setPlainText(text)
 
-    def eventFilter(self, widget: QObject, event: QEvent):
+    def eventFilter(self, widget: QWidget, event: QEvent):
         """
         Event filter to ignore wheel events in comboboxes to prevent accidental changes to them.
         """
-        if event.type() == QEvent.Wheel and widget and not widget.hasFocus():
+        if event.type() == QEvent.Type.Wheel and widget and not widget.hasFocus():
             event.ignore()
             return True
         return QObject.eventFilter(self, widget, event)
@@ -252,7 +253,7 @@ class PlainTextEditTemplate(QPlainTextEdit):
 
     def sizeHint(self) -> QSize:
         """Text field sizes are scaled to text length"""
-        rect = self.fontmetric.boundingRect(self.contentsRect(), Qt.TextWordWrap, self.toPlainText())
+        rect = self.fontmetric.boundingRect(self.contentsRect(), Qt.TextFlag.TextWordWrap, self.toPlainText())
         size = QSize(100, rect.height() + 14)
         if size.height() > 300:
             # Prevent extreme height for long text:

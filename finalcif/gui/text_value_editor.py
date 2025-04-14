@@ -1,8 +1,7 @@
 import sys
-from typing import Tuple, List, Union
 
 from PySide6 import QtGui, QtCore
-from PySide6.QtCore import QSize, Qt, Signal
+from PySide6.QtCore import QSize, Signal
 from PySide6.QtWidgets import QWidget, QHBoxLayout, QCheckBox, QListWidgetItem, QVBoxLayout, QLabel
 
 from finalcif.gui import text_templates_ui
@@ -83,7 +82,7 @@ class MyTextTemplateEdit(QWidget):
         self.ui.templatesListWidget.clear()
         TextEditItem._num = 1
 
-    def add_textfields(self, text_list: Union[List, Tuple]) -> None:
+    def add_textfields(self, text_list: list | tuple) -> None:
         self.ui.templatesListWidget.clear()
         if text_list:
             for text in text_list:
@@ -104,7 +103,7 @@ class MyTextTemplateEdit(QWidget):
         self.ui.templatesListWidget.addItem(item)
         self.ui.templatesListWidget.setItemWidget(item, edit_item)
 
-    def get_template_texts(self) -> List[str]:
+    def get_template_texts(self) -> list[str]:
         texts = []
         for num in range(self.ui.templatesListWidget.count()):
             item = self.ui.templatesListWidget.item(num)

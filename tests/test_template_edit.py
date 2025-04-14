@@ -4,8 +4,8 @@ os.environ["RUNNING_TEST"] = 'True'
 import unittest
 from pathlib import Path
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtTest import QTest
+from PySide6.QtCore import Qt
+from PySide6.QtTest import QTest
 
 from finalcif.appwindow import AppWindow
 

@@ -3,9 +3,9 @@
 # The file dialog is opened by pressing the button.
 # The button should be placed above the QTextedit widget and appear on mouse over.
 
-from PySide6 import QtWidgets, QtCore, QtGui
-import os
 import sys
+
+from PySide6 import QtWidgets, QtCore, QtGui
 
 
 class FloatingButtonWidget(QtWidgets.QPushButton):

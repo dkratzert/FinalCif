@@ -9,7 +9,7 @@ from contextlib import suppress
 from zipfile import ZipFile, ZIP_DEFLATED, ZIP_STORED
 
 
-class ArchiveReport():
+class ArchiveReport:
     def __init__(self, filename):
         self.zipfile = filename
         level = ZIP_STORED

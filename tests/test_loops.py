@@ -10,8 +10,8 @@ os.environ["RUNNING_TEST"] = 'True'
 import unittest
 from pathlib import Path
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QTabWidget
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QTabWidget
 from gemmi.cif import as_string
 
 from finalcif.appwindow import AppWindow

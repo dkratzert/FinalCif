@@ -1,9 +1,10 @@
 from __future__ import annotations
+
 import threading
 import time
 from contextlib import suppress
 from pathlib import Path
-from typing import List, Dict
+from typing import TYPE_CHECKING
 
 from PySide6 import QtCore
 from PySide6.QtWidgets import QListWidgetItem, QTableWidget, QStackedWidget, QLabel
@@ -13,14 +14,12 @@ from finalcif.cif.text import retranslate_delimiter, utf8_to_str
 from finalcif.equip_property.tools import read_document_from_cif_file
 from finalcif.gui.dialogs import cif_file_open_dialog, show_general_warning, cif_file_save_dialog
 from finalcif.gui.plaintextedit import PlainTextEditTemplate
-from finalcif.tools.settings import FinalCifSettings
 from finalcif.tools import misc
-
-from typing import TYPE_CHECKING
+from finalcif.tools.settings import FinalCifSettings
 
 if TYPE_CHECKING:
     from finalcif.appwindow import AppWindow
-
+    from finalcif.gui.custom_classes import MyCifTable
 
 class Properties(QtCore.QObject):
     def __init__(self, parent: AppWindow, settings: FinalCifSettings):
@@ -175,7 +174,7 @@ class Properties(QtCore.QObject):
             loop = block.init_loop(cif_key, [''])
         except RuntimeError:
             # Not a valid loop key
-            show_general_warning(self.app, '"{}" is not a valid cif keyword.'.format(cif_key))
+            show_general_warning(self.app, f'"{cif_key}" is not a valid cif keyword.')
             return
         for value in table_data:
             if value:
@@ -189,7 +188,7 @@ class Properties(QtCore.QObject):
         except PermissionError:
             if Path(filename).is_dir():
                 return
-            show_general_warning(self.app, 'No permission to write file to {}'.format(Path(filename).resolve()))
+            show_general_warning(self.app, f'No permission to write file to {Path(filename).resolve()}')
 
     def selected_template_name(self) -> str:
         return self.app.ui.PropertiesTemplatesListWidget.currentIndex().data()
@@ -220,10 +219,7 @@ class Properties(QtCore.QObject):
                 if len(i.loop.tags) > 0:
                     loop_column_name = i.loop.tags[0]
                 for n in range(i.loop.length()):
-                    try:
-                        value = i.loop.val(n, 0)
-                    except AttributeError:
-                        value = i.loop[n, 0]
+                    value = i.loop[n, 0]
                     template_list.append(retranslate_delimiter(cif.as_string(value).strip("\n\r ;")))
         block_name = block.name.replace('__', ' ')
         # This is the list shown in the Main menu:
@@ -271,7 +267,7 @@ class Properties(QtCore.QObject):
         # table.setWordWrap(False)
         table.resizeRowsToContents()
 
-    def export_raw_data(self) -> List[Dict]:
+    def export_raw_data(self) -> list[dict]:
         properties_list = []
         for property_name in self.settings.get_properties_list():
             if property_name:
@@ -279,10 +275,10 @@ class Properties(QtCore.QObject):
                 properties_list.append({'name': property_name, 'cif_key': property_cif_key, 'data': property_data})
         return properties_list
 
-    def import_raw_data(self, properties_list: List[Dict]) -> None:
-        for property in properties_list:
-            self.settings.save_settings_list(property='property', name=property.get("name"),
-                                             items=[property.get('cif_key'), property.get('data')])
+    def import_raw_data(self, properties_list: list[dict]) -> None:
+        for prop in properties_list:
+            self.settings.save_settings_list(property='property', name=prop.get("name"),
+                                             items=[prop.get('cif_key'), prop.get('data')])
         self.show_properties()
 
     @staticmethod
@@ -298,7 +294,7 @@ class Properties(QtCore.QObject):
         key_item.setPlainText(value)
         table.setCellWidget(row_num, 0, key_item)
 
-    def save_property(self, table: QTableWidget,
+    def save_property(self, table: QTableWidget | MyCifTable,
                       stackwidget: QStackedWidget,
                       keyword: str = '') -> None:
         """

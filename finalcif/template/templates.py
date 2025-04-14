@@ -1,7 +1,7 @@
 from __future__ import annotations
+
 from contextlib import suppress
 from pathlib import Path
-from typing import List
 from typing import TYPE_CHECKING
 
 from PySide6.QtCore import Qt
@@ -33,7 +33,7 @@ class ReportTemplates:
     def add_new_template(self, templ_path: str = '') -> None:
         if not templ_path:
             templ_path, _ = QFileDialog.getOpenFileName(filter="DOCX file (*.docx);; html file (*.html *.tmpl)",
-                                                        initialFilter="DOCX file (*.docx)",
+                                                        selectedFilter="DOCX file (*.docx)",
                                                         caption='Open a Report Template File', parent=self.app)
         itemslist = self.get_templates_list_from_widget()
         self.app.status_bar.show_message('')
@@ -47,7 +47,7 @@ class ReportTemplates:
             print('This template does not exist or is unreadable.', Path(templ_path).resolve())
             return
         item = QListWidgetItem(templ_path)
-        item.setCheckState(Qt.Unchecked)
+        item.setCheckState(Qt.CheckState.Unchecked)
         self.app.ui.docxTemplatesListWidget.addItem(item)
         self.settings.save_template_list('report_templates_list', self.get_templates_list_from_widget())
 
@@ -65,9 +65,9 @@ class ReportTemplates:
                 else:
                     item = QListWidgetItem(str(Path(text).resolve(strict=True)))
             self.app.ui.docxTemplatesListWidget.addItem(item)
-            item.setCheckState(Qt.Unchecked)
+            item.setCheckState(Qt.CheckState.Unchecked)
 
-    def get_templates_list_from_widget(self) -> List:
+    def get_templates_list_from_widget(self) -> list:
         itemslist = []
         for num in range(self.lw.count()):
             itemtext = self.lw.item(num).text()
@@ -90,13 +90,13 @@ class ReportTemplates:
         if not current_item:
             self.app.ui.docxTemplatesListWidget.blockSignals(False)
             return
-        current_item.setCheckState(Qt.Checked)
+        current_item.setCheckState(Qt.CheckState.Checked)
         self.settings.save_options(options)
         self.app.ui.docxTemplatesListWidget.blockSignals(False)
 
     def uncheck_all_templates(self):
         for num in range(self.lw.count()):
-            self.lw.item(num).setCheckState(Qt.Unchecked)
+            self.lw.item(num).setCheckState(Qt.CheckState.Unchecked)
 
     def report_from_default_template(self) -> bool:
         """Check whether the report is generated from a template or hard-coded"""

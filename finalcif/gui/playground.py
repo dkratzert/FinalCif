@@ -1,7 +1,7 @@
 import threading
 
 import requests
-from PySide6.QtCore import QObject, Signal, pyqtSlot
+from PySide6.QtCore import QObject, Signal, Slot
 from PySide6.QtWidgets import QLabel, QMainWindow
 
 
@@ -48,7 +48,7 @@ class MainWindow(QMainWindow):
         self.thread1.start()
         self.thread2.start()
 
-    @pyqtSlot(str)
+    @Slot(str)
     def updateLabel(self, result):
         # Update the label with the result
         txt = self.label.text()

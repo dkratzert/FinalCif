@@ -3,7 +3,7 @@ import os
 os.environ["RUNNING_TEST"] = 'True'
 import unittest
 
-from PyQt5.QtGui import QIcon
+from PySide6.QtGui import QIcon
 
 from finalcif.appwindow import AppWindow
 from finalcif.tools.statusbar import StatusBar
@@ -15,7 +15,7 @@ class TestStausBarWithGraphics(unittest.TestCase):
     def setUp(self) -> None:
         self.myapp = AppWindow()
         self.myapp.setWindowIcon(QIcon('./icon/multitable.png'))
-        self.myapp.setWindowTitle('FinalCif v{}'.format(VERSION))
+        self.myapp.setWindowTitle(f'FinalCif v{VERSION}')
         self.status = StatusBar(self.myapp.ui)
         self.myapp.hide()
 

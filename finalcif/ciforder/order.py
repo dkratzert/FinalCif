@@ -41,9 +41,11 @@ class CifOrder(QtWidgets.QGroupBox):
         if settings is not None:
             order = settings.load_settings_list('cif_order', 'order')
             essentials = settings.load_settings_list('cif_order', 'essentials')
+            self.essential_keys = essentials
             if order:
-                self.essential_keys = essentials
                 self.set_keys(order)
+            else:
+                self.set_keys(cif_order.order)
 
     def connect_signals_and_slots(self):
         self.ui.importCifPushButton.clicked.connect(self.import_cif)

@@ -1,12 +1,11 @@
-# -*- coding: utf-8 -*-
 #
 # This program was innitially created by Nils Trapp and extended by
 # Daniel Kratzert
 #
 import itertools as it
+from collections.abc import Sequence
 from math import sin, radians
 from pathlib import Path
-from typing import List, Sequence, Union
 
 from docx import Document
 from docx.enum.text import WD_BREAK
@@ -31,7 +30,7 @@ from finalcif.tools.options import Options
 from finalcif.tools.settings import FinalCifSettings
 
 
-def open_cif_file(cif_fileobj) -> Union[None, CifContainer]:
+def open_cif_file(cif_fileobj) -> None | CifContainer:
     try:
         cif = CifContainer(cif_fileobj)
     except Exception as e:
@@ -67,12 +66,12 @@ def make_multi_tables(cif: CifContainer, output_filename: str = 'multitable.docx
     return output_filename
 
 
-def make_report_from(options: Options, cif: CifContainer, output_filename: str = None, picfile: Path = None) -> str:
+def make_report_from(options: Options, cif: CifContainer, output_filename: str | None = None, picfile: Path | None = None) -> str:
     """
     Creates a tabular cif report.
     """
     document = create_document()
-    references: Union[ReferenceList, None] = None
+    references: ReferenceList | None = None
 
     if not options.report_text:
         document.add_heading(f'Structure Tables for {cif.block.name}', 1)
@@ -416,16 +415,14 @@ def populate_main_table_values(main_table: Table, cif: CifContainer, column=1, r
     if not cif.is_centrosymm:
         main_table.cell(row, column).text = cif['_refine_ls_abs_structure_Flack'].replace('-', minus_sign) or '?'
         row += 1
-    else:
-        if row_shift > 0:
-            main_table.cell(row, column).text = '---'
-            row += 1
+    elif row_shift > 0:
+        main_table.cell(row, column).text = '---'
+        row += 1
     exti = cif['_refine_ls_extinction_coef']
     if exti:
         main_table.cell(row, column).text = exti
-    else:
-        if row_shift > 0:
-            main_table.cell(row, column).text = '---'
+    elif row_shift > 0:
+        main_table.cell(row, column).text = '---'
     row += 1
 
 
@@ -939,7 +936,7 @@ def add_last_symminfo_line(newsymms: str, document: Document) -> None:
     run.font.size = Pt(8)
 
 
-def get_card(cif: CifContainer, symm: str) -> List[str]:
+def get_card(cif: CifContainer, symm: str) -> list[str]:
     """
     Returns a symmetry card from the _space_group_symop_operation_xyz or _symmetry_equiv_pos_as_xyz list.
     :param cif: the cif file object

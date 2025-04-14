@@ -1,3 +1,4 @@
+from __future__ import annotations
 from textwrap import wrap
 from typing import TYPE_CHECKING
 
@@ -20,9 +21,9 @@ class MyComboBox(QComboBox):
     """
     textTemplate = QtCore.Signal(int)
 
-    def __init__(self, parent: 'MyCifTable' = None):
+    def __init__(self, parent: MyCifTable = None):
         super().__init__(parent)
-        self.parent: 'MyCifTable' = parent
+        self.parent: MyCifTable = parent
         self.cif_key = ''
         self.color = white
         self.default_palette = self.palette()
@@ -46,10 +47,10 @@ class MyComboBox(QComboBox):
     def row(self) -> int:
         return self.parent.vheaderitems.index(self.cif_key)
 
-    def _delete_row(self):
+    def _delete_row(self) -> None:
         self.parent.delete_row(self.row)
 
-    def _on_create_template(self):
+    def _on_create_template(self) -> None:
         self.textTemplate.emit(self.row)
 
     def eventFilter(self, widget: QObject, event: QEvent):
