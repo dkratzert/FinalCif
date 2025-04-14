@@ -5,8 +5,8 @@ from pathlib import Path
 def fix_comment(pyfile: Path, uifile: Path):
     txt = pyfile.read_text()
     lines = txt.splitlines(keepends=True)
-    lines[2] = f"# Form implementation generated from reading ui file '{uifile.name}'\n"
-    lines[4] = "# Created by: PyQt5 UI code generator"
+    lines[5] = ''#f"## Form generated from reading UI file '{uifile.name}'\n"
+    lines[7] = ''#'"## Created by: Qt User Interface Compiler\n"
     pyfile.write_text(data=''.join(lines))
 
 
@@ -18,13 +18,10 @@ def compile_ui():
 
 def compile_ui_file(ui_file: Path) -> None:
     py_file = ui_file.with_suffix('.py')
-    out = subprocess.check_output(['pyside6-uic', ui_file])
-    py_file.write_bytes(out)
+    out = subprocess.check_output(['pyside6-uic', ui_file, '-o', py_file])
+    #py_file.write_bytes(out)
     print(py_file, 'finished')
-    """with open(py_file, 'w', encoding='utf-8') as pyf, open(ui_file, 'r', encoding='utf-8') as uif:
-        uic.compileUi(uifile=uif, pyfile=pyf, execute=True)
-        print(f'Compiling {ui_file.name}')
-    fix_comment(pyfile=py_file, uifile=ui_file)"""
+    fix_comment(pyfile=py_file, uifile=ui_file)
 
 
 if __name__ == '__main__':

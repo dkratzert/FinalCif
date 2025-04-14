@@ -3,9 +3,7 @@
 # Python: from finalcif.ciforder.order import CifOrder
 
 ################################################################################
-## Form generated from reading UI file 'finalcif_gui_ui.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.9.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -851,25 +849,25 @@ class Ui_FinalCifWindow(object):
         self.zLabel = QLabel(self.groupBox_3)
         self.zLabel.setObjectName(u"zLabel")
 
-        self.formLayout_3.setWidget(0, QFormLayout.ItemRole.LabelRole, self.zLabel)
+        self.formLayout_3.setWidget(0, QFormLayout.LabelRole, self.zLabel)
 
         self.zLineEdit = QLineEdit(self.groupBox_3)
         self.zLineEdit.setObjectName(u"zLineEdit")
         self.zLineEdit.setReadOnly(True)
 
-        self.formLayout_3.setWidget(0, QFormLayout.ItemRole.FieldRole, self.zLineEdit)
+        self.formLayout_3.setWidget(0, QFormLayout.FieldRole, self.zLineEdit)
 
         self.temperatureLabel = QLabel(self.groupBox_3)
         self.temperatureLabel.setObjectName(u"temperatureLabel")
         self.temperatureLabel.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
-        self.formLayout_3.setWidget(1, QFormLayout.ItemRole.LabelRole, self.temperatureLabel)
+        self.formLayout_3.setWidget(1, QFormLayout.LabelRole, self.temperatureLabel)
 
         self.temperatureLineEdit = QLineEdit(self.groupBox_3)
         self.temperatureLineEdit.setObjectName(u"temperatureLineEdit")
         self.temperatureLineEdit.setReadOnly(True)
 
-        self.formLayout_3.setWidget(1, QFormLayout.ItemRole.FieldRole, self.temperatureLineEdit)
+        self.formLayout_3.setWidget(1, QFormLayout.FieldRole, self.temperatureLineEdit)
 
         self.wR2Label = QLabel(self.groupBox_3)
         self.wR2Label.setObjectName(u"wR2Label")
@@ -879,50 +877,50 @@ class Ui_FinalCifWindow(object):
         self.wR2Label.setFont(font3)
         self.wR2Label.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
-        self.formLayout_3.setWidget(2, QFormLayout.ItemRole.LabelRole, self.wR2Label)
+        self.formLayout_3.setWidget(2, QFormLayout.LabelRole, self.wR2Label)
 
         self.wR2LineEdit = QLineEdit(self.groupBox_3)
         self.wR2LineEdit.setObjectName(u"wR2LineEdit")
         self.wR2LineEdit.setReadOnly(True)
 
-        self.formLayout_3.setWidget(2, QFormLayout.ItemRole.FieldRole, self.wR2LineEdit)
+        self.formLayout_3.setWidget(2, QFormLayout.FieldRole, self.wR2LineEdit)
 
         self.r1Label = QLabel(self.groupBox_3)
         self.r1Label.setObjectName(u"r1Label")
         self.r1Label.setFont(font3)
         self.r1Label.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
-        self.formLayout_3.setWidget(3, QFormLayout.ItemRole.LabelRole, self.r1Label)
+        self.formLayout_3.setWidget(3, QFormLayout.LabelRole, self.r1Label)
 
         self.r1LineEdit = QLineEdit(self.groupBox_3)
         self.r1LineEdit.setObjectName(u"r1LineEdit")
         self.r1LineEdit.setReadOnly(True)
 
-        self.formLayout_3.setWidget(3, QFormLayout.ItemRole.FieldRole, self.r1LineEdit)
+        self.formLayout_3.setWidget(3, QFormLayout.FieldRole, self.r1LineEdit)
 
         self.goofLabel = QLabel(self.groupBox_3)
         self.goofLabel.setObjectName(u"goofLabel")
         self.goofLabel.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
-        self.formLayout_3.setWidget(4, QFormLayout.ItemRole.LabelRole, self.goofLabel)
+        self.formLayout_3.setWidget(4, QFormLayout.LabelRole, self.goofLabel)
 
         self.goofLineEdit = QLineEdit(self.groupBox_3)
         self.goofLineEdit.setObjectName(u"goofLineEdit")
         self.goofLineEdit.setReadOnly(True)
 
-        self.formLayout_3.setWidget(4, QFormLayout.ItemRole.FieldRole, self.goofLineEdit)
+        self.formLayout_3.setWidget(4, QFormLayout.FieldRole, self.goofLineEdit)
 
         self.maxShiftLabel = QLabel(self.groupBox_3)
         self.maxShiftLabel.setObjectName(u"maxShiftLabel")
         self.maxShiftLabel.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
-        self.formLayout_3.setWidget(5, QFormLayout.ItemRole.LabelRole, self.maxShiftLabel)
+        self.formLayout_3.setWidget(5, QFormLayout.LabelRole, self.maxShiftLabel)
 
         self.maxShiftLineEdit = QLineEdit(self.groupBox_3)
         self.maxShiftLineEdit.setObjectName(u"maxShiftLineEdit")
         self.maxShiftLineEdit.setReadOnly(True)
 
-        self.formLayout_3.setWidget(5, QFormLayout.ItemRole.FieldRole, self.maxShiftLineEdit)
+        self.formLayout_3.setWidget(5, QFormLayout.FieldRole, self.maxShiftLineEdit)
 
         self.completeLabel = QLabel(self.groupBox_3)
         self.completeLabel.setObjectName(u"completeLabel")
@@ -931,13 +929,13 @@ class Ui_FinalCifWindow(object):
         self.completeLabel.setFont(font4)
         self.completeLabel.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
-        self.formLayout_3.setWidget(6, QFormLayout.ItemRole.LabelRole, self.completeLabel)
+        self.formLayout_3.setWidget(6, QFormLayout.LabelRole, self.completeLabel)
 
         self.completeLineEdit = QLineEdit(self.groupBox_3)
         self.completeLineEdit.setObjectName(u"completeLineEdit")
         self.completeLineEdit.setReadOnly(True)
 
-        self.formLayout_3.setWidget(6, QFormLayout.ItemRole.FieldRole, self.completeLineEdit)
+        self.formLayout_3.setWidget(6, QFormLayout.FieldRole, self.completeLineEdit)
 
 
         self.gridLayout_4.addLayout(self.formLayout_3, 0, 2, 1, 1)
@@ -956,81 +954,81 @@ class Ui_FinalCifWindow(object):
         self.reflTotalLabel.setObjectName(u"reflTotalLabel")
         self.reflTotalLabel.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
-        self.formLayout_2.setWidget(0, QFormLayout.ItemRole.LabelRole, self.reflTotalLabel)
+        self.formLayout_2.setWidget(0, QFormLayout.LabelRole, self.reflTotalLabel)
 
         self.reflTotalLineEdit = QLineEdit(self.groupBox_3)
         self.reflTotalLineEdit.setObjectName(u"reflTotalLineEdit")
         self.reflTotalLineEdit.setReadOnly(True)
 
-        self.formLayout_2.setWidget(0, QFormLayout.ItemRole.FieldRole, self.reflTotalLineEdit)
+        self.formLayout_2.setWidget(0, QFormLayout.FieldRole, self.reflTotalLineEdit)
 
         self.refl2sigmaLabel = QLabel(self.groupBox_3)
         self.refl2sigmaLabel.setObjectName(u"refl2sigmaLabel")
 
-        self.formLayout_2.setWidget(1, QFormLayout.ItemRole.LabelRole, self.refl2sigmaLabel)
+        self.formLayout_2.setWidget(1, QFormLayout.LabelRole, self.refl2sigmaLabel)
 
         self.refl2sigmaLineEdit = QLineEdit(self.groupBox_3)
         self.refl2sigmaLineEdit.setObjectName(u"refl2sigmaLineEdit")
 
-        self.formLayout_2.setWidget(1, QFormLayout.ItemRole.FieldRole, self.refl2sigmaLineEdit)
+        self.formLayout_2.setWidget(1, QFormLayout.FieldRole, self.refl2sigmaLineEdit)
 
         self.uniqReflLabel = QLabel(self.groupBox_3)
         self.uniqReflLabel.setObjectName(u"uniqReflLabel")
 
-        self.formLayout_2.setWidget(2, QFormLayout.ItemRole.LabelRole, self.uniqReflLabel)
+        self.formLayout_2.setWidget(2, QFormLayout.LabelRole, self.uniqReflLabel)
 
         self.uniqReflLineEdit = QLineEdit(self.groupBox_3)
         self.uniqReflLineEdit.setObjectName(u"uniqReflLineEdit")
 
-        self.formLayout_2.setWidget(2, QFormLayout.ItemRole.FieldRole, self.uniqReflLineEdit)
+        self.formLayout_2.setWidget(2, QFormLayout.FieldRole, self.uniqReflLineEdit)
 
         self.numParametersLabel = QLabel(self.groupBox_3)
         self.numParametersLabel.setObjectName(u"numParametersLabel")
         self.numParametersLabel.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
-        self.formLayout_2.setWidget(3, QFormLayout.ItemRole.LabelRole, self.numParametersLabel)
+        self.formLayout_2.setWidget(3, QFormLayout.LabelRole, self.numParametersLabel)
 
         self.numParametersLineEdit = QLineEdit(self.groupBox_3)
         self.numParametersLineEdit.setObjectName(u"numParametersLineEdit")
         self.numParametersLineEdit.setMinimumSize(QSize(0, 0))
         self.numParametersLineEdit.setReadOnly(True)
 
-        self.formLayout_2.setWidget(3, QFormLayout.ItemRole.FieldRole, self.numParametersLineEdit)
+        self.formLayout_2.setWidget(3, QFormLayout.FieldRole, self.numParametersLineEdit)
 
         self.dataReflnsLabel = QLabel(self.groupBox_3)
         self.dataReflnsLabel.setObjectName(u"dataReflnsLabel")
         self.dataReflnsLabel.setFont(font4)
         self.dataReflnsLabel.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
-        self.formLayout_2.setWidget(4, QFormLayout.ItemRole.LabelRole, self.dataReflnsLabel)
+        self.formLayout_2.setWidget(4, QFormLayout.LabelRole, self.dataReflnsLabel)
 
         self.dataReflnsLineEdit = QLineEdit(self.groupBox_3)
         self.dataReflnsLineEdit.setObjectName(u"dataReflnsLineEdit")
         self.dataReflnsLineEdit.setReadOnly(True)
 
-        self.formLayout_2.setWidget(4, QFormLayout.ItemRole.FieldRole, self.dataReflnsLineEdit)
+        self.formLayout_2.setWidget(4, QFormLayout.FieldRole, self.dataReflnsLineEdit)
 
         self.wavelengthLabel = QLabel(self.groupBox_3)
         self.wavelengthLabel.setObjectName(u"wavelengthLabel")
         self.wavelengthLabel.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
-        self.formLayout_2.setWidget(5, QFormLayout.ItemRole.LabelRole, self.wavelengthLabel)
+        self.formLayout_2.setWidget(5, QFormLayout.LabelRole, self.wavelengthLabel)
 
         self.wavelengthLineEdit = QLineEdit(self.groupBox_3)
         self.wavelengthLineEdit.setObjectName(u"wavelengthLineEdit")
         self.wavelengthLineEdit.setReadOnly(True)
 
-        self.formLayout_2.setWidget(5, QFormLayout.ItemRole.FieldRole, self.wavelengthLineEdit)
+        self.formLayout_2.setWidget(5, QFormLayout.FieldRole, self.wavelengthLineEdit)
 
         self.flackXLabel = QLabel(self.groupBox_3)
         self.flackXLabel.setObjectName(u"flackXLabel")
 
-        self.formLayout_2.setWidget(6, QFormLayout.ItemRole.LabelRole, self.flackXLabel)
+        self.formLayout_2.setWidget(6, QFormLayout.LabelRole, self.flackXLabel)
 
         self.flackXLineEdit = QLineEdit(self.groupBox_3)
         self.flackXLineEdit.setObjectName(u"flackXLineEdit")
 
-        self.formLayout_2.setWidget(6, QFormLayout.ItemRole.FieldRole, self.flackXLineEdit)
+        self.formLayout_2.setWidget(6, QFormLayout.FieldRole, self.flackXLineEdit)
 
 
         self.gridLayout_4.addLayout(self.formLayout_2, 0, 6, 1, 1)
@@ -1076,88 +1074,88 @@ class Ui_FinalCifWindow(object):
         self.peakLabel.setObjectName(u"peakLabel")
         self.peakLabel.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
-        self.formLayout.setWidget(0, QFormLayout.ItemRole.LabelRole, self.peakLabel)
+        self.formLayout.setWidget(0, QFormLayout.LabelRole, self.peakLabel)
 
         self.peakLineEdit = QLineEdit(self.groupBox_3)
         self.peakLineEdit.setObjectName(u"peakLineEdit")
         self.peakLineEdit.setReadOnly(True)
 
-        self.formLayout.setWidget(0, QFormLayout.ItemRole.FieldRole, self.peakLineEdit)
+        self.formLayout.setWidget(0, QFormLayout.FieldRole, self.peakLineEdit)
 
         self.rintLabel = QLabel(self.groupBox_3)
         self.rintLabel.setObjectName(u"rintLabel")
         self.rintLabel.setFont(font4)
         self.rintLabel.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
-        self.formLayout.setWidget(1, QFormLayout.ItemRole.LabelRole, self.rintLabel)
+        self.formLayout.setWidget(1, QFormLayout.LabelRole, self.rintLabel)
 
         self.rintLineEdit = QLineEdit(self.groupBox_3)
         self.rintLineEdit.setObjectName(u"rintLineEdit")
         self.rintLineEdit.setReadOnly(True)
 
-        self.formLayout.setWidget(1, QFormLayout.ItemRole.FieldRole, self.rintLineEdit)
+        self.formLayout.setWidget(1, QFormLayout.FieldRole, self.rintLineEdit)
 
         self.rsigmaLabel = QLabel(self.groupBox_3)
         self.rsigmaLabel.setObjectName(u"rsigmaLabel")
         self.rsigmaLabel.setFont(font4)
         self.rsigmaLabel.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
-        self.formLayout.setWidget(2, QFormLayout.ItemRole.LabelRole, self.rsigmaLabel)
+        self.formLayout.setWidget(2, QFormLayout.LabelRole, self.rsigmaLabel)
 
         self.rsigmaLineEdit = QLineEdit(self.groupBox_3)
         self.rsigmaLineEdit.setObjectName(u"rsigmaLineEdit")
         self.rsigmaLineEdit.setReadOnly(True)
 
-        self.formLayout.setWidget(2, QFormLayout.ItemRole.FieldRole, self.rsigmaLineEdit)
+        self.formLayout.setWidget(2, QFormLayout.FieldRole, self.rsigmaLineEdit)
 
         self.numRestraintsLabel = QLabel(self.groupBox_3)
         self.numRestraintsLabel.setObjectName(u"numRestraintsLabel")
         self.numRestraintsLabel.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
-        self.formLayout.setWidget(3, QFormLayout.ItemRole.LabelRole, self.numRestraintsLabel)
+        self.formLayout.setWidget(3, QFormLayout.LabelRole, self.numRestraintsLabel)
 
         self.numRestraintsLineEdit = QLineEdit(self.groupBox_3)
         self.numRestraintsLineEdit.setObjectName(u"numRestraintsLineEdit")
         self.numRestraintsLineEdit.setReadOnly(True)
 
-        self.formLayout.setWidget(3, QFormLayout.ItemRole.FieldRole, self.numRestraintsLineEdit)
+        self.formLayout.setWidget(3, QFormLayout.FieldRole, self.numRestraintsLineEdit)
 
         self.thetaMaxLabel = QLabel(self.groupBox_3)
         self.thetaMaxLabel.setObjectName(u"thetaMaxLabel")
         self.thetaMaxLabel.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
-        self.formLayout.setWidget(4, QFormLayout.ItemRole.LabelRole, self.thetaMaxLabel)
+        self.formLayout.setWidget(4, QFormLayout.LabelRole, self.thetaMaxLabel)
 
         self.thetaMaxLineEdit = QLineEdit(self.groupBox_3)
         self.thetaMaxLineEdit.setObjectName(u"thetaMaxLineEdit")
         self.thetaMaxLineEdit.setReadOnly(True)
 
-        self.formLayout.setWidget(4, QFormLayout.ItemRole.FieldRole, self.thetaMaxLineEdit)
+        self.formLayout.setWidget(4, QFormLayout.FieldRole, self.thetaMaxLineEdit)
 
         self.thetaFullLabel = QLabel(self.groupBox_3)
         self.thetaFullLabel.setObjectName(u"thetaFullLabel")
         self.thetaFullLabel.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
-        self.formLayout.setWidget(5, QFormLayout.ItemRole.LabelRole, self.thetaFullLabel)
+        self.formLayout.setWidget(5, QFormLayout.LabelRole, self.thetaFullLabel)
 
         self.thetaFullLineEdit = QLineEdit(self.groupBox_3)
         self.thetaFullLineEdit.setObjectName(u"thetaFullLineEdit")
         self.thetaFullLineEdit.setReadOnly(True)
 
-        self.formLayout.setWidget(5, QFormLayout.ItemRole.FieldRole, self.thetaFullLineEdit)
+        self.formLayout.setWidget(5, QFormLayout.FieldRole, self.thetaFullLineEdit)
 
         self.dLabel = QLabel(self.groupBox_3)
         self.dLabel.setObjectName(u"dLabel")
         self.dLabel.setFont(font4)
         self.dLabel.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
-        self.formLayout.setWidget(6, QFormLayout.ItemRole.LabelRole, self.dLabel)
+        self.formLayout.setWidget(6, QFormLayout.LabelRole, self.dLabel)
 
         self.dLineEdit = QLineEdit(self.groupBox_3)
         self.dLineEdit.setObjectName(u"dLineEdit")
         self.dLineEdit.setReadOnly(True)
 
-        self.formLayout.setWidget(6, QFormLayout.ItemRole.FieldRole, self.dLineEdit)
+        self.formLayout.setWidget(6, QFormLayout.FieldRole, self.dLineEdit)
 
 
         self.gridLayout_4.addLayout(self.formLayout, 0, 4, 1, 1)
@@ -1256,7 +1254,7 @@ class Ui_FinalCifWindow(object):
         self.label_7 = QLabel(self.groupBox_COD)
         self.label_7.setObjectName(u"label_7")
 
-        self.formLayout_6.setWidget(0, QFormLayout.ItemRole.SpanningRole, self.label_7)
+        self.formLayout_6.setWidget(0, QFormLayout.SpanningRole, self.label_7)
 
         self.CODURLTextedit = QLineEdit(self.groupBox_COD)
         self.CODURLTextedit.setObjectName(u"CODURLTextedit")
@@ -1264,7 +1262,7 @@ class Ui_FinalCifWindow(object):
         self.CODURLTextedit.setSizePolicy(sizePolicy3)
         self.CODURLTextedit.setMinimumSize(QSize(300, 0))
 
-        self.formLayout_6.setWidget(1, QFormLayout.ItemRole.SpanningRole, self.CODURLTextedit)
+        self.formLayout_6.setWidget(1, QFormLayout.SpanningRole, self.CODURLTextedit)
 
 
         self.gridLayout_12.addWidget(self.groupBox_COD, 2, 2, 1, 1)
@@ -1278,7 +1276,7 @@ class Ui_FinalCifWindow(object):
         self.label_4 = QLabel(self.groupBox_7)
         self.label_4.setObjectName(u"label_4")
 
-        self.formLayout_4.setWidget(0, QFormLayout.ItemRole.SpanningRole, self.label_4)
+        self.formLayout_4.setWidget(0, QFormLayout.SpanningRole, self.label_4)
 
         self.CheckCIFServerURLTextedit = QLineEdit(self.groupBox_7)
         self.CheckCIFServerURLTextedit.setObjectName(u"CheckCIFServerURLTextedit")
@@ -1286,7 +1284,7 @@ class Ui_FinalCifWindow(object):
         self.CheckCIFServerURLTextedit.setSizePolicy(sizePolicy3)
         self.CheckCIFServerURLTextedit.setMinimumSize(QSize(300, 0))
 
-        self.formLayout_4.setWidget(1, QFormLayout.ItemRole.SpanningRole, self.CheckCIFServerURLTextedit)
+        self.formLayout_4.setWidget(1, QFormLayout.SpanningRole, self.CheckCIFServerURLTextedit)
 
 
         self.gridLayout_12.addWidget(self.groupBox_7, 0, 2, 1, 1)

@@ -3,9 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'loop_creator_ui.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.9.0
 ##
-## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
 from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
