@@ -30,7 +30,7 @@ jobs:
                           "3.13" ]
         os: [ windows-latest ]
         # , ubuntu-latest ]
-        include:
+        #include:
           #- os: ubuntu-latest
           #  path: ~/.cache/pip
           #- os: macos-latest
