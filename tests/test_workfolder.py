@@ -55,6 +55,8 @@ class TestWorkfolder(unittest.TestCase):
         self.myapp.equipment.import_equipment_from_file(str(data.parent / 'test-data/Crystallographer_Details.cif'))
         self.myapp.setWindowIcon(QIcon('./icon/multitable.png'))
         self.myapp.setWindowTitle(f'FinalCif v{VERSION}')
+        self.myapp.settings.save_settings_list('cif_order', 'order', [])
+        self.myapp.settings.save_settings_list('cif_order', 'essentials', [])
 
     def tearDown(self) -> None:
         self.testcif.with_suffix('.ins').unlink(missing_ok=True)
