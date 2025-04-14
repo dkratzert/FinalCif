@@ -933,7 +933,6 @@ class AppWindow(QMainWindow):
                             full_iucr=self.ui.fullIucrCheckBox.isChecked())
         self.ckf.progress.connect(self._ckf_progress)
         self.ckf.failed.connect(self._checkcif_failed)
-        # noinspection PyUnresolvedReferences
         self.ckf.finished.connect(self._checkcif_finished)
         self.ui.CheckcifHTMLOnlineButton.setDisabled(True)
         self.ui.CheckcifPDFOnlineButton.setDisabled(True)

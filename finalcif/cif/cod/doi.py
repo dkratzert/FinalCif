@@ -67,8 +67,7 @@ def get_names_from_doi(data: dict[str, list]) -> list:
     if not data or 'author' not in data:
         return []
     for person in data['author']:
-        name = '{}, {}'.format(person['family'] if 'family' in person else '',
-                               person['given'] if 'given' in person else '')
+        name = f'{person["family"] if "family" in person else ""}, {person["given"] if "given" in person else ""}'
         if 'sequence' in person and person['sequence'] == 'first' and name != ', ':
             authors.insert(0, name)
         elif name != ', ':
@@ -76,8 +75,8 @@ def get_names_from_doi(data: dict[str, list]) -> list:
     return authors
 
 
-def _append_to_authors_list(authors, person, first=False):
-    name = '{}, {}'.format(person['family'], person['given'])
+def _append_to_authors_list(authors, person, first=False) -> None:
+    name = f'{person["family"]}, {person["given"]}'
     if first:
         authors.insert(0, name)
     else:

@@ -12,7 +12,6 @@ import time
 from contextlib import suppress
 from html.parser import HTMLParser
 from pathlib import Path
-from typing import List, Optional, Dict
 
 import requests
 from PySide6.QtCore import QThread, Signal
@@ -36,7 +35,7 @@ class CheckCif(QThread):
         self.checkcif_url = url
         self.full_iucr = full_iucr
 
-    def _html_check(self):
+    def _html_check(self) -> None:
         if self.hkl_upload:
             self.progress.emit('Running Checkcif with hkl data')
         else:
@@ -76,11 +75,11 @@ class CheckCif(QThread):
         if req:
             self.progress.emit('request finished')
             if req.status_code != 200:
-                self.failed.emit('Request failed with code: {}'.format(str(req.status_code)))
+                self.failed.emit(f'Request failed with code: {req.status_code!s}')
             else:
                 t2 = time.perf_counter()
                 time.sleep(0.1)
-                self.progress.emit('Report took {}s.'.format(str(round(t2 - t1, 2))))
+                self.progress.emit(f'Report took {round(t2 - t1, 2)!s}s.')
                 try:
                     self.html_out_file.write_bytes(fix_iucr_urls(req.content.decode()).encode())
                 except PermissionError:
@@ -156,7 +155,7 @@ class MyHTMLParser(HTMLParser):
         self.alert_levels = []
         self.feed(data)
 
-    def get_pdf(self) -> Optional[bytes]:
+    def get_pdf(self) -> bytes | None:
         return requests.get(self.pdf_link, timeout=10).content
 
     def handle_starttag(self, tag: str, attrs: str) -> None:
@@ -193,7 +192,7 @@ class MyHTMLParser(HTMLParser):
             return ''
 
     @property
-    def response_forms(self) -> List[Dict[str, str]]:
+    def response_forms(self) -> list[dict[str, str]]:
         """
         :returns
         [
@@ -226,7 +225,7 @@ class MyHTMLParser(HTMLParser):
         return forms
 
 
-class AlertHelp():
+class AlertHelp:
     def __init__(self, checkdef: list):
         self.checkdef = checkdef  # Path('../check.def').read_text().splitlines(keepends=False)
 

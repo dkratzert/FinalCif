@@ -7,7 +7,6 @@
 
 import io
 from pathlib import Path
-from typing import Union, List, Dict
 from urllib.parse import urlparse
 
 import requests
@@ -35,10 +34,10 @@ _shelx_fab_checksum
 """
 
 
-class CODdeposit():
+class CODdeposit:
 
-    def __init__(self, ui: Ui_FinalCifWindow, cif: Union[CifContainer, None], options: Options):
-        self.hkl_file: Union[io.StringIO, None] = None
+    def __init__(self, ui: Ui_FinalCifWindow, cif: CifContainer | None, options: Options):
+        self.hkl_file: io.StringIO | None = None
         self.ui = ui
         self.settings = FinalCifSettings()
         self._cif = cif
@@ -53,7 +52,6 @@ class CODdeposit():
         self.ui.refreshDepositListPushButton.clicked.connect(self._refresh_cod_list)
         self.ui.GetDOIPushButton.clicked.connect(self.get_doi_data)
         self.ui.Upload_hkl_pushButton.clicked.connect(self._set_external_hkl_file)
-        #
         self.ui.depositCIFpushButton.clicked.connect(self._init_deposit)
         # The full deposit url: self.deposit_url = 'https://www.crystallography.net/cod/cgi-bin/cif-deposit.pl'
         self.username = self.settings.load_value_of_key('cod_username')
@@ -108,7 +106,7 @@ class CODdeposit():
         return self._cif
 
     @cif.setter
-    def cif(self, obj):
+    def cif(self, obj) -> None:
         self.ui.depositCIFpushButton.setEnabled(True)
         self._cif = obj
         self.check_for_publ_author()
@@ -116,7 +114,7 @@ class CODdeposit():
         self.ui.depositHKLcheckBox.setChecked(len(self._cif['_shelx_hkl_file']))
         self.ui.depositHKLcheckBox.setDisabled(not len(self._cif['_shelx_hkl_file']))
 
-    def _back_to_cod_page(self):
+    def _back_to_cod_page(self) -> None:
         self.ui.MainStackedWidget.got_to_cod_page()
         self.check_for_publ_author()
         self.ui.TemplatesStackedWidget.setCurrentIndex(0)
@@ -153,7 +151,7 @@ class CODdeposit():
         self.ui.authorEditorPushButton_2.setVisible(True)
         # self.ui.depositCIFpushButton.setDisabled(True)
 
-    def _set_checkbox_states(self):
+    def _set_checkbox_states(self) -> None:
         self.ui.prepublicationDepositRadioButton.clicked.connect(self._prepublication_was_toggled)
         self.ui.publishedDepositionRadioButton.clicked.connect(self._published_was_toggled)
         self.ui.personalDepositRadioButton.clicked.connect(self._personal_was_toggled)
@@ -161,7 +159,7 @@ class CODdeposit():
         self.deposition_type = 'personal'
         self.ui.depositionOptionsStackedWidget.setCurrentIndex(0)
 
-    def _personal_was_toggled(self, state: bool):
+    def _personal_was_toggled(self, state: bool) -> None:
         self.ui.prepublicationDepositRadioButton.setChecked(False)
         self.ui.publishedDepositionRadioButton.setChecked(False)
         if state:
@@ -169,7 +167,7 @@ class CODdeposit():
             self.deposition_type = 'personal'
             self.reset_deposit_button_state_to_initial()
 
-    def _prepublication_was_toggled(self, state: bool):
+    def _prepublication_was_toggled(self, state: bool) -> None:
         self.ui.publishedDepositionRadioButton.setChecked(False)
         self.ui.personalDepositRadioButton.setChecked(False)
         if state:
@@ -177,7 +175,7 @@ class CODdeposit():
             self.deposition_type = 'prepublication'
             self.reset_deposit_button_state_to_initial()
 
-    def _published_was_toggled(self, state: bool):
+    def _published_was_toggled(self, state: bool) -> None:
         self.ui.prepublicationDepositRadioButton.setChecked(False)
         self.ui.personalDepositRadioButton.setChecked(False)
         if state:
@@ -186,7 +184,7 @@ class CODdeposit():
             self.reset_deposit_button_state_to_initial()
 
     @staticmethod
-    def deposition_type_to_int(deposition_type: str):
+    def deposition_type_to_int(deposition_type: str) -> int | None:
         if deposition_type == 'personal':
             return 0
         if deposition_type == 'prepublication':
@@ -197,7 +195,7 @@ class CODdeposit():
         if deposition_type == 'deposit':
             return 3
 
-    def _refresh_cod_list(self):
+    def _refresh_cod_list(self) -> None:
         if self.settings.load_settings_list('COD', self.username) and self.ui.CODtableWidget.rowCount() == 0:
             self.add_deposited_structures_to_table(self.settings.load_settings_list('COD', self.username))
         else:
@@ -216,25 +214,25 @@ class CODdeposit():
         parser.feed(f.table_html)
         return parser
 
-    def add_deposited_structures_to_table(self, structures: List[dict], login_token: str = ''):
+    def add_deposited_structures_to_table(self, structures: list[dict], login_token: str = ''):
         self.ui.CODtableWidget.setRowCount(0)
         for row, structure in enumerate(structures):
             num = structure['number']
             date = structure['date']
             time = structure['time']
             if login_token:
-                url = self.main_url + 'information_card.php?id={0}&CODSESSION={1}'.format(num, login_token)
+                url = self.main_url + f'information_card.php?id={num}&CODSESSION={login_token}'
                 num = num + '*'
             else:
-                url = self.main_url + 'information_card.php?id={0}'.format(num)
+                url = self.main_url + f'information_card.php?id={num}'
             self.ui.CODtableWidget.insertRow(row)
             self.ui.CODtableWidget.setItem(row, 0, QTableWidgetItem(num))
             self.ui.CODtableWidget.setItem(row, 1, QTableWidgetItem(date))
             self.ui.CODtableWidget.setItem(row, 2, QTableWidgetItem(time))
-            link = '<a href="{}">{}</a>'.format(url, num)
+            link = f'<a href="{url}">{num}</a>'
             self._set_link_to_cell(link, row)
 
-    def _set_link_to_cell(self, link, row):
+    def _set_link_to_cell(self, link, row) -> None:
         text_browser = QTextBrowser(self.ui.CODtableWidget)
         text_browser.setText(link)
         text_browser.setFrameShape(QFrame.Shape.NoFrame)
@@ -251,14 +249,14 @@ class CODdeposit():
                 continue
             if key == '_publ_author_name':
                 value = delimit_string(value[0])
-            self.ui.DOIResolveTextLabel.setText(self.ui.DOIResolveTextLabel.text() + "{}:\t {}\n".format(key, value))
+            self.ui.DOIResolveTextLabel.setText(self.ui.DOIResolveTextLabel.text() + f"{key}:\t {value}\n")
             self.cif.set_pair_delimited(key, value)
             status = True
         if not status:
             self.ui.DOIResolveTextLabel.setText("Failed to get DOI information!")
 
-    def _init_deposit(self):
-        print("#### Deposition in '{}' mode...".format(self.deposition_type))
+    def _init_deposit(self) -> None:
+        print(f"#### Deposition in '{self.deposition_type}' mode...")
         self.ui.depositOutputTextBrowser.clear()
         self.switch_to_page('deposit')
         if len(self.username) < 2:
@@ -271,7 +269,7 @@ class CODdeposit():
             return
         self.cif.save()
         print('Saved cif to:', self.cif.filename)
-        self.ui.statusBar.showMessage('  File Saved:  {}'.format(self.cif.filename), 10 * 1000)
+        self.ui.statusBar.showMessage(f'  File Saved:  {self.cif.filename}', 10 * 1000)
         data, files = self.prepare_upload(username=self.username,
                                           password=self.password,
                                           author_name=self.author_name,
@@ -303,17 +301,19 @@ class CODdeposit():
         files = self._get_files_data_for_upload()
         if 'hkl' not in files and not self.cif.hkl_file \
             and not show_ok_cancel_warning(self.ui.Mainwidget, 'You are attempting to upload a CIF without hkl data.\n'
-                                           'Do you really want to proceed?'):
+                                                               'Do you really want to proceed?'):
             self.ui.depositOutputTextBrowser.setText('Deposition aborted.')
             return
-        self.ui.depositOutputTextBrowser.setText('Starting deposition of {} in "{}" mode ...'
-                                                 .format(self.cif.fileobj.name, deposition_type))
+        self.ui.depositOutputTextBrowser.setText(
+            f'Starting deposition of {self.cif.fileobj.name} in "{deposition_type}" mode ...'
+            )
         return data, files
 
-    def _get_files_data_for_upload(self) -> Dict:
+    def _get_files_data_for_upload(self) -> dict:
         if self.ui.depositHKLcheckBox.isChecked():
             files = {'cif': (self.cif.filename, io.StringIO(self.cif.cif_as_string()), 'multipart/form-data'),
-                     'hkl': (str(self.cif.finalcif_file.with_suffix('.hkl')), io.StringIO(self.cif.hkl_as_cif), 'multipart/form-data')}
+                     'hkl': (str(self.cif.finalcif_file.with_suffix('.hkl')), io.StringIO(self.cif.hkl_as_cif),
+                             'multipart/form-data')}
         elif self.hkl_file:
             files = {'cif': (self.cif.filename, io.StringIO(self.cif.cif_as_string()), 'multipart/form-data'),
                      'hkl': (self.hkl_file.name, self.hkl_file, 'multipart/form-data')}
@@ -323,8 +323,8 @@ class CODdeposit():
                      }
         return files
 
-    def _enrich_upload_data(self, author_email: str, author_name: str, data: Dict,
-                            deposition_type: str, embargo_time: str) -> Dict:
+    def _enrich_upload_data(self, author_email: str, author_name: str, data: dict,
+                            deposition_type: str, embargo_time: str) -> dict:
         if deposition_type == 'personal':
             data.update({'author_name' : author_name,
                          'author_email': author_email})
@@ -358,11 +358,11 @@ class CODdeposit():
         # logger.warning('Got response %r from %s', resp.text, resp.url)
         print(resp.text)
 
-    def _set_username(self, text: str):
+    def _set_username(self, text: str) -> None:
         self.settings.save_key_value('cod_username', text)
         self.username = text
 
-    def _set_password(self, text: str):
+    def _set_password(self, text: str) -> None:
         self.token_valid = False
         # Do not store this anywhere!
         if len(text) > 4:
@@ -373,7 +373,7 @@ class CODdeposit():
             self.ui.refreshDepositListPushButton.setDisabled(True)
         self.password = text
 
-    def _set_user_email(self, text: str):
+    def _set_user_email(self, text: str) -> None:
         self.settings.save_key_value('cod_user_email', text)
         self.user_email = text
 
@@ -390,7 +390,8 @@ class CODdeposit():
             cif = CifContainer(file)
             list_code = cif['_shelx_refln_list_code']
             if list_code != '4':
-                show_general_warning(self.ui.Mainwidget, 'Only plain hkl or fcf (LIST 4 style) files should be uploaded.')
+                show_general_warning(self.ui.Mainwidget,
+                                     'Only plain hkl or fcf (LIST 4 style) files should be uploaded.')
                 return
             self.hkl_file = io.StringIO(Path(file).read_text())
             self.hkl_file.name = Path(file).name
@@ -401,7 +402,7 @@ class CODdeposit():
 
 
 if __name__ == '__main__':
-    # x = cif_deposit()
+    #x = cif_deposit()
     # print(x.request.register_hook(log_response_text()))
     # print("Text from COD:", x.text, '##')
     # print(x.iter_content())

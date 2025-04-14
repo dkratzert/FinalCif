@@ -71,12 +71,10 @@ space-separated list of atom types and their counts, like 'C18 H19 N7 O8 S'.
 5. Missing or non-integer '_cell_formula_units_Z'.
 """
 
-from typing import List, Tuple
-
 from finalcif.cif.cif_file_io import CifContainer
 
 
-class DepositCheck():
+class DepositCheck:
     def __init__(self, cif: CifContainer):
         self.cif = cif
 
@@ -108,7 +106,7 @@ class DepositCheck():
                    )
         return tocheck
 
-    def list_missing_for_deposit(self, needs: Tuple) -> List[int]:
+    def list_missing_for_deposit(self, needs: tuple) -> list[int]:
         """
         Lists the index numbers of missing items from prepublication_needs.
         """
@@ -121,7 +119,7 @@ class DepositCheck():
     def needed_keywords_list(self, item):
         return [item in self.cif, hasattr(self.cif.get_loop(item), 'values')]
 
-    def is_complete_for_prepublication(self, needs: Tuple):
+    def is_complete_for_prepublication(self, needs: tuple):
         if not self.list_missing_for_deposit(needs):
             return True
         return False

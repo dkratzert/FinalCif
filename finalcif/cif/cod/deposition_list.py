@@ -7,14 +7,14 @@ TODO: save table in settings and resfresh it during each COD login. Otherwise us
 """
 
 
-class CODFetcher():
+class CODFetcher:
     def __init__(self, main_url: str):
         self.table_html = ''
         self.main_url = main_url
         self.authenticated = False
 
     @property
-    def _url(self):
+    def _url(self) -> str:
         return self.main_url + 'my_depositions.php'
 
     def get_token(self, username: str, password: str):
