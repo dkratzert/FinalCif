@@ -198,12 +198,12 @@ dependencies = [
     { name = "wheel" },
 ]
 
-[package.optional-dependencies]
+[package.dev-dependencies]
 dev = [
     { name = "pytest" },
+    { name = "ruff" },
 ]
 doc = [
-    { name = "ruff" },
     { name = "sphinx", version = "8.1.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "sphinx", version = "8.2.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
     { name = "sphinx-rtd-theme" },
@@ -225,19 +225,24 @@ requires-dist = [
     { name = "pyenchant" },
     { name = "pyside6", specifier = "<6.9" },
     { name = "pyside6-stubs" },
-    { name = "pytest", marker = "extra == 'dev'" },
     { name = "python-docx" },
     { name = "qtawesome" },
     { name = "qtpy" },
     { name = "requests" },
-    { name = "ruff", marker = "extra == 'doc'" },
     { name = "shelxfile" },
-    { name = "sphinx", marker = "extra == 'doc'" },
-    { name = "sphinx-rtd-theme", marker = "extra == 'doc'" },
     { name = "urllib3" },
     { name = "wheel" },
 ]
-provides-extras = ["dev", "doc"]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "pytest" },
+    { name = "ruff" },
+]
+doc = [
+    { name = "sphinx" },
+    { name = "sphinx-rtd-theme" },
+]
 
 [[package]]
 name = "gemmi"

@@ -40,9 +40,7 @@ class MyQPlainTextEdit(QPlainTextEdit):
         self.cif_key = ''
         self.edit_button = None
         self.default_palette = self.palette()
-        font = QFont()
-        font.setPointSize(self.document().defaultFont().pointSize() + 1)
-        self.setFont(font)
+        # self.increse_font_size()
         self.parent: MyCifTable = parent
         self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
         self.setFrameShape(QFrame.Shape.NoFrame)
@@ -52,6 +50,11 @@ class MyQPlainTextEdit(QPlainTextEdit):
         self.setWordWrapMode(QTextOption.WrapMode.WordWrap)
         self.setSizeAdjustPolicy(QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
         self.textChanged.connect(lambda: self.parent.resizeRowToContents(self.row))
+
+    def increse_font_size(self):
+        font = QFont()
+        font.setPointSize(self.document().defaultFont().pointSize() + 1)
+        self.setFont(font)
 
     def __str__(self):
         return self.toPlainText()

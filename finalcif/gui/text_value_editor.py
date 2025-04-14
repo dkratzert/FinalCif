@@ -24,7 +24,7 @@ class TextEditItem(QWidget):
         self.number_label = QLabel()
         self.vlayout.addWidget(self.number_label)
         self.textfield = SpellTextEdit(self)
-        self.set_font_size()
+        #self.set_font_size()
         self.vlayout.addWidget(self.checkbox)
         layout.addLayout(self.vlayout)
         layout.addWidget(self.textfield)
@@ -68,7 +68,7 @@ class MyTextTemplateEdit(QWidget):
         self.ui.cancelTextPushButton.clicked.connect(self._on_backbutton_clicked)
         if not self.ui.templatesListWidget.count():
             self.add_more_fiels()
-        self.set_font_size()
+        # self.set_font_size()
 
     def set_font_size(self):
         textedit_font: QtGui.QFont = self.ui.plainTextEdit.font()

@@ -134,7 +134,7 @@ class AppWindow(QMainWindow):
         self.connect_signals_and_slots()
         with suppress(Exception):
             self.make_button_icons()
-        self.set_font_sizes()
+        #self.set_font_sizes()
 
     @property
     def running_inside_unit_test(self):
@@ -621,17 +621,17 @@ class AppWindow(QMainWindow):
 
     def resizeEvent(self, a0: QtGui.QResizeEvent) -> None:
         """It called when the main window resizes."""
-        super().resizeEvent(a0)
         with suppress(AttributeError):
             self._savesize()
-        main_width = self.ui.Mainwidget.width()
-        left_frame = main_width * 0.22
-        left_frame = max(300, left_frame)
-        self.ui.LeftFrame.setMinimumWidth(int(left_frame))
+        #main_width = self.ui.Mainwidget.width()
+        #left_frame = main_width * 0.22
+        #left_frame = max(300, left_frame)
+        #self.ui.LeftFrame.setMinimumWidth(int(left_frame))
         # Not necessary here, it is done in MyCifTable
         # threading.Thread(target=self.ui.cif_main_table.resizeRowsToContents).start()
         # QtCore.QTimer(self).singleShot(0, self.ui.cif_main_table.resizeRowsToContents)
         self.setTextEditSizes()
+        super().resizeEvent(a0)
 
     def setTextEditSizes(self):
         for ui in [self.ui.Spacegroup_top_LineEdit, self.ui.CCDCNumLineEdit, self.ui.SumFormMainLineEdit]:
@@ -1062,7 +1062,7 @@ class AppWindow(QMainWindow):
         font.setFamily("Courier New")
         font.setStyleHint(QtGui.QFont.StyleHint.Monospace)
         # app.processEvents()
-        font.setPointSize(14)
+        #font.setPointSize(14)
         doc.setDefaultFont(font)
 
     def load_recent_file(self, file_index: int) -> None:
@@ -1376,7 +1376,7 @@ class AppWindow(QMainWindow):
         font.setStyleHint(QtGui.QFont.StyleHint.Monospace)
         # increases the pont size every time a bit more :)
         # size = font.pointSize()
-        font.setPointSize(14)
+        #font.setPointSize(14)
         doc.setDefaultFont(font)
         final_textedit.setLineWrapMode(QPlainTextEdit.LineWrapMode.NoWrap)
         final_textedit.setPlainText(self.cif.finalcif_file.read_text(encoding='utf-8', errors='ignore'))
@@ -1988,7 +1988,7 @@ class AppWindow(QMainWindow):
         font = doc.defaultFont()
         font.setFamily("Courier New")
         font.setStyleHint(QtGui.QFont.StyleHint.Monospace)
-        font.setPointSize(14)
+        #font.setPointSize(14)
         doc.setDefaultFont(font)
         textedit.setLineWrapMode(QPlainTextEdit.LineWrapMode.NoWrap)
         textedit.setReadOnly(True)

@@ -1013,7 +1013,7 @@
         <item row="2" column="0" colspan="13">
          <widget class="MyMainStackedWidget" name="MainStackedWidget">
           <property name="currentIndex">
-           <number>5</number>
+           <number>6</number>
           </property>
           <widget class="QWidget" name="page_MainTable">
            <layout class="QVBoxLayout" name="verticalLayout">
@@ -1501,7 +1501,6 @@
                  <property name="font">
                   <font>
                    <family>Courier New</family>
-                   <pointsize>11</pointsize>
                   </font>
                  </property>
                  <property name="frameShape">
@@ -1535,8 +1534,6 @@
                  <property name="font">
                   <font>
                    <family>Courier New</family>
-                   <pointsize>11</pointsize>
-                   <weight>75</weight>
                    <bold>true</bold>
                   </font>
                  </property>
@@ -1603,7 +1600,6 @@
                   <widget class="QLabel" name="wR2Label">
                    <property name="font">
                     <font>
-                     <weight>50</weight>
                      <italic>false</italic>
                      <bold>false</bold>
                     </font>
@@ -1627,7 +1623,6 @@
                   <widget class="QLabel" name="r1Label">
                    <property name="font">
                     <font>
-                     <weight>50</weight>
                      <italic>false</italic>
                      <bold>false</bold>
                     </font>
@@ -1685,7 +1680,6 @@
                   <widget class="QLabel" name="completeLabel">
                    <property name="font">
                     <font>
-                     <weight>50</weight>
                      <bold>false</bold>
                     </font>
                    </property>
@@ -1801,7 +1795,6 @@
                   <widget class="QLabel" name="dataReflnsLabel">
                    <property name="font">
                     <font>
-                     <weight>50</weight>
                      <bold>false</bold>
                     </font>
                    </property>
@@ -1949,7 +1942,6 @@
                   <widget class="QLabel" name="rintLabel">
                    <property name="font">
                     <font>
-                     <weight>50</weight>
                      <bold>false</bold>
                     </font>
                    </property>
@@ -1972,7 +1964,6 @@
                   <widget class="QLabel" name="rsigmaLabel">
                    <property name="font">
                     <font>
-                     <weight>50</weight>
                      <bold>false</bold>
                     </font>
                    </property>
@@ -2046,7 +2037,6 @@
                   <widget class="QLabel" name="dLabel">
                    <property name="font">
                     <font>
-                     <weight>50</weight>
                      <bold>false</bold>
                     </font>
                    </property>
@@ -3396,7 +3386,6 @@ Contact authors should always also appear as regular authors.</string>
                   <property name="font">
                    <font>
                     <family>Courier New</family>
-                    <pointsize>10</pointsize>
                    </font>
                   </property>
                   <property name="readOnly">
