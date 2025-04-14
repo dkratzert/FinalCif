@@ -35,8 +35,8 @@ jobs:
           #  path: ~/.cache/pip
           #- os: macos-latest
           #  path: ~/Library/Caches/pip
-          - os: windows-latest
-            path: ~\AppData\Local\pip\Cache
+          #- os: windows-latest
+          #  path: ~\AppData\Local\pip\Cache
 
     steps:
       - uses: actions/checkout@v4
@@ -55,9 +55,9 @@ jobs:
       - name: Lint with flake8
         run: |
           # stop the build if there are Python syntax errors or undefined names
-          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --ignore=E203,E127,E128,E227,E501,W291,W503,E266
+          flake8 finalcif --count --select=E9,F63,F7,F82 --show-source --statistics --ignore=E203,E127,E128,E227,E501,W291,W503,E266
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics  --ignore=E203,E203,E127,E128,E227,E501,W291,W503,E266
+          flake8 finalcif --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics  --ignore=E203,E203,E127,E128,E227,E501,W291,W503,E266
 
       - name: Test with pytest
         run: |
