@@ -22,11 +22,11 @@ class EquipmentTestCase(unittest.TestCase):
     def equipment_edit_click(self, field: str):
         listw = self.app.ui.EquipmentTemplatesListWidget
         self.app.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
-        item = listw.findItems(field, Qt.MatchStartsWith)[0]
+        item = listw.findItems(field, Qt.MatchFlag.MatchStartsWith)[0]
         listw.setCurrentItem(item)
         self.assertEqual(field, item.text())
         rect = listw.visualItemRect(item)
-        QTest.mouseClick(listw.viewport(), Qt.LeftButton, Qt.NoModifier, rect.center())
+        QTest.mouseClick(listw.viewport(), Qt.MouseButton.LeftButton, Qt.KeyboardModifier.NoModifier, rect.center())
         # This is necessary:
         self.app.equipment.edit_equipment_template()
 
@@ -52,11 +52,11 @@ class PropertiesTestCase(unittest.TestCase):
     def property_edit_click(self, field: str):
         listw = self.app.ui.PropertiesTemplatesListWidget
         self.app.ui.PropertiesTemplatesListWidget.setCurrentRow(0)
-        item = listw.findItems(field, Qt.MatchStartsWith)[0]
+        item = listw.findItems(field, Qt.MatchFlag.MatchStartsWith)[0]
         listw.setCurrentItem(item)
         self.assertEqual(field, item.text())
         rect = listw.visualItemRect(item)
-        QTest.mouseClick(listw.viewport(), Qt.LeftButton, Qt.NoModifier, rect.center())
+        QTest.mouseClick(listw.viewport(), Qt.MouseButton.LeftButton, Qt.KeyboardModifier.NoModifier, rect.center())
         # self.app.properties.edit_property_template()
         self.app.ui.EditPropertyTemplateButton.click()
 

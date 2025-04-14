@@ -24,7 +24,7 @@ class Column(enum.IntEnum):
 
 
 class CifOrder(QtWidgets.QGroupBox):
-    def __init__(self, parent=None, cif_file: Path | None = None):
+    def __init__(self, parent=None):
         super().__init__(parent)
         self.ui = Ui_CifOrderForm()
         self.ui.setupUi(self)
@@ -32,8 +32,6 @@ class CifOrder(QtWidgets.QGroupBox):
         self.settings = None
         self.essential_keys = cif_order.essential_keys
         self.set_keys(cif_order.order)
-        if cif_file is not None:
-            self.set_keys_from_cif(cif_file)
         self.connect_signals_and_slots()
 
     def set_order_from_settings(self, settings: FinalCifSettings = None):
@@ -43,9 +41,8 @@ class CifOrder(QtWidgets.QGroupBox):
             essentials = settings.load_settings_list('cif_order', 'essentials')
             self.essential_keys = essentials
             if order:
+                self.essential_keys = essentials
                 self.set_keys(order)
-            else:
-                self.set_keys(cif_order.order)
 
     def connect_signals_and_slots(self):
         self.ui.importCifPushButton.clicked.connect(self.import_cif)
@@ -122,8 +119,7 @@ class CifOrder(QtWidgets.QGroupBox):
         essentials = []
         for row in range(self.ui.cifOrderTableWidget.rowCount()):
             item = self.ui.cifOrderTableWidget.item(row, Column.key)
-            essential = item.checkState()
-            if essential:
+            if item.checkState() == QtCore.Qt.CheckState.Checked:
                 essentials.append(item.text())
         return essentials
 
@@ -176,8 +172,8 @@ class CifOrder(QtWidgets.QGroupBox):
 
     def restore_default(self):
         self.essential_keys = cif_order.essential_keys
-        self.settings.save_settings_list('cif_order', 'order', [])
-        self.settings.save_settings_list('cif_order', 'essentials', [])
+        self.settings.save_settings_list('cif_order', 'order', cif_order.order)
+        self.settings.save_settings_list('cif_order', 'essentials', cif_order.essential_keys)
         self.set_keys(cif_order.order)
 
     def open_add_cif_key(self):

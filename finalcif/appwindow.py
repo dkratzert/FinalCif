@@ -75,12 +75,16 @@ class AppWindow(QMainWindow):
 
     def __init__(self, file: Path | None = None):
         super().__init__()
+        self.thread_download = None
+        self.ckf = None
+        self.thread_version = None
+        self.worker = None
         self.setAttribute(QtCore.Qt.WidgetAttribute.WA_DeleteOnClose)
         # This prevents some things to happen during unit tests:
         # Open of target dir of shred cif,
         # open report doc,
         # get check.def from platon server
-        self.sources: dict[str, tuple[str | None]] | None = None
+        self.sources: dict[str, tuple[str, str | None]] | None = None
         self.cif: CifContainer | None = None
         self.report_picture_path: Path | None = None
         self.loopcreate: LoopCreator | None = None
@@ -321,18 +325,18 @@ class AppWindow(QMainWindow):
         self.ui.AuthorEditPushButton.clicked.connect(self._on_go_to_loops_page)
         self.ui.AuthorEditPushButton.clicked.connect(lambda x: self.ui.TemplatesStackedWidget.setCurrentIndex(1))
         self.ui.AuthorEditPushButton.clicked.connect(lambda x: self.ui.LoopsTabWidget.setCurrentIndex(0))
-        ## checkcif
+        # checkcif
         self.ui.CheckcifStartButton.clicked.connect(self.open_checkcif_page)
         self.ui.CheckcifButton.clicked.connect(self.do_offline_checkcif)
         self.ui.CheckcifHTMLOnlineButton.clicked.connect(self.do_html_checkcif)
         self.ui.CheckcifPDFOnlineButton.clicked.connect(self.do_pdf_checkcif)
         self.ui.BackFromPlatonPushButton.clicked.connect(self.back_to_main_noload)
         self.ui.SavePushButton.clicked.connect(self.save_responses)
-        ## open, import
+        # open, import
         self.ui.SelectCif_PushButton.clicked.connect(self.load_cif_file)
         self.ui.SaveCifButton.clicked.connect(self.save_cif_and_display)
         self.ui.ImportCifPushButton.clicked.connect(self.import_additional_cif)
-        ## report
+        # report
         self.ui.SaveFullReportButton.clicked.connect(self.make_report_tables)
         self.ui.RecentComboBox.currentIndexChanged.connect(self.load_recent_file)
         self.ui.cif_main_table.row_deleted.connect(self._deleted_row)
@@ -387,11 +391,11 @@ class AppWindow(QMainWindow):
     def finalcif_changes_filename(self):
         return self.cif.finalcif_file_prefixed(prefix='', suffix='-finalcif_changes.cif', force_strip=True)
 
-    def _on_go_to_loops_page(self):
+    def _on_go_to_loops_page(self) -> None:
         self.make_loops_tables()
         self.ui.MainStackedWidget.go_to_loops_page()
 
-    def export_all_templates(self, filename: Path = None):
+    def export_all_templates(self, filename: Path | None = None):
         import pickle
         if not filename:
             filename, _ = QFileDialog.getSaveFileName(dir=str(Path(self.get_last_workdir()).joinpath(
@@ -407,11 +411,12 @@ class AppWindow(QMainWindow):
                      'authors'   : self.authors.export_raw_data(),
                      }
         try:
-            pickle.dump(templates, open(filename, "wb"))
+            with open(filename, "wb") as f:
+                pickle.dump(templates, f)
         except pickle.PickleError as e:
             self.status_bar.show_message(f'Saving templates failed: {e!s}')
 
-    def import_all_templates(self, filename: Path = None):
+    def import_all_templates(self, filename: Path | None = None):
         import pickle
         if not filename:
             filename, _ = QFileDialog.getOpenFileName(dir=self.get_last_workdir(),
@@ -1756,7 +1761,7 @@ class AppWindow(QMainWindow):
         except Exception:
             print('Molecule view crashed!')
 
-    def _show_shelx_file(self):
+    def _show_shelx_file(self) -> None:
         if self.cif.res_file_data:
             self.ui.shelx_warn_TextEdit.clear()
             if hasattr(self.cif.shx, 'restraint_errors') and self.cif.shx.restraint_errors:
@@ -1764,7 +1769,7 @@ class AppWindow(QMainWindow):
                 self.ui.shelx_warn_TextEdit.setPlainText('Errors were found in the SHELX file:\n')
                 self.ui.shelx_warn_TextEdit.appendPlainText('\n'.join(self.cif.shx.restraint_errors))
                 vScrollBar = self.ui.shelx_warn_TextEdit.verticalScrollBar()
-                vScrollBar.triggerAction(QScrollBar.SliderToMinimum)
+                vScrollBar.triggerAction(QScrollBar.SliderAction.SliderToMinimum)
             else:
                 self.ui.shelx_warn_TextEdit.hide()
             self.ui.shelx_TextEdit.setPlainText(cif.as_string(self.cif.res_file_data))
@@ -1779,8 +1784,7 @@ class AppWindow(QMainWindow):
         else:
             self.ui.molGroupBox.setTitle('Asymmetric Unit')
             with suppress(Exception):
-                atoms = [x for x in self.cif.atoms_orth]
-                self.ui.render_widget.open_molecule(atoms, labels=self.ui.labelsCheckBox.isChecked())
+                self.ui.render_widget.open_molecule(list(self.cif.atoms_orth), labels=self.ui.labelsCheckBox.isChecked())
 
     def grow_molecule(self):
         atoms = tuple(self.cif.atoms_fract)
@@ -1809,10 +1813,9 @@ class AppWindow(QMainWindow):
             Z = 1
         csystem = self.cif.crystal_system
         bad = False
-        if Z and Z > 20.0 and (csystem == 'tricilinic' or csystem == 'monoclinic'):
+        if Z and Z > 20.0 and (csystem in {'tricilinic', 'monoclinic'}):
             bad = True
-        if Z and Z > 32.0 and (csystem == 'orthorhombic' or csystem == 'tetragonal' or csystem == 'trigonal'
-                               or csystem == 'hexagonal' or csystem == 'cubic'):
+        if Z and Z > 32.0 and (csystem in {'orthorhombic', 'tetragonal', 'trigonal', 'hexagonal', 'cubic'}):
             bad = True
         if bad:
             bad_z_message(self, Z)
@@ -1987,10 +1990,10 @@ class AppWindow(QMainWindow):
         font.setStyleHint(QtGui.QFont.StyleHint.Monospace)
         font.setPointSize(14)
         doc.setDefaultFont(font)
-        textedit.setLineWrapMode(QPlainTextEdit.NoWrap)
+        textedit.setLineWrapMode(QPlainTextEdit.LineWrapMode.NoWrap)
         textedit.setReadOnly(True)
 
-    def _go_to_new_loop_page(self):
+    def _go_to_new_loop_page(self) -> None:
         self.loopcreate = LoopCreator(parent=self, cif=self.cif)
         self.ui.LoopsTabWidget.addTab(self.loopcreate, 'Create Loops')
         self.ui.LoopsTabWidget.setCurrentIndex(self.ui.LoopsTabWidget.count() - 1)
@@ -1999,11 +2002,11 @@ class AppWindow(QMainWindow):
         self.ui.deleteLoopButton.hide()
         self.loopcreate.saveLoopPushButton.clicked.connect(self.save_new_loop_to_cif)
 
-    def _on_delete_current_loop(self):
+    def _on_delete_current_loop(self) -> None:
         current_tab_index = self.ui.LoopsTabWidget.currentIndex()
         current_table_view: MyQTableView = self.ui.LoopsTabWidget.widget(current_tab_index)
         try:
-            header_model: LoopTableModel = current_table_view.horizontalHeader().model()
+            header_model: LoopTableModel | QtCore.QAbstractItemModel = current_table_view.horizontalHeader().model()
         except AttributeError:
             # Not a QTableView
             return

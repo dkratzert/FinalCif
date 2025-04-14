@@ -43,7 +43,7 @@ class TestCheckCifHTML(unittest.TestCase):
 
     def equipment_click(self, field: str):
         self.myapp.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
-        item = self.myapp.ui.EquipmentTemplatesListWidget.findItems(field, Qt.MatchStartsWith)[0]
+        item = self.myapp.ui.EquipmentTemplatesListWidget.findItems(field, Qt.MatchFlag.MatchStartsWith)[0]
         self.myapp.ui.EquipmentTemplatesListWidget.setCurrentItem(item)
         self.myapp.equipment.load_selected_equipment()
 
@@ -56,7 +56,7 @@ class TestCheckCifHTML(unittest.TestCase):
         self.myapp.ui.cif_main_table.setText(key='_chemical_absolute_configuration', txt='ad', column=Column.EDIT)
         # Remember: This test is without structure factors!
         self.myapp.ui.structfactCheckBox.setChecked(True)
-        QTest.mouseClick(self.myapp.ui.CheckcifHTMLOnlineButton, Qt.LeftButton, Qt.NoModifier)
+        QTest.mouseClick(self.myapp.ui.CheckcifHTMLOnlineButton, Qt.MouseButton.LeftButton, Qt.KeyboardModifier.NoModifier)
         time.sleep(5)
         # this is the file on github:
         html_as_it_is_expected = self.myapp.cif.finalcif_file_prefixed(prefix='checkcif-', suffix='-test.html')
