@@ -108,10 +108,10 @@ class MoleculeWidget(QtWidgets.QWidget):
     def save_image(self, filename: Path, image_scale=1.5):
         image = QImage(self.size() * image_scale, QImage.Format.Format_RGB32)
         image.fill(Qt.GlobalColor.white)
-        #painter = QPainter(image)
-        #painter.scale(image_scale, image_scale)
-        self.render(image)
-        #painter.end()
+        painter = QPainter(image)
+        painter.scale(image_scale, image_scale)
+        self.render(painter, QtCore.QPoint(0, 0))
+        painter.end()
         image.save(str(filename.resolve()))
 
     def rotate_x(self):
