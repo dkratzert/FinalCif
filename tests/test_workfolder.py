@@ -50,13 +50,14 @@ class TestWorkfolder(unittest.TestCase):
         self.testcif = (data / 'examples/work/cu_BruecknerJK_153F40_0m.cif').resolve()
         # TODO: Adapt this to the bahavior with the changes file:
         (data / 'examples/work/cu_BruecknerJK_153F40_0m-finalcif_changes.cif').unlink(missing_ok=True)
-        self.myapp = AppWindow(file=self.testcif)
+        self.myapp = AppWindow()
+        self.myapp.settings.save_settings_list('cif_order', 'order', [])
+        self.myapp.settings.save_settings_list('cif_order', 'essentials', [])
+        self.myapp.load_cif_file(self.testcif)
         self.myapp.ui.trackChangesCifCheckBox.setChecked(True)
         self.myapp.equipment.import_equipment_from_file(str(data.parent / 'test-data/Crystallographer_Details.cif'))
         self.myapp.setWindowIcon(QIcon('./icon/multitable.png'))
         self.myapp.setWindowTitle(f'FinalCif v{VERSION}')
-        self.myapp.settings.save_settings_list('cif_order', 'order', [])
-        self.myapp.settings.save_settings_list('cif_order', 'essentials', [])
 
     def tearDown(self) -> None:
         self.testcif.with_suffix('.ins').unlink(missing_ok=True)
