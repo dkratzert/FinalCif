@@ -46,7 +46,7 @@ class FinalCifSettings:
         pos: QPoint = self.settings.value("position", type=QPoint)
         # noinspection PyTypeChecker
         size: QSize = self.settings.value("size", type=QSize)
-        size = size if size.width() > 0 else QSize(900, 850)
+        size = size if size and size.width() > 0 else QSize(900, 850)
         pos = pos if pos.x() > 0 else QSize(20, 20)
         maximized = self.settings.value('maximized')
         maxim = False
