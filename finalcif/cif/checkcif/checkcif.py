@@ -150,7 +150,7 @@ class MyHTMLParser(HTMLParser):
         self.pdf_link = ''
         self.structure_factor_report = ''
         self.imageurl = ''
-        super(MyHTMLParser, self).__init__()
+        super().__init__()
         self.vrf = ''
         self.alert_levels = []
         self.feed(data)
