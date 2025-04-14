@@ -30,24 +30,24 @@ jobs:
         include:
           #- os: ubuntu-latest
           #  path: ~/.cache/pip
-          - os: macos-latest
-            path: ~/Library/Caches/pip
+          #- os: macos-latest
+          #  path: ~/Library/Caches/pip
           - os: windows-latest
             path: ~\AppData\Local\pip\Cache
 
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+
+      - name: Install uv and set the python version
+        uses: astral-sh/setup-uv@v5
         with:
           python-version: ${{ matrix.python-version }}
-          architecture: x64
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          python -m pip install flake8 pytest
+      - name: Install the project
+        run: uv sync --all-extras --dev
+
+      - name: Set up testing
+        run: uv add flake8 pytest
 
       - name: Lint with flake8
         run: |
@@ -61,11 +61,11 @@ jobs:
           if [ "$RUNNER_OS" == "Linux" ]; then
             # Ubuntu needs this to be able to start pyqt5
             sudo apt-get update 
-            sudo apt-get -qq install libxcb-xinerama0 pyqt5-dev-tools 
+            sudo apt-get -qq install libxcb-xinerama0 pyqt6-dev-tools
             # There is no enchant?
             # sudo apt-get -qq install enchant
             xvfb-run --auto-servernum pytest
           else
-            pytest
+            uv run pytest tests
           fi
 

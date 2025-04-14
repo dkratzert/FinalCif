@@ -1,13 +1,11 @@
 [build-system]
-requires = ["hatchling", "hatch-requirements-txt"]
+requires = ["hatchling"]
 build-backend = "hatchling.build"
 
-[tool.hatch.metadata.hooks.requirements_txt]
-files = ["requirements.txt"]
 
 [project]
 name = "finalcif"
-dynamic = ["version", "dependencies"]
+dynamic = ["version"]
 authors = [
     { name = "Daniel Kratzert", email = "dkratzert@gmx.de" },
 ]
@@ -21,6 +19,41 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Chemistry",
     "Development Status :: 5 - Production/Stable",
     "Programming Language :: Python :: 3",
+]
+
+dependencies = [
+    "wheel",
+    "certifi",
+    "chardet",
+    "gemmi<0.7.0",
+    "html2text",
+    "lxml",
+    "pefile",
+    "pybind11",
+    "pyside6<6.9",
+    "pyside6-stubs",
+    "python-docx",
+    "QtAwesome",
+    "QtPy",
+    "requests",
+    "urllib3",
+    "docxtpl",
+    "shelxfile",
+    "crossrefapi",
+    "numpy",
+    "pyenchant",
+    "hatchling>=1.27.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest",
+    "ruff"
+]
+
+doc = [
+    "sphinx",
+    "sphinx-rtd-theme",
 ]
 
 [project.urls]
