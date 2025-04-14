@@ -3,7 +3,7 @@ from __future__ import annotations
 import enum
 import sys
 from pathlib import Path
-from typing import List, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 import gemmi
 from PySide6 import QtWidgets, QtCore
@@ -24,7 +24,7 @@ class Column(enum.IntEnum):
 
 
 class CifOrder(QtWidgets.QGroupBox):
-    def __init__(self, parent=None, cif_file: Path = None):
+    def __init__(self, parent=None, cif_file: Path | None = None):
         super().__init__(parent)
         self.ui = Ui_CifOrderForm()
         self.ui.setupUi(self)
@@ -140,7 +140,7 @@ class CifOrder(QtWidgets.QGroupBox):
     def set_essentials(self, essentials):
         self.essential_keys = essentials
 
-    def set_keys(self, order_keys: List[str] = None):
+    def set_keys(self, order_keys: list[str] | None = None):
         self.ui.cifOrderTableWidget.setRowCount(0)
         row = 0
         for key_text in order_keys:
@@ -153,7 +153,7 @@ class CifOrder(QtWidgets.QGroupBox):
 
     def set_row_text(self, key_text: str, row: int) -> None:
         item1 = CifOrderItem(key_text)
-        item1.setFlags(item1.flags() | QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemFlag.ItemIsEnabled)
+        item1.setFlags(item1.flags() | QtCore.Qt.ItemFlag.ItemIsUserCheckable | QtCore.Qt.ItemFlag.ItemIsEnabled)
         item1.setText(key_text)
         if key_text in self.essential_keys:
             item1.setEssential(True)
@@ -161,7 +161,7 @@ class CifOrder(QtWidgets.QGroupBox):
             item1.setEssential(False)
         self.ui.cifOrderTableWidget.setItem(row, Column.key, item1)
 
-    def set_keys_from_settings(self, keys: List[str]):
+    def set_keys_from_settings(self, keys: list[str]):
         self.set_keys(keys)
 
     def import_cif(self):
@@ -213,7 +213,7 @@ class CifOrder(QtWidgets.QGroupBox):
         except PermissionError:
             if Path(filename).is_dir():
                 return
-            show_general_warning(self, 'No permission to write file to {}'.format(Path(filename).resolve()))
+            show_general_warning(self, f'No permission to write file to {Path(filename).resolve()}')
 
 
 if __name__ == "__main__":

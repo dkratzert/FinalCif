@@ -1,5 +1,4 @@
 from html.parser import HTMLParser
-from typing import List, Dict, Union
 
 
 class MyCODStructuresParser(HTMLParser):
@@ -9,7 +8,7 @@ class MyCODStructuresParser(HTMLParser):
         self._table_body = False
         self._tag = ''
         self._structure = self.init_structure()
-        self.structures: List = []
+        self.structures: list = []
         self._column = 0
         self.token = ''
 
@@ -20,7 +19,7 @@ class MyCODStructuresParser(HTMLParser):
                          f'information_card.php?id={st["number"]}&CODSESSION={self.token}\n')
         return txt
 
-    def init_structure(self) -> Dict[str, Union[str, None]]:
+    def init_structure(self) -> dict[str, str | None]:
         return {'number': None, 'date': None, 'time': None}
 
     def handle_starttag(self, tag: str, attrs: str):

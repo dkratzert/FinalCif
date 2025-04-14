@@ -13,8 +13,8 @@ from pathlib import Path
 from finalcif.datafiles.utils import get_file_to_parse
 
 
-class SaintListFile():
-    def __init__(self, name_patt: str, directory: Path = None, file_to_parse: Path = None):
+class SaintListFile:
+    def __init__(self, name_patt: str, directory: Path | None = None, file_to_parse: Path | None = None):
         self.cell_reflections = ''
         self.cell_res_min_2t = 0.0
         self.cell_res_max_2t = 0.0
@@ -114,20 +114,20 @@ class SaintListFile():
         return float(self.cell_res_max_2t) / 2.0
 
     def __repr__(self):
-        out = 'Version: {}, file: {}\n'.format(self.version, self.filename.name)
-        out += 'Number of samples: {} with {} components.\n'.format(self.nsamples, self.components_firstsample)
-        out += 'Used Reflections: {}\n'.format(self.cell_reflections)
-        out += 'min thata: {}\n'.format(self.cell_res_min_theta)
-        out += 'max theta: {}\n'.format(self.cell_res_max_theta)
-        out += 'min 2 theta: {}\n'.format(self.cell_res_min_2t)
-        out += 'max 2 theta: {}\n'.format(self.cell_res_max_2t)
+        out = f'Version: {self.version}, file: {self.filename.name}\n'
+        out += f'Number of samples: {self.nsamples} with {self.components_firstsample} components.\n'
+        out += f'Used Reflections: {self.cell_reflections}\n'
+        out += f'min thata: {self.cell_res_min_theta}\n'
+        out += f'max theta: {self.cell_res_max_theta}\n'
+        out += f'min 2 theta: {self.cell_res_min_2t}\n'
+        out += f'max 2 theta: {self.cell_res_max_2t}\n'
         if self.aquire_software:
-            out += 'Aquire software: {}\n'.format(self.aquire_software)
-        out += 'Twin integration {}\n'.format(self.is_twin)
+            out += f'Aquire software: {self.aquire_software}\n'
+        out += f'Twin integration {self.is_twin}\n'
         if self.is_twin:
             out += 'With twin law: \n'
-            for n, law in enumerate(self.twinlaw, 1):
-                out += "{}:\n".format(law)
+            for _, law in enumerate(self.twinlaw, 1):
+                out += f"{law}:\n"
                 out += '\n'.join(['{:>7.4f} {:>7.4f} {:>7.4f}'.format(*x) for x in self.twinlaw[law]])
                 out += '\n'
         return out

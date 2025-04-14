@@ -16,7 +16,6 @@ _journal_page_first or _journal_article_reference
 Strings in the result are not delimited!
 """
 from pprint import pprint
-from typing import List, Dict
 
 from crossref.restful import Works
 
@@ -37,13 +36,13 @@ def resolve_doi(doi: str) -> dict:
             }
 
 
-def get_first_page(data: Dict[str, str]) -> str:
+def get_first_page(data: dict[str, str]) -> str:
     if not data or 'page' not in data:
         return ''
     return data['page'].split('-')[0]
 
 
-def get_journal_name(data: Dict[str, List]) -> str:
+def get_journal_name(data: dict[str, list]) -> str:
     if not data or 'container-title' not in data:
         return ''
     if data['container-title']:
@@ -51,21 +50,21 @@ def get_journal_name(data: Dict[str, List]) -> str:
     return ''
 
 
-def get_publication_year(data: Dict[str, Dict]) -> str:
+def get_publication_year(data: dict[str, dict]) -> str:
     if not data or 'issued' not in data or 'date-parts' not in data['issued']:
         return ''
     return str(data['issued']['date-parts'][0][0])
 
 
-def get_paper_title(data: Dict[str, List]) -> str:
+def get_paper_title(data: dict[str, list]) -> str:
     if not data or 'title' not in data:
         return ''
     return data['title'][0]
 
 
-def get_names_from_doi(data: Dict[str, List]) -> List:
+def get_names_from_doi(data: dict[str, list]) -> list:
     authors = []
-    if not data or not 'author' in data:
+    if not data or 'author' not in data:
         return []
     for person in data['author']:
         name = '{}, {}'.format(person['family'] if 'family' in person else '',

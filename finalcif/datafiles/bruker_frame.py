@@ -15,7 +15,7 @@ from pprint import pformat
 from finalcif.tools.misc import isnumeric
 
 
-class BrukerFrameHeader():
+class BrukerFrameHeader:
     def __init__(self, basename: str, searchpath: Path = Path(__file__).parent.parent):
         basename = re.sub(r'_[a-z]$', '', basename)
         frames = searchpath.glob('{}{}*.sfrm'.format('*' if basename else '', basename))
@@ -30,10 +30,10 @@ class BrukerFrameHeader():
         self.header = {}
         if self._fileobj.is_file():
             with open(str(self._fileobj.resolve()), encoding='ascii', errors='ignore', mode='r') as file:
-                for n in range(96):
-                    l = file.read(80).strip()
-                    key = l[:7].strip()
-                    self.header[key] = l[8:].strip()  # value
+                for _ in range(96):
+                    line = file.read(80).strip()
+                    key = line[:7].strip()
+                    self.header[key] = line[8:].strip()  # value
 
     def __repr__(self):
         return pformat(self.header, indent=2, width=120)

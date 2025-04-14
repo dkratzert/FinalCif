@@ -39,7 +39,7 @@ def process_cif_dict(cdic):
         if '_name' in cdic[x]:
             item = cdic[x]
             name = item['_name']
-            if isinstance(item, dict) and not '[]' in name:
+            if isinstance(item, dict) and '[]' not in name:
                 definition = escape(item['_definition'])
                 example = item.get('_example', '')
                 example_detail = item.get('_example_detail', '')
@@ -51,17 +51,17 @@ def process_cif_dict(cdic):
                         example = '\n'.join([str(x) for x in example])
                     if isinstance(example, list) and enumeration_detail:
                         example = '\n'.join(
-                            ["{}\t\t{}\n".format(str(x), str(y)) for x, y in zip(example, example_detail)])
+                            [f"{x!s}\t\t{y!s}\n" for x, y in zip(example, example_detail, strict=True)])
                     example = format_definition(escape(str(example)))
-                    definition = '{}\n\n<h3>Example:</h3>\n{}'.format(definition, example)
+                    definition = f'{definition}\n\n<h3>Example:</h3>\n{example}'
                 if enumeration:
                     if isinstance(enumeration, list) and not enumeration_detail:
                         enumeration = '\n'.join([str(x) for x in enumeration])
                     if isinstance(enumeration, list) and enumeration_detail:
                         enumeration = '\n'.join(
-                            ["{}\n\t{}\n".format(str(x), str(y)) for x, y in zip(enumeration, enumeration_detail)])
+                            [f"{x!s}\n\t{y!s}\n" for x, y in zip(enumeration, enumeration_detail)])
                     enumeration = format_definition(escape(str(enumeration)))
-                    definition = '{}\n\n<h3>Example:</h3>\n{}'.format(definition, enumeration)
+                    definition = f'{definition}\n\n<h3>Example:</h3>\n{enumeration}'
                 type_format = item.get("_type", "")
                 enum_range = item.get('_enumeration_range', '')
                 if isinstance(name, list):

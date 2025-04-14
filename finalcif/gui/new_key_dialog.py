@@ -1,6 +1,6 @@
 import re
 
-from PySide6 import QtWidgets, QtGui
+from PySide6 import QtWidgets, QtGui, QtCore
 from PySide6.QtCore import Signal, Qt
 
 from finalcif.cif import all_cif_dicts
@@ -16,8 +16,9 @@ class NewKey(QtWidgets.QMainWindow, Ui_AddKeyWindow):
         self.searchLineEdit.textChanged.connect(self.search)
         self.addKeyPushButton.clicked.connect(self.add_keys)
         self.cancelPushButton.clicked.connect(lambda: self.close())
-        self.keysListWidget.addItems([''] + list(all_cif_dicts.cif_all_dict.keys()))
-        self.keysListWidget.item(0).setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled | QtCore.Qt.ItemFlag.ItemIsEditable)
+        self.keysListWidget.addItems(['', *list(all_cif_dicts.cif_all_dict.keys())])
+        self.keysListWidget.item(0).setFlags(
+            QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled | QtCore.Qt.ItemFlag.ItemIsEditable)
         self.keysListWidget.item(0).setText('Double-click to add custom key.')
         self.keysListWidget.item(0).setForeground(QtGui.QBrush(QtGui.QColor("gray")))
         self.keysListWidget.itemDoubleClicked.connect(self.item_clicked)

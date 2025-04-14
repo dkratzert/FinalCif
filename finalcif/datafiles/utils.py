@@ -10,7 +10,7 @@ import os
 from pathlib import Path
 
 
-class ParserMixin():
+class ParserMixin:
     """
     A Mxin class for all file parsers for data/list files.
     """
@@ -20,7 +20,7 @@ class ParserMixin():
         self.filename = self._fileobj.resolve()
 
 
-def get_file_to_parse(fileobj: Path = None, name_pattern: str = '', base_directory: Path = '.'):
+def get_file_to_parse(fileobj: Path | None = None, name_pattern: str = '', base_directory: Path = '.'):
     """
     Either fileobjs is given, then the parser uses this file, or a name pattern is given, then
     a file is searched in base_directory in order to parse this file.
@@ -46,14 +46,14 @@ def get_file_to_parse(fileobj: Path = None, name_pattern: str = '', base_directo
                 return fileobj
 
 
-class DSRFind():
+class DSRFind:
     def __init__(self, resfile):
         self.resflie = resfile
         self.dsr_used = False
         if resfile:
             self.parse_res()
 
-    def _isthere(self):
+    def _isthere(self) -> bool:
         self.dsr_used = True
         return True
 

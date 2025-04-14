@@ -7,7 +7,7 @@
 #  ----------------------------------------------------------------------------
 
 
-class WorkDataMixin():
+class WorkDataMixin:
     """
     A class to hold data from work folder etc.
     """

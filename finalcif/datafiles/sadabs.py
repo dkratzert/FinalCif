@@ -19,7 +19,7 @@ from finalcif.tools.misc import to_float, to_int
 #
 
 @dataclasses.dataclass
-class Transmission():
+class Transmission:
     tmin: float = None
     tmax: float = None
 
@@ -27,14 +27,14 @@ class Transmission():
         return f'min: {self.tmin}, max: {self.tmax}'
 
 
-class Dataset():
+class Dataset:
     def __init__(self):
-        self.written_reflections: Optional[int] = None
-        self.hklfile: Optional[str] = None
+        self.written_reflections: int | None = None
+        self.hklfile: str | None = None
         self.transmission = Transmission()
-        self.mu_r: Optional[str] = None
-        self.point_group_merge: Optional[str] = '1'
-        self.filetype: Optional[int] = 4
+        self.mu_r: str | None = None
+        self.point_group_merge: str | None = '1'
+        self.filetype: int | None = 4
         self.domain: str = '1'
         self.numerical: bool = False
         self.rint1 = None
@@ -53,7 +53,7 @@ class Dataset():
         return out
 
 
-class Sadabs():
+class Sadabs:
     """
     This is a SADABS/TWINABS file parsing object.
     """
@@ -61,7 +61,7 @@ class Sadabs():
     _rint_regex = re.compile(r'^.*Rint\s=.*observations and')
     _rint3sig_regex = re.compile(r'^.*Rint\s=.*observations with')
 
-    def __init__(self, basename: str = '', searchpath: Path = Path(__file__).parent.parent, fileobj: Path = None):
+    def __init__(self, basename: str = '', searchpath: Path = Path(__file__).parent.parent, fileobj: Path | None = None):
         """
         """
         self.faces = False

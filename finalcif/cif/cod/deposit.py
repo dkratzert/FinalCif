@@ -237,7 +237,7 @@ class CODdeposit():
     def _set_link_to_cell(self, link, row):
         text_browser = QTextBrowser(self.ui.CODtableWidget)
         text_browser.setText(link)
-        text_browser.setFrameShape(QFrame.NoFrame)
+        text_browser.setFrameShape(QFrame.Shape.NoFrame)
         text_browser.setOpenExternalLinks(True)
         text_browser.setStyleSheet("QTextEdit { padding-left:13; padding-top:2; padding-bottom:5; padding-right:10}")
         self.ui.CODtableWidget.setCellWidget(row, 0, text_browser)

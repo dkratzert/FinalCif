@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 
 #  ----------------------------------------------------------------------------
 #  "THE BEER-WARE LICENSE" (Revision 42):
@@ -25,13 +24,13 @@ def read_file_to_list(p4pfile: str) -> list:
     p4plist = []
     try:
         p4plist = Path(p4pfile).read_text().splitlines(keepends=False)
-    except IOError as e:
+    except OSError as e:
         print(e)
-        print('*** CANNOT READ FILE {} ***'.format(p4pfile))
+        print(f'*** CANNOT READ FILE {p4pfile} ***')
     return p4plist
 
 
-class P4PFile():
+class P4PFile:
 
     def __init__(self, basename: str = '', searchpath: Path = Path(__file__).parent.parent):
         self.fileid = None
@@ -109,7 +108,7 @@ class P4PFile():
                     pass
 
     @staticmethod
-    def to_float_list(items):
+    def to_float_list(items) -> list[float]:
         return [float(x) for x in items]
 
     @property

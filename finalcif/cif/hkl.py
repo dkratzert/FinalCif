@@ -3,13 +3,13 @@ from collections import namedtuple
 from pathlib import Path
 
 import gemmi
-import numpy as numpy
+import numpy as np
 from gemmi.cif import Loop, Document, Style
 
 Limit = namedtuple('Limit', 'h_max, h_min, k_max, k_min, l_max, l_min')
 
 
-class HKL():
+class HKL:
     """
     loop_
       _refln_index_h
@@ -64,7 +64,7 @@ class HKL():
     def __repr__(self) -> str:
         return self.hkl_as_cif[:250]
 
-    def _trim_header_to_hkl_width(self, loop_header):
+    def _trim_header_to_hkl_width(self, loop_header: list[str]) -> list[str]:
         hkl_with = self._get_hkl_width()
         trimmed_header = loop_header[:hkl_with]
         return trimmed_header
@@ -78,8 +78,8 @@ class HKL():
     def get_hkl_min_max(self) -> Limit:
         hkl: gemmi.ReflnBlock = gemmi.hkl_cif_as_refln_block(self.block)
         miller = hkl.make_miller_array()
-        h_max, k_max, l_max = numpy.max(miller, axis=0)
-        h_min, k_min, l_min = numpy.min(miller, axis=0)
+        h_max, k_max, l_max = np.max(miller, axis=0)
+        h_min, k_min, l_min = np.min(miller, axis=0)
         return Limit(h_max=h_max, h_min=h_min, k_max=k_max, k_min=k_min, l_max=l_max, l_min=l_min)
 
 

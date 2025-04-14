@@ -30,6 +30,7 @@ import os
 import sys
 from typing import Union
 
+from PySide6 import QtGui, QtCore
 from PySide6.QtCore import QEvent, QPoint
 from PySide6.QtGui import (QFocusEvent, QSyntaxHighlighter, QTextBlockUserData, QTextCharFormat, QTextCursor,
                            QContextMenuEvent)
@@ -68,7 +69,7 @@ try:
             # 1. The cursor remains invisible after closing the context menu
             # 2. Keyboard input causes it to appear, but it doesn't blink
             # 3. Switching focus away from and back to the window fixes it
-            self.focusInEvent(QFocusEvent(QEvent.FocusIn))
+            self.focusInEvent(QFocusEvent(QEvent.Type.FocusIn))
 
         def create_spellcheck_context_menu(self, pos: QPoint) -> QMenu:
             """Create and return an augmented default context menu.
@@ -97,12 +98,12 @@ try:
             if not cursor:
                 return None
             text = cursor.selectedText()
-            learn_action = QAction(f"Learn '{text}'", parent=menu)
+            learn_action = QtGui.QAction(f"Learn '{text}'", parent=menu)
             learn_action.setData(text)
             menu.triggered.connect(self.learn_word)
             menu.insertAction(menu.actions()[0], learn_action)
 
-        def learn_word(self, action: QAction) -> None:
+        def learn_word(self, action: QtGui.QAction) -> None:
             misspelled_word = action.data()
             if 'Learn' not in action.text() or isinstance(misspelled_word, tuple):
                 return None
@@ -121,7 +122,7 @@ try:
 
             spell_menu = QMenu('Spelling Suggestions', parent)
             for word in suggests:
-                action = QAction(word, spell_menu)
+                action = QtGui.QAction(word, spell_menu)
                 action.setData((cursor, word))
                 spell_menu.addAction(action)
 
@@ -135,7 +136,7 @@ try:
             """Create and return a menu for selecting the spell-check language."""
             curr_lang = self.highlighter.dict().tag
             lang_menu = QMenu("Language", parent)
-            lang_actions = QActionGroup(lang_menu)
+            lang_actions = QtGui.QActionGroup(lang_menu)
 
             for lang in enchant.list_languages():
                 action = lang_actions.addAction(lang)
@@ -150,7 +151,7 @@ try:
         def create_formats_menu(self, parent=None):
             """Create and return a menu for selecting the spell-check language."""
             fmt_menu = QMenu("Format", parent)
-            fmt_actions = QActionGroup(fmt_menu)
+            fmt_actions = QtGui.QActionGroup(fmt_menu)
 
             curr_format = self.highlighter.chunkers()
             for name, chunkers in (('Text', []), ('HTML', [tokenize.HTMLChunker])):
@@ -176,8 +177,8 @@ try:
                 if start <= cursor.positionInBlock() <= end:
                     block_pos = cursor.block().position()
 
-                    cursor.setPosition(block_pos + start, QTextCursor.MoveAnchor)
-                    cursor.setPosition(block_pos + end, QTextCursor.KeepAnchor)
+                    cursor.setPosition(block_pos + start, QTextCursor.MoveMode.MoveAnchor)
+                    cursor.setPosition(block_pos + end, QTextCursor.MoveMode.KeepAnchor)
                     break
 
             if cursor.hasSelection():
@@ -240,7 +241,7 @@ try:
         err_format = QTextCharFormat()
         err_format.setUnderlineColor(QtCore.Qt.GlobalColor.red)
         # err_format.setUnderlineStyle(QTextCharFormat.SpellCheckUnderline)
-        err_format.setUnderlineStyle(QTextCharFormat.WaveUnderline)
+        err_format.setUnderlineStyle(QTextCharFormat.UnderlineStyle.WaveUnderline)
 
         def __init__(self, *args) -> None:
             QSyntaxHighlighter.__init__(self, *args)
