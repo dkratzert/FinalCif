@@ -1,12 +1,10 @@
-from typing import Union
-
 from docxtpl import RichText
 from lxml import etree
 
 from finalcif.app_path import application_path
 
 
-def xml_to_html(xml_string: Union[str, RichText]):
+def xml_to_html(xml_string: str | RichText):
     """
     Transforms XML to HTML using XSLT.
     """

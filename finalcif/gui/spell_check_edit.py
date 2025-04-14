@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """QPlainTextEdit With Inline Spell Check
 Original PyQt4 Version:
     https://nachtimwald.com/2009/08/22/qplaintextedit-with-in-line-spell-check/
@@ -30,12 +29,11 @@ import os
 import sys
 from typing import Union
 
-from PyQt5.Qt import Qt
-from PyQt5.QtCore import QEvent, QPoint
-from PyQt5.QtGui import (QFocusEvent, QSyntaxHighlighter, QTextBlockUserData, QTextCharFormat, QTextCursor,
-                         QContextMenuEvent)
-from PyQt5.QtWidgets import (QAction, QActionGroup, QApplication, QMenu,
-                             QPlainTextEdit)
+from PySide6 import QtGui, QtCore
+from PySide6.QtCore import QEvent, QPoint
+from PySide6.QtGui import (QFocusEvent, QSyntaxHighlighter, QTextBlockUserData, QTextCharFormat, QTextCursor,
+                           QContextMenuEvent)
+from PySide6.QtWidgets import (QApplication, QMenu, QPlainTextEdit)
 
 try:
     if "RUNNING_TEST" in os.environ:
@@ -64,13 +62,13 @@ try:
         def contextMenuEvent(self, event: QContextMenuEvent) -> None:
             """Custom context menu handler to add a spelling suggestions submenu"""
             popup_menu = self.create_spellcheck_context_menu(event.pos())
-            popup_menu.exec_(event.globalPos())
+            popup_menu.exec(event.globalPos())
 
             # Fix bug observed in Qt 5.2.1 on *buntu 14.04 LTS where:
             # 1. The cursor remains invisible after closing the context menu
             # 2. Keyboard input causes it to appear, but it doesn't blink
             # 3. Switching focus away from and back to the window fixes it
-            self.focusInEvent(QFocusEvent(QEvent.FocusIn))
+            self.focusInEvent(QFocusEvent(QEvent.Type.FocusIn))
 
         def create_spellcheck_context_menu(self, pos: QPoint) -> QMenu:
             """Create and return an augmented default context menu.
@@ -99,12 +97,12 @@ try:
             if not cursor:
                 return None
             text = cursor.selectedText()
-            learn_action = QAction(f"Learn '{text}'", parent=menu)
+            learn_action = QtGui.QAction(f"Learn '{text}'", parent=menu)
             learn_action.setData(text)
             menu.triggered.connect(self.learn_word)
             menu.insertAction(menu.actions()[0], learn_action)
 
-        def learn_word(self, action: QAction) -> None:
+        def learn_word(self, action: QtGui.QAction) -> None:
             misspelled_word = action.data()
             if 'Learn' not in action.text() or isinstance(misspelled_word, tuple):
                 return None
@@ -113,7 +111,7 @@ try:
             personal_dictionary.add(misspelled_word)
             self.highlighter.rehighlight()
 
-        def create_corrections_menu(self, cursor, parent=None) -> Union[QMenu, None]:
+        def create_corrections_menu(self, cursor, parent=None) -> QMenu | None:
             """Create and return a menu for correcting the selected word."""
             if not cursor:
                 return None
@@ -123,7 +121,7 @@ try:
 
             spell_menu = QMenu('Spelling Suggestions', parent)
             for word in suggests:
-                action = QAction(word, spell_menu)
+                action = QtGui.QAction(word, spell_menu)
                 action.setData((cursor, word))
                 spell_menu.addAction(action)
 
@@ -137,7 +135,7 @@ try:
             """Create and return a menu for selecting the spell-check language."""
             curr_lang = self.highlighter.dict().tag
             lang_menu = QMenu("Language", parent)
-            lang_actions = QActionGroup(lang_menu)
+            lang_actions = QtGui.QActionGroup(lang_menu)
 
             for lang in enchant.list_languages():
                 action = lang_actions.addAction(lang)
@@ -152,7 +150,7 @@ try:
         def create_formats_menu(self, parent=None):
             """Create and return a menu for selecting the spell-check language."""
             fmt_menu = QMenu("Format", parent)
-            fmt_actions = QActionGroup(fmt_menu)
+            fmt_actions = QtGui.QActionGroup(fmt_menu)
 
             curr_format = self.highlighter.chunkers()
             for name, chunkers in (('Text', []), ('HTML', [tokenize.HTMLChunker])):
@@ -178,8 +176,8 @@ try:
                 if start <= cursor.positionInBlock() <= end:
                     block_pos = cursor.block().position()
 
-                    cursor.setPosition(block_pos + start, QTextCursor.MoveAnchor)
-                    cursor.setPosition(block_pos + end, QTextCursor.KeepAnchor)
+                    cursor.setPosition(block_pos + start, QTextCursor.MoveMode.MoveAnchor)
+                    cursor.setPosition(block_pos + end, QTextCursor.MoveMode.KeepAnchor)
                     break
 
             if cursor.hasSelection():
@@ -225,7 +223,7 @@ try:
             'wingx',
         )
 
-        def _skip(self, word):
+        def _skip(self, word) -> bool:
             if word.lower() in self.words_to_skip:
                 return True
             return False
@@ -240,9 +238,9 @@ try:
         # XXX: Does QSyntaxHighlighter.setFormat handle keeping this from
         #      clobbering styles set in the data itself?
         err_format = QTextCharFormat()
-        err_format.setUnderlineColor(Qt.red)
+        err_format.setUnderlineColor(QtCore.Qt.GlobalColor.red)
         # err_format.setUnderlineStyle(QTextCharFormat.SpellCheckUnderline)
-        err_format.setUnderlineStyle(QTextCharFormat.WaveUnderline)
+        err_format.setUnderlineStyle(QTextCharFormat.UnderlineStyle.WaveUnderline)
 
         def __init__(self, *args) -> None:
             QSyntaxHighlighter.__init__(self, *args)
@@ -306,4 +304,4 @@ if __name__ == '__main__':
     spellEdit.show()
     spellEdit.setPlainText('This is somee missspelled texawt with errorsd.')
 
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

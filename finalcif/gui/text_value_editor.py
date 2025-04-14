@@ -1,9 +1,8 @@
 import sys
-from typing import Tuple, List, Union
 
-from PyQt5 import QtGui
-from PyQt5.QtCore import QSize, Qt, pyqtSignal
-from PyQt5.QtWidgets import QWidget, QHBoxLayout, QCheckBox, QListWidgetItem, QVBoxLayout, QLabel
+from PySide6 import QtGui, QtCore
+from PySide6.QtCore import QSize, Signal
+from PySide6.QtWidgets import QWidget, QHBoxLayout, QCheckBox, QListWidgetItem, QVBoxLayout, QLabel
 
 from finalcif.gui import text_templates_ui
 from finalcif.gui.spell_check_edit import SpellTextEdit
@@ -14,13 +13,13 @@ class TextEditItem(QWidget):
     Text editor for large text inside of dropdown widgets.
     """
     _num = 1
-    checkbox_clicked = pyqtSignal(str)
+    checkbox_clicked = Signal(str)
 
     def __init__(self, parent: QWidget):
         super().__init__(parent)
         layout = QHBoxLayout(self)
         self.vlayout = QVBoxLayout()
-        self.vlayout.setAlignment(Qt.AlignVCenter)
+        self.vlayout.setAlignment(QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.checkbox = QCheckBox()
         self.number_label = QLabel()
         self.vlayout.addWidget(self.number_label)
@@ -83,7 +82,7 @@ class MyTextTemplateEdit(QWidget):
         self.ui.templatesListWidget.clear()
         TextEditItem._num = 1
 
-    def add_textfields(self, text_list: Union[List, Tuple]) -> None:
+    def add_textfields(self, text_list: list | tuple) -> None:
         self.ui.templatesListWidget.clear()
         if text_list:
             for text in text_list:
@@ -98,13 +97,13 @@ class MyTextTemplateEdit(QWidget):
         edit_item = TextEditItem(self.ui.templatesListWidget)
         edit_item.setText(text)
         edit_item.checkbox_clicked.connect(lambda x: self.ui.plainTextEdit.appendPlainText(x))
-        item = QListWidgetItem(parent=self.ui.templatesListWidget)
+        item = QListWidgetItem(self.ui.templatesListWidget)
         item.setSizeHint(edit_item.sizeHint())
         # item.setIcon(qtawesome.icon('fa5.image'))
         self.ui.templatesListWidget.addItem(item)
         self.ui.templatesListWidget.setItemWidget(item, edit_item)
 
-    def get_template_texts(self) -> List[str]:
+    def get_template_texts(self) -> list[str]:
         texts = []
         for num in range(self.ui.templatesListWidget.count()):
             item = self.ui.templatesListWidget.item(num)
@@ -120,7 +119,7 @@ class MyTextTemplateEdit(QWidget):
 
 
 if __name__ == "__main__":
-    from PyQt5.QtWidgets import QApplication
+    from PySide6.QtWidgets import QApplication
 
     app = QApplication.instance()
     if app is None:
@@ -128,4 +127,4 @@ if __name__ == "__main__":
     window = MyTextTemplateEdit()
     # window.add_textfields(txts)
     window.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

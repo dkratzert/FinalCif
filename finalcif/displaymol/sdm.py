@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 # möp
 #
 # ----------------------------------------------------------------------------
@@ -14,16 +13,19 @@
 import time
 from collections import namedtuple
 from math import sqrt, cos, radians, sin
-from typing import List, Tuple
+from typing import TYPE_CHECKING
 
 from finalcif.cif.atoms import get_radius_from_element
 from finalcif.tools.dsrmath import Array, SymmetryElement, Matrix, frac_to_cart
+
+if TYPE_CHECKING:
+    from finalcif.cif.cif_file_io import CifContainer
 
 DEBUG = False
 Atomtuple = namedtuple('Atomtuple', 'label, type, x, y, z, part')
 
 
-class SymmCards():
+class SymmCards:
     """
     Contains the list of SYMM cards
     """
@@ -44,8 +46,7 @@ class SymmCards():
         return self._symmcards[item]
 
     def __iter__(self):
-        for x in self._symmcards:
-            yield x
+        yield from self._symmcards
 
     def __len__(self):
         return len(self._symmcards)
@@ -57,12 +58,12 @@ class SymmCards():
         :return: None
         """
         newSymm = SymmetryElement(symmData)
-        if not newSymm in self._symmcards:
+        if newSymm not in self._symmcards:
             self._symmcards.append(newSymm)
 
 
-class SDMItem(object):
-    __slots__ = ['dist', 'atom1', 'atom2', 'a1', 'a2', 'symmetry_number', 'covalent', 'dddd']
+class SDMItem:
+    __slots__ = ['a1', 'a2', 'atom1', 'atom2', 'covalent', 'dddd', 'dist', 'symmetry_number']
 
     def __init__(self):
         self.dist = 0.0
@@ -83,15 +84,13 @@ class SDMItem(object):
         return False
 
     def __repr__(self):
-        return '{} {} {} {} dist: {} coval: {} sn: {} {}'.format(self.atom1.name, self.atom2.name, self.a1, self.a2,
-                                                                 self.dist, self.covalent,
-                                                                 self.symmetry_number, self.dddd)
+        return f'{self.atom1.name} {self.atom2.name} {self.a1} {self.a2} dist: {self.dist} coval: {self.covalent} sn: {self.symmetry_number} {self.dddd}'
 
 
-class SDM():
-    sdm_list: List[SDMItem]
+class SDM:
+    sdm_list: list[SDMItem]
 
-    def __init__(self, atoms: Tuple[List], symmlist: list, cell: Tuple[float, float, float, float, float, float],
+    def __init__(self, atoms: tuple[list], symmlist: list, cell: tuple[float, float, float, float, float, float],
                  centric=False):
         """
         Calculates the shortest distance matrix
@@ -164,8 +163,8 @@ class SDM():
                 if not sdm_item.atom1:
                     # Do not grow grown atoms:
                     continue
-                if (sdm_item.atom1[1] not in h and sdm_item.atom2[1] not in h) and \
-                    sdm_item.atom1[5] * sdm_item.atom2[5] == 0 or sdm_item.atom1[5] == sdm_item.atom2[5]:
+                if ((sdm_item.atom1[1] not in h and sdm_item.atom2[1] not in h) and
+                    sdm_item.atom1[5] * sdm_item.atom2[5] == 0) or sdm_item.atom1[5] == sdm_item.atom2[5]:
                     dddd = (get_radius_from_element(at1[1]) + get_radius_from_element(at2[1])) * 1.2
                     sdm_item.dddd = dddd
                 else:
@@ -184,7 +183,7 @@ class SDM():
         self.calc_molindex(self.atoms)
         need_symm = self.collect_needed_symmetry()
         if DEBUG:
-            print("The asymmetric unit contains {} fragments.".format(self.maxmol))
+            print(f"The asymmetric unit contains {self.maxmol} fragments.")
         return need_symm
 
     def collect_needed_symmetry(self) -> list:
@@ -197,7 +196,7 @@ class SDM():
                     continue
                 for n, symop in enumerate(self.symmcards):
                     if sdm_item.atom1[5] * sdm_item.atom2[5] != 0 and \
-                        sdm_item.atom1[5] != sdm_item.atom2[5]:
+                            sdm_item.atom1[5] != sdm_item.atom2[5]:
                         continue
                     # Both the same atomic number and number 0 (hydrogen)
                     if sdm_item.atom1[1] == sdm_item.atom2[1] and sdm_item.atom1[1] in h:
@@ -250,7 +249,7 @@ class SDM():
         A = 2.0 * (x * y * self.aga + x * z * self.bbe + y * z * self.cal)
         return sqrt(x ** 2 * self.asq + y ** 2 * self.bsq + z ** 2 * self.csq + A)
 
-    def packer(self, sdm: 'SDM', need_symm: list, with_qpeaks=False) -> List[Atomtuple]:
+    def packer(self, sdm: 'SDM', need_symm: list, with_qpeaks=False) -> list[Atomtuple]:
         """
         Packs atoms of the asymmetric unit to real molecules.
         """
@@ -267,7 +266,7 @@ class SDM():
                     coords = Array(atom[2:5]) * self.symmcards[s].matrix \
                              + Array(self.symmcards[s].trans) + Array([h, k, l])
                     # The new atom:
-                    new = [atom[0], atom[1]] + list(coords) + [atom[5], atom[6], atom[7], 'symmgen']
+                    new = [atom[0], atom[1], *list(coords), atom[5], atom[6], atom[7], 'symmgen']
                     new_atoms.append(new)
                     isthere = False
                     # Only add atom if its occupancy (new[5]) is greater zero:
@@ -290,19 +289,19 @@ class SDM():
         return cart_atoms
 
 
-def make_molecule(cif: 'CifContainer') -> List[Atomtuple]:
-    atoms = tuple(cif.atoms_fract)
-    sdm = SDM(atoms, cif.symmops, cif.cell[:6], centric=cif.is_centrosymm)
-    needsymm = sdm.calc_sdm()
-    atoms = sdm.packer(sdm, needsymm)
-    return atoms
-
-
 if __name__ == "__main__":
     from pathlib import Path
     from molecule2D import display
-    from pathlib import Path
     from finalcif.cif.cif_file_io import CifContainer
+
+
+    def make_molecule(cif: CifContainer) -> list[Atomtuple]:
+        atoms = tuple(cif.atoms_fract)
+        sdm = SDM(atoms, cif.symmops, cif.cell[:6], centric=cif.is_centrosymm)
+        needsymm = sdm.calc_sdm()
+        atoms = sdm.packer(sdm, needsymm)
+        return atoms
+
 
     cif = CifContainer(Path('test-data/4060314.cif'))
     atoms = make_molecule(cif)

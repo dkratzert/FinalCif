@@ -4,17 +4,16 @@
 #   this notice you can do whatever you want with this stuff. If we meet some day,
 #   and you think this stuff is worth it, you can buy me a beer in return.
 #   ----------------------------------------------------------------------------
-from typing import List
 
 
-class Author():
+class Author:
 
     def __init__(self, name: str, citation_id: int):
         self.name = name
         self.citation_id = citation_id
 
 
-class Authors():
+class Authors:
     """
     loop_
     _citation_author_citation_id
@@ -25,7 +24,7 @@ class Authors():
     """
 
     def __init__(self):
-        self._authors: List[Author] = []
+        self._authors: list[Author] = []
 
     def add_author(self, name: str, citation_id: int):
         self._authors.append(Author(name=name, citation_id=citation_id))
@@ -38,11 +37,11 @@ class Authors():
         return results
 
 
-class Reference():
+class Reference:
     _count = 0
 
     @classmethod
-    def incr(self):
+    def incr(self) -> int:
         self._count += 1
         return self._count
 

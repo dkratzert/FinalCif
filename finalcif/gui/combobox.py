@@ -1,9 +1,10 @@
+from __future__ import annotations
 from textwrap import wrap
 from typing import TYPE_CHECKING
 
-from PyQt5 import QtCore, QtGui
-from PyQt5.QtCore import Qt, QObject, QEvent
-from PyQt5.QtWidgets import QComboBox, QSizePolicy, QAction
+from PySide6 import QtCore, QtGui
+from PySide6.QtCore import Qt, QObject, QEvent
+from PySide6.QtWidgets import QComboBox, QSizePolicy
 
 from finalcif.gui.validators import validators
 
@@ -18,24 +19,24 @@ class MyComboBox(QComboBox):
     """
     A special QComboBox with convenient methods to set the background color and other things.
     """
-    textTemplate = QtCore.pyqtSignal(int)
+    textTemplate = QtCore.Signal(int)
 
-    def __init__(self, parent: 'MyCifTable' = None):
+    def __init__(self, parent: MyCifTable = None):
         super().__init__(parent)
-        self.parent: 'MyCifTable' = parent
+        self.parent: MyCifTable = parent
         self.cif_key = ''
         self.color = white
         self.default_palette = self.palette()
-        self.setFocusPolicy(Qt.StrongFocus)
-        self.setSizeAdjustPolicy(QComboBox.AdjustToMinimumContentsLength)
-        self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
+        self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
+        self.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLengthWithIcon)
+        self.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Expanding)
         self.setEditable(True)  # only editable as new template
         self.installEventFilter(self)
-        self.actionDelete = QAction("Delete Row", self)
-        self.setContextMenuPolicy(Qt.ActionsContextMenu)
+        self.actionDelete = QtGui.QAction("Delete Row", self)
+        self.setContextMenuPolicy(Qt.ContextMenuPolicy.ActionsContextMenu)
         self.addAction(self.actionDelete)
         self.actionDelete.triggered.connect(self._delete_row)
-        action_template = QAction("Text Template", self)
+        action_template = QtGui.QAction("Text Template", self)
         self.addAction(action_template)
         action_template.triggered.connect(lambda: self.textTemplate.emit(self.row))
 
@@ -46,10 +47,10 @@ class MyComboBox(QComboBox):
     def row(self) -> int:
         return self.parent.vheaderitems.index(self.cif_key)
 
-    def _delete_row(self):
+    def _delete_row(self) -> None:
         self.parent.delete_row(self.row)
 
-    def _on_create_template(self):
+    def _on_create_template(self) -> None:
         self.textTemplate.emit(self.row)
 
     def eventFilter(self, widget: QObject, event: QEvent):
@@ -84,12 +85,12 @@ class MyComboBox(QComboBox):
 
     def getBackgroundColor(self) -> QtGui.QColor:
         palette = self.palette()
-        background_color = palette.color(QtGui.QPalette.Base)
+        background_color = palette.color(QtGui.QPalette.ColorRole.Base)
         return background_color
 
     def setUneditable(self):
         # noinspection PyUnresolvedReferences
-        self.setFlags(self.flags() ^ Qt.ItemIsEditable)
+        self.setFlags(self.flags() ^ QtCore.Qt.ItemFlag.ItemIsEditable)
 
     def setText(self, txt: str):
         self.setEditText('\n'.join(wrap(txt, width=80)))

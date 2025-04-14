@@ -2,13 +2,12 @@ import os
 
 os.environ['RUNNING_TEST'] = 'True'
 import unittest
-from datetime import datetime
 from pathlib import Path
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QIcon, QColor
-from PyQt5.QtWidgets import QWidget
-from qtpy.QtTest import QTest
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QIcon, QColor
+from PySide6.QtWidgets import QWidget
+from PySide6.QtTest import QTest
 
 from finalcif import VERSION
 from finalcif.appwindow import AppWindow
@@ -28,7 +27,7 @@ class TestFileIsOpened(unittest.TestCase):
         self.myapp = AppWindow(file=self.testcif)
         self.myapp.ui.trackChangesCifCheckBox.setChecked(True)
         self.myapp.setWindowIcon(QIcon('./icon/multitable.png'))
-        self.myapp.setWindowTitle('FinalCif v{}'.format(VERSION))
+        self.myapp.setWindowTitle(f'FinalCif v{VERSION}')
         (data / 'examples/work/foo.cif').unlink(missing_ok=True)
         (data / 'examples/work/cu_BruecknerJK_153F40_0m-finalcif.cif').unlink(missing_ok=True)
 
@@ -55,7 +54,9 @@ class TestWorkfolder(unittest.TestCase):
         self.myapp.ui.trackChangesCifCheckBox.setChecked(True)
         self.myapp.equipment.import_equipment_from_file(str(data.parent / 'test-data/Crystallographer_Details.cif'))
         self.myapp.setWindowIcon(QIcon('./icon/multitable.png'))
-        self.myapp.setWindowTitle('FinalCif v{}'.format(VERSION))
+        self.myapp.setWindowTitle(f'FinalCif v{VERSION}')
+        self.myapp.settings.save_settings_list('cif_order', 'order', [])
+        self.myapp.settings.save_settings_list('cif_order', 'essentials', [])
 
     def tearDown(self) -> None:
         self.testcif.with_suffix('.ins').unlink(missing_ok=True)
@@ -91,11 +92,11 @@ class TestWorkfolder(unittest.TestCase):
     def equipment_click(self, field: str):
         listw = self.myapp.ui.EquipmentTemplatesListWidget
         self.myapp.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
-        item = listw.findItems(field, Qt.MatchStartsWith)[0]
+        item = listw.findItems(field, Qt.MatchFlag.MatchStartsWith)[0]
         listw.setCurrentItem(item)
         self.assertEqual(field.upper(), item.text().upper())
         rect = listw.visualItemRect(item)
-        QTest.mouseDClick(listw.viewport(), Qt.LeftButton, Qt.NoModifier, rect.center())
+        QTest.mouseDClick(listw.viewport(), Qt.MouseButton.LeftButton, Qt.KeyboardModifier.NoModifier, rect.center())
         # This is necessary:
         self.myapp.equipment.load_selected_equipment()
 
@@ -158,7 +159,7 @@ class TestWorkfolder(unittest.TestCase):
             self.get_combobox_items(row, Column.EDIT))
 
         row = self.key_row('_diffrn_radiation_type')
-        self.assertEqual(['', 'Mo Kα', 'Cu Kα', 'Ag Kα', 'In Kα', 'Ga Kα', 'Fe Kα', 'W Kα'],
+        self.assertEqual(['', 'Mo Kα', 'Cu Kα', 'Ag Kα', 'In Kα', 'Ga Kα', 'Fe Kα', 'W Kα'],  # noqa: RUF001
                          self.get_combobox_items(row, Column.EDIT))
 
         row = self.key_row('_exptl_crystal_description')
@@ -187,15 +188,15 @@ class TestWorkfolder(unittest.TestCase):
                                                                       Column.DATA).getBackgroundColor().name())
 
         self.assertEqual('#ffffff', self.myapp.ui.cif_main_table.widget_from_key('_cell_measurement_theta_max',
-                                                                          Column.CIF).getBackgroundColor().name())
+                                                                                 Column.CIF).getBackgroundColor().name())
         self.assertEqual('#d9ffc9',
                          self.myapp.ui.cif_main_table.widget_from_key('_cell_measurement_theta_max',
                                                                       Column.DATA).getBackgroundColor().name())
         self.assertEqual('#ffffff', self.myapp.ui.cif_main_table.widget_from_key('_cell_measurement_theta_max',
-                                                                          Column.EDIT).getBackgroundColor().name())
+                                                                                 Column.EDIT).getBackgroundColor().name())
 
         self.assertEqual('#ffffff', self.myapp.ui.cif_main_table.widget_from_key('_computing_molecular_graphics',
-                                                                          Column.DATA).getBackgroundColor().name())
+                                                                                 Column.DATA).getBackgroundColor().name())
 
     def test_exptl_crystal_size(self):
         self.assertEqual('0.220', self.cell_text('_exptl_crystal_size_max', Column.DATA))
@@ -282,7 +283,7 @@ class TestWorkfolderOtherCifName(unittest.TestCase):
         self.myapp.ui.trackChangesCifCheckBox.setChecked(True)
         self.myapp.equipment.import_equipment_from_file(data.parent / 'test-data/Crystallographer_Details.cif')
         self.myapp.setWindowIcon(QIcon('./icon/multitable.png'))
-        self.myapp.setWindowTitle('FinalCif v{}'.format(VERSION))
+        self.myapp.setWindowTitle(f'FinalCif v{VERSION}')
 
     def tearDown(self) -> None:
         self.testcif.with_suffix('.ins').unlink(missing_ok=True)
@@ -321,6 +322,7 @@ class TestWorkfolderOtherCifName(unittest.TestCase):
         self.assertEqual('',
                          self.myapp.ui.cif_main_table.cellWidget(
                              self.key_row('_exptl_crystal_recrystallization_method'), Column.DATA).styleSheet())
+        # This can fail if the cif order is not correctly saved/loaded:
         self.assertEqual('#faf796',
                          self.myapp.ui.cif_main_table.cellWidget(
                              self.key_row('_exptl_crystal_recrystallization_method'), Column.DATA).getBackgroundColor().name())

@@ -1,17 +1,17 @@
 import sys
 
 import requests
-from PyQt5.QtCore import pyqtSignal, QObject
+from PySide6.QtCore import Signal, QObject
 
 from finalcif import VERSION
 
 
 # noinspection PyUnresolvedReferences
 class MyDownloader(QObject):
-    progress = pyqtSignal(str)
-    failed = pyqtSignal(int)
-    finished = pyqtSignal()
-    loaded = pyqtSignal(bytes)
+    progress = Signal(str)
+    failed = Signal(int)
+    finished = Signal()
+    loaded = Signal(bytes)
 
     def __init__(self, url, parent=None):
         super().__init__(parent)
@@ -45,8 +45,8 @@ class MyDownloader(QObject):
 
 
 if __name__ == "__main__":
-    from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLabel
-    from PyQt5.QtWidgets import QApplication
+    from PySide6.QtWidgets import QWidget, QHBoxLayout, QLabel
+    from PySide6.QtWidgets import QApplication
     import threading
 
     app = QApplication(sys.argv)
@@ -68,4 +68,4 @@ if __name__ == "__main__":
     worker.loaded.connect(foo)
     thread = threading.Thread(target=worker.download)
     thread.start()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

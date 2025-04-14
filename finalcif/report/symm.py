@@ -1,6 +1,6 @@
-class SymmetryElement():
+class SymmetryElement:
     symm_ID = 1
-    __slots__ = ['centric', 'symms', 'ID', 'matrix', 'trans']
+    __slots__ = ['ID', 'centric', 'matrix', 'symms', 'trans']
 
     def __init__(self, symms):
         self.symms = symms
@@ -15,7 +15,7 @@ class SymmetryElement():
         self.trans = trans
         self.matrix = lines
 
-    def _parse_line(self, symm):
+    def _parse_line(self, symm: str) -> tuple[list[str], None | float | int | str]:
         symm = symm.upper().replace(' ', '')
         chars = ['X', 'Y', 'Z']
         line = []
@@ -28,13 +28,13 @@ class SymmetryElement():
             trans = 0
         return line, trans
 
-    def _float(self, string):
+    def _float(self, string: str) -> float | None | int | float:
         try:
             return float(string)
         except ValueError:
             if '/' in string:
                 string = string.replace('/', './') + '.'
-                return eval('{}'.format(string))
+                return eval(f'{string}')
 
     def _partition(self, symm, char):
         parts = symm.partition(char)

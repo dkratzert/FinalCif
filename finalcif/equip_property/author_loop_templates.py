@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 #   ----------------------------------------------------------------------------
 #   "THE BEER-WARE LICENSE" (Revision 42):
 #   Daniel Kratzert <dkratzert@gmx.de> wrote this file.  As long as you retain
@@ -9,10 +10,10 @@ import re
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import Dict, Union, List
+from typing import TYPE_CHECKING
 
 import gemmi.cif
-from PyQt5.QtWidgets import QListWidgetItem
+from PySide6.QtWidgets import QListWidgetItem
 from gemmi.cif import Loop, as_string
 
 from finalcif.cif.cif_file_io import CifContainer
@@ -22,8 +23,6 @@ from finalcif.gui.dialogs import cif_file_save_dialog, show_general_warning, cif
 from finalcif.gui.finalcif_gui_ui import Ui_FinalCifWindow
 from finalcif.tools.misc import grouper
 from finalcif.tools.settings import FinalCifSettings
-
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from finalcif.appwindow import AppWindow
@@ -50,7 +49,7 @@ class Author:
     iucr_id: str = ''
 
 
-class AuthorLoops():
+class AuthorLoops:
     def __init__(self, ui: Ui_FinalCifWindow, cif: CifContainer, app: AppWindow):
         self.ui = ui
         self.cif = cif
@@ -112,7 +111,7 @@ class AuthorLoops():
             self.ui.SaveAuthorLoopToTemplateButton.setDisabled(True)
             self.ui.AddThisAuthorToLoopPushButton.setDisabled(True)
 
-    def get_author_loop(self, author: Author) -> List[str]:
+    def get_author_loop(self, author: Author) -> list[str]:
         contact = 'contact_' if author.contact_author else ''
         if author.author_type == AuthorType.publ and author.contact_author:
             author_loop = [f'_{author.author_type}_{contact}author_name',
@@ -162,16 +161,15 @@ class AuthorLoops():
         self.app.make_loops_tables()
         self.show_authors_list()
 
-    def check_if_loop_and_row_size_fit_together(self, gemmi_loop: gemmi.cif.Loop, row: List[str]) -> None:
+    def check_if_loop_and_row_size_fit_together(self, gemmi_loop: gemmi.cif.Loop, row: list[str]) -> None:
         if gemmi_loop.width() < len(row):
             cut_row = row[:gemmi_loop.width()]
             if cut_row not in gemmi_loop.values:
                 gemmi_loop.add_row(cut_row)
         elif gemmi_loop.width() > len(row):
             show_general_warning(self, 'An author loop with larger size is already in the CIF. Can not proceed.')
-        else:
-            if row not in gemmi_loop.values:
-                gemmi_loop.add_row(row)
+        elif row not in gemmi_loop.values:
+            gemmi_loop.add_row(row)
 
     def get_author_info(self) -> Author:
         if self.ui.authorEditTabWidget.currentWidget().objectName() == 'page_publication':
@@ -197,12 +195,12 @@ class AuthorLoops():
         return Author(name=name, address=address, email=email, footnote=footnote, orcid=orcid,
                       phone=phone, contact_author=contact, author_type=author_type, iucr_id=iucr)
 
-    def set_author_info(self, author: Union[Dict[str, Union[str, None]], Author]) -> None:
+    def set_author_info(self, author: dict[str, str | None] | Author) -> None:
         if not author:
             return
         author_type = AuthorType.publ if self.ui.authorEditTabWidget.currentWidget().objectName() == \
                                          'page_publication' else AuthorType.audit
-        if type(author) == dict:
+        if type(author) is dict:
             author = Author(name=author.get('name'), address=author.get('address'), email=author.get('email'),
                             phone=author.get('phone'), orcid=author.get('orcid'), footnote=author.get('footnote'),
                             contact_author=author.get('contact', False), author_type=author_type)
@@ -222,13 +220,13 @@ class AuthorLoops():
             getattr(self.ui, f'EMailLineEdit{author_type}').setText(retranslate_delimiter(as_string(author.email)))
         if author.footnote and author.author_type == AuthorType.publ:
             # Audit authors have no footnote:
-            getattr(self.ui, 'FootNoteLineEdit').setText(retranslate_delimiter(as_string(author.footnote)))
+            self.ui.FootNoteLineEdit.setText(retranslate_delimiter(as_string(author.footnote)))
         if author.orcid and author.author_type == AuthorType.publ:
             # Audit authors have no ORCID:
-            getattr(self.ui, 'ORCIDLineEdit').setText(retranslate_delimiter(as_string(author.orcid)))
+            self.ui.ORCIDLineEdit.setText(retranslate_delimiter(as_string(author.orcid)))
         if author.iucr_id and author.author_type == AuthorType.publ:
             # Audit authors have no IUCrID:
-            getattr(self.ui, 'IUCRIDLineEdit').setText(retranslate_delimiter(as_string(author.iucr_id)))
+            self.ui.IUCRIDLineEdit.setText(retranslate_delimiter(as_string(author.iucr_id)))
         if author.phone:
             getattr(self.ui, f'PhoneLineEdit{author_type}').setText(retranslate_delimiter(as_string(author.phone)))
 
@@ -266,7 +264,7 @@ class AuthorLoops():
         self.settings.save_settings_dict(property='authors_list', name=itemtext, items=author)
         self.show_authors_list()
 
-    def export_author_template(self, filename: str = None) -> None:
+    def export_author_template(self, filename: str | None = None) -> None:
         """
         Exports the currently selected author to a file.
         """
@@ -282,17 +280,17 @@ class AuthorLoops():
         author_cif = self.put_author_in_cif_object(blockname, filename)
         try:
             author_cif.save(Path(filename))
-        except (PermissionError, IOError):
+        except (OSError, PermissionError):
             if Path(filename).is_dir():
                 return
-            show_general_warning(self, 'No permission to write file to {}'.format(Path(filename).resolve()))
+            show_general_warning(self, f'No permission to write file to {Path(filename).resolve()}')
 
     def put_author_in_cif_object(self, blockname: str, filename: str) -> CifContainer:
         author = self.author_loopdata(author_name=self.get_selected_loop_name())
         data = [author.name, author.address, author.email, author.phone, author.orcid, author.iucr_id,
                 author.footnote]
         author_cif = CifContainer(filename, new_block=blockname)
-        for key, value in zip(self.keys_list, data):
+        for key, value in zip(self.keys_list, data, strict=True):
             if value:
                 author_cif.set_pair_delimited(key, as_string(value))
         return author_cif
@@ -347,7 +345,7 @@ class AuthorLoops():
         self.set_author_info(self.author_loopdata(author_name=self.get_selected_loop_name()))
         self.ui.LoopsTabWidget.setCurrentIndex(0)
 
-    def author_loopdata(self, author_name: str) -> Union[Dict[str, str], Author]:
+    def author_loopdata(self, author_name: str) -> dict[str, str] | Author:
         return self.settings.load_settings_dict('authors_list', author_name)
 
     def show_authors_list(self) -> None:
@@ -356,7 +354,7 @@ class AuthorLoops():
             if author:
                 self.ui.LoopTemplatesListWidget.addItem(QListWidgetItem(author))
 
-    def export_raw_data(self) -> List[Author]:
+    def export_raw_data(self) -> list[Author]:
         """
         Export all authors in order to export them all"""
         authors = []
@@ -365,14 +363,14 @@ class AuthorLoops():
             authors.append(author_data)
         return authors
 
-    def import_raw_data(self, authors_data: List[Author]):
+    def import_raw_data(self, authors_data: list[Author]):
         """
         Import all authors from an external file"""
         for author in authors_data:
             if author and isinstance(author, Author):
                 self.general_author_save(author)
 
-    def authors_list(self) -> List[str]:
+    def authors_list(self) -> list[str]:
         return self.settings.list_saved_items(property='authors_list')
 
     def contact_author_checked(self, checked: bool):

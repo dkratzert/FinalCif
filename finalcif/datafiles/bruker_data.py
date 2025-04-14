@@ -21,7 +21,7 @@ from finalcif.datafiles.shelx_lst import SolutionProgram
 from finalcif.gui.dialogs import show_general_warning
 
 
-class MissingCifData():
+class MissingCifData:
     def __init__(self):
         self.data = {}
 
@@ -32,7 +32,7 @@ class MissingCifData():
 class BrukerData(WorkDataMixin):
 
     def __init__(self, app, cif: CifContainer):
-        super(BrukerData, self).__init__()
+        super().__init__()
         self.cif = cif
         self.app = app
         self.saint_data = SaintListFile(name_patt='*_0*m._ls', directory=self.cif.fileobj.parent.resolve())
@@ -195,7 +195,7 @@ class BrukerData(WorkDataMixin):
             self.sources['_chemical_absolute_configuration'] = ('', '')
         if self.saint_data.is_twin and self.saint_data.components_firstsample == 2:
             with suppress(Exception):
-                law = self.saint_data.twinlaw[list(self.saint_data.twinlaw.keys())[0]]
+                law = self.saint_data.twinlaw[next(iter(self.saint_data.twinlaw.keys()))]
                 self.sources['_twin_individual_twin_matrix_11'] = (str(law[0][1]), self.saint_data.filename.name)
                 self.sources['_twin_individual_twin_matrix_12'] = (str(law[0][2]), self.saint_data.filename.name)
                 self.sources['_twin_individual_twin_matrix_13'] = (str(law[0][0]), self.saint_data.filename.name)

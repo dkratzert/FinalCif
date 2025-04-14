@@ -5,9 +5,10 @@
 #  and you think this stuff is worth it, you can buy me a beer in return.
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
-from typing import List, Dict, Union, Tuple, Iterable, TYPE_CHECKING
+from collections.abc import Iterable
+from typing import TYPE_CHECKING
 
-from PyQt5.QtCore import QPoint, QSettings, QSize
+from PySide6.QtCore import QPoint, QSettings, QSize
 
 if TYPE_CHECKING:
     pass
@@ -15,7 +16,7 @@ if TYPE_CHECKING:
 DEBUG = False
 
 
-class FinalCifSettings():
+class FinalCifSettings:
     def __init__(self):
         self.software_name = 'FinalCif'
         self.organization = 'DK'
@@ -41,10 +42,12 @@ class FinalCifSettings():
         Loads window position information and sets default values if no configuration exists.
         """
         self.settings.beginGroup("MainWindow")
-        pos = self.settings.value("position", type=QPoint)
-        size = self.settings.value("size", type=QSize)
-        size = size if size.width() > 0 else QSize(900, 850)
-        pos = pos if pos.x() > 0 else QSize(20, 20)
+        # noinspection PyTypeChecker
+        pos: QPoint = self.settings.value("position", type=QPoint)
+        # noinspection PyTypeChecker
+        size: QSize = self.settings.value("size", type=QSize)
+        size = size if size and size.width() > 0 else QSize(900, 850)
+        pos = pos if pos and pos.x() > 0 else QSize(20, 20)
         maximized = self.settings.value('maximized')
         maxim = False
         if isinstance(maximized, str):
@@ -64,7 +67,8 @@ class FinalCifSettings():
 
     def load_last_workdir(self) -> str:
         self.settings.beginGroup('WorkDir')
-        lastdir = self.settings.value("dir", type=str)
+        # noinspection PyTypeChecker
+        lastdir: str = self.settings.value("dir", type=str)
         self.settings.endGroup()
         return lastdir
 
@@ -83,7 +87,7 @@ class FinalCifSettings():
                 pass
         return keylist
 
-    def load_cif_keys_of_properties(self) -> List[str]:
+    def load_cif_keys_of_properties(self) -> list[str]:
         property_keys = [x[0] for x in self.load_property_keys_and_values()]
         return property_keys
 
@@ -110,7 +114,7 @@ class FinalCifSettings():
         self.property_keys_and_values = self.load_property_keys_and_values()
         self.property_keys = self.load_cif_keys_of_properties()
 
-    def save_key_value(self, name: str, item: Union[str, List, Tuple, Dict]):
+    def save_key_value(self, name: str, item: str | list | tuple | dict):
         """
         Saves a single key/value pair.
         """
@@ -118,7 +122,7 @@ class FinalCifSettings():
         if DEBUG:
             print(f"Saving {name} {item}")
 
-    def load_value_of_key(self, key: str) -> Union[object, Iterable, List]:
+    def load_value_of_key(self, key: str) -> object | Iterable | list:
         """
         Load templates and return them as string.
         """
@@ -167,11 +171,11 @@ class FinalCifSettings():
     def save_options(self, options: dict):
         self.save_settings_dict('Options', 'options', options)
 
-    def load_settings_dict(self, property: str = '', item_name: str = '') -> Dict:
+    def load_settings_dict(self, property: str = '', item_name: str = '') -> dict:
         settings = self._load_settings(property, item_name)
         return settings or {}
 
-    def load_settings_list(self, property: str = '', item_name: str = '') -> List:
+    def load_settings_list(self, property: str = '', item_name: str = '') -> list:
         settings = self._load_settings(property, item_name)
         return settings or []
 
@@ -207,14 +211,14 @@ class FinalCifSettings():
     def save_settings_dict(self, property: str, name: str, items) -> None:
         self._save_settings_value(items, name, property)
 
-    def _save_settings_value(self, items: Union[str, Dict[str, bool], List[str]], name: str, property: str) -> None:
+    def _save_settings_value(self, items: str | dict[str, bool] | list[str], name: str, property: str) -> None:
         self.settings.beginGroup(property)
         self.settings.setValue(name, items)
         if DEBUG:
             print(f"Saving {name} {items}")
         self.settings.endGroup()
 
-    def save_settings_list(self, property: str, name: str, items: List):
+    def save_settings_list(self, property: str, name: str, items: list):
         self._save_settings_value(items, name, property)
 
 

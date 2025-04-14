@@ -8,12 +8,13 @@ import re
 import sys
 from abc import ABC
 from collections import namedtuple
+from collections.abc import Iterator
 from contextlib import suppress
 from math import sin, radians
 from pathlib import Path
-from typing import List, Dict, Union, Iterator, Any
+from typing import Any
 
-from PyQt5.QtWidgets import QApplication
+from PySide6.QtWidgets import QApplication
 
 from finalcif.cif.text import string_to_utf8
 from finalcif.template.xsl.convert import xml_to_html
@@ -59,14 +60,14 @@ class ReportFormat(enum.Enum):
 
 
 @dataclasses.dataclass(frozen=True)
-class Bond():
+class Bond:
     atoms: str
     symm: str
     dist: str
 
 
 @dataclasses.dataclass(frozen=True)
-class Angle():
+class Angle:
     atom1: str
     atom2: str
     symm1: str
@@ -75,7 +76,7 @@ class Angle():
 
 
 @dataclasses.dataclass(frozen=True)
-class Torsion():
+class Torsion:
     atom1: str
     atom2: str
     atom3: str
@@ -88,7 +89,7 @@ class Torsion():
 
 
 @dataclasses.dataclass(frozen=True)
-class HydrogenBond():
+class HydrogenBond:
     atoms: str
     dist_dh: str
     dist_ha: str
@@ -97,17 +98,17 @@ class HydrogenBond():
     symm: str
 
 
-class BondsAndAngles():
+class BondsAndAngles:
     def __init__(self, cif: CifContainer, without_h: bool):
         self.cif = cif
         self.without_h = without_h
         self._symmlist = {}
         # These can be used as strings for python-docx:
-        self.bonds_as_string: List[Bond] = []
-        self.angles_as_string: List[Angle] = []
+        self.bonds_as_string: list[Bond] = []
+        self.angles_as_string: list[Angle] = []
         # These can be used as Richtext for python-docx-tpl:
-        self.bonds_richtext: List[Dict[str, RichText]] = self._get_bonds_list(without_h)
-        self.angles_richtext: List[Dict[str, RichText]] = self._get_angles_list(without_h)
+        self.bonds_richtext: list[dict[str, RichText]] = self._get_bonds_list(without_h)
+        self.angles_richtext: list[dict[str, RichText]] = self._get_angles_list(without_h)
         # The list of symmetry elements at the table end used for generated atoms:
         self.symminfo: str = get_symminfo(self._symmlist)
 
@@ -118,7 +119,7 @@ class BondsAndAngles():
     def symmetry_generated_atoms_used(self):
         return len(self._symmlist) > 0
 
-    def _get_bonds_list(self, without_h: bool) -> List[Dict[str, RichText]]:
+    def _get_bonds_list(self, without_h: bool) -> list[dict[str, RichText]]:
         bonds = []
         num = 1
         newsymms = {}
@@ -130,7 +131,7 @@ class BondsAndAngles():
             num = symmsearch(self.cif, newsymms, num, symm2, symms)
             # Atom1 - Atom2:
             a = f'{at1}{halbgeviert}{at2}'
-            symm = f'#{str(symms[symm2])}' if symm2 else ''
+            symm = f'#{symms[symm2]!s}' if symm2 else ''
             atoms = RichText(a)
             atoms.add(symm, superscript=True)
             bonds.append({'atoms': atoms, 'dist': dist})
@@ -138,7 +139,7 @@ class BondsAndAngles():
         self._symmlist.update(newsymms)
         return bonds
 
-    def _get_angles_list(self, without_h: bool) -> List[Dict[str, RichText]]:
+    def _get_angles_list(self, without_h: bool) -> list[dict[str, RichText]]:
         angles_list = []
         newsymms = {}
         symms = {}
@@ -152,8 +153,8 @@ class BondsAndAngles():
                 symm2 = None
             num = symmsearch(self.cif, newsymms, num, symm1, symms)
             num = symmsearch(self.cif, newsymms, num, symm2, symms)
-            symm1_str = f'#{str(symms[symm1])}' if symm1 else ''
-            symm2_str = f'#{str(symms[symm2])}' if symm2 else ''
+            symm1_str = f'#{symms[symm1]!s}' if symm1 else ''
+            symm2_str = f'#{symms[symm2]!s}' if symm2 else ''
             angle_val = ang.angle_val.replace('-', minus_sign)
             # atom1 symm1_str a symm2_str
             atoms = RichText(ang.label1)
@@ -168,13 +169,13 @@ class BondsAndAngles():
         return angles_list
 
 
-class TorsionAngles():
+class TorsionAngles:
 
     def __init__(self, cif: CifContainer, without_h: bool):
         self.cif = cif
         self.without_h = without_h
         self._symmlist = {}
-        self.torsion_angles_as_string: List[Torsion] = []
+        self.torsion_angles_as_string: list[Torsion] = []
         self.torsion_angles_as_richtext = self._get_torsion_angles_list(without_h)
         # The list of symmetry elements at the table end used for generated atoms:
         self.symminfo: str = get_symminfo(self._symmlist)
@@ -186,7 +187,7 @@ class TorsionAngles():
     def symmetry_generated_atoms_used(self):
         return len(self._symmlist) > 0
 
-    def _get_torsion_angles_list(self, without_h: bool) -> List[Dict[str, RichText]]:
+    def _get_torsion_angles_list(self, without_h: bool) -> list[dict[str, RichText]]:
         if self.cif.nangles(without_h) <= 0:
             return []
         symms = {}
@@ -207,10 +208,10 @@ class TorsionAngles():
             num = symmsearch(self.cif, newsymms, num, symm2, symms)
             num = symmsearch(self.cif, newsymms, num, symm3, symms)
             num = symmsearch(self.cif, newsymms, num, symm4, symms)
-            symmstr1 = f'#{str(symms[symm1])}' if symm1 else ''
-            symmstr2 = f'#{str(symms[symm2])}' if symm2 else ''
-            symmstr3 = f'#{str(symms[symm3])}' if symm3 else ''
-            symmstr4 = f'#{str(symms[symm4])}' if symm4 else ''
+            symmstr1 = f'#{symms[symm1]!s}' if symm1 else ''
+            symmstr2 = f'#{symms[symm2]!s}' if symm2 else ''
+            symmstr3 = f'#{symms[symm3]!s}' if symm3 else ''
+            symmstr4 = f'#{symms[symm4]!s}' if symm4 else ''
             atoms = RichText(tors.label1)
             atoms.add(symmstr1, superscript=True)
             atoms.add(halbgeviert)
@@ -233,11 +234,11 @@ class TorsionAngles():
         return torsion_angles
 
 
-class HydrogenBonds():
+class HydrogenBonds:
     def __init__(self, cif: CifContainer):
         self.cif = cif
         self._symmlist = {}
-        self.hydrogen_bonds_as_str: List[HydrogenBond] = []
+        self.hydrogen_bonds_as_str: list[HydrogenBond] = []
         self.hydrogen_bonds = self._get_hydrogen_bonds()
         self.symminfo = get_symminfo(self._symmlist)
 
@@ -248,7 +249,7 @@ class HydrogenBonds():
     def symmetry_generated_atoms_used(self):
         return len(self._symmlist) > 0
 
-    def _get_hydrogen_bonds(self) -> List[dict]:
+    def _get_hydrogen_bonds(self) -> list[dict]:
         symms = {}
         newsymms = {}
         num = 1
@@ -258,7 +259,7 @@ class HydrogenBonds():
             if symm in ('.', '?'):
                 symm = None
             num = symmsearch(self.cif, newsymms, num, symm, symms)
-            symmval = f'#{str(symms[symm])}' if symm else ''
+            symmval = f'#{symms[symm]!s}' if symm else ''
             a = h.label_d + halbgeviert + h.label_h + ellipsis_mid + h.label_a
             atoms = RichText(a)
             atoms.add(symmval, superscript=True)
@@ -271,7 +272,7 @@ class HydrogenBonds():
         return atoms_list
 
 
-def get_card(cif: CifContainer, symm: str) -> Union[List[str], None]:
+def get_card(cif: CifContainer, symm: str) -> list[str] | None:
     """
     Returns a symmetry card from the _space_group_symop_operation_xyz or _symmetry_equiv_pos_as_xyz list.
     :param cif: the cif file object
@@ -285,7 +286,7 @@ def get_card(cif: CifContainer, symm: str) -> Union[List[str], None]:
     return card
 
 
-def get_symminfo(newsymms: Dict[int, str]) -> str:
+def get_symminfo(newsymms: dict[int, str]) -> str:
     """
     Adds text about the symmetry generators used in order to add symmetry generated atoms.
     """
@@ -304,8 +305,8 @@ def get_symminfo(newsymms: Dict[int, str]) -> str:
         return ''
 
 
-def symmsearch(cif: CifContainer, newsymms: Dict[int, str], num: int,
-               symm: Union[str, None], symms_list: Dict[str, int]) -> int:
+def symmsearch(cif: CifContainer, newsymms: dict[int, str], num: int,
+               symm: str | None, symms_list: dict[str, int]) -> int:
     if symm and symm not in symms_list.keys():
         symms_list[symm] = num
         card = get_card(cif, symm)
@@ -319,7 +320,7 @@ def symmsearch(cif: CifContainer, newsymms: Dict[int, str], num: int,
     return num
 
 
-class Atoms():
+class Atoms:
     def __init__(self, cif: CifContainer):
         """
         Text for non-hydrogen atoms.
@@ -353,7 +354,7 @@ class Atoms():
         """
         return xml_to_html(self.rt)
 
-    def number_of_isotropic_atoms(self, without_h: bool = True) -> Union[float, int]:
+    def number_of_isotropic_atoms(self, without_h: bool = True) -> float | int:
         isotropic_count = 0
         for site in self.cif.atomic_struct.sites:
             if self.atom_is_isotropic(site, without_h):
@@ -361,14 +362,14 @@ class Atoms():
         return isotropic_count
 
     @staticmethod
-    def atom_is_isotropic(site, without_h: bool):
+    def atom_is_isotropic(site, without_h: bool) -> bool:
         if without_h:
             return not site.aniso.nonzero() and not site.element.is_hydrogen
         else:
             return not site.aniso.nonzero()
 
 
-class Hydrogens():
+class Hydrogens:
     def __init__(self, cif: CifContainer):
         """
         The hydrogen atoms were refined isotropically on calculated positions using
@@ -377,7 +378,7 @@ class Hydrogens():
         carbon atoms.
         """
         rt = RichText()
-        hatoms: List[SHXAtom] = [x for x in cif.shx.atoms.all_atoms if x.is_hydrogen]
+        hatoms: list[SHXAtom] = [x for x in cif.shx.atoms.all_atoms if x.is_hydrogen]
         n_hatoms = len(hatoms)
         n_anisotropic_h = len([x for x in hatoms if sum([abs(y) for y in x.uvals[1:]]) > 0.0001])
         n_constr_h = len([x for x in hatoms if x.uvals[0] < -1.0])
@@ -476,7 +477,7 @@ class Hydrogens():
         return xml_to_html(self.rt)
 
 
-class Disorder():
+class Disorder:
     def __init__(self, cif: CifContainer):
         self.rt = RichText()
         self.dsr_sentence = ''
@@ -809,9 +810,12 @@ class Formatter(ABC):
         images = cif.block.find_values('_bruker_diffrn_runs_images')
         times = cif.block.find_values('_bruker_diffrn_runs_time')
         axes = cif.block.find_values('_bruker_diffrn_runs_axis')
-        seconds = sum([(images is not None and time is not None and int(images) * float(time)) or 0.0
-                       for axis, images, time in zip(axes, images, times, strict=False) if axis], 0.0)
-        if seconds:
+        try:
+            seconds = sum([(images is not None and time is not None and int(images) * float(time)) or 0.0
+                           for axis, images, time in zip(axes, images, times, strict=False) if axis], 0.0)
+        except ValueError:
+            seconds = 0
+        if seconds > 0.0001:
             return f'{seconds / 3600.0:.2f}'
         return 'n/a'
 
@@ -867,7 +871,7 @@ class HtmlFormatter(Formatter):
     def get_hydrogen_bonds(self) -> list[HydrogenBond]:
         return self._hydrogens.hydrogen_bonds_as_str
 
-    def _format_symminfo(self, txt):
+    def _format_symminfo(self, txt: str) -> str:
         return (txt.replace('#1:', '<br>#1:')
                 .replace(', ', ',&nbsp;')
                 .replace(': ', ':&nbsp;')
@@ -956,13 +960,13 @@ class RichTextFormatter(Formatter):
     def __init__(self, options: Options, cif: CifContainer) -> None:
         super().__init__(options, cif)
 
-    def get_bonds(self) -> List[Dict[str, RichText]]:
+    def get_bonds(self) -> list[dict[str, RichText]]:
         return self._bonds_angles.bonds_richtext
 
-    def get_angles(self) -> List[Dict[str, RichText]]:
+    def get_angles(self) -> list[dict[str, RichText]]:
         return self._bonds_angles.angles_richtext
 
-    def get_torsion_angles(self) -> List[Dict[str, RichText]]:
+    def get_torsion_angles(self) -> list[dict[str, RichText]]:
         return self._torsions.torsion_angles_as_richtext
 
     def get_hydrogen_bonds(self) -> list[dict[str, RichText]]:
@@ -1068,7 +1072,7 @@ def text_factory(options: Options, cif: CifContainer) -> dict[ReportFormat, Form
     return factory
 
 
-class TemplatedReport():
+class TemplatedReport:
     def __init__(self, format: ReportFormat, options: Options, cif: CifContainer) -> None:
         self.format = format
         self.cif = cif
@@ -1138,7 +1142,7 @@ class TemplatedReport():
 
     def make_templated_html_report(self,
                                    output_filename: str = 'test.html',
-                                   picfile: Path = None,
+                                   picfile: Path | None = None,
                                    template_path: Path = Path('.'),
                                    template_file: str = "report.tmpl") -> bool:
         context = self.get_context(self.cif, self.options, picfile, None)
@@ -1339,7 +1343,7 @@ if __name__ == '__main__':
         ok = t.make_templated_docx_report(template_path=Path('finalcif/template/template_text.docx'),
                                           output_filename=str(output), picfile=pic)
     if ok:
-        print('DOCX report successfully generated')
+        print('report successfully generated')
         if sys.platform == 'darwin':
             subprocess.call(['open', output])
         else:

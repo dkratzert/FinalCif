@@ -7,9 +7,9 @@
 #  ----------------------------------------------------------------------------
 import re
 from collections import namedtuple
+from collections.abc import Generator
 from contextlib import suppress
 from pathlib import Path
-from typing import Dict, List, Tuple, Union, Generator
 
 import gemmi
 from gemmi.cif import as_string, Document, Loop
@@ -28,12 +28,12 @@ class GemmiError(Exception):
     pass
 
 
-class CifContainer():
+class CifContainer:
     """
     This class holds the content of a cif file, independent of the file parser used.
     """
 
-    def __init__(self, file: Union[Path, str], new_block: str = ''):
+    def __init__(self, file: Path | str, new_block: str = ''):
         """
 
         Args:
@@ -42,7 +42,7 @@ class CifContainer():
                        the existing document is opened.
         """
         self.picometer: bool = False
-        self._abs_hkl_details: Dict[str, str] = {}
+        self._abs_hkl_details: dict[str, str] = {}
         if isinstance(file, str):
             self.fileobj = Path(file)
         elif isinstance(file, Path):
@@ -71,10 +71,10 @@ class CifContainer():
         self.set_order_keys(order)
         self.set_essential_keys(essential_keys)
 
-    def set_order_keys(self, keys: List[str]) -> None:
+    def set_order_keys(self, keys: list[str]) -> None:
         self.order = keys
 
-    def set_essential_keys(self, keys: List[str]) -> None:
+    def set_essential_keys(self, keys: list[str]) -> None:
         self.essential_keys = keys
 
     @property
@@ -153,7 +153,7 @@ class CifContainer():
         # A dictionary to convert Atom names like 'C1_2' or 'Ga3' into Element names like 'C' or 'Ga'
         self._name2elements = dict(
             zip([x.upper() for x in self.block.find_loop('_atom_site_label')],
-                [x.upper() for x in self.block.find_loop('_atom_site_type_symbol')]))
+                [x.upper() for x in self.block.find_loop('_atom_site_type_symbol')], strict=True))
         self.check_hkl_min_max()
 
     @property
@@ -243,7 +243,7 @@ class CifContainer():
         return bool(self.__getitem__(item))
 
     def __str__(self) -> str:
-        return (f"CIF file: {str(self.fileobj.resolve())}\n"
+        return (f"CIF file: {self.fileobj.resolve()!s}\n"
                 f"{len(self.doc)} Block(s): {', '.join([x.name for x in self.doc])}\n"
                 f"Contains SHELX res file: {True if self.res_file_data else False}\n"
                 f"Has {self.natoms()} atoms"
@@ -270,7 +270,7 @@ class CifContainer():
             else:
                 self.block.set_pair(key, quote(txt))
 
-    def save(self, filename: Union[Path, None] = None) -> None:
+    def save(self, filename: Path | None = None) -> None:
         """
         Saves the current cif file.
         :param filename:  Name to save cif file to.
@@ -295,7 +295,7 @@ class CifContainer():
         else:
             self.doc.write_file(str(filename), gemmi.cif.Style.Indent35)
 
-    def is_writable(self, filepath: Union[Path, str]) -> bool:
+    def is_writable(self, filepath: Path | str) -> bool:
         filepath = Path(filepath)
         try:
             exist = filepath.exists()
@@ -371,7 +371,7 @@ class CifContainer():
             else:
                 return ''
         except Exception as e:
-            print('No hkl data found in CIF!, {}'.format(e))
+            print(f'No hkl data found in CIF!, {e}')
             return ''
 
     @property
@@ -418,7 +418,7 @@ class CifContainer():
                 return num
         return 0
 
-    def _sadabs_hkl_details(self) -> Dict[str, str]:
+    def _sadabs_hkl_details(self) -> dict[str, str]:
         """
         This method tries to determine the information witten at the end of a cif hkl file by sadabs.
         """
@@ -468,7 +468,7 @@ class CifContainer():
             zero_reflection_position = 0
         return zero_reflection_position
 
-    def reversed_search(self, hkl_splitted: List[str]) -> int:
+    def reversed_search(self, hkl_splitted: list[str]) -> int:
         pattern = re.compile(r'\s+0\s+0\s+0\s+0')
         zero_reflection_position = 0
         for num, line in enumerate(reversed(hkl_splitted)):
@@ -488,7 +488,7 @@ class CifContainer():
             return True
         return False
 
-    def keys(self) -> List[str]:
+    def keys(self) -> list[str]:
         """
         Returns a plain list of keys that are really in this CIF.
         """
@@ -501,7 +501,7 @@ class CifContainer():
         return [x.pair[1] for x in self.block if x.pair is not None]
 
     @property
-    def loops(self) -> List[gemmi.cif.Loop]:
+    def loops(self) -> list[gemmi.cif.Loop]:
         """
         Returns a list of loops contained in the current block.
         """
@@ -511,14 +511,14 @@ class CifContainer():
                 loops.append(b.loop)
         return loops
 
-    def add_loop_to_cif(self, loop_tags: List[str], row_values: Union[List[str], Tuple[str]]) -> gemmi.cif.Loop:
+    def add_loop_to_cif(self, loop_tags: list[str], row_values: list[str] | tuple[str]) -> gemmi.cif.Loop:
         gemmi_loop = self.init_loop(loop_tags)
         for row in list(grouper(row_values, len(loop_tags))):
             gemmi_loop.add_row(row)
         return gemmi_loop
 
-    def add_loop_from_columns(self, loop_tags: List[str],
-                              column_values: Union[List[List[str]], Tuple[Tuple[str]]]) -> gemmi.cif.Loop:
+    def add_loop_from_columns(self, loop_tags: list[str],
+                              column_values: list[list[str]] | tuple[tuple[str]]) -> gemmi.cif.Loop:
         try:
             gemmi_loop = self.init_loop(loop_tags)
             gemmi_loop.set_all_values(column_values)
@@ -533,10 +533,10 @@ class CifContainer():
     def get_loop(self, key_in_loop: str) -> gemmi.cif.Loop:
         return self.block.find_loop(key_in_loop).get_loop()
 
-    def get_loop_column(self, key_in_loop: str) -> List:
+    def get_loop_column(self, key_in_loop: str) -> list:
         return [retranslate_delimiter(as_string(x)) for x in self.block.find_loop(key_in_loop)]
 
-    def init_loop(self, loop_keywords: List) -> gemmi.cif.Loop:
+    def init_loop(self, loop_keywords: list) -> gemmi.cif.Loop:
         return self.block.init_loop('', loop_keywords)
 
     @property
@@ -587,7 +587,7 @@ class CifContainer():
                 return ''
 
     @property
-    def symmops_from_spgr(self) -> List[str]:
+    def symmops_from_spgr(self) -> list[str]:
         # _symmetry_space_group_name_Hall
         space_group = None
         if self['_space_group_name_H-M_alt']:
@@ -679,12 +679,12 @@ class CifContainer():
                     self.block.set_pair(newkey, value)
 
     @property
-    def symmops(self) -> List[str]:
+    def symmops(self) -> list[str]:
         """
         Reads the symmops from the cif file.
         """
-        xyz1 = self.block.find(("_symmetry_equiv_pos_as_xyz",))  # deprecated
-        xyz2 = self.block.find(("_space_group_symop_operation_xyz",))  # New definition
+        xyz1 = self.block.find(["_symmetry_equiv_pos_as_xyz"])  # deprecated
+        xyz2 = self.block.find(["_space_group_symop_operation_xyz"])  # New definition
         if xyz1:
             return [i.str(0) for i in xyz1]
         elif xyz2:
@@ -719,7 +719,7 @@ class CifContainer():
         for label, type, x, y, z, part, occ, u_eq in zip(labels, types, x, y, z,
                                                          part if part else ('0',) * len(labels),
                                                          occ if occ else ('1.000000',) * len(labels),
-                                                         u_eq):
+                                                         u_eq, strict=True):
             if without_h and self.ishydrogen(label):
                 continue
             if self.picometer:
@@ -797,7 +797,7 @@ class CifContainer():
 
     def checksymm(self, symm):
         """Add translation of 555 to symmetry elements without translation"""
-        if len(symm) == 1 and not (symm == '.' or symm == '?'):
+        if len(symm) == 1 and symm not in {'.', '?'}:
             symm = symm + '_555'
         return symm
 
@@ -812,14 +812,14 @@ class CifContainer():
         publ_loop = self.block.find_loop('_geom_bond_publ_flag')
         bond = namedtuple('bond', ('label1', 'label2', 'dist', 'symm'))
         for label1, label2, dist, symm, publ in zip(label1, label2, dist, symm, publ_loop):
-            if without_h and (self.ishydrogen(label1) or self.ishydrogen(label2)) or self.yes_not_set(publ):
+            if (without_h and (self.ishydrogen(label1) or self.ishydrogen(label2))) or self.yes_not_set(publ):
                 continue
             else:
                 if self.picometer:
                     dist = _angstrom_to_x(dist)
                 yield bond(label1=label1, label2=label2, dist=dist, symm=self.checksymm(symm))
 
-    def bond_dist(self, pair: str) -> Union[str, None]:
+    def bond_dist(self, pair: str) -> str | None:
         for p in self.bonds():
             if f'{p.label1}-{p.label2}' == pair:
                 if self.picometer:
@@ -828,13 +828,13 @@ class CifContainer():
                     return p.dist
         return None
 
-    def angle(self, atoms: str) -> Union[str, None]:
+    def angle(self, atoms: str) -> str | None:
         for p in self.angles():
             if f'{p.label1}-{p.label2}-{p.label3}' == atoms:
                 return p.angle_val
         return None
 
-    def torsion(self, atoms: str) -> Union[str, None]:
+    def torsion(self, atoms: str) -> str | None:
         for p in self.torsion_angles():
             if f'{p.label1}-{p.label2}-{p.label3}-{p.label4}' == atoms:
                 return p.torsang
@@ -850,9 +850,9 @@ class CifContainer():
         publ_loop = self.block.find_loop('_geom_angle_publ_flag')
         angle = namedtuple('angle', ('label1', 'label2', 'label3', 'angle_val', 'symm1', 'symm2'))
         for label1, label2, label3, angle_val, symm1, symm2, publ in \
-            zip(label1, label2, label3, angle_val, symm1, symm2, publ_loop):
-            if (without_H and (self.ishydrogen(label1) or self.ishydrogen(label2) or
-                               self.ishydrogen(label3)) or (self.yes_not_set(publ))):
+                zip(label1, label2, label3, angle_val, symm1, symm2, publ_loop, strict=True):
+            if ((without_H and (self.ishydrogen(label1) or self.ishydrogen(label2) or
+                                self.ishydrogen(label3))) or (self.yes_not_set(publ))):
                 continue
             else:
                 yield angle(label1=label1, label2=label2, label3=label3, angle_val=angle_val,
@@ -895,13 +895,13 @@ class CifContainer():
         publ_loop = self.block.find_loop('_geom_torsion_publ_flag')
         tors = namedtuple('Torsion',
                           ('label1', 'label2', 'label3', 'label4', 'torsang', 'symm1', 'symm2', 'symm3', 'symm4'))
-        for label1, label2, label3, label4, torsang, symm1, symm2, symm3, symm4, publ in zip(label1, label2, label3,
+        for label1, label2, label3, label4, torsang, symm1, symm2, symm3, symm4, publ in zip(label1, label2, label3,  # noqa: B020
                                                                                              label4,
                                                                                              torsang, symm1, symm2,
                                                                                              symm3,
-                                                                                             symm4, publ_loop):
-            if (without_h and (self.ishydrogen(label1) or self.ishydrogen(label2)
-                               or self.ishydrogen(label3) or self.ishydrogen(label3)) or self.yes_not_set(publ)):
+                                                                                             symm4, publ_loop, strict=True):
+            if ((without_h and (self.ishydrogen(label1) or self.ishydrogen(label2)
+                                or self.ishydrogen(label3) or self.ishydrogen(label3))) or self.yes_not_set(publ)):
                 continue
             yield tors(label1=label1, label2=label2, label3=label3, label4=label4, torsang=torsang,
                        symm1=self.checksymm(symm1),
@@ -922,7 +922,7 @@ class CifContainer():
         hydr = namedtuple('HydrogenBond', ('label_d', 'label_h', 'label_a', 'dist_dh', 'dist_ha', 'dist_da',
                                            'angle_dha', 'symm'))
         for label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm, publ in (
-            zip(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm, publ_loop)):
+                zip(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm, publ_loop)):
             if self.yes_not_set(publ):
                 continue
             if self.picometer:
@@ -934,7 +934,7 @@ class CifContainer():
     def yes_not_set(self, publ: str):
         return publ not in {'y', 'yes', '?', '.'} or publ in {'n', 'no'}
 
-    def key_value_pairs(self) -> List[Tuple[str, str]]:
+    def key_value_pairs(self) -> list[tuple[str, str]]:
         """
         Returns the key/value pairs of a cif file sorted by priority.
         """
@@ -948,7 +948,7 @@ class CifContainer():
         """
         return self.is_centrosymm and key in non_centrosymm_keys
 
-    def keys_with_essentials(self) -> Tuple[List[Tuple[str, str]], List[Tuple[str, str]]]:
+    def keys_with_essentials(self) -> tuple[list[tuple[str, str]], list[tuple[str, str]]]:
         """
         Returns the keys to be displayed in the main table as two separate lists.
         """
@@ -973,8 +973,8 @@ class CifContainer():
         self.check_for_missing_essential_keys(all_keys, questions)
         return sorted(questions), sorted(with_values)
 
-    def check_for_missing_essential_keys(self, all_keys: List[Tuple[str, str]],
-                                         questions: List[Tuple[str, str]]) -> None:
+    def check_for_missing_essential_keys(self, all_keys: list[tuple[str, str]],
+                                         questions: list[tuple[str, str]]) -> None:
         """
         Check if there are keys not in the cif but in essential_keys and append them if so.
         """

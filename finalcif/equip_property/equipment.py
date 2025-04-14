@@ -1,11 +1,11 @@
 from __future__ import annotations
+
 from bisect import bisect
 from pathlib import Path
-from typing import List, Dict
 from typing import TYPE_CHECKING
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QListWidgetItem
+from PySide6 import QtCore
+from PySide6.QtWidgets import QListWidgetItem
 from gemmi import cif
 
 from finalcif.app_path import application_path
@@ -87,7 +87,7 @@ class Equipment:
         item = QListWidgetItem('')
         self.app.ui.EquipmentTemplatesListWidget.addItem(item)
         self.app.ui.EquipmentTemplatesListWidget.setCurrentItem(item)
-        item.setFlags(Qt.ItemIsEditable | Qt.ItemIsEnabled | Qt.ItemIsSelectable)
+        item.setFlags(QtCore.Qt.ItemFlag.ItemIsEditable | QtCore.Qt.ItemFlag.ItemIsEnabled | QtCore.Qt.ItemFlag.ItemIsSelectable)
         self.app.ui.EquipmentTemplatesListWidget.editItem(item)
 
     def delete_equipment(self) -> None:
@@ -101,7 +101,7 @@ class Equipment:
         # I do these both to clear the list:
         self.load_default_equipment()
 
-    def export_raw_data(self) -> List[Dict]:
+    def export_raw_data(self) -> list[dict]:
         equipment_list = []
         for equipment_name in self.settings.get_equipment_list():
             if equipment_name:
@@ -110,7 +110,7 @@ class Equipment:
                                        'deleted': self.settings.deleted_equipment})
         return equipment_list
 
-    def import_raw_data(self, equipment_list: List[Dict]) -> None:
+    def import_raw_data(self, equipment_list: list[dict]) -> None:
         deleted = self.settings.deleted_equipment
         for eq in equipment_list:
             name = eq.get('name')
@@ -203,7 +203,7 @@ class Equipment:
                                          f'Change the name in order to save.\n'
                                          f'Keys must start with an underscore.')
                     return
-                show_general_warning(self.app, '"{}" is not an official CIF keyword!'.format(key))
+                show_general_warning(self.app, f'"{key}" is not an official CIF keyword!')
         self.settings.save_settings_list('equipment', self.selected_template_name(), table_data)
         self.app.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
         self.load_default_equipment()
@@ -269,7 +269,7 @@ class Equipment:
     def selected_template_name(self) -> str:
         return self.app.ui.EquipmentTemplatesListWidget.currentIndex().data()
 
-    def export_equipment_template(self, filename: str = None) -> None:
+    def export_equipment_template(self, filename: str | None = None) -> None:
         """
         Exports the currently selected equipment entry to a file.
 
@@ -293,7 +293,7 @@ class Equipment:
         except PermissionError:
             if Path(filename).is_dir():
                 return
-            show_general_warning(self.app, 'No permission to write file to {}'.format(Path(filename).resolve()))
+            show_general_warning(self.app, f'No permission to write file to {Path(filename).resolve()}')
 
     def cancel_equipment_template(self) -> None:
         """

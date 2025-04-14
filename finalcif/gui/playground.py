@@ -1,13 +1,13 @@
 import threading
 
 import requests
-from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
-from PyQt5.QtWidgets import QLabel, QMainWindow
+from PySide6.QtCore import QObject, Signal, Slot
+from PySide6.QtWidgets import QLabel, QMainWindow
 
 
 class Class1(QObject):
     # Define a signal to emit the result of the class
-    resultReady = pyqtSignal(str)
+    resultReady = Signal(str)
 
     def run(self):
         # Calculate the result
@@ -18,7 +18,7 @@ class Class1(QObject):
 
 class Class2(QObject):
     # Define a signal to emit the result of the class
-    resultReady = pyqtSignal(str)
+    resultReady = Signal(str)
 
     def run(self):
         # Calculate the result
@@ -48,7 +48,7 @@ class MainWindow(QMainWindow):
         self.thread1.start()
         self.thread2.start()
 
-    @pyqtSlot(str)
+    @Slot(str)
     def updateLabel(self, result):
         # Update the label with the result
         txt = self.label.text()
@@ -58,15 +58,15 @@ class MainWindow(QMainWindow):
 
 if __name__ == "__main__":
     import sys
-    from PyQt5 import QtWidgets
+    from PySide6 import QtWidgets
     app = QtWidgets.QApplication(sys.argv)
     window = MainWindow()
     window.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
 
 
 """if __name__ == '__main__':
-    from PyQt5 import QtWidgets
+    from PySide6 import QtWidgets
 
     app = QtWidgets.QApplication([])
 

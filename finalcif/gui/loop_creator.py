@@ -1,7 +1,6 @@
 import re
-from typing import List
 
-from PyQt5.QtWidgets import QWidget
+from PySide6.QtWidgets import QWidget
 
 from finalcif.cif import all_cif_dicts
 from finalcif.cif.cif_file_io import CifContainer
@@ -55,7 +54,7 @@ class LoopCreator(QWidget, Ui_LoopCreator):
             if row <= self.availableKeysListWidget.count():
                 self.availableKeysListWidget.setCurrentRow(row + 1)
 
-    def get_itemtexts_from_new_loop(self) -> List[str]:
+    def get_itemtexts_from_new_loop(self) -> list[str]:
         itemtexts = []
         for num in range(self.newLoopKeysListWidget.count()):
             itemtext = self.newLoopKeysListWidget.item(num).text()
@@ -74,11 +73,11 @@ class LoopCreator(QWidget, Ui_LoopCreator):
 
 if __name__ == '__main__':
     import sys
-    from PyQt5.QtWidgets import QApplication
+    from PySide6.QtWidgets import QApplication
 
     app = QApplication(sys.argv)
     cif = CifContainer('test-data/1000006.cif')
     lc = LoopCreator(cif=cif)
     lc.saveLoopPushButton.clicked.connect(lc.save_new_loop_to_cif)
     lc.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

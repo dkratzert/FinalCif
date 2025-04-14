@@ -4,8 +4,8 @@ os.environ["RUNNING_TEST"] = 'True'
 import unittest
 from pathlib import Path
 
-from PyQt5 import QtCore
-from PyQt5.QtTest import QTest
+from PySide6 import QtCore
+from PySide6.QtTest import QTest
 from finalcif.appwindow import AppWindow
 
 data = Path('tests')
@@ -77,7 +77,6 @@ class MyTestCase(unittest.TestCase):
     def test_set_name(self):
         self.app.ui.FullNameLineEdit.setText('test')
         self.assertEqual('test', self.app.authors.get_author_info().name)
-        #
         self.app.ui.FullNameLineEdit.clear()
         self.app.ui.authorEditTabWidget.setCurrentIndex(1)
         self.app.ui.FullNameLineEdit_cif.setText('test2')
@@ -87,7 +86,6 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(False, self.app.ui.ContactAuthorCheckBox.isChecked())
         self.app.ui.ContactAuthorCheckBox.setChecked(True)
         self.assertEqual(True, self.app.authors.get_author_info().contact_author)
-        #
         self.app.ui.authorEditTabWidget.setCurrentIndex(1)
         self.assertEqual(False, self.app.ui.ContactAuthorCheckBox_cif.isChecked())
         self.app.ui.ContactAuthorCheckBox_cif.setChecked(True)
@@ -96,7 +94,6 @@ class MyTestCase(unittest.TestCase):
     def test_set_address(self):
         self.app.ui.AddressTextedit.setText('Eine Adresse 1')
         self.assertEqual("'Eine Adresse 1'", self.app.authors.get_author_info().address)
-        #
         self.app.ui.AddressTextedit.clear()
         self.app.ui.authorEditTabWidget.setCurrentIndex(1)
         self.app.ui.AddressTextedit_cif.setText('Eine Adresse 2')
@@ -109,7 +106,6 @@ class MyTestCase(unittest.TestCase):
     def test_set_email(self):
         self.app.ui.EMailLineEdit.setText('test@foo.de')
         self.assertEqual('test@foo.de', self.app.authors.get_author_info().email)
-        #
         self.app.ui.authorEditTabWidget.setCurrentIndex(1)
         self.app.ui.EMailLineEdit.clear()
         self.app.ui.EMailLineEdit_cif.setText('test@foo.de')
@@ -122,7 +118,6 @@ class MyTestCase(unittest.TestCase):
     def test_set_phone(self):
         self.app.ui.PhoneLineEdit.setText('12345a')
         self.assertEqual('12345a', self.app.authors.get_author_info().phone)
-        #
         self.app.ui.PhoneLineEdit.clear()
         self.app.ui.authorEditTabWidget.setCurrentIndex(1)
         self.app.ui.PhoneLineEdit_cif.setText('12345b')

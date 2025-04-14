@@ -9,7 +9,6 @@ import sys
 import time
 import traceback
 from pathlib import Path
-from typing import Type
 
 from finalcif import VERSION
 from finalcif.app_path import application_path
@@ -17,7 +16,7 @@ from finalcif.appwindow import AppWindow, DEBUG, app
 from finalcif.gui.dialogs import show_bug_found_warning, show_general_warning
 
 
-def my_exception_hook(exctype: Type[BaseException], value: BaseException, error_traceback: traceback,
+def my_exception_hook(exctype: type[BaseException], value: BaseException, error_traceback: traceback,
                       exit=True) -> None:
     """
     Hooks into Exceptions to create debug reports.
@@ -40,13 +39,13 @@ def my_exception_hook(exctype: Type[BaseException], value: BaseException, error_
         errortext += (f'File "{frame.f_code.co_filename}", line {frame.f_lineno}, in '
                       f'{frame.f_code.co_qualname}(...):\n')
         newline = '\n'
-        errortext += f'  Locals: \n    '
+        errortext += '  Locals: \n    '
         errortext += "    ".join(
             [f"  {k}:{newline}          {'          '.join([x + newline for x in repr(v).splitlines()])}" for k, v in
              frame.f_locals.items()]) + '\n\n'
 
     errortext += f'{"-" * 120}\n'
-    errortext += f'{str(exctype.__name__)}: {str(value)} \n'
+    errortext += f'{exctype.__name__!s}: {value!s} \n'
     errortext += f'{"-" * 120}\n'
 
     logfile = Path.home().joinpath(Path(r'finalcif-crash.txt'))
@@ -75,9 +74,9 @@ def main():
             file = None
     app.setQuitOnLastWindowClosed(True)
     w = AppWindow(file=file)
-    from PyQt5.QtGui import QIcon
+    from PySide6.QtGui import QIcon
     app.setWindowIcon(QIcon(str(application_path / r'icon/finalcif2.png')))
-    w.setWindowTitle('FinalCif v{}'.format(VERSION))
+    w.setWindowTitle(f'FinalCif v{VERSION}')
     # w.showMaximized()  # For full screen view
     w.setBaseSize(1200, 780)
     sys.exit(app.exec())

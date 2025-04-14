@@ -13,5 +13,5 @@ from finalcif import VERSION
 def upload_cif(deposit_url, data, files):
     # pprint(data)
     # pprint(files)
-    r = requests.post(deposit_url, data=data, files=files, headers={'User-Agent': 'FinalCif/{}'.format(VERSION)})
+    r = requests.post(deposit_url, data=data, files=files, headers={'User-Agent': f'FinalCif/{VERSION}'})
     return r

@@ -1,20 +1,19 @@
-#!/usr/bin/python3
+from __future__ import annotations
 # QcodeEditor.py by acbetter.
-# -*- coding: utf-8 -*-
 # Taken from: https://stackoverflow.com/questions/40386194/create-text-area-textedit-with-line-number-in-pyqt
-
-from PyQt5.QtCore import Qt, QRect, QSize
-from PyQt5.QtGui import QColor, QPainter, QTextFormat, QFont
-from PyQt5.QtWidgets import QWidget, QPlainTextEdit, QTextEdit
+from PySide6 import QtCore, QtGui
+from PySide6.QtCore import QRect, QSize
+from PySide6.QtGui import QColor, QPainter, QTextFormat
+from PySide6.QtWidgets import QWidget, QPlainTextEdit, QTextEdit
 
 
 class QLineNumberArea(QWidget):
-    def __init__(self, parent):
+    def __init__(self, parent: QCodeEditor):
         super().__init__(parent=parent)
         self.codeEditor = parent
 
     def sizeHint(self):
-        return QSize(self.editor.line_number_area_width(), 0)
+        return QSize(self.codeEditor.line_number_area_width(), 0)
 
     def paintEvent(self, event):
         self.codeEditor.line_number_area_paint_event(event)
@@ -35,7 +34,7 @@ class QCodeEditor(QPlainTextEdit):
         while max_value >= 10:
             max_value /= 10
             digits += 1
-        space = self.fontMetrics().width('9 ') * digits
+        space = self.fontMetrics().horizontalAdvance('9 ') * digits
         return space
 
     def update_line_number_area_width(self, _):
@@ -59,9 +58,9 @@ class QCodeEditor(QPlainTextEdit):
         extra_selections = []
         if not self.isReadOnly():
             selection = QTextEdit.ExtraSelection()
-            line_color = QColor(Qt.lightGray).lighter(160)
+            line_color = QColor(QtCore.Qt.GlobalColor.lightGray).lighter(160)
             selection.format.setBackground(line_color)
-            selection.format.setProperty(QTextFormat.FullWidthSelection, True)
+            selection.format.setProperty(QTextFormat.Property.FullWidthSelection, True)
             selection.cursor = self.textCursor()
             selection.cursor.clearSelection()
             extra_selections.append(selection)
@@ -80,12 +79,13 @@ class QCodeEditor(QPlainTextEdit):
         while block.isValid() and (top <= event.rect().bottom()):
             if block.isVisible() and (bottom >= event.rect().top()):
                 number = f'{block_number + 1} '
-                painter.setPen(Qt.black)
+                painter.setPen(QtCore.Qt.GlobalColor.black)
                 font = painter.font()
                 font.setFamily("Courier")
-                font.setStyleHint(QFont.Monospace)
+                font.setStyleHint(QtGui.QFont.StyleHint.Monospace)
                 painter.setFont(font)
-                painter.drawText(0, top, self.lineNumberArea.width(), height, Qt.AlignRight, number)
+                painter.drawText(0, top, self.lineNumberArea.width(), height,
+                                 QtCore.Qt.AlignmentFlag.AlignRight, number)
 
             block = block.next()
             top = bottom
@@ -94,7 +94,8 @@ class QCodeEditor(QPlainTextEdit):
 
 
 if __name__ == '__main__':
-    from PyQt5.QtWidgets import QApplication
+    from PySide6.QtWidgets import QApplication
+
     app = QApplication.instance()
     if app is None:
         app = QApplication([])
@@ -103,4 +104,4 @@ if __name__ == '__main__':
     codeEditor = QCodeEditor()
     codeEditor.setPlainText('Foo bar')
     codeEditor.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

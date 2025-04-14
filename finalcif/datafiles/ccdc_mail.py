@@ -2,14 +2,13 @@ import base64
 import email
 from contextlib import suppress
 from pathlib import Path
-from typing import Union
 
-import html2text as html2text
+import html2text
 
 from finalcif.cif.cif_file_io import CifContainer
 
 
-class CCDCMail():
+class CCDCMail:
     """
     This class searches for .eml (email) files in the current directory of the cif file.
     Each mail is parsed for CCDC number and unit cell.
@@ -20,7 +19,7 @@ class CCDCMail():
     def __init__(self, cif: CifContainer):
         eml_files = cif.fileobj.parent.glob('*.eml')
         self.depnum: int = 0
-        self.mail_cell: Union[tuple, None] = None
+        self.mail_cell: tuple | None = None
         self.emlfile: Path = Path()
         for emlfile in eml_files:
             eml = False
@@ -40,7 +39,7 @@ class CCDCMail():
         cell = 'None'
         if self.mail_cell:
             cell = ', '.join([str(x) for x in self.mail_cell])
-        return 'CCDC-Number: {}\nCell from mail: {}\n.eml file name: {}'.format(self.depnum, cell, self.emlfile)
+        return f'CCDC-Number: {self.depnum}\nCell from mail: {cell}\n.eml file name: {self.emlfile}'
 
     def parse_emlfile(self, file: Path):
         m = email.message_from_string(file.read_text())
@@ -72,7 +71,7 @@ class CCDCMail():
         return True
 
     @staticmethod
-    def is_same_cell(cif: CifContainer, cell: Union[list, tuple]):
+    def is_same_cell(cif: CifContainer, cell: list | tuple) -> bool:
         """
         """
         is_same = False
@@ -88,3 +87,4 @@ if __name__ == '__main__':
     cif = CifContainer(
         Path('test-data/DK_zucker2_0m.cif'))
     ccdc = CCDCMail(cif)
+    print(ccdc)

@@ -1,19 +1,20 @@
-from PyQt5.QtCore import QSize, Qt
-from PyQt5.QtWidgets import QDialog, QFrame, QHBoxLayout, QLabel, QPushButton, QSizePolicy, QSpacerItem, QTextEdit, \
+from PySide6 import QtCore
+from PySide6.QtCore import QSize, Qt
+from PySide6.QtWidgets import QDialog, QFrame, QHBoxLayout, QLabel, QPushButton, QSizePolicy, QSpacerItem, QTextEdit, \
     QVBoxLayout, QWidget
 
 
 class QHLine(QFrame):
     def __init__(self, parent, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
-        self.setFrameShape(QFrame.HLine)
+        self.setFrameShape(QFrame.Shape.HLine)
         # self.setFrameShadow(QFrame.Sunken)
         # gives a black line:
         # self.setFrameShadow(QFrame.Plain)
-        self.setFrameShadow(QFrame.Raised)
+        self.setFrameShadow(QFrame.Shadow.Raised)
 
 
-class VREF():
+class VREF:
     """
     _vrf_PLAT699_DK_zucker2_0m
     ;
@@ -37,7 +38,7 @@ class VREF():
         return self._response
 
     @response.setter
-    def response(self, txt):
+    def response(self, txt) -> None:
         self._response = self.response + txt
 
     @property
@@ -45,13 +46,13 @@ class VREF():
         return self._problem
 
     @problem.setter
-    def problem(self, txt):
+    def problem(self, txt) -> None:
         self._problem = self.problem + txt
 
     def __repr__(self):
         txt = (
-            "{}\n"
-            "{}\n".format(self.problem, self.response)
+            f"{self.problem}\n"
+            f"{self.response}\n"
         )
         return txt
 
@@ -93,7 +94,6 @@ class MyVRFContainer(QWidget):
         self.response_label_box()
         self.setAutoFillBackground(False)
         self.help = help
-        #
         self.show()
 
     def show_help(self):
@@ -121,34 +121,34 @@ class MyVRFContainer(QWidget):
         label = QLabel()
         hlayout.addWidget(label)
         level = self.form['level']
-        type = level[-1] if len(level) > 1 else 'General A  Alert'
+        atype = level[-1] if len(level) > 1 else 'General A  Alert'
         color = 'lightgray'
-        if type == 'A':
+        if atype == 'A':
             color = 'rgb(240, 88, 70)'  # 'red'
-        elif type == 'B':
+        elif atype == 'B':
             color = 'rgb(252, 119, 20)'
-        elif type == 'C':
+        elif atype == 'C':
             color = 'yellow'
-        elif type == 'G':
+        elif atype == 'G':
             color = 'green'
-        if len(type) == 1:
-            type = type + '  Alert'
+        if len(atype) == 1:
+            atype = atype + '  Alert'
         num = self.form['alert_num'] if 'alert_num' in self.form else ''
         if self.is_multi_cif:
             name = "  --> {}".format(self.form['data_name'])
         else:
             name = ''
-        label.setText("{} {} {}".format(type, num, name))
-        style = 'QLabel {{ font-size: 12px; background-color: {:s}; ' \
+        label.setText(f"{atype} {num} {name}")
+        style = f'QLabel {{ font-size: 12px; background-color: {color:s}; ' \
                 'font-weight: bold;' \
                 'border: 1px solid gray;' \
                 'border-radius: 5px; ' \
                 'margin: 0px;' \
                 'padding: 4px;' \
                 'opacity: 230;' \
-                '}}'.format(color)
+                '}'
         label.setStyleSheet(style)
-        spacerItem = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        spacerItem = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
         hlayout.addItem(spacerItem)
         hlayout.addWidget(self.helpbutton)
         self.mainVLayout.addWidget(frame)
@@ -159,14 +159,14 @@ class MyVRFContainer(QWidget):
         hlayout.setContentsMargins(4, 4, 4, 4)
         frame.setLayout(hlayout)
         p_label = QLabel()
-        hlayout.addWidget(p_label, 0, Qt.AlignTop)
+        hlayout.addWidget(p_label, 0, QtCore.Qt.AlignmentFlag.AlignTop)
         p_label.setText('Problem:   ')
-        p_label.setAlignment(Qt.AlignLeft)
+        p_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
         p_label.setStyleSheet('QLabel { font-size: 12px; font-weight: bold; }')
         p_text_label = QLabel()
-        p_text_label.setAlignment(Qt.AlignLeft)
+        p_text_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
         hlayout.addWidget(p_text_label)
-        hlayout.setAlignment(Qt.AlignLeft)
+        hlayout.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
         p_text_label.setText(self.form['problem'])
         self.mainVLayout.addWidget(frame)
 
@@ -176,16 +176,16 @@ class MyVRFContainer(QWidget):
         hlayout.setContentsMargins(4, 8, 4, 12)
         frame.setLayout(hlayout)
         resp_label = QLabel()
-        hlayout.addWidget(resp_label, 0, Qt.AlignTop)
+        hlayout.addWidget(resp_label, 0, QtCore.Qt.AlignmentFlag.AlignTop)
         resp_label.setText('Response: ')
         resp_label.setStyleSheet('QLabel { font-size: 12px; font-weight: bold }')
-        self.response_text_edit.setFocusPolicy(Qt.StrongFocus)
+        self.response_text_edit.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
         hlayout.addWidget(self.response_text_edit)
         self.mainVLayout.addWidget(frame)
 
 
 if __name__ == '__main__':
-    from PyQt5.QtWidgets import QApplication
+    from PySide6.QtWidgets import QApplication
     import sys
 
     app = QApplication(sys.argv)
@@ -196,7 +196,7 @@ if __name__ == '__main__':
                          '!  ',
             'alert_num': 'PLAT035'}
     web = MyVRFContainer(form, help='helptext', parent=None, is_multi_cif=True)
-    app.exec_()
+    app.exec()
     web.raise_()
 
     v = VREF()

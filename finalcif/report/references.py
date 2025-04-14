@@ -6,14 +6,14 @@
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
 from contextlib import suppress
-from typing import List, Tuple, Union
+from typing import Union
 
 from docx.text.paragraph import Paragraph
 from docxtpl import RichText
 
 from finalcif import VERSION
 
-"""
+r"""
 [1] SAINT
 [2] SADABS/TWINABS
 [3] SHELXT
@@ -43,7 +43,7 @@ Missing: d*trek
 """
 
 
-class ReferenceList():
+class ReferenceList:
     """
     This reference list holds a list of all used references. During each self.append(Reference()), a new reference is
     appended to the list. 
@@ -52,11 +52,11 @@ class ReferenceList():
 
     def __init__(self, paragraph: Paragraph):
         self.paragraph = paragraph
-        self._references = list()
+        self._references = []
 
-    def append(self, ref: Union[List['Reference'], Tuple['Reference'], 'Reference']) -> None:
+    def append(self, ref: Union[list['Reference'], tuple['Reference'], 'Reference']) -> None:
         """Adds a superscript list of reference numbers in brackets to the document."""
-        if isinstance(ref, (list, tuple)):
+        if isinstance(ref, list | tuple):
             if not ref:
                 return None
             self._append_list(ref)
@@ -67,7 +67,7 @@ class ReferenceList():
         # better not here:
         # self.paragraph.add_run(' ')
 
-    def _append_list(self, reflist: List) -> None:
+    def _append_list(self, reflist: list) -> None:
         reflst_long = []
         self.paragraph.add_run('[').font.superscript = True
         reflist = [x for x in reflist if x]
@@ -81,7 +81,7 @@ class ReferenceList():
         self.paragraph.add_run(']').font.superscript = True
 
     @staticmethod
-    def get_sequence(stringlist: List[int]):
+    def get_sequence(stringlist: list[int]) -> str:
         """
         Converts a list of numbers into a string of numbers where recurring sequences
         are described with a range.
@@ -119,14 +119,14 @@ class ReferenceList():
             template = 'references'
         for num, ref in enumerate(self._references, 1):
             paragraph_reflist = document.add_paragraph('', template)
-            paragraph_reflist.add_run(f'[{str(num)}] \t')
+            paragraph_reflist.add_run(f'[{num!s}] \t')
             ref.add_reference(paragraph_reflist)
 
     def __repr__(self):
         return '\n'.join([f'[{num}] {x}' for num, x in enumerate(self._references)])
 
 
-class Reference():
+class Reference:
     def __init__(self):
         self.authors = ''
         self.journal = ''
@@ -458,7 +458,7 @@ class SHELXLReference(Reference):
     """
 
     def __init__(self) -> None:
-        super(SHELXLReference, self).__init__()
+        super().__init__()
         self.authors = 'G. M. Sheldrick'
         self.year = '2015'
         self.journal = 'Acta Cryst.'
@@ -566,7 +566,7 @@ class SORTAVReference(Reference):
 class FinalCifReference(Reference):
     """
     >>> FinalCifReference()
-    D. Kratzert, FinalCif, V51, https://dkratzert.de/finalcif.html.
+    D. Kratzert, FinalCif, V150, https://dkratzert.de/finalcif.html.
     """
 
     def __init__(self):

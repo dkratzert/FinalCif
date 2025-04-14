@@ -1,6 +1,4 @@
 import os
-from builtins import str
-from typing import Union, List, Tuple
 
 import gemmi
 from docx import Document
@@ -9,14 +7,12 @@ from docx.text.paragraph import Paragraph
 from docx.text.run import Run
 from lxml import etree
 from lxml.etree import XSLTAccessControl
-from shelxfile.atoms.atoms import Atom as SHXAtom
 
 from finalcif.app_path import application_path
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.cif.text import retranslate_delimiter, string_to_utf8
 from finalcif.report import references
-from finalcif.tools.misc import (protected_space, angstrom, zero_width_space, remove_line_endings,
-                                 flatten)
+from finalcif.tools.misc import (protected_space, angstrom, remove_line_endings)
 
 
 def math_to_word(eq: str) -> BaseOxmlElement:
@@ -61,15 +57,14 @@ def _get_cooling_device(cif: CifContainer) -> str:
         return ''
 
 
-class FormatMixin():
+class FormatMixin:
 
     def bold(self, run: Run):
         r = run.bold = True
         return r
 
 
-
-class SpaceChar():
+class SpaceChar:
     def __init__(self, paragraph: Paragraph):
         self.p = paragraph
 
@@ -80,7 +75,7 @@ class SpaceChar():
         self.p.add_run(protected_space)
 
 
-class RefinementDetails():
+class RefinementDetails:
     def __init__(self, cif: CifContainer, document: Document):
         ph = document.add_paragraph(style='Heading 2')
         ph.add_run(text=fr"Refinement details for {cif.block.name}")

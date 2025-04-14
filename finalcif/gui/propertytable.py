@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QTableWidget, QWidget
+from PySide6.QtWidgets import QTableWidget, QWidget
 
 
 class MyPropTableWidget(QTableWidget):
@@ -10,7 +10,7 @@ class MyPropTableWidget(QTableWidget):
         super().__init__(*args, **kwargs)
         self.parent = parent
 
-    def delete_row(self, row: int = None):
+    def delete_row(self, row: int | None = None):
         if not row:
             row = self.currentRow()
         self.removeRow(row)

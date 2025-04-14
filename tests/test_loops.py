@@ -10,8 +10,8 @@ os.environ["RUNNING_TEST"] = 'True'
 import unittest
 from pathlib import Path
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QTabWidget
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QTabWidget
 from gemmi.cif import as_string
 
 from finalcif.appwindow import AppWindow
@@ -83,23 +83,15 @@ class TestLoops(unittest.TestCase):
     def test_loop_no_edit(self):
         self.myapp.ui.SaveCifButton.click()
         c = CifContainer(self.myapp.cif.finalcif_file)
-        try:
-            val = c.loops[3].val(0, 2)
-        except AttributeError:
-            val = c.loops[3][0, 2]
+        val = c.loops[3][0, 2]
         self.assertEqual('0.0181', val)
 
     def test_loop_edit_one_single_field(self):
         model = self.myapp.ui.LoopsTabWidget.widget(self.get_index_of('Scattering')).model()
-        model.setData(model.index(0, 2), 'foo bar', role=Qt.EditRole)
+        model.setData(model.index(0, 2), 'foo bar', role=Qt.ItemDataRole.EditRole)
         self.myapp.ui.SaveCifButton.click()
         c = CifContainer(self.myapp.cif.finalcif_file)
-        try:
-            # gemmi pre-0.6.5:
-            result = as_string(c.loops[3].val(0, 2))
-        except AttributeError:
-            # gemmi post-0.6.5:
-            result = as_string(c.loops[3][0, 2])
+        result = as_string(c.loops[3][0, 2])
         self.assertEqual('foo bar', result)
 
 

@@ -36,7 +36,7 @@ class SHELXTlistfile(ParserMixin):
                         self.solutions[self._text[num + 1 + n][58:76].strip()] = self._text[num + 1 + n][37:51].strip()
 
 
-class SolutionProgram(object):
+class SolutionProgram:
     """Handles the solution program: _computing_structure_solution"""
 
     def __init__(self, cif: CifContainer):

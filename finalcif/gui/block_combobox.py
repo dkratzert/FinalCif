@@ -1,8 +1,8 @@
-from PyQt5 import QtWidgets, QtCore
+from PySide6 import QtWidgets, QtCore
 
 
 class ComboBoxWithContextMenu(QtWidgets.QComboBox):
-    delete_signal = QtCore.pyqtSignal(int)
+    delete_signal = QtCore.Signal(int)
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -10,7 +10,7 @@ class ComboBoxWithContextMenu(QtWidgets.QComboBox):
     def contextMenuEvent(self, event):
         context_menu = QtWidgets.QMenu(self)
         delete_action = context_menu.addAction(f"Delete block '{self.currentText()}'")
-        action = context_menu.exec_(self.mapToGlobal(event.pos()))
+        action = context_menu.exec(self.mapToGlobal(event.pos()))
         if action == delete_action and self.count() > 1:
             self.delete_signal.emit(self.currentIndex())
 
@@ -32,4 +32,4 @@ if __name__ == "__main__":
     combo_box.delete_signal.connect(delete_block)
 
     window.show()
-    app.exec_()
+    app.exec()
