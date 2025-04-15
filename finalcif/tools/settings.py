@@ -114,7 +114,7 @@ class FinalCifSettings:
         self.property_keys_and_values = self.load_property_keys_and_values()
         self.property_keys = self.load_cif_keys_of_properties()
 
-    def save_key_value(self, name: str, item: str | list | tuple | dict):
+    def save_key_value(self, name: str, item: str | list | tuple | dict | int):
         """
         Saves a single key/value pair.
         """
@@ -122,7 +122,7 @@ class FinalCifSettings:
         if DEBUG:
             print(f"Saving {name} {item}")
 
-    def load_value_of_key(self, key: str) -> object | Iterable | list:
+    def load_value_of_key(self, key: str) -> Iterable | list | int | float:
         """
         Load templates and return them as string.
         """

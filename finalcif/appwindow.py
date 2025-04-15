@@ -100,6 +100,7 @@ class AppWindow(QMainWindow):
         self.ui.setupUi(self)
         self.ui.page_MainTable.setParent(self.ui.MainStackedWidget)
         self.settings = FinalCifSettings()
+        self.load_fontsize_from_settings()
         self.options = Options(self.ui, self.settings)
         self.deposit = CODdeposit(self.ui, self.cif, self.options)
         self.equipment = Equipment(app=self, settings=self.settings)
@@ -134,7 +135,15 @@ class AppWindow(QMainWindow):
         self.connect_signals_and_slots()
         with suppress(Exception):
             self.make_button_icons()
-        #self.set_font_sizes()
+        # self.set_font_sizes()
+
+    def load_fontsize_from_settings(self):
+        fontsize = self.settings.load_value_of_key('global_font_size')
+        if fontsize is not None and fontsize >= 8:
+            self.set_global_font(fontsize)
+            self.ui.textSizeSpinBox.setValue(fontsize)
+        else:
+            self.ui.textSizeSpinBox.setValue(0)
 
     @property
     def running_inside_unit_test(self):
@@ -190,6 +199,15 @@ class AppWindow(QMainWindow):
             self.ui.CODpushButton.setDisabled(True)
         else:
             self.ui.CODpushButton.setEnabled(True)
+
+    def set_global_font(self, size: int) -> None:
+        if size >= 8:
+            self.settings.save_key_value('global_font_size', size)
+            font: QtGui.QFont = app.font()
+            font.setPointSize(size)
+            app.setFont(font)
+        else:
+            self.settings.save_key_value('global_font_size', 0)
 
     def set_font_sizes(self) -> None:
         large_font = QtGui.QFont()
@@ -386,6 +404,7 @@ class AppWindow(QMainWindow):
         self.ui.ExportAllTemplatesPushButton.clicked.connect(self.export_all_templates)
         self.ui.ImportAllTemplatesPushButton.clicked.connect(self.import_all_templates)
         self.ui.searchMainTableLineEdit.textChanged.connect(self.ui.cif_main_table.search)
+        self.ui.textSizeSpinBox.valueChanged.connect(self.set_global_font)
 
     @property
     def finalcif_changes_filename(self):
@@ -623,10 +642,10 @@ class AppWindow(QMainWindow):
         """It called when the main window resizes."""
         with suppress(AttributeError):
             self._savesize()
-        #main_width = self.ui.Mainwidget.width()
-        #left_frame = main_width * 0.22
-        #left_frame = max(300, left_frame)
-        #self.ui.LeftFrame.setMinimumWidth(int(left_frame))
+        # main_width = self.ui.Mainwidget.width()
+        # left_frame = main_width * 0.22
+        # left_frame = max(300, left_frame)
+        # self.ui.LeftFrame.setMinimumWidth(int(left_frame))
         # Not necessary here, it is done in MyCifTable
         # threading.Thread(target=self.ui.cif_main_table.resizeRowsToContents).start()
         # QtCore.QTimer(self).singleShot(0, self.ui.cif_main_table.resizeRowsToContents)
@@ -1061,7 +1080,7 @@ class AppWindow(QMainWindow):
         font.setFamily("Courier New")
         font.setStyleHint(QtGui.QFont.StyleHint.Monospace)
         # app.processEvents()
-        #font.setPointSize(14)
+        # font.setPointSize(14)
         doc.setDefaultFont(font)
 
     def load_recent_file(self, file_index: int) -> None:
@@ -1375,7 +1394,7 @@ class AppWindow(QMainWindow):
         font.setStyleHint(QtGui.QFont.StyleHint.Monospace)
         # increases the pont size every time a bit more :)
         # size = font.pointSize()
-        #font.setPointSize(14)
+        # font.setPointSize(14)
         doc.setDefaultFont(font)
         final_textedit.setLineWrapMode(QPlainTextEdit.LineWrapMode.NoWrap)
         final_textedit.setPlainText(self.cif.finalcif_file.read_text(encoding='utf-8', errors='ignore'))
@@ -1987,7 +2006,7 @@ class AppWindow(QMainWindow):
         font = doc.defaultFont()
         font.setFamily("Courier New")
         font.setStyleHint(QtGui.QFont.StyleHint.Monospace)
-        #font.setPointSize(14)
+        # font.setPointSize(14)
         doc.setDefaultFont(font)
         textedit.setLineWrapMode(QPlainTextEdit.LineWrapMode.NoWrap)
         textedit.setReadOnly(True)

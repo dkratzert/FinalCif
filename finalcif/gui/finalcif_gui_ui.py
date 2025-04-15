@@ -38,7 +38,12 @@ class Ui_FinalCifWindow(object):
     def setupUi(self, FinalCifWindow):
         if not FinalCifWindow.objectName():
             FinalCifWindow.setObjectName(u"FinalCifWindow")
-        FinalCifWindow.resize(1914, 860)
+        FinalCifWindow.resize(1446, 860)
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(FinalCifWindow.sizePolicy().hasHeightForWidth())
+        FinalCifWindow.setSizePolicy(sizePolicy)
         self.Mainwidget = QWidget(FinalCifWindow)
         self.Mainwidget.setObjectName(u"Mainwidget")
         self.horizontalLayout_4 = QHBoxLayout(self.Mainwidget)
@@ -46,16 +51,16 @@ class Ui_FinalCifWindow(object):
         self.horizontalLayout_4.setContentsMargins(6, 6, 6, 0)
         self.splitter = QSplitter(self.Mainwidget)
         self.splitter.setObjectName(u"splitter")
-        self.splitter.setOrientation(Qt.Horizontal)
+        self.splitter.setOrientation(Qt.Orientation.Horizontal)
         self.LeftFrame = QFrame(self.splitter)
         self.LeftFrame.setObjectName(u"LeftFrame")
-        sizePolicy = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
-        sizePolicy.setHorizontalStretch(20)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.LeftFrame.sizePolicy().hasHeightForWidth())
-        self.LeftFrame.setSizePolicy(sizePolicy)
-        self.LeftFrame.setFrameShape(QFrame.NoFrame)
-        self.LeftFrame.setFrameShadow(QFrame.Plain)
+        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
+        sizePolicy1.setHorizontalStretch(8)
+        sizePolicy1.setVerticalStretch(0)
+        sizePolicy1.setHeightForWidth(self.LeftFrame.sizePolicy().hasHeightForWidth())
+        self.LeftFrame.setSizePolicy(sizePolicy1)
+        self.LeftFrame.setFrameShape(QFrame.Shape.NoFrame)
+        self.LeftFrame.setFrameShadow(QFrame.Shadow.Plain)
         self.LeftFrame.setLineWidth(0)
         self.verticalLayout_5 = QVBoxLayout(self.LeftFrame)
         self.verticalLayout_5.setSpacing(6)
@@ -113,11 +118,8 @@ class Ui_FinalCifWindow(object):
 
         self.TemplatesStackedWidget = QStackedWidget(self.LeftFrame)
         self.TemplatesStackedWidget.setObjectName(u"TemplatesStackedWidget")
-        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
-        sizePolicy1.setHorizontalStretch(0)
-        sizePolicy1.setVerticalStretch(0)
-        sizePolicy1.setHeightForWidth(self.TemplatesStackedWidget.sizePolicy().hasHeightForWidth())
-        self.TemplatesStackedWidget.setSizePolicy(sizePolicy1)
+        sizePolicy.setHeightForWidth(self.TemplatesStackedWidget.sizePolicy().hasHeightForWidth())
+        self.TemplatesStackedWidget.setSizePolicy(sizePolicy)
         self.TemplatesStackedWidget.setLineWidth(1)
         self.page_equipment = QWidget()
         self.page_equipment.setObjectName(u"page_equipment")
@@ -138,8 +140,8 @@ class Ui_FinalCifWindow(object):
         self.verticalLayout_7.setContentsMargins(6, 4, 6, 4)
         self.EquipmentTemplatesStackedWidget = QStackedWidget(self.EquipmentGroupBox)
         self.EquipmentTemplatesStackedWidget.setObjectName(u"EquipmentTemplatesStackedWidget")
-        sizePolicy1.setHeightForWidth(self.EquipmentTemplatesStackedWidget.sizePolicy().hasHeightForWidth())
-        self.EquipmentTemplatesStackedWidget.setSizePolicy(sizePolicy1)
+        sizePolicy.setHeightForWidth(self.EquipmentTemplatesStackedWidget.sizePolicy().hasHeightForWidth())
+        self.EquipmentTemplatesStackedWidget.setSizePolicy(sizePolicy)
         self.EquipmentSelectPage = QWidget()
         self.EquipmentSelectPage.setObjectName(u"EquipmentSelectPage")
         self.verticalLayout_19 = QVBoxLayout(self.EquipmentSelectPage)
@@ -147,9 +149,9 @@ class Ui_FinalCifWindow(object):
         self.verticalLayout_19.setContentsMargins(0, 3, 0, 3)
         self.EquipmentTemplatesListWidget = QListWidget(self.EquipmentSelectPage)
         self.EquipmentTemplatesListWidget.setObjectName(u"EquipmentTemplatesListWidget")
-        self.EquipmentTemplatesListWidget.setEditTriggers(QAbstractItemView.NoEditTriggers)
-        self.EquipmentTemplatesListWidget.setSelectionMode(QAbstractItemView.SingleSelection)
-        self.EquipmentTemplatesListWidget.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.EquipmentTemplatesListWidget.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
+        self.EquipmentTemplatesListWidget.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
+        self.EquipmentTemplatesListWidget.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
 
         self.verticalLayout_19.addWidget(self.EquipmentTemplatesListWidget)
 
@@ -191,12 +193,12 @@ class Ui_FinalCifWindow(object):
             self.EquipmentEditTableWidget.setRowCount(1)
         self.EquipmentEditTableWidget.setObjectName(u"EquipmentEditTableWidget")
         self.EquipmentEditTableWidget.setAutoScroll(False)
-        self.EquipmentEditTableWidget.setEditTriggers(QAbstractItemView.AllEditTriggers)
+        self.EquipmentEditTableWidget.setEditTriggers(QAbstractItemView.EditTrigger.AllEditTriggers)
         self.EquipmentEditTableWidget.setAlternatingRowColors(False)
-        self.EquipmentEditTableWidget.setSelectionMode(QAbstractItemView.SingleSelection)
-        self.EquipmentEditTableWidget.setSelectionBehavior(QAbstractItemView.SelectRows)
-        self.EquipmentEditTableWidget.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
-        self.EquipmentEditTableWidget.setHorizontalScrollMode(QAbstractItemView.ScrollPerPixel)
+        self.EquipmentEditTableWidget.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
+        self.EquipmentEditTableWidget.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+        self.EquipmentEditTableWidget.setVerticalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
+        self.EquipmentEditTableWidget.setHorizontalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
         self.EquipmentEditTableWidget.setSortingEnabled(True)
         self.EquipmentEditTableWidget.setRowCount(1)
         self.EquipmentEditTableWidget.horizontalHeader().setCascadingSectionResizes(True)
@@ -275,7 +277,7 @@ class Ui_FinalCifWindow(object):
 
         self.groupBox_5 = QGroupBox(self.page_equipment)
         self.groupBox_5.setObjectName(u"groupBox_5")
-        sizePolicy4 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
+        sizePolicy4 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
         sizePolicy4.setHorizontalStretch(0)
         sizePolicy4.setVerticalStretch(50)
         sizePolicy4.setHeightForWidth(self.groupBox_5.sizePolicy().hasHeightForWidth())
@@ -339,8 +341,8 @@ class Ui_FinalCifWindow(object):
 
         self.groupBox_6 = QGroupBox(self.groupBox_5)
         self.groupBox_6.setObjectName(u"groupBox_6")
-        sizePolicy1.setHeightForWidth(self.groupBox_6.sizePolicy().hasHeightForWidth())
-        self.groupBox_6.setSizePolicy(sizePolicy1)
+        sizePolicy.setHeightForWidth(self.groupBox_6.sizePolicy().hasHeightForWidth())
+        self.groupBox_6.setSizePolicy(sizePolicy)
         self.verticalLayout_2 = QVBoxLayout(self.groupBox_6)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.verticalLayout_2.setContentsMargins(6, 3, 6, 6)
@@ -351,8 +353,8 @@ class Ui_FinalCifWindow(object):
         __qlistwidgetitem.setCheckState(Qt.Checked);
         __qlistwidgetitem.setFont(font);
         self.docxTemplatesListWidget.setObjectName(u"docxTemplatesListWidget")
-        self.docxTemplatesListWidget.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
-        self.docxTemplatesListWidget.setSelectionMode(QAbstractItemView.NoSelection)
+        self.docxTemplatesListWidget.setSizeAdjustPolicy(QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
+        self.docxTemplatesListWidget.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
         self.docxTemplatesListWidget.setSelectionRectVisible(False)
 
         self.verticalLayout_2.addWidget(self.docxTemplatesListWidget)
@@ -379,9 +381,9 @@ class Ui_FinalCifWindow(object):
 
         self.label = QLabel(self.groupBox_6)
         self.label.setObjectName(u"label")
-        self.label.setTextFormat(Qt.RichText)
+        self.label.setTextFormat(Qt.TextFormat.RichText)
         self.label.setOpenExternalLinks(True)
-        self.label.setTextInteractionFlags(Qt.TextBrowserInteraction)
+        self.label.setTextInteractionFlags(Qt.TextInteractionFlag.TextBrowserInteraction)
 
         self.verticalLayout_2.addWidget(self.label)
 
@@ -406,9 +408,9 @@ class Ui_FinalCifWindow(object):
         self.verticalLayout_17.setContentsMargins(6, 6, 6, 6)
         self.LoopTemplatesListWidget = QListWidget(self.LoopsGroupBox)
         self.LoopTemplatesListWidget.setObjectName(u"LoopTemplatesListWidget")
-        self.LoopTemplatesListWidget.setEditTriggers(QAbstractItemView.NoEditTriggers)
-        self.LoopTemplatesListWidget.setSelectionMode(QAbstractItemView.SingleSelection)
-        self.LoopTemplatesListWidget.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.LoopTemplatesListWidget.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
+        self.LoopTemplatesListWidget.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
+        self.LoopTemplatesListWidget.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
 
         self.verticalLayout_17.addWidget(self.LoopTemplatesListWidget)
 
@@ -454,11 +456,8 @@ class Ui_FinalCifWindow(object):
         self.splitter.addWidget(self.LeftFrame)
         self.CifDataItemsFrame = QFrame(self.splitter)
         self.CifDataItemsFrame.setObjectName(u"CifDataItemsFrame")
-        sizePolicy6 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
-        sizePolicy6.setHorizontalStretch(80)
-        sizePolicy6.setVerticalStretch(0)
-        sizePolicy6.setHeightForWidth(self.CifDataItemsFrame.sizePolicy().hasHeightForWidth())
-        self.CifDataItemsFrame.setSizePolicy(sizePolicy6)
+        sizePolicy1.setHeightForWidth(self.CifDataItemsFrame.sizePolicy().hasHeightForWidth())
+        self.CifDataItemsFrame.setSizePolicy(sizePolicy1)
         self.gridLayout_6 = QGridLayout(self.CifDataItemsFrame)
         self.gridLayout_6.setSpacing(6)
         self.gridLayout_6.setObjectName(u"gridLayout_6")
@@ -480,8 +479,8 @@ class Ui_FinalCifWindow(object):
         self.datanameComboBox.setObjectName(u"datanameComboBox")
         self.datanameComboBox.setEditable(True)
         self.datanameComboBox.setMaxVisibleItems(20)
-        self.datanameComboBox.setInsertPolicy(QComboBox.InsertAtCurrent)
-        self.datanameComboBox.setSizeAdjustPolicy(QComboBox.AdjustToContents)
+        self.datanameComboBox.setInsertPolicy(QComboBox.InsertPolicy.InsertAtCurrent)
+        self.datanameComboBox.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToContents)
         self.datanameComboBox.setMinimumContentsLength(20)
         self.datanameComboBox.setFrame(True)
 
@@ -500,11 +499,11 @@ class Ui_FinalCifWindow(object):
         self.CCDCNumLineEdit = QTextEdit(self.CifDataItemsFrame)
         self.CCDCNumLineEdit.setObjectName(u"CCDCNumLineEdit")
         self.CCDCNumLineEdit.viewport().setProperty(u"cursor", QCursor(Qt.CursorShape.IBeamCursor))
-        self.CCDCNumLineEdit.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.CCDCNumLineEdit.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.CCDCNumLineEdit.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
+        self.CCDCNumLineEdit.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.CCDCNumLineEdit.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.CCDCNumLineEdit.setSizeAdjustPolicy(QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
         self.CCDCNumLineEdit.setTabChangesFocus(True)
-        self.CCDCNumLineEdit.setLineWrapMode(QTextEdit.NoWrap)
+        self.CCDCNumLineEdit.setLineWrapMode(QTextEdit.LineWrapMode.NoWrap)
         self.CCDCNumLineEdit.setReadOnly(False)
         self.CCDCNumLineEdit.setAcceptRichText(False)
 
@@ -522,13 +521,13 @@ class Ui_FinalCifWindow(object):
         self.SumFormMainLineEdit = QTextEdit(self.CifDataItemsFrame)
         self.SumFormMainLineEdit.setObjectName(u"SumFormMainLineEdit")
         self.SumFormMainLineEdit.viewport().setProperty(u"cursor", QCursor(Qt.CursorShape.IBeamCursor))
-        self.SumFormMainLineEdit.setInputMethodHints(Qt.ImhNone)
-        self.SumFormMainLineEdit.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.SumFormMainLineEdit.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.SumFormMainLineEdit.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
+        self.SumFormMainLineEdit.setInputMethodHints(Qt.InputMethodHint.ImhNone)
+        self.SumFormMainLineEdit.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.SumFormMainLineEdit.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.SumFormMainLineEdit.setSizeAdjustPolicy(QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
         self.SumFormMainLineEdit.setTabChangesFocus(True)
         self.SumFormMainLineEdit.setUndoRedoEnabled(False)
-        self.SumFormMainLineEdit.setLineWrapMode(QTextEdit.NoWrap)
+        self.SumFormMainLineEdit.setLineWrapMode(QTextEdit.LineWrapMode.NoWrap)
         self.SumFormMainLineEdit.setReadOnly(True)
 
         self.gridLayout_6.addWidget(self.SumFormMainLineEdit, 0, 11, 1, 1)
@@ -546,14 +545,14 @@ class Ui_FinalCifWindow(object):
         self.Spacegroup_top_LineEdit = QTextEdit(self.CifDataItemsFrame)
         self.Spacegroup_top_LineEdit.setObjectName(u"Spacegroup_top_LineEdit")
         self.Spacegroup_top_LineEdit.viewport().setProperty(u"cursor", QCursor(Qt.CursorShape.IBeamCursor))
-        self.Spacegroup_top_LineEdit.setInputMethodHints(Qt.ImhNone)
-        self.Spacegroup_top_LineEdit.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.Spacegroup_top_LineEdit.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.Spacegroup_top_LineEdit.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
+        self.Spacegroup_top_LineEdit.setInputMethodHints(Qt.InputMethodHint.ImhNone)
+        self.Spacegroup_top_LineEdit.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.Spacegroup_top_LineEdit.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.Spacegroup_top_LineEdit.setSizeAdjustPolicy(QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
         self.Spacegroup_top_LineEdit.setTabChangesFocus(True)
-        self.Spacegroup_top_LineEdit.setLineWrapMode(QTextEdit.NoWrap)
+        self.Spacegroup_top_LineEdit.setLineWrapMode(QTextEdit.LineWrapMode.NoWrap)
         self.Spacegroup_top_LineEdit.setReadOnly(True)
-        self.Spacegroup_top_LineEdit.setTextInteractionFlags(Qt.TextSelectableByKeyboard|Qt.TextSelectableByMouse)
+        self.Spacegroup_top_LineEdit.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByKeyboard|Qt.TextInteractionFlag.TextSelectableByMouse)
 
         self.gridLayout_6.addWidget(self.Spacegroup_top_LineEdit, 0, 5, 1, 1)
 
@@ -575,14 +574,14 @@ class Ui_FinalCifWindow(object):
         __qtablewidgetitem4 = QTableWidgetItem()
         self.cif_main_table.setHorizontalHeaderItem(2, __qtablewidgetitem4)
         self.cif_main_table.setObjectName(u"cif_main_table")
-        self.cif_main_table.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
+        self.cif_main_table.setSizeAdjustPolicy(QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
         self.cif_main_table.setAutoScroll(False)
-        self.cif_main_table.setEditTriggers(QAbstractItemView.AllEditTriggers)
-        self.cif_main_table.setSelectionBehavior(QAbstractItemView.SelectRows)
-        self.cif_main_table.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
-        self.cif_main_table.setHorizontalScrollMode(QAbstractItemView.ScrollPerPixel)
+        self.cif_main_table.setEditTriggers(QAbstractItemView.EditTrigger.AllEditTriggers)
+        self.cif_main_table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+        self.cif_main_table.setVerticalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
+        self.cif_main_table.setHorizontalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
         self.cif_main_table.setShowGrid(True)
-        self.cif_main_table.setGridStyle(Qt.SolidLine)
+        self.cif_main_table.setGridStyle(Qt.PenStyle.SolidLine)
         self.cif_main_table.setSortingEnabled(False)
         self.cif_main_table.setWordWrap(True)
         self.cif_main_table.setCornerButtonEnabled(False)
@@ -700,7 +699,7 @@ class Ui_FinalCifWindow(object):
         self.verticalLayout_3.setContentsMargins(0, 0, 0, 0)
         self.FinalCifFilePlainTextEdit = QCodeEditor(self.page_FinalCif)
         self.FinalCifFilePlainTextEdit.setObjectName(u"FinalCifFilePlainTextEdit")
-        self.FinalCifFilePlainTextEdit.setTextInteractionFlags(Qt.LinksAccessibleByMouse|Qt.TextSelectableByKeyboard|Qt.TextSelectableByMouse)
+        self.FinalCifFilePlainTextEdit.setTextInteractionFlags(Qt.TextInteractionFlag.LinksAccessibleByMouse|Qt.TextInteractionFlag.TextSelectableByKeyboard|Qt.TextInteractionFlag.TextSelectableByMouse)
 
         self.verticalLayout_3.addWidget(self.FinalCifFilePlainTextEdit)
 
@@ -734,27 +733,27 @@ class Ui_FinalCifWindow(object):
         self.gridLayout_3.setObjectName(u"gridLayout_3")
         self.molGroupBox = QGroupBox(self.page_molinfo)
         self.molGroupBox.setObjectName(u"molGroupBox")
-        sizePolicy7 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-        sizePolicy7.setHorizontalStretch(55)
-        sizePolicy7.setVerticalStretch(80)
-        sizePolicy7.setHeightForWidth(self.molGroupBox.sizePolicy().hasHeightForWidth())
-        self.molGroupBox.setSizePolicy(sizePolicy7)
+        sizePolicy6 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        sizePolicy6.setHorizontalStretch(55)
+        sizePolicy6.setVerticalStretch(80)
+        sizePolicy6.setHeightForWidth(self.molGroupBox.sizePolicy().hasHeightForWidth())
+        self.molGroupBox.setSizePolicy(sizePolicy6)
         self.verticalLayout_8 = QVBoxLayout(self.molGroupBox)
         self.verticalLayout_8.setObjectName(u"verticalLayout_8")
         self.verticalLayout_8.setContentsMargins(6, 3, 6, 8)
         self.render_widget = MoleculeWidget(self.molGroupBox)
         self.render_widget.setObjectName(u"render_widget")
-        sizePolicy8 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-        sizePolicy8.setHorizontalStretch(0)
-        sizePolicy8.setVerticalStretch(0)
-        sizePolicy8.setHeightForWidth(self.render_widget.sizePolicy().hasHeightForWidth())
-        self.render_widget.setSizePolicy(sizePolicy8)
+        sizePolicy7 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        sizePolicy7.setHorizontalStretch(0)
+        sizePolicy7.setVerticalStretch(0)
+        sizePolicy7.setHeightForWidth(self.render_widget.sizePolicy().hasHeightForWidth())
+        self.render_widget.setSizePolicy(sizePolicy7)
 
         self.verticalLayout_8.addWidget(self.render_widget)
 
         self.horizontalLayout_7 = QHBoxLayout()
         self.horizontalLayout_7.setObjectName(u"horizontalLayout_7")
-        self.horizontalLayout_7.setSizeConstraint(QLayout.SetDefaultConstraint)
+        self.horizontalLayout_7.setSizeConstraint(QLayout.SizeConstraint.SetDefaultConstraint)
         self.growCheckBox = QCheckBox(self.molGroupBox)
         self.growCheckBox.setObjectName(u"growCheckBox")
         self.growCheckBox.setMinimumSize(QSize(0, 20))
@@ -788,44 +787,44 @@ class Ui_FinalCifWindow(object):
 
         self.groupBox_9 = QGroupBox(self.page_molinfo)
         self.groupBox_9.setObjectName(u"groupBox_9")
-        sizePolicy9 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
-        sizePolicy9.setHorizontalStretch(45)
-        sizePolicy9.setVerticalStretch(80)
-        sizePolicy9.setHeightForWidth(self.groupBox_9.sizePolicy().hasHeightForWidth())
-        self.groupBox_9.setSizePolicy(sizePolicy9)
+        sizePolicy8 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
+        sizePolicy8.setHorizontalStretch(45)
+        sizePolicy8.setVerticalStretch(80)
+        sizePolicy8.setHeightForWidth(self.groupBox_9.sizePolicy().hasHeightForWidth())
+        self.groupBox_9.setSizePolicy(sizePolicy8)
         self.verticalLayout_41 = QVBoxLayout(self.groupBox_9)
         self.verticalLayout_41.setObjectName(u"verticalLayout_41")
         self.shelx_TextEdit = QPlainTextEdit(self.groupBox_9)
         self.shelx_TextEdit.setObjectName(u"shelx_TextEdit")
-        sizePolicy10 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-        sizePolicy10.setHorizontalStretch(0)
-        sizePolicy10.setVerticalStretch(90)
-        sizePolicy10.setHeightForWidth(self.shelx_TextEdit.sizePolicy().hasHeightForWidth())
-        self.shelx_TextEdit.setSizePolicy(sizePolicy10)
+        sizePolicy9 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        sizePolicy9.setHorizontalStretch(0)
+        sizePolicy9.setVerticalStretch(90)
+        sizePolicy9.setHeightForWidth(self.shelx_TextEdit.sizePolicy().hasHeightForWidth())
+        self.shelx_TextEdit.setSizePolicy(sizePolicy9)
         font1 = QFont()
         font1.setFamilies([u"Courier New"])
         self.shelx_TextEdit.setFont(font1)
-        self.shelx_TextEdit.setFrameShape(QFrame.NoFrame)
-        self.shelx_TextEdit.setFrameShadow(QFrame.Plain)
+        self.shelx_TextEdit.setFrameShape(QFrame.Shape.NoFrame)
+        self.shelx_TextEdit.setFrameShadow(QFrame.Shadow.Plain)
         self.shelx_TextEdit.setUndoRedoEnabled(False)
-        self.shelx_TextEdit.setLineWrapMode(QPlainTextEdit.NoWrap)
+        self.shelx_TextEdit.setLineWrapMode(QPlainTextEdit.LineWrapMode.NoWrap)
         self.shelx_TextEdit.setReadOnly(True)
 
         self.verticalLayout_41.addWidget(self.shelx_TextEdit)
 
         self.shelx_warn_TextEdit = QPlainTextEdit(self.groupBox_9)
         self.shelx_warn_TextEdit.setObjectName(u"shelx_warn_TextEdit")
-        sizePolicy11 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-        sizePolicy11.setHorizontalStretch(0)
-        sizePolicy11.setVerticalStretch(10)
-        sizePolicy11.setHeightForWidth(self.shelx_warn_TextEdit.sizePolicy().hasHeightForWidth())
-        self.shelx_warn_TextEdit.setSizePolicy(sizePolicy11)
+        sizePolicy10 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        sizePolicy10.setHorizontalStretch(0)
+        sizePolicy10.setVerticalStretch(10)
+        sizePolicy10.setHeightForWidth(self.shelx_warn_TextEdit.sizePolicy().hasHeightForWidth())
+        self.shelx_warn_TextEdit.setSizePolicy(sizePolicy10)
         font2 = QFont()
         font2.setFamilies([u"Courier New"])
         font2.setBold(True)
         self.shelx_warn_TextEdit.setFont(font2)
         self.shelx_warn_TextEdit.setUndoRedoEnabled(False)
-        self.shelx_warn_TextEdit.setLineWrapMode(QPlainTextEdit.NoWrap)
+        self.shelx_warn_TextEdit.setLineWrapMode(QPlainTextEdit.LineWrapMode.NoWrap)
         self.shelx_warn_TextEdit.setReadOnly(True)
 
         self.verticalLayout_41.addWidget(self.shelx_warn_TextEdit)
@@ -835,11 +834,11 @@ class Ui_FinalCifWindow(object):
 
         self.groupBox_3 = QGroupBox(self.page_molinfo)
         self.groupBox_3.setObjectName(u"groupBox_3")
-        sizePolicy12 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Expanding)
-        sizePolicy12.setHorizontalStretch(0)
-        sizePolicy12.setVerticalStretch(20)
-        sizePolicy12.setHeightForWidth(self.groupBox_3.sizePolicy().hasHeightForWidth())
-        self.groupBox_3.setSizePolicy(sizePolicy12)
+        sizePolicy11 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Expanding)
+        sizePolicy11.setHorizontalStretch(0)
+        sizePolicy11.setVerticalStretch(20)
+        sizePolicy11.setHeightForWidth(self.groupBox_3.sizePolicy().hasHeightForWidth())
+        self.groupBox_3.setSizePolicy(sizePolicy11)
         self.gridLayout_4 = QGridLayout(self.groupBox_3)
         self.gridLayout_4.setObjectName(u"gridLayout_4")
         self.formLayout_3 = QFormLayout()
@@ -857,7 +856,7 @@ class Ui_FinalCifWindow(object):
 
         self.temperatureLabel = QLabel(self.groupBox_3)
         self.temperatureLabel.setObjectName(u"temperatureLabel")
-        self.temperatureLabel.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.temperatureLabel.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.formLayout_3.setWidget(1, QFormLayout.LabelRole, self.temperatureLabel)
 
@@ -873,7 +872,7 @@ class Ui_FinalCifWindow(object):
         font3.setBold(False)
         font3.setItalic(False)
         self.wR2Label.setFont(font3)
-        self.wR2Label.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.wR2Label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.formLayout_3.setWidget(2, QFormLayout.LabelRole, self.wR2Label)
 
@@ -886,7 +885,7 @@ class Ui_FinalCifWindow(object):
         self.r1Label = QLabel(self.groupBox_3)
         self.r1Label.setObjectName(u"r1Label")
         self.r1Label.setFont(font3)
-        self.r1Label.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.r1Label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.formLayout_3.setWidget(3, QFormLayout.LabelRole, self.r1Label)
 
@@ -898,7 +897,7 @@ class Ui_FinalCifWindow(object):
 
         self.goofLabel = QLabel(self.groupBox_3)
         self.goofLabel.setObjectName(u"goofLabel")
-        self.goofLabel.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.goofLabel.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.formLayout_3.setWidget(4, QFormLayout.LabelRole, self.goofLabel)
 
@@ -910,7 +909,7 @@ class Ui_FinalCifWindow(object):
 
         self.maxShiftLabel = QLabel(self.groupBox_3)
         self.maxShiftLabel.setObjectName(u"maxShiftLabel")
-        self.maxShiftLabel.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.maxShiftLabel.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.formLayout_3.setWidget(5, QFormLayout.LabelRole, self.maxShiftLabel)
 
@@ -925,7 +924,7 @@ class Ui_FinalCifWindow(object):
         font4 = QFont()
         font4.setBold(False)
         self.completeLabel.setFont(font4)
-        self.completeLabel.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.completeLabel.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.formLayout_3.setWidget(6, QFormLayout.LabelRole, self.completeLabel)
 
@@ -950,7 +949,7 @@ class Ui_FinalCifWindow(object):
         self.formLayout_2.setObjectName(u"formLayout_2")
         self.reflTotalLabel = QLabel(self.groupBox_3)
         self.reflTotalLabel.setObjectName(u"reflTotalLabel")
-        self.reflTotalLabel.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.reflTotalLabel.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.formLayout_2.setWidget(0, QFormLayout.LabelRole, self.reflTotalLabel)
 
@@ -982,7 +981,7 @@ class Ui_FinalCifWindow(object):
 
         self.numParametersLabel = QLabel(self.groupBox_3)
         self.numParametersLabel.setObjectName(u"numParametersLabel")
-        self.numParametersLabel.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.numParametersLabel.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.formLayout_2.setWidget(3, QFormLayout.LabelRole, self.numParametersLabel)
 
@@ -996,7 +995,7 @@ class Ui_FinalCifWindow(object):
         self.dataReflnsLabel = QLabel(self.groupBox_3)
         self.dataReflnsLabel.setObjectName(u"dataReflnsLabel")
         self.dataReflnsLabel.setFont(font4)
-        self.dataReflnsLabel.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.dataReflnsLabel.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.formLayout_2.setWidget(4, QFormLayout.LabelRole, self.dataReflnsLabel)
 
@@ -1008,7 +1007,7 @@ class Ui_FinalCifWindow(object):
 
         self.wavelengthLabel = QLabel(self.groupBox_3)
         self.wavelengthLabel.setObjectName(u"wavelengthLabel")
-        self.wavelengthLabel.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.wavelengthLabel.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.formLayout_2.setWidget(5, QFormLayout.LabelRole, self.wavelengthLabel)
 
@@ -1033,29 +1032,29 @@ class Ui_FinalCifWindow(object):
 
         self.groupBox_4 = QGroupBox(self.groupBox_3)
         self.groupBox_4.setObjectName(u"groupBox_4")
-        sizePolicy13 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
-        sizePolicy13.setHorizontalStretch(0)
-        sizePolicy13.setVerticalStretch(0)
-        sizePolicy13.setHeightForWidth(self.groupBox_4.sizePolicy().hasHeightForWidth())
-        self.groupBox_4.setSizePolicy(sizePolicy13)
+        sizePolicy12 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
+        sizePolicy12.setHorizontalStretch(0)
+        sizePolicy12.setVerticalStretch(0)
+        sizePolicy12.setHeightForWidth(self.groupBox_4.sizePolicy().hasHeightForWidth())
+        self.groupBox_4.setSizePolicy(sizePolicy12)
         self.gridLayout_9 = QGridLayout(self.groupBox_4)
         self.gridLayout_9.setObjectName(u"gridLayout_9")
         self.cellField = QLabel(self.groupBox_4)
         self.cellField.setObjectName(u"cellField")
-        sizePolicy14 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
-        sizePolicy14.setHorizontalStretch(0)
-        sizePolicy14.setVerticalStretch(0)
-        sizePolicy14.setHeightForWidth(self.cellField.sizePolicy().hasHeightForWidth())
-        self.cellField.setSizePolicy(sizePolicy14)
+        sizePolicy13 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+        sizePolicy13.setHorizontalStretch(0)
+        sizePolicy13.setVerticalStretch(0)
+        sizePolicy13.setHeightForWidth(self.cellField.sizePolicy().hasHeightForWidth())
+        self.cellField.setSizePolicy(sizePolicy13)
         self.cellField.setMinimumSize(QSize(0, 75))
         self.cellField.setBaseSize(QSize(0, 75))
-        self.cellField.setContextMenuPolicy(Qt.ActionsContextMenu)
+        self.cellField.setContextMenuPolicy(Qt.ContextMenuPolicy.ActionsContextMenu)
         self.cellField.setAutoFillBackground(False)
         self.cellField.setStyleSheet(u"border-color: rgb(53, 53, 53);")
-        self.cellField.setFrameShape(QFrame.NoFrame)
-        self.cellField.setFrameShadow(QFrame.Plain)
-        self.cellField.setTextFormat(Qt.RichText)
-        self.cellField.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignTop)
+        self.cellField.setFrameShape(QFrame.Shape.NoFrame)
+        self.cellField.setFrameShadow(QFrame.Shadow.Plain)
+        self.cellField.setTextFormat(Qt.TextFormat.RichText)
+        self.cellField.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignTop)
 
         self.gridLayout_9.addWidget(self.cellField, 0, 2, 1, 1)
 
@@ -1070,7 +1069,7 @@ class Ui_FinalCifWindow(object):
         self.formLayout.setObjectName(u"formLayout")
         self.peakLabel = QLabel(self.groupBox_3)
         self.peakLabel.setObjectName(u"peakLabel")
-        self.peakLabel.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.peakLabel.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.formLayout.setWidget(0, QFormLayout.LabelRole, self.peakLabel)
 
@@ -1083,7 +1082,7 @@ class Ui_FinalCifWindow(object):
         self.rintLabel = QLabel(self.groupBox_3)
         self.rintLabel.setObjectName(u"rintLabel")
         self.rintLabel.setFont(font4)
-        self.rintLabel.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.rintLabel.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.formLayout.setWidget(1, QFormLayout.LabelRole, self.rintLabel)
 
@@ -1096,7 +1095,7 @@ class Ui_FinalCifWindow(object):
         self.rsigmaLabel = QLabel(self.groupBox_3)
         self.rsigmaLabel.setObjectName(u"rsigmaLabel")
         self.rsigmaLabel.setFont(font4)
-        self.rsigmaLabel.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.rsigmaLabel.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.formLayout.setWidget(2, QFormLayout.LabelRole, self.rsigmaLabel)
 
@@ -1108,7 +1107,7 @@ class Ui_FinalCifWindow(object):
 
         self.numRestraintsLabel = QLabel(self.groupBox_3)
         self.numRestraintsLabel.setObjectName(u"numRestraintsLabel")
-        self.numRestraintsLabel.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.numRestraintsLabel.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.formLayout.setWidget(3, QFormLayout.LabelRole, self.numRestraintsLabel)
 
@@ -1120,7 +1119,7 @@ class Ui_FinalCifWindow(object):
 
         self.thetaMaxLabel = QLabel(self.groupBox_3)
         self.thetaMaxLabel.setObjectName(u"thetaMaxLabel")
-        self.thetaMaxLabel.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.thetaMaxLabel.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.formLayout.setWidget(4, QFormLayout.LabelRole, self.thetaMaxLabel)
 
@@ -1132,7 +1131,7 @@ class Ui_FinalCifWindow(object):
 
         self.thetaFullLabel = QLabel(self.groupBox_3)
         self.thetaFullLabel.setObjectName(u"thetaFullLabel")
-        self.thetaFullLabel.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.thetaFullLabel.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.formLayout.setWidget(5, QFormLayout.LabelRole, self.thetaFullLabel)
 
@@ -1145,7 +1144,7 @@ class Ui_FinalCifWindow(object):
         self.dLabel = QLabel(self.groupBox_3)
         self.dLabel.setObjectName(u"dLabel")
         self.dLabel.setFont(font4)
-        self.dLabel.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.dLabel.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.formLayout.setWidget(6, QFormLayout.LabelRole, self.dLabel)
 
@@ -1241,11 +1240,11 @@ class Ui_FinalCifWindow(object):
 
         self.groupBox_COD = QGroupBox(self.page_options)
         self.groupBox_COD.setObjectName(u"groupBox_COD")
-        sizePolicy15 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
-        sizePolicy15.setHorizontalStretch(50)
-        sizePolicy15.setVerticalStretch(0)
-        sizePolicy15.setHeightForWidth(self.groupBox_COD.sizePolicy().hasHeightForWidth())
-        self.groupBox_COD.setSizePolicy(sizePolicy15)
+        sizePolicy14 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
+        sizePolicy14.setHorizontalStretch(50)
+        sizePolicy14.setVerticalStretch(0)
+        sizePolicy14.setHeightForWidth(self.groupBox_COD.sizePolicy().hasHeightForWidth())
+        self.groupBox_COD.setSizePolicy(sizePolicy14)
         self.formLayout_6 = QFormLayout(self.groupBox_COD)
         self.formLayout_6.setObjectName(u"formLayout_6")
         self.formLayout_6.setContentsMargins(-1, 12, -1, -1)
@@ -1267,8 +1266,11 @@ class Ui_FinalCifWindow(object):
 
         self.groupBox_7 = QGroupBox(self.page_options)
         self.groupBox_7.setObjectName(u"groupBox_7")
-        sizePolicy.setHeightForWidth(self.groupBox_7.sizePolicy().hasHeightForWidth())
-        self.groupBox_7.setSizePolicy(sizePolicy)
+        sizePolicy15 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
+        sizePolicy15.setHorizontalStretch(20)
+        sizePolicy15.setVerticalStretch(0)
+        sizePolicy15.setHeightForWidth(self.groupBox_7.sizePolicy().hasHeightForWidth())
+        self.groupBox_7.setSizePolicy(sizePolicy15)
         self.formLayout_4 = QFormLayout(self.groupBox_7)
         self.formLayout_4.setObjectName(u"formLayout_4")
         self.label_4 = QLabel(self.groupBox_7)
@@ -1299,7 +1301,7 @@ class Ui_FinalCifWindow(object):
         self.ExportAllTemplatesPushButton = QPushButton(self.groupBox_8)
         self.ExportAllTemplatesPushButton.setObjectName(u"ExportAllTemplatesPushButton")
 
-        self.verticalLayout_34.addWidget(self.ExportAllTemplatesPushButton, 0, Qt.AlignLeft)
+        self.verticalLayout_34.addWidget(self.ExportAllTemplatesPushButton, 0, Qt.AlignmentFlag.AlignLeft)
 
         self.label_18 = QLabel(self.groupBox_8)
         self.label_18.setObjectName(u"label_18")
@@ -1313,7 +1315,7 @@ class Ui_FinalCifWindow(object):
         self.ImportAllTemplatesPushButton = QPushButton(self.groupBox_8)
         self.ImportAllTemplatesPushButton.setObjectName(u"ImportAllTemplatesPushButton")
 
-        self.verticalLayout_34.addWidget(self.ImportAllTemplatesPushButton, 0, Qt.AlignLeft)
+        self.verticalLayout_34.addWidget(self.ImportAllTemplatesPushButton, 0, Qt.AlignmentFlag.AlignLeft)
 
         self.label_17 = QLabel(self.groupBox_8)
         self.label_17.setObjectName(u"label_17")
@@ -1333,6 +1335,25 @@ class Ui_FinalCifWindow(object):
         self.trackChangesCifCheckBox.setObjectName(u"trackChangesCifCheckBox")
 
         self.verticalLayout_37.addWidget(self.trackChangesCifCheckBox)
+
+        self.horizontalLayout_15 = QHBoxLayout()
+        self.horizontalLayout_15.setObjectName(u"horizontalLayout_15")
+        self.textSizeSpinBox = QSpinBox(self.groupBox_10)
+        self.textSizeSpinBox.setObjectName(u"textSizeSpinBox")
+
+        self.horizontalLayout_15.addWidget(self.textSizeSpinBox)
+
+        self.label_26 = QLabel(self.groupBox_10)
+        self.label_26.setObjectName(u"label_26")
+
+        self.horizontalLayout_15.addWidget(self.label_26)
+
+        self.horizontalSpacer_6 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_15.addItem(self.horizontalSpacer_6)
+
+
+        self.verticalLayout_37.addLayout(self.horizontalLayout_15)
 
         self.verticalSpacer_14 = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
@@ -1369,8 +1390,8 @@ class Ui_FinalCifWindow(object):
         self.verticalLayout_20.setContentsMargins(0, 3, 0, 3)
         self.PropertiesTemplatesListWidget = QListWidget(self.PropertiesSelectPage)
         self.PropertiesTemplatesListWidget.setObjectName(u"PropertiesTemplatesListWidget")
-        self.PropertiesTemplatesListWidget.setSelectionMode(QAbstractItemView.SingleSelection)
-        self.PropertiesTemplatesListWidget.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.PropertiesTemplatesListWidget.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
+        self.PropertiesTemplatesListWidget.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
 
         self.verticalLayout_20.addWidget(self.PropertiesTemplatesListWidget)
 
@@ -1424,11 +1445,11 @@ class Ui_FinalCifWindow(object):
             self.PropertiesEditTableWidget.setRowCount(1)
         self.PropertiesEditTableWidget.setObjectName(u"PropertiesEditTableWidget")
         self.PropertiesEditTableWidget.setAutoScroll(False)
-        self.PropertiesEditTableWidget.setEditTriggers(QAbstractItemView.AllEditTriggers)
-        self.PropertiesEditTableWidget.setSelectionMode(QAbstractItemView.SingleSelection)
-        self.PropertiesEditTableWidget.setSelectionBehavior(QAbstractItemView.SelectRows)
-        self.PropertiesEditTableWidget.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
-        self.PropertiesEditTableWidget.setHorizontalScrollMode(QAbstractItemView.ScrollPerPixel)
+        self.PropertiesEditTableWidget.setEditTriggers(QAbstractItemView.EditTrigger.AllEditTriggers)
+        self.PropertiesEditTableWidget.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
+        self.PropertiesEditTableWidget.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+        self.PropertiesEditTableWidget.setVerticalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
+        self.PropertiesEditTableWidget.setHorizontalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
         self.PropertiesEditTableWidget.setRowCount(1)
         self.PropertiesEditTableWidget.horizontalHeader().setVisible(False)
         self.PropertiesEditTableWidget.horizontalHeader().setMinimumSectionSize(90)
@@ -1521,19 +1542,19 @@ class Ui_FinalCifWindow(object):
         self.gridLayout_5.setObjectName(u"gridLayout_5")
         self.label_34 = QLabel(self.page_publication)
         self.label_34.setObjectName(u"label_34")
-        self.label_34.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.label_34.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.gridLayout_5.addWidget(self.label_34, 5, 0, 1, 1)
 
         self.footnote_label = QLabel(self.page_publication)
         self.footnote_label.setObjectName(u"footnote_label")
-        self.footnote_label.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.footnote_label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.gridLayout_5.addWidget(self.footnote_label, 7, 0, 1, 1)
 
         self.label_21 = QLabel(self.page_publication)
         self.label_21.setObjectName(u"label_21")
-        self.label_21.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.label_21.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.gridLayout_5.addWidget(self.label_21, 2, 0, 1, 1)
 
@@ -1555,14 +1576,14 @@ class Ui_FinalCifWindow(object):
 
         self.label_22 = QLabel(self.page_publication)
         self.label_22.setObjectName(u"label_22")
-        self.label_22.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.label_22.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
         self.label_22.setOpenExternalLinks(True)
 
         self.gridLayout_5.addWidget(self.label_22, 0, 0, 1, 1)
 
         self.EmailLabel = QLabel(self.page_publication)
         self.EmailLabel.setObjectName(u"EmailLabel")
-        self.EmailLabel.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.EmailLabel.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.gridLayout_5.addWidget(self.EmailLabel, 3, 0, 1, 1)
 
@@ -1579,7 +1600,7 @@ class Ui_FinalCifWindow(object):
 
         self.PhoneLabel = QLabel(self.page_publication)
         self.PhoneLabel.setObjectName(u"PhoneLabel")
-        self.PhoneLabel.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.PhoneLabel.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.gridLayout_5.addWidget(self.PhoneLabel, 4, 0, 1, 1)
 
@@ -1605,7 +1626,7 @@ class Ui_FinalCifWindow(object):
 
         self.label_36 = QLabel(self.page_publication)
         self.label_36.setObjectName(u"label_36")
-        self.label_36.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.label_36.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.gridLayout_5.addWidget(self.label_36, 6, 0, 1, 1)
 
@@ -1625,7 +1646,7 @@ class Ui_FinalCifWindow(object):
         self.SaveAuthorLoopToTemplateButton = QPushButton(self.page_publication)
         self.SaveAuthorLoopToTemplateButton.setObjectName(u"SaveAuthorLoopToTemplateButton")
 
-        self.verticalLayout_32.addWidget(self.SaveAuthorLoopToTemplateButton, 0, Qt.AlignRight)
+        self.verticalLayout_32.addWidget(self.SaveAuthorLoopToTemplateButton, 0, Qt.AlignmentFlag.AlignRight)
 
         self.AddThisAuthorToLoopPushButton = QPushButton(self.page_publication)
         self.AddThisAuthorToLoopPushButton.setObjectName(u"AddThisAuthorToLoopPushButton")
@@ -1657,7 +1678,7 @@ class Ui_FinalCifWindow(object):
 
         self.label_24 = QLabel(self.page_audit)
         self.label_24.setObjectName(u"label_24")
-        self.label_24.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.label_24.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
         self.label_24.setOpenExternalLinks(True)
 
         self.gridLayout_25.addWidget(self.label_24, 0, 0, 1, 1)
@@ -1670,7 +1691,7 @@ class Ui_FinalCifWindow(object):
 
         self.EmailLabel_cif = QLabel(self.page_audit)
         self.EmailLabel_cif.setObjectName(u"EmailLabel_cif")
-        self.EmailLabel_cif.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.EmailLabel_cif.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.gridLayout_25.addWidget(self.EmailLabel_cif, 3, 0, 1, 1)
 
@@ -1691,7 +1712,7 @@ class Ui_FinalCifWindow(object):
 
         self.label_25 = QLabel(self.page_audit)
         self.label_25.setObjectName(u"label_25")
-        self.label_25.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.label_25.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.gridLayout_25.addWidget(self.label_25, 2, 0, 1, 1)
 
@@ -1702,7 +1723,7 @@ class Ui_FinalCifWindow(object):
 
         self.PhoneLabel_cif = QLabel(self.page_audit)
         self.PhoneLabel_cif.setObjectName(u"PhoneLabel_cif")
-        self.PhoneLabel_cif.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.PhoneLabel_cif.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.gridLayout_25.addWidget(self.PhoneLabel_cif, 4, 0, 1, 1)
 
@@ -1743,7 +1764,7 @@ class Ui_FinalCifWindow(object):
         self.SaveAuthorLoopToTemplateButton_cif = QPushButton(self.page_audit)
         self.SaveAuthorLoopToTemplateButton_cif.setObjectName(u"SaveAuthorLoopToTemplateButton_cif")
 
-        self.verticalLayout_39.addWidget(self.SaveAuthorLoopToTemplateButton_cif, 0, Qt.AlignRight)
+        self.verticalLayout_39.addWidget(self.SaveAuthorLoopToTemplateButton_cif, 0, Qt.AlignmentFlag.AlignRight)
 
         self.AddThisAuthorToLoopPushButton_cif = QPushButton(self.page_audit)
         self.AddThisAuthorToLoopPushButton_cif.setObjectName(u"AddThisAuthorToLoopPushButton_cif")
@@ -1777,8 +1798,8 @@ class Ui_FinalCifWindow(object):
         sizePolicy24.setVerticalStretch(0)
         sizePolicy24.setHeightForWidth(self.frame_2.sizePolicy().hasHeightForWidth())
         self.frame_2.setSizePolicy(sizePolicy24)
-        self.frame_2.setFrameShape(QFrame.StyledPanel)
-        self.frame_2.setFrameShadow(QFrame.Raised)
+        self.frame_2.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame_2.setFrameShadow(QFrame.Shadow.Raised)
 
         self.gridLayout_2.addWidget(self.frame_2, 2, 2, 1, 1)
 
@@ -1852,10 +1873,10 @@ class Ui_FinalCifWindow(object):
         self.verticalLayout_11.setContentsMargins(0, 0, 0, 0)
         self.CheckcifPlaintextEdit = QPlainTextEdit(self.platon_page)
         self.CheckcifPlaintextEdit.setObjectName(u"CheckcifPlaintextEdit")
-        self.CheckcifPlaintextEdit.setLineWrapMode(QPlainTextEdit.NoWrap)
+        self.CheckcifPlaintextEdit.setLineWrapMode(QPlainTextEdit.LineWrapMode.NoWrap)
         self.CheckcifPlaintextEdit.setReadOnly(True)
         self.CheckcifPlaintextEdit.setPlainText(u"")
-        self.CheckcifPlaintextEdit.setTextInteractionFlags(Qt.LinksAccessibleByMouse|Qt.TextSelectableByKeyboard|Qt.TextSelectableByMouse)
+        self.CheckcifPlaintextEdit.setTextInteractionFlags(Qt.TextInteractionFlag.LinksAccessibleByMouse|Qt.TextInteractionFlag.TextSelectableByKeyboard|Qt.TextInteractionFlag.TextSelectableByMouse)
 
         self.verticalLayout_11.addWidget(self.CheckcifPlaintextEdit)
 
@@ -1867,7 +1888,7 @@ class Ui_FinalCifWindow(object):
         self.verticalLayout_12.setContentsMargins(0, 0, 0, 0)
         self.ResponsesTabWidget = QTabWidget(self.html_page)
         self.ResponsesTabWidget.setObjectName(u"ResponsesTabWidget")
-        self.ResponsesTabWidget.setTabPosition(QTabWidget.South)
+        self.ResponsesTabWidget.setTabPosition(QTabWidget.TabPosition.South)
         self.ResponsesTabWidget.setMovable(False)
         self.htmlTabwidgetPage = QWidget()
         self.htmlTabwidgetPage.setObjectName(u"htmlTabwidgetPage")
@@ -1887,11 +1908,11 @@ class Ui_FinalCifWindow(object):
         self.verticalLayout_15.setContentsMargins(0, 0, 0, 0)
         self.responseFormsListWidget = QListWidget(self.ResponsesTabWidgetPage2)
         self.responseFormsListWidget.setObjectName(u"responseFormsListWidget")
-        self.responseFormsListWidget.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
+        self.responseFormsListWidget.setSizeAdjustPolicy(QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
         self.responseFormsListWidget.setAutoScroll(False)
-        self.responseFormsListWidget.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.responseFormsListWidget.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
         self.responseFormsListWidget.setProperty(u"showDropIndicator", False)
-        self.responseFormsListWidget.setSelectionMode(QAbstractItemView.NoSelection)
+        self.responseFormsListWidget.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
 
         self.verticalLayout_15.addWidget(self.responseFormsListWidget)
 
@@ -1902,7 +1923,7 @@ class Ui_FinalCifWindow(object):
 
         self.frame = QFrame(self.ResponsesTabWidgetPage2)
         self.frame.setObjectName(u"frame")
-        self.frame.setFrameShape(QFrame.NoFrame)
+        self.frame.setFrameShape(QFrame.Shape.NoFrame)
         self.horizontalLayout_2 = QHBoxLayout(self.frame)
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.horizontalLayout_2.setContentsMargins(0, 0, 0, 0)
@@ -1952,7 +1973,7 @@ class Ui_FinalCifWindow(object):
         self.ckf_textedit.setObjectName(u"ckf_textedit")
         self.ckf_textedit.setFont(font1)
         self.ckf_textedit.setReadOnly(True)
-        self.ckf_textedit.setTextInteractionFlags(Qt.LinksAccessibleByKeyboard|Qt.LinksAccessibleByMouse|Qt.TextBrowserInteraction|Qt.TextSelectableByKeyboard|Qt.TextSelectableByMouse)
+        self.ckf_textedit.setTextInteractionFlags(Qt.TextInteractionFlag.LinksAccessibleByKeyboard|Qt.TextInteractionFlag.LinksAccessibleByMouse|Qt.TextInteractionFlag.TextBrowserInteraction|Qt.TextInteractionFlag.TextSelectableByKeyboard|Qt.TextInteractionFlag.TextSelectableByMouse)
 
         self.verticalLayout_36.addWidget(self.ckf_textedit)
 
@@ -2021,8 +2042,8 @@ class Ui_FinalCifWindow(object):
 
         self.ButtonFrame = QFrame(self.page_checkcif)
         self.ButtonFrame.setObjectName(u"ButtonFrame")
-        self.ButtonFrame.setFrameShape(QFrame.NoFrame)
-        self.ButtonFrame.setFrameShadow(QFrame.Raised)
+        self.ButtonFrame.setFrameShape(QFrame.Shape.NoFrame)
+        self.ButtonFrame.setFrameShadow(QFrame.Shadow.Raised)
         self.ButtonFrame.setLineWidth(0)
         self.horizontalLayout_3 = QHBoxLayout(self.ButtonFrame)
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
@@ -2057,8 +2078,8 @@ class Ui_FinalCifWindow(object):
         self.gridLayout_22.setObjectName(u"gridLayout_22")
         self.frame_for_radiobuttons = QFrame(self.page_cod)
         self.frame_for_radiobuttons.setObjectName(u"frame_for_radiobuttons")
-        self.frame_for_radiobuttons.setFrameShape(QFrame.StyledPanel)
-        self.frame_for_radiobuttons.setFrameShadow(QFrame.Raised)
+        self.frame_for_radiobuttons.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame_for_radiobuttons.setFrameShadow(QFrame.Shadow.Raised)
         self.verticalLayout_28 = QVBoxLayout(self.frame_for_radiobuttons)
         self.verticalLayout_28.setObjectName(u"verticalLayout_28")
         self.verticalLayout_28.setContentsMargins(0, 0, 0, 0)
@@ -2104,7 +2125,7 @@ class Ui_FinalCifWindow(object):
 
         self.depositorPasswordLineEdit = QLineEdit(self.page_cod)
         self.depositorPasswordLineEdit.setObjectName(u"depositorPasswordLineEdit")
-        self.depositorPasswordLineEdit.setEchoMode(QLineEdit.Password)
+        self.depositorPasswordLineEdit.setEchoMode(QLineEdit.EchoMode.Password)
 
         self.gridLayout_19.addWidget(self.depositorPasswordLineEdit, 1, 1, 1, 1)
 
@@ -2128,7 +2149,7 @@ class Ui_FinalCifWindow(object):
 
         self.userEmailLineEdit = QLineEdit(self.page_cod)
         self.userEmailLineEdit.setObjectName(u"userEmailLineEdit")
-        self.userEmailLineEdit.setInputMethodHints(Qt.ImhEmailCharactersOnly|Qt.ImhLowercaseOnly|Qt.ImhNoAutoUppercase)
+        self.userEmailLineEdit.setInputMethodHints(Qt.InputMethodHint.ImhEmailCharactersOnly|Qt.InputMethodHint.ImhLowercaseOnly|Qt.InputMethodHint.ImhNoAutoUppercase)
 
         self.gridLayout_19.addWidget(self.userEmailLineEdit, 2, 1, 1, 1)
 
@@ -2139,10 +2160,10 @@ class Ui_FinalCifWindow(object):
 
         self.label_2 = QLabel(self.page_cod)
         self.label_2.setObjectName(u"label_2")
-        self.label_2.setTextFormat(Qt.RichText)
-        self.label_2.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignTop)
+        self.label_2.setTextFormat(Qt.TextFormat.RichText)
+        self.label_2.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignTop)
         self.label_2.setOpenExternalLinks(True)
-        self.label_2.setTextInteractionFlags(Qt.LinksAccessibleByKeyboard|Qt.LinksAccessibleByMouse)
+        self.label_2.setTextInteractionFlags(Qt.TextInteractionFlag.LinksAccessibleByKeyboard|Qt.TextInteractionFlag.LinksAccessibleByMouse)
 
         self.gridLayout_19.addWidget(self.label_2, 0, 2, 4, 1)
 
@@ -2156,8 +2177,8 @@ class Ui_FinalCifWindow(object):
 
         self.depositionOptionsStackedWidget = QStackedWidget(self.page_cod)
         self.depositionOptionsStackedWidget.setObjectName(u"depositionOptionsStackedWidget")
-        self.depositionOptionsStackedWidget.setFrameShape(QFrame.NoFrame)
-        self.depositionOptionsStackedWidget.setFrameShadow(QFrame.Raised)
+        self.depositionOptionsStackedWidget.setFrameShape(QFrame.Shape.NoFrame)
+        self.depositionOptionsStackedWidget.setFrameShadow(QFrame.Shadow.Raised)
         self.depositionOptionsStackedWidget.setLineWidth(1)
         self.page_personal = QWidget()
         self.page_personal.setObjectName(u"page_personal")
@@ -2166,7 +2187,7 @@ class Ui_FinalCifWindow(object):
         self.verticalLayout_30.setContentsMargins(0, 12, 0, -1)
         self.label_10 = QLabel(self.page_personal)
         self.label_10.setObjectName(u"label_10")
-        self.label_10.setTextFormat(Qt.RichText)
+        self.label_10.setTextFormat(Qt.TextFormat.RichText)
 
         self.verticalLayout_30.addWidget(self.label_10)
 
@@ -2342,7 +2363,7 @@ class Ui_FinalCifWindow(object):
 
         self.DOIResolveTextLabel = QLabel(self.page_published)
         self.DOIResolveTextLabel.setObjectName(u"DOIResolveTextLabel")
-        self.DOIResolveTextLabel.setTextFormat(Qt.PlainText)
+        self.DOIResolveTextLabel.setTextFormat(Qt.TextFormat.PlainText)
         self.DOIResolveTextLabel.setWordWrap(True)
 
         self.verticalLayout_27.addWidget(self.DOIResolveTextLabel)
@@ -2351,7 +2372,7 @@ class Ui_FinalCifWindow(object):
         self.verticalLayout_26.setObjectName(u"verticalLayout_26")
         self.label_14 = QLabel(self.page_published)
         self.label_14.setObjectName(u"label_14")
-        self.label_14.setTextFormat(Qt.RichText)
+        self.label_14.setTextFormat(Qt.TextFormat.RichText)
 
         self.verticalLayout_26.addWidget(self.label_14)
 
@@ -2375,8 +2396,8 @@ class Ui_FinalCifWindow(object):
 
         self.depositOutputTextBrowser = QTextBrowser(self.page_deposition_output)
         self.depositOutputTextBrowser.setObjectName(u"depositOutputTextBrowser")
-        self.depositOutputTextBrowser.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        self.depositOutputTextBrowser.setAutoFormatting(QTextEdit.AutoAll)
+        self.depositOutputTextBrowser.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        self.depositOutputTextBrowser.setAutoFormatting(QTextEdit.AutoFormattingFlag.AutoAll)
         self.depositOutputTextBrowser.setOpenExternalLinks(True)
 
         self.verticalLayout_31.addWidget(self.depositOutputTextBrowser)
@@ -2395,7 +2416,7 @@ class Ui_FinalCifWindow(object):
         sizePolicy28.setVerticalStretch(0)
         sizePolicy28.setHeightForWidth(self.StructuresListGroupBox.sizePolicy().hasHeightForWidth())
         self.StructuresListGroupBox.setSizePolicy(sizePolicy28)
-        self.StructuresListGroupBox.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
+        self.StructuresListGroupBox.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter)
         self.gridLayout_18 = QGridLayout(self.StructuresListGroupBox)
         self.gridLayout_18.setObjectName(u"gridLayout_18")
         self.refreshDepositListPushButton = QPushButton(self.StructuresListGroupBox)
@@ -2424,9 +2445,9 @@ class Ui_FinalCifWindow(object):
         __qtablewidgetitem11 = QTableWidgetItem()
         self.CODtableWidget.setHorizontalHeaderItem(2, __qtablewidgetitem11)
         self.CODtableWidget.setObjectName(u"CODtableWidget")
-        self.CODtableWidget.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        self.CODtableWidget.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
-        self.CODtableWidget.setSelectionMode(QAbstractItemView.NoSelection)
+        self.CODtableWidget.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        self.CODtableWidget.setSizeAdjustPolicy(QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
+        self.CODtableWidget.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
         self.CODtableWidget.setSortingEnabled(True)
         self.CODtableWidget.horizontalHeader().setCascadingSectionResizes(False)
         self.CODtableWidget.horizontalHeader().setDefaultSectionSize(100)
@@ -2436,7 +2457,7 @@ class Ui_FinalCifWindow(object):
         self.gridLayout_18.addWidget(self.CODtableWidget, 0, 0, 1, 3)
 
 
-        self.gridLayout_17.addWidget(self.StructuresListGroupBox, 0, 0, 1, 1, Qt.AlignHCenter)
+        self.gridLayout_17.addWidget(self.StructuresListGroupBox, 0, 0, 1, 1, Qt.AlignmentFlag.AlignHCenter)
 
         self.horizontalLayout_10 = QHBoxLayout()
         self.horizontalLayout_10.setObjectName(u"horizontalLayout_10")
@@ -2582,8 +2603,7 @@ class Ui_FinalCifWindow(object):
         QWidget.setTabOrder(self.ImportAllTemplatesPushButton, self.ReportTextCheckBox)
         QWidget.setTabOrder(self.ReportTextCheckBox, self.HAtomsCheckBox)
         QWidget.setTabOrder(self.HAtomsCheckBox, self.CODURLTextedit)
-        QWidget.setTabOrder(self.CODURLTextedit, self.trackChangesCifCheckBox)
-        QWidget.setTabOrder(self.trackChangesCifCheckBox, self.authorEditTabWidget)
+        QWidget.setTabOrder(self.CODURLTextedit, self.authorEditTabWidget)
         QWidget.setTabOrder(self.authorEditTabWidget, self.depositorUsernameLineEdit)
         QWidget.setTabOrder(self.depositorUsernameLineEdit, self.depositorPasswordLineEdit)
         QWidget.setTabOrder(self.depositorPasswordLineEdit, self.SelectCif_LineEdit)
@@ -2623,7 +2643,7 @@ class Ui_FinalCifWindow(object):
 
         self.TemplatesStackedWidget.setCurrentIndex(0)
         self.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
-        self.MainStackedWidget.setCurrentIndex(6)
+        self.MainStackedWidget.setCurrentIndex(4)
         self.PropertiesTemplatesStackedWidget.setCurrentIndex(1)
         self.LoopsTabWidget.setCurrentIndex(0)
         self.authorEditTabWidget.setCurrentIndex(1)
@@ -2774,6 +2794,7 @@ class Ui_FinalCifWindow(object):
         self.groupBox_10.setTitle(QCoreApplication.translate("FinalCifWindow", u"General Options", None))
         self.trackChangesCifCheckBox.setText(QCoreApplication.translate("FinalCifWindow", u"Track CIF changes in separate file\n"
 " \"[name]-finalcif_changes.cif\".", None))
+        self.label_26.setText(QCoreApplication.translate("FinalCifWindow", u"Application font size", None))
         self.PropertiesGroupBox.setTitle(QCoreApplication.translate("FinalCifWindow", u"Property Templates", None))
 #if QT_CONFIG(tooltip)
         self.PropertiesTemplatesListWidget.setToolTip(QCoreApplication.translate("FinalCifWindow", u"<html><head/><body><p>A list of common properties like </p><p>_exptl_crystal_colour: yellow, red, blue, ...</p><p>Lists defined here will appear as dropdown menus in the main Table.</p></body></html>", None))
