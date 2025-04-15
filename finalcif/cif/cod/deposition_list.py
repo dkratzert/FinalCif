@@ -17,17 +17,23 @@ class CODFetcher:
     def _url(self) -> str:
         return self.main_url + 'my_depositions.php'
 
-    def get_token(self, username: str, password: str):
+    def get_token(self, username: str, password: str) -> str:
         post_data = {'username': username,
                      'password': password}
-        r = requests.post(self._url, data=post_data)
+        try:
+            r = requests.post(self._url, data=post_data)
+        except requests.exceptions.ConnectionError:
+            return ''
         return self._extract_token(r.text)
 
-    def get_table_data_by_token(self, token: str):
+    def get_table_data_by_token(self, token: str) -> None:
         post = {
             'CODSESSION': token,
         }
-        r = requests.post(url=self._url, data=post)
+        try:
+            r = requests.post(url=self._url, data=post)
+        except requests.exceptions.ConnectionError:
+            return None
         self.table_html = r.text
 
     def _extract_token(self, text: str, token: str = '') -> str:

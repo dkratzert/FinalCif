@@ -203,12 +203,14 @@ class CODdeposit:
             self.settings.save_settings_list('COD', self.username, parser.structures)
             self.add_deposited_structures_to_table(parser.structures, parser.token)
 
-    def get_structures_from_cod(self):
+    def get_structures_from_cod(self) -> MyCODStructuresParser:
         f = CODFetcher(main_url=self.main_url)
         if not self.token_valid:
             self._cod_token = f.get_token(username=self.username, password=self.password)
             if f.authenticated:
                 self.token_valid = True
+            else:
+                self.ui.statusBar.showMessage('Unable to login. Check username/password.', timeout=12000)
         f.get_table_data_by_token(self._cod_token)
         parser = MyCODStructuresParser()
         parser.feed(f.table_html)
