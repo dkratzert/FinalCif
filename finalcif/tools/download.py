@@ -6,7 +6,6 @@ from PySide6.QtCore import Signal, QObject
 from finalcif import VERSION
 
 
-# noinspection PyUnresolvedReferences
 class MyDownloader(QObject):
     progress = Signal(str)
     failed = Signal(int)
