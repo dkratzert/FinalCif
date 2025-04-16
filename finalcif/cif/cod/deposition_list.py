@@ -22,7 +22,8 @@ class CODFetcher:
                      'password': password}
         try:
             r = requests.post(self._url, data=post_data)
-        except requests.exceptions.ConnectionError:
+        except requests.exceptions.ConnectionError as e:
+            print(f'Getting auth token failed: {e}')
             return ''
         return self._extract_token(r.text)
 
