@@ -49,7 +49,7 @@ def get_changes():
         return s.get_data()
 
     today = datetime.date.today()
-    return "\nToday is: {}".format(str(today.strftime('%b %d, %Y\n')), strip_tags(text))
+    return "\nToday is: {}".format(str(today.strftime('%b %d, %Y\n')), )
 
 
 def get_platon() -> tempfile.TemporaryFile:

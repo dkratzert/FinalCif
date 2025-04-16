@@ -13,53 +13,51 @@ import re
 import subprocess
 import sys
 from datetime import datetime
+from math import sqrt
 from os import path
 from pathlib import Path
-from typing import Union, Tuple, List
-
-from math import sqrt
 
 # protected space character:
-protected_space = u'\u00A0'
-medium_math_space = u'\u205F'
+protected_space = '\u00A0' 
+medium_math_space = '\u205F'
 # Angstrom character:
 # angstrom = u'\u212B'  # Unicode angstrom sign (only for compatibility)
 # angstrom = 'Å'      # MSWord seems unable to render the regular letter correctly. It looks like a different font?
-angstrom = u'\u00C5'  # Latin capital A with ring above. The Unicode consortium recommends to use the regular letter
+angstrom = '\u00C5'  # Latin capital A with ring above. The Unicode consortium recommends to use the regular letter
 # greek small letters:
-alpha_symol = u'\u03B1'
-beta_symol = u'\u03B2'
-gamma_symol = u'\u03B3'
+alpha_symol = '\u03B1'
+beta_symol = '\u03B2'
+gamma_symol = '\u03B3'
 # Greek Small Letter Theta θ:
-theta_symbol = u'\u03B8'
+theta_symbol = '\u03B8'
 # Greek Small Letter Pi
-pi_symbol = u'\u03C0'
+pi_symbol = '\u03C0'
 # bigger or equal:
-bequal = u'\u2265'
+bequal = '\u2265'
 # small_sigma:
-sigma_sm = u'\u03C3'
+sigma_sm = '\u03C3'
 # en dash:
-halbgeviert = u'\u2013'
+halbgeviert = '\u2013'
 # minus sign:
-minus_sign = u'\u2212'
+minus_sign = '\u2212'
 # degree sign:
-degree_sign = u'\u00B0'
+degree_sign = '\u00B0'
 # middle ellipsis
-ellipsis_mid = u'\u22EF'
+ellipsis_mid = '\u22EF'
 # ellipsis
-ellipsis_char = u'\u2026'
+ellipsis_char = '\u2026'
 # middle dot
-middle_dot = u'\u00B7'
+middle_dot = '\u00B7'
 # less or equal sign
-less_or_equal = u'\u2264'
+less_or_equal = '\u2264'
 # times (cross) symbol
-timessym = u'\u00d7'
+timessym = '\u00d7'
 # lambda
-lambdasym = u'\u03bb'
+lambdasym = '\u03bb'
 # one bar
-one_bar = u'\u0031\u0305'
+one_bar = '\u0031\u0305'
 # Zero-with space ZWSP
-zero_width_space = u'\u200B'
+zero_width_space = '\u200B'
 
 
 def isnumeric(value: str) -> bool:
@@ -148,7 +146,7 @@ def _angstrom_to_x(value: str, factor: float = 100) -> str:
         return f'{float(value.strip(")")) * factor:.{length}f}'
 
 
-def _get_decimal_length(vval, factor: float = 100):
+def _get_decimal_length(vval, factor: float = 100) -> float:
     """
     Determine how many decimal places should be used in output formatting.
     """
@@ -164,7 +162,7 @@ def _get_decimal_length(vval, factor: float = 100):
     return length
 
 
-def get_error_from_value(value: str) -> Tuple[float, float]:
+def get_error_from_value(value: str) -> tuple[float, float]:
     """
     Returns the error value from a number string.
     """
@@ -232,7 +230,7 @@ def file_age_in_days(file_path: Path) -> int:
     return diff
 
 
-class Multilog(object):
+class Multilog:
     """
     This class copies all output from stdout and stderr to a file
     It acts like tee with following usage:
@@ -255,7 +253,7 @@ class Multilog(object):
         return g
 
 
-def strip_finalcif_of_name(pth: Union[str, Path], till_name_ends=False) -> str:
+def strip_finalcif_of_name(pth: str | Path, till_name_ends=False) -> str:
     """
     Strips '-finalcif' from the stem path
     """
@@ -284,7 +282,7 @@ def find_line(inputlist: list, regex: str) -> int:
     return 0
 
 
-def this_or_quest(value: Union[str, int, float, None]) -> Union[str, int, float]:
+def this_or_quest(value: str | int | float | None) -> str | int | float:
     """
     Returns the value or a question mark if the value is None.
     """
@@ -294,7 +292,7 @@ def this_or_quest(value: Union[str, int, float, None]) -> Union[str, int, float]
         return value
 
 
-def to_float(st) -> Union[float, List[float], None]:
+def to_float(st) -> float | list[float] | None:
     if isinstance(st, list):
         try:
             return [float(x) for x in st[-2:]]
@@ -307,7 +305,7 @@ def to_float(st) -> Union[float, List[float], None]:
             return None
 
 
-def to_int(st: Union[str, List[Union[str, int]]]) -> Union[int, List[int], None]:
+def to_int(st: str | list[str | int]) -> int | list[int] | None:
     if isinstance(st, list):
         try:
             return [int(x) for x in st[-2:]]
@@ -762,7 +760,7 @@ celltxt = """
     """
 
 
-def is_database_number(input_num: Union[str, int]) -> bool:
+def is_database_number(input_num: str | int) -> bool:
     if isinstance(input_num, int):
         input_num = str(input_num)
     state: bool = False

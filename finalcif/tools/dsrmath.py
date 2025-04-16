@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 # möp
 #
 # ----------------------------------------------------------------------------
@@ -17,7 +16,7 @@ from operator import sub, add
 from typing import Union
 
 
-class Array(object):
+class Array:
     """
     MIT License
 
@@ -55,12 +54,11 @@ class Array(object):
     """
     __slots__ = ['values']
 
-    def __init__(self, values: Union[list, tuple]):
+    def __init__(self, values: list | tuple):
         self.values = values
 
     def __iter__(self) -> iter:
-        for v in self.values:
-            yield v
+        yield from self.values
 
     def __len__(self) -> int:
         return len(self.values)
@@ -75,11 +73,11 @@ class Array(object):
         """
         if isinstance(other, Array):
             return Array(list(map(add, self.values, other)))
-        elif type(other) == float or type(other) == int:
+        elif isinstance(other, float | int):
             # return Array( list(map(lambda x: x - other, self.values)) )
             return Array([i + other for i in self.values])
         else:
-            raise TypeError('Cannot add type Array to type {}.'.format(str(type(other))))
+            raise TypeError(f'Cannot add type Array to type {type(other)!s}.')
 
     def __iadd__(self, other):
         return self.__add__(other)
@@ -95,7 +93,7 @@ class Array(object):
         >>> a1 == a2
         False
         """
-        return all([a == b for (a, b) in zip(self.values, other.values)])
+        return all(a == b for (a, b) in zip(self.values, other.values, strict=True))
 
     def __sub__(self, other):
         """
@@ -113,14 +111,14 @@ class Array(object):
         elif isinstance(other, float) or isinstance(other, int):
             return Array([i - other for i in self.values])
         else:
-            raise TypeError('Cannot add type Array to type {}.'.format(str(type(other))))
+            raise TypeError(f'Cannot add type Array to type {type(other)!s}.')
 
     def __imul__(self, other):
         """
         Currently supports multiplication by a number. 
         __imul__ means a *= b
         """
-        if isinstance(other, (int, float)):
+        if isinstance(other, int | float):
             self.values = [v * other for v in self.values]
             return self
         else:
@@ -148,7 +146,7 @@ class Array(object):
             return self.dot(other)
 
     def __repr__(self):
-        return 'Array({})'.format(str(self.values))
+        return f'Array({self.values!s})'
 
     def __getitem__(self, val):
         """
@@ -217,7 +215,7 @@ class Array(object):
         """
         if len(self) != len(other):
             raise ValueError('Vector sizes must match')
-        return sum([i * j for i, j in zip(self, other)])
+        return sum([i * j for i, j in zip(self, other, strict=True)])
 
     def cross(self, other: 'Array') -> 'Array':
         """
@@ -249,7 +247,7 @@ class Array(object):
         return round(degrees(acos(self.dot(other) / (self.normalized() * other.normalized()))), 9)
 
 
-class Matrix(object):
+class Matrix:
     """
     MIT License
 
@@ -280,9 +278,9 @@ class Matrix(object):
     | 15.000  18.000  21.000|
     <BLANKLINE>
     """
-    __slots__ = ['values', 'shape']
+    __slots__ = ['shape', 'values']
 
-    def __init__(self, values: Union[list, tuple]):
+    def __init__(self, values: list | tuple):
         self.shape = (len(values[0]), len(values))
         self.values = values
 
@@ -294,7 +292,7 @@ class Matrix(object):
         >>> m[1][1]
         2.2
         """
-        if isinstance(val, (tuple, list)):
+        if isinstance(val, tuple | list):
             if len(val) == 1:
                 return self.values[val[0]]
             return self.values[val[1]][val[0]]
@@ -304,7 +302,7 @@ class Matrix(object):
     def __repr__(self):
         rows = ''
         for row in self.values:
-            rows += '|' + ' '.join(['{:>7.3f}'.format(float(x)) for x in row]) + '|' + '\n'
+            rows += '|' + ' '.join([f'{float(x):>7.3f}' for x in row]) + '|' + '\n'
         return rows
 
     def __add__(self, other: (list, 'Matrix')) -> 'Matrix':
@@ -329,12 +327,12 @@ class Matrix(object):
                 raise ValueError('Matrix and Array are not of equal length.')
             return Matrix(
                 [[sum(e1, e2) for e1, e2 in zip(row1, row2)] for row1, row2 in zip(self.values, other.values)])
-        elif isinstance(other, (float, int)):
+        elif isinstance(other, float | int):
             return Matrix([[x + other for x in i] for i in self.values])
         elif isinstance(other, Matrix):
             return Matrix([[e1 + e2 for e1, e2 in zip(row1, row2)] for row1, row2 in zip(self.values, other.values)])
         else:
-            raise TypeError('Cannot add type {} Array to Matrix.'.format(str(type(other))))
+            raise TypeError(f'Cannot add type {type(other)!s} Array to Matrix.')
 
     def __mul__(self, other: ('Matrix', 'Array', int, float)) -> ('Matrix', 'Array'):
         """
@@ -362,20 +360,20 @@ class Matrix(object):
         >>> Array([0.333333, 0.666667, 0.45191]) * m
         Array([-0.666667, -0.333334, 0.45191])
         """
-        if isinstance(other, (int, float)):
+        if isinstance(other, int | float):
             return Matrix([[v * other for v in row] for row in self.values])
         elif isinstance(other, Matrix):
             return Matrix([[sum(ea * eb for ea, eb in zip(a, b)) for b in other.values] for a in self.values])
         elif isinstance(other, Array):
             return Array([sum([b * x for (b, x) in zip(other.values, row)]) for row in self.values])
         else:
-            raise TypeError('Cannot add type {} to Matrix.'.format(str(type(other))))
+            raise TypeError(f'Cannot add type {type(other)!s} to Matrix.')
 
     def __len__(self):
         return self.shape[1]
 
     def __iter__(self) -> list:
-        return [n for n in self.values]
+        return list(self.values)
 
     def __eq__(self, other):
         """
@@ -388,7 +386,7 @@ class Matrix(object):
         >>> m1 == m2
         False
         """
-        return all([b == x for (b, x) in zip(other.values, self.values)])
+        return all(b == x for (b, x) in zip(other.values, self.values))
 
     def __sub__(self, other):
         """
@@ -536,7 +534,7 @@ class Matrix(object):
         return b_k
 
 
-class SymmetryElement(object):
+class SymmetryElement:
     """
     Class representing a symmetry operation.
     >>> from shelxfile.shelx import ShelXFile
@@ -554,7 +552,7 @@ class SymmetryElement(object):
     True
     """
     symm_ID = 1
-    __slots__ = ['centric', 'symms', 'ID', 'matrix', 'trans']
+    __slots__ = ['ID', 'centric', 'matrix', 'symms', 'trans']
 
     def __init__(self, symms, centric=False):
         """
@@ -577,20 +575,9 @@ class SymmetryElement(object):
             self.trans *= -1
 
     def __str__(self):
-        string = "|{aa:2} {ab:2} {ac:2}|   |{v:>4.2}| \n" \
-                 "|{ba:2} {bb:2} {bc:2}| + |{vv:>4.2}| \n" \
-                 "|{ca:2} {cb:2} {cc:2}|   |{vvv:>4.2}| \n".format(aa=self.matrix[0, 0],
-                                                                   ab=self.matrix[0, 1],
-                                                                   ac=self.matrix[0, 2],
-                                                                   ba=self.matrix[1, 0],
-                                                                   bb=self.matrix[1, 1],
-                                                                   bc=self.matrix[1, 2],
-                                                                   ca=self.matrix[2, 0],
-                                                                   cb=self.matrix[2, 1],
-                                                                   cc=self.matrix[2, 2],
-                                                                   v=float(self.trans[0]),
-                                                                   vv=float(self.trans[1]),
-                                                                   vvv=float(self.trans[2]))
+        string = f"|{self.matrix[0, 0]:2} {self.matrix[0, 1]:2} {self.matrix[0, 2]:2}|   |{float(self.trans[0]):>4.2}| \n" \
+                 f"|{self.matrix[1, 0]:2} {self.matrix[1, 1]:2} {self.matrix[1, 2]:2}| + |{float(self.trans[1]):>4.2}| \n" \
+                 f"|{self.matrix[2, 0]:2} {self.matrix[2, 1]:2} {self.matrix[2, 2]:2}|   |{float(self.trans[2]):>4.2}| \n"
         return string
 
     def __repr__(self):
@@ -684,7 +671,7 @@ class SymmetryElement(object):
         except ValueError:
             if '/' in string:
                 string = string.replace('/', './') + '.'
-                return eval('{}'.format(string))
+                return eval(f'{string}')
 
     def _partition(self, symm, char):
         parts = symm.partition(char)
@@ -927,9 +914,9 @@ def dice_coefficient(a, b, case_insens=True):
     if not len(a) or not len(b):
         return 0.0
     if len(a) == 1:
-        a = a + u'.'
+        a = a + '.'
     if len(b) == 1:
-        b = b + u'.'
+        b = b + '.'
     a_bigram_list = []
     for i in range(len(a) - 1):
         a_bigram_list.append(a[i:i + 2])
@@ -1019,12 +1006,13 @@ def fft(x):
     """
     from cmath import exp, pi
     N = len(x)
-    if N <= 1: return x
+    if N <= 1:
+        return x
     even = fft(x[0::2])
     odd = fft(x[1::2])
     T = [exp(-2j * pi * k / N) * odd[k] for k in range(int(N / 2))]
     return [even[k] + T[k] for k in range(int(N / 2))] + \
-           [even[k] - T[k] for k in range(int(N / 2))]
+        [even[k] - T[k] for k in range(int(N / 2))]
 
 
 def levenshtein(s1, s2):
@@ -1081,7 +1069,7 @@ def vol_unitcell(a, b, c, al, be, ga):
     return v
 
 
-class A(object):
+class A:
     """
     orthogonalization matrix
     e.g. converts fractional coordinates to cartesian coodinates
@@ -1276,7 +1264,7 @@ def almost_equal(a, b, places=3):
     return round(abs(a - b), places) == 0
 
 
-def frac_to_cart(frac_coord: list, cell: Union[list, tuple]) -> list:
+def frac_to_cart(frac_coord: list, cell: list | tuple) -> list:
     """
     Converts fractional coordinates to cartesian coodinates
     :param frac_coord: [float, float, float]

@@ -7,12 +7,12 @@ from finalcif.gui.dialogs import show_general_warning
 from finalcif.tools.statusbar import StatusBar
 
 
-class ShredCIF():
+class ShredCIF:
     """
     This class extracts the .res and .hkl file content from a cif file.
     """
 
-    def __init__(self, cif: CifContainer, statusbar: Union[StatusBar, None]):
+    def __init__(self, cif: CifContainer, statusbar: StatusBar | None):
         self._cif = cif
         self._statusbar = statusbar or Mock()
 
@@ -45,9 +45,8 @@ class ShredCIF():
             hkl_data = self._cif.hkl_file
         if not self._data_is_valid(res_data):
             self._statusbar.show_message('No .res file data found!')
-        else:
-            if not self._write_res_file(resfile_path, res_data):
-                return None
+        elif not self._write_res_file(resfile_path, res_data):
+            return None
         if not self._data_is_valid(hkl_data):
             self._statusbar.show_message('No .hkl file data found!')
         else:
@@ -72,7 +71,7 @@ class ShredCIF():
             lines.append(line)
         return '\n'.join(lines).lstrip('\n')
 
-    def _show_info(self, resname: Path, hklname: Path, resdata: Union[str, None], hkldata: Union[str, None]) -> None:
+    def _show_info(self, resname: Path, hklname: Path, resdata: str | None, hkldata: str | None) -> None:
         if resdata and not hkldata:
             self._statusbar.show_message(f'{self._statusbar.current_message}\nFinished writing data to {resname.name}.')
         if hkldata and not resdata:
@@ -82,14 +81,14 @@ class ShredCIF():
                 f'{self._statusbar.current_message}\nFinished writing data to {resname.name} and {hklname.name}.')
 
     @staticmethod
-    def _data_is_valid(data: Union[str, None]) -> bool:
+    def _data_is_valid(data: str | None) -> bool:
         if not data or len(data.splitlines(keepends=False)) < 3:
             return False
         else:
             return True
 
     @staticmethod
-    def _write_hkl_file(hklfile: Path, hkl: Union[str, None]) -> bool:
+    def _write_hkl_file(hklfile: Path, hkl: str | None) -> bool:
         try:
             hklfile.write_text(hkl, encoding='latin1', errors='ignore')
         except Exception as e:
@@ -113,7 +112,7 @@ class ShredCIF():
             return True
 
     @staticmethod
-    def _write_res_file(resfile: Path, reslines: Union[str, None]) -> bool:
+    def _write_res_file(resfile: Path, reslines: str | None) -> bool:
         """
         Writes a res file from the cif content.
         """

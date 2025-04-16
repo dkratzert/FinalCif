@@ -14,7 +14,7 @@ from finalcif.tools.misc import isnumeric
 from finalcif.tools.spgr_format import spgrps
 
 
-class SpaceGroups():
+class SpaceGroups:
 
     def __init__(self):
         self.spgrps = spgrps
@@ -43,22 +43,22 @@ class SpaceGroups():
             char, spgr_format = word
             if len(sp) >= n + 1:
                 with suppress(Exception):
-                    if sp[n][1] == 'overline':
+                    if word[1] == 'overline':
                         overline = True
                     if sp[n + 1][1] == 'sub':
                         sub = True
                         xml = xml + '<msub>\n'
             if overline:
                 overline = False
-                xml = xml + '<mover>\n<mn>{}</mn>\n<mo stretchy="false">&#x0305;</mo>'.format(char)
+                xml = xml + f'<mover>\n<mn>{char}</mn>\n<mo stretchy="false">&#x0305;</mo>'
             if not overline and spgr_format == 'overline':
                 xml = xml + '\n</mover>\n'
             if spgr_format == 'regular':
-                xml = xml + '<mn>{}</mn>\n'.format(char)
+                xml = xml + f'<mn>{char}</mn>\n'
             if spgr_format == 'italic':
-                xml = xml + '<mi>{}</mi>\n'.format(char)
+                xml = xml + f'<mi>{char}</mi>\n'
             if sub and spgr_format == 'sub':
-                xml = xml + '<mn>{}</mn>\n</msub>\n'.format(char)
+                xml = xml + f'<mn>{char}</mn>\n</msub>\n'
         xml = xml + '</math>\n'
         return xml
 
@@ -86,13 +86,13 @@ class SpaceGroups():
         for word in self.spgrps[space_group][0]:
             char, space_group_format = word
             if space_group_format == 'italic':
-                html = html + '<i>{}</i>'.format(char)
+                html = html + f'<i>{char}</i>'
             elif space_group_format == 'regular':
                 html = html + char
             elif space_group_format == 'sub':
-                html = html + '<sub>{}</sub>'.format(char)
+                html = html + f'<sub>{char}</sub>'
             elif space_group_format == 'overline':
-                html = html + '<span style=" text-decoration: overline;">{}</span>'.format(char)
+                html = html + f'<span style=" text-decoration: overline;">{char}</span>'
             else:
                 print('##############', char)
         return html
@@ -109,8 +109,7 @@ class SpaceGroups():
             splitted_spgr = space_group_obj.xhm().split(' ')
             if space_group_obj.short_name() == self._myshort(space_group_obj):
                 splitted_spgr = self.remove_setting(space_group_obj)
-            html.append("    '{}'         : (\n        (('{}', 'italic'),\n".format(space_group_obj.xhm(),
-                                                                                    splitted_spgr.pop(0)))
+            html.append(f"    '{space_group_obj.xhm()}'         : (\n        (('{splitted_spgr.pop(0)}', 'italic'),\n")
             if space_group_obj.short_name() == 'P21212(a)':
                 self.handle_p21212a_specially(html)
             else:
@@ -118,21 +117,21 @@ class SpaceGroups():
                     if ':' in chars:
                         chars, append = chars.split(':')
                         if chars.startswith('-'):
-                            html.append("            ({}, 'overline'),\n".format(chars[-1]))
+                            html.append(f"            ({chars[-1]}, 'overline'),\n")
                         else:
                             self._italize_chars_format(chars, html)
                         self._italize_chars_format(':' + append, html)
                         continue
                     if len(chars) == 1:
                         if isnumeric(chars):
-                            html.append("         ('{}', 'regular'),\n".format(chars))
+                            html.append(f"         ('{chars}', 'regular'),\n")
                         else:
-                            html.append("         ('{}', 'italic'),\n".format(chars))
+                            html.append(f"         ('{chars}', 'italic'),\n")
                     if len(chars) == 2 and self._get_screw(chars):
                         html.append(self._get_screw_format(chars))
                     if len(chars) == 2 and not self._get_screw(chars):
                         if chars.startswith('-'):
-                            html.append("         ('{}', 'overline'),\n".format(chars[-1]))
+                            html.append(f"         ('{chars[-1]}', 'overline'),\n")
                         else:
                             self._italize_chars_format(chars, html)
                     if len(chars) > 2:
@@ -140,16 +139,12 @@ class SpaceGroups():
                         if self._get_screw(chars[:2]):
                             html.append(self._get_screw_format(chars[:2]))
                             chars = chars[:]
-                        for chars in chars:
-                            self._make_italic_format(chars, txt)
+                        for char in chars:
+                            self._make_italic_format(char, txt)
                         html.append("{}".format(''.join(txt)))
             htxt = htxt + ''.join(html) \
-                   + "         ), {{'itnumber': {}, 'crystal_system': '{}', " \
-                     "'short-hm': '{}', 'is_reference': {}}},\n    ),\n".format(space_group_obj.number,
-                                                                                space_group_obj.crystal_system_str(),
-                                                                                space_group_obj.short_name(),
-                                                                                space_group_obj.is_reference_setting(),
-                                                                                )
+                   + f"         ), {{'itnumber': {space_group_obj.number}, 'crystal_system': '{space_group_obj.crystal_system_str()}', " \
+                     f"'short-hm': '{space_group_obj.short_name()}', 'is_reference': {space_group_obj.is_reference_setting()}}},\n    ),\n"
         Path('testing2.py').write_text(htxt + '\n}')
 
     def remove_setting(self, space_group_obj):
@@ -166,11 +161,11 @@ class SpaceGroups():
                 '65': sub_format, }.get(symbol)
 
     def _get_screw(self, symbol: str):
-        sub = '{}<sub>{}</sub>'.format(symbol[0], symbol[1])
+        sub = f'{symbol[0]}<sub>{symbol[1]}</sub>'
         return self._screw(sub, symbol)
 
     def _get_screw_format(self, symbol: str):
-        sub = "         ('{}', 'regular'), \n         ('{}', 'sub'),\n".format(symbol[0], symbol[1])
+        sub = f"         ('{symbol[0]}', 'regular'), \n         ('{symbol[1]}', 'sub'),\n"
         return self._screw(sub, symbol)
 
     def _myshort(self, s):
@@ -184,7 +179,7 @@ class SpaceGroups():
 
     def _make_italic(self, char, txt):
         if char.isalpha():
-            txt.append('<i>{}</i>'.format(char))
+            txt.append(f'<i>{char}</i>')
         else:
             txt.append(char)
 
@@ -196,9 +191,9 @@ class SpaceGroups():
 
     def _make_italic_format(self, char, txt):
         if char.isalpha():
-            txt.append("         ('{}', 'italic'),\n".format(char))
+            txt.append(f"         ('{char}', 'italic'),\n")
         else:
-            txt.append("         ('{}', 'regular'),\n".format(char))
+            txt.append(f"         ('{char}', 'regular'),\n")
 
 
 ##########################
@@ -211,7 +206,7 @@ def wite_xml():
         print(s.number, s.short_name())
         p = sp.to_mathml(s.xhm())
         print(p)
-        txt = txt + '{} {}\n'.format(s.number, s.short_name())
+        txt = txt + f'{s.number} {s.short_name()}\n'
         txt = txt + p + '\n'
     Path('testing_xml.html').write_text(txt)
 
