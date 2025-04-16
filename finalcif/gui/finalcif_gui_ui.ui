@@ -42,7 +42,7 @@
       <widget class="QFrame" name="LeftFrame">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-         <horstretch>8</horstretch>
+         <horstretch>9</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
@@ -794,7 +794,7 @@
       <widget class="QFrame" name="CifDataItemsFrame">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-         <horstretch>8</horstretch>
+         <horstretch>7</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
