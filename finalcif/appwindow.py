@@ -424,10 +424,12 @@ class AppWindow(QMainWindow):
                 caption='Save templates')
         if not filename:
             return
-        templates = {'text'      : self.export_raw_text_templates(),
-                     'equipment' : self.equipment.export_raw_data(),
-                     'properties': self.properties.export_raw_data(),
-                     'authors'   : self.authors.export_raw_data(),
+        templates = {'text'               : self.export_raw_text_templates(),
+                     'equipment'          : self.equipment.export_raw_data(),
+                     'properties'         : self.properties.export_raw_data(),
+                     'authors'            : self.authors.export_raw_data(),
+                     'cif_order'          : self.ui.cifOrderWidget.order_keys,
+                     'cif_order_essential': self.ui.cifOrderWidget.order_essentials,
                      }
         try:
             with open(filename, "wb") as f:
@@ -453,6 +455,8 @@ class AppWindow(QMainWindow):
         self.properties.import_raw_data(templates.get('properties'))
         self.authors.import_raw_data(templates.get('authors'))
         self.status_bar.show_message('Template import successful.')
+        self.ui.cifOrderWidget.save_in_settings(templates.get('cif_order'), templates.get('cif_order_essential'))
+        self.ui.cifOrderWidget.set_order_from_settings(self.settings)
 
     def draw_image(self):
         image_filename = self.cif.finalcif_file_prefixed(prefix='', suffix='-finalcif.png')
@@ -1802,7 +1806,8 @@ class AppWindow(QMainWindow):
         else:
             self.ui.molGroupBox.setTitle('Asymmetric Unit')
             with suppress(Exception):
-                self.ui.render_widget.open_molecule(list(self.cif.atoms_orth), labels=self.ui.labelsCheckBox.isChecked())
+                self.ui.render_widget.open_molecule(list(self.cif.atoms_orth),
+                                                    labels=self.ui.labelsCheckBox.isChecked())
 
     def grow_molecule(self):
         atoms = tuple(self.cif.atoms_fract)

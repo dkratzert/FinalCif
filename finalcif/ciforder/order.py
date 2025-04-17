@@ -51,7 +51,7 @@ class CifOrder(QtWidgets.QGroupBox):
         self.ui.importCifPushButton.clicked.connect(self.import_cif)
         self.ui.restoreDefaultPushButton.clicked.connect(self.restore_default)
         self.ui.addKeyPushButton.clicked.connect(self.open_add_cif_key)
-        self.ui.saveSettingPushButton.clicked.connect(self.save_setting)
+        self.ui.saveSettingPushButton.clicked.connect(self._save_setting)
         self.ui.deleteKeyPushButton.clicked.connect(self.delete_keys)
         self.ui.exportToCifPushButton.clicked.connect(self.export_cif)
         # Connect signals for moveUpPushButton
@@ -189,10 +189,13 @@ class CifOrder(QtWidgets.QGroupBox):
             self.ui.cifOrderTableWidget.insertRow(0)
             self.set_row_text(key, 0)
 
-    def save_setting(self):
-        self.settings.save_settings_list('cif_order', 'order', self.order_keys)
-        self.settings.save_settings_list('cif_order', 'essentials', self.order_essentials)
-        self.essential_keys = self.order_essentials
+    def _save_setting(self) -> None:
+        self.save_in_settings(order_keys=self.order_keys, order_essentials=self.order_essentials)
+
+    def save_in_settings(self, order_keys: list[str], order_essentials: list[str]) -> None:
+        self.settings.save_settings_list('cif_order', 'order', order_keys)
+        self.settings.save_settings_list('cif_order', 'essentials', order_essentials)
+        self.essential_keys = order_essentials
 
     def delete_keys(self):
         items = self.ui.cifOrderTableWidget.selectedItems()
