@@ -11,5 +11,5 @@ rem git pull
 call scripts\_create_dist.bat
 
 CALL .venv\Scripts\activate.bat
-venv\Scripts\python.exe scripts\make_win_release.py
+.venv\Scripts\python.exe scripts\make_win_release.py
 CALL .venv\Scripts\deactivate.bat

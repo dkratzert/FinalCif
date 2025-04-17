@@ -69,7 +69,10 @@ Filename: "{app}\vc_redist.x64.exe"; WorkingDir: "{app}"; Parameters: "/passive 
 
 
 [InstallDelete]
-;Type: filesandordirs; Name: "{app}\*"
+Type: filesandordirs; Name: "{app}\finalcif"
+Type: filesandordirs; Name: "{app}\Lib"
+Type: filesandordirs; Name: "{app}\Scripts"
+Type: filesandordirs; Name: "{app}\python*.*"
 
 
 [UninstallDelete]
