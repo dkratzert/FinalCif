@@ -31,7 +31,6 @@ dependencies = [
     "pefile",
     "pybind11",
     "pyside6<6.9",
-    "pyside6-stubs",
     "python-docx",
     "QtAwesome",
     "QtPy",
@@ -48,7 +47,7 @@ dependencies = [
 [dependency-groups]
 dev = [
     "pytest",
-    "ruff"
+    "ruff",
 ]
 
 doc = [
