@@ -48,6 +48,7 @@ dependencies = [
 dev = [
     "pytest",
     "ruff",
+    "pyside6-stubs",
 ]
 
 doc = [
