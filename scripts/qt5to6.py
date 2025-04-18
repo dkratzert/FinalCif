@@ -1,8 +1,8 @@
 import ast
 import os
 import re
-import shutil
-
+from pathlib import Path
+from pprint import pprint
 
 PYQT5_TO_PYQT6_IMPORTS = [
     (r'from\s+PyQt5\s+import\s+(QtWidgets|QtGui|QtCore|QtSvg)', r'from PySide6 import \1'),
@@ -87,7 +87,7 @@ COMMON_REPLACEMENTS = [
     # WidgetAttribute
     (r'(QtCore\.)?Qt\.WA_DeleteOnClose\W', r'QtCore.Qt.WidgetAttribute.WA_DeleteOnClose'),
 
-    #QFont
+    # QFont
     (r'(QtGui\.)?QFont\.Monospace\W', r'QtGui.QFont.StyleHint.Monospace'),
 
     # TransformationMode
@@ -211,8 +211,8 @@ def process_py_file(filepath):
         content = re.sub(pattern, repl, content)
 
     if content != original_content:
-        backup_path = filepath + '.bak'
-        shutil.copy(filepath, backup_path)
+        # backup_path = filepath + '.bak'
+        # shutil.copy(filepath, backup_path)
         with open(filepath, 'w', encoding='utf-8') as f:
             f.write(content)
         print(f"Ported: {filepath}")
@@ -228,11 +228,11 @@ def process_ui_file(filepath):
     original_content = content
 
     # Change XML namespaces or version-specific tags if needed
-    content = re.sub(r'PyQt5', 'PyQt6', content)
+    content = re.sub(r'PyQt5', 'PySide6', content)
 
     if content != original_content:
-        backup_path = filepath + '.bak'
-        shutil.copy(filepath, backup_path)
+        # backup_path = filepath + '.bak'
+        # shutil.copy(filepath, backup_path)
         with open(filepath, 'w', encoding='utf-8') as f:
             f.write(content)
         print(f"Updated UI file: {filepath}")
@@ -251,6 +251,67 @@ def port_directory(root_dir):
                 process_ui_file(filepath)
 
 
+
+
+def get_enums(content: str) -> set[str]:
+    tree = ast.parse(content)
+    imported = set()
+
+    for node in ast.walk(tree):
+        if isinstance(node, ast.ClassDef):
+            if node.name == 'System':
+                print(node.name, node.bases[0].attr)
+            #mod = node.module.replace("PyQt6.", "")
+            #imported.add(mod)
+        elif isinstance(node, ast.Import):
+            for alias in node.names:
+                if alias.name.startswith("PyQt6."):
+                    mod = alias.name.replace("PyQt6.", "")
+                    imported.add(mod.split('.')[0])  # nur Hauptmodul
+    return imported
+
+
+class InnerEnumFinder(ast.NodeVisitor):
+    def __init__(self):
+        self.enums = []
+
+    def visit_ClassDef(self, node):
+        # Check if this class is an Enum
+        is_enum = any(
+            (isinstance(base, ast.Attribute) and base.attr == 'Enum')
+            or (isinstance(base, ast.Name) and base.id == 'Enum')
+            for base in node.bases
+        )
+
+        #if is_enum and isinstance(getattr(node, 'parent', None), ast.ClassDef):
+        #    self.inner_enums.append((node.parent.name, node.name))
+
+        parent = getattr(node, 'parent', None)
+        if is_enum and isinstance(parent, ast.ClassDef):
+            items = []
+            for stmt in node.body:
+                if isinstance(stmt, ast.AnnAssign) and isinstance(stmt.target, ast.Name):
+                    value = (
+                        stmt.annotation.value if isinstance(stmt.annotation, ast.Constant)
+                        else stmt.annotation.n if isinstance(stmt.annotation, ast.Num)
+                        else ast.unparse(stmt.annotation) if hasattr(ast, 'unparse')
+                        else None
+                    )
+                    items.append(stmt.target.id)
+            self.enums.append((parent.name, node.name, items))
+
+        for child in node.body:
+            if isinstance(child, ast.ClassDef):
+                child.parent = node
+            self.visit(child)
+
+
 if __name__ == '__main__':
-    project_root = r'./finalcif'
-    port_directory(project_root)
+    # project_root = r'./finalcif'
+    # port_directory(project_root)
+    qtcore = Path('/Users/daniel/Documents/GitHub/FinalCif/.venv/lib/python3.13/site-packages/PySide6-stubs/QtCore.pyi')
+    finder = InnerEnumFinder()
+    tree = ast.parse(qtcore.read_text())
+    finder.visit(tree)
+
+    pprint(finder.enums)
