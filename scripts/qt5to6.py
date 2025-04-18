@@ -251,8 +251,6 @@ def port_directory(root_dir):
                 process_ui_file(filepath)
 
 
-
-
 def get_enums(content: str) -> set[str]:
     tree = ast.parse(content)
     imported = set()
@@ -261,8 +259,8 @@ def get_enums(content: str) -> set[str]:
         if isinstance(node, ast.ClassDef):
             if node.name == 'System':
                 print(node.name, node.bases[0].attr)
-            #mod = node.module.replace("PyQt6.", "")
-            #imported.add(mod)
+            # mod = node.module.replace("PyQt6.", "")
+            # imported.add(mod)
         elif isinstance(node, ast.Import):
             for alias in node.names:
                 if alias.name.startswith("PyQt6."):
@@ -283,7 +281,7 @@ class InnerEnumFinder(ast.NodeVisitor):
             for base in node.bases
         )
 
-        #if is_enum and isinstance(getattr(node, 'parent', None), ast.ClassDef):
+        # if is_enum and isinstance(getattr(node, 'parent', None), ast.ClassDef):
         #    self.inner_enums.append((node.parent.name, node.name))
 
         parent = getattr(node, 'parent', None)
@@ -291,12 +289,11 @@ class InnerEnumFinder(ast.NodeVisitor):
             items = []
             for stmt in node.body:
                 if isinstance(stmt, ast.AnnAssign) and isinstance(stmt.target, ast.Name):
-                    value = (
+                    """value = (
                         stmt.annotation.value if isinstance(stmt.annotation, ast.Constant)
-                        else stmt.annotation.n if isinstance(stmt.annotation, ast.Num)
                         else ast.unparse(stmt.annotation) if hasattr(ast, 'unparse')
                         else None
-                    )
+                    )"""
                     items.append(stmt.target.id)
             self.enums.append((parent.name, node.name, items))
 
@@ -314,4 +311,28 @@ if __name__ == '__main__':
     tree = ast.parse(qtcore.read_text())
     finder.visit(tree)
 
-    pprint(finder.enums)
+    lookup = {}
+    """
+    for outer, enumname, members in finder.enums:
+        for member in members:
+            full_name = f'{outer}.{enumname}.{member}'  # Qt.Qt.Key_Escape
+            short_name = f'{member}'  # Key_Escape
+            lookup[short_name] = full_name
+
+    pprint(lookup)"""
+
+    for stub_file in Path(
+        '/Users/daniel/Documents/GitHub/FinalCif/.venv/lib/python3.13/site-packages/PySide6-stubs/').glob('*.pyi'):
+        module_name = stub_file.stem  # e.g., 'QtCore'
+        tree = ast.parse(stub_file.read_text())
+        finder = InnerEnumFinder()
+        finder.visit(tree)
+
+        for outer, enumname, members in finder.enums:
+            for member in members:
+                key = member  # e.g., 'Key_Escape'
+                qualified = f'{module_name}.{outer}.{enumname}.{member}'
+                # I may use this first, then without module name and then without outer:
+                lookup[f'{module_name}.{outer}.{key}'] = qualified
+
+    pprint(lookup)
