@@ -25,7 +25,7 @@ dependencies = [
     "wheel",
     "certifi",
     "chardet",
-    "gemmi<0.7.0",
+    "gemmi",
     "html2text",
     "lxml",
     "pefile",

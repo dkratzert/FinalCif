@@ -5,6 +5,7 @@ from pathlib import Path
 import gemmi
 import numpy as np
 from gemmi.cif import Loop, Document, Style
+from packaging import version
 
 Limit = namedtuple('Limit', 'h_max, h_min, k_max, k_min, l_max, l_min')
 
@@ -30,7 +31,10 @@ class HKL:
 
     @property
     def hkl_as_cif(self) -> str:
-        return self._doc.as_string(style=Style.Simple)
+        if version.parse(gemmi.__version__) < version.parse('0.5.1'):
+            return self._doc.as_string(style=Style.Simple)
+        else:
+            return self._doc.as_string(options=gemmi.cif.WriteOptions(Style.Simple))
 
     def _add_hkl_as_loop(self) -> None:
         """
