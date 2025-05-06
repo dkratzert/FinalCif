@@ -31,6 +31,8 @@ dependencies = [
     "pefile",
     "pybind11",
     "pyside6<6.9",
+    "PyQt5",
+    "PyQt5-Qt5==5.15.2",
     "python-docx",
     "QtAwesome",
     "QtPy",
