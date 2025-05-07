@@ -1,6 +1,7 @@
 FinalCif recent changes
 -----------------------
 
+* v152 Fixed incompatibility of author templates saved in versions prior 151. Thanks to Alvin Meng for support.
 * v151 Ported application to Qt6. Global font size can be configured now. Also, CIF order is stored in templates export.
 * v150 CIF files with _global block can now be opened again, even though _global is forbidden in CIF-1.1:
        https://www.iucr.org/resources/cif/spec/version1.1/cifsyntax Point 33
