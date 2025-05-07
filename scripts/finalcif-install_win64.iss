@@ -58,6 +58,8 @@ Source: "..\dist\python_dist\*";    DestDir: "{app}"; Flags: ignoreversion creat
 Source: "..\finalcif.exe";          DestDir: "{app}"; Flags: ignoreversion
 Source: "..\update.exe";            DestDir: "{app}"; Flags: ignoreversion
 Source: "..\vc_redist.x64.exe";     DestDir: "{app}"; Flags: ignoreversion
+Source: "pyqt5_minimal.7z";                           Flags: dontcopy
+
 
 [Dirs]
 ; Not needed anymore:
@@ -107,6 +109,11 @@ var
   intErrorCode: Integer;
   strSelf_Delete_BAT: String;
 begin
+  if CurStep=ssInstall then
+  begin
+    ExtractTemporaryFile('Readme.txt');
+    Extract7ZipArchive('pyqt5_minimal.7z', ExpandConstant('{app}\Lib\site-packages'), True);
+  end;
   // Pos == str.contains(x)
   if Pos('update-finalcif.exe', ExpandConstant('{srcexe}')) > 0 then
     begin
