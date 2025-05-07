@@ -229,11 +229,13 @@ class AppWindow(QMainWindow):
 
     def set_window_size_and_position(self) -> None:
         wsettings = self.settings.load_window_position()
-        with suppress(TypeError):
-            self.resize(wsettings['size'])
-        with suppress(TypeError):
-            self.move(wsettings['position'])
-        if wsettings['maximized']:
+        if wsettings.get('size'):
+            size: QtCore.QSize = wsettings['size']
+            self.resize(size)
+        if wsettings.get('position'):
+            pos: QtCore.QSize = wsettings['position']
+            self.move(pos.width(), pos.height())
+        if wsettings.get('maximized'):
             self.showMaximized()
 
     def make_button_icons(self) -> None:
@@ -677,8 +679,9 @@ class AppWindow(QMainWindow):
 
     def _savesize(self) -> None:
         """Saves the main window size nd position."""
-        x, y = self.pos().x(), self.pos().y()
-        self.settings.save_window_position(QtCore.QPoint(x, y), self.size(), self.isMaximized())
+        self.settings.save_window_position(position=self.pos(),
+                                           size=self.size(),
+                                           maximized=self.isMaximized())
 
     def show_help(self) -> None:
         QtGui.QDesktopServices.openUrl(QtCore.QUrl('https://dkratzert.de/files/finalcif/docs/'))

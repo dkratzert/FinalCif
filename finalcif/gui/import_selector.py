@@ -1,7 +1,7 @@
 import shutil
 from pathlib import Path
 
-from qtpy import QtWidgets, QtCore
+from PySide6 import QtWidgets, QtCore
 
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.gui.import_selector_ui import Ui_importSelectMainWindow

@@ -6,9 +6,10 @@
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
 from collections.abc import Iterable
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from PySide6.QtCore import QPoint, QSettings, QSize
+from PyQt5 import QtCore as QtCore5
 
 if TYPE_CHECKING:
     pass
@@ -21,6 +22,7 @@ class FinalCifSettings:
         self.software_name = 'FinalCif'
         self.organization = 'DK'
         self.settings = QSettings(self.organization, self.software_name)
+        self.s_old = QtCore5.QSettings(self.organization, self.software_name)
         self.property_keys_and_values = self.load_property_keys_and_values()
         self.property_keys = self.load_cif_keys_of_properties()
         # print(self.settings.fileName())
@@ -42,13 +44,14 @@ class FinalCifSettings:
         Loads window position information and sets default values if no configuration exists.
         """
         self.settings.beginGroup("MainWindow")
+        self.s_old.beginGroup("MainWindow")
         # noinspection PyTypeChecker
-        pos: QPoint = self.settings.value("position", type=QPoint)
+        pos: QPoint = self.load_value_of_key("position")
         # noinspection PyTypeChecker
-        size: QSize = self.settings.value("size", type=QSize)
+        size: QSize = self.load_value_of_key("size")
         size = size if size and size.width() > 0 else QSize(900, 850)
         pos = pos if pos and pos.x() > 0 else QSize(20, 20)
-        maximized = self.settings.value('maximized')
+        maximized = self.load_value_of_key('maximized')
         maxim = False
         if isinstance(maximized, str):
             if eval(maximized.capitalize()):
@@ -126,6 +129,8 @@ class FinalCifSettings:
         """
         Load templates and return them as string.
         """
+        if value := self.s_old.value(key):
+            return value
         return self.settings.value(key)
 
     def delete_template(self, property: str, name: str):
@@ -189,10 +194,14 @@ class FinalCifSettings:
                 continue
         return keydict
 
-    def _load_settings(self, property: str, item_name: str):
+    def _load_settings(self, property: str, item_name: str) -> object | None:
         directory = self.list_saved_items(property)
         if directory and item_name in directory:
             self.settings.beginGroup(property)
+            self.s_old.beginGroup(property)
+            if v := self.s_old.value(item_name):
+                self.s_old.endGroup()
+                return v
             try:
                 v = self.settings.value(item_name)
             except TypeError as e:
@@ -201,8 +210,13 @@ class FinalCifSettings:
                 v = None
             self.settings.endGroup()
             return v
+        return None
 
     def list_saved_items(self, property: str) -> list:
+        self.s_old.beginGroup(property)
+        if v := self.s_old.allKeys():
+            self.s_old.endGroup()
+            return v
         self.settings.beginGroup(property)
         v = self.settings.allKeys()
         self.settings.endGroup()
@@ -228,3 +242,9 @@ if __name__ == '__main__':
     # print(p, '###ä###')
     print('load_property_by_key:', s.load_property_values_by_key(cif_key='_diffrn_ambient_environment'))
     print(s.load_cif_keys_of_properties())
+    print(s.load_property_values_by_key('_diffrn_ambient_environment'))
+    print(s.load_options())
+    print(s.load_property_keys_and_values())
+    print(s.list_saved_items(property='authors_list'))
+    print(s.load_settings_dict('authors_list', 'dxfbg'))
+    print(s.load_window_position())

@@ -51,7 +51,7 @@ select = ["E", "F", "B", "UP", "ANN", "A", "C4", "DTZ", "NPY", "PL", "FURB", "RU
 ignore = ["E501", "F401", "E401", "B904", "E402", "C901",
     "PLR0912", "PLR0915", "PLR0913", "ANN201", "ANN201", "ANN204", "ANN001", "ANN002",
     "D102", "D103", "D205", "D212", "PLR2004", "PLW2901", "DTZ005", "DTZ006", "UP015",
-    "RUF012", "DTZ001",
+    "RUF012", "DTZ001", "A002",
 ]
 
 # Avoid trying to fix flake8-bugbear (`B`) violations.
