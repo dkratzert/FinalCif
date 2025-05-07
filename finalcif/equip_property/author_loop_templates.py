@@ -59,6 +59,7 @@ class AuthorLoops:
                           f'{self.cif_key}_phone', f'{self.cif_key}_id_orcid', f'{self.cif_key}_id_iucr',
                           f'{self.cif_key}_footnote']
         self.settings = FinalCifSettings()
+        self._migrate_pyqt_saved_templates()
         if app:
             self.ui.authorEditTabWidget.setCurrentIndex(0)
             self.contact_author_checked(self.ui.ContactAuthorCheckBox.isChecked())
@@ -66,6 +67,30 @@ class AuthorLoops:
             self.connect_signals_and_slots()
             self.show_authors_list()
             self.make_sure_to_save_only_when_name_field_has_text()
+
+    def _migrate_pyqt_saved_templates(self) -> None:
+        """Author entries saved by PyQt5 (pre-v151) cannot be loaded by PySide2. Load such entries
+        using PyQt5 and re-save with PySide2.
+        """
+
+        UPGRADE_FLAG = "v152_migrated_author_templates"
+        if self.settings.load_value_of_key(UPGRADE_FLAG):
+            return
+
+        import PyQt5.QtCore
+        pyqt_settings = PyQt5.QtCore.QSettings(self.settings.organization, self.settings.software_name)
+
+        pyqt_settings.beginGroup("authors_list")
+        for author in self.authors_list():
+            pyside_loopdata = self.author_loopdata(author)
+            pyqt_loopdata = pyqt_settings.value(author)
+            if not pyside_loopdata and isinstance(pyqt_loopdata, Author):
+                self.general_author_save(pyqt_loopdata)
+                print(f"Migrated pre-v151 saved author data for \"{author}\".")
+        pyqt_settings.endGroup()
+
+        self.settings.save_key_value(UPGRADE_FLAG, True)
+        del pyqt_settings
 
     def connect_signals_and_slots(self) -> None:
         self.ui.AddThisAuthorToLoopPushButton.clicked.connect(self.save_author_to_loop)
