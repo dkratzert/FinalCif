@@ -1176,6 +1176,37 @@ class TemplatedReport:
             return False
         return True
 
+    def make_templated_latex_report(self,
+                                   output_filename: str = 'test.html',
+                                   picfile: Path | None = None,
+                                   template_path: Path = Path('.'),
+                                   template_file: str = "report.tmpl") -> bool:
+        context = self.get_context(self.cif, self.options, picfile, None)
+        jinja_env = jinja2.Environment(
+            block_start_string='\BLOCK{',
+            block_end_string='}',
+            variable_start_string='\VAR{',
+            variable_end_string='}',
+            comment_start_string='\#{',
+            comment_end_string='}',
+            line_statement_prefix='%%',
+            line_comment_prefix='%#',
+            trim_blocks=True,
+            autoescape=False,
+            loader=jinja2.FileSystemLoader(searchpath=template_path.resolve())
+        )
+        template = jinja_env.get_template('report.tex')
+
+        try:
+            with open(output_filename, encoding='utf-8', mode='w+t') as f:
+                outputText = template.render(context)
+                f.write(outputText)
+        except Exception as e:
+            show_general_warning(parent=None, window_title='Warning', warn_text='Document generation failed',
+                                 info_text=str(e))
+            return False
+        return True
+
     def prepare_report_data(self, cif: CifContainer,
                             options: Options,
                             picfile: Path | None,

@@ -1,0 +1,70 @@
+\documentclass[11pt,a4paper,twocolumn]{article}
+
+% Modernes Design und Schrift
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[scaled]{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage[ngerman]{babel}
+
+% Seitenränder – linker Rand größer für Ablage
+\usepackage[left=3.5cm,right=2cm,top=2.5cm,bottom=2.5cm]{geometry}
+
+% Tabellen und Typografie
+\usepackage{booktabs}
+\usepackage{microtype}
+\usepackage{caption}
+\captionsetup[table]{position=above}
+\usepackage{siunitx} % für Maßeinheiten
+
+% Dokumentinformationen
+\title{\textbf{Strukturbeschreibung eines Einkristalls}}
+\author{Max Mustermann}
+\date{\today}\begin{document}
+\maketitle
+  \begin{abstract}
+    In diesem Dokument wird die Kristallstruktur einer anorganischen Verbindung anhand experimenteller Gitterparameter beschrieben. Die Struktur wurde mittels Einkristallröntgenbeugung bestimmt und nach Standardmethoden ausgewertet.
+  \end{abstract}
+  \vspace{1em}
+
+
+\section*{Einleitung}
+
+Die Einkristallstrukturanalyse liefert präzise Informationen über die atomare Anordnung in einem Kristall. Sie ist ein unverzichtbares Werkzeug in der Festkörperchemie und Materialwissenschaft. Im Folgenden werden die wichtigsten Parameter der untersuchten Verbindung zusammengefasst.
+
+\section*{Kristallstruktur}
+
+Die untersuchte Verbindung kristallisiert im monoklinen Kristallsystem. Die Kristallstruktur wurde mit Mo-K\(\alpha\)-Strahlung bei Raumtemperatur gemessen. Die wichtigsten strukturellen Parameter sind in Tabelle~\ref{tab:struktur} zusammengefasst.
+
+\begin{table}[h!]
+\centering
+\caption{Gitterparameter und Raumgruppe der untersuchten Verbindung.}
+\label{tab:struktur}
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Parameter}         & \textbf{Wert}                        \\
+\midrule
+Raumgruppe                 & $P2_1/c$ (Nr. 14)                   \\
+a / \si{\angstrom}         & 7.123(2)                            \\
+b / \si{\angstrom}         & 12.456(3)                           \\
+c / \si{\angstrom}         & 9.789(2)                            \\
+$\beta$ / \si{\degree}     & 101.23(1)                           \\
+Volumen / \si{\angstrom^3} & 842.5(5)                            \\
+Z                          & 4                                   \\
+Dichte / \si{\gram\per\cubic\centi\metre} & 2.36                  \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section*{Diskussion}
+
+Die Raumgruppe $P2_1/c$ ist eine der häufigsten monoklinen Raumgruppen und erlaubt eine dichte Packung der Moleküle. Die Werte der Gitterparameter sind typisch für kleine bis mittelgroße anorganische Molekülverbindungen.
+
+\section*{Fazit}
+
+Die Strukturaufklärung zeigt, dass die Verbindung eine stabile monokline Kristallstruktur besitzt. Die Analyse der atomaren Positionen liefert die Grundlage für weiterführende Untersuchungen, etwa zur elektronischen Struktur oder zum Bindungsverhalten.
+
+
+\end{document}
+
+\end{document}
